@@ -44,7 +44,7 @@ import com.sitescape.team.remoting.ws.BaseService;
 import com.sitescape.team.remoting.ws.model.TemplateBrief;
 import com.sitescape.team.remoting.ws.model.TemplateCollection;
 
-public class TemplateServiceImpl extends BaseService implements TemplateService {
+public class TemplateServiceImpl extends BaseService implements TemplateService, TemplateServiceInternal {
 
 	public long template_addBinder(String accessToken, long parentBinderId, long binderConfigId, String title)
 	{

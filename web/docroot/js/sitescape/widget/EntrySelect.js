@@ -42,6 +42,7 @@ dojo.widget.defineWidget(
 		searchFieldIndex: '',
 		widgetStepsRef : null,
 		weekStartsOn: null,
+	    getSubSearchString: function() {return ""},
 		selectOption : function(/*Event*/ evt){
 			if (this.widgetStepsRef != null) this.widgetStepsRef.destroy();
 			sitescape.widget.EntrySelect.superclass.selectOption.call(this, evt);
@@ -63,6 +64,18 @@ dojo.widget.defineWidget(
 			
 			this.widgetStepsRef.setDefaultValues(fieldId, fieldLabel, userValues, fieldType, userValueLabel);
 			
+		},
+		handleArrowClick: function(){
+			this._handleBlurTimer(true, 0);
+			this.tryFocus();
+			if(this.popupWidget.isShowingNow){
+				this.hideResultList();
+			}else{
+				// forces full population of results, if they click
+				// on the arrow it means they want to see more options
+				this.startSearch(this.getSubSearchString());
+			}
 		}
+		
 	}
 );

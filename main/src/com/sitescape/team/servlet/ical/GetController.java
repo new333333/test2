@@ -68,7 +68,6 @@ public class GetController extends SAbstractController {
 		response.resetBuffer();
 		response.setContentType(MailModule.CONTENT_TYPE_CALENDAR + MailModule.CONTENT_TYPE_CHARSET_SUFFIX + XmlFileUtil.FILE_ENCODING);
 		response.setHeader("Cache-Control", "private");
-		response.setHeader("Pragma", "no-cache");
 		
 		Long entryId = RequestUtils.getLongParameter(request, "entry");
 		if (entryId != null) {

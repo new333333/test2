@@ -35,19 +35,22 @@ EasyMock Class Extensions 2.3
 Ehcache 1.3.0 (needed by Hibernate)
 ezmorph 1.0.1
 Hibernate 3.2.6.ga
-iCal4j 1.0-beta2
-Jackrabbit API 1.3.1
-Jackrabbit JCR Commons 1.3.1
-Jackrabbit Core 1.3.1
+iCal4j 1.0-beta4
+Jackrabbit API 1.4
+Jackrabbit JCR Commons 1.4.2
+Jackrabbit Core 1.4.5
+Jackrabbit SPI 1.4
+Jackrabbit SPI Commons 1.4
 Jakarta Taglibs Standard 1.1
 Jaxen 1.1-beta-7
 JAXRPC 1.1
 JBoss App Server 4.2.1.GA jbosssx.jar
 JBoss Common 1.2.0.GA
 JBoss Portal 2.6.1.GA portal-identity-lib.jar
+JBPM 3.1.4 (not using/shipping jbpm-identity;added sequence name patch to *.hbm.xml files http://jira.jboss.com/jira/browse/JBPM-982)
 JCR 1.0
 JDOM 1.0
-Joda-Time 1.4
+Joda-Time 1.5.2
 Json-lib 1.1 for jdk15
 JSTL 1.0.5
 JSTL Implementation (from Apache) 1.0.6

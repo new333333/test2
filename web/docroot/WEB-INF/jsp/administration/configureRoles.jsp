@@ -30,12 +30,14 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-
+<body class="ss_style_body">
+<div class="ss_pseudoPortal">
+<div class="ss_style ss_portlet">
 <script type="text/javascript">
 </script>
 
-<div class="ss_style ss_portlet">
-<h3><ssf:nlt tag="administration.configure_roles.configure" text="Configure SiteScape Forum Roles"/></h3>
+
+<spam class="ss_titlebold"><ssf:nlt tag="administration.configure_roles.configure" text="Configure SiteScape Forum Roles"/></span>
 <c:if test="${!empty ssException}">
 <font color="red">
 
@@ -57,8 +59,7 @@
 
 <ssf:expandableArea title="<%= NLT.get("administration.configure_roles.add") %>">
 <form class="ss_style ss_form" method="post" 
-	action="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="configure_roles"/></portlet:actionURL>">
+	action="<ssf:url action="configure_roles" actionUrl="true"/>">
 		
 	<span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span>
 	<input type="text" class="ss_text" size="70" name="roleName" maxlength="64"><br>
@@ -81,8 +82,7 @@
 <jsp:useBean id="function" type="com.sitescape.team.security.function.Function" />
 <ssf:expandableArea title="<%= NLT.getDef(function.getName()) %>">
 <form class="ss_style ss_form" method="post" 
-	action="<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="configure_roles"/></portlet:actionURL>">
+	action="<ssf:url action="configure_roles" actionUrl="true"/>">
 	<span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span>
 	<input type="text" class="ss_text" size="70" name="roleName" value="${function.name}"><br>
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">
@@ -109,9 +109,14 @@
 
 <br/>
 
-<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>rolesForm" method="post" 
-	action="<portlet:renderURL windowState="normal" portletMode="view"></portlet:renderURL>"/>
+<form class="ss_style ss_form" name="${renderResponse.namespace}rolesForm" method="post" 
+	action="<ssf:url action="site_administration" actionUrl="false"/>" >
 
-	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"/>
+	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+		  onClick="self.window.close();return false;"/>
 </form>
 </div>
+
+</div>
+</body>
+</html>

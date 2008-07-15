@@ -30,8 +30,9 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body">
+<div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
-
 <%
 String cTreeName = renderResponse.getNamespace() + "_cTree";
 %>
@@ -42,74 +43,23 @@ String cTreeName = renderResponse.getNamespace() + "_cTree";
 
 function <%=cTreeName%>_showId(id, obj, action) {
 	//Build a url to go to
-	var url = "<ssf:url action="ssActionPlaceHolder"><ssf:param 
-			name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>"
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
-	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-	self.location.href = url;
+	var params = {binderId:id};
+	self.location.href = ss_buildAdapterUrl(ss_AjaxBaseUrl, params, action);
 	return false;
 } 
 </script>
-<div class="ss_form" style="margin:6px;">
-<div style="margin:6px;">
-<h3><ssf:nlt tag="administration.configure_configurations" /></h3>
-<br/>
-<br/>
-<h3><ssf:nlt tag="administration.configure_cfg.add"/></h3>
-<form class="ss_style ss_form" name="${renderResponse.namespace}add" method="post" 
-	action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
-	name="operation" value="add"/></ssf:url>" >
-		
-	 <input type="radio" name="cfgType" value="8"><ssf:nlt tag="general.type.workspace"/><br/>
-	 <input type="radio" name="cfgType" value="5" checked><ssf:nlt tag="general.type.folder"/><br/>
-	 <input type="radio" name="cfgType" value="-1" ><ssf:nlt tag="administration.configure_cfg.clone"/> 
-	   <ssf:inlineHelp tag="ihelp.designers.new_template"/><br/>
-	<br/>
 
-	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
-</form>
-
-<br>
-<hr>
+<span class="ss_titlebold"><ssf:nlt tag="administration.configure_configurations" /></span>
 <br/>
-<h3><ssf:nlt tag="administration.configure_cfg.import"/></h3>
-<div class="ss_indent_medium">
-<ul class="ss_square">
-<li><a target="_blank" href="<ssf:url adapter="true" 
-			portletName="ss_administration" 
-			action="configure_configuration" 
-			actionUrl="true" ><ssf:param 
-		    name="operation" value="add"/><ssf:param 
-		    name="cfgType" value="-2"/></ssf:url>"><ssf:nlt tag="administration.configure_cfg.import"/></a> 
-<ssf:inlineHelp tag="ihelp.designers.import_definitions"/>
-</li>
-<li><a href="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
-	name="operation" value="add"/><ssf:param 
-	name="cfgType" value="-3"/></ssf:url>"><ssf:nlt tag="administration.configure_cfg.reload"/></a> 
-</li>
-</ul>
-</div> 
-
-<br>
-<hr>
 <br/>
-<form class="ss_style ss_form" name="${renderResponse.namespace}export" method="post" 
-	action="<ssf:url action="configure_configuration"><ssf:param 
-		name="operation" value="export"/></ssf:url>" >
-<h3><ssf:nlt tag="administration.export.templates"/></h3>
-<br>
-	<input type="submit" class="ss_submit" name="exportBtn" value="<ssf:nlt tag="button.export" text="Export"/>">
-</form>
-<br>
-<hr>
-<br>
-<h3><ssf:nlt tag="administration.configure_cfg.existing" text="Currently defined templates"/> <ssf:inlineHelp tag="ihelp.designers.current_templates"/></h3>
+<ssf:toolbar toolbar="${ss_toolbar}" style="ss_actions_bar2 ss_actions_bar" />
+<br/>
 <div style="padding-top: 10px; padding-bottom: 2px;"><span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.standardTemplates"/></span></div>
 <ul class="ss_square">
 <c:forEach var="bconfig" items="${ssBinderConfigs}">
 <jsp:useBean id="bconfig" type="com.sitescape.team.domain.TemplateBinder"/>
 	<c:if test="${bconfig.reserved}">
-	<li><a class="ss_bold ss_style ss_title_link" href="" onClick="return <%=cTreeName%>_showId('${bconfig.id}', this, 'configure_configuration');">
+	<li><a class="ss_bold ss_style ss_title_link" href="javascript:" onClick="return <%=cTreeName%>_showId('${bconfig.id}', this, 'configure_configuration');">
 	<ssf:nlt tag="${bconfig.templateTitle}" checkIfTag="true"/></a>
 		<c:if test="${!empty bconfig.templateDescription.text}">
 		- <c:out value="<%= NLT.getDef(bconfig.getTemplateDescription().getText()) %>" escapeXml="false" />
@@ -124,7 +74,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <c:forEach var="cconfig" items="${ssBinderConfigs}">
 <jsp:useBean id="cconfig" type="com.sitescape.team.domain.TemplateBinder"/>
 	<c:if test="${!cconfig.reserved}">
-	<li><a class="ss_bold ss_style ss_title_link" href="" onClick="return <%=cTreeName%>_showId('${cconfig.id}', this, 'configure_configuration');">
+	<li><a class="ss_bold ss_style ss_title_link" href="javascript:" onClick="return <%=cTreeName%>_showId('${cconfig.id}', this, 'configure_configuration');">
 	<ssf:nlt tag="${cconfig.templateTitle}" checkIfTag="true"/></a>
 		<c:if test="${!empty cconfig.templateDescription.text}">
 		- <c:out value="<%= NLT.getDef(cconfig.getTemplateDescription().getText()) %>" escapeXml="false" />
@@ -135,38 +85,28 @@ function <%=cTreeName%>_showId(id, obj, action) {
 </ul>
 <br/>
 
-<form class="ss_style ss_form" method="post" 
-	action="<ssf:url />">
+<form class="ss_style ss_form" >
 
-	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+	<input type="submit" class="ss_submit" name="closeBtn" onClick="self.window.close();return false;" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
-</div>
-</div>
+
 </c:if>
 
 <c:if test="${ssOperation == 'export'}">
-<script type="text/javascript">
-var ssExportURL="<ssf:url action="configure_configuration" actionUrl="true"/>";
-</script>
-
+<span class="ss_titlebold"><ssf:nlt tag="administration.export.templates.select"/></span>
 <table class="ss_style" width="100%"><tr><td>
 
 <form class="ss_style ss_form" action="<ssf:url webPath="templateDownload"/>" 
 	method="post" name="${renderResponse.namespace}fm">
 
-<br>
-<br>
-<span class="ss_bold"><ssf:nlt tag="administration.export.templates.select"/></span>
 <%@include file="/WEB-INF/jsp/administration/commonSelectTree.jsp" %>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
+		  onClick='self.location.href="<ssf:url action="configure_configuration" 
+			actionUrl="false"/>";return false;'/>
 <script type="text/javascript">
-document.${renderResponse.namespace}fm.cancelBtn.onclick=function () {
-	document.${renderResponse.namespace}fm.action=ssExportURL;
-	document.${renderResponse.namespace}fm.onsubmit=function() { return true; };
-	return true;
-};
 document.${renderResponse.namespace}fm.onsubmit=function() { return ss_selectAllIfNoneSelected.call(this,"id_");};
 </script>
-
 </form>
 <br>
 </td></tr></table>
@@ -210,7 +150,7 @@ function ss_confirmDeleteConfig() {
 
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
@@ -229,7 +169,7 @@ function ss_confirmDeleteConfig() {
 
 	<% // Folder Sidebar %>
 
-    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
+    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
 
     <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
         initOpen="true" sticky="true">
@@ -296,8 +236,7 @@ ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initSho
 </c:if>
 
 <c:if test="${ssOperation == 'add_folder' or ssOperation == 'add_workspace'}">
-<div class="ss_form" style="margin:6px;">
-<div style="margin:6px;">
+
 <form method="post" action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
 		name="operation" value="${ssOperation}"/><ssf:param 
 		name="binderId" value="${ssBinderConfig.id}"/></ssf:url>" >
@@ -315,12 +254,13 @@ ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initSho
 </div>
 
 </form>
-</div>
-</div>
 
 </c:if>
 
 
 </c:if>
 </div>
+</div>
+</body>
+</html>
 

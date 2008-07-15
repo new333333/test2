@@ -49,9 +49,9 @@ public class SearchTreeHelper implements DomTreeHelper {
 		//determine the name of the checkbox.  We use variable names so the
 		//profile binder can show up as the parent of the users/groups and 
 		//as the parent of user workspaces. 
-		if (type == DomTreeBuilder.TYPE_WORKSPACE) {return DomTreeBuilder.NODE_TYPE_WORKSPACE;}
-		if (type == DomTreeBuilder.TYPE_FOLDER) {return DomTreeBuilder.NODE_TYPE_FOLDER;}
-		if (type == DomTreeBuilder.TYPE_PEOPLE) {return DomTreeBuilder.NODE_TYPE_PEOPLE;}
+		if (type == DomTreeBuilder.TYPE_WORKSPACE) {return "search";}
+		if (type == DomTreeBuilder.TYPE_FOLDER) {return "search";}
+		if (type == DomTreeBuilder.TYPE_PEOPLE) {return "search";}
 		
 		return null;
 	}

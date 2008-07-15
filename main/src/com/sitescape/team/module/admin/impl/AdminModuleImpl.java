@@ -341,8 +341,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 				reader = new SAXReader(false);  
 				try {
 					in = new ClassPathResource(file).getInputStream();
-					Document doc = reader.read(in);
-					defs.add(getDefinitionModule().addDefinition(doc, true));
+					defs.add(getDefinitionModule().addDefinition(in, null, null, null, true).getId());
 					getCoreDao().flush();
 				} catch (Exception ex) {
 					logger.error("Cannot read definition from file: " + file + " " + ex.getMessage());

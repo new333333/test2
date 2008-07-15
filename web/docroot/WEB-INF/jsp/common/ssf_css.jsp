@@ -192,6 +192,11 @@ a.ss_download_link {
 .ss_size_14px { font-size: 14px !important;}
 .ss_size_15px { font-size: 15px !important;}
 .ss_size_16px { font-size: 16px !important;}
+.ss_size_18px { font-size: 18px !important;}
+.ss_size_20px { font-size: 20px !important;}
+.ss_size_24px { font-size: 24px !important;}
+.ss_size_28px { font-size: 28px !important;}
+.ss_size_32px { font-size: 32px !important;}
 
 
 
@@ -1168,7 +1173,9 @@ a.ss_displaytag {
 /* Sliding tables */
 div.ss_sliding_table_column0 {
   display: block; 
-  border: ${ss_sliding_table_border_color} 1px solid;
+  border-left: ${ss_sliding_table_border_color} 1px solid;
+  border-right: ${ss_sliding_table_border_color} 1px solid;
+  border-bottom: ${ss_sliding_table_border_color} 1px solid;
   margin: 0px;
 }
 .ss_sliding_table_column0 * {
@@ -1179,6 +1186,7 @@ div.ss_sliding_table_column0 {
 div.ss_sliding_table_column1 {
   position: absolute; 
   visibility: hidden;
+  overflow:hidden;
   display: block; 
   border-left: #ffffff solid 1px;
   margin: 0px;
@@ -1191,6 +1199,7 @@ div.ss_sliding_table_column1 {
 div.ss_sliding_table_column {
   position: absolute; 
   visibility: hidden;
+  overflow:hidden;
   display: block; 
   border-left: ${ss_sliding_table_border_color} solid 1px;
   margin: 0px;
@@ -1203,8 +1212,8 @@ div.ss_sliding_table_column {
   position: absolute; 
   visibility: hidden;
   display:block; 
-  border-left: ${ss_sliding_table_border_color} solid 1px;
-  margin: 0px;
+  margin-left: 0px;
+  padding-left:1px;
 }
 .ss_sliding_table_row0 {
   background-color: ${ss_sliding_table_row0_background_color}; 
@@ -2038,6 +2047,7 @@ span.ss_tabs_title {
 }
 .ss_breadcrumb ul{
 	margin-left:-15px;
+	margin-top:-12px;
 }
 .ss_breadcrumb li{
 	float:left;
@@ -2047,6 +2057,10 @@ span.ss_tabs_title {
 a.ss_breadcrumb {
 	font-size: ${ss_style_font_smallprint};
 }
+.ss_bc {					/* used with a span to try to fix entry breadcrumb (put span where ss_bold is???)  */
+	font-weight:bold;
+	margin-top:15px !important; 
+}  
 
 div.ss_sidebar_panel {
 	padding-bottom: 1px;
@@ -2146,6 +2160,77 @@ div.ss_sidebar_panel_featured {
   text-decoration:none;
 }
 
+/* TOOLBAR STYLES */
+
+.ss_sidebarImage {
+	background-image: url("<html:rootPath/>images/pics/navbar/bg_toolbar.gif");  
+	background-repeat: repeat-x;
+}
+.ss_sidebarSlide {
+	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_lg.png"); 
+	background-position:top left;
+	background-repeat: no-repeat;
+	height:22px;
+	color:#FFF;
+	}
+.ss_sidebarSlidesm {
+	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_sm.png"); 
+	background-position:top left;
+	background-repeat: no-repeat;
+	height:22px;
+	color:#FFF;
+	}
+button { 
+  border:0; 
+  cursor:pointer; 
+  padding:0 20px 0 0; 
+  text-align:center; 
+}
+button span {
+	position:relative;
+	display:block;
+	white-space:nowrap;
+	padding:0 0 0 25px;
+}
+
+/*AQUA buttons*/
+.ss_toolbar_submitBtn {
+	font-size:.8em;
+	background-color: transparent !important;
+	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_right.png");
+	background-repeat: no-repeat;
+	background-position: right;
+	 <c:if test="<%= isIE %>">
+  		background-position: top right!important;
+ 	</c:if>
+	
+}
+.ss_toolbar_submitBtn span {
+	line-height:20px;
+	height: 20px;
+	color:#fff;
+	background-color: transparent !important;
+	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_left.png");
+	background-repeat: no-repeat;
+	background-position: left;
+		 <c:if test="<%= isIE %>">
+  		background-position: top left!important;
+ 	</c:if>
+}
+.ss_toolbar_submitBtn:hover {
+	background-color: transparent !important;
+	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_right_hover.png");
+	background-repeat: no-repeat;
+	background-position: right;
+}
+.ss_toolbar_submitBtn:hover span {
+	background-color: transparent !important;
+	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_left_hover.png");
+	background-repeat: no-repeat;
+	background-position: left;
+}
+	
+	
 /* actions: */
 
 .ss_actions_bar1 {
@@ -2161,11 +2246,11 @@ div.ss_actions_bar1_pane {
 	height: 22px;
 	white-space: nowrap;
 }
-
+	
 table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	background-color: ${ss_toolbar2_background_color};
 	width: 100%;
-	height: 22px;
+	height: 24px;
 	padding: 0px;
 	margin: 0px;
 	border-collapse: collapse;
@@ -2453,10 +2538,11 @@ div.ss_dashboardContainer {
 	padding: 0px 0px 0px 0px;
 }
 div.ss_utils_bar {
-    float:right;
-    text-align:right;
+    float:right;		
+    text-align:right;	/* this was here */
 	margin-bottom:0px;
-	background:transparent none repeat scroll 0%;
+	background:transparent none repeat 0%;
+	background-attachment:scroll;
 	width:100%;
 }
 div.ss_line {
@@ -2466,14 +2552,15 @@ div.ss_line {
 	padding: 0px 0px 0px 0px;
 }
 ul.ss_utils_bar {
-	float: right;
+ 	float: right;		
 	list-style-type:none;
 	margin:0px;
 	padding:0px;
-	text-align:right;
+	text-align:right;	/* this was here */
 }
 div.ss_utils_bar ul.ss_utils_bar li {
-	float:left;
+	float:left;			
+/*	text-align: left;	 this is new */	
 	margin: 0px 5px 0px 0px;
 }
 div.ss_utils_bar ul.ss_utils_bar li a, div.ss_utils_bar ul.ss_utils_bar li a:visited {
@@ -3209,6 +3296,10 @@ div.ss_cal_monthGridDayBadgeCurrent a, div.ss_cal_monthGridDayBadge a {
   top: -2px;
 }
 
+div.ss_cal_monthGridDayBadgeOverHighlight {
+  background-color: #E8EFF7;
+}
+
 /* Highlight for today */
 div.ss_cal_monthGridDayBadgeToday {
   background-color: #E8EFF7;
@@ -3776,6 +3867,60 @@ ul.ss_calendarNaviBar li.ss_taskViewOptions {
 	padding-left: 30px;
 }
 
+.ss_event_scheduler {
+	width: 600px;
+}
+
+.ss_event_scheduler div.timeLine {
+	width: 400px;
+	float: left;
+}
+
+.ss_event_scheduler ul.usersList, .ss_event_scheduler ul.usersList li {
+	width: 200px;
+}
+
+.ss_event_scheduler ul, .ss_event_scheduler ul li {
+	overflow: hidden;
+}
+
+.ss_event_scheduler ul.usersList {
+	float: left;
+}
+
+.ss_event_scheduler ul {
+	margin: 0;
+	padding: 0;
+}
+
+.ss_event_scheduler ul.usersList li {
+	margin-top: 0.5em;
+	height: 1.5em;
+	padding-left: 5px;
+	background-color: #CCCCCC;
+}
+
+.ss_event_scheduler ul.legend {
+	clear: both;
+	width: 300px;
+}
+
+
+.ss_event_scheduler ul.legend table {
+	display: inline;
+	empty-cells: show;
+}
+
+.ss_event_scheduler ul.legend table, .ss_event_scheduler ul.legend td {
+	width: 10px;
+	height: 10px;
+	color: #FFFFFF;
+}
+.ss_event_scheduler ul.legend li {
+	margin-top: 5px;
+}
+
+
 /* TEAM BUDDIES LIST */
 
 div.ss_buddies {
@@ -3948,6 +4093,26 @@ a.ss_searchButton img, a.ss_searchButton:link img , a.ss_searchButton:focus img,
 }
 
 a.ss_searchButton:hover img {
+    background-position:  left -16px; 
+<ssf:ifaccessible>
+  outline: dotted 1px gray;
+</ssf:ifaccessible>  
+}
+/***  NEW LAYOUT SEARCH BUTTON ***/
+a.ss_searchButton2 img {
+	width: 19px;
+	height: 34px;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+	vertical-align: bottom;
+}
+
+a.ss_searchButton2 img, a.ss_searchButton:link img , a.ss_searchButton:focus img, a.ss_searchButton:visited img { 
+	background: transparent url(<html:rootPath/>images/pics/masthead/search.png) no-repeat top left; 
+}
+
+a.ss_searchButton2:hover img {
     background-position:  left -16px; 
 <ssf:ifaccessible>
   outline: dotted 1px gray;
@@ -4651,10 +4816,9 @@ div.ssPageNavi table td {
 	background-color: #FFFFFF;
 }
 
-div.ss_results_pro_page {
-	position:relative;
-	top: 0px; 
-	margin:0px 2px; 
+.ss_results_pro_page {
+
+	margin-left:-1px; 
 	padding: 1px 4px 1px 4px;
 	border-top:solid #CCCCCC 1px; 
 	border-bottom:solid #CCCCCC 1px;  

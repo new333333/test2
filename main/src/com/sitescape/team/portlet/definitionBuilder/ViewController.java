@@ -30,8 +30,6 @@ package com.sitescape.team.portlet.definitionBuilder;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
@@ -42,16 +40,20 @@ import javax.portlet.RenderResponse;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.DefinitionInvalidException;
 import com.sitescape.team.domain.DefinitionInvalidOperation;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
+import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.Validator;
@@ -67,13 +69,21 @@ public class ViewController extends SAbstractController {
 
 		Map formData = request.getParameterMap();
 		String selectedItem = PortletRequestUtils.getStringParameter(request,"sourceDefinitionId", "");
-			
+		String operation = PortletRequestUtils.getStringParameter(request,"operation", "");
+		Long binderId=null;
+		try {
+			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		} catch (Exception ex) {};
 		//See if there is an operation to perform
 		if (formData.containsKey("cancelBtn")) {
-			//The operation was canceled. Go back to the top screen
-				
-		} else if (formData.containsKey("operation")) {
-			String operation = PortletRequestUtils.getStringParameter(request,"operation", "");
+			//The operation was canceled; refresh view
+			if (Validator.isNull(selectedItem)) {
+				//return to manage
+				response.setRenderParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
+				response.setRenderParameter(WebKeys.URL_OPERATION, "");
+				return;
+			}
+		} else if (Validator.isNotNull(operation)) {
 				
 			try {
 				if (operation.equals("addDefinition")) {
@@ -82,67 +92,86 @@ public class ViewController extends SAbstractController {
 					String caption = PortletRequestUtils.getStringParameter(request, "propertyId_caption", "");
 					String operationItem = PortletRequestUtils.getStringParameter(request, "operationItem", "");
 					Integer type = PortletRequestUtils.getIntParameter(request, "definitionType_"+operationItem);
-					if (!name.equals("") && type != null) {
-						Definition def = getDefinitionModule().addDefinition(name, caption, type.intValue(),  new MapInputData(formData));			
-						selectedItem = def.getId();
+					if (Validator.isNotNull(name) && type != null) {
+						if (binderId == null) {
+							Definition def = getDefinitionModule().addDefinition(null, name, caption, type, new MapInputData(formData));			
+							selectedItem = def.getId();
+						} else {
+							Definition def = getDefinitionModule().addDefinition(getBinderModule().getBinder(binderId), name, caption, type, new MapInputData(formData));			
+							selectedItem = def.getId();
+							
+						}
 					}
 					
 				} else if (operation.equals("modifyDefinition")) {
 					//Modify the name of the selected item
-					selectedItem = PortletRequestUtils.getStringParameter(request, "selectedId", "");
-					if (!selectedItem.equals("")) {
-						getDefinitionModule().modifyDefinitionProperties(selectedItem,  new MapInputData(formData));
-					}
+					getDefinitionModule().modifyDefinitionProperties(selectedItem,  new MapInputData(formData));
 					
-				} else if (operation.equals("deleteDefinition")) {
-					//Delete the selected item
-					selectedItem = PortletRequestUtils.getStringParameter(request, "selectedId", "");
-					if (!selectedItem.equals("")) {
-						try {
-							getDefinitionModule().deleteDefinition(selectedItem);
-						} catch(NoDefinitionByTheIdException e) {
-							//If the id is already deleted, ignore the error
+				} else if (operation.equals("setVisibility")) {
+					//Modify the name of the selected item
+					Long targetBinderId = PortletRequestUtils.getLongParameter(request, "targetId");
+					Integer visibility = PortletRequestUtils.getIntParameter(request, "visibility");
+					getDefinitionModule().modifyVisibility(selectedItem, visibility, targetBinderId);
+
+				} else if (operation.equals("moveDefinition")) {
+					//Modify the name of the selected item
+					Long targetBinderId = PortletRequestUtils.getLongParameter(request, "targetId");
+					Definition def = getDefinitionModule().getDefinition(selectedItem);
+					getDefinitionModule().modifyVisibility(selectedItem, def.getVisibility(), targetBinderId);
+					response.setRenderParameter("binderId", targetBinderId.toString());
+
+				} else if (operation.equals("copyDefinition")) {
+					//Add a new definition type
+					String name = PortletRequestUtils.getStringParameter(request,"propertyId_name", "");
+					String caption = PortletRequestUtils.getStringParameter(request, "propertyId_caption", "");
+					if (Validator.isNull(caption)) caption = name;
+					Definition def;
+					if (Validator.isNotNull(name)) {
+						if (binderId == null) {
+							def = getDefinitionModule().copyDefinition(selectedItem, null, name, caption);			
+							selectedItem = def.getId();
+						} else {
+							def = getDefinitionModule().copyDefinition(selectedItem, getBinderModule().getBinder(binderId), name, caption);			
+							selectedItem = def.getId();
+								
 						}
-						selectedItem = "";
 					}
-					
+				} else if (operation.equals("deleteDefinition")) {
+					try {
+						getDefinitionModule().deleteDefinition(selectedItem);
+					} catch(NoDefinitionByTheIdException e) {
+							//If the id is already deleted, ignore the error
+					}
+					selectedItem=null;
 				} else if (operation.equals("addItem")) {
-					selectedItem = PortletRequestUtils.getStringParameter(request, "sourceDefinitionId", "");
-					if (!selectedItem.equals("")) {
-						//Add the new item
-						String itemId = PortletRequestUtils.getStringParameter(request,"selectedId", "");
-						String itemToAdd = PortletRequestUtils.getStringParameter(request, "operationItem", "");
-						getDefinitionModule().addItem(selectedItem, itemId, itemToAdd,  new MapInputData(formData));
-					}
+					//Add the new item
+					String itemId = PortletRequestUtils.getStringParameter(request,"selectedId", "");
+					String itemToAdd = PortletRequestUtils.getStringParameter(request, "operationItem", "");
+					getDefinitionModule().addItem(selectedItem, itemId, itemToAdd,  new MapInputData(formData));
 						
 				} else if (operation.equals("modifyItem")) {
-					selectedItem = PortletRequestUtils.getStringParameter(request, "sourceDefinitionId", "");
-					if (!selectedItem.equals("")) {
-						//Modify the item
-						String itemId = PortletRequestUtils.getStringParameter(request,"selectedId", "");
-						getDefinitionModule().modifyItem(selectedItem, itemId, new MapInputData(formData));
-					}
+					//Modify the item
+					String itemId = PortletRequestUtils.getStringParameter(request,"selectedId", "");
+					getDefinitionModule().modifyItem(selectedItem, itemId, new MapInputData(formData));
 					
 				} else if (operation.equals("deleteItem")) {
-					selectedItem = PortletRequestUtils.getStringParameter(request, "sourceDefinitionId", "");
-					if (!selectedItem.equals("")) {
-						//Delete the item
-						String itemId = PortletRequestUtils.getStringParameter(request,"selectedId", "");
-						getDefinitionModule().deleteItem(selectedItem, itemId);
-					}
+					//Delete the item
+					String itemId = PortletRequestUtils.getStringParameter(request,"selectedId", "");
+					getDefinitionModule().deleteItem(selectedItem, itemId);
 					
 				} else if (operation.equals("moveItem")) {
-					selectedItem = PortletRequestUtils.getStringParameter(request, "sourceDefinitionId", "");
-					if (!selectedItem.equals("")) {
-						//Delete the item
-						String itemId = PortletRequestUtils.getStringParameter(request, "operationItem", "");
-						String targetItemId = PortletRequestUtils.getStringParameter(request, "selectedId", "");
-						String location = PortletRequestUtils.getStringParameter(request, "moveTo", "");
-						getDefinitionModule().modifyItemLocation(selectedItem, itemId, targetItemId, location);
-					}
+					//Move the item
+					String itemId = PortletRequestUtils.getStringParameter(request, "operationItem", "");
+					String targetItemId = PortletRequestUtils.getStringParameter(request, "selectedId", "");
+					String location = PortletRequestUtils.getStringParameter(request, "moveTo", "");
+					getDefinitionModule().moveItem(selectedItem, itemId, targetItemId, location);
 					
-				} else if (operation.equals("selectId")) {
-					selectedItem = PortletRequestUtils.getStringParameter(request, "selectedId", "");
+				} else if (operation.equals("copyItem")) {
+					//Copy the item
+					String itemId = PortletRequestUtils.getStringParameter(request, "operationItem", "");
+					String targetItemId = PortletRequestUtils.getStringParameter(request, "selectedId", "");
+					getDefinitionModule().copyItem(selectedItem, itemId, targetItemId);
+					
 				}
 			} catch (DefinitionInvalidOperation e) {
 				//An error occurred while processing the operation; pass the error message back to the jsp
@@ -154,11 +183,20 @@ public class ViewController extends SAbstractController {
 				//The selected id must be non-existant. Give an error message
 				response.setRenderParameter("ss_configErrorMessage", e.getLocalizedMessage());
 				selectedItem = "";
+			} catch (DataIntegrityViolationException de) {
+				response.setRenderParameter("ss_configErrorMessage", NLT.get("definition.error.alreadyExistsByName"));
 			}
 		}
 		
-		//Pass the selection id to be shown on to the rendering phase
-		response.setRenderParameter("selectedItem", selectedItem);
+		if (Validator.isNull(selectedItem)) {
+			//return to manage
+			response.setRenderParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
+			response.setRenderParameter(WebKeys.URL_OPERATION, "");
+
+		} else {
+			//Pass the selection id to be shown on to the rendering phase
+			response.setRenderParameter("selectedItem", selectedItem);
+		}
 	}
 		
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -166,42 +204,44 @@ public class ViewController extends SAbstractController {
 			
 		Map model = new HashMap();
 		Map formData = request.getParameterMap();
+		Long binderId=null;
+		try {
+			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+			model.put(WebKeys.BINDER_ID, binderId);
+		} catch (Exception ex) {};
+		String selectedItem = PortletRequestUtils.getRequiredStringParameter(request, "selectedItem");
+		Definition def =  getDefinitionModule().getDefinition(selectedItem);
 
-		String selectedItem = PortletRequestUtils.getStringParameter(request, "selectedItem", "");
-		if (selectedItem.equals("0")) selectedItem = "";
-		String selectedItemTitle = "";
-		//See if there is a definition type requested
-		String definitionType = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, "");
-
-		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
 		Document definitionConfig = getDefinitionModule().getDefinitionConfig();
 		model.put(WebKeys.CONFIG_DEFINITION, definitionConfig);
-			
-
+		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
+		model.put(WebKeys.DEFINITION, def);
+		String option = PortletRequestUtils.getStringParameter(request, "option", "");		
 		Map data = new HashMap();
+		model.put("data", data);
+		data.put("option", option);
+		data.put("selectedItem", selectedItem);
+		Document sourceDefinition = def.getDefinition();
+		data.put("sourceDefinition", sourceDefinition);
+		String title = NLT.getDef(def.getTitle()) + "  (" + def.getName() + ")";
+		data.put("selectedItemTitle", title);
 			
+		if (Validator.isNull(option)) {
+			if (binderId != null) model.put(WebKeys.BINDER, getBinderModule().getBinder(binderId));
+
+			//Open the item that was selected
+			String nodeOpen = PortletRequestUtils.getStringParameter(request, "selectedId", "");
+			data.put("nodeOpen", nodeOpen);
 			
-		//Open the item that was selected
-		String nodeOpen = PortletRequestUtils.getStringParameter(request, "selectedId", "");
-		data.put("nodeOpen", nodeOpen);
-			
-		Map idData = new HashMap();
-		Map idDataNames = new HashMap();
-		Map idDataCaptions = new HashMap();
-		data.put("idData", idData);
-		idData.put("names",idDataNames);
-		idData.put("captions",idDataCaptions);
-		
-		Document definitionTree;
-		if (Validator.isNotNull(selectedItem)) {
-			//A definition was selected, go view it
-			Definition def =  getDefinitionModule().getDefinition(selectedItem);
-			model.put(WebKeys.DEFINITION, def);
-			
-			idDataNames.put(def.getId(), NLT.getDef(def.getName()));
-			definitionType = String.valueOf(def.getType());
-			Document sourceDefinition = def.getDefinition();
-			data.put("sourceDefinition", sourceDefinition);
+			Map idData = new HashMap();
+			Map idDataNames = new HashMap();
+			Map idDataCaptions = new HashMap();
+			data.put("idData", idData);
+			idData.put("names",idDataNames);
+			idData.put("captions",idDataCaptions);
+
+			Document definitionTree;
+			idDataNames.put(def.getId(), def.getName());
 			Element sourceRoot = null;
 			if (sourceDefinition != null) {
 				sourceRoot = sourceDefinition.getRootElement();
@@ -210,101 +250,51 @@ public class ViewController extends SAbstractController {
 			//Build the definition tree
 			definitionTree = DocumentHelper.createDocument();
 			Element dtRoot = definitionTree.addElement("root");
-			String title = NLT.getDef(def.getName());
-			String caption = "";
-			if (sourceRoot != null) {
-				caption = NLT.getDef(sourceRoot.attributeValue("caption", ""));
-			}
-			if (!caption.equals("")) {title = caption + " (" + title + ")";}
 			dtRoot.addAttribute("title", title);
 			dtRoot.addAttribute("id", def.getId());
-			idDataCaptions.put(def.getId(), caption.replaceAll("'", "\'").replaceAll("&", "&amp;"));
 			
 			if (sourceRoot != null) {
 				buildDefinitionTree(sourceRoot, dtRoot, idDataNames, idDataCaptions);
 			}
-			selectedItemTitle = title;
+	        //There is a forum specified, so get the forum object
+			model.put("definitionTree", definitionTree);
+			if (formData.containsKey("ss_configErrorMessage")) {
+				model.put("ss_configErrorMessage", ((String[]) formData.get("ss_configErrorMessage"))[0]);
+			}
+			return new ModelAndView(WebKeys.VIEW_DEFINITION, model);
 
 			
+		} else if ("moveDefinition".equals(option) && binderId != null) {
+			Workspace ws = getWorkspaceModule().getTopWorkspace();
+			Document wsTree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+			model.put(WebKeys.BINDER, getBinderModule().getBinder(binderId));
+			return new ModelAndView(WebKeys.VIEW_ADMIN_MOVE_DEFINITION, model);
+			
 		} else {
-			List currentDefinitions;
-			if (Validator.isNull(definitionType)) 
-				currentDefinitions = getDefinitionModule().getDefinitions();
-			else
-				currentDefinitions = getDefinitionModule().getDefinitions(Integer.valueOf(definitionType).intValue());
-			
-			//No definition is selected. Show the initial tree
-			
-			//Build the definition tree
-			definitionTree = DocumentHelper.createDocument();
-			Element dtRoot = definitionTree.addElement("root");
-			dtRoot.addAttribute("title", NLT.getDef("__definitions"));
-			dtRoot.addAttribute("id", "0");
-			Element root = definitionConfig.getRootElement();
-			
-			Iterator definitions = root.elementIterator("definition");
-			while (definitions.hasNext()) {
-				Element defEle = (Element) definitions.next();
-				//See if this is one of the desired definition types
-				if (definitionType.equals("") || definitionType.equals(defEle.attributeValue("definitionType", ""))) {
-					Element treeEle = dtRoot.addElement("child");
-					treeEle.addAttribute("type", "definition");
-					treeEle.addAttribute("title", NLT.getDef(defEle.attributeValue("caption")));
-					treeEle.addAttribute("id", defEle.attributeValue("name"));	
-					//Add the current definitions (if any)
-					ListIterator li = currentDefinitions.listIterator();
-					while (li.hasNext()) {
-						Definition curDef = (Definition)li.next();
-						Document curDefDoc = curDef.getDefinition();
-						if (curDefDoc == null) continue;
-						Element curDefDocRoot = curDefDoc.getRootElement();
-						if (curDef.getType() == Integer.valueOf(defEle.attributeValue("definitionType", "0")).intValue()) {
-							Element curDefEle = treeEle.addElement("child");
-							curDefEle.addAttribute("type", defEle.attributeValue("name"));
-							String title = NLT.getDef(curDef.getTitle());
-							curDefEle.addAttribute("title", title + " (" + curDef.getName() + ")");
-							curDefEle.addAttribute("id", curDef.getId());
-							idDataNames.put(curDef.getId(), curDef.getName());
-							idDataCaptions.put(curDef.getId(), title);
-						}
-					}
-				}
-			}
-		}
-		//Set up the other data items
-		String option = PortletRequestUtils.getStringParameter(request, "option", "");		
-		data.put("option", option);
-		
-		String itemId = PortletRequestUtils.getStringParameter(request, "itemId", "");		
-		data.put("itemId", itemId);
-		
-		String itemName = PortletRequestUtils.getStringParameter(request, "itemName", "");		
-		data.put("itemName", itemName);
-		
-		String refItemId = PortletRequestUtils.getStringParameter(request, "refItemId", "");		
-		data.put("refItemId", refItemId);
-		
-        //There is a forum specified, so get the forum object
-		model.put("definitionTree", definitionTree);
-		data.put("selectedItem", selectedItem);
-		data.put("selectedItemTitle", selectedItemTitle);
-		data.put("definitionType", definitionType);
-		if (formData.containsKey("ss_configErrorMessage")) {
-			model.put("ss_configErrorMessage", ((String[]) formData.get("ss_configErrorMessage"))[0]);
-		}
-		model.put("data", data);
-		if (Validator.isNotNull(option)) {
 			response.setContentType("text/xml");			
 			Map statusMap = new HashMap();
+			model.put(WebKeys.AJAX_STATUS, statusMap);
 			if(!WebHelper.isUserLoggedIn(request)) {
 				//Signal that the user is not logged in. 
 				//  The code on the calling page will output the proper translated message.
 				statusMap.put(WebKeys.AJAX_STATUS_NOT_LOGGED_IN, new Boolean(true));
+			} else {
+				//Set up the other data items		
+				String itemId = PortletRequestUtils.getStringParameter(request, "itemId", "");		
+				data.put("itemId", itemId);
+			
+				String itemName = PortletRequestUtils.getStringParameter(request, "itemName", "");		
+				data.put("itemName", itemName);
+			
+				String refItemId = PortletRequestUtils.getStringParameter(request, "refItemId", "");		
+				data.put("refItemId", refItemId);
+				if ("view_definition_options".equals(option)) {
+					model.put("ssIsAdmin", Boolean.valueOf(getDefinitionModule().testAccess(null, def.getType(), DefinitionModule.DefinitionOperation.manageDefinition)));
+				}
 			}
-			model.put(WebKeys.AJAX_STATUS, statusMap);
 			return new ModelAndView("definition_builder/view_definition_builder_option", model);
-		}
-		return new ModelAndView(WebKeys.VIEW_DEFINITION, model);
+		}			
 		
 	}
 

@@ -92,7 +92,8 @@ public interface InputDataAccessor {
 	 */
 	public Object getSingleObject(String key);
 	/**
-	 * Return count of elements
+	 * Return count of elements if the information is available. 
+	 * Returns -1 if not applicable to the specific implementation of the interface.
 	 * @return
 	 */
 	public int getCount();

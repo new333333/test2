@@ -53,7 +53,7 @@
 	if (caption == null || caption.equals("")) {
 		caption = "";
 	} else {
-		caption = "<b>"+caption+"</b><br/>";
+		caption = "<b>"+caption+"</b>";
 	}
 
 	String required = (String) request.getAttribute("property_required");
@@ -70,15 +70,30 @@
   <c:if test="${property_name == 'description'}" >
     <c:set var="textValue" value="${ssDefinitionEntry.description.text}"/>
   </c:if>
-  <c:if test="${property_name != 'description'}" >
+  <c:if test="${property_name == 'branding'}" >
+    <c:set var="textValue" value="${ssDefinitionEntry.branding}"/>
+  </c:if>
+  <c:if test="${property_name != 'description' && property_name != 'branding'}" >
     <c:set var="textValue" value="${ssDefinitionEntry.customAttributes[property_name].value.text}"/>
   </c:if>
 </c:if>
 <div class="ss_entryContent">
-  <span class="ss_labelLeft"><%= caption %><%= required %></span>
+
+  <span class="ss_labelLeft"><%= caption %><%= required %>   </span>
+  	<div class="ss_editorHints" style="padding-left:10px;">
+  	<c:if test="${!empty ss_html_editor_textarea_form_helpicon}" >
+  		<c:if test="${!empty ss_html_editor_textarea_form_helpicon_prefix}">
+  			<em><ssf:nlt tag="${ss_html_editor_textarea_form_helpicon_prefix}"/> </em>
+  		</c:if>	
+  		<ssf:inlineHelp tag="${ss_html_editor_textarea_form_helpicon}"/>
+  	</c:if>
+  	</div>
+
   <div>
   <ssf:htmleditor name="${property_name}" id="ss_htmleditor_${property_name}" 
     height="<%= height %>"><ssf:markup type="form" 
     entity="${ssDefinitionEntry}"><c:out value="${textValue}"/></ssf:markup></ssf:htmleditor>
   </div>
 </div>
+<c:set var="ss_html_editor_textarea_form_helpicon" value="" scope="request" />
+<c:set var="ss_html_editor_textarea_form_helpicon_prefix" value="" scope="request" />

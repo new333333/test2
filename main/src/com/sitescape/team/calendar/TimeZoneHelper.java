@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.joda.time.DateTimeZone;
+
 /**
  * Fixes wrong time zone definitions: converts all deprecated 3-characters time
  * zone IDs to Olson database IDs. Java above Java SE v1.3.x to Java SE 1.5.0_13
@@ -43,6 +45,58 @@ public class TimeZoneHelper {
 
 	private static Map<String, String> cZoneIdConversion = new HashMap();
 	static {
+		
+		cZoneIdConversion.put("ACDT", "Australia/Adelaide");
+		cZoneIdConversion.put("CSuT", "Australia/Adelaide");
+		cZoneIdConversion.put("ACST", "Australia/Darwin");
+		cZoneIdConversion.put("CAST", "Australia/Darwin");
+		cZoneIdConversion.put("ADT", "America/Halifax");
+		cZoneIdConversion.put("AEDT", "Australia/Sydney");
+		cZoneIdConversion.put("ESuT", "Australia/Sydney");
+		cZoneIdConversion.put("AEST", "Australia/Sydney");
+		cZoneIdConversion.put("AES", "Australia/Sydney");
+		cZoneIdConversion.put("EAST", "Australia/Sydney");
+		cZoneIdConversion.put("AFT", "Asia/Tehran");
+		cZoneIdConversion.put("AKDT", "America/Juneau");
+		cZoneIdConversion.put("AKST", "America/Anchorage");
+		cZoneIdConversion.put("AWDT", "Australia/Perth");
+		cZoneIdConversion.put("AWST", "Australia/Perth");
+		cZoneIdConversion.put("CDT", "America/Chicago");
+		cZoneIdConversion.put("CEDT", "Europe/Paris");
+		cZoneIdConversion.put("CEST", "Europe/Paris");
+		cZoneIdConversion.put("CET", "Europe/Paris");
+		cZoneIdConversion.put("CXT", "Indian/Christmas");
+		cZoneIdConversion.put("EDT", "America/New_York");
+		cZoneIdConversion.put("EEDT", "Europe/Athens");
+		cZoneIdConversion.put("EEST", "Europe/Athens");
+		cZoneIdConversion.put("HAA", "America/Halifax");
+		cZoneIdConversion.put("HAC", "America/Chicago");
+		cZoneIdConversion.put("HADT", "America/Adak");
+		cZoneIdConversion.put("HAE", "America/New_York");
+		cZoneIdConversion.put("HAP", "America/Vancouver");
+		cZoneIdConversion.put("HAR", "America/Denver");
+		cZoneIdConversion.put("HAST", "America/Adak");
+		cZoneIdConversion.put("HAT", "America/St_Johns");
+		cZoneIdConversion.put("HAY", "America/Anchorage");
+		cZoneIdConversion.put("HNA", "America/Anchorage");
+		cZoneIdConversion.put("HNC", "America/Chicago");
+		cZoneIdConversion.put("HNE", "America/New_York");
+		cZoneIdConversion.put("HNP", "America/Los_Angeles");
+		cZoneIdConversion.put("HNR", "America/Denver");
+		cZoneIdConversion.put("HNT", "Pacific/Auckland");
+		cZoneIdConversion.put("HNY", "America/Anchorage");
+		cZoneIdConversion.put("MDT", "America/Denver");
+		cZoneIdConversion.put("MESZ", "Europe/Paris");
+		cZoneIdConversion.put("MEZ", "Europe/Paris");
+		cZoneIdConversion.put("MSD", "Europe/Moscow");
+		cZoneIdConversion.put("MSK", "Europe/Moscow");
+		cZoneIdConversion.put("NDT", "America/St_Johns");
+		cZoneIdConversion.put("NFT", "Pacific/Norfolk");
+		cZoneIdConversion.put("PDT", "America/Vancouver");
+		cZoneIdConversion.put("WDT", "Australia/Perth");
+		cZoneIdConversion.put("WEDT", "Europe/Lisbon");
+		cZoneIdConversion.put("WEST", "Europe/Lisbon");
+		cZoneIdConversion.put("WST", "Australia/Perth");
 		cZoneIdConversion.put("MIT", "Pacific/Apia");
 		cZoneIdConversion.put("HST", "Pacific/Honolulu");
 		cZoneIdConversion.put("AST", "America/Anchorage");
@@ -74,37 +128,61 @@ public class TimeZoneHelper {
 		cZoneIdConversion.put("AET", "Australia/Sydney");
 		cZoneIdConversion.put("SST", "Pacific/Guadalcanal");
 		cZoneIdConversion.put("NST", "Pacific/Auckland");
+		cZoneIdConversion.put("KST", "Asia/Seoul");
+		cZoneIdConversion.put("SBT", "Pacific/Guadalcanal");
 	}
 
 	private static TimeZone defaultTimeZone;
 	static {
-		defaultTimeZone = TimeZone.getTimeZone(getConvertedId(TimeZone
-				.getDefault().getID()));
-	}
-
-	public static TimeZone getTimeZone(String ID) {
-		return TimeZone.getTimeZone(getConvertedId(ID));
-	}
-	
-	public static TimeZone fixTimeZone(TimeZone timeZone) {
-		if (timeZone == null) {
-			return null;
-		}
-		return TimeZone.getTimeZone(getConvertedId(timeZone.getID()));
+		defaultTimeZone = fixTimeZone(TimeZone.getDefault());
 	}
 
 	public static TimeZone getDefault() {
 		return defaultTimeZone;
 	}
+	
+	public static TimeZone getTimeZone(String ID) {
+		return fixTimeZone(TimeZone.getTimeZone(fixTimeZoneId(ID)));
+	}
 
-	private static String getConvertedId(String id) {
+	public static TimeZone fixTimeZone(TimeZone timeZone) {
+		if (timeZone == null) {
+			return null;
+		}
+				
+		String fixedId = fixTimeZoneId(timeZone.getID());
+		try {
+			DateTimeZone dateTimeZone = DateTimeZone.forID(fixedId);
+			if (dateTimeZone != null) {
+				return dateTimeZone.toTimeZone();
+			}
+		} catch (IllegalArgumentException e) {
+			// The datetime zone id is not recognised
+		}
+		return timeZone;
+	}	
+
+	private static String fixTimeZoneId(String id) {
 		if (id == null) {
 			return null;
 		}
-		if (!cZoneIdConversion.containsKey(id)) {
-			return id;
+		
+		if (cZoneIdConversion.containsKey(id)) {
+		//	System.out.println("get from list: " + cZoneIdConversion.get(id));
+			return (String) cZoneIdConversion.get(id);
 		}
-		return (String) cZoneIdConversion.get(id);
+		
+		try {
+			DateTimeZone dateTimeZone = DateTimeZone.forID(id);
+			if (dateTimeZone != null) {
+				// System.out.println("get from joda by ID: " + dateTimeZone.toTimeZone().getID());
+				return dateTimeZone.toTimeZone().getID();
+			}
+		} catch (IllegalArgumentException e) {
+			// The datetime zone id is not recognised
+		}
+		
+		return id;
 	}
 
 }

@@ -45,4 +45,4 @@
 	--%><c:set var="ss_editableDivIdNumber" value="0" scope="request"/><%--
 --%></c:if><%--
 --%><div class="ss_entryContent ss_entryDescription" <%--
-    --%> id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_editableDiv${ss_editableDivIdNumber}">
+    --%> id="${renderResponse.namespace}ss_editableDiv${ss_editableDivIdNumber}">

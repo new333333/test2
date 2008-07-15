@@ -28,6 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // Sidebars based on the folder listing style  %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 

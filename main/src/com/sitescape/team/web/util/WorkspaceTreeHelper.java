@@ -66,6 +66,7 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
@@ -155,6 +156,8 @@ public class WorkspaceTreeHelper {
 						return WebKeys.VIEW_ACCESS_DENIED;
 					} else {
 						//Please log in
+						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+						model.put(WebKeys.URL, refererUrl);
 						return WebKeys.VIEW_LOGIN_PLEASE;
 					}
 				}
@@ -167,6 +170,7 @@ public class WorkspaceTreeHelper {
 			binderId = workspaceId;
 			entryId = null;
 		}
+		BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
 
  		//Remember the last binder viewed
 		String namespace = response.getNamespace();
@@ -225,6 +229,7 @@ public class WorkspaceTreeHelper {
 				}
 			}
 
+			//Set up more standard beans
 			Map userProperties = bs.getProfileModule().getUserProperties(user.getId()).getProperties();
 			model.put(WebKeys.USER_PROPERTIES, userProperties);
 			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
@@ -277,12 +282,13 @@ public class WorkspaceTreeHelper {
 				return WebKeys.VIEW_ACCESS_DENIED;
 			} else {
 				//Please log in
+				String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+				model.put(WebKeys.URL, refererUrl);
 				return WebKeys.VIEW_LOGIN_PLEASE;
 			}
 		}
 		
 		//Set up the standard beans
-		BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.FOLDER, binder);
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
@@ -531,6 +537,15 @@ public class WorkspaceTreeHelper {
 					adapterUrl.toString(), qualifiers);
 		}
 		
+		if (bs.getBinderModule().testAccess(workspace, BinderOperation.manageConfiguration)) {
+			adminMenuCreated=true;
+			qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("administration.definition_builder_designers"), url, qualifiers);
+		}
 		//Delete
 		if (!workspace.isReserved()) {
 			if (bs.getBinderModule().testAccess(workspace, BinderOperation.deleteBinder)) {
@@ -585,6 +600,16 @@ public class WorkspaceTreeHelper {
 			url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
 			toolbar.addToolbarMenuItem("1_administration", "", 
 					NLT.get("toolbar.menu.report"), url, qualifiers);
+		}
+		
+		//Site administration
+		if (bs.getAdminModule().testAccess(AdminOperation.manageFunction)) {
+			adminMenuCreated=true;
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_SITE_ADMINISTRATION);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			toolbar.addToolbarMenuItem("1_administration", "", 
+					NLT.get("toolbar.menu.siteAdministration"), url);
 		}
 		
 		//if no menu items were added, remove the empty menu

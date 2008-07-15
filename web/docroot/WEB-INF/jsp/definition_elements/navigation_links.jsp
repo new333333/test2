@@ -155,7 +155,7 @@
 
 <li>
 <c:if test="${ssDefinitionEntry.entityType == 'folderEntry' || empty ssNavigationLinkTree[ssDefinitionEntry.id]}">
-<a class="ss_bold"
+<a
 <c:if test="${ssDefinitionEntry.entityType == 'folderEntry'}">
   href="<ssf:url 
   folderId="${ssDefinitionEntry.parentBinder.id}" 

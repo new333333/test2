@@ -32,8 +32,8 @@
 <ssf:ifadapter>
 <body class="ss_style_body">
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
-<div class="ss_portlet_style ss_portlet">
-<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
+<div class="ss_style ss_portlet">
+<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <div class="ss_clear_float"></div>
 </ssf:ifadapter>
 <div style="padding:30px;">
@@ -57,6 +57,14 @@
           <input type="password" size="40" name="password"/>
         </td>
       </tr>
+      <tr>
+        <td valign="top" align="right">
+          <span><ssf:nlt tag="login.remember"/></span>
+        </td>
+        <td valign="top" style="padding-left:4px;">
+          <input type="checkbox" name="remember"/>
+        </td>
+      </tr>
     </table>
     <br/>
     <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
@@ -64,7 +72,10 @@
   </fieldset>
   </form>
 </div>
-
+<script type="text/javascript">
+	var formObj = self.document.getElementById('loginForm');
+	formObj.username.focus();
+</script>
 <ssf:ifadapter>
 </div>
 </div>

@@ -30,7 +30,7 @@ import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.definition.DefinitionService;
 import com.sitescape.team.module.extension.ExtensionDeployNotifier;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.support.AbstractTestBase;
@@ -60,7 +60,7 @@ public class DisplayConfigurationTest<S extends ExtensionDeployNotifier<S>> exte
 		"</definition>"; 
 	private DisplayConfiguration dc = new DisplayConfiguration();
 	@Autowired
-	private DefinitionModule definitions;
+	private DefinitionService definitions;
 
 	@Test
 	public void doStartTagFindExtensionJsp() throws Exception {
@@ -93,7 +93,7 @@ public class DisplayConfigurationTest<S extends ExtensionDeployNotifier<S>> exte
 		addOperationFor(WorkAreaOperation.SITE_ADMINISTRATION, p.getFirst());
 		RequestContext rc = fakeRequestContext(p);
 		replay(rc);
-		definitions.addDefinition(def, true);
+		definitions.addDefinition(def, true, rc.getZone());
 		
 		dc.setConfigDefinition(def);
 		dc.setConfigElement(def.getRootElement());

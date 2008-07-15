@@ -48,7 +48,7 @@ String menuImage = ParamUtil.get(request, "menuImage", "");
 // General variables
 Integer nameCount = (Integer) renderRequest.getAttribute("ss_menu_tag_name_count");
 if (nameCount == null) {
-	nameCount = new Integer(0);
+	nameCount = new Integer(new Long(Math.round(Math.random()*999999)).toString());
 }
 
 nameCount = new Integer(nameCount.intValue() + 1);
@@ -57,8 +57,8 @@ renderRequest.setAttribute("ss_menu_tag_name_count", new Integer(nameCount.intVa
 String menuTagDivId = "ss_menuTagDiv" + nameCount.toString();
 %>
 
-<a href="javascript: ;" onClick="ss_showAccessibleMenu('<%= menuTagDivId %>_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');" title="<%= title %>"><%= title %><c:if test="<%= !("".equals(menuImage)) %>">
+<a href="javascript: ;" onClick="ss_showAccessibleMenu('<%= menuTagDivId %>_${renderResponse.namespace}');" title="<%= title %>"><%= title %><c:if test="<%= !("".equals(menuImage)) %>">
 	<img src='<html:imagesPath/><%= menuImage %>' <ssf:alt tag="alt.showMenu"/>/>
 </c:if></a>
 			
-<div id="<%= menuTagDivId %>_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" style="visibility:hidden;display:none;white-space:nowrap;">
+<div id="<%= menuTagDivId %>_${renderResponse.namespace}" style="visibility:hidden;display:none;white-space:nowrap;">

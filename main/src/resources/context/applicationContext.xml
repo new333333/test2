@@ -495,11 +495,9 @@
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.template.impl.TemplateModuleImpl">
 				<property name="adminModule"><ref local="adminModule"/></property>
-				<property name="definitionModule"><ref local="definitionModule"/></property>
-				<property name="folderModule"><ref local="folderModule"/></property>
-				<property name="workspaceModule"><ref local="workspaceModule"/></property>
 				<property name="binderModule"><ref local="binderModule"/></property>
 				<property name="dashboardModule"><ref local="dashboardModule"/></property>
+				<property name="definitionModule"><ref local="definitionModule"/></property>
 				<property name="fileModule"><ref local="fileModule"/></property>
 				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 			</bean>

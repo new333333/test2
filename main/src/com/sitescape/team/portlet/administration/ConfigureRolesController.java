@@ -143,17 +143,12 @@ public class ConfigureRolesController extends  SAbstractController {
 				}
 				response.setRenderParameter(WebKeys.EXCEPTION, ns.getLocalizedMessage());
 			}
-		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			response.setRenderParameter("redirect", "true");
 		} else
 			response.setRenderParameters(formData);
 	}
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		if (!Validator.isNull(request.getParameter("redirect"))) {
-			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
-		}
 		Map model = new HashMap();
 		model.put(WebKeys.ROLE_USERS, request.getParameter(WebKeys.ROLE_USERS));
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));

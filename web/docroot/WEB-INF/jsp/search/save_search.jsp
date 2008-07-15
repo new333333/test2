@@ -28,6 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // Search results saved queries %>
 <c:if test="${empty ss_namespace}">
 	<c:set var="ss_namespace" value="${renderResponse.namespace}" />

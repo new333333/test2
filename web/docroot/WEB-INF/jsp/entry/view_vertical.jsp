@@ -48,7 +48,8 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 <a name="ss_top_of_folder"></a>
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 
-	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
+	<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 
 	<script type="text/javascript">
 		//Set up variables needed by the javascript routines
@@ -73,31 +74,29 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
-	<% // Tabs %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
+	<% // Status %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/status.jsp" />	
+	
+	<% // Share and Track %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/share_track.jsp" />
+	
+	<% // Recent Places %>
+	<jsp:include page="/WEB-INF/jspsidebars/recent_places.jsp" />
 
 	<% // Folder Sidebar %>
 
-    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
+    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
 
-    <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
-        initOpen="true" sticky="true">
-		<c:if test="${!empty ssSidebarWsTree}">
-		<ssf:tree treeName="sidebarWsTree${renderResponse.namespace}" 
-		  treeDocument="${ssSidebarWsTree}" 
-		  highlightNode="${ssBinder.id}" 
-		  showIdRoutine="ss_treeShowId"
-		  namespace="${renderResponse.namespace}"
-		  rootOpen="true"
-		  nowrap="true"/>
-		</c:if>
-	</ssf:sidebarPanel>
+	<% // Workspace Tree %>
+
+    <%@ include file="/WEB-INF/jsp/sidebars/workspace_tree.jsp" %>
+
 
 	</td>
 	<td valign="top" class="ss_view_info">
 
-		<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
-		<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+		<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
+		<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 
 		<div id="ss_folder">
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
@@ -134,7 +133,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 			    <ssf:param name="box_width" value="0" />
 			      <div style="position:relative;">
 			      <c:set var="ss_history_bar_table_class" value="ss_title_bar_history_bar" scope="request"/>
-			      <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+			      <jsp:include page="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" />
 			      </div>
 			    </ssf:param>
 			  <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; 
@@ -165,7 +164,7 @@ ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initSho
 
 <c:if test="${!empty ssEntryIdToBeShown && !empty ss_useDefaultViewEntryPopup}">
 <script type="text/javascript">
-function ss_showEntryToBeShown<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
+function ss_showEntryToBeShown${renderResponse.namespace}() {
     var url = "<ssf:url     
 		adapter="true" 
 		portletName="ss_forum" 
@@ -175,7 +174,7 @@ function ss_showEntryToBeShown<ssf:ifadapter><portletadapter:namespace/></ssf:if
 		actionUrl="true" />" 
 	ss_showForumEntryInIframe(url);
 }
-ss_createOnLoadObj('ss_showEntryToBeShown<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', ss_showEntryToBeShown<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>);
+ss_createOnLoadObj('ss_showEntryToBeShown${renderResponse.namespace}', ss_showEntryToBeShown${renderResponse.namespace});
 </script>
 </c:if>
 

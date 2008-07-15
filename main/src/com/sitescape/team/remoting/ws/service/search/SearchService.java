@@ -36,8 +36,6 @@ public interface SearchService {
 
 	public String search_getWorkspaceTreeAsXML(String accessToken, long binderId, int levels, String page);
 	
-	public String search_getTeamsAsXML(String accessToken);
-	
 	public TeamCollection search_getTeams(String accessToken);
 	
 	/*

@@ -119,7 +119,8 @@ public class Eventtext extends TagSupport {
 			req.setAttribute("repeatString", repeatString);
 			req.setAttribute("allDayEvent", event.isAllDayEvent());
 			req.setAttribute("hasDuration", event.getDuration().getInterval() != 0);
-
+			req.setAttribute("freeBusy", event.getFreeBusy().name());
+			
 			StringServletResponse res = new StringServletResponse(
 					(HttpServletResponse) pageContext.getResponse());
 			// this next line invokes the jsp and captures it into res

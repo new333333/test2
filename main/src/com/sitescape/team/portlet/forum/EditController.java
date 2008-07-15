@@ -65,6 +65,7 @@ import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.PortletPreferencesUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.web.tree.TreeHelper;
 import com.sitescape.util.Validator;
 /**
  * @author Peter Hurley
@@ -92,45 +93,22 @@ public class EditController extends SAbstractController {
 			//	if not on form, must already be set.  
 			if (ViewController.FORUM_PORTLET.equals(displayType) || 
 					ViewController.MOBILE_PORTLET.equals(displayType)) {
-				List forumPrefIdList = new ArrayList();
-				List forumDelIdList = new ArrayList();
-				String[] currentForumPrefIdList = PortletPreferencesUtil.getValues(prefs, 
-						WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
 				
-				//	Build the jsp bean (sorted by folder title)
-				for (int i = 0; i < currentForumPrefIdList.length; i++) {
-					forumPrefIdList.add(currentForumPrefIdList[i]);
-				}
+				Collection<Long> forumPrefIdList = TreeHelper.getSelectedIds(formData);
 				//	Get the forums to be deleted
 				Iterator itFormData = formData.entrySet().iterator();
 				while (itFormData.hasNext()) {
 					Map.Entry me = (Map.Entry) itFormData.next();
 					if (((String)me.getKey()).startsWith("del_")) {
 						String forumId = ((String)me.getKey()).substring(4);
-						if (forumPrefIdList.contains(forumId)) forumPrefIdList.remove(forumId);
-						forumDelIdList.add(forumId);
+						try {
+							forumPrefIdList.remove(Long.valueOf(forumId));
+						} catch (NumberFormatException nf) {}
 					}
 				}
-				//	Get the forums to be displayed
-				itFormData = formData.entrySet().iterator();
-				while (itFormData.hasNext()) {
-					Map.Entry me = (Map.Entry) itFormData.next();
-					if (WebKeys.URL_ID_CHOICES.equals((String)me.getKey())) {
-						String[] values = (String[])me.getValue();
-						for (int i = 0; i < values.length; i++) {
-							String[] valueSplited = values[i].split("\\s");
-							for (int j = 0; j < valueSplited.length; j++) {
-								if (valueSplited[j] != null && !"".equals(valueSplited[j])) {
-									String forumId = valueSplited[j].substring(valueSplited[j].indexOf("%") + 1);
-									if (!forumPrefIdList.contains(forumId) && !forumDelIdList.contains(forumId)) forumPrefIdList.add(forumId);
-								}
-							}
-						}
-					}
-				}
+			
 				if (ViewController.FORUM_PORTLET.equals(displayType)) {
-					prefs.setValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, 
-							(String[]) forumPrefIdList.toArray(new String[forumPrefIdList.size()]));
+					prefs.setValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, LongIdUtil.getIdsAsString(forumPrefIdList).split(" "));
 				} else if (ViewController.MOBILE_PORTLET.equals(displayType)) {
 					User user = RequestContextHolder.getRequestContext().getUser();
 					//don't store arrays in properties
@@ -245,7 +223,7 @@ public class EditController extends SAbstractController {
 			Set<Long> binderIds = LongIdUtil.getIdsAsLongSet(mobileBinderIds);
 			Collection binders = getBinderModule().getBinders(binderIds);
 			model.put(WebKeys.FOLDER_LIST, binders);
-			model.put(WebKeys.BINDER_ID_LIST, binderIds);
+			model.put(WebKeys.BINDER_ID_LIST, Arrays.asList(LongIdUtil.getIdsAsString(binderIds).split(" ")));
 			return new ModelAndView(WebKeys.VIEW_MOBILE_EDIT, model);
 		} else if (ViewController.RELEVANCE_DASHBOARD_PORTLET.equals(displayType)) {
 			return setupRelevanceDashboardPortlet(request, prefs, model, "relevance_dashboard");

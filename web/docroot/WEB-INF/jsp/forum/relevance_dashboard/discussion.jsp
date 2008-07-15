@@ -36,9 +36,9 @@
       <div class="ss_col1">
       <!-- Start Left Column -->
 
-	<h2>This Starts Column Left</h2>
+	<h2>xxx This Starts Column Left xxx</h2>
 	<div id="ss_today">
-<div id="ss_hints">Lists for Discussions<br><em>Need to replace with real data</em></div>
+<div id="ss_hints">xxx Lists for Discussions<br><em>Need to replace with real data</em></div>
 <div id="ss_tasks_para">
 <c:forEach var="entry" items="${ss_myTasks}">
 	<jsp:useBean id="entry" type="java.util.HashMap" />

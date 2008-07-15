@@ -78,7 +78,6 @@ public class ListController extends SAbstractController {
 		response.resetBuffer();
 		response.setContentType("text/xml; charset=" + XmlFileUtil.FILE_ENCODING);
 		response.setHeader("Cache-Control", "private");
-		response.setHeader("Pragma", "no-cache");
 		//use writer to enfoce character set
 		if (authErr) {
 			response.getWriter().write(getRssModule().AuthError(request, response));

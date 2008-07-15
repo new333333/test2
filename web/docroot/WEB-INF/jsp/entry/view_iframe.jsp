@@ -53,23 +53,22 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 </c:if>
 
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
-	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
-	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
-</c:if>
-<div class="ss_actions_bar1_pane" width="100%" style="height: 22px;">
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
+<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
+<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
+<div class="ss_actions_bar1_pane ss_sidebarImage" width="100%">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr><td valign="middle">
 <a href="javascript: ;" 
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
-><span style="padding-left:20px; display:${ss_sidebarVisibilityShow};"
+><span style="padding-left:9px; display:${ss_sidebarVisibilityShow};"
   id="ss_sidebarHide${renderResponse.namespace}" 
-  class="ss_fineprint">[<ssf:nlt tag="toolbar.sidebar.show"/>]</span><span 
-  style="padding-left:20px; display:${ss_sidebarVisibilityHide};"
+  class="ss_fineprint ss_sidebarSlidesm"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
+  style="padding-left:9px; display:${ss_sidebarVisibilityHide};"
   id="ss_sidebarShow${renderResponse.namespace}" 
-  class="ss_fineprint">[<ssf:nlt tag="toolbar.sidebar.hide"/>]</span></a>
+  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/> xxx</span></a>
 </td><td valign="top">
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 </td></tr>
 </table>
 </div>
@@ -79,16 +78,11 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
     <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
 
-<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
-	<% // Navigation bar %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
-</c:if>
-
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 
 	<% // Folder Sidebar %>
-    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
+    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
 
 	<c:if test="${!empty ssSidebarWsTree}">
       <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
@@ -106,9 +100,6 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	</td>
 	<td valign="top" class="ss_view_info">
 	    <div class="ss_style_color" >
-<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
-			<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
-</c:if>		
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 					  configElement="${ssConfigElement}" 
 					  configJspStyle="${ssConfigJspStyle}" />

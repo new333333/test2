@@ -50,17 +50,17 @@
 		googleScript0 = googleScript0.replaceAll("</script", "</scr'+'ipt");
 	}
 %>
-<iframe id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_ss_googleWidget${ssComponentId}" 
-  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_ss_googleWidget${ssComponentId}" style="width: 99%;
+<iframe id="${renderResponse.namespace}_ss_googleWidget${ssComponentId}" 
+  name="${renderResponse.namespace}_ss_googleWidget${ssComponentId}" style="width: 99%;
   height: ${ssDashboard.dashboard.components[ssComponentId].data.height};
   margin:0px; padding:0px;" frameBorder="0" >xxx</iframe>
 
 <script type="text/javascript">
-function ss_initGoogleWidget<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>${ssComponentId}() {
-	var ifObj = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_ss_googleWidget${ssComponentId}');
+function ss_initGoogleWidget${renderResponse.namespace}${ssComponentId}() {
+	var ifObj = document.getElementById('${renderResponse.namespace}_ss_googleWidget${ssComponentId}');
 	if (ifObj == null) return;
-	window.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_ss_googleWidget${ssComponentId}.document.writeln('<%= googleScript0 %>');
+	window.${renderResponse.namespace}_ss_googleWidget${ssComponentId}.document.writeln('<%= googleScript0 %>');
 }
-ss_createOnLoadObj('ss_initGoogleWidget<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>${ssComponentId}', ss_initGoogleWidget<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>${ssComponentId});
+ss_createOnLoadObj('ss_initGoogleWidget${renderResponse.namespace}${ssComponentId}', ss_initGoogleWidget${renderResponse.namespace}${ssComponentId});
 </script>
 

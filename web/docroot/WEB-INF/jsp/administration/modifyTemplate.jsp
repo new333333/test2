@@ -30,9 +30,9 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body">
+<div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
-<div class="ss_form" style="margin:6px;">
-<div style="margin:6px;">
 
 <c:if test="${ssOperation == 'modify'}">
 <h2>
@@ -78,10 +78,9 @@ function ss_checkForm(obj, binderId) {
 ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 </script>
 </c:if>
-<form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="configure_configuration"/><portlet:param 
-		name="operation" value="modify_template"/><portlet:param 
-		name="binderId" value="${ssBinderConfig.id}"/></portlet:actionURL>" 
+<form method="post" action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
+		name="operation" value="modify_template"/><ssf:param 
+		name="binderId" value="${ssBinderConfig.id}"/></ssf:url>" 
 		onSubmit="return ss_checkForm(this, '${ssBinderConfig.id}');">
 
 <div class="ss_buttonBarRight">
@@ -131,7 +130,7 @@ ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 </c:if>
 
 <c:if test="${ssOperation == 'add'}">
-<c:if test="${cfgType == '-1'}">
+<c:if test="${definitionType == '-1'}">
 <%
 String wsTreeName = "cfg_" + renderResponse.getNamespace();
 %>
@@ -143,12 +142,11 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <div class="ss_style ss_portlet">
 
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
-<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" 
-    id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" method="post" 
-    action="<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="configure_configuration"/><portlet:param 
-		name="operation" value="add"/></portlet:actionURL>" >
-<input type="hidden" name="cfgType" value="-1"/>
+<form class="ss_style ss_form" name="${renderResponse.namespace}fm" 
+    id="${renderResponse.namespace}fm" method="post" 
+    action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
+		name="operation" value="add"/></ssf:url>" >
+<input type="hidden" name="definitionType" value="-1"/>
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 </div>
@@ -174,17 +172,16 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 
 
 </c:if>
-<c:if test="${cfgType != '-1' and cfgType != '-2'}">
+<c:if test="${definitionType != '-1'}">
 <script type="text/javascript">
 ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 </script>
 
 
-<form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="configure_configuration"/><portlet:param 
-		name="operation" value="add"/></portlet:actionURL>" 
+<form method="post" action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
+		name="operation" value="add"/></ssf:url>" 
 		onSubmit="return ss_checkForm(this);">
-<input type="hidden" name="cfgType" value="${cfgType}"/>
+<input type="hidden" name="definitionType" value="${definitionType}"/>
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>" onClick="ss_buttonSelect('okBtn');">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">
@@ -220,7 +217,8 @@ ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 </form>
 </c:if>
 </c:if>
-</div>
-</div>
-</div>
 
+</div>
+</div>
+</body>
+</html>

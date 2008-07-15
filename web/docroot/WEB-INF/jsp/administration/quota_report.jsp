@@ -31,6 +31,9 @@
 <%@ page import="java.util.ArrayList" %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body">
+<div class="ss_pseudoPortal">
+<div class="ss_style ss_portlet">
 <script type="text/javascript">
 function ss_numbers_only(evt)
   {
@@ -41,12 +44,11 @@ function ss_numbers_only(evt)
      return true;
   }
 </script>
-<c:set var="formName"><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm</c:set>
+<c:set var="formName">${renderResponse.namespace}fm</c:set>
 <script type="text/javascript">
-var ssReportURL="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="quota_report"/><portlet:param 
-	name="binderId" value="${ssBinder.id}"/><portlet:param 
-	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>";
+var ssReportURL="<ssf:url action="quota_report" actionUrl="true"><ssf:param 
+	name="binderId" value="${ssBinder.id}"/><ssf:param 
+	name="binderType" value="${ssBinder.entityType}"/></ssf:url>";
 </script>
 
 <table class="ss_style" width="100%"><tr><td>
@@ -58,7 +60,8 @@ var ssReportURL="<portlet:actionURL windowState="maximized"><portlet:param
 <div class="ss_buttonBarRight">
     <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.action=ssReportURL; document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.submit()">
+    <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+		  onClick="self.window.close();return false;"/>
 </div>
    <br/>
    <br/>
@@ -76,8 +79,13 @@ var ssReportURL="<portlet:actionURL windowState="maximized"><portlet:param
    <div class="ss_buttonBarLeft">
     <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.action=ssReportURL; document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.submit()">
+    <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+		  onClick="self.window.close();return false;"/>
    </div>
 </form>
 <br>
 </td></tr></table>
+</div>
+</div>
+</body>
+</html>

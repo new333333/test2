@@ -29,7 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <script type="text/javascript">
 //How long to sleep between auto refresh; 
 //  set this to 0 for no auto refresh (defaulted to 0 to keep iChain session timeouts from being voided)

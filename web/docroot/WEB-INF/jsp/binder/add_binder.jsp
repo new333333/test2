@@ -191,7 +191,7 @@ function ss_checkForm(obj) {
 <c:set var="ss_breadcrumbsShowIdRoutine" 
   value="ss_treeShowIdAddBinder${renderResponse.namespace}" 
   scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 </fieldset>
 <br/>
 <c:if test="${!empty ss_accessControlMap && 

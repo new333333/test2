@@ -28,6 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.sitescape.team.util.CalendarHelper" %>
 <script type="text/javascript">

@@ -30,7 +30,7 @@
 %>
 <% // Workspace binder listing %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 
 <c:if test="${ss_discussionWorkspaceView}">
 <%@ include file="/WEB-INF/jsp/definition_elements/discussion/discussion_workspace_binder_list.jsp" %>

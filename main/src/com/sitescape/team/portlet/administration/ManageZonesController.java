@@ -48,14 +48,14 @@ public class ManageZonesController extends  SAbstractController {
 		if (formData.containsKey("addBtn")) {
 			String zoneName = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_ZONE_NAME);
 			String virtualHost = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_VIRTUAL_HOST);
-			getZoneModule().addZoneUnderPortal(zoneName, virtualHost, null);
+			getZoneModule().addZone(zoneName, virtualHost, null);
 		} else if (formData.containsKey("deleteBtn")) {
 			String zoneName = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_ZONE_NAME);
-			getZoneModule().deleteZoneUnderPortal(zoneName);
+			getZoneModule().deleteZone(zoneName);
 		} else if (formData.containsKey("modifyBtn")) {
 			String zoneName = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_ZONE_NAME);
 			String virtualHost = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_VIRTUAL_HOST);
-			getZoneModule().modifyZoneUnderPortal(zoneName, virtualHost, null);
+			getZoneModule().modifyZone(zoneName, virtualHost, null);
 		} else {
 			response.setRenderParameters(formData);
 		}

@@ -37,3 +37,18 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="ssf" uri="http://www.sitescape.com/tags-ssf"%>
 <%@ taglib prefix="html" tagdir="/WEB-INF/tags/html"%>
+<%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %>
+<%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
+
+<portletadapter:defineObjects1/>
+<%
+
+//Set up the user object
+if (com.sitescape.team.context.request.RequestContextHolder.getRequestContext() != null) {
+	com.sitescape.team.domain.User user = com.sitescape.team.context.request.RequestContextHolder.getRequestContext().getUser();
+	request.setAttribute("ssUser", user);
+}
+
+%>
+<ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
+<ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>

@@ -33,9 +33,9 @@
 
 <c:set var="prefix" value="${ssFindFormName}_${ssFindFormElement}_${ssFindInstanceCount}" />
 
-<c:if test="${empty ss_find_list_js_loaded}" >
-	<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/list.js"></script>
-	<c:set var="ss_find_list_js_loaded" value="1" scope="request"/>
+<c:if test="${empty ss_find_js_loaded}" >
+	<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/find.js"></script>
+	<c:set var="ss_find_js_loaded" value="1" scope="request"/>
 </c:if>
 
 <c:choose>
@@ -59,24 +59,33 @@
 	</c:otherwise>
 </c:choose>
 
-<input type="hidden" name="${ssFindFormElement}" id="ss_usersListInput${prefix}"/>		
+<input type="hidden" name="${ssFindFormElement}" id="${prefix}_ss_find_multiple_input"/>		
 <table class="ss_style" cellspacing="0px" cellpadding="0px" style="padding-bottom:5px;">
 <tbody>
 <tr>
 <td valign="top">
 <img src="<html:imagesPath/>pics/1pix.gif" <ssf:alt/>
-  onload="ss_findUsersConfVariableForPrefix('${prefix}', '${ssFindClickRoutine}', '${ssFindFormName}', '${ssFindFormElement}'); ss_findUserListInitializeForm('${prefix}', '${ssFindFormName}', '${ssFindFormElement}');  <c:forEach var="item" items="${ssFindUserList}" varStatus="status"> ss_addUserIdToFormElement('${prefix}', '<c:out value="${item.id}"/>');</c:forEach>" />
+	onload="window['findMultiple${prefix}'] = ssFind.configMultiple({
+						thisName: 'findMultiple${prefix}',
+						prefix: '${prefix}', 
+						clickRoutineObj: '${ssFindClickRoutineObj}', 
+						clickRoutine: '${ssFindClickRoutine}',
+						formName: '${ssFindFormName}',
+						elementName: '${ssFindFormElement}'
+			}); <c:forEach var="item" items="${ssFindUserList}" varStatus="status"> window['findMultiple${prefix}'].addValue('<c:out value="${item.id}"/>');</c:forEach>" />
   <ssf:find formName="" 
     formElement="searchText" 
     type="${ssFindListType}"
     userList="${ssFindUserList}"
     width="70px" 
-    clickRoutine="ss_userListSelectItem"
-    clickRoutineArgs="${prefix}"
+    clickRoutine="addValueByElement"
+    clickRoutineObj="findMultiple${prefix}"
+    findMultipleObj="findMultiple${prefix}"
     leaveResultsVisible="${ssFindLeaveResultsVisible}"
     singleItem="true"
     accessibilityText="${accessibilityText}"
     addCurrentUser="${ssFindAddCurrentUser}"
+    showUserTitleOnly="${ssShowUserTitleOnly}"
     /> 
     <c:if test="${ssFindListType == 'user'}">
       <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findUser"/></span></div>
@@ -101,7 +110,8 @@
       <c:forEach var="item" items="${ssFindUserList}">
         <li class="ss_nowrap" id="<c:out value="${item.id}"/>" ><c:out value="${item.title}"/>
           <a href="javascript: ;" 
-            onclick="ss_userListRemove('${prefix}', this);return false;"><img border="0" style="padding-left: 10px;" 
+			onclick="window['findMultiple${prefix}'].removeValueByElement(this, '<c:out value="${item.id}"/>', '<c:out value="${item.title}"/>'); return false;"
+            ><img border="0" style="padding-left: 10px;" 
             <ssf:alt tag="alt.delete"/> src="<html:imagesPath/>pics/sym_s_delete.gif"/></a>
         </li>
       </c:forEach>

@@ -28,6 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // Search results tags %>
 <ssf:sidebarPanel title="searchResult.tagsTitle" id="ss_rating_tags" divClass="ss_rating_box_content"
     initOpen="true" sticky="false">

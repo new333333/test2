@@ -51,8 +51,7 @@
 	}
 	if (nodeOpen.equals("")) {nodeOpen = " ";}
 %>
-<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/single_user.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/user_list.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
 dojo.require('dojo.widget.*');
 dojo.require('sitescape.widget.SelectPageable');
@@ -72,23 +71,9 @@ var operationReferenceItem="";
 
 var selectedIdText = null;
 var selectedCaptionText = null;
-<%
-	if (!data.containsKey("selectedItem") || data.get("selectedItem").equals("")) {
-%>
-var sourceDefinitionId = '';
-<%
-	} else {
-%>
-var sourceDefinitionId = '<%= data.get("selectedItem") %>';
-<%
-	}
 
-	String definitionType = "";
-	if (data.containsKey("definitionType")) {
-		definitionType = (String) data.get("definitionType");
-	}
-%>
-
+var sourceDefinitionId = '${data.selectedItem}';
+var binderId = '${ssBinderId}'
 function initializeStateMachine() {
 	//ss_hideAllDeclaredDivs()
 	ss_setDivHtml("displaydiv", "")
@@ -100,27 +85,19 @@ function initializeStateMachine() {
 	showDisplayDiv()
 	ss_showHideObj('definitionbuilder_tree_loading', 'hidden', 'none')
 	ss_showHideObj('definitionbuilder_tree', 'visible', 'block')
+	if (sourceDefinitionId != '') {
+		operationSelection = "view_definition_options";
+		operationSelectedItem = sourceDefinitionId;		
+		selectedId = sourceDefinitionId;
+		setStateMachine("view_definition_options")
+	}
 }
 
 function loadDiv(option, itemId, itemName, refItemId) {
 	//alert("Load div: " + option + ", " + itemId + ", " + itemName + ", " + refItemId)
 	ss_loadNextDiv(option, itemId, itemName, refItemId)
 	return
-	
-	
-	hideDisplayDiv();
-	var url = "<ssf:url adapter="true" 
-		portletName="ss_administration" 
-		action="definition_builder" 
-		actionUrl="true" />";
-	if (sourceDefinitionId != "") {url += "\&sourceDefinitionId=" + sourceDefinitionId;}
-	url += "\&option=" + option
-	if (itemId != "") {url += "\&itemId=" + itemId;}
-	if (itemName != "") {url += "\&itemName=" + itemName;}
-	if (refItemId != "") {url += "\&refItemId=" + refItemId;}
-	url += "\&rn=" + rn++
-	//alert(url)
-	ss_fetch_url(url, loadDivCallback)
+
 }
 
 function hideDisplayDiv() {
@@ -171,11 +148,7 @@ function showDisplayDiv() {
 
 var ss_scrollTopOffset = 15;
 
-function loadDivCallback(s) {
-	//alert("s: " +s)
-	ss_addHtmlToDiv("displaydiv", s)
-	showDisplayDiv();
-}
+
 
 function definitionTree_showId(id, obj) {
 	//User selected an item from the tree
@@ -200,7 +173,7 @@ function definitionTree_showId(id, obj) {
 	}
 	
 	//See if waiting for an item to be selected
-	if (state == "moveItem" || state == "cloneItem") {
+	if (state == "moveItem" || state == "copyItem") {
 		//Make sure we aren't going back to the definition itself
 		if (sourceDefinitionId != id) {
 			setStateMachine(state + "Confirm")
@@ -221,20 +194,16 @@ function definitionTree_showId(id, obj) {
 	}
 		
 	//See if in the confirmation state
-	if (state == "deleteDefinitionConfirm" || state == "moveItemConfirm" || state == "cloneItemConfirm") {
+	if (state == "deleteDefinition" || state == "moveItemConfirm" || state == "copyItemConfirm") {
 		//The user selected something else while in the confirmation step.
 		//Go back to square 1
 		setStateMachine("definition_selected")
 		return false
 	}
 		
-	if (sourceDefinitionId == "" && !idMap[id]) {
-		//This is a request to view a definition
-		return viewDefinition();
-	}
 
 	//Put up the standard "view" and "delete" options
-	operationSelection = "viewDefinitionOptions";
+	operationSelection = "view_definition_options";
 	operationSelectedItem = "";		
 	if (sourceDefinitionId == mappedId) {
 		setStateMachine("view_definition_options")
@@ -258,16 +227,6 @@ function addDefinition(id, name, item) {
 	return false;
 }
 
-function viewDefinition() {
-	operationSelection = "selectId";
-	operationSelectedItem = "selectedId";
-	ss_setDivHtml("displaydiv", "");
-	ss_setDivHtml("displaydiv", ss_getDivHtml("definitionbuilder_tree_loading"));
-	var formObj = self.document.forms['definitionbuilder']
-	setSubmitData(formObj)
-	formObj.submit()
-	return false
-}
 
 function modifyDefinition() {
 	operationSelection = "modifyDefinition"
@@ -275,14 +234,53 @@ function modifyDefinition() {
 	setStateMachine("modifyDefinition")
 	return false;
 }
-
+function copyDefinition() {
+	operationSelection = "copyDefinition"
+	operationSelectedItem = selectedId
+	setStateMachine("copyDefinition")
+	return false;
+}
 function deleteDefinition() {
 	operationSelection = "deleteDefinition"
 	operationSelectedItem = selectedId
-	setStateMachine("deleteDefinitionConfirm")
+	setStateMachine("deleteDefinition")
 	return false;
 }
+function moveDefinition() {
+	var urlParams={option:'moveDefinition', sourceDefinitionId:sourceDefinitionId, binderId:binderId};
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "definition_builder"); 
+	self.location.href =url;
+	return false;
+}
+function setVisibility(visible, toId) {
+	operationSelection = "view_definition_options"
+	operationSelectedItem = selectedId
+	ss_setupStatusMessageDiv()
+	//alert("load div: " + option + ", " + itemId + ", " + itemName + ", " + refItemId)
+	hideDisplayDiv();
+	var urlParams={operation:'setVisibility', visibility:visible, option:'view_definition_options', 
+		sourceDefinitionId:sourceDefinitionId, binderId:binderId};
 
+	if (toId != "") {urlParams['targetId'] = toId;}
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "definition_builder"); 
+	
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	//ajaxRequest.setEchoDebugInfo()
+	ajaxRequest.setPostRequest(ss_postVisibilityChange);
+	ajaxRequest.setUseGET();
+	ajaxRequest.sendRequest();  //Send the request
+
+}
+function ss_postVisibilityChange(obj) {
+	// get trimmed content 
+
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+		alert(ss_not_logged_in);
+	} else {
+		ss_doImgOnloadCalls()
+		showDisplayDiv()
+	}
+}
 function addItem(id, name, item) {
 	//alert("addItem: " + id + ", " + name + ", " + item)
 	showOptions(id, name, item)
@@ -312,7 +310,11 @@ function modifyItem(id, name, item) {
 	return false;
 }
 
-function cloneItem(id, name, item) {
+function copyItem(id, name, item) {
+	operationSelection = id;
+	operationSelectedItem = selectedId;
+	setStateMachine("copyItem")
+	return false;
 }
 
 function getConditionSelectbox(obj, op, op2) {
@@ -320,14 +322,9 @@ function getConditionSelectbox(obj, op, op2) {
 	var formObj = ss_getContainingForm(obj)
 	var nameObj = obj.name
 	if (!obj.name) nameObj = obj.id;
-	var url = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="true" >
-    	</ssf:url>"
-    url += "&operation=" + op;
-    if (op2 != null && op2 != "") url += "&operation2=" + op2;
+	var urlParams={operation:op, sourceDefinitionId:sourceDefinitionId, binderId:binderId};
+    if (op2 != null && op2 != "") urlParams['operation']=op2;
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams); 
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements(formObj.name);
 	//ajaxRequest.setEchoDebugInfo();
@@ -392,7 +389,7 @@ function showProperties(name, refItem) {
 
 var state = "";
 function setStateMachine(newState) {
-	//alert("Entering new state: " + newState)
+//	alert("Entering new state: " + newState + " selectedId:" + selectedId)
 	state = newState
 	if (state == "definition_selected") {
 		//alert("info_"+selectedIdMapped)
@@ -429,23 +426,21 @@ function setStateMachine(newState) {
 	} else if (state == "view_definition_options") {
 		//alert("view_definition_options")
 		ss_setDivHtml("displaydiv", "")
-		var selectedIdNameText = "<span class='ss_bold'>"+selectedCaptionText + " (" + selectedIdText + ")</span>";
-		ss_setDivHtml("infoDefinitionOptionsDefinitionName", selectedIdNameText)
-		ss_addToDiv("displaydiv", "infoDefinitionOptions")
-		hideDisplayButtons()
-		showDisplayDiv();
+		hideDisplayButtons();
+		showDisplayButtons()
+		loadDiv(state, "", "");
 	} else if (state == "modifyDefinition") {
 		ss_setDivHtml("displaydiv", "")
 		showDisplayButtons()
 		loadDiv('properties', "", "")
-	} else if (state == "deleteDefinitionConfirm") {
-		//alert('deleteDefinitionConfirm')
+	} else if (state == "copyDefinition") {
 		ss_setDivHtml("displaydiv", "")
-		var selectedIdNameText = "<span class='ss_bold'>"+selectedCaptionText + " (" + selectedIdText + ")</span>";
-		ss_setDivHtml("deleteDefinitionSelection", selectedIdNameText)
-		ss_addToDiv("displaydiv", "delete_definition_confirm")
 		showDisplayButtons()
-		showDisplayDiv();
+		loadDiv('copyDefinition', "", "")
+	} else if (state == "deleteDefinition") {
+		ss_setDivHtml("displaydiv", "")
+		showDisplayButtons()
+		loadDiv('deleteDefinition', "", "")
 	} else if (state == "viewItem") {
 		//alert("viewItem: "+operationSelectedItem)
 		ss_setDivHtml("displaydiv", "")
@@ -488,8 +483,15 @@ function setStateMachine(newState) {
 		ss_addToDiv("displaydiv", "move_item_confirm")
 		showDisplayButtons()
 		showDisplayDiv();
-	} else if (state == "cloneItemConfirm") {
-		ss_addToDiv("displaydiv", "clone_item_confirm")
+	} else if (state == "copyItem") {
+		ss_setDivHtml("displaydiv", "")
+		//ss_addToDiv("displaydiv", "info_"+selectedId)
+		ss_addToDiv("displaydiv", "copy_item")
+		//loadDiv('info', '', 'copyItem')
+		hideDisplayButtons()
+		showDisplayDiv();
+	} else if (state == "copyItemConfirm") {
+//		ss_addToDiv("displaydiv", "copy_item_confirm")
 		showDisplayButtons()
 		showDisplayDiv();
 	} else {
@@ -522,17 +524,13 @@ function ss_loadNextDiv(option, itemId, itemName, refItemId) {
 	ss_setupStatusMessageDiv()
 	//alert("load div: " + option + ", " + itemId + ", " + itemName + ", " + refItemId)
 	hideDisplayDiv();
-	var url = "<ssf:url adapter="true" 
-		portletName="ss_administration" 
-		action="definition_builder" 
-		actionUrl="true" />";
-	if (sourceDefinitionId != "") {url += "\&sourceDefinitionId=" + sourceDefinitionId;}
-	url += "\&option=" + option
-	if (itemId != "") {url += "\&itemId=" + itemId;}
-	if (itemName != "") {url += "\&itemName=" + itemName;}
-	if (refItemId != "") {url += "\&refItemId=" + refItemId;}
-	url += "\&rn=" + rn++
-	//alert(url)
+	var urlParams={option:option, binderId:binderId};
+	if (sourceDefinitionId != "") urlParams['sourceDefinitionId'] = sourceDefinitionId;
+	if (itemId != "")  urlParams['itemId'] = itemId;
+	if (itemName != "") urlParams['itemName'] = itemName;
+	if (refItemId != "") urlParams['refItemId'] = refItemId;
+	
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "definition_builder"); 
 	
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	//ajaxRequest.setEchoDebugInfo();
@@ -602,26 +600,16 @@ function ss_saveUserGroupResults(s) {
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
 <td><span class="ss_titlebold">
-<a href="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="definition_builder" /><portlet:param 
-	name="definition_type" value="<%= definitionType %>" /></portlet:actionURL>">
+<c:if test="${!empty ssBinder}">${ssBinder.title}<br/></c:if>
 <ssf:nlt tag="definition.builder" text="Definition builder" />
-</a>
-<%
-	//See if there is a selected item
-	if (data.containsKey("selectedItemTitle") && !data.get("selectedItemTitle").equals("")) {
-%>
 >> <c:out value="${data.selectedItemTitle}" />
-<%
-	}
-%>
 </span>
 </td>
 <td align="right">
-<form>
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
-  onClick="self.location.href='<portlet:renderURL windowState="normal"><portlet:param
-  name="action" value="view"/></portlet:renderURL>';return false;">
+
+<form action="<ssf:url actionUrl="false" binderId="${ssBinderId}" action="manage_definitions"/>" 
+				method="post">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
 </form>
 </td>
 </tr>
@@ -655,9 +643,8 @@ function ss_saveUserGroupResults(s) {
 			<div id="displaydiv_spacer" style="height:1px;">&nbsp;
 			</div>
 			<div id="displaydiv0" style="display:inline; visibility:hidden; z-index:100;">
-			<form class="ss_form" action="<portlet:actionURL windowState="maximized"><portlet:param 
-				name="action" value="definition_builder" /><portlet:param 
-				name="definition_type" value="<%= definitionType %>" /></portlet:actionURL>" 
+			<form class="ss_form" action="<ssf:url actionUrl="true" binderId="${ssBinderId}"><ssf:param 
+				name="action" value="definition_builder" /></ssf:url>" 
 				method="post" name="definitionbuilder" id="definitionbuilder" 
 				onSubmit="setSubmitData(this)" style="display:inline;" >
 			<ssf:box>
@@ -693,57 +680,33 @@ function ss_saveUserGroupResults(s) {
 </div>
 
 <div>
-<%
-	String ssSelectItemText = NLT.get("definition.select_item");
-	//Build the divs
-	if (!data.containsKey("selectedItem") || data.get("selectedItem").equals("")) {
-%>
-<ssf:buildDefinitionDivs title="<%= ssSelectItemText %>" 
-  sourceDocument="${ssConfigDefinition}" configDocument="${ssConfigDefinition}"/>
-<%
-	
-	} else {
-		//A definition type was selected. Build the page to edit that definition type
-%>
-<ssf:buildDefinitionDivs title="<%= ssSelectItemText %>" 
-  sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
-  configDocument="${ssConfigDefinition}" />
-<%
-	}
-%>
+
+<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
+  sourceDocument="${data.sourceDefinition}" 
+  configDocument="${ssConfigDefinition}"
+  />
 </div>
 
 <%
 	//Show the preview area
-	if (data.containsKey("selectedItem") && !data.get("selectedItem").equals("")) {
 		String selectedItem = (String)data.get("selectedItem");
 		//See if this is an entry definition
 		Element configElementEntry = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='entryForm']");
-		Element configElementFileEntry = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='fileEntryForm']");
 		Element configElementProfile = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='profileEntryForm']");
 		Element configElementFolder = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='folderForm']");
-		Element configElementFileFolder = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='fileFolderForm']");
 		Element configElementWorkspace = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='workspaceForm']");
 		Element configElement = null;
 		if (configElementEntry != null || configElementProfile != null || 
-				configElementFileEntry != null || configElementFileFolder != null ||
 				configElementFolder != null || configElementWorkspace != null) {
 			//This definition has a form definition; so show the form preview
-			String definitionName = (String) ((Document) data.get("sourceDefinition")).getRootElement().attributeValue("caption","");
 			if (configElementEntry != null) {
 				configElement = configElementEntry;
-				request.setAttribute("definitionEntry", new FolderEntry());
-			} else if (configElementFileEntry != null) {
-				configElement = configElementFileEntry;
 				request.setAttribute("definitionEntry", new FolderEntry());
 			} else if (configElementProfile != null) {
 				configElement = configElementProfile;
 				request.setAttribute("definitionEntry", new User());
 			} else if (configElementFolder != null) {
 				configElement = configElementFolder;
-				request.setAttribute("definitionEntry", new Folder());
-			} else if (configElementFileFolder != null) {
-				configElement = configElementFileFolder;
 				request.setAttribute("definitionEntry", new Folder());
 			} else if (configElementWorkspace != null) {
 				configElement = configElementWorkspace;
@@ -761,7 +724,7 @@ function ss_saveUserGroupResults(s) {
 <div class="ss_style ss_portlet">
 <div align="center" width="100%">
   <span class="ss_titlebold">
-    <ssf:nlt tag="definition.form_preview" text="Form Preview"/><br/><%= definitionName %>
+    <ssf:nlt tag="definition.form_preview" text="Form Preview"/><br/>${data.selectedItemTitle}
   </span>
 </div>
 <br/>
@@ -781,7 +744,6 @@ function ss_saveUserGroupResults(s) {
 	 		Element workflowElement = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='workflowProcess']");
 			if (workflowElement != null) {
 				//This is a workflow definition, show the applet
-				String definitionName = (String) ((Document) data.get("sourceDefinition")).getRootElement().attributeValue("caption","");
 %>
 
 <br/>
@@ -791,7 +753,7 @@ function ss_saveUserGroupResults(s) {
 <div class="ss_style ss_portlet">
 <div align="center" width="100%">
   <span class="ss_titlebold">
-    <ssf:nlt tag="definition.workflow_preview" text="Workflow Preview"/><br/><%= definitionName %>
+    <ssf:nlt tag="definition.workflow_preview" text="Workflow Preview"/><br/>${data.selectedItemTitle}
   </span>
 
 <br/>
@@ -838,7 +800,6 @@ function ss_saveUserGroupResults(s) {
 <%
 			}
 		}
-	}
 %>
 
 <script type="text/javascript">

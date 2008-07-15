@@ -42,16 +42,12 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer" 
   style="display:block; margin:2px;">
-<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
-	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
-</c:if>
+<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 
-	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
+	<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 	    <div class="ss_style_color">
-			<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
-<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
-			<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
-</c:if>		
+			<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 					  configElement="${ssConfigElement}" 
 					  configJspStyle="${ssConfigJspStyle}" />
@@ -83,15 +79,17 @@ function ss_showForumEntryInIframe(url) {
 
 <c:if test="${!empty ssEntryIdToBeShown && !empty ss_useDefaultViewEntryPopup}">
 <script type="text/javascript">
-function ss_showEntryToBeShown<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
+function ss_showEntryToBeShown${renderResponse.namespace}() {
     var url = "<ssf:url     
 		folderId="${ssBinder.id}" 
 		action="view_folder_entry" 
 		entryId="${ssEntryIdToBeShown}" 
-		actionUrl="true" />" 
+		actionUrl="true" >
+		<ssf:param name="entryViewStyle" value="full"/>
+		</ssf:url>" 
 	self.location.href = url;
 }
-ss_createOnLoadObj('ss_showEntryToBeShown<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', ss_showEntryToBeShown<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>);
+ss_createOnLoadObj('ss_showEntryToBeShown${renderResponse.namespace}', ss_showEntryToBeShown${renderResponse.namespace});
 </script>
 </c:if>
 

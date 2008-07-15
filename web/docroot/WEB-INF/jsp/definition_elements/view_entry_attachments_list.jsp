@@ -30,6 +30,7 @@
 %>
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ page import="com.sitescape.team.ssfs.util.SsfsUtil" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
 <div id="${ss_viewEntryAttachmentDivId}">
@@ -63,7 +64,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
   </c:forEach>
   <c:set var="thumbRowSpan" value="1"/>
   <c:if test="${versionCount >= 1}">
-    <c:set var="thumbRowSpan" value="${thumbRowSpan + 2}"/>
+    <c:set var="thumbRowSpan" value="2"/>
   </c:if>
      <tr><td colspan="9"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 	  <tr>
@@ -277,7 +278,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
         <tr><td style="height:10px;" class="ss_att_title" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 		<tr>
 		  <td class="ss_att_title ss_subhead2" colspan="8">
-		    <c:set var="previousVersionsText" value="<%= NLT.get("entry.PreviousVersions") %>"/>
+		    <c:set var="previousVersionsText" value="<%= NLT.get("entry.PreviousVersions", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>"/>
 		    <ssf:expandableArea title="${previousVersionsText}">
 			  <table>
 			  <c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">

@@ -113,6 +113,13 @@ public class LoginController  extends SAbstractControllerRetry {
 		Map<String,Object> model = new HashMap<String,Object>();
 		
 		Long binderId = user.getWorkspaceId();
+		if (!binderId.equals("")) {
+			try {
+				//See if this user can access the binder
+				Binder binder = getBinderModule().getBinder(new Long(binderId));
+				model.put(WebKeys.BINDER, binder);
+			} catch(Exception e) {}
+		}
 
 		//The user is logged in, go to the user profile page
 		//Set up the standard beans

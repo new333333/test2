@@ -84,6 +84,7 @@ import org.joda.time.YearMonthDay;
 
 import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.util.EnumUserType;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.module.ical.impl.IcalModuleImpl;
 import com.sitescape.team.module.shared.XmlUtils;
@@ -123,6 +124,13 @@ import com.sitescape.team.ObjectKeys;
  */
 public class Event extends PersistentTimestampObject implements Cloneable, UpdateAttributeSupport {
 
+	public enum FreeBusyType {
+		free,
+		busy,
+		tentative, 
+		outOfOffice
+	};
+	
 	// Recurrence types
 
 	/**
@@ -285,6 +293,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	protected TimeZone timeZone;
 	
 	protected String uid;
+	
+	protected FreeBusyType freeBusy;  //access=field set by hibernate, so we can deal with nulls
 	
 	/* Constructors */
 
@@ -2845,6 +2855,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	public void setTimeZoneSensitive(boolean timeZoneSensitive) {
+		// v1.1 compatibility - default value was false (should be true) 
 		this.timeZoneSensitive = !timeZoneSensitive;
 	}
 	
@@ -2858,6 +2869,27 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	public void setUid(String uid) {
 		this.uid = uid;
+	}
+	
+	/**
+	 * @hibernate.property length="32"
+	 * @return
+	 */
+	public FreeBusyType getFreeBusy() {
+		// ver. 1.x compatibility, there was no freeBusy info
+		if (freeBusy == null) {
+			if (this.isAllDayEvent()) {
+				return FreeBusyType.free;
+			} else {
+				return FreeBusyType.busy;
+			}
+		}
+		
+		return freeBusy;
+	}
+
+	public void setFreeBusy(FreeBusyType freeBusy) {
+		this.freeBusy = freeBusy;
 	}
 	
 	/**
@@ -3009,6 +3041,12 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			setUid(newEvent.getUid());
 			changed = true;
 		}
+		if ((getFreeBusy() == null && newEvent.getFreeBusy() != null) || 
+				(getFreeBusy() != null && newEvent.getFreeBusy() == null) ||
+				(getFreeBusy() != null && newEvent.getFreeBusy() != null && !getFreeBusy().equals(newEvent.getFreeBusy()))) {
+			setFreeBusy(newEvent.getFreeBusy());
+			changed = true;
+		}
 		if ((getTimeZone() == null && newEvent.getTimeZone() != null) || 
 				(getTimeZone() != null && newEvent.getTimeZone() == null) ||
 				(getTimeZone() != null && newEvent.getTimeZone() != null && !getTimeZone().equals(newEvent.getTimeZone()))) {
@@ -3098,6 +3136,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		
 		XmlUtils.addProperty(element, "uid", getUid());		
 		
+		XmlUtils.addProperty(element, "freeBusy", getFreeBusy());	
+		
 		XmlUtils.addProperty(element, "bySecond", getBySecondString());
 
 		XmlUtils.addProperty(element, "byMinute", getByMinuteString());
@@ -3143,7 +3183,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		if (!isAllDayEvent()) {
 			net.fortuna.ical4j.model.DateTime start = new net.fortuna.ical4j.model.DateTime(getDtStart().getTime());
 			if (timeZone != null) {
-				// it's enough to set always GMT
+				// it's NOT enough to set always GMT - recurrences depends on given time zone
+				// f.e. recurrences on week days
 				start.setTimeZone(IcalModuleImpl.getTimeZone(getTimeZone(), "GMT"));
 			}
 
@@ -3240,13 +3281,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		
 		return result;
 	}
-
-	public void setAllDaysEvent(boolean allDaysEvent) {
-		if (!allDaysEvent) {
-			setTimeZone(TimeZoneHelper.getTimeZone("GMT"));
-		} else {
-			setTimeZone(null);
-		}
+	
+	public void allDaysEvent() {
+		setTimeZone(null);
 	}
 	
 	/**

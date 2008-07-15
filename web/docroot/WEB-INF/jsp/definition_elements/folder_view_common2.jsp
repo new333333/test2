@@ -31,6 +31,8 @@
 <% // Folder listing %>
 <jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
+<c:set var="ss_entryViewStyle" value=""/>
+<c:if test="${ssUser.displayStyle == 'newpage' && slidingTableStyle != 'fixed'}"><c:set var="ss_entryViewStyle" value="full"/></c:if>
 <%
 boolean useAdaptor = true;
 if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle()) &&
@@ -46,15 +48,12 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 		ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
 %>
 <div align="center">
-<div id="ss_diss_inset">
+<div id="ss_diss_inset" >
 <div align="left" class="ssPageNavi">
 <% // filter toolbar %>
-<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
+<jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 </div><br/>
-<div align="left" class="ssPageNavi">
-<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %>
-</div><br/>
-<br/>
+
 <c:set var="actionVar" value="view_ws_listing"/>
 <c:if test="${ssDefinitionEntry.parentBinder.entityType == 'folder'}">
   <c:set var="actionVar" value="view_folder_listing"/>
@@ -69,20 +68,9 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   href="<ssf:url action="view_folder_listing" binderId="${ssBinder.id}"/>">${ssBinder.title}</a>
 </span>
 <br/><br/>
+<jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" />
 
-<div id="ss_configureCol">
-<% // configure columns area %>
-	 [<a href="<ssf:url
-			adapter="true" 
-			portletName="ss_forum" 
-			action="__ajax_request" 
-			actionUrl="true" >
-			<ssf:param name="operation" value="configure_folder_columns" />
-			<ssf:param name="binderId" value="${ssBinder.id}" />
-			<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-			</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
-		    <span class="ss_muted_label_small ss_underline"><ssf:nlt tag="misc.configureColumns"/> </span> </a>&nbsp;]  
-</div> <!--end of configure columns-->		
+
 <div id="ss_folder_table_parent" class="ss_folder">
 
 <div class="ss_folder_border">
@@ -96,12 +84,16 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 
 
 <%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
+<c:set var="slidingTableTableStyle" value=""/>
+<c:if test="${slidingTableStyle == 'fixed'}">
+  <c:set var="slidingTableTableStyle" value="ss_borderTable"/>
+</c:if>
 <ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="${slidingTableStyle}" 
- height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}">
+ height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}" tableStyle="${slidingTableTableStyle}">
 
-<ssf:slidingTableRow headerRow="true">
+<ssf:slidingTableRow style="${slidingTableRowStyle}" headerRow="true">
   <c:if test="${!empty ssFolderColumns['number']}">
-    <ssf:slidingTableColumn width="6%">
+    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="6%">
 
     <a href="<ssf:url binderId="${ssFolder.id}" action="${action}" actionUrl="true"><ssf:param 
     	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -135,7 +127,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </c:if>
 
   <c:if test="${!empty ssFolderColumns['title']}">
-    <ssf:slidingTableColumn width="28%">
+    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="28%">
     
     <a href="<ssf:url binderId="${ssFolder.id}" action="${action}" actionUrl="true"><ssf:param 
     	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -170,7 +162,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </c:if>
   
   <c:if test="${!empty ssFolderColumns['author']}">
-    <ssf:slidingTableColumn width="20%">
+    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="20%">
 
     <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
     	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -205,13 +197,13 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </c:if>
 
   <c:if test="${!empty ssFolderColumns['comments']}">
-    <ssf:slidingTableColumn width="12%">
+    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="12%">
       <div class="ss_title_menu"><ssf:nlt tag="folder.column.Comments"/> </div>
     </ssf:slidingTableColumn>
   </c:if>
 
   <c:if test="${!empty ssFolderColumns['size']}">
-    <ssf:slidingTableColumn width="8%">
+    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="8%">
 
     <a href="<ssf:url binderId="${ssFolder.id}" action="${action}" actionUrl="true"><ssf:param 
 	    	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -232,19 +224,19 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </c:if>
 
   <c:if test="${!empty ssFolderColumns['download']}">
-    <ssf:slidingTableColumn width="8%">
+    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="8%">
       <div class="ss_title_menu"><ssf:nlt tag="folder.column.Download"/> </div>
     </ssf:slidingTableColumn>
   </c:if>
 
   <c:if test="${!empty ssFolderColumns['html']}">
-    <ssf:slidingTableColumn width="10%">
+    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="10%">
       <div class="ss_title_menu"><ssf:nlt tag="folder.column.Html"/> </div>
     </ssf:slidingTableColumn>
   </c:if>
 
   <c:if test="${!empty ssFolderColumns['state']}">
-    <ssf:slidingTableColumn width="8%">
+    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="8%">
 
     <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
     	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -279,7 +271,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </c:if>
 
   <c:if test="${!empty ssFolderColumns['date']}">
-    <ssf:slidingTableColumn width="20%">
+    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="20%">
     
     <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
     	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -340,7 +332,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 %>
 	  <c:set var="eleName" value="<%= eleName %>"/>
 	  <c:set var="eleCaption" value="<%= eleCaption %>"/>
-	  <ssf:slidingTableColumn width="20%">
+	  <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="20%">
 	    <div class="ss_title_menu">${eleCaption}</div>
 	  </ssf:slidingTableColumn>
 <%
@@ -366,7 +358,11 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	String seenStyleTitle = seenStyle;
 	String seenStyleTitle2 = "class=\"ss_noUnderlinePlus\"";
 %>
+<c:set var="slidingTableRowStyle" value=""/>
+<c:set var="slidingTableColStyle" value=""/>
 <c:if test="${slidingTableStyle == 'fixed'}">
+  <c:set var="slidingTableRowStyle" value=""/>
+  <c:set var="slidingTableColStyle" value=""/>
 <%
 	seenStyleTitle = "class=\"ss_underline\"";
 	seenStyleTitle2 = "class=\"ss_underlinePlus\"";
@@ -385,15 +381,16 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 
 <c:set var="hasFile2" value="<%= hasFile %>"/>
 <c:set var="oneFile2" value="<%= oneFile %>"/>
-<ssf:slidingTableRow id="${folderLineId}" >
+<ssf:slidingTableRow style="${slidingTableRowStyle}" id="${folderLineId}" >
  <c:if test="${!empty ssFolderColumns['number']}">
-  <ssf:slidingTableColumn>
+  <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <a href="<ssf:url     
     adapter="<%= useAdaptor %>" 
     portletName="ss_forum" 
     binderId="${ssFolder.id}" 
     action="view_folder_entry" 
-    entryId="${entry1._docId}" actionUrl="true" />" 
+    entryId="${entry1._docId}" actionUrl="true">
+    <ssf:param name="entryViewStyle" value="${ss_entryViewStyle}"/></ssf:url>" 
 <c:if test="${slidingTableStyle != 'fixed'}">
     onClick="ss_loadEntry(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 </c:if>
@@ -405,7 +402,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
  </c:if>
   
  <c:if test="${!empty ssFolderColumns['title']}">
-  <ssf:slidingTableColumn>
+  <ssf:slidingTableColumn style="${slidingTableColStyle}">
   <!-- to keep sunburst in line -->
     <c:if test="${!empty seenStyleburst}">
 	  		<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" <ssf:alt tag="alt.new"/> />&nbsp;
@@ -416,14 +413,15 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     portletName="ss_forum" 
     binderId="${ssFolder.id}" 
     action="view_folder_entry" 
-    entryId="${entry1._docId}" actionUrl="true" />" 
+    entryId="${entry1._docId}" actionUrl="true" 
+    ><ssf:param name="entryViewStyle" value="${ss_entryViewStyle}"/></ssf:url>" 
     
 	<c:if test="${slidingTableStyle != 'fixed'}">
     	onClick="ss_loadEntry(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 	</c:if>
 	
 	<c:if test="${slidingTableStyle == 'fixed'}">
-    	onClick="ss_loadEntryInPlace(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no', 'ss_folderEntryTitle_${entry1._docId}');return false;" 
+    	onClick="ss_loadEntryInPlace(this, '${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no', 'ss_folderEntryTitle_${entry1._docId}');return false;" 
     	<c:if test="${!empty entry1._desc}">
     	  onMouseOver="ss_showHoverOver(this, 'ss_folderEntryTitle_${entry1._docId}', event, 20, 12);"
     	  onMouseOut="ss_hideHoverOver('ss_folderEntryTitle_${entry1._docId}');"
@@ -451,19 +449,19 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
  </c:if>
   
   <c:if test="${!empty ssFolderColumns['author']}">
-  <ssf:slidingTableColumn>
+  <ssf:slidingTableColumn  style="${slidingTableColStyle}">
 	<ssf:showUser user="<%=(User)entry1.get("_principal")%>" titleStyle="<%= seenStyleAuthor %>"/> 
   </ssf:slidingTableColumn>
  </c:if>
  
  <c:if test="${!empty ssFolderColumns['comments']}">
-  <ssf:slidingTableColumn>
+  <ssf:slidingTableColumn  style="${slidingTableColStyle}">
       <span <%= seenStyle %>>${entry1._totalReplyCount}</span>
   </ssf:slidingTableColumn>
  </c:if>
   
  <c:if test="${!empty ssFolderColumns['size']}">
-  <ssf:slidingTableColumn>
+  <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <c:if test="${hasFile2 && oneFile2 && !empty entry1._fileSize}">
       <span <%= seenStyle %>>${entry1._fileSize}KB</span>
     </c:if>
@@ -471,7 +469,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
  </c:if>
   
  <c:if test="${!empty ssFolderColumns['download']}">
-  <ssf:slidingTableColumn>
+  <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <c:if test="${hasFile2 && oneFile2}">
 <%
 	String fn = "";
@@ -500,7 +498,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
  </c:if>
   
  <c:if test="${!empty ssFolderColumns['html']}">
-  <ssf:slidingTableColumn>
+  <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <c:if test="${hasFile2 && oneFile2}">
 		<ssf:ifSupportsViewAsHtml relativeFilePath="${entry1._fileName}" browserType="<%=strBrowserType%>">
 			<a target="_blank" style="text-decoration: none;" href="<ssf:url 
@@ -519,14 +517,15 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
  </c:if>
   
 <c:if test="${!empty ssFolderColumns['state']}">
-  <ssf:slidingTableColumn>
+  <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <c:if test="${!empty entry1._workflowStateCaption}">
     <a href="<ssf:url     
     adapter="<%= useAdaptor %>" 
     portletName="ss_forum" 
     binderId="${ssFolder.id}" 
     action="view_folder_entry" 
-    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
+    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" >
+    <ssf:param name="entryViewStyle" value="${ss_entryViewStyle}"/></ssf:url>" 
 <c:if test="${slidingTableStyle == 'fixed'}">
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 </c:if>
@@ -540,7 +539,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   
 
  <c:if test="${!empty ssFolderColumns['date']}">
-  <ssf:slidingTableColumn>
+  <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <span <%= seenStyle %>><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${entry1._lastActivity}" type="both" 
 	 timeStyle="short" dateStyle="short" /></span>
@@ -585,7 +584,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  <c:set var="entryDef" value="${ssEntryDefinitionMap[defId2]}"/>
 	  <c:if test="${!empty entryDef}">
 	  <jsp:useBean id="entryDef" type="com.sitescape.team.domain.Definition"/>
-	  <ssf:slidingTableColumn>
+	  <ssf:slidingTableColumn  style="${slidingTableColStyle}">
          <span <%= seenStyle %>>
          <c:if test="${!empty eleName2 && !empty entry1[eleName2]}">
 	       <c:if test="${eleType2 == 'selectbox' || eleType2 == 'radio' || eleType2 == 'checkbox' || eleType2 == 'text'}">
@@ -645,7 +644,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   <div id="ss_folderEntryTitle_${entry2._docId}" class="ss_hover_over" 
     style="visibility:hidden; display:none;">
       <span class="ss_style" ><ssf:markup type="view" binderId="${entry2._binderId}" entryId="${entry2._docId}"><%--
-    		--%><ssf:textFormat formatAction="limitedDescription" textMaxWords="100">${entry2._desc}</ssf:textFormat><%--
+    		--%><ssf:textFormat formatAction="limitedDescription" textMaxWords="50">${entry2._desc}</ssf:textFormat><%--
     		--%></ssf:markup></span>
   </div>
 </c:forEach>

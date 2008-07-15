@@ -50,16 +50,28 @@ public class AttachmentsField extends Field implements Serializable {
 	}
 
 	public static class Attachment {
+		private String id;
 		private String fileName;
+		private long length; // The length, in bytes, of the attachment
 		private String href;
 		
 		public Attachment() {}
 		
-		public Attachment(String fileName, String href) {
-			setFileName(fileName);
-			setHref(href);
+		public Attachment(String id, String fileName, long length, String href) {
+			this.id = id;
+			this.fileName = fileName;
+			this.length = length;
+			this.href = href;
 		}
 	
+		public String getId() {
+			return id;
+		}
+
+		public void setId(String id) {
+			this.id = id;
+		}
+
 		public String getFileName() {
 			return fileName;
 		}
@@ -74,6 +86,14 @@ public class AttachmentsField extends Field implements Serializable {
 	
 		public void setHref(String href) {
 			this.href = href;
+		}
+
+		public long getLength() {
+			return length;
+		}
+
+		public void setLength(long length) {
+			this.length = length;
 		}
 	}
 

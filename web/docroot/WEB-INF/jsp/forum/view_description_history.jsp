@@ -275,10 +275,10 @@ function dodiff()
 </td>
 <td valign="top" width="90%">
   <ssf:expandableArea title="${change.folderEntry.attributes.modifiedOn}">
-  <div><span class="ss_largeprint" id="title${change.folderEntry.attributes.logVersion}">${change.folderEntry.attribute.title}</span></div>
+  <div><span class="ss_largeprint" id="title${change.folderEntry.attributes.logVersion}">${change.folderEntry.attribute.title.value}</span></div>
   <div><span class="ss_smallprint">${change.folderEntry.attributes.modifiedBy}</span></div>
   <div class="ss_entryContent ss_entryDescription" id="desc${change.folderEntry.attributes.logVersion}">
-    ${change.folderEntry.attribute.description}
+    ${change.folderEntry.attribute.description.value}
   </div>
   </ssf:expandableArea>
 </td>

@@ -29,6 +29,7 @@
 package com.sitescape.team.portlet.binder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,6 +63,7 @@ import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.tree.TreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.Clipboard;
@@ -117,8 +119,9 @@ public class AdvancedSearchController extends AbstractBinderController {
 		
 		String strBinderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		model.put(WebKeys.BINDER_ID, strBinderId);
+		Long binderId = null;
 		if (!strBinderId.equals("")) {
-			Long binderId = Long.valueOf(strBinderId);
+			binderId = Long.valueOf(strBinderId);
 			Binder binder = getBinderModule().getBinder(binderId);
 			model.put(WebKeys.BINDER, binder);
 		}
@@ -179,6 +182,13 @@ public class AdvancedSearchController extends AbstractBinderController {
         	return new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model);
         } else {
         	model.putAll(BinderHelper.prepareSearchFormData(this, request));
+        	if (binderId != null) {
+        		Map options = new HashMap();
+        		options.put("search_currentAndSubfolders", Boolean.TRUE);
+        		options.put("search_subfolders", Boolean.TRUE);
+        		options.put("searchFolders", Collections.singletonList(binderId));
+        		model.put(WebKeys.SEARCH_FILTER_MAP, options);
+        	}
         	
     		//Build a reload url
     		PortletURL reloadUrl = response.createRenderURL();
@@ -317,13 +327,19 @@ public class AdvancedSearchController extends AbstractBinderController {
 
 	private ModelAndView ajaxGetWorkflows(RenderRequest request, RenderResponse response) {
 		
-		List workflows = new ArrayList();
+		Set workflows = new HashSet();
 		if (WebHelper.isUserLoggedIn(request)) {
-			workflows = DefinitionHelper.getDefinitions(Definition.WORKFLOW);
+			Collection<Long> ids = TreeHelper.getSelectedIds(request.getParameterMap());
+			for (Long id:ids) {
+				try {
+					workflows.addAll(getDefinitionModule().getDefinitions(id, Boolean.TRUE, Definition.WORKFLOW));
+				} catch (Exception ex) {}
+			}
+			if (workflows.isEmpty()) workflows.addAll(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.WORKFLOW));
 		}
 		
 		Map model = new HashMap();
-		model.put(WebKeys.WORKFLOW_DEFINITION_MAP, workflows);
+		model.put(WebKeys.WORKFLOW_DEFINITION_MAP, DefinitionHelper.orderDefinitions(workflows, false));
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/find_workflows_widget", model);
 	}
@@ -344,16 +360,17 @@ public class AdvancedSearchController extends AbstractBinderController {
 	private ModelAndView ajaxGetEntryTypes(RenderRequest request, RenderResponse response) {
 		
 		Map model = new HashMap();
-		SortedMap<String, Definition> entries = new TreeMap<String, Definition>();
+		Set entries = new HashSet();
 		if (WebHelper.isUserLoggedIn(request)) {
-			Iterator<Definition> it = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY).iterator();
-			while (it.hasNext()) {
-				Definition entry = it.next();
-				String title = NLT.getDef(entry.getTitle());
-				entries.put(title + "|" + entry.getId(), entry);
+			Collection<Long> ids = TreeHelper.getSelectedIds(request.getParameterMap());
+			for (Long id:ids) {
+				try {
+					entries.addAll(getDefinitionModule().getDefinitions(id, Boolean.TRUE, Definition.FOLDER_ENTRY));
+				} catch (Exception ex) {}
 			}
+			if (entries.isEmpty()) entries.addAll(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.FOLDER_ENTRY));
 		}
-		model.put(WebKeys.ENTRY, entries);
+		model.put(WebKeys.ENTRY, DefinitionHelper.orderDefinitions(entries, false));
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/find_entry_types_widget", model);
 	}

@@ -59,7 +59,10 @@ import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.calendar.AbstractIntervalView;
 import com.sitescape.team.calendar.EventsViewHelper;
+import com.sitescape.team.calendar.OneDayView;
+import com.sitescape.team.calendar.OneMonthView;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Binder;
@@ -91,6 +94,7 @@ import com.sitescape.team.security.function.OperationAccessControlExceptionNoNam
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
+import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.TagUtil;
@@ -202,7 +206,9 @@ public class ListFolderHelper {
 					//Access is not allowed
 					return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
 				} else {
-					//Please log in
+					//Please log in 
+					String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+					model.put(WebKeys.URL, refererUrl);
 					return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
 				}
 			}
@@ -426,7 +432,7 @@ public class ListFolderHelper {
 		
 		//Determine the Folder Start Index
 		Integer tabPageNumber = (Integer) tabOptions.get(Tabs.PAGE);
-		if (tabPageNumber == null) tabPageNumber = Integer.valueOf(0);
+		if (tabPageNumber == null || tabPageNumber < 0) tabPageNumber = Integer.valueOf(0);
 		options.put(ObjectKeys.SEARCH_OFFSET, tabPageNumber);
 		tab.setData(tabOptions); //use synchronzied method
 		
@@ -563,22 +569,30 @@ public class ListFolderHelper {
        	String strSessGridSize = "";
        	if (sessGridSize != null) strSessGridSize = sessGridSize.toString(); 
       	
+       	AbstractIntervalView intervalView = null;
        	if (EventsViewHelper.GRID_MONTH.equals(strSessGridType)) {
-    		setStartDayOfMonth(calStartDateRange);
-    		calEndDateRange = (Calendar) calStartDateRange.clone();
-    		setEndDayOfMonth(calEndDateRange);
+			Integer weekFirstDay = (Integer)userProperties.getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK);
+			weekFirstDay = weekFirstDay!=null?weekFirstDay:CalendarHelper.getFirstDayOfWeek();
+			
+       		intervalView = new OneMonthView(currentDate, weekFirstDay);
+       		
+//    		setStartDayOfMonth(calStartDateRange);
+//    		calEndDateRange = (Calendar) calStartDateRange.clone();
+//    		setEndDayOfMonth(calEndDateRange);
        		
        		nextDate.add(Calendar.MONTH, 1);
        		prevDate.add(Calendar.MONTH, -1);
        		
        	} else if (EventsViewHelper.GRID_DAY.equals(strSessGridType)) {
+       		intervalView = new OneDayView(currentDate);
        		setDatesForGridDayView(calStartDateRange, calEndDateRange, strSessGridSize, prevDate, nextDate);
        	}
        	
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 		
 		options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
-       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, getExtViewDayDates(calStartDateRange, calEndDateRange));
+       	// options.put(ObjectKeys.SEARCH_EVENT_DAYS, getExtViewDayDates(calStartDateRange, calEndDateRange));
+       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervalView.getVisibleInterval());
        	
        	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, formatter.format(calStartDateRange.getTime()));
        	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, formatter.format(calEndDateRange.getTime()));
@@ -817,6 +831,7 @@ public class ListFolderHelper {
 		String pageStartIndex = (String) pagingInfo.get(WebKeys.PAGE_START_INDEX);
 		String pageEndIndex = (String) pagingInfo.get(WebKeys.PAGE_END_INDEX);
 
+		model.put(WebKeys.PAGE_CURRENT, pagingInfo.get(WebKeys.PAGE_CURRENT));
 		model.put(WebKeys.PAGE_PREVIOUS, prevPage);
 		model.put(WebKeys.PAGE_NUMBERS, pageNumbers);
 		model.put(WebKeys.PAGE_NEXT, nextPage);
@@ -827,6 +842,8 @@ public class ListFolderHelper {
 		double dblNoOfPages = Math.ceil((double)totalRecordsFound/searchPageIncrement);
 		
 		model.put(WebKeys.PAGE_COUNT, ""+dblNoOfPages);
+		model.put(WebKeys.PAGE_LAST, String.valueOf(Math.round(dblNoOfPages)));
+		model.put(WebKeys.PAGE_LAST_STARTING_INDEX, String.valueOf((Math.round(dblNoOfPages) -1) * searchPageIncrement));
 		model.put(WebKeys.SEARCH_TOTAL_HITS, folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 		
 		return model;
@@ -1106,7 +1123,8 @@ public class ListFolderHelper {
 		
 		HashMap<String, Object> hmRet = new HashMap<String, Object>();
 		ArrayList<HashMap> pagingInfo = new ArrayList<HashMap>(); 
-		int currentDisplayValue = ( intSearchOffset + intSearchPageIncrement) / intSearchPageIncrement;		
+		int currentDisplayValue = ( intSearchOffset + intSearchPageIncrement) / intSearchPageIncrement;
+		hmRet.put(WebKeys.PAGE_CURRENT, String.valueOf(currentDisplayValue));
 
 		//Adding Prev Page Link
 		int prevInternalValue = intSearchOffset - intSearchPageIncrement;
@@ -1224,6 +1242,8 @@ public class ListFolderHelper {
 		//Build the toolbar arrays
 		Toolbar folderToolbar = new Toolbar();
 		Toolbar entryToolbar = new Toolbar();
+		Toolbar folderActionsToolbar = new Toolbar();
+		Toolbar folderViewsToolbar = new Toolbar();
 		Toolbar dashboardToolbar = new Toolbar();
 		Toolbar footerToolbar = new Toolbar();
 		AdaptedPortletURL adapterUrl;
@@ -1291,6 +1311,16 @@ public class ListFolderHelper {
 					NLT.get("toolbar.menu.configuration"), url, qualifiers);
 		}
 		
+		//Site administration
+		if (bs.getAdminModule().testAccess(AdminOperation.manageFunction)) {
+			adminMenuCreated=true;
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_SITE_ADMINISTRATION);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			folderToolbar.addToolbarMenuItem("1_administration", "", 
+					NLT.get("toolbar.menu.siteAdministration"), url);
+		}
+
 		//Reporting
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.report)) {
 			adminMenuCreated=true;
@@ -1304,24 +1334,15 @@ public class ListFolderHelper {
 					NLT.get("toolbar.menu.report"), url, qualifiers);
 		}
 		
-		//Definition builder - forms (turned off until local definitions supported)
-		/*
-		adminMenuCreated=true;
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
-		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FOLDER_ENTRY));
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-		folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.definition_builder.folderEntry"), url);
-		//Definition builder - workflows
-		adminMenuCreated=true;
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
-		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.WORKFLOW));
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-		folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.definition_builder.workflow"), url);
-		*/
+		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageConfiguration)) {
+			adminMenuCreated=true;
+			qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("administration.definition_builder_designers"), url, qualifiers);
+		}
 		
 		//Delete binder
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.deleteBinder)) {
@@ -1376,7 +1397,18 @@ public class ListFolderHelper {
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SYNCHRONIZE_MIRRORED_FOLDER);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-				folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.synchronize_mirrored_folder"), url, qualifiers);
+				folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.synchronize_mirrored_folder.manual"), url, qualifiers);
+			}
+			if(folder.isMirrored() &&
+					bs.getFolderModule().testAccess(folder, FolderOperation.scheduleSynchronization)) {
+				qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
+
+				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SCHEDULE_SYNCHRONIZATION);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				folderToolbar.addToolbarMenuItem("1_administration", "", 
+						NLT.get("toolbar.menu.synchronize_mirrored_folder.scheduled"), adapterUrl.toString(), qualifiers);
 			}
 		}
 
@@ -1590,7 +1622,7 @@ public class ListFolderHelper {
 		}
 		
 		//	The "Display styles" menu
-		entryToolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_views"));
+		folderViewsToolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_views"));
 		//Get the definitions available for use in this folder
 		List<Definition> folderViewDefs = folder.getViewDefinitions();
 		Definition currentDef = (Definition)model.get(WebKeys.DEFAULT_FOLDER_DEFINITION);  //current definition in use
@@ -1603,7 +1635,7 @@ public class ListFolderHelper {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_DEFINITION);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_VALUE, def.getId());
-			entryToolbar.addToolbarMenuItem("3_display_styles", "folderviews", NLT.getDef(def.getTitle()), url, qualifiers);
+			folderViewsToolbar.addToolbarMenuItem("3_display_styles", "folderviews", NLT.getDef(def.getTitle()), url, qualifiers);
 		}
 		//WebDav folder view
 		String webdavUrl = "";
@@ -1612,7 +1644,7 @@ public class ListFolderHelper {
 			qualifiers = new HashMap();
 			qualifiers.put("webdavUrl", webdavUrl);
 			qualifiers.put("folder", webdavUrl);
-			entryToolbar.addToolbarMenuItem("3_display_styles", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
+			folderViewsToolbar.addToolbarMenuItem("3_display_styles", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
 		}
 		
 		//WebDav Permalink
@@ -1636,7 +1668,7 @@ public class ListFolderHelper {
 				|| viewType.equals(Definition.VIEW_STYLE_FILE)
 				|| viewType.equals(""))) {
 			//Only show these options if in the folder table style and not in accessible mode
-			entryToolbar.addToolbarMenu("4_display_styles", NLT.get("toolbar.folder_actions"));
+			folderActionsToolbar.addToolbarMenu("4_display_styles", NLT.get("toolbar.folder_actions"));
 			
 			/** Vertical mode has been removed
 			//Hemanth: Display Show entries at bottom folder action option only for the Table view
@@ -1664,8 +1696,19 @@ public class ListFolderHelper {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
-			entryToolbar.addToolbarMenuItem("4_display_styles", "styles", 
+			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
 					NLT.get("toolbar.menu.display_style_iframe"), url, qualifiers);
+			//newpage
+			qualifiers = new HashMap();
+			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE)) 
+				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE);
+			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
+					NLT.get("toolbar.menu.display_style_newpage"), url, qualifiers);
 			//popup
 			qualifiers = new HashMap();
 			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) 
@@ -1675,7 +1718,7 @@ public class ListFolderHelper {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
-			entryToolbar.addToolbarMenuItem("4_display_styles", "styles", 
+			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
 					NLT.get("toolbar.menu.display_style_popup"), url, qualifiers);
 		}
 		
@@ -1708,17 +1751,17 @@ public class ListFolderHelper {
 			}
 			
 			
-			entryToolbar.addToolbarMenu("5_calendar", optionTitle);	
+			folderActionsToolbar.addToolbarMenu("5_calendar", optionTitle);	
 			
 			Map qualifiersByFile = new HashMap();
 			qualifiersByFile.put("onClick", "ss_calendar_import.importFormFromFile({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
 					titleFromFile + "', legend: '" + legendFromFile + "', btn: '" + btnFromFile + "'});return false;");
-			entryToolbar.addToolbarMenuItem("5_calendar", "calendar", importFromFile, "#", qualifiersByFile);
+			folderActionsToolbar.addToolbarMenuItem("5_calendar", "calendar", importFromFile, "#", qualifiersByFile);
 			
 			Map qualifiersByURL = new HashMap();
 			qualifiersByURL.put("onClick", "ss_calendar_import.importFormByURL({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
 					titleByURL + "', legend: '" + legendByURL + "', btn: '" + btnByURL + "'});return false;");
-			entryToolbar.addToolbarMenuItem("5_calendar", "calendar", importByURL, "#", qualifiersByURL);
+			folderActionsToolbar.addToolbarMenuItem("5_calendar", "calendar", importByURL, "#", qualifiersByURL);
 		}
 		
 		//Build the "Manage dashboard" toolbar
@@ -1829,6 +1872,8 @@ public class ListFolderHelper {
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_TOOLBAR,  folderToolbar.getToolbar());
 		model.put(WebKeys.ENTRY_TOOLBAR,  entryToolbar.getToolbar());
+		model.put(WebKeys.FOLDER_VIEWS_TOOLBAR,  folderViewsToolbar.getToolbar());
+		model.put(WebKeys.FOLDER_ACTIONS_TOOLBAR,  folderActionsToolbar.getToolbar());
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 	}
 	

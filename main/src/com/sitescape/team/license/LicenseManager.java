@@ -83,7 +83,7 @@ public interface LicenseManager {
 	 * typically feature name begins with the package name of the interface
 	 * through which the particular feature is exposed followed by a short
 	 * name representing the feature. For example,
-	 * com.sitescape.team.module.workflow.AdvancedWorkflow
+	 * com.sitescape.team.module.folder.MirroredFolder
 	 * @return
 	 */
 	public boolean isAuthorizedByLicense(String featureName);

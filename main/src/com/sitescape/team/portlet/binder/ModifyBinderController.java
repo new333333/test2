@@ -83,7 +83,7 @@ public class ModifyBinderController extends AbstractBinderController {
 				// The binder was indeed deleted.  Finish it up.
 				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");			
 			}
-		} else if (formData.containsKey("okBtn")) {
+		} else if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
 			if (op.equals("") || op.equals(WebKeys.OPERATION_MODIFY)) { 			
 				//	The modify form was submitted. Go process it
 				Map fileMap = null;
@@ -112,7 +112,8 @@ public class ModifyBinderController extends AbstractBinderController {
 		   		}
 		   		try {
 		   			getBinderModule().modifyBinder(binderId, mid, fileMap, deleteAtts, null);				
-		   			setupReloadOpener(response, binderId);	
+		   			if (formData.containsKey("okBtn")) setupReloadOpener(response, binderId);	
+		   			if (formData.containsKey("applyBtn")) response.setRenderParameters(formData);
 		   		} catch (ConfigurationException cf) {
 		   			response.setRenderParameters(formData);
 		   			response.setRenderParameter(WebKeys.EXCEPTION, cf.getLocalizedMessage() != null ? cf.getLocalizedMessage() : cf.getMessage());

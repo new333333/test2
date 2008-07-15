@@ -28,7 +28,9 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
-public class TeamBrief {
+import java.io.Serializable;
+
+public class TeamBrief implements Serializable {
 
 	private Long binderId;
 	private String title;

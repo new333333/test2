@@ -39,19 +39,182 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color:#EBEBEA;
 	border-color:#CCCCCC;
 	border: 1px;
-	padding-bottom:2px;
+	padding-bottom:2px;	
 	}
 
 	/*BRANDING*/
 #ss_branding{
-	margin:0px;
-	padding:0px;
-	height:100px;       /* Need to define specific height for graphics */
+	width:100%;
+	margin-top: 0px !important;
+	padding: 0px !important;
+	height:60px;       /* Need to define specific height for graphics */
 	overflow:hidden;	/* This chops off any overhanging divs */
-	}
+	}	
 		
-	/* NAVIGATION AREA FOR STATUS LINE */
+	/* MASTHEAD CODE */
+	
+#ss_input {
+	background-color:#FFFFFF;
+	background-position:center;
+	display:block;
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:0.6em;
+	height:10px;
+	text-align:left;
+	width:70px;
+	margin-bottom: 2px;
+	color: #333333;
+}
 
+.ss_searchbox {
+	height: 12px;
+	width: 100px;
+	background-color: #006666;
+}
+
+.ss_search_TD {
+	width: 120px;
+}
+
+.ss_searchtext {
+	font-family: Arial, Helvetica, sans-serif !important;
+	font-size: 10px !important;
+	color: #FFFFFF !important;
+	background-color: #5A9A98;
+	text-align: left;
+	margin:0px;
+	padding-left:3px;
+	white-space:nowrap !important;
+}
+.ss_searchtext a{
+	color: #FFFFFF !important;
+}
+.ss_searchtext a:hover{
+	color: #FF9000 !important;
+}
+.ss_search_title {
+	font-family: Arial, Helvetica, sans-serif !important;
+	font-size: 1.0em !important;
+	font-weight: 100;
+	color: #FFFFFF !important;
+	background-color: #5A9A98;
+	padding-top: 10px;
+	padding-right: 4px;
+	padding-bottom: 0px;
+	padding-left: 0px;
+	white-space:nowrap !important;
+}
+.ss_find {
+	height:30px;
+	}
+.ss_workspace {
+	background-position: left center;
+	font-family: Arial, Helvetica, sans-serif !important;
+	font-size: 11px !important;
+	font-weight: normal;
+	color: #FFFFFF !important;
+	white-space:nowrap;
+}
+.ss_workspace a
+	{color: #FFFFFF !important;}
+.ss_workspace a:hover{
+	color: #FF9000 !important;
+}
+.ss_masthead_top {
+	background-image: url("<html:rootPath/>images/pics/masthead/masthead_bg.png");  
+	background-repeat: repeat-y;
+	background-position: right;
+}
+.ss_companyName {	
+	text-align: left;
+	vertical-align: middle;
+	font-family: Arial, Helvetica, sans-serif !important;
+	font-weight: bold;
+	overflow: hidden;
+	font-size: 36px !important;
+	color: #999999 !important;
+	text-indent: 5px;
+}
+
+.ss_masthead_top div {
+	clear: none;
+	float: none;
+	height: 54px;
+	width: 92px;
+	position: relative;
+}
+.ss_mastheadName {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: normal;
+	color: #FFFFFF;
+	font-style: oblique;
+	line-height: 16px;
+	padding-right: 10px;
+	white-space: nowrap;
+}
+.ss_mastheadName a{
+	color:#FFFFFF !important;
+}
+.ss_mastheadName a:hover{
+	color:#555555 !important;
+}
+.ss_mastheadtoplinks {
+
+	background-position: left center;
+	font-family: Arial, Helvetica, sans-serif !important;
+	font-size: 11px !important;
+	font-weight: bold;
+	color: #5A9A98 !important;
+	white-space:nowrap !important;
+}
+.ss_masthead_fullscreen {
+
+	background-position: left center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #FFFFFF;
+}
+.ss_masthead_portals 
+	{color: #375E5C !important;}
+	
+.ss_masthead_portals a
+	{color: #375E5C !important;}
+.ss_masthead_portals a:hover{
+	color: #FF9000 !important;
+}	
+.ss_masthead_favorites a
+	{color: #5A9A98 !important;}
+ss_masthead_favorites a:hover{
+	color: #FF9000 !important;
+}
+	/* NEW CODE FOR SEARCH/FIND LINE */
+#ss_mastNav {
+	color:#FFFFFF;
+	font-size:12px;
+	font-weight:700;
+	padding:0px 1px 0px 5px;
+}
+
+#ss_mastNav ul {
+	border:0px none;
+	list-style-type:none;
+	margin:0px;
+	padding:0px 20px 0px 10px;
+}
+
+#ss_mastNav li {
+
+	font-family:Arial,Helvetica,sans-serif;
+	margin:0px;
+	padding:0px 3px 0px 5px;
+	display:inline !important;
+}
+
+
+	/* NAVIGATION AREA FOR STATUS LINE */
+	
 #ss_statusArea{
 	float:left;
 	min-width:300px;
@@ -81,7 +244,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 	/* SHARE AND TRACK BUTTONS */		
 	
-a.ss_STButton:focus,{
+a.ss_STButton:focus {
   	font-family: ${ss_style_folder_view_font_family};
   	font-size: ${ss_style_font_fineprint};
 	}
@@ -494,9 +657,9 @@ div.ss_global_toolbar_maximized table.ss_global_toolbar_maximized td {
 	text-align: center;
 	}
 div.ss_global_toolbar_show_portal {
-	background:url(<html:imagesPath/>icons/toolbar_show_portal.jpg) no-repeat top;
 	}
 div.ss_global_toolbar_hide_portal {
+	background:url(<html:imagesPath/>icons/toolbar_show_portal.jpg) no-repeat top;
 	background:url(<html:imagesPath/>icons/toolbar_hide_portal.jpg) no-repeat top;
 	}
 div.ss_global_toolbar_help {

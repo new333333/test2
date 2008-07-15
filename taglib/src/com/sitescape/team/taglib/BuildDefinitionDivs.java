@@ -34,6 +34,8 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.sitescape.util.search.Constants;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 
@@ -41,6 +43,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
@@ -51,8 +54,10 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.profile.ProfileModule;
 
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
@@ -76,6 +81,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.SortedMap;
 
 
 /**
@@ -101,9 +107,11 @@ public class BuildDefinitionDivs extends TagSupport {
 	private Element rootConfigElement;
 	private String contextPath;
 	private DefinitionConfigurationBuilder configBuilder=DefinitionHelper.getDefinitionBuilderConfig();
-
+	private Long binderId;
+    private ProfileModule profileModule;
     
 	public int doStartTag() throws JspException {
+		profileModule = (ProfileModule)SpringContextUtil.getBean("profileModule");
 	    if(this.title == null)
 	        throw new JspException("ssf:buildDefinitionDivs: The title must be specified.");
 	    
@@ -142,7 +150,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				buildDivs(root, root, sb, hb, "item");
 				buildDefaultDivs(sb, hb);
 				jspOut.print(hb.toString());
-			} else {
+			} else {	
 				buildDivs(root, root, sb, hb, "item");
 			}
 			jspOut.print(sb.toString());
@@ -155,6 +163,7 @@ public class BuildDefinitionDivs extends TagSupport {
 	        itemId = "";
 	        itemName = "";
 	        refItemId="";
+	        binderId = null;
 	    }
 	    
 		return SKIP_BODY;
@@ -234,14 +243,6 @@ public class BuildDefinitionDivs extends TagSupport {
 			//Build the information divs
 			buildInfoDivs(root, sourceRoot, sb, hb, filter);
 
-			//Build the infoDefinitionOptions div
-			buildInfoOptionsDivs(root, sourceRoot, sb, hb, filter);
-
-			//Build the modify_definition div
-			buildModifyDefinitionDiv(root, sourceRoot, sb, hb, filter);
-
-			//Build the delete_definition divs
-			buildDeleteDefinitionDiv(root, sourceRoot, sb, hb, filter);
 
 			//Build the operations divs
 			buildOperationsDivs(root, sourceRoot, sb, hb, filter);
@@ -289,91 +290,7 @@ public class BuildDefinitionDivs extends TagSupport {
 		}
 
 	}
-	
-	private void buildInfoOptionsDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
-		if (Validator.isNull(this.option) && !this.divNames.containsKey("infoDefinitionOptions")) {
-			this.divNames.put("infoDefinitionOptions", "1");
-			sb.append("\n<div id=\"infoDefinitionOptions\" ");
-			sb.append("class=\"ss_definitionBuilder\">\n");
-			sb.append("<span class=\"ss_titlebold\" id=\"infoDefinitionOptionsDefinitionName\"></span>\n");
-			
-			sb.append("<table><tbody>\n");
-			
-			sb.append("<tr><td>\n");
-			sb.append("<a href=\"javascript: ;\" "); 
-			sb.append("onClick=\"return viewDefinition();\">");
-			sb.append(NLT.get("definition.view_this_definition"));
-			sb.append("</a>\n");
-			sb.append("</td></tr>\n");
-			
-			sb.append("<tr><td>\n");
-			sb.append("<a href=\"javascript: ;\" "); 
-			sb.append("onClick=\"return modifyDefinition();\">");
-			sb.append(NLT.get("definition.modifyProperties"));
-			sb.append("</a>\n");
-			sb.append("</td></tr>\n");
 
-			sb.append("<tr><td>\n");
-			sb.append("<a href=\"javascript: ;\" "); 
-			sb.append("onClick=\"return deleteDefinition();\">");
-			sb.append(NLT.get("definition.deleteDefinition"));
-			sb.append("</a>\n");
-			sb.append("</td></tr>\n");
-
-			sb.append("</tbody></table>\n");
-
-			sb.append("</div>\n");
-			//sb.append("<script type=\"text/javascript\">\n");
-			//sb.append("    self.ss_setDeclaredDiv('infoDefinitionOptions')\n");
-			//sb.append("</script>\n");
-		}
-	}
-
-	private void buildModifyDefinitionDiv(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
-		//This div is only built and used dynamically
-		if (!this.divNames.containsKey("modify_definition") && this.option.equals("modifyDefinition")) {
-			this.divNames.put("modify_definition", "1");
-			
-			//String definitionType = 
-			sb.append("<span class=\"ss_titlebold\">"+NLT.get("definition.modifyProperties")+"</span><br/><br/>\n");
-			sb.append("<span>"+NLT.get("definition.name")+"</span><br/>\n");
-			sb.append("<input type=\"text\" class=\"ss_text\" size=\"40\" value=\"");
-			sb.append(sourceRoot.attributeValue("name", ""));
-			sb.append("\" disabled=\"true\"/>\n");
-			sb.append("<input type=\"hidden\" name=\"modifyDefinitionName\" value=\"");
-			sb.append(Html.formatTo(sourceRoot.attributeValue("name", "")));
-			sb.append("\" />\n<br/><br/>\n");
-			sb.append("<span>"+NLT.get("definition.caption")+"</span><br/>\n");
-			sb.append("<input type=\"text\" class=\"ss_text\" name=\"modifyDefinitionCaption\" size=\"40\" value=\"");
-			sb.append(Html.formatTo(sourceRoot.attributeValue("caption", "")));
-			sb.append("\"/><br/><br/>\n");
-
-			//Append the properties form elements
-			this.option = "properties";
-			buildPropertiesDivs(root, sourceRoot, sb, hb, filter);
-		}
-	}
-	
-	private void buildDeleteDefinitionDiv(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
-		if (Validator.isNull(option) && !this.divNames.containsKey("delete_definition")) {
-			this.divNames.put("delete_definition", "1");
-			sb.append("\n<div id=\"delete_definition\" ");
-			sb.append("class=\"ss_definitionBuilder\">\n");
-			sb.append("<span class=\"ss_titlebold\">"+NLT.get("definition.selectDefinitionToBeDeleted")+"</span>\n");
-			sb.append("</div>\n");
-			//sb.append("<script type=\"text/javascript\">\n");
-			//sb.append("    self.ss_setDeclaredDiv('delete_definition')\n");
-			//sb.append("</script>\n");
-			sb.append("\n<div id=\"delete_definition_confirm\" ");
-			sb.append("class=\"ss_definitionBuilder\">\n");
-			sb.append("<span class=\"ss_titlebold\">"+NLT.get("definition.delete")+" </span><span id=\"deleteDefinitionSelection\"></span>\n");
-			sb.append("<br/>\n");
-			sb.append("</div>\n");
-			//sb.append("<script type=\"text/javascript\">\n");
-			//sb.append("    self.ss_setDeclaredDiv('delete_definition_confirm')\n");
-			//sb.append("</script>\n");
-		}
-	}
 
 	private void buildOperationsDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		if (this.option.equals("operations") && !this.divNames.containsKey("operations_"+rootElementId)) {
@@ -391,29 +308,27 @@ public class BuildDefinitionDivs extends TagSupport {
 					operationElement.addAttribute("name", "addOption");
 					operationElement.addAttribute("caption", "__add");
 				}
-				if (rootConfigElement.element("properties") != null) {
+				//if view element or no name properties(which are most likely unique
+				if ("view".equals(rootElement.attributeValue("display","")) ||
+						rootElement.selectNodes(".//properties/property[@name='name']").isEmpty()) {
 					operationElement = operations.addElement("operation");
-					operationElement.addAttribute("name", "modifyItem");
-					operationElement.addAttribute("caption", "__modify");
+					operationElement.addAttribute("name", "copyItem");
+					operationElement.addAttribute("caption", "__copy");
 				}
 				if (rootConfigElement.attributeValue("canBeDeleted", "true").equalsIgnoreCase("true")) {
 					operationElement = operations.addElement("operation");
 					operationElement.addAttribute("name", "deleteItem");
 					operationElement.addAttribute("caption", "__delete");
 				}
+				if (rootConfigElement.element("properties") != null) {
+					operationElement = operations.addElement("operation");
+					operationElement.addAttribute("name", "modifyItem");
+					operationElement.addAttribute("caption", "__modify");
+				}
 				
 				operationElement = operations.addElement("operation");
 				operationElement.addAttribute("name", "moveItem");
 				operationElement.addAttribute("caption", "__move");
-				
-				/**
-				 if (rootElement.attributeValue("multipleAllowed", "").equalsIgnoreCase("true") || 
-						sourceRoot.selectSingleNode("//item[@name='"+rootElementName+"']") == null) {
-					operationElement = operations.addElement("operation");
-					operationElement.addAttribute("name", "cloneItem");
-					operationElement.addAttribute("caption", "__clone");
-					}
-				 **/
 				
 			} 
 			
@@ -676,7 +591,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				Element refItem = (Element)sourceRoot.selectSingleNode("//item[@id='"+this.refItemId+"'] ");
 				if (refItem != null) properties = refItem.element("properties");
 			}	 
-				
+
 			if (properties == null) properties = rootElement.element("properties");
 			Iterator itProperties = propertiesConfig.elementIterator("property");
 				while (itProperties.hasNext()) {
@@ -699,6 +614,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					if(propertyId.equalsIgnoreCase("name")){
 						readonly = "";
 						}
+					String propertyConfigCaption = NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;");
 					List propertyValues = new ArrayList();
 					if (properties != null) {
 						//See if there are already values for this property in the actual definition file
@@ -729,10 +645,8 @@ public class BuildDefinitionDivs extends TagSupport {
 					String propertyValueDefault = propertyConfig.attributeValue("default", "");
 					String type = propertyConfig.attributeValue("type", "text");
 					if (type.equals("textarea")) {
-						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "").replaceAll("&", "&amp;")));
-							sb.append("\n<br/>\n");
-						}
+						sb.append(propertyConfigCaption);
+						sb.append("\n<br/>\n");
 						sb.append("<textarea name=\"propertyId_" + propertyId + "\" rows=\"6\" cols=\"45\" "+readonly+">"+Html.formatTo(propertyValue0)+"</textarea>\n<br/>\n");
 					
 					} else if (type.equals("boolean") || type.equals("checkbox")) {
@@ -749,10 +663,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					
 					} else if (type.equals("selectbox") || type.equals("radio")) {
 						int optionCount = 0;
-						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "").replaceAll("&", "&amp;")));
-							sb.append("\n<br/>\n");
-						}
+						sb.append(propertyConfigCaption);
 						if (type.equals("selectbox")) {
 							//See if multiple selections are allowed
 							String multipleText = "";
@@ -875,10 +786,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						}
 					
 					} else if (type.equals("itemSelect")) {
-						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
-							sb.append("\n<br/>\n");
-						}
+						sb.append(propertyConfigCaption);
 						//Get the list of items in this definition
 						String itemSelectPath = propertyConfig.attributeValue("path", "");
 						if (!itemSelectPath.equals("")) {
@@ -917,44 +825,35 @@ public class BuildDefinitionDivs extends TagSupport {
 						}
 					
 					} else if (type.equals("replyStyle")) {
-						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
-							sb.append("\n<br/>\n");
-						}
-					
-						String eType = rootConfigElement.attributeValue("definitionType");
-						List definitions;
-						if (!Validator.isNull(eType)) {
-							int t = Integer.parseInt(eType);
-							definitions = DefinitionHelper.getDefinitions(t);
-						} else {
-							definitions = new ArrayList();
-						}
-						int size = definitions.size();
+						sb.append(propertyConfigCaption);
+
+						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(binderId, Definition.FOLDER_ENTRY);
+						int size = defs.size();
 						if (size <= 0) size = 1;
 						sb.append("<select multiple=\"multiple\" name=\"propertyId_" + 
 								propertyId + "\" size=\"" + String.valueOf(size+1) + "\">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_reply_styles")).append("</option>\n");
-						for (int i=0; i<definitions.size(); ++i) {
-							//Build a list of the entry definitions
-							Definition entryDef = (Definition)definitions.get(i);
-							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
-							Iterator itReplyStyles = sourceRoot.selectNodes("properties/property[@name='replyStyle']").iterator();
-							while (itReplyStyles.hasNext()) {
-								if (entryDef.getId().equals(((Element)itReplyStyles.next()).attributeValue("value", ""))) {
-									sb.append(" selected=\"selected\"");
-									break;
-								}
-							}
-							sb.append(">").append(NLT.getDef(entryDef.getTitle()).replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
+						List<Element> replyStyles = sourceRoot.selectNodes("properties/property[@name='replyStyle']");
+						List<String>replyIds = new ArrayList();
+						for (Element reply:replyStyles) {
+							String id = reply.attributeValue("value");
+							if (Validator.isNotNull(id)) replyIds.add(id);
 						}
+						
+						for (Map.Entry<String, Definition> me:defs.entrySet()) {
+							//Build a list of the entry definitions
+							Definition entryDef = me.getValue();
+							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
+							if (replyIds.contains(entryDef.getId())) {
+								sb.append(" selected=\"selected\"");
+							}
+							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")).append("</option>\n");								
+						}
+
 						sb.append("</select>\n<br/><br/>\n");
 					
 					} else if (type.equals("iconList")) {
-						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
-							sb.append("\n<br/>\n");
-						}
+						sb.append(propertyConfigCaption);
 						String iconListPath = propertyConfig.attributeValue("path", "");
 						String[] iconList = SPropsUtil.getCombinedPropertyList(iconListPath, ObjectKeys.CUSTOM_PROPERTY_PREFIX);
 						Element iconValueEle = (Element)sourceRoot.selectSingleNode("properties/property[@name='icon']");
@@ -976,10 +875,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					
 					} else if (type.equals("repositoryList")) {
 						int optionCount = 0;
-						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
-							sb.append("\n<br/>\n");
-						}
+						sb.append(propertyConfigCaption);
 						//See if multiple selections are allowed
 						String multipleText = "";
 						if (propertyConfig.attributeValue("multipleAllowed", "").equals("true")) multipleText = "multiple=\"multiple\"";
@@ -1040,7 +936,8 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("</span><br/>");
 									sb.append("</td>");
 									sb.append("<td valign=\"top\">");
-									sb.append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;"));
+									if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) sb.append("<del>").append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;")).append("</del>");
+									else sb.append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;"));
 									sb.append("</td>");
 									sb.append("</tr>");
 									
@@ -1147,13 +1044,13 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append("onChange=\"getConditionSelectbox(this, 'get_condition_entry_elements')\" ");
 						sb.append(">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
-						//GET both entry and file Entry definitions
-						List defs = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY);
-						for (int i=0; i<defs.size(); ++i) {
+						
+						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(this.binderId, Definition.FOLDER_ENTRY);
+						for (Map.Entry<String, Definition> me:defs.entrySet()) {
 							//Build a list of the entry definitions
-							Definition entryDef = (Definition)defs.get(i);
+							Definition entryDef = me.getValue();
 							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
-							sb.append(">").append(NLT.getDef(entryDef.getTitle()).replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
+							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")).append("</option>\n");								
 						}
 						sb.append("</select>\n<br/><br/>\n");
 						sb.append("<div id=\"conditionEntryElements\"></div><br/>\n");
@@ -1184,7 +1081,8 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("</span><br/>");
 									sb.append("</td>");
 									sb.append("<td valign=\"top\">");
-									sb.append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;"));
+									if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) sb.append("<del>").append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;")).append("</del>");
+									else sb.append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;"));
 									sb.append("</td>");
 									sb.append("</tr>");
 									
@@ -1215,12 +1113,12 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append(">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
 						//GET both entry and file Entry definitions
-						List defs = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY);
-						for (int i=0; i<defs.size(); ++i) {
+						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(this.binderId, Definition.FOLDER_ENTRY);
+						for (Map.Entry<String, Definition> me:defs.entrySet()) {
 							//Build a list of the entry definitions
-							Definition entryDef = (Definition)defs.get(i);
+							Definition entryDef = me.getValue();
 							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
-							sb.append(">").append(NLT.getDef(entryDef.getTitle()).replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
+							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")).append("</option>\n");								
 						}
 						sb.append("</select>\n<br/><br/>\n");
 						sb.append("<div id=\"conditionEntryElements\"></div><br/>\n");
@@ -1280,11 +1178,67 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append(res.getString().replaceAll("&", "&amp;"));
 						} catch(Exception e) {}
 						
-					} else {
-						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
-							sb.append("\n<br/>\n");
+					} else if (type.equals("remoteApp")) {
+						sb.append(propertyConfigCaption);
+					
+						Map options = new HashMap();
+						options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
+						options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
+						//get them all
+						options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
+
+						Document searchFilter = DocumentHelper.createDocument();
+						Element field = searchFilter.addElement(Constants.FIELD_ELEMENT);
+				    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ENTRY_TYPE_FIELD);
+				    	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
+				    	child.setText(Constants.ENTRY_TYPE_APPLICATION);
+				    	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
+						Map searchResults = profileModule.getApplications(profileModule.getProfileBinder().getId(), options);
+						List remoteAppList = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
+						int size = remoteAppList.size();
+						if (size <= 0) size = 1;
+						sb.append("<select name=\"propertyId_" + 
+								propertyId + "\">\n");
+						sb.append("<option value=\"\">").append(NLT.get("definition.select_remote_app")).append("</option>\n");
+						for (int i=0; i<remoteAppList.size(); ++i) {
+							//Build a list of the remote apps
+							Map remoteApp = (Map)remoteAppList.get(i);
+							sb.append("<option value=\"").append(remoteApp.get("_docId")).append("\"");
+							Element remoteAppEle = (Element)sourceRoot.selectSingleNode("item[@type='form']/item[@name='"+propertyName+"']/properties/property[@name='remoteApp']");
+							if (remoteAppEle != null) {
+								if (remoteApp.get("_applicationName").equals(remoteAppEle.attributeValue("value", ""))) {
+									sb.append(" selected=\"selected\"");
+								}
+							}
+							sb.append(">").append(((String)remoteApp.get("title")).replaceAll("&", "&amp;"))
+								.append(" (").append(remoteApp.get("_applicationName")).append(")</option>\n");
 						}
+						sb.append("</select>\n<br/><br/>\n");
+
+					} else if (type.equals("subProcess")) {
+						String selectedId ="";
+						Element processProperty = (Element)rootElement.selectSingleNode("properties/property[@name='definitionId']");
+						if (processProperty != null) selectedId = processProperty.attributeValue("value", "");
+						sb.append(propertyConfigCaption);
+						sb.append("<select name=\"propertyId_" + 
+								propertyId + "\">\n");
+						sb.append("<option value=\"\">").append(NLT.get("definition.select_subProcess")).append("</option>\n");
+						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(binderId, Definition.WORKFLOW);
+						for (Map.Entry<String, Definition> me:defs.entrySet()) {
+							//Build a list of the entry definitions
+							Definition entryDef = me.getValue();
+							if (entryDef.getId().equals(sourceDocument.getRootElement().attributeValue("databaseId"))) continue;
+							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
+							if (entryDef.getId().equals(selectedId)) {
+								sb.append(" selected=\"selected\"");
+							}
+							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")).append("</option>\n");								
+						}
+
+						sb.append("</select>\n<br/><br/>\n");
+
+					} else {
+						sb.append(propertyConfigCaption);
 						sb.append("<input type=\"text\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" size=\"40\" ");
 						sb.append("value=\""+Html.formatTo(propertyValue0)+"\" "+readonly+"/>\n");
 					}
@@ -1346,7 +1300,6 @@ public class BuildDefinitionDivs extends TagSupport {
 			}
 		}
 	}
-
 	private void buildDefaultDivs(StringBuffer sb, StringBuffer hb) {
 		if (!this.divNames.containsKey("delete_item")) {
 			this.divNames.put("delete_item", "1");
@@ -1386,6 +1339,14 @@ public class BuildDefinitionDivs extends TagSupport {
 			//sb.append("<script type=\"text/javascript\">\n");
 			//sb.append("    self.ss_setDeclaredDiv('move_item_confirm')\n");
 			//sb.append("</script>\n");
+		}
+		//Build the copy_item divs
+		if (!this.divNames.containsKey("copy_item")) {
+			this.divNames.put("copy_item", "1");
+			sb.append("\n<div id=\"copy_item\" ");
+			sb.append("class=\"ss_definitionBuilder\">\n");
+			sb.append("<span class=\"ss_bold\">"+NLT.get("definition.selectNewLocation")+"</span><br/>\n");
+			sb.append("</div>\n");
 		}
 		hb.append("<div align=\"left\" id=\"help_div_customFormJsp");
 		hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
@@ -1518,7 +1479,6 @@ public class BuildDefinitionDivs extends TagSupport {
 			}
 		}
 	}
-
 	public int doEndTag() throws JspException {
 		return EVAL_PAGE;
 	}
@@ -1554,6 +1514,9 @@ public class BuildDefinitionDivs extends TagSupport {
 	
 	public void setRefItemId(String refItemId) {
 	    this.refItemId = refItemId;
+	}
+	public void setOwningBinderId(Long binderId) {
+	    this.binderId = binderId;
 	}
 }
 

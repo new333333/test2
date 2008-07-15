@@ -29,6 +29,7 @@
 package com.sitescape.team.remoting.ws;
 
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Map;
 
 import org.dom4j.Branch;
@@ -43,9 +44,11 @@ import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
@@ -139,6 +142,15 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
 		entryElem.addAttribute("reserved", Boolean.toString(entry.isReserved()));
 		entryElem.addAttribute("name", entry.getName());
+		if (entry instanceof User) {
+			entryElem.addAttribute("firstName", ((User)entry).getFirstName());
+			entryElem.addAttribute("middleName", ((User)entry).getMiddleName());
+			entryElem.addAttribute("lastName", ((User)entry).getLastName());
+			entryElem.addAttribute("zonName", ((User)entry).getZonName());
+			entryElem.addAttribute("status", ((User)entry).getStatus());
+			entryElem.addAttribute("skypeId", ((User)entry).getSkypeId());
+			entryElem.addAttribute("twitterId", ((User)entry).getTwitterId());
+		}
 		
 		return entryElem;
 	}
@@ -155,9 +167,15 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryElem.addAttribute("type", (String) user.get(Constants.ENTRY_TYPE_FIELD));
 		entryElem.addAttribute("reserved", Boolean.toString(user.get(Constants.RESERVEDID_FIELD)!=null));
 		String name = getPrincipalName(user);
-		if(name != null)
-			entryElem.addAttribute("name", name);
+		if(name != null) entryElem.addAttribute("name", name);
 		
+		if (user.containsKey(Constants.FIRSTNAME_FIELD)) entryElem.addAttribute("firstName", (String) user.get(Constants.FIRSTNAME_FIELD));
+		if (user.containsKey(Constants.MIDDLENAME_FIELD)) entryElem.addAttribute("middleName", (String) user.get(Constants.MIDDLENAME_FIELD));
+		if (user.containsKey(Constants.LASTNAME_FIELD)) entryElem.addAttribute("lastName", (String) user.get(Constants.LASTNAME_FIELD));
+		if (user.containsKey(Constants.ZONNAME_FIELD)) entryElem.addAttribute("zonName", (String) user.get(Constants.ZONNAME_FIELD));
+		if (user.containsKey(Constants.STATUS_FIELD)) entryElem.addAttribute("status", (String) user.get(Constants.STATUS_FIELD));
+		if (user.containsKey(Constants.SKYPEID_FIELD)) entryElem.addAttribute("skypeId", (String) user.get(Constants.SKYPEID_FIELD));
+		if (user.containsKey(Constants.TWITTERID_FIELD)) entryElem.addAttribute("twitterId", (String) user.get(Constants.TWITTERID_FIELD));
 /*
  * I don't know how to get this from the map
 		entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
@@ -205,13 +223,44 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		}
 	}
 	
+	protected void fillUserModel(com.sitescape.team.remoting.ws.model.User userModel, User user) {
+		// Principal common
+		fillPrincipalModel(userModel, user);
+		
+		// Note: With this implementation, most of the statically-known attributes (eg. first name)
+		// are also duplicated as definable attributes, due to the way our system works. 
+		// At the moment, we'll not make an effort to eliminate this duplicate from the model
+		// object returned from this method, since they are harmless.  
+		
+		// User specific
+		userModel.setFirstName(user.getFirstName());
+		userModel.setMiddleName(user.getMiddleName());
+		userModel.setLastName(user.getLastName());
+		userModel.setOrganization(user.getOrganization());
+		userModel.setPhone(user.getPhone());
+		userModel.setZonName(user.getZonName());
+		Locale locale = user.getLocale();
+		if(locale != null) {
+			userModel.setLocaleLanguage(locale.getLanguage());
+			userModel.setLocaleCountry(locale.getCountry());
+		}
+		if(user.getTimeZone() != null) {
+			userModel.setTimeZone(user.getTimeZone().getID());
+		}
+		userModel.setSkypeId(user.getSkypeId());
+		userModel.setTwitterId(user.getTwitterId());
+	}
+	
+	protected void fillGroupModel(com.sitescape.team.remoting.ws.model.Group groupModel, Group group) {
+		fillPrincipalModel(groupModel, group);
+	}
+	
 	protected void fillPrincipalModel(com.sitescape.team.remoting.ws.model.Principal principalModel, Principal entry) {
 		// Entry common
 		fillEntryModel(principalModel, entry);
 
 		// Principal specific
 		principalModel.setEmailAddress(entry.getEmailAddress());
-		principalModel.setType(entry.getEntityType().toString());
 		principalModel.setDisabled(entry.isDeleted());
 		principalModel.setReserved(entry.isReserved());
 		principalModel.setName(entry.getName());
@@ -235,7 +284,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	protected void fillDefinableEntityModelStatic(com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity) {
 		entityModel.setId(entity.getId());
 		
-		entityModel.setBinderId(entity.getParentBinder().getId());
+		entityModel.setParentBinderId(entity.getParentBinder().getId());
 		
 		if(entity.getEntryDef() != null)
 			entityModel.setDefinitionId(entity.getEntryDef().getId());
@@ -305,6 +354,12 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryBrief.setDocNumber(entry.getDocNumber());
 		entryBrief.setDocLevel(entry.getDocLevel());
 		entryBrief.setHref(WebUrlUtil.getEntryViewURL(entry));
+		if(entry.getCreation() != null) {
+			entryBrief.setCreation(toTimestampModel(entry.getCreation()));
+		}
+		if(entry.getModification() != null) {
+			entryBrief.setModification(toTimestampModel(entry.getModification()));
+		}
 		if(entry.getAverageRating() != null) {
 			entryBrief.setAverageRating(toAverageRatingModel(entry.getAverageRating()));
 		}	

@@ -49,5 +49,6 @@
 	         required="${property_required}"
 	         hasDuration="${property_hasDuration}"
 	         hasRecurrence="${property_hasRecurrence}" 
-	         isTimeZoneSensitiveActive="${property_timeZoneSensitiveActive}"/>
+	         isTimeZoneSensitiveActive="${property_timeZoneSensitiveActive}"
+	         isFreeBusyActive="${property_freeBusyActive}" />
 </div>

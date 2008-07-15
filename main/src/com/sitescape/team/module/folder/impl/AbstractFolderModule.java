@@ -32,11 +32,13 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -79,6 +81,7 @@ import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Visits;
+import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.jobs.FolderDelete;
 import com.sitescape.team.jobs.ZoneSchedule;
@@ -96,6 +99,7 @@ import com.sitescape.team.module.shared.AccessUtils;
 import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
+import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
@@ -201,6 +205,9 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			case synchronize:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);
 				break;
+			case scheduleSynchronization:
+				getAccessControlManager().checkOperation(folder, WorkAreaOperation.BINDER_ADMINISTRATION);
+				break;				
 			case changeEntryTimestamps:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.SITE_ADMINISTRATION);
 				break;
@@ -978,6 +985,97 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	return subFolders;    	
     }
     
+    public boolean testTransitionOutStateAllowed(FolderEntry entry, Long stateId) {
+		try {
+			checkTransitionOutStateAllowed(entry, stateId);
+			return true;
+		} catch (AccessControlException ac) {
+			return false;
+		}
+    }
+    protected void checkTransitionOutStateAllowed(FolderEntry entry, Long stateId) {
+		WorkflowState ws = entry.getWorkflowState(stateId);
+		AccessUtils.checkTransitionOut(entry.getParentBinder(), entry, ws.getDefinition(), ws);   		
+    }
+	
+    public boolean testTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState) {
+		try {
+			checkTransitionInStateAllowed(entry, stateId, toState);
+			return true;
+		} catch (AccessControlException ac) {
+			return false;
+		}
+   }
+    protected void checkTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState) {
+		WorkflowState ws = entry.getWorkflowState(stateId);
+		AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), toState);   		
+    }
+    public void addEntryWorkflow(Long folderId, Long entryId, String definitionId, Map options) {
+    	//start a workflow on an entry
+    	FolderEntry entry = loadEntry(folderId, entryId);
+    	checkAccess(entry, FolderOperation.addEntryWorkflow);
+		if (options != null && options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)) { //used to import entries into system
+			checkAccess(entry.getParentFolder(), FolderOperation.changeEntryTimestamps);
+		}
+        Definition def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
+        FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
+        processor.addEntryWorkflow(entry.getParentBinder(), entry, def, options);
+    }
+    public void deleteEntryWorkflow(Long folderId, Long entryId, String definitionId) 
+		throws AccessControlException {
+       	//start a workflow on an entry
+    	FolderEntry entry = loadEntry(folderId, entryId);
+    	checkAccess(entry, FolderOperation.deleteEntryWorkflow);
+    	Definition def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
+        FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
+        processor.deleteEntryWorkflow(entry.getParentBinder(), entry, def);
+
+    }
+   public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException {
+       FolderEntry entry = loadEntry(folderId, entryId);   	
+       Folder folder = entry.getParentFolder();
+       FolderCoreProcessor processor=loadProcessor(folder);
+       //access checks - not a simple modify
+       checkTransitionOutStateAllowed(entry, stateId);
+       checkTransitionInStateAllowed(entry, stateId, toState);
+       processor.modifyWorkflowState(folder, entry, stateId, toState);
+    }
+	public Map<String, String> getManualTransitions(FolderEntry entry, Long stateId) {
+		WorkflowState ws = entry.getWorkflowState(stateId);
+		Map result = WorkflowUtils.getManualTransitions(ws.getDefinition(), ws.getState());
+		Map transitionData = new LinkedHashMap();
+		if (testTransitionOutStateAllowed(entry, stateId)) {
+			for (Iterator iter=result.entrySet().iterator(); iter.hasNext();) {
+				Map.Entry me = (Map.Entry)iter.next();
+					try {
+						//access check
+					AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey());  
+					transitionData.put(me.getKey(), me.getValue());
+					} catch (AccessControlException ac) {};
+			}
+			return transitionData;
+		} 
+		//cannot transition out, so don't return anyting
+		return Collections.EMPTY_MAP;
+		
+    }		
+
+	public Map getWorkflowQuestions(FolderEntry entry, Long stateId) {
+		if (testTransitionOutStateAllowed(entry, stateId)) {
+			WorkflowState ws = entry.getWorkflowState(stateId);
+        	return  WorkflowUtils.getQuestions(ws.getDefinition(), ws.getState());
+        }
+        return Collections.EMPTY_MAP;
+    }		
+
+    public void setWorkflowResponse(Long folderId, Long entryId, Long stateId, InputDataAccessor inputData) {
+        FolderEntry entry = loadEntry(folderId, entryId);   	
+        checkAccess(entry, FolderOperation.addReply);
+        checkTransitionOutStateAllowed(entry, stateId);
+        Folder folder = entry.getParentFolder();
+        FolderCoreProcessor processor=loadProcessor(folder);
+        processor.setWorkflowResponse(folder, entry, stateId, inputData);
+    }
     
     //called by scheduler to complete folder deletions
     //no transaction

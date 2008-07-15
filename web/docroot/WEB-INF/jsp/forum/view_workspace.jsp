@@ -32,7 +32,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <c:set var="showWorkspacePage" value="true"/>
 <ssf:ifnotadapter>
   <c:set var="showWorkspacePage" value="false"/>
@@ -51,7 +51,6 @@
 </c:if>
 
 <c:if test="${empty ssReloadUrl}">
-<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
 <script type="text/javascript">
 if (self.parent) {
 	//We are in an iframe inside a portlet (maybe?)
@@ -149,7 +148,6 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 <!-- portlet iframe div -->	
 
 </ssf:ifnotadapter>
-</c:if>
 
 <c:if test="${showWorkspacePage}">
 	<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
@@ -161,9 +159,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 	</script>
 
 	<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
-<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
-	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
-</c:if>
+<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}"/>
 <c:if test="${empty ss_sidebarVisibility}"><c:set var="ss_sidebarVisibility" value="block"/></c:if>
 <c:if test="${ss_sidebarVisibility == 'none'}">
@@ -176,7 +172,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
   <c:set var="ss_sidebarVisibilityHide" value="block"/>
   <c:set var="ss_sidebarTdStyle" value="ss_view_sidebar"/>
 </c:if>
-<div class="ss_actions_bar1_pane" width="100%" style="height: 22px;">
+<div class="ss_actions_bar1_pane ss_sidebarImage" width="100%">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr>
 <ssf:ifnotaccessible>
@@ -185,14 +181,15 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
 ><span style="padding-left:9px; display:${ss_sidebarVisibilityShow};"
   id="ss_sidebarHide${renderResponse.namespace}" 
-  class="ss_fineprint">[<ssf:nlt tag="toolbar.sidebar.show"/>]</span><span 
+  class="ss_fineprint ss_sidebarSlidesm"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
   style="padding-left:9px; display:${ss_sidebarVisibilityHide};"
   id="ss_sidebarShow${renderResponse.namespace}" 
-  class="ss_fineprint">[<ssf:nlt tag="toolbar.sidebar.hide"/>]</span></a>
+  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/> www</span></a>
 </td>
 </ssf:ifnotaccessible>
+
 <td valign="top">
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 </td></tr>
 </table>
 </div>
@@ -203,17 +200,12 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
     <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
 
-<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
-	<% // Navigation bar %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
-</c:if>
-
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 
 	<% // Folder Sidebar %>
 
-    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
+    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
 
     <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
         initOpen="true" sticky="true">
@@ -240,9 +232,6 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 					  	<c:choose>
 					  		<c:when test="${ss_showTeamMembers}">
 								<% // Navigation links %>
-<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
-								<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
-</c:if>								
 								<%@ include file="/WEB-INF/jsp/forum/list_team_members.jsp" %>
 								
 								<c:if test="${!empty ss_reloadUrl}">
@@ -252,10 +241,6 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 							</c:when>
 							<c:otherwise>
 								<% // Navigation links %>
-<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
-								<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
-</c:if>								
-
 <a class="ss_linkButton" href="<ssf:url 
 		action="view_ws_listing" binderId="${ssBinder.id}"><ssf:param
 		name="type" value="whatsNew"/><ssf:param
@@ -270,7 +255,9 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 		name="namespace" value="${ss_namespace}"/></ssf:url>"
 	onClick="ss_showWhatsNewPage(this, '${ssBinder.id}', 'unseen', '0', '', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
 ><ssf:nlt tag="workspace.listUnseen"/></a>
-<br/>
+
+
+
 <div id="ss_whatsNewDiv${ss_namespace}">
 <c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
 <%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>

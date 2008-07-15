@@ -67,6 +67,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected String password; //set by hibernate access="field"
     protected Long digestSeed;
     protected String skypeId="";
+    protected String twitterId="";
     protected String status="";
     private SortedSet groupNames; // sorted set of group names; this field is computed
 	public User() {
@@ -259,6 +260,20 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	public void setSkypeId(String skypeId) {
 		this.skypeId = skypeId;
 	}
+
+	/**
+     * @hibernate.property length="64"
+     */
+	public String getTwitterId() {
+		return twitterId;
+	}
+	/**
+	 * @param twitterId The twitterId to set.
+	 */
+	public void setTwitterId(String twitterId) {
+		this.twitterId = twitterId;
+	}
+
 	/**
 	 * Returns encrypted password.
 	 * 

@@ -28,6 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% //Support routines for showing presence pop-ups %>
 
 <c:if test="${empty ss_presence_support_loaded}">

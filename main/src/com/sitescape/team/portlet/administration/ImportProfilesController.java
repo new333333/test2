@@ -68,8 +68,6 @@ public class ImportProfilesController extends  SAbstractController {
 				response.setRenderParameters(formData);
 			}
 		
-		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
-			response.setRenderParameter("redirect", "true");
 		} else
 			response.setRenderParameters(formData);
 	}
@@ -77,9 +75,6 @@ public class ImportProfilesController extends  SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 			
-		if (!Validator.isNull(request.getParameter("redirect"))) {
-			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
-		}
 		Binder binder = getProfileModule().getProfileBinder();
 		Map model = new HashMap();
 		model.put(WebKeys.BINDER, binder);

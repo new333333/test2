@@ -29,41 +29,15 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
+<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 <div class="ss_style ss_portlet_style">
 	
 
-	<%@ include file="/WEB-INF/jsp/search/search_js.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/search/search_js.jsp" />
 
-	<script type="text/javascript">
-	
-		var ss_searchWorkflows = new Array();
-		var ss_searchSteps = new Array();
-	<c:if test="${!empty ssWorkflowDefinitionMap}">
-		<c:forEach var="wf" items="${ssWorkflowDefinitionMap}">
-			ss_searchWorkflows['${wf.id}'] = '<ssf:escapeJavaScript value="${wf.title}"/>';
-			<c:forEach var="step" items="${wf.steps}">
-				ss_searchSteps['${wf.id}-${step.name}'] = '<ssf:escapeJavaScript value="${step.title}"/>';
-			</c:forEach>
-		</c:forEach>
-	</c:if>
-	<c:if test="${!empty ssEntryDefinitionMap}">
-		var ss_searchEntries = new Array();
-		var ss_searchFields = new Array();
-		var ss_searchFieldsTypes = new Array();
-		<c:forEach var="entry" items="${ssEntryDefinitionMap}">
-			ss_searchEntries['${entry.id}'] = '<ssf:escapeJavaScript value="${entry.title}"/>';
-			<c:forEach var="field" items="${entry.fields}">
-				ss_searchFields['${entry.id}-<ssf:escapeJavaScript value="${field.name}"/>'] = '<ssf:escapeJavaScript value="${field.title}"/>';
-				ss_searchFieldsTypes['${entry.id}-<ssf:escapeJavaScript value="${field.name}"/>'] = '<ssf:escapeJavaScript value="${field.type}"/>';
-			</c:forEach>
-		</c:forEach>
-	</c:if>
-	</script>
 
-<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
-	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
-</c:if>
+<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}"/>
 <c:if test="${empty ss_sidebarVisibility}"><c:set var="ss_sidebarVisibility" value="block"/></c:if>
 <c:if test="${ss_sidebarVisibility == 'none'}">
@@ -76,19 +50,19 @@
   <c:set var="ss_sidebarVisibilityHide" value="block"/>
   <c:set var="ss_sidebarTdStyle" value="ss_view_sidebar"/>
 </c:if>
-<div class="ss_actions_bar1_pane" width="100%" style="height: 22px;">
+<div class="ss_actions_bar1_pane ss_sidebarImage" width="100%">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr><td valign="middle">
 <a href="javascript: ;" 
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
-><span style="padding-left:20px; display:${ss_sidebarVisibilityShow};"
+><span style="padding-left:9px; display:${ss_sidebarVisibilityShow};"
   id="ss_sidebarHide${renderResponse.namespace}" 
-  class="ss_fineprint">[<ssf:nlt tag="toolbar.sidebar.show"/>]</span><span 
-  style="padding-left:20px; display:${ss_sidebarVisibilityHide};"
+  class="ss_fineprint ss_sidebarSlidesm"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
+  style="padding-left:9px; display:${ss_sidebarVisibilityHide};"
   id="ss_sidebarShow${renderResponse.namespace}" 
-  class="ss_fineprint">[<ssf:nlt tag="toolbar.sidebar.hide"/>]</span></a>
+  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/> sss</span></a>
 </td><td valign="top">
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 </td></tr>
 </table>
 </div>
@@ -98,27 +72,21 @@
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
     <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
 
-
-<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
-	<% // Navigation bar %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
-</c:if>
-
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 	<div class="ss_clear"></div>
 
 	<!-- Saved searches -->
-	<%@ include file="/WEB-INF/jsp/search/save_search.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/search/save_search.jsp" />
 								
 	<!-- Places rating - Moved to the new file -->
-	<%@ include file="/WEB-INF/jsp/search/rating_places.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/search/rating_places.jsp" />
 
 	<!-- People rating - Moved to the new file -->
-	<%@ include file="/WEB-INF/jsp/search/rating_people.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/search/rating_people.jsp" />
 
 	<!-- Tags -->
-	<%@ include file="/WEB-INF/jsp/search/tags.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/search/tags.jsp" />
 
 	</div>
 	</td>
@@ -128,11 +96,6 @@
 
 		<div id="ss_tabs_container">
 
-<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
-			<% // Breadcrumbs %>
-			<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
-</c:if>
-		
 			<div id="ss_tab_content">
 				
 						<div id="ss_content_container">
@@ -179,6 +142,6 @@
 </div>
 
 <script type="text/javascript">
-	<%@ include file="/WEB-INF/jsp/search/advanced_search_form_data_init.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/search/advanced_search_form_data_init.jsp" />
 </script>
 

@@ -30,23 +30,11 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <script type="text/javascript" src="<html:rootPath />js/binder/ss_access.js"></script>
 <script type="text/javascript">
-function ss_treeShowIdAccessControl${renderResponse.namespace}(id, obj, action) {
-	var binderId = id;
-	//See if the id is formatted (e.g., "ss_favorites_xxx")
-	if (binderId.indexOf("_") >= 0) {
-		var binderData = id.substr(13).split("_");
-		binderId = binderData[binderData.length - 1];
-	}
-
-	//Build a url to go to
-	var url = "<ssf:url ><ssf:param 
-		name="action" value="configure_access_control"/><ssf:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>";
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
-	self.location.href = url;
-	return false;
+function ss_treeShowIdAccessControl${renderResponse.namespace}(id, obj, action, namespace) {
+	ss_treeShowIdNoWS(id, obj, 'configure_access_control', namespace);
 }
 function ss_accessSelectPrincipal${renderResponse.namespace}(id) {
 	${renderResponse.namespace}accessObj.selectPrincipals([id]);
@@ -134,7 +122,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 <c:set var="ss_breadcrumbsShowIdRoutine" 
   value="ss_treeShowIdAccessControl${renderResponse.namespace}" 
   scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 
 <c:if test="${ssBinder.functionMembershipInheritanceSupported}">
   <ssf:box style="rounded">

@@ -27,10 +27,7 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.portlet.administration;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.util.zip.ZipInputStream;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -68,12 +65,10 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.shared.MapInputData;
-import com.sitescape.team.portlet.forum.ListFolderController;
+import com.sitescape.team.portlet.administration.ImportDefinitionController.ZipStreamWrapper;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.TempFileUtil;
-import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
@@ -98,39 +93,12 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		if (formData.containsKey("okBtn")) {
 			if (WebKeys.OPERATION_ADD.equals(operation)) {
 				//adding top level config
-				Integer type = PortletRequestUtils.getIntParameter(request, "cfgType");
+				Integer type = PortletRequestUtils.getIntParameter(request, "definitionType");
 				if (type == null)  return;
 				if (type == -1) {
 					Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 					Long configId = getTemplateModule().addTemplateFromBinder(binderId);
 					response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
-				} else if (type == -2) {
-					if (request instanceof MultipartFileSupport) {
-						int i=0;
-						Map fileMap = ((MultipartFileSupport) request).getFileMap();
-						if (fileMap != null) {
-							List errors = new ArrayList();
-							while (++i>0) {
-								MultipartFile myFile=null;
-								try {
-									myFile = (MultipartFile)fileMap.get("template" + i);
-									if (myFile == null) break;
-									if (Validator.isNull(myFile.getOriginalFilename())) continue; //not filled in
-									SAXReader xIn = new SAXReader();
-									InputStream fIn = myFile.getInputStream();
-									Document doc = xIn.read(fIn);   
-									fIn.close();
-									getTemplateModule().addTemplate(doc, true);
-								} catch (Exception fe) {
-									errors.add((myFile==null ? "" : myFile.getOriginalFilename()) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
-								}
-							}
-							if (!errors.isEmpty()) response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
-						}
-						
-					}
-					response.setRenderParameter(WebKeys.URL_OPERATION,  WebKeys.OPERATION_ADD);
-					response.setRenderParameter("cfgType", "-2");
 				} else {
 					Map updates = new HashMap();
 					String sVal = PortletRequestUtils.getStringParameter(request, "title", null);
@@ -145,6 +113,41 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					response.setRenderParameter(WebKeys.URL_BINDER_ID, config.getId().toString());
 					response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
 				}
+			} else if (WebKeys.OPERATION_IMPORT.equals(operation)) {
+				if (request instanceof MultipartFileSupport) {
+					int i=0;
+					Map fileMap = ((MultipartFileSupport) request).getFileMap();
+					if (fileMap != null) {
+						List errors = new ArrayList();
+						while (++i>0) {
+							MultipartFile myFile=null;
+							try {
+								myFile = (MultipartFile)fileMap.get("template" + i);
+								if (myFile == null) break;
+								if (Validator.isNull(myFile.getOriginalFilename())) continue; //not filled in
+								Boolean replace = PortletRequestUtils.getBooleanParameter(request,"template" + i + "ck", false);
+								if(myFile.getOriginalFilename().toLowerCase().endsWith(".zip")) {
+									ZipInputStream zipIn = new ZipInputStream(myFile.getInputStream());
+									ZipEntry entry = null;
+									while((entry = zipIn.getNextEntry()) != null) {
+										loadTemplates(entry.getName(), new ZipStreamWrapper(zipIn), replace, errors);
+										zipIn.closeEntry();
+									}
+								} else {
+									loadTemplates(myFile.getOriginalFilename(), myFile.getInputStream(), replace, errors);
+								}
+								myFile.getInputStream().close();
+							} catch (Exception fe) {
+								errors.add((myFile==null ? "" : myFile.getOriginalFilename()) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
+							}
+						}
+						if (!errors.isEmpty()) response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
+					}
+					
+				}
+				response.setRenderParameter(WebKeys.URL_OPERATION,  WebKeys.OPERATION_IMPORT);
+			} else if (WebKeys.OPERATION_RESET.equals(operation)) {
+				getTemplateModule().updateDefaultTemplates(RequestContextHolder.getRequestContext().getZoneId());
 			} else if (WebKeys.OPERATION_MODIFY.equals(operation)) {
 				Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 				//	The modify form was submitted. Go process it
@@ -165,7 +168,6 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				}
 				getBinderModule().modifyBinder(configId, new MapInputData(formData), fileMap, deleteAtts, null);
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
-				response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 			} else if (WebKeys.OPERATION_MODIFY_TEMPLATE.equals(operation)) {
 				Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 				//Get the function id from the form
@@ -215,7 +217,6 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 				if (configId != null) {
 					response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
-					response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 				}
 			}
 		} else if (WebKeys.OPERATION_DELETE.equals(operation)) {
@@ -226,15 +227,6 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, config.getParentBinder().getId().toString());
 			response.setRenderParameter(WebKeys.URL_OPERATION, "");
 			getBinderModule().deleteBinder(configId);
-		} else if (WebKeys.OPERATION_ADD.equals(operation)) {
-			Integer type = PortletRequestUtils.getIntParameter(request, "cfgType");
-			if (type != null && type.intValue() == -3) {
-				getTemplateModule().updateDefaultTemplates(RequestContextHolder.getRequestContext().getZoneId());
-			} else {
-				//pass it along
-				response.setRenderParameters(formData);
-
-			}
 			//an add without an okBtn - check for reload
 		} else if (WebKeys.OPERATION_SET_DISPLAY_DEFINITION.equals(operation)) {
 			Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
@@ -254,15 +246,21 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		} else
 			response.setRenderParameters(formData);
 	}
-
+	protected Long loadTemplates(String fileName, InputStream fIn, boolean replace, List errors)
+	{
+		try {
+			SAXReader xIn = new SAXReader();
+			Document doc = xIn.read(fIn);  
+			return getTemplateModule().addTemplate(doc, replace);
+		} catch (Exception fe) {
+			errors.add((fileName==null ? "" : fileName) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
+		}
+		return null;
+	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		model.put(WebKeys.ERROR_LIST,  request.getParameterValues(WebKeys.ERROR_LIST));
-		if (!Validator.isNull(request.getParameter("redirect"))) {
-			model.put(WebKeys.DOWNLOAD_URL, PortletRequestUtils.getStringParameter(request, WebKeys.DOWNLOAD_URL, ""));
-			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT, model);
-		}
 		Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		
@@ -272,14 +270,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		
 			model.put(WebKeys.BINDER_CONFIG, config);
 			model.put(WebKeys.BINDER, config);
-			if (WebKeys.OPERATION_RELOAD_LISTING.equals(operation)) {
-				//An action is asking us to build the url
-				PortletURL reloadUrl = response.createRenderURL();
-				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, configId.toString());
-				reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
-				request.setAttribute(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());			
-				return new ModelAndView("administration/reload_opener");
-			} else if (Validator.isNull(operation)) {
+			if (Validator.isNull(operation)) {
 				//Build a reload url
 				PortletURL reloadUrl = response.createRenderURL();
 				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, configId.toString());
@@ -359,17 +350,19 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			
 		} else if (WebKeys.OPERATION_ADD.equals(operation)) {
 				model.put(WebKeys.OPERATION, operation);
-				String cfgType = PortletRequestUtils.getStringParameter(request, "cfgType", String.valueOf(Definition.FOLDER_VIEW));
-				if (cfgType.equals("-1")) {
-					Document wsTree = getBinderModule().getDomBinderTree(null, new WsDomTreeBuilder(null, true, this, new TemplateCopyHelper()), 1);									
+				String definitionType = PortletRequestUtils.getStringParameter(request, "definitionType", String.valueOf(Definition.FOLDER_VIEW));
+				if (definitionType.equals("-1")) {
+					Document wsTree = getBinderModule().getDomBinderTree(RequestContextHolder.getRequestContext().getZone().getId(), new WsDomTreeBuilder(null, true, this, new TemplateCopyHelper()), 1);									
 					model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 				}
-				model.put("cfgType", cfgType);
-				if (cfgType.equals("-2")) {
-					path = WebKeys.VIEW_IMPORT_TEMPLATE;
-				} else {
-					path = WebKeys.VIEW_MODIFY_TEMPLATE;
-				}
+				model.put("definitionType", definitionType);
+				path = WebKeys.VIEW_MODIFY_TEMPLATE;
+		} else if (WebKeys.OPERATION_IMPORT.equals(operation)) {
+			model.put(WebKeys.OPERATION, operation);
+			path = WebKeys.VIEW_IMPORT_TEMPLATE;
+		} else if (WebKeys.OPERATION_RESET.equals(operation)) {
+			model.put(WebKeys.OPERATION, operation);
+			path = WebKeys.VIEW_IMPORT_TEMPLATE;
 		} else if (WebKeys.OPERATION_EXPORT.equals(operation)) {
 			List<TemplateBinder> configs = getTemplateModule().getTemplates();
 
@@ -393,9 +386,47 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			model.put(WebKeys.DOM_TREE, definitionTree);
 			model.put(WebKeys.OPERATION, operation);				
 		} else {
+			PortletURL url;
+
+			Toolbar toolbar = new Toolbar();
+			Map qualifiers = new HashMap();
+			qualifiers.put("onClick", "{return true}");
+
+			toolbar.addToolbarMenu("1_add", NLT.get("administration.toolbar.add"), "");
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
+			url.setParameter("definitionType", String.valueOf(Definition.FOLDER_VIEW));
+			toolbar.addToolbarMenuItem("1_add", "", NLT.get("general.type.folder"), url, qualifiers);
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
+			url.setParameter("definitionType", String.valueOf(Definition.WORKSPACE_VIEW));
+			toolbar.addToolbarMenuItem("1_add", "", NLT.get("general.type.workspace"), url, qualifiers);
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
+			url.setParameter("definitionType", "-1");
+			toolbar.addToolbarMenuItem("1_add", "", NLT.get("administration.configure_cfg.clone"), url, qualifiers);
+			
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RESET);
+			toolbar.addToolbarMenu("3_reload", NLT.get("administration.toolbar.reset"), url);
+			
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_IMPORT);
+			toolbar.addToolbarMenu("4_import", NLT.get("administration.toolbar.import"), url);
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_EXPORT);
+			toolbar.addToolbarMenu("5_export", NLT.get("administration.toolbar.export"), url);
+			
+			model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
+
 			List<TemplateBinder> configs = getTemplateModule().getTemplates();
 			model.put(WebKeys.BINDER_CONFIGS, configs);
-			model.put(WebKeys.DOWNLOAD_URL, PortletRequestUtils.getStringParameter(request, WebKeys.DOWNLOAD_URL, ""));
 
 		}
 		return new ModelAndView(path, model);
@@ -414,6 +445,8 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		//see if have rights to change anything
 		boolean manager = getBinderModule().testAccess(config, BinderOperation.setProperty);
 		Map qualifiers = new HashMap();
+		Map qualifiersBlock = new HashMap();
+		qualifiersBlock.put("onClick", "{return true}");
 		if (manager) {
 			//Add Folder
 			if (config.getEntityType().equals(EntityType.folder)) {
@@ -421,19 +454,19 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 				url.setParameter(WebKeys.URL_BINDER_ID, configId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
-				toolbar.addToolbarMenuItem("1_administration", "folders", NLT.get("toolbar.menu.addFolderTemplate"), url);
+				toolbar.addToolbarMenuItem("1_administration", "folders", NLT.get("toolbar.menu.addFolderTemplate"), url, qualifiersBlock);
 			} else {
 				//	must be workspace
 				url = response.createRenderURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 				url.setParameter(WebKeys.URL_BINDER_ID, configId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
-				toolbar.addToolbarMenuItem("1_administration", "workspace", NLT.get("toolbar.menu.addWorkspaceTemplate"), url);
+				toolbar.addToolbarMenuItem("1_administration", "workspace", NLT.get("toolbar.menu.addWorkspaceTemplate"), url, qualifiersBlock);
 				url = response.createRenderURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 				url.setParameter(WebKeys.URL_BINDER_ID, configId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
-				toolbar.addToolbarMenuItem("1_administration", "folders", NLT.get("toolbar.menu.addFolderTemplate"), url);			
+				toolbar.addToolbarMenuItem("1_administration", "folders", NLT.get("toolbar.menu.addFolderTemplate"), url, qualifiersBlock);			
 			}
 			//Delete config
 			qualifiers.put("onClick", "return ss_confirmDeleteConfig();");
@@ -448,7 +481,10 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY_TEMPLATE);
 			url.setParameter(WebKeys.URL_BINDER_ID, configId);
-			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_template"), url);		
+			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_template"), url, qualifiersBlock);		
+			//export config
+			String webUrl  = WebUrlUtil.getServletRootURL(request) + "templateDownload?id_" + configId.toString() + "=on";
+			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.export_template"), webUrl, qualifiersBlock);		
 			
 		}
 		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.manageThisTarget"));
@@ -458,23 +494,21 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
 		url.setParameter(WebKeys.URL_BINDER_ID, configId);
 		url.setParameter(WebKeys.URL_BINDER_TYPE, config.getEntityType().name());
-		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.accessControl"), url);
+		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.accessControl"), url, qualifiersBlock);
 		//Configuration
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
 		url.setParameter(WebKeys.URL_BINDER_ID, configId);
 		url.setParameter(WebKeys.URL_BINDER_TYPE, config.getEntityType().name());
-		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url);
+		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url, qualifiersBlock);
 
 		if (manager) {
 			//Modify target
-			qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_administration", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
-			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, configId);
-			toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.modify_target"), adapterUrl.toString(), qualifiers);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
+			url.setParameter(WebKeys.URL_BINDER_ID, configId);
+			toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.modify_target"), url, qualifiersBlock);
 
 		}
 		

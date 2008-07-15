@@ -50,6 +50,8 @@ public class AdaptedPortletURL {
 	private boolean action;
 	private Map params;
 	private Boolean secure;
+	private String adapterUrlString=null;
+	private boolean crawler = false;
 	
 	// Normally, hostname and port are taken either from the runtime context 
 	// or from the configuration. The following two fields are used only for
@@ -60,7 +62,6 @@ public class AdaptedPortletURL {
 	
 	private final String ACTION_FALSE = "0";
 	private final String ACTION_TRUE = "1";
-
 	/**
 	 * Construct an adapted portlet URL from the information passed in.
 	 * 
@@ -75,6 +76,11 @@ public class AdaptedPortletURL {
 		if(req != null)
 			this.secure = req.isSecure();
 		this.params = new HashMap();
+	}
+	
+	public AdaptedPortletURL(HttpServletRequest req, String portletName, boolean action, boolean crawler) {
+		this(req, portletName, action);
+		this.crawler = crawler;
 	}
 	
 	/**
@@ -93,6 +99,14 @@ public class AdaptedPortletURL {
 		this.params = new HashMap();
 	}
 	
+	/**
+	 * Add to a preconstructed url
+	 */
+	public AdaptedPortletURL(String urlString) {
+		this.adapterUrlString = urlString;
+		this.params = new HashMap();
+
+	}
 	/**
 	 * Note: The web/portlet controllers serving browser-based client must 
 	 *       *never* use this method. This method is reserved exclusive
@@ -213,28 +227,44 @@ public class AdaptedPortletURL {
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		
-		String adapterRootURL = null;
+		if (adapterUrlString == null) {		
+			String adapterRootURL;
+			if(secure != null && hostname != null && port != null)
+				adapterRootURL = WebUrlUtil.getAdapterRootURL(secure, hostname, port);
+			else if(sreq != null)
+				adapterRootURL = WebUrlUtil.getAdapterRootURL(sreq, secure);
+			else
+				adapterRootURL = WebUrlUtil.getAdapterRootURL(preq, secure);
 		
-		if(secure != null && hostname != null && port != null)
-			adapterRootURL = WebUrlUtil.getAdapterRootURL(secure, hostname, port);
-		else if(sreq != null)
-			adapterRootURL = WebUrlUtil.getAdapterRootURL(sreq, secure);
-		else
-			adapterRootURL = WebUrlUtil.getAdapterRootURL(preq, secure);
-		
-		sb.append(adapterRootURL);
-		
-		sb.append("do?");
-		
-		sb.append(KeyNames.PORTLET_URL_PORTLET_NAME);
-		sb.append(Constants.EQUAL);
-		sb.append(Http.encodeURL(portletName));
-		sb.append(Constants.AMPERSAND);
-		
-		sb.append(KeyNames.PORTLET_URL_ACTION);
-		sb.append(Constants.EQUAL);
-		sb.append(action? Http.encodeURL(ACTION_TRUE) : Http.encodeURL(ACTION_FALSE));
-		
+			sb.append(adapterRootURL);
+					
+			if(crawler) {
+				sb.append("c/");
+				
+				sb.append(KeyNames.PORTLET_URL_PORTLET_NAME);
+				sb.append(Constants.SLASH);
+				sb.append(Http.encodeURL(portletName));
+				sb.append(Constants.SLASH);
+			
+				sb.append(KeyNames.PORTLET_URL_ACTION);
+				sb.append(Constants.SLASH);
+				sb.append(action? Http.encodeURL(ACTION_TRUE) : Http.encodeURL(ACTION_FALSE));				
+			}
+			else {
+				sb.append("do?");
+			
+				sb.append(KeyNames.PORTLET_URL_PORTLET_NAME);
+				sb.append(Constants.EQUAL);
+				sb.append(Http.encodeURL(portletName));
+				sb.append(Constants.AMPERSAND);
+			
+				sb.append(KeyNames.PORTLET_URL_ACTION);
+				sb.append(Constants.EQUAL);
+				sb.append(action? Http.encodeURL(ACTION_TRUE) : Http.encodeURL(ACTION_FALSE));
+			}
+		} else {
+			sb.append(adapterUrlString);
+		}
 		Iterator itr = params.entrySet().iterator();
 
 		while (itr.hasNext()) {
@@ -244,9 +274,15 @@ public class AdaptedPortletURL {
 			String[] values = (String[])entry.getValue();
 
 			for (int i = 0; i < values.length; i++) {
-				sb.append(Constants.AMPERSAND);
+				if(crawler)
+					sb.append(Constants.SLASH);
+				else
+					sb.append(Constants.AMPERSAND);
 				sb.append(name);
-				sb.append(Constants.EQUAL);
+				if(crawler)
+					sb.append(Constants.SLASH);
+				else
+					sb.append(Constants.EQUAL);
 				sb.append(Http.encodeURL(values[i]));
 
 			}

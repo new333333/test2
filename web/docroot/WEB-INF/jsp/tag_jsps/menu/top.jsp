@@ -47,7 +47,7 @@
 // General variables
 Integer nameCount = (Integer) renderRequest.getAttribute("ss_menu_tag_name_count");
 if (nameCount == null) {
-	nameCount = new Integer(0);
+	nameCount = new Integer(new Long(Math.round(Math.random()*999999)).toString());
 }
 
 nameCount = new Integer(nameCount.intValue() + 1);
@@ -75,4 +75,4 @@ String isAccessible = ParamUtil.get(request, "isAccessible", "false");
 	</c:if>
 </c:if>
 
-  id="<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
+  id="<%= menuTagDivId %>${renderResponse.namespace}">

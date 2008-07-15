@@ -72,9 +72,11 @@ import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.util.Pair;
 
 
-// XXX Not desirable to load mock-liferay-context.xml at this level but ugly singletons require it (for now)
-@ContextConfiguration(	locations= {	"/context/applicationContext.xml", 
-														"/context/additionalContext.xml","/com/sitescape/team/liferay/mock-liferay-context.xml" })
+// XXX Not desirable to load mock-liferay-context.xml at this level but ugly
+// singletons require it (for now)
+@ContextConfiguration(locations = { "/context/applicationContext.xml",
+		"/context/additionalContext.xml",
+		"/com/sitescape/team/liferay/mock-liferay-context.xml" })
 public abstract class AbstractTestBase extends AbstractTransactionalJUnit4SpringContextTests {
 	protected static final String adminGroup = "administrators";
 	protected static final String adminUser = "admin";

@@ -163,7 +163,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	  			case copyBinder:
 	  			case modifyBinder:
 	  			case setProperty:
-	  			case manageDefinitions:
+	  			case manageConfiguration:
 	  			case manageTeamMembers:
 		 			getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION); 	 	
 		 			break;	
@@ -565,7 +565,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
      //inside write transaction    
 	public Binder setDefinitionsInherited(Long binderId, boolean inheritFromParent) {
 		Binder binder = loadBinder(binderId);
-		checkAccess(binder, BinderOperation.manageDefinitions); 
+		checkAccess(binder, BinderOperation.manageConfiguration); 
 		boolean oldInherit = binder.isDefinitionsInherited();
 		if (inheritFromParent != oldInherit) {
 			if (inheritFromParent) {
@@ -590,7 +590,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     public Binder setDefinitions(Long binderId, List<String> definitionIds, Map<String,String> workflowAssociations) 
 	throws AccessControlException {
 		Binder binder = loadBinder(binderId);
-		checkAccess(binder, BinderOperation.manageDefinitions); 
+		checkAccess(binder, BinderOperation.manageConfiguration); 
 		List definitions = new ArrayList(); 
 		Definition def;
 		//	Build up new set - domain object will handle associations

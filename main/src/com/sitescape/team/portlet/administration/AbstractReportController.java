@@ -36,7 +36,6 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.dom4j.Document;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -61,10 +60,6 @@ public abstract class AbstractReportController extends  AbstractBinderController
 			RenderResponse response) throws Exception {
 
 		Map formData = request.getParameterMap();
-
-		if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
-			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
-		}
 		
 		Map model = new HashMap();
 		populateModel(request, model);

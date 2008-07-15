@@ -74,8 +74,8 @@ function ss_showSlidingTableCols200() {
 
 function ss_showSlidingTableCols() {
     if (typeof ss_slidingTableId_2 == "undefined") return;
-	ss_sTableMarginLeft = parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginRight)
-	ss_sTableMarginRight =  parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginLeft)
+	ss_sTableMarginLeft = parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginLeft)
+	ss_sTableMarginRight =  parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginRight)
 	ss_sTableMarginTop = parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginTop)
 	ss_sTableMarginBottom =  parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginBottom)
 	
@@ -109,7 +109,7 @@ function ss_showSlidingTableCols() {
 	
     //Now, position the columns (starting at the left inner side of the ss_sTable boundary)
     var top = parseInt(ss_getSlidingTableY(ss_slidingTableId_2) + ss_sTableMarginTop)
-    var left = ss_getSlidingTableX(ss_slidingTableId_2) + ss_sTableMarginLeft
+    var left = ss_getSlidingTableX(ss_slidingTableId_2) 
     var deltaLeft = 0
     var w = parseInt(ss_sTableInnerWidth - deltaLeft) + "px"
     

@@ -29,12 +29,14 @@
  */
 %>
 <% // User filters %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ page import="com.sitescape.team.domain.UserProperties" %>
 <%
 	UserProperties userFolderProperties = (UserProperties) request.getAttribute("ssUserFolderProperties");
-	String filterName = NLT.get("Select");
+	String filterName = "";
 	if (userFolderProperties != null) {
 		Map searchFilters = (Map) userFolderProperties.getProperty("searchFilters");
 		if (searchFilters == null) searchFilters = new java.util.HashMap();
@@ -45,45 +47,49 @@
 		renderRequest.setAttribute("currentFilter", filterName);
 	}
 %>
-<div class="ss_style">
+<table>
+<tbody>
+<tr><td align="right" width="10%">
+<div class="ss_style ss_bold ss_fineprint">
 <ssf:nlt tag="filter.filter" text="Filter"/>:<ssHelpSpot 
   helpId="workspaces_folders/menus_toolbars/folder_toolbar" offsetX="-45" offsetY="-5" 
   title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>"></ssHelpSpot>&nbsp;</span>
-
-		<form class="ss_style" style="display: inline;"  
-		    name="ss_filterSelect" 
-			action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+  </div>
+</td>
+<td>
+		<div id="ss_navbar_inline" class="ss_style ss_fineprint ss_normal">
+			
+					<ul>
+					<li>
+					<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssFolder.id}"/><ssf:param 
-				name="operation" value="select_filter"/></ssf:url>" 
-			method="post" >
-			
-			
-			<%
-			//	if (filterName.length() > 10) {
-			//		filterName = filterName.substring(0, 6) + "...";
-			//	}
-			%>
-
-			  <ssf:ifnotaccessible>
-					<select name="select_filter" onchange="ss_submitParentForm(this);">
-					<option value="">--<ssf:nlt tag="none" text="none"/>--</option>
+				name="operation" value="select_filter"/><ssf:param 
+				name="select_filter" value=""/></ssf:url>">
+					<span 
+					<c:if test="${currentFilter == ''}"> class="ss_navbar_current"</c:if>
+					<c:if test="${currentFilter != ''}"> class="ss_normal"</c:if>
+					>
+						<ssf:nlt tag="None"/>
+					</a></li>
+					
 					<c:forEach var="filter" items="${ss_searchFilters}">
-					<option value="${filter.key}"
-					<c:if test="${filter.key == currentFilter}"> selected="true"</c:if>					
-					><c:out value="${filter.key}"/></option>
+					<li><a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+				name="binderId" value="${ssFolder.id}"/><ssf:param 
+				name="operation" value="select_filter"/><ssf:param 
+				name="select_filter" value="${filter.key}"/></ssf:url>">
+					<span 
+					<c:if test="${filter.key == currentFilter}"> class="ss_navbar_current"</c:if>
+					<c:if test="${filter.key != currentFilter}"> class="ss_normal"</c:if>
+					>				
+					<c:out value="${filter.key}"/></span>
+					</a></li>
 					</c:forEach>
-					</select>					
-			  </ssf:ifnotaccessible>
-			 				
-		</form>
-		<c:if test="${ssConfigJspStyle != 'template'}">
-		<a class="ss_actions_bar_inline" href="<ssf:url ><ssf:param 
-			name="action" value="build_filter"/><ssf:param 
-			name="binderId" value="${ssBinder.id}"/><ssf:param 
-			name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
-		><ssf:nlt tag="Edit" text="Edit"/></a>
-		</c:if>
-		<c:if test="${ssConfigJspStyle == 'template'}">
-		<ssf:nlt tag="Edit" text="Edit"/>
-		</c:if>
-</div>
+					</ul>
+				
+		</div>
+
+</td>
+</tr>
+
+</tbody>
+</table>

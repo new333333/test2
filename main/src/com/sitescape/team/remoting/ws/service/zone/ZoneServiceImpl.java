@@ -32,15 +32,15 @@ import com.sitescape.team.remoting.ws.BaseService;
 
 public class ZoneServiceImpl extends BaseService implements ZoneService {
 
-	public void zone_addZoneUnderPortal(String accessToken, String zoneName, String virtualHost, String mailDomain) {
-		getZoneModule().addZoneUnderPortal(zoneName, virtualHost, mailDomain);
+	public Long zone_addZone(String accessToken, String zoneName, String virtualHost, String mailDomain) {
+		return getZoneModule().addZone(zoneName, virtualHost, mailDomain);
 	}
 
-	public void zone_modifyZoneUnderPortal(String accessToken, String zoneName, String virtualHost, String mailDomain) {
-		getZoneModule().modifyZoneUnderPortal(zoneName, virtualHost, mailDomain);
+	public void zone_modifyZone(String accessToken, String zoneName, String virtualHost, String mailDomain) {
+		getZoneModule().modifyZone(zoneName, virtualHost, mailDomain);
 	}
 
-	public void zone_deleteZoneUnderPortal(String accessToken, String zoneName) {
-		getZoneModule().deleteZoneUnderPortal(zoneName);
+	public void zone_deleteZone(String accessToken, String zoneName) {
+		getZoneModule().deleteZone(zoneName);
 	}
 }

@@ -467,6 +467,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
        if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_THEME)) ++noCheckCount;
    	        
        if (!RequestContextHolder.getRequestContext().getUserId().equals(entryId) ||
+    		   (inputData.getCount() == -1) ||
     		   (inputData.getCount() > noCheckCount)) {
     	   checkAccess(entry, ProfileOperation.modifyEntry);
        }

@@ -50,6 +50,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.SimpleName;
+import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
@@ -145,6 +146,20 @@ public class ConfigureController extends AbstractBinderController {
 				} else if (!simpleUrl.getBinderId().equals(binderId)) {
 					response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, "true");
 				}
+			} else {
+				//name is null, see if prefix is user's name
+				if (prefix.toLowerCase().equals(user.getName().toLowerCase())) {
+					SimpleName simpleUrl = getBinderModule().getSimpleName(prefix);
+					if (simpleUrl == null) {
+						getBinderModule().addSimpleName(prefix, binderId, binder.getEntityType().name());
+					} else if (simpleUrl.getBinderId().equals(binderId)) {
+						response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, "true");
+					} else {
+						response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, "true");
+					}
+				} else {
+					response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, "true");
+				}
 			}
 		} else if (formData.containsKey("deleteUrlBtn")) {
 			Set<String> deleteNames = new HashSet();
@@ -167,7 +182,10 @@ public class ConfigureController extends AbstractBinderController {
 			getBinderModule().setDefinitionsInherited(binderId, inherit);
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			setupViewBinder(response, binderId, binderType);
+			if (binder instanceof TemplateBinder) {
+				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+				response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+			} else setupViewBinder(response, binderId, binderType);
 		} else
 			response.setRenderParameters(formData);
 	}
@@ -260,7 +278,7 @@ public class ConfigureController extends AbstractBinderController {
 		{
 			tempEntryDefMap.put(defEntryIds[i], DefinitionHelper.getDefinition(defEntryIds[i]));
 		}
-		Map replyDefMap = DefinitionHelper.getReplyDefinitions(tempEntryDefMap);
+		Map replyDefMap = DefinitionHelper.getReplyDefinitions(tempEntryDefMap.values());
 		Object[] replyIdsArray = replyDefMap.keySet().toArray();
 		
 		if (defEntryIds != null) {
@@ -285,26 +303,32 @@ public class ConfigureController extends AbstractBinderController {
 		}
 	}
 	protected void setupDefinitions(Binder binder, Map model) {
-
+		//get definitions in translated title order
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
 		EntityType binderType = binder.getEntityType();
 		if (binderType.equals(EntityType.workspace)) {
 			if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
-				DefinitionHelper.getDefinitions(Definition.USER_WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+				model.put(WebKeys.ALL_BINDER_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(null, Definition.USER_WORKSPACE_VIEW));
 			} else {
-				DefinitionHelper.getDefinitions(Definition.WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+				model.put(WebKeys.ALL_BINDER_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(binder.getId(), Definition.WORKSPACE_VIEW));
 			}
 		} else if (binderType.equals(EntityType.profiles)) {
-			DefinitionHelper.getDefinitions(Definition.PROFILE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
-			DefinitionHelper.getDefinitions(Definition.PROFILE_ENTRY_VIEW, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);			
+			model.put(WebKeys.ALL_BINDER_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(null, Definition.PROFILE_VIEW));
+			model.put(WebKeys.ALL_ENTRY_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(null, Definition.PROFILE_ENTRY_VIEW));	
 		} else {
-			DefinitionHelper.getDefinitions(Definition.FOLDER_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
-			DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);
+			model.put(WebKeys.ALL_BINDER_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(binder.getId(), Definition.FOLDER_VIEW));
+
+			//build ordered list of entry definition types
+			model.put(WebKeys.ALL_ENTRY_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(binder.getId(), Definition.FOLDER_ENTRY));
+			
+			//build orders list of workflow definition types
+			model.put(WebKeys.ALL_WORKFLOW_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(binder.getId(),  Definition.WORKFLOW));			
+			model.put(WebKeys.ENTRY_REPLY_STYLES, DefinitionHelper.getReplyDefinitions(binder.getEntryDefinitions()));
+
 		}
-		DefinitionHelper.getDefinitions(binder, model);
-		DefinitionHelper.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
 		
 	}
+
 
 }

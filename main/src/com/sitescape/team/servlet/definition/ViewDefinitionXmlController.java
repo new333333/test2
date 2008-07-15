@@ -56,7 +56,6 @@ public class ViewDefinitionXmlController extends SAbstractController {
 		}
 		response.setContentType("text/xml");
 		response.setHeader("Cache-Control", "private");
-		response.setHeader("Pragma", "no-cache");
 		response.getOutputStream().write(data.getBytes());
 
 		response.getOutputStream().flush();

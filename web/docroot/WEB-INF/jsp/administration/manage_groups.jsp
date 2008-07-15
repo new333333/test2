@@ -30,9 +30,12 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body">
+<div class="ss_pseudoPortal">
+
 <script type="text/javascript">
 
-function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(obj) {
+function ${renderResponse.namespace}_onsub(obj) {
 	if (obj.name.value == '') {
 		alert('<ssf:nlt tag="general.required.name"/>');
 		return false;
@@ -56,9 +59,9 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 </c:if>
 <ssf:expandableArea title="<%= NLT.get("administration.add.group") %>">
 <form class="ss_style ss_form" method="post" 
-	action="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="binderId" value="${ssBinder.id}"/><portlet:param 
-	name="action" value="manage_groups"/></portlet:actionURL>" onSubmit="return(<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(this))">
+	action="<ssf:url action="manage_groups" actionUrl="true"><ssf:param 
+	name="binderId" value="${ssBinder.id}"/></ssf:url>" 
+	onSubmit="return(${renderResponse.namespace}_onsub(this))">
 		
 	<span class="ss_bold"><ssf:nlt tag="administration.add.groupName"/></span><ssf:inlineHelp tag="ihelp.groups.data_name"/><br/>
 	<input type="text" class="ss_text" size="70" name="name"><br/><br/>
@@ -82,10 +85,9 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 <br/>
 <div class="ss_indent_medium" id="ss_modifyGroups">
   <c:forEach var="group" items="${ss_groupList}">
-  	<a href="<portlet:actionURL windowState="maximized"><portlet:param 
-		name="binderId" value="${ssBinder.id}"/><portlet:param 
-		name="entryId" value="${group._docId}"/><portlet:param 
-		name="action" value="manage_groups"/></portlet:actionURL>"
+  	<a href="<ssf:url action="manage_groups" actionUrl="true"><ssf:param 
+		name="binderId" value="${ssBinder.id}"/><ssf:param 
+		name="entryId" value="${group._docId}"/>></ssf:url>"
 	><span>${group.title}</span> <span class="ss_smallprint">(${group._groupName})</span></a><br/>
   </c:forEach>
 </div>
@@ -98,10 +100,9 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 <br/>
 <br/>
 <form name="ss_groupForm" id="ss_groupForm" method="post"
-  action="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="binderId" value="${ssBinder.id}"/><portlet:param 
-	name="entryId" value="${ssGroup.id}"/><portlet:param 
-	name="action" value="manage_groups"/></portlet:actionURL>"
+  action="<ssf:url action="manage_groups" actionUrl="true"><ssf:param 
+	name="binderId" value="${ssBinder.id}"/><ssf:param 
+	name="entryId" value="${ssGroup.id}"/></ssf:url>"
   onSubmit="return ss_onSubmit(this);">
 		
 <ssf:expandableArea title="<%= NLT.get("administration.modify.groupTitle") %>">
@@ -153,14 +154,13 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 <div class="ss_formBreak"/>
 
 <form class="ss_style ss_form" method="post"
-		  action="<portlet:actionURL windowState="maximized"><portlet:param 
-		  name="action" value="manage_groups"/><portlet:param 
-		  name="binderId" value="${ssBinder.id}"/></portlet:actionURL>" 
-		  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
+		  action="<ssf:url action="manage_groups" actionUrl="true"><ssf:param 
+		  name="binderId" value="${ssBinder.id}"/></ssf:url>" 
+		  name="${renderResponse.namespace}fm">
 <div class="ss_buttonBarLeft">
 
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-onClick="self.location.href='<portlet:renderURL windowState="normal" portletMode="view"/>';return false;"/>
+<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+		  onClick="self.window.close();return false;"/>
 </div>
 </form>
 </div>
@@ -168,3 +168,6 @@ onClick="self.location.href='<portlet:renderURL windowState="normal" portletMode
 </div>
 </div>
 
+</div>
+</body>
+</html>

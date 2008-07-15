@@ -64,8 +64,7 @@ public class AttachmentUrlTagTest extends AbstractTestBase {
 				Collections.singletonList(new FileUploadItem(
 						FileUploadItem.TYPE_ATTACHMENT, "attachment", null,
 						RepositoryUtil.getDefaultRepositoryName())));
-		Definition def = (Definition) coreDao.loadDefinitions(rc.getZoneId(),
-				Definition.FOLDER_ENTRY).get(0);
+		Definition def = (Definition) coreDao.loadDefinitions(rc.getZoneId()).get(0);
 		Entry entry = entries.addEntry(folder, def, FolderEntry.class,
 				new EmptyInputData(), entryData,
 				Collections.EMPTY_MAP);

@@ -35,7 +35,7 @@ import java.util.Set;
 
 import org.dom4j.Element;
 
-import com.sitescape.team.remoting.ws.model.StringArrayField;
+import com.sitescape.team.remoting.ws.model.CustomStringArrayField;
 
 /**
  *
@@ -68,7 +68,7 @@ public class ElementBuilderSelect extends AbstractElementBuilder {
 	    		element.addElement("value");
 	    	}
 			if(values != null)
-				entityModel.addStringArrayField(new StringArrayField(dataElemName, dataElemType, values.toArray(new String[]{})));
+				entityModel.addCustomStringArrayField(new CustomStringArrayField(dataElemName, dataElemType, values.toArray(new String[]{})));
 	    	return true;
 	    }
 

@@ -135,38 +135,47 @@ public class WorkflowUtils {
 
     public static WfAcl getStateAcl(Definition wfDef, DefinableEntity entity, String stateName, WfAcl.AccessType type) {
     	Document wfDoc = wfDef.getDefinition();
+    	WfAcl acl = null;
 		//Find the current state in the definition
 		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", stateName);
 		if (stateEle != null) {
-			Element accessControls = (Element)stateEle.selectSingleNode("./item[@name='accessControls']");
-			if (accessControls != null) {
-				if (WfAcl.AccessType.read.equals(type))
-					return getAcl((Element)accessControls.selectSingleNode("./item[@name='readAccess']"), entity, type);
-				else if (WfAcl.AccessType.write.equals(type))  
-					return getAcl((Element)accessControls.selectSingleNode("./item[@name='modifyAccess']"), entity, type);
-				else if (WfAcl.AccessType.delete.equals(type)) 
-					return getAcl((Element)accessControls.selectSingleNode("./item[@name='deleteAccess']"), entity, type);
-				else if (WfAcl.AccessType.transitionOut.equals(type))
-					return getAcl((Element)accessControls.selectSingleNode("./item[@name='transitionOutAccess']"), entity, type);
-				else if (WfAcl.AccessType.transitionIn.equals(type))
-					return getAcl((Element)accessControls.selectSingleNode("./item[@name='transitionInAccess']"), entity, type);
+			String nodeString=null;
+			if (WfAcl.AccessType.read.equals(type)) {
+				nodeString = "item[@name='readAccess']";
+			} else if (WfAcl.AccessType.write.equals(type)) {  
+				nodeString = "item[@name='modifyAccess']";
+			} else if (WfAcl.AccessType.delete.equals(type)) {
+				nodeString = "item[@name='deleteAccess']";
+			} else if (WfAcl.AccessType.transitionOut.equals(type)) {
+				nodeString = "item[@name='transitionOutAccess']";
+			} else if (WfAcl.AccessType.transitionIn.equals(type)) {
+				nodeString = "item[@name='transitionInAccess']";
+			} 
+			if (nodeString != null) {
+				acl = getAcl((Element)stateEle.selectSingleNode("./item[@name='accessControls']/" + nodeString), entity, type);
 			}
-			
-		}
-		return getAcl(null, entity, type);
+			if (acl == null) {
+				//check global settings
+				acl = getAcl((Element)wfDoc.getRootElement().selectSingleNode("./item[@name='workflowProcess']/item[@name='accessControls']/" + nodeString), entity, type);
+			}
+			if (acl != null) return acl;
+		} 
+		acl = new WfAcl(type);
+		acl.setUseDefault(true);
+		return acl;
     }
 
     private static WfAcl getAcl(Element aclElement, DefinableEntity entity, WfAcl.AccessType type) {
-    	WfAcl result = new WfAcl(type);
-    	if (aclElement == null) return result;
+     	if (aclElement == null) return null;
 		List<Element>props = aclElement.selectNodes("./properties/property");
     	String name, value;
-		if ((props == null) || props.isEmpty()) return result;
+		if ((props == null) || props.isEmpty()) return null;
+	   	WfAcl result = new WfAcl(type);
 		for (Element prop:props) {
 			name = prop.attributeValue("name","");
 			value = prop.attributeValue("value","");
 			if ("folderDefault".equals(name)) {
-				result.setUseDefault(GetterUtil.getBoolean(value, true));
+				result.setUseDefault(GetterUtil.getBoolean(value, false));
 			} else if ("userGroupAccess".equals(name)) {
 				result.addPrincipalIds(LongIdUtil.getIdsAsLongSet(value));
 			} else if ("team".equals(name) &&  GetterUtil.getBoolean(value, false)) {
@@ -189,6 +198,8 @@ public class WorkflowUtils {
     			result.addPrincipalId(ObjectKeys.OWNER_USER_ID);
     		}
 		}
+		//see if nothing was actually set
+		if (result.getPrincipalIds().isEmpty() && !result.isUseDefault()) return null;
     	return result;
     }
  

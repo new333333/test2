@@ -46,13 +46,13 @@
 <tr id="${selection.id}">
 <c:if test="${count > 0}">
 <td><a class="ss_inlineButton" 
-onClick="ss_moveThisTableRow(this, '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', 'down');ss_saveFileOrder(this, '${property_name}__order');"
+onClick="ss_moveThisTableRow(this, '${renderResponse.namespace}', 'down');ss_saveFileOrder(this, '${property_name}__order');"
 ><img alt="<ssf:nlt tag="favorites.movedown"/>" title="<ssf:nlt tag="favorites.movedown"/>" 
 src="<html:imagesPath/>icons/button_move_down.gif" 
 /></a></td>
 
 <td><a class="ss_inlineButton" 
-onClick="ss_moveThisTableRow(this, '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', 'up');ss_saveFileOrder(this, '${property_name}__order');"
+onClick="ss_moveThisTableRow(this, '${renderResponse.namespace}', 'up');ss_saveFileOrder(this, '${property_name}__order');"
 ><img alt="<ssf:nlt tag="favorites.moveup"/>" title="<ssf:nlt tag="favorites.moveup"/>" 
 src="<html:imagesPath/>icons/button_move_up.gif" 
 /></a></td>

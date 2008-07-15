@@ -63,14 +63,8 @@ public class EmailConfigController extends  AbstractBinderController  {
 		response.setRenderParameters(formData);
 		Long folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			if (folderId != null) {
-				Binder binder = getBinderModule().getBinder(folderId);
-				setupViewBinder(response, binder);
-				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
-			} else {
-				response.setRenderParameter("redirect", "true");
-			}
-		} else  {
+			setupCloseWindow(response);
+		} else  if (formData.containsKey("okBtn")) {
 			//sub-folders don't have a schedule, use addresses to figure it out
 			if (formData.containsKey("addresses")) {
 				Set userList = new HashSet();
@@ -93,14 +87,11 @@ public class EmailConfigController extends  AbstractBinderController  {
 						response.setRenderParameter(WebKeys.EXCEPTION, ne.getLocalizedMessage() != null ? ne.getLocalizedMessage() : ne.getMessage());
 				}
 			}
-		}
+		} 
 	}
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		if (!Validator.isNull(request.getParameter("redirect"))) {
-			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
-		}
 		Map model = new HashMap();
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));

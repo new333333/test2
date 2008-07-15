@@ -31,29 +31,27 @@
 <%@ page import="java.util.ArrayList" %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<script type="text/javascript">
-var ssExportURL="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="export_definition"/></portlet:actionURL>";
-</script>
-
+<body class="ss_style_body">
+<div class="ss_pseudoPortal">
+<div class="ss_style ss_portlet">
+<span class="ss_titlebold"><ssf:nlt tag="administration.export.definitions.select"/></span>
 <table class="ss_style" width="100%"><tr><td>
 
 <form class="ss_style ss_form" action="<ssf:url webPath="definitionDownload"/>" 
-	method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
+	method="post" name="${renderResponse.namespace}fm">
 
-<br>
-<br>
-<span class="ss_bold"><ssf:nlt tag="administration.export.definitions.select"/></span>
 <%@include file="/WEB-INF/jsp/administration/commonSelectTree.jsp" %>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
+		  onClick='self.location.href="<ssf:url action="manage_definitions" 
+			actionUrl="false"><ssf:param name="binderId" value="${ssBinderId}"/></ssf:url>";return false;'>
 <script type="text/javascript">
-document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.cancelBtn.onclick=function () {
-	document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.action=ssExportURL;
-	document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.onsubmit=function() { return true; };
-	return true;
-};
-document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.onsubmit=function() { return ss_selectAllIfNoneSelected.call(this,"id_");};
+document.${renderResponse.namespace}fm.onsubmit=function() { return ss_selectAllIfNoneSelected.call(this,"id_");};
 </script>
 </form>
 <br>
 </td></tr></table>
-
+</div>
+</div>
+</body>
+</html>

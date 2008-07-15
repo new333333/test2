@@ -195,7 +195,8 @@ public class ViewPermalinkController  extends SAbstractController {
 				if (!binderId.equals("")) {
 					try {
 						//See if this user can access the binder
-						getBinderModule().getBinder(new Long(binderId));
+						Binder binder = getBinderModule().getBinder(new Long(binderId));
+						model.put(WebKeys.BINDER, binder);
 						if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
 							//See if the user can access the entry, too
 							getFolderModule().getEntry(new Long(binderId), new Long(entryId));

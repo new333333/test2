@@ -46,7 +46,7 @@
 <script type="text/javascript">
 	//Define the variables needed by the javascript routines
 	//var ss_iframe_box_div_name = 'ss_iframe_box_div';
-	//var ss_box_iframe_name = '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_box_iframe';	
+	//var ss_box_iframe_name = '${renderResponse.namespace}_box_iframe';	
 	
 	<c:if test="${!empty ss_entryWindowTop && !empty ss_entryWindowLeft}">
 		var ss_entryWindowTopOriginal = ${ss_entryWindowTop};
@@ -84,7 +84,7 @@
     <ssf:param name="box_title" useBody="true">
       <div style="position:relative;">
       <c:set var="ss_history_bar_table_class" value="ss_title_bar_history_bar" scope="request"/>
-      <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+      <jsp:include page="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" />
       </div>
     </ssf:param>
     <ssf:param name="box_show_resize_icon" value="true" />

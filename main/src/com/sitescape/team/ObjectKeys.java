@@ -243,6 +243,7 @@ public interface ObjectKeys {
     //User properties
     public static final String USER_DISPLAY_STYLE_ACCESSIBLE = "accessible";
     public static final String USER_DISPLAY_STYLE_IFRAME = "iframe";
+    public static final String USER_DISPLAY_STYLE_NEWPAGE = "newpage";
     public static final String USER_DISPLAY_STYLE_POPUP = "popup";
     public static final String USER_DISPLAY_STYLE_VERTICAL = "vertical";
     public static final String USER_PROPERTY_CALENDAR_VIEWMODE = "calendarViewMode";
@@ -321,6 +322,7 @@ public interface ObjectKeys {
     public static final String FIELD_FILE_ID="_fileID";
     
     public static final String FIELD_APPLICATION_POST_URL="postUrl";
+    public static final String FIELD_APPLICATION_TIMEOUT="timeout";
     public static final String FIELD_APPLICATION_TRUSTED="trusted";
     public static final String FIELD_BINDER_LIBRARY="library";
     public static final String FIELD_BINDER_NAME="name";
@@ -339,6 +341,7 @@ public interface ObjectKeys {
     public static final String FIELD_USER_EMAIL_MOBILE="mobileEmailAddress";
     public static final String FIELD_USER_LOCALE="locale";
     public static final String FIELD_USER_SKYPEID="skypeId";
+    public static final String FIELD_USER_TWITTERID="twitterId";
     public static final String FIELD_USER_STATUS="status";
     public static final String FIELD_USER_TIMEZONE="timeZone";
     public static final String FIELD_USER_PASSWORD="password";
@@ -428,6 +431,7 @@ public interface ObjectKeys {
     public static final String XTAG_USER_ORGANIZATION="organization";
     public static final String XTAG_USER_PHONE="phone";
     public static final String XTAG_USER_SKYPEID="skypeId";
+    public static final String XTAG_USER_TWITTERID="twitterId";
     public static final String XTAG_USER_STATUS="status";
     public static final String XTAG_USER_TIMEZONE="timeZone";
     //values of name= attributes on XTAG_ELEMENT_TYPE_PROPERTY for user

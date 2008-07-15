@@ -857,13 +857,47 @@ function ss_calendarEngine(
 	     	var d = (counter % 7);
 	        var w = Math.floor(counter / 7);
 			
-	    	var isToday = ss_cal_CalData.isToday(date);
+			var isToday = ss_cal_CalData.isToday(date);
 	    	if (isToday) {
-	    		var today = dojo.byId("ss_cal_monthGridToday" + instanceId);
-				today.style.left = this.monthGridDayBadgeVOffsets[d] + "%";
-	            today.style.top = this.monthGridDayBadgeHOffsets[this.monthGridWeeks][w] + "%";
-	            dojo.html.show(today);
-	    	}
+	    		var allDayBadge = dojo.byId("ss_cal_monthGridToday" + instanceId);
+				allDayBadge.style.left = this.monthGridDayBadgeVOffsets[d] + "%";
+	            allDayBadge.style.top = this.monthGridDayBadgeHOffsets[this.monthGridWeeks][w] + "%";
+	            dojo.html.show(allDayBadge);
+	    	} else {
+				var allDayBadge = document.createElement("div");
+		        allDayBadge.style.top = this.monthGridDayBadgeHOffsets[this.monthGridWeeks][w] + "%";
+		        allDayBadge.style.left = this.monthGridDayBadgeVOffsets[d] + "%";
+		        allDayBadge.style.width = this.monthGridDayBadgeVOffsets[1] + "%";
+		        allDayBadge.style.height = this.monthGridDayBadgeHOffsets[this.monthGridWeeks][1] + "%";	
+				
+				allDayBadge.style.position = "absolute";
+						
+				container.appendChild(allDayBadge);
+			}
+			
+			(function() {
+				dojo.event.browser.addListener(allDayBadge, "onmouseover", function(evt) {
+					dojo.html.addClass(evt.target, "ss_cal_monthGridDayBadgeOverHighlight");
+       			});
+            })();
+			
+			(function() {
+				dojo.event.browser.addListener(allDayBadge, "onmouseout", function(evt) {
+					dojo.html.removeClass(evt.target, "ss_cal_monthGridDayBadgeOverHighlight");
+       			});
+            })();
+			
+		    var url = addEntryURL;
+		    url += "&year=" + date.getFullYear();
+		    url += "&month=" + date.getMonth();
+		    url += "&dayOfMonth=" + date.getDate();
+            (function() {
+				dojo.event.browser.addListener(allDayBadge, "onclick", function(evt) {
+				    ss_openUrlInPortlet(url, true);
+					return false;
+       			});
+            })();							
+
 
 	        var badge = document.createElement("div");
 	        badge.className = className;
@@ -873,12 +907,11 @@ function ss_calendarEngine(
 
 	        badge.style.left = this.monthGridDayBadgeVOffsets[d] + "%";
 	        badge.style.top = this.monthGridDayBadgeHOffsets[this.monthGridWeeks][w] + "%";
-	               
+
             var changeViewLink = document.createElement("a");
             changeViewLink.href = "javascript: // ;";
             changeViewLink.innerHTML = date.getDate();
             (function(date) {
-	        	// dojo.event.connect(changeViewLink, "onclick", function(evt) {
 				dojo.event.browser.addListener(changeViewLink, "onclick", function(evt) {
 							ss_cal_Events.switchView('daydirect', date.getFullYear(), date.getMonth(), date.getDate());
 	        			});

@@ -32,13 +32,14 @@
 <ssf:ifadapter>
 <body class="ss_style_body">
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
-<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
+<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
+<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 </ssf:ifadapter>
 
 <div style="padding-top:20px;"><span class="ss_bold ss_errorLabel">[<ssf:nlt tag="errorcode.access.denied"/>]</span></div>
 
 <ssf:ifadapter>
-</div>
+</div></div>
 	</body>
 </html>
 </ssf:ifadapter>

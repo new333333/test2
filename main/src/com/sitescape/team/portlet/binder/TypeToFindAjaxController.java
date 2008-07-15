@@ -139,7 +139,9 @@ public class TypeToFindAjaxController extends SAbstractController {
 		String foldersOnly = PortletRequestUtils.getStringParameter(request, "foldersOnly", "false");
 		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 		String binderId = PortletRequestUtils.getStringParameter(request, "binderId", "");
+		String findObjectName = PortletRequestUtils.getStringParameter(request, "findObjectName", "");
 		String searchSubFolders = PortletRequestUtils.getStringParameter(request, "searchSubFolders", "");
+		String showUserTitleOnly = PortletRequestUtils.getStringParameter(request, "showUserTitleOnly", "false");
 		boolean addCurrentUser = PortletRequestUtils.getBooleanParameter(request, "addCurrentUser", false);
 		Integer startingCount = Integer.parseInt(pageNumber) * Integer.parseInt(maxEntries);
 
@@ -278,10 +280,12 @@ public class TypeToFindAjaxController extends SAbstractController {
 			}
 			model.put(WebKeys.ENTRIES, resultList);
 			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+			model.put(WebKeys.FIND_SHOW_USER_TITLE_ONLY, showUserTitleOnly);
 		} else if (findType.equals(WebKeys.FIND_TYPE_APPLICATION_GROUP)) {
 			Map entries = getProfileModule().getApplicationGroups(user.getParentBinder().getId(), options);
 			model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
 			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+			model.put(WebKeys.FIND_SHOW_USER_TITLE_ONLY, showUserTitleOnly);
 		} else if (findType.equals(WebKeys.FIND_TYPE_APPLICATION)) {
 			Map entries = getProfileModule().getApplications(user.getParentBinder().getId(), options);
 			model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
@@ -290,7 +294,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		model.put(WebKeys.FIND_TYPE, findType);
 		model.put(WebKeys.PAGE_SIZE, maxEntries);
 		model.put(WebKeys.PAGE_NUMBER, pageNumber);
-		
+		model.put("findObjectName", findObjectName);
 		model.put(WebKeys.NAMESPACE, namespace);
 		
 		

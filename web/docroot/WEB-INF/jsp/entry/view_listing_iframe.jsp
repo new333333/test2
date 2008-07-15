@@ -29,16 +29,16 @@
  */
 %>
 <% // The main forum view - for viewing folder listings and for viewing entries %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:if test="${ss_snippet}"><%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %></c:if>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <c:set var="showFolderPage" value="true"/>
-<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
-  <ssf:ifnotadapter>
+<ssf:ifnotadapter>
     <c:set var="showFolderPage" value="false"/>
-  </ssf:ifnotadapter>
-</c:if>
+</ssf:ifnotadapter>
 <ssf:ifadapter>
-<body class="ss_style_body">
+<c:if test="${!ss_snippet}"><body class="ss_style_body"></c:if>
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
 </ssf:ifadapter>
 <c:if test="${!empty ssReloadUrl}">
@@ -49,9 +49,7 @@
 
 </c:if>
 <c:if test="${empty ssReloadUrl}">
-<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
-  <%@ include file="/WEB-INF/jsp/entry/view_workarea_common.jsp" %>
-</c:if>
+<%@ include file="/WEB-INF/jsp/entry/view_workarea_common.jsp" %>
 <c:if test="${showFolderPage}">
  <jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
  <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
@@ -78,7 +76,9 @@
 </c:if>
 <ssf:ifadapter>
 </div>
+<c:if test="${!ss_snippet}">
 </body>
 </html>
+</c:if>
 </ssf:ifadapter>
 

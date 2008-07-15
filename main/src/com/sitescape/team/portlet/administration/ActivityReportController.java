@@ -35,7 +35,6 @@ import org.dom4j.Document;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Folder;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.SearchTreeHelper;

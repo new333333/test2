@@ -29,9 +29,9 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<ssf:ifadapter>
-<body>
-</ssf:ifadapter>
+<body class="ss_style_body">
+<div class="ss_pseudoPortal">
+
 <div class="ss_style ss_portlet">
 <form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
 		  action="<ssf:url adapter="true" 
@@ -66,7 +66,6 @@ onClick="window.close();return false;"/>
 </div>
 </form>
 </div>
-<ssf:ifadapter>
+</div>
 </body>
 </html>
-</ssf:ifadapter>
