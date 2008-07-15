@@ -31,7 +31,6 @@ package com.sitescape.team.samples.coapp.web;
 import java.io.IOException;
 
 import javax.servlet.GenericServlet;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -43,13 +42,6 @@ import javax.servlet.http.HttpSession;
  *
  */
 public class SSOServlet extends GenericServlet {
-
-	ServletConfig config;
-	
-	public void init(ServletConfig config) throws ServletException {
-		super.init(config);
-		this.config = config;
-	}
 
 	@Override
 	public void service(ServletRequest req, ServletResponse resp) throws ServletException, IOException {
