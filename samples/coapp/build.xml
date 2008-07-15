@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<project name="coapp" basedir=".">
+	<property name="project.dir" value="${basedir}/../.." />
+
+	<import file="${project.dir}/build-common.xml"/>
+
+	<import file="${project.dir}/deploy-support.xml" />
+		
+	<property name="coapp.jar.file" value="coapp.jar" />
+	<property name="coapp.liferay.jar.file" value="coapp-liferay.jar" />
+	<property name="war.name" value="coapp" />
+	<property name="war.file" value="${war.name}.war" />
+	
+	<target name="coapp-jar">
+		<jar 
+			jarfile="${coapp.jar.file}"
+		>
+			<fileset dir="${classes.dir}"
+				includes="com/sitescape/team/samples/coapp/web/**/*"
+			/>
+		</jar>
+	</target>
+	
+	<target name="coapp-liferay-jar">
+		<jar 
+			jarfile="${coapp.liferay.jar.file}"
+		>
+			<fileset dir="${classes.dir}"
+				includes="com/sitescape/team/samples/coapp/liferay/**/*"
+			/>
+		</jar>
+	</target>
+	
+	<target name="jar" depends="compile,coapp-jar,coapp-liferay-jar">
+	</target>
+	
+	<target name="war" depends="jar">
+		<copy file="${coapp.jar.file}" todir="war/WEB-INF/lib"/>
+		<war
+			basedir="war"
+			destfile="${war.file}"
+			webxml="war/WEB-INF/web.xml"
+		/>
+	</target>
+
+    <target name="deploy" depends="war">
+        <antcall target="deploy-war">
+        	<param name="deploy-support.war.name" value="${war.name}" />
+        </antcall>
+		<antcall target="deploy-jar-into-portal">
+			<param name="deploy-support.jar.file" value="${coapp.liferay.jar.file}" />
+		</antcall>
+	</target>
+	
+</project>
