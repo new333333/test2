@@ -148,6 +148,7 @@
 			<fileset dir="${ssf.resources.dir}" includes="*.properties context/**" />
 			<filterset>
 				<filter token="app.server.ssf.extension.dir" value="${app.server.liferay.tomcat.ssf.extension.dir}" />
+				<filter token="app.server.ssf.extension.web.dir" value="${app.server.liferay.tomcat.ssf.extension.web.dir}" />
 			</filterset>
 		</copy>
 		<war basedir="temp"	destfile="${war.file}" update="true" />
