@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	    xsi:schemaLocation="http://www.icecore.org/definition-0.1
+				definition_builder_config.xsd"
+	    name="VideoFolder"
+	    caption="VideoFolder"
+	    type="5"
+	    definitionType="5">
+  <item name="folderForm" caption="__folder_form" type="form" display="form">
+    <properties/>
+    <item name="title" caption="__title" type="data" >
+      <properties>
+        <property name="caption" value="__title"/>
+        <property name="name" value="title"/>
+        <property name="width" value="60"/>
+        <property name="generated" value=""/>
+        <property name="itemSource" value=""/>
+      </properties>
+    </item>
+    <item name="folderIcon" caption="__icon" type="data" >
+      <properties>
+        <property name="caption" value="__icon"/>
+        <property name="name" value="iconName"/>
+      </properties>
+    </item>
+  </item>
+  <item name="forumView" caption="__folder_view" >
+    <properties>
+      <property name="type" value="folder"/>
+    </properties>
+    <item name="folderList" caption="__folder_listing" >
+      <properties/>
+    </item>
+  </item>
+  <properties>
+    <property name="caption" value="VideoFolder"/>
+    <property name="name" value="VideoFolder"/>
+    <property name="icon" value="/icons/folder_blue.gif"/>
+  </properties>
+</definition>
