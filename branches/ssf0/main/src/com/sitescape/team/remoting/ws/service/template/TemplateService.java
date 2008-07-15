@@ -34,7 +34,5 @@ public interface TemplateService {
 
 	public long template_addBinder(String accessToken, long parentBinderId, long binderConfigId, String title);
 	
-	public String template_getTemplatesAsXML(String accessToken);
-	
 	public TemplateCollection template_getTemplates(String accessToken);
 }

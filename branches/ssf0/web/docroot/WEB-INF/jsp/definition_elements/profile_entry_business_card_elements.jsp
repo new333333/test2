@@ -31,7 +31,7 @@
 <% //Business card elements %>
 <%@ page import="java.lang.reflect.Method" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <%
 		//Get the form item being displayed
 		Element item = (Element) request.getAttribute("item");
@@ -121,7 +121,7 @@
 <c:forEach var="selection" items="${selections}">
   <c:if test="${pictureCount == 0}">
 	<a href="javascript:;" onClick="ss_showThisImage(this);return false;"><img 
-	  align="middle" id="ss_profilePicture<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
+	  align="middle" id="ss_profilePicture${renderResponse.namespace}"
 	  border="0" 
 	  src="<ssf:url 
 	    webPath="viewFile"
@@ -148,7 +148,6 @@
 <div class="ss_entryContent">
   <div id="ss_presenceOptions1_${renderResponse.namespace}"></div>
   <ssf:presenceInfo user="${ssDefinitionEntry}" 
-      showOptionsInline="false" 
       optionsDivId="ss_presenceOptions1_${renderResponse.namespace}"/>
 <c:if test="${empty ssDefinitionEntry.title}">
 <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.name}"/></span>
@@ -205,7 +204,7 @@
   <c:set var="selections" value="${ssDefinitionEntry.customAttributes['picture'].value}" />
   <c:forEach var="selection" items="${selections}">
 	<div><a href="javascript:;" onClick="ss_showThisImage(this);return false;"
-	  onMouseover="ss_showProfileImg(this, 'ss_profilePicture<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>'); return false;">
+	  onMouseover="ss_showProfileImg(this, 'ss_profilePicture${renderResponse.namespace}'); return false;">
 	<img <ssf:alt text="${selection.fileItem.name}"/> border="0" src="<ssf:url 
 	    webPath="viewFile"
 	    folderId="${ssDefinitionEntry.parentBinder.id}"
@@ -233,7 +232,6 @@
  <div class="ss_entryContent">
   <div id="ss_presenceOptions2_${renderResponse.namespace}"></div>
   <ssf:presenceInfo user="${ssDefinitionEntry}" 
-      showOptionsInline="false" 
       optionsDivId="ss_presenceOptions2_${renderResponse.namespace}"/>
 
  <c:if test="${empty ssDefinitionEntry.title}">

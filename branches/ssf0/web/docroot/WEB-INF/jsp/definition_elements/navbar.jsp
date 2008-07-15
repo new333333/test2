@@ -33,9 +33,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 <c:set var="ss_urlWindowState" value="maximized"/>
-<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
-  <c:set var="ss_urlWindowState" value=""/>
-</c:if>
+<c:set var="ss_urlWindowState" value=""/>
 <!-- <script type="text/javascript" src="/ssf/js/tree/tree_widget.js"></script> -->
 <script type="text/javascript">
 var	ss_savedSearchTitle = "<ssf:nlt tag="searchResult.savedSearchTitle"/>";
@@ -248,6 +246,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			  ><ssf:nlt tag="navigation.search"/></label></span>
 			<span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced ss_fineprint" 
 				  href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+					name="binderId" value="${ssBinder.id}"/><ssf:param 
 				  name="tabTitle" value="SEARCH FORM"/><ssf:param 
 				  name="newTab" value="0"/></ssf:url>"
 				><ssf:nlt tag="navigation.search.advanced"/></a></span>
@@ -496,6 +495,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     </span>
 		<a class="ss_advanced ss_fineprint" style="margin-left: 15px;" 
 			href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+			name="binderId" value="${ssBinder.id}"/><ssf:param 
 			name="tabTitle" value="SEARCH FORM"/><ssf:param 
 			name="newTab" value="0"/></ssf:url>"
 		><ssf:nlt tag="navigation.search.advanced"/></a>
@@ -574,6 +574,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		<a class="ss_advanced ss_fineprint" 
 			href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 			name="tabTitle" value="SEARCH FORM"/><ssf:param 
+			name="binderId" value="${ssBinder.id}"/><ssf:param 
 			name="newTab" value="0"/></ssf:url>"
 			><ssf:nlt tag="navigation.search.advanced"/></a>
  	</div>

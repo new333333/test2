@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.text.SimpleDateFormat;
 
 import javax.servlet.http.HttpServletRequest;
@@ -102,6 +104,9 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	int maxInactiveDays = 7;
 	SimpleDateFormat fmt = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 
+	private static final String SCHEME_HOST_PORT_PATTERN = "<link>http.*/ssf/a/";
+
+	private Pattern pattern = Pattern.compile(SCHEME_HOST_PORT_PATTERN);
 
 	public RssModuleImpl() {
 
@@ -377,11 +382,17 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 			// create the return string, add the channel info
 			String rss = addRssHeader(binder.getTitle());
+			
+			String adapterRoot = WebUrlUtil.getAdapterRootURL(request, null);
+			
 			// step thru the hits and add them to the rss return string
 			int count = 0;
+			String item;
 			while (count < hits.length()) {
 				org.apache.lucene.document.Document doc = hits.doc(count);
-				rss += doc.getField("rssItem").stringValue();
+				item = doc.getField("rssItem").stringValue();
+				item = fixupSchemeHostPort(item, adapterRoot);
+				rss += item;
 				count++;
 			}
 			indexSearcher.close();
@@ -399,6 +410,11 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 
+	protected String fixupSchemeHostPort(String item, String adapterRoot) {
+		Matcher matcher = pattern.matcher(item);
+		return matcher.replaceFirst("<link>" + adapterRoot);
+	}
+	
 	/**
 	 * return an Authentication error to the reader
 	 * 

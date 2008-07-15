@@ -42,7 +42,7 @@ String wsTreeName = renderResponse.getNamespace();
 <form class="ss_style ss_form" 
  action="<portlet:actionURL windowState="maximized"/>" 
  method="post" 
- name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
+ name="${renderResponse.namespace}fm">
 
 <br/>
 <span class="ss_bold"><ssf:nlt tag="portlet.workspace.select.workspace" /></span>

@@ -32,24 +32,28 @@
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body">
+<div class="ss_pseudoPortal">
+<div class="ss_style ss_portlet">
+
 <%
-String wsTreeName = "search_" + renderResponse.getNamespace();
+String wsTreeName = "" + renderResponse.getNamespace();
 %>
 <table class="ss_style" width="100%"><tr><td>
 
 <form class="ss_style ss_form" 
 	action="<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>" 
 	method="post" 
-	name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm"
-	id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm"
+	name="${renderResponse.namespace}fm"
+	id="${renderResponse.namespace}fm"
 	onSubmit="return ss_submitIndexingForm();" >
 
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="okBtn" 
   value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="submit" class="ss_submit" name="closeBtn" 
- value="<ssf:nlt tag="button.close" text="Close"/>" onClick="ss_buttonSelect('closeBtn');">
+<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+		  onClick="self.window.close();return false;"/>
 </div>
 <br>
 <span class="ss_bold"><ssf:nlt tag="administration.configure.index.select" text="Select the forums to be re-indexed:"/></span>
@@ -78,27 +82,25 @@ function ss_getOperationStatus()
 }
 
 function ss_submitIndexingForm() {
-	var formObj = document.forms['<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm'];
+	var formObj = document.forms['${renderResponse.namespace}fm'];
 	formObj.btnClicked.value = ss_buttonSelected;
 	if (ss_buttonSelected == 'okBtn') {
 		formObj.action = '<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>&ss_statusId='+ss_indexStatusTicket
-		ss_submitFormViaAjax('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm', 'ss_indexingDone');
+		ss_submitFormViaAjax('${renderResponse.namespace}fm', 'ss_indexingDone');
 		ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
 		return false;
 	} else {
 		if(ss_indexTimeout) { clearTimeout(ss_indexTimeout); }
-		formObj.action = '<portlet:actionURL windowState="maximized"><portlet:param name="action" value="configure_index"/></portlet:actionURL>'
+		formObj.action = '<ssf:url action="configure_index" actionUrl="true"/>'
 		return true;
 	}
 }
 
 function ss_indexingDone() {
 	if(ss_indexTimeout) { clearTimeout(ss_indexTimeout); }
-	ss_buttonSelect('closeBtn');
-	var formObj = document.forms['<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm'];
-	formObj.btnClicked.value = 'closeBtn';
-	formObj.action = '<portlet:actionURL windowState="maximized"><portlet:param name="action" value="configure_index"/></portlet:actionURL>'
-	formObj.submit();
+	ss_stopSpinner();
+	ss_showPopupDivCentered('ss_indexing_done_div${renderResponse.namespace}');
+	setTimeout("self.window.close();", 4000)
 }
 
 
@@ -109,7 +111,7 @@ function <%= wsTreeName %>_showId(forum, obj, action) {
 		cDocument = obj.document;
 	}
 	if (cDocument) {
-		var r = cDocument.getElementById("ss_tree_checkbox<%= wsTreeName %>" + action + forum);
+		var r = cDocument.getElementById("ss_tree_checkbox<%= wsTreeName %>id" + forum);
 		if (r) {
 			if (r.checked !== undefined) {
 				r.checked = !r.checked;
@@ -125,7 +127,7 @@ function <%= wsTreeName %>_showId(forum, obj, action) {
 </script>
 <ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
   rootOpen="true" topId="${ssWsDomTreeBinderId}" 
-  multiSelect="<%= new ArrayList() %>" multiSelectPrefix="$type" />
+  multiSelect="<%= new ArrayList() %>" multiSelectPrefix="id" />
 
 <br>
 <br>
@@ -134,10 +136,17 @@ function <%= wsTreeName %>_showId(forum, obj, action) {
   value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="closeBtn" 
- value="<ssf:nlt tag="button.close" text="Close"/>" onClick="ss_buttonSelect('closeBtn');">
+ value="<ssf:nlt tag="button.close" text="Close"/>" onClick="self.window.close();return false;">
 </div>
 <input type="hidden" name="btnClicked"/>
 </form>
 <br>
 </td></tr></table>
 
+<div id="ss_indexing_done_div${renderResponse.namespace}" style="position:absolute;display:none;">
+<span><ssf:nlt tag="index.finished"/></span>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -61,7 +61,6 @@ public abstract class ZipDownloadController extends  SAbstractController {
 		String filename = getFilename();
 		response.setContentType(mimeTypes.getContentType(filename));
 		response.setHeader("Cache-Control", "private");
-		response.setHeader("Pragma", "no-cache");
 		response.setHeader(
 					"Content-Disposition",
 					"attachment; filename=\"" + filename + "\"");
@@ -72,6 +71,7 @@ public abstract class ZipDownloadController extends  SAbstractController {
 			Map.Entry me = (Map.Entry) itFormData.next();
 			if (((String)me.getKey()).startsWith("id_")) {
 				String defId = ((String)me.getKey()).substring(4);
+				if (defId.startsWith("%")) defId = defId.substring(1);
 				if (Validator.isNotNull(defId)) {
 					try {
 						NamedDocument doc = getDocumentForId(defId);

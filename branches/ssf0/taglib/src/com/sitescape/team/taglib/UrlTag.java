@@ -68,7 +68,8 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
     private String webPath;
     private String windowState;
     private boolean adapter=false;
-    private String portletName = "";
+    private boolean crawlable=false;
+    private String portletName = "ss_forum";
     private boolean actionUrl = true;
     private boolean stayInFrame = false;
 	private Map _params;
@@ -94,9 +95,10 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 		operation=null;
 		webPath = null;
 		adapter=false;
+		crawlable=false;
 		actionUrl = true;
 		stayInFrame=false;
-		portletName="";
+		portletName = "ss_forum";
 	}
 	public int doEndTag() throws JspException {
 		try {
@@ -177,8 +179,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				if (!Validator.isNull(action)) {
 					params.put("action", new String[] {this.action});
 				}
-				
-				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, this.portletName, this.actionUrl);
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, this.portletName, this.actionUrl, crawlable);
 				Iterator it = params.entrySet().iterator();
 				while (it.hasNext()) {
 					Map.Entry me = (Map.Entry) it.next();
@@ -286,6 +287,10 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 	    this.adapter = adapter;
 	}
 
+	public void setCrawlable(boolean crawlable) {
+		this.crawlable = crawlable;
+	}
+	
 	public void setPortletName(String portletName) {
 	    this.portletName = portletName;
 	}

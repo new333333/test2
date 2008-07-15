@@ -678,53 +678,6 @@ function ss_moveObjectToBody(obj) {
     }
 }
 
-var ss_originalSSParentNodes = new Array();
-var ss_originalSSChildNodeNumber = new Array();
-function ss_moveDivToTopOfBody(divId) {
-	var obj = document.getElementById(divId);
-	if (obj == null) return;
-    var bodyObj = document.getElementsByTagName("body").item(0);
-    if (obj && obj.parentNode.tagName.toLowerCase() != 'body') {
-    	//move the object to the body (at the top)
-    	var startLeft = ss_getObjAbsX(obj)
-    	var startTop = ss_getObjAbsY(obj)
-    	ss_originalSSParentNodes[divId] = obj.parentNode;
-		ss_originalSSChildNodeNumber[divId] = 0;
-		for (var i = 0; i < obj.parentNode.childNodes.length; i++) {
-			if (obj.parentNode.childNodes.item(i) == obj) break;
-			ss_originalSSChildNodeNumber[divId]++;
-		}
-		obj.parentNode.removeChild(obj);
-		obj.style.top = startTop;
-		obj.style.left = startLeft;
-		bodyObj.insertBefore(obj, bodyObj.childNodes.item(0));
-		obj.style.zIndex = ssPortletZ;
-		dojo.lfx.html.slideTo(divId, {top: 0, left:0}, 300, null, ssf_onLayoutChange).play();
-    } else {
-		if (ss_originalSSParentNodes[divId] != null) {
-		
-			bodyObj.removeChild(obj);
-			if (ss_originalSSParentNodes[divId].childNodes.length <= ss_originalSSChildNodeNumber[divId]) {
-				ss_originalSSParentNodes[divId].appendChild(obj);
-			} else {
-				ss_originalSSParentNodes[divId].insertBefore(obj, ss_originalSSParentNodes[divId].childNodes.item(parseInt(ss_originalSSChildNodeNumber[divId] + 1)))
-			}
-	    	var startLeft = parseInt(0 - parseInt(ss_getObjAbsX(obj)))
-	    	var startTop = parseInt(0 - parseInt(ss_getObjAbsY(obj)))
-	    	var endLeft = ss_getObjectLeft(obj)
-	    	var endTop = ss_getObjectTop(obj)
-	    	obj.style.top = startTop;
-	    	obj.style.left = startLeft;
-			dojo.lfx.html.slideTo(divId, {top: endTop, left: endLeft}, 300, null, ssf_onLayoutChange).play();
-		}
-	}
-	//Signal that the layout changed
-	if (ssf_onLayoutChange) ssf_onLayoutChange();
-	
-	//Also signal that a resize might have been done
-	ssf_onresize_event_handler();
-}
-
 //Functions to save the user status
 function ss_updateStatusSoon(obj, evt) {
 	if ((typeof evt.which == "undefined" || !evt.which) && typeof event == "undefined") return;
@@ -868,7 +821,15 @@ function ss_selectRelevanceTab(obj, type, binderId, namespace) {
 		//If in accessible mode, just jump to the url directly
 		self.location.href = url;
 	} else {
-		ss_fetch_url(url, ss_showRelevanceTab, namespace)
+		if (type == 'profile') {
+			//Special case for the profile tab; always refresh the whole page
+			url = window["ss_relevanceProfileUrl"+namespace];
+			url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
+			url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
+			self.location.href = url;
+		} else {
+			ss_fetch_url(url, ss_showRelevanceTab, namespace)
+		}
 	}
 }
 function ss_showRelevanceTab(s, namespace) {
@@ -1427,6 +1388,7 @@ function ssf_onLayoutChange(obj) {
 }
 
 function ss_getObjAbsX(obj) {
+    return dojo.html.getAbsolutePosition(obj, true).x;
     var x = 0
     var parentObj = obj
     while (parentObj.offsetParent && parentObj.offsetParent != '') {
@@ -1437,6 +1399,7 @@ function ss_getObjAbsX(obj) {
 }
 
 function ss_getObjAbsY(obj) {
+    return dojo.html.getAbsolutePosition(obj, true).y;
     var y = 0
     var parentObj = obj
     while (parentObj.offsetParent && parentObj.offsetParent != '') {
@@ -1447,6 +1410,10 @@ function ss_getObjAbsY(obj) {
 }
 
 function ss_getDivTop(divName) {
+    var obj = self.document.getElementById(divName);
+    if (!obj) return 0;
+    return dojo.html.getAbsolutePosition(obj, true).y;
+
     var top = 0;
     var obj = self.document.getElementById(divName)
     while (1) {
@@ -1459,6 +1426,10 @@ function ss_getDivTop(divName) {
 }
 
 function ss_getDivLeft(divName) {
+    var obj = self.document.getElementById(divName);
+    if (!obj) return 0;
+    return dojo.html.getAbsolutePosition(obj, true).x;
+    
     var left = 0;
     if (ss_isNSN || ss_isNSN6 || ss_isMoz5) {
         var obj = self.document.getElementById(divName)
@@ -1480,76 +1451,33 @@ function ss_getDivLeft(divName) {
     return parseInt(left);
 }
 
+
 function ss_getDivScrollTop(divName) {
     var obj = self.document.getElementById(divName)
     if (!obj) return 0;
-    return parseInt(obj.scrollTop);
+    return dojo.html.getAbsolutePosition(obj, true).y;
+    //return parseInt(obj.scrollTop);
 }
 
 function ss_getDivScrollLeft(divName) {
     var obj = self.document.getElementById(divName)
     if (!obj) return 0;
-    return parseInt(obj.scrollLeft);
+    return dojo.html.getAbsolutePosition(obj, true).x;
+    //return parseInt(obj.scrollLeft);
 }
 
 function ss_getDivHeight(divName) {
     var obj = self.document.getElementById(divName)
     if (!obj) return 0;
-    return parseInt(obj.offsetHeight);
+    return parseInt(dojo.html.getContentBox(obj).height);
+    //return parseInt(obj.offsetHeight);
 }
 
 function ss_getDivWidth(divName) {
     var obj = self.document.getElementById(divName)
     if (!obj) return 0;
-    return parseInt(obj.offsetWidth);
-}
-
-function ss_getAnchorTop(anchorName) {
-    var top = 0;
-    if (ss_isNSN6 || ss_isMoz5) {
-        var obj = document.anchors[anchorName]
-        while (1) {
-            if (!obj) {break}
-            top += parseInt(obj.offsetTop)
-            if (obj == obj.offsetParent) {break}
-            obj = obj.offsetParent
-        }
-    } else if (ss_isNSN) {
-        top = document.anchors[anchorName].y
-    } else {
-        var obj = document.all[anchorName]
-        while (1) {
-            if (!obj) {break}
-            top += obj.offsetTop
-            if (obj == obj.offsetParent) {break}
-            obj = obj.offsetParent
-        }
-    }
-    return parseInt(top);
-}
-
-function ss_getAnchorLeft(anchorName) {
-    var left = 0;
-    if (ss_isNSN6 || ss_isMoz5) {
-        var obj = document.anchors[anchorName]
-        while (1) {
-            if (!obj) {break}
-            left += parseInt(obj.offsetLeft)
-            if (obj == obj.offsetParent) {break}
-            obj = obj.offsetParent
-        }
-    } else if (ss_isNSN) {
-        left = document.anchors[anchorName].x
-    } else {
-        var obj = document.all[anchorName]
-        while (1) {
-            if (!obj) {break}
-            left += obj.offsetLeft
-            if (obj == obj.offsetParent) {break}
-            obj = obj.offsetParent
-        }
-    }
-    return parseInt(left);
+    return parseInt(dojo.html.getContentBox(obj).width);
+    //return parseInt(obj.offsetWidth);
 }
 
 function ss_getImageTop(imageName) {
@@ -1609,23 +1537,11 @@ function ss_getObjectHeight(obj) {
 }
 
 function ss_getObjectLeft(obj) {
-    if (ss_isNSN6 || ss_isMoz5) {
-        return parseInt(obj.style.left)
-    } else if (ss_isNSN) {
-        return parseInt(obj.style.left)
-    } else {
-        return parseInt(obj.style.pixelLeft)
-    }
+    return dojo.html.getAbsolutePosition(obj, true).x;
 }
 
 function ss_getObjectTop(obj) {
-    if (ss_isNSN6 || ss_isMoz5) {
-        return parseInt(obj.style.top)
-    } else if (ss_isNSN) {
-        return parseInt(obj.style.top)
-    } else {
-        return parseInt(obj.style.pixelTop)
-    }
+    return dojo.html.getAbsolutePosition(obj, true).y;
 }
 
 function ss_getObjectLeftAbs(obj) {
@@ -2322,6 +2238,7 @@ function setWindowHighWaterMark(divName) {
 //Routines to replace substrings in a string
 function ss_replaceSubStr(str, subStr, newSubStrVal) {
     //ss_debug("ss_replaceSubStr: " + str + ", " + subStr + " ==> " + newSubStrVal)
+    if (typeof str == 'undefined') return str;
     var newStr = str;
 	var i = str.indexOf(subStr);
     var lenS = str.length;
@@ -2333,6 +2250,7 @@ function ss_replaceSubStr(str, subStr, newSubStrVal) {
 	return newStr;
 }
 function ss_replaceSubStrAll(str, subStr, newSubStrVal) {
+    if (typeof str == 'undefined') return str;
     var newStr = str;
     var i = -1
     //Prevent a possible loop by only doing 1000 passes through this loop
@@ -3692,6 +3610,43 @@ function ss_loadEntry(obj, id, binderId, entityType, namespace, isDashboard) {
 	ss_showForumEntry(obj.href, isDashboard);
 	return false;
 }
+
+function ss_fadeOutTableRow(rowId, divId) {
+	var rowObj = self.document.getElementById(rowId);
+	var divObj = self.document.getElementById(divId);
+	if (typeof rowObj == 'undefined' || typeof divObj == 'undefined') return;
+	if (divObj.visibility != 'hidden') {
+		dojo.lfx.html.fadeHide(divId, 600, null, function(divId) {
+			var divObj = self.document.getElementById(divId);
+			var rowObj = ss_findOwningElement(divObj, "tr");
+			var tbodyObj = ss_findOwningElement(rowObj, "tbody");
+			tbodyObj.removeChild(rowObj);
+			if (ss_loadEntryInPlaceLastRowObj != null) {
+				var rowTop = parseInt(ss_getObjectTopAbs(ss_loadEntryInPlaceLastRowObj));
+				var scrollTop = dojo.html.getScroll().top;
+				var screenBottom = parseInt(scrollTop + ss_getWindowHeight());
+				if (parseInt(rowTop + 200) > screenBottom || parseInt(rowTop - 100) < scrollTop) {
+					window.scroll(0, rowTop - 100);
+				}
+			}
+		}).play();
+		return;
+	}
+}
+
+function ss_setWindowHighWaterMark(height) {
+	var bodyObj = document.getElementsByTagName("body").item(0);
+	var divObj = document.getElementById("ss_highwatermarkDiv");
+	if (divObj == null) {
+		divObj = document.createElement("div")
+		divObj.setAttribute("id", "ss_highwatermarkDiv");
+		bodyObj.appendChild(divObj);
+		ss_setObjectHeight(divObj, height);
+	}
+	var divHeight = ss_getObjectHeight(divObj);
+	if (divHeight < height) ss_setObjectHeight(divObj, height);
+}
+
 var ss_loadEntryInPlaceLastRowObj = null;
 var ss_loadEntryInPlaceLastId = null;
 function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboard, hoverOverId) {
@@ -3699,6 +3654,7 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 		self.location.href = obj.href;
 		return false;
 	}
+	var random = ++ss_random;
 	if (hoverOverId != "") ss_hideHoverOver(hoverOverId);
 	
 	trObj = ss_findOwningElement(obj, "tr")
@@ -3706,13 +3662,15 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 	tableObj = ss_findOwningElement(trObj, "table")
 	tableDivObj = ss_findOwningElement(trObj, "div")
 	if (ss_loadEntryInPlaceLastRowObj != null) {
+		ss_setWindowHighWaterMark(ss_getObjectHeight(ss_loadEntryInPlaceLastRowObj))
+		var divId = 'ss_entry_iframeDiv'+ ss_loadEntryInPlaceLastId.substr(ss_loadEntryInPlaceLastId.indexOf(",")+1) + parseInt(random - 1);
 		if (ss_loadEntryInPlaceLastId == binderId + ',' + id) {
-			tbodyObj.removeChild(ss_loadEntryInPlaceLastRowObj);
+			ss_fadeOutTableRow(ss_loadEntryInPlaceLastRowObj.id, divId);
 			ss_loadEntryInPlaceLastRowObj = null;
 			ss_loadEntryInPlaceLastId = null;
 			return;
 		} else {
-			tbodyObj.removeChild(ss_loadEntryInPlaceLastRowObj);
+			ss_fadeOutTableRow(ss_loadEntryInPlaceLastRowObj.id, divId);
 			ss_loadEntryInPlaceLastRowObj = null;
 			ss_loadEntryInPlaceLastId = null;
 		}
@@ -3732,23 +3690,23 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 		if (childObj == trObj.lastChild) break;
 		childObj = childObj.nextSibling
 	}
-	var random = ++ss_random;
 	var iframeRow = document.createElement("tr");
+	iframeRow.setAttribute("id", "ss_entry_rowId"+id+random);
 	var iframeCol = document.createElement("td");
 	iframeCol.setAttribute("colSpan", count);
 	iframeRow.appendChild(iframeCol);
 	//Draw Iframe for discussion thread
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, entryId:id, entityType:entityType, entryViewType:"entryView", entryViewStyle:"inline", namespace:namespace}, "view_folder_entry");
 	iframeCol.innerHTML = '<div id="ss_entry_iframeDiv'+id+random+'" style="width:'+(ss_getObjectWidth(tableDivObj)-50)+'px;">' +
 		'<iframe id="ss_entry_iframe'+id+random+'" name="ss_entry_iframe'+id+random+'"' +
-    	' src="'+obj.href+'"' +
-    	' style="height:300px;width:'+(ss_getObjectWidth(tableDivObj)-50)+'px; margin:0px; padding:0px;" frameBorder="1"' +
+    	' src="'+url+'"' +
+    	' style="height:300px;width:'+(ss_getObjectWidth(tableDivObj)-50)+'px; margin:10px 10px 10px 16px; padding:0px;" frameBorder="1"' +
     	' onLoad="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+random+'\', \'ss_entry_iframe'+id+random+'\', \''+hoverOverId+'\')"' +
     	'>xxx</iframe>' +
     	'</div>';
-	
 	tbodyObj.replaceChild(iframeRow, trObj)
 	ss_loadEntryInPlaceLastRowObj = iframeRow;
-
+	
 	ss_highlightLine(id, namespace);
 	return false;
 }
@@ -3756,9 +3714,9 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 var ss_entryInPlaceIframeOffset = 50;
 function ss_setIframeHeight(divId, iframeId, hoverOverId) {
 	var targetDiv = document.getElementById(divId);
-	var iframeDiv = document.getElementById(iframeId);
+	var iframeDiv = document.getElementById(iframeId);	
 	if (window.frames[iframeId] != null) {
-		eval("var iframeHeight = parseInt(window." + iframeId + ".document.body.scrollHeight);")
+		var iframeHeight = parseInt(window.frames[iframeId].document.body.scrollHeight);
 		if (iframeHeight > 0) {
 			iframeDiv.style.height = parseInt(iframeHeight + ss_entryInPlaceIframeOffset) + "px"
 			iframeDiv.style.width= parseInt(ss_getObjectWidth(targetDiv) - 6) + "px";
@@ -3771,18 +3729,25 @@ function ss_setIframeHeight(divId, iframeId, hoverOverId) {
 
 function ss_showForumEntry(url, isDashboard) {	
 	if (ss_userDisplayStyle == "accessible") {
-		self.location.href = obj.href;
+		self.location.href = url;
 		return false;
 	}
 	if (isDashboard == "yes") {
 		if (ss_userDisplayStyle == 'popup') {
 			return ss_showForumEntryInIframe_Popup(url);	
+		} else if (ss_userDisplayStyle == 'newpage') {
+			return ss_showForumEntryInIframe_Newpage(url);	
 		} else {
 			return ss_showForumEntryInIframe_Overlay(url);
 		}
 	} else {
 		//redefined for displayType
-		return ss_showForumEntryInIframe(url);
+		if (typeof self.ss_showForumEntryInIframe != "undefined") {
+			return ss_showForumEntryInIframe(url);
+		} else {
+			self.location.href = url;
+			return false;
+		}
 	}
 }
 
@@ -3840,6 +3805,11 @@ function ss_showForumEntryInIframe_Popup(url) {
 	}
 	
     self.window.open(url, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars');
+    return false;
+}
+
+function ss_showForumEntryInIframe_Newpage(url) {
+	self.location.href = url;
     return false;
 }
 
@@ -3949,9 +3919,11 @@ function ssFavorites(namespace) {
 		//fObj.style.display = "none";
 		fObj.style.display = "block";
 		var w = ss_getObjectWidth(fObj)
-		ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_favorites" + namespace) + ss_favoritesPaneTopOffset))
-		ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_favorites" + namespace)))
-		var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom" + namespace) + ss_favoritesPaneLeftOffset);
+		var navbarFavDivObj = document.getElementById("ss_navbar_favorites" + namespace);
+		var parentTrObj = navbarFavDivObj.parentNode.parentNode;
+		var parentTrObjHeight = parseInt(dojo.html.getContentBox(parentTrObj).height);
+		ss_setObjectTop(fObj, parseInt(dojo.html.getAbsolutePosition(parentTrObj, true).y + parentTrObjHeight))
+		ss_setObjectLeft(fObj, parseInt(dojo.html.getAbsolutePosition(navbarFavDivObj, true).x))
 		dojo.html.hide("ss_favorites_editor" + namespace);
     	dojo.html.show(fObj);
 	    dojo.html.setVisibility(fObj, "visible");
@@ -3978,11 +3950,7 @@ function ssFavorites(namespace) {
 			t += '<li id ="ss_favorite_' + f.id + '">';
 			t += '<input type="checkbox" style="display: none;" />';
 			t += '<a href="javascript:;" ';
-			if (1 == 1 || typeof ss_displayType != "undefined" && ss_displayType == "ss_workarea") {
-				t += 'onClick="ss_treeShowIdNoWS(';
-			} else {
-				t += 'onClick="ss_treeShowId(';
-			}
+			t += 'onClick="ss_treeShowIdNoWS(';
 			t += "'" + f.value + "', this";
 			if (typeof f.action == "undefined") {
 				f.action = "view_ws_listing";
@@ -4149,7 +4117,10 @@ function ssTeams(namespace) {
 		//fObj.style.display = "none";
 		fObj.style.display = "block";
 		var w = ss_getObjectWidth(fObj)
-		ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_myteams" + namespace) + ss_favoritesPaneTopOffset))
+		var navbarTeamsDivObj = document.getElementById("ss_navbar_myteams" + namespace);
+		var parentTrObj = navbarTeamsDivObj.parentNode.parentNode;
+		var parentTrObjHeight = parseInt(dojo.html.getContentBox(parentTrObj).height);
+		ss_setObjectTop(fObj, parseInt(dojo.html.getAbsolutePosition(parentTrObj, true).y + parentTrObjHeight))
 		ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_myteams" + namespace)))
 		var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom" + namespace) + ss_favoritesPaneLeftOffset);
 	    dojo.html.show(fObj);
@@ -4182,21 +4153,6 @@ function ssTeams(namespace) {
 	}
 }
 
-//
-//         Routine to show/hide portal
-//
-
-
-function ss_toggleShowHidePortal(obj) {
-	ss_moveDivToTopOfBody('ss_portlet_content')
-	var divObj = document.getElementById('ss_portlet_content');
-	var spanObj = document.getElementById('ss_navbarHideShowPortalText');
-    if (divObj && divObj.parentNode.tagName.toLowerCase() == 'body') {
-    	obj.className = "ss_global_toolbar_show_portal";
-    } else {
-    	obj.className = "ss_global_toolbar_hide_portal";
-    }
-}
 //show a div as a popup - no ajax
 function ss_showPopupDiv(divId) {
 	var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
@@ -5954,7 +5910,25 @@ function ss_clearMultiSelect(id) {
 		inputHiddenObj.parentNode.removeChild(inputHiddenObj);
 	}
 }
-
+function ss_checkTree(obj, divName) {
+	if (obj.ownerDocument) {
+		var cDocument = obj.ownerDocument;
+	} else if (obj.document) {
+		cDocument = obj.document;
+	}
+	if (cDocument) {
+		var r = cDocument.getElementById(divName);
+		if (r) {
+			if (r.checked !== undefined) {
+				r.checked = !r.checked;
+			}
+			if (r.onclick !== undefined) {
+				r.onclick();
+			}
+		}
+	}
+	return false;
+}
 function ss_saveTreeId(obj, treeName, placeId, idChoicesInputId) {
 	var idChoices = null;
 	var choicesAreFromParent = false;
@@ -6116,4 +6090,15 @@ function ss_showHideSidebar(namespace) {
 	ajaxRequest.sendRequest();  //Send the request
 }
 
+//Routine to get the current url and post it to the login controller so we can return here after logging in
+function ss_requestLogin(obj, binderId, userWorkspaceId, userName) {
+	//If we are looking at the guest user workspace, don't return here. Go to the new user's workspace
+	if (userName == "guest" && binderId == userWorkspaceId) return true;
+	var formObj = ss_findOwningElement(obj, "form");
+	if (formObj == null) return true;
+	formObj.url.value = self.location.href;
+	formObj.action = obj.href; 
+	formObj.submit();
+	return false;
+}
 

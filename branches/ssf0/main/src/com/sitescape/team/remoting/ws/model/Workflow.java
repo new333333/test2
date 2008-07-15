@@ -1,6 +1,8 @@
 package com.sitescape.team.remoting.ws.model;
 
-public class Workflow {
+import java.io.Serializable;
+
+public class Workflow implements Serializable {
 	private String definitionId;
 	private Long tokenId;
 	private String state;

@@ -33,14 +33,17 @@ import java.util.Calendar;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 
+import com.sitescape.team.remoting.ws.model.Binder;
 import com.sitescape.team.remoting.ws.model.DefinitionCollection;
 import com.sitescape.team.remoting.ws.model.FolderEntry;
 import com.sitescape.team.remoting.ws.model.FolderEntryCollection;
-import com.sitescape.team.remoting.ws.model.Principal;
+import com.sitescape.team.remoting.ws.model.FunctionMembership;
+import com.sitescape.team.remoting.ws.model.Group;
 import com.sitescape.team.remoting.ws.model.PrincipalCollection;
 import com.sitescape.team.remoting.ws.model.TeamCollection;
 import com.sitescape.team.remoting.ws.model.TeamMemberCollection;
 import com.sitescape.team.remoting.ws.model.TemplateCollection;
+import com.sitescape.team.remoting.ws.model.User;
 import com.sitescape.team.remoting.ws.service.binder.BinderService;
 import com.sitescape.team.remoting.ws.service.definition.DefinitionService;
 import com.sitescape.team.remoting.ws.service.folder.FolderService;
@@ -58,6 +61,7 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		BinderService,
 		DefinitionService, 
 		FolderService, 
+		MigrationService,
 		IcalService, 
 		LdapService,
 		LicenseService, 
@@ -115,22 +119,23 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	protected ZoneService getZoneService() {
 		return (ZoneService) SpringContextUtil.getBean("zoneService");
 	}
-	
-	public long binder_addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML) {
-		return getBinderService().binder_addBinder(accessToken, parentId, definitionId, inputDataAsXML);
+	/*
+	public long binder_addBinderWithXML(String accessToken, long parentId, String definitionId, String inputDataAsXML) {
+		return getBinderService().binder_addBinderWithXML(accessToken, parentId, definitionId, inputDataAsXML);
 	}
 	public String binder_getTeamMembersAsXML(String accessToken, long binderId) {
 		return getBinderService().binder_getTeamMembersAsXML(accessToken, binderId);
-	}
+	}*/
 	public void binder_indexBinder(String accessToken, long binderId) {
 		getBinderService().binder_indexBinder(accessToken, binderId);
 	}
 	public void binder_setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations) {
 		getBinderService().binder_setDefinitions(accessToken, binderId, definitionIds, workflowAssociations);
 	}
-	public void binder_setFunctionMembership(String accessToken, long binderId, String inputDataAsXml) {
-		getBinderService().binder_setFunctionMembership(accessToken, binderId, inputDataAsXml);
-	}
+	/*
+	public void binder_setFunctionMembershipWithXML(String accessToken, long binderId, String inputDataAsXml) {
+		getBinderService().binder_setFunctionMembershipWithXML(accessToken, binderId, inputDataAsXml);
+	}*/
 	public void binder_setFunctionMembershipInherited(String accessToken, long binderId, boolean inherit) {
 		getBinderService().binder_setFunctionMembershipInherited(accessToken, binderId, inherit);
 	}
@@ -143,41 +148,47 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public String definition_getDefinitionAsXML(String accessToken, String definitionId) {
 		return getDefinitionService().definition_getDefinitionAsXML(accessToken, definitionId);
 	}
+	/*
 	public String definition_getDefinitionsAsXML(String accessToken) {
 		return getDefinitionService().definition_getDefinitionsAsXML(accessToken);
-	}
+	}*/
 	public void folder_addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId) {
 		getFolderService().folder_addEntryWorkflow(accessToken, binderId, entryId, definitionId);
 	}
-	public long folder_addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
-		return getFolderService().folder_addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName);
+	/*
+	public long folder_addEntryWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
+		return getFolderService().folder_addEntryWithXML(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName);
 	}
-	public long folder_addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName) {
-		return getFolderService().folder_addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML, attachedFileName);
-	}
+	public long folder_addReplyWithXML(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName) {
+		return getFolderService().folder_addReplyWithXML(accessToken, binderId, parentId, definitionId, inputDataAsXML, attachedFileName);
+	}*/
 	public void folder_modifyWorkflowState(String accessToken, long binderId, long entryId, long stateId, String toState) {
 		getFolderService().folder_modifyWorkflowState(accessToken, binderId, entryId, stateId, toState);
 	}
-	public String folder_getFolderEntriesAsXML(String accessToken, long binderId) {
-		return getFolderService().folder_getFolderEntriesAsXML(accessToken, binderId);
+	/*
+	public String folder_getEntriesAsXML(String accessToken, long binderId) {
+		return getFolderService().folder_getEntriesAsXML(accessToken, binderId);
 	}
-	public String folder_getFolderEntryAsXML(String accessToken, long binderId, long entryId, boolean includeAttachments) {
-		return getFolderService().folder_getFolderEntryAsXML(accessToken, binderId, entryId, includeAttachments);
+	public String folder_getEntryAsXML(String accessToken, long binderId, long entryId, boolean includeAttachments) {
+		return getFolderService().folder_getEntryAsXML(accessToken, binderId, entryId, includeAttachments);
 	}
-	public void folder_modifyFolderEntry(String accessToken, long binderId, long entryId, String inputDataAsXML) {
-		getFolderService().folder_modifyFolderEntry(accessToken, binderId, entryId, inputDataAsXML);
-	}
+	public void folder_modifyEntryWithXML(String accessToken, long binderId, long entryId, String inputDataAsXML) {
+		getFolderService().folder_modifyEntryWithXML(accessToken, binderId, entryId, inputDataAsXML);
+	}*/
 	public void folder_synchronizeMirroredFolder(String accessToken, long binderId) {
 		getFolderService().folder_synchronizeMirroredFolder(accessToken, binderId);
 	}
-	public void folder_uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
-		getFolderService().folder_uploadFolderFile(accessToken, binderId, entryId, fileUploadDataItemName, fileName);
+	public void folder_uploadFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
+		getFolderService().folder_uploadFile(accessToken, binderId, entryId, fileUploadDataItemName, fileName);
 	}
-	public void folder_uploadFolderFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
-		getFolderService().folder_uploadFolderFileStaged(accessToken, binderId, entryId, fileUploadDataItemName, fileName, stagedFileRelativePath);
+	public void folder_uploadFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
+		getFolderService().folder_uploadFileStaged(accessToken, binderId, entryId, fileUploadDataItemName, fileName, stagedFileRelativePath);
 	}
-	public void ical_uploadCalendarEntries(String accessToken, long folderId, String iCalDataAsXML) {
-		getIcalService().ical_uploadCalendarEntries(accessToken, folderId, iCalDataAsXML);
+	public void folder_deleteEntry(String accessToken, long binderId, long entryId) {
+		getFolderService().folder_deleteEntry(accessToken, binderId, entryId);
+	}
+	public void ical_uploadCalendarEntriesWithXML(String accessToken, long folderId, String iCalDataAsXML) {
+		getIcalService().ical_uploadCalendarEntriesWithXML(accessToken, folderId, iCalDataAsXML);
 	}
 	public void ldap_syncAll(String accessToken) {
 		getLdapService().ldap_syncAll(accessToken);
@@ -194,17 +205,17 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void license_updateLicense(String accessToken) {
 		getLicenseService().license_updateLicense(accessToken);
 	}
-	public long migration_addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
-		return getMigrationService().migration_addBinder(accessToken, parentId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
+	public long migration_addBinderWithXML(String accessToken, long parentId, String definitionId, String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+		return getMigrationService().migration_addBinderWithXML(accessToken, parentId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
 	}
 	public void migration_addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState, String modifier, Calendar modificationDate) {
 		getMigrationService().migration_addEntryWorkflow(accessToken, binderId, entryId, definitionId, startState, modifier, modificationDate);
 	}
-	public long migration_addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
-		return getMigrationService().migration_addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
+	public long migration_addFolderEntryWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+		return getMigrationService().migration_addFolderEntryWithXML(accessToken, binderId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
 	}
-	public long migration_addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
-		return getMigrationService().migration_addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
+	public long migration_addReplyWithXML(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+		return getMigrationService().migration_addReplyWithXML(accessToken, binderId, parentId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
 	}
 	public void migration_uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, String modifier, Calendar modificationDate) {
 		getMigrationService().migration_uploadFolderFile(accessToken, binderId, entryId, fileUploadDataItemName, fileName, modifier, modificationDate);
@@ -212,12 +223,13 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void migration_uploadFolderFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath, String modifier, Calendar modificationDate) {
 		getMigrationService().migration_uploadFolderFileStaged(accessToken, binderId, entryId, fileUploadDataItemName, fileName, stagedFileRelativePath, modifier, modificationDate);
 	}
-	public long profile_addGroup(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
-		return getProfileService().profile_addGroup(accessToken, binderId, definitionId, inputDataAsXML);
+	/*
+	public long profile_addGroupWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
+		return getProfileService().profile_addGroupWithXML(accessToken, binderId, definitionId, inputDataAsXML);
 	}
-	public long profile_addUser(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
-		return getProfileService().profile_addUser(accessToken, binderId, definitionId, inputDataAsXML);
-	}
+	public long profile_addUserWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
+		return getProfileService().profile_addUserWithXML(accessToken, binderId, definitionId, inputDataAsXML);
+	}*/
 	public void profile_addUserToGroup(String accessToken, long userId, String username, long groupId) {
 		getProfileService().profile_addUserToGroup(accessToken, userId, username, groupId);
 	}
@@ -227,21 +239,23 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void profile_deletePrincipal(String accessToken, long binderId, long principalId) {
 		getProfileService().profile_deletePrincipal(accessToken, binderId, principalId);
 	}
+	/*
 	public String profile_getPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords) {
 		return getProfileService().profile_getPrincipalsAsXML(accessToken, firstRecord, maxRecords);
 	}
 	public String profile_getPrincipalAsXML(String accessToken, long binderId, long principalId) {
 		return getProfileService().profile_getPrincipalAsXML(accessToken, binderId, principalId);
 	}
-	public void profile_modifyPrincipal(String accessToken, long binderId, long principalId, String inputDataAsXML) {
-		getProfileService().profile_modifyPrincipal(accessToken, binderId, principalId, inputDataAsXML);
-	}
+	public void profile_modifyPrincipalWithXML(String accessToken, long binderId, long principalId, String inputDataAsXML) {
+		getProfileService().profile_modifyPrincipalWithXML(accessToken, binderId, principalId, inputDataAsXML);
+	}*/
 	public String search_getHotContent(String accessToken, String limitType, Long binderId) {
 		return getSearchService().search_getHotContent(accessToken, limitType, binderId);
 	}
+	/*
 	public String search_getTeamsAsXML(String accessToken) {
 		return getSearchService().search_getTeamsAsXML(accessToken);
-	}
+	}*/
 	public String search_getWorkspaceTreeAsXML(String accessToken, long binderId, int levels, String page) {
 		return getSearchService().search_getWorkspaceTreeAsXML(accessToken, binderId, levels, page);
 	}
@@ -251,34 +265,38 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public long template_addBinder(String accessToken, long parentBinderId, long binderConfigId, String title) {
 		return getTemplateService().template_addBinder(accessToken, parentBinderId, binderConfigId, title);
 	}
+	/*
 	public String template_getTemplatesAsXML(String accessToken) {
 		return getTemplateService().template_getTemplatesAsXML(accessToken);
+	}*/
+	public Long zone_addZone(String accessToken, String zoneName, String virtualHost, String mailDomain) {
+		return getZoneService().zone_addZone(accessToken, zoneName, virtualHost, mailDomain);
 	}
-	public void zone_addZoneUnderPortal(String accessToken, String zoneName, String virtualHost, String mailDomain) {
-		getZoneService().zone_addZoneUnderPortal(accessToken, zoneName, virtualHost, mailDomain);
+	public void zone_deleteZone(String accessToken, String zoneName) {
+		getZoneService().zone_deleteZone(accessToken, zoneName);
 	}
-	public void zone_deleteZoneUnderPortal(String accessToken, String zoneName) {
-		getZoneService().zone_deleteZoneUnderPortal(accessToken, zoneName);
-	}
-	public void zone_modifyZoneUnderPortal(String accessToken, String zoneName, String virtualHost, String mailDomain) {
-		getZoneService().zone_modifyZoneUnderPortal(accessToken, zoneName, virtualHost, mailDomain);
-	}
-
-
-	public FolderEntry folder_getFolderEntry(String accessToken, long binderId, long entryId, boolean includeAttachments) {
-		return getFolderService().folder_getFolderEntry(accessToken, binderId, entryId, includeAttachments);
+	public void zone_modifyZone(String accessToken, String zoneName, String virtualHost, String mailDomain) {
+		getZoneService().zone_modifyZone(accessToken, zoneName, virtualHost, mailDomain);
 	}
 
-	public FolderEntryCollection folder_getFolderEntries(String accessToken, long binderId) {
-		return getFolderService().folder_getFolderEntries(accessToken, binderId);
+	public FolderEntry folder_getEntry(String accessToken, long binderId, long entryId, boolean includeAttachments) {
+		return getFolderService().folder_getEntry(accessToken, binderId, entryId, includeAttachments);
+	}
+
+	public FolderEntryCollection folder_getEntries(String accessToken, long binderId) {
+		return getFolderService().folder_getEntries(accessToken, binderId);
 	}
 
 	public PrincipalCollection profile_getPrincipals(String accessToken, int firstRecord, int maxRecords) {
 		return getProfileService().profile_getPrincipals(accessToken, firstRecord, maxRecords);
 	}
 
-	public Principal profile_getPrincipal(String accessToken, long binderId, long principalId) {
-		return getProfileService().profile_getPrincipal(accessToken, binderId, principalId);
+	public User profile_getUser(String accessToken, long binderId, long userId) {
+		return getProfileService().profile_getUser(accessToken, binderId, userId);
+	}
+
+	public Group profile_getGroup(String accessToken, long binderId, long groupId) {
+		return getProfileService().profile_getGroup(accessToken, binderId, groupId);
 	}
 
 	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId) {
@@ -295,6 +313,54 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 
 	public TemplateCollection template_getTemplates(String accessToken) {
 		return getTemplateService().template_getTemplates(accessToken);
+	}
+	
+	public long binder_addBinder(String accessToken, Binder binder) {
+		return getBinderService().binder_addBinder(accessToken, binder);
+	}
+
+	public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships) {
+		getBinderService().binder_setFunctionMembership(accessToken, binderId, functionMemberships);
+	}
+
+	public long folder_addEntry(String accessToken, FolderEntry entry, String attachedFileName) {
+		return getFolderService().folder_addEntry(accessToken, entry, attachedFileName);
+	}
+	
+	public long folder_addReply(String accessToken, long parentEntryId, FolderEntry reply, String attachedFileName) {
+		return getFolderService().folder_addReply(accessToken, parentEntryId, reply, attachedFileName);
+	}
+
+	public void folder_modifyEntry(String accessToken, FolderEntry entry) {
+		getFolderService().folder_modifyEntry(accessToken, entry);
+	}
+
+	public long migration_addBinder(String accessToken, Binder binder) {
+		return getMigrationService().migration_addBinder(accessToken, binder);
+	}
+	
+	public long migration_addFolderEntry(String accessToken, FolderEntry entry) {
+		return getMigrationService().migration_addFolderEntry(accessToken, entry);
+	}
+	
+	public long migration_addReply(String accessToken, long parentEntryId, FolderEntry reply) {
+		return getMigrationService().migration_addReply(accessToken, parentEntryId, reply);
+	}
+
+	public long profile_addUser(String accessToken, User user) {
+		return getProfileService().profile_addUser(accessToken, user);
+	}
+	
+	public long profile_addGroup(String accessToken, Group group) {
+		return getProfileService().profile_addGroup(accessToken, group);
+	}
+	
+	public void profile_modifyUser(String accessToken, User user) {
+		getProfileService().profile_modifyUser(accessToken, user);
+	}
+
+	public void profile_modifyGroup(String accessToken, Group group) {
+		getProfileService().profile_modifyGroup(accessToken, group);
 	}
 
 }

@@ -35,7 +35,7 @@
 <%
 String wsTreeName = "search_" + renderResponse.getNamespace();
 %>
-<c:set var="formName"><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm</c:set>
+<c:set var="formName">${renderResponse.namespace}fm</c:set>
 
 
 <table class="ss_style" width="100%"><tr><td>
@@ -73,13 +73,11 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
    <div id="ss_report_activityFlavorOptions" style="margin-left:20px;">
    <input type="checkbox" class="ss_check" name="ss_byUser" id="ss_byUser"/><label class="ss_checkbox_label"><ssf:nlt tag="administration.report.label.breakDown"/></label>
    </div>
-<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.Workflow">
    <input type="radio" class="ss_radio" name="reportFlavor" value="workflow" onclick="showOptions(this);return true;"/><label class="ss_radio_label"><ssf:nlt tag="administration.report.label.workflow"/></label>
    <div id="ss_report_workflowFlavorOptions" style="margin-left:20px;">
      <input type="radio" class="ss_radio" name="ss_reportFlavor" value="averages" checked="checked"/><label class="ss_radio_label"><ssf:nlt tag="administration.report.label.averages"/></label><br/>
      <input type="radio" class="ss_radio" name="ss_reportFlavor" value="current"/><label class="ss_radio_label"><ssf:nlt tag="administration.report.label.current"/></label><br/>   <br/>
    </div>
-</ssf:ifAuthorizedByLicense>
    <br/>
    <br/>
    <span class="ss_bold"><ssf:nlt tag="administration.report.forum"/></span>
@@ -87,7 +85,7 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
    <br/>
    <ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
      rootOpen="true" topId="${ssWsDomTreeBinderId}" 
-     multiSelect="<%= new ArrayList() %>" multiSelectPrefix="$type" />
+     multiSelect="<%= new ArrayList() %>" multiSelectPrefix="id" />
 
    <br/>
    <br/>
@@ -131,7 +129,7 @@ function <%= wsTreeName %>_showId(forum, obj, action) {
 		cDocument = obj.document;
 	}
 	if (cDocument) {
-		var r = cDocument.getElementById("ss_tree_checkbox<%= wsTreeName %>" + action + forum);
+		var r = cDocument.getElementById("ss_tree_checkbox<%= wsTreeName %>id" + forum);
 		if (r) {
 			if (r.checked !== undefined) {
 				r.checked = !r.checked;

@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -84,9 +85,9 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected int binderCount=0;
     protected HKey binderKey;
     protected int nextBinderNumber=1;
-    protected String branding; //initialized by hiberate access=field
+    protected String branding; 
     protected Boolean postingEnabled;
-   
+    protected String type;
     public Binder() {
     }
     /**
@@ -261,6 +262,16 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	this.binderCount = binderCount;
     }
  
+    /**
+     * @hibernate.property insert="false" update="false"
+     *
+     */
+    protected String getType() {
+    	return type;
+    }
+    protected void setType(String type) {
+    	this.type = type;
+    }
     /**
      * Only used on top workspace.
      * @hibernate.property length="128" 
@@ -466,6 +477,15 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
      	if (definitions == null) definitions = new ArrayList();
      	return definitions;
      }
+    public Map<String,Definition>getDefinitionMap() {
+    	List<Definition> defs = getDefinitions();
+    	//convert to map of id->def
+    	Map results = new TreeMap();
+    	for (Definition def:defs) {
+    		results.put(def.getId(), def);
+    	}
+    	return results;	
+    }
     /**
      * Replace current configured definitions.
      * @param definitions
@@ -599,10 +619,14 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	public boolean isMirroredAndReadOnly() {
 		return isMirrored() && getResourceDriver().isReadonly();
 	}
+	public Binder getBrandingSource() {
+    	if (Validator.isNotNull(branding)) return this;
+        if (parentBinder == null) return this;
+        return parentBinder.getBrandingSource();
+		
+	}
     public String getBranding() {
-    	if (Validator.isNotNull(branding)) return branding;
-        if (parentBinder == null) return null;
-        return parentBinder.getBranding();
+    	return branding;
     }
     public void setBranding(String branding) {
     	this.branding = branding; 

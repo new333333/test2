@@ -61,6 +61,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 	private String _parentId;
 	private String _folderId;
 	private String _height;
+	private String _tableStyle;
 	private String _style;
 	private String _type;
 	private String _jsp;
@@ -85,6 +86,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 		if (_id == null || _id.equals("")) _id = "ss_sTable";
 		if (_parentId == null || _parentId.equals("")) _parentId = _id;
 		if (_height == null || _height.equals("0")) _height = this.defaultTableHeight;
+		if (_tableStyle == null) _tableStyle = "";
 		if (_style == null) _style = "";
 
 		// Output the table
@@ -189,6 +191,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 			_id = "";
 			_parentId = ""; 
 			_height = "";
+			_tableStyle = "";
 			_style = "";
 			_type = "";
 			_jsp = "";
@@ -222,6 +225,9 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 	}
 	public void setHeight(String height) {
 		_height = height;
+	}
+	public void setTableStyle(String tableStyle) {
+		_tableStyle = tableStyle;
 	}
 	public void setStyle(String style) {
 		_style = style;

@@ -88,11 +88,13 @@ public class ManageApplicationsController extends  SAbstractController {
 			String title = PortletRequestUtils.getStringParameter(request, "title", "");
 			String description = PortletRequestUtils.getStringParameter(request, "description", "");
 			String postUrl = PortletRequestUtils.getStringParameter(request, "postUrl", "");
+			String timeout = PortletRequestUtils.getStringParameter(request, "timeout");
 			String trusted = PortletRequestUtils.getStringParameter(request, "trusted", "");
 			Map updates = new HashMap();
 			updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 			updates.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 			updates.put(ObjectKeys.FIELD_APPLICATION_POST_URL, postUrl);
+			updates.put(ObjectKeys.FIELD_APPLICATION_TIMEOUT, timeout);
 			updates.put(ObjectKeys.FIELD_APPLICATION_TRUSTED, trusted);
 			getProfileModule().modifyEntry(binderId, applicationId, new MapInputData(updates));
 			response.setRenderParameter(WebKeys.URL_ENTRY_ID, applicationId.toString());
@@ -101,8 +103,6 @@ public class ManageApplicationsController extends  SAbstractController {
 			Long applicationId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
 			getProfileModule().deleteEntry(binderId, applicationId, null);
 			
-		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
-			response.setRenderParameter("redirect", "true");
 		} else {
 			response.setRenderParameters(formData);
 		}
@@ -111,9 +111,6 @@ public class ManageApplicationsController extends  SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 			
-		if (!Validator.isNull(request.getParameter("redirect"))) {
-			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
-		}
 		Binder binder = getProfileModule().getProfileBinder();
 		
 		Map options = new HashMap();

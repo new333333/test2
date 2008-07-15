@@ -38,7 +38,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 	/* COLUMN CONTAINER */
 #ss_dashboard_content {
-	position:relative; /* This fixes the IE7 overflow hidden bug */
+/*	position:relative;  Needed at one time, but breaks view in IE6 */
 	clear:both;
 	float:left;
     width:100%;	/* width of whole page */
@@ -83,8 +83,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	width:18%;				/* Width of right column content (column width minus padding on either side) */
 	left:44%;				/* (100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
 	}
-	
-	}
 
 div.ss_canvas {
 	border-left: solid 1px ${ss_toolbar1_background_color};
@@ -97,7 +95,7 @@ div.ss_canvas {
 #ss_wrap{
 	margin: auto;
 	min-height:100%;
-	position:relative;		/* This fixes the IE7 overflow hidden bug */
+/*	position:relative;		 Needed at one time, but breaks view in IE6 */
 	clear:both;
 	float:left;
     width:100%;			/* width of whole page */
@@ -581,7 +579,7 @@ div.ss_canvas {
 	text-decoration: underline!important;
 	color:#4AAA42!important;
 	font-size:10px!important;
-	font-height:14px;
+	line-height:14px;
 	}			
 /* ============ End link styles =========================== */		
 
@@ -626,16 +624,17 @@ div.ss_canvas {
     line-height:normal;
     border-bottom: 1px solid #666;
     border-right: 10px solid #EFEFEF;
+    margin-top:0px;
       }
  #ss_tabsC ul {
-    margin:0;
-    padding:10px 10px 0 20px;
+    margin: 0px!important;
+    padding:10px 10px 0 10px;
     list-style:none;
       }
 #ss_tabsC li {
     display:inline;
-    margin:0;
-   	padding:0;
+    margin-top:0;
+   	padding:0px !important;
       }
  #ss_tabsC a {
     float:left;
@@ -648,6 +647,7 @@ div.ss_canvas {
     display:block;
     background:url("<html:rootPath/>images/pics/tabrightF.gif") no-repeat right top;
     padding:5px 15px 4px 6px;
+    white-space:nowrap !important;
 
       }
  /* Commented Backslash Hack hides rule from IE5-Mac \ */

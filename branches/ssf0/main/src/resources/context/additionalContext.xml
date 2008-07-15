@@ -24,8 +24,19 @@
 
 	<!-- ============================== Modules ============================= -->
 
-	<bean id="ldapModule"  class="com.sitescape.team.module.ldap.impl.NullLdapModuleImpl"/>
-	<bean id="workflowModule" class="com.sitescape.team.module.workflow.impl.NullWorkflowModuleImpl"/>
+	<bean id="ldapModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.ldap.impl.NullLdapModuleImpl"/>
+
+	<bean id="workflowFactory" class="com.sitescape.team.module.workflow.impl.WorkflowFactory">
+		<property name="hibernateSessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="workflowModule" parent="baseTransactionProxy" depends-on="zoneConfig, workflowFactory" >
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.workflow.impl.WorkflowModuleImpl">
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+			</bean>
+		</property>
+	</bean>	
+
 	
 	<bean id="folderModuleTarget" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.folder.impl.BaseFolderModule">
 		<property name="fileModule"><ref bean="fileModule"/></property>

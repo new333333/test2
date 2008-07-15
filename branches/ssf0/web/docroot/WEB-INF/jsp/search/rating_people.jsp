@@ -28,6 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // Search results rating of "people" %>
 <ssf:sidebarPanel title="searchResult.ratigPeopleTitle" id="ss_rating_people" divClass="ss_rating_box_content"
     initOpen="true" sticky="false">

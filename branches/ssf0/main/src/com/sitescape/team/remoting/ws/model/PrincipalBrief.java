@@ -36,7 +36,7 @@ public class PrincipalBrief implements Serializable {
 	private String definitionId;
 	private String title;
 	private String emailAddress;
-	private String type;
+	private String type; // user, group, application, or applicationGroup
 	// This information may not be present depending on whether the source is 
 	// the principal object or search index. So use Boolean instead of boolean.
 	private Boolean disabled;

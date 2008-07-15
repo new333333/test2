@@ -117,6 +117,11 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
+		<attribute>
+			<name>owningBinderId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
 	</tag>
 	
 	<tag>
@@ -426,6 +431,12 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
+			<name>isFreeBusyActive</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
 		</attribute>		
 		<attribute>
 			<name>initEvent</name>
@@ -521,10 +532,15 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<name>clickRoutineArgs</name>
+			<name>clickRoutineObj</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
+		</attribute>
+		<attribute>
+			<name>findMultipleObj</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 		<attribute>
 			<name>leaveResultsVisible</name>
 			<required>false</required>
@@ -555,6 +571,12 @@
 		</attribute>
 		<attribute>
 			<name>addCurrentUser</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
+			<name>showUserTitleOnly</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.Boolean</type>
@@ -983,12 +1005,6 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 		<attribute>
-			<name>showOptionsInline</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>java.lang.Boolean</type>
-		</attribute>		
-		<attribute>
 			<name>optionsDivId</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -1176,6 +1192,11 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		<attribute>
+			<name>tableStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 	</tag>
 	
 	<tag>
@@ -1194,6 +1215,11 @@
 			<type>java.lang.Boolean</type>
 		</attribute>
 		<attribute>
+			<name>style</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<name>oddStyle</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -1209,6 +1235,11 @@
 		<name>slidingTableColumn</name>
 		<tag-class>com.sitescape.team.taglib.SlidingTableColumnTag</tag-class>
 		<body-content>JSP</body-content>
+		<attribute>
+			<name>style</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 		<attribute>
 			<name>width</name>
 			<required>false</required>
@@ -1653,6 +1684,11 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
+		<attribute>
+			<name>callbackUrl</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
 	</tag>
 
 	<tag>
@@ -1727,6 +1763,12 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
+		<attribute>
+			<name>crawlable</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
+		</attribute>		
 	</tag>
 
 	<tag>
@@ -1741,14 +1783,13 @@
 	</tag>
 	
 	<tag>
-		<name>remoteAccessory</name>
-		<tag-class>com.sitescape.team.taglib.RemoteAccessoryTag</tag-class>
+		<name>remoteApplication</name>
+		<tag-class>com.sitescape.team.taglib.RemoteApplicationTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>applicationId</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>java.lang.Long</type>
 		</attribute>		
 	</tag>
 	

@@ -33,6 +33,6 @@
 <% // This is JSON type AJAX response  %>
 {
 <c:forEach var="workflow" items="${ssWorkflowDefinitionMap}" varStatus="status">
-	"<ssf:escapeJavaScript value="${workflow.id}"/>":"<ssf:escapeJavaScript value="${workflow.title}"/>"<c:if test="${!status.last}">,</c:if>
+	"<ssf:escapeJavaScript value="${workflow.value.id}"/>":"<ssf:escapeJavaScript value="${workflow.key}"/>"<c:if test="${!status.last}">,</c:if>
 </c:forEach>
 }

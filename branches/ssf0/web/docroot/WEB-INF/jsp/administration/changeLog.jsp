@@ -28,7 +28,11 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body">
+<div class="ss_pseudoPortal">
+<div class="ss_style ss_portlet">
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 <script type="text/javascript">
 function ss_saveChangeLogBinderId(id) {
@@ -47,12 +51,12 @@ function ss_saveChangeLogEntryId(id) {
 
 </script>
 
-<div class="ss_portlet_style ss_portlet">
+<div class="ss_style ss_portlet">
 
 <form class="ss_portlet_style ss_form" 
   id="ss_changeLogForm" 
   name="ss_changeLogForm" method="post" 
-  action="<portlet:renderURL windowState="maximized"/>">
+  action="<ssf:url action="view_change_log" actionUrl="true"/>">
 
 <span class="ss_largerprint ss_bold"><ssf:nlt tag="administration.view_change_log"/></span>
 <br/>
@@ -112,11 +116,9 @@ function ss_saveChangeLogEntryId(id) {
 	    <option value="addEntry">addEntry</option>
 	    <option value="modifyEntry">modifyEntry</option>
 	    <option value="deleteEntry">deleteEntry</option>
-<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.Workflow">
 	    <option value="startWorkflow">startWorkflow</option>
 	    <option value="modifyWorkflowState">modifyWorkflowState</option>
 	    <option value="addWorkflowResponse">addWorkflowResponse</option>
-</ssf:ifAuthorizedByLicense>
 	    <option value="moveEntry">moveEntry</option>
 	    <option value="addFile">addFile</option>
 	    <option value="modifyFile">modifyFile</option>
@@ -139,7 +141,8 @@ function ss_saveChangeLogEntryId(id) {
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>" 
 	  onClick="if (${ssNamespace}_getChanges) {${ssNamespace}_getChanges()};return false;">
 
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+	onClick="self.window.close();return false;"/>
 </div>
 </form>
 <br/>
@@ -152,25 +155,26 @@ function ss_saveChangeLogEntryId(id) {
 var rn = Math.round(Math.random()*999999);
 
 function ${ssNamespace}_getChanges() {
-	var url = "<ssf:url adapter="true" 
-			portletName="ss_administration" 
-			action="view_change_log" 
-			actionUrl="false" />";
 
 	var frame = self.document.getElementById('${ssNamespace}_display');
 	var myForm = self.document.forms['ss_changeLogForm'];
 	if (!myForm.binderId.value && !myForm.entityId.value) {
 		return false;
 	}
-	url += "\&operation=" + myForm.operation.value;
+	var urlParams={operation:myForm.operation.value, rn:rn++};
 	if (myForm.binderId.value) {
-		url += "\&binderId=" + myForm.binderId.value;
+		urlParams['binderId'] = myForm.binderId.value;
 	}
 	if (myForm.entityId.value) {
-		url += "\&entityId=" + myForm.entityId.value;
+		urlParams['entityId'] = myForm.entityId.value;
 	}
-	url += "\&entityType=" + myForm.entityType.value;
-	url += "\&rn=" + rn++;
-	frame.src = url;
+	urlParams['entityType'] = myForm.entityType.value;
+	frame.src = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "view_change_log"); 
+
 }
 </script>
+
+</div>
+</div>
+</body>
+</html>

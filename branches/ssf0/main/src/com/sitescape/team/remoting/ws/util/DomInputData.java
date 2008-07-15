@@ -30,9 +30,7 @@ package com.sitescape.team.remoting.ws.util;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.dom4j.Document;
@@ -44,8 +42,7 @@ import com.sitescape.team.domain.Event;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.survey.Survey;
-import com.sitescape.team.web.util.DateHelper;
-import com.sitescape.team.web.util.EventHelper;
+import com.sitescape.team.util.DateUtil;
 
 /**
  * An implementation of <code>InputDataAccessor</code> based on element-only
@@ -60,15 +57,6 @@ public class DomInputData implements InputDataAccessor {
 	private Element root;
 	private IcalModule icalModule;
 	
-	private static SimpleDateFormat[] formats = {
-		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'"),
-		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),
-		new SimpleDateFormat("yyyy-MM-dd'T'HH:mmz"),
-		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz"),
-		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm"),
-		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"),
-		new SimpleDateFormat("yyyy-MM-dd")
-	};
 	public DomInputData(Document doc, IcalModule icalModule) {
 		this(doc.getRootElement(), icalModule);
 		this.doc = doc;
@@ -93,21 +81,10 @@ public class DomInputData implements InputDataAccessor {
 		}
 	}
 
-	private static Date parseDate(String text)
-	{
-		for(SimpleDateFormat sdf : formats) {
-			try {
-				return sdf.parse(text);
-			} catch(java.text.ParseException e) {
-			}
-		}
-		return null;
-	}
-
 	public Date getDateValue(String key) {
 		String textVal = getSingleValue(key);
 		if(textVal != null) {
-			return parseDate(textVal);
+			return DateUtil.parseDate(textVal);
 		}
 		return null;
 	}

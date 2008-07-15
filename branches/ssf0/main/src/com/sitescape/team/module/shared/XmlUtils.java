@@ -200,7 +200,7 @@ public class XmlUtils {
 			 String name = defElement.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_NAME);
 			 if (Validator.isNotNull(name)) {
 				 try {
-					 def = ci.getCoreDao().loadDefinitionByName(name, RequestContextHolder.getRequestContext().getZoneId());
+					 def = ci.getCoreDao().loadDefinitionByName(null, name, RequestContextHolder.getRequestContext().getZoneId());
 				} catch (NoDefinitionByTheIdException nd) {};
 			 } 
 		 }

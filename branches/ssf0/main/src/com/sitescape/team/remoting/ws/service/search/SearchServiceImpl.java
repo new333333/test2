@@ -60,7 +60,7 @@ import com.sitescape.team.web.tree.WebSvcTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.util.search.Constants;
 
-public class SearchServiceImpl extends BaseService implements SearchService {
+public class SearchServiceImpl extends BaseService implements SearchService, SearchServiceInternal {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 

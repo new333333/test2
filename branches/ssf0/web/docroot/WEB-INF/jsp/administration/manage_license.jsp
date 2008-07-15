@@ -29,8 +29,10 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body">
+<div class="ss_pseudoPortal">
 
-<div class="ss_portlet_style ss_portlet">
+<div class="ss_style ss_portlet">
   <c:if test='${! empty ssLicenseException}'>
     <div class="error"><span class="error">${ssLicenseException}</span></div>
   </c:if>
@@ -114,10 +116,14 @@
 <br/>
 	<form class="ss_portlet_style ss_form" id="${ssNamespace}_btnForm" 
 	  name="${ssNamespace}_btnForm" method="post"  
-	  action="<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="manage_license"/></portlet:actionURL>">
+	  action="<ssf:url action="manage_license" actionUrl="true"/>">
 		<input type="submit" class="ss_submit" name="updateBtn" value="<ssf:nlt tag="button.update_license"/>">
-		<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
+		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+		  onClick="self.window.close();return false;"/>
 	</form>
   </div>
 </div>
+
+</div>
+</body>
+</html>

@@ -28,9 +28,13 @@
  */
 package com.sitescape.team.web.util;
 
-import com.sitescape.team.context.request.RequestContextHolder;
+import javax.servlet.http.HttpServletRequest;
+
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 
 public class PermaLinkUtil {
@@ -42,5 +46,19 @@ public class PermaLinkUtil {
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, binder.getEntityType().toString());
 
 		return adapterUrl.toString();
+	}
+	
+	public static String getWorkspaceURL(HttpServletRequest request, String userId) {
+		Long profileBinderId = getProfileModule().getProfileBinder().getId();
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, profileBinderId.toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId);
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.workspace.toString());
+		return adapterUrl.toString();
+	}
+	
+	private static ProfileModule getProfileModule() {
+		return (ProfileModule) SpringContextUtil.getBean("profileModule");
 	}
 }

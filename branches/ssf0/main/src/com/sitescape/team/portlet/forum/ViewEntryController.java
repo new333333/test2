@@ -70,6 +70,7 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
+import com.sitescape.team.security.function.OperationAccessControlExceptionNoName;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.TagUtil;
@@ -80,6 +81,7 @@ import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
+import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
 
@@ -140,15 +142,29 @@ public class ViewEntryController extends  SAbstractController {
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String displayStyle = user.getDisplayStyle();
 		if (request.getWindowState().equals(WindowState.NORMAL)) 
 			return BinderHelper.CommonPortletDispatch(this, request, response);
 		
+		Map<String,Object> model = new HashMap();
+		
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		String entryViewType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_TYPE, "entryView");
+		String entryViewStyle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_STYLE, "");
+		String displayType = BinderHelper.getDisplayType(request);
+		if (entryViewStyle.equals("")) {
+			if (ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE.equals(displayStyle) &&
+					!ViewController.WIKI_PORTLET.equals(displayType)) entryViewStyle = "full";
+		}
+		
 		Map formData = request.getParameterMap();
 		Map userProperties = getProfileModule().getUserProperties(null).getProperties();
 		
-		Map<String,Object> model = new HashMap();
+		//Let the jsp know what style to show the entry in 
+		//  (popup has no navbar header, inline has no navbar and no script tags, full has a navbar header)
+		model.put(WebKeys.ENTRY_VIEW_STYLE, entryViewStyle);
 		
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (!operation.equals("")) {
@@ -175,7 +191,7 @@ public class ViewEntryController extends  SAbstractController {
 				if (entries.size() == 1) {
 					FolderEntry entry = (FolderEntry)entries.iterator().next();
 					entryId = entry.getId().toString();
-					fe = getShowEntry(entryId, formData, request, response, folderId, model);
+					fe = getShowEntry(entryId, formData, request, response, folderId, model, entryViewType);
 				} else if (entries.size() == 0) {
 					//There are no entries by this title
 					Folder folder = getFolderModule().getFolder(folderId);
@@ -188,12 +204,24 @@ public class ViewEntryController extends  SAbstractController {
 				}
 			} else {
 				try {
-					fe = getShowEntry(entryId, formData, request, response, folderId, model);
+					fe = getShowEntry(entryId, formData, request, response, folderId, model, entryViewType);
 				} catch (NoFolderEntryByTheIdException nf) {
 					Folder newFolder = getFolderModule().locateEntry(Long.valueOf(entryId));
 					if (newFolder == null) throw nf;
 					model.put("entryMoved", newFolder);
 					throw nf;
+				} catch(OperationAccessControlExceptionNoName e) {
+					//Access is not allowed
+					if (WebHelper.isUserLoggedIn(request) && 
+							!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+						//Access is not allowed
+						return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
+					} else {
+						//Please log in
+						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+						model.put(WebKeys.URL, refererUrl);
+						return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE_SNIPPET, model);
+					}
 				}
 			}
 
@@ -248,11 +276,28 @@ public class ViewEntryController extends  SAbstractController {
 
 			}
 		} catch(NoFolderEntryByTheIdException e) {
+		} catch(OperationAccessControlExceptionNoName e) {
+			//Access is not allowed
+			if (WebHelper.isUserLoggedIn(request) && 
+					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+				//Access is not allowed
+				return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
+			} else {
+				//Please log in
+				String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+				model.put(WebKeys.URL, refererUrl);
+				return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE_SNIPPET, model);
+			}
 		}
 		
 		if(fe == null) {
 			return new ModelAndView("entry/deleted_entry", model);		
 		} else {
+			if (entryViewStyle.equals(WebKeys.ENTRY_VIEW_STYLE_INLINE) || 
+					entryViewType.equals("entryBlogView") && PortletAdapterUtil.isRunByAdapter(request)) {
+				model.put(WebKeys.SNIPPET, true);
+				viewPath = "entry/view_entry_snippet";
+			}
 			return new ModelAndView(viewPath, model);
 		}
 	} 
@@ -666,7 +711,7 @@ public class ViewEntryController extends  SAbstractController {
 	}
 	
 	protected FolderEntry getShowEntry(String entryId, Map formData, RenderRequest req, RenderResponse response, 
-			Long folderId, Map model)  {
+			Long folderId, Map model, String viewType)  {
 		Folder folder = null;
 		FolderEntry entry = null;
 		Map folderEntries = null;
@@ -696,8 +741,8 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 		model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
-		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
-			DefinitionHelper.getDefaultEntryView(entry, model);
+		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='"+viewType+"']") == false) {
+			DefinitionHelper.getDefaultEntryView(entry, model, "//item[@name='"+viewType+"']");
 		}
 
 		//only start transaction if necessary

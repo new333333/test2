@@ -59,7 +59,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		    action="view_folder_entry" 
 		    entryId="${ss_wikiHomepageEntryId}" 
 		    actionUrl="true"><ssf:param
-		    name="namespace" value="${renderResponse.namespace}"/><ssf:ifaccessible><ssf:param name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
+		    name="entryViewStyle" value="popup"/><ssf:param
+		    name="namespace" value="${renderResponse.namespace}"/><ssf:ifaccessible><ssf:param 
+		    name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
 
 		    <ssf:title tag="title.open.folderEntrySimple" />
 		    
@@ -77,7 +79,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
         <div class="ss_blog_sidebar_subhead"><ssf:nlt tag="wiki.findPage"/></div>
 	    <c:if test="${ssConfigJspStyle != 'template'}">
-	    <form method="post" name="ss_findWikiPageForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
+	    <form method="post" name="ss_findWikiPageForm${renderResponse.namespace}"
 	    	action="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
 					name="binderId" value="${ssBinder.id}"/></ssf:url>">
 		 <ssf:find formName="ss_findWikiPageForm${renderResponse.namespace}" 
@@ -118,6 +120,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		    folderId="${ssFolder.id}" 
 		    action="view_folder_entry" 
 		    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true"><ssf:param
+		    name="entryViewStyle" value="popup"/><ssf:param
 		    name="namespace" value="${renderResponse.namespace}"/><ssf:ifaccessible><ssf:param name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
 
 		    <ssf:title tag="title.open.folderEntry">
@@ -223,5 +226,5 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	</c:if>
 		
 </ssf:sidebarPanel>
-<%@ include file="/WEB-INF/jsp/sidebars/folder_tags.jsp" %>
+<jsp:include page="/WEB-INF/jsp/sidebars/folder_tools.jsp" />
    

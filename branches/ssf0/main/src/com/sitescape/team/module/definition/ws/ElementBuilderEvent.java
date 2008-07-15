@@ -41,7 +41,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Event;
-import com.sitescape.team.remoting.ws.model.StringField;
+import com.sitescape.team.remoting.ws.model.CustomStringField;
 
 public class ElementBuilderEvent extends AbstractElementBuilder {
 	protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, Object obj, DefinableEntity entity, String dataElemType, String dataElemName) {
@@ -58,12 +58,12 @@ public class ElementBuilderEvent extends AbstractElementBuilder {
 			if(element != null)
 				element.add(org.dom4j.DocumentHelper.createCDATA(writer.toString()));
 			if(entityModel != null)
-				entityModel.addStringField(new StringField(dataElemName, dataElemType, writer.toString()));
+				entityModel.addCustomStringField(new CustomStringField(dataElemName, dataElemType, writer.toString()));
 		} else {
 			if(element != null)
 				element.setText(obj.toString());
 			if(entityModel != null)
-				entityModel.addStringField(new StringField(dataElemName, dataElemType, obj.toString()));
+				entityModel.addCustomStringField(new CustomStringField(dataElemName, dataElemType, obj.toString()));
 		}
 		return true;
 	}

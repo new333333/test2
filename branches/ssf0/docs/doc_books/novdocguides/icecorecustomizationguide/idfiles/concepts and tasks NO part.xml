@@ -2,11 +2,11 @@
 
 <targets>
 
- <target id="bck3as4" pid="bck3as4" name="Chapter" level="0" number="5"> <text>Web Services Overview</text> </target>
+ <target id="bck3as4" pid="bck3as4" name="Chapter" level="0" number="1"> <text>Web Services Overview</text> </target>
 
- <target id="bctvpqz" pid="bctvpqz" name="Sect1" level="1" number="5.1"> <text>Novell Teaming Web Services Implementation</text> </target>
+ <target id="bctvpqz" pid="bctvpqz" name="Sect1" level="1" number="1.1"> <text>Novell Teaming Web Services Implementation</text> </target>
 
- <target id="bctvrdr" pid="bctvpqz" name="Sect2" level="2" number="5.1.1"> <text>Sample Clients</text> </target>
+ <target id="bctvrdr" pid="bctvpqz" name="Sect2" level="2" number="1.1.1"> <text>Sample Clients</text> </target>
 
  <target id="bctxj50" pid="bctvpqz" name="FormalPara" level="3" number="w"> <text>wsclient.bat (V1+):</text> </target>
 
@@ -14,17 +14,17 @@
 
  <target id="bctw2ca" pid="bctvpqz" name="Sect3" level="3"> <text>Enabling wsclient.bat (Windows systems only)</text> </target>
 
- <target id="bdtwx8k" pid="bctvpqz" name="Procedure" level="4" number="1"> <text>Use a command-line window to cd to the /ssf/samples/remotingclient directory.</text> </target>
+ <target id="bdtwx8k" pid="bctvpqz" name="Procedure" level="4" number="1"> <text>Use a command line window to cd to the /ssf/samples/remotingclient directory.</text> </target>
 
- <target id="bdtwx8l" pid="bctvpqz" name="Step" level="5" number="1"> <text>Use a command-line window to cd to the /ssf/samples/remotingclient directory.</text> </target>
+ <target id="bdtwx8l" pid="bctvpqz" name="Step" level="5" number="1"> <text>Use a command line window to cd to the /ssf/samples/remotingclient directory.</text> </target>
 
  <target id="bdtwxps" pid="bctvpqz" name="Step" level="5" number="2"> <text>Type wsclient.bat.</text> </target>
 
- <target id="bdtwxwq" pid="bctvpqz" name="Step" level="5" number="3"> <text>On the same line, type a wsclient.bat command name and its parameters.</text> </target>
+ <target id="bdtwxwq" pid="bctvpqz" name="Step" level="5" number="3"> <text>On the same line, type a wsclient.bat command name and desired arguments.</text> </target>
 
  <target id="bdtwy1d" pid="bctvpqz" name="Step" level="5" number="4"> <text>Press the Return key.</text> </target>
 
- <target id="bctw7ou" pid="bctvpqz" name="Sect2" level="2" number="5.1.2"> <text>Novell Teaming-Specific Terminology</text> </target>
+ <target id="bctw7ou" pid="bctvpqz" name="Sect2" level="2" number="1.1.2"> <text>Novell Teaming-Specific Terminology</text> </target>
 
  <target id="bcty2r3" pid="bctvpqz" name="FormalPara" level="3" number="w"> <text>binder:</text> </target>
 
@@ -42,21 +42,21 @@
 
  <target id="bcty4ln" pid="bctvpqz" name="FormalPara" level="3" number="w"> <text>principal ID:</text> </target>
 
- <target id="bctvse8" pid="bctvse8" name="Sect1" level="1" number="5.2"> <text>Connecting to the Server</text> </target>
+ <target id="bctvse8" pid="bctvse8" name="Sect1" level="1" number="1.2"> <text>Connecting to the Server</text> </target>
 
- <target id="bd4nv3j" pid="bctvse8" name="Sect2" level="2" number="5.2.1"> <text>Notes About Security</text> </target>
+ <target id="bd4nv3j" pid="bctvse8" name="Sect2" level="2" number="1.2.1"> <text>Notes About Security</text> </target>
 
  <target id="bd4o1di" pid="bctvse8" name="Sect3" level="3"> <text>Password Digest</text> </target>
 
  <target id="bd4o1m3" pid="bctvse8" name="Sect3" level="3"> <text>Password Text</text> </target>
 
- <target id="bctvsq4" pid="bctvsq4" name="Sect1" level="1" number="5.3"> <text>Sending Messages</text> </target>
+ <target id="bctvsq4" pid="bctvsq4" name="Sect1" level="1" number="1.3"> <text>Sending Messages</text> </target>
 
- <target id="bd5rxp1" pid="bd5rxp1" name="Sect1" level="1" number="5.4"> <text>Other Helpful Source Files</text> </target>
+ <target id="bd5rxp1" pid="bd5rxp1" name="Sect1" level="1" number="1.4"> <text>Other Helpful Source Files</text> </target>
 
- <target id="bctvsun" pid="bctvsun" name="Sect1" level="1" number="5.5"> <text>Notes about Specific Messages</text> </target>
+ <target id="bctvsun" pid="bctvsun" name="Sect1" level="1" number="1.5"> <text>Notes about Specific Messages</text> </target>
 
- <target id="bctvt9s" pid="bctvsun" name="Sect2" level="2" number="5.5.1"> <text>Adding Folders and the Binder Configuration Identifier</text> </target>
+ <target id="bctvt9s" pid="bctvsun" name="Sect2" level="2" number="1.5.1"> <text>Adding Folders and the Binder Configuration Identifier</text> </target>
 
  <target id="bdtxqj9" pid="bctvsun" name="Procedure" level="3" number="1"> <text>Click Manage workspace and folder templates in the administration portlet.</text> </target>
 
@@ -78,29 +78,45 @@
 
  <target id="bdtxujm" pid="bctvsun" name="Step" level="4" number="5"> <text>In the input HTML tag that creates the radio button for that type of folder, note the name="binderConfigId" and value="nnn" pair of tag elements.</text> </target>
 
- <target id="bctvty7" pid="bctvsun" name="Sect2" level="2" number="5.5.2"> <text>Adding Entries and the Definition Identifier</text> </target>
+ <target id="bctvty7" pid="bctvsun" name="Sect2" level="2" number="1.5.2"> <text>Adding Items and the Definition Identifier</text> </target>
 
- <target id="bctvu6t" pid="bctvsun" name="Sect2" level="2" number="5.5.3"> <text>Tips for All Messages that Add and Modify</text> </target>
+ <target id="bfk5lr0" pid="bctvsun" name="Procedure" level="3" number="1"> <text>Sign in to Novell Teaming as a site administrator.</text> </target>
+
+ <target id="bfk5lr1" pid="bctvsun" name="Step" level="4" number="1"> <text>Sign in to Novell Teaming as a site administrator.</text> </target>
+
+ <target id="bfk5lvh" pid="bctvsun" name="Step" level="4" number="2"> <text>In the administration portlet, click the plus sign (+) next to Form and view designers.</text> </target>
+
+ <target id="bfk5mvw" pid="bctvsun" name="Step" level="4" number="3"> <text>Click the category of the item you want to create using the Web services (for example, click Entry designer if you want your Web service call to create an entry).</text> </target>
+
+ <target id="bfk5ngm" pid="bctvsun" name="Step" level="4" number="4"> <text>Click the plus sign (+) next to Entry definitions.</text> </target>
+
+ <target id="bfk5nta" pid="bctvsun" name="Step" level="4" number="5"> <text>Locate the title of the item you want to create (for example, Blog entry), and note the identifier in parentheses next to the title (for example, _blogEntry).</text> </target>
+
+ <target id="bfk5oel" pid="bctvsun" name="Step" level="4" number="6"> <text>In the XML returned by getDefinitionListAsXML, parse the string until you find the type of item you want to create (for example, name="_blogEntry").</text> </target>
+
+ <target id="bfk5u7o" pid="bctvsun" name="Step" level="4" number="7"> <text>Continue parsing that same element until you locate the id attribute.</text> </target>
+
+ <target id="bctvu6t" pid="bctvsun" name="Sect2" level="2" number="1.5.3"> <text>Tips for All Messages that Add and Modify Entries</text> </target>
 
  <target id="bdtxwmh" pid="bctvsun" name="Procedure" level="3" number="1"> <text>In the Novell Teaming UI, create an entry of the type you want your Web services client to be able to create or modify, and specify a value for every element on the creation form.</text> </target>
 
  <target id="bdtxwmi" pid="bctvsun" name="Step" level="4" number="1"> <text>In the Novell Teaming UI, create an entry of the type you want your Web services client to be able to create or modify, and specify a value for every element on the creation form.</text> </target>
 
- <target id="bdtxwrz" pid="bctvsun" name="Step" level="4" number="2"> <text>Place your mouse over the title of the created entry and note the entry identifier in URL displayed in your browser:</text> </target>
+ <target id="bdtxwrz" pid="bctvsun" name="Step" level="4" number="2"> <text>Mouse over the title of the created entry and note the entry identifier in URL displayed in your browser:</text> </target>
 
  <target id="bdtxx4w" pid="bctvsun" name="Step" level="4" number="3"> <text>Either use the printFolderEntry command for wsclient.bat or use the getFolderEntryAsXML message to view the XML contents of the entry you just created in the UI.</text> </target>
 
  <target id="bdtxxa5" pid="bctvsun" name="Step" level="4" number="4"> <text>Use the XML information you retrieved as a template for the string you need to pass to create a new entry or to modify one.</text> </target>
 
- <target id="bctvuo1" pid="bctvsun" name="Sect2" level="2" number="5.5.4"> <text>Attaching Files</text> </target>
+ <target id="bctvuo1" pid="bctvsun" name="Sect2" level="2" number="1.5.4"> <text>Attaching Files</text> </target>
 
- <target id="bctvv30" pid="bctvsun" name="Sect2" level="2" number="5.5.5"> <text>Fetching Attachments</text> </target>
+ <target id="bctvv30" pid="bctvsun" name="Sect2" level="2" number="1.5.5"> <text>Fetching Attachments</text> </target>
 
- <target id="bctvuuy" pid="bctvsun" name="Sect2" level="2" number="5.5.6"> <text>Adding Calendar Entries</text> </target>
+ <target id="bctvuuy" pid="bctvsun" name="Sect2" level="2" number="1.5.6"> <text>Adding Calendar Entries</text> </target>
 
- <target id="bcuzctd" pid="bctvsun" name="Sect2" level="2" number="5.5.7"> <text>Binder Pages and getWorkspaceTreeAsXML</text> </target>
+ <target id="bcuzctd" pid="bctvsun" name="Sect2" level="2" number="1.5.7"> <text>Binder Pages and getWorkspaceTreeAsXML</text> </target>
 
- <target id="bctxcnz" pid="bctxcnz" name="Sect1" level="1" number="5.6"> <text>Extending Novell Teaming Web Services</text> </target>
+ <target id="bctxcnz" pid="bctxcnz" name="Sect1" level="1" number="1.6"> <text>Extending Novell Teaming Web Services</text> </target>
 
  <target id="bdty2e1" pid="bctxcnz" name="Procedure" level="2" number="1"> <text>Use a command-line window to go to the /extendedws directory.</text> </target>
 
@@ -112,8 +128,58 @@
 
  <target id="bdty3b6" pid="bctxcnz" name="Step" level="3" number="4"> <text>In the same set of directories, open this file for editing:</text> </target>
 
- <target id="bdty3ou" pid="bctxcnz" name="Step" level="3" number="5"> <text>Restart the Novell Teaming server.</text> </target>
+ <target id="bdty3ou" pid="bctxcnz" name="Step" level="3" number="5"> <text>Restart the c server.</text> </target>
 
  <target id="bdty3vc" pid="bctxcnz" name="Step" level="3" number="6"> <text>To test the new Web services message, view this page in a browser window:</text> </target>
+
+ <target id="bfk23dg" pid="bfk23dg" name="Sect1" level="1" number="1.7"> <text>Migrating from Forum to Novell Teaming</text> </target>
+
+ <target id="bfk2kl2" pid="bfk23dg" name="Sect2" level="2" number="1.7.1"> <text>Sequence of Migration Operations</text> </target>
+
+ <target id="bfk2ktv" pid="bfk23dg" name="Sect2" level="2" number="1.7.2"> <text>Migration Overwrite Operations</text> </target>
+
+ <target id="bfk49kp" pid="bfk23dg" name="FormalPara" level="3" number="w"> <text>setDefinitions:</text> </target>
+
+ <target id="bfk4a7k" pid="bfk23dg" name="FormalPara" level="3" number="w"> <text>setFunctionMembership:</text> </target>
+
+ <target id="bfk2l91" pid="bfk23dg" name="Sect2" level="2" number="1.7.3"> <text>Migrating Users</text> </target>
+
+ <target id="bfk4bro" pid="bfk23dg" name="Procedure" level="3" number="1"> <text>Use either LDAP or the Import profiles administration-portlet tool to add your Forum users to Novell Teaming.</text> </target>
+
+ <target id="bfk4brp" pid="bfk23dg" name="Step" level="4" number="1"> <text>Use either LDAP or the Import profiles administration-portlet tool to add your Forum users to Novell Teaming.</text> </target>
+
+ <target id="bfk4c9o" pid="bfk23dg" name="Step" level="4" number="2"> <text>Use the addUserWorkspace message to add personal workspaces for the new Novell Teaming users.</text> </target>
+
+ <target id="bfk2ld6" pid="bfk23dg" name="Sect2" level="2" number="1.7.4"> <text>Migrating Files</text> </target>
+
+ <target id="bfk4ggt" pid="bfk23dg" name="Procedure" level="3" number="1"> <text>Establish a directory on the Novell Teaming server machine where you want to place the Forum files.</text> </target>
+
+ <target id="bfk4ggu" pid="bfk23dg" name="Step" level="4" number="1"> <text>Establish a directory on the Novell Teaming server machine where you want to place the Forum files.</text> </target>
+
+ <target id="bfk4gr2" pid="bfk23dg" name="Step" level="4" number="2"> <text>Make the three required changes to the ssf.properties and ssf-ext.properties files. This action    indicates the location of the staging directory. (See the installation guide for more information about the these files.) </text> </target>
+
+ <target id="bfk4h64" pid="bfk23dg" name="Step" level="4" number="3"> <text>Copy the Forum files onto the Novell Teaming server, using the specified staging directory as your top directory.</text> </target>
+
+ <target id="bfk4hi0" pid="bfk23dg" name="Step" level="4" number="4"> <text>Use the migrateFolderFileStaged message to migrate the files into the Novell Teaming installation.</text> </target>
+
+ <target id="bfk2lhz" pid="bfk23dg" name="Sect2" level="2" number="1.7.5"> <text>Migrating Custom Commands and Workflow</text> </target>
+
+ <target id="bfk4kpi" pid="bfk23dg" name="Procedure" level="3" number="1"> <text>Migrate your Forum users to Novell Teaming.</text> </target>
+
+ <target id="bfk4kpj" pid="bfk23dg" name="Step" level="4" number="1"> <text>Migrate your Forum users to Novell Teaming.</text> </target>
+
+ <target id="bfk4lrq" pid="bfk23dg" name="Step" level="4" number="2"> <text>Use the getAllPrincipalsAsXML message to get a list of the user identifiers for the newly created Teaming users.</text> </target>
+
+ <target id="bfk6gm7" pid="bfk23dg" name="Step" level="4" number="3"> <text>Create a mapping file that maps Teaming user identifiers to Forum usernames.</text> </target>
+
+ <target id="bfk6f41" pid="bfk23dg" name="Step" level="4" number="4"> <text>Run a Tcl script-which uses the mapping file-to generate an XML file of workflow information.</text> </target>
+
+ <target id="bfk6g7i" pid="bfk23dg" name="Step" level="4" number="5"> <text>Import the workflow XML file into Novell Teaming.</text> </target>
+
+ <target id="bfk6ggv" pid="bfk23dg" name="Step" level="4" number="6"> <text>Create another mapping file, which maps workflow identifiers in Novell Teaming to Forum workflow names.</text> </target>
+
+ <target id="bfk4mhd" pid="bfk23dg" name="Step" level="4" number="7"> <text>Run a Tcl script-which uses the second mapping file-to generate an XML file of custom command information.</text> </target>
+
+ <target id="bfk6hpd" pid="bfk23dg" name="Step" level="4" number="8"> <text>Import the custom command XML into Novell Teaming.</text> </target>
 
 </targets>

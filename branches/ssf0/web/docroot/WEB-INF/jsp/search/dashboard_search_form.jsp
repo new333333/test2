@@ -34,39 +34,14 @@
 
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 
-<script type="text/javascript">
-
-<c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssWorkflowDefinitionMap}">
-	var ss_searchWorkflows = new Array();
-	var ss_searchSteps = new Array();
-	<c:forEach var="wf" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssWorkflowDefinitionMap}">
-		ss_searchWorkflows['${wf.id}'] = '<ssf:escapeJavaScript value="${wf.title}"/>';
-		<c:forEach var="step" items="${wf.steps}">
-			ss_searchSteps['${wf.id}-<ssf:escapeJavaScript value="${step.name}"/>'] = '<ssf:escapeJavaScript value="${step.title}"/>';
-		</c:forEach>
-	</c:forEach>
-</c:if>
-<c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssEntryDefinitionMap}">
-	var ss_searchEntries = new Array();
-	var ss_searchFields = new Array();
-	var ss_searchFieldsTypes = new Array();
-	<c:forEach var="entry" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssEntryDefinitionMap}">
-		ss_searchEntries['${entry.id}'] = '<ssf:escapeJavaScript value="${entry.title}"/>';
-		<c:forEach var="field" items="${entry.fields}">
-			ss_searchFields['${entry.id}-<ssf:escapeJavaScript value="${field.name}"/>'] = '<ssf:escapeJavaScript value="${field.title}"/>';
-			ss_searchFieldsTypes['${entry.id}-<ssf:escapeJavaScript value="${field.name}"/>'] = '<ssf:escapeJavaScript value="${field.type}"/>';
-		</c:forEach>
-	</c:forEach>
-</c:if>
-</script>
-
-
 <c:set var="summaryWordCount" value="${ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount}"/>
 <c:if test="${empty summaryWordCount}"><c:set var="summaryWordCount" value="20"/></c:if>
 <c:set var="resultsCount" value="${ssDashboard.dashboard.components[ssComponentId].data.resultsCount}"/>
 <c:if test="${empty resultsCount}"><c:set var="resultsCount" value="5"/></c:if>
 
 <c:set var="ss_filterMap" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ss_filterMap}"/>
+<c:set var="ssWorkflowDefinitionMap" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssWorkflowDefinitionMap}"/>
+<c:set var="ssEntryDefinitionMap" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssEntryDefinitionMap}"/>
 
 <div class="ss_style ss_portlet_style">
 

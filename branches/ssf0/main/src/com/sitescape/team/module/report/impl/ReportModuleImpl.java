@@ -481,6 +481,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		final Collection<Long> userIds;
 		if(byUser) {
 				userIds = getBinderModule().getTeamMemberIds(binderId, true);
+				if (userIds.isEmpty()) {
+					addBlankRow(report, binder, byUser, null);
+					return;
+				}
 		} else {
 			userIds = null;
 		}

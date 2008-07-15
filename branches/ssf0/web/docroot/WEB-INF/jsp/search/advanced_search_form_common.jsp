@@ -28,6 +28,9 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="com.sitescape.team.util.CalendarHelper" %>
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 	<script type="text/javascript">
 		var ss_user_locale = "${ssUser.locale.language}";
@@ -102,6 +105,7 @@
 									</div>
 								
 									<div id="ss_foldersTree_${ssNamespace}" style="padding-left: 24px; padding-top: 6px; ">
+								<input type="hidden" name="search_dashboardFolders" id="search_dashboardFolders" value="${ssBinder.id}"/>
 								</c:if>
 								
 								<c:if test="${!activateDashboardFolder && !empty ssBinder}">
@@ -194,7 +198,6 @@
 					<a href="javascript: ;" onClick="ss_addOption('tag');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
 				</div>
 			</div>	
-<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.Workflow">
 			<div id="ss_workflows_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Workflow"/></h4>
 				<div id="ss_workflows_options" class="ss_options"></div>
@@ -202,7 +205,6 @@
 					<a href="javascript: ;" onClick="ss_addOption('workflow');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
 				</div>
 			</div>
-</ssf:ifAuthorizedByLicense>
 			<div id="ss_entries_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Entry"/></h4>
 				<div id="ss_entries_options" class="ss_options"></div>

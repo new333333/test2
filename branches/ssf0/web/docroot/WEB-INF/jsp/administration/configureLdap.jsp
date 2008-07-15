@@ -31,19 +31,22 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 
-<div class="ss_portlet">
+<body class="ss_style_body">
+<div class="ss_pseudoPortal">
+<div class="ss_style ss_portlet">
+
 <span class="ss_titlebold"><ssf:nlt tag="ldap.title"/></span><br/><br/>
 <c:if test="${!empty ssException}">
 <span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
 </c:if>
 
-<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" method="post" 
-  action="<portlet:actionURL windowState="maximized"><portlet:param 
-  name="action" value="configure_ldap"/></portlet:actionURL>">
+<form class="ss_style ss_form" name="${renderResponse.namespace}fm" method="post" 
+  action="<ssf:url action="configure_ldap" actionUrl="true"/>">
 <div class="ss_buttonBarRight">
 <br/>
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
-	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+		  onClick="self.window.close();return false;"/>
 </div>
 <table class="ss_style" border ="0" cellspacing="0" cellpadding="3">
 <tr><td> 
@@ -145,7 +148,13 @@
 <br/>
 <div class="ss_buttonBarLeft">
 	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
-	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
+	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+		  onClick="self.window.close();return false;"/>
 </div>
 </form>
 </div>
+
+</div>
+
+</body>
+</html>

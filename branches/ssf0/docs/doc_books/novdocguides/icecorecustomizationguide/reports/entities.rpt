@@ -2042,7 +2042,7 @@
    <String `Entity Report for icecorecustomizationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `5/1/2008 5:05:55 PM'>
+   <String `7/3/2008 3:32:05 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2054,7 +2054,7 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String ` Valid Entities (2)'>
+   <String ` Valid Entities (3)'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2071,6 +2071,16 @@
   <PgfTag `CenterTab'>
   <ParaLine 
    <String `product'>
+   <Char Tab> 
+   <String `1'>
+   <Char Tab> 
+   <String `entity-decl.ent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTab'>
+  <ParaLine 
+   <String `product_short'>
    <Char Tab> 
    <String `1'>
    <Char Tab> 

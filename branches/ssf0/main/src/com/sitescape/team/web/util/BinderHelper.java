@@ -427,6 +427,8 @@ public class BinderHelper {
 					return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
 				} else {
 					//Please log in
+					String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+					model.put(WebKeys.URL, refererUrl);
 					return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
 				}
 			}
@@ -544,6 +546,8 @@ public class BinderHelper {
 		if (displayDefinition != null && displayDefinition.equalsIgnoreCase(ObjectKeys.SEARCH_RESULTS_DISPLAY)) {
 			if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_IFRAME;
+			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE)) {
+				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_NEWPAGE;
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_POPUP;
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
@@ -565,6 +569,8 @@ public class BinderHelper {
 			}
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
 			viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
+		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE)) {
+			viewListingJspName = WebKeys.VIEW_LISTING_NEWPAGE;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 			viewListingJspName = WebKeys.VIEW_LISTING_POPUP;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
@@ -605,46 +611,12 @@ public class BinderHelper {
 				bs.getProfileModule().setUserProperty(user.getId(), 
 						ObjectKeys.USER_PROPERTY_PERMALINK_URL, url.toString());
 		}
-		setPortalUrl(bs, request, response);
-	}
-	
-	//Routine to set the user's portal url 
-	static public void setPortalUrl(AllModulesInjected bs, 
-			RenderRequest request, RenderResponse response) {
-		try {
-			if (PortletAdapterUtil.isRunByAdapter(request)) return;
-		} catch(Exception e) {return;}
-		
-		User user = null;
-		try {
-			user = RequestContextHolder.getRequestContext().getUser();
-		} catch(Exception e) {
-			//TODO If there is no user, then get the permalink of the guest account
-			return;
-		}
-		UserProperties userProperties = (UserProperties) bs.getProfileModule().getUserProperties(user.getId());
-		String url = (String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_PORTAL_URL);
-		PortletURL pUrl = response.createRenderURL();
-		try {pUrl.setWindowState(WindowState.NORMAL);} catch(Exception e) {};
-			if (url == null || (!url.equals("") && !url.equals(pUrl.toString()))) 
-				bs.getProfileModule().setUserProperty(user.getId(), 
-						ObjectKeys.USER_PROPERTY_PORTAL_URL, pUrl.toString());
 	}
 	
 	//Routine to get the user's portal url 
 	//  This routine is callable from an adaptor controller
 	static public String getPortalUrl(AllModulesInjected bs) {
-		User user = null;
-		try {
-			user = RequestContextHolder.getRequestContext().getUser();
-		} catch(Exception e) {
-			//No user, return the default
-			return SPropsUtil.getString("permalink.fallback.url");
-		}
-		UserProperties userProperties = (UserProperties) bs.getProfileModule().getUserProperties(user.getId());
-		String url = (String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_PORTAL_URL);
-		if (url == null || url.equals("")) url = SPropsUtil.getString("permalink.fallback.url");
-		return url;
+		return SPropsUtil.getString("permalink.fallback.url");
 	}
 	
 	//Routine to get a portal url that points to a binder or entry 
@@ -1613,14 +1585,20 @@ public class BinderHelper {
 				//Add the attributes
 				String name = ele.attributeValue("name");
 				attributeMap = new HashMap();
-				eleMap.put("attributes", attributeMap);
 				itAttr = ele.attributeIterator();
 				while (itAttr.hasNext()) {
 					Attribute attr = (Attribute) itAttr.next();
 					attributeMap.put(attr.getName(), attr.getValue());
 				}
 				//Add the data
-				eleMap.put(name, ele.getData());
+				if (Validator.isNull(name)) {
+					eleMap.put("attributes", attributeMap);
+					continue; //no way to add it
+				}
+				Map dataMap = new HashMap();
+				dataMap.put("attributes", attributeMap);
+				dataMap.put("value", ele.getData());
+				eleMap.put(name, dataMap);
 			}
 		}
 		return changeList;
@@ -2034,7 +2012,7 @@ public class BinderHelper {
 		//save tab options
 		tab.setData(options);
 		SearchFilterToMapConverter searchFilterConverter = 
-			new SearchFilterToMapConverter(query, bs.getDefinitionModule(), bs.getProfileModule(), bs.getBinderModule());
+			new SearchFilterToMapConverter(bs, query);
 		model.putAll(searchFilterConverter.convertAndPrepareFormData());
 		
 		// SearchUtils.filterEntryAttachmentResults(results);

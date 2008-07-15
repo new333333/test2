@@ -118,13 +118,6 @@ public class DispatchServer extends GenericServlet {
 
 			WebHelper.putContext(ses, user);
 
-			if(ses.getAttribute(WebKeys.SERVER_NAME) == null) {		
-				ses.setAttribute(WebKeys.SERVER_NAME, req.getServerName().toLowerCase());
-				ses.setAttribute(WebKeys.SERVER_PORT, Integer.valueOf(req.getServerPort()));
-				if(logger.isDebugEnabled())
-					logger.debug("Server name:port is " + req.getServerName().toLowerCase() + ":" + req.getServerPort() + " for user " + userName + " at the time of login");
-			}	
-			
 			final String infoId = (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);
 			if(infoId == null) { 
 				if(!user.isShared() || 

@@ -37,31 +37,35 @@
 var ss_columnCount = 0;
 
 //Routine called when "find photo" is clicked
-function ss_loadPhotoEntryId<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id) {
+function ss_loadPhotoEntryId${renderResponse.namespace}(id) {
 	var url = "<ssf:url     
 	    adapter="true" 
 	    portletName="ss_forum" 
 	    folderId="${ssBinder.id}" 
 	    action="view_folder_entry" 
 	    entryId="ss_entryIdPlaceholder" 
-	    actionUrl="true" />";
+	    actionUrl="true" ><ssf:param name="entryViewStyle" value="full"/></ssf:url>";
 	url = ss_replaceSubStr(url, 'ss_entryIdPlaceholder', id);
 	ss_showForumEntry(url);
 	return false;
 }
 
 var ss_photoIframeOffset = 20;
-function ss_setPhotoIframeSize<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
-	var targetDiv = document.getElementById('ss_photoEntryDiv<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
-	var iframeDiv = document.getElementById('ss_photoIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
-	if (window.frames['ss_photoIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>'] != null) {
-		eval("var iframeHeight = parseInt(window.ss_photoIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>.document.body.scrollHeight);")
+function ss_setPhotoIframeSize${renderResponse.namespace}() {
+	var targetDiv = document.getElementById('ss_photoEntryDiv${renderResponse.namespace}')
+	var iframeDiv = document.getElementById('ss_photoIframe${renderResponse.namespace}')
+	if (window.frames['ss_photoIframe${renderResponse.namespace}'] != null) {
+		eval("var iframeHeight = parseInt(window.ss_photoIframe${renderResponse.namespace}.document.body.scrollHeight);")
 		if (iframeHeight > 0) {
 			iframeDiv.style.height = iframeHeight + ss_photoIframeOffset + "px"
 		}
 	}
 }
 
+function ss_showForumEntryInIframe(url) {
+	self.location.href = url;
+	return false;
+}
 </script>
 
 <div class="ss_folder_border">
@@ -72,7 +76,7 @@ function ss_setPhotoIframeSize<ssf:ifadapter><portletadapter:namespace/></ssf:if
 </ssf:toolbar>
 <div class="ss_clear"></div>
 </div>
-<%@ include file="/WEB-INF/jsp/forum/page_navigation_bar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <div class="ss_folder" id="ss_photo_folder_div">
 <%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/photo/photo_folder_listing.jsp" %>

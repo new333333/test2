@@ -51,7 +51,7 @@
 	if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") || 
 			ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
 %>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 
 <div class="ss_folder">
 
@@ -64,7 +64,7 @@
 </ssf:toolbar>
 <div class="ss_clear"></div>
 </div>
-<%@ include file="/WEB-INF/jsp/forum/page_navigation_bar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <ssf:slidingTable id="ss_folder_table" type="<%= slidingTableStyle %>" 
  height="<%= ssFolderTableHeight %>" folderId="${ssBinder.id}">
 

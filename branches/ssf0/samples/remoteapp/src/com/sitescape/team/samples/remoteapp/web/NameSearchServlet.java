@@ -32,8 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -41,18 +39,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.rpc.ServiceException;
 
-import org.apache.axis.client.Call;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.dom4j.Document;
 import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 
 import com.sitescape.team.client.ws.TeamingServiceSoapBindingStub;
 import com.sitescape.team.client.ws.TeamingServiceSoapServiceLocator;
 import com.sitescape.team.client.ws.WebServiceClientUtil;
+import com.sitescape.team.client.ws.model.User;
 import com.sitescape.util.servlet.StringServletResponse;
 
 public class NameSearchServlet extends HttpServlet {
@@ -114,14 +109,9 @@ public class NameSearchServlet extends HttpServlet {
 	}
 
 	private String getUserTitle(TeamingServiceSoapBindingStub stub, String accessToken, Long userId) throws ServiceException, DocumentException, RemoteException {
-		String principalAsXML = stub.profile_getPrincipalAsXML(accessToken, PROFILE_BINDER_ID, userId);
+		User user = stub.profile_getUser(accessToken, PROFILE_BINDER_ID, userId);
 		
-		Document doc = DocumentHelper.parseText(principalAsXML);
-		Element rootElem = doc.getRootElement();
-		Element elm = (Element) rootElem.selectSingleNode("/principal");
-		String userTitle = elm.attributeValue("title");
-		
-		return userTitle;
+		return user.getTitle();
 	}
 	
 	private String googleForName(HttpServletRequest req, HttpServletResponse resp, String userTitle) throws IOException, ServletException {
@@ -177,6 +167,6 @@ public class NameSearchServlet extends HttpServlet {
 		// binder ID and enry ID, etc. Useful only for one-off testing.
 		File file = new File("C:/junk/junk1/chinese-application.doc");
 		WebServiceClientUtil.attachFile(stub, file);
-		stub.folder_uploadFolderFile(accessToken, 33, 9, "upload", "chinese-application.doc");
+		stub.folder_uploadFile(accessToken, 33, 9, "upload", "chinese-application.doc");
 	}
 }

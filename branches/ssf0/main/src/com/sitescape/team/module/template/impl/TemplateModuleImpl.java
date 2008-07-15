@@ -47,7 +47,6 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.file.WriteFilesException;
-import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
@@ -55,8 +54,6 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.module.template.TemplateService;
-import com.sitescape.team.module.workspace.WorkspaceModule;
-import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
@@ -74,71 +71,39 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		TemplateService {
 	private static final String[] defaultDefAttrs = new String[]{ObjectKeys.FIELD_INTERNALID, ObjectKeys.FIELD_ENTITY_DEFTYPE};
 
-    protected DefinitionModule definitionModule;
-	/**
-	 * Setup by spring
-	 * @param definitionModule
-	 */
-	public void setDefinitionModule(DefinitionModule definitionModule) {
+    private DefinitionModule definitionModule;
+    @Required
+    public void setDefinitionModule(DefinitionModule definitionModule) {
 		this.definitionModule = definitionModule;
 	}
-   	protected DefinitionModule getDefinitionModule() {
-		return definitionModule;
-	}
 
-	protected AdminModule adminModule;
+	private AdminModule adminModule;
+	@Required
 	public void setAdminModule(AdminModule adminModule) {
 		this.adminModule = adminModule;
 	}
-   	protected AdminModule getAdminModule() {
-		return adminModule;
-	}
 
-	protected WorkspaceModule workspaceModule;
-	public void setWorkspaceModule(WorkspaceModule workspaceModule) {
-		this.workspaceModule = workspaceModule;
-	}
-   	protected WorkspaceModule getWorkspaceModule() {
-		return workspaceModule;
-	}
-
-	protected FolderModule folderModule;
-	public void setFolderModule(FolderModule folderModule) {
-		this.folderModule = folderModule;
-	}
-   	protected FolderModule getFolderModule() {
-		return folderModule;
-	}
- 
-	protected BinderModule binderModule;
+	private BinderModule binderModule;
+	@Required
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
 	}
-   	protected BinderModule getBinderModule() {
-		return binderModule;
-	}
 
-   	protected FileModule fileModule;
+   	private FileModule fileModule;
+   	@Required
    	public void setFileModule(FileModule fileModule) {
    		this.fileModule = fileModule;
    	}
-   	protected FileModule getFileModule() {
-   		return fileModule;
-   	}	
 
-	protected DashboardModule dashboardModule;
-	public void setDashboardModule(DashboardModule dashboardModule) {
+   	private DashboardModule dashboardModule;
+   	@Required
+   	public void setDashboardModule(DashboardModule dashboardModule) {
 		this.dashboardModule = dashboardModule;
-	}
-   	protected DashboardModule getDashboardModule() {
-		return dashboardModule;
 	}
 
    	private TransactionTemplate transactionTemplate;
-    protected TransactionTemplate getTransactionTemplate() {
-		return transactionTemplate;
-	}
-	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+   	@Required
+   	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
 		this.transactionTemplate = transactionTemplate;
 	}
 
@@ -194,10 +159,10 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				config.setTemplateTitle("__template_default_folder");
 				config.setTemplateDescription("__template_default_folder_description");
 				config.setInternalId(ObjectKeys.DEFAULT_FOLDER_CONFIG);
-				entryDef = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW);
+				entryDef = definitionModule.addDefaultDefinition(Definition.FOLDER_VIEW);
 				config.setEntryDef(entryDef);
 				defs.add(entryDef);
-				defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_ENTRY));
+				defs.add(definitionModule.addDefaultDefinition(Definition.FOLDER_ENTRY));
 				break;
 			}
 			case Definition.WORKSPACE_VIEW: {
@@ -207,7 +172,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				config.setTemplateTitle("__template_workspace");
 				config.setTemplateDescription("__template_workspace_description");
 				config.setInternalId(ObjectKeys.DEFAULT_WORKSPACE_CONFIG);
-				entryDef = getDefinitionModule().addDefaultDefinition(type);
+				entryDef = definitionModule.addDefaultDefinition(type);
 				config.setEntryDef(entryDef);
 				defs.add(entryDef);
 				break;
@@ -220,7 +185,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				config.setTemplateTitle("__template_user_workspace");
 				config.setTemplateDescription("__template_user_workspace_description");
 				config.setInternalId(ObjectKeys.DEFAULT_USER_WORKSPACE_CONFIG);
-				entryDef = getDefinitionModule().addDefaultDefinition(type);
+				entryDef = definitionModule.addDefaultDefinition(type);
 				config.setEntryDef(entryDef);
 				defs.add(entryDef);
 				break;
@@ -268,8 +233,8 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			 }
 		 }
 		template.setName(name);
-		if (!validateTemplateName(name)) throw new NotSupportedException("errorcode.notsupported.duplicateTemplateName", new Object[]{name});
-		Definition entryDef = getDefinitionModule().addDefaultDefinition(type);
+		if (!validateTemplateName(null, name)) throw new NotSupportedException("errorcode.notsupported.duplicateTemplateName", new Object[]{name});
+		Definition entryDef = definitionModule.addDefaultDefinition(type);
 		template.setEntryDef(entryDef);
 		if (type == Definition.FOLDER_VIEW) template.setLibrary(true);
 		List<Definition> definitions = new ArrayList<Definition>();
@@ -311,7 +276,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 template.setEntryDef(template.getDefaultViewDef());
 		 Element dashboardConfig = (Element)config.selectSingleNode(ObjectKeys.XTAG_ELEMENT_TYPE_DASHBOARD);
 		 if (dashboardConfig != null) {
-			getDashboardModule().createEntityDashboard(template.getEntityIdentifier(), dashboardConfig);
+			dashboardModule.createEntityDashboard(template.getEntityIdentifier(), dashboardConfig);
 		 }
 	 }
 	 protected TemplateBinder doAddTemplate(TemplateBinder template, int type, Map updates, Workspace zone, UserPrincipal user) {
@@ -349,7 +314,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				getCoreDao().save(myDashboard);
 			  }
 			//copy all file attachments
-			getFileModule().copyFiles(source, source, destination, destination);
+			fileModule.copyFiles(source, source, destination, destination);
 			EntryBuilder.copyAttributes(source, destination);
 			return destination;		
 		}
@@ -362,7 +327,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 config.setPathName(parentConfig.getPathName() + "/" + config.getTitle());
       	 getCoreDao().updateFileName(parentConfig, config, null, config.getTitle());
 		 //get childen before adding new children incase parent and source are the same
-		 List<TemplateBinder> children = new ArrayList(srcConfig.getBinders());
+		 List<TemplateBinder> children = new ArrayList<TemplateBinder>(srcConfig.getBinders());
       	 
 		 parentConfig.addBinder(config);  //setup binder_sortKey
 		 getCoreDao().save(config); // generateId for binderKey needed by custom attributes
@@ -377,14 +342,16 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 }
 		 return config.getId();
 	 }
-	 protected boolean validateTemplateName(String name) {
+	 protected boolean validateTemplateName(Long binderId, String name) {
 		 if (Validator.isNull(name)) return false;
-		 List<TemplateBinder> binders = getCoreDao().loadObjects(TemplateBinder.class, new FilterControls(ObjectKeys.FIELD_BINDER_NAME, name), RequestContextHolder.getRequestContext().getZoneId());
-		 if (!binders.isEmpty()) {
+			try {
+				TemplateBinder binder = getTemplateByName(name);
+				if (binderId != null && binder.getId().equals(binderId)) return true;
+			} catch (NoBinderByTheNameException nb) {
+				return true;
+			} catch (Exception ex) {};
 			 return false;
 		 }
-		 return true;
-	 }
 	   public Long addTemplateFromBinder(Long binderId) throws AccessControlException, WriteFilesException {
 		   checkAccess(TemplateOperation.manageTemplate);
 		   Long zoneId =  RequestContextHolder.getRequestContext().getZoneId();
@@ -395,7 +362,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		protected TemplateBinder templateFromBinder(TemplateBinder parent, Binder binder) {
 			//get binder setup
 			if (binder.getDefinitionType() == null) {
-				getDefinitionModule().setDefaultBinderDefinition(binder);
+				definitionModule.setDefaultBinderDefinition(binder);
 			}	
 			TemplateBinder config = new TemplateBinder(binder);
 			if (parent == null) {
@@ -403,7 +370,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				String name = config.getName();
 				if (Validator.isNull(name)) name = config.getTemplateTitle();
 				int next=1;
-				while (!validateTemplateName(name)) {
+				while (!validateTemplateName(null, name)) {
 					name = name + next++;
 				}
 				config.setName(name);
@@ -444,9 +411,13 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			String name = (String)updates.get(ObjectKeys.FIELD_BINDER_NAME);
 			if (Validator.isNull(name)) {
 				throw new IllegalArgumentException(NLT.get("general.required.name"));
-			} else if (!name.equals(config.getName())) {
-				List<TemplateBinder> binders = getCoreDao().loadObjects(TemplateBinder.class, new FilterControls(ObjectKeys.FIELD_BINDER_NAME, name), RequestContextHolder.getRequestContext().getZoneId());
-				if (!binders.isEmpty()) {
+			} else if (!validateTemplateName(id, name)) {
+				try {
+					TemplateBinder binder = getTemplateByName(name);
+					if (!binder.getId().equals(id)) {
+						throw new NotSupportedException("errorcode.notsupported.duplicateTemplateName", new Object[]{name});
+					}
+				} catch (org.springframework.dao.IncorrectResultSizeDataAccessException in) {
 					throw new NotSupportedException("errorcode.notsupported.duplicateTemplateName", new Object[]{name});
 				}
 			}
@@ -502,7 +473,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		
 		if (!binder.isFunctionMembershipInherited()) {
 			 //need to convert all ids to names??
-	    	 List<WorkAreaFunctionMembership> wfms = getAdminModule().getWorkAreaFunctionMemberships(binder);
+	    	 List<WorkAreaFunctionMembership> wfms = adminModule.getWorkAreaFunctionMemberships(binder);
 	    	 for (WorkAreaFunctionMembership fm: wfms) {
 	    		 Set ids = fm.getMemberIds();
 	    		 List<UserPrincipal> members = getProfileDao().loadUserPrincipals(ids, binder.getZoneId(), true);
@@ -548,7 +519,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	
 		}
 		
-		Dashboard dashboard = getDashboardModule().getEntityDashboard(binder.getEntityIdentifier());
+		Dashboard dashboard = dashboardModule.getEntityDashboard(binder.getEntityIdentifier());
 		if (dashboard != null) dashboard.asXml(element);
 		
 		List<TemplateBinder> children = binder.getBinders();
@@ -591,7 +562,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		IndexSynchronizationManager.applyChanges();
 		//now that we have registered the sortKey in the parent binder, we use a longer transaction to complete 
 		//it - there shouldn't be any contention here since the binder is new and doesn't need to reference its parent
-		getTransactionTemplate().execute(new TransactionCallback() {
+		transactionTemplate.execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
 	        //need to reload incase addFolder/workspace used retry loop where session cache is flushed by exception
 	        TemplateBinder cfg = getCoreDao().loadTemplate(configId, RequestContextHolder.getRequestContext().getZoneId());
@@ -609,7 +580,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	 	//flush changes so we can use them to fix up dashboards
 		IndexSynchronizationManager.applyChanges();
 	 	//after children are added, resolve relative selections
-		getTransactionTemplate().execute(new TransactionCallback() {
+		transactionTemplate.execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
         		List<Binder>binders = new ArrayList();
         		binders.add(top);
@@ -652,7 +623,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	   Binder binder;
 	   Definition def = cfg.getDefaultViewDef();
 	   if (def == null) {
-		   def = getDefinitionModule().addDefaultDefinition(cfg.getDefinitionType());
+		   def = definitionModule.addDefaultDefinition(cfg.getDefinitionType());
 	   }
 	   Map fileItems = new HashMap();
 	   Map entryData = new HashMap();
@@ -674,11 +645,11 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		   entryData.put(ObjectKeys.INPUT_FIELD_WORKFLOWASSOCIATIONS, cfg.getWorkflowAssociations());
 	   }
 	   if (!cfg.isFunctionMembershipInherited()) {
-			entryData.put(ObjectKeys.INPUT_FIELD_FUNCTIONMEMBERSHIPS, getAdminModule().getWorkAreaFunctionMemberships(cfg));
+			entryData.put(ObjectKeys.INPUT_FIELD_FUNCTIONMEMBERSHIPS, adminModule.getWorkAreaFunctionMemberships(cfg));
 	   }	    	
 	   //get binder created
 	   try {
-			   binder = getCoreDao().loadBinder(getBinderModule().addBinder(parentBinder.getId(), def.getId(), inputData, fileItems, ctx), zoneId);
+			   binder = getCoreDao().loadBinder(binderModule.addBinder(parentBinder.getId(), def.getId(), inputData, fileItems, ctx), zoneId);
 	   } catch (WriteFilesException wf) {
 		   //don't fail, but log it
   			logger.error("Error creating binder from template: ", wf);
@@ -739,7 +710,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 						zone.getZoneId());
 				if (binder instanceof TemplateBinder) {
 					// if it exists, delete it
-					getBinderModule().deleteBinder(binder.getId());
+					binderModule.deleteBinder(binder.getId());
 				} else {
 					throw new ConfigurationException(
 							"Reserved binder exists with same internal id");
@@ -756,7 +727,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 					zone.getZoneId());
 			if (!binders.isEmpty()) {
 				if (replace)
-					getBinderModule().deleteBinder(binders.get(0).getId());
+					binderModule.deleteBinder(binders.get(0).getId());
 				else
 					throw new NotSupportedException(
 							"errorcode.notsupported.duplicateTemplateName",

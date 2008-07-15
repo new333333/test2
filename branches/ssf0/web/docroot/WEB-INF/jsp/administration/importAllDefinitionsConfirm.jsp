@@ -29,16 +29,18 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body">
+<div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="administration.reload.definitions" /></span>
 <br>
 <br>
 
 <form class="ss_style ss_form" method="post" 
-		  action="<portlet:actionURL windowState="maximized"><portlet:param 
-		  name="action" value="import_definition"/><portlet:param 
-		  name="operation" value="reload"/></portlet:actionURL>" 
-		  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
+		  action="<ssf:url action="import_definition" actionUrl="true"><ssf:param 
+		  name="operation" value="reload"/><ssf:param 
+		  name="binderId" value="${ssBinderId}"/></ssf:url>" 
+		  name="${renderResponse.namespace}fm">
 
 <span>
 <ssf:nlt tag="administration.reload.definitions.warning"/>
@@ -46,10 +48,14 @@
 <br/>
 <br/>
 
-<input type="submit" class="ss_submit" name="reloadDefinitionsBtn" value="<ssf:nlt tag="button.ok" />">
+<input type="submit" class="ss_submit" name="reloadDefinitionsBtn" value="<ssf:nlt tag="button.ok" />"/>
 &nbsp;&nbsp;&nbsp;
-<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
-onClick="self.location.href='<portlet:renderURL windowState="normal" portletMode="view"/>';return false;">
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"/>
 
 </form>
+
 </div>
+</div>
+</body>
+</html>
+

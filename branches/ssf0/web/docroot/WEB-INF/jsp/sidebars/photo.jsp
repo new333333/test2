@@ -50,7 +50,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		  </div>
 
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="photo.findPage"/></div>
-	    <form method="post" name="ss_findWikiPageForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
+	    <form method="post" name="ss_findWikiPageForm${renderResponse.namespace}"
 	    	action="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
 					name="binderId" value="${ssBinder.id}"/></ssf:url>">
 		 <ssf:find formName="ss_findWikiPageForm${renderResponse.namespace}" 
@@ -102,4 +102,5 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	   </c:if>
 	   	   
 </ssf:sidebarPanel>
-<%@ include file="/WEB-INF/jsp/sidebars/folder_tags.jsp" %>
+
+<jsp:include page="/WEB-INF/jsp/sidebars/folder_tools.jsp" />

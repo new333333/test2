@@ -87,11 +87,11 @@ public class DisplayConfiguration extends TagSupport {
 	private Element configElement;
 	private String configJspStyle;
 	/**
+	 * FIXME
 	 * This attribute should be removed so we can treat item processing
 	 * uniformly. Either process a single element or all children elements,
 	 * *not* both.
 	 */
-	@Deprecated
 	private boolean processThisItem = false;
 	private DefinableEntity entry;
 

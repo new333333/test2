@@ -30,19 +30,21 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body">
+<div class="ss_pseudoPortal">
+<div class="ss_style ss_portlet">
+
 <c:if test="${empty ssErrorList}">
 <script type="text/javascript">
-var url_str = '<portlet:renderURL windowState="normal" portletMode="view"/>';
 var timeout = 0;
 <c:if test="${!empty ssDownloadURL}">
 timeout = 200;
 </c:if>
-setTimeout("self.location.replace('"+url_str+"')", timeout);
+setTimeout("self.window.close()", timeout);
 </script>
 </c:if>
 <c:if test="${!empty ssErrorList}">
-<form class="ss_style ss_form" action="<portlet:renderURL windowState="normal" portletMode="view"/>"
-		 method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
+<form class="ss_style ss_form" >
 <br/>
 <br/>
 <span class="ss_bold"><ssf:nlt tag="administration.errors"/></span>
@@ -53,7 +55,11 @@ setTimeout("self.location.replace('"+url_str+"')", timeout);
 	<li>${err}</li>
 </c:forEach>
 </ul>
-<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+<input type="submit" class="ss_submit" name="cancelBtn" onClick="self.window.close();return false;" value="<ssf:nlt tag="button.ok" text="OK"/>">
 
 </form>
 </c:if>
+</div>
+</div>
+</body>
+</html>

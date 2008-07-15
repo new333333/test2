@@ -33,6 +33,7 @@
 
 
 <c:set var="allDayEventId" value="allDayEvent_${evid}" />
+<c:set var="timeZoneFieldName" value="timeZone_${evid}" />
 <c:set var="dateId" value="dp_${evid}" />
 <c:set var="dateId2" value="dp2_${evid}" />
 <c:set var="endrangeId" value="endRange_${evid}" />
@@ -218,6 +219,19 @@
 			</td>
 		</tr>
 	</c:if>	
+	<c:if test="${attMap.isFreeBusyActive}">
+		<tr>
+			<td colspan="4">
+				<label for="${prefix}freeBusy"><ssf:nlt tag="event.freeBusy.legend" /></label> <select name="${prefix}_freeBusy" id="${prefix}freeBusy">
+				<c:forEach var="freeBusyType" items="<%= com.sitescape.team.domain.Event.FreeBusyType.values() %>">
+					<option value="${freeBusyType}" <c:if test="${initEvent.freeBusy == freeBusyType}">
+						selected="true"
+					</c:if>><ssf:nlt tag="event.freeBusy.${freeBusyType}" /></option>
+				</c:forEach>
+				</select>
+			</td>
+		</tr>
+	</c:if>		
 	</table>
 	
 
@@ -506,6 +520,9 @@
 	</c:if>
 	
 	<input type="hidden" name="${prefix}_event_uid" value="${initEvent.uid}" />
+	<c:if test="${!empty initEvent.timeZone}">
+		<input type="hidden" name="${timeZoneFieldName}" value="${initEvent.timeZone.ID}" />
+	</c:if>
 	
 	<script type="text/javascript">
 	
@@ -515,7 +532,7 @@
 		djConfig.searchIds.push("${dateId}_time_${prefix}");
 		djConfig.searchIds.push("${dateId2}_time_${prefix}");
 	
-			function ${prefix}_onEventFormSubmit() {
+		function ${prefix}_onEventFormSubmit() {
 		
 			var eventTimeZoneSensitiveObj = document.getElementById("timeZoneSensitive_${evid}");
 			var startDateTimeZoneSensitiveObj = document.getElementById("${dateId}_timeZoneSensitive");
@@ -528,7 +545,7 @@
 			return true;
 		}
 
-		 ss_createOnSubmitObj('${prefix}onsub', '${formName}', ${prefix}_onEventFormSubmit);
+		ss_createOnSubmitObj('${prefix}onsub', '${formName}', ${prefix}_onEventFormSubmit);
 		 
 	</script>
 

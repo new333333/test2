@@ -29,6 +29,7 @@
  */
 %>
 <% // Common folder page number navigation %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>

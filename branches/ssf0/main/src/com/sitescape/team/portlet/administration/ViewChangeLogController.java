@@ -54,8 +54,11 @@ public class ViewChangeLogController  extends  SAbstractController {
 			RenderResponse response) throws Exception {
 
 		Map model = new HashMap();
+		
 		Long binderId = PortletRequestUtils.getLongParameter(request,  WebKeys.URL_BINDER_ID);
-		Long entityId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTITY_ID);
+		String entityIdStr = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_ID, "");
+		Long entityId = null;
+		if (!entityIdStr.equals("")) entityId = new Long(entityIdStr);
 		if ((binderId == null) && (entityId == null)) {
 			//not ajax request
 			return new ModelAndView(WebKeys.VIEW_ADMIN_CHANGELOG, model);

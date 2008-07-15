@@ -68,9 +68,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 	#ss_diss_inset
 	{
-		margin:0% 5%;
-		width:90%;
+		
+		width:96%;
 		text-align:left;
+
 
 	}
 	#ss_diss_top
@@ -78,7 +79,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		clear:both;
 		float: left;
 		width: 100%;
-		overflow: hidden;
 		color: #526394;
 		font-family: Arial, Helvetica, sans-serif;
 
@@ -163,7 +163,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 }
 #ss_topic_title span
 {
-	color:#333333;!important;
+	color:#333333 !important;
 	font-size:14px;
 	font-weight:bold;
 }
@@ -305,4 +305,157 @@ a.ss_new_thread:hover {
 	margin-left:20px;
 	padding-bottom:10px;
 	}
-/**********************************/
+	
+/**** INLINE NAVBAR STYLE ************/
+
+#ss_navbar_inline ul{
+	margin:0px;
+	}
+#ss_navbar_inline ul li{
+	display: inline!important;
+	white-space: nowrap;
+	margin-right: 10px!important;
+	}
+#ss_navbar_inline ul a{
+	color:#666666;
+	}	
+#ss_navbar_inline ul a:hover{
+	color:#0C9;
+	font-weight:bold;
+	}
+#ss_navbar_inline ul a:active{
+	font-weight:bold;
+	color:#C00000;
+	}	
+.ss_navbar_current {
+	font-weight: bold !important;
+	text-decoration: underline;
+	}	
+
+/******* PAGINATION STYLES *************/
+#ss_goBox {
+	<c:if test="<%= isIE %>">
+ 	overflow:hidden;
+ 	height:26px !important;
+ 	</c:if>
+	}
+.ss_paginationGo {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: ${ss_style_font_fineprint} !important;
+	padding-left: 5px;
+	padding-right: 10px;
+	white-space: nowrap;
+	padding-top: 0px;
+	height:26px !important;
+	<c:if test="<%= isIE %>">
+  		vertical-align:top;
+  		padding-top: 3px;
+ 	</c:if>
+
+}
+.ss_paginationFont {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: ${ss_style_font_fineprint} !important;
+	padding-left: 5px;
+	padding-right: 2px;
+	white-space: nowrap;
+	padding-top: 2px;
+	height:26px !important;
+	<c:if test="<%= isIE %>">
+  		vertical-align:top;
+  		padding-top: 6px;
+ 	</c:if>
+ 	overflow:hidden;
+}
+
+.ss_paginationFont a{
+	border:solid 1px #DDDDDD !important;
+	margin-right:5px;
+}
+.ss_pageActive{
+	color:#408080!important;
+	font-weight:normal;
+	padding:7px 4px 0px 6px;
+		<c:if test="<%= isIE %>">
+  		padding:6px 4px 0px 6px;
+ 	</c:if>
+}
+.ss_paginationFont a:link,
+.ss_paginationFont a:visited {
+	color:#333333;
+	padding:3px 6px 3px 6px;
+	text-decoration:none;
+	background-color:#E9F1F1 !important;
+	background:transparent !important;	
+}
+.ss_paginationFont a:hover{
+	border:solid 1px #666666 !important;
+	background-color: #CCDFDE !important;
+}
+.ss_paginationTextBox {
+	font-family: Arial, Helvetica, sans-serif;
+	line-height: 10px;
+	font-size: ${ss_style_font_finestprint} !important;
+	width: 22px;
+	border-top-width: 0.8px !important;
+	border-right-width: 0.4px;
+	border-bottom-width: 0.4px;
+	border-left-width: 0.4px !important;
+	border-top-style: solid !important;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: solid !important;
+	border-top-color: #698F8E !important;
+	border-right-color: #698F8E;
+	border-bottom-color: #698F8E;
+	border-left-color: #698F8E !important;
+	padding-top: 1px;
+	margin-top: 2px;
+	margin-left: 5px;
+}
+.ss_pTB_no {
+	font-family: Arial, Helvetica, sans-serif;
+	line-height: 10px;
+	font-size: ${ss_style_font_finestprint} !important;
+	width: 22px;
+	border-top-width: 0.8px !important;
+	border-right-width: 0.4px;
+	border-bottom-width: 0.4px;
+	border-left-width: 0.4px !important;
+	border-top-style: solid !important;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: solid !important;
+	border-top-color: #698F8E !important;
+	border-right-color: #698F8E;
+	border-bottom-color: #698F8E;
+	border-left-color: #698F8E !important;
+	padding-top: 1px;
+	margin-top: 2px;
+	margin-left: 5px;
+	background-color:#D9D9D9 !important;
+}
+.ss_pagination {
+	background-color: #CCDFDE !important;
+	height:26px !important;
+	margin-bottom: 5px;
+	}
+	
+.ss_pagination_table {
+	height:26px !important;
+	white-space: nowrap !important;
+	}	
+.ss_pagination_arrows {
+	vertical-align: top;
+	padding-top: 5px;
+	}	
+.ss_pagination_goTable {
+	height:26px !important;
+	background-color: #CCDFDE !important;
+	white-space: nowrap !important;
+}
+.ss_paginationDiv {
+	background-color: #E9F1F1 !important;
+	height:26px !important;
+}
+/*************************************/

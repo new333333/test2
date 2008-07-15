@@ -158,9 +158,10 @@ public class FolderUtils {
 		data.put(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, resourceDriverName);
 		data.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, resourcePath);
 		data.put(ObjectKeys.PI_SYNCH_TO_SOURCE, Boolean.toString(synchToSource));
-		
+		Map params = new HashMap();
+		params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
 		return getBinderModule().addBinder(parentBinder.getId(), def.getId(), 
-					new MapInputData(data), null, null);
+					new MapInputData(data), null, params);
 	}
 
 	/**
@@ -184,9 +185,11 @@ public class FolderUtils {
 		data.put(ObjectKeys.FIELD_ENTITY_TITLE, folderName); 
 		//data.put("description", "This folder was created through WebDAV");
 		data.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.TRUE.toString());
-		
+		Map params = new HashMap();
+		params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
+
 		return getBinderModule().addBinder(parentBinder.getId(), def.getId(), 
-					new MapInputData(data), null, null);
+					new MapInputData(data), null, params);
 	}
 	
 	public static void deleteMirroredFolder(Folder folder, boolean deleteMirroredSource)
@@ -471,11 +474,14 @@ public class FolderUtils {
 	}
 	
 	private static Definition getZoneWideDefaultFolderEntryDefinition() {
-		List defs = getDefinitionModule().getDefinitions(Definition.FOLDER_ENTRY);
-		if(defs != null)
-			return (Definition) defs.get(0);
-		else
-			return null;
+		List<Definition> defs = getDefinitionModule().getDefinitions(null, Boolean.FALSE, Definition.FOLDER_ENTRY);
+		for (Definition def:defs) {
+			if (ObjectKeys.DEFAULT_FOLDER_ENTRY_DEF.equals(def.getInternalId())) return def;
+		}
+		for (Definition def:defs) {
+			if (!Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) return def;
+		}
+		return null;
 	}
 	
 	private static Definition getFolderDefinition(Binder parentBinder) {
@@ -493,11 +499,14 @@ public class FolderUtils {
 	}
 	
 	private static Definition getZoneWideDefaultFolderDefinition() {
-		List defs = getDefinitionModule().getDefinitions(Definition.FOLDER_VIEW);
-		if(defs != null)
-			return (Definition) defs.get(0);
-		else
-			return null;
+		List<Definition> defs = getDefinitionModule().getDefinitions(null, Boolean.FALSE, Definition.FOLDER_ENTRY);
+		for (Definition def:defs) {
+			if (ObjectKeys.DEFAULT_FOLDER_DEF.equals(def.getInternalId())) return def;
+		}
+		for (Definition def:defs) {
+			if (!Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) return def;
+		}
+		return null;
 	}
 
 	private static FolderModule getFolderModule() {

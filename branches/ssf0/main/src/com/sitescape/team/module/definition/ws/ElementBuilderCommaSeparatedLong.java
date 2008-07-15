@@ -30,7 +30,7 @@ package com.sitescape.team.module.definition.ws;
 
 import org.dom4j.Element;
 
-import com.sitescape.team.remoting.ws.model.LongArrayField;
+import com.sitescape.team.remoting.ws.model.CustomLongArrayField;
 import com.sitescape.util.StringUtil;
 
 public class ElementBuilderCommaSeparatedLong extends AbstractElementBuilder {
@@ -44,7 +44,7 @@ public class ElementBuilderCommaSeparatedLong extends AbstractElementBuilder {
 	   			Long[] longs = new Long[strings.length];
 	   			for(int i = 0; i < longs.length; i++)
 	   				longs[i] = Long.parseLong(strings[i]);
-	   			entityModel.addLongArrayField(new LongArrayField(dataElemName, dataElemType, longs));
+	   			entityModel.addCustomLongArrayField(new CustomLongArrayField(dataElemName, dataElemType, longs));
 	   		}
 	   	}
 	   	return true;

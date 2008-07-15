@@ -220,6 +220,7 @@
 					src="<html:imagesPath/>pics/1pix.gif" /></a>
 
 			</c:if>
+			<jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_css_init.jsp" />
 		</ssf:ifLoggedIn>
 	</c:if>
 </c:if>

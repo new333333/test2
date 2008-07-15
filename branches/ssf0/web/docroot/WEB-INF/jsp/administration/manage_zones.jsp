@@ -30,9 +30,12 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body">
+<div class="ss_pseudoPortal">
+
 <script type="text/javascript">
 
-function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(obj) {
+function ${renderResponse.namespace}_onsub(obj) {
 	if (obj.name.value == '') {
 		alert('<ssf:nlt tag="general.required.name"/>');
 		return false;
@@ -58,9 +61,8 @@ function ss_confirmDeleteZone() {
 <br>
 <ssf:expandableArea title="<%= NLT.get("administration.add.zone") %>">
 <form class="ss_style ss_form" method="post" 
-	action="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="manage_zones"/></portlet:actionURL>" 
-	onSubmit="return(<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(this))">
+	action="<ssf:url action="manage_zones" actionUrl="true"/>" 
+	onSubmit="return(${renderResponse.namespace}_onsub(this))">
 		
 	<span class="ss_bold"><ssf:nlt tag="administration.zoneName"/></span><br/>
 	<input type="text" class="ss_text" size="50" name="zoneName"><br/><br/>
@@ -86,9 +88,8 @@ function ss_confirmDeleteZone() {
   <c:forEach var="zoneInfo" items="${ss_zoneInfoList}">
   <tr>
 	<form class="ss_style ss_form" method="post" 
-	action="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="manage_zones"/></portlet:actionURL>" 
-	onSubmit="return(<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(this))">
+	action="<ssf:url action="manage_zones" actionUrl="true"/>" 
+	onSubmit="return(${renderResponse.namespace}_onsub(this))">
 		
     <td align="left" valign="middle">
 	<input type="text" class="ss_text" size="50" name="zoneName" value="${zoneInfo.zoneName}" readonly>
@@ -117,7 +118,17 @@ function ss_confirmDeleteZone() {
 </table>
 
 <br/>
+<br/>
+	<form class="ss_portlet_style ss_form" id="${ssNamespace}_btnForm" 
+	  name="${ssNamespace}_btnForm" method="post" 
+	  action="<ssf:url action="site_administration" actionUrl="false"/>">
+		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+		  onClick="self.window.close();return false;"/>
+	</form>
 
 </div>
 </div>
 
+</div>
+</body>
+</html>

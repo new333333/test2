@@ -535,6 +535,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
     	if(logger.isDebugEnabled())
     		logger.debug("Deleting binder [" + binder.getPathName() + "]");
+    	//mark deleted first, saving real work for later
     	if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource, options);
     	else {
     		//if binder is marked deleted, we are called from cleanup code without a transaction 

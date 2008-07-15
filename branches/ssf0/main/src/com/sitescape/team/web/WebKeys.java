@@ -53,12 +53,17 @@ public class WebKeys {
 	public static final String CALENDAR_GRID_TYPE = "ssGridType";
 	public static final String CALENDAR_GRID_SIZE = "ssGridSize";
 	public static final String CALENDAR_STICKY_ID = "calendarStickyId";
+	public static final String CALENDAR_FREE_BUSY_INFO = "ssCalendarFreeBusyInfo";
 	public static final String TASK_FILTER_TYPE = "ssTaskFilterType";
 	public static final String TASK_CURRENT_FILTER_TYPE = "ssCurrentTaskFilterType";
 	public static final String CALENDAR_PREV_DATE= "ssPrevDate";
 	public static final String CALENDAR_NEXT_DATE= "ssNextDate";
 	public static final String CALENDAR_CURR_DATE= "ssCurrDate";
 	public static final String CALENDAR_RANGE_END_DATE= "ssRangeEndDate";
+	public static final String CALENDAR_SCHEDULE_USER_IDS= "ssUsersId";
+	public static final String CALENDAR_SCHEDULE_START_DATE= "ssStartDate";
+	public static final String CALENDAR_SCHEDULE_END_DATE= "ssEndDate";
+	public static final String CALENDAR_SCHEDULE_USER_LIST_NAME= "ssUserListName";
 	
 	public static final String DEFAULT_SAVE_LOCATION="ssDefaultSaveLocation";
 	public static final String DEFAULT_SAVE_LOCATION_ID="ssDefaultSaveLocationId";
@@ -128,6 +133,8 @@ public class WebKeys {
     public static final String URL_ENTRY_PAGE_TITLE="page_title";
     public static final String URL_ENTRY_TITLE="title";
     public static final String URL_ENTRY_TYPE="entryType";
+    public static final String URL_ENTRY_VIEW_STYLE="entryViewStyle";
+    public static final String URL_ENTRY_VIEW_TYPE="entryViewType";
 	public static final String URL_FILE = "file";
 	public static final String URL_FILE_ID = "fileId";
 	public static final String URL_FILE_NAME = "fileName";
@@ -230,6 +237,7 @@ public class WebKeys {
 	public static final String ACTION_DEFINITION_BUILDER = "definition_builder";
 	public static final String ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";
 	public static final String ACTION_EDIT_ELEMENT = "edit_element";
+	public static final String ACTION_MANAGE_DEFINITIONS = "manage_definitions";
 	public static final String ACTION_MODIFY_DASHBOARD = "modify_dashboard";
 	public static final String ACTION_MODIFY_FOLDER_ENTRY = "modify_folder_entry";
 	public static final String ACTION_LOCK_FOLDER_ENTRY = "lock_folder_entry";
@@ -268,6 +276,8 @@ public class WebKeys {
 	public static final String ACTION_QUOTA_REPORT="quota_report";
 	public static final String ACTION_SEND_EMAIL="send_email";
 	public static final String ACTION_SEND_ENTRY_EMAIL="send_entry_email";
+	public static final String ACTION_SCHEDULE_SYNCHRONIZATION="schedule_synchronization";
+	public static final String ACTION_SITE_ADMINISTRATION="site_administration";
 	public static final String ACTION_START_WORKFLOW="start_workflow";
 	public static final String ACTION_STOP_WORKFLOW="stop_workflow";
 	public static final String ACTION_VIEW_UPLOAD_FILE="view_upload_file";
@@ -289,6 +299,8 @@ public class WebKeys {
     public static final String OPERATION_VIEW_WORKSPACE = "view_workspace";
     public static final String OPERATION_ADD="add";
     public static final String OPERATION_COPY = "copy";
+    public static final String OPERATION_IMPORT="import";
+    public static final String OPERATION_RESET="reset";
     public static final String OPERATION_EXPORT="export";
     public static final String OPERATION_CLEAR_CLIPBOARD = "clear_clipboard";
  	public static final String OPERATION_REMOVE_FROM_CLIPBOARD = "remove_from_clipboard";
@@ -404,6 +416,7 @@ public class WebKeys {
 	public static final String OPERATION_SHOW_TEAM_MEMBERS = "show_team_members";
 	public static final String OPERATION_FIND_CALENDAR_EVENTS = "find_calendar_events";
 	public static final String OPERATION_STICKY_CALENDAR_DISPLAY_SETTINGS = "sticky_calendar_display_settings";
+	public static final String OPERATION_GET_CALENDAR_FREE_INFO = "get_calendar_free_info";
 	public static final String OPERATION_UPDATE_TASK = "update_task";
 	public static final String OPERATION_START_WORKFLOW = "start_workflow";
 	public static final String OPERATION_STOP_WORKFLOW = "stop_workflow";
@@ -572,6 +585,7 @@ public class WebKeys {
     public static final String EMAIL_ALIASES="ssEmailAliases";
 	public static final String ENTITY_ID = "ss_entityId";
 	public static final String ENTITY_TYPE="_entityType";
+	public static final String ENTITY_TYPE_BEAN="ss_entityType";
     public static final String ENTRIES_VIEWED="ssEntriesViewed";
     public static final String ENTRIES_VIEWED_PAGE="ssEntriesViewedPage";
     public static final String ENTRY="ssEntry";
@@ -585,6 +599,10 @@ public class WebKeys {
     public static final String ENTRY_ATTACHMENT_EDITOR_TYPE="ssEntryAttachmentEditorType";
     public static final String ENTRY_TITLE="ssEntryTitle";
     public static final String ENTRY_USER_LIST="assignedUsers";
+    public static final String ENTRY_VIEW_STYLE="ss_entryViewStyle";
+    public static final String ENTRY_VIEW_STYLE_POPUP="entryViewStylePopup";
+    public static final String ENTRY_VIEW_STYLE_INLINE="entryViewStyleInline";
+    public static final String ENTRY_VIEW_STYLE_FULL="entryViewStyleFull";
     public static final String ENTRY_DUE_DATE="dueDate";
     public static final String MEETING_TOKEN="ssMeetingToken";
     public static final String MEETING_ERROR="ssMeetingError";
@@ -601,6 +619,8 @@ public class WebKeys {
     public static final String ENTRY_DEFINTION_ELEMENT_DATA="ssEntryDefinitionElementData";
     public static final String ENTRY_DEFINTION_ELEMENT_DATA_MAP="ssEntryDefinitionElementDataMap";
     public static final String ENTRY_TOOLBAR="ssEntryToolbar";
+    public static final String FOLDER_VIEWS_TOOLBAR="ssFolderViewsToolbar";
+    public static final String FOLDER_ACTIONS_TOOLBAR="ssFolderActionsToolbar";
     public static final String ENTRY_ATTACHMENT_FILE_RECEIVER_URL = "ssAttachmentFileReceiverURL";
     public static final String FOLDER_ATTACHMENT_FILE_RECEIVER_URL = "ssFolderAttachmentFileReceiverURL";
     public static final String FOLDER_ATTACHMENT_APPLET_REFRESH_URL = "ssFolderAttachmentAppletRefereshURL";
@@ -764,17 +784,13 @@ public class WebKeys {
     public static final String PROFILE_CONFIG_ENTRY="ssProfileConfigEntry";
     public static final String PROFILE_SHOW_BUSINESSCARD_MINE="ssProfileShowBusinessCardMine";
     public static final String PROFILE_SHOW_BUSINESSCARD_OTHER="ssProfileShowBusinessCardOther";
-    public static final String PUBLIC_DEFINITIONS="ssPublicDefinitions";
-    public static final String PUBLIC_BINDER_DEFINITIONS="ssPublicBinderDefinitions";
-    public static final String PUBLIC_BINDER_ENTRY_DEFINITIONS="ssPublicBinderEntryDefinitions";
-    public static final String PUBLIC_ENTRY_DEFINITIONS="ssPublicEntryDefinitions";
-    public static final String PUBLIC_FOLDER_DEFINITIONS="ssPublicFolderDefinitions";
-    public static final String PUBLIC_PROFILE_DEFINITIONS="ssPublicProfileDefinitions";
-    public static final String PUBLIC_PROFILE_ENTRY_DEFINITIONS="ssPublicProfileEntryDefinitions";
+    public static final String ALL_BINDER_DEFINITIONS="ssAllBinderDefinitions";
+    public static final String ALL_ENTRY_DEFINITIONS="ssAllEntryDefinitions";
+    public static final String ALL_WORKFLOW_DEFINITIONS="ssAllWorkflowDefinitions";
     public static final String PUBLIC_WORKFLOW_DEFINITIONS="ssPublicWorkflowDefinitions";
-    public static final String PUBLIC_WORKSPACE_DEFINITIONS="ssPublicWorkspaceDefinitions";
     public static final String RATING_DIV_ID="ss_ratingDivId";
     public static final String RECORDS_DIV_ID="ss_recordsDivId";
+    public static final String REFERER_URL="ss_refererUrl";
     public static final String RELEVANCE_SHARED_ENTITIES="ss_sharedEntities";
     public static final String RELEVANCE_SHARED_ENTITIES_PAGE="ss_sharedEntitiesPage";
     public static final String RELEVANCE_TRACKED_BINDERS="ss_trackedBinders";
@@ -832,6 +848,7 @@ public class WebKeys {
     public static final String SHOW_SEARCH_RESULTS="ss_showSearchResults";
     public static final String SIMPLE_URL_NAME_EXISTS_ERROR="ss_simpleUrlNameExistsError";
     public static final String SIMPLE_URL_NAME_NOT_ALLOWED_ERROR="ss_simpleUrlNameNotAllowedError";
+    public static final String SNIPPET="ss_snippet";
     public static final String TRACKED_PLACES_PAGE="ss_trackedPlacesPage";
     public static final String TRACKED_SITE_PAGE="ss_trackedSitePage";
     public static final String WHATS_HOT_PAGE="ss_whatsHotPage";
@@ -854,11 +871,13 @@ public class WebKeys {
     public static final String FIND_LIST_TYPE="ssFindListType";
     public static final String FIND_SINGLE_ITEM="ssFindSingleItem";
     public static final String FIND_CLICK_ROUTINE="ssFindClickRoutine";
-    public static final String FIND_CLICK_ROUTINE_ARGS="ssFindClickRoutineArgs";
+    public static final String FIND_CLICK_ROUTINE_OBJ="ssFindClickRoutineObj";
+    public static final String FIND_MULTIPLE_OBJ="ssFindMultipleObj";
     public static final String FIND_INSTANCE_COUNT="ssFindInstanceCount";
     public static final String FIND_INSTANCE_CODE="ssFindInstanceCode";
     public static final String FIND_LEAVE_RESULTS_VISIBLE="ssFindLeaveResultsVisible";
     public static final String FIND_SEARCH_SUBFOLDERS="ssFindSearchSubFolders";
+    public static final String FIND_SHOW_USER_TITLE_ONLY="ssShowUserTitleOnly";
     public static final String FIND_FOLDERS_ONLY="ssFindFoldersOnly";
     public static final String FIND_ACCESSIBILITY_TEXT="accessibilityText";
     public static final String FIND_ADD_CURRENT_USER="ssFindAddCurrentUser";
@@ -954,8 +973,6 @@ public class WebKeys {
     public static final String WORKSPACE_BEANS_SETUP="ssWorkspaceBeansSetup";
     public static final String ZONE_NAME = "com.sitescape.zonename";
     public static final String ZONE_ID = "com.sitescape.zoneId";
-    public static final String SERVER_NAME = "com.sitescape.server.name";
-    public static final String SERVER_PORT = "com.sitescape.server.port";
     public static final String TOKEN_INFO_ID = "ssTokenInfoId";
     
     public static final String FOLDER_SORT_BY = "ssFolderSortBy";
@@ -969,9 +986,12 @@ public class WebKeys {
     public static final String PAGE_DISPLAY_VALUE = "ssPageDisplayValue";
 	public static final String PAGE_INTERNAL_VALUE = "ssPageInternalValue";
 	public static final String PAGE_NO_LINK = "ssPageNoLink";
+	public static final String PAGE_CURRENT = "ssPageCurrent";
 	public static final String PAGE_IS_CURRENT = "ssPageIsCurrent";
 	public static final String PAGE_PREVIOUS = "ssPagePrevious";
 	public static final String PAGE_NEXT = "ssPageNext";
+	public static final String PAGE_LAST = "ssPageLast";
+	public static final String PAGE_LAST_STARTING_INDEX = "ssPageLastStartingIndex";
 	public static final String PAGE_NUMBERS = "ssPageNumbers";
 	public static final String PAGE_COUNT = "ssPageCount";
 	public static final String PAGE_ENTRIES_PER_PAGE = "ssEntriesPerPage";
@@ -993,6 +1013,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_IMPORT_ALL_DEFINITIONS_CONFIRM ="administration/importAllDefinitionsConfirm"; 
     public static final String VIEW_ADMIN_IMPORT_DEFINITIONS ="administration/importDefinitions"; 
     public static final String VIEW_ADMIN_EXPORT_DEFINITIONS ="administration/exportDefinitions"; 
+    public static final String VIEW_ADMIN_MOVE_DEFINITION="administration/moveDefinition";
     public static final String VIEW_ADMIN_MANAGE_APPLICATIONS="administration/manage_applications";
     public static final String VIEW_ADMIN_MANAGE_APPLICATION_GROUPS="administration/manage_application_groups";
     public static final String VIEW_ADMIN_MANAGE_GROUPS="administration/manage_groups";
@@ -1008,6 +1029,7 @@ public class WebKeys {
     public static final String VIEW_BUILD_FILTER_SELECT = "binder/build_filter_select";
     public static final String VIEW_CONFIGURE = "binder/configure";
     public static final String VIEW_CONFIRM_DELETE_USER_WORKSPACE="profile/confirm_delete_user_workspace";
+    public static final String VIEW_DEFINITIONS="administration/view_definitions";
     public static final String VIEW_DEFINITION="definition_builder/view_definition_builder";
     public static final String VIEW_DEFINITION_OPTION="definition_builder/view_definition_builder_option";
     public static final String VIEW_DEFINITION_XML="definition_builder/view_definition_xml";
@@ -1024,6 +1046,7 @@ public class WebKeys {
     public static final String VIEW_GUESTBOOK_EDIT="guestbook_summary/edit";
     public static final String VIEW_IMPORT_TEMPLATE="administration/importTemplate";
     public static final String VIEW_LOGIN_PLEASE="forum/login_please";
+    public static final String VIEW_LOGIN_PLEASE_SNIPPET="forum/login_please_snippet";
     public static final String VIEW_LOGIN_RETURN="forum/login_return";
     public static final String VIEW_LOGIN_RETRY="forum/login_retry";
     public static final String VIEW_LOGOUT_RETURN="forum/logout_return";
@@ -1033,10 +1056,12 @@ public class WebKeys {
     public static final String VIEW_TASK_EDIT="task_summary/edit";
     public static final String VIEW_LICENSE_REPORT="administration/license_report";
     public static final String VIEW_LISTING_IFRAME="entry/view_listing_iframe";
+    public static final String VIEW_LISTING_NEWPAGE="entry/view_listing_newpage";
     public static final String VIEW_LISTING_POPUP="entry/view_listing_popup";
     public static final String VIEW_LISTING_ACCESSIBLE="entry/view_listing_accessible";
     public static final String VIEW_LISTING_SEARCH_RESULTS_ACCESSIBLE="entry/view_listing_search_results_accessible";
     public static final String VIEW_LISTING_SEARCH_RESULTS_IFRAME="entry/view_listing_search_results_iframe";
+    public static final String VIEW_LISTING_SEARCH_RESULTS_NEWPAGE="entry/view_listing_search_results_newpage";
     public static final String VIEW_LISTING_SEARCH_RESULTS_POPUP="entry/view_listing_search_results_popup";
     public static final String VIEW_LISTING_SEARCH_RESULTS_VERTICAL="entry/view_listing_search_results_vertical";
     public static final String VIEW_LISTING_VERTICAL="entry/view_listing_vertical";
@@ -1060,6 +1085,7 @@ public class WebKeys {
     public static final String VIEW_RELEVANCE_DASHBOARD = "relevance_dashboard/view";
     public static final String VIEW_RELEVANCE_DASHBOARD_EDIT = "relevance_dashboard/edit";
     public static final String VIEW_REPORT="administration/report";
+    public static final String VIEW_SCHEDULE_SYNCHRONIZATION="administration/schedule_synchronization";
     public static final String VIEW_SEARCH="search/view";
     public static final String VIEW_SEARCH_EDIT="search/edit";
     public static final String VIEW_TEMPLATE="administration/configureConfiguration";
@@ -1083,4 +1109,5 @@ public class WebKeys {
     public static final String SERVLET_PORTAL_LOGIN="portalLogin";
     public static final String SERVLET_PORTAL_LOGOUT="portalLogout";
     
+    public static final String USERID_PLACEHOLDER = "__ss_userid_placeholder_";
 }

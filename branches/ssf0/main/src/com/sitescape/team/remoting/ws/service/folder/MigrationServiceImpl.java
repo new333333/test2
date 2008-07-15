@@ -38,7 +38,11 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.remoting.RemotingException;
+import com.sitescape.team.remoting.ws.model.DefinableEntity;
+import com.sitescape.team.remoting.ws.model.FolderEntry;
+import com.sitescape.team.remoting.ws.model.Timestamp;
 import com.sitescape.team.remoting.ws.util.DomInputData;
+import com.sitescape.team.remoting.ws.util.ModelInputData;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
 public class MigrationServiceImpl extends FolderServiceImpl implements
@@ -46,7 +50,7 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 
 
 
-	public long migration_addFolderEntry(String accessToken, long binderId, String definitionId,
+	public long migration_addFolderEntryWithXML(String accessToken, long binderId, String definitionId,
 			String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
 		HashMap options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
@@ -55,7 +59,7 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 		return addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, null, options);
 	}
 
-	public long migration_addReply(String accessToken, long binderId, long parentId, String definitionId,
+	public long migration_addReplyWithXML(String accessToken, long binderId, long parentId, String definitionId,
 			String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
@@ -87,7 +91,7 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 		getTimestamps(options, null, null, modifier, modificationDate);
 		addEntryWorkflow(accessToken, binderId, entryId, definitionId, options);
 	}
-	public long migration_addBinder(String accessToken, long parentId, String definitionId,
+	public long migration_addBinderWithXML(String accessToken, long parentId, String definitionId,
 			String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
@@ -116,4 +120,56 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 		if (modifier != null) options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, modifier);
 		if (modificationDate != null) options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modificationDate);
 	}
+
+	protected void getTimestamps(Map options, DefinableEntity entry)
+	{
+		Timestamp creation = entry.getCreation();
+		if(creation != null) {
+			if(creation.getPrincipal() != null)
+				options.put(ObjectKeys.INPUT_OPTION_CREATION_NAME, creation.getPrincipal());
+			if(creation.getDate() != null)
+				options.put(ObjectKeys.INPUT_OPTION_CREATION_DATE, creation.getDate());
+		}
+		Timestamp modification = entry.getModification();
+		if(modification != null) {
+			if(modification.getPrincipal() != null)
+				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, modification.getPrincipal());
+			if(modification.getDate() != null)
+				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modification.getDate());
+		}
+	}
+
+	public long migration_addBinder(String accessToken, com.sitescape.team.remoting.ws.model.Binder modelBinder) {
+		try {
+			Map options = new HashMap();
+			//let binder be indexed, so it can be found
+			getTimestamps(options, modelBinder);
+			Long binderId = getBinderModule().addBinder(modelBinder.getParentBinderId(), 
+					modelBinder.getDefinitionId(), new ModelInputData(modelBinder), null, options).longValue();
+			Binder binder = getBinderModule().getBinder(binderId);
+			//sub-folders should inherit
+			if (binder instanceof Folder && binder.getParentBinder() instanceof Folder)
+				getBinderModule().setDefinitionsInherited(binderId, true);
+			return binderId;
+		} catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+	}
+
+	public long migration_addFolderEntry(String accessToken, FolderEntry entry) {
+		HashMap options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+    	options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
+ 		getTimestamps(options, entry);
+		return addFolderEntry(accessToken, entry, null, options);
+	}
+
+	public long migration_addReply(String accessToken, long parentEntryId, FolderEntry reply) {
+		Map options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+    	options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
+		getTimestamps(options, reply);
+		return addReply(accessToken, parentEntryId, reply, null, options);
+	}
+
 }

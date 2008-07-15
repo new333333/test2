@@ -333,6 +333,19 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   			if (!binder.isRoot()) {
 		   				session.getSessionFactory().evictCollection("com.sitescape.team.domain.Binder.binders", binder.getParentBinder().getId());
 		   			}
+		   			//find definitions owned by this binder
+		   			List<Definition> defs = session.createCriteria(Definition.class)
+		   				.add(Expression.eq("binderId", binder.getId())).list();
+		   			for (Definition definition:defs) {
+		   				try {
+		   					delete(definition);
+		   				} catch (Exception ex) {
+		   					//assume in use
+		   					definition.setVisibility(Definition.VISIBILITY_DEPRECATED);
+		   					definition.setBinderId(null);
+		   					definition.setName(definition.getId());//need a unique name
+		   				}
+		   			}
 		   			session.flush();
 		   			session.evict(binder);
 		   			
@@ -853,21 +866,25 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
   		return def;
 	}
 
-	public Definition loadDefinitionByName(final String name, final Long zoneId) {
+	public Definition loadDefinitionByName(final Binder binder, final String name, final Long zoneId) {
 		return (Definition)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
-	                 	Definition def = (Definition)session.getNamedQuery("find-definition-by-name")
-                 		.setLong(ParameterNames.ZONE_ID, zoneId)
-                 		.setString(ParameterNames.NAME, name)
-                 		.setCacheable(true)
-                		.uniqueResult();
+	                 	Criteria crit =session.createCriteria(Definition.class)
+                 		.add(Expression.eq("zoneId", zoneId))
+                 		.add(Expression.eq("name", name));
+                 		if (binder != null) crit.add(Expression.eq("binderId", binder.getId()));
+                 		else crit.add(Expression.isNull("binderId"));
+                		Definition def = (Definition)crit.uniqueResult();
 	                    if (def == null) {throw new NoDefinitionByTheIdException(name);}
 	                    return def;
 	                }
 	            }
 	        );
  	}
+	public List loadDefinitions(FilterControls filter, Long zoneId) {
+		return loadObjects(new ObjectControls(Definition.class), filter, zoneId);
+	}
 	public List loadDefinitions(Long zoneId) {
 		OrderBy order = new OrderBy();
 		order.addColumn("type");
@@ -875,13 +892,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		FilterControls filter = new FilterControls();
 		filter.setOrderBy(order);
     	return loadObjects(new ObjectControls(Definition.class), filter, zoneId);
-	}
-	public List loadDefinitions(Long zoneId, int type) {
-		OrderBy order = new OrderBy();
-		order.addColumn("name");
-		FilterControls filter = new FilterControls("type", Integer.valueOf(type));
-		filter.setOrderBy(order);
-    	return loadObjectsCacheable(new ObjectControls(Definition.class), filter, zoneId);
 	}
 	
 	// return top level configurations

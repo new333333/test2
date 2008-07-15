@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.module.definition;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -35,6 +36,7 @@ import java.util.NoSuchElementException;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.sitescape.team.ObjectExistsException;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
@@ -51,8 +53,8 @@ public interface DefinitionModule {
 	public enum DefinitionOperation {
 		manageDefinition,
 	}
-	public String addDefinition(Document doc, boolean replace) throws AccessControlException;
-	public Definition addDefinition(String name, String title, int type, InputDataAccessor inputData) throws AccessControlException;
+	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace) throws AccessControlException, Exception;
+	public Definition addDefinition(Binder binder, String name, String title, Integer type, InputDataAccessor inputData) throws AccessControlException;
 	/**
 	 * Adds an item to an item in a definition tree.
 	 *
@@ -68,16 +70,24 @@ public interface DefinitionModule {
 	 * @exception NoSuchElementException iteration has no more elements.
 	 */
 	public Element addItem(String defId, String itemId, String itemName, InputDataAccessor inputData) throws DefinitionInvalidException, AccessControlException;
-	public Definition addDefaultDefinition(int type);
+	public Definition addDefaultDefinition(Integer type);
+	public Definition copyDefinition(String id, Binder binder, String name, String title) throws AccessControlException;
+	public void copyItem(String defId, String sourceItemId, String targetItemId) throws DefinitionInvalidException, AccessControlException;
 	public void deleteDefinition(String id) throws AccessControlException;
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException, AccessControlException;
 
 	public Definition getDefinition(String id);
-	public Definition getDefinitionByName(String id);
-	public List<Definition> getDefinitions();
-	public List<Definition> getDefinitions(int type);
+	public Definition getDefinitionByName(Binder binder, Boolean includeAncestors, String name);
+	public List<Definition> getAllDefinitions();
+	public List<Definition> getAllDefinitions(Integer type);
+	public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors);
+	public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors, Integer type);
 	public Document getDefinitionConfig();
 	public Document getDefinitionAsXml(Definition def);
+	
+	public static String ENTRY_ATTRIBUTES_SET = "__set__";
+	public static String ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED = "__setMultipleAllowed__";
+	
 	/**
 	 * Routine to process the input data and return a map of only the entry data
 	 * 
@@ -89,16 +99,15 @@ public interface DefinitionModule {
 	public Map getEntryDefinitionElements(String id);
 	public Map getWorkflowDefinitionStates(String id);
 
-	public void modifyDefinitionName(String id, String name, String caption) throws AccessControlException;
-	public void modifyDefinitionAttribute(String id, String key, String value) throws AccessControlException;
+	public void modifyVisibility(String id, Integer visibility, Long binderId) throws AccessControlException,ObjectExistsException;
 	public void modifyDefinitionProperties(String id, InputDataAccessor inputData) throws AccessControlException;
 	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException, AccessControlException;
-	public void modifyItemLocation(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException, AccessControlException;
+	public void moveItem(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException, AccessControlException;
 	public Definition setDefaultBinderDefinition(Binder binder);
 	public Definition setDefaultEntryDefinition(Entry entry);
 	public void setDefinitionLayout(String id, InputDataAccessor inputData) throws AccessControlException;
 
-  	public boolean testAccess(int type, DefinitionOperation operation);
+  	public boolean testAccess(Binder binder, Integer type, DefinitionOperation operation);
   	/**
   	 * After importing a definition, references to other definitions must be resolved.
   	 * 

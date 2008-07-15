@@ -34,7 +34,7 @@ import org.dom4j.Element;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.remoting.ws.model.Field;
-import com.sitescape.team.remoting.ws.model.StringField;
+import com.sitescape.team.remoting.ws.model.CustomStringField;
 import com.sitescape.team.util.InvokeUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ObjectPropertyNotFoundException;
@@ -83,7 +83,7 @@ public abstract class AbstractElementBuilder implements ElementBuilder {
 	   		if(element != null)
 	   			element.setText(value);
 	   		if(entityModel != null && !dataElemName.equals("title"))
-	   			entityModel.addStringField(new StringField(dataElemName, dataElemType, value));
+	   			entityModel.addCustomStringField(new CustomStringField(dataElemName, dataElemType, value));
 	   	}
 	   	return true;
     }

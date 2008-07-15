@@ -32,165 +32,181 @@
  */
 package com.sitescape.team.taglib;
 
-import java.lang.Boolean;
-import java.util.Date;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.Date;
 import java.util.HashMap;
+
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.tagext.TagSupport;
-
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
 
 import org.joda.time.DateTime;
 
-import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Event;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 
 /**
- * @author billmers
- *;
+ * @author billmers ;
  */
 
 public class Eventeditor extends TagSupport {
-        
-  private String contextPath;
-  private String id;
-  private String formName;
-  private Event initEvent = null;
-  private Boolean hasDuration = false;
-  private Boolean hasRecurrence = true;
-  private Boolean isTimeZoneSensitiveActive = false;
-  private Boolean required = false;
 
-  public int doStartTag() throws JspException {
-    try {
-        if (id == null) {
-        	throw new JspException("You must provide an element name"); 
-        }
-        if (formName == null) {
-        	throw new JspException("You must provide a form name"); 
-        }
-        
-      HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
-      contextPath = httpReq.getContextPath();
-      if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
-				
-      ServletRequest req = null;
-      req = new DynamicServletRequest((HttpServletRequest)pageContext.getRequest());
+	private String contextPath;
 
-      String jsp = "/WEB-INF/jsp/tag_jsps/eventeditor/eventeditor.jsp";
-      RequestDispatcher rd = req.getRequestDispatcher(jsp); 
-      
-      // if initEvent is provided, take it apart and pass in two dates
-      Date startDate = null;
-      Date endDate = null;
-      // initialize the event, if none was provided
-      if (initEvent != null) {
-          Calendar startCal = initEvent.getDtStart();
-          Calendar endCal = initEvent.getDtEnd();
-          // if the start or end dates were never initialized, set to today
-          if (startCal.getTime().getTime() == 0) {
-        	  startCal.setTime(startDate);
-          }
-          if (endCal.getTime().getTime() == 0) {
-        	  endCal.setTime(endDate);
-          }
-          
-          startDate = startCal.getTime();
-          endDate = endCal.getTime();
-      } else if (required) {
-    	  initEvent = new Event();
-    	  initEvent.setTimeZone(RequestContextHolder.getRequestContext().getUser().getTimeZone());
-    	  
-    	  
-    	  DateTime startDateTime = new DateTime();
-    	  startDateTime = startDateTime.plusMinutes(startDateTime.getMinuteOfHour() > 30 ?  60 - startDateTime.getMinuteOfHour(): 30 - startDateTime.getMinuteOfHour());
-    	  startDate = startDateTime.toDate();
-    	  initEvent.setDtStart(startDateTime.toGregorianCalendar());
-    	  if (hasDuration.booleanValue()) {
-    		  startDateTime = startDateTime.plusMinutes(30);
-    		  endDate = startDateTime.toDate();
-    		  initEvent.setDtEnd(startDateTime.toGregorianCalendar());
-    	  }
-      }
-      
-      // any attributes we might want to pass into the jsp go here
-      req.setAttribute("initEvent", initEvent);
-      // these need to be beans because the jsp page will pass them on to other tags
-      req.setAttribute("evid", id);
-      req.setAttribute("formName", formName);
-      req.setAttribute("startDate", startDate);
-      req.setAttribute("endDate", endDate);
-      // any other miscellaneous pieces can go here, for access by JSTL on the JSP page
-      HashMap attMap = new HashMap();
-      attMap.put("hasDur", hasDuration);
-      attMap.put("hasRecur", hasRecurrence);
-      attMap.put("isTimeZoneSensitiveActive", isTimeZoneSensitiveActive);
-      req.setAttribute("attMap", attMap);
-      
-      StringServletResponse res =
-          new StringServletResponse((HttpServletResponse)pageContext.getResponse());
-      // this next line invokes the jsp and captures it into res
-      rd.include(req, res);
-      // and now dump it out into this response
-      pageContext.getOut().print(res.getString());
-    }
+	private String id;
 
-    catch (Exception e) {
-      throw new JspException(e);
-    }
-    finally {
-	  id = null;
-	  formName = null;
-	  initEvent = null;
-	  hasDuration = false;
-	  hasRecurrence = true;
-	  isTimeZoneSensitiveActive = false;
-    }
-    return SKIP_BODY;
-  }
+	private String formName;
 
-  public int doEndTag() throws JspException {
-      return SKIP_BODY;
-  }
+	private Event initEvent = null;
 
-  public void setId(String id) {
-      this.id = id;
-  }
+	private Boolean hasDuration = false;
 
-  public void setFormName(String formName) {
-      this.formName = formName;
-  }
+	private Boolean hasRecurrence = true;
 
-  public void setHasDuration(Boolean hasDuration) {
-      this.hasDuration = hasDuration;
-  }
+	private Boolean isTimeZoneSensitiveActive = false;
+	
+	private Boolean isFreeBusyActive = false;
 
-  public void setHasRecurrence(Boolean hasRecurrence) {
-      this.hasRecurrence = hasRecurrence;
-  }
+	private Boolean required = false;
 
-  public void setIsTimeZoneSensitiveActive(Boolean isTimeZoneSensitiveActive) {
-      this.isTimeZoneSensitiveActive = isTimeZoneSensitiveActive;
-  }
-  
-  public void setInitEvent(Event initEvent) {
-      this.initEvent = initEvent;
-  }
+	public int doStartTag() throws JspException {
+		try {
+			if (id == null) {
+				throw new JspException("You must provide an element name");
+			}
+			if (formName == null) {
+				throw new JspException("You must provide a form name");
+			}
+
+			HttpServletRequest httpReq = (HttpServletRequest) pageContext
+					.getRequest();
+			contextPath = httpReq.getContextPath();
+			if (contextPath.endsWith("/"))
+				contextPath = contextPath
+						.substring(0, contextPath.length() - 1);
+
+			ServletRequest req = null;
+			req = new DynamicServletRequest((HttpServletRequest) pageContext
+					.getRequest());
+
+			String jsp = "/WEB-INF/jsp/tag_jsps/eventeditor/eventeditor.jsp";
+			RequestDispatcher rd = req.getRequestDispatcher(jsp);
+
+			// if initEvent is provided, take it apart and pass in two dates
+			Date startDate = null;
+			Date endDate = null;
+			// initialize the event, if none was provided
+			if (initEvent != null) {
+				Calendar startCal = initEvent.getDtStart();
+				Calendar endCal = initEvent.getDtEnd();
+				// if the start or end dates were never initialized, set to
+				// today
+				if (startCal.getTime().getTime() == 0) {
+					startCal.setTime(startDate);
+				}
+				if (endCal.getTime().getTime() == 0) {
+					endCal.setTime(endDate);
+				}
+
+				startDate = startCal.getTime();
+				endDate = endCal.getTime();
+			} else if (required) {
+				initEvent = new Event();
+				initEvent.setTimeZone(RequestContextHolder.getRequestContext()
+						.getUser().getTimeZone());
+
+				DateTime startDateTime = new DateTime();
+				startDateTime = startDateTime.plusMinutes(startDateTime
+						.getMinuteOfHour() > 30 ? 60 - startDateTime
+						.getMinuteOfHour() : 30 - startDateTime
+						.getMinuteOfHour());
+				startDate = startDateTime.toDate();
+				initEvent.setDtStart(startDateTime.toGregorianCalendar());
+				if (hasDuration.booleanValue()) {
+					startDateTime = startDateTime.plusMinutes(30);
+					endDate = startDateTime.toDate();
+					initEvent.setDtEnd(startDateTime.toGregorianCalendar());
+				}
+			}
+
+			// any attributes we might want to pass into the jsp go here
+			req.setAttribute("initEvent", initEvent);
+			// these need to be beans because the jsp page will pass them on to
+			// other tags
+			req.setAttribute("evid", id);
+			req.setAttribute("formName", formName);
+			req.setAttribute("startDate", startDate);
+			req.setAttribute("endDate", endDate);
+			// any other miscellaneous pieces can go here, for access by JSTL on
+			// the JSP page
+			HashMap attMap = new HashMap();
+			attMap.put("hasDur", hasDuration);
+			attMap.put("hasRecur", hasRecurrence);
+			attMap.put("isTimeZoneSensitiveActive", isTimeZoneSensitiveActive);
+			attMap.put("isFreeBusyActive", isFreeBusyActive);
+			req.setAttribute("attMap", attMap);
+
+			StringServletResponse res = new StringServletResponse(
+					(HttpServletResponse) pageContext.getResponse());
+			// this next line invokes the jsp and captures it into res
+			rd.include(req, res);
+			// and now dump it out into this response
+			pageContext.getOut().print(res.getString());
+		}
+
+		catch (Exception e) {
+			throw new JspException(e);
+		} finally {
+			id = null;
+			formName = null;
+			initEvent = null;
+			hasDuration = false;
+			hasRecurrence = true;
+			isTimeZoneSensitiveActive = false;
+			isFreeBusyActive = false;
+		}
+		return SKIP_BODY;
+	}
+
+	public int doEndTag() throws JspException {
+		return SKIP_BODY;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setFormName(String formName) {
+		this.formName = formName;
+	}
+
+	public void setHasDuration(Boolean hasDuration) {
+		this.hasDuration = hasDuration;
+	}
+
+	public void setHasRecurrence(Boolean hasRecurrence) {
+		this.hasRecurrence = hasRecurrence;
+	}
+
+	public void setIsTimeZoneSensitiveActive(Boolean isTimeZoneSensitiveActive) {
+		this.isTimeZoneSensitiveActive = isTimeZoneSensitiveActive;
+	}
+	
+	public void setIsFreeBusyActive(Boolean isFreeBusyActive) {
+		this.isFreeBusyActive = isFreeBusyActive;
+	}
+
+	public void setInitEvent(Event initEvent) {
+		this.initEvent = initEvent;
+	}
 
 	public void setRequired(Boolean required) {
 		this.required = required;
 	}
-  
-}
 
+}

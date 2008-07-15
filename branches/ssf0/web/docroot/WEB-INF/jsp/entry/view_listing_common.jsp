@@ -29,7 +29,7 @@
  */
 %>
 <% // The main forum view - for viewing folder listings and for viewing entries %>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <%
 String op = (String) renderRequest.getAttribute(WebKeys.ACTION);
 String displayStyle = ssUser.getDisplayStyle();
@@ -152,37 +152,38 @@ function ss_loadEntryUrl(url,id) {
 <c:if test="<%= !reloadCaller %>">
   <c:if test="<%= isViewEntry %>">
 <div id="ss_entryTop_${renderResponse.namespace}"></div>
+<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 <script type="text/javascript">
 
 if (self.parent && self.parent.ss_highlightLineById) {
 	self.parent.ss_highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
- 	
-	dojo.html.scrollIntoView(self.document.getElementById("ss_entryTop_${renderResponse.namespace}"))
-	//self.parent.ss_scrollOuter();
 }
 //Define the url of this page in case the entry needs to reload this page
 var ss_reloadUrl = "${ss_reloadUrl}";
 var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 
 </script>
+<c:set var="ss_viewEntryNavbar" value="false"/>
+<ssf:ifnotadapter><c:set var="ss_viewEntryNavbar" value="true"/></ssf:ifnotadapter>
+<c:if test="${ss_entryViewStyle == 'full'}"><c:set var="ss_viewEntryNavbar" value="true"/></c:if>
+<ssf:ifaccessible><c:set var="ss_viewEntryNavbar" value="true"/></ssf:ifaccessible>
 
-<ssf:ifnotadapter>
+<c:if test="${ss_viewEntryNavbar}">
 <div id="ss_portlet_content" class="ss_style ss_portlet">
+<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 
+<ssf:ifnotaccessible>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
     <td valign="top" class="ss_view_sidebar">
-
-	<% // Navigation bar %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 
 	<% // Folder Sidebar %>
 
-    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
+    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
 
 
     <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
@@ -200,8 +201,9 @@ var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 
 	</td>
 	<td valign="top" class="ss_view_info">
+</ssf:ifnotaccessible>
 	    <div class="ss_style_color">
-</ssf:ifnotadapter>
+</c:if>
 
 
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
@@ -210,30 +212,21 @@ var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 			  processThisItem="true" 
 			  entry="${ssEntry}" />
 
-<ssf:ifnotadapter>
+<c:if test="${ss_viewEntryNavbar}">
 		</div>
-</ssf:ifnotadapter>
+</c:if>
 		<% // Footer toolbar %>
 		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
 		
-		<% // Post a comment form %>
-		<ssf:ifnotaccessible>
-		<c:if test="${0 == 1 && ss_accessControlMap[ssDefinitionEntry.id]['addReply'] && !empty ssEntryReplyStyles}">
-		  <c:set var="replyStyle0" value=""/>
-		  <c:forEach var="replyStyle" items="${ssEntryReplyStyles}">
-		    <c:if test="${empty replyStyle0}"><c:set var="replyStyle0" value="${replyStyle}"/></c:if>
-		  </c:forEach>
-		  <a class="ss_linkButton" href="javascript: ;"
-		    onClick="ss_postComment('${replyStyle0}');return false;">xxx post a comment xxx</a>
-		</c:if>
-		</ssf:ifnotaccessible>
-<ssf:ifnotadapter>
+<c:if test="${ss_viewEntryNavbar}">
+  <ssf:ifnotaccessible>
 	</td>
 	</tr>
 	</tbody>
 	</table>
+  </ssf:ifnotaccessible>
 </div>
-</ssf:ifnotadapter>
+</c:if>
 
 <%
 	//See if this is the Popup view

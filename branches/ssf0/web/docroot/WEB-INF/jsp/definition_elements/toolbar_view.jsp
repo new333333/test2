@@ -38,7 +38,7 @@ String ss_portletNamespace = renderResponse.getNamespace();
 // General variables
 Integer nameCount = (Integer) renderRequest.getAttribute("ss_menu_tag_name_count");
 if (nameCount == null) {
-	nameCount = new Integer(0);
+	nameCount = new Integer(new Long(Math.round(Math.random()*999999)).toString());
 }
 
 nameCount = new Integer(nameCount.intValue() + 1);
@@ -73,7 +73,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
         --%><c:if test="${empty toolbarMenu.value.qualifiers.highlight}"><%--
 			--%><li <%--
         --%></c:if><%--
-        --%>id="parent_<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"><%--
+        --%>id="parent_<%= menuTagDivId %>${renderResponse.namespace}"><%--
         
         --%><%-- BEGIN Helpspots for folder menus --%><%--
         
@@ -119,7 +119,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
                 --%><c:if test="${!empty toolbarMenu.value.qualifiers.linkclass}"><%--
                 	--%> class="${toolbarMenu.value.qualifiers.linkclass}"<%--
                 --%></c:if><%--                
-                --%> onClick="${spin} ss_activateMenuLayerClone('<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', 'parent_<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');"><%--
+                --%> onClick="${spin} ss_activateMenuLayerClone('<%= menuTagDivId %>${renderResponse.namespace}', 'parent_<%= menuTagDivId %>${renderResponse.namespace}');"><%--
 
                 --%><c:if test="${!empty toolbarMenu.value.qualifiers.icon}"><%--
                     --%><img border="0" <%--
@@ -150,7 +150,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 
         --%></c:choose><%--
 
-        --%><div id="<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" <%--
+        --%><div id="<%= menuTagDivId %>${renderResponse.namespace}" <%--
         --%> class="${ss_toolbar_style}_submenu" style=""><%--
         --%><ul class="${ss_toolbar_style}_submenu"><%--
         --%><c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}"><%--

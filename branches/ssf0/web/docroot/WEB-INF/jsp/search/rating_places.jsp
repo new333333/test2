@@ -28,6 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // Search results ratings of "places" %>
 <ssf:sidebarPanel title="searchResult.ratigPlacesTitle" id="ss_rating_places" divClass="ss_rating_box_content"
     initOpen="true" sticky="false">

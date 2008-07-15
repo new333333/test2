@@ -38,11 +38,11 @@ import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.ReservedByAnotherUserException;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.fi.FIException;
+import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
@@ -75,6 +75,7 @@ public interface FolderModule {
 	   reserveEntry,
 	   overrideReserveEntry,
 	   synchronize,
+	   scheduleSynchronization,
 	   changeEntryTimestamps
    }
  
@@ -530,4 +531,7 @@ public interface FolderModule {
 	 */
 	public boolean synchronize(Long folderId, StatusTicket statusTicket)
 		throws AccessControlException, FIException, UncheckedIOException;
+	
+	public ScheduleInfo getSynchronizationSchedule(Long zoneId, Long folderId);	
+	public void setSynchronizationSchedule(ScheduleInfo config, Long folderId);
 }

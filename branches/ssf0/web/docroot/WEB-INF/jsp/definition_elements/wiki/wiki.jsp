@@ -37,7 +37,7 @@
 var ss_columnCount = 0;
 function ss_loadWikiEntry(obj,id) {
 	ss_highlightLineById('folderLine_' + id);
-	var iframeDiv = document.getElementById('ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
+	var iframeDiv = document.getElementById('ss_wikiIframe${renderResponse.namespace}')
 	iframeDiv.src = obj.href;
 	return false;
 }
@@ -48,8 +48,8 @@ function ss_loadWikiEntryInParent(obj,id) {
 
 //Routine called when "find wiki page" is clicked
 function ss_loadWikiEntryId${renderResponse.namespace}(id) {
-	var urlParams = {binderId:'${ssBinder.id}', entryId:id, namespace:'${renderResponse.namespace}'};
-	var iframeDiv = document.getElementById('ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
+	var urlParams = {binderId:'${ssBinder.id}', entryId:id, namespace:'${renderResponse.namespace}', entryViewStyle:'popup'};
+	var iframeDiv = document.getElementById('ss_wikiIframe${renderResponse.namespace}')
 	iframeDiv.src = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "view_folder_entry");
 }
 
@@ -79,7 +79,7 @@ function ss_confirmSetWikiHomepage() {
 </c:if>
 </ssf:toolbar>
 <div class="ss_clear"></div>
-<%@ include file="/WEB-INF/jsp/forum/page_navigation_bar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <div class="ss_folder" id="ss_wiki_folder_div">
 <%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_listing.jsp" %>

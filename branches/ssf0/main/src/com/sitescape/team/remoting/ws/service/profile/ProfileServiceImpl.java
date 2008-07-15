@@ -38,6 +38,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -46,9 +47,10 @@ import com.sitescape.team.remoting.ws.BaseService;
 import com.sitescape.team.remoting.ws.model.PrincipalBrief;
 import com.sitescape.team.remoting.ws.model.PrincipalCollection;
 import com.sitescape.team.remoting.ws.util.DomInputData;
+import com.sitescape.team.remoting.ws.util.ModelInputData;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
-public class ProfileServiceImpl extends BaseService implements ProfileService {
+public class ProfileServiceImpl extends BaseService implements ProfileService, ProfileServiceInternal {
 
 	public String profile_getPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords) {
 		Document doc = DocumentHelper.createDocument();
@@ -89,7 +91,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 		return xml;
 	}
 	
-	public long profile_addUser(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
+	public long profile_addUserWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
@@ -103,7 +105,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 
 	}
 	
-	public long profile_addGroup(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
+	public long profile_addGroupWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
@@ -121,7 +123,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 		getProfileModule().addUserToGroup(Long.valueOf(userId), username, Long.valueOf(groupId));
 	}
 	
-	public void profile_modifyPrincipal(String accessToken, long binderId, long principalId, String inputDataAsXML) {
+	public void profile_modifyPrincipalWithXML(String accessToken, long binderId, long principalId, String inputDataAsXML) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
@@ -167,21 +169,79 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 				((Integer)results.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue(), 
 				principals.toArray(array));
 	}
-	
-	public com.sitescape.team.remoting.ws.model.Principal profile_getPrincipal(String accessToken, long binderId, long principalId) {
-		Long bId = new Long(binderId);
-		Long pId = new Long(principalId);
+		
+	public com.sitescape.team.remoting.ws.model.Group profile_getGroup(String accessToken, long binderId, long groupId) {
+		Long bId = Long.valueOf(binderId);
+		Long gId = Long.valueOf(groupId);
 		
 		// Retrieve the raw entry.
 		Principal entry = 
-			getProfileModule().getEntry(bId, pId);
+			getProfileModule().getEntry(bId, gId);
 
-		com.sitescape.team.remoting.ws.model.Principal principalModel = 
-			new com.sitescape.team.remoting.ws.model.Principal();
+		if(!(entry instanceof Group))
+			throw new IllegalArgumentException(gId + " does not represent a group. It is " + entry.getClass().getSimpleName());
 		
-		fillPrincipalModel(principalModel, entry);
+		com.sitescape.team.remoting.ws.model.Group groupModel = 
+			new com.sitescape.team.remoting.ws.model.Group();
 		
-		return principalModel;
+		fillGroupModel(groupModel, (Group) entry);
+		
+		return groupModel;
+	}
+	
+	public com.sitescape.team.remoting.ws.model.User profile_getUser(String accessToken, long binderId, long userId) {
+		Long bId = Long.valueOf(binderId);
+		Long uId = Long.valueOf(userId);
+		
+		// Retrieve the raw entry.
+		Principal entry = 
+			getProfileModule().getEntry(bId, uId);
+
+		if(!(entry instanceof User))
+			throw new IllegalArgumentException(uId + " does not represent an user. It is " + entry.getClass().getSimpleName());
+		
+		com.sitescape.team.remoting.ws.model.User userModel = 
+			new com.sitescape.team.remoting.ws.model.User();
+		
+		fillUserModel(userModel, (User) entry);
+		
+		return userModel;
+	}
+	
+	public long profile_addGroup(String accessToken, com.sitescape.team.remoting.ws.model.Group group) {
+		try {
+			return getProfileModule().addGroup(group.getParentBinderId(), group.getDefinitionId(), new ModelInputData(group), null, null).longValue();
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+	}
+	
+	public long profile_addUser(String accessToken, com.sitescape.team.remoting.ws.model.User user) {
+		try {
+			return getProfileModule().addUser(user.getParentBinderId(), user.getDefinitionId(), new ModelInputData(user), null, null).longValue();
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+	}
+	
+	public void profile_modifyGroup(String accessToken, com.sitescape.team.remoting.ws.model.Group group) {
+		try {
+			getProfileModule().modifyEntry(group.getParentBinderId(), group.getId(), new ModelInputData(group));
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+	}
+	
+	public void profile_modifyUser(String accessToken, com.sitescape.team.remoting.ws.model.User user) {
+		try {
+			getProfileModule().modifyEntry(user.getParentBinderId(), user.getId(), new ModelInputData(user));
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
 	}
 
 }

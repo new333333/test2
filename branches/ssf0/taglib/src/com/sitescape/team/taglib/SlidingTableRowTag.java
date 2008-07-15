@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
@@ -40,6 +42,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 public class SlidingTableRowTag extends BodyTagSupport implements SlidingTableColumnAncestorTag {
 	private String _id = "";
+	private String _style = "";
 	private String _oddStyle = "";
 	private String _evenStyle = "";
 	private Boolean _headerRow;
@@ -76,26 +79,32 @@ public class SlidingTableRowTag extends BodyTagSupport implements SlidingTableCo
 		finally {
 			_columns = null;
 			_id = "";
+			_style = "";
 			_oddStyle = "";
 			_evenStyle = "";
 			_headerRow = null;
 		}
 	}
 	
-	public void addColumn (String text, String width) {
+	public void addColumn (String text, String width, String style) {
 		if (_columns == null) {
 			_columns = new ArrayList();
 		}
 		if (text == null) text = "";
+		if (_style == null) _style = "";
 		if (width == null) width = "";
 		Map column = new HashMap();
 		column.put("text", text);
 		column.put("width", width);
+		column.put("style", style);
 		_columns.add(column);
 	}
 
 	public void setId(String id) {
 		_id = id;
+	}
+	public void setStyle(String style) {
+		_style = style;
 	}
 	public void setOddStyle(String style) {
 		_oddStyle = style;

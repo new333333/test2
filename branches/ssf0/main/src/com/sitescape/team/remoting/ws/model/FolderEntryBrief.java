@@ -40,7 +40,9 @@ public class FolderEntryBrief implements Serializable {
 	private int docLevel;
 	private String href;
 	private AverageRating averageRating;
-	
+	private Timestamp creation;
+	private Timestamp modification;
+
 	public AverageRating getAverageRating() {
 		return averageRating;
 	}
@@ -88,6 +90,18 @@ public class FolderEntryBrief implements Serializable {
 	}
 	public void setDocNumber(String docNumber) {
 		this.docNumber = docNumber;
+	}
+	public Timestamp getCreation() {
+		return creation;
+	}
+	public void setCreation(Timestamp creation) {
+		this.creation = creation;
+	}
+	public Timestamp getModification() {
+		return modification;
+	}
+	public void setModification(Timestamp modification) {
+		this.modification = modification;
 	}
 	
 }

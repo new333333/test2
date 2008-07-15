@@ -110,7 +110,7 @@ public abstract class AbstractPortalLogin implements PortalLogin {
 			// Apache HttpClient requires domain name to be set even for inbound cookies.
 			String domain = sourceCookie.getDomain();
 			if(domain == null)
-				domain = getPortalHostname(request);
+				domain = request.getServerName();
 			targetCookie = new org.apache.commons.httpclient.Cookie(domain, sourceCookie.getName(), sourceCookie.getValue());
 
 			// This is our internal mark that this particular cookie was copied from a client cookie.
@@ -149,19 +149,20 @@ public abstract class AbstractPortalLogin implements PortalLogin {
 		String scheme = SPropsUtil.getString(PORTAL_LOGIN_OVERRIDE_SCHEME, "");
 		if(scheme.equals(""))
 			scheme = "http";
-		String host = getPortalHostname(request);
+		
+		String host = SPropsUtil.getString(PORTAL_LOGIN_OVERRIDE_HOST, "");
+		if(host.equals(""))
+			host = "127.0.0.1"; // use local loopback address
+
 		String port = SPropsUtil.getString(PORTAL_LOGIN_OVERRIDE_PORT, "");
 		if(port.equals(""))
 			port = String.valueOf(request.getServerPort());
 		
-		return scheme + "://" + host + ":" + port;
-	}
-	
-	private String getPortalHostname(HttpServletRequest request) {
-		String host = SPropsUtil.getString(PORTAL_LOGIN_OVERRIDE_HOST, "");
-		if(host.equals(""))
-			host = request.getServerName();
-		return host;
+		String url = scheme + "://" + host + ":" + port;
+		if(logger.isTraceEnabled())
+			logger.trace("portal base url: " + url);
+		
+		return url;
 	}
 	
 	protected void copyPortalCookies(javax.servlet.http.Cookie[] clientCookies, 

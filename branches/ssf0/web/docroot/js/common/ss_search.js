@@ -129,7 +129,9 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	div.appendChild(sDiv);
 	document.getElementById('ss_workflows_options').appendChild(div);
 		
-	var properties = {name:"searchWorkflow"+orderNo+"", id:"searchWorkflow"+orderNo+"", dataUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_workflows_widget&randomNumber="+ss_random++, nestedUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_workflow_step_widget&randomNumber="+ss_random++, stepsWidget:sDiv, searchFieldName:"searchWorkflowStep"+orderNo, mode: "remote",
+	var properties = {name:"searchWorkflow"+orderNo+"", id:"searchWorkflow"+orderNo+"",getSubSearchString:ss_getSelectedBinders,
+	 dataUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_workflows_widget&idChoices=%{searchString}&randomNumber="+ss_random++, 
+	 nestedUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_workflow_step_widget&randomNumber="+ss_random++, stepsWidget:sDiv, searchFieldName:"searchWorkflowStep"+orderNo, mode: "remote",
 								maxListLength : 10,	autoComplete: false};
 	var wfWidget = dojo.widget.createWidget("WorkflowSelect", properties, document.getElementById("placeholderWorkflow"+orderNo+""));
 
@@ -143,7 +145,28 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	
 	return wfWidget;
 }
-
+function ss_getSelectedBinders() {
+	var value = "";
+	var obj = document.getElementById('search_currentFolder');
+	if (obj !== undefined && obj != null && obj.checked) {
+		obj = document.getElementById('search_dashboardFolders');
+		return 	" searchFolders%" + obj.value;
+	}
+	obj = document.getElementById('t_searchForm_wsTreesearchFolders_idChoices');				
+	if (obj !== undefined && obj != null) value = obj.value;
+	obj = document.getElementById('search_currentAndSubfolders');
+	if (obj !== undefined && obj != null && obj.checked) {
+		//don't allow duplicates
+		var id = " searchFolders%" + obj.name.substr(13);
+		var re = new RegExp(id + " ", "g");
+		value = value.replace(re, " ");
+		re = new RegExp(id + "$", "g");
+		value = value.replace(re, "");
+		value += id;
+	}
+	return value;
+ 
+}
 function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
@@ -162,7 +185,10 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	div.appendChild(sDiv);
 	document.getElementById('ss_entries_options').appendChild(div);
 
-	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", dataUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_entry_types_widget&randomNumber="+ss_random++, nestedUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_entry_fields_widget&randomNumber="+ss_random++, widgetContainer:sDiv, searchFieldIndex:orderNo, mode: "remote",
+	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", getSubSearchString:ss_getSelectedBinders,
+		dataUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_entry_types_widget&idChoices=%{searchString}&randomNumber="+ss_random++, 
+		nestedUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_entry_fields_widget&randomNumber="+ss_random++, 
+		widgetContainer:sDiv, searchFieldIndex:orderNo, mode: "remote",
 								maxListLength : 10,	autoComplete: false, weekStartsOn: ss_weekStartsOn};
 	var entryWidget = dojo.widget.createWidget("EntrySelect", properties, document.getElementById("placeholderEntry"+orderNo+""));
 	if (entryId && entryId != "") {
@@ -319,24 +345,8 @@ function ss_addDate(orderNo, type, startDate, endDate) {
 }
 
 /* check/uncheck checkboxes in tree on click in the place name */
-function t_advSearchForm_wsTree_showId(forum, obj) {
-	if (obj.ownerDocument) {
-		var cDocument = obj.ownerDocument;
-	} else if (obj.document) {
-		cDocument = obj.document;
-	}
-	if (cDocument) {
-		var r = cDocument.getElementById("ss_tree_checkboxt_searchForm_wsTreesearchFolders" + forum);
-		if (r) {
-			if (r.checked !== undefined) {
-				r.checked = !r.checked;
-			}
-			if (r.onclick !== undefined) {
-				r.onclick();
-			}
-		}
-	}
-	return false;
+function t_advSearchForm_wsTree_showId(id, obj) {
+	return ss_checkTree(obj, "ss_tree_checkboxt_searchForm_wsTreesearchFolders" + id)
 }
 
 function ss_addFolderAfterPost(response, bindObjId) {

@@ -55,8 +55,8 @@ public class WarExtensionDeployerTest<S extends ExtensionDeployNotifier<S>>
 	public void registersDefinitions() throws Exception {
 		deployer.deploy(loader.getResource(testWar).getFile());
 
-		defaultRequestContext();
-		Definition def = definitions.getDefinitionByName(definitionName);
+		Definition def = definitions.getDefinitionByName(
+				defaultRequestContext().getZone(), true, definitionName);
 		assertNotNull(def);
 		assertNotNull(def.getId());
 		assertEquals(definitionName, def.getName());
@@ -76,8 +76,7 @@ public class WarExtensionDeployerTest<S extends ExtensionDeployNotifier<S>>
 	public void deployAddsExtensionAttrToDef() throws Exception {
 		deployer.deploy(loader.getResource(testWar).getFile());
 
-		defaultRequestContext();
-		Definition def = definitions.getDefinitionByName(definitionName);
+		Definition def = definitions.getDefinitionByName(defaultRequestContext().getZone(), true, definitionName);
 		assertEquals(testWarName, def
 				.getDefinition().selectSingleNode("/*/@" + ObjectKeys.XTAG_ATTRIBUTE_EXTENSION).getText());
 	}

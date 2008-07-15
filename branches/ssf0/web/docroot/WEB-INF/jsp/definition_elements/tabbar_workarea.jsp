@@ -34,9 +34,7 @@
 <%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="ss_urlWindowState" value="maximized"/>
-<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
-  <c:set var="ss_urlWindowState" value=""/>
-</c:if>
+<c:set var="ss_urlWindowState" value=""/>
 <c:set var="numTabs" value="0"/>
 <ul style="padding-top: 2px; padding-left: 5px;">
 <c:forEach var="tab" items="${ss_tabs.tabList}">

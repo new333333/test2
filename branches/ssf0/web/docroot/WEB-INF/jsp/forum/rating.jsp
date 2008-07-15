@@ -46,8 +46,8 @@
 		    onMouseout="ss_clearRating('${i + 1}', '${ssDefinitionEntry.id}', '${ss_namespace}');"
 		    onClick="ss_saveRating('${i + 1}', '${ssDefinitionEntry.id}', '${ss_namespace}');return false;"
 		  ><img border="0" id="ss_rating_img_${ssDefinitionEntry.id}_${i + 1}" 
-		    <ssf:alt tag="alt.goldStar"/> src="<html:imagesPath/>pics/star_gold.gif"/></a></td>
-			<script type="text/javascript">ss_ratingImages['ss_rating_img_${ssDefinitionEntry.id}_${i + 1}'] = "<html:imagesPath/>pics/star_gold.gif";</script>
+		    <ssf:alt tag="alt.goldStar"/> src="<html:imagesPath/>pics/star_gold.gif"
+		    onLoad="ss_ratingImages['ss_rating_img_${ssDefinitionEntry.id}_${i + 1}'] = '<html:imagesPath/>pics/star_gold.gif';" /></a></td>
 	
 		</c:forEach>
 	</c:if>
@@ -59,8 +59,8 @@
 			    onMouseout="ss_clearRating('${i + 1}', '${ssDefinitionEntry.id}', '${ss_namespace}');"
 			    onClick="ss_saveRating('${i + 1}', '${ssDefinitionEntry.id}', '${ss_namespace}');return false;"
 			  ><img <ssf:alt tag="alt.grayStar"/> border="0" id="ss_rating_img_${ssDefinitionEntry.id}_${i + 1}" 
-			    src="<html:imagesPath/>pics/star_gray.gif"/></a></td>
-			<script type="text/javascript">ss_ratingImages['ss_rating_img_${ssDefinitionEntry.id}_${i + 1}'] = "<html:imagesPath/>pics/star_gray.gif";</script>
+			    src="<html:imagesPath/>pics/star_gray.gif"
+			    onLoad="ss_ratingImages['ss_rating_img_${ssDefinitionEntry.id}_${i + 1}'] = '<html:imagesPath/>pics/star_gray.gif';" /></a></td>
 		</c:forEach>
 	</c:if>
 
