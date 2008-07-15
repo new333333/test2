@@ -10,7 +10,7 @@
 	<import file="../deploy-support.xml" />
 	
 	<property name="jar.file" value="ssf-main.jar" />
-	<property name="hibernate.dir" value="${basedir}/hibernate" />
+	<property name="hibernate.dir" value="${basedir}/src/resources/com/sitescape/team/domain" />
 	<target name="clean" depends="ss-hib-clean,build-common.clean" />
 
 	<target name="compile" depends="compile-common,build-common.compile" />
