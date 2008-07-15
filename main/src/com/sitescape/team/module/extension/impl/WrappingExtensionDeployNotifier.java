@@ -24,11 +24,6 @@ public class WrappingExtensionDeployNotifier<S extends EventSource<S, File>>
 		implements ExtensionDeployNotifier<WrappingExtensionDeployNotifier<S>>,
 		EventListener<S, File> {
 
-	@Override
-	protected WrappingExtensionDeployNotifier<S> myself() {
-		return this;
-	}
-
 	public void onNotification(S source, File event) {
 		propagate(event);
 	}

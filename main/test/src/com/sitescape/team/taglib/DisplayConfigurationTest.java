@@ -38,8 +38,9 @@ import com.sitescape.util.Pair;
 
 public class DisplayConfigurationTest<S extends ExtensionDeployNotifier<S>> extends AbstractTestBase {
 
-	private static final String extensionPath = "/WEB-INF/opt/";
 	private static final String name = "extension-test";
+	private static final String extensionPath = "/opt/" + name + "/";
+	private static final String jsp = "views/view.jsp"; 
 	private static final String xml = 
 		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 		"<definition xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
@@ -53,7 +54,7 @@ public class DisplayConfigurationTest<S extends ExtensionDeployNotifier<S>> exte
 						"<property name=\"caption\" value=\"ok\"/>\n" +
 					"</properties>\n" +
 					"<jsps>\n" +
-						"<jsp name='custom' value='views/" + name + "' />\n" +
+						"<jsp name='custom' value='" + jsp + "' />\n" +
 					"</jsps>\n" +
 				"</item>\n" +
 		"</definition>"; 
@@ -79,7 +80,7 @@ public class DisplayConfigurationTest<S extends ExtensionDeployNotifier<S>> exte
 		rd.include(isA(ServletRequest.class), isA(ServletResponse.class));
 		replay(rd);
 		HttpServletRequest req = createMock(HttpServletRequest.class);
-		expect(req.getRequestDispatcher(extensionPath + "views/" + name)).andReturn(rd);
+		expect(req.getRequestDispatcher(extensionPath + jsp)).andReturn(rd);
 		req.setAttribute(isA(String.class), anyObject());
 		expectLastCall().anyTimes();
 		replay(req);

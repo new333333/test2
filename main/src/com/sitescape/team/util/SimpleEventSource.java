@@ -4,6 +4,7 @@
 package com.sitescape.team.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -22,15 +23,14 @@ public abstract class SimpleEventSource<S extends EventSource<S, E>, E>
 	private List<EventListener<S, E>> listeners = new ArrayList<EventListener<S, E>>();
 
 	/**
-	 * Should return the concrete class which implements {@link EventSource}.
-	 * Typically, this method is implemented by:
-	 * <p>
-	 * <code>return this;</code>
-	 * </p>
+	 * Returns the concrete class which implements {@link EventSource}.
 	 * 
 	 * @return the concrete class which implements {@link EventSource}.
 	 */
-	abstract protected S myself();
+	@SuppressWarnings("unchecked")
+	final protected S myself() {
+		return (S) this;
+	}
 
 	/**
 	 * Notifies all {@link EventListener}s of the specified <code>E</code>
@@ -51,4 +51,10 @@ public abstract class SimpleEventSource<S extends EventSource<S, E>, E>
 		listeners.add(listener);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.sitescape.team.util.EventSource#setListeners(java.util.Collection)
+	 */
+	public void setListeners(Collection<? extends EventListener<S, E>> listeners) {
+		this.listeners = new ArrayList<EventListener<S,E>>(listeners);
+	}
 }

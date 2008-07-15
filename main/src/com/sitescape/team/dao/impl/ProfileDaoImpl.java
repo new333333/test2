@@ -66,7 +66,6 @@ import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.ApplicationPrincipal;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.EmailAddress;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Group;

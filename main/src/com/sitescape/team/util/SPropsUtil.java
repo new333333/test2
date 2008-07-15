@@ -88,4 +88,8 @@ public class SPropsUtil extends PropsUtil implements InitializingBean {
 			logger.debug("System environment" + Constants.NEWLINE + Utils.toStringML(System.getenv()));
 		}	
 	}
+	
+	public static SPropsUtil getInstance() {
+		return instance;
+	}
 }

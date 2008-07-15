@@ -1,10 +1,6 @@
 package com.sitescape.team.util;
 
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.classextension.EasyMock.replay;
-import static org.easymock.classextension.EasyMock.reset;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,13 +9,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.sitescape.team.context.request.RequestContext;
-import com.sitescape.team.dao.util.FilterControls;
-import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.FileItem;
-import com.sitescape.team.domain.Group;
-import com.sitescape.team.domain.User;
-import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.support.AbstractTestBase;
 import com.sitescape.util.FileChangePoller;
 

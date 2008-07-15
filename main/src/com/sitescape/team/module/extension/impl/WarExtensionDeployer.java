@@ -24,16 +24,19 @@ import org.dom4j.tree.AbstractAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 
-import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.module.definition.DefinitionService;
 import com.sitescape.team.module.extension.ExtensionDeployNotifier;
 import com.sitescape.team.module.extension.ExtensionDeployer;
-import com.sitescape.team.module.template.TemplateModule;
+import com.sitescape.team.module.template.TemplateService;
+import com.sitescape.team.module.zone.ZoneModule;
 
 /**
  * @author dml
  * 
- * Listens for and deploys war-based extensions.
+ * Listens for and deploys jar-based extensions.
  * 
  */
 public class WarExtensionDeployer<S extends ExtensionDeployNotifier<S>>
@@ -42,8 +45,9 @@ public class WarExtensionDeployer<S extends ExtensionDeployNotifier<S>>
 	private static final Logger log = LoggerFactory
 			.getLogger(WarExtensionDeployer.class);
 
-	private DefinitionModule definitionModule;
-	private TemplateModule templateModule;
+	private DefinitionService definitionModule;
+	private TemplateService templateService;
+	private ZoneModule zoneModule;
 	private String configurationFileExtension = "xml";
 	private Namespace schemaInstanceNamespace = new Namespace("xsi",
 			"http://www.w3.org/2001/XMLSchema-instance");
@@ -52,9 +56,11 @@ public class WarExtensionDeployer<S extends ExtensionDeployNotifier<S>>
 			schemaInstanceNamespace);
 	private String definitionsSchemaNamespace = "http://www.icecore.org/definition";
 	private String templateSchemaNamespace = "http://www.icecore.org/template";
-	private String extensionAttr = "extension";
-	private File extensionBaseDir = new File("web/docroot/WEB-INF/opt/");
-
+	private String extensionAttr = ObjectKeys.XTAG_ATTRIBUTE_EXTENSION;
+	private String infPrefix = "WEB-INF";
+	private File extensionBaseDir;
+	private File extensionWebDir;
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -71,6 +77,7 @@ public class WarExtensionDeployer<S extends ExtensionDeployNotifier<S>>
 	 * @see com.sitescape.team.module.extension.ExtensionDeployer#deploy(java.io.File)
 	 */
 	public void deploy(final File extension) {
+		log.info("Deploying new extension from {}", extension.getPath());
 		JarInputStream warIn;
 		try {
 			warIn = new JarInputStream(new FileInputStream(extension), true);
@@ -80,22 +87,31 @@ public class WarExtensionDeployer<S extends ExtensionDeployNotifier<S>>
 			return;
 		}
 		SAXReader reader = new SAXReader(false);
-		File extensionDir = new File(extensionBaseDir, extension.getName()
-				.substring(0, extension.getName().lastIndexOf(".")));
+		String extensionPrefix = extension.getName()
+		.substring(0, extension.getName().lastIndexOf("."));
+		File extensionDir = new File(extensionBaseDir, extensionPrefix);
 		extensionDir.mkdirs();
+		File extensionWebDir = new File(this.extensionWebDir, extensionPrefix);
+		extensionWebDir.mkdirs();
 		try {
 			for (JarEntry entry = warIn.getNextJarEntry(); entry != null; entry = warIn
 					.getNextJarEntry()) {
 				// extract file to proper extension directory
-				File inflated = new File(extensionDir, entry.getName());
+				File inflated = new File(
+						entry.getName().startsWith(infPrefix) ? extensionDir
+								: extensionWebDir, entry.getName());
 				if (entry.isDirectory()) {
+					log.debug("Creating directory at {}", inflated.getPath());
 					inflated.mkdirs();
 					continue;
 				}
 				inflated.getParentFile().mkdirs();
 				FileOutputStream entryOut = new FileOutputStream(inflated);
 				if (!entry.getName().endsWith(configurationFileExtension)) {
-					// not an extension configuration file, just inflate
+					log
+							.debug(
+									"Inflating file resource to {}",
+									inflated.getPath());
 					IOUtils.copy(warIn, entryOut);
 					entryOut.close();
 					continue;
@@ -108,11 +124,15 @@ public class WarExtensionDeployer<S extends ExtensionDeployNotifier<S>>
 					Attribute schema = document.getRootElement().attribute(
 							schemaAttribute);
 					if (schema == null || StringUtils.isBlank(schema.getText())) {
-						// unspecified xml schema, don't attempt processing
+						log.debug(
+								"Inflating XML with unrecognized schema to {}",
+								inflated.getPath());
 						continue;
 					}
 					if (schema.getText().contains(definitionsSchemaNamespace)) {
-						// declared to be a definition
+						log.debug(
+								"Inflating and registering definition from {}",
+								inflated.getPath());
 						// record the "owning" extension
 						document.getRootElement().add(new AbstractAttribute() {
 							private static final long serialVersionUID = -7880537136055718310L;
@@ -126,12 +146,14 @@ public class WarExtensionDeployer<S extends ExtensionDeployNotifier<S>>
 							}
 						});
 						// attempt to add
-						definitionModule.addDefinition(document, true);
+						definitionModule.addDefinition(document, true,
+								zoneModule.getDefaultZone());
 						continue;
 					}
 					if (schema.getText().contains(templateSchemaNamespace)) {
-						// declared to be a template, attempt to add
-						templateModule.addTemplate(document, true);
+						log.debug("Inflating and registering template from {}",
+								inflated.getPath());
+						templateService.addTemplate(document, true, zoneModule.getDefaultZone());
 						continue;
 					}
 				} catch (DocumentException e) {
@@ -155,15 +177,30 @@ public class WarExtensionDeployer<S extends ExtensionDeployNotifier<S>>
 	}
 
 	@Autowired
-	public void setDefinitionModule(DefinitionModule definitionModule) {
+	public void setDefinitionService(DefinitionService definitionModule) {
 		this.definitionModule = definitionModule;
 	}
 
 	@Autowired
-	public void setTemplateModule(TemplateModule templateModule) {
-		this.templateModule = templateModule;
+	public void setTemplateModule(TemplateService templateService) {
+		this.templateService = templateService;
+	}
+	
+	@Autowired
+	public void setZoneModule(ZoneModule zoneModule) {
+		this.zoneModule = zoneModule;
 	}
 
+	@Required
+	public void setExtensionBaseDir(File extensionBaseDir) {
+		this.extensionBaseDir = extensionBaseDir;
+	}
+	
+	@Required
+	public void setExtensionWebDir(File extensionWebDir) {
+		this.extensionWebDir = extensionWebDir;
+	}
+	
 	public void setConfigurationFileExtension(String definitionFileExtension) {
 		this.configurationFileExtension = definitionFileExtension;
 	}
@@ -192,7 +229,8 @@ public class WarExtensionDeployer<S extends ExtensionDeployNotifier<S>>
 		this.extensionAttr = extensionAttr;
 	}
 
-	public void setExtensionBaseDir(File extensionBaseDir) {
-		this.extensionBaseDir = extensionBaseDir;
+	public void setInfPrefix(String infPrefix) {
+		this.infPrefix = infPrefix;
 	}
+
 }

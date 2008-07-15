@@ -48,8 +48,6 @@ import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -63,7 +61,6 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.AverageRating;
-import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
@@ -87,8 +84,6 @@ import com.sitescape.team.jobs.FolderDelete;
 import com.sitescape.team.jobs.ZoneSchedule;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderModule;
-import com.sitescape.team.module.binder.BinderModule.BinderOperation;
-import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -120,7 +115,6 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	protected String[] ratingAttrs = new String[]{"id.entityId", "id.entityType"};
 	protected String[] entryTypes = {Constants.ENTRY_TYPE_ENTRY};
-    protected DefinitionModule definitionModule;
     protected FileModule fileModule;
     protected BinderModule binderModule;
     
@@ -129,19 +123,6 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     AtomicInteger deCount = new AtomicInteger();
     AtomicInteger arCount = new AtomicInteger();
 
-
-	protected DefinitionModule getDefinitionModule() {
-		return definitionModule;
-	}
-	 
-	/**
-	 * 
-	 * Setup by spring
-	 * @param definitionModule
-	 */
-	public void setDefinitionModule(DefinitionModule definitionModule) {
-		this.definitionModule = definitionModule;
-	}
 	protected FileModule getFileModule() {
 		return fileModule;
 	}

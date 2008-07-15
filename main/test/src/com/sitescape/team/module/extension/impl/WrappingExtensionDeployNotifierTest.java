@@ -1,25 +1,19 @@
 package com.sitescape.team.module.extension.impl;
 
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.isA;
+import static org.easymock.classextension.EasyMock.createMock;
+import static org.easymock.classextension.EasyMock.replay;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.classextension.EasyMock.*;
-
-import com.sitescape.team.context.request.RequestContext;
-import com.sitescape.team.dao.util.FilterControls;
-import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.FileItem;
-import com.sitescape.team.domain.Group;
-import com.sitescape.team.domain.User;
-import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.support.AbstractTestBase;
 import com.sitescape.team.util.EventListener;
 import com.sitescape.team.util.EventSource;
@@ -42,15 +36,22 @@ public class WrappingExtensionDeployNotifierTest<S extends EventSource<S, File>>
 			}			
 		};
 		notifier.register(listener);
+		File d = createMock(File.class);
 		File f = createMock(File.class);
-		expect(f.lastModified()).andReturn(1L).times(2);
+		expect(d.lastModified()).andReturn(1L).times(2);
+		expect(d.isDirectory()).andStubReturn(true);
+		expect(d.listFiles(isA(FileFilter.class))).andReturn(new File[]{f});
+		expect(f.isDirectory()).andReturn(false);
+		expect(f.lastModified()).andReturn(1L);
+		expect(f.getPath()).andReturn("wrapsNotifications").times(3);
+		replay(d);
 		replay(f);
-		poller.setTarget(f);
+		poller.setTarget(d);
 		poller.setLastModified(0L);
 		poller.check();
 		while(notifications.size() < 1) {
 			; // await notification
 		}
 		assertTrue(true); // notification received
-	}
+	} 
 }
