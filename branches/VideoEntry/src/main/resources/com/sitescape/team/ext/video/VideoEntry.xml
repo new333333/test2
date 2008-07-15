@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	    xsi:schemaLocation="http://www.icecore.org/definition-0.1
+				definition_builder_config.xsd"
+	    name="VideoEntry"
+	    caption="VideoEntry"
+	    type="1"
+	    definitionType="1">
+  <item name="entryForm" caption="__entry_form_definition" type="form" display="form">
+    <properties />
+    <item name="entryFormForm" caption="__form" >
+      <properties>
+        <property name="name" value="form1"/>
+        <property name="type" value="form"/>
+      </properties>
+      <item name="title" caption="__title" type="data" >
+        <properties>
+          <property name="caption" value="__title"/>
+          <property name="name" value="title"/>
+          <property name="width" value="60"/>
+          <property name="generated" value=""/>
+          <property name="itemSource" value=""/>
+        </properties>
+      </item>
+      <item name="description" caption="__description" type="data" >
+        <properties>
+          <property name="caption" value="__description"/>
+          <property name="name" value="description"/>
+          <property name="height" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="attachFiles" caption="__attach_files" type="data" >
+        <properties>
+          <property name="caption" value="__attach_files"/>
+          <property name="name" value="ss_attachFile"/>
+          <property name="width" value="60"/>
+          <property name="number" value=""/>
+          <property name="storage" value=""/>
+          <property name="hide" value=""/>
+        </properties>
+      </item>
+      <item name="entryFormButtons" caption="__form_buttons" >
+        <properties>
+          <property name="alignment" value=""/>
+        </properties>
+        <item name="okButton" caption="__ok_button" >
+          <properties>
+            <property name="caption" value="__ok"/>
+            <property name="onClick" value=""/>
+          </properties>
+        </item>
+        <item name="cancelButton" caption="__cancel_button" >
+          <properties>
+            <property name="caption" value="__cancel"/>
+            <property name="onClick" value=""/>
+          </properties>
+        </item>
+      </item>
+    </item>
+  </item>
+  <item name="entryView" caption="__entry_view_definition" display="view">
+    <properties>
+      <property name="type" value="entryView"/>
+    </properties>
+    <item name="titleView" caption="__title" >
+      <properties>
+        <property name="caption" value="__title"/>
+      </properties>
+    </item>
+    <item name="entrySignatureView" caption="__entry_signature" >
+      <properties>
+        <property name="caption" value=""/>
+      </properties>
+    </item>
+    <item name="descriptionView" caption="__description" >
+      <properties>
+        <property name="caption" value="__description"/>
+      </properties>
+    </item>
+    <item name="entryWorkflow" caption="__entry_workflow" >
+      <properties>
+        <property name="caption" value="__entry_workflow"/>
+      </properties>
+    </item>
+    <item name="entryAttachments" caption="__entry_attachments" >
+      <properties>
+        <property name="caption" value="__entry_attachments"/>
+      </properties>
+    </item>
+    <item name="entryReplies" caption="__entry_replies" >
+      <properties>
+        <property name="caption" value="__entry_replies"/>
+      </properties>
+    </item>
+    <jsps>
+      <jsp name="custom" value="view.jsp" />
+    </jsps>
+  </item>
+  <item name="entryBlogView" caption="__entry_blog_view_definition"  display="view">
+    <properties>
+      <property name="type" value="blog"/>
+    </properties>
+    <item name="titleBlogView" caption="__title" >
+      <properties>
+        <property name="caption" value="__title"/>
+      </properties>
+    </item>
+    <item name="descriptionBlogView" caption="__description" >
+      <properties>
+        <property name="caption" value="__description"/>
+      </properties>
+    </item>
+  </item>
+  <properties>
+    <property name="caption" value="VideoEntry"/>
+    <property name="name" value="VideoEntry"/>
+    <property name="family" value=""/>
+    <property name="replyStyle" value="_comment"/>
+  </properties>
+</definition>
