@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.sitescape.util;
+package com.sitescape.team.util;
 
 import java.io.File;
 import java.util.Collection;

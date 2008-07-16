@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.sitescape.team.support.AbstractTestBase;
 import com.sitescape.team.util.EventListener;
 import com.sitescape.team.util.EventSource;
-import com.sitescape.util.FileChangePoller;
+import com.sitescape.team.util.FileChangePoller;
 
 public class WrappingExtensionDeployNotifierTest<S extends EventSource<S, File>> extends AbstractTestBase {
 	

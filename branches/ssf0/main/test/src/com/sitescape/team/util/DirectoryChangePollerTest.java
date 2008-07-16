@@ -11,8 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.sitescape.team.support.AbstractTestBase;
-import com.sitescape.util.DirectoryChangePoller;
-import com.sitescape.util.FileChangePoller;
 
 public class DirectoryChangePollerTest extends AbstractTestBase {
 	

@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.sitescape.team.support.AbstractTestBase;
-import com.sitescape.util.FileChangePoller;
 
 public class FileChangePollerTest extends AbstractTestBase {
 	
