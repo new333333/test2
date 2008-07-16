@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.sitescape.util;
+package com.sitescape.team.util;
 
 import java.io.File;
 import java.util.Date;
@@ -9,7 +9,6 @@ import java.util.Date;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Required;
 
-import com.sitescape.team.util.SimpleEventSource;
 
 /**
  * @author dml

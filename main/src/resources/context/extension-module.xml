@@ -15,7 +15,7 @@
 	<context:annotation-config />
 
 	<!-- Actual file-change event source, typically called as a timer task -->
-	<bean id="extFileChangePoller" class="com.sitescape.util.DirectoryChangePoller">
+	<bean id="extFileChangePoller" class="com.sitescape.team.util.DirectoryChangePoller">
 		<property name="target">
 			<bean class="java.io.File">
 				<constructor-arg value="${extension.dir}" />

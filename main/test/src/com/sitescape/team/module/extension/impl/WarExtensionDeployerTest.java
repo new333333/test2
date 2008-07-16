@@ -162,6 +162,12 @@ public class WarExtensionDeployerTest<S extends ExtensionDeployNotifier<S>>
 		assertEquals(templateName, tb.getName());
 	}
 	
+	@Test
+	public void overwritesOldDefinitions() throws Exception {
+		deployer.deploy(loader.getResource(testWar).getFile());
+		deployer.deploy(loader.getResource(testWar).getFile());		
+	}
+	
 	private static class ExtDirWalker extends DirectoryWalker {
 		private File context;
 		private String extName;
