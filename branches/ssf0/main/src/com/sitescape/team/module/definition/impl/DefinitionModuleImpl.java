@@ -92,6 +92,7 @@ import com.sitescape.team.survey.Survey;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
@@ -260,7 +261,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements
     
 	protected Definition doAddDefinition(Document document, Binder binder, String name, String title, boolean replace) {
     	Element root = document.getRootElement();
-		Long zoneId = binder != null? binder.getZoneId() : null;
+		Long zoneId = binder != null? binder.getZoneId() : RequestContextHolder.getRequestContext().getZoneId();
 		if (Validator.isNull(name)) {
 			name=title;
 		}
