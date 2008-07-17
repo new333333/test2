@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.module.definition.impl;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,16 +41,13 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
-import java.io.File;
-import java.io.InputStream;
+
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.xml.sax.SAXException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.team.NotSupportedException;
@@ -70,42 +68,36 @@ import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.NoBinderByTheIdException;
+import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.NoPrincipalByTheNameException;
 import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.domain.ZoneInfo;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionService;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workflow.WorkflowModule;
-import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.survey.Survey;
-import com.sitescape.team.util.DirPath;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
-import com.sun.star.auth.InvalidArgumentException;
 
 /**
  * @author hurley
@@ -262,10 +254,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements
     		getWorkflowModule().modifyProcessDefinition(def.getId(), def);
     	}
 	}
+    protected Definition doAddDefinition(Document document, String name, String title, boolean replace) {
+    	return doAddDefinition(document, null, name, title, replace);
+    }
+    
 	protected Definition doAddDefinition(Document document, Binder binder, String name, String title, boolean replace) {
-		// FIXME implement
     	Element root = document.getRootElement();
-		Long zoneId = binder.getZoneId();
+		Long zoneId = binder != null? binder.getZoneId() : null;
 		if (Validator.isNull(name)) {
 			name=title;
 		}
