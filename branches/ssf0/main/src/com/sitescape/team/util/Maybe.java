@@ -52,6 +52,13 @@ public abstract class Maybe<E> {
 	public abstract E orElse(Func0<E> alternative);
 	
 	/**
+	 * If this object is defined, return the <code>Maybe</code>-wrapped version.  Otherwise, return the result of {@link #maybe(Object)} for <code>alternative</code>
+	 * @param alternative - maybe an <code>E</code>
+	 * @return this or <code>Maybe</code> the <code>alternative</code>
+	 */
+	public abstract Maybe<E> orMaybe(E alternative);
+	
+	/**
 	 * If this object is defined, run a {@link Func1} and return its value.  Otherwise, return a default value. 
 	 * @param <V> - the type to be returned
 	 * @param then - the function to be run if this value is defined.
@@ -79,9 +86,14 @@ public abstract class Maybe<E> {
 		public <V> V and(Func1<E, V> then, V otherwise) {
 			return otherwise;
 		}
+		@Override
+		public Maybe<E> orMaybe(E alternative) {
+			return maybe(alternative);
+		}
 	}
 	
 	public static class Some<E> extends Maybe<E> {
+		
 		private E e; 
 		private Some(E e) {
 			this.e = e;
@@ -101,6 +113,10 @@ public abstract class Maybe<E> {
 		@Override
 		public <V> V and(Func1<E, V> then, V otherwise) {
 			return then.apply(e);
+		}
+		@Override
+		public Maybe<E> orMaybe(E alternative) {
+			return this;
 		}
 	}
 

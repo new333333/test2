@@ -41,6 +41,26 @@ public class MaybeTest extends AbstractTestBase {
 	}
 	
 	@Test
+	public void orMaybeSome() throws Exception {
+		assertEquals("something", maybe(null).orMaybe("something").or(""));
+	}
+	
+	@Test
+	public void orMaybeSome2() throws Exception {
+		assertEquals("something", maybe("something").orMaybe("somethingElse").or(""));
+	}
+	
+	@Test
+	public void orMaybeNothing() throws Exception {
+		assertEquals("nothing", maybe(null).orMaybe(null).or("nothing"));
+	}
+	
+	@Test
+	public void orMaybeNothing2() throws Exception {
+		assertEquals("nothing", maybe("nothing").orMaybe(null).or(""));
+	}
+	
+	@Test
 	public void andSome() throws Exception {
 		assertEquals("another", maybe("something").and(new Func1<String, String>() {
 			public String apply(String x) {

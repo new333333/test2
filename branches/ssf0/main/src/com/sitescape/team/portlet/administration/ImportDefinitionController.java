@@ -119,7 +119,7 @@ public class ImportDefinitionController extends  SAbstractController {
 		try {
 			if (binderId == null) {
 				
-				return getDefinitionModule().addDefinition(fIn, null, null, null, replace).getId();
+				return getDefinitionModule().addDefinition(fIn, replace).getId();
 			} else {
 				return getDefinitionModule().addDefinition(fIn, getBinderModule().getBinder(binderId), null, null, replace).getId();				
 			}
