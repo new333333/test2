@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectExistsException;
@@ -53,6 +54,38 @@ public interface DefinitionModule {
 	public enum DefinitionOperation {
 		manageDefinition,
 	}
+	
+	/**
+	 * Registers a {@link Definition} read from the supplied {@link InputStream}.
+	 * 
+	 * @param in -
+	 *            the <code>InputStream</code> from which to read the
+	 *            <code>Definition</code>
+	 * @param replace -
+	 *            whether to replace an existing <code>Definition</code>
+	 * @return the newly created <code>Definition</code>
+	 * @throws DocumentException -
+	 *             if <code>in</code> does not specify a valid
+	 *             {@link Document}
+	 */
+	public Definition addDefinition(InputStream in, boolean replace) throws DocumentException;
+	/**
+	 * Registers a {@link Definition} read from the supplied {@link InputStream}.
+	 * 
+	 * @param in -
+	 *            the <code>InputStream</code> from which to read the
+	 *            <code>Definition</code>
+	 * @param binder -
+	 *            the owning {@link Binder} for the <code>Definition</code>
+	 * @param replace -
+	 *            whether to replace an existing <code>Definition</code>
+	 * @return the newly created <code>Definition</code>
+	 * @throws DocumentException -
+	 *             if <code>in</code> does not specify a valid
+	 *             {@link Document}
+	 */
+	public Definition addDefinition(InputStream in, Binder binder, boolean replace) throws DocumentException;
+	
 	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace) throws AccessControlException, Exception;
 	public Definition addDefinition(Binder binder, String name, String title, Integer type, InputDataAccessor inputData) throws AccessControlException;
 	/**

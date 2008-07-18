@@ -242,6 +242,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		template.setDefinitionsInherited(false);
 		template.setDefinitions(definitions);
 		template.setFunctionMembershipInherited(true);
+		template.setParentBinder(RequestContextHolder.getRequestContext().getZone());
        	String icon = DefinitionUtils.getPropertyValue(entryDef.getDefinition().getRootElement(), "icon");
        	if (Validator.isNotNull(icon))
 			template.setIconName(icon);

@@ -171,7 +171,7 @@
    <span class="ss_light"><ssf:nlt tag="profile.element.${element}"/></span>
   </td>
   <td valign="top" align="left">
-   <c:if test="${!empty ssDefinitionEntry[element]}">
+   <c:if test="${!empty element && !empty ssDefinitionEntry[element]}">
     <span class="ss_bold">
     <c:if test="${element == 'emailAddress' || element == 'mobileEmailAddress' || element == 'txtEmailAddress'}">
         <a href="mailto:${ssDefinitionEntry[element]}">

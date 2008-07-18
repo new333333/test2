@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.module.definition.impl;
 
+import static com.sitescape.team.util.Maybe.*;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,6 +45,7 @@ import java.util.TreeMap;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -91,12 +93,14 @@ import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.survey.Survey;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.LongIdUtil;
+import com.sitescape.team.util.Maybe;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.GetterUtil;
+import com.sitescape.util.Pair;
 import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
 
@@ -176,20 +180,29 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements
    		if (def.getBinderId() == null) checkAccess(null, def.getType(), operation);
    		else checkAccess(getCoreDao().loadBinder(def.getBinderId(), def.getZoneId()), def.getType(), operation);
    	}
+   	
+   	public Definition addDefinition(InputStream in, boolean replace) throws DocumentException {
+   		Document document = new SAXReader(false).read(in);
+   		Pair<String, String> nameCaption = getNameCaption(document);
+		return doAddDefinition(document, nameCaption.getFirst(), nameCaption
+				.getSecond(), replace);
+   	}
    
+	/* (non-Javadoc)
+	 * @see com.sitescape.team.module.definition.DefinitionModule#addDefinition(java.io.InputStream, com.sitescape.team.domain.Binder, boolean)
+	 */
+	public Definition addDefinition(InputStream in, Binder binder,
+			boolean replace) throws DocumentException {
+		Document document = new SAXReader(false).read(in);
+		Pair<String, String> nameCaption = getNameCaption(document);
+		return doAddDefinition(document, binder, nameCaption.getFirst(),
+				nameCaption.getSecond(), replace);
+	}
 	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace) throws AccessControlException, Exception {
-/*The current xsd is really for the configuration file.  The export defintions don't follow all the rules,
-  xsd:sequence in particular.  Until we either fix this or build a new xsd, this validating code is disabled.
-		SAXReader xIn = new SAXReader(true);
-        // The following code turns on XML schema-based validation
-        // features specific to Apache Xerces2 parser. Therefore it
-        // will not work when a different parser is used. 
-		xIn.setFeature("http://apache.org/xml/features/validation/schema", true); // Enables XML Schema validation
-		xIn.setFeature("http://apache.org/xml/features/validation/schema-full-checking",true); // Enables full (if slow) schema checking
-		xIn.setProperty(
-                "http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation",
-                DirPath.getDTDDirPath() + File.separator + "definition_builder_config.xsd");
-*/
+		if (name == null) {
+			throw new IllegalArgumentException("Definitions may not be created with a null name.");
+		}
+		
 		SAXReader xIn = new SAXReader(false);
 		Document doc = xIn.read(indoc);  
 		String type = doc.getRootElement().attributeValue("type");
@@ -226,14 +239,24 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements
     /* (non-Javadoc)
 	 * @see com.sitescape.team.module.definition.DefinitionService#addDefinition(org.dom4j.Document, boolean, com.sitescape.team.domain.ZoneInfo)
 	 */
-	public Definition addDefinition(Document doc, boolean replace, Workspace zone) {
-    	Element root = doc.getRootElement();
-		String name = root.attributeValue("name");
-		String caption = root.attributeValue("caption");
-		if (Validator.isNull(name)) name = DefinitionUtils.getPropertyValue(root, "name");
-		if (Validator.isNull(caption)) caption = DefinitionUtils.getPropertyValue(root, "caption");
-		return doAddDefinition(doc, zone, name, caption, replace);
-		}
+	public Definition addDefinition(Document doc, boolean replace,
+			Workspace zone) {
+		Pair<String, String> nameCaption = getNameCaption(doc);
+		return doAddDefinition(doc, zone, nameCaption.getFirst(), nameCaption
+				.getSecond(), replace);
+	}
+	
+	private Pair<String, String> getNameCaption(Document document) {
+		String caption = maybe(
+				document.getRootElement().attributeValue("caption")).or(
+				DefinitionUtils.getPropertyValue(document.getRootElement(),
+						"caption"));
+		String name = maybe(document.getRootElement().attributeValue("name"))
+				.orMaybe(
+						DefinitionUtils.getPropertyValue(document
+								.getRootElement(), "name")).or(caption);
+		return new Pair<String, String>(name, caption);
+	}
     protected void setDefinition(Definition def, Document doc) {
     	 
    		//Make sure the definition name and caption remain consistent
@@ -255,13 +278,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements
     		getWorkflowModule().modifyProcessDefinition(def.getId(), def);
     	}
 	}
-    protected Definition doAddDefinition(Document document, String name, String title, boolean replace) {
-    	return doAddDefinition(document, null, name, title, replace);
+    protected Definition doAddDefinition(Document document, String name,
+			String title, boolean replace) {
+		return doAddDefinition(document, RequestContextHolder
+				.getRequestContext().getZone(), name, title, replace);
     }
     
 	protected Definition doAddDefinition(Document document, Binder binder, String name, String title, boolean replace) {
     	Element root = document.getRootElement();
-		Long zoneId = binder != null? binder.getZoneId() : RequestContextHolder.getRequestContext().getZoneId();
+		Long zoneId = binder.getZoneId();
 		if (Validator.isNull(name)) {
 			name=title;
 		}
@@ -817,7 +842,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements
 		}
 		Document doc = getInitialDefinition(definitionName, definitionTitle, type, new MapInputData(new HashMap()));
 		doc.getRootElement().addAttribute("internalId", internalId);
-		return doAddDefinition(doc, null, definitionName, definitionTitle, true);
+		return doAddDefinition(doc, definitionName, definitionTitle, true);
 	}
 	
 /*

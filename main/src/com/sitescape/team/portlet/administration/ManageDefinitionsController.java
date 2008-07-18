@@ -27,6 +27,8 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.portlet.administration;
+
+import static com.sitescape.team.util.Maybe.*;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -56,6 +58,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.definition.DefinitionModule.DefinitionOperation;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.util.Maybe;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -417,8 +420,11 @@ public class ManageDefinitionsController extends  SAbstractController {
 		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		model.put(WebKeys.NAMESPACE, namespace);
 		//in this case binderId is the definitionType
-		Integer definitionType = PortletRequestUtils.getIntParameter(request, "binderId");
-		Long binderId = PortletRequestUtils.getLongParameter(request, "binderId2");
+		Integer definitionType = PortletRequestUtils.getIntParameter(request,
+				"binderId");
+		Long binderId = maybe(
+				PortletRequestUtils.getLongParameter(request, "binderId2")).or(
+				RequestContextHolder.getRequestContext().getZone().getId());
 		List<Definition> definitions = getDefinitionModule().getDefinitions(binderId, Boolean.FALSE, definitionType);
 			
 		Document adminTree = DocumentHelper.createDocument();
