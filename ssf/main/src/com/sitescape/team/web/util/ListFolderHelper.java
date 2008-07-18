@@ -1180,8 +1180,7 @@ public class ListFolderHelper {
 		hmRet.put(WebKeys.PAGE_NEXT, hmRetNext);
 		hmRet.put(WebKeys.PAGE_START_INDEX, "" + (intSearchOffset + 1));
 		
-		if (nextInternalValue >= intTotalRecordsFound) hmRet.put(WebKeys.PAGE_END_INDEX, "" + intTotalRecordsFound);
-		else hmRet.put(WebKeys.PAGE_END_INDEX, "" + nextInternalValue);
+		hmRet.put(WebKeys.PAGE_END_INDEX, "" + intTotalRecordsFound);
 		
 		return hmRet;
 	}

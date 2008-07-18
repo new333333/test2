@@ -96,13 +96,15 @@ public class FieldBuilderEntryAttributes extends AbstractFieldBuilder {
         while (itNames.hasNext()) {
         	String attributeSetName = (String)itNames.next();
         	Set attributeSet = (Set)dataElemMap.get(dataElemName + DefinitionModule.ENTRY_ATTRIBUTES_SET + attributeSetName);
-            String fieldName = makeFieldName(attributeSetName);
-            String val;
-            Field field;
-            for (Iterator it = attributeSet.iterator(); it.hasNext(); i++) {
-                val = (String) it.next();
-    	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.UN_TOKENIZED);
-    	        fields[i] = field;
+            if (attributeSet != null) {
+            	String fieldName = makeFieldName(dataElemName + DefinitionModule.ENTRY_ATTRIBUTES_SET + attributeSetName);
+                String val;
+                Field field;
+                for (Iterator it = attributeSet.iterator(); it.hasNext(); i++) {
+                    val = (String) it.next();
+        	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.UN_TOKENIZED);
+        	        fields[i] = field;
+                }
             }
         }
         return fields;

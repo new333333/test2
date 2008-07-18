@@ -111,8 +111,10 @@ public class AddEntryServlet extends HttpServlet {
 				String operation = req.getParameter(PARAMETER_FORM_OPERATION);
 				String definitionId = req.getParameter(PARAMETER_FORM_DEFINITION_ID);
 				if (definitionId == null) definitionId = ObjectKeys.DEFAULT_FOLDER_ENTRY_DEF;
-				String jsp = "/WEB-INF/jsp/addentry/entry_view.jsp";
-				if (operation.equals(PARAMETER_FORM_OPERATION_ENTRY_FORM)) jsp = "/WEB-INF/jsp/addentry/entry_form.jsp";
+				String jsp = "/WEB-INF/jsp/addentry/entry_form.jsp";
+				if (PARAMETER_FORM_OPERATION_ENTRY_FORM.equals(operation)) {
+					jsp = "/WEB-INF/jsp/addentry/entry_view.jsp";
+				}
 				RequestDispatcher rd = req.getRequestDispatcher(jsp);	
 				StringServletResponse resp2 = new StringServletResponse(resp);	
 				req.setAttribute(PARAMETER_NAME_ACCESS_TOKEN, accessToken);

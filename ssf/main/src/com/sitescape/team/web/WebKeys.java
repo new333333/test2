@@ -331,6 +331,7 @@ public class WebKeys {
 	public static final String OPERATION_FIND_USERS_WIDGET = "get_users_widget";
 	public static final String OPERATION_FIND_GROUPS_WIDGET = "get_groups_widget";
 	public static final String OPERATION_FIND_TEAMS_WIDGET = "get_teams_widget";
+	public static final String OPERATION_FIND_ENTRY_ATTRIBUTES_WIDGET = "get_entry_attributes_widget";	
 	public static final String OPERATION_FIND_ENTRY_FIELDS_WIDGET = "get_entry_fields_widget";	
 	public static final String OPERATION_FIND_ENTRY_FOR_FILE = "find_entry_for_file";	
 	public static final String OPERATION_FIND_PLACES_SEARCH = "find_places_search";

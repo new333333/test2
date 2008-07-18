@@ -183,13 +183,18 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	sDiv.id = "entryFields"+orderNo;
 	sDiv.setAttribute("style", "display:inline;");
 	div.appendChild(sDiv);
+	var sDiv2 = document.createElement('div');
+	sDiv2.id = "entryFieldsValue"+orderNo;
+	sDiv2.setAttribute("style", "display:inline;");
+	div.appendChild(sDiv2);
 	document.getElementById('ss_entries_options').appendChild(div);
 
-	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", getSubSearchString:ss_getSelectedBinders,
+	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", 
+		getSubSearchString:ss_getSelectedBinders,
 		dataUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_entry_types_widget&idChoices=%{searchString}&randomNumber="+ss_random++, 
 		nestedUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_entry_fields_widget&randomNumber="+ss_random++, 
-		widgetContainer:sDiv, searchFieldIndex:orderNo, mode: "remote",
-								maxListLength : 10,	autoComplete: false, weekStartsOn: ss_weekStartsOn};
+		widgetContainer:sDiv, widgetContainer2:sDiv2, searchFieldIndex:orderNo, mode: "remote",
+		maxListLength : 10,	autoComplete: false, weekStartsOn: ss_weekStartsOn};
 	var entryWidget = dojo.widget.createWidget("EntrySelect", properties, document.getElementById("placeholderEntry"+orderNo+""));
 	if (entryId && entryId != "") {
 		entryWidget.setDefaultValue(entryId, ss_searchEntries[entryId], fieldName, ss_searchFields[entryId+"-"+fieldName], value, ss_searchFieldsTypes[entryId+"-"+fieldName], valueLabel);

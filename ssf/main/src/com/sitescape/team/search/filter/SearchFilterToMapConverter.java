@@ -316,6 +316,9 @@ public class SearchFilterToMapConverter {
 				} else if (valueType.equals("selectbox") || valueType.equals("radio")) {
 					Map selectBoxDefinedValues = (Map)((Map)fieldsMap.get(entryFieldId)).get(EntryField.ValuesField);
 					formattedValue = (String)selectBoxDefinedValues.get(value);
+				} else if (valueType.equals("entryAttributes")) {
+					parsedValue = value;
+					formattedValue = value.substring(value.indexOf(",")+1).replace(",", ": ");
 				} else if (valueType.equals("user_list")) {
 					if (SearchFilterKeys.CurrentUserId.equals(value.toString())) {
 						formattedValue = NLT.get("searchForm.currentUserTitle");

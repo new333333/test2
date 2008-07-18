@@ -340,6 +340,39 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 %>
   </c:forEach>
   
+  <c:if test="${!empty ssFolderColumns['rating']}">
+    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="10%">
+    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+    	name="operation" value="save_folder_sort_info"/><ssf:param 
+    	name="binderId" value="${ssFolder.id}"/><ssf:param 
+    	name="ssFolderSortBy" value="_rating"/><c:choose><c:when 
+    	test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'false'}"><ssf:param 
+    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
+    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></ssf:url>"
+	
+	<c:choose>
+	  <c:when test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'false'}">
+	  	<ssf:title tag="title.sort.by.column.desc">
+	  		<ssf:param name="value" value="<%= NLT.get("folder.column.Rating") %>" />
+	  	</ssf:title>
+	  </c:when>
+	  <c:otherwise>
+	  	<ssf:title tag="title.sort.by.column.asc">
+	  		<ssf:param name="value" value="<%= NLT.get("folder.column.Rating") %>" />
+	  	</ssf:title>
+	  </c:otherwise>
+	</c:choose>
+	><ssf:nlt tag="folder.column.Rating"/>
+	    <c:if test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'true'}">
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Rating") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+		</c:if>
+		<c:if test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'false'}">
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Rating") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+		</c:if>
+    <a/>
+    </ssf:slidingTableColumn>
+  </c:if>
+
 </ssf:slidingTableRow>
 
 <c:forEach var="entry1" items="${ssFolderEntries}" >
@@ -587,7 +620,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  <ssf:slidingTableColumn  style="${slidingTableColStyle}">
          <span <%= seenStyle %>>
          <c:if test="${!empty eleName2 && !empty entry1[eleName2]}">
-	       <c:if test="${eleType2 == 'selectbox' || eleType2 == 'radio' || eleType2 == 'checkbox' || eleType2 == 'text'}">
+	       <c:if test="${eleType2 == 'selectbox' || eleType2 == 'radio' || eleType2 == 'checkbox' || eleType2 == 'text' || eleType2 == 'entryAttributes'}">
 	         <%
 	         	String eleValues = com.sitescape.team.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
 	         %>
@@ -634,6 +667,37 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 %>
   </c:forEach>
 
+ <c:if test="${!empty ssFolderColumns['rating']}">
+   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
+     <c:if test="${!empty entry1._rating}">
+		<table style="border-spacing:0px; border-width:thin;"><tbody><tr>
+			<%
+				String iRating = String.valueOf(java.lang.Math.round(Float.valueOf(entry1.get("_rating").toString())));
+			%>
+			<c:set var="sRating" value="<%= iRating %>"/>
+			<c:if test="${sRating > 0}">
+				<c:forEach var="i" begin="0" end="${sRating - 1}" step="1">
+			
+				  <td><img border="0" 
+				    <ssf:alt tag="alt.goldStar"/>
+				    src="<html:imagesPath/>pics/star_gold.gif"/>
+				  </td>
+			
+				</c:forEach>
+			</c:if>
+			
+			<c:if test="${sRating < 5}">
+				<c:forEach var="i" begin="${sRating}" end="4" step="1">
+				  <td><img <ssf:alt tag="alt.grayStar"/> border="0" 
+					    src="<html:imagesPath/>pics/star_gray.gif" />
+				  </td>
+				</c:forEach>
+			</c:if>
+		</tr></tbody></table>
+     </c:if>&nbsp;
+   </ssf:slidingTableColumn>
+ </c:if>
+  
 </ssf:slidingTableRow>
 </c:forEach>
 </ssf:slidingTable>

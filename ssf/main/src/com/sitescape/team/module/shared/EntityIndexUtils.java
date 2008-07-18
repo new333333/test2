@@ -143,7 +143,7 @@ public class EntityIndexUtils {
    public static void addRating(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	//rating may not exist or not be supported
     	try {
-        	Field rateField = new Field(RATING_FIELD, entry.getAverageRating().getAverage().toString(), Field.Store.NO, Field.Index.UN_TOKENIZED);
+        	Field rateField = new Field(RATING_FIELD, entry.getAverageRating().getAverage().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         	doc.add(rateField);
         } catch (Exception ex) {};
    	
