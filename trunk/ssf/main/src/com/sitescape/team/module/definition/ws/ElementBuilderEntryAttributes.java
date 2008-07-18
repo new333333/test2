@@ -42,7 +42,8 @@ import com.sitescape.team.remoting.ws.model.CustomStringArrayField;
  * @author Jong Kim
  */
 public class ElementBuilderEntryAttributes extends AbstractElementBuilder {
-	   protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, Object obj, String dataElemType, String dataElemName) {
+	   protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, 
+			   Object obj, String dataElemType, String dataElemName) {
 			List<String> values = null;
 			if(entityModel != null)
 				values = new ArrayList<String>(); 
@@ -68,7 +69,8 @@ public class ElementBuilderEntryAttributes extends AbstractElementBuilder {
 	    		element.addElement("value");
 	    	}
 			if(values != null)
-				entityModel.addCustomStringArrayField(new CustomStringArrayField(dataElemName, dataElemType, values.toArray(new String[]{})));
+				entityModel.addCustomStringArrayField(new CustomStringArrayField(dataElemName, 
+						dataElemType, values.toArray(new String[]{})));
 	    	return true;
 	    }
 

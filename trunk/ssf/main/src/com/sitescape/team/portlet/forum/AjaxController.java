@@ -541,7 +541,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Long rating = new Long(PortletRequestUtils.getRequiredLongParameter(request, "rating"));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "entryId"));				
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "binderId"));				
+		FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
 		getFolderModule().setUserRating(binderId, entryId, rating);
+		getFolderModule().indexEntry(entry, false);
 	}
 	
 	private String getModelLink(ActionResponse response, Binder binder,

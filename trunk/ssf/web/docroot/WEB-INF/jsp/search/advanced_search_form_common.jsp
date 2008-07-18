@@ -32,9 +32,11 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.sitescape.team.util.CalendarHelper" %>
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
-	<script type="text/javascript">
-		var ss_user_locale = "${ssUser.locale.language}";
-	</script>
+<script type="text/javascript">
+var ss_user_locale = "${ssUser.locale.language}";
+var ss_searchBinderUrl = "<ssf:url adapter="true" portletName="ss_forum" actionUrl="true" ><ssf:param 
+	name="binderId" value="${ssBinder.id}"/></ssf:url>";
+</script>
 
 	<div id="ss_searchForm_container">
 		<div id="ss_searchForm">
@@ -280,3 +282,10 @@
 			<input type="hidden" name="searchTypes" id="searchTypes" value=""/>
 		</div>
 	</div>
+<script type="text/javascript">
+function ss_showAdvancedSearchForm() {
+	ss_showAdditionalOptions('ss_searchForm_additionalFilters', 'ss_search_more_options_txt_${ssNamespace}', '${ssNamespace}');
+}
+ss_createOnLoadObj("ss_showAdvancedSearchForm", ss_showAdvancedSearchForm);
+
+</script>

@@ -29,25 +29,53 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
+<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 <%@ include file="/WEB-INF/jsp/search/search_js.jsp" %>
 
 <div id="ss_portlet_content" class="ss_style ss_portlet_style ss_content_outer">
 
+<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
+<c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}"/>
+<c:if test="${empty ss_sidebarVisibility}"><c:set var="ss_sidebarVisibility" value="block"/></c:if>
+<c:if test="${ss_sidebarVisibility == 'none'}">
+  <c:set var="ss_sidebarVisibilityShow" value="block"/>
+  <c:set var="ss_sidebarVisibilityHide" value="none"/>
+  <c:set var="ss_sidebarTdStyle" value=""/>
+</c:if>
+<c:if test="${ss_sidebarVisibility != 'none'}">
+  <c:set var="ss_sidebarVisibilityShow" value="none"/>
+  <c:set var="ss_sidebarVisibilityHide" value="block"/>
+  <c:set var="ss_sidebarTdStyle" value="ss_view_sidebar"/>
+</c:if>
+<div class="ss_actions_bar1_pane ss_sidebarImage" width="100%">
+<table cellspacing="0" cellpadding="0" width="100%">
+<tr><td valign="middle">
+<a href="javascript: ;" 
+  onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
+><span style="padding-left:9px; display:${ss_sidebarVisibilityShow};"
+  id="ss_sidebarHide${renderResponse.namespace}" 
+  class="ss_fineprint ss_sidebarSlidesm"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
+  style="padding-left:9px; display:${ss_sidebarVisibilityHide};"
+  id="ss_sidebarShow${renderResponse.namespace}" 
+  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/> sss</span></a>
+</td><td valign="top">
+</td></tr>
+</table>
+</div>
+
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
-    <td valign="top" class="ss_view_sidebar">
-
-	<% // Navigation bar %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+    <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
+    <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
 
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 
 	<%@ include file="/WEB-INF/jsp/search/save_search.jsp" %>
 
-
+	</div>
 	</td>
 	<td valign="top" class="ss_view_info">
 			

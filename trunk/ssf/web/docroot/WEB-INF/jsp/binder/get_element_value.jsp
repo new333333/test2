@@ -97,6 +97,19 @@
 	         value="${element.value.type}"/>
 	       </c:if>
 	       
+	       <c:if test="${element.value.type == 'entryAttributes'}">
+			 <select
+		       name="elementValue${ss_filterTermNumber}" 
+		       multiple="multiple" 
+		       size="${element.value.length}"
+		     >
+				<c:forEach var="option" items="${element.value.values}">
+				  <option value="${option.key}">${option.value}</option>
+				</c:forEach>
+		       </select>
+	         <input type="hidden" name="elementValueType${ss_filterTermNumber}" value="${element.value.type}"/>
+	       </c:if>
+	       
 	       <c:if test="${element.value.type == 'user_list'}">
 	         <ssf:nlt tag="filter.users" text="Users"/>: ...
 	       </c:if>

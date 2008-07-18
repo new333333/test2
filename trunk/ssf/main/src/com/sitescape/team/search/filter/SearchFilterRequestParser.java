@@ -208,6 +208,14 @@ public class SearchFilterRequestParser {
 					String entryFieldId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField.concat(numbers[i]), SearchFilter.AllEntries);
 					String[] value = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]));
 					String value2 = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]).concat("0"), null);
+					String[] valueValue = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueValueField.concat(numbers[i]));
+					if (valueValue != null) {
+						for (int j = 0; j < value.length; j++) {
+							if (j < valueValue.length) {
+								if (!valueValue[j].equals("")) value[j] = valueValue[j];
+							}
+						}
+					}
 					if (value != null && value2 != null) {
 						String[] allValues = new String[value.length + 1];
 						System.arraycopy(value, 0, allValues, 0, value.length);

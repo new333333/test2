@@ -1,3 +1,4 @@
+<%
 /**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
@@ -26,29 +27,12 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.definition.notify;
-
-import java.util.Map;
-
-import org.apache.velocity.VelocityContext;
-
-import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.web.util.DefinitionHelper;
-
-/**
-*
-* @author Janet McCann
-*/
-public class NotifyBuilderEntryAttributes extends AbstractNotifyBuilder {
-    public String getDefaultTemplate() {
-    	return "attributes.vm";
-    }
-	   
-    public void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
-    	Map attributeSelections = DefinitionHelper.findAttributeSelectionsAsMap(attr.getName(), visitor.getEntity());
-    	ctx.put("ssCaptions", attributeSelections);
-    	super.build(visitor, template, ctx);
-	   }
-
+%>
+<%@ page language="java" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<% // This is JSON type AJAX response  %>
+{
+<c:forEach var="entryValue" items="${elementValueSet}" varStatus="status">
+	"<ssf:escapeJavaScript value="${elementName},${elementValue},${entryValue}"/>":"<ssf:escapeJavaScript value="${entryValue}"/>"<c:if test="${!status.last}">,</c:if>
+</c:forEach>
 }
-
