@@ -28,34 +28,44 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //Entry attributes form %>
+<% //Guest name form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${!empty ssBinder.customAttributes[property_source].valueSet}">
+<%@ page import="com.sitescape.team.ObjectKeys" %>
+<%
+	String elementName = (String) request.getAttribute("property_name");
+	String caption = (String) request.getAttribute("property_caption");
+	String width = (String) request.getAttribute("property_width");
+	if (width == null || width.equals("")) {
+		width = "";
+	} else {
+		width = "size=\""+width+"\" maxlength=\""+width+"\"";
+	}
+	if (caption == null || caption.equals("")) {
+		caption = "";
+	} else {
+		caption = "<span class=\"ss_bold\">"+caption+"</span><br/>";
+	}
+	String required = (String) request.getAttribute("property_required");
+	Boolean req = Boolean.parseBoolean(required);
+	if (required == null) {required = "";}
+	if (required.equals("true")) {
+		required = "<span class=\"ss_required\">*</span>";
+	} else {
+		required = "";
+	}
+%>
+<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
+<c:if test="${ssOperation == 'add_folder_entry'}">
+<c:if test="${ssUser.internalId == guestInternalId}">
 <div class="ss_entryContent">
-  <span class="ss_labelRight">${property_caption}</span>
-  <table border="1">
-    <tr>
-      <c:forEach var="attributeSet" items="${ssBinder.customAttributes[property_source].valueSet}">
-        <c:set var="sourceAttributeSet" value="${property_source}__set__${attributeSet}"/>
-        <c:set var="sourceAttributeSetMA" value="${property_source}__setMultipleAllowed__${attributeSet}"/>
-          <td valign="top">
-        	<span class="ss_bold">${attributeSet}</span><br/>
-        	<select name="${property_name}__set__${attributeSet}"
-        	  <c:if test="${ssBinder.customAttributes[sourceAttributeSetMA].value}"> multiple="multiple" </c:if>
-        	>
-        	<c:set var="attributes" value="${property_name}__set__${attributeSet}"/>
-        	<c:forEach var="attribute" items="${ssBinder.customAttributes[sourceAttributeSet].valueSet}">
-         	  <option value="${attribute}"
-         	    <c:forEach var="attr" items="${ssDefinitionEntry.customAttributes[attributes].valueSet}">
-         	      <c:if test="${attr == attribute}"> selected="selected" </c:if>
-         	    </c:forEach>
-         	  >${attribute}</option>
-        	</c:forEach>
-        	</select>
-        	<input type="hidden" name="${property_name}" value="${attributeSet}"/>
-          </td>
-      </c:forEach>
-    </tr>
-  </table>
+<div class="ss_labelAbove">${property_caption}<%= required %></div>
+ <div style="padding-left:10px;">
+  <span class="ss_bold"><ssf:nlt tag="guest.user.name"/></span><br/>
+  <input type="text" class="ss_text" name="${property_name}" <%= width %> /><br/>
+  <span class="ss_bold"><ssf:nlt tag="guest.user.email"/></span><br/>
+  <input type="text" class="ss_text" name="${property_name}" <%= width %> />
+ </div>
 </div>
+<br/>
+</c:if>
 </c:if>

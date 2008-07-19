@@ -1884,6 +1884,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							v.setValue(ids);
 							entryData.put(nameValue, v);
 						}
+					} else if (itemName.equals("guestName")) {
+						if (inputData.exists(nameValue)) {
+					    	entryData.put(nameValue, inputData.getValues(nameValue));
+						}
 					} else if (itemName.equals("selectbox")) {
 						if (inputData.exists(nameValue)) {
 					    	String multiple = DefinitionUtils.getPropertyValue(nextItem, "multipleAllowed");
