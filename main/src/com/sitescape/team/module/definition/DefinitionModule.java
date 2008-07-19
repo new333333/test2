@@ -110,6 +110,14 @@ public interface DefinitionModule {
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException, AccessControlException;
 
 	public Definition getDefinition(String id);
+	
+	/**
+	 * Returns the unique, "top-level" {@link Definition} for which {@link Definition#getName()} is equal to <code>name</code>.
+	 * @param name - the unique name of the <code>Definition</code>.
+	 * @return the <code>Definition</code> with name equal to <code>name</code>
+	 */
+	public Definition getDefinitionByName(String name);
+	
 	public Definition getDefinitionByName(Binder binder, Boolean includeAncestors, String name);
 	public List<Definition> getAllDefinitions();
 	public List<Definition> getAllDefinitions(Integer type);

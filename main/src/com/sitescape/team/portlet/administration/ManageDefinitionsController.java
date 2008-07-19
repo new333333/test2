@@ -422,9 +422,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 		//in this case binderId is the definitionType
 		Integer definitionType = PortletRequestUtils.getIntParameter(request,
 				"binderId");
-		Long binderId = maybe(
-				PortletRequestUtils.getLongParameter(request, "binderId2")).or(
-				RequestContextHolder.getRequestContext().getZone().getId());
+		Long binderId = PortletRequestUtils.getLongParameter(request, "binderId2");
 		List<Definition> definitions = getDefinitionModule().getDefinitions(binderId, Boolean.FALSE, definitionType);
 			
 		Document adminTree = DocumentHelper.createDocument();
