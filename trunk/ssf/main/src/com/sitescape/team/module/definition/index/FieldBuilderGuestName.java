@@ -1,4 +1,3 @@
-<%
 /**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
@@ -27,35 +26,42 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-%>
-<% //Entry attributes form %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${!empty ssBinder.customAttributes[property_source].valueSet}">
-<div class="ss_entryContent">
-  <span class="ss_labelRight">${property_caption}</span>
-  <table border="1">
-    <tr>
-      <c:forEach var="attributeSet" items="${ssBinder.customAttributes[property_source].valueSet}">
-        <c:set var="sourceAttributeSet" value="${property_source}__set__${attributeSet}"/>
-        <c:set var="sourceAttributeSetMA" value="${property_source}__setMultipleAllowed__${attributeSet}"/>
-          <td valign="top">
-        	<span class="ss_bold">${attributeSet}</span><br/>
-        	<select name="${property_name}__set__${attributeSet}"
-        	  <c:if test="${ssBinder.customAttributes[sourceAttributeSetMA].value}"> multiple="multiple" </c:if>
-        	>
-        	<c:set var="attributes" value="${property_name}__set__${attributeSet}"/>
-        	<c:forEach var="attribute" items="${ssBinder.customAttributes[sourceAttributeSet].valueSet}">
-         	  <option value="${attribute}"
-         	    <c:forEach var="attr" items="${ssDefinitionEntry.customAttributes[attributes].valueSet}">
-         	      <c:if test="${attr == attribute}"> selected="selected" </c:if>
-         	    </c:forEach>
-         	  >${attribute}</option>
-        	</c:forEach>
-        	</select>
-        	<input type="hidden" name="${property_name}" value="${attributeSet}"/>
-          </td>
-      </c:forEach>
-    </tr>
-  </table>
-</div>
-</c:if>
+package com.sitescape.team.module.definition.index;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.lucene.document.Field;
+
+import com.sitescape.team.search.BasicIndexUtils;
+
+/**
+ *
+ * @author Jong Kim
+ */
+public class FieldBuilderGuestName extends AbstractFieldBuilder {
+
+    public String makeFieldName(String dataElemName) {
+        //Just use the data name. It is guaranteed to be unique within its definition
+    	return dataElemName;
+    }
+    
+    protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
+        // This default guestName implementation ignores args.
+              
+        Field[] fields = new Field[dataElemValue.size()];
+        String fieldName = makeFieldName(dataElemName);
+       
+        String val;
+        Field field;
+        int i = 0;
+        for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
+            val = (String) it.next();
+	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.UN_TOKENIZED);
+	        fields[i] = field;
+        }
+        
+        return fields;
+    }
+}
