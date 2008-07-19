@@ -34,17 +34,25 @@ public class DefinitionModuleImplTest extends AbstractTestBase {
 				true);
 		assertNotNull(d);
 		assertEquals(name, d.getName());
+		assertEquals(null, d.getBinderId());
 	}
 
 	@Test
 	public void addDefinitionWithBinderNoName() throws Exception {
 		Workspace b = defaultRequestContext().getZone();
-		RequestContextHolder.clear();
 		Definition d = definitions.addDefinition(IOUtils.toInputStream(xml), b,
 				true);
 		assertNotNull(d);
 		assertEquals(name, d.getName());
 		assertEquals(b.getId(), d.getBinderId());
+	}
+	
+	@Test
+	public void getDefinitionByNameNoBinder() throws Exception {
+		definitions.addDefinition(IOUtils.toInputStream(xml), true);
+		Definition d = definitions.getDefinitionByName(name);
+		assertNotNull(d);
+		assertEquals(name, d.getName());
 	}
 
 }

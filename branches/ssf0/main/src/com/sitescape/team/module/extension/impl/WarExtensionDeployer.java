@@ -87,6 +87,7 @@ public class WarExtensionDeployer<S extends ExtensionDeployNotifier<S>>
 			return;
 		}
 		SAXReader reader = new SAXReader(false);
+		reader.setIncludeExternalDTDDeclarations(false);
 		String extensionPrefix = extension.getName()
 		.substring(0, extension.getName().lastIndexOf("."));
 		File extensionDir = new File(extensionBaseDir, extensionPrefix);
@@ -146,8 +147,7 @@ public class WarExtensionDeployer<S extends ExtensionDeployNotifier<S>>
 							}
 						});
 						// attempt to add
-						definitionModule.addDefinition(document, true,
-								zoneModule.getDefaultZone());
+						definitionModule.addDefinition(document, true);
 						continue;
 					}
 					if (schema.getText().contains(templateSchemaNamespace)) {

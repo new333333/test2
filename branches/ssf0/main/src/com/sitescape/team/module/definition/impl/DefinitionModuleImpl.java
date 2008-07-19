@@ -28,7 +28,8 @@
  */
 package com.sitescape.team.module.definition.impl;
 
-import static com.sitescape.team.util.Maybe.*;
+import static com.sitescape.team.util.Maybe.maybe;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -76,7 +77,6 @@ import com.sitescape.team.domain.NoPrincipalByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
-import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
@@ -93,7 +93,6 @@ import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.survey.Survey;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.LongIdUtil;
-import com.sitescape.team.util.Maybe;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SimpleProfiler;
@@ -239,10 +238,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements
     /* (non-Javadoc)
 	 * @see com.sitescape.team.module.definition.DefinitionService#addDefinition(org.dom4j.Document, boolean, com.sitescape.team.domain.ZoneInfo)
 	 */
-	public Definition addDefinition(Document doc, boolean replace,
-			Workspace zone) {
+	public Definition addDefinition(Document doc, boolean replace) {
 		Pair<String, String> nameCaption = getNameCaption(doc);
-		return doAddDefinition(doc, zone, nameCaption.getFirst(), nameCaption
+		return doAddDefinition(doc, null, nameCaption.getFirst(), nameCaption
 				.getSecond(), replace);
 	}
 	
@@ -280,13 +278,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements
 	}
     protected Definition doAddDefinition(Document document, String name,
 			String title, boolean replace) {
-		return doAddDefinition(document, RequestContextHolder
-				.getRequestContext().getZone(), name, title, replace);
+    	// XXX is using null appropriate to indicate a 'top-level' definition?
+		return doAddDefinition(document, null, name, title, replace);
     }
     
 	protected Definition doAddDefinition(Document document, Binder binder, String name, String title, boolean replace) {
     	Element root = document.getRootElement();
-		Long zoneId = binder.getZoneId();
+		Long zoneId = coreDao.findTopWorkspace(SZoneConfig.getDefaultZoneName()).getZoneId();
 		if (Validator.isNull(name)) {
 			name=title;
 		}
@@ -536,26 +534,35 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements
 		// Controllers need access to definitions.  Allow world read        
  		return coreDao.loadDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
 	}
-    //lookup definition by name going up tree including public
+    
+    /* (non-Javadoc)
+     * @see com.sitescape.team.module.definition.DefinitionModule#getDefinitionByName(java.lang.String)
+     */
+    public Definition getDefinitionByName(String name) {
+		return getDefinitionByName(null, true, name);
+	}
+    
+	//lookup definition by name going up tree including public
 	public Definition getDefinitionByName(Binder binder, Boolean includeAncestors, String name) {
 		List<Definition> defs;
+		long zoneId = coreDao.findTopWorkspace(SZoneConfig.getDefaultZoneName()).getZoneId();
 		if (binder == null) {
   	    	Map params = new HashMap();
    	    	params.put("name", name);    
-   	    	params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());  //need zone without binder
+   	    	params.put("zoneId", zoneId);  //need zone without binder
   	    	defs = coreDao.loadObjects("from com.sitescape.team.domain.Definition where binderId is null and zoneId=:zoneId and name=:name", params);
   	    	 			
 		} else if (includeAncestors.equals(Boolean.TRUE)) {
    	    	Map params = new HashMap();
    	    	params.put("binderId", getAncestorIds(binder));    
    	    	params.put("name", name);    
-  	    	params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());  //need zone without binder
+  	    	params.put("zoneId", zoneId);  //need zone without binder
   	    	defs = coreDao.loadObjects("from com.sitescape.team.domain.Definition where (binderId in (:binderId) or binderId is null) and zoneId=:zoneId and name=:name", params);
   	 	} else {
   	    	FilterControls filter = new FilterControls();
   	 		filter.add("binderId", binder.getId());     	 		
  	 		filter.add("name", name);     	 		
-  	 		defs =  coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
+  	 		defs =  coreDao.loadDefinitions(filter, zoneId);
  	 	}
    	 	//find the first one
 		if (defs.size() == 0) throw new NoDefinitionByTheIdException(name);
@@ -966,7 +973,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements
 		}
 		return newItem;
 	}
-	
 	protected Element addItemToDefinitionDocument(String defId, Document definitionTree, String itemId, 
 			String itemNameToAdd, InputDataAccessor inputData) throws DefinitionInvalidException {
 	

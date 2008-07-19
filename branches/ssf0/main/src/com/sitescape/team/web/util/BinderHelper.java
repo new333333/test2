@@ -759,7 +759,7 @@ public class BinderHelper {
 			navigationLinkMap = new HashMap();
 			model.put(WebKeys.NAVIGATION_LINK_TREE, navigationLinkMap);
 		}
-    	while (parentConfig != null) {
+    	while (parentConfig instanceof TemplateBinder && parentConfig != null) {
         	Document tree = buildTemplateTreeRoot(bs, parentConfig, helper);
  			navigationLinkMap.put(parentConfig.getId(), tree);
 			parentConfig = (TemplateBinder)parentConfig.getParentBinder();

@@ -93,7 +93,7 @@ public class DisplayConfigurationTest<S extends ExtensionDeployNotifier<S>> exte
 		addOperationFor(WorkAreaOperation.SITE_ADMINISTRATION, p.getFirst());
 		RequestContext rc = fakeRequestContext(p);
 		replay(rc);
-		definitions.addDefinition(def, true, rc.getZone());
+		definitions.addDefinition(def, true);
 		
 		dc.setConfigDefinition(def);
 		dc.setConfigElement(def.getRootElement());
