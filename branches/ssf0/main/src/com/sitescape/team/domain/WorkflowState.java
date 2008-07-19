@@ -29,13 +29,11 @@
 package com.sitescape.team.domain;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.util.Validator;
