@@ -315,7 +315,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 	protected void fillChildElements(Element element, Integer type, Collection<Definition> definitions) {
 		//build sorted map of definitions
 		if (definitions == null) return;
-		if (definitions.isEmpty()) element.getParent().addAttribute("hasChildren", "false");
+		if (definitions.isEmpty()) element.addAttribute("hasChildren", "false");
 		List prunedDefs = new ArrayList();
 		for (Definition def:definitions) {
 			if (!type.equals(def.getType())) continue;
