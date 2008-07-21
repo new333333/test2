@@ -5866,51 +5866,7 @@ function ss_hideBucketText() {
 	}
 }
 
-function ss_clearSingleSelect(treeName, idChoicesInputId) {
-	window["ss_treeSelected_" + treeName] = null;
-	if (parent) {
-		// in accessible mode
-		parent.window["ss_treeSelected_" + treeName] = null;
-	}
-	var inputHiddenObj = document.getElementById(treeName + "_lastChoice");
-	if (!inputHiddenObj && parent) {
-		inputHiddenObj = parent.document.getElementById(treeName + "_lastChoice");
-	}
-	
-	if (parent) {
-		// in accessible mode only - unselect radio
-		if (inputHiddenObj) {
-			var selected = parent.document.getElementById("ss_tree_radio" + treeName + inputHiddenObj.name + inputHiddenObj.value);
-			if (!selected) {
-				var treeIframe = document.getElementById("ss_treeIframe");
-				if (treeIframe) {
-					var doc = treeIframe.document ? treeIframe.document : treeIframe.contentDocument;
-					var selected = doc.getElementById("ss_tree_radio" + treeName + inputHiddenObj.name + inputHiddenObj.value);
-				}
-			}
-			if (selected && selected.checked) {
-				selected.checked = false;
-			}			
-		}
-	}
-		
-	if (inputHiddenObj) {
-		inputHiddenObj.parentNode.removeChild(inputHiddenObj);
-	}
-	
-	return true;
-}
 
-function ss_clearMultiSelect(id) {
-	var inputHiddenObj = document.getElementById(id + "_lastChoice");
-	if (!inputHiddenObj && parent) {
-		// in accessible mode
-		inputHiddenObj = parent.document.getElementById(id + "_lastChoice");
-	}
-	if (inputHiddenObj) {
-		inputHiddenObj.parentNode.removeChild(inputHiddenObj);
-	}
-}
 function ss_checkTree(obj, elementId) {
 	if (obj.ownerDocument) {
 		var cDocument = obj.ownerDocument;
