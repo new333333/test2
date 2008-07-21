@@ -90,13 +90,13 @@ import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.file.WriteFilesException;
-import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.search.IndexSynchronizationManager;
-import com.sitescape.team.search.LuceneSession;
+import com.sitescape.team.search.LuceneReadSession;
+import com.sitescape.team.search.LuceneWriteSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
@@ -315,7 +315,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	    	if (checked.isEmpty()) return done;
 	
 			if (clearAll) {
-				LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+				LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession();
 				try {
 					luceneSession.clearIndex();
 	
@@ -753,7 +753,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   		logger.debug("Query is in executeSearchQuery: " + soQuery.toString());
 	   	}
 
-	   	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+	   	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
 	   	try {
 	        hits = luceneSession.search(soQuery,so.getSortBy(),offset,maxResults);
 	   	} catch(Exception e) {
@@ -788,7 +788,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	    	QueryBuilder qb = new QueryBuilder(true);
 			so = qb.buildQuery(qTree);
 		}
-    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
         try {
 	        tags = luceneSession.getTags(so!=null?so.getQuery():null, wordroot, type);
@@ -965,7 +965,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     		logger.debug("Query is: " + so.getQuery().toString());
     	}
     	
-    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
     	Hits hits = null;
         try {
@@ -1310,7 +1310,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	if(logger.isDebugEnabled()) {
     		logger.debug("Query is: " + soQueryFinal.toString());
     	}
-    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
     	List results = new ArrayList();
     	Hits hits = null;

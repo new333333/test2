@@ -101,7 +101,7 @@ import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.workflow.WorkflowUtils;
-import com.sitescape.team.search.LuceneSession;
+import com.sitescape.team.search.LuceneReadSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
@@ -601,7 +601,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	if(logger.isDebugEnabled())
     		logger.debug("Query is: " + so.getQueryString());
     	
-    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
     	//RemoteInStreamSession instreamSession = getInstreamSessionFactory().openSession();
         
         try {

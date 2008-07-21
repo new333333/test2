@@ -76,7 +76,7 @@ import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.IndexSynchronizationManager;
-import com.sitescape.team.search.LuceneSession;
+import com.sitescape.team.search.LuceneReadSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.search.filter.SearchFilter;
@@ -1091,7 +1091,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		logger.debug("Query is: " + soQuery.toString());
     	}
     	
-    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
         try {
 	        hits = luceneSession.search(soQuery, so.getSortBy(), searchOffset, maxResults);
