@@ -48,23 +48,8 @@ String wsTreeName = renderResponse.getNamespace();
 <span class="ss_bold"><ssf:nlt tag="portlet.workspace.select.workspace" /></span>
 <br>
 <script type="text/javascript">
-function <%= wsTreeName %>_showId(forum, obj) {
-	if (obj.ownerDocument) {
-		var cDocument = obj.ownerDocument;
-	} else if (obj.document) {
-		cDocument = obj.document;
-	}
-	if (cDocument) {
-		var r = cDocument.getElementById("ss_tree_radio<%= wsTreeName %>topWorkspace" + forum);
-		if (r) {
-			if (r.checked !== undefined) {
-				r.checked = true;
-			}
-			if (r.onclick !== undefined) {
-				r.onclick();
-			}
-		}
-	}
+function <%= wsTreeName %>_showId(id, obj) {
+	return ss_checkTree(obj, "ss_tree_radio<%= wsTreeName %>topWorkspace" + id);
 }
 </script>
 <c:set var="singleSelect" value=""/>

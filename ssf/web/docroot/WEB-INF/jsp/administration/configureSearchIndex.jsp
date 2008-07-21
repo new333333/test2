@@ -104,24 +104,8 @@ function ss_indexingDone() {
 }
 
 
-function <%= wsTreeName %>_showId(forum, obj, action) {
-	if (obj.ownerDocument) {
-		var cDocument = obj.ownerDocument;
-	} else if (obj.document) {
-		cDocument = obj.document;
-	}
-	if (cDocument) {
-		var r = cDocument.getElementById("ss_tree_checkbox<%= wsTreeName %>id" + forum);
-		if (r) {
-			if (r.checked !== undefined) {
-				r.checked = !r.checked;
-			}
-			if (r.onclick !== undefined) {
-				r.onclick();
-			}
-		}
-	}
-	return false;
+function <%= wsTreeName %>_showId(id, obj, action) {
+	return ss_checkTree(obj, "ss_tree_checkbox<%= wsTreeName %>id" + id);
 }
 
 </script>

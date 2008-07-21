@@ -52,6 +52,7 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
+import com.sitescape.team.web.tree.TreeHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 
@@ -120,26 +121,12 @@ public class ModifyBinderController extends AbstractBinderController {
 		   		}
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be a move
-				String destinationIdString = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
-				Long destinationId = null;
-				try {
-					destinationId = Long.valueOf(destinationIdString.replaceAll("destination" + WebKeys.URL_ID_CHOICES_SEPARATOR, "").trim()); 
-				} catch (NumberFormatException e) {
-					// nothing to do
-				}
+				Long destinationId = TreeHelper.getSelectedId(formData);
 				if (destinationId != null) getBinderModule().moveBinder(binderId, destinationId, null);
 				setupReloadOpener(response, binderId);
 			} else if (op.equals(WebKeys.OPERATION_COPY)) {
-				String destinationIdString = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
-				Long destinationId = null;
-				try {
-					destinationId = Long.valueOf(destinationIdString.replaceAll("destination" + WebKeys.URL_ID_CHOICES_SEPARATOR, "").trim()); 
-				} catch (NumberFormatException e) {
-					// nothing to do
-				}
-				if (destinationId != null) {
-					getBinderModule().copyBinder(binderId, destinationId, null);
-				} 
+				Long destinationId = TreeHelper.getSelectedId(formData);
+				if (destinationId != null) getBinderModule().copyBinder(binderId, destinationId, null);
 				setupReloadOpener(response, binderId);
 				
 			} else if (op.equals(WebKeys.OPERATION_DELETE)) {

@@ -298,7 +298,7 @@ public class TreeTag extends TagSupport {
 						sb.append("<input type=\"hidden\" id=\"" + treeName + "_lastChoice\" name=\"" + this.singleSelectName + "\" value=\"" + this.singleSelect + "\" />\n");
 					}
 					if (this.singleSelectName != null && !this.singleSelectName.equals("")) {
-						sb.append("<input type=\"hidden\" id=\"" + getIdChoicesInputId() + "\" name=\"" + WebKeys.URL_ID_CHOICES + "\" value=\"" + (this.singleSelect != null?(this.singleSelectName+this.singleSelect):"") + "\"/>\n");
+						sb.append("<input type=\"hidden\" id=\"" + getIdChoicesInputId() + "\" name=\"" + WebKeys.URL_ID_CHOICES + "\" value=\"" + (this.singleSelect != null?(this.singleSelectName+ WebKeys.URL_ID_CHOICES_SEPARATOR+this.singleSelect):"") + "\"/>\n");
 					}
 					
 				}
