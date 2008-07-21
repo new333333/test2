@@ -562,6 +562,12 @@ public class ViewEntryController extends  SAbstractController {
 			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY_ENTRY);
 			adapterUrl.setParameter(WebKeys.URL_ENTITY_ID, entryId);
 			toolbar.addToolbarMenuItem("8_reports", "", NLT.get("toolbar.reports.editHistory"), adapterUrl.toString(), qualifiers);
+			
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WORKFLOW_HISTORY);
+			adapterUrl.setParameter(WebKeys.URL_ENTITY_ID, entryId);
+			adapterUrl.setParameter(WebKeys.URL_FOLDER_ID, folderId);
+			toolbar.addToolbarMenuItem("8_reports", "", NLT.get("toolbar.reports.workflowHistory"), adapterUrl.toString(), qualifiers);
 		}
 
 
