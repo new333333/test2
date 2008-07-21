@@ -455,9 +455,6 @@ public class TreeTag extends TagSupport {
 						jspOut.print("ss_tree_checkbox" + treeName + mPrefix + s_id + "\" ");
 						jspOut.print(checked);
 						jspOut.print(" onclick=\"ss_saveTreeId(this, '" + treeName + "', '" + s_id + "', '" + getIdChoicesInputId() + "');");
-						if (this.multiSelect.contains(s_binderId)) {
-							jspOut.print(" ss_clearMultiSelect('" + treeName + mPrefix + s_id + "');");
-						}
 						jspOut.print("\"");
 						jspOut.print("/>");
 					}
@@ -474,7 +471,7 @@ public class TreeTag extends TagSupport {
 						jspOut.print(singleSelectName + "\" value=\""+s_binderId + "\" " + checked);
 						jspOut.print(" id=\"");
 						jspOut.print("ss_tree_radio" + treeName + this.singleSelectName + s_id + "\" ");
-						jspOut.print(" onclick=\"ss_saveTreeId(this, '" + treeName + "', '" + s_id + "', '" + getIdChoicesInputId() + "'); ss_clearSingleSelect('" + treeName +"');\"/>");
+						jspOut.print(" onclick=\"ss_saveTreeId(this, '" + treeName + "', '" + s_id + "', '" + getIdChoicesInputId() + "'); \"/>");
 					}
 					
 				}
