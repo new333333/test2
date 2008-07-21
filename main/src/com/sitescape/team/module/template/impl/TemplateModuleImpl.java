@@ -12,6 +12,7 @@ import org.apache.lucene.index.Term;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.Namespace;
 import org.dom4j.QName;
 import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.annotation.Required;
@@ -69,6 +70,9 @@ import com.sitescape.util.search.Constants;
 
 public class TemplateModuleImpl extends CommonDependencyInjection implements
 		TemplateService {
+	private QName schemaLocationAttr = new QName("schemaLocation", new Namespace("xsi", "http://www.w3.org/2001/XMLSchema-instance"));
+	private String schemaLocation = "http://www.icecore.org/template";
+	private String schemaVersion = "0.1";
 	private static final String[] defaultDefAttrs = new String[]{ObjectKeys.FIELD_INTERNALID, ObjectKeys.FIELD_ENTITY_DEFTYPE};
 
     private DefinitionModule definitionModule;
@@ -105,6 +109,18 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
    	@Required
    	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
 		this.transactionTemplate = transactionTemplate;
+	}
+   	
+	public void setSchemaLocationAttr(QName schemaLocationAttr) {
+		this.schemaLocationAttr = schemaLocationAttr;
+	}
+
+	public void setSchemaLocation(String schemaLocation) {
+		this.schemaLocation = schemaLocation;
+	}
+
+	public void setSchemaVersion(String schemaVersion) {
+		this.schemaVersion = schemaVersion;
 	}
 
 	private BinderProcessor loadBinderProcessor(Binder binder) {
@@ -432,9 +448,22 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 
 		ObjectBuilder.updateObject(config, updates);
 	}
+	
+	/**
+	 * Returns the schema location URI from the configured schema location and
+	 * version number.
+	 * 
+	 * @return the schema location URI from the configured schema location and
+	 *         version number.
+	 */
+	protected String getSchemaLocationUri() {
+    	return schemaLocation + "-" + schemaVersion;
+    }
+	
 	public Document getTemplateAsXml(TemplateBinder binder) {
 		Document doc = DocumentHelper.createDocument();
 		Element element = doc.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_TEMPLATE);
+		element.addAttribute(schemaLocationAttr, getSchemaLocationUri() + " " + getSchemaLocationUri());
 		getTemplateAsXml(binder, element);
 		return doc;
 	}

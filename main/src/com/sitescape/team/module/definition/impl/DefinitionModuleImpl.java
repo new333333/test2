@@ -49,7 +49,10 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.Namespace;
+import org.dom4j.QName;
 import org.dom4j.io.SAXReader;
+import org.dom4j.tree.DefaultAttribute;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -112,6 +115,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements
 	private Document definitionConfig;
 	private Element configRoot;
 	private DefinitionConfigurationBuilder definitionBuilderConfig;
+	private QName schemaLocationAttr = new QName("schemaLocation", new Namespace("xsi", "http://www.w3.org/2001/XMLSchema-instance"));
+	private String schemaVersion = "0.1";
+	private String schemaLocation = "http://www.icecore.org/definition";
 	private static final String[] defaultDefAttrs = new String[]{"internalId", "type"};
 	
 	protected BinderModule binderModule;
@@ -130,7 +136,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements
 		return workflowModule;
 	}
 	
-    public void afterPropertiesSet() {
+	public void setSchemaLocationAttr(QName schemaLocationAttr) {
+		this.schemaLocationAttr = schemaLocationAttr;
+	}
+	
+    public void setSchemaVersion(String schemaVersion) {
+		this.schemaVersion = schemaVersion;
+	}
+    
+	public void setSchemaLocation(String schemaLocation) {
+		this.schemaLocation = schemaLocation;
+	}
+	public void afterPropertiesSet() {
 		this.definitionConfig = definitionBuilderConfig.getAsMergedDom4jDocument();
 		this.configRoot = this.definitionConfig.getRootElement();
 		
@@ -462,6 +479,17 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements
     	def.setDefinition(doc);
 
     }
+    
+    /**
+	 * Returns the schema location URI from the configured schema location and
+	 * version number.
+	 * 
+	 * @return the schema location URI from the configured schema location and
+	 *         version number.
+	 */
+	protected String getSchemaLocationUri() {
+    	return schemaLocation + "-" + schemaVersion;
+    }
     	
     public Document getDefinitionAsXml(Definition def) {
     	//convert enty definitionId references to names
@@ -469,6 +497,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements
     	Document outDoc;
     	if (srcDoc != null) outDoc = (Document)srcDoc.clone();
     	else outDoc = DocumentHelper.createDocument();
+    	
+    	// add schemaLocation attribute
+    	outDoc.getRootElement().addAttribute(schemaLocationAttr, getSchemaLocationUri() + " " + getSchemaLocationUri());
     	
     	Set<Long> principalIds = new HashSet();
     	Set<String>definitionIds = new HashSet();
