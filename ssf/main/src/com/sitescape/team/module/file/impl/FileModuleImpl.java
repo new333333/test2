@@ -95,7 +95,7 @@ import com.sitescape.team.repository.RepositorySessionFactory;
 import com.sitescape.team.repository.RepositorySessionFactoryUtil;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.repository.archive.ArchiveStore;
-import com.sitescape.team.search.LuceneSession;
+import com.sitescape.team.search.LuceneReadSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.util.DatedMultipartFile;
@@ -931,7 +931,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		logger.debug("Query is: " + soQuery.toString());
     	}
     	
-    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
     	Hits hits = null;
         try {

@@ -39,11 +39,20 @@ package com.sitescape.team.search;
 public interface LuceneSessionFactory {
     
     /**
-     * Open a <code>LuceneSession</code> on the index corresponding to the
+     * Open a <code>LuceneReadSession</code> on the index corresponding to the
      * caller's context zone. 
      * 
      * @return
      * @throws LuceneException
      */
-    public LuceneSession openSession() throws LuceneException;
+    public LuceneReadSession openReadSession() throws LuceneException;
+    
+    /**
+     * Open a <code>LuceneWriteSession</code> on the index corresponding to the
+     * caller's context zone. 
+     * 
+     * @return
+     * @throws LuceneException
+     */
+    public LuceneWriteSession openWriteSession() throws LuceneException;
 }

@@ -36,17 +36,34 @@ import com.sitescape.team.util.Utils;
  */
 public abstract class AbstractLuceneSessionFactory implements LuceneSessionFactory {
 
-    public LuceneSession openSession() throws LuceneException {
-    	// We use zone key as the index name
-        return openSession(Utils.getZoneKey());
+    public LuceneReadSession openReadSession() throws LuceneException {
+        return openReadSession(getIndexName());
+    }    
+    
+    public LuceneWriteSession openWriteSession() throws LuceneException {
+        return openWriteSession(getIndexName());
     }    
     
     /**
-     * Open a <code>LuceneSession</code>.
+     * Open a <code>LuceneReadSession</code>.
      * 
      * @param indexName
      * @return
      * @throws LuceneException
      */
-    protected abstract LuceneSession openSession(String indexName) throws LuceneException;
+    protected abstract LuceneReadSession openReadSession(String indexName) throws LuceneException;
+    
+    /**
+     * Open a <code>LuceneWriteSession</code>.
+     * 
+     * @param indexName
+     * @return
+     * @throws LuceneException
+     */
+    protected abstract LuceneWriteSession openWriteSession(String indexName) throws LuceneException;
+    
+    protected String getIndexName() {
+    	// We use zone key as the index name
+    	return Utils.getZoneKey();
+    }
 }

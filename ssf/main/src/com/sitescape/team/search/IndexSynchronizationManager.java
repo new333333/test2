@@ -155,7 +155,7 @@ public class IndexSynchronizationManager {
         
         try {
             if(hasWorkToDo()) {                
-		        LuceneSession luceneSession = getInstance().getLuceneSessionFactory().openSession();
+		        LuceneWriteSession luceneSession = getInstance().getLuceneSessionFactory().openWriteSession();
 		        
 		        try {
 		            doCommit(luceneSession);
@@ -192,7 +192,7 @@ public class IndexSynchronizationManager {
             return false;
     }
     
-    private static void doCommit(LuceneSession luceneSession) {
+    private static void doCommit(LuceneWriteSession luceneSession) {
         
         Request request;
         Object obj;

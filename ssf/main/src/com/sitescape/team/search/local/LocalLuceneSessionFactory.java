@@ -37,14 +37,12 @@ import org.springframework.beans.factory.DisposableBean;
 import com.sitescape.team.lucene.LuceneHelper;
 import com.sitescape.team.search.AbstractLuceneSessionFactory;
 import com.sitescape.team.search.LuceneException;
+import com.sitescape.team.search.LuceneReadSession;
 import com.sitescape.team.search.LuceneSession;
+import com.sitescape.team.search.LuceneWriteSession;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.FileHelper;
 
-/**
- * @author Jong Kim
- *
- */
 public class LocalLuceneSessionFactory extends AbstractLuceneSessionFactory 
 implements DisposableBean, LocalLuceneSessionFactoryMBean {
     
@@ -52,7 +50,15 @@ implements DisposableBean, LocalLuceneSessionFactoryMBean {
 	private static ConcurrentHashMap<String,String> indexNameMap= new ConcurrentHashMap();
 	
 
-	public LuceneSession openSession(String indexName) {
+	public LuceneReadSession openReadSession(String indexName) {
+        return (LuceneReadSession) openSession(indexName, true);
+    }
+	
+	public LuceneWriteSession openWriteSession(String indexName) {
+        return (LuceneWriteSession) openSession(indexName, false);
+    }
+	
+	private LuceneSession openSession(String indexName, boolean read) {
 		String indexDirPath = getIndexDirPath(indexName);
 		
 		try {
@@ -64,8 +70,12 @@ implements DisposableBean, LocalLuceneSessionFactoryMBean {
 			indexNameMap.put(indexName, indexDirPath);
 			LuceneHelper.unlock(indexDirPath);
 		}
-        return new LocalLuceneSession(indexDirPath);
-    }
+
+		if(read)
+			return new LocalLuceneReadSession(indexDirPath);
+		else
+			return new LocalLuceneWriteSession(indexDirPath);
+	}
 	
 	public void setIndexRootDir(String indexRootDir) {
 		if(indexRootDir.endsWith(Constants.SLASH))
