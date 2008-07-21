@@ -287,7 +287,6 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 doAddTemplate(template, type, updates, zone, user);
 		 //setup after template is saved
 		 if (!template.isTeamMembershipInherited()) XmlUtils.getTeamMembersFromXml(template, config, this);
-		 XmlUtils.getDefinitionsFromXml(template, config, this);
 		 if (!template.isFunctionMembershipInherited()) XmlUtils.getFunctionMembershipFromXml(template, config, this);
 		 template.setEntryDef(template.getDefaultViewDef());
 		 Element dashboardConfig = (Element)config.selectSingleNode(ObjectKeys.XTAG_ELEMENT_TYPE_DASHBOARD);
