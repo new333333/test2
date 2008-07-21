@@ -285,6 +285,7 @@ public class WebKeys {
 	public static final String ACTION_ADD_MEETING="add_meeting";
 	public static final String ACTION_VIEW_CREDITS="view_credits";
 	public static final String ACTION_VIEW_EDITABLE_HISTORY="view_editable_history";
+	public static final String ACTION_VIEW_WORKFLOW_HISTORY="view_workflow_history";
 	
 	
 	//operations
