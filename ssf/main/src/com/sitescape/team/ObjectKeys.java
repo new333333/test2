@@ -491,6 +491,7 @@ public interface ObjectKeys {
     public static final String XTAG_WFS_DEFINITION="definition";
     public static final String XTAG_WFS_TIMER="timer";
     public static final String XTAG_WFS_THREAD="thread";
+    public static final String XTAG_WFS_PROCESS="process";
      
     //value of name= attribute XTAG_ELEMENT_TYPE_PROPERTY element XTAG_ELEMENT_TYPE_WORKFLOWRESPONSE
     public static final String XTAG_WFR_DEFINITION="definition";
