@@ -52,8 +52,12 @@ public abstract class Maybe<E> {
 	public abstract E orElse(Func0<E> alternative);
 	
 	/**
-	 * If this object is defined, return the <code>Maybe</code>-wrapped version.  Otherwise, return the result of {@link #maybe(Object)} for <code>alternative</code>
-	 * @param alternative - maybe an <code>E</code>
+	 * If this object is defined, return the <code>Maybe</code>-wrapped
+	 * version. Otherwise, return the result of {@link #maybe(Object)} for
+	 * <code>alternative</code>
+	 * 
+	 * @param alternative -
+	 *            maybe an <code>E</code>
 	 * @return this or <code>Maybe</code> the <code>alternative</code>
 	 */
 	public abstract Maybe<E> orMaybe(E alternative);
