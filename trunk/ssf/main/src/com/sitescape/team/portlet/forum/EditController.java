@@ -158,10 +158,9 @@ public class EditController extends SAbstractController {
 				prefs.setValue(WebKeys.PRESENCE_PREF_USER_LIST, LongIdUtil.getIdsAsString(request.getParameterValues("users")));
 				prefs.setValue(WebKeys.PRESENCE_PREF_GROUP_LIST, LongIdUtil.getIdsAsString(request.getParameterValues("groups"))); 			
 			} else if (ViewController.WORKSPACE_PORTLET.equals(displayType)) {
-				String id = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
-				id = id.replaceAll("topWorkspace" + WebKeys.URL_ID_CHOICES_SEPARATOR, "").trim();
-				if (Validator.isNotNull(id)) {
-					prefs.setValue(WebKeys.WORKSPACE_PREF_ID, id);
+				Long id = TreeHelper.getSelectedId(formData);
+				if (id != null) {
+					prefs.setValue(WebKeys.WORKSPACE_PREF_ID, id.toString());
 				}
 			}
 		} else if (ViewController.RELEVANCE_DASHBOARD_PORTLET.equals(displayType)) {

@@ -5911,17 +5911,23 @@ function ss_clearMultiSelect(id) {
 		inputHiddenObj.parentNode.removeChild(inputHiddenObj);
 	}
 }
-function ss_checkTree(obj, divName) {
+function ss_checkTree(obj, elementId) {
 	if (obj.ownerDocument) {
 		var cDocument = obj.ownerDocument;
 	} else if (obj.document) {
 		cDocument = obj.document;
 	}
 	if (cDocument) {
-		var r = cDocument.getElementById(divName);
+		var r = cDocument.getElementById(elementId);
 		if (r) {
-			if (r.checked !== undefined) {
-				r.checked = !r.checked;
+			if (r.type == 'radio') {
+				if (r.checked !== undefined) {
+					r.checked = true;
+				}
+			} else {
+				if (r.checked !== undefined) {
+					r.checked = !r.checked;
+				}
 			}
 			if (r.onclick !== undefined) {
 				r.onclick();
@@ -5930,6 +5936,7 @@ function ss_checkTree(obj, divName) {
 	}
 	return false;
 }
+
 function ss_saveTreeId(obj, treeName, placeId, idChoicesInputId) {
 	var idChoices = null;
 	var choicesAreFromParent = false;

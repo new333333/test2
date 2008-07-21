@@ -30,7 +30,7 @@ package com.sitescape.team.search.filter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +41,7 @@ import javax.portlet.PortletRequest;
 import org.dom4j.Document;
 
 import com.sitescape.team.module.definition.DefinitionModule;
-import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.tree.TreeHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 
 public class SearchFilterRequestParser {
@@ -391,26 +391,7 @@ public class SearchFilterRequestParser {
 		boolean searchSubfolders = PortletRequestUtils.getBooleanParameter(request, SearchFilterKeys.SearchSubfolders, false);
 		
 		if (foldersType.equals("selected")) {
-			List folderIds = new ArrayList();
-			Map formData = request.getParameterMap();
-			Iterator itFormData = formData.entrySet().iterator();
-			while (itFormData.hasNext()) {
-				Map.Entry me = (Map.Entry) itFormData.next();
-				String key = (String)me.getKey();
-				String[] values = (String[])me.getValue();
-				if (key.equals(WebKeys.URL_ID_CHOICES) && values != null) {
-					for (int i = 0; i < values.length; i++) {
-						String[] valueSplited = values[i].split("\\s");
-						for (int j = 0; j < valueSplited.length; j++) {
-							if (valueSplited[j] != null && valueSplited[j].indexOf(SearchFilterKeys.SearchFolders + WebKeys.URL_ID_CHOICES_SEPARATOR) > -1) {
-								String folderId = valueSplited[j].replaceFirst(SearchFilterKeys.SearchFolders + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
-								folderIds.add(folderId);
-							}
-						}
-					}
-				}
-			}
-
+			Collection<String> folderIds = TreeHelper.getSelectedStringIds(request.getParameterMap(), SearchFilterKeys.SearchFolders);
 			if (!searchSubfolders) {
 				searchFilter.addFolderIds(folderIds);
 			} else {
