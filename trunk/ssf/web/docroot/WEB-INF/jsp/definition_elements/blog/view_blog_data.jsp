@@ -76,5 +76,9 @@
 		
 	} else if (itemType.equals("event")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_event.jsp" %><%
+
+	} else if (itemType.equals("entryAttributes")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/entry_attributes_view.jsp" %><%
+
 	}
 %>
