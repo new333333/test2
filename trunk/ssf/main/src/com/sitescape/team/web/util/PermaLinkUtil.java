@@ -58,6 +58,16 @@ public class PermaLinkUtil {
 		return adapterUrl.toString();
 	}
 	
+	public static String getWapLandingPageURL(HttpServletRequest request, String userId) {
+		Long profileBinderId = getProfileModule().getProfileBinder().getId();
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, profileBinderId.toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId);
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.workspace.toString());
+		return adapterUrl.toString();
+	}
+	
 	private static ProfileModule getProfileModule() {
 		return (ProfileModule) SpringContextUtil.getBean("profileModule");
 	}

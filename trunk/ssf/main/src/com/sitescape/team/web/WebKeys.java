@@ -225,6 +225,7 @@ public class WebKeys {
     public static final String ACTION_ADD_TEAM_MEMBER = "add_team_member";
     public static final String ACTION_ADVANCED_SEARCH = "advanced_search";
     public static final String ACTION_IMPORT_FORUM_ENTRIES = "forum_import";
+    public static final String ACTION_MOBILE_AJAX = "__ajax_mobile";
     public static final String ACTION_MODIFY_BINDER = "modify_binder";
     public static final String ACTION_CLIPBOARD = "clipboard";
     public static final String ACTION_CONFIG_EMAIL="config_email";
