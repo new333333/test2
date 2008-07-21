@@ -5,7 +5,8 @@
 	    name="VideoFolder"
 	    caption="VideoFolder"
 	    type="5"
-	    definitionType="5">
+	    definitionType="5"
+	    databaseId="ff8081811b3ca719011b3cace9e6000f">
   <item name="folderForm" caption="__folder_form" type="form" display="form">
     <properties/>
     <item name="title" caption="__title" type="data" >
