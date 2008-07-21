@@ -24,6 +24,7 @@
 	<bean id="dashboardModifyController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ModifyDashboardController" />
 	<bean id="advancedSearchController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.AdvancedSearchController" />	
 	<bean id="entryVersionController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.EntryVersionController" />
+	<bean id="entryWorkflowHistoryController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.EntryWorkflowHistoryController" />
 
 	<bean id="profileModifyEntryController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.profile.ModifyEntryController" />
 	<bean id="folderModifyEntryController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.ModifyEntryController" />
@@ -127,6 +128,7 @@
 						<entry key="add_team_member"><ref bean="teamController"/></entry>					
 						<entry key="send_entry_email"><ref bean="sendEntryEmailController"/></entry>
 						<entry key="view_editable_history"><ref bean="entryVersionController"/></entry>
+						<entry key="view_workflow_history"><ref bean="entryWorkflowHistoryController"/></entry>						
 						<entry key="view_credits"><ref bean="creditsController"/></entry>
 						<entry key="schedule_synchronization"><ref bean="mirroredFolderSynchronizationController"/></entry>
 
