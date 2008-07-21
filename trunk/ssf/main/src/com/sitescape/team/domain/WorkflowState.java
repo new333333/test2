@@ -38,6 +38,7 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
+import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
 
 /**
@@ -192,7 +193,11 @@ public class WorkflowState extends ZonedObject {
 		if (getTimerId() != null)
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_WFS_TIMER, getTimerId());
 		if (!Validator.isNull(getThreadName())) 
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_WFS_THREAD, getThreadName());
+			element.addAttribute(ObjectKeys.XTAG_WFS_THREAD, getThreadName());
+		
+		String wfTitle = NLT.getDef(definition.getTitle());
+		element.addAttribute(ObjectKeys.XTAG_WFS_PROCESS, wfTitle);
+		
 		if (getWorkflowChange() != null) getWorkflowChange().addChangeLog(element, ObjectKeys.XTAG_WF_CHANGE);
 		return element;
     	
