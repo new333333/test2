@@ -115,6 +115,7 @@ public interface AdminModule {
      * @return ChangeLogs ordered by entity and operationDate
      */
     public List<ChangeLog> getChanges(EntityIdentifier entityIdentifier, String operation);
+    public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, String operation);
     /**
      * Get system functions
      * @return
