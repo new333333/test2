@@ -31,32 +31,33 @@
 <% // Discussion Workspace binder listing %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
-<div id="ss_dashboard_content" class="ss_doublecolumn">
+<div id="ss_dashboard_content">
 <div id="ss_folder_inset">
-<div id="ss_column_L" class="ss_colleft">
-<div class="ss_col1">
-<div id="ss_topic">
-<c:set var="binderCounter" value="0"/>
-<c:forEach var="binder" items="${ss_binders}">
-  <c:set var="binderCounter" value="${binderCounter + 1}"/>
-  <c:if test="${binder._entityType == 'workspace' || binder._entityType == 'profiles'}">
-    <c:forEach var="subBinder" items="${ss_bindersSubBinders[binder._docId]}">
-      <c:set var="binderCounter" value="${binderCounter + 1}"/>
-    </c:forEach>
-  </c:if>
-  
-</c:forEach>
+<table><tbody><tr><td valign="top">
 
-<c:set var="binderCounter2" value="0"/>
-<c:set var="column2Seen" value="0"/>
-<c:forEach var="binder" items="${ss_binders}">
-  <c:if test="${binderCounter2 >= (binderCounter/2) && column2Seen == '0'}">
-    <c:set var="column2Seen" value="1"/>
-    </div><!-- end of topic -->
-    </div><!-- end of Column 1 -->
-		<!-- Start Right Column -->
-      	<div id="ss_column_R" class="ss_col2">
-  </c:if>
+<div id="ss_topic">
+	<c:set var="binderCounter" value="0"/> <% // set binder counter to zero (first pass) %>
+   		<c:forEach var="binder" items="${ss_binders}">
+  			<c:set var="binderCounter" value="${binderCounter + 1}"/>
+  			<c:if test="${binder._entityType == 'workspace' || binder._entityType == 'profiles'}">
+    		<c:forEach var="subBinder" items="${ss_bindersSubBinders[binder._docId]}">
+      			<c:set var="binderCounter" value="${binderCounter + 1}"/>
+    		</c:forEach>
+  			</c:if>
+  
+   		</c:forEach>
+
+	<c:set var="binderCounter2" value="0"/>  <% // set binder counter to zero (second pass) %>
+	<c:set var="column2Seen" value="0"/>
+  <c:forEach var="binder" items="${ss_binders}">
+  		<c:if test="${binderCounter2 >= (binderCounter/2) && column2Seen == '0'}">
+    		<c:set var="column2Seen" value="1"/>
+    		</div><!-- end of topic -->
+    		</td><!-- end of Column 1 -->
+			<!-- Start Right Column -->
+      		<td valign="top">
+      		<div id="ss_topic">
+  		</c:if>
 
   <c:if test="${binder._entityType == 'workspace'}">
     <div id="ss_topic_title" class="ss_disc_th1">
@@ -76,14 +77,22 @@
       <span class="ss_title_th1">${binder.title}</span>
     </a>
     <br/>
-    </div><!-- end of title -->
+    </div><!-- end of ss_topic_title -->
     <div id="ss_topic_desc"><ssf:markup type="view" binderId="${binder._docId}">
 		<ssf:textFormat formatAction="limitedDescription" 
 		  textMaxWords="50">${binder._desc}</ssf:textFormat></ssf:markup></div>
     <c:forEach var="subBinder" items="${ss_bindersSubBinders[binder._docId]}">
+    <c:if test="${binderCounter2 >= (binderCounter/2) && column2Seen == '0'}">
+    		<c:set var="column2Seen" value="1"/>
+    		</div><!-- end of topic -->
+    		</td><!-- end of Column 1 -->
+			<!-- Start Right Column -->
+      		<td valign="top">
+      		<div id="ss_topic">
+  		</c:if>
       <c:if test="${subBinder._entityType == 'workspace' || subBinder._entityType == 'profiles'}">
-      <div id="ss_topic_title" class="ss_disc_th1">
-        <div style="padding-left:25px;">
+      <div id="ss_topic_title" class="ss_disc_sub_th1">
+        <div style="padding-left:10px;">
         
         <span>(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
         <a 
@@ -103,7 +112,7 @@
         </div><!-- end of title -->
       </c:if>
       <c:if test="${subBinder._entityType == 'profiles'}">
-        <div style="padding-left:25px;">
+        <div style="padding-left:10px;">
         <span style="padding-right:10px;">profiles</span>
         <span>(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
         <a href="<ssf:url action="view_profiles_listing" binderId="${subBinder._docId}"/>">
@@ -112,17 +121,17 @@
         <br/>
         </div>
       </c:if>
-      <c:if test="${subBinder._entityType == 'folder'}">
+     <c:if test="${subBinder._entityType == 'folder'}">
       <div id="ss_topic_thread">
-        <div style="padding-left:25px;">
-       <img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle" <ssf:alt tag="folder"/> /> 
-        <span>(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
-        <a href="<ssf:url action="view_folder_listing" binderId="${subBinder._docId}"/>">
-          <span>${subBinder.title}</span>
-        </a>
-        <br/>
+        <div style="padding-left:10px;">
+       		<img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle" <ssf:alt tag="folder"/>/> 
+        	<span>(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
+        	<a href="<ssf:url action="view_folder_listing" binderId="${subBinder._docId}"/>">
+          		<span>${subBinder.title}</span>
+        	</a>
+        	<br/>
         </div><!-- end of left padding -->
-        </div><!-- end of folder thread -->
+       </div><!-- end of folder thread -->
       </c:if>
       <c:set var="binderCounter2" value="${binderCounter2 + 1}"/>
     </c:forEach>
@@ -136,7 +145,7 @@
       <span class="ss_title_th1">${binder.title}</span>
     </a>
     <br/>
-    </div><!-- end of folder thread -->
+    </div><!-- end of ss_topic_title -->
     <div id="ss_topic_desc"><ssf:markup type="view" binderId="${binder._docId}">
 		<ssf:textFormat formatAction="limitedDescription" 
 		  textMaxWords="50">${binder._desc}</ssf:textFormat></ssf:markup></div>
@@ -145,11 +154,12 @@
   <br/>
   <c:set var="binderCounter2" value="${binderCounter2 + 1}"/>
 
-</c:forEach>
 
-</div><!-- end of ss_topic -->
-</div><!-- end of colright -->
-</div><!-- end of colleft -->
+</c:forEach>
+</div><!-- end of ss_topic (see top) -->
+</td>
+</tr>
+</tbody>
+</table>
 </div><!-- end of folder inset -->
-</div><!-- end of double col -->
-</div><!-- end of center -->
+</div><!-- end of dashboard content -->

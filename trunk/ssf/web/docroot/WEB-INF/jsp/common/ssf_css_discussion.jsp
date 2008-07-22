@@ -50,15 +50,15 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	/* holder for left column */
 	height:100%;
 	}	
-.ss_doublecolumn .ss_colleft{		/* right column width */
+.ss_doublecolumn .ss_dblcolleft{		/* right column width */
 	right:49%;		
 	}
-.ss_doublecolumn .ss_col1{
+.ss_doublecolumn .ss_dblcol1{
 	width:49%;						/* left column content width (column width minus left and right padding) */
 	left:50%;						/* (right column width) plus (left column padding) */
 	background-color:#fff;			/* left column background color */
 	}	
-.ss_doublecolumn .ss_col2{
+.ss_doublecolumn .ss_dblcol2{
 	width:49%;						/* right column content width (column width minus left and right padding) */
 	left:51%;						/* (right column column width) plus (left column left and right padding) plus (right column left padding) */
 	overflow:hidden;
@@ -76,8 +76,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 	#ss_diss_top
 	{
-		clear:both;
-		float: left;
+		/*clear:both;
+		float: left;*/
 		width: 100%;
 		color: #526394;
 		font-family: Arial, Helvetica, sans-serif;
@@ -130,7 +130,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 #ss_folder_inset
 	{
-		margin:0% 5%;
+		margin:0% 5% 0% 5%;
 		width:90%;
 		text-align:left;
 
@@ -187,6 +187,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-image: url("<html:rootPath/>images/pics/discussion/blue_topic.png");
 	background-repeat: no-repeat;
 	background-position: 1% 1%;
+	color: #00ADef;
+}
+.ss_disc_sub_th1
+{
+	background-image: url("<html:rootPath/>images/pics/discussion/blue_topic.png");
+	background-repeat: no-repeat;
+	background-position: 4% 1%!important;
 	color: #00ADef;
 }
 .ss_disc_folder_th1
@@ -333,37 +340,92 @@ a.ss_new_thread:hover {
 	}	
 
 /******* PAGINATION STYLES *************/
+.ss_pagination {
+	background-color: #CCDFDE !important;
+	height:38px !important;
+	margin-bottom: 5px;
+	}
+/***********This is the style sub-group for the "Go boxes" ***********/
 #ss_goBox {
+	height:38px !important;
 	<c:if test="<%= isIE %>">
- 	overflow:hidden;
- 	height:26px !important;
+ 	height:38px !important;
  	</c:if>
 	}
+.ss_pagination_goTable {
+	height:40px !important;
+/*	background-color: #CCDFDE !important;
+	white-space: nowrap !important; */
+}
+	
 .ss_paginationGo {
-	font-family: Arial, Helvetica, sans-serif;
 	font-size: ${ss_style_font_fineprint} !important;
-	padding-left: 5px;
+	padding-left: 0px;
 	padding-right: 10px;
 	white-space: nowrap;
 	padding-top: 0px;
-	height:26px !important;
 	<c:if test="<%= isIE %>">
-  		vertical-align:top;
-  		padding-top: 3px;
+ 		vertical-align:middle !important;
+ 		padding-top:0px;
  	</c:if>
 
 }
+.ss_page_IE {
+		<c:if test="<%= isIE %>">
+ 		vertical-align:middle !important;
+ 		padding-top:10px;
+ 	</c:if>
+ 	}
+.ss_pTB_no {				/* This greys out the Go Box if only one page */
+	font-family: Arial, Helvetica, sans-serif;
+	line-height: 10px;
+	font-size: ${ss_style_font_finestprint} !important;
+	width: 22px;
+	border-top-width: 0.8px !important;
+	border-right-width: 0.4px;
+	border-bottom-width: 0.4px;
+	border-left-width: 0.4px !important;
+	border-top-style: solid !important;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: solid !important;
+	border-top-color: #698F8E !important;
+	border-right-color: #698F8E;
+	border-bottom-color: #698F8E;
+	border-left-color: #698F8E !important;
+	padding-top: 1px;
+	margin-top: 2px;
+	margin-left: 5px;
+	background-color:#D9D9D9 !important;
+}
+/***********This is the style sub-group for Page N of M ***********/
+.ss_paginationDiv {
+	background-color: #E9F1F1 !important;
+	height:40px !important;
+}
+.ss_pagination_table {
+	height:38px !important;
+/*	white-space: nowrap !important; */
+	}
+.ss_pagination_arrows {
+	vertical-align: middle;
+	padding-top: 1px;
+	padding-left: 0px !important;
+	padding-right: 0px !important;
+	<c:if test="<%= isIE %>">
+  		padding-top: 4px;
+ 	</c:if>
+	}
 .ss_paginationFont {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: ${ss_style_font_fineprint} !important;
-	padding-left: 5px;
+	padding-left: 2px;
 	padding-right: 2px;
-	white-space: nowrap;
+/*	white-space: nowrap !important; */
 	padding-top: 2px;
-	height:26px !important;
+/*	height:40px !important;			*/
 	<c:if test="<%= isIE %>">
-  		vertical-align:top;
-  		padding-top: 6px;
+  		padding-top: 0px;
  	</c:if>
  	overflow:hidden;
 }
@@ -375,9 +437,10 @@ a.ss_new_thread:hover {
 .ss_pageActive{
 	color:#408080!important;
 	font-weight:normal;
-	padding:7px 4px 0px 6px;
-		<c:if test="<%= isIE %>">
-  		padding:6px 4px 0px 6px;
+	vertical-align:middle;
+	padding:3px 4px 0px 6px;
+	<c:if test="<%= isIE %>">
+  		padding:3px 4px 0px 6px;
  	</c:if>
 }
 .ss_paginationFont a:link,
@@ -413,49 +476,18 @@ a.ss_new_thread:hover {
 	margin-top: 2px;
 	margin-left: 5px;
 }
-.ss_pTB_no {
-	font-family: Arial, Helvetica, sans-serif;
-	line-height: 10px;
-	font-size: ${ss_style_font_finestprint} !important;
-	width: 22px;
-	border-top-width: 0.8px !important;
-	border-right-width: 0.4px;
-	border-bottom-width: 0.4px;
-	border-left-width: 0.4px !important;
-	border-top-style: solid !important;
-	border-right-style: none;
-	border-bottom-style: none;
-	border-left-style: solid !important;
-	border-top-color: #698F8E !important;
-	border-right-color: #698F8E;
-	border-bottom-color: #698F8E;
-	border-left-color: #698F8E !important;
-	padding-top: 1px;
-	margin-top: 2px;
-	margin-left: 5px;
-	background-color:#D9D9D9 !important;
-}
-.ss_pagination {
-	background-color: #CCDFDE !important;
-	height:26px !important;
-	margin-bottom: 5px;
+
+/***** FORMS ATTRIBUTES STYLES ******/
+
+.ss_box_delete {
+	background-color: #C90000!important;
+	border: 0.3px solid #3D3D3D!important;
 	}
-	
-.ss_pagination_table {
-	height:26px !important;
-	white-space: nowrap !important;
+.ss_attribute {
+	background-color: #DBEDFF!important;
+	border: 0.3px solid #999999!important;
+	margin-bottom: 5px;
+	margin-right: 3px;
 	}	
-.ss_pagination_arrows {
-	vertical-align: top;
-	padding-top: 5px;
-	}	
-.ss_pagination_goTable {
-	height:26px !important;
-	background-color: #CCDFDE !important;
-	white-space: nowrap !important;
-}
-.ss_paginationDiv {
-	background-color: #E9F1F1 !important;
-	height:26px !important;
-}
+
 /*************************************/

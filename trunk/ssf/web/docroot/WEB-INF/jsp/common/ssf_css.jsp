@@ -2160,7 +2160,7 @@ div.ss_sidebar_panel_featured {
   text-decoration:none;
 }
 
-/* TOOLBAR STYLES */
+/* TOOLBAR STYLES (change heights to 22px and no ka for boulder */
 
 .ss_sidebarImage {
 	background-image: url("<html:rootPath/>images/pics/navbar/bg_toolbar.gif");  
@@ -2170,14 +2170,14 @@ div.ss_sidebar_panel_featured {
 	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_lg.png"); 
 	background-position:top left;
 	background-repeat: no-repeat;
-	height:22px;
+	height:22px;		/* boulder 22px */
 	color:#FFF;
 	}
 .ss_sidebarSlidesm {
 	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_sm.png"); 
 	background-position:top left;
 	background-repeat: no-repeat;
-	height:22px;
+	height:22px;		/* boulder 22px */
 	color:#FFF;
 	}
 button { 
@@ -2243,7 +2243,7 @@ div.ss_actions_bar1_pane {
 	background-color: #AFAFAF;
 	border-bottom: 1px solid;
 	border-color: #FFF;
-	height: 22px;
+	height: 22px;		/* boulder 22px */
 	white-space: nowrap;
 }
 	

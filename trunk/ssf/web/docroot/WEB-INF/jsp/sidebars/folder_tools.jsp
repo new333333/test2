@@ -41,18 +41,7 @@
 	<li>
 	  <ssf:toolbar toolbar="${ssFolderActionsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
 	</li>
-	<li>
-		<c:if test="${ssConfigJspStyle != 'template'}">
-		<a href="<ssf:url ><ssf:param 
-			name="action" value="build_filter"/><ssf:param 
-			name="binderId" value="${ssBinder.id}"/><ssf:param 
-			name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
-		><span class="ss_tabs_title"><ssf:nlt tag="sidebar.tags.filter" text="Add a Filter"/></span></a>
-		</c:if>
-		<c:if test="${ssConfigJspStyle == 'template'}">
-		<span class="ss_tabs_title"><ssf:nlt tag="sidebar.tags.filter" text="Add a Filter"/></span>
-		</c:if>
-	</li>
+	
 	<li>
 
 		<% // configure columns area %>

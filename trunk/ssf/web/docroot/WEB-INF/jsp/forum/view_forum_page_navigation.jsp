@@ -37,14 +37,14 @@
 <c:if test="${ssConfigJspStyle != 'template'}">
 	  <ssHelpSpot helpId="workspaces_folders/menus_toolbars/more_folder_navigation" offsetX="-5" offsetY="3" 
 	    title="<ssf:nlt tag="helpSpot.moreFolderNavigation"/>"></ssHelpSpot>
-<div class="ss_pagination">
+<div class="ss_pagination ss_style">
 <table border="0" cellspacing="0px" cellpadding="0px" width="100%">
 		<tbody>
 		<tr>
-			<td width="20%" bgcolor="#FFFFFF" align="right" style="padding-right:10px; white-space:nowrap;">
+			<td width="12%" bgcolor="#FFFFFF" align="right" style="padding-right:10px;">
 
 		<% // configure columns area %>
-	 	[<a href="<ssf:url
+	 	<a href="<ssf:url
 			adapter="true" 
 			portletName="ss_forum" 
 			action="__ajax_request" 
@@ -53,7 +53,7 @@
 			<ssf:param name="binderId" value="${ssBinder.id}" />
 			<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
 			</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
-		    <span class="ss_tabs_title"><ssf:nlt tag="misc.configureColumns"/></span> </a>] 
+		    <span class="ss_fineprint">[<ssf:nlt tag="misc.configureColumns"/>]</span> </a> 
 
 			</td>
 			<td valign="top" align="right">
@@ -74,13 +74,14 @@
 				
 			<c:if test="${ssPageCount > '1.0'}">
 				<ssf:ifnotaccessible>
-			    	<ssf:nlt tag="entry.goTo"/> (page)
+			    	Go to EntryXX
 			    </ssf:ifnotaccessible>
 			    
 			    <ssf:ifaccessible>
-			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
+			    	<span><label for="entry.goTo"><ssf:nlt tag="entry.goTo"/></label></span>
 			    </ssf:ifaccessible>
-			    </td><td valign="middle" class="ss_paginationGo">
+			    </td>
+			    <td align="right" class="ss_paginationGo ss_page_IE">
 			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
 				<a href="javascript: ;" 
 				<ssf:title tag="entry.goTo" />
@@ -96,7 +97,8 @@
 			    <ssf:ifaccessible>
 			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
 			    </ssf:ifaccessible>
-			    </td><td valign="middle" class="ss_paginationGo">
+			    </td>
+			    <td align="right" valign="top" class="ss_paginationGo">
 			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_pTB_no" />&nbsp;
 				<a href="" 
 				<ssf:title tag="entry.goTo" />
@@ -109,8 +111,8 @@
 			</div>
 		
 			</td>
-			<td width="50%" valign="top" align="center">
-			<div width="100%" class="ss_paginationDiv">
+			<td width="50%" valign="top" align="center" class="ss_paginationDiv">
+			<div width="100%" >
 			<table valign="top" border="0" cellpadding="1" cellspacing="0" class="ss_pagination_table">
 				<tbody><tr>
 					<td bgcolor="#E9F1F1" class="ss_pagination_arrows">
@@ -190,8 +192,8 @@
 			<td valign="top">
 			<div id="ss_goBox">
 			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
-				<tbody><tr>
-				<td class="ss_paginationFont" valign="middle">
+				<tbody><tr><td><tr>
+				<td class="ss_paginationFont" valign="top">
 			<form name="ss_goToPageForm_${renderResponse.namespace}" id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
 			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
@@ -210,7 +212,8 @@
 			    <ssf:ifaccessible>
 			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
 			    </ssf:ifaccessible>
-			    </td><td valign="middle"  class="ss_paginationGo">
+			    </td></tr><tr>
+			    <td valign="top"  class="ss_paginationGo">
 			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
 				<a href="javascript: ;" 
 				<ssf:title tag="title.goto.page" />
@@ -226,7 +229,8 @@
 			    <ssf:ifaccessible>
 			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
 			    </ssf:ifaccessible>
-			    </td><td valign="middle" class="ss_paginationGo">
+			    </td></tr><tr>
+			    <td valign="top" class="ss_paginationGo">
 			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_pTB_no" />&nbsp;
 				<a href="" 
 				<ssf:title tag="title.goto.page" />
