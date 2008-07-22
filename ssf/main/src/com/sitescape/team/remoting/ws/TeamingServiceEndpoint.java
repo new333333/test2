@@ -35,6 +35,7 @@ import javax.xml.rpc.server.ServiceLifecycle;
 
 import com.sitescape.team.remoting.ws.model.Binder;
 import com.sitescape.team.remoting.ws.model.DefinitionCollection;
+import com.sitescape.team.remoting.ws.model.FolderCollection;
 import com.sitescape.team.remoting.ws.model.FolderEntry;
 import com.sitescape.team.remoting.ws.model.FolderEntryCollection;
 import com.sitescape.team.remoting.ws.model.FunctionMembership;
@@ -361,6 +362,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 
 	public void profile_modifyGroup(String accessToken, Group group) {
 		getProfileService().profile_modifyGroup(accessToken, group);
+	}
+	
+	public FolderCollection binder_getFolders(String accessToken, long binderId) {
+		return getBinderService().binder_getFolders(accessToken, binderId);
 	}
 
 }

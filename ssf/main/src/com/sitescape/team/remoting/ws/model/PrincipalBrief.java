@@ -43,6 +43,21 @@ public class PrincipalBrief implements Serializable {
 	private boolean reserved;
 	private String name;
 	
+	public PrincipalBrief() {}
+	
+	public PrincipalBrief(Long id, Long binderId, String definitionId, String title,
+			String emailAddress, String type, Boolean disabled, boolean reserved, String name) {
+		this.id = id;
+		this.binderId = binderId;
+		this.definitionId = definitionId;
+		this.title = title;
+		this.emailAddress = emailAddress;
+		this.type = type;
+		this.disabled = disabled;
+		this.reserved = reserved;
+		this.name = name;
+	}
+	
 	public Long getBinderId() {
 		return binderId;
 	}

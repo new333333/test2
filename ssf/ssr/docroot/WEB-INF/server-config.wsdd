@@ -53,6 +53,8 @@
 		<beanMapping qname="ns:Description" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Description"/>
 		<beanMapping qname="ns:Entry" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Entry"/>
 		<beanMapping qname="ns:Field" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Field"/>
+		<beanMapping qname="ns:FolderBrief" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.FolderBrief"/>
+		<beanMapping qname="ns:FolderCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.FolderCollection"/>
 		<beanMapping qname="ns:FolderEntry" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.FolderEntry"/>
 		<beanMapping qname="ns:FolderEntryBrief" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.FolderEntryBrief"/>
 		<beanMapping qname="ns:FolderEntryCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.FolderEntryCollection"/>

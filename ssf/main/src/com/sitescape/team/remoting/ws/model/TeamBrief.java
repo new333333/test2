@@ -34,12 +34,16 @@ public class TeamBrief implements Serializable {
 
 	private Long binderId;
 	private String title;
+	private Timestamp creation;
+	private Timestamp modification;
 	
 	public TeamBrief() {}
 	
-	public TeamBrief(Long binderId, String title) {
+	public TeamBrief(Long binderId, String title, Timestamp creation, Timestamp modification) {
 		setBinderId(binderId);
 		setTitle(title);
+		setCreation(creation);
+		setModification(modification);
 	}
 	
 	public Long getBinderId() {
@@ -53,6 +57,22 @@ public class TeamBrief implements Serializable {
 	}
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public Timestamp getCreation() {
+		return creation;
+	}
+
+	public void setCreation(Timestamp creation) {
+		this.creation = creation;
+	}
+
+	public Timestamp getModification() {
+		return modification;
+	}
+
+	public void setModification(Timestamp modification) {
+		this.modification = modification;
 	}
 	
 }

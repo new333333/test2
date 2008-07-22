@@ -29,6 +29,7 @@
 package com.sitescape.team.remoting.ws.service.binder;
 
 import com.sitescape.team.remoting.ws.model.Binder;
+import com.sitescape.team.remoting.ws.model.FolderCollection;
 import com.sitescape.team.remoting.ws.model.FunctionMembership;
 import com.sitescape.team.remoting.ws.model.TeamMemberCollection;
 
@@ -51,4 +52,6 @@ public interface BinderService {
 	public long binder_addBinder(String accessToken, Binder binder);
 	
 	public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships);
+	
+	public FolderCollection binder_getFolders(String accessToken, long binderId);
 }

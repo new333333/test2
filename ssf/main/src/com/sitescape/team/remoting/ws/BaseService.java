@@ -309,9 +309,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	}
 	
 	protected com.sitescape.team.remoting.ws.model.Timestamp toTimestampModel(HistoryStamp hs) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(hs.getDate());
-		return new Timestamp(hs.getPrincipal().getName(), cal);
+		return new Timestamp(hs.getPrincipal().getName(), hs.getDate());
 	}
 	
 	protected void fillDefinableEntityModelDefinable(final com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, final DefinableEntity entity) {
@@ -388,18 +386,18 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	}
 	
 	protected PrincipalBrief toPrincipalBrief(Principal principal) {
-		PrincipalBrief principalBrief = new PrincipalBrief();
-		principalBrief.setId(principal.getId());
-		principalBrief.setBinderId(principal.getParentBinder().getId());
-		principalBrief.setDefinitionId(principal.getEntryDef().getId());
-		principalBrief.setTitle(principal.getTitle());
-		principalBrief.setEmailAddress(principal.getEmailAddress());
-		principalBrief.setType(principal.getEntityType().toString());
-		principalBrief.setDisabled(Boolean.valueOf(principal.isDeleted()));
-		principalBrief.setReserved(principal.isReserved());
-		principalBrief.setName(principal.getName());
+		PrincipalBrief principalBrief = new PrincipalBrief(
+				principal.getId(),
+				principal.getParentBinder().getId(),
+				principal.getEntryDef().getId(),
+				principal.getTitle(),
+				principal.getEmailAddress(),
+				principal.getEntityType().toString(),
+				Boolean.valueOf(principal.isDisabled()),
+				principal.isReserved(),
+				principal.getName()
+				);
 		
 		return principalBrief;
-
 	}
 }
