@@ -745,6 +745,7 @@ public class WebKeys {
 	public static final String MY_TASKS = "ss_myTasks";
 	public static final String MY_TASKS_FOLDERS = "ss_myTasksFolders";
 	public static final String MY_TASKS_PAGE = "ss_myTasksPage";
+    public static final String MY_TAGS="ss_myTags"; 
     public static final String MY_TEAMS="ss_myTeams"; 
     public static final String NAMING_PREFIX="ssNamespace";
     public static final String NAVIGATION_LINK_TREE="ssNavigationLinkTree";

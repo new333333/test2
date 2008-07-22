@@ -94,6 +94,15 @@
 		</div>
 	</ssf:canvas>
 
+	<ssf:canvas id="relevanceTags" type="inline" styleId="ss_people">
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.myTags"/></div>
+	</ssf:param>
+		<div id="ss_dashboardMyTags${renderResponse.namespace}">
+		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tags.jsp" />
+		</div>
+	</ssf:canvas>
+
       </div><!-- end of col3 -->
     </div><!-- end of col left -->
   </div><!-- end of col mid -->

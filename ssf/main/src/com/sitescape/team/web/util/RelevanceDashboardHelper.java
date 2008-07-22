@@ -123,6 +123,7 @@ public class RelevanceDashboardHelper {
 			setupVisitorsBeans(bs, userWorkspace, model);
 			setupViewedEntriesBean(bs, userWorkspace, model);
 			setupDocumentsBeans(bs, userWorkspace, model);
+			setupMyTagsBeans(bs, model);
 		}
 	}
 	
@@ -682,6 +683,12 @@ public class RelevanceDashboardHelper {
 		if (hotEntries != null && hotEntries.size() > pageStart) {
 			model.put(WebKeys.WHATS_HOT, hotEntries.subList(pageStart, hotEntries.size()));
 		}
+	}
+	
+	public static void setupMyTagsBeans(AllModulesInjected bs, Map model) {
+		String findType = WebKeys.FIND_TYPE_PERSONAL_TAGS;
+		Collection myTags = bs.getBinderModule().getSearchTags("", findType);
+		model.put(WebKeys.MY_TAGS, myTags);
 	}
 	
 }

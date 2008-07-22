@@ -31,35 +31,14 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_today">
-<div id="ss_nextPage" align="right">
-<c:if test="${ss_visitorsPage > '0'}">
-<a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'visitors', '${ss_visitorsPage}', 'previous', 'ss_dashboardVisitors', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-  title="<ssf:nlt tag="general.previousPage"/>"/>
-</a>
-</c:if>
-<c:if test="${empty ss_visitorsPage || ss_visitorsPage <= '0'}">
-<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
-</c:if>
-<c:if test="${!empty ss_visitors}">
-<a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'visitors', '${ss_visitorsPage}', 'next', 'ss_dashboardVisitors', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-  title="<ssf:nlt tag="general.nextPage"/>"/>
-</a>
-</c:if>
-<c:if test="${empty ss_visitors}">
-<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
-</c:if>
-</div>
 
-  <c:forEach var="user" items="${ss_visitors}">
-    <div id="ss_col3_para" >
-	  <span><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
-	  <c:if test="${!empty user.status}">
-		<div id="ss_im_status"><em>${user.status}</em></div>
-	  </c:if>
-    </div><!-- end of para -->
-  </c:forEach>
+  <div id="ss_col3_para" >
+    <c:forEach var="tag" items="${ss_myTags}">
+	  <a href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+			name="searchPersonalTags_hidden" value="${tag.ssTag}"/><ssf:param 
+			name="operation" value="ss_searchResults"/><ssf:param 
+			name="tabTitle" value="ss_tagPlaceHolder"/><ssf:param 
+			name="newTab" value="1"/></ssf:url>">${tag.ssTag}</a><br/>
+    </c:forEach>
+  </div><!-- end of para -->
 </div><!-- end of today -->
