@@ -178,6 +178,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				Calendar c1 = Calendar.getInstance();
 				c1.setTime(df.parse((String)args[7]));
 				wsClient.fetchAndPrintACK("TeamingService", "migration_uploadFolderFileStaged", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], args[6], c1}, null);
+			} else if(args[0].equals("getFolders")) {
+				wsClient.fetchAndPrintACK("TeamingService", "binder_getFolders", new Object[] {null, Long.parseLong(args[1])});
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -231,6 +233,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("migrateFile <folder id> <entry id> <fileDataFieldName> <filename> <modifier> <modDate>");
 		System.out.println("migrateFileStaged <folder id> <entry id> <fileDataFieldName> <fileName> <stagedFileRelativePath> <modifier> <modDate>");
 		System.out.println("synchronize <mirrored folder id>");
+		System.out.println("getFolders <binder id>");
 		
 		// an example of addZoneUnderPortal invocation - 
 		// addZoneUnderPortal fake-bestbuy www.fake-bestbuy.com mail.fake-bestbuy.com

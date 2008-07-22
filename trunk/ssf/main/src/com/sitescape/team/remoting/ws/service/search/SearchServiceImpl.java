@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.remoting.ws.service.search;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,6 +39,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -51,10 +53,11 @@ import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.report.ReportModule.ActivityInfo;
+import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
 import com.sitescape.team.remoting.ws.model.TeamBrief;
 import com.sitescape.team.remoting.ws.model.TeamCollection;
-import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.remoting.ws.model.Timestamp;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.team.web.tree.WebSvcTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
@@ -216,10 +219,17 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());
 		
 		List<TeamBrief> teamList = new ArrayList<TeamBrief>();
-		for(Map binder : myTeams) {
-			String binderIdStr = (String) binder.get(Constants.DOCID_FIELD);
-			Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
-			teamList.add(new TeamBrief(binderId, (String) binder.get(Constants.TITLE_FIELD)));
+		try {
+			for(Map binder : myTeams) {
+				String binderIdStr = (String) binder.get(Constants.DOCID_FIELD);
+				Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
+				teamList.add(new TeamBrief(binderId, (String) binder.get(Constants.TITLE_FIELD),
+						new Timestamp((String) binder.get(Constants.MODIFICATION_NAME_FIELD), DateTools.stringToDate((String) binder.get(Constants.MODIFICATION_DATE_FIELD))),
+						new Timestamp((String) binder.get(Constants.CREATOR_NAME_FIELD), DateTools.stringToDate((String) binder.get(Constants.CREATION_DATE_FIELD)))));
+			}
+		}
+		catch(ParseException e) {
+			throw new RemotingException(e);
 		}
 	
 		TeamBrief[] array = new TeamBrief[teamList.size()];

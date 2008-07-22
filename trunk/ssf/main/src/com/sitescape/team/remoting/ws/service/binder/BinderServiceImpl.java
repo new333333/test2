@@ -45,10 +45,13 @@ import org.dom4j.Element;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
+import com.sitescape.team.remoting.ws.model.FolderBrief;
+import com.sitescape.team.remoting.ws.model.FolderCollection;
 import com.sitescape.team.remoting.ws.model.FunctionMembership;
 import com.sitescape.team.remoting.ws.model.PrincipalBrief;
 import com.sitescape.team.remoting.ws.model.TeamMemberCollection;
@@ -57,6 +60,8 @@ import com.sitescape.team.remoting.ws.util.ModelInputData;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
+import com.sitescape.team.web.tree.WebSvcTreeHelper;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 
 public class BinderServiceImpl extends BaseService implements BinderService, BinderServiceInternal {
 	public long binder_addBinderWithXML(String accessToken, long parentId, String definitionId, String inputDataAsXML)
@@ -203,5 +208,73 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		}
 		getAdminModule().setWorkAreaFunctionMembershipInherited(binder, false); 
 		getAdminModule().setWorkAreaFunctionMemberships(binder, wfms);
+	}
+	
+	public FolderCollection binder_getFolders(String accessToken, long binderId) {
+		// Cheap implementation - copied mostly from search_getWorkspaceTreeAsXML
+		
+		com.sitescape.team.domain.Binder binder = null;
+		
+		if(binderId == -1) {
+			binder = getWorkspaceModule().getTopWorkspace();
+		} else {
+			binder = getBinderModule().getBinder(new Long(binderId));
+		}
+
+		Document tree;
+		if (binder instanceof Workspace) {
+			tree = getBinderModule().getDomBinderTree(binder.getId(), 
+					new WsDomTreeBuilder(binder, true, this, new WebSvcTreeHelper(), ""), 1);
+		} 
+		else {
+			tree = getBinderModule().getDomBinderTree(binder.getId(), 
+					new WsDomTreeBuilder(binder, false, this, new WebSvcTreeHelper(), ""), 1);
+		}
+
+		return getFolderCollectionFromDomBinderTree(binderId, tree);
+	}
+	
+	protected FolderCollection getFolderCollectionFromDomBinderTree(Long binderId, Document tree) {
+		List children = tree.getRootElement().selectNodes("//child[@type='folder']");
+		FolderBrief[] folders = new FolderBrief[children.size()];
+		String value;
+		Long id;
+		String image;
+		String imageClass;
+		String action;
+		Boolean displayOnly;
+		String permaLink;
+		String rss;
+		String ical;
+		Element child;
+		for(int i = 0; i < folders.length; i++) {
+			child = (Element) children.get(i);
+			id = null;
+			image = null;
+			imageClass = null;
+			action = null;
+			displayOnly = null;
+			permaLink = null;
+			rss = null;
+			ical = null;
+			value = child.attributeValue("id", "");
+			if(!value.equals("")) id = Long.valueOf(value);
+			value = child.attributeValue("image", "");
+			if(!value.equals("")) image = value;
+			value = child.attributeValue("imageClass", "");
+			if(!value.equals("")) imageClass = value;
+			value = child.attributeValue("action", "");
+			if(!value.equals("")) action = value;
+			value = child.attributeValue("displayOnly", "");
+			if(!value.equals("")) displayOnly = Boolean.valueOf(value);
+			value = child.attributeValue("permaLink", "");
+			if(!value.equals("")) permaLink = value;
+			value = child.attributeValue("rss", "");
+			if(!value.equals("")) rss = value;
+			value = child.attributeValue("ical", "");
+			if(!value.equals("")) ical = value;
+			folders[i] = new FolderBrief(id, image, imageClass, action, displayOnly, permaLink, rss, ical);
+		}
+		return new FolderCollection(binderId, folders);	
 	}
 }
