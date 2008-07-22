@@ -90,7 +90,6 @@ import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.file.WriteFilesException;
-import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.ObjectBuilder;
@@ -477,7 +476,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		checkAccess(binder, BinderOperation.setProperty);
 		binder.setProperty(property, value);	
    }    
-   //inside write transaction    
+	//inside write transaction    
     public Set<Exception> deleteBinder(Long binderId) {
     	return deleteBinder(binderId, true, null);
     }

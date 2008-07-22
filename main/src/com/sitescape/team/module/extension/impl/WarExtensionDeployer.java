@@ -27,11 +27,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.context.request.BaseSessionContext;
+import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.module.definition.DefinitionService;
 import com.sitescape.team.module.extension.ExtensionDeployNotifier;
 import com.sitescape.team.module.extension.ExtensionDeployer;
 import com.sitescape.team.module.template.TemplateService;
 import com.sitescape.team.module.zone.ZoneModule;
+import com.sitescape.team.util.SZoneConfig;
 
 /**
  * @author dml
@@ -78,6 +82,10 @@ public class WarExtensionDeployer<S extends ExtensionDeployNotifier<S>>
 	 */
 	public void deploy(final File extension) {
 		log.info("Deploying new extension from {}", extension.getPath());
+		RequestContextHolder.setRequestContext(new RequestContext(SZoneConfig
+				.getDefaultZoneName(), SZoneConfig.getAdminUserName(SZoneConfig
+				.getDefaultZoneName()), new BaseSessionContext()));
+		RequestContextHolder.getRequestContext().resolve();
 		JarInputStream warIn;
 		try {
 			warIn = new JarInputStream(new FileInputStream(extension), true);
@@ -173,7 +181,9 @@ public class WarExtensionDeployer<S extends ExtensionDeployNotifier<S>>
 				log.warn("Unable to close extension war at " + extension.getPath(), e);
 				return;
 			}
+			RequestContextHolder.clear();
 		}
+		log.info("Extension deployed successfully from {}", extension.getPath());
 	}
 
 	@Autowired
