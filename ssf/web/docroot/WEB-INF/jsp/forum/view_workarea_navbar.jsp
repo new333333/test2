@@ -226,7 +226,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
     		src="<html:rootPath/>images/pics/masthead/masthead_printer.png" width="23" height="21" align="right" /></a></td>
 			<td><a href="javascript: ss_helpSystem.run();"><img border="0" style="margin-left: 10px; margin-right: 10px;" title="<ssf:nlt tag="navigation.help"/>"
     		<ssf:alt tag="navigation.help"/> src="<html:rootPath/>images/pics/masthead/mastheadHelp.png" width="19" height="21" hspace="2" /></a></td>
-			</tr></tbody></table>
+			</tr></tbody></table><!-- boulder: print button and help button no ka and boulder is png change h & w on printer button -->
 			
         </td>
       </tr>
@@ -275,7 +275,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
    </td>
   </tr>
   <tr>
-    <td bgcolor="#5A9A98">
+    <td bgcolor="#5A9A98"> <!-- Sets background for search area table kablink = #449EFF kablink blue = #6BC5CE -->
     <!-- Start of search area with find boxes -->
     <!-- Beginning of Search Buttons -->
     <table align="center" border="0" cellpadding="0" cellspacing="0" width="90%">
@@ -353,7 +353,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			
 			<img title="<ssf:nlt tag="alt.search"/>"
 			<ssf:alt tag="alt.search"/> src="<html:rootPath/>images/pics/masthead/search.png" width="19" height="20" border="0" align="absmiddle" />
-		</a>
+		</a><!-- kablink: sarch_ka.png -->
 				<input type="hidden" name="searchBtn" value="searchBtn"/>
 				<input type="hidden" name="quickSearch" value="true"/>					
 				<input type="hidden" name="operation" value="ss_searchResults"/>
@@ -398,7 +398,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 					<input type="hidden" name="searchBtn" value="searchBtn"/>
 					<input type="hidden" name="quickSearch" value="true"/>					
 					<input type="hidden" name="operation" value="ss_searchResults"/>
-		</form>
+		</form><!-- kablink: search_ka.png -->
      </div>
      
 </ssf:ifaccessible>
@@ -580,7 +580,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			      	action="view_ws_listing"
 			      	binderId="${ssUser.workspaceId}"/>"
               	><img src="<html:rootPath/>images/pics/masthead/ss_banner_guy.png" width="30" height="34" border="0" align="absmiddle" />&nbsp;&nbsp;<ssf:nlt tag="navigation.myWorkspace"/></a> </td>
-          </tr>
+          </tr><!-- kablink: ss_banner_guy_ka.gif -->
         </tbody>
     </table></td>
   </tr>

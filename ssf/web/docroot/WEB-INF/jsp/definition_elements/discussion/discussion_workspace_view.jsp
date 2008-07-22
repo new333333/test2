@@ -42,7 +42,7 @@
        value="${ssDefinitionEntry.description.text}" escapeXml="false"/></ssf:markup></span>
   </div><!-- end of box -->
 </div><!-- end of top -->
-<br/>
+
 
 
 	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
