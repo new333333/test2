@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.module.definition.DefinitionModule;
@@ -165,6 +166,13 @@ public class WarExtensionDeployerTest<S extends ExtensionDeployNotifier<S>>
 	public void overwritesOldDefinitions() throws Exception {
 		deployer.deploy(loader.getResource(testWar).getFile());
 		deployer.deploy(loader.getResource(testWar).getFile());		
+	}
+	
+	@Test
+	public void overwritesOldTemplates() throws Exception {
+		RequestContextHolder.clear();
+		deployer.deploy(loader.getResource(testWar).getFile());
+		deployer.deploy(loader.getResource(testWar).getFile());
 	}
 	
 	private static class ExtDirWalker extends DirectoryWalker {
