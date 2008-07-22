@@ -21,7 +21,7 @@ public class DefinitionModuleImplTest extends AbstractTestBase {
 
 	private final String name = RandomStringUtils.randomAlphabetic(16);
 	private final String schemaLoc = "xsi:schemaLocation=\"http://www.icecore.org/definition-0.1\n"
-			+ "definition_builder_config.xsd\"\n";
+			+ "definition_builder_config-0.1.xsd\"\n";
 
 	@Autowired
 	private DefinitionModule definitions;

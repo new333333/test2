@@ -54,8 +54,8 @@ public class WarExtensionDeployer<S extends ExtensionDeployNotifier<S>>
 	private String schemaLocationAttribute = "schemaLocation";
 	private QName schemaAttribute = new QName(schemaLocationAttribute,
 			schemaInstanceNamespace);
-	private String definitionsSchemaNamespace = "http://www.icecore.org/definition";
-	private String templateSchemaNamespace = "http://www.icecore.org/template";
+	private String definitionsSchemaNamespace = "http://kablink.org/definition";
+	private String templateSchemaNamespace = "http://kablink.org/template";
 	private String extensionAttr = ObjectKeys.XTAG_ATTRIBUTE_EXTENSION;
 	private String infPrefix = "WEB-INF";
 	private File extensionBaseDir;

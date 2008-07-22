@@ -28,7 +28,7 @@ public class TemplateModuleImplTest extends AbstractTestBase {
 	
 	private static final String name = "TemplateModuelImplTest-4778106701760087515L";
 	private static final String schemaLocationAttr = "xsi:schemaLocation='http://www.icecore.org/template-0.1\n"
-			+ "template.xsd'\n"; 
+			+ "template-0.1.xsd'\n"; 
 	private SAXReader reader = new SAXReader(false);
 	
 	@Autowired
