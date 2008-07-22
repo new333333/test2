@@ -46,19 +46,21 @@ public class TreeHelper {
 
 		//Get the binders for reporting
 		String[] values = (String[])params.get(WebKeys.URL_ID_CHOICES);
-		for (int i = 0; i < values.length; i++) {
-			String[] valueSplited = values[i].split("\\s");
-			for (int j = 0; j < valueSplited.length; j++) {
-				if (Validator.isNotNull(valueSplited[j])) {
-					String id=null;
-					if (Validator.isNotNull(prefix)) {
-						if (!valueSplited[j].startsWith(prefix + WebKeys.URL_ID_CHOICES_SEPARATOR)) continue;
-						id = valueSplited[j].replace(prefix + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
-					} else {
-						//just look for separator
-						id = valueSplited[j].substring(valueSplited[j].indexOf(WebKeys.URL_ID_CHOICES_SEPARATOR) + 1);
+		if (values != null) {
+			for (int i = 0; i < values.length; i++) {
+				String[] valueSplited = values[i].split("\\s");
+				for (int j = 0; j < valueSplited.length; j++) {
+					if (Validator.isNotNull(valueSplited[j])) {
+						String id=null;
+						if (Validator.isNotNull(prefix)) {
+							if (!valueSplited[j].startsWith(prefix + WebKeys.URL_ID_CHOICES_SEPARATOR)) continue;
+							id = valueSplited[j].replace(prefix + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
+						} else {
+							//just look for separator
+							id = valueSplited[j].substring(valueSplited[j].indexOf(WebKeys.URL_ID_CHOICES_SEPARATOR) + 1);
+						}
+						ids.add(id);
 					}
-					ids.add(id);
 				}
 			}
 		}

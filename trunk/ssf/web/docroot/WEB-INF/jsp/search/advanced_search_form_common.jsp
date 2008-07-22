@@ -284,7 +284,7 @@ var ss_searchBinderUrl = "<ssf:url adapter="true" portletName="ss_forum" actionU
 	</div>
 <script type="text/javascript">
 function ss_showAdvancedSearchForm() {
-	ss_showAdditionalOptions('ss_searchForm_additionalFilters', 'ss_search_more_options_txt_${ssNamespace}', '${ssNamespace}');
+	//ss_showAdditionalOptions('ss_searchForm_additionalFilters', 'ss_search_more_options_txt_${ssNamespace}', '${ssNamespace}');
 }
 ss_createOnLoadObj("ss_showAdvancedSearchForm", ss_showAdvancedSearchForm);
 
