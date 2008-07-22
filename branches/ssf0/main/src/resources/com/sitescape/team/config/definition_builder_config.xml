@@ -10,7 +10,7 @@
 -->
 
 <!-- Definitions -->
-<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="classpath:/com/sitescape/team/dtd/definition_builder_config.xsd">
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="classpath:/com/sitescape/team/dtd/definition_builder_config-0.1.xsd">
 	<definition name="entryTypeDefinition" definitionType="1" caption="__entry_definitions" canBeDeleted="false">		
 		<operations>
 			<operation name="addDefinition" item="entryType" caption="__add_a_new_entry_definition" />

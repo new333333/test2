@@ -45,7 +45,7 @@ public class DisplayConfigurationTest<S extends ExtensionDeployNotifier<S>> exte
 		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 		"<definition xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
 					"xsi:schemaLocation=\"http://www.icecore.org/definition-0.1\n" + 
-										"definition_builder_config.xsd\"\n" +
+										"definition_builder_config-0.1.xsd\"\n" +
 					"caption=\"WarExtensionDeployerTest-2300224201166748020L\"\n" +
 					"type=\"1\"\n" +
 					"extension=\"" + name + "\">\n" +
