@@ -327,23 +327,6 @@
         <resource-bundle>content.welcome</resource-bundle>
     </portlet>
 
-     <portlet>
-        <description xml:lang="en">ICEcore Migration</description>
-        <portlet-name>ss_migration</portlet-name>
-        <display-name xml:lang="en">Migration</display-name>
-        <portlet-class>com.sitescape.team.spring.web.portlet.DispatcherPortlet</portlet-class>
-		<init-param>
-			<name>contextConfigLocation</name>
-			<value>/WEB-INF/context/portlet/migration.xml</value>
-		</init-param>
-        <expiration-cache>300</expiration-cache>
-        <supports>
-            <mime-type>text/html</mime-type>
-            <portlet-mode>view</portlet-mode>
-        </supports>
-        <resource-bundle>content.migration</resource-bundle>
-    </portlet>
-
     <user-attribute>
         <description xml:lang="en">User First Name</description>
         <name>user.name.given</name>
