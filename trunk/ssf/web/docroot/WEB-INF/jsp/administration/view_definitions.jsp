@@ -135,6 +135,7 @@ name="value" value="${ssBinder.title}"/></ssf:nlt></span>
 	method="post" name="${renderResponse.namespace}addfm">
 
 <br>
+<c:if test="${!empty ssBinderId}">
 		<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
 		  sourceDocument="${ssConfigDefinition}"
 		  configDocument="${ssConfigDefinition}"
@@ -142,6 +143,15 @@ name="value" value="${ssBinder.title}"/></ssf:nlt></span>
 		  itemName="${itemName}"
 		  owningBinderId="${ssBinderId}" 
 		/>
+</c:if>
+<c:if test="${empty ssBinderId}">
+		<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
+		  sourceDocument="${ssConfigDefinition}"
+		  configDocument="${ssConfigDefinition}"
+		  option="properties" 
+		  itemName="${itemName}"
+		/>
+</c:if>
 <br>		
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
 &nbsp;&nbsp;&nbsp;
