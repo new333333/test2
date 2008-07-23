@@ -899,7 +899,7 @@ function ss_showDashboardPage(binderId, type, op, currentPage, direction, divId,
 		self.location.href = url;
 	} else {
 		ss_setupStatusMessageDiv();
-		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, operation:"get_dashboard_page", operation2:op, pageNumber:page, direction:direction}, "__ajax_relevance");
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, operation:"get_dashboard_page", operation2:op, pageNumber:page, direction:direction, namespace:namespace}, "__ajax_relevance");
 		ss_fetch_url(url, ss_showDashboardPageDiv, divId+namespace)
 	}
 }
@@ -3650,7 +3650,7 @@ function ss_setWindowHighWaterMark(height) {
 
 var ss_loadEntryInPlaceLastRowObj = null;
 var ss_loadEntryInPlaceLastId = null;
-function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboard, hoverOverId) {
+function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType, isDashboard, hoverOverId) {
 	if (ss_userDisplayStyle == "accessible") {
 		self.location.href = obj.href;
 		return false;
@@ -3697,7 +3697,7 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 	iframeCol.setAttribute("colSpan", count);
 	iframeRow.appendChild(iframeCol);
 	//Draw Iframe for discussion thread
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, entryId:id, entityType:entityType, entryViewType:"entryView", entryViewStyle:"inline", namespace:namespace}, "view_folder_entry");
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, entryId:id, entityType:entityType, entryViewType:"entryView", entryViewStyle:"inline", entryViewStyle2:viewType, namespace:namespace}, "view_folder_entry");
 	iframeCol.innerHTML = '<div id="ss_entry_iframeDiv'+id+random+'" style="width:'+(ss_getObjectWidth(tableDivObj)-50)+'px;">' +
 		'<iframe id="ss_entry_iframe'+id+random+'" name="ss_entry_iframe'+id+random+'"' +
     	' src="'+url+'"' +
