@@ -149,10 +149,10 @@ public class BuildDefinitionDivs extends TagSupport {
 				buildDivs(configRoot, root, sb, hb, "");
 				buildDivs(root, root, sb, hb, "item");
 				buildDefaultDivs(sb, hb);
-				jspOut.print(hb.toString());
 			} else {	
 				buildDivs(root, root, sb, hb, "item");
 			}
+			jspOut.print(hb.toString());
 			jspOut.print(sb.toString());
 		}
 	    catch(Exception e) {
@@ -254,7 +254,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			buildPropertiesDivs(root, sourceRoot, sb, hb, filter);
 			
 			//Build the help divs
-			buildHelpDivs(root, sourceRoot, sb, hb, filter);
+//			buildHelpDivs(root, sourceRoot, sb, hb, filter);
 
 			//See if this element has any sub elements to do
 			if (Validator.isNull(this.option)) {

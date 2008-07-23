@@ -2188,6 +2188,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/expandable_div.jsp" />
 		</jsps>
+		<help>ihelp.designers.expand_area</help>
 		<notify velocity="expandable_div.vm" />
 	</item>
 		
@@ -2252,6 +2253,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
 		</jsps>
+		<help>ihelp.designers.divider</help>
 		<notify velocity="divider.vm" />
 	</item>
 		
@@ -2481,6 +2483,7 @@
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
+		<help>ihelp.designers.custom_jsp</help>
 	</item>
 	<item name="remoteApp" caption="__remoteApp" type="data" category="entryData" display="form">
 		<properties>
@@ -2519,6 +2522,7 @@
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
+		<help>ihelp.designers.remote_app</help>
 	</item>
 		
 <!-- Workflow items -->
