@@ -971,7 +971,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					
 					//Process the properties (if any)
 					processProperties(defId, itemEleToAdd, newItem, inputData);
-					processJsps(item, inputData);
+					processJsps(newItem, inputData);
 					//See if this is a "dataView" type
 					if (newItem.attributeValue("type", "").equals("dataView")) {
 						checkDataView(root, newItem);
