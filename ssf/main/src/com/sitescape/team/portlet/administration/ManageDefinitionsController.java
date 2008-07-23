@@ -101,8 +101,8 @@ public class ManageDefinitionsController extends  SAbstractController {
 		Binder binder = null;
 		try {
 			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-			model.put(WebKeys.BINDER_ID, binderId);
 			binder = getBinderModule().getBinder(binderId);
+			model.put(WebKeys.BINDER_ID, binderId);
 			model.put(WebKeys.BINDER, binder);
 		} catch (Exception ex) {};
 		//Set up the standard beans
