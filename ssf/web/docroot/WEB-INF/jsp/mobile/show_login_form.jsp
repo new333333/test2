@@ -37,27 +37,21 @@
     <legend class="ss_legend"><ssf:nlt tag="login.please"/></legend>
     <table>
       <tr>
-        <td valign="top" align="right">
-          <span><ssf:nlt tag="login.name"/></span>
-        </td>
-        <td valign="top" style="padding-left:4px;">
-          <input type="text" size="40" name="username"/>
+        <td valign="top">
+          <span><ssf:nlt tag="login.name"/></span><br/>
+          <input type="text" style="width:150px;" name="username"/>
         </td>
       </tr>
       <tr>
-        <td valign="top" align="right">
-          <span><ssf:nlt tag="login.password"/></span>
-        </td>
-        <td valign="top" style="padding-left:4px;">
-          <input type="password" size="40" name="password"/>
+        <td valign="top">
+          <span><ssf:nlt tag="login.password"/></span><br/>
+          <input type="password" style="width:150px;" name="password"/>
         </td>
       </tr>
       <tr>
-        <td valign="top" align="right">
-          <span><ssf:nlt tag="login.remember"/></span>
-        </td>
-        <td valign="top" style="padding-left:4px;">
+        <td valign="top">
           <input type="checkbox" name="remember"/>
+          <span><ssf:nlt tag="login.remember"/></span>
         </td>
       </tr>
     </table>
