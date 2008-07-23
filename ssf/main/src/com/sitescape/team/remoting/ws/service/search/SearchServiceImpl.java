@@ -32,6 +32,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
@@ -219,17 +220,12 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());
 		
 		List<TeamBrief> teamList = new ArrayList<TeamBrief>();
-		try {
-			for(Map binder : myTeams) {
-				String binderIdStr = (String) binder.get(Constants.DOCID_FIELD);
-				Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
-				teamList.add(new TeamBrief(binderId, (String) binder.get(Constants.TITLE_FIELD),
-						new Timestamp((String) binder.get(Constants.MODIFICATION_NAME_FIELD), DateTools.stringToDate((String) binder.get(Constants.MODIFICATION_DATE_FIELD))),
-						new Timestamp((String) binder.get(Constants.CREATOR_NAME_FIELD), DateTools.stringToDate((String) binder.get(Constants.CREATION_DATE_FIELD)))));
-			}
-		}
-		catch(ParseException e) {
-			throw new RemotingException(e);
+		for(Map binder : myTeams) {
+			String binderIdStr = (String) binder.get(Constants.DOCID_FIELD);
+			Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
+			teamList.add(new TeamBrief(binderId, (String) binder.get(Constants.TITLE_FIELD),
+					new Timestamp((String) binder.get(Constants.MODIFICATION_NAME_FIELD), (Date) binder.get(Constants.MODIFICATION_DATE_FIELD)),
+					new Timestamp((String) binder.get(Constants.CREATOR_NAME_FIELD), (Date) binder.get(Constants.CREATION_DATE_FIELD))));
 		}
 	
 		TeamBrief[] array = new TeamBrief[teamList.size()];
