@@ -315,9 +315,17 @@ a.ss_new_thread:hover {
 	
 /**** INLINE NAVBAR STYLE ************/
 
-#ss_navbar_inline ul{
+#ss_navbar_inline {
 	margin:0px;
+	padding:1px 0px 0px 0px;
+	<c:if test="<%= isIE %>">
+ 		padding-top:3px;
+ 		padding-bottom:3px;
+ 	</c:if>
 	}
+#ss_navbar_inline ul{
+	margin:0px !important;
+	}	
 #ss_navbar_inline ul li{
 	display: inline!important;
 	white-space: nowrap;
@@ -336,8 +344,23 @@ a.ss_new_thread:hover {
 	}	
 .ss_navbar_current {
 	font-weight: bold !important;
-	text-decoration: underline;
+	border:solid 1px #999999 !important; /* text-decoration: underline; */
+	padding:2px 5px 2px 5px;
 	}	
+.ss_navbar_new {
+	text-align: center;
+	font-weight: bold !important;
+	border:solid 1px #FFFFFF !important; /* text-decoration: underline; */
+	padding:2px 5px 2px 5px;
+	background-color: #828282 !important;
+	
+	}
+.ss_navbar_new a {
+	color: #FFFFFF !important;
+	}	
+.ss_navbar_new a:hover {
+	color: #333333 !important;
+	}		
 
 /******* PAGINATION STYLES *************/
 .ss_pagination {
@@ -420,19 +443,20 @@ a.ss_new_thread:hover {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: ${ss_style_font_fineprint} !important;
 	padding-left: 2px;
-	padding-right: 2px;
+	padding-right: 5px;
 /*	white-space: nowrap !important; */
 	padding-top: 2px;
 /*	height:40px !important;			*/
 	<c:if test="<%= isIE %>">
-  		padding-top: 0px;
+  		margin-top: 5px;
+  		padding-top: 4px;
  	</c:if>
  	overflow:hidden;
 }
 
 .ss_paginationFont a{
 	border:solid 1px #DDDDDD !important;
-	margin-right:5px;
+	margin-right:2px;
 }
 .ss_pageActive{
 	color:#408080!important;
@@ -442,6 +466,15 @@ a.ss_new_thread:hover {
 	<c:if test="<%= isIE %>">
   		padding:3px 4px 0px 6px;
  	</c:if>
+}
+.ss_pageNext {
+	color:#333333;
+	padding:3px 6px 3px 6px;
+	text-decoration:none;
+	background-color:#E9F1F1 !important;
+	background:transparent !important;	
+	border:solid 1px #DDDDDD !important;
+	margin-right:5px;
 }
 .ss_paginationFont a:link,
 .ss_paginationFont a:visited {

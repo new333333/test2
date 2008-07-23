@@ -41,36 +41,13 @@
 <table border="0" cellspacing="0px" cellpadding="0px" width="100%">
 		<tbody>
 		<tr>
-			<td width="12%" bgcolor="#FFFFFF" align="right" style="padding-right:10px;">
-
-		<% // configure columns area %>
-	 	<a href="<ssf:url
-			adapter="true" 
-			portletName="ss_forum" 
-			action="__ajax_request" 
-			actionUrl="true" >
-			<ssf:param name="operation" value="configure_folder_columns" />
-			<ssf:param name="binderId" value="${ssBinder.id}" />
-			<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-			</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
-		    <span class="ss_fineprint">[<ssf:nlt tag="misc.configureColumns"/>]</span> </a> 
-
-			</td>
-			<td valign="top" align="right">
+			<td valign="top" align="right" width="25%">
 			<% // this should be view entry %>
 			<div id="ss_goBox">
 			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
 				<tbody><tr>
 				<td class="ss_paginationFont" valign="middle">
-			<form name="ss_goToPageForm_${renderResponse.namespace}" id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
-			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-				name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
-				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
-				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
-				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
-				name="endDate" value="${endDate}"/></c:if><ssf:param 
-				name="operation" value="save_folder_goto_page_info"/></ssf:url>" onSubmit="return(ss_submitPage_${renderResponse.namespace}(this))">
-				&nbsp;&nbsp;
+			
 				
 			<c:if test="${ssPageCount > '1.0'}">
 				<ssf:ifnotaccessible>
@@ -80,9 +57,19 @@
 			    <ssf:ifaccessible>
 			    	<span><label for="entry.goTo"><ssf:nlt tag="entry.goTo"/></label></span>
 			    </ssf:ifaccessible>
+			
 			    </td>
 			    <td align="right" class="ss_paginationGo ss_page_IE">
-			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
+			        <form name="ss_goToPageForm_${renderResponse.namespace}" id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
+			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+				name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
+				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
+				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
+				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+				name="endDate" value="${endDate}"/></c:if><ssf:param 
+				name="operation" value="save_folder_goto_page_info"/></ssf:url>" onSubmit="return(ss_submitPage_${renderResponse.namespace}(this))">
+				&nbsp;&nbsp;
+			    <input name="ssGoToEntry" id="ssGoToEntry" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
 				<a href="javascript: ;" 
 				<ssf:title tag="entry.goTo" />
 				onClick="ss_clickGoToPage_${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}'); return false;">
@@ -155,7 +142,7 @@
 					<td bgcolor="#E9F1F1" class="ss_paginationFont">
 						<c:choose>
 				  			<c:when test="${ssPageNext.ssPageNoLink == 'true'}">
-							<ssf:nlt tag="general.Next"/>
+							<span class="ss_pageNext"><ssf:nlt tag="general.Next"/>&nbsp;&nbsp;</span>&nbsp;&nbsp;
 				  			</c:when>
 				  		<c:otherwise>
 						<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
@@ -189,12 +176,23 @@
 			</td></tr></tbody></table>	</div>
 			</td>
 			<% // goto page option %>
-			<td valign="top">
+			<td valign="top" width="25%">
 			<div id="ss_goBox">
 			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
-				<tbody><tr><td><tr>
-				<td class="ss_paginationFont" valign="top">
-			<form name="ss_goToPageForm_${renderResponse.namespace}" id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
+				<tbody><tr>
+				<td class="ss_paginationFont" valign="middle">
+			
+			<c:if test="${ssPageCount > '1.0'}">
+				<ssf:ifnotaccessible>
+			    	<ssf:nlt tag="folder.GoToPage"/>
+			    </ssf:ifnotaccessible>
+			    
+			    <ssf:ifaccessible>
+			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
+			    </ssf:ifaccessible>
+			    </td>
+			    <td valign="middle"  class="ss_paginationGo">
+			    <form name="ss_goToPageForm_${renderResponse.namespace}" id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
 			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
 				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
@@ -204,16 +202,6 @@
 				name="operation" value="save_folder_goto_page_info"/></ssf:url>" onSubmit="return(ss_submitPage_${renderResponse.namespace}(this))">
 				&nbsp;&nbsp;
 				
-			<c:if test="${ssPageCount > '1.0'}">
-				<ssf:ifnotaccessible>
-			    	<ssf:nlt tag="folder.GoToPage"/>
-			    </ssf:ifnotaccessible>
-			    
-			    <ssf:ifaccessible>
-			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
-			    </ssf:ifaccessible>
-			    </td></tr><tr>
-			    <td valign="top"  class="ss_paginationGo">
 			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
 				<a href="javascript: ;" 
 				<ssf:title tag="title.goto.page" />
@@ -230,7 +218,7 @@
 			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
 			    </ssf:ifaccessible>
 			    </td></tr><tr>
-			    <td valign="top" class="ss_paginationGo">
+			    <td valign="middle" class="ss_paginationGo ss_page_IE">
 			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_pTB_no" />&nbsp;
 				<a href="" 
 				<ssf:title tag="title.goto.page" />

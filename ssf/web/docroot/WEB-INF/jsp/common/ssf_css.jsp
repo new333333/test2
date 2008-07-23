@@ -4382,7 +4382,6 @@ table.ss_milestones_list td.ss_overdue, table.ss_milestones_list td.ss_overdue a
 	z-index: 500;
 	background-color: ${ss_style_background_color_opaque};
 	border: 1px solid ${ss_form_border_color};
-	margin: 0px;
 	padding: 6px;
 	text-align: left;
 	font-size: ${ss_style_font_smallprint};
