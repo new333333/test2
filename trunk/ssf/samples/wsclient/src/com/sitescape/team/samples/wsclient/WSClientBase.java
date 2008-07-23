@@ -65,6 +65,8 @@ public abstract class WSClientBase {
 			com.sitescape.team.client.ws.model.Description.class,
 			com.sitescape.team.client.ws.model.Entry.class,
 			com.sitescape.team.client.ws.model.Field.class,
+			com.sitescape.team.client.ws.model.FolderBrief.class,
+			com.sitescape.team.client.ws.model.FolderCollection.class,
 			com.sitescape.team.client.ws.model.FolderEntry.class,
 			com.sitescape.team.client.ws.model.FolderEntryBrief.class,
 			com.sitescape.team.client.ws.model.FolderEntryCollection.class,
