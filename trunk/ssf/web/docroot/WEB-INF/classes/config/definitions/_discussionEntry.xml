@@ -71,25 +71,27 @@
     <properties> 
       <property name="type" value="entryView"/> 
     </properties>  
-    <item name="titleView" caption="__title" id="10"> 
-      <properties> 
-        <property name="caption" value="__title"/> 
-      </properties> 
-    </item>  
-    <item name="entrySignatureView" caption="__entry_signature" id="11"> 
-      <properties> 
-        <property name="caption" value=""/> 
-      </properties> 
-    </item>  
-    <item name="descriptionView" caption="__description" id="12"> 
-      <properties> 
-        <property name="caption" value="__description"/> 
-      </properties> 
-    </item>  
-    <item name="entryWorkflow" caption="__entry_workflow" id="13"> 
-      <properties> 
-        <property name="caption" value="__entry_workflow"/> 
-      </properties> 
+    <item name="entrySignatureView" caption="__entry_signature" id="11" category="commonEntryViewData" display="view"> 
+      <properties>
+        <property name="caption" value=""/>
+        <property name="showPicture" value="true"/>
+        <property name="displayType" value="leftAligned"/>
+      </properties>
+      <item name="titleView" caption="__title" id="10"> 
+        <properties> 
+          <property name="caption" value="__title"/> 
+        </properties> 
+      </item>
+      <item name="descriptionView" caption="__description" id="12"> 
+        <properties> 
+          <property name="caption" value="__description"/> 
+        </properties> 
+      </item>
+      <item name="entryWorkflow" caption="__entry_workflow" id="13"> 
+        <properties> 
+          <property name="caption" value="__entry_workflow"/> 
+        </properties> 
+      </item>
     </item>  
     <item name="entryAttachments" caption="__entry_attachments" id="14"> 
       <properties> 
