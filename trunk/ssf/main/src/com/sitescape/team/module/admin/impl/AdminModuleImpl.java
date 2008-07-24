@@ -457,6 +457,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
         				}
         			}
         		}
+           		workArea.setFunctionMembershipInherited(false);
 				processAccessChangeLog(workArea, ChangeLog.ACCESSMODIFY);
 				return null;
         	}});

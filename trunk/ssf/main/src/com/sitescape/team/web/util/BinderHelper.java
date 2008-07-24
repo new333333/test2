@@ -1888,11 +1888,11 @@ public class BinderHelper {
 			else styles.put(Integer.valueOf(i), address);
 		}
 		if (!styles.isEmpty()) {
-			bs.getFolderModule().addSubscription(folderId, entryId, styles);
+			bs.getFolderModule().setSubscription(folderId, entryId, styles);
 			
 		} else if (Validator.isNotNull(subscribeElementPresent)) {
 			//The user turned off the subscription
-			bs.getFolderModule().deleteSubscription(folderId, entryId);
+			bs.getFolderModule().setSubscription(folderId, entryId, null);
 		}
 	}
 

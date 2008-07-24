@@ -40,7 +40,8 @@ public interface MigrationService {
 	
 	public long migration_addFolderEntryWithXML(String accessToken, long binderId, String definitionId,
 							   String inputDataAsXML, 
-							   String creator, Calendar creationDate, String modifier, Calendar modificationDate);
+							   String creator, Calendar creationDate, String modifier, Calendar modificationDate,
+							   boolean subscribe);
 		
 	public long migration_addReplyWithXML(String accessToken, long binderId, long parentId, String definitionId,
 					     String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate);
@@ -54,7 +55,7 @@ public interface MigrationService {
 
 	public long migration_addBinder(String accessToken, Binder binder);
 	
-	public long migration_addFolderEntry(String accessToken, FolderEntry entry);
+	public long migration_addFolderEntry(String accessToken, FolderEntry entry, boolean subscribe);
 		
 	public long migration_addReply(String accessToken, long parentEntryId, FolderEntry reply);
 

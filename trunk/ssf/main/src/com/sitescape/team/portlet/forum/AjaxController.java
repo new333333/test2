@@ -768,7 +768,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.NAMESPACE, namespace);
 		if (entryId==null) {
 			Binder binder = getBinderModule().getBinder(binderId);
-			Subscription sub = getBinderModule().getSubscription(binderId);
+			Subscription sub = getBinderModule().getSubscription(binder);
 			model.put(WebKeys.SUBSCRIPTION, sub);
 			model.put(WebKeys.SCHEDULE_INFO, getAdminModule().getNotificationSchedule());
 			model.put(WebKeys.BINDER, binder);
@@ -797,11 +797,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 			else styles.put(Integer.valueOf(i), address);
 		}
 		if (entryId == null) {
-			if (styles.isEmpty()) getBinderModule().deleteSubscription(binderId);
-			else getBinderModule().addSubscription(binderId, styles);
+			getBinderModule().setSubscription(binderId, styles);
 		} else {
-			if (styles.isEmpty()) getFolderModule().deleteSubscription(binderId, entryId);
-			else getFolderModule().addSubscription(binderId, entryId, styles);
+			getFolderModule().setSubscription(binderId, entryId, styles);
 		}
 
 		return new ModelAndView("common/json_ajax_return");

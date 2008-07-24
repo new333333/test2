@@ -542,12 +542,11 @@
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>
-				<prop key="addSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addEntryWorkflow">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="copyEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteEntryWorkflow">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteTag">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="deleteSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException,+com.sitescape.team.exception.UncheckedCodedException</prop>
 				<prop key="modifyWorkflowState">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="moveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
@@ -599,7 +598,7 @@
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>
-				<prop key="addSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException,+com.sitescape.team.exception.UncheckedCodedException</prop>
 				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
@@ -991,7 +990,7 @@ text/calendar											  ics
 	
 	<bean id="binderService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.service.binder.BinderServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.remoting.ws.service.binder.attachments.BinderServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">

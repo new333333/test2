@@ -138,7 +138,7 @@ public class Subscription extends ZonedObject {
     public boolean hasStyle(Integer style) {
     	return getStyles().containsKey(style);
     }
-    public String[] getStyle(Integer style) {
+    public String[] getEmailTypes(Integer style) {
     	String [] result = getStyles().get(style);
     	if (result != null) return result;
     	return new String[0];

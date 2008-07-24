@@ -78,6 +78,8 @@ public abstract class WSClientBase {
 			com.sitescape.team.client.ws.model.PrincipalCollection.class,
 			com.sitescape.team.client.ws.model.CustomStringArrayField.class,
 			com.sitescape.team.client.ws.model.CustomStringField.class,
+			com.sitescape.team.client.ws.model.SubscriptionStyle.class,
+			com.sitescape.team.client.ws.model.Subscription.class,
 			com.sitescape.team.client.ws.model.TeamBrief.class,
 			com.sitescape.team.client.ws.model.TeamCollection.class,
 			com.sitescape.team.client.ws.model.TeamMemberCollection.class,

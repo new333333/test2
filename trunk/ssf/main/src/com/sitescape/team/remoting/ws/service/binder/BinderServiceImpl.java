@@ -45,6 +45,7 @@ import org.dom4j.Element;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.XmlUtils;
@@ -76,6 +77,26 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			throw new RemotingException(e);
 		}
 	}
+	public com.sitescape.team.remoting.ws.model.Subscription binder_getSubscription(String accessToken, long binderId) {
+		Binder binder = getBinderModule().getBinder(binderId);
+		Subscription sub = getBinderModule().getSubscription(binder);
+		if (sub == null) return null;
+		return toSubscriptionModel(sub);
+		
+	}
+	public void binder_setSubscription(String accessToken, long binderId, com.sitescape.team.remoting.ws.model.Subscription subscription) {
+		if (subscription == null || subscription.getStyles().length == 0) {
+			getBinderModule().setSubscription(binderId, null);
+			return;
+		}
+		Map subMap = new HashMap();
+		com.sitescape.team.remoting.ws.model.SubscriptionStyle[] styles = subscription.getStyles();
+		for (int i=0; i<styles.length; ++i) {
+			subMap.put(styles[i].getStyle(), styles[i].getEmailTypes());
+		}
+		getBinderModule().setSubscription(binderId, subMap);
+	}
+	
 	public void binder_setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations) {
 		HashMap wfs = new HashMap();
 		for (int i=0; i<workflowAssociations.length; i++) {
@@ -137,7 +158,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			 if (ids.isEmpty()) continue;
 			 wfms.put(func.getId(), ids);
 		}
-		getAdminModule().setWorkAreaFunctionMembershipInherited(binder, false); 
 		getAdminModule().setWorkAreaFunctionMemberships(binder, wfms);
 	}
 	public void binder_setFunctionMembershipInherited(String accessToken, long binderId, boolean inherit) {
@@ -152,6 +172,11 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		getBinderModule().indexBinder(binderId, true);
 	}
 	
+	public Long[] binder_indexTree(String accessToken, long binderId) {
+		Set<Long> binderIds = getBinderModule().indexTree(binderId);
+		Long[] array = new Long[binderIds.size()];
+		return binderIds.toArray(array);
+	}
 	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId) {
 		Binder binder = getBinderModule().getBinder(new Long(binderId));
 		SortedSet<Principal> principals = getBinderModule().getTeamMembers(binder, true);
@@ -175,6 +200,31 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		}
 	}
 	
+	public String[] binder_deleteBinder(String accessToken, long binderId, boolean deleteMirroredSource) {
+		Set<Exception>errors = getBinderModule().deleteBinder(binderId, deleteMirroredSource, null);
+		String[] strErrors = new String[errors.size()];
+		int i=0;
+		for (Exception ex:errors) {
+			strErrors[i++] = ex.getLocalizedMessage();
+		}
+		return strErrors;
+	}
+	public com.sitescape.team.remoting.ws.model.Binder binder_getBinder(String accessToken, long binderId, boolean includeAttachments) {
+
+		// Retrieve the raw binder.
+		Binder binder =  getBinderModule().getBinder(binderId);
+
+		com.sitescape.team.remoting.ws.model.Binder binderModel = 
+			new com.sitescape.team.remoting.ws.model.Binder(); 
+
+		fillBinderModel(binderModel, binder);
+		
+		return binderModel;
+	}
+	public void binder_uploadFile(String accessToken, long binderId, String fileUploadDataItemName, String fileName) {
+		throw new UnsupportedOperationException();
+	}
+
 	public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships) {
 		if(functionMemberships == null) return;
 		Binder binder = getBinderModule().getBinder(binderId);
@@ -206,7 +256,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			 if (ids.isEmpty()) continue;
 			 wfms.put(func.getId(), ids);
 		}
-		getAdminModule().setWorkAreaFunctionMembershipInherited(binder, false); 
 		getAdminModule().setWorkAreaFunctionMemberships(binder, wfms);
 	}
 	

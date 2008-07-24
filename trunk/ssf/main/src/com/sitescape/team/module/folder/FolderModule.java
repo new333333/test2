@@ -124,9 +124,9 @@ public interface FolderModule {
      * Subscribe to an entry.  Multiple styles can be specified and multiple address/style are permitted
      * @param folderId
      * @param entryId
-     * @param styles
+     * @param styles - null or empty will delete
      */
-    public void addSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles); 
+    public void setSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles); 
     /**
      * Add a vote to a survey entry.
      * @param folderId
@@ -198,12 +198,6 @@ public interface FolderModule {
      */
     public void deleteEntryWorkflow(Long parentFolderId, Long entryId, String definitionId)
     	throws AccessControlException;
-    /**
-     * Unsubscribe to a <code>FolderEntry</code>
-     * @param folderId
-     * @param entryId
-     */
-    public void deleteSubscription(Long folderId, Long entryId);
     /**
      * Delete a <code>Tag</code> associated with a <code>FolderEntry</code>
      * @param binderId

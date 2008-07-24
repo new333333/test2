@@ -66,6 +66,8 @@
 		<beanMapping qname="ns:PrincipalCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.PrincipalCollection"/>
 		<beanMapping qname="ns:CustomStringArrayField" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.CustomStringArrayField"/>
 		<beanMapping qname="ns:CustomStringField" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.CustomStringField"/>
+		<beanMapping qname="ns:SubscriptionStyle" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.SubscriptionStyle"/>
+		<beanMapping qname="ns:Subscription" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Subscription"/>
 		<beanMapping qname="ns:TeamBrief" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TeamBrief"/>
 		<beanMapping qname="ns:TeamCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TeamCollection"/>
 		<beanMapping qname="ns:TeamMemberCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TeamMemberCollection"/>

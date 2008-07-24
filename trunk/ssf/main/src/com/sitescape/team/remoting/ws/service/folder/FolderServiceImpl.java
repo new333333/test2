@@ -41,8 +41,10 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.remoting.RemotingException;
@@ -269,7 +271,6 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			Iterator entryIterator = entrylist.listIterator();
 			while (entryIterator.hasNext()) {
 				FolderEntry entry  = (FolderEntry) entryIterator.next();
-				FolderEntryBrief entryBrief = new FolderEntryBrief();
 				entries.add(toFolderEntryBrief(entry));
 			}
 		}
@@ -328,5 +329,25 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	public void folder_deleteEntry(String accessToken, long binderId, long entryId) {
 		getFolderModule().deleteEntry(binderId, entryId);
 	}
-	
+	public com.sitescape.team.remoting.ws.model.Subscription folder_getSubscription(String accessToken, long binderId, long entryId) {
+		FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
+		Subscription sub = getFolderModule().getSubscription(entry);
+		if (sub == null) return null;
+		return toSubscriptionModel(sub);
+		
+	}
+	public void folder_setSubscription(String accessToken, long binderId, long entryId, com.sitescape.team.remoting.ws.model.Subscription subscription) {
+		if (subscription == null || subscription.getStyles().length == 0) {
+			getFolderModule().setSubscription(binderId, entryId, null);
+			return;
+		}
+		Map subMap = new HashMap();
+		com.sitescape.team.remoting.ws.model.SubscriptionStyle[] styles = subscription.getStyles();
+		for (int i=0; i<styles.length; ++i) {
+			subMap.put(styles[i].getStyle(), styles[i].getEmailTypes());
+		}
+		getFolderModule().setSubscription(binderId, entryId, subMap);
+
+	}
+
 }
