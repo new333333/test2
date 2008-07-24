@@ -1957,7 +1957,6 @@ div.ss_content_outer table, div.ss_portlet table, table.ss_style, div.ss_popup_b
 	font-size:1px;
 }
 .ss_decor-round-corners-top2 div {
-	background:none;
 }
 .ss_decor-round-corners-bottom2{
 	background:url(<html:imagesPath/>roundcorners2/border.gif) repeat-x bottom;
