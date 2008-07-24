@@ -167,6 +167,7 @@ var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 <ssf:ifnotadapter><c:set var="ss_viewEntryNavbar" value="true"/></ssf:ifnotadapter>
 <c:if test="${ss_entryViewStyle == 'full'}"><c:set var="ss_viewEntryNavbar" value="true"/></c:if>
 <ssf:ifaccessible><c:set var="ss_viewEntryNavbar" value="true"/></ssf:ifaccessible>
+<c:set var="ss_entryViewStyle2" value="${ss_folderViewStyle}" scope="request"/>
 
 <c:if test="${ss_viewEntryNavbar}">
 <div id="ss_portlet_content" class="ss_style ss_portlet">
@@ -204,7 +205,6 @@ var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 </ssf:ifnotaccessible>
 	    <div class="ss_style_color">
 </c:if>
-
 
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 			  configElement="${ssConfigElement}" 

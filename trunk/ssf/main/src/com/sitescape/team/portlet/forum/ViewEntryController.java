@@ -153,6 +153,7 @@ public class ViewEntryController extends  SAbstractController {
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String entryViewType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_TYPE, "entryView");
 		String entryViewStyle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_STYLE, "");
+		String entryViewStyle2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_STYLE2, "");
 		String displayType = BinderHelper.getDisplayType(request);
 		if (entryViewStyle.equals("")) {
 			if (ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE.equals(displayStyle) &&
@@ -165,6 +166,7 @@ public class ViewEntryController extends  SAbstractController {
 		//Let the jsp know what style to show the entry in 
 		//  (popup has no navbar header, inline has no navbar and no script tags, full has a navbar header)
 		model.put(WebKeys.ENTRY_VIEW_STYLE, entryViewStyle);
+		model.put(WebKeys.ENTRY_VIEW_STYLE2, entryViewStyle2);
 		
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (!operation.equals("")) {
@@ -293,8 +295,7 @@ public class ViewEntryController extends  SAbstractController {
 		if(fe == null) {
 			return new ModelAndView("entry/deleted_entry", model);		
 		} else {
-			if (entryViewStyle.equals(WebKeys.ENTRY_VIEW_STYLE_INLINE) || 
-					entryViewType.equals("entryBlogView") && PortletAdapterUtil.isRunByAdapter(request)) {
+			if (entryViewType.equals("entryBlogView") && PortletAdapterUtil.isRunByAdapter(request)) {
 				model.put(WebKeys.SNIPPET, true);
 				viewPath = "entry/view_entry_snippet";
 			}
