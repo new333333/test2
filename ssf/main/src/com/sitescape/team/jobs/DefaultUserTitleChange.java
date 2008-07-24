@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Collections;
 
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -58,7 +59,7 @@ import com.sitescape.team.util.SpringContextUtil;
  */
 public class DefaultUserTitleChange extends SSStatefulJob implements UserTitleChange {
 	 
- 
+	protected static int MAX_IDS=10;
 	public void doExecute(JobExecutionContext context) throws JobExecutionException {	
 	   	CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
 	    BinderModule binderModule = (BinderModule)SpringContextUtil.getBean("binderModule");
@@ -107,34 +108,49 @@ public class DefaultUserTitleChange extends SSStatefulJob implements UserTitleCh
 
 	}
 
-    public void schedule(User user, List binderIds, List entryIds) {
-		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
-		String userIdString = user.getId().toString() + user.getModification().getDate().toString();
+    public void schedule(User user, List<Long> binderIds, List<Long> entryIds) {
+		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	
+		//the number of changes could be large, and some databases won't accept it (mssql packet size 1M)
+		int count = 0;
+		int binderIndex=0;
+		int entryIndex=0;
 		try {
-			//each job is new
-			JobDetail jobDetail = new JobDetail(userIdString, USER_TITLE_GROUP, 
+			while (binderIndex < binderIds.size() || entryIndex < entryIds.size()) {
+				String userIdString = user.getId().toString() + " " + user.getModification().getDate().toString() + " " + String.valueOf(count);
+				//each job is new
+				JobDetail jobDetail = new JobDetail(userIdString, USER_TITLE_GROUP, 
 						Class.forName(this.getClass().getName()),false, false, false);
-			jobDetail.setDescription(USER_TITLE_DESCRIPTION);
-			JobDataMap data = new JobDataMap();
-			data.put(ZONEID,user.getZoneId());
-			data.put("binderIds", binderIds);
-			data.put("entryIds", entryIds);
+				jobDetail.setDescription(USER_TITLE_DESCRIPTION);
+				JobDataMap data = new JobDataMap();
+				data.put(ZONEID,user.getZoneId());
+				if (binderIndex < binderIds.size()) {
+					data.put("entryIds", Collections.EMPTY_LIST);
+					data.put("binderIds", new ArrayList(binderIds.subList(binderIndex, Math.min(binderIndex+MAX_IDS, binderIds.size()))));
+					binderIndex+= MAX_IDS;
+					
+				} else {
+					data.put("binderIds", Collections.EMPTY_LIST);
+					data.put("entryIds", new ArrayList(entryIds.subList(entryIndex, Math.min(entryIndex+MAX_IDS, entryIds.size()))));
+					entryIndex+= MAX_IDS;					
+				}
 			
-			jobDetail.setJobDataMap(data);
-			jobDetail.addJobListener(getDefaultCleanupListener());
-			scheduler.addJob(jobDetail, true);
-			//wait 3 minutes so user title is committed.  Otherwise we end up with
-			// the previously commited title and the index is wrong
-			GregorianCalendar start = new GregorianCalendar();
-			start.add(Calendar.MINUTE, 3);
+				jobDetail.setJobDataMap(data);
+				jobDetail.addJobListener(getDefaultCleanupListener());
+				scheduler.addJob(jobDetail, true);
+				//wait 3 minutes so user title is committed.  Otherwise we end up with
+				// the previously commited title and the index is wrong
+				GregorianCalendar start = new GregorianCalendar();
+				start.add(Calendar.MINUTE, 3+count);
 		
-			//repeats every 5 minutes
-			SimpleTrigger trigger = new SimpleTrigger(userIdString, USER_TITLE_GROUP, userIdString, USER_TITLE_GROUP, start.getTime(), null, 
+				//repeats every 5 minutes
+				SimpleTrigger trigger = new SimpleTrigger(userIdString, USER_TITLE_GROUP, userIdString, USER_TITLE_GROUP, start.getTime(), null, 
 						SimpleTrigger.REPEAT_INDEFINITELY, 5*60*1000);
-			trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
-			trigger.setDescription(USER_TITLE_DESCRIPTION);
-			trigger.setVolatility(false);
-			scheduler.scheduleJob(trigger);				
+				trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
+				trigger.setDescription(USER_TITLE_DESCRIPTION);
+				trigger.setVolatility(false);
+				scheduler.scheduleJob(trigger);			
+				++count;
+			}
 		} catch (SchedulerException se) {			
 			throw new ConfigurationException(se.getLocalizedMessage());			
   		} catch (ClassNotFoundException cf) {
