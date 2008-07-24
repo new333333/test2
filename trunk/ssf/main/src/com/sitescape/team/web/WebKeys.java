@@ -134,6 +134,7 @@ public class WebKeys {
     public static final String URL_ENTRY_TITLE="title";
     public static final String URL_ENTRY_TYPE="entryType";
     public static final String URL_ENTRY_VIEW_STYLE="entryViewStyle";
+    public static final String URL_ENTRY_VIEW_STYLE2="entryViewStyle2";
     public static final String URL_ENTRY_VIEW_TYPE="entryViewType";
 	public static final String URL_FILE = "file";
 	public static final String URL_FILE_ID = "fileId";
@@ -603,9 +604,7 @@ public class WebKeys {
     public static final String ENTRY_TITLE="ssEntryTitle";
     public static final String ENTRY_USER_LIST="assignedUsers";
     public static final String ENTRY_VIEW_STYLE="ss_entryViewStyle";
-    public static final String ENTRY_VIEW_STYLE_POPUP="entryViewStylePopup";
-    public static final String ENTRY_VIEW_STYLE_INLINE="entryViewStyleInline";
-    public static final String ENTRY_VIEW_STYLE_FULL="entryViewStyleFull";
+    public static final String ENTRY_VIEW_STYLE2="ss_entryViewStyle2";
     public static final String ENTRY_DUE_DATE="dueDate";
     public static final String MEETING_TOKEN="ssMeetingToken";
     public static final String MEETING_ERROR="ssMeetingError";
@@ -729,6 +728,7 @@ public class WebKeys {
     public static final String AJAX_STATUS="ss_ajaxStatus";
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
     public static final String NAMESPACE="ss_namespace";
+    public static final String NAMESPACE_RELEVANCE_DASHBOARD="ss_relevanceDashboardNamespace";
     public static final String MAIL_POSTING_USE_ALIASES="mail_posting_use_aliases"; 
     public static final String MAIL_POSTING_DUMMY_PASSWORD="_____"; 
     public static final String MANAGE_GROUPS_PAGE_TITLE_TAG="ssPageTitleTag";
