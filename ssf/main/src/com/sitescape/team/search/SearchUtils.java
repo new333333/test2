@@ -158,4 +158,9 @@ public class SearchUtils {
 		return crit;
 	}
 	
+    public static String getIndexName() {
+    	// We use zone key as the index name
+    	return com.sitescape.team.util.Utils.getZoneKey();
+    }
+
 }

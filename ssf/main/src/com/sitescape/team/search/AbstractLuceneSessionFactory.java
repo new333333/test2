@@ -28,20 +28,14 @@
  */
 package com.sitescape.team.search;
 
-import com.sitescape.team.util.Utils;
-
-/**
- *
- * @author Jong Kim
- */
 public abstract class AbstractLuceneSessionFactory implements LuceneSessionFactory {
 
     public LuceneReadSession openReadSession() throws LuceneException {
-        return openReadSession(getIndexName());
+        return openReadSession(SearchUtils.getIndexName());
     }    
     
     public LuceneWriteSession openWriteSession() throws LuceneException {
-        return openWriteSession(getIndexName());
+        return openWriteSession(SearchUtils.getIndexName());
     }    
     
     /**
@@ -61,9 +55,4 @@ public abstract class AbstractLuceneSessionFactory implements LuceneSessionFacto
      * @throws LuceneException
      */
     protected abstract LuceneWriteSession openWriteSession(String indexName) throws LuceneException;
-    
-    protected String getIndexName() {
-    	// We use zone key as the index name
-    	return Utils.getZoneKey();
-    }
 }
