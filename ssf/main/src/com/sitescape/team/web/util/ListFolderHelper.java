@@ -1447,7 +1447,7 @@ public class ListFolderHelper {
 				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageSubscriptionsMenu");
 				folderToolbar.addToolbarMenu("3_administration", NLT.get("toolbar.manageFolderSubscriptions"), "", qualifiers);
 			
-				Subscription sub = bs.getBinderModule().getSubscription(folder.getId());
+				Subscription sub = bs.getBinderModule().getSubscription(folder);
 				qualifiers = new HashMap();
 				adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
 				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);

@@ -35,6 +35,7 @@ import org.apache.axis.EngineConfiguration;
 import com.sitescape.team.client.ws.TeamingServiceSoapBindingStub;
 import com.sitescape.team.client.ws.TeamingServiceSoapServiceLocator;
 import com.sitescape.team.client.ws.WebServiceClientUtil;
+import com.sitescape.team.client.ws.model.Binder;
 import com.sitescape.team.client.ws.model.FolderEntry;
 import com.sitescape.team.client.ws.model.FolderEntryBrief;
 import com.sitescape.team.client.ws.model.FolderEntryCollection;
@@ -60,9 +61,9 @@ public class TeamingServiceClientWithStub {
 	
 	public static void main(String[] args) throws Exception {
 		FolderEntry entry;
-		
+		checkBinder(29);
 		//getFolderEntryWSSecurity(85, 47, true);
-		getFolderEntry(85, 80, true);
+		//getFolderEntry(85, 80, true);
 		
 		// Test add
 		//entry = getFolderEntry(85, 80, false);
@@ -83,6 +84,18 @@ public class TeamingServiceClientWithStub {
 		//getPrincipal(2, 1);
 		
 		//getPrincipals(2, 5);
+	}
+	public static void checkBinder(long binderId) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+
+		Binder binder = stub.binder_getBinder(null, binderId, true);
+		stub.binder_indexBinder(null, binderId);
+		stub.binder_indexTree(null, binderId);
+		
+		
 	}
 	
 	public static FolderEntry getFolderEntryWSSecurity(long binderId, long entryId, boolean includeAttachments) throws Exception {

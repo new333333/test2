@@ -303,8 +303,10 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.migration#addFolderEntry}.
 	 */
 	public long migrateFolderEntry(long binderId, String definitionId, String inputDataAsXML, 
-							   String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
-		return this.migrationService.migration_addFolderEntryWithXML(null, binderId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
+							   String creator, Calendar creationDate, String modifier, Calendar modificationDate,
+							   boolean subscribe) {
+		return this.migrationService.migration_addFolderEntryWithXML(null, binderId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate,
+				subscribe);
 	}
 		
 	/**

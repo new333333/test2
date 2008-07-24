@@ -30,6 +30,7 @@ package com.sitescape.team.remoting.ws.service.folder;
 
 import com.sitescape.team.remoting.ws.model.FolderEntry;
 import com.sitescape.team.remoting.ws.model.FolderEntryCollection;
+import com.sitescape.team.remoting.ws.model.Subscription;
 
 public interface FolderService {
 
@@ -52,5 +53,6 @@ public interface FolderService {
 	public long folder_addReply(String accessToken, long parentEntryId, FolderEntry reply, String attachedFileName);
 	
 	public void folder_deleteEntry(String accessToken, long binderId, long entryId);
-
+	public Subscription folder_getSubscription(String accessToken, long binderId, long entryId);
+	public void folder_setSubscription(String accessToken, long binderId, long entryId, Subscription subscription); 
 }

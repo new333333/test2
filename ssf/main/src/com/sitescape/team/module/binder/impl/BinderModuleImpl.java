@@ -674,30 +674,21 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 	
     //inside write transaction    
-   public void addSubscription(Long binderId, Map<Integer,String[]> styles) {
-    	//getEntry check read access
-		Binder binder = loadBinder(binderId);
+   public void setSubscription(Long binderId, Map<Integer,String[]> styles) {
+		Binder binder = getBinder(binderId);
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Subscription s = getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
-		if (s == null) {
+		if (styles == null || styles.isEmpty()) {
+			if (s != null) getCoreDao().delete(s);
+		} else if (s == null) {
 			s = new Subscription(user.getId(), binder.getEntityIdentifier());
 			s.setStyles(styles);
 			getCoreDao().save(s);
 		} else s.setStyles(styles); 	
     }
-    public Subscription getSubscription(Long binderId) {
-    	//getBinder checks read access
-		Binder binder = getBinder(binderId);
-		User user = RequestContextHolder.getRequestContext().getUser();
+    public Subscription getSubscription(Binder binder) {
+ 		User user = RequestContextHolder.getRequestContext().getUser();
 		return getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
-    }
-    //inside write transaction    
-    public void deleteSubscription(Long binderId) {
-    	//delete your own
-		Binder binder = loadBinder(binderId);
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Subscription s = getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
-		if (s != null) getCoreDao().delete(s);
     }
 
     public Map executeSearchQuery(Criteria crit, int offset, int maxResults)

@@ -688,7 +688,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         processor.copyEntry(folder, entry, destination, options);
     }
     //inside write transaction    
-    public void addSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles) {
+    public void setSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles) {
     	//getEntry does read check
 		FolderEntry entry = getEntry(folderId, entryId);
 		//only subscribe at top level
@@ -696,12 +696,21 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Subscription s = getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
 		//digest doesn't make sense here - only individual messages are sent 
-		if (s == null) {
-			s = new Subscription(user.getId(), entry.getEntityIdentifier());
-			s.setStyles(styles);
-			getCoreDao().save(s);
-		} else 	s.setStyles(styles);
-		entry.setSubscribed(true);
+		if (styles == null || styles.isEmpty()) {
+			if (s != null) {
+				getCoreDao().delete(s);
+				//if this is the last subscription, let entry know
+				List subs = getCoreDao().loadSubscriptionByEntity(entry.getEntityIdentifier());
+				if (subs.size() == 1) entry.setSubscribed(false);				
+			}
+		} else {
+			if (s == null) {
+				s = new Subscription(user.getId(), entry.getEntityIdentifier());
+				s.setStyles(styles);
+				getCoreDao().save(s);
+			} else 	s.setStyles(styles);
+			entry.setSubscribed(true);
+		}
   	
     }
     public Subscription getSubscription(FolderEntry entry) {
@@ -709,20 +718,6 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		if (!entry.isTop()) entry = entry.getTopEntry();
 		return getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
-    }
-    //inside write transaction    
-    public void deleteSubscription(Long folderId, Long entryId) {
-    	//should be able to delete your own
-		FolderEntry entry = loadEntry(folderId, entryId);
-		if (!entry.isTop()) entry = entry.getTopEntry();
-		User user = RequestContextHolder.getRequestContext().getUser();
-		List subs = getCoreDao().loadSubscriptionByEntity(entry.getEntityIdentifier());
-		Subscription s = getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
-		if (s != null) {
-			getCoreDao().delete(s);
-			//if this is the last subscription, let entry know
-			if (subs.size() == 1) entry.setSubscribed(false);
-		}
     }
 
 	public Collection<Tag> getTags(FolderEntry entry) {

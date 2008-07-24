@@ -39,6 +39,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.AverageRating;
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.Entry;
@@ -49,6 +50,7 @@ import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
@@ -222,7 +224,11 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 			entryModel.addWorkflow(wfModel);
 		}
 	}
-	
+	protected void fillBinderModel(com.sitescape.team.remoting.ws.model.Binder binderModel, Binder binder) {
+		// Binder common
+		fillDefinableEntityModel(binderModel, binder);
+		
+	}
 	protected void fillUserModel(com.sitescape.team.remoting.ws.model.User userModel, User user) {
 		// Principal common
 		fillPrincipalModel(userModel, user);
@@ -284,7 +290,8 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	protected void fillDefinableEntityModelStatic(com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity) {
 		entityModel.setId(entity.getId());
 		
-		entityModel.setParentBinderId(entity.getParentBinder().getId());
+		if (entity.getParentBinder() != null) 
+			entityModel.setParentBinderId(entity.getParentBinder().getId());
 		
 		if(entity.getEntryDef() != null)
 			entityModel.setDefinitionId(entity.getEntryDef().getId());
@@ -341,7 +348,16 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	protected com.sitescape.team.remoting.ws.model.Description toDescriptionModel(Description desc) {
 		return new com.sitescape.team.remoting.ws.model.Description(desc.getText(), desc.getFormat());
 	}
-	
+	protected com.sitescape.team.remoting.ws.model.Subscription toSubscriptionModel(Subscription subscription) {
+		com.sitescape.team.remoting.ws.model.Subscription model = new com.sitescape.team.remoting.ws.model.Subscription();
+		Map<Integer, String[]> styles = subscription.getStyles();
+		for (Map.Entry<Integer, String[]>me: styles.entrySet()) {
+			model.addStyle(me.getKey(), me.getValue());
+		}
+		
+		model.setEntityId(subscription.getId().getEntityId());
+		return model;
+	}
 	protected FolderEntryBrief toFolderEntryBrief(FolderEntry entry) {
 		FolderEntryBrief entryBrief = new FolderEntryBrief();
 		entryBrief.setId(entry.getId());
