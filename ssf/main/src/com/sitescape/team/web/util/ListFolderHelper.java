@@ -1854,7 +1854,7 @@ public class ListFolderHelper {
 			isAccessible = true;
 		}
 		
-		if (isAppletSupported && bs.getFolderModule().testAccess(folder, FolderOperation.addEntry) && !isAccessible) {
+		if (isAppletSupported && !folder.isMirroredAndReadOnly() && bs.getFolderModule().testAccess(folder, FolderOperation.addEntry) && !isAccessible) {
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "javascript: ss_showFolderAddAttachmentDropbox('" + response.getNamespace() + "', '" + folder.getId() + "','" + Boolean.toString(folder.isLibrary()) + "'); return false;");
 			footerToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
