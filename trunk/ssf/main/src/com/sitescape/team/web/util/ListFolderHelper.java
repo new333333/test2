@@ -1186,7 +1186,7 @@ public class ListFolderHelper {
 	}
 	protected static void addEntryToolbar(AllModulesInjected bs, RenderRequest request, RenderResponse response, Binder folder, Toolbar entryToolbar, Map model) {
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
-		if (defaultEntryDefinitions.size() > 1) {
+		if (defaultEntryDefinitions != null && defaultEntryDefinitions.size() > 1) {
 			int count = 1;
 			Map dropdownQualifiers = new HashMap();
 			dropdownQualifiers.put("highlight", new Boolean(true));
@@ -1212,7 +1212,7 @@ public class ListFolderHelper {
 					model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
 				}
 			}
-		} else if (defaultEntryDefinitions.size() != 0) {
+		} else if (defaultEntryDefinitions != null && defaultEntryDefinitions.size() != 0) {
 			// Only one option
 			Definition def = (Definition) defaultEntryDefinitions.get(0);
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
