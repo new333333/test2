@@ -125,4 +125,19 @@ public interface LuceneWriteSession extends LuceneSession {
 	 */
 	public void clearIndex() throws LuceneException;
 
+	/**
+	 * Note: This modifies the javadoc in {@link LuceneSession#close()}.
+	 * 
+	 * End the <code>LuceneSession</code> by disconnecting from the Lucene
+	 * service and cleaning up. Note that this does NOT implicitly perform
+	 * <code>flush</code> operation. In other words, <code>flush</code>
+	 * must be invoked explicitly by the caller before closing the session
+	 * if that was intended. Once <code>close</code> method is called, the 
+	 * session object is no longer usable.
+	 * 
+	 * @throws LuceneException
+	 *
+	 */
+	public void close() throws LuceneException;
+
 }
