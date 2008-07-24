@@ -108,7 +108,23 @@
 		<properties>
 <!-- don't want caption by default -->
 			<property name="caption" caption="__caption" type="text" value=""/>
+			<property name="showPicture" caption="__show_picture" type="boolean" default="false"/>
+			<property name="displayType" caption="__displayType" type="selectbox" default="inline">
+				<option name="inline" caption="__display_inline"/>
+				<option name="leftAligned" caption="__display_left_aligned"/>
+			</property>
 		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option name="titleView" caption="__title" />
+			<option name="entrySignatureView" caption="__entry_signature" />
+			<option name="descriptionView" caption="__description" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="entryWorkflow" caption="__entry_workflow" />
+			<option name="entryAttachments" caption="__entry_attachments" />
+			<option name="entryReplies" caption="__entry_replies" />
+			<option_select path="//item[@category='commonEntryViewData']" />
+			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
+		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_signature.jsp" />
