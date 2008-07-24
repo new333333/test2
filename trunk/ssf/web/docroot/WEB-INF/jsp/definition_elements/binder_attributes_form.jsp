@@ -55,32 +55,39 @@
   		</c:if>
 
     	
-      <table  class="ss_attribute" cellpadding="1"><tbody>
+      <table  class="ss_attribute" cellpadding="2"><tbody>
         <tr>
-        	<td class="ss_bold" colspan="2" align="center"><ssf:nlt tag="attributes.set"/> = ${attributeSet}
+        	<td class="ss_bold" colspan="2" align="left">${attributeSet}
           	</td></tr>
-          	 <tr><td class="ss_fineprint ss_bold" align="right" style="padding-bottom:3px;"><ssf:nlt tag="attributes.deleteSet"/>
-        	</td>
-        	<td valign="top"  style="padding-bottom:3px;">
-        	<input type="checkbox" name="${property_name}__delete__${attributeSet}" />
-        	</td></tr>
-        	<tr><td class="ss_bold" colspan="2" align="right">
-        <span class="ss_fineprint" align="right"><ssf:nlt tag="attributes.delete"/></span>
+          	 <tr><td colspan="2" valign="top" class="ss_smallprint ss_bold" align="left" style="padding-bottom:3px;"><ssf:nlt tag="attributes.deleteSet"/>
+          	 <input type="hidden" name="${property_name}__set__${attributeSet}" value="${attributeSet}"/>&nbsp&nbsp
+        	
+        	<input type="submit" class="ss_submit" name="${property_name}__delete__${attributeSet}" 
+		      value="<ssf:nlt tag="button.delete" text="Delete"/>" 
+		      onClick="ss_deleteAttributeSet(this, '${property_name}__delete__${attributeSet}');" /> 
+        	  
+		    
+		     
+		 
+		</td></tr>
+        	<tr><td class="ss_bold" colspan="2" align="left">
+        <span class="ss_smallprint" align="left"><ssf:nlt tag="attributes.delete"/></span>
           	</td></tr>
 			
         	<c:set var="attributes" value="${property_name}__set__${attributeSet}"/>
         	<c:forEach var="attribute" items="${ssDefinitionEntry.customAttributes[attributes].valueSet}">
         	<tr>
-        	 <td align="right">${attribute}
-        	  <input type="hidden" name="${property_name}__set__${attributeSet}" value="${attribute}"/><br/>
-        	</td>
-        	<td>
-        	  <input class="ss_box_delete" type="checkbox" name="${property_name}__delete__${attributeSet}__${attribute}" /> </td>
+        	 <td width="30%" align="left"><span class="ss_fineprint" align="left" style="padding-left:5px;">${attribute}</span>
+        	  </td>
+        	 <td>
+        	  <a href="javascript:;"
+      onClick="ss_deleteAttribute(this, '${property_name}__delete__${attribute}');return false;"
+    ><img border="0" valign="absmiddle" src="<html:imagesPath/>pics/1pix.gif" class="ss_generic_close"/></a> </td>
         	  </tr>
         	
         	</c:forEach>
         	<tr>
-        	<td>
+        	<td colspan="2" class="ss_smallprint ss_bold">
         	<input type="checkbox" name="${property_name}__setMultipleAllowed__${attributeSet}" 
         	  <c:set var="attributeSetMA" value="${property_name}__setMultipleAllowed__${attributeSet}"/>
         	  <c:if test="${ssDefinitionEntry.customAttributes[attributeSetMA].value}">checked</c:if> /> 
@@ -94,8 +101,8 @@
 
           </td>
         </tr>
-        <tr><td colspan=2 style="padding:3px;" align="center">
-        
+        <tr><td colspan="2" style="padding:3px;" align="center">
+        	
         	<input class="ss_submit" type="submit" name="applyBtn" value="<ssf:nlt tag="button.saveChanges"/>" />
           </td>
         </tr>

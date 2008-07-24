@@ -364,6 +364,8 @@ a.ss_new_thread:hover {
 
 /******* PAGINATION STYLES *************/
 .ss_pagination {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: ${ss_style_font_fineprint} !important;
 	background-color: #CCDFDE !important;
 	height:38px !important;
 	margin-bottom: 5px;
@@ -399,8 +401,18 @@ a.ss_new_thread:hover {
  		padding-top:10px;
  	</c:if>
  	}
+ .ss_page_IE2 {
+ 	font-size: ${ss_style_font_fineprint} !important;
+ 	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 2px;
+	<c:if test="<%= isIE %>">
+  		padding-top: 14px;
+  		vertical-align:top !important;
+ 	</c:if>
+ 	overflow:hidden;
+ 	}	
 .ss_pTB_no {				/* This greys out the Go Box if only one page */
-	font-family: Arial, Helvetica, sans-serif;
 	line-height: 10px;
 	font-size: ${ss_style_font_finestprint} !important;
 	width: 22px;
@@ -440,13 +452,10 @@ a.ss_new_thread:hover {
  	</c:if>
 	}
 .ss_paginationFont {
-	font-family: Arial, Helvetica, sans-serif;
 	font-size: ${ss_style_font_fineprint} !important;
 	padding-left: 2px;
 	padding-right: 5px;
-/*	white-space: nowrap !important; */
 	padding-top: 2px;
-/*	height:40px !important;			*/
 	<c:if test="<%= isIE %>">
   		margin-top: 5px;
   		padding-top: 4px;
@@ -489,7 +498,6 @@ a.ss_new_thread:hover {
 	background-color: #CCDFDE !important;
 }
 .ss_paginationTextBox {
-	font-family: Arial, Helvetica, sans-serif;
 	line-height: 10px;
 	font-size: ${ss_style_font_finestprint} !important;
 	width: 22px;
@@ -513,7 +521,6 @@ a.ss_new_thread:hover {
 /***** FORMS ATTRIBUTES STYLES ******/
 
 .ss_box_delete {
-	background-color: #C90000!important;
 	border: 0.3px solid #3D3D3D!important;
 	}
 .ss_attribute {
