@@ -46,7 +46,7 @@
 			<div id="ss_goBox">
 			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
 				<tbody><tr>
-				<td class="ss_paginationFont" valign="middle">
+				<td class="ss_page_IE2" valign="middle">
 			
 				
 			<c:if test="${ssPageCount > '1.0'}">
@@ -59,7 +59,7 @@
 			    </ssf:ifaccessible>
 			
 			    </td>
-			    <td align="right" class="ss_paginationGo ss_page_IE">
+			    <td valign="middle"  class="ss_paginationGo ss_page_IE">
 			        <form name="ss_goToPageForm_${renderResponse.namespace}" id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
 			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
@@ -68,7 +68,7 @@
 				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 				name="endDate" value="${endDate}"/></c:if><ssf:param 
 				name="operation" value="save_folder_goto_page_info"/></ssf:url>" onSubmit="return(ss_submitPage_${renderResponse.namespace}(this))">
-				&nbsp;&nbsp;
+				
 			    <input name="ssGoToEntry" id="ssGoToEntry" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
 				<a href="javascript: ;" 
 				<ssf:title tag="entry.goTo" />
@@ -180,7 +180,7 @@
 			<div id="ss_goBox">
 			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
 				<tbody><tr>
-				<td class="ss_paginationFont" valign="middle">
+				<td class="ss_page_IE2" valign="middle">
 			
 			<c:if test="${ssPageCount > '1.0'}">
 				<ssf:ifnotaccessible>
@@ -191,7 +191,7 @@
 			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
 			    </ssf:ifaccessible>
 			    </td>
-			    <td valign="middle"  class="ss_paginationGo">
+			    <td valign="middle"  class="ss_paginationGo ss_page_IE">
 			    <form name="ss_goToPageForm_${renderResponse.namespace}" id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
 			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
@@ -200,7 +200,7 @@
 				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 				name="endDate" value="${endDate}"/></c:if><ssf:param 
 				name="operation" value="save_folder_goto_page_info"/></ssf:url>" onSubmit="return(ss_submitPage_${renderResponse.namespace}(this))">
-				&nbsp;&nbsp;
+				
 				
 			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
 				<a href="javascript: ;" 
