@@ -313,7 +313,7 @@ public class BinderHelper {
 			model.put(WebKeys.LOGIN_URL, loginUrl.toString());
 			String logoutUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_LOGOUT;
 			model.put(WebKeys.LOGOUT_URL, logoutUrl);
-			String loginPostUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_LOGIN;
+			String loginPostUrl = WebUrlUtil.getSSFContextRootURL(request) + WebKeys.SERVLET_LOGIN;
 			model.put(WebKeys.LOGIN_POST_URL, loginPostUrl);
 		}
 		User user = null;

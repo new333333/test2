@@ -56,86 +56,34 @@ public class LoginFilter  implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 
-		if(WebHelper.isUserLoggedIn(req)) {
-			// User is logged in either as guest or as regular user.
-			if(isAtRoot(req) && req.getMethod().equalsIgnoreCase("get")) {
-				// We're at the root URL. Re-direct the client to its workspace.
-				// Do this only if the request method is GET.
-				String workspaceUrl = getWorkspaceURL(req);
-				res.sendRedirect(workspaceUrl);
+		if(isAtRoot(req) && req.getMethod().equalsIgnoreCase("get")) {
+			// We're at the root URL. Re-direct the client to its workspace.
+			// Do this only if the request method is GET.
+			String workspaceUrl = getWorkspaceURL(req);
+			res.sendRedirect(workspaceUrl);
+		}
+		else {
+			if(WebHelper.isGuestLoggedIn(req)) {
+				// User is logged in as guest. Proceed to the login screen.
+				String refererUrl = getOriginalURL(req);
+				req.setAttribute(WebKeys.REFERER_URL, refererUrl);
+				chain.doFilter(request, response);
 			}
 			else {
-				if(WebHelper.isGuestLoggedIn(req)) {
-					// User is logged in as guest. Proceed to the login screen.
-					String refererUrl = getOriginalURL(req);
-					req.setAttribute(WebKeys.REFERER_URL, refererUrl);
-					chain.doFilter(request, response);
+				String url = req.getQueryString();
+				String redirectUrl = url;
+				if (url != null) { 
+					redirectUrl = redirectUrl.replace(WebKeys.USERID_PLACEHOLDER, WebHelper.getRequiredUserId(req).toString());
 				}
-				else {
-					// User is logged in as regular user. Proceed as normal.
+
+				// User is logged in as regular user. Proceed as normal.
+				if(! redirectUrl.equals(url)) {
+					res.sendRedirect(req.getRequestURI() + "?" + redirectUrl);
+				} else {
 					req.setAttribute("referer", req.getQueryString());
 					chain.doFilter(request, response);
 				}
 			}
-		}
-		else {
-			// User is not (yet) logged in.
-			// Try synchronizing Teaming's HTTP state with the portal's by touching into it.
-			// The end result is expected to be one of the following two:
-			// 1. The portal logs the client in if the previous "rememberMe" credential
-			// is present and valid.
-			// 2. The portal logs the client in as a guest allowing anonymous access.
-			// Either way, by the time the following call returns, the client should
-			// have been logged in one way or another.
-			try {
-				getPortalLogin().touchPortal((HttpServletRequest) request, (HttpServletResponse) response);
-			} catch (Exception e) {
-				throw new ServletException(e);
-			}
-			
-			// Now redirect the client to the same original URL instead of proceeding in 
-			// this execution thread. This extra round trip is necessary in order to set
-			// up the request environment (HTTP session, etc.) properly with the HTTP
-			// state obtained from the previous contact with the portal.
-			String redirectUrl = getOriginalURL(req);
-			res.sendRedirect(redirectUrl);
-			
-			/*
-			String path = req.getPathInfo();
-			String actionValue = request.getParameter("action");
-			
-			if(isPathPermittedUnauthenticated(path) || isActionPermittedUnauthenticated(actionValue)) {
-				// The action value indicates that the framework should allow
-				// execution of the controller corresponding to the action value
-				// even when the user is not authenticated (or previous 
-				// authentication has expired). 
-				// Note that this does NOT open up a security hole as one might
-				// be tempted to think, because the action value to controller
-				// mapping is done with the special prefix (i.e., "__") value
-				// already taken into consideration. Therefore, user's attempt
-				// to prefix the action value with the special characters to
-				// bypass the filter's security check will bear no fruit since
-				// the mapping doesn't exist. 
-				
-				request.setAttribute(WebKeys.UNAUTHENTICATED_REQUEST, Boolean.TRUE);
-				
-				chain.doFilter(request, response); // Proceed
-			}
-			else {
-				// Unauthenticated access is not allowed. So don't bother 
-				// invoking the servlet. Instead simply redirect the user to 
-				// the portal login page.
-				RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/jsp/forum/login_please.jsp");
-				request.setAttribute(WebKeys.URL, req.getRequestURL()+"?"+req.getQueryString());
-				AdaptedPortletURL loginUrl = new AdaptedPortletURL(req, "ss_forum", true);
-				loginUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOGIN); 
-				request.setAttribute(WebKeys.LOGIN_URL, loginUrl.toString());
-				String logoutUrl = WebUrlUtil.getServletRootURL(req) + WebKeys.SERVLET_LOGOUT;
-				request.setAttribute(WebKeys.LOGOUT_URL, logoutUrl);
-				String loginPostUrl = WebUrlUtil.getServletRootURL(req) + WebKeys.SERVLET_LOGIN;
-				request.setAttribute(WebKeys.LOGIN_POST_URL, loginPostUrl);
-				dispatcher.forward(request, response);
-			}*/
 		}
 	}
 	

@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.sitescape.team.domain.AuthenticationConfig;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.Description;
@@ -57,7 +58,8 @@ public interface AdminModule {
 		manageTemplate,
 		report,
 		manageFunctionMembership,
-		manageErrorLogs
+		manageErrorLogs,
+		manageAuthentication
 	}
 	/**
 	 * The method name to be called is used as the operation.   This
@@ -178,4 +180,7 @@ public interface AdminModule {
 	public void updateDefaultDefinitions(Long topId);
     
  
+	public List<AuthenticationConfig> getAuthenticationConfigs(Long zoneId);
+	public List<AuthenticationConfig> getAuthenticationConfigs();
+	public void setAuthenticationConfigs(List<AuthenticationConfig> configs);
  }

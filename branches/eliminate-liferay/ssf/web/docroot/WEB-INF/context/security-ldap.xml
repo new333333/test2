@@ -4,7 +4,29 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.1.xsd">
     
-    <bean id="contextSourceA" class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">
+	<bean id="springAuthenticationBeans" class="com.sitescape.team.spring.security.SpringAuthenticationBeans">
+		<property name="globalProviders">
+			<map>
+				<entry key="ldapOne" value-ref="fallbackAuthenticationProvider"/>
+			</map>
+		</property>
+		<property name="zoneSpecificProviders">
+			<map>
+				<entry key="monkeyco">
+					<map>
+						<entry key="ldapTwo" value-ref="ldapTwo"/>
+					</map>
+				</entry>
+			</map>
+		</property>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+		<property name="defaultProvider" ref="fallbackAuthenticationProvider"/>
+	</bean>
+
+
+	<bean id="_apacheDirectoryServerContainer" class="java.lang.String"/>
+	
+    <bean id="fallbackContextSource" class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">
         <constructor-arg value="ldap://192.168.3.197:389/"/>
     </bean>
 
@@ -13,91 +35,34 @@
     </bean>
 
 
-    <s:ldap-server id="embeddedLDAPsource" ldif="classpath:users.ldif" port="33389"/>
-    <bean id="contextSourceEmbedded" class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">
-        <constructor-arg value="ldap://localhost:33389/dc=springframework,dc=org"/>
-    </bean>
-
-	<bean id="ssfContextMapper" class="com.sitescape.team.security.spring.SsfContextMapper"/>
-
-    <bean id="firstLdapProvider" class="org.springframework.security.providers.ldap.LdapAuthenticationProvider">
-        <s:custom-authentication-provider />
+    <bean id="fallbackAuthenticationProvider" class="org.springframework.security.providers.ldap.LdapAuthenticationProvider">
 		<constructor-arg>
 			<bean class="org.springframework.security.providers.ldap.authenticator.BindAuthenticator">
-				<constructor-arg ref="contextSourceA" />
+				<constructor-arg ref="fallbackContextSource" />
 				<property name="userSearch">
 					<bean id="userSearchOne" class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch">
-					  <constructor-arg index="0" value="ou=aspendemocouid,o=novell"/>
+					  <constructor-arg index="0" value="o=novell"/>
 					  <constructor-arg index="1" value="(uid={0})"/>
-					  <constructor-arg index="2" ref="contextSourceA" />
+					  <constructor-arg index="2" ref="fallbackContextSource" />
+					  <property name="searchSubtree" value="false"/>
 					</bean>
 				</property>
-			</bean>
-		</constructor-arg>
-		<constructor-arg>
-			<bean class="org.springframework.security.ldap.populator.DefaultLdapAuthoritiesPopulator">
-				<constructor-arg ref="contextSourceA" />
-				<constructor-arg value="ou=groups" />
-				<property name="groupSearchFilter" value="(member={0})"/>
-				<property name="rolePrefix" value="ROLE_"/>
-				<property name="searchSubtree" value="true"/>
-				<property name="convertToUpperCase" value="true"/>
 			</bean>
 		</constructor-arg>
 		<property name="userDetailsContextMapper"><ref bean="ssfContextMapper"/></property>
     </bean>
 
-    <bean id="secondLdapProvider" class="org.springframework.security.providers.ldap.LdapAuthenticationProvider">
-        <s:custom-authentication-provider />
-		<constructor-arg>
+    <bean id="ldapTwo" class="org.springframework.security.providers.ldap.LdapAuthenticationProvider">
+        <constructor-arg>
 			<bean class="org.springframework.security.providers.ldap.authenticator.BindAuthenticator">
 				<constructor-arg ref="contextSourceB" />
 				<property name="userSearch">
 					<bean id="userSearchTwo" class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch">
-					  <constructor-arg index="0" value="o=novell"/>
+					  <constructor-arg index="0" value="ou=Quality Assurance,ou=aspendemocouid,o=novell"/>
 					  <constructor-arg index="1" value="(uid={0})"/>
 					  <constructor-arg index="2" ref="contextSourceB" />
-					  <property name="searchSubtree" value="false"/>
 					</bean>
 				</property>
-			</bean>
-		</constructor-arg>
-		<constructor-arg>
-			<bean class="org.springframework.security.ldap.populator.DefaultLdapAuthoritiesPopulator">
-				<constructor-arg ref="contextSourceB" />
-				<constructor-arg value="ou=groups" />
-				<property name="groupSearchFilter" value="(member={0})"/>
-				<property name="rolePrefix" value="ROLE_"/>
-				<property name="searchSubtree" value="true"/>
-				<property name="convertToUpperCase" value="true"/>
-			</bean>
-		</constructor-arg>
-		<property name="userDetailsContextMapper"><ref bean="ssfContextMapper"/></property>
-    </bean>
-
-    <bean id="embeddedLdapProvider" class="org.springframework.security.providers.ldap.LdapAuthenticationProvider">
-        <s:custom-authentication-provider />
-		<constructor-arg>
-			<bean class="org.springframework.security.providers.ldap.authenticator.BindAuthenticator">
-				<constructor-arg ref="contextSourceEmbedded" />
-				<property name="userSearch">
-					<bean id="userSearchThree" class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch">
-					  <constructor-arg index="0" value="ou=people"/>
-					  <constructor-arg index="1" value="(uid={0})"/>
-					  <constructor-arg index="2" ref="contextSourceEmbedded" />
-					  <property name="searchSubtree" value="false"/>
-					</bean>
-				</property>
-			</bean>
-		</constructor-arg>
-		<constructor-arg>
-			<bean class="org.springframework.security.ldap.populator.DefaultLdapAuthoritiesPopulator">
-				<constructor-arg ref="contextSourceEmbedded" />
-				<constructor-arg value="ou=groups" />
-				<property name="groupSearchFilter" value="(member={0})"/>
-				<property name="rolePrefix" value="ROLE_"/>
-				<property name="searchSubtree" value="true"/>
-				<property name="convertToUpperCase" value="true"/>
 			</bean>
 		</constructor-arg>
 		<property name="userDetailsContextMapper"><ref bean="ssfContextMapper"/></property>

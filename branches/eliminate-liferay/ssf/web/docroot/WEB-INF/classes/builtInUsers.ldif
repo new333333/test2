@@ -1,0 +1,49 @@
+dn: ou=groups,dc=teaming
+objectclass: top
+objectclass: organizationalUnit
+ou: groups
+
+dn: ou=people,dc=teaming
+objectclass: top
+objectclass: organizationalUnit
+ou: people
+
+dn: uid=admin,ou=people,dc=teaming
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Mary Admin
+sn: Admin
+givenName: Mary
+uid: admin
+userPassword: test
+
+dn: uid=wmitty,ou=people,dc=teaming
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Walter Mitty
+sn: Mitty
+uid: wmitty
+userPassword: password
+
+dn: cn=user,ou=groups,dc=teaming
+objectclass: top
+objectclass: groupOfNames
+cn: user
+member: uid=admin,ou=people,dc=teaming
+member: uid=wmitty,ou=people,dc=teaming
+
+dn: cn=teller,ou=groups,dc=teaming
+objectclass: top
+objectclass: groupOfNames
+cn: teller
+member: uid=wmitty,ou=people,dc=teaming
+
+dn: cn=supervisor,ou=groups,dc=teaming
+objectclass: top
+objectclass: groupOfNames
+cn: supervisor
+member: uid=admin,ou=people,dc=teaming
