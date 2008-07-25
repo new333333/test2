@@ -1100,7 +1100,7 @@ public class WebKeys {
     public static final String VIEW_TEAM_MEMBERS="forum/view_team_members";
     
     //servlet paths
-    public static final String SERVLET_LOGIN="portalLogin";
+    public static final String SERVLET_LOGIN="j_spring_security_check";
     public static final String SERVLET_LOGOUT="portalLogout";
     public static final String SERVLET_VIEW_FILE="viewFile";
     public static final String SERVLET_VIEW_CSS="viewCss";

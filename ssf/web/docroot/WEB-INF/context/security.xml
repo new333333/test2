@@ -3,15 +3,71 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.1.xsd">
-    
-    <s:http>
-        <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED" />
 
-        <s:form-login />
-        <s:anonymous />
+	<bean id="zoneGrabbingFilter" class="com.sitescape.team.spring.security.ZoneGrabbingFilter">
+		<s:custom-filter position="FIRST"/>
+	</bean>
+	
+	<bean id="zoneAwareAuthenticationProvider" class="com.sitescape.team.spring.security.ZoneAwareAuthenticationProvider"
+		depends-on="springAuthenticationBeans">
+        <s:custom-authentication-provider />
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+		<property name="adminModule"><ref bean="adminModule"/></property>
+	</bean>
+	
+    <s:http session-fixation-protection="newSession">
+        <s:intercept-url pattern="/ws/**" access="ROLE_ANONYMOUS" />
+        <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED,ROLE_ANONYMOUS" />
+
+        <s:form-login/>
+        <s:anonymous granted-authority="ROLE_ANONYMOUS" username="guest"  />
         <s:logout />
 
     </s:http>
 
+	<bean id="_anonymousProcessingFilter"
+	      class="com.sitescape.team.spring.security.ZoneAwareAnonymousProcessingFilter">
+		<property name="key" value="thisIsIgnored"/>
+		<property name="userAttribute" value="guest,ROLE_ANONYMOUS"/>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+	</bean>
+
+	<bean id="springAuthenticationBeans" class="com.sitescape.team.spring.security.SpringAuthenticationBeans">
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+		<property name="defaultProvider" ref="fallbackAuthenticationProvider"/>
+	</bean>
+	
+	<bean id="ssfContextMapper" class="com.sitescape.team.spring.security.SsfContextMapper">
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+	</bean>
+
+	<s:ldap-server id="fallbackContextSource" ldif="classpath:builtInUsers.ldif" port="33389" root="dc=teaming"/>
+
+    <bean id="fallbackAuthenticationProvider" class="org.springframework.security.providers.ldap.LdapAuthenticationProvider">
+		<constructor-arg>
+			<bean class="org.springframework.security.providers.ldap.authenticator.BindAuthenticator">
+				<constructor-arg ref="fallbackContextSource" />
+				<property name="userSearch">
+					<bean id="userSearchThree" class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch">
+					  <constructor-arg index="0" value="ou=people"/>
+					  <constructor-arg index="1" value="(uid={0})"/>
+					  <constructor-arg index="2" ref="fallbackContextSource" />
+					  <property name="searchSubtree" value="false"/>
+					</bean>
+				</property>
+			</bean>
+		</constructor-arg>
+		<constructor-arg>
+			<bean class="org.springframework.security.ldap.populator.DefaultLdapAuthoritiesPopulator">
+				<constructor-arg ref="fallbackContextSource" />
+				<constructor-arg value="ou=groups" />
+				<property name="groupSearchFilter" value="(member={0})"/>
+				<property name="rolePrefix" value="ROLE_"/>
+				<property name="searchSubtree" value="true"/>
+				<property name="convertToUpperCase" value="true"/>
+			</bean>
+		</constructor-arg>
+		<property name="userDetailsContextMapper"><ref bean="ssfContextMapper"/></property>
+    </bean>
 
 </beans>
