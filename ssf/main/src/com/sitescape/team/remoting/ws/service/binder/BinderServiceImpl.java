@@ -31,23 +31,30 @@ package com.sitescape.team.remoting.ws.service.binder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.comparator.BinderComparator;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
-import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.rss.util.UrlUtil;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
@@ -56,13 +63,14 @@ import com.sitescape.team.remoting.ws.model.FolderCollection;
 import com.sitescape.team.remoting.ws.model.FunctionMembership;
 import com.sitescape.team.remoting.ws.model.PrincipalBrief;
 import com.sitescape.team.remoting.ws.model.TeamMemberCollection;
+import com.sitescape.team.remoting.ws.model.Timestamp;
 import com.sitescape.team.remoting.ws.util.DomInputData;
 import com.sitescape.team.remoting.ws.util.ModelInputData;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
-import com.sitescape.team.web.tree.WebSvcTreeHelper;
-import com.sitescape.team.web.tree.WsDomTreeBuilder;
+import com.sitescape.team.web.util.PermaLinkUtil;
+import com.sitescape.util.search.Constants;
 
 public class BinderServiceImpl extends BaseService implements BinderService, BinderServiceInternal {
 	public long binder_addBinderWithXML(String accessToken, long parentId, String definitionId, String inputDataAsXML)
@@ -260,70 +268,46 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 	}
 	
 	public FolderCollection binder_getFolders(String accessToken, long binderId) {
-		// Cheap implementation - copied mostly from search_getWorkspaceTreeAsXML
-		
-		com.sitescape.team.domain.Binder binder = null;
-		
-		if(binderId == -1) {
-			binder = getWorkspaceModule().getTopWorkspace();
-		} else {
-			binder = getBinderModule().getBinder(new Long(binderId));
+        User user = RequestContextHolder.getRequestContext().getUser();
+        // Probably sorting by title isn't as important in web services as in browser UI, 
+        // but it wouldn't hurt either.
+        Comparator c = new BinderComparator(user.getLocale(),BinderComparator.SortByField.title);
+		Binder binder = getBinderModule().getBinder(binderId);		
+		Map searchResults = getBinderModule().getBinders(binder, new HashMap());
+		List searchBinders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
+		TreeSet set = new TreeSet(c);
+	
+		List<FolderBrief> folderList = new ArrayList<FolderBrief>();
+		//get folders
+		Long id;
+		String title;
+		Timestamp creation;
+		Timestamp modification;
+		String permaLink;
+		String rssUrl;
+		String icalUrl;
+		for (int i=0; i<searchBinders.size(); ++i) {
+			Map search = (Map)searchBinders.get(i);
+			String entityType = (String)search.get(Constants.ENTITY_FIELD);
+			if (!EntityType.folder.name().equals(entityType))
+				continue;
+			id = Long.valueOf((String)search.get(Constants.DOCID_FIELD));
+			title = (String) search.get(Constants.TITLE_FIELD);
+			creation = new Timestamp((String) search.get(Constants.MODIFICATION_NAME_FIELD), (Date) search.get(Constants.MODIFICATION_DATE_FIELD));
+			modification = new Timestamp((String) search.get(Constants.CREATOR_NAME_FIELD), (Date) search.get(Constants.CREATION_DATE_FIELD));
+			permaLink = PermaLinkUtil.getURL(id, (String) search.get(Constants.ENTITY_FIELD));
+			rssUrl = UrlUtil.getFeedURL(null, id.toString()); // folder only
+			icalUrl = com.sitescape.team.ical.util.UrlUtil.getICalURL(null, id.toString(), null); // folder only
+			folderList.add(new FolderBrief(id, 
+					title,
+					creation,
+					modification,
+					permaLink,
+					rssUrl,
+					icalUrl));								
 		}
-
-		Document tree;
-		if (binder instanceof Workspace) {
-			tree = getBinderModule().getDomBinderTree(binder.getId(), 
-					new WsDomTreeBuilder(binder, true, this, new WebSvcTreeHelper(), ""), 1);
-		} 
-		else {
-			tree = getBinderModule().getDomBinderTree(binder.getId(), 
-					new WsDomTreeBuilder(binder, false, this, new WebSvcTreeHelper(), ""), 1);
-		}
-
-		return getFolderCollectionFromDomBinderTree(binderId, tree);
+		FolderBrief[] array = new FolderBrief[folderList.size()];
+		return new FolderCollection(binderId, folderList.toArray(array));
 	}
 	
-	protected FolderCollection getFolderCollectionFromDomBinderTree(Long binderId, Document tree) {
-		List children = tree.getRootElement().selectNodes("//child[@type='folder']");
-		FolderBrief[] folders = new FolderBrief[children.size()];
-		String value;
-		Long id;
-		String image;
-		String imageClass;
-		String action;
-		Boolean displayOnly;
-		String permaLink;
-		String rss;
-		String ical;
-		Element child;
-		for(int i = 0; i < folders.length; i++) {
-			child = (Element) children.get(i);
-			id = null;
-			image = null;
-			imageClass = null;
-			action = null;
-			displayOnly = null;
-			permaLink = null;
-			rss = null;
-			ical = null;
-			value = child.attributeValue("id", "");
-			if(!value.equals("")) id = Long.valueOf(value);
-			value = child.attributeValue("image", "");
-			if(!value.equals("")) image = value;
-			value = child.attributeValue("imageClass", "");
-			if(!value.equals("")) imageClass = value;
-			value = child.attributeValue("action", "");
-			if(!value.equals("")) action = value;
-			value = child.attributeValue("displayOnly", "");
-			if(!value.equals("")) displayOnly = Boolean.valueOf(value);
-			value = child.attributeValue("permaLink", "");
-			if(!value.equals("")) permaLink = value;
-			value = child.attributeValue("rss", "");
-			if(!value.equals("")) rss = value;
-			value = child.attributeValue("ical", "");
-			if(!value.equals("")) ical = value;
-			folders[i] = new FolderBrief(id, image, imageClass, action, displayOnly, permaLink, rss, ical);
-		}
-		return new FolderCollection(binderId, folders);	
-	}
 }

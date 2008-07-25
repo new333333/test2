@@ -28,44 +28,19 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
-public class FolderBrief {
+import java.io.Serializable;
 
-	private Long id;
-	private String imagePath;
-	private String imageClass;
-	private String action;
-	private Boolean displayOnly;
-	private String permalink;
+public class FolderBrief extends BinderBrief implements Serializable {
+
 	private String rssUrl;
 	private String icalUrl;
 	
 	public FolderBrief() {}
 	
-	public FolderBrief(Long id, String imagePath, String imageClass, String action, Boolean displayOnly, String permalink, String rssUrl, String icalUrl) {
-		this.id = id;
-		this.imagePath = imagePath;
-		this.imageClass = imageClass;
-		this.action = action;
-		this.displayOnly = displayOnly;
-		this.permalink = permalink;
+	public FolderBrief(Long id, String title, Timestamp creation, Timestamp modification, String permalink, String rssUrl, String icalUrl) {
+		super(id, title, creation, modification, permalink);
 		this.rssUrl = rssUrl;
 		this.icalUrl = icalUrl;
-	}
-
-	public String getAction() {
-		return action;
-	}
-
-	public void setAction(String action) {
-		this.action = action;
-	}
-
-	public Boolean getDisplayOnly() {
-		return displayOnly;
-	}
-
-	public void setDisplayOnly(Boolean displayOnly) {
-		this.displayOnly = displayOnly;
 	}
 
 	public String getIcalUrl() {
@@ -76,38 +51,6 @@ public class FolderBrief {
 		this.icalUrl = icalUrl;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getImageClass() {
-		return imageClass;
-	}
-
-	public void setImageClass(String imageClass) {
-		this.imageClass = imageClass;
-	}
-
-	public String getImagePath() {
-		return imagePath;
-	}
-
-	public void setImagePath(String imagePath) {
-		this.imagePath = imagePath;
-	}
-
-	public String getPermalink() {
-		return permalink;
-	}
-
-	public void setPermalink(String permalink) {
-		this.permalink = permalink;
-	}
-
 	public String getRssUrl() {
 		return rssUrl;
 	}
@@ -116,5 +59,4 @@ public class FolderBrief {
 		this.rssUrl = rssUrl;
 	}
 	
-
 }

@@ -45,6 +45,7 @@
 		<beanMapping qname="ns:Attachment" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.AttachmentsField$Attachment"/>
 		<beanMapping qname="ns:AverageRating" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.AverageRating"/>
 		<beanMapping qname="ns:Binder" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Binder"/>
+		<beanMapping qname="ns:BinderBrief" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.BinderBrief"/>
 		<beanMapping qname="ns:CustomBooleanField" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.CustomBooleanField"/>
 		<beanMapping qname="ns:CustomDateField" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.CustomDateField"/>
 		<beanMapping qname="ns:DefinableEntity" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.DefinableEntity"/>

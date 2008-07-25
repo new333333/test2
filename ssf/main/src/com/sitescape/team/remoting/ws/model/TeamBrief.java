@@ -30,49 +30,11 @@ package com.sitescape.team.remoting.ws.model;
 
 import java.io.Serializable;
 
-public class TeamBrief implements Serializable {
+public class TeamBrief extends BinderBrief implements Serializable {
 
-	private Long binderId;
-	private String title;
-	private Timestamp creation;
-	private Timestamp modification;
-	
 	public TeamBrief() {}
 	
-	public TeamBrief(Long binderId, String title, Timestamp creation, Timestamp modification) {
-		setBinderId(binderId);
-		setTitle(title);
-		setCreation(creation);
-		setModification(modification);
+	public TeamBrief(Long id, String title, Timestamp creation, Timestamp modification, String permalink) {
+		super(id, title, creation, modification, permalink);
 	}
-	
-	public Long getBinderId() {
-		return binderId;
-	}
-	public void setBinderId(Long binderId) {
-		this.binderId = binderId;
-	}
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public Timestamp getCreation() {
-		return creation;
-	}
-
-	public void setCreation(Timestamp creation) {
-		this.creation = creation;
-	}
-
-	public Timestamp getModification() {
-		return modification;
-	}
-
-	public void setModification(Timestamp modification) {
-		this.modification = modification;
-	}
-	
 }
