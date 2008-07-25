@@ -28,7 +28,9 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
-public class FolderCollection {
+import java.io.Serializable;
+
+public class FolderCollection implements Serializable {
 
 	private Long parentBinderId;
 	private FolderBrief[] folders;
