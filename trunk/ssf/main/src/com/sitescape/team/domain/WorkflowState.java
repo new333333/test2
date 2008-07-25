@@ -188,7 +188,11 @@ public class WorkflowState extends ZonedObject {
 		Element element = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_WORKFLOWSTATE);
 		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID, getId().toString());
 		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, getState());
-		
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_STATE_CAPTION, 
+				WorkflowUtils.getStateCaption(getDefinition(),getState()));
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_THREAD_CAPTION, 
+				WorkflowUtils.getThreadCaption(getDefinition(),getThreadName()));
+			
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_WFS_DEFINITION, getDefinition().getId());
 		if (getTimerId() != null)
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_WFS_TIMER, getTimerId());
