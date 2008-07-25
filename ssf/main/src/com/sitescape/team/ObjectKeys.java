@@ -363,6 +363,8 @@ public interface ObjectKeys {
     //xml tags - some used in GenerateLdapList (as strings) - keep in sync
     public static final String XTAG_ATTRIBUTE_DATABASEID="databaseId";
     public static final String XTAG_ATTRIBUTE_NAME="name";
+    public static final String XTAG_ATTRIBUTE_STATE_CAPTION="stateCaption";
+    public static final String XTAG_ATTRIBUTE_THREAD_CAPTION="threadCaption";
     public static final String XTAG_ATTRIBUTE_TYPE="type";
     public static final String XTAG_ATTRIBUTE_INTERNALID="internalId";
     
