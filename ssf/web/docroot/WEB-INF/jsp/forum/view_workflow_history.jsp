@@ -30,13 +30,13 @@
 %>
 <%@ page import="org.dom4j.Element" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/view_css.jsp" %>
 
 <ssf:ifadapter>
 <body>
 </ssf:ifadapter>
 
 <div class="ss_style ss_portlet">
-<h3><ssf:nlt tag="entry.workflowHistory"/></h3>
 <form class="ss_form" method="post" action="<ssf:url     
 		adapter="true" 
 		portletName="ss_forum" 
@@ -46,57 +46,87 @@
 		<ssf:param name="operation" value="modifyEntry" />
 		</ssf:url>"
 >
-<table class="ss_style" cellpadding="10" width="100%">
-<th><center><ssf:nlt tag="entry.Version"/></center></th>
-<th><center><ssf:nlt tag="entry.modifiedOn"/></center></th>
-<th><center><ssf:nlt tag="entry.modifiedBy"/></center></th>
-<th><center><ssf:nlt tag="entry.operation"/></center></th>
-<th><center><ssf:nlt tag="entry.processName"/></center></th>
-<th><center><ssf:nlt tag="entry.threadName"/></center></th>
-<th><center><ssf:nlt tag="entry.state"/></center></th>
-
-<c:forEach var="change" items="${ss_changeLogList}">
-<tr>
-<td valign="top" width="05%" nowrap>
-  <span style="padding-left:10px;">${change.folderEntry.attributes.logVersion}</span>
-</td>
-<td valign="top" width="10%" nowrap>
-  <span style="padding-left:10px;">"${change.folderEntry.attributes.modifiedOn}"</span>
-</td>
-<td valign="top" width="10%" nowrap>
-  <span style="padding-left:10px;">${change.folderEntry.attributes.modifiedBy}</span>
-</td>
-<td valign="top" width="10%" nowrap>
-  <span style="padding-left:10px;"><ssf:nlt tag="workflow.${change.folderEntry.attributes.operation}"/></span>
-</td>
-<td valign="top" width="10%" nowrap>
-  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
-	  <span style="padding-left:10px;">${workflow.value.attributes.process}</span>
-	<br>
-  </c:forEach>
-</td>
-<td valign="top" width="10%" nowrap>
-  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
-	  <span style="padding-left:10px;">${workflow.value.attributes.thread}</span>
-	<br>
-  </c:forEach>
-</td>
-<td valign="top" width="10%" nowrap>
-  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
-	  <span style="padding-left:10px;">${workflow.value.attributes.name}</span>
-	<br>
-  </c:forEach>
-</td>
-<td valign="top" width="30%" nowrap/>
-</tr>
-</c:forEach>
+<table width="75%" border="0" align="center" cellpadding="0" cellspacing="0" class="ss_formWrap">
+  <tr>
+    <td height="267"><h1><ssf:nlt tag="entry.workflowHistory"/></h1>
+	 <div class="ss_formButton">
+	 	<input type="button" name="Button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;"/>
+	 </div>
+	 <br/>
+    	<table width="100%" border="0" cellpadding="0" cellspacing="0">
+    		<tr>
+				<td width="50" class="ss_FormTableHeading"><ssf:nlt tag="entry.eventNumber"/></th>
+				<td width="152" class="ss_FormTableHeading"><ssf:nlt tag="entry.modifiedOn"/></th>
+				<td width="78" class="ss_FormTableHeading"><ssf:nlt tag="entry.modifiedBy"/></th>
+				<td width="90" class="ss_FormTableHeading"><ssf:nlt tag="entry.operation"/></th>
+				<td width="103" class="ss_FormTableHeading"><ssf:nlt tag="entry.processName"/></th>
+				<td width="86" class="ss_FormTableHeading"><p><ssf:nlt tag="entry.threadName"/></p></th>
+				<td width="93" class="ss_FormTableHeading"><ssf:nlt tag="entry.state"/></th>
+			</tr>
+			
+			<c:set var="odd" value="${false}"/>
+			
+			<c:forEach var="change" items="${ss_changeLogList}">
+				<c:set var="odd" value= "${not odd}"/>
+				
+				<tr <c:if test="${odd == 'true'}">class="ss_oddRow"</c:if>>		
+					<td class="ss_dataTableMid">
+					  ${change.folderEntry.attributes.logVersion}
+					</td>
+					
+					<td class="ss_dataTableTD">
+					 ${change.folderEntry.attributes.modifiedOn}
+					</td>
+					
+					<td class="ss_dataTableTD">
+					 ${change.folderEntry.attributes.modifiedBy}
+					</td>
+					
+					<td class="ss_dataTableTD">
+					  <ssf:nlt tag="workflow.${change.folderEntry.attributes.operation}"/>
+					</td>
+					
+					<td class="ss_dataTableTD">
+					  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
+						  ${workflow.value.attributes.process}
+						<br>
+					  </c:forEach>
+					</td>
+					
+					<td class="ss_dataTableTD">
+					  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
+						 	<%-- ${workflow.value.attributes.thread} --%>
+						  ${workflow.value.attributes.threadCaption}
+						<br>
+					  </c:forEach>
+					</td>
+					
+					<td class="ss_dataTableTD">
+					  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
+						  ${workflow.value.attributes.stateCaption}
+						<br>
+					  </c:forEach>
+					</td>
+					
+					<td class="ss_dataTableTD">
+					<c:out value="${change.definition}"/>
+					</td>
+				</tr>
+			</c:forEach>
+		</table> 
+	 <br />
+	 
+	 <div class="ss_formButton">
+	 	<input type="button" name="Button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;"/>
+	 </div>
+	 
 <tr>
 <td valign="top" nowrap>
-  <input type="button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;"/>
 </td>
 <td></td>
 </tr>
 </table>
+</body>
 </form>
 
 <br/>
@@ -104,16 +134,6 @@
 
 </div>
 
-<div id ="diff" style="display:none">
-<h3 id="diff-header"><ssf:nlt tag="entry.comparison">
-  <ssf:param name="value" value="<span id=\"versionNumberA\">x</span>"/>
-  <ssf:param name="value" value="<span id=\"versionNumberB\">x</span>"/>
-  </ssf:nlt>
-</h3>
-<h4 id="diff-key"><ssf:nlt tag="entry.comparison.key"/></h4>
-<div id="diff-title" class="ss_largeprint"></div>
-<div id="diff-desc" class="ss_entryContent ss_entryDescription"></div>
-</div>
 <ssf:ifadapter>
 </body>
 </html>
