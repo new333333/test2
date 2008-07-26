@@ -96,4 +96,5 @@ function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, page
 	formObj.ssEntriesPerPage.value = pageCountValue;
 	formObj.submit();
 }
+
 </script>

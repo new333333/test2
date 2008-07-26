@@ -877,6 +877,7 @@ function ss_showFolderPage(obj, binderId, currentPageIndex, divId, cTag, pTag, y
 function ss_showFolderPageDiv(s, divId) {
 	var divObj = self.document.getElementById(divId);
 	divObj.innerHTML = s;
+	ss_executeJavascript(divObj);
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }

@@ -258,6 +258,9 @@ Slider.eventHandlers = {
 			}
 			s.setValue(reset ? Slider._sliderDragData.startValue :
 						s.getMinimum() + boundSize * pos / size);
+
+			if (typeof s.ondrag == "function")
+				s.ondrag();
 			return false;
 		}
 		else {
@@ -491,4 +494,7 @@ Slider.prototype.ontimer = function () {
 };
 
 Slider.prototype.ondrop = function () {
+};
+
+Slider.prototype.ondrag = function () {
 };

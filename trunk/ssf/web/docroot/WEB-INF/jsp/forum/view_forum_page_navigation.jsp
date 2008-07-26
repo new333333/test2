@@ -140,6 +140,8 @@
 					<div class="slider" id="ss_page_slider${renderResponse.namespace}" style="width:150px;">
 						<input class="slider-input" id="ss_page_slider_input${renderResponse.namespace}"/>
 					</div>
+					<div id="ss_pageNavPageDiv${renderResponse.namespace}" class="ss_style"
+					  style="position:absolute; display:none; border:1px black solid; background-color:#ffffff;"></div>
 					<ssf:nlt tag="title.page.n_of_m">
 					  <ssf:param name="value" value="${ssPageCurrent}"/>
 					  <ssf:param name="value" value="${ssPageLast}"/>
@@ -244,18 +246,29 @@
 
 <script type="text/javascript">
 
+var ss_currentPageNavPage${renderResponse.namespace} = ${ssPageCurrent};
 var s = new Slider(document.getElementById("ss_page_slider${renderResponse.namespace}"), document.getElementById("ss_page_slider_input${renderResponse.namespace}"));
-s.onchange = function () {
+s.ondrop = function () {
+	var pageDivObj = document.getElementById('ss_pageNavPageDiv${renderResponse.namespace}');
+	pageDivObj.style.display = 'none';
 	var gotoObj = document.getElementById('ssGoToPage${renderResponse.namespace}');
 	if (gotoObj != null) {
 		gotoObj.value = s.getValue();
+		if (s.getValue() != ss_currentPageNavPage${renderResponse.namespace}) {
+			ss_autoGoToPage${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}', s.getValue());
+		}
 	}
 };
-s.ondrop = function () {
-	var gotoObj = document.getElementById('ssGoToPage${renderResponse.namespace}');
-	if (gotoObj != null) {
-		ss_autoGoToPage${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}', s.getValue());
-	}
+s.ondrag = function () {
+	var pageDivObj = document.getElementById('ss_pageNavPageDiv${renderResponse.namespace}');
+	var sliderDivObj = document.getElementById('ss_page_slider${renderResponse.namespace}');
+	ss_moveObjectToBody(pageDivObj);
+	pageDivObj.style.display = 'block';
+	ss_setObjectLeft(pageDivObj, parseInt(ss_getObjectLeft(sliderDivObj) + 70) + "px");
+	ss_setObjectTop(pageDivObj, parseInt(ss_getObjectTop(sliderDivObj) - 20) + "px");
+	//ss_setObjectLeft(pageDivObj, 0);
+	//ss_setObjectTop(pageDivObj, 0);
+	pageDivObj.innerHTML = "<span>"+s.getValue()+"</span>";
 };
 s.setValue(${ssPageCurrent});
 s.setMinimum(1);
