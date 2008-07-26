@@ -148,6 +148,7 @@ var ss_rootPath;
 var ss_imagesPath;
 var ss_1pix;
 var ss_forumCssUrl;
+var ss_sliderCssUrl;
 var ss_forumColorsCssUrl;
 var ss_not_logged_in;
 var ss_rtc_not_configured;
@@ -185,6 +186,7 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_imagesPath = "<html:imagesPath/>";
 	
 	ss_forumCssUrl = ss_urlBase + ss_rootPath + "css/forum.css";
+	ss_sliderCssUrl = ss_urlBase + ss_rootPath + "css/slider_swing.css";
 	ss_1pix = ss_imagesPath + "pics/1pix.gif";
 	ss_forumColorsCssUrl = "<ssf:url webPath="viewCss">
 	    <ssf:param name="theme" value="${ssUser.theme}"/>
@@ -261,9 +263,11 @@ function ss_createStyleSheet(url, title, enabled) {
 	if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 		if (document.createStyleSheet) {
 			document.createStyleSheet(ss_forumCssUrl);
+			document.createStyleSheet(ss_sliderCssUrl);
 			document.createStyleSheet(ss_forumColorsCssUrl);
 		} else {
 			ss_createStyleSheet(ss_forumCssUrl);
+			ss_createStyleSheet(ss_sliderCssUrl);
 			ss_createStyleSheet(ss_forumColorsCssUrl);
 		}
 	}

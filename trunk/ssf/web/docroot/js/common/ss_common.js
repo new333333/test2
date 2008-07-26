@@ -935,6 +935,35 @@ function ss_showWhatsNewPageDiv(s, divId) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
+function ss_selectWikiTab(obj, tab, namespace) {
+	//Clear "current" tab
+	var currentTab = window["ss_wikiTabCurrent_"+namespace];
+	if (currentTab != null) {
+		currentTab.parentNode.className = "";
+	}
+	if (obj != null) {
+		window["ss_wikiTabCurrent_"+namespace] = obj;
+		obj.parentNode.className = "ss_tabsCCurrent";
+	}
+	//Switch to the new tab
+	var url = window["ss_wikiAjaxUrl"+namespace];
+	url = ss_replaceSubStr(url, "ss_typePlaceHolder", tab);
+	if (ss_userDisplayStyle == "accessible") {
+		//If in accessible mode, just jump to the url directly
+		self.location.href = url;
+	} else {
+		var dirObj = document.getElementById('ss_wiki_directory_div'+namespace)
+		var entObj = document.getElementById('ss_wiki_entries_div'+namespace)
+		if (tab == 'directory') {
+			entObj.style.display = 'none';
+			dirObj.style.display = 'block';
+		} else {
+			dirObj.style.display = 'none';
+			entObj.style.display = 'block';
+		}
+	}
+}
+
 //Function to create a named div in the body
 function ss_createDivInBody(divId, className) {
 	var divObj = document.getElementById(divId);

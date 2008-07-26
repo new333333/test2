@@ -38,7 +38,6 @@
 	}
 %>
 
-
         <div id="ss_wikiEntryDiv${renderResponse.namespace}">
           <iframe id="ss_wikiIframe${renderResponse.namespace}" 
             name="ss_wikiIframe${renderResponse.namespace}" 
