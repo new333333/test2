@@ -33,6 +33,9 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/slider/slider.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/slider/range.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/slider/timer.js"></script>
 <script type="text/javascript">
 var ss_baseBinderPageUrl${renderResponse.namespace} = '<ssf:url><ssf:param 
 	name="action" value="ssActionPlaceHolder"/><ssf:param 
@@ -46,7 +49,7 @@ var ss_baseBinderPageUrl${renderResponse.namespace} = '<ssf:url><ssf:param
 
 //Check the Page Number Before Submission
 function ss_goToPage_${renderResponse.namespace}(formObj) {
-	var strGoToPage = formObj.ssGoToPage.value;
+	var strGoToPage = formObj.ssGoToPage${renderResponse.namespace}.value;
 	var pageCount = <c:out value="${ssPageCount}"/>;
 	
 	if (strGoToPage == "") {
@@ -63,7 +66,7 @@ function ss_goToPage_${renderResponse.namespace}(formObj) {
 		return false;
 	}
 	if (strGoToPage > pageCount) {
-		formObj.ssGoToPage.value = pageCount;
+		formObj.ssGoToPage${renderResponse.namespace}.value = pageCount;
 	}
 	return true;
 }
@@ -74,6 +77,14 @@ function ss_submitPage_${renderResponse.namespace}(formObj) {
 
 function ss_clickGoToPage_${renderResponse.namespace}(strFormName) {
 	var formObj = document.getElementById(strFormName);
+	if (ss_goToPage_${renderResponse.namespace}(formObj)) {
+		formObj.submit();
+	}
+}
+
+function ss_autoGoToPage${renderResponse.namespace}(formId, page) {
+	var formObj = document.getElementById(formId);
+	ss_goToPage_${renderResponse.namespace}(formObj);
 	if (ss_goToPage_${renderResponse.namespace}(formObj)) {
 		formObj.submit();
 	}

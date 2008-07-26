@@ -69,6 +69,15 @@ function ss_confirmSetWikiHomepage() {
 	return confirm("<ssf:nlt tag="wiki.confirmSetHomepage"/>");
 }
 
+<ssf:ifnotaccessible>
+  var ss_wikiAjaxUrl${renderResponse.namespace} = "";
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+  var ss_wikiAjaxUrl${renderResponse.namespace} = "<ssf:url 
+	action="view_folder_listing" ><ssf:param 
+  	name="binderId" value="${ssBinder.id}"/><ssf:param 
+	name="type" value="ss_typePlaceHolder" /></ssf:url>";
+</ssf:ifaccessible>
 </script>
 
 <% // Add the toolbar with the navigation widgets, commands and filter %>
@@ -79,8 +88,41 @@ function ss_confirmSetWikiHomepage() {
 </c:if>
 </ssf:toolbar>
 <div class="ss_clear"></div>
-<jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
-<div class="ss_folder" id="ss_wiki_folder_div">
-<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
-<%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_listing.jsp" %>
+
+<div id="ss_wrap" align="center">
+ <div id="ss_tabsC">
+  <ul>
+	<!-- CSS Tabs -->
+  <c:if test="${empty ssWikiCurrentTab}"><c:set var="ssWikiCurrentTab" value="directory" scope="request"/></c:if>
+	<li <c:if test="${ssWikiCurrentTab == 'directory'}">class="ss_tabsCCurrent"</c:if>
+	><a 
+	  <c:if test="${ssWikiCurrentTab == 'directory'}">id="ss_wikiInitialTab${renderResponse.namespace}"</c:if>
+	  href="javascript: ;"
+		onClick="ss_selectWikiTab(this, 'directory', '${renderResponse.namespace}');return false;"
+		><span><ssf:nlt tag="wiki.tab.directory"/></span></a></li>
+	
+	<li <c:if test="${ssWikiCurrentTab == 'entries'}">class="ss_tabsCCurrent"</c:if>
+	><a 
+	  <c:if test="${ssWikiCurrentTab == 'entries'}">id="ss_wikiInitialTab${renderResponse.namespace}"</c:if>
+	  href="javascript: ;"
+		onClick="ss_selectWikiTab(this, 'entries', '${renderResponse.namespace}');return false;"
+		><span><ssf:nlt tag="wiki.tab.entries"/></span></a></li>
+
+  </ul>
+ </div>
+</div>
+<div class="ss_clear"></div>
+
+<div id="ss_wiki_directory_div${renderResponse.namespace}" style="display:block;">
+  <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
+  <div class="ss_folder" >
+    <%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
+    xxxxxxxxxxxxxxxxx folder listing goes here xxxxxxxxxxxxxxxxxx
+  </div>
+</div>
+
+<div id="ss_wiki_entries_div${renderResponse.namespace}" style="display:none;">
+  <div class="ss_folder" id="ss_wiki_folder_div">
+    <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_listing.jsp" %>
+  </div>
 </div>

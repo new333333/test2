@@ -51,7 +51,7 @@
 				
 			<c:if test="${ssPageCount > '1.0'}">
 				<ssf:ifnotaccessible>
-			    	Go to EntryXX
+			    	xxx Go to Entry XXX
 			    </ssf:ifnotaccessible>
 			    
 			    <ssf:ifaccessible>
@@ -60,16 +60,18 @@
 			
 			    </td>
 			    <td valign="middle"  class="ss_paginationGo ss_page_IE">
-			        <form name="ss_goToPageForm_${renderResponse.namespace}" id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
-			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-				name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
-				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
-				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
-				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
-				name="endDate" value="${endDate}"/></c:if><ssf:param 
-				name="operation" value="save_folder_goto_page_info"/></ssf:url>" onSubmit="return(ss_submitPage_${renderResponse.namespace}(this))">
+			      <form name="ss_goToEntryForm_${renderResponse.namespace}" 
+			        id="ss_goToEntryForm_${renderResponse.namespace}" method="post" 
+				    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+					name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
+					name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
+					name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
+					name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+					name="endDate" value="${endDate}"/></c:if><ssf:param 
+					name="operation" value="save_folder_goto_page_info"/></ssf:url>" 
+					onSubmit="return(ss_submitPage_${renderResponse.namespace}(this))">
 				
-			    <input name="ssGoToEntry" id="ssGoToEntry" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
+			    <input name="ssGoToEntry" id="ssGoToEntry${renderResponse.namespace}" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
 				<a href="javascript: ;" 
 				<ssf:title tag="entry.goTo" />
 				onClick="ss_clickGoToPage_${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}'); return false;">
@@ -86,7 +88,7 @@
 			    </ssf:ifaccessible>
 			    </td>
 			    <td align="right" valign="top" class="ss_paginationGo">
-			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_pTB_no" />&nbsp;
+			    <input name="ssGoToPage" id="ssGoToPage${renderResponse.namespace}" size="7" type="text" class="ss_pTB_no" />&nbsp;
 				<a href="" 
 				<ssf:title tag="entry.goTo" />
 				>
@@ -133,7 +135,11 @@
 						><ssf:nlt tag="general.Previous"/>&nbsp;&nbsp;
 					</a>&nbsp;&nbsp;
 					</td>
-					<td class="ss_paginationFont ss_pageActive" bgcolor="#E9F1F1" valign="top">
+					<td class="ss_paginationFont ss_pageActive" bgcolor="#E9F1F1" valign="top" align="center">
+					<c:if test="${ssPageLastStartingIndex > 2}">
+					<div class="slider" id="ss_page_slider${renderResponse.namespace}" style="width:150px;">
+						<input class="slider-input" id="ss_page_slider_input${renderResponse.namespace}"/>
+					</div>
 					<ssf:nlt tag="title.page.n_of_m">
 					  <ssf:param name="value" value="${ssPageCurrent}"/>
 					  <ssf:param name="value" value="${ssPageLast}"/>
@@ -202,7 +208,7 @@
 				name="operation" value="save_folder_goto_page_info"/></ssf:url>" onSubmit="return(ss_submitPage_${renderResponse.namespace}(this))">
 				
 				
-			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
+			    <input name="ssGoToPage" id="ssGoToPage${renderResponse.namespace}" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
 				<a href="javascript: ;" 
 				<ssf:title tag="title.goto.page" />
 				onClick="ss_clickGoToPage_${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}'); return false;">
@@ -219,7 +225,7 @@
 			    </ssf:ifaccessible>
 			    </td></tr><tr>
 			    <td valign="middle" class="ss_paginationGo ss_page_IE">
-			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_pTB_no" />&nbsp;
+			    <input name="ssGoToPage" id="ssGoToPage${renderResponse.namespace}" size="7" type="text" class="ss_pTB_no" />&nbsp;
 				<a href="" 
 				<ssf:title tag="title.goto.page" />
 				>
@@ -235,7 +241,28 @@
 		</tbody>
 		</table>
 </div>
-		
+
+<script type="text/javascript">
+
+var s = new Slider(document.getElementById("ss_page_slider${renderResponse.namespace}"), document.getElementById("ss_page_slider_input${renderResponse.namespace}"));
+s.onchange = function () {
+	var gotoObj = document.getElementById('ssGoToPage${renderResponse.namespace}');
+	if (gotoObj != null) {
+		gotoObj.value = s.getValue();
+	}
+};
+s.ondrop = function () {
+	var gotoObj = document.getElementById('ssGoToPage${renderResponse.namespace}');
+	if (gotoObj != null) {
+		ss_autoGoToPage${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}', s.getValue());
+	}
+};
+s.setValue(${ssPageCurrent});
+s.setMinimum(1);
+s.setMaximum(${ssPageLast})
+
+</script>
+</c:if>
 </c:if>
 
 </ssf:skipLink>
