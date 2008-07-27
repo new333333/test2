@@ -47,6 +47,15 @@ var ss_baseBinderPageUrl${renderResponse.namespace} = '<ssf:url><ssf:param
 	name="endDate" value="ssEndDatePlaceHolder"/><ssf:param 
 	name="newTab" value="ssNewTabPlaceHolder"/></ssf:url>';
 
+var ss_pageNavigationSliderUrl${renderResponse.namespace} = '<ssf:url action="${action}" actionUrl="true"><ssf:param 
+	name="operation" value="save_folder_page_info"/><ssf:param 
+	name="binderId" value="${ssFolder.id}"/><ssf:param 
+	name="ssPageStartIndex" value="ss_pageIndexPlaceHolder"/><c:if test="${!empty cTag}"><ssf:param 
+	name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
+	name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
+	name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+	name="endDate" value="${endDate}"/></c:if></ssf:url>';
+	
 //Check the Page Number Before Submission
 function ss_goToPage_${renderResponse.namespace}(formObj) {
 	var strGoToPage = formObj.ssGoToPage${renderResponse.namespace}.value;
@@ -84,9 +93,15 @@ function ss_clickGoToPage_${renderResponse.namespace}(strFormName) {
 
 function ss_autoGoToPage${renderResponse.namespace}(formId, page) {
 	var formObj = document.getElementById(formId);
-	ss_goToPage_${renderResponse.namespace}(formObj);
-	if (ss_goToPage_${renderResponse.namespace}(formObj)) {
-		formObj.submit();
+	if (ss_userDisplayStyle == "accessible") {
+		if (ss_goToPage_${renderResponse.namespace}(formObj)) {
+			formObj.submit();
+		}
+	} else {
+		var pageIndex = parseInt((page - 1) * ${ssEntriesPerPage});
+		var url = ss_pageNavigationSliderUrl${renderResponse.namespace};
+		url = ss_replaceSubStr(url, "ss_pageIndexPlaceHolder", pageIndex);
+		ss_showFolderPageIndex(url, '${ssFolder.id}', pageIndex, 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');
 	}
 }
 
