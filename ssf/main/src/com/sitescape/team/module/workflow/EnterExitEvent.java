@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -177,7 +178,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 				try {
 					seconds = Integer.parseInt(secsString);
 				} catch (Exception ex) {};
-				schedJob.schedule(wfEntry, currentWs, actionName, null, seconds);
+				schedJob.schedule(wfEntry, currentWs, actionName, buildParams(wfEntry, currentWs), seconds);
 					
 			} else {
 				((WorkflowAction)job).setHelper(new CalloutHelper(executionContext));
@@ -220,25 +221,29 @@ public class EnterExitEvent extends AbstractActionHandler {
 			try {
 				seconds = Integer.parseInt(secsString);
 			} catch (Exception ex) {};
-			HashMap params = new HashMap();
-			params.put("workflow.application_id", app.getId().toString());
-			params.put("workflow.application_name", app.getName());
-			params.put("workflow.entry_id", currentWs.getOwner().getEntity().getId().toString());
-			params.put("workflow.binder_id", currentWs.getOwner().getEntity().getParentBinder().getId().toString());
-			params.put("workflow.state_id", currentWs.getId().toString());
+			Map params = buildParams(wfEntry, currentWs);
+			params.put(WorkflowScheduledAction.WORKFLOW_APPLICATION_ID, app.getId().toString());
+			params.put(WorkflowScheduledAction.WORKFLOW_APPLICATION_NAME, app.getName());
 			
 			schedJob.schedule(wfEntry, currentWs, StartRemoteApp.class.getName(), params, seconds);
 					
 		} catch (NoPrincipalByTheIdException e) {
 			throw new ConfigurationException(
-					"Invalid remote application id '" + application + "'",
-					e);
+					"Invalid remote application id '" + application + "'", e);
 		} finally {
 			RequestContextHolder.setRequestContext(oldCtx);
 		}
 	}
 		
-	
+	protected Map buildParams(WorkflowSupport wfEntry, WorkflowState currentWs) {
+		HashMap params = new HashMap();
+		params.put(WorkflowScheduledAction.WORKFLOW_ENTRY_ID, currentWs.getOwner().getEntity().getId().toString());
+		params.put(WorkflowScheduledAction.WORKFLOW_BINDER_ID, currentWs.getOwner().getEntity().getParentBinder().getId().toString());
+		params.put(WorkflowScheduledAction.WORKFLOW_STATE_ID, currentWs.getId().toString());
+		params.put(WorkflowScheduledAction.WORKFLOW_STATE_NAME, currentWs.getState());
+		params.put(WorkflowScheduledAction.WORKFLOW_THREAD_NAME, currentWs.getThreadName()==null?"":currentWs.getThreadName());
+		return params;
+	}
 	protected void moveEntry(Element item, ExecutionContext executionContext, WorkflowSupport wfEntry, WorkflowState currentWs) {
 		Entry entry = (Entry)wfEntry;
 		Binder parent = entry.getParentBinder();

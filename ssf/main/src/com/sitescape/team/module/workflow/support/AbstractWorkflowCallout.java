@@ -9,20 +9,31 @@ import java.util.HashMap;
  *
  */
 public abstract class AbstractWorkflowCallout implements WorkflowCallout {
-	protected WorkflowCalloutHelper helper;
-	public void setHelper(WorkflowCalloutHelper helper) {
+	protected WorkflowCallout helper;
+	protected Map params;
+	public void setHelper(WorkflowCallout helper) {
 		this.helper = helper;		
 	}
 	public Object getVariable(String name) {
-		if (helper == null) return null;
+		if (helper == null) {
+			if (params == null) params = new HashMap();
+			return params.get(name);
+		}
 		return helper.getVariable(name);
 	}
 	public Map getVariables() {
-		if (helper == null) return new HashMap();
+		if (helper == null) {
+			if (params == null) params = new HashMap();
+			return params;
+		}
 		return helper.getVariables();
 	}
 	public void setVariable(String name, Object value) {
-		if (helper == null) return;
+		if (helper == null) {
+			if (params == null) params = new HashMap();
+			params.put(name, value);
+			return;
+		}
 		helper.setVariable(name, value);
 	}
 }
