@@ -403,12 +403,14 @@ a.ss_new_thread:hover {
  	}
  .ss_page_IE2 {
  	font-size: ${ss_style_font_fineprint} !important;
+ 	
  	padding-left: 5px;
 	padding-right: 5px;
 	padding-top: 2px;
 	<c:if test="<%= isIE %>">
-  		padding-top: 14px;
-  		vertical-align:top !important;
+  		padding-top: 2px;
+  		vertical-align:middle !important;
+  		padding-bottom: 10px;
  	</c:if>
  	overflow:hidden;
  	}	
