@@ -19,6 +19,7 @@
 	<property name="upgradeVersion" access="field"/>
     <property name="mirrored"/>
     <property name="binderCount"/>
+    <property name="type" update="false" insert="false"/> 
     <property name="resourceDriverName" length="64"/>
     <property name="resourcePath" length="1024"/>
     <many-to-one name="parentBinder">
@@ -87,9 +88,12 @@
     </component>
     <property name="popularity" optimistic-lock="false"/>
     <component name="description">
-      <property name="HDescription" column="description_text" type="com.sitescape.team.dao.util.SSClobStringType"/>
+ 
+      <property name="HDescription"  column="description_text" type="com.sitescape.team.dao.util.SSClobStringType"/>
       <property name="HFormat" column="description_format"/>
     </component>
+
+   	<property name="branding"  type="org.springframework.orm.hibernate3.support.ClobStringType"/>
     <property name="title" length="255" access="field"/>
     <property name="normalTitle" length="255"/>
     <property name="iconName" length="64"/>    
@@ -115,6 +119,7 @@
         <column name="modification_principal"/>
       </many-to-one>
     </component>
+    <property name="postingEnabled" access="field"/>
     <subclass name="com.sitescape.team.domain.Folder" node="ss_folder" discriminator-value="folder" dynamic-update="true">
       <many-to-one name="topFolder" />
       <property name="nextEntryNumber"/>

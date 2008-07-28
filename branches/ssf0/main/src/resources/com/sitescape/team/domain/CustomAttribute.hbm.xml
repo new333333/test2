@@ -32,15 +32,16 @@
     <property name="name" length="64" access="field"/>
     <property name="stringValue" length="2000"/>
     <component name="description">
+
       <property name="HDescription" column="description_text" type="com.sitescape.team.dao.util.SSClobStringType"/>
       <property name="HFormat" column="description_format"/>
     </component>
     <property name="longValue" />
     <property name="dateValue" />
-<!-- use length to force medium blog in mysql -->
-    <property name="serializedValue"  length="2000000" type="com.sitescape.team.dao.util.SSBlobSerializableType"/>
-<!-- use length to force medium text in mysql -->
-    <property name="xmlValue" length="2000000" type="com.sitescape.team.dao.util.SSClobStringType"/>
+
+    <property name="serializedValue"  type="com.sitescape.team.dao.util.SSBlobSerializableType"/>
+
+    <property name="xmlValue" type="com.sitescape.team.dao.util.SSClobStringType"/>
     <property name="booleanValue" />
     <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="values" order-by="position asc">
       <key column="parent"/>
