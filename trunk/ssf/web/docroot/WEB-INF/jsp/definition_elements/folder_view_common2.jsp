@@ -53,10 +53,6 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 %>
 <div align="center">
 <div id="ss_diss_inset" >
-<div align="left" class="ssPageNavi">
-<% // filter toolbar %>
-<jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
-</div><br/>
 
 <c:set var="actionVar" value="view_ws_listing"/>
 <c:if test="${ssDefinitionEntry.parentBinder.entityType == 'folder'}">
@@ -72,6 +68,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   href="<ssf:url action="view_folder_listing" binderId="${ssBinder.id}"/>">${ssBinder.title}</a>
 </span>
 <br/><br/>
+<% // filter toolbar %>
+<jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" />
 
 

@@ -34,15 +34,6 @@
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <% //View the listing part of a wiki folder %>
-<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
-<%
-	boolean useAdaptor = true;
-	if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle()) &&
-			!ObjectKeys.GUEST_USER_INTERNALID.equals(ssUser.getInternalId())) {
-		useAdaptor = false;
-	}
-
-%>
 <%@ page import="java.util.Date" %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 <ssf:sidebarPanel title="__definition_default_folder_wiki" id="ss_folder_sidebar" divClass="ss_blog_sidebar"
@@ -53,7 +44,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 	    <c:if test="${!empty ss_wikiHomepageEntryId}">
 	    <a class="ss_linkButton" href="<ssf:url     
-		    adapter="<%= useAdaptor %>" 
+		    adapter="true" 
 		    portletName="ss_forum" 
 		    folderId="${ssFolder.id}" 
 		    action="view_folder_entry" 
@@ -115,7 +106,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		    <tr><td><div style="padding:0px 4px 4px 8px;">
 		    <a 
 		    href="<ssf:url     
-		    adapter="<%= useAdaptor %>" 
+		    adapter="true" 
 		    portletName="ss_forum" 
 		    folderId="${ssFolder.id}" 
 		    action="view_folder_entry" 

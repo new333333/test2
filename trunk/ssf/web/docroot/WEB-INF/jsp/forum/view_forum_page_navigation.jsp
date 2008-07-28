@@ -131,7 +131,7 @@
 					</td>
 					<td class="ss_paginationFont ss_pageActive" bgcolor="#E9F1F1" valign="top" align="center">
 					<ssf:ifnotaccessible>
-					<c:if test="${ssPageLastStartingIndex > 2}">
+					<c:if test="${ssPageLast > 2}">
 					<div class="slider" id="ss_page_slider${renderResponse.namespace}" style="width:150px;">
 						<input class="slider-input" id="ss_page_slider_input${renderResponse.namespace}"/>
 					</div>
@@ -242,39 +242,39 @@
 </div>
 
 <ssf:ifnotaccessible>
-<c:if test="${ssPageLastStartingIndex > 2}">
+<c:if test="${ssPageLast > 2}">
 <script type="text/javascript">
 
 var ss_currentPageNavPage${renderResponse.namespace} = ${ssPageCurrent};
-var s = new Slider(document.getElementById("ss_page_slider${renderResponse.namespace}"), document.getElementById("ss_page_slider_input${renderResponse.namespace}"));
-s.ondrop = function () {
+var ss_pageSlider${renderResponse.namespace} = new Slider(document.getElementById("ss_page_slider${renderResponse.namespace}"), document.getElementById("ss_page_slider_input${renderResponse.namespace}"));
+ss_pageSlider${renderResponse.namespace}.ondrop = function () {
 	var pageDivObj = document.getElementById('ss_pageNavPageDiv${renderResponse.namespace}');
 	if (pageDivObj != null) {
 		pageDivObj.style.display = 'none';
 		var gotoObj = document.getElementById('ssGoToPage${renderResponse.namespace}');
 		if (gotoObj != null) {
-			gotoObj.value = s.getValue();
-			if (s.getValue() != ss_currentPageNavPage${renderResponse.namespace}) {
+			gotoObj.value = ss_pageSlider${renderResponse.namespace}.getValue();
+			if (ss_pageSlider${renderResponse.namespace}.getValue() != ss_currentPageNavPage${renderResponse.namespace}) {
 				pageDivObj.parentNode.removeChild(pageDivObj);
-				setTimeout("ss_autoGoToPage${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}', " + s.getValue() + ")", 100);
+				setTimeout("ss_autoGoToPage${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}', " + ss_pageSlider${renderResponse.namespace}.getValue() + ")", 100);
 			}
 		}
 	}
 };
-s.ondrag = function () {
+ss_pageSlider${renderResponse.namespace}.ondrag = function () {
 	var pageDivObj = document.getElementById('ss_pageNavPageDiv${renderResponse.namespace}');
 	if (pageDivObj != null) {
 		var sliderDivObj = document.getElementById('ss_page_slider${renderResponse.namespace}');
 		ss_moveObjectToBody(pageDivObj);
 		pageDivObj.style.display = 'block';
 		ss_setObjectLeft(pageDivObj, parseInt(ss_getObjectLeft(sliderDivObj) + 70) + "px");
-		ss_setObjectTop(pageDivObj, parseInt(ss_getObjectTop(sliderDivObj) - 20) + "px");
-		pageDivObj.innerHTML = "<span>"+s.getValue()+"</span>";
+		ss_setObjectTop(pageDivObj, parseInt(ss_getObjectTop(sliderDivObj) - 12) + "px");
+		pageDivObj.innerHTML = "<span>"+ss_pageSlider${renderResponse.namespace}.getValue()+"</span>";
 	}
 };
-s.setValue(${ssPageCurrent});
-s.setMinimum(1);
-s.setMaximum(${ssPageLast})
+ss_pageSlider${renderResponse.namespace}.setValue(${ssPageCurrent});
+ss_pageSlider${renderResponse.namespace}.setMinimum(1);
+ss_pageSlider${renderResponse.namespace}.setMaximum(${ssPageLast})
 
 </script>
 </c:if>
