@@ -197,17 +197,19 @@
 			    </ssf:ifaccessible>
 			    </td>
 			    <td valign="middle"  class="ss_paginationGo ss_page_IE">
-			    <form name="ss_goToPageForm_${renderResponse.namespace}" id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
-			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-				name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
-				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
-				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
-				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
-				name="endDate" value="${endDate}"/></c:if><ssf:param 
-				name="operation" value="save_folder_goto_page_info"/></ssf:url>" onSubmit="return(ss_submitPage_${renderResponse.namespace}(this))">
-				
-				
-			    <input name="ssGoToPage" id="ssGoToPage${renderResponse.namespace}" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
+			    <form name="ss_goToPageForm_${renderResponse.namespace}" 
+			      style="display:inline;"
+			      id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
+			      action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+					name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
+					name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
+					name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
+					name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+					name="endDate" value="${endDate}"/></c:if><ssf:param 
+					name="operation" value="save_folder_goto_page_info"/></ssf:url>" 
+				  onSubmit="return(ss_submitPage_${renderResponse.namespace}(this))">
+			    <input name="ssGoToPage" id="ssGoToPage${renderResponse.namespace}" size="7" type="text" 
+			      class="ss_paginationTextBox" />&nbsp;
 				<a href="javascript: ;" 
 				<ssf:title tag="title.goto.page" />
 				onClick="ss_clickGoToPage_${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}'); return false;">
@@ -256,7 +258,7 @@ ss_pageSlider${renderResponse.namespace}.ondrop = function () {
 			gotoObj.value = ss_pageSlider${renderResponse.namespace}.getValue();
 			if (ss_pageSlider${renderResponse.namespace}.getValue() != ss_currentPageNavPage${renderResponse.namespace}) {
 				pageDivObj.parentNode.removeChild(pageDivObj);
-				setTimeout("ss_autoGoToPage${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}', " + ss_pageSlider${renderResponse.namespace}.getValue() + ")", 100);
+				setTimeout("ss_autoGoToPage${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}', '" + ss_pageSlider${renderResponse.namespace}.getValue() + "')", 100);
 			}
 		}
 	}
@@ -268,7 +270,7 @@ ss_pageSlider${renderResponse.namespace}.ondrag = function () {
 		ss_moveObjectToBody(pageDivObj);
 		pageDivObj.style.display = 'block';
 		ss_setObjectLeft(pageDivObj, parseInt(ss_getObjectLeft(sliderDivObj) + 70) + "px");
-		ss_setObjectTop(pageDivObj, parseInt(ss_getObjectTop(sliderDivObj) - 12) + "px");
+		ss_setObjectTop(pageDivObj, parseInt(ss_getObjectTop(sliderDivObj) - 18) + "px");
 		pageDivObj.innerHTML = "<span>"+ss_pageSlider${renderResponse.namespace}.getValue()+"</span>";
 	}
 };
