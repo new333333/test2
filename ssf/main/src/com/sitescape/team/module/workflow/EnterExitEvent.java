@@ -42,11 +42,13 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
+import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WfNotify;
+import com.sitescape.team.domain.NoPrincipalByTheIdException;
 import com.sitescape.team.domain.WorkflowResponse;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
@@ -54,7 +56,6 @@ import com.sitescape.team.jobs.WorkflowProcess;
 import com.sitescape.team.modelprocessor.ProcessorManager;
 import com.sitescape.team.module.binder.processor.EntryProcessor;
 import com.sitescape.team.module.definition.DefinitionUtils;
-import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.workflow.jbpm.CalloutHelper;
 import com.sitescape.team.module.workflow.support.WorkflowAction;
@@ -141,8 +142,10 @@ public class EnterExitEvent extends AbstractActionHandler {
 	   				if (stopThread(item, executionContext, entry, ws)) check = true;
 	   			} else if ("workflowAction".equals(name)) {
 	   				startProcess(item, executionContext, entry, ws);
+	   			} else if ("workflowRemoteApp".equals(name)) {
+	   				startRemoteApp(item, executionContext, entry, ws);
 	   			}
-			}
+	   		}
 			if (Event.EVENTTYPE_NODE_LEAVE.equals(executionContext.getEvent().getEventType())) {
 				//leaving a state - logit
 				getReportModule().addWorkflowStateHistory(ws, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()), false);
@@ -192,6 +195,44 @@ public class EnterExitEvent extends AbstractActionHandler {
 			throw new ConfigurationException(
 						"Cannot instantiate Workflow Action of type '"
 						+ actionName + "'");
+		} finally {
+			RequestContextHolder.setRequestContext(oldCtx);
+		}
+	}
+		
+	
+	protected void startRemoteApp(Element action, ExecutionContext executionContext, WorkflowSupport wfEntry, WorkflowState currentWs) {
+		String application = DefinitionUtils.getPropertyValue(action, "remoteApp");
+		if (Validator.isNull(application)) return;
+		RequestContext oldCtx = RequestContextHolder.getRequestContext();
+		try {
+			Application app = getProfileDao().loadApplication(Long.valueOf(application), RequestContextHolder.getRequestContext().getZoneId());
+			String ctxType = DefinitionUtils.getPropertyValue(action, "runAs");
+			if ("entryowner".equals(ctxType)) {
+				RequestContextUtil.setThreadContext(currentWs.getZoneId(), wfEntry.getOwnerId());
+			} else if ("binderowner".equals(ctxType)) {
+				RequestContextUtil.setThreadContext(currentWs.getZoneId(), currentWs.getOwner().getEntity().getParentBinder().getOwnerId());						
+			}
+			WorkflowProcess schedJob = (WorkflowProcess)SZoneConfig.getObject(RequestContextHolder.getRequestContext().getZoneName(), 
+							"workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_JOB + "']", com.sitescape.team.jobs.DefaultWorkflowProcess.class);
+			String secsString = (String)SZoneConfig.getString(RequestContextHolder.getRequestContext().getZoneName(), "workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_SECONDS + "']");
+			int seconds = 300;
+			try {
+				seconds = Integer.parseInt(secsString);
+			} catch (Exception ex) {};
+			HashMap params = new HashMap();
+			params.put("workflow.application_id", app.getId().toString());
+			params.put("workflow.application_name", app.getName());
+			params.put("workflow.entry_id", currentWs.getOwner().getEntity().getId().toString());
+			params.put("workflow.binder_id", currentWs.getOwner().getEntity().getParentBinder().getId().toString());
+			params.put("workflow.state_id", currentWs.getId().toString());
+			
+			schedJob.schedule(wfEntry, currentWs, StartRemoteApp.class.getName(), params, seconds);
+					
+		} catch (NoPrincipalByTheIdException e) {
+			throw new ConfigurationException(
+					"Invalid remote application id '" + application + "'",
+					e);
 		} finally {
 			RequestContextHolder.setRequestContext(oldCtx);
 		}

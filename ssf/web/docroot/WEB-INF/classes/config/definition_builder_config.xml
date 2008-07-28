@@ -2596,6 +2596,16 @@
 		</properties>
 	</item>
 
+	<item name="workflowRemoteApp" caption="__remoteApp">
+		<properties>
+			<property name="remoteApp" caption="__remoteApp" type="remoteApp"/>
+			<property name="runAs" caption="__workflow_action_runas" type="selectbox">
+				<option name="currentuser" caption="__workflow_action_runas_currentuser"/>
+				<option name="entryowner" caption="__workflow_action_runas_entryowner"/>
+				<option name="binderowner" caption="__workflow_action_runas_binderowner"/>
+			</property>
+		</properties>
+	</item>
 	<item name="transitions" caption="__transitions" unique="./item[@name='transitions']">
 		<options>
 			<option name="transitionManual" />
@@ -2819,6 +2829,7 @@
 			<option name="moveEntry" />
 			<option name="copyEntry" />
 			<option name="workflowAction"/>
+			<option name="workflowRemoteApp"/>
 		</options>
 		<help>ihelp.workflow.on_entry</help>
 	</item>
@@ -2833,6 +2844,7 @@
 			<option name="moveEntry" />
 			<option name="copyEntry" />
 			<option name="workflowAction"/>
+			<option name="workflowRemoteApp"/>
 		</options>
 	</item>
 	<!-- not implemented yet -->
