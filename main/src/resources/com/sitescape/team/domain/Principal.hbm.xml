@@ -51,7 +51,8 @@
 </properties>
     <many-to-one name="parentBinder"/>
     <component name="description">
-      <property name="HDescription" column="description_text" type="com.sitescape.team.dao.util.SSClobStringType"/>
+ 
+      <property name="HDescription"  column="description_text" type="com.sitescape.team.dao.util.SSClobStringType"/>
       <property name="HFormat" column="description_format"/>
     </component>
     <property name="title" access="field" length="255"/>
@@ -95,6 +96,7 @@
 	      <property name="phone" length="128"/>
 	      <property name="zonName" length="100"/>
 	      <property name="skypeId" length="64"/>
+	      <property name="twitterId" length="64"/>
 	      <property name="status" length="256"/>
 	      <property name="password" access="field" length="64"/>
 		  <property name="timeZone" access="field" length="80"/>
@@ -116,8 +118,11 @@
 	    </subclass>
 	    <subclass name="com.sitescape.team.domain.Application" node="Application" discriminator-value="application" dynamic-update="true">
 	      <property name="postUrl" length="256"/>
+		  <property name="timeout" access="field"/>
+		  <property name="trusted" access="field"/>
 	    </subclass>
   	</subclass>
   </class>
   <query name="find-User-Company"><![CDATA[from com.sitescape.team.domain.User user where lower(user.name)=:userName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
+  <query name="find-Principal-Company"><![CDATA[from com.sitescape.team.domain.Principal user where lower(user.name)=:userName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
 </hibernate-mapping>
