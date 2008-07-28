@@ -47,6 +47,7 @@
 		renderRequest.setAttribute("currentFilter", filterName);
 	}
 %>
+<div align="left" class="ssPageNavi">
 <table width="95%">
 <tbody>
 <tr><td align="right" width="10%">
@@ -107,3 +108,4 @@
 
 </tbody>
 </table>
+</div>
