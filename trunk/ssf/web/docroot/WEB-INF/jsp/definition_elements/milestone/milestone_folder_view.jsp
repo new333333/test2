@@ -36,10 +36,8 @@
 <script type="text/javascript" src="<html:rootPath/>js/common/guestbook.js"></script>
 
 <br>
-<div class="ss_folder_border" style="position:relative; top:2; margin:0px; padding:2px 0px; 
-  border-top:solid #666666 1px; 
-  border-right:solid #666666 1px; 
-  border-left:solid #666666 1px;">
+<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
+<div class="ss_folder_border" >
 
 <% // Add the toolbar with the navigation widgets, commands and filter %>
 <ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
@@ -50,7 +48,6 @@
 </ssf:toolbar>
 <div class="ss_clear"></div>
 </div>
-<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <div class="ss_folder">
 <%@ include file="/WEB-INF/jsp/definition_elements/milestone/milestone_folder_listing.jsp" %>

@@ -69,13 +69,6 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 </span>
 <br/><br/>
 <%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
-<% // filter toolbar %>
-<jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
-<jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" />
-
-
-<div id="ss_folder_table_parent" class="ss_folder">
-
 <div class="ss_folder_border">
 	<% // Add the toolbar with the navigation widgets, commands and filter %>
 	<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">			
@@ -85,6 +78,11 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <div class="ss_clear"></div>
 </div>
 
+<% // filter toolbar %>
+<jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
+<jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" />
+
+<div id="ss_folder_table_parent" class="ss_folder">
 
 <c:set var="slidingTableTableStyle" value=""/>
 <c:if test="${slidingTableStyle == 'fixed'}">
