@@ -48,20 +48,20 @@
 >
 <table width="75%" border="0" align="center" cellpadding="0" cellspacing="0" class="ss_formWrap">
   <tr>
-    <td height="267"><form_header><ssf:nlt tag="entry.workflowHistory"/></form_header>
+    <div height="267"><td class="form_header"><ssf:nlt tag="entry.workflowHistory"/></td></div>
 	 <div class="ss_formButton">
 	 	<input type="button" name="Button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;"/>
 	 </div>
 	 <br/>
-    	<table width="100%" border="0" cellpadding="0" cellspacing="0">
+    	<table width="75%" align="center" border="0" cellpadding="0" cellspacing="0">
     		<tr>
-				<th width="50" class="ss_FormTableHeading"><ssf:nlt tag="entry.eventNumber"/></th>
-				<th width="152" class="ss_FormTableHeading"><ssf:nlt tag="entry.modifiedOn"/></th>
-				<th width="78" class="ss_FormTableHeading"><ssf:nlt tag="entry.modifiedBy"/></th>
-				<th width="90" class="ss_FormTableHeading"><ssf:nlt tag="entry.operation"/></th>
-				<th width="103" class="ss_FormTableHeading"><ssf:nlt tag="entry.processName"/></th>
-				<th width="86" class="ss_FormTableHeading"><p><ssf:nlt tag="entry.threadName"/></p></th>
-				<th width="93" class="ss_FormTableHeading"><ssf:nlt tag="entry.state"/></th>
+				<th width="3.75%" class="ss_FormTableHeading"><ssf:nlt tag="entry.eventNumber"/></th>
+				<th width="15%" class="ss_FormTableHeading"><ssf:nlt tag="entry.modifiedOn"/></th>
+				<th width="7.5%" class="ss_FormTableHeading"><ssf:nlt tag="entry.modifiedBy"/></th>
+				<th width="15%" class="ss_FormTableHeading"><ssf:nlt tag="entry.operation"/></th>
+				<th width="15%" class="ss_FormTableHeading"><ssf:nlt tag="entry.processName"/></th>
+				<th width="11.25%" class="ss_FormTableHeading"><p><ssf:nlt tag="entry.threadName"/></p></th>
+				<th width="7.5%" class="ss_FormTableHeading"><ssf:nlt tag="entry.state"/></th>
 			</tr>
 			
 			<c:set var="odd" value="${false}"/>
@@ -71,39 +71,38 @@
 				
 				<tr <c:if test="${odd == 'true'}">class="ss_oddRow"</c:if>>		
 					<td class="ss_dataTableMid">
-					  ${change.folderEntry.attributes.logVersion}
+					  ${change.folderEntry.attributes.logVersion}&nbsp
 					</td>
 					
 					<td class="ss_dataTableTD">
-					 ${change.folderEntry.attributes.modifiedOn}
+					 ${change.folderEntry.attributes.modifiedOn}&nbsp
 					</td>
 					
 					<td class="ss_dataTableTD">
-					 ${change.folderEntry.attributes.modifiedBy}
+					 ${change.folderEntry.attributes.modifiedBy}&nbsp
 					</td>
 					
 					<td class="ss_dataTableTD">
-					  <ssf:nlt tag="workflow.${change.folderEntry.attributes.operation}"/>
+					  <ssf:nlt tag="workflow.${change.folderEntry.attributes.operation}"/>&nbsp
 					</td>
 					
-					<td class="ss_dataTableTD">
+					<td class="ss_dataTableTD">			
 					  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
-						  ${workflow.value.attributes.process}
+						  ${workflow.value.attributes.process}&nbsp
 						<br>
 					  </c:forEach>
 					</td>
 					
 					<td class="ss_dataTableTD">
 					  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
-						 	<%-- ${workflow.value.attributes.thread} --%>
-						  ${workflow.value.attributes.threadCaption}
+						  ${workflow.value.attributes.threadCaption}&nbsp
 						<br>
 					  </c:forEach>
 					</td>
 					
 					<td class="ss_dataTableTD">
 					  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
-						  ${workflow.value.attributes.stateCaption}
+						  ${workflow.value.attributes.stateCaption}&nbsp
 						<br>
 					  </c:forEach>
 					</td>
