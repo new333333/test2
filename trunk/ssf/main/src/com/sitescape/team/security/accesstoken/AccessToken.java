@@ -74,7 +74,7 @@ public class AccessToken {
 	private String digest; 										// required
 	private Long binderId; 										// optional
 	private BinderAccessConstraints binderAccessConstraints; 	// optional, this value is meaningful iff binderId is non-null
-	private String infoId;										// required for interactive, null for background
+	private String infoId;										// required
 	
 	public static AccessToken sessionScopedToken(String infoId, Long applicationId, 
 			Long userId, String digest, Long binderId, BinderAccessConstraints binderAccessConstraints) {
@@ -82,9 +82,9 @@ public class AccessToken {
 				userId, digest, binderId, binderAccessConstraints);
 	}
 	
-	public static AccessToken requestScopedToken(Long applicationId, 
+	public static AccessToken requestScopedToken(String infoId, Long applicationId, 
 			Long userId, String digest, Long binderId, BinderAccessConstraints binderAccessConstraints) {
-		return new AccessToken(TokenScope.request, null, applicationId,
+		return new AccessToken(TokenScope.request, infoId, applicationId,
 				userId, digest, binderId, binderAccessConstraints);
 	}
 	
