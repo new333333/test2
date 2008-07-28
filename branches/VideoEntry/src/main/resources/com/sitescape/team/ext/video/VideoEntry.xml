@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	    xsi:schemaLocation="http://www.icecore.org/definition-0.1
-				definition_builder_config.xsd"
+	    xsi:schemaLocation="http://kablink.org/definition
+				http://kablink.org/definition-0.1"
 	    name="VideoEntry"
 	    caption="VideoEntry"
 	    type="1"
