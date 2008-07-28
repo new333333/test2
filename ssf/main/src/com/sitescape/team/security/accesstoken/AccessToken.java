@@ -149,7 +149,7 @@ public class AccessToken {
 		return binderAccessConstraints;
 	}
 
-	public void setIncludeDescendants(BinderAccessConstraints binderAccessConstraints) {
+	public void setBinderAccessConstraints(BinderAccessConstraints binderAccessConstraints) {
 		this.binderAccessConstraints = binderAccessConstraints;
 	}
 
@@ -222,6 +222,15 @@ public class AccessToken {
 			if(userId == null)
 				throw new IllegalStateException("user id is missing");
 		} else if(TokenScope.request.equals(scope)) {
+			// Do NOT encode applicationId, userId, binderId, and binderAccessConstraints
+			// into the string EVEN IF they are present. This same information is stored
+			// in the corresponding token info object in the database, and therefore,
+			// doesn't have to be placed into the token itself. However, once a client-
+			// supplied token is successfully validated, these fields are automatically
+			// populated with the values from the token info simply as an additional
+			// programming convenience. So, whether these fields should be null or not
+			// is determined by the time and context of the usage related to the token's
+			// lifecycle (sacrificing some robustness over convenience...)
 			if(applicationId != null)
 				throw new IllegalStateException("application id is present");
 			if(userId != null)

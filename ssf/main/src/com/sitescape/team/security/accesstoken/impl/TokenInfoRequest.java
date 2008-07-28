@@ -37,7 +37,7 @@ public class TokenInfoRequest extends TokenInfo {
 	private Long applicationId; 
 	private Long userId; 
 	private Long binderId; // may be null
-	private int binderAccessConstraints; // meaningful only when binderId is specified
+	private int binderAccessConstraints; // access by field; meaningful only when binderId is specified
 	
 	public TokenInfoRequest(Long applicationId, Long userId, Long binderId, 
 			AccessToken.BinderAccessConstraints binderAccessConstraints, String seed) {
