@@ -34,21 +34,16 @@
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
 
-body {
-	font-family:Geneva, Arial, Helvetica, sans-serif;
-	font-size:14px;
-	color:#666;
-	margin-top: 8px;
-	}
 
-h1 {
+
+form_header {
 	font-size:28px;
 	letter-spacing:-1px;
 	font-family:Georgia, "Times New Roman", Times, serif;
 	font-weight:normal;
 	color:#666;
 	}
-h2 {
+ss_h2 {
 	font-size: 24px;
 	letter-spacing: -1px;
 }
