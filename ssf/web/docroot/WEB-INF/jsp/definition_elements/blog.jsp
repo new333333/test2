@@ -121,8 +121,8 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 </ssf:toolbar>
 <div class="ss_clear"></div>
 </div>
+<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <div class="ss_folder">
-<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/blog/blog_folder_listing.jsp" %>
 </div>

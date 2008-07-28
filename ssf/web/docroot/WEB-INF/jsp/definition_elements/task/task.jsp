@@ -68,9 +68,9 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 </ssf:toolbar>
 <div class="ss_clear"></div>
 </div>
+<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <div class="ss_folder" id="ss_task_folder_div">
-<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/task/task_nav_bar.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/task/task_folder_listing.jsp" %>
 </div>

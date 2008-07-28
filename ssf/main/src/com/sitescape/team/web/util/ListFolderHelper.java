@@ -1528,8 +1528,7 @@ public class ListFolderHelper {
 	
 		
 		//See if a "sort by" menu is needed
-		if (viewType.equals(Definition.VIEW_STYLE_DEFAULT) || 
-				viewType.equals(Definition.VIEW_STYLE_WIKI)|| 
+		if (viewType.equals(Definition.VIEW_STYLE_WIKI)|| 
 				viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
 			//Add a way to set the sorting
 			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folder.getId());

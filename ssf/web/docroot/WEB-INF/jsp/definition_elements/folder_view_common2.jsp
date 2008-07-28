@@ -68,6 +68,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   href="<ssf:url action="view_folder_listing" binderId="${ssBinder.id}"/>">${ssBinder.title}</a>
 </span>
 <br/><br/>
+<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <% // filter toolbar %>
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" />
@@ -85,7 +86,6 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 </div>
 
 
-<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <c:set var="slidingTableTableStyle" value=""/>
 <c:if test="${slidingTableStyle == 'fixed'}">
   <c:set var="slidingTableTableStyle" value="ss_borderTable"/>
