@@ -93,7 +93,7 @@ ss_h2 {
 	padding-right: 0px;
 	padding-bottom: 0px;
 	padding-left: 0px;
-	border: 0.1px solid efefef;
+	border: 0.1px solid #EFEFEF;
 }
 .ss_dataTableTD {
 	font-family: Arial, Helvetica, sans-serif;
