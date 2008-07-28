@@ -82,10 +82,8 @@ public class AccessToken {
 				userId, digest, binderId, binderAccessConstraints);
 	}
 	
-	public static AccessToken requestScopedToken(String infoId, Long applicationId, 
-			Long userId, String digest, Long binderId, BinderAccessConstraints binderAccessConstraints) {
-		return new AccessToken(TokenScope.request, infoId, applicationId,
-				userId, digest, binderId, binderAccessConstraints);
+	public static AccessToken requestScopedToken(String infoId, String digest) {
+		return new AccessToken(TokenScope.request, infoId, null, null, digest, null, null);
 	}
 	
 	private AccessToken(TokenScope scope, String infoId, Long applicationId, 
@@ -230,8 +228,8 @@ public class AccessToken {
 				throw new IllegalStateException("user id is present");
 			if(binderId != null)
 				throw new IllegalStateException("binder id is present");	
-			if(binderId != null)
-				throw new IllegalStateException("binder id is present");	
+			if(binderAccessConstraints != null)
+				throw new IllegalStateException("binder access constraints is present");	
 		} else {
 			throw new IllegalStateException("something's serious broken");
 		}
