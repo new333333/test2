@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 /**
  * Abstact class to kick off customization in workflow processing
+ * Only usefull for non-scheduled callouts, where workflow exection is active
  * @author Janet
  *
  */
