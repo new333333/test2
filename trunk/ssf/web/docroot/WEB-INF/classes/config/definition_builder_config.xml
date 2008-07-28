@@ -321,7 +321,7 @@
 	<item name="guestName" caption="__guestName" type="data" multipleAllowed="false" 
 		category="entryData" display="form">
 		<properties>
-			<property name="caption" caption="__caption" type="text" value="guest.defualt.caption" />
+			<property name="caption" caption="__caption" type="text" value="__guest.default.caption" />
 			<property name="name" caption="__data_name" type="text" readonly="true" value="_guestName"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean"
