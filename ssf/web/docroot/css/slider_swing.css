@@ -7,7 +7,7 @@
 
 .dynamic-slider-control {
 	position:			relative;
-	background-color:	rgb(204,204,204);
+	/* background-color:	rgb(204,204,204); */
 	-moz-user-focus:	normal;
 	-moz-user-select:	none;
 	cursor:				default;
@@ -15,7 +15,7 @@
 
 .slider-horizontal {
 	width:				200px;
-	height:				27px;
+	height:				17px;
 }
 
 .slider-vertical {
