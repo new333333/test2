@@ -48,20 +48,20 @@
 >
 <table width="75%" border="0" align="center" cellpadding="0" cellspacing="0" class="ss_formWrap">
   <tr>
-    <td height="267"><h1><ssf:nlt tag="entry.workflowHistory"/></h1>
+    <td height="267"><form_header><ssf:nlt tag="entry.workflowHistory"/></form_header>
 	 <div class="ss_formButton">
 	 	<input type="button" name="Button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;"/>
 	 </div>
 	 <br/>
     	<table width="100%" border="0" cellpadding="0" cellspacing="0">
     		<tr>
-				<td width="50" class="ss_FormTableHeading"><ssf:nlt tag="entry.eventNumber"/></th>
-				<td width="152" class="ss_FormTableHeading"><ssf:nlt tag="entry.modifiedOn"/></th>
-				<td width="78" class="ss_FormTableHeading"><ssf:nlt tag="entry.modifiedBy"/></th>
-				<td width="90" class="ss_FormTableHeading"><ssf:nlt tag="entry.operation"/></th>
-				<td width="103" class="ss_FormTableHeading"><ssf:nlt tag="entry.processName"/></th>
-				<td width="86" class="ss_FormTableHeading"><p><ssf:nlt tag="entry.threadName"/></p></th>
-				<td width="93" class="ss_FormTableHeading"><ssf:nlt tag="entry.state"/></th>
+				<th width="50" class="ss_FormTableHeading"><ssf:nlt tag="entry.eventNumber"/></th>
+				<th width="152" class="ss_FormTableHeading"><ssf:nlt tag="entry.modifiedOn"/></th>
+				<th width="78" class="ss_FormTableHeading"><ssf:nlt tag="entry.modifiedBy"/></th>
+				<th width="90" class="ss_FormTableHeading"><ssf:nlt tag="entry.operation"/></th>
+				<th width="103" class="ss_FormTableHeading"><ssf:nlt tag="entry.processName"/></th>
+				<th width="86" class="ss_FormTableHeading"><p><ssf:nlt tag="entry.threadName"/></p></th>
+				<th width="93" class="ss_FormTableHeading"><ssf:nlt tag="entry.state"/></th>
 			</tr>
 			
 			<c:set var="odd" value="${false}"/>
