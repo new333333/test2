@@ -40,6 +40,7 @@ public interface WorkflowModule {
     public final static String ENTRY_ID = "__entryId";
     public final static String BINDER_ID = "__binderId";
     public final static String FORCE_STATE = "__forceState";
+    public final static String ACTION_RESULT="__actionResult";
 	/**
 	 * Start workflow on entry.
 	 * @param entry

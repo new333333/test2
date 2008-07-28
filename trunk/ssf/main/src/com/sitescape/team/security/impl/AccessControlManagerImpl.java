@@ -196,7 +196,12 @@ public class AccessControlManagerImpl implements AccessControlManager {
     	throws AccessControlException {
         if (!testOperation(user, workArea, workArea, workAreaOperation)) {
         	//Make sure the user is allowed to see the workarea at all
-        	if (!WorkAreaOperation.READ_ENTRIES.equals(workAreaOperation)) {
+        	if (WorkAreaOperation.READ_ENTRIES.equals(workAreaOperation)) {
+           		//This user shouldn't see anything about this workarea
+        		throw new OperationAccessControlExceptionNoName(user.getName(), 
+            			workAreaOperation.toString());
+        	}
+        	if (testOperation(user, workArea, workArea, WorkAreaOperation.READ_ENTRIES)) {
         		throw new OperationAccessControlException(user.getName(), 
         			workAreaOperation.toString(), workArea.toString());
         	} else {

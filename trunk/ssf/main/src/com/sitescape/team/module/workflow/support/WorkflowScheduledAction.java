@@ -1,9 +1,16 @@
 package com.sitescape.team.module.workflow.support;
 
-import com.sitescape.team.domain.WorkflowState;
-import com.sitescape.team.domain.WorkflowSupport;
 
 //marker interface - workflow processing will schedule job
 public interface WorkflowScheduledAction  {
-	public boolean execute(WorkflowSupport entry, WorkflowState state, WorkflowStatus status);
+	//status input params
+	public final static String WORKFLOW_APPLICATION_ID="workflow.application_id";
+	public final static String WORKFLOW_APPLICATION_NAME="workflow.application_name";
+	public final static String WORKFLOW_BINDER_ID="workflow.binder_id";
+	public final static String WORKFLOW_ENTRY_ID="workflow.entry_id";
+	public final static String WORKFLOW_STATE_ID="workflow.state_id";
+	public final static String WORKFLOW_STATE_NAME="workflow.state_name";
+	public final static String WORKFLOW_THREAD_NAME="workflow.thread_name";
+
+	public boolean execute(Long entryId, Long stateId, WorkflowStatus status);
 }

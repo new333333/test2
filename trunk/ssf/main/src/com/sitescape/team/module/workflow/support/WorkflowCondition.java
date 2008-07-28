@@ -11,5 +11,5 @@ public interface WorkflowCondition {
 	 * @return True if condition met and transition should be taken; false otherwise
 	 */
 	public boolean execute(WorkflowSupport entry, WorkflowState state);
-	public void setHelper(WorkflowCalloutHelper helper);
+	public void setHelper(WorkflowCallout helper);
 }
