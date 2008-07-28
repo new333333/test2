@@ -93,7 +93,7 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 				
 		String digest = computeDigest(TokenScope.request, applicationId, userId, binderId, binderAccessConstraints, info.getSeed());
 		
-		return AccessToken.requestScopedToken(info.getId(), applicationId, userId, digest, binderId, binderAccessConstraints);
+		return AccessToken.requestScopedToken(info.getId(), digest);
 	}
 
 	public void destroyRequestScopedToken(AccessToken token) {
