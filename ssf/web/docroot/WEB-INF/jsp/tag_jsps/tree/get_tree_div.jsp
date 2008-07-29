@@ -39,7 +39,7 @@
 
 <taconite-root xml:space="preserve">
 <%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
-<c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
+<c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn && !empty ssWsDomTree}">
   <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 
 	<taconite-insert-after contextNodeID="${ss_tree_treeName}temp${ss_tree_id}" parseInBrowser="true">
