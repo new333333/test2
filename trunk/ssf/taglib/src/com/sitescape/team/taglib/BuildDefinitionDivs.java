@@ -1204,11 +1204,8 @@ public class BuildDefinitionDivs extends TagSupport {
 							//Build a list of the remote apps
 							Map remoteApp = (Map)remoteAppList.get(i);
 							sb.append("<option value=\"").append(remoteApp.get("_docId")).append("\"");
-							Element remoteAppEle = (Element)sourceRoot.selectSingleNode("item[@type='form']/item[@name='"+propertyName+"']/properties/property[@name='remoteApp']");
-							if (remoteAppEle != null) {
-								if (remoteApp.get("_applicationName").equals(remoteAppEle.attributeValue("value", ""))) {
-									sb.append(" selected=\"selected\"");
-								}
+							if (remoteApp.get("_docId").equals(propertyValue0)) {
+								sb.append(" selected=\"selected\"");
 							}
 							sb.append(">").append(((String)remoteApp.get("title")).replaceAll("&", "&amp;"))
 								.append(" (").append(remoteApp.get("_applicationName")).append(")</option>\n");

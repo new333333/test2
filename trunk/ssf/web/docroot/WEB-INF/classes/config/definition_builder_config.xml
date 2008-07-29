@@ -375,6 +375,7 @@
 			<option name="entryWorkflow" caption="__entry_workflow" initial="true" />
 			<option name="entryAttachments" caption="__entry_attachments" initial="true" />
 			<option name="entryReplies" caption="__entry_replies" initial="true" />
+			<option_select path="//item[@category='entryViewData']" />
 			<option_select path="//item[@category='commonEntryViewData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 		</options>
@@ -2523,10 +2524,13 @@
 		<help>ihelp.designers.remote_app</help>
 	</item>
 		
-	<item name="remoteAppView" type="dataView" caption="__remoteApp" category="entryViewData" display="view">
+	<item name="remoteAppView" caption="__remoteApp" category="entryViewData" display="view">
 		<properties>
 			<property name="remoteApp" caption="__remoteApp" type="remoteApp"/>
 		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/remote_application_entry_view.jsp" />
+		</jsps>
 		<help>ihelp.designers.remote_app</help>
 	</item>
 		
@@ -2588,6 +2592,10 @@
 	<item name="workflowRemoteApp" caption="__remoteApp">
 		<properties>
 			<property name="remoteApp" caption="__remoteApp" type="remoteApp"/>
+			<property name="variable" caption="__workflow_variable_name" type="text" 
+				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" >
+				<help>ihelp.workflow.remoteApp.variable</help>
+			</property>	
 			<property name="runAs" caption="__workflow_action_runas" type="selectbox">
 				<option name="currentuser" caption="__workflow_action_runas_currentuser"/>
 				<option name="entryowner" caption="__workflow_action_runas_entryowner"/>
