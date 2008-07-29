@@ -11,6 +11,6 @@ public interface WorkflowScheduledAction  {
 	public final static String WORKFLOW_STATE_ID="workflow.state_id";
 	public final static String WORKFLOW_STATE_NAME="workflow.state_name";
 	public final static String WORKFLOW_THREAD_NAME="workflow.thread_name";
-
+	public final static String WORKFLOW_RESULT_NAME="workflow.result_name";
 	public boolean execute(Long entryId, Long stateId, WorkflowStatus status);
 }

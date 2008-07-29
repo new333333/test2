@@ -224,7 +224,8 @@ public class EnterExitEvent extends AbstractActionHandler {
 			Map params = buildParams(wfEntry, currentWs);
 			params.put(WorkflowScheduledAction.WORKFLOW_APPLICATION_ID, app.getId().toString());
 			params.put(WorkflowScheduledAction.WORKFLOW_APPLICATION_NAME, app.getName());
-			
+			String variable = DefinitionUtils.getPropertyValue(action, "variable");
+			if (Validator.isNotNull(variable)) params.put(WorkflowScheduledAction.WORKFLOW_RESULT_NAME, variable);
 			schedJob.schedule(wfEntry, currentWs, StartRemoteApp.class.getName(), params, seconds);
 					
 		} catch (NoPrincipalByTheIdException e) {
