@@ -29,7 +29,7 @@
 
 
 dojo.require("dojo.date");
-dojo.require("dijit");
+dojo.require("dijit.dijit");
 
 
 function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard) {
@@ -304,7 +304,7 @@ function ss_calendarEngine(
 	function fadeAndDestroy(e, t) {	
 		dojo.fadeOut({node: e, duration: t,
 				      onEnd: function() { dojo._destroyElement(e)}
-			        ).play();
+			        }).play();
 	}
 
 	function getMonthName(date) {
@@ -762,8 +762,8 @@ function ss_calendarEngine(
 	        todayMarker.style.height = hOffsetSize + "%";
 	        todayMarker.style.display = "none";
 	        
-	        dojo.query(".ss_cal_todayMarker", container).foreach("dojo._destroyElement(item);");	
-	        dojo.query(".ss_cal_gridHeaderText", container).foreach("dojo._destroyElement(item);");	
+	        dojo.query(".ss_cal_todayMarker", container).forEach("dojo._destroyElement(item);");	
+	        dojo.query(".ss_cal_gridHeaderText", container).forEach("dojo._destroyElement(item);");	
 	
 	        for (var x = 0; x < 7; x++) {
 	            var vrule = document.createElement("div");
@@ -823,6 +823,7 @@ function ss_calendarEngine(
 			var isToday = ss_cal_CalData.isToday(date);
 	    	if (isToday) {
 	    		var allDayBadge = dojo.byId("ss_cal_monthGridToday" + instanceId);
+	    		alert(allDayBadge)
 				allDayBadge.style.left = this.monthGridDayBadgeVOffsets[d] + "%";
 	            allDayBadge.style.top = this.monthGridDayBadgeHOffsets[this.monthGridWeeks][w] + "%";
 	            dojo.style(allDayBadge, "display", "block");
@@ -1599,7 +1600,7 @@ function ss_calendarEngine(
 	            if (animate) {
 	                dojo.fadeHide({node: hoverBox, duration: 100,
 	                               onEnd: function() {dojo.style(hoverBox, "display", "none")}
-	                             ).play();
+	                            }).play();
 	            } else {
 	                dojo.style(hoverBox, "display", "none");
 	            }
@@ -1647,7 +1648,7 @@ function ss_calendarEngine(
 				
 	            dojo.style(hoverBox, "opacity", 0);
 	            dojo.style(hoverBox, "display", "block");
-	            dijit.placeOnScreen(hoverBox, { x: (ebox.l + 30), y: (ebox.t - hoverBox.offsetHeight - 20)} "TL", false);
+	            dijit.placeOnScreen(hoverBox, { x: (ebox.l + 30), y: (ebox.t - hoverBox.offsetHeight - 20)}, "TL", false);
 	            dojo.fadeIn({node: hoverBox, duration: 200}).play();
 	        }
 	    },
@@ -2610,7 +2611,7 @@ function ss_calendar_formatHour(hour, lang) {
 	// I have no idea what is expected of this...  not documented in any Dojo version
 	//var hourS = dojo.date.format(d, {formatLength: 'hourOnly', locale: lang});
 	// Best guess follows
-	var hourS = dojo.date.locale.format(d, {timePattern:'K',selector:'time', locale: lang}));
+	var hourS = dojo.date.locale.format(d, {timePattern:'K',selector:'time', locale: lang});
 	// next line because dojo.date.format requires to use separators in pattern 
 	return hourS.replace(" ", "").toLowerCase();
 }
