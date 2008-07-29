@@ -42,7 +42,7 @@
 <table border="0" cellspacing="0px" cellpadding="0px" width="100%">
 		<tbody>
 		<tr>
-			<td valign="top" align="right" width="25%">
+			<td valign="middle" align="right" width="25%">
 			<% // this should be view entry %>
 			<div id="ss_goBox">
 			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
@@ -51,7 +51,7 @@
 			
 				
 			<c:if test="${ssPageCount > '1.0'}">
-			    <span><label for="ssGoToEntry${renderResponse.namespace}"><ssf:nlt tag="entry.goTo"/></label></span>
+			    <span><label for="ssGoToEntry${renderResponse.namespace}"><ssf:nlt tag="entry.goTo"/> xxx</label></span>
 			
 			    </td>
 			    <td valign="middle"  class="ss_paginationGo ss_page_IE">
@@ -82,7 +82,7 @@
 			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
 			    </ssf:ifaccessible>
 			    </td>
-			    <td align="right" valign="top" class="ss_paginationGo">
+			    <td align="right" valign="middle" class="ss_paginationGo ss_page_IE">
 			    <input name="ssGoToPage" id="ssGoToPage${renderResponse.namespace}" size="7" type="text" class="ss_pTB_no" />&nbsp;
 				<a href="" 
 				<ssf:title tag="entry.goTo" />
@@ -225,7 +225,7 @@
 			    <ssf:ifaccessible>
 			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
 			    </ssf:ifaccessible>
-			    </td></tr><tr>
+			    </td>
 			    <td valign="middle" class="ss_paginationGo ss_page_IE">
 			    <input name="ssGoToPage" id="ssGoToPage${renderResponse.namespace}" size="7" type="text" class="ss_pTB_no" />&nbsp;
 				<a href="" 
