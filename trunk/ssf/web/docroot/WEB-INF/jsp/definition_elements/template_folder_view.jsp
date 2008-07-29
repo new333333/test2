@@ -82,17 +82,7 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="view_folder_listing" actionUrl="
 <div class="ss_clear"></div>
 </div>
 
-<jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation_init.jsp" />
-<div align="left" class="ssPageNavi">
- <table border="0" cellspacing="0px" cellpadding="0px">
-  <tr>
-	<td><jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" /></td>   
-  </tr>
-  <tr>
-    <td style="padding-left: 20px;"><jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" /></td>
-  </tr>
-  <tr>
-    <td align="right" width="20%">
+<div align="right" class="ssPageNavi">
 <ssf:ifAccessAllowed  binder="${ssBinder}" operation="setProperty">
 		  <a href="<ssf:url
 			adapter="true" 
@@ -105,9 +95,6 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="view_folder_listing" actionUrl="
 			</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
 		    <span class="ss_muted_label_small"><ssf:nlt tag="misc.configureColumns"/></span></a>
 </ssf:ifAccessAllowed>
-		</td>
-  </tr>
- </table>
 </div>
 
 
