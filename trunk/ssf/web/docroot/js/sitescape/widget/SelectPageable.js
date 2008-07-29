@@ -63,14 +63,14 @@ sitescape.widget.incrementalPagableComboBoxDataProvider = function(/*String*/ ur
 		
 		var realUrl = dojo.string.substituteParams(this.searchUrl, {"searchString": tss, "pagerString": pager});
 		var _this = this;
-		var request = dojo.io.bind({
+		var request = dojo.xhrGet({
 			url: realUrl,
 			method: "get",
 			mimetype: "text/json",
-			load: function(type, data, evt){
+			load: function(data){
 			try {
 				_this.inFlight = false;
-				if(!dojo.lang.isArray(data)){
+				if(!dojo.isArray(data)){
 					var arrData = [];
 					for(var key in data){
 						if (typeof(data[key]) == 'function') continue;
@@ -100,7 +100,7 @@ sitescape.widget.incrementalPagableComboBoxDataProvider = function(/*String*/ ur
 				//                   -2    display data if arrow, otherwise hide data				
 				//                   -ve   these wont match an index, nothing selected
 				//                   else  if there is matching index, selects it   
-				if (!dojo.lang.isArray(data[0])) {
+				if (!dojo.isArray(data[0])) {
 					//console.debug(data[0]._prev);
 					var pagerObj = data.shift();
 					
@@ -147,7 +147,7 @@ sitescape.widget.incrementalPagableComboBoxDataProvider = function(/*String*/ ur
 					else if (pgTp=="n")  // next was pressed, select first
 						activeIndex = -10; 
 					else 
-						activeIndex = (!dojo.lang.isArray(data[0]) ? 1 : 0); // select first, but skip <prev>
+						activeIndex = (!dojo.isArray(data[0]) ? 1 : 0); // select first, but skip <prev>
 				}
 
 				_this.provideSearchResults(data, activeIndex);
@@ -195,7 +195,7 @@ dojo.widget.defineWidget(
 				if(tr){
 					var td = document.createElement("div");
 					// if not array, it is a pager object. process this
-					if(!dojo.lang.isArray(tr)){			
+					if(!dojo.isArray(tr)){			
 						td.appendChild(document.createTextNode(tr.text));
 						td.setAttribute("resultName", tr.text);
 						td.setAttribute("resultValue", tr.pgStr);

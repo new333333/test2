@@ -47,10 +47,10 @@
 		
 			var bindArgs = {
 		    	url: url,
-				error: function(type, data, evt) {
+				error: function(err) {
 					// alert(ss_not_logged_in);
 				},
-				load: function(type, data, evt) {
+				load: function(data) {
 					if (data.notLoggedIn) {
 						alert(ss_not_logged_in);
 					} else if (data.denied) {
@@ -64,7 +64,7 @@
 				mimetype: "text/json",
 				method: "post"
 			};
-			dojo.io.bind(bindArgs);
+			dojo.xhrGet(bindArgs);
 		}
 	
 		this.changePriority = function (entryId, newPriority) {
@@ -74,10 +74,10 @@
 				
 			var bindArgs = {
 		    	url: url,
-				error: function(type, data, evt) {
+				error: function(err) {
 					// alert(ss_not_logged_in);
 				},
-				load: function(type, data, evt) {
+				load: function(data) {
 					if (data.notLoggedIn) {
 						alert(ss_not_logged_in);
 					} else if (data.denied) {
@@ -91,7 +91,7 @@
 				mimetype: "text/json",
 				method: "post"
 			};
-			dojo.io.bind(bindArgs);
+			dojo.xhrGet(bindArgs);
 		}
 		
 		this.changeCompleted = function (entryId, newCompleted) {
@@ -105,10 +105,10 @@
 				
 			var bindArgs = {
 		    	url: url,
-				error: function(type, data, evt) {
+				error: function(err) {
 					// alert(ss_not_logged_in);
 				},
-				load: function(type, data, evt) {
+				load: function(data) {
 					if (data.notLoggedIn) {
 						alert(ss_not_logged_in);
 					} else if (data.denied) {
@@ -122,7 +122,7 @@
 				mimetype: "text/json",
 				method: "post"
 			};
-			dojo.io.bind(bindArgs);
+			dojo.xhrGet(bindArgs);
 		}
 				
 		function overwrite(newTasks) {
@@ -198,9 +198,9 @@
 			oldDueTD.parentNode.replaceChild(newDueTD, oldDueTD);	
 						
 			if (task.status == "s3" || task.status == "s4") {
-				dojo.html.addClass(document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_title"), "ss_task_completed");
+				dojo.addClass(document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_title"), "ss_task_completed");
 			} else {
-				dojo.html.removeClass(document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_title"), "ss_task_completed");
+				dojo.removeClass(document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_title"), "ss_task_completed");
 			}
 		}
 				
@@ -219,7 +219,7 @@
 			
 			var container = document.createElement('div');
 			dojo.html.setClass(container, "ss_completedContainer");
-			dojo.event.connect(container, "onmouseout", ss_declare_changeValue(that, task, container, completedStatusDivs[task.id][11], value));
+			dojo.connect(container, "onmouseout", ss_declare_changeValue(that, task, container, completedStatusDivs[task.id][11], value));
 		
 			var clearDiv = document.createElement('div');
 			dojo.html.setClass(clearDiv, "ss_clear");
@@ -234,8 +234,8 @@
 				var title = task.completedValues[realValue];
 				completedStatusDivs[task.id][i].title = task.completedValues[realValue];
 				
-				dojo.event.connect(completedStatusDivs[task.id][i], "onclick", ss_declare_saveValue(that, task, container, completedStatusDivs[task.id][11], realValue));
-				dojo.event.connect(completedStatusDivs[task.id][i], "onmouseover", ss_declare_changeValue(that, task, container, completedStatusDivs[task.id][11], realValue));
+				dojo.connect(completedStatusDivs[task.id][i], "onclick", ss_declare_saveValue(that, task, container, completedStatusDivs[task.id][11], realValue));
+				dojo.connect(completedStatusDivs[task.id][i], "onmouseover", ss_declare_changeValue(that, task, container, completedStatusDivs[task.id][11], realValue));
 		
 				container.appendChild(completedStatusDivs[task.id][i]);
 			}
@@ -262,7 +262,7 @@
 		}
 		
 		this.ss_saveValue = function(task, container, statusContainer, newValue) {
-			// dojo.event.connect(container, "onmouseout", ss_declare_changeValue(that, task, container, statusContainer, newValue));
+			// dojo.connect(container, "onmouseout", ss_declare_changeValue(that, task, container, statusContainer, newValue));
 			// statusContainer.innerHTML = task.completedValues[newValue];
 			that.changeCompleted(task.id, newValue);
 		}
@@ -319,7 +319,7 @@
 				}
 					
 				(function(taskId, statusKey) {
-				dojo.event.connect(hrefObj, "onclick", 
+				dojo.connect(hrefObj, "onclick", 
 						function() {
 							that.changeStatus(taskId, statusKey);
 						}
@@ -359,7 +359,7 @@
 					dojo.html.setClass(hrefObj, "ss_taskPriority");			
 				}
 				
-				dojo.event.connect(hrefObj, "onclick", function(obj, taskId, newPriority) {
+				dojo.connect(hrefObj, "onclick", function(obj, taskId, newPriority) {
 					return function() {
 						obj.changePriority(taskId, newPriority);
 					}					
@@ -390,7 +390,7 @@
 			tdObj.setAttribute("id", "ss_tasks_" + namespace +"_" + task.id + "_due");
 			var txt = task.dueDate;
 			if (task.overdue && (task.status != "s3" && task.status != "s4")) {
-				dojo.html.addClass(tdObj, "ss_overdue");
+				dojo.addClass(tdObj, "ss_overdue");
 				txt += ss_tasks.overdueLabel ? " " + ss_tasks.overdueLabel : "";
 			}
 			tdObj.appendChild(document.createTextNode(txt));
@@ -407,7 +407,7 @@
 			hrefObj.href = "javascript: // ;";
 		    
 			var callViewTask = declareViewTask(that, task.id);
-			dojo.event.connect(hrefObj, "onclick", function(obj, taskId){
+			dojo.connect(hrefObj, "onclick", function(obj, taskId){
 				return function() {
 					obj.viewTask(taskId);
 				}				

@@ -27,14 +27,14 @@
  * are trademarks of SiteScape, Inc.
  */
 
-dojo.require("dojo.html.*");
-dojo.require("dojo.html.util");
-dojo.require("dojo.html.selection");
-dojo.require("dojo.event");
-dojo.require("dojo.date.common");
-dojo.require("dojo.date.format");
-dojo.require("dojo.lfx");
-dojo.require("dojo.io.IframeIO");
+// dojo_xxx		dojo.require("dojo.html.*");
+// dojo_xxx		dojo.require("dojo.html.util");
+// dojo_xxx		dojo.require("dojo.html.selection");
+// dojo_xxx		dojo.require("dojo.event");
+// dojo_xxx		dojo.require("dojo.date.common");
+// dojo_xxx		dojo.require("dojo.date.format");
+// dojo_xxx		dojo.require("dojo.lfx");
+// dojo_xxx		dojo.require("dojo.io.IframeIO");
 
 
 function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard) {
@@ -59,16 +59,16 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard)
 	}
 	
 	this.loadEventsByDate = function(reqParams, date, calendarObj) {
-		dojo.io.bind({
+		dojo.xhrGet({
 	    	url: ss_buildAdapterUrl(ss_AjaxBaseUrl, mergeObj({operation: "find_calendar_events",
 										binderId: binderId, 
 										binderIds: calendarIds,
 										ssDashboardRequest: isDashboard,
 										calendarStickyId: stickyId}, reqParams)),
-			error: function(type, data, evt) {
+			error: function(err) {
 				alert(ss_not_logged_in);
 			},
-			load: function(type, data, evt) {
+			load: function(data) {
 				calendarObj.addEvents(data, date);
 			},
 						
@@ -79,15 +79,15 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard)
 	}
 	
 	this.loadEntryEvents = function(reqParams, calendarObj) {
-		dojo.io.bind({
+		dojo.xhrGet({
 	    	url: ss_buildAdapterUrl(ss_AjaxBaseUrl, mergeObj({operation: "find_calendar_events",
 											binderId: binderId, 
 											binderIds: calendarIds,
 											ssDashboardRequest: isDashboard}, reqParams)),
-			error: function(type, data, evt) {
+			error: function(err) {
 				alert(ss_not_logged_in);
 			},
-			load: function(type, data, evt) {
+			load: function(data) {
 				calendarObj.addEvents(data);
 			},
 			mimetype: "text/json",
@@ -104,10 +104,10 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard)
 	 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, mergeObj({operation: "sticky_calendar_display_settings",
 								binderId: binderId, calendarStickyId: stickyId}, options));
 		
-		dojo.io.bind({
+		dojo.xhrGet({
 	    	url: url,
-			error: function(type, data, evt) {},
-			load: function(type, data, evt) {},
+			error: function(err) {},
+			load: function(data) {},
 			mimetype: "text/json",
 			preventCache: true,
 			method: "get"
@@ -572,9 +572,9 @@ function ss_calendarEngine(
 	            this.drawDayGrid("ss_cal_dayGridHour" + instanceId, ss_cal_CalData.today, this.gridSize, this.firstDayToShow, "ss_cal_hourGrid", 0); 
 	            this.drawHourMarkers("ss_cal_hourHeader" + instanceId);
 	            if (!this.dayGridCreated && !this.readOnly) {
-	                // dojo.event.connect(dojo.byId("ss_cal_dayGridHour" + instanceId),  "onmousedown", function(evt) { ss_cal_CalEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridHour" + instanceId))});
+	                // dojo.connect(dojo.byId("ss_cal_dayGridHour" + instanceId),  "onmousedown", function(evt) { ss_cal_CalEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridHour" + instanceId))});
 					dojo.event.browser.addListener(dojo.byId("ss_cal_dayGridHour" + instanceId),  "onmousedown", function(evt) { ss_cal_CalEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridHour" + instanceId))});
-	                // dojo.event.connect(dojo.byId("ss_cal_dayGridAllDay" + instanceId), "onmousedown", function(evt) { ss_cal_CalAllDayEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridAllDay" + instanceId))});
+	                // dojo.connect(dojo.byId("ss_cal_dayGridAllDay" + instanceId), "onmousedown", function(evt) { ss_cal_CalAllDayEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridAllDay" + instanceId))});
 					dojo.event.browser.addListener(dojo.byId("ss_cal_dayGridAllDay" + instanceId), "onmousedown", function(evt) { ss_cal_CalAllDayEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridAllDay" + instanceId))});
 	                this.dayGridCreated = true;
 	            }
@@ -731,7 +731,7 @@ function ss_calendarEngine(
 	        	var mm = currentDayToShow.getMonth();
 	        	var dd = currentDayToShow.getDate();
 	        	(function(yyyy, mm, dd) {
-		        	// dojo.event.connect(changeViewLink, "onclick", function(evt) {
+		        	// dojo.connect(changeViewLink, "onclick", function(evt) {
 					dojo.event.browser.addListener(changeViewLink, "onclick", function(evt) {
 							ss_cal_Events.switchView('daydirect', yyyy, mm, dd);
 	        			});
@@ -1055,7 +1055,7 @@ function ss_calendarEngine(
 	        hourOffset = this.recordHourOffset(this.currDay.getFullYear(), this.currDay.getMonth(), this.currDay.getDate());
 	        this.currDispId = ss_cal_drawCalendarEvent(grid.id, ss_cal_Grid.gridSize, 1, 0, dayOffset, hourOffset, -1, "All day", "", "", false, {calendarId: defaultCalendarId});
 	        this.resetGridHeight();
-	        dojo.event.connect(dojo.body(), "onmouseup", this, "mouseIsUp");       
+	        dojo.connect(dojo.body(), "onmouseup", this, "mouseIsUp");       
 	        this.currEventData = {};
 	        this.currEventData.startDate = this.currDay;
 	        this.currEventData.start = -1;
@@ -1132,8 +1132,8 @@ function ss_calendarEngine(
 	
 	        gridWidth = grid.offsetWidth;
 	        currGrid = grid;
-	        dojo.event.connect(dojo.body(), "onmousemove", this, "whataDrag");
-	        dojo.event.connect(dojo.body(), "onmouseup", this, "mouseIsUp");
+	        dojo.connect(dojo.body(), "onmousemove", this, "whataDrag");
+	        dojo.connect(dojo.body(), "onmouseup", this, "mouseIsUp");
 	    
 	        // Calculate hour and day offsets.
 	        hourOffset = Math.floor(gridY / 42);
@@ -1879,14 +1879,14 @@ function ss_calendarEngine(
 	    ebox.className = "ss_cal_eventBox";
 	
 	    if (eventId != "") {
-	        // dojo.event.connect(ebox, "onmousedown", function(e) {
+	        // dojo.connect(ebox, "onmousedown", function(e) {
 			dojo.event.browser.addListener(ebox, "onmousedown", function(e) {
 	        	// prevent new events creation
 	        	if (!e) var e = window.event;
 				e.cancelBubble = true;
 				if (e.stopPropagation) e.stopPropagation();
 	        });
-	        // dojo.event.connect(ebox, "onmouseover", function(evt) { ss_cal_Events.requestHover(evt, eventId, day); });
+	        // dojo.connect(ebox, "onmouseover", function(evt) { ss_cal_Events.requestHover(evt, eventId, day); });
 			dojo.event.browser.addListener(ebox, "onmouseover", function(evt) { ss_cal_Events.requestHover(evt, eventId, day); });
 	    }
 	
@@ -2283,7 +2283,7 @@ function ss_calendarEngine(
 			
 			(function(eboxInner, dayOfWeek, container, vOffsetSize, week, hOffsetSize, eventCount, eventList, date) {
 				dojo.event.browser.addListener(eboxInner, "onclick", function(evt) {
-				// dojo.event.connect(eboxInner, "onclick", function(evt) {
+				// dojo.connect(eboxInner, "onclick", function(evt) {
 					// create all events pane
 					var moreEventsDiv = document.createElement("div");
 					moreEventsDiv.className = "ss_calendar_more_box";
@@ -2361,13 +2361,13 @@ function ss_calendarEngine(
 					
 					
 					var lightBox = ss_showLightbox(null, null, null, "ss_lightBox_transparent");
-					// dojo.event.connect(lightBox, "onclick", function(evt) {
+					// dojo.connect(lightBox, "onclick", function(evt) {
 					dojo.event.browser.addListener(lightBox, "onclick", function(evt) {
 						dojo.dom.removeNode(moreEventsDiv);
 						dojo.dom.removeNode(lightBox);
 					});
 					
-					// dojo.event.connect(moreEventsDiv, "onclick", function(evt) {
+					// dojo.connect(moreEventsDiv, "onclick", function(evt) {
 					dojo.event.browser.addListener(moreEventsDiv, "onclick", function(evt) {
 						dojo.dom.removeNode(moreEventsDiv);
 						dojo.dom.removeNode(lightBox);
@@ -2439,7 +2439,7 @@ if (!window["ss_calendar_import"]) {
 			
 			dojo.byId("ss_calendar_import_title").appendChild(document.createTextNode(props.title));
 	
-			dojo.event.connect(dojo.byId("ss_calendar_import_close"), "onclick", function(evt) {
+			dojo.connect(dojo.byId("ss_calendar_import_close"), "onclick", function(evt) {
 				ss_calendar_import.cancel();
 		    });
 
@@ -2474,13 +2474,13 @@ if (!window["ss_calendar_import"]) {
 			ss_toggleAjaxLoadingIndicator(box, true);			
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"uploadICalendarFile"});
 			dojo.debug("uploadFile");
-			dojo.io.bind({
+			dojo.xhrGet({
 		    	url: url,
-				error: function(type, data, evt) {
+				error: function(err) {
 					alert(ss_not_logged_in);
 					ss_calendar_import.cancel();
 				},
-				load: function(type, data, evt) {
+				load: function(data) {
 					if (data && data.notLoggedIn) {
 						alert(ss_not_logged_in);
 					} else if (data && data.parseExceptionMsg) {
@@ -2511,13 +2511,13 @@ if (!window["ss_calendar_import"]) {
 			var box = dojo.byId("ss_calendar_importURL_form");
 			ss_toggleAjaxLoadingIndicator(box, true);
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"loadICalendarByURL"});
-			dojo.io.bind({
+			dojo.xhrGet({
 		    	url: url,
-				error: function(type, data, evt) {
+				error: function(err) {
 					alert(ss_not_logged_in);
 					ss_calendar_import.cancel();
 				},
-				load: function(type, data, evt) {
+				load: function(data) {
 					if (data && data.notLoggedIn) {
 						alert(ss_not_logged_in);
 					} else if (data && data.parseExceptionMsg) {
@@ -2603,7 +2603,7 @@ if (!window.ss_calendar_settings) {
 			// Link into the document tree
 			document.getElementsByTagName("body").item(0).appendChild(calConfigureDiv);
 
-			dojo.event.connect(dojo.byId("ss_calendar_configure_close"), "onclick", function(evt) {
+			dojo.connect(dojo.byId("ss_calendar_configure_close"), "onclick", function(evt) {
 				ss_calendar_settings.cancel();
 		    });
 		    
@@ -2613,13 +2613,13 @@ if (!window.ss_calendar_settings) {
 		save : function () {
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"saveCalendarConfiguration"});
 			dojo.debug("save calendar configuration");
-			dojo.io.bind({
+			dojo.xhrGet({
 		    	url: url,
-				error: function(type, data, evt) {
+				error: function(err) {
 					alert(ss_not_logged_in);
 					ss_calendar_import.cancel();
 				},
-				load: function(type, data, evt) {
+				load: function(data) {
 					if (data && data.notLoggedIn) {
 						alert(ss_not_logged_in);
 					} else if (data && data.status == "ok") {

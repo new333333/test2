@@ -172,10 +172,10 @@ if (!ss_onLoadRoutineLoaded) {
 function ss_fetch_div(url, divId, signal) {
 	var bindArgs = {
 	    	url: url,
-			error: function(type, data, evt) {
+			error: function(err) {
 				alert(ss_not_logged_in);
 			},
-			load: function(type, data, evt) {
+			load: function(data) {
 	  		  try {
 	  		  	dojo.byId(divId).innerHTML = data;
 				//Signal that the layout changed
@@ -184,7 +184,7 @@ function ss_fetch_div(url, divId, signal) {
 			},
 			preventCache: true
 	};   
-	dojo.io.bind(bindArgs);
+	dojo.xhrGet(bindArgs);
 }
 //suggest moving towards ss_get_url so errors can be handled consistantly
 //Updated to dojo, result is text/plain
@@ -194,11 +194,11 @@ function ss_fetch_url(url, callbackRoutine, callbackData, toggleCall) {
 	eval(toggleCall);
 	var bindArgs = {
 	    	url: url,
-			error: function(type, data, evt) {
+			error: function(err) {
 				eval(toggleCall);
 				alert(data.message);
 			},
-			load: function(type, data, evt) {
+			load: function(data) {
 				eval(toggleCall);
 			    try {
 					ss_fetch_url_debug("received " + data);
@@ -210,7 +210,7 @@ function ss_fetch_url(url, callbackRoutine, callbackData, toggleCall) {
 			},
 			preventCache: true
 	};   
-	dojo.io.bind(bindArgs);
+	dojo.xhrGet(bindArgs);
 
 }                
 
@@ -224,11 +224,11 @@ function ss_post(url, formId, callBackRoutine, callbackData, toggleCall) {
 	var bindArgs = {
     	url: url,
     	formNode: dojo.byId(formId),
-		error: function(type, data, evt) {
+		error: function(err) {
 			eval(toggleCall);
-			alert(data.error);
+			alert(err);
 		},
-		load: function(type, data, evt) {
+		load: function(data) {
 			eval(toggleCall);
 			if (data.failure) {
 				alert(data.failure);
@@ -240,7 +240,7 @@ function ss_post(url, formId, callBackRoutine, callbackData, toggleCall) {
 		mimetype: "text/json",
 		method: "post"
 	};   
-	dojo.io.bind(bindArgs);
+	dojo.xhrGet(bindArgs);
 }     
 //Use dojo to get a url.  Results in text/json. 
 //When result contains failure, message display
@@ -248,11 +248,11 @@ function ss_get_url(url, callBackRoutine, callbackData, toggleCall) {
 	eval(toggleCall);
 	var bindArgs = {
     	url: url,
-		error: function(type, data, evt) {
+		error: function(err) {
 			eval(toggleCall);
-			alert(data.error);
+			alert(err);
 		},
-		load: function(type, data, evt) {
+		load: function(data) {
 			eval(toggleCall);
 			if (data.failure) {
 				alert(data.failure);
@@ -263,7 +263,7 @@ function ss_get_url(url, callBackRoutine, callbackData, toggleCall) {
 		preventCache: true,				
 		mimetype: "text/json"
 	};   
-	dojo.io.bind(bindArgs);
+	dojo.xhrGet(bindArgs);
 }     
 function ss_buildAdapterUrl(base, paramMap, action) {
 	var url = base;
@@ -273,7 +273,7 @@ function ss_buildAdapterUrl(base, paramMap, action) {
 		url += "\&action=__ajax_request";
 	}	
 	for (var i in paramMap) {
-		if (dojo.lang.isArray(paramMap[i])){
+		if (dojo.isArray(paramMap[i])){
 			for(var j=0,l=paramMap[i].length; j<l; j++){
 				url += "\&" + i + "=" + encodeURIComponent(paramMap[i][j]);
 			}
@@ -467,7 +467,7 @@ function ss_showPermalink(obj) {
 	    inputObj.setAttribute("id", "ss_permalink_display_input");
 		inputObj.setAttribute("type", "text");
 		inputObj.setAttribute("style", "margin: 2px;");
-		dojo.event.connect(inputObj, "onclick", function(evt) {
+		dojo.connect(inputObj, "onclick", function(evt) {
 			inputObj.select();
 			return false;
 	    });		
@@ -579,8 +579,8 @@ function ss_fetchUrlInIframe(url, anchorDivName, width, height) {
     iframeObj.style.width = parseInt(width) + "px"
     iframeObj.style.height = parseInt(height) + "px"
 	ss_showDiv("ss_reusableIframeDiv");
-	var x = dojo.html.getAbsolutePosition(anchorDivObj, true).x
-	var y = dojo.html.getAbsolutePosition(anchorDivObj, true).y
+	var x = dojo.coords(anchorDivObj, true).x
+	var y = dojo.coords(anchorDivObj, true).y
     ss_setObjectTop(iframeDivObj, y);
     ss_setObjectLeft(iframeDivObj, x);
 	iframeObj.src = url;
@@ -986,14 +986,14 @@ function ss_showHoverOver(parentObj, divName, event, offsetX, offsetY) {
 	divObj = document.getElementById(divName)
 	if (divObj == null) return;
 	divObj.style.zIndex = '500';
-	var x = dojo.html.getAbsolutePosition(parentObj, true).x
-	var y = dojo.html.getAbsolutePosition(parentObj, true).y
+	var x = dojo.coords(parentObj, true).x
+	var y = dojo.coords(parentObj, true).y
 	if (typeof event != 'undefined') {
 		x = event.clientX;
 	}
-	var topOffset = parseInt(parseInt(y) + dojo.html.getContentBoxHeight(parentObj) + 4)
+	var topOffset = parseInt(parseInt(y) + dojo.contentBox(parentObj).h + 4)
 	//firefox doesn't compute the content box height right
-	if (dojo.html.getContentBoxHeight(parentObj) <= 0) topOffset += offsetY;
+	if (dojo.contentBox(parentObj).h <= 0) topOffset += offsetY;
 	ss_setObjectTop(divObj, topOffset + "px")
 	ss_setObjectLeft(divObj, parseInt(parseInt(x) + offsetX) + "px")
 }
@@ -1095,12 +1095,12 @@ function ss_toggleImage(iconId, img1, img2) {
 function ss_showHideBusinessCard(op, scope) {
 	var urlParams = {scope:scope};
 	if (op == "show") {
-		dojo.html.hide("ss_smallBusinessCard");
-		dojo.html.show("ss_largeBusinessCard");
+		ss_hideDiv("ss_smallBusinessCard");
+		ss_showDiv("ss_largeBusinessCard");
 		urlParams.operation="show_business_card";
 	} else {
-		dojo.html.hide("ss_largeBusinessCard");
-		dojo.html.show("ss_smallBusinessCard");
+		ss_hideDiv("ss_largeBusinessCard");
+		ss_showDiv("ss_smallBusinessCard");
 		urlParams.operation="hide_business_card";
 	}
 	ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams));
@@ -1109,7 +1109,7 @@ function ss_showHideBusinessCard(op, scope) {
 //Routine to set the opacity of a div
 //  (Note: this may not work if "width" is not explicitly set on the div)
 function ss_setOpacity(obj, opacity) {
-	dojo.html.setOpacity(obj, opacity);
+	dojo.style(obj, "opacity", opacity);
 }
 
 //Routine to fade in a div
@@ -1125,7 +1125,7 @@ function ss_showDivFadeIn(id, ms) {
     	ss_setOpacity(document.getElementById(id),0.1);
     	ss_showDiv(id);
     }
-    dojo.lfx.html.fadeIn(id, ms).play();
+    dojo.fadeIn(id, ms).play();
 }
 
 //Routine to fade out a div
@@ -1137,7 +1137,7 @@ function ss_hideDivFadeOut(id, ms) {
     //Is this still being shown? If yes, return.
 	if (ss_divFadeInArray[id] > 1) return;
     if (!ms || ms == undefined) ms = 300;
-    dojo.lfx.html.fadeOut(id, ms, function(){
+    dojo.fadeOut(id, ms, function(){
     	ss_hideDiv(id);
     	return true;
     }).play();
@@ -1419,7 +1419,7 @@ function ssf_onLayoutChange(obj) {
 }
 
 function ss_getObjAbsX(obj) {
-    return dojo.html.getAbsolutePosition(obj, true).x;
+    return dojo.coords(obj, true).x;
     var x = 0
     var parentObj = obj
     while (parentObj.offsetParent && parentObj.offsetParent != '') {
@@ -1430,7 +1430,7 @@ function ss_getObjAbsX(obj) {
 }
 
 function ss_getObjAbsY(obj) {
-    return dojo.html.getAbsolutePosition(obj, true).y;
+    return dojo.coords(obj, true).y;
     var y = 0
     var parentObj = obj
     while (parentObj.offsetParent && parentObj.offsetParent != '') {
@@ -1443,7 +1443,7 @@ function ss_getObjAbsY(obj) {
 function ss_getDivTop(divName) {
     var obj = self.document.getElementById(divName);
     if (!obj) return 0;
-    return dojo.html.getAbsolutePosition(obj, true).y;
+    return dojo.coords(obj, true).y;
 
     var top = 0;
     var obj = self.document.getElementById(divName)
@@ -1459,7 +1459,7 @@ function ss_getDivTop(divName) {
 function ss_getDivLeft(divName) {
     var obj = self.document.getElementById(divName);
     if (!obj) return 0;
-    return dojo.html.getAbsolutePosition(obj, true).x;
+    return dojo.coords(obj, true).x;
     
     var left = 0;
     if (ss_isNSN || ss_isNSN6 || ss_isMoz5) {
@@ -1486,28 +1486,28 @@ function ss_getDivLeft(divName) {
 function ss_getDivScrollTop(divName) {
     var obj = self.document.getElementById(divName)
     if (!obj) return 0;
-    return dojo.html.getAbsolutePosition(obj, true).y;
+    return dojo.coords(obj, true).y;
     //return parseInt(obj.scrollTop);
 }
 
 function ss_getDivScrollLeft(divName) {
     var obj = self.document.getElementById(divName)
     if (!obj) return 0;
-    return dojo.html.getAbsolutePosition(obj, true).x;
+    return dojo.coords(obj, true).x;
     //return parseInt(obj.scrollLeft);
 }
 
 function ss_getDivHeight(divName) {
     var obj = self.document.getElementById(divName)
     if (!obj) return 0;
-    return parseInt(dojo.html.getContentBox(obj).height);
+    return parseInt(dojo.contentBox(obj).h);
     //return parseInt(obj.offsetHeight);
 }
 
 function ss_getDivWidth(divName) {
     var obj = self.document.getElementById(divName)
     if (!obj) return 0;
-    return parseInt(dojo.html.getContentBox(obj).width);
+    return parseInt(dojo.contentBox(obj).w);
     //return parseInt(obj.offsetWidth);
 }
 
@@ -1560,27 +1560,27 @@ function ss_getImageLeft(imageName) {
 }
 
 function ss_getObjectWidth(obj) {
-    return dojo.html.getContentBoxWidth(obj)
+    return dojo.contentBox(obj).w
 }
 
 function ss_getObjectHeight(obj) {
-	return dojo.html.getContentBoxHeight(obj)
+	return dojo.contentBox(obj).h
 }
 
 function ss_getObjectLeft(obj) {
-    return dojo.html.getAbsolutePosition(obj, true).x;
+    return dojo.coords(obj, true).x;
 }
 
 function ss_getObjectTop(obj) {
-    return dojo.html.getAbsolutePosition(obj, true).y;
+    return dojo.coords(obj, true).y;
 }
 
 function ss_getObjectLeftAbs(obj) {
-	return dojo.html.getAbsolutePosition(obj, true).x
+	return dojo.coords(obj, true).x
 }
 
 function ss_getObjectTopAbs(obj) {
-    return dojo.html.getAbsolutePosition(obj, true).y
+    return dojo.coords(obj, true).y
 }
 
 function ss_setObjectWidth(obj, width) {
@@ -1780,8 +1780,8 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
 	var y = 0;
     if (parentDivId != "") {
     	var pObj = document.getElementById(parentDivId);
-    	x = dojo.html.getAbsolutePosition(pObj, true).x
-    	y = dojo.html.getAbsolutePosition(pObj, true).y
+    	x = dojo.coords(pObj, true).x
+    	y = dojo.coords(pObj, true).y
 	    //Add the offset to the x and y positions so the div isn't occluding too much
 	    x = parseInt(parseInt(x) + parseInt(offsetLeft))
 	    y = parseInt(parseInt(y) + ss_getDivHeight(parentDivId) + parseInt(offsetTop))
@@ -1902,8 +1902,8 @@ function ss_showBackgroundIFrame(divId, frmId) {
 	} else {
 		frm.style.zIndex = ssLightboxZ - 2;
 	}
-	var top = dojo.html.getAbsolutePosition(div, true).y;
-	var left = dojo.html.getAbsolutePosition(div, true).x;
+	var top = dojo.coords(div, true).y;
+	var left = dojo.coords(div, true).x;
     ss_setObjectTop(frm, top);
     ss_setObjectLeft(frm, left);
 
@@ -1972,31 +1972,40 @@ function ss_showDivAtXY(divName) {
 	ss_showDiv(divName)
 }
 function ss_showDiv(divName, backgroundIframe) {
-	if (document.getElementById(divName) == null) return;
-    document.getElementById(divName).style.visibility = "visible";
-    if (!document.getElementById(divName).style.display || document.getElementById(divName).style.display != 'inline') {
-    	document.getElementById(divName).style.display = "block";
+	var divObj = document.getElementById(divName);
+	if (divObj == null) return;
+	ss_showDivObj(divObj, backgroundIframe)
+}
+function ss_showDivObj(divObj, backgroundIframe) {
+    divObj.style.visibility = "visible";
+    if (!divObj.style.display || divObj.style.display != 'inline') {
+    	divObj.style.display = "block";
     }
-	if (typeof backgroundIframe == 'undefined' || backgroundIframe != 'no') ss_showBackgroundIFrame(divName, "ss_background_iframe");
+	if (typeof backgroundIframe == 'undefined' || backgroundIframe != 'no') 
+		ss_showBackgroundIFrame(divObj.id, "ss_background_iframe");
 	//Signal that the layout changed
-	if (!document.getElementById(divName) || 
-	    	document.getElementById(divName).style.position != "absolute") {
+	if (!divObj || divObj.style.position != "absolute") {
 		ssf_onLayoutChange();
-		//ss_debug("ss_showDiv: " + divName)
+		//ss_debug("ss_showDivObj: " + divObj.id)
 	}
 }
 
 function ss_hideDiv(divName) {
-	if (document.getElementById(divName))
-			document.getElementById(divName).style.visibility = "hidden";
-    ss_divToBeDelayHidden[divName] = null
+	var divObj = document.getElementById(divName);
+	ss_hideDivObj(divObj);
+}
+function ss_hideDivObj(divObj) {
+	if (divObj != null) {
+		divObj.style.visibility = "hidden";
+    	ss_divToBeDelayHidden[divObj.id] = null;
+    }
     ss_divBeingShown = null;
     ss_hideBackgroundIFrame("ss_background_iframe");
 	//Signal that the layout changed
-	if (!document.getElementById(divName) || 
-	    	document.getElementById(divName).style.position != "absolute") {
+	if (divObj == null || 
+	    	divObj.style.position != "absolute") {
 		ssf_onLayoutChange();
-		//ss_debug("ss_hideDiv: " + divName)
+		//ss_debug("ss_hideDiv: " + divObj.id)
 	}
 }
 
@@ -2356,12 +2365,12 @@ function ss_showLightbox(id, zIndex, opacity, className) {
     lightBox.style.display = "block";
     lightBox.style.top = "0px";
     lightBox.style.left = "0px";
-    dojo.html.setOpacity(lightBox, 0);
+    ss_setOpacity(lightBox, 0);
     lightBox.style.width = ss_getBodyWidth() + "px";
     lightBox.style.height = ss_getBodyHeight() + "px";
     lightBox.style.zIndex = zIndex;
     lightBox.style.visibility = "visible";
-    dojo.lfx.html.fade(lightBox, {end:opacity}, 150).play();
+    dojo.fade(lightBox, {end:opacity}, 150).play();
     return lightBox;
 }
 function ss_hideLightbox(id) {
@@ -2404,7 +2413,7 @@ var ss_helpSystem = {
 	    	welcomeDiv.style.display = "block";
 	        //welcomeDiv.style.top = this.getPositionTop(welcomeDiv);
 	        //welcomeDiv.style.left = this.getPositionLeft(welcomeDiv);
-	        dojo.html.placeOnScreen(welcomeDiv,0,0,[5,5],false, ['TL'], false);
+	        difit.placeOnScreen(welcomeDiv,0,0,[5,5],false, ['TL'], false);
 	        if (helpMenuAnchorDiv != null) {
 	        	helpMenuAnchorDiv.style.visibility = "visible";
 	        	helpMenuAnchorDiv.style.display = "block";
@@ -2415,14 +2424,14 @@ var ss_helpSystem = {
 	        	var offsetL = parseInt((ss_getObjectWidth(helpMenuAnchorDiv) - ss_getObjectWidth(welcomeDiv)) / 2);
 	        	//welcomeDiv.style.left = parseInt(ss_getObjectLeftAbs(helpMenuAnchorDiv) + offsetL) + "px";
 	        }
-	    	dojo.html.setOpacity(welcomeDiv, 0);
-	    	dojo.lfx.html.fade(welcomeDiv, {start:0, end:1.0}, 150).play();
-	    	dojo.event.connect(window, "onscroll", this, "moveWelcomeIntoView");
+	    	ss_setOpacity(welcomeDiv, 0);
+	    	dojo.fade(welcomeDiv, {start:0, end:1.0}, 150).play();
+	    	dojo.connect(window, "onscroll", this, "moveWelcomeIntoView");
 		}
 	},
 
 	moveWelcomeIntoView : function (e) {
-		dojo.html.placeOnScreen(dojo.byId("ss_help_welcome"),0,0,[5,5],false, ['TL'], false);
+		dijit.placeOnScreen(dojo.byId("ss_help_welcome"),0,0,[5,5],false, ['TL'], false);
 	},
 	
 	hide : function() {
@@ -2461,7 +2470,7 @@ var ss_helpSystem = {
     		//Delete all of the highlighted nodes
     		this.clearHighlights();
 
-    		dojo.lfx.html.fade(lightBox, {end: 0}, 150, '', function() {
+    		dojo.fade(lightBox, {end: 0}, 150, '', function() {
     			var lightBox2 = document.getElementById('ss_help_light_box');
 		    	lightBox.style.visibility = "hidden";
 		    	lightBox.style.display = "none";
@@ -2551,7 +2560,7 @@ var ss_helpSystem = {
 	        var offsetY = nodes[i].getAttribute("offsetY");
 	        if (!offsetY) offsetY = 0;
 	        offsetY = parseInt(offsetY);
-	        var top = parseInt(dojo.html.getAbsolutePosition(nodes[i], true).y + offsetY);
+	        var top = parseInt(dojo.coords(nodes[i], true).y + offsetY);
 	        if (nodes[i].getAttribute("valign")) {
 	        	if (nodes[i].getAttribute("valign") == "middle") {
 	        		top += parseInt(ss_getObjectHeight(nodes[i]) / 2);
@@ -2562,12 +2571,12 @@ var ss_helpSystem = {
 	        var offsetX = nodes[i].getAttribute("offsetX");
 	        if (!offsetX) offsetX = 0;
 	        offsetX = parseInt(offsetX);
-	        var left = parseInt(dojo.html.getAbsolutePosition(nodes[i], true).x + offsetX);
+	        var left = parseInt(dojo.coords(nodes[i], true).x + offsetX);
 	        if (nodes[i].getAttribute("align")) {
 	        	if (nodes[i].getAttribute("align") == "center") {
-	        		left += parseInt(dojo.html.getMarginBox(nodes[i]).width / 2);
+	        		left += parseInt(dojo.marginBox(nodes[i]).w / 2);
 	        	} else if (nodes[i].getAttribute("align") == "right") {
-	        		left += dojo.html.getMarginBox(nodes[i]).width;
+	        		left += dojomarginBox(nodes[i]).w;
 	        	}
 	        }
 	        helpSpotNode.style.top = top + "px";
@@ -2578,8 +2587,8 @@ var ss_helpSystem = {
 	        var okToShow = 1
 	        while (owningDiv != null && owningDiv.tagName != null && owningDiv.tagName.toLowerCase() != 'body') {
 	        	if (owningDiv.tagName.toLowerCase() == 'div') {
-	        		var displayStyle = dojo.html.getComputedStyle(owningDiv, 'display')
-	        		var positionStyle = dojo.html.getComputedStyle(owningDiv, 'position')
+	        		var displayStyle = dojo.style(owningDiv, 'display')
+	        		var positionStyle = dojo.style(owningDiv, 'position')
 	        		if (displayStyle.toLowerCase() == 'none' || positionStyle.toLowerCase() == 'absolute') {
 	        			okToShow = 0
 	        			break
@@ -2588,7 +2597,7 @@ var ss_helpSystem = {
 	        	owningDiv = owningDiv.parentNode
 	        }
 	        if (okToShow == 1) helpSpotNode.style.visibility = "visible";
-			//ss_debug("nodes[i] width = "+dojo.html.getMarginBox(nodes[i]).width)
+			//ss_debug("nodes[i] width = "+dojo.marginBox(nodes[i]).w)
 		}
 	},
 	
@@ -2599,15 +2608,15 @@ var ss_helpSystem = {
 				x = ss_help_position_leftOffset
 				break
 			case "center" :
-				x = parseInt((ss_getWindowWidth() - dojo.html.getMarginBox(obj).width) / 2)
+				x = parseInt((ss_getWindowWidth() - dojo.marginBox(obj).w) / 2)
 				if (x < 0) x = 0;
 				break
 			case "right" :
-				x = parseInt(ss_getWindowWidth() - dojo.html.getMarginBox(obj).width - ss_help_position_rightOffset)
+				x = parseInt(ss_getWindowWidth() - dojo.marginBox(obj).w - ss_help_position_rightOffset)
 				if (x < 0) x = 0;
 			 	break
 			default :
-				x = parseInt((ss_getWindowWidth() - dojo.html.getMarginBox(obj).width) / 2)
+				x = parseInt((ss_getWindowWidth() - dojo.marginBox(obj).w) / 2)
 				if (x < 0) x = 0;
 		}
 		return x;
@@ -2759,14 +2768,14 @@ var ss_helpSystem = {
 		}
 		//ss_debug("showHelpSpotInfo helpSpot: " + helpSpot)
 		if (helpSpot != null) {
-		    var top = parseInt(dojo.html.getAbsolutePosition(helpSpot, true).y);
-		    var left = parseInt(dojo.html.getAbsolutePosition(helpSpot, true).x);
-		    var width = parseInt(dojo.html.getContentBox(helpSpot).width);
-		    var height = parseInt(dojo.html.getContentBox(helpSpot).height);
+		    var top = parseInt(dojo.coords(helpSpot, true).y);
+		    var left = parseInt(dojo.coords(helpSpot, true).x);
+		    var width = parseInt(dojo.contentBox(helpSpot).w);
+		    var height = parseInt(dojo.contentBox(helpSpot).h);
 		    var x = parseInt(left + 3);
 		    var y = parseInt(top + height - 8);
 			this.showHelpPanel(id, "ss_help_panel", x, y, xAlignment, yAlignment)
-			dojo.html.scrollIntoView(helpSpot);
+			dijit.scrollIntoView(helpSpot);
 		}
 	},
 	
@@ -2783,8 +2792,8 @@ var ss_helpSystem = {
 		if (yAlignment == null) yAlignment = "";
 		//ss_debug('showInlineHelpSpotInfo jspId = '+jspId)
 		if (helpSpot != null) {
-		    var top = parseInt(dojo.html.getAbsolutePosition(helpSpot, true).y);
-		    var left = parseInt(dojo.html.getAbsolutePosition(helpSpot, true).x);
+		    var top = parseInt(dojo.coords(helpSpot, true).y);
+		    var left = parseInt(dojo.coords(helpSpot, true).x);
 		    var x = parseInt(left + 3 + parseInt(dx));
 		    var y = parseInt(top + 3 + parseInt(dy));
 			this.showHelpPanel(jspId, "ss_help_panel", x, y, xAlignment, yAlignment, tagId)
@@ -2792,14 +2801,15 @@ var ss_helpSystem = {
 	},
 
 	toggleShowHelpCPanel: function () {
-		if (dojo.html.isDisplayed("ss_help_welcome_panel_body")) {
+		if (dojo.style(document.getElementById("ss_help_welcome_panel_body"), "display") != 'none') {
 			this.recordShowHelpCPanel("hidden");
-			dojo.html.setClass("ss_help_cpanel_show_control", "ss_help_cpanel_hide");
+			ss_setClass("ss_help_cpanel_show_control", "ss_help_cpanel_hide");
+			dojo.style(document.getElementById("ss_help_welcome_panel_body"), "display", "none")
 		} else {
 			this.recordShowHelpCPanel("visible");
-			dojo.html.setClass("ss_help_cpanel_show_control", "ss_help_cpanel_show");
+			ss_setClass("ss_help_cpanel_show_control", "ss_help_cpanel_show");
+			dojo.style(document.getElementById("ss_help_welcome_panel_body"), "display", "block")
 		}		
-		dojo.html.toggleDisplay("ss_help_welcome_panel_body");
 	},
 
 	recordShowHelpCPanel : function (visible) {
@@ -2851,8 +2861,8 @@ var ss_helpSystem = {
 				pObj.style.display = "none"
 				return
 			}
-			startTop = parseInt(dojo.html.getAbsolutePosition(pObj, true).y);
-			startLeft = parseInt(dojo.html.getAbsolutePosition(pObj, true).x);
+			startTop = parseInt(dojo.coords(pObj, true).y);
+			startLeft = parseInt(dojo.coords(pObj, true).x);
 			if (pObj.style && pObj.style.visibility) 
 					startVisibility = pObj.style.visibility;
 		}
@@ -2869,10 +2879,10 @@ var ss_helpSystem = {
 
 		var bindArgs = {
 	    	url: url,
-			error: function(type, data, evt) {
+			error: function(err) {
 				alert(ss_not_logged_in);
 			},
-			load: function(type, data, evt) {
+			load: function(data) {
 	  		  try {
 	  		  	dojo.byId(panelId).innerHTML = data;
 	  		    ss_helpSystem.postShowPanel(callbackParams);
@@ -2882,7 +2892,7 @@ var ss_helpSystem = {
 			mimetype: "text/plain",
 			method: "get"
 		};   
-		dojo.io.bind(bindArgs);
+		dojo.xhrGet(bindArgs);
 
 	},
 	
@@ -2891,8 +2901,8 @@ var ss_helpSystem = {
 		var pObj = self.document.getElementById(panelId);
 		pObj.setAttribute("helpId", data.id);
 		pObj.style.display = "block"
-		var width = parseInt(dojo.html.getMarginBox(pObj).width);
-		var height = parseInt(dojo.html.getMarginBox(pObj).height);
+		var width = parseInt(dojo.marginBox(pObj).w);
+		var height = parseInt(dojo.marginBox(pObj).h);
 		var x = data.x;
 		var y = data.y;
 		var xAlignment = data.xAlignment;
@@ -2973,7 +2983,7 @@ var ss_helpSystem = {
 		if (startTop >= 0 && startLeft >= 0 && startVisibility == "visible") {
 			pObj.style.top = startTop + "px";
 			pObj.style.left = startLeft + "px";
-			dojo.lfx.html.slideTo(panelId, {top: top, left: left}, 300).play();
+			dojo.fx.slideTo(panelId, {top: top, left: left}, 300).play();
 		} else {
 			pObj.style.top = top + "px";
 			pObj.style.left = left + "px";
@@ -3001,7 +3011,7 @@ var ss_helpSystem = {
 	hideHelpPanel : function(obj) {
 	    while (dojo.dom.hasParent(obj)) {
 	        var n = obj.parentNode;
-	    	if (dojo.html.hasClass(n, "ss_popup_panel_outer")) {
+	    	if (dojo.hasClass(n, "ss_popup_panel_outer")) {
 	    		if (n.id) {
 					ss_hideDiv(n.id);
 					break;
@@ -3647,7 +3657,7 @@ function ss_fadeOutTableRow(rowId, divId) {
 	var divObj = self.document.getElementById(divId);
 	if (typeof rowObj == 'undefined' || typeof divObj == 'undefined') return;
 	if (divObj.visibility != 'hidden') {
-		dojo.lfx.html.fadeHide(divId, 600, null, function(divId) {
+		dojo.fadeHide(divId, 600, null, function(divId) {
 			var divObj = self.document.getElementById(divId);
 			var rowObj = ss_findOwningElement(divObj, "tr");
 			var tbodyObj = ss_findOwningElement(rowObj, "tbody");
@@ -3952,14 +3962,14 @@ function ssFavorites(namespace) {
 		var w = ss_getObjectWidth(fObj)
 		var navbarFavDivObj = document.getElementById("ss_navbar_favorites" + namespace);
 		var parentTrObj = navbarFavDivObj.parentNode.parentNode;
-		var parentTrObjHeight = parseInt(dojo.html.getContentBox(parentTrObj).height);
-		ss_setObjectTop(fObj, parseInt(dojo.html.getAbsolutePosition(parentTrObj, true).y + parentTrObjHeight))
-		ss_setObjectLeft(fObj, parseInt(dojo.html.getAbsolutePosition(navbarFavDivObj, true).x))
-		dojo.html.hide("ss_favorites_editor" + namespace);
-    	dojo.html.show(fObj);
-	    dojo.html.setVisibility(fObj, "visible");
-	    dojo.html.setOpacity(fObj,0);
-	    dojo.lfx.html.fadeIn(fObj, 100).play();
+		var parentTrObjHeight = parseInt(dojo.contentBox(parentTrObj).h);
+		ss_setObjectTop(fObj, parseInt(dojo.coords(parentTrObj, true).y + parentTrObjHeight))
+		ss_setObjectLeft(fObj, parseInt(dojo.coords(navbarFavDivObj, true).x))
+		ss_hideDiv("ss_favorites_editor" + namespace);
+    	ss_showDivObj(fObj);
+	    dojo.style(fObj, "visibility", "visible");
+	    ss_setOpacity(fObj,0);
+	    dojo.fadeIn(fObj, 100).play();
 		loadFavorites(url);
 	}
 	
@@ -4005,7 +4015,7 @@ function ssFavorites(namespace) {
 		var callback = function(data) {
 				setFavoritesList(data);
 				ss_hideDiv("ss_favorites_loading" + namespace);
-				dojo.lfx.html.fadeHide("ss_favorites_editor" + namespace, 100).play()
+				dojo.fadeHide("ss_favorites_editor" + namespace, 100).play()
 		}
 		ss_get_url(url, ss_createDelegate(this, callback));
 	}
@@ -4030,14 +4040,14 @@ function ssFavorites(namespace) {
 
 	this.showhideFavoritesEditor = function() {
 	   var ebox = dojo.byId("ss_favorites_editor" + namespace);
-		if (dojo.html.isDisplayed(ebox)) {
-			dojo.lfx.html.fadeHide(ebox, 100).play()
+		if (dojo.style(ebox, "display") != "none") {
+			dojo.fadeHide(ebox, 100).play()
 			setFavoriteListEditable(false);
 		} else {
-		    dojo.html.show(ebox);
-		    dojo.html.setVisibility(ebox, "visible");
-		    dojo.html.setOpacity(ebox,0);
-		    dojo.lfx.html.fadeIn(ebox, 300).play();
+		    ss_showDivObj(ebox);
+		    dojo.style(ebox, "display", "block");
+		    ss_setOpacity(ebox,0);
+		    dojo.fadeIn(ebox, 300).play();
 			setFavoriteListEditable(true);
 		}
 	}
@@ -4053,9 +4063,9 @@ function ssFavorites(namespace) {
 	    while (li) {
 	    	var cb = dojo.dom.getFirstChildElement(li);
 	    	if (enable) {
-		    	dojo.html.show(cb);
+		    	ss_showDivObj(cb);
 		    } else {
-		    	dojo.html.hide(cb);
+		    	ss_hideDivObj(cb);
 		    }
 		    li = dojo.dom.getNextSiblingElement(li);
 	    }    
@@ -4081,8 +4091,8 @@ function ssFavorites(namespace) {
 
 	this.deleteSelectedFavorites = function() {
 	    var toDelete = getSelectedFavorites();
-	    dojo.lang.forEach(toDelete, recordDeletedFavorite) 
-	    dojo.lang.forEach(toDelete, dojo.dom.removeNode)
+	    dojo.forEach(toDelete, recordDeletedFavorite) 
+	    dojo.forEach(toDelete, dojo.dom.removeNode)
 	}
 
 	function recordDeletedFavorite(node) {
@@ -4092,9 +4102,9 @@ function ssFavorites(namespace) {
 	this.moveSelectedFavorites = function(upDown) {
 	    var toMove = getSelectedFavorites();
 	    if (upDown == 'up') {
-		    dojo.lang.forEach(toMove, ss_moveElementUp);
+		    dojo.forEach(toMove, ss_moveElementUp);
 		} else {
-		    dojo.lang.forEach(toMove.reverse(), ss_moveElementDown);
+		    dojo.forEach(toMove.reverse(), ss_moveElementDown);
 		}
 	}
 	
@@ -4150,15 +4160,15 @@ function ssTeams(namespace) {
 		var w = ss_getObjectWidth(fObj)
 		var navbarTeamsDivObj = document.getElementById("ss_navbar_myteams" + namespace);
 		var parentTrObj = navbarTeamsDivObj.parentNode.parentNode;
-		var parentTrObjHeight = parseInt(dojo.html.getContentBox(parentTrObj).height);
-		ss_setObjectTop(fObj, parseInt(dojo.html.getAbsolutePosition(parentTrObj, true).y + parentTrObjHeight))
+		var parentTrObjHeight = parseInt(dojo.contentBox(parentTrObj).h);
+		ss_setObjectTop(fObj, parseInt(dojo.coords(parentTrObj, true).y + parentTrObjHeight))
 		ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_myteams" + namespace)))
 		var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom" + namespace) + ss_favoritesPaneLeftOffset);
-	    dojo.html.show(fObj);
-		dojo.html.setDisplay(fObj, "block");
-	    dojo.html.setVisibility(fObj, "visible");
-	    dojo.html.setOpacity(fObj,0);
-	    dojo.lfx.html.fadeIn(fObj, 100).play();
+	    ss_showDivObj(fObj);
+		dojo.style(fObj, "display", "block");
+	    dojo.style(fObj, "visibility", "visible");
+	    ss_setOpacity(fObj,0);
+	    dojo.fadeIn(fObj, 100).play();
 	    ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_my_teams", namespace:namespace}), ss_createDelegate(this, showCallback));
 	}
 	function showCallback(data) {
@@ -4173,14 +4183,14 @@ function ssTeams(namespace) {
 		var dObj = self.document.getElementById("ss_navbar_myteams" + namespace);
 		var fObj = self.document.getElementById("ss_myTeamsIframe" + namespace);
 		dObj.style.display = "block";
-	    dojo.html.setVisibility(dObj, "visible");
+	    dojo.style(dObj, "visibility", "visible");
 	    dObj.style.zIndex = parseInt(ssMenuZ);
 	    fObj.src = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_my_teams", namespace:namespace});
 	}
 	this.hideAccessible = function() {
 		var dObj = self.document.getElementById("ss_navbar_myteams" + namespace);
-		dojo.html.setDisplay(dObj, "none");
-	    dojo.html.setVisibility(dObj, "hidden");
+		dojo.style(dObj, "display", "none");
+	    dojo.style(dObj, "visibility", "hidden");
 	}
 }
 
@@ -4272,7 +4282,7 @@ function ss_dashboardInitialization(divId) {
 
 	var penlets = ss_getElementsByClass('ss_dashboard_component', dashboardTable, 'div')
 	for (var i = 0; i < penlets.length; i++) {
-		new dojo.dnd.ss_dashboard_source(penlets[i], "penlet");
+// dojo_xxx		new dojo.dnd.ss_dashboard_source(penlets[i], "penlet");
 	}
 
 	var bodyObj = document.getElementsByTagName("body").item(0);
@@ -4282,7 +4292,7 @@ function ss_dashboardInitialization(divId) {
 		ss_dashboardClones[i].className = "ss_dashboardDropTarget";
 		ss_dashboardClones[i].style.visibility = "hidden";
 		bodyObj.appendChild(ss_dashboardClones[i])
-		new dojo.dnd.ss_dashboard_target(ss_dashboardClones[i], ["penlet"]);
+// dojo_xxx		new dojo.dnd.ss_dashboard_target(ss_dashboardClones[i], ["penlet"]);
 	}
 }
 
@@ -4290,7 +4300,7 @@ function ss_clearDashboardSlider() {
 	var bodyObj = document.getElementsByTagName("body").item(0);
 	if (ss_dashboardSliderObj != null) {
 		bodyObj.removeChild(ss_dashboardSliderObj);
-		dojo.html.setOpacity(ss_dashboardSliderTargetObj, 1)
+		ss_setOpacity(ss_dashboardSliderTargetObj, 1)
 	}
 	ss_dashboardSliderObj = null;
 }
@@ -4305,14 +4315,14 @@ function ss_enableDashboardDropTargets() {
 	for (var i = 0; i < tableElements.length; i++) tableElements[i].className = "ss_dashboardTable_on";
 
 	var narrowFixedObj = document.getElementById('narrow_fixed')
-	var narrowFixedHeight = parseInt(dojo.html.getContentBox(narrowFixedObj).height);
+	var narrowFixedHeight = parseInt(dojo.contentBox(narrowFixedObj).h);
 	var narrowVariableObj = document.getElementById('narrow_variable')
-	var narrowVariableHeight = parseInt(dojo.html.getContentBox(narrowVariableObj).height);
+	var narrowVariableHeight = parseInt(dojo.contentBox(narrowVariableObj).h);
 	var targets = ss_getElementsByClass('ss_dashboardProtoDropTarget', null, 'div')
 	for (var i = 0; i < targets.length; i++) {
-		ss_dashboardClones[i].style.left = parseInt(dojo.html.getAbsolutePosition(targets[i], true).x) + "px";
-		ss_dashboardClones[i].style.top = parseInt(dojo.html.getAbsolutePosition(targets[i], true).y) + "px";
-		dojo.html.setContentBox(ss_dashboardClones[i], {width: dojo.html.getContentBox(targets[i]).width})
+		ss_dashboardClones[i].style.left = parseInt(dojo.coords(targets[i], true).x) + "px";
+		ss_dashboardClones[i].style.top = parseInt(dojo.coords(targets[i], true).y) + "px";
+		dojo.ContentBox(ss_dashboardClones[i], {w: dojo.contentBox(targets[i]).w})
 		ss_dashboardClones[i].className = "ss_dashboardDropTarget";
 		ss_dashboardClones[i].style.height = ss_dashboardDropTargetHeight;
 		ss_dashboardClones[i].style.visibility = "visible";
@@ -4328,8 +4338,8 @@ function ss_enableDashboardDropTargets() {
 			//The top target gets enlarged upward
 			if (children[0] == sourceNode) {
 				ss_dashboardClones[i].style.height = ss_dashboardTopDropTargetHeight;
-				var top = parseInt(dojo.html.getAbsolutePosition(targets[i], true).y);
-				top += parseInt(dojo.html.getContentBox(targets[i]).height);
+				var top = parseInt(dojo.coords(targets[i], true).y);
+				top += parseInt(dojo.contentBox(targets[i]).h);
 				top = top - parseInt(ss_dashboardDropTargetTopOffset);
 				top = top - parseInt(ss_dashboardDropTargetTopOffset);
 				top = top - parseInt(ss_dashboardTopDropTargetHeight);
@@ -4339,7 +4349,7 @@ function ss_enableDashboardDropTargets() {
 		} else if (sourceNode.parentNode.id == "wide_bottom") {
 			if (children[children.length - 1] == sourceNode) {
 				ss_dashboardClones[i].style.height = ss_dashboardTopDropTargetHeight;
-				var top = parseInt(dojo.html.getAbsolutePosition(targets[i], true).y);
+				var top = parseInt(dojo.coords(targets[i], true).y);
 				ss_dashboardClones[i].style.top = top + "px";
 			}
 
@@ -4720,7 +4730,7 @@ function ss_Clipboard () {
 	    formObj.setAttribute("id", "ss_muster_form");
 	    formObj.setAttribute("name", "ss_muster_form");
 		dojo.byId("ss_muster_inner").appendChild(formObj);
-		dojo.event.connect(formObj, "onsubmit", function(evt) {
+		dojo.connect(formObj, "onsubmit", function(evt) {
 			return dojoformfunction(this);
 	    });
 	    var hiddenObj = document.createElement("input");
@@ -4739,7 +4749,7 @@ function ss_Clipboard () {
 		addContrBtnObj.setAttribute("type", "button");
 		addContrBtnObj.setAttribute("name", "add");
 		addContrBtnObj.setAttribute("value", ss_addContributesToClipboardText);
-		dojo.event.connect(addContrBtnObj, "onclick", function(evt) {
+		dojo.connect(addContrBtnObj, "onclick", function(evt) {
 			ss_muster.addContributesToClipboard();
 			return false;
 	    });
@@ -4748,7 +4758,7 @@ function ss_Clipboard () {
 		addTeamMembersBtnObj.setAttribute("type", "button");
 		addTeamMembersBtnObj.setAttribute("name", "add");
 		addTeamMembersBtnObj.setAttribute("value", ss_addTeamMembersToClipboardText);
-		dojo.event.connect(addTeamMembersBtnObj, "onclick", function(evt) {
+		dojo.connect(addTeamMembersBtnObj, "onclick", function(evt) {
 			ss_muster.addTeamMembersToClipboard();
 			return false;
 	    });
@@ -4771,14 +4781,14 @@ function ss_Clipboard () {
 		deleteBtnObj.setAttribute("type", "button");
 		deleteBtnObj.setAttribute("name", "clear");
 		deleteBtnObj.setAttribute("value", ss_clearClipboardText);
-		dojo.event.connect(deleteBtnObj, "onclick", function(evt) {
+		dojo.connect(deleteBtnObj, "onclick", function(evt) {
 			ss_muster.removeFromClipboard('ss_muster_form');
 			return false;
 	    });
 
 		deleteBtnObj.style.marginRight = "15px"
 
-		dojo.event.connect(dojo.byId("ss_muster_close"), "onclick", function(evt) {
+		dojo.connect(dojo.byId("ss_muster_close"), "onclick", function(evt) {
 			ss_muster.cancel();
 	    });
 
@@ -4797,11 +4807,11 @@ function ss_Clipboard () {
 		
 		var bindArgs = {
 	    	url: url,
-			error: function(type, data, evt) {
+			error: function(err) {
 				ss_toggleAjaxLoadingIndicator(divObj);
 				alert(ss_not_logged_in);
 			},
-			load: function(type, data, evt) {
+			load: function(data) {
 				ss_toggleAjaxLoadingIndicator(divObj);
 				displayUsers(data, divObj);			
 			},
@@ -4810,7 +4820,7 @@ function ss_Clipboard () {
 			method: "get"
 		};
 	   
-		dojo.io.bind(bindArgs);
+		dojo.xhrGet(bindArgs);
 	}
 	
 	function displayUsers(data, containerObj) {
@@ -4833,7 +4843,7 @@ function ss_Clipboard () {
 			var hrefSelectAllObj = document.createElement("a");
 			hrefSelectAllObj.href = "javascript: //;";
 			// hrefSelectAllObj.onclick = ss_muster.selectAll;
-			dojo.event.connect(hrefSelectAllObj, "onclick", function(evt) {
+			dojo.connect(hrefSelectAllObj, "onclick", function(evt) {
 				ss_muster.selectAll();
 		    });
 
@@ -4844,7 +4854,7 @@ function ss_Clipboard () {
 			var hrefDeselectAllObj = document.createElement("a");
 			hrefDeselectAllObj.href = "javascript: //";
 			// hrefDeselectAllObj.onclick = ss_muster.clearAll;
-			dojo.event.connect(hrefDeselectAllObj, "onclick", function(evt) {
+			dojo.connect(hrefDeselectAllObj, "onclick", function(evt) {
 				ss_muster.clearAll();
 		    });
 
@@ -4929,10 +4939,10 @@ function ss_Clipboard () {
 	function updateClipboard(url, afterPostRoutine, args) {
 			var bindArgs = {
 	    	url: url,
-			error: function(type, data, evt) {
-				alert(data.message);
+			error: function(err) {
+				alert(err);
 			},
-			load: function(type, data, evt) {
+			load: function(data) {
 				if (data.failure) {
 					alert(data.failure);
 				} else { 
@@ -4942,17 +4952,17 @@ function ss_Clipboard () {
 			preventCache: true,				
 			mimetype: "text/json"
 		};   
-		dojo.io.bind(bindArgs);	
+		dojo.xhrGet(bindArgs);	
 	}
 	
 	this.removeFromClipboard = function (formId) {
 		var bindArgs = {
 	    	url: ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"remove_from_clipboard"}, "clipboard"),
 	    	formNode: dojo.byId(formId),	    	
-			error: function(type, data, evt) {
-				alert(data.message);
+			error: function(err) {
+				alert(err);
 			},
-			load: function(type, data, evt) {
+			load: function(data) {
 				if (data.failure) {
 					alert(data.failure);
 				} else { 
@@ -4963,7 +4973,7 @@ function ss_Clipboard () {
 			mimetype: "text/json",
 			method: "post"			
 		};   
-		dojo.io.bind(bindArgs);	
+		dojo.xhrGet(bindArgs);	
 	}
 }
 
@@ -4994,11 +5004,11 @@ function ss_startMeeting(url, formId, ajaxLoadingIndicatorPane) {
 	
 	var bindArgs = {
     	url: url,
-		error: function(type, data, evt) {
+		error: function(err) {
 			ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
 			alert(ss_not_logged_in);
 		},
-		load: function(type, data, evt) {
+		load: function(data) {
 			ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
 			if ((!data.meetingToken || data.meetingToken == "") && data.meetingError) {
 				alert(data.meetingError);
@@ -5012,7 +5022,7 @@ function ss_startMeeting(url, formId, ajaxLoadingIndicatorPane) {
 		method: "post"
 	};
    
-	dojo.io.bind(bindArgs);
+	dojo.xhrGet(bindArgs);
 }
 
 /*
@@ -5243,7 +5253,7 @@ function ss_createValidationErrorsDiv()
 		var i = document.createElement("input");
 		i.setAttribute("type", "button");
 		// i.setAttribute("onclick", "ss_cancelPopupDiv('ss_validation_errors_div')");
-		dojo.event.connect(i, "onclick", function(evt) {
+		dojo.connect(i, "onclick", function(evt) {
 			ss_cancelPopupDiv('ss_validation_errors_div');
 			return false;
 	    });
@@ -5343,23 +5353,23 @@ function ss_stopSpinner()
 	}
 }
 
-dojo.require("dojo.html.iframe");
+dojo.require("dojo.io.iframe");
 
 function ss_showSavedQueriesList(relObj, divId, resultUrl) {
 
-	if (dojo.html.isDisplayed(divId)) {
-		dojo.lfx.html.fadeHide(divId, 100).play();
-		//dojo.html.hide(divId);
+	if (dojo.style(dojo.byId(divId), "display") != "none") {
+		dojo.fadeHide(divId, 100).play();
+		//ss_hideDiv(divId);
 		return false;
 	}
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"list_saved_queries"});
 	
 	var bindArgs = {
     	url: url,
-		error: function(type, data, evt) {
+		error: function(err) {
 			alert(ss_not_logged_in);
 		},
-		load: function(type, data, evt) {
+		load: function(data) {
 			try {
 				var divObj = document.getElementById(divId);
 			
@@ -5376,10 +5386,10 @@ function ss_showSavedQueriesList(relObj, divId, resultUrl) {
 				divObj.innerHTML = txt;
 
 				ss_placeOnScreen(divId, relObj, 12, -128);
-				dojo.html.setDisplay(divId, "block");
-				dojo.html.setVisibility(divId, "visible");
-	            dojo.html.setOpacity(divId,0);
-	            dojo.lfx.html.fadeIn(divId, 200).play();
+				dojo.style(divId, "display", "block");
+				dojo.style(divId, "visibility", "visible");
+	            ss_setOpacity(divId,0);
+	            dojo.fadeIn(divId, 200).play();
 				//Signal that the layout changed
 				if (ssf_onLayoutChange) ssf_onLayoutChange();
 			} catch (e) {alert(e)}
@@ -5388,13 +5398,13 @@ function ss_showSavedQueriesList(relObj, divId, resultUrl) {
 		mimetype: "text/json",
 		method: "get"
 	};   
-	dojo.io.bind(bindArgs);	
+	dojo.xhrGet(bindArgs);	
 }
 
 function ss_placeOnScreen(div, rel, offsetTop, offsetLeft) {
-	var box = dojo.html.abs(rel);
+	var box = dojo.coords(rel);
 	ss_moveDivToBody(div);
-	dojo.html.placeOnScreen(div, box.left + offsetLeft, box.top + offsetTop, 0, false, "TL");
+	dojo.placeOnScreen(div, box.l + offsetLeft, box.t + offsetTop, 0, false, "TL");
 }
 
 
@@ -5447,10 +5457,10 @@ function ss_changeUIThemeRequest(themeId) {
 
 	var bindArgs = {
     	url: setUrl,
-		error: function(type, data, evt) {
+		error: function(err) {
 			alert(ss_not_logged_in);
 		},
-		load: function(type, data, evt) {
+		load: function(data) {
   		  try {
 		  	document.location.reload();	  	
 	      } catch (e) {alert(e);}
@@ -5459,7 +5469,7 @@ function ss_changeUIThemeRequest(themeId) {
 		mimetype: "text/plain",
 		method: "get"
 	};   
-	dojo.io.bind(bindArgs);
+	dojo.xhrGet(bindArgs);
 	    
 }
 
@@ -5668,7 +5678,7 @@ function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, ind
 	    aObj.appendChild(document.createTextNode(ss_treeButtonClose));
 	    closeDivObj.appendChild(aObj);
 		self.document.getElementsByTagName( "body" ).item(0).appendChild(iframeDivObj);
-		dojo.event.connect(iframeObj, "onload", function(evt) {
+		dojo.connect(iframeObj, "onload", function(evt) {
 			var iframeDiv = document.getElementById('ss_treeIframe');
 			if (window.frames['ss_treeIframe'] != null) {
 				eval("var iframeHeight = parseInt(window.ss_treeIframe" + ".document.body.scrollHeight);");
@@ -5681,8 +5691,8 @@ function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, ind
     }
     if (iframeDivObj == null) iframeDivObj = iframeDivObjParent;
     if (iframeObj == null) iframeObj = iframeObjParent;
-	var x = dojo.html.getAbsolutePosition(tempObj, true).x
-	var y = dojo.html.getAbsolutePosition(tempObj, true).y
+	var x = dojo.coords(tempObj, true).x
+	var y = dojo.coords(tempObj, true).y
     ss_setObjectTop(iframeDivObj, y + "px");
     ss_setObjectLeft(iframeDivObj, x + "px");
 	ss_showDiv("ss_treeIframeDiv");
@@ -5883,8 +5893,8 @@ function ss_showBucketText(obj, text) {
 	tipObj.style.display = "block";
 	tipObj.style.fontSize = obj.style.fontSize;
 	tipObj.style.fontFamily = obj.style.fontFamily;
-	var x = dojo.html.getAbsolutePosition(obj, true).x
-	var y = dojo.html.getAbsolutePosition(obj, true).y
+	var x = dojo.coords(obj, true).x
+	var y = dojo.coords(obj, true).y
     ss_setObjectTop(tipObj, y + 16 + "px");
     ss_setObjectLeft(tipObj, x + 16 + "px");
 }
@@ -6057,7 +6067,7 @@ function ss_showHideSidebar(namespace) {
 	var sidebarVisibility = "";
 	if (divObj.style.display == 'block') {
 		//Hide it
-   		dojo.lfx.html.fade(divObj, {end: 0}, 400, '', function() {
+   		dojo.fade(divObj, {end: 0}, 400, '', function() {
 		    	divObj.style.visibility = "hidden";
 		    	divObj.style.display = "none";
 				tdObj.className = '';
@@ -6068,10 +6078,10 @@ function ss_showHideSidebar(namespace) {
 	} else {
 		//Show it
 		tdObj.className = 'ss_view_sidebar';
-    	dojo.html.setOpacity(divObj, 0);
+    	ss_setOpacity(divObj, 0);
 		divObj.style.display = 'block';
     	divObj.style.visibility = "visible";
-	    dojo.lfx.html.fade(divObj, {start:0, end:1.0}, 400).play();
+	    dojo.fade(divObj, {start:0, end:1.0}, 400).play();
 		sidebarShow.style.display = 'block'
 		sidebarHide.style.display = 'none'
 		sidebarVisibility = "block"
@@ -6096,3 +6106,7 @@ function ss_requestLogin(obj, binderId, userWorkspaceId, userName) {
 	return false;
 }
 
+function ss_setClass(divId, className) {
+	var divObj = document.getElementById(divId);
+	if (divObj != null) divObj.className = className;
+}

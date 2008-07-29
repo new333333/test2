@@ -125,12 +125,12 @@ if (typeof djConfig == "undefined") {
 	djConfig = { 
 		isDebug: false,
 		locale: '<ssf:convertLocaleToDojoStyle />',
-		parseWidgets: false,
+		// dojo_xxx     parseWidgets: false,
 		searchIds: []
 	};
 }
 </script>
-<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo/dojo.js.uncompressed.js"></script>
 <script type="text/javascript">
 var ss_scripts_loaded = "no";
 var scripts = document.getElementsByTagName("script");
@@ -173,11 +173,11 @@ function ss_loadJsFile(rootPath, jsFile) {
 }
 function ss_loadDojoFiles() {
 	if (ss_scripts_loaded && ss_scripts_loaded == "no") {
-		dojo.require("dojo.html.*");
-		dojo.require("dojo.lfx.*");
-		dojo.require("dojo.event.*");
-		dojo.require("dojo.lang.*");
-		dojo.require("dojo.dnd.*");
+// dojo_xxx		dojo.require("dojo.html.*");
+// dojo_xxx		dojo.require("dojo.lfx.*");
+// dojo_xxx		dojo.require("dojo.event.*");
+// dojo_xxx		dojo.require("dojo.lang.*");
+// dojo_xxx		dojo.require("dojo.dnd.*");
 	}
 }
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
@@ -226,7 +226,7 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_loadJsFile(ss_rootPath, "js/common/taconite-client.js");
 	ss_loadJsFile(ss_rootPath, "js/common/taconite-parser.js");
-	ss_loadJsFile(ss_rootPath, "js/common/ss_dashboard_drag_and_drop.js");
+//dojo_xxx  	ss_loadJsFile(ss_rootPath, "js/common/ss_dashboard_drag_and_drop.js");
 }
 </script>
 <script type="text/javascript">
