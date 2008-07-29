@@ -42,7 +42,7 @@ dojo.declare(
 	this.dataType = [];
 
 	this.getData = function(/*String*/ url){
-		dojo.io.bind({
+		dojo.xhrGet({
 			url: url,
 			load: dojo.lang.hitch(this, function(type, data, evt){ 
 				var arrDataType = [];

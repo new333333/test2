@@ -28,10 +28,10 @@
  */
 dojo.provide("sitescape.widget.WorkflowSelect");
 
-dojo.require("dojo.widget.Select");
-dojo.require("dojo.widget.*");
-dojo.require("dojo.html.*");
-dojo.require("dojo.widget.html.stabile");
+// dojo_xxx		dojo.require("dojo.widget.Select");
+// dojo_xxx		dojo.require("dojo.widget.*");
+// dojo_xxx		dojo.require("dojo.html.*");
+// dojo_xxx		dojo.require("dojo.widget.html.stabile");
 
 dojo.widget.defineWidget(
 	"sitescape.widget.WorkflowSelect",
@@ -72,7 +72,7 @@ dojo.widget.defineWidget(
 			stepsIds = stepsIds||[];
 			var stepsS = "|" + stepsIds.join("|") + "|";
 			this.stepsWidget.innerHTML = "";
-			dojo.io.bind({
+			dojo.xhrGet({
 				url: this.nestedUrl+"&workflowId="+workflowId,
 				load: dojo.lang.hitch(this, function(type, data, evt){ 
 					for (var i in data) {
