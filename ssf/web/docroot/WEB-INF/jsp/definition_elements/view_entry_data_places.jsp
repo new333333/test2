@@ -39,14 +39,41 @@
 	          <c:if test="${!selection.value.deleted}">
 				<a       
 		          <ssf:ifadapter>
+		            <c:if test="${selection.value.definitionType == '5'}">
 			          href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${selection.key}">
 							<ssf:param name="entityType" value="folder"/></ssf:url>"
-						onclick="ss_openUrlInParentWorkarea(this.href, '', 'view_ws_listing'); return false;"
+					  onclick="ss_openUrlInParentWorkarea(this.href, '${selection.key}', 'view_folder_listing'); return false;"
+					</c:if>
+		            <c:if test="${selection.value.definitionType == '6'}">
+			          href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${selection.key}">
+							<ssf:param name="entityType" value="profiles"/></ssf:url>"
+					  onclick="ss_openUrlInParentWorkarea(this.href, '${selection.key}', 'view_profile_listing'); return false;"
+					</c:if>
+		            <c:if test="${selection.value.definitionType == '8' || selection.value.definitionType == 12}">
+			          href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${selection.key}">
+							<ssf:param name="entityType" value="workspace"/></ssf:url>"
+					  onclick="ss_openUrlInParentWorkarea(this.href, '${selection.key}', 'view_ws_listing'); return false;"
+					</c:if>
 		          </ssf:ifadapter>
 		          <ssf:ifnotadapter>
-				     href="<ssf:url adapter="false" portletName="ss_forum" folderId="${selection.key}" action="view_folder_listing" actionUrl="false" >
-		    			<ssf:param name="binderId" value="${selection.key}"/>
-						</ssf:url>" 		          
+				     <c:if test="${selection.value.definitionType == '5'}">
+				       href="<ssf:url adapter="false" portletName="ss_forum" folderId="${selection.key}" 
+				         action="view_folder_listing" actionUrl="false" >
+		    			 <ssf:param name="binderId" value="${selection.key}"/>
+						 </ssf:url>"
+					 </c:if>
+				     <c:if test="${selection.value.definitionType == '6'}">
+				       href="<ssf:url adapter="false" portletName="ss_forum" folderId="${selection.key}" 
+				         action="view_profile_listing" actionUrl="false" >
+		    			 <ssf:param name="binderId" value="${selection.key}"/>
+						 </ssf:url>"
+					 </c:if>
+				     <c:if test="${selection.value.definitionType == '8' || selection.value.definitionType == '12'}">
+				       href="<ssf:url adapter="false" portletName="ss_forum" folderId="${selection.key}" 
+				         action="view_ws_listing" actionUrl="false" >
+		    			 <ssf:param name="binderId" value="${selection.key}"/>
+						 </ssf:url>"
+					 </c:if>
 		          </ssf:ifnotadapter>
 		          class="ss_parentPointer"></c:if><c:out value="${selection.value.title}" escapeXml="false"/><c:if test="${!selection.value.deleted}"></a></c:if>
 				<c:if test="${selection.value.deleted}">
