@@ -97,13 +97,13 @@ function ss_confirmSetWikiHomepage() {
 	<li <c:if test="${ssWikiCurrentTab == 'directory'}">class="ss_tabsCCurrent"</c:if>
 	><a id="ss_wikiDirectoryTab${renderResponse.namespace}"
 	  href="javascript: ;"
-		onClick="ss_selectWikiTab(this, 'directory', '${renderResponse.namespace}', ss_pageSlider${renderResponse.namespace});return false;"
+		onClick="ss_selectWikiTab(this, 'directory', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="wiki.tab.directory"/></span></a></li>
 	
 	<li <c:if test="${ssWikiCurrentTab == 'entries'}">class="ss_tabsCCurrent"</c:if>
 	><a id="ss_wikiEntriesTab_${renderResponse.namespace}" 
 	  href="javascript: ;"
-		onClick="ss_selectWikiTab(this, 'entries', '${renderResponse.namespace}', ss_pageSlider${renderResponse.namespace});return false;"
+		onClick="ss_selectWikiTab(this, 'entries', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="wiki.tab.entries"/></span></a></li>
 
   </ul>
@@ -146,7 +146,7 @@ var ss_wikiTabCurrent_${renderResponse.namespace} = document.getElementById('ss_
 		    </ssf:title>
 
 		    <ssf:ifnotaccessible>
-		    	onClick="ss_selectWikiTab(document.getElementById('ss_wikiEntriesTab_${renderResponse.namespace}'), 'entries', '${renderResponse.namespace}', ss_pageSlider${renderResponse.namespace});ss_loadWikiEntry(this, '${entry1._docId}');return false;" 		    	
+		    	onClick="ss_selectWikiTab(document.getElementById('ss_wikiEntriesTab_${renderResponse.namespace}'), 'entries', '${renderResponse.namespace}');ss_loadWikiEntry(this, '${entry1._docId}');return false;" 		    	
 		    </ssf:ifnotaccessible>
 		    
 		    <ssf:ifaccessible>

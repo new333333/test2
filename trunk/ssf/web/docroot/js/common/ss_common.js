@@ -935,7 +935,7 @@ function ss_showWhatsNewPageDiv(s, divId) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
-function ss_selectWikiTab(obj, tab, namespace, pageSlider) {
+function ss_selectWikiTab(obj, tab, namespace) {
 	//Clear "current" tab
 	var currentTab = window["ss_wikiTabCurrent_"+namespace];
 	if (currentTab != null) {
@@ -957,6 +957,8 @@ function ss_selectWikiTab(obj, tab, namespace, pageSlider) {
 		if (tab == 'directory') {
 			entObj.style.display = 'none';
 			dirObj.style.display = 'block';
+			var pageSlider = "";
+			if (window["ss_pageSlider" + namespace]) eval("set pageSlider = ss_pageSlider" + namespace);
 			if (pageSlider != null) pageSlider.recalculate();
 		} else {
 			dirObj.style.display = 'none';
