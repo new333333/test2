@@ -169,7 +169,7 @@ public interface FolderModule {
      * @param options additional processing options or null
      * @throws AccessControlException
      */
-    public void copyEntry(Long folderId, Long entryId, Long destinationId, Map options)
+    public Long copyEntry(Long folderId, Long entryId, Long destinationId, Map options)
     	throws AccessControlException;
    /**
      * Delete a <code>FolderEntry</code> and all of its replies.  Deleted mirrored resources also.

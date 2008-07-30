@@ -677,7 +677,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         processor.moveEntry(folder, entry, destination, options);
     }
     //inside write transaction    
-    public void copyEntry(Long folderId, Long entryId, Long destinationId, Map options) {
+    public Long copyEntry(Long folderId, Long entryId, Long destinationId, Map options) {
         FolderEntry entry = loadEntry(folderId, entryId);   	
         checkAccess(entry, FolderOperation.copyEntry);
         Folder folder = entry.getParentFolder();
@@ -685,7 +685,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
                
         Folder destination =  loadFolder(destinationId);
         checkAccess(destination, FolderOperation.addEntry);
-        processor.copyEntry(folder, entry, destination, options);
+        return processor.copyEntry(folder, entry, destination, options).getId();
     }
     //inside write transaction    
     public void setSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles) {

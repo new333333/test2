@@ -126,7 +126,7 @@ public class ModifyBinderController extends AbstractBinderController {
 				setupReloadOpener(response, binderId);
 			} else if (op.equals(WebKeys.OPERATION_COPY)) {
 				Long destinationId = TreeHelper.getSelectedId(formData);
-				if (destinationId != null) getBinderModule().copyBinder(binderId, destinationId, null);
+				if (destinationId != null) getBinderModule().copyBinder(binderId, destinationId, true, null);
 				setupReloadOpener(response, binderId);
 				
 			} else if (op.equals(WebKeys.OPERATION_DELETE)) {

@@ -108,11 +108,11 @@ public interface BinderModule {
 	 * Copy a binder to another location
 	 * @param sourceId
 	 * @param destinationId
-	 * @param cascade - True to copy child binders
-     * @param options - processing options or null (See INPUT_OPTION_COPY_BINDER_CASCADE)
+	 * @param cascade
+     * @param options - processing options or null 
 	 * @return
 	 */
-	public Long copyBinder(Long sourceId, Long destinationId, Map options)
+	public Long copyBinder(Long sourceId, Long destinationId, boolean cascade, Map options)
 		throws AccessControlException;
 	/**
 	 * Delete a binder including any sub-binders and entries.

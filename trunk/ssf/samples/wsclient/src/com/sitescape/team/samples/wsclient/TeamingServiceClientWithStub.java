@@ -43,6 +43,7 @@ import com.sitescape.team.client.ws.model.User;
 import com.sitescape.team.client.ws.model.Group;
 import com.sitescape.team.client.ws.model.PrincipalBrief;
 import com.sitescape.team.client.ws.model.PrincipalCollection;
+import com.sitescape.team.client.ws.model.Tag;
 
 /**
  * This WS client program uses JAX-RPC compliant client binding classes 
@@ -61,7 +62,8 @@ public class TeamingServiceClientWithStub {
 	
 	public static void main(String[] args) throws Exception {
 		FolderEntry entry;
-		checkBinder(29);
+		//checkBinder(29);
+		checkTags(29);
 		//getFolderEntryWSSecurity(85, 47, true);
 		//getFolderEntry(85, 80, true);
 		
@@ -84,6 +86,28 @@ public class TeamingServiceClientWithStub {
 		//getPrincipal(2, 1);
 		
 		//getPrincipals(2, 5);
+	}
+	public static void checkTags(long binderId) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		Tag tag = new Tag();
+		tag.setEntityId(binderId);
+		tag.setName("tag1");
+		stub.binder_setTag(null, tag);
+		tag.setName("tag2");
+		stub.binder_setTag(null, tag);
+		Tag[] tags = stub.binder_getTags(null, binderId);
+		System.out.println("Begin tags");
+		if (tags.length != 2) System.out.println("Number of tags expected=2, actual=" + tags.length);
+		for (int i=0; i<tags.length; ++i) {			
+			if (!tag.getName().equals("tag1") && !tag.getName().equals("tag2")) {
+				System.out.println("Unexpected tag=" + tag.getName());
+			}
+		}
+		System.out.println("End tags");
+		
 	}
 	public static void checkBinder(long binderId) throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();

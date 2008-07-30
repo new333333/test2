@@ -533,7 +533,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
            	
     }
      //no transaction    
-     public Long copyBinder(Long fromId, Long toId, Map options) {
+     public Long copyBinder(Long fromId, Long toId, boolean cascade, Map options) {
        	Binder source = loadBinder(fromId);
 		checkAccess(source, BinderOperation.copyBinder);
        	Binder destinationParent = loadBinder(toId);
@@ -545,10 +545,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
        	Map params = new HashMap();
        	if (options != null) params.putAll(options);
        	params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
+       	params.put(ObjectKeys.INPUT_OPTION_PRESERVE_DOCNUMBER, Boolean.TRUE);
        	//lock top level
    		Binder binder = loadBinderProcessor(source).copyBinder(source, destinationParent, params);
-   		Boolean cascade = (Boolean)params.get(ObjectKeys.INPUT_OPTION_COPY_BINDER_CASCADE);
-   		if (cascade == null) cascade = Boolean.TRUE;
        	if (cascade) doCopyChildren(source, binder);
        	return binder.getId();
      }

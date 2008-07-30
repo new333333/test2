@@ -28,7 +28,7 @@
  */
 package com.sitescape.team.remoting.ws.service.binder;
 
-
+import com.sitescape.team.remoting.ws.model.Tag;
 import com.sitescape.team.remoting.ws.model.Binder;
 import com.sitescape.team.remoting.ws.model.FolderCollection;
 import com.sitescape.team.remoting.ws.model.FunctionMembership;
@@ -36,10 +36,23 @@ import com.sitescape.team.remoting.ws.model.Subscription;
 import com.sitescape.team.remoting.ws.model.TeamMemberCollection;
 
 public interface BinderService {
+	/**
+	 * Add a new binder, without using a template
+	 * @param accessToken
+	 * @param binder
+	 * @return
+	 */
 	public long binder_addBinder(String accessToken, Binder binder);
+	public long binder_copyBinder(String accessToken, long sourceId, long destinationId, boolean cascade);
 	public String[] binder_deleteBinder(String accessToken, long binderId, boolean deleteMirroredSource); 
 	public Binder binder_getBinder(String accessToken, long binderId, boolean includeAttachments);
+	public void binder_moveBinder(String accessToken, long binderId, long destinationId);
+	public void binder_modifyBinder(String accessToken, Binder binder);
 	public void binder_uploadFile(String accessToken, long binderId, String fileUploadDataItemName, String fileName);
+
+	public void binder_deleteTag(String accessToken, long binderId, String tagId); 
+	public Tag[] binder_getTags(String accessToken, long binderId);
+	public void binder_setTag(String accessToken, Tag tag);
 
 	public void binder_indexBinder(String accessToken, long binderId);
     public Long[] binder_indexTree(String accessToken, long binderId);
