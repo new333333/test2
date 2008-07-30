@@ -130,7 +130,7 @@ if (typeof djConfig == "undefined") {
 	};
 }
 </script>
-<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo/dojo.js.uncompressed.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo/dojo.js"></script>
 <script type="text/javascript">
 var ss_scripts_loaded = "no";
 var scripts = document.getElementsByTagName("script");
