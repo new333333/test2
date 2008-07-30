@@ -28,8 +28,10 @@
  */
 //Common javascript functions for forum portlets
 //
-// browser-specific vars
+dojo.require("dijit.dijit");
+dojo.require("dojo.fx");
 
+// browser-specific vars
 var undefined;
 var ss_declaredDivs;
 if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "undefined" ) {
@@ -237,7 +239,7 @@ function ss_post(url, formId, callBackRoutine, callbackData, toggleCall) {
 			}
 		},
 		preventCache: true,				
-		mimetype: "text/json",
+		handleAs: "json",
 		method: "post"
 	};   
 	dojo.xhrGet(bindArgs);
@@ -261,7 +263,7 @@ function ss_get_url(url, callBackRoutine, callbackData, toggleCall) {
 			}
 		},
 		preventCache: true,				
-		mimetype: "text/json"
+		handleAs: "json"
 	};   
 	dojo.xhrGet(bindArgs);
 }     
@@ -1127,7 +1129,7 @@ function ss_showDivFadeIn(id, ms) {
     	ss_setOpacity(document.getElementById(id),0.1);
     	ss_showDiv(id);
     }
-    dojo.fadeIn(id, ms).play();
+    dojo.fadeIn({node:id, delay:ms}).play();
 }
 
 //Routine to fade out a div
@@ -1139,10 +1141,10 @@ function ss_hideDivFadeOut(id, ms) {
     //Is this still being shown? If yes, return.
 	if (ss_divFadeInArray[id] > 1) return;
     if (!ms || ms == undefined) ms = 300;
-    dojo.fadeOut(id, ms, function(){
+    dojo.fadeOut({node:id, delay:ms, onEnd:function(){
     	ss_hideDiv(id);
     	return true;
-    }).play();
+    }}).play();
 }
 
 //Routine to add the innerHMTL of one div to another div
@@ -2372,7 +2374,7 @@ function ss_showLightbox(id, zIndex, opacity, className) {
     lightBox.style.height = ss_getBodyHeight() + "px";
     lightBox.style.zIndex = zIndex;
     lightBox.style.visibility = "visible";
-    dojo.fade(lightBox, {end:opacity}, 150).play();
+    dojo.fadeIn({node:lightBox, end:opacity, delay:150}).play();
     return lightBox;
 }
 function ss_hideLightbox(id) {
@@ -2415,7 +2417,7 @@ var ss_helpSystem = {
 	    	welcomeDiv.style.display = "block";
 	        //welcomeDiv.style.top = this.getPositionTop(welcomeDiv);
 	        //welcomeDiv.style.left = this.getPositionLeft(welcomeDiv);
-	        difit.placeOnScreen(welcomeDiv,0,0,[5,5],false, ['TL'], false);
+	        dijit.placeOnScreen(welcomeDiv, {x:0, y:0}, "TL", false);
 	        if (helpMenuAnchorDiv != null) {
 	        	helpMenuAnchorDiv.style.visibility = "visible";
 	        	helpMenuAnchorDiv.style.display = "block";
@@ -2427,13 +2429,13 @@ var ss_helpSystem = {
 	        	//welcomeDiv.style.left = parseInt(ss_getObjectLeftAbs(helpMenuAnchorDiv) + offsetL) + "px";
 	        }
 	    	ss_setOpacity(welcomeDiv, 0);
-	    	dojo.fade(welcomeDiv, {start:0, end:1.0}, 150).play();
+	    	dojo.fadeIn({node:welcomeDiv, start:0, end:1.0, delay:150}).play();
 	    	dojo.connect(window, "onscroll", this, "moveWelcomeIntoView");
 		}
 	},
 
 	moveWelcomeIntoView : function (e) {
-		dijit.placeOnScreen(dojo.byId("ss_help_welcome"),0,0,[5,5],false, ['TL'], false);
+		dijit.placeOnScreen(dojo.byId("ss_help_welcome"), {x:0, y:0}, "TL", false);
 	},
 	
 	hide : function() {
@@ -2444,7 +2446,7 @@ var ss_helpSystem = {
 		if (welcomeDiv) {
 	    	welcomeDiv.style.visibility = "hidden";
 	    	welcomeDiv.style.display = "none";
-	    	dojo.event.disconnect(window, "onscroll", this, "moveWelcomeIntoView");
+	    	dojo.disconnect(dojo.body(), "onscroll", this, "moveWelcomeIntoView");
 		    //Call the routines that want to be called on layout changes
 		    ssf_onLayoutChange();
 		}
@@ -2472,11 +2474,11 @@ var ss_helpSystem = {
     		//Delete all of the highlighted nodes
     		this.clearHighlights();
 
-    		dojo.fade(lightBox, {end: 0}, 150, '', function() {
+    		dojo.fadeOut({node:lightBox, end: 0, delay:150, onEnd: function() {
     			var lightBox2 = document.getElementById('ss_help_light_box');
 		    	lightBox.style.visibility = "hidden";
 		    	lightBox.style.display = "none";
-   		}).play();
+   		}}).play();
     		return
 		}
 	},
@@ -2891,7 +2893,7 @@ var ss_helpSystem = {
 		      } catch (e) {alert(e);}
 			},
 			preventCache: true,				
-			mimetype: "text/plain",
+			handleAs: "text",
 			method: "get"
 		};   
 		dojo.xhrGet(bindArgs);
@@ -2985,7 +2987,7 @@ var ss_helpSystem = {
 		if (startTop >= 0 && startLeft >= 0 && startVisibility == "visible") {
 			pObj.style.top = startTop + "px";
 			pObj.style.left = startLeft + "px";
-			dojo.fx.slideTo(panelId, {top: top, left: left}, 300).play();
+			dojo.fx.slideTo({node:panelId, top: top, left: left, duration:300}).play();
 		} else {
 			pObj.style.top = top + "px";
 			pObj.style.left = left + "px";
@@ -3659,20 +3661,20 @@ function ss_fadeOutTableRow(rowId, divId) {
 	var divObj = self.document.getElementById(divId);
 	if (typeof rowObj == 'undefined' || typeof divObj == 'undefined') return;
 	if (divObj.visibility != 'hidden') {
-		dojo.fadeHide(divId, 600, null, function(divId) {
+		dojo.fadeOut({node:divId, delay:600, onEnd: function() {
 			var divObj = self.document.getElementById(divId);
 			var rowObj = ss_findOwningElement(divObj, "tr");
 			var tbodyObj = ss_findOwningElement(rowObj, "tbody");
 			tbodyObj.removeChild(rowObj);
 			if (ss_loadEntryInPlaceLastRowObj != null) {
 				var rowTop = parseInt(ss_getObjectTopAbs(ss_loadEntryInPlaceLastRowObj));
-				var scrollTop = dojo.html.getScroll().top;
+				var scrollTop = dijit.getScroll().top;
 				var screenBottom = parseInt(scrollTop + ss_getWindowHeight());
 				if (parseInt(rowTop + 200) > screenBottom || parseInt(rowTop - 100) < scrollTop) {
 					window.scroll(0, rowTop - 100);
 				}
 			}
-		}).play();
+		}}).play();
 		return;
 	}
 }
@@ -3971,7 +3973,7 @@ function ssFavorites(namespace) {
     	ss_showDivObj(fObj);
 	    dojo.style(fObj, "visibility", "visible");
 	    ss_setOpacity(fObj,0);
-	    dojo.fadeIn(fObj, 100).play();
+	    dojo.fadeIn({node:fObj, delay:100}).play();
 		loadFavorites(url);
 	}
 	
@@ -4017,7 +4019,8 @@ function ssFavorites(namespace) {
 		var callback = function(data) {
 				setFavoritesList(data);
 				ss_hideDiv("ss_favorites_loading" + namespace);
-				dojo.fadeHide("ss_favorites_editor" + namespace, 100).play()
+				dojo.fadeOut({node: "ss_favorites_editor" + namespace, delay:100, onEnd: function() {
+				ss_hideDiv("ss_favorites_editor" + namespace);}}).play()
 		}
 		ss_get_url(url, ss_createDelegate(this, callback));
 	}
@@ -4043,13 +4046,13 @@ function ssFavorites(namespace) {
 	this.showhideFavoritesEditor = function() {
 	   var ebox = dojo.byId("ss_favorites_editor" + namespace);
 		if (dojo.style(ebox, "display") != "none") {
-			dojo.fadeHide(ebox, 100).play()
+			dojo.fadeOut({node:ebox, delay:100}).play()
 			setFavoriteListEditable(false);
 		} else {
 		    ss_showDivObj(ebox);
 		    dojo.style(ebox, "display", "block");
 		    ss_setOpacity(ebox,0);
-		    dojo.fadeIn(ebox, 300).play();
+		    dojo.fadeIn({node:ebox, delay:300}).play();
 			setFavoriteListEditable(true);
 		}
 	}
@@ -4170,7 +4173,7 @@ function ssTeams(namespace) {
 		dojo.style(fObj, "display", "block");
 	    dojo.style(fObj, "visibility", "visible");
 	    ss_setOpacity(fObj,0);
-	    dojo.fadeIn(fObj, 100).play();
+	    dojo.fadeIn({node:fObj, delay:100}).play();
 	    ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_my_teams", namespace:namespace}), ss_createDelegate(this, showCallback));
 	}
 	function showCallback(data) {
@@ -4817,7 +4820,7 @@ function ss_Clipboard () {
 				ss_toggleAjaxLoadingIndicator(divObj);
 				displayUsers(data, divObj);			
 			},
-			mimetype: "text/json",
+			handleAs: "json",
 			transport: "XMLHTTPTransport",
 			method: "get"
 		};
@@ -4952,7 +4955,7 @@ function ss_Clipboard () {
 				}
 			},
 			preventCache: true,				
-			mimetype: "text/json"
+			handleAs: "json"
 		};   
 		dojo.xhrGet(bindArgs);	
 	}
@@ -4972,7 +4975,7 @@ function ss_Clipboard () {
 				}
 			},
 			preventCache: true,				
-			mimetype: "text/json",
+			handleAs: "json",
 			method: "post"			
 		};   
 		dojo.xhrGet(bindArgs);	
@@ -5020,7 +5023,7 @@ function ss_startMeeting(url, formId, ajaxLoadingIndicatorPane) {
 			
 		},
 		formNode: $(formId),
-		mimetype: "text/json",
+		handleAs: "json",
 		method: "post"
 	};
    
@@ -5360,8 +5363,8 @@ dojo.require("dojo.io.iframe");
 function ss_showSavedQueriesList(relObj, divId, resultUrl) {
 
 	if (dojo.style(dojo.byId(divId), "display") != "none") {
-		dojo.fadeHide(divId, 100).play();
-		//ss_hideDiv(divId);
+		dojo.fadeOut({node:divId, delay:100, onEnd: function() {
+		ss_hideDiv(divId);}}).play();
 		return false;
 	}
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"list_saved_queries"});
@@ -5391,13 +5394,13 @@ function ss_showSavedQueriesList(relObj, divId, resultUrl) {
 				dojo.style(divId, "display", "block");
 				dojo.style(divId, "visibility", "visible");
 	            ss_setOpacity(divId,0);
-	            dojo.fadeIn(divId, 200).play();
+	            dojo.fadeIn({node:divId, delay:200}).play();
 				//Signal that the layout changed
 				if (ssf_onLayoutChange) ssf_onLayoutChange();
 			} catch (e) {alert(e)}
 		},
 		preventCache: true,
-		mimetype: "text/json",
+		handleAs: "json",
 		method: "get"
 	};   
 	dojo.xhrGet(bindArgs);	
@@ -5468,7 +5471,7 @@ function ss_changeUIThemeRequest(themeId) {
 	      } catch (e) {alert(e);}
 		},
 		preventCache: true,				
-		mimetype: "text/plain",
+		handleAs: "text",
 		method: "get"
 	};   
 	dojo.xhrGet(bindArgs);
@@ -6069,13 +6072,13 @@ function ss_showHideSidebar(namespace) {
 	var sidebarVisibility = "";
 	if (divObj.style.display == 'block') {
 		//Hide it
-   		dojo.fade(divObj, {end: 0}, 400, '', function() {
+   		dojo.fadeOut({node: divObj, end: 0, delay: 400, onEnd: function() {
 		    	divObj.style.visibility = "hidden";
 		    	divObj.style.display = "none";
 				tdObj.className = '';
 				sidebarShow.style.display = 'none'
 				sidebarHide.style.display = 'block'
-   		}).play();
+   		}}).play();
    		sidebarVisibility = "none";
 	} else {
 		//Show it
@@ -6083,7 +6086,7 @@ function ss_showHideSidebar(namespace) {
     	ss_setOpacity(divObj, 0);
 		divObj.style.display = 'block';
     	divObj.style.visibility = "visible";
-	    dojo.fade(divObj, {start:0, end:1.0}, 400).play();
+	    dojo.fadeIn({node: divObj, start:0, end:1.0, delay:400}).play();
 		sidebarShow.style.display = 'block'
 		sidebarHide.style.display = 'none'
 		sidebarVisibility = "block"
