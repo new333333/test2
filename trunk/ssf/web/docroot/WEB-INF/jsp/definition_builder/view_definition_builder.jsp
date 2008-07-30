@@ -53,7 +53,7 @@
 %>
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
-dojo.require('dojo.widget.*');
+dojo.require('dojox.widget.*');
 dojo.require('sitescape.widget.SelectPageable');
 dojo.require('sitescape.widget.MultiplePageableSelect');
 </script>

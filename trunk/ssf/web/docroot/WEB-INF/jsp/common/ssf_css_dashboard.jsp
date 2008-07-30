@@ -98,7 +98,6 @@ div.ss_canvas {
 	min-height:100%;
 /*	position:relative;		 Needed at one time, but breaks view in IE6 */
 	clear:both;
-	float:left;
     width:100%;			/* width of whole page */
 	overflow:hidden;	/* This chops off any overhanging divs */
 	text-align:left;
