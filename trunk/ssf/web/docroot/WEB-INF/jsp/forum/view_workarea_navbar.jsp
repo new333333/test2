@@ -180,6 +180,9 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 	            title="<ssf:nlt tag="navigation.goToPortalView"/>"
 	          ><ssf:nlt tag="navigation.portalView"/></a> | 
 	          <a
+	 			  <c:if test="${empty ssBinder}">
+	 			    href=""
+	 			  </c:if>
 	 			  <c:if test="${ssBinder.entityType == 'folder'}">
 	 			    href="<ssf:url adapter="true" portletName="ss_forum" 
 			    		action="view_folder_listing"
