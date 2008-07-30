@@ -67,7 +67,7 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard)
 			load: function(data) {
 				calendarObj.addEvents(data, date);
 			},
-						
+			preventCache: true
 		});
 	}
 	
@@ -84,6 +84,7 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard)
 			load: function(data) {
 				calendarObj.addEvents(data);
 			},
+			preventCache: true
 		});	 
 	}
 	
@@ -100,6 +101,7 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard)
 	    	handleAs: "json",
 			error: function(err) { },
 			load: function(data) { return data },
+			preventCache: true
 		});
 	}
 
@@ -2466,6 +2468,7 @@ if (!window["ss_calendar_import"]) {
 					}
 					ss_calendar_import.cancel();
 				},
+				preventCache: true,
 				form: "ss_calendar_import_form"
 			});
 	
@@ -2502,6 +2505,7 @@ if (!window["ss_calendar_import"]) {
 					}
 					ss_calendar_import.cancel();
 				},
+				preventCache: true,
 				form: "ss_calendar_importURL_form"
 			});
 	
@@ -2593,6 +2597,7 @@ if (!window.ss_calendar_settings) {
 					}
 				  	document.location.reload();	  	
 				},
+				preventCache: true,
 				form: "ss_calendar_settings_form"
 			});
 	
