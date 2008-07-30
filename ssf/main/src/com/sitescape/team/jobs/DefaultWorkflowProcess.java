@@ -101,7 +101,9 @@ public class DefaultWorkflowProcess extends SSStatefulJob implements WorkflowPro
        			removeJob(context);
        			if (state != null && job instanceof WorkflowCallout) {
        				//could be a naming issue for variables if multiple remote apps run simultaneously for the same entry
-       				((WorkflowModule)SpringContextUtil.getBean("workflowModule")).modifyWorkflowState(entry, state, ((WorkflowCallout)job).getVariables());
+       				WorkflowModule wf = (WorkflowModule)SpringContextUtil.getBean("workflowModule");
+       				wf.setWorkflowVariables(entry, state, ((WorkflowCallout)job).getVariables());
+       				wf.modifyWorkflowStateOnChange(entry);
        			}
        		} else {
        			//update jobdata

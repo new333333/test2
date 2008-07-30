@@ -343,6 +343,7 @@ public class TransitionUtils {
 		return true;
 
 	}	
+	//check for conditions when don't have a running execution context.  Called after change to entry.
 	private static boolean processConditions(WorkflowSupport entry, Token current, boolean isModify, boolean isReply) {
 
 		boolean found = true;
@@ -365,7 +366,7 @@ public class TransitionUtils {
 					if (t.hasEnded() || (ws.getOwner() == null)) continue;
 					ExecutionContext ctx = new ExecutionContext(t);
 					String toState =TransitionUtils.processConditions(ctx, entry, ws, isModify, isReply); 
-					if (toState != null) {
+					if (Validator.isNotNull(toState)) {
 						ctx.leaveNode(ws.getState() + "." + toState);
 						context.save(t);
 						stateChange=true;
@@ -383,7 +384,7 @@ public class TransitionUtils {
 	}
 	/**
 	 * Look for the first condition that is met and return the state to transition to.  If
-	 * no condition is fully satisfied, return the earlies timeout we should wait for.  If neither, return null;   
+	 * no condition is fully satisfied, set timeouts if requested.   
 	 * @param executionContext
 	 * @param entry
 	 * @param state

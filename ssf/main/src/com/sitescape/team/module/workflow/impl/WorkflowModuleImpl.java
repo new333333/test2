@@ -665,7 +665,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	/**
 	 * Set some workflow variables and continue processing.
 	 */
-	public void modifyWorkflowState(WorkflowSupport entry, WorkflowState state, Map<String, Object> variables) {
+	public void setWorkflowVariables(WorkflowSupport entry, WorkflowState state, Map<String, Object> variables) {
+		if (variables.isEmpty()) return;
 		JbpmContext context=WorkflowFactory.getContext();
 		try {
 			Long tokenId = state.getTokenId();
@@ -680,7 +681,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 				cI.setVariable((String)me.getKey(), me.getValue());
 				if (debugEnabled) logger.debug("Set variable " + me.getKey() + "=" + me.getValue());
 			}
-			TransitionUtils.processConditions(executionContext, entry, state);
 		} finally {
 			context.close();
 		}
@@ -826,6 +826,18 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		return TransitionUtils.processConditions(entry, false, true);	
 	}	
 
+	//see if anything to do after some external event
+    public void  modifyWorkflowStateOnChange(WorkflowSupport wfEntry) {
+		boolean changed = TransitionUtils.processConditions(wfEntry, false, false);
+		if (changed) {
+			Entry entry = (Entry)wfEntry;
+			EntryProcessor processor = loadEntryProcessor(entry.getParentBinder());
+			entry.incrLogVersion();
+			processor.processChangeLog(entry, ChangeLog.WORKFLOWTIMEOUT);
+			processor.indexEntry(entry);
+		}
+	
+    }
 	
 	private EntryProcessor loadEntryProcessor(Binder binder) {
         // This is nothing but a dispatcher to an appropriate processor. 

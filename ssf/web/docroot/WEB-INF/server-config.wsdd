@@ -87,6 +87,7 @@
 		<beanMapping qname="ns:CustomStringField" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.CustomStringField"/>
 		<beanMapping qname="ns:SubscriptionStyle" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.SubscriptionStyle"/>
 		<beanMapping qname="ns:Subscription" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Subscription"/>
+		<beanMapping qname="ns:Tag" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Tag"/>
 		<beanMapping qname="ns:TeamBrief" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TeamBrief"/>
 		<beanMapping qname="ns:TeamCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TeamCollection"/>
 		<beanMapping qname="ns:TeamMemberCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TeamMemberCollection"/>
@@ -95,5 +96,6 @@
 		<beanMapping qname="ns:Timestamp" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Timestamp"/>
 		<beanMapping qname="ns:User" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.User"/>
 		<beanMapping qname="ns:Workflow" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Workflow"/>
+		<beanMapping qname="ns:WorkflowResponse" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.WorkflowResponse"/>
 	</service>
 </deployment>

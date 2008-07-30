@@ -29,7 +29,7 @@ public class StartRemoteApp extends AbstractWorkflowCallout implements WorkflowS
 		String resultVariable = (String)params.get(WorkflowScheduledAction.WORKFLOW_RESULT_NAME);
 		try {
 			String result = getRemoteApplicationManager().executeRequestScopedNonRenderableAction(params, Long.valueOf(appId), 
-					Long.valueOf(binderId), AccessToken.BinderAccessConstraints.BINDER_ONLY);
+					Long.valueOf(binderId), AccessToken.BinderAccessConstraints.NONE);
 			//scheduler will push variables back to workflow engine and check for new conditions
 			if (Validator.isNotNull(resultVariable)) setVariable(resultVariable, result);
 			return true;

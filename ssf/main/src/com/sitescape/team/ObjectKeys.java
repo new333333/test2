@@ -291,9 +291,8 @@ public interface ObjectKeys {
 	/********INPUT options parameters********/
 	//Passed to processors to force a database lock.  Used to reduce optimistic lock exceptions
 	public static final String INPUT_OPTION_FORCE_LOCK="com.sitescape.team.options.lock";
+	//default = Boolean.TRUE if INPUT_OPTION_COPY_NEW_BINDER=TRUE; Preserve old docnumbers when copy to a new folder;
 	public static final String INPUT_OPTION_PRESERVE_DOCNUMBER="com.sitescape.team.options.preserve.docnum";
-	//default=Boolean.TRUE; Copy a binder and all its child binders if true
-	public static final String INPUT_OPTION_COPY_BINDER_CASCADE="com.sitescape.team.options.cascade.copy";
 	//Default=Boolean.FALSE; When deleteing a profile entry, delete the associated workspace and all source/sub binders
 	public static final String INPUT_OPTION_DELETE_USER_WORKSPACE="com.sitescape.team.options.delete.userworkspace";
 	//migration flags

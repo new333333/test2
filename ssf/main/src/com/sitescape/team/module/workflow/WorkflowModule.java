@@ -93,13 +93,6 @@ public interface WorkflowModule {
 	 */
 	public void modifyWorkflowState(WorkflowSupport entry, WorkflowState state, String toState);
 	/**
-	 * Set context variables and continue processing.
-	 * @param entry
-	 * @param state
-	 * @param variables
-	 */
-	public void modifyWorkflowState(WorkflowSupport entry, WorkflowState state, Map<String, Object> variables);
-	/**
 	 * A reply was entered.  
 	 * See if that triggers a transition and process
 	 * @param entry
@@ -120,6 +113,20 @@ public interface WorkflowModule {
 	 * @return
 	 */
 	public boolean modifyWorkflowStateOnUpdate(WorkflowSupport entry);
+	/**
+	 * An external event occured on the entry.
+	 * See if that triggers a transition and process
+	 * @param entry
+	 * @return
+	 */
+	public void  modifyWorkflowStateOnChange(WorkflowSupport entry);
 	public void processTimers();
+	/**
+	 * Set context variables and continue processing.
+	 * @param entry
+	 * @param state
+	 * @param variables
+	 */
+	public void setWorkflowVariables(WorkflowSupport entry, WorkflowState state, Map<String, Object> variables);
 
 }

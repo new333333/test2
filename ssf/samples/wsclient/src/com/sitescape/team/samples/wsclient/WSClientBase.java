@@ -80,6 +80,7 @@ public abstract class WSClientBase {
 			com.sitescape.team.client.ws.model.CustomStringField.class,
 			com.sitescape.team.client.ws.model.SubscriptionStyle.class,
 			com.sitescape.team.client.ws.model.Subscription.class,
+			com.sitescape.team.client.ws.model.Tag.class,
 			com.sitescape.team.client.ws.model.TeamBrief.class,
 			com.sitescape.team.client.ws.model.TeamCollection.class,
 			com.sitescape.team.client.ws.model.TeamMemberCollection.class,
@@ -88,6 +89,7 @@ public abstract class WSClientBase {
 			com.sitescape.team.client.ws.model.Timestamp.class,
 			com.sitescape.team.client.ws.model.User.class,
 			com.sitescape.team.client.ws.model.Workflow.class,
+			com.sitescape.team.client.ws.model.WorkflowResponse.class,
 	};
 
 	protected String host; // optional - default to localhost

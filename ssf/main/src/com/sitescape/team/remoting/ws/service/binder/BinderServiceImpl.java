@@ -51,6 +51,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
+import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -208,6 +209,9 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		}
 	}
 	
+	public long binder_copyBinder(String accessToken, long sourceId, long destinationId, boolean cascade) {
+		return getBinderModule().copyBinder(sourceId, destinationId, cascade, null);
+	}
 	public String[] binder_deleteBinder(String accessToken, long binderId, boolean deleteMirroredSource) {
 		Set<Exception>errors = getBinderModule().deleteBinder(binderId, deleteMirroredSource, null);
 		String[] strErrors = new String[errors.size()];
@@ -216,6 +220,9 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			strErrors[i++] = ex.getLocalizedMessage();
 		}
 		return strErrors;
+	}
+	public void binder_moveBinder(String accessToken, long binderId, long destinationId) {
+		getBinderModule().moveBinder(binderId, destinationId, null);
 	}
 	public com.sitescape.team.remoting.ws.model.Binder binder_getBinder(String accessToken, long binderId, boolean includeAttachments) {
 
@@ -228,6 +235,15 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		fillBinderModel(binderModel, binder);
 		
 		return binderModel;
+	}
+	public void binder_modifyBinder(String accessToken, com.sitescape.team.remoting.ws.model.Binder binder) {
+		try {
+			getBinderModule().modifyBinder(binder.getId(), 
+				new ModelInputData(binder), null, null, null);
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}			
 	}
 	public void binder_uploadFile(String accessToken, long binderId, String fileUploadDataItemName, String fileName) {
 		throw new UnsupportedOperationException();
@@ -275,7 +291,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		Binder binder = getBinderModule().getBinder(binderId);		
 		Map searchResults = getBinderModule().getBinders(binder, new HashMap());
 		List searchBinders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
-		TreeSet set = new TreeSet(c);
 	
 		List<FolderBrief> folderList = new ArrayList<FolderBrief>();
 		//get folders
@@ -309,5 +324,20 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		FolderBrief[] array = new FolderBrief[folderList.size()];
 		return new FolderCollection(binderId, folderList.toArray(array));
 	}
-	
+	public void binder_deleteTag(String accessToken, long binderId, String tagId) {
+		getBinderModule().deleteTag(binderId, tagId);
+	}
+	public void binder_setTag(String accessToken, com.sitescape.team.remoting.ws.model.Tag tag) {
+		getBinderModule().setTag(tag.getEntityId(), tag.getName(), tag.isPublic());
+	}
+	public com.sitescape.team.remoting.ws.model.Tag[] binder_getTags(String accessToken, long binderId) {
+		Collection<Tag>tags = getBinderModule().getTags(getBinderModule().getBinder(binderId));
+		com.sitescape.team.remoting.ws.model.Tag[] results = new com.sitescape.team.remoting.ws.model.Tag[tags.size()];
+		int i=0;
+		for (Tag tag:tags) {
+			results[i++] = toTagModel(tag);
+		}
+		return results;
+	}
+
 }
