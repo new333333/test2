@@ -3669,7 +3669,7 @@ function ss_fadeOutTableRow(rowId, divId) {
 			tbodyObj.removeChild(rowObj);
 			if (ss_loadEntryInPlaceLastRowObj != null) {
 				var rowTop = parseInt(ss_getObjectTopAbs(ss_loadEntryInPlaceLastRowObj));
-				var scrollTop = dijit.getScroll().top;
+				var scrollTop = ss_getScrollXY()[1];
 				var screenBottom = parseInt(scrollTop + ss_getWindowHeight());
 				if (parseInt(rowTop + 200) > screenBottom || parseInt(rowTop - 100) < scrollTop) {
 					window.scroll(0, rowTop - 100);
