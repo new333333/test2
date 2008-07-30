@@ -90,7 +90,7 @@ if (!window.ssSurvey) {
 			ss_questionsArray[ss_questionsCounter].type=type;
 		
 			var questionContainer = document.createElement('div');
-			dojo.html.setClass(questionContainer, "ss_questionContainer");
+			ss_setClass(questionContainer, "ss_questionContainer");
 			questionContainer.id = prefix + "question" + ss_questionsCounter;
 			dojo.byId(surveyContainerId).appendChild(questionContainer);
 			ss_addQuestionHeader(questionContainer);
@@ -187,7 +187,7 @@ if (!window.ssSurvey) {
 		
 		function ss_addDefaultAnswers(index, withDefaultOptions) {
 			var more = document.createElement('a');
-			dojo.html.setClass(more, "ss_button");
+			ss_setClass(more, "ss_button");
 			dojo.connect(more, "onclick", ss_callAddAnswerOption(that, index));
 			more.appendChild(document.createTextNode(that.locale.moreAnswers));
 			var answersList = document.createElement('ol');
@@ -452,6 +452,7 @@ ssSurvey.vote = function(formId, binderId, entryId, requiredQuestions, prefix) {
 			}
 		},
 		mimetype: "text/json",
+		preventCache: true,
 		formNode: document.getElementById(formId)
 	});
 }
@@ -475,6 +476,7 @@ ssSurvey.removeVote = function(formId, binderId, entryId) {
 			}
 		},
 		mimetype: "text/json",
+		preventCache: true,
 		formNode: document.getElementById(formId)
 	});
 }

@@ -62,6 +62,7 @@
 				},
 							
 				mimetype: "text/json",
+				preventCache: true,
 				method: "post"
 			};
 			dojo.xhrGet(bindArgs);
@@ -89,6 +90,7 @@
 				},
 							
 				mimetype: "text/json",
+				preventCache: true,
 				method: "post"
 			};
 			dojo.xhrGet(bindArgs);
@@ -120,6 +122,7 @@
 				},
 							
 				mimetype: "text/json",
+				preventCache: true,
 				method: "post"
 			};
 			dojo.xhrGet(bindArgs);
@@ -215,14 +218,14 @@
 			
 			completedStatusDivs[task.id][11] = document.createElement('div');
 			completedStatusDivs[task.id][11].innerHTML = task.completedValues[task.completed];
-			dojo.html.setClass(completedStatusDivs[task.id][11], "ss_bar_status");
+			ss_setClass(completedStatusDivs[task.id][11], "ss_bar_status");
 			
 			var container = document.createElement('div');
-			dojo.html.setClass(container, "ss_completedContainer");
+			ss_setClass(container, "ss_completedContainer");
 			dojo.connect(container, "onmouseout", ss_declare_changeValue(that, task, container, completedStatusDivs[task.id][11], value));
 		
 			var clearDiv = document.createElement('div');
-			dojo.html.setClass(clearDiv, "ss_clear");
+			ss_setClass(clearDiv, "ss_clear");
 			parent.appendChild(container);
 			
 			
@@ -247,9 +250,9 @@
 		function ss_setStyle(obj, tempValue, borderValue) {
 			var borderValueT = borderValue.replace("c", "") * 1;
 			if (tempValue <= borderValueT && borderValueT != 0 ) {
-				dojo.html.setClass(obj, "ss_bar_on");
+				ss_setClass(obj, "ss_bar_on");
 			} else {
-				dojo.html.setClass(obj, "ss_bar_off");
+				ss_setClass(obj, "ss_bar_off");
 			}
 		}
 		
@@ -307,15 +310,15 @@
 		function createStatusTD(task) {
 			var tdObj = document.createElement('td');
 			tdObj.setAttribute("id", "ss_tasks_" + namespace +"_" + task.id + "_status");
-			dojo.html.setClass(tdObj, "ss_iconsContainer");
+			ss_setClass(tdObj, "ss_iconsContainer");
 			for (var i = 0; i < task.statuses.length; i++) {
 				var hrefObj = document.createElement('a');
 				hrefObj.href = "javascript: // ;";
 				
 				if (task.status != task.statuses[i].key) {
-					dojo.html.setClass(hrefObj, "ss_taskStatus ss_taskStatus_" + task.statuses[i].key + "_u");
+					ss_setClass(hrefObj, "ss_taskStatus ss_taskStatus_" + task.statuses[i].key + "_u");
 				} else {
-					dojo.html.setClass(hrefObj, "ss_taskStatus");			
+					ss_setClass(hrefObj, "ss_taskStatus");			
 				}
 					
 				(function(taskId, statusKey) {
@@ -347,16 +350,16 @@
 		function createPriorityTD(task) {
 			var tdObj = document.createElement('td');
 			tdObj.setAttribute("id", "ss_tasks_" + namespace +"_" + task.id + "_priority");
-			dojo.html.setClass(tdObj, "ss_iconsContainer");
+			ss_setClass(tdObj, "ss_iconsContainer");
 			
 			for (var i = 0; i < task.priorities.length; i++) {
 				var hrefObj = document.createElement('a');
 				hrefObj.href = "javascript: // ;";
 		    
 		    	if (task.priority != task.priorities[i].key) {
-		    		dojo.html.setClass(hrefObj, "ss_taskPriority ss_taskPriority_" + task.priorities[i].key + "_u");
+		    		ss_setClass(hrefObj, "ss_taskPriority ss_taskPriority_" + task.priorities[i].key + "_u");
 				} else {
-					dojo.html.setClass(hrefObj, "ss_taskPriority");			
+					ss_setClass(hrefObj, "ss_taskPriority");			
 				}
 				
 				dojo.connect(hrefObj, "onclick", function(obj, taskId, newPriority) {
@@ -400,7 +403,7 @@
 		function createTitleTD(task) {
 			var tdObj = document.createElement('td');
 			if (task.status == "s3" || task.status == "s4") {
-				dojo.html.setClass(tdObj, "ss_task_completed");
+				ss_setClass(tdObj, "ss_task_completed");
 			}
 			
 			var hrefObj = document.createElement('a');
