@@ -31,36 +31,74 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${ssDefinitionEntry.entityType == 'folder'}">
 
-<ssf:sidebarPanel title="sidebar.tags.tools" id="ss_tooltags_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
+<ssf:sidebarPanel title="sidebar.configure" id="ss_tooltags_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
 
-<div>
-	<ul style="padding-top: 2px; padding-left: 5px;">
-	<li>
-	  <ssf:toolbar toolbar="${ssFolderViewsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
-	</li>
-	<li>
+ <div class="ss_dropdownTitle">Entry Display Style xx
+	<div class="ss_sub_dropdownMenu">
+
 	  <ssf:toolbar toolbar="${ssFolderActionsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
-	</li>
-	
-	<li>
+	</div>
+ </div>	
+ 
+  <div class="ss_dropdownTitle">Folder Display Style xx
+	<div class="ss_sub_dropdownMenu">
 
-		<% // configure columns area %>
-	 	<a href="<ssf:url
-			adapter="true" 
-			portletName="ss_forum" 
-			action="__ajax_request" 
-			actionUrl="true" >
-			<ssf:param name="operation" value="configure_folder_columns" />
-			<ssf:param name="binderId" value="${ssBinder.id}" />
-			<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-			</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
-		    <span class="ss_tabs_title"><ssf:nlt tag="misc.configureColumns"/></span> </a> 
-
-	</li>
-
-			<li style="margin-top:2px;">
-			<% // Show number of entries per page %>
-			<form name="ss_recordsPerPage_${renderResponse.namespace}" id="ss_recordsPerPage_${renderResponse.namespace}" method="post" 
+	  <ssf:toolbar toolbar="${ssFolderViewsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
+	</div>
+ </div>	
+ 
+ <div class="ss_dropdownTitle">Theme xx
+ 	<div class="ss_sub_dropdownMenu">
+        <table width="100%">
+          <tr>
+            <td><label>
+              <input type="radio" name="Folder Display Style" value="radio" />
+              High Contrast </label></td>
+          </tr>
+          <tr>
+            <td><label>
+              <input type="radio" name="Folder Display Style" value="radio" />
+              Business 
+              Blue</label></td>
+          </tr>
+          <tr>
+            <td class= "ss_rollover"><label>
+              <input type="radio" name="Folder Display Style" value="radio" />
+              Novell Gray 
+            </label></td>
+          </tr>
+        </table>
+       
+	</div>
+ </div>
+ 
+  <div class="ss_dropdownTitle"><ssf:nlt tag="misc.configureColumns"/>
+ 	<div class="ss_sub_dropdownMenu">
+        <table width="100%">
+          <tr>
+            <td>
+             <% // configure columns area %>
+	 			<a href="<ssf:url
+				 adapter="true" 
+				 portletName="ss_forum" 
+				 action="__ajax_request" 
+				 actionUrl="true" >
+				 <ssf:param name="operation" value="configure_folder_columns" />
+				 <ssf:param name="binderId" value="${ssBinder.id}" />
+				 <ssf:param name="rn" value="ss_randomNumberPlaceholder" />
+				 </ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
+		    	 <span class="ss_tabs_title"><ssf:nlt tag="misc.configureColumns"/></span> </a> </td>
+          </tr>
+        </table>
+       
+	</div>
+ </div>
+ 
+  <div class="ss_dropdownTitle">Entries Per Page xx
+ 	<div class="ss_sub_dropdownMenu">
+        <table width="100%">
+          <tr>
+            <td><form name="ss_recordsPerPage_${renderResponse.namespace}" id="ss_recordsPerPage_${renderResponse.namespace}" method="post" 
 			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssFolder.id}"/>
 				<c:if test="${!empty cTag}"><ssf:param 
@@ -112,10 +150,13 @@
 
 			    </span>
 			  
-			</form>
-				</li></ul>
-			</div>
+			</form></td>
+          </tr>
+        </table>
+       
+	</div>
+ </div>
+
 </ssf:sidebarPanel>
 </c:if>
 
-<jsp:include page="/WEB-INF/jsp/sidebars/folder_tags.jsp" />
