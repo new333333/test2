@@ -478,8 +478,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 
 	<c:if test="${empty seenStyleburst}">
 		<c:if test="${slidingTableStyle == 'fixed'}">
-    		<div <%= seenStyleTitle2 %>><c:if test="${empty entry1.title}" 
-    		>--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${entry1.title}"/></div></a> 
+    		<span <%= seenStyleTitle2 %>><c:if test="${empty entry1.title}" 
+    		>--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${entry1.title}"/></span></a> 
 		</c:if>
 	  	<c:if test="${slidingTableStyle != 'fixed'}">
     		<span <%= seenStyleTitle2 %>><c:if test="${empty entry1.title}" 
@@ -569,7 +569,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" >
     <ssf:param name="entryViewStyle" value="${ss_entryViewStyle}"/>
     <ssf:param name="entryViewStyle2" value="${ss_entryViewStyle2}"/></ssf:url>" 
-<c:if test="${slidingTableStyle == 'fixed'}">
+<c:if test="${slidingTableStyle != 'fixed'}">
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 </c:if>
 <c:if test="${slidingTableStyle == 'fixed'}">

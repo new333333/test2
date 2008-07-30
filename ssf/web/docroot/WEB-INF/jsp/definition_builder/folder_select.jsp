@@ -34,7 +34,7 @@
 <input type="hidden" id="propertyId_${propertyId}" 
   name="propertyId_${propertyId}"
   value="${propertyValue}" />
-<table cellspacing="0px" cellpadding="0px" width="100%">
+<table cellspacing="0" cellpadding="0" width="100%">
   <tbody>
 	<tr>
 		<td valign="top">
