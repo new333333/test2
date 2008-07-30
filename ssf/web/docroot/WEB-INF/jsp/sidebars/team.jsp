@@ -25,37 +25,30 @@
  * 
  * 
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
- * are trademarks of SiteScape, Inc.
+ * are trademarks of SiteScape, Inc.     
  */
 %>
-<% // Tabs %>
-<%@ page import="com.sitescape.team.util.NLT" %>
-<%@ page import="com.sitescape.team.util.SPropsUtil" %>
-<%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
- <div class="ss_myStatus">
 
- 	  		<strong><ssf:nlt tag="relevance.userStatus"/></strong>
+<ssf:sidebarPanel title="Team IT xxx" id="ss_meet_sidebar" divClass="ss_place_tags" initOpen="true" sticky="true">
 
-	   <ssf:ifLoggedIn>
-			<script type="text/javascript">
-			  ss_statusCurrent = "${ssUser.status}";
-			</script>
+	<div class="ss_sub_dropdownMenu">
+		<table width="100%"><tbody>
+            <tr>
+              <td class="ss_rollover"><a href="#">Manage Team </a></td>
+            </tr>
+            <tr class="ss_rollover">
+              <td><a href="#">Team Meeting </a></td>
+            </tr>
+			  <tr>
+              <td class="ss_rollover"><a href="#">Team Mail  </a></td>
+            </tr>
+			 <tr class="ss_rollover">
+              <td><a href="#">Team Membership </a></td>
+			
+		</tbody></table>
+	</div>
 
-			<input type="text" cols="22" rows="2" class="ss_input_myStatus"
-			style="font-size:${ss_style_font_fineprint};" value="${ssUser.status}"
-  			onFocus="ss_setStatusBackground(this, 'focus');"
-  			onKeyPress="ss_updateStatusSoon(this, event);"
-  			onChange="ss_updateStatusNow(this);"
-  			onBlur="ss_updateStatusNow(this);ss_setStatusBackground(this, 'blur')"
-  			onMouseover="ss_setStatusBackground(this, 'mouseOver');"
-  			onMouseout="ss_setStatusBackgroundCheck(this);"
-  			/>
-
-	   </ssf:ifLoggedIn> 
-
-</div>	
-
-
+</ssf:sidebarPanel>
 

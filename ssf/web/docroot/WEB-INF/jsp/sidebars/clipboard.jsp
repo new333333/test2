@@ -25,37 +25,18 @@
  * 
  * 
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
- * are trademarks of SiteScape, Inc.
+ * are trademarks of SiteScape, Inc.     
  */
 %>
-<% // Tabs %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ page import="com.sitescape.team.util.SPropsUtil" %>
 <%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
- <div class="ss_myStatus">
+<ssf:sidebarPanel title="Clipboard xxx" id="ss_clipboard_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
+<ssf:ifLoggedIn>
 
- 	  		<strong><ssf:nlt tag="relevance.userStatus"/></strong>
-
-	   <ssf:ifLoggedIn>
-			<script type="text/javascript">
-			  ss_statusCurrent = "${ssUser.status}";
-			</script>
-
-			<input type="text" cols="22" rows="2" class="ss_input_myStatus"
-			style="font-size:${ss_style_font_fineprint};" value="${ssUser.status}"
-  			onFocus="ss_setStatusBackground(this, 'focus');"
-  			onKeyPress="ss_updateStatusSoon(this, event);"
-  			onChange="ss_updateStatusNow(this);"
-  			onBlur="ss_updateStatusNow(this);ss_setStatusBackground(this, 'blur')"
-  			onMouseover="ss_setStatusBackground(this, 'mouseOver');"
-  			onMouseout="ss_setStatusBackgroundCheck(this);"
-  			/>
-
-	   </ssf:ifLoggedIn> 
-
-</div>	
-
-
+need to add code or point to right jsp
+</ssf:ifLoggedIn> 
+</ssf:sidebarPanel>
 

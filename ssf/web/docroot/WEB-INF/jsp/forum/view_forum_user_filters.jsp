@@ -48,33 +48,35 @@
 	}
 %>
 <div align="left" class="ssPageNavi">
+
 <table width="95%">
-<tbody>
-<tr><td align="right" width="10%">
-<div class="ss_style ss_bold ss_fineprint">
-<ssf:nlt tag="filter.filter" text="Filter"/>:<ssHelpSpot 
-  helpId="workspaces_folders/menus_toolbars/folder_toolbar" offsetX="-45" offsetY="-5" 
-  title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>"></ssHelpSpot>&nbsp;</span>
-  </div>
-</td>
-<td>
-		<div id="ss_navbar_inline" class="ss_style ss_fineprint ss_normal">
+ <tbody>
+  <tr><td align="right" width="10%">
+     <div class="ss_style ss_bold ss_fineprint">
+     	<ssf:nlt tag="filter.filter" text="Filter"/>:<ssHelpSpot 
+  		helpId="workspaces_folders/menus_toolbars/folder_toolbar" offsetX="-45" offsetY="-5" 
+  		title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>"></ssHelpSpot>&nbsp;</span>
+  	 </div>
+	</td>
+	<td>
+	 <div id="ss_navbar_inline" class="ss_style ss_fineprint ss_normal">
 			
-					<ul>
-					<li>
-					<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+		<ul>
+			<li>
+				<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssFolder.id}"/><ssf:param 
 				name="operation" value="select_filter"/><ssf:param 
 				name="select_filter" value=""/></ssf:url>">
-					<span 
+				<span 
 					<c:if test="${currentFilter == ''}"> class="ss_navbar_current"</c:if>
 					<c:if test="${currentFilter != ''}"> class="ss_normal"</c:if>
 					>
 						<ssf:nlt tag="None"/></span>
-					</a></li>
+				</a>
+			</li>
 					
-					<c:forEach var="filter" items="${ss_searchFilters}">
-					<li><a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+			<c:forEach var="filter" items="${ss_searchFilters}">
+			 <li><a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssFolder.id}"/><ssf:param 
 				name="operation" value="select_filter"/><ssf:param 
 				name="select_filter" value="${filter.key}"/></ssf:url>">
@@ -83,29 +85,30 @@
 					<c:if test="${filter.key != currentFilter}"> class="ss_normal"</c:if>
 					>				
 					<c:out value="${filter.key}"/></span>
-					</a></li>
-					</c:forEach>
-					</ul>
+				</a>
+			 </li>
+			</c:forEach>
+		</ul>
 				
+	 </div>
+
+	</td>
+	<td align="right" width="10%">
+		<div class="ss_fineprint ss_navbar_new">
+			<c:if test="${ssConfigJspStyle != 'template'}">
+			  <a href="<ssf:url ><ssf:param 
+			  name="action" value="build_filter"/><ssf:param 
+			  name="binderId" value="${ssBinder.id}"/><ssf:param 
+			  name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
+			  ><span><ssf:nlt tag="sidebar.tags.filter" text="New Filter"/></span></a>
+			</c:if>
+			<c:if test="${ssConfigJspStyle == 'template'}">
+			  <span><ssf:nlt tag="sidebar.tags.filter" text="New Filter"/></span>
+			</c:if>
 		</div>
+	</td>
+  </tr>
 
-</td>
-<td align="right" width="10%">
-<div class="ss_fineprint ss_navbar_new">
-		<c:if test="${ssConfigJspStyle != 'template'}">
-		<a href="<ssf:url ><ssf:param 
-			name="action" value="build_filter"/><ssf:param 
-			name="binderId" value="${ssBinder.id}"/><ssf:param 
-			name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
-		><span><ssf:nlt tag="sidebar.tags.filter" text="New Filter"/></span></a>
-		</c:if>
-		<c:if test="${ssConfigJspStyle == 'template'}">
-		<span><ssf:nlt tag="sidebar.tags.filter" text="New Filter"/></span>
-		</c:if>
-</div>
-</td>
-</tr>
-
-</tbody>
+ </tbody>
 </table>
 </div>
