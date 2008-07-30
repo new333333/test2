@@ -38,7 +38,7 @@
 <jsp:useBean id="ssComponentId" type="java.lang.String" scope="request" />
 
 <script type="text/javascript">
-	dojo.require('dojox.widget.*');
+	dojo.require('dijit._Widget');
 	dojo.require('sitescape.widget.SelectPageable');
 
 	function ${treeName}_showId(forum, obj) {

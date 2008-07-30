@@ -155,10 +155,6 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
         --%><ul class="${ss_toolbar_style}_submenu"><%--
         --%><c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}"><%--
         
-            --%><c:if test="${!empty toolbarMenuCategory.key}"><%--
-                --%><span class="ss_bold"><c:out value="${toolbarMenuCategory.key}" /></span><%--
-            --%></c:if><%--
-            
             --%><c:forEach var="toolbarMenuCategoryItem" items="${toolbarMenuCategory.value}"><%--
 
                 --%><c:set var="popup" value="false"/><%--

@@ -28,9 +28,6 @@
  */
 //Common javascript functions for forum portlets
 //
-dojo.require("dijit.dijit");
-dojo.require("dojo.fx");
-dojo.require("dojo.io.iframe");
 
 // browser-specific vars
 var undefined;
@@ -1027,6 +1024,23 @@ function ss_showHideObj(objName, visibility, displayStyle) {
 	    if (obj.style.visibility != visibility) {
 		    obj.style.visibility = visibility;
 		    obj.style.display = displayStyle;
+		}
+		//Signal that the layout changed
+		if (!obj.style.position || obj.style.position != "absolute") {
+			ssf_onLayoutChange();
+			//ss_debug("ss_showHideObj: " + objName + " = " + visibility)
+		}
+	} else {
+		//ss_debug('Div "'+objName+'" does not exist. (ss_showHideObj)')
+	}
+}
+function ss_toggleShowDiv(divName) {
+   var obj = self.document.getElementById(divName);
+    if (obj && obj.style) {
+	    if (!obj.style.display || obj.style.display != "none") {
+		    obj.style.display = "none";
+		} else {
+			obj.style.display = "block";
 		}
 		//Signal that the layout changed
 		if (!obj.style.position || obj.style.position != "absolute") {
@@ -6113,3 +6127,8 @@ function ss_setClass(divId, className) {
 	var divObj = document.getElementById(divId);
 	if (divObj != null) divObj.className = className;
 }
+
+//After defining all the standard functions, identify the required dojo files
+dojo.require("dijit.dijit");
+dojo.require("dojo.fx");
+dojo.require("dojo.io.iframe");

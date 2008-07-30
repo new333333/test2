@@ -113,12 +113,12 @@ function showOptions(sel)
   var aOpt = document.getElementById('ss_report_activityFlavorOptions');
   var wOpt = document.getElementById('ss_report_workflowFlavorOptions');
   if(sel.value == "activity") {
-  	dojo.lfx.html.fadeIn(aOpt, 100).play();
-  	dojo.lfx.html.fade(wOpt,  {end:0.3}, 1000).play();
+  	dojo.fadeIn({node:aOpt, delay:100}).play();
+  	dojo.fadeOut({node:wOpt, end:0.3, delay:1000}).play();
   	document.getElementById('ss_reportType').value='binder';
   } else {
-  	dojo.lfx.html.fade(aOpt,  {end:0.3}, 1000).play();
-  	dojo.lfx.html.fadeIn(wOpt, 100).play();
+  	dojo.fadeOut({node:aOpt, end:0.3, delay:1000}).play();
+  	dojo.fadeIn({node:wOpt, delay:100}).play();
   	document.getElementById('ss_reportType').value='workflow';
   }
 }

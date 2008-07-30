@@ -133,7 +133,7 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	 dataUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_workflows_widget&idChoices=%{searchString}&randomNumber="+ss_random++, 
 	 nestedUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_workflow_step_widget&randomNumber="+ss_random++, stepsWidget:sDiv, searchFieldName:"searchWorkflowStep"+orderNo, mode: "remote",
 								maxListLength : 10,	autoComplete: false};
-	var wfWidget = dojo.widget.createWidget("WorkflowSelect", properties, document.getElementById("placeholderWorkflow"+orderNo+""));
+	var wfWidget = dijit.widget.createWidget("WorkflowSelect", properties, document.getElementById("placeholderWorkflow"+orderNo+""));
 
 	if (wfIdValue!=null && wfIdValue!=""){
 		wfWidget.setDefaultValue(wfIdValue, ss_searchWorkflows[wfIdValue], stepsValue);
@@ -195,7 +195,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 		nestedUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_entry_fields_widget&randomNumber="+ss_random++, 
 		widgetContainer:sDiv, widgetContainer2:sDiv2, searchFieldIndex:orderNo, mode: "remote",
 		maxListLength : 10,	autoComplete: false, weekStartsOn: ss_weekStartsOn};
-	var entryWidget = dojo.widget.createWidget("EntrySelect", properties, document.getElementById("placeholderEntry"+orderNo+""));
+	var entryWidget = dojox.widget.createWidget("EntrySelect", properties, document.getElementById("placeholderEntry"+orderNo+""));
 	if (entryId && entryId != "") {
 		entryWidget.setDefaultValue(entryId, ss_searchEntries[entryId], fieldName, ss_searchFields[entryId+"-"+fieldName], value, ss_searchFieldsTypes[entryId+"-"+fieldName], valueLabel);
 	}
@@ -229,8 +229,8 @@ function ss_addTag(orderNo, communityTagValue, personalTagValue) {
 								id:"searchPersonalTags"+orderNo+"", 
 								dataUrl:url+"&findType=personalTags", 
 								maxListLength : 12,	autoComplete: false};
-	var communityTagWidget = dojo.widget.createWidget("SelectPageable", propertiesCommunity, document.getElementById("placeholderCommunity"+orderNo+""));
-	var personalTagWidget = dojo.widget.createWidget("SelectPageable", propertiesPersonal, document.getElementById("placeholderPersonal"+orderNo+""));
+	var communityTagWidget = dojox.widget.createWidget("SelectPageable", propertiesCommunity, document.getElementById("placeholderCommunity"+orderNo+""));
+	var personalTagWidget = dojox.widget.createWidget("SelectPageable", propertiesPersonal, document.getElementById("placeholderPersonal"+orderNo+""));
 	if (communityTagValue && communityTagValue != "") {
 		communityTagWidget.setValue(communityTagValue);
 		communityTagWidget.setLabel(communityTagValue);
@@ -262,7 +262,7 @@ function ss_addAuthor(orderNo, authorId, authorName) {
 					dataUrl:url,
 					maxListLength : 12,
 					autoComplete: false};
-	var usersWidget = dojo.widget.createWidget("SelectPageable", props, document.getElementById("placeholderAuthor"+orderNo+""));
+	var usersWidget = dojox.widget.createWidget("SelectPageable", props, document.getElementById("placeholderAuthor"+orderNo+""));
 	if (authorId && authorName && authorId!="" && authorName!="") {
 		usersWidget.setValue(authorId);
 		usersWidget.setLabel(authorName);
@@ -335,7 +335,7 @@ function ss_addDate(orderNo, type, startDate, endDate) {
 	if (!endDate)
 		endDate = '';
 
-	dojo.widget.createWidget("DropdownDatePickerActivateByInput", 
+	dojox.widget.createWidget("DropdownDatePickerActivateByInput", 
 								{value:startDate, 
 								lang: djConfig&&djConfig["locale"]?djConfig["locale"]:"en", 
 								weekStartsOn: ss_weekStartsOn,
@@ -345,7 +345,7 @@ function ss_addDate(orderNo, type, startDate, endDate) {
 								autoComplete: false}, 
 							document.getElementById("placeholderStartDate"+orderNo+""));
 
-	dojo.widget.createWidget("DropdownDatePickerActivateByInput", {value:endDate, lang: djConfig&&djConfig["locale"]?djConfig["locale"]:"en", weekStartsOn: ss_weekStartsOn, id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo,
+	dojox.widget.createWidget("DropdownDatePickerActivateByInput", {value:endDate, lang: djConfig&&djConfig["locale"]?djConfig["locale"]:"en", weekStartsOn: ss_weekStartsOn, id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo,
 								maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderEndDate"+orderNo+""));
 }
 

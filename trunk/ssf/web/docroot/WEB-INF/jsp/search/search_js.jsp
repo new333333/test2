@@ -32,7 +32,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.sitescape.team.util.CalendarHelper" %>
 <script type="text/javascript">
-dojo.require('dojox.widget.*');
+dojo.require("dijit._Widget");
 dojo.require('sitescape.widget.WorkflowSelect');
 dojo.require('sitescape.widget.EntrySelect');
 dojo.require('sitescape.widget.FieldSelect');
