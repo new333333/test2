@@ -35,7 +35,7 @@ dojo.require("dojo.io.iframe");
 // browser-specific vars
 var undefined;
 var ss_declaredDivs;
-if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "undefined" ) {
+if (typeof ss_common_loaded == "undefined" ) {
 	var ss_isNSN = (navigator.appName == "Netscape");
 	var ss_isNSN4 = ss_isNSN && ((navigator.userAgent.indexOf("Mozilla/4") > -1));
 	var ss_isNSN6 = ((navigator.userAgent.indexOf("Netscape6") > -1));
@@ -43,7 +43,6 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_isMacIE = ((navigator.userAgent.indexOf("IE ") > -1) && (navigator.userAgent.indexOf("Mac") > -1));
 	var ss_isIE = ((navigator.userAgent.indexOf("IE ") > -1));
 	var ss_isIE6 = ((navigator.userAgent.indexOf("IE ") > -1) && (navigator.userAgent.indexOf("MSIE 6") > -1));
-	
 	
 	//Random number seed (for building urls that are unique)
 	var ss_now = new Date();

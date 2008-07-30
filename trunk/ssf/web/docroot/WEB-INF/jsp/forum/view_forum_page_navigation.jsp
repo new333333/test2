@@ -39,7 +39,7 @@
 	  <ssHelpSpot helpId="workspaces_folders/menus_toolbars/more_folder_navigation" offsetX="-5" offsetY="3" 
 	    title="<ssf:nlt tag="helpSpot.moreFolderNavigation"/>"></ssHelpSpot>
 <div class="ss_pagination ss_style">
-<table border="0" cellspacing="0px" cellpadding="0px" width="100%">
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
 		<tbody>
 		<tr>
 			<td valign="middle" align="right" width="25%">
