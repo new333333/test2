@@ -28,9 +28,9 @@
  */
 dojo.provide("sitescape.widget.WorkflowSelect");
 
-// dojo_xxx		dojo.require("dojo.widget.Select");
-// dojo_xxx		dojo.require("dojo.widget.*");
-// dojo_xxx		dojo.require("dojo.html.*");
+		dojo.require("dojox.widget.Select");
+		dojo.require("dojox.widget.*");
+// dojo_xxx		dojo.require("dojox.html.*");
 // dojo_xxx		dojo.require("dojo.widget.html.stabile");
 
 dojo.widget.defineWidget(

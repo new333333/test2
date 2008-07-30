@@ -94,7 +94,7 @@
 				calendarHref.style.borderWidth = "1px";
 				calendarHref.style.borderStyle = "solid";				
 				calendarHref.style.marginBottom = "2px";
-				dojo.html.addClass(calendarHref, cssStyle);
+				dojo.addClass(calendarHref, cssStyle);
 				
 				dojo.lfx.rounded(
 					{tl: {radius:2}, 

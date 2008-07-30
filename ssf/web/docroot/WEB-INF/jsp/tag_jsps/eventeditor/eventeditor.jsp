@@ -510,7 +510,7 @@
 		</c:choose>
 	
 		dojo.addOnLoad( function() { 
-			dojo.event.connect(dojo.widget.byId("repeat_until_${prefix}"), "onValueChanged", function() { 
+			dojo.connect(dojo.widget.byId("repeat_until_${prefix}"), "onValueChanged", function() { 
 				${prefix}_checkRadio('${prefix}_rangeSel_until');
 				${prefix}_rangeRowMarker.mark(document.getElementById('${prefix}_rangeSel_until'), '${prefix}_rangeSel_until_row');
 			});
