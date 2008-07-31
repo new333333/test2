@@ -105,6 +105,26 @@ function ss_autoGoToPage${renderResponse.namespace}(formId, page) {
 	}
 }
 
+function ss_clickGoToEntry_${renderResponse.namespace}(strFormName) {
+	var formObj = document.getElementById(strFormName);
+	var strGoToEntry = formObj.ssGoToEntry${renderResponse.namespace}.value;
+
+	if (strGoToEntry == "") {
+		alert("<ssf:nlt tag="folder.enterEntryNumber" />");
+		return false;	
+	}
+	if (strGoToEntry == "0") {
+		alert("<ssf:nlt tag="folder.enterValidEntryNumber" />");
+		return false;
+	}
+	var blnValueCheck = _isInteger(strGoToEntry);
+	if (!blnValueCheck) {
+		alert("<ssf:nlt tag="folder.enterValidEntryNumber" />");
+		return false;
+	}
+	formObj.submit();
+}
+
 //Change the number of entries to be displayed in a page
 function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, pageCountValue) {
 	var formObj = document.getElementById(strFormName);
