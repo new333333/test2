@@ -29,13 +29,13 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <%@ page import="com.sitescape.team.util.NLT" %>
 
 
 <ssf:ifadapter>
 	<body>
 </ssf:ifadapter>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 		<script type="text/javascript">
 			var width = ss_getWindowWidth()/2;
 			if (width < 700) width=700;

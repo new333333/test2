@@ -138,7 +138,7 @@
 </c:if>
   </div>
  </div>
-</div></div>
+</div>
 </div><div class="ss_smallRBoxBtm1 ss_profileBox1"></div><div class="ss_smallRBoxBtm2 ss_profileBox1"></div>
 </td>
 

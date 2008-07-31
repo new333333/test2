@@ -40,9 +40,9 @@
 
 <table id="ss_dashboardTable" class="ss_dashboardTable_off" cellspacing="0" cellpadding="0" 
   frame="border" rules="all">
-<tbody>
 <col width="${ssDashboard.narrowFixedWidth}">
 <col width="100%">
+<tbody>
 <tr>
   <td colspan="2" class="ss_dashboardTable_off">
 			<div id="wide_top">

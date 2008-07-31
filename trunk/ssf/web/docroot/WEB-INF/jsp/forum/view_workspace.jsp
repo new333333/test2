@@ -32,7 +32,6 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <c:set var="showWorkspacePage" value="true"/>
 <ssf:ifnotadapter>
   <c:set var="showWorkspacePage" value="false"/>
@@ -42,6 +41,12 @@
 <body class="ss_style_body">
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
 </ssf:ifadapter>
+<ssf:ifLoggedIn><c:if test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
+  <a class="ss_skiplink" href="${ss_accessibleUrl}"><img border="0"
+    <ssf:alt tag="accessible.enableAccessibleMode"/> 
+    src="<html:imagesPath/>pics/1pix.gif" /></a><%--
+		--%></c:if></ssf:ifLoggedIn>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 
 <c:if test="${!empty ssReloadUrl}">
 	<script type="text/javascript">
