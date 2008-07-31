@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -48,7 +47,9 @@ import org.dom4j.Element;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.comparator.BinderComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
@@ -68,12 +69,22 @@ import com.sitescape.team.remoting.ws.model.Timestamp;
 import com.sitescape.team.remoting.ws.util.DomInputData;
 import com.sitescape.team.remoting.ws.util.ModelInputData;
 import com.sitescape.team.security.function.Function;
+import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.team.web.util.PermaLinkUtil;
 import com.sitescape.util.search.Constants;
 
 public class BinderServiceImpl extends BaseService implements BinderService, BinderServiceInternal {
+	private CoreDao coreDao;
+	
+	protected CoreDao getCoreDao() {
+		return coreDao;
+	}
+	public void setCoreDao(CoreDao coreDao) {
+		this.coreDao = coreDao;
+	}
+	
 	public long binder_addBinderWithXML(String accessToken, long parentId, String definitionId, String inputDataAsXML)
 	{
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
@@ -299,18 +310,36 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		Timestamp creation;
 		Timestamp modification;
 		String permaLink;
+		String webdavUrl;
 		String rssUrl;
 		String icalUrl;
+		Folder folder;
 		for (int i=0; i<searchBinders.size(); ++i) {
 			Map search = (Map)searchBinders.get(i);
 			String entityType = (String)search.get(Constants.ENTITY_FIELD);
-			if (!EntityType.folder.name().equals(entityType))
+			if (!EntityType.folder.name().equals(entityType)) 
 				continue;
 			id = Long.valueOf((String)search.get(Constants.DOCID_FIELD));
+			// Unfortunately, the search index does not contain path information for each
+			// binder/folder. Consequently, we need to retrieve each folder from the
+			// database in order to get that information, which is needed when constructing
+			// webdav url. Otherwise, this operation could have been highly efficient...
+			folder = null;
+			try {
+				folder = (Folder) getCoreDao().load(Folder.class, id);
+			}
+			catch(Exception e) {
+				logger.warn(e.toString());
+				continue;
+			}
+			if(folder == null) 
+				continue;
 			title = (String) search.get(Constants.TITLE_FIELD);
 			creation = new Timestamp((String) search.get(Constants.MODIFICATION_NAME_FIELD), (Date) search.get(Constants.MODIFICATION_DATE_FIELD));
 			modification = new Timestamp((String) search.get(Constants.CREATOR_NAME_FIELD), (Date) search.get(Constants.CREATION_DATE_FIELD));
 			permaLink = PermaLinkUtil.getURL(id, (String) search.get(Constants.ENTITY_FIELD));
+			// Construct webdav url regardless of whether this folder is a library binder or not. 
+			webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
 			rssUrl = UrlUtil.getFeedURL(null, id.toString()); // folder only
 			icalUrl = com.sitescape.team.ical.util.UrlUtil.getICalURL(null, id.toString(), null); // folder only
 			folderList.add(new FolderBrief(id, 
@@ -318,6 +347,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 					creation,
 					modification,
 					permaLink,
+					webdavUrl,
 					rssUrl,
 					icalUrl));								
 		}

@@ -110,6 +110,10 @@ public class SsfsUtil {
 		append(binder.getPathName()).toString();
 	}
 	
+	public static String getLibraryBinderUrl(Binder binder) {
+		return getLibraryBinderUrl((HttpServletRequest)null, binder);
+	}
+	
 	private static StringBuffer getInternalCommonPart(HttpServletRequest req, Binder binder, 
 			DefinableEntity entity) {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);

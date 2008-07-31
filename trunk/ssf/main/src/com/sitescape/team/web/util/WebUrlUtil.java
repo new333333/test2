@@ -72,7 +72,7 @@ public class WebUrlUtil {
 	}
 
 	public static StringBuffer getSSFSContextRootURL(HttpServletRequest req) {
-		StringBuffer sb = getHostAndPort(WebApp.SSFS, req, req.isSecure(), getSsfsWebProtocol(), true);
+		StringBuffer sb = getHostAndPort(WebApp.SSFS, req, (req != null)? req.isSecure():null, getSsfsWebProtocol(), true);
 		
 		String ctx = SPropsUtil.getString(SPropsUtil.SSFS_CTX, "/ssfs");
 		
@@ -82,7 +82,7 @@ public class WebUrlUtil {
 	}
 	
 	public static StringBuffer getSSFSContextRootURL(PortletRequest req) {
-		StringBuffer sb = getHostAndPort(WebApp.SSFS, req, req.isSecure(), getSsfsWebProtocol(), true);
+		StringBuffer sb = getHostAndPort(WebApp.SSFS, req, (req != null)? req.isSecure():null, getSsfsWebProtocol(), true);
 		
 		String ctx = SPropsUtil.getString(SPropsUtil.SSFS_CTX, "/ssfs");
 		

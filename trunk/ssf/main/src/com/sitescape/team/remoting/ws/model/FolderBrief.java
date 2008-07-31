@@ -34,13 +34,31 @@ public class FolderBrief extends BinderBrief implements Serializable {
 
 	private String rssUrl;
 	private String icalUrl;
+	// Actually, legitimate webdav URL can be constructed for any type of binder. 
+	// However, since construction of webdav url is rather expensive (because it 
+	// requires retrieval of corresponding binder object from the database), this 
+	// property is placed here in FolderBrief rather than in BinderBrief class, 
+	// with the observation that most of time binder webdav url is useful only
+	// for folders. As a matter of fact, the browser UI exposes webdav URL (via
+	// "WebDAV URL" button) for even smaller subset of folders called library
+	// folders.
+	private String webdavUrl;
 	
 	public FolderBrief() {}
 	
-	public FolderBrief(Long id, String title, Timestamp creation, Timestamp modification, String permalink, String rssUrl, String icalUrl) {
+	public FolderBrief(Long id, String title, Timestamp creation, Timestamp modification, String permalink, String webdavUrl, String rssUrl, String icalUrl) {
 		super(id, title, creation, modification, permalink);
+		this.webdavUrl = webdavUrl;
 		this.rssUrl = rssUrl;
 		this.icalUrl = icalUrl;
+	}
+
+	public String getWebdavUrl() {
+		return webdavUrl;
+	}
+
+	public void setWebdavUrl(String webdavUrl) {
+		this.webdavUrl = webdavUrl;
 	}
 
 	public String getIcalUrl() {
