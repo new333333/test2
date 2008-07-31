@@ -28,11 +28,11 @@
  * are trademarks of SiteScape, Inc.     
  */
 %>
+<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="com.sitescape.team.util.SPropsUtil" %>
+<%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 
-<ssf:sidebarPanel title="RSS It xxx" id="ss_rss_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
-
-need to add code or point to right jsp
-</ssf:sidebarPanel>
+<a href="#">Email IT xxx</a>
 

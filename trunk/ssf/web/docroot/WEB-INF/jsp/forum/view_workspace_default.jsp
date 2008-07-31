@@ -43,9 +43,37 @@
 <% // Navigation bar %>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
-<% // Tabs %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
-<div class="ss_clear"></div>
+<% // BEGIN SIDEBAR LAYOUT  %>
+<ssf:ifnotaccessible>
+    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+    <tbody>
+    <tr>
+    <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
+     <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
+	
+	  <div id="ss_sideNav_wrap"> <% // new sidebar format %>
+
+		<% // Status %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
+	
+		<% // "It" Bars %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_action_dispatch.jsp" />
+
+		<% // Recent Places %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
+
+		<% // Folder Sidebar %>
+    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
+
+		<% // Workspace Tree %>    
+    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tree.jsp" />
+
+	  </div> <% // end of new sidebar format %>
+	 </div> <% // end of ss_sidebarDiv %>
+	</td>
+
+	<td valign="top" class="ss_view_info">
+</ssf:ifnotaccessible>
 
 <% // Navigation links %>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />

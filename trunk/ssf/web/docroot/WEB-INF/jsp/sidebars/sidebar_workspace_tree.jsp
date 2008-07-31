@@ -28,14 +28,19 @@
  * are trademarks of SiteScape, Inc.     
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
-<%@ page import="com.sitescape.team.util.SPropsUtil" %>
-<%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-
-<ssf:sidebarPanel title="Email It xxx" id="ss_email_sidebar" divClass="ss_place_tags" initOpen="true" sticky="true">
-
-need to add code or point to right jsp
-</ssf:sidebarPanel>
-
+    <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
+        initOpen="true" sticky="true">
+		<c:if test="${!empty ssSidebarWsTree}">
+		<ssf:tree treeName="sidebarWsTree${renderResponse.namespace}" 
+		  treeDocument="${ssSidebarWsTree}" 
+		  highlightNode="${ssBinder.id}" 
+		  showIdRoutine="ss_treeShowId"
+		  namespace="${renderResponse.namespace}"
+		  rootOpen="true"
+		  nowrap="true"/>
+		</c:if>
+	</ssf:sidebarPanel>
+	
+	<% // or use???? showIdRoutine="ss_treeShowIdNoWS"  %>

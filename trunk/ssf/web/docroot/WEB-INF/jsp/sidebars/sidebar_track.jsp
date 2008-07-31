@@ -25,14 +25,43 @@
  * 
  * 
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
- * are trademarks of SiteScape, Inc.     
+ * are trademarks of SiteScape, Inc.
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
+		  <ssf:ifLoggedIn>
+			 <c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
+			   <a href="javascript: ;" 
+  				onClick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;"
+			 	<c:if test="${ssBinder.entityType == 'workspace'}">
+  			 		<c:if test="${ssBinder.definitionType != 12}">
+  						title="<ssf:nlt tag="relevance.trackThisWorkspace"/>" >
+  						<span><ssf:nlt tag="relevance.justTrack"/></span>
+  					</c:if>
+  			 		<c:if test="${ssBinder.definitionType == 12}">
+  						title="<ssf:nlt tag="relevance.trackThisPerson"/>" >
+  						<span><ssf:nlt tag="relevance.justTrack"/></span>
+  					</c:if>
+			 	</c:if>
+			 	<c:if test="${ssBinder.entityType == 'folder'}">
+  			 		<c:if test="${ssDefinitionFamily != 'calendar'}">
+  						title="<ssf:nlt tag="relevance.trackThisFolder"/>" >
+  						<span><ssf:nlt tag="relevance.justTrack"/></span>
+  					</c:if>
+  			 		<c:if test="${ssDefinitionFamily == 'calendar'}">
+  						title="<ssf:nlt tag="relevance.trackThisCalendar"/>" >
+  						<span><ssf:nlt tag="relevance.justTrack"/></span>
+  					</c:if>
+			 	</c:if>
+			  </a>
+			
+			  <div id="ss_track_this_ok${renderResponse.namespace}" 
+  				style="position:relative; display:none; visibility:hidden; top:5px; left:10px; z-index:500;
+         		border:1px solid black; padding-top:10px; padding-left: 10px; padding-bottom: 10px; padding-right: 10px; background-color:#ffffff; white-space:nowrap; margin-bottom:10px;">
+			  </div>
+			</c:if>
+		  </ssf:ifLoggedIn>
 
-<ssf:sidebarPanel title="Meet xxx" id="ss_meet_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
 
-need to add code or point to right jsp
-</ssf:sidebarPanel>
 

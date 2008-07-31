@@ -42,8 +42,20 @@
 <% // Navigation bar %>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
-<% // Tabs %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
+	<% // BEGIN SIDEBAR LAYOUT  %>
+	
+	  <div id="ss_sideNav_wrap"> <% // new sidebar format %>
+
+		<% // Status %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
+	
+		<% // Recent Places %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
+
+		<% // Folder Sidebar %>
+    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
+
+	  </div> <% // end of new sidebar format %>
 
 <% // Toolbar %>
 <ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar2 ss_actions_bar" />

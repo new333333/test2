@@ -33,10 +33,5 @@
 <%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<ssf:sidebarPanel title="Clipboard xxx" id="ss_clipboard_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
-<ssf:ifLoggedIn>
-
-need to add code or point to right jsp
-</ssf:ifLoggedIn> 
-</ssf:sidebarPanel>
+<a href="#">Clipboard xxx </a>
 

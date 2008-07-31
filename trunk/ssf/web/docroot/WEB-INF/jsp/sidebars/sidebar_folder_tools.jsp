@@ -118,4 +118,4 @@
 </ssf:sidebarPanel>
 </c:if>
 
-<jsp:include page="/WEB-INF/jsp/sidebars/folder_tags.jsp" />
+<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_folder_tags.jsp" />

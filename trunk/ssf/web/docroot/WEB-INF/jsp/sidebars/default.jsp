@@ -34,12 +34,10 @@
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
 
-<jsp:include page="/WEB-INF/jsp/sidebars/configure.jsp" />
+<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure.jsp" />
 
-<jsp:include page="/WEB-INF/jsp/sidebars/team.jsp" />
+<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_team.jsp" />
 
-<jsp:include page="/WEB-INF/jsp/sidebars/folder_tags2.jsp" />
+<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_folder_tags.jsp" />
 
-<jsp:include page="/WEB-INF/jsp/sidebars/folder_tools.jsp" />
-
-<jsp:include page="/WEB-INF/jsp/sidebars/workspace_tags.jsp" />
+<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tags.jsp" />

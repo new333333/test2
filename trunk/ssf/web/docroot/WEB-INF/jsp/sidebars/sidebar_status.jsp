@@ -28,23 +28,34 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% // Tabs %>
+<% // Status %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ page import="com.sitescape.team.util.SPropsUtil" %>
 <%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<div id="ss_sideNav_wrap"> <% // new sidebar format %>
-	<% // Status %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/status.jsp" />	
-	
-	<!-- "It Boxes" -->
-	<div id="ss_leftNav">
-		<ul>
-            <li>
-			<a href="#">Take Out the Tabbar! xxx</a>
-			</li>
-	</ul>
- </div>
+ <div class="ss_myStatus">
 
-</div>
+ 	  		<strong><ssf:nlt tag="relevance.userStatus"/></strong>
+
+	   <ssf:ifLoggedIn>
+			<script type="text/javascript">
+			  ss_statusCurrent = "${ssUser.status}";
+			</script>
+
+			<input type="text" cols="22" rows="2" class="ss_input_myStatus"
+			style="font-size:${ss_style_font_fineprint};" value="${ssUser.status}"
+  			onFocus="ss_setStatusBackground(this, 'focus');"
+  			onKeyPress="ss_updateStatusSoon(this, event);"
+  			onChange="ss_updateStatusNow(this);"
+  			onBlur="ss_updateStatusNow(this);ss_setStatusBackground(this, 'blur')"
+  			onMouseover="ss_setStatusBackground(this, 'mouseOver');"
+  			onMouseout="ss_setStatusBackgroundCheck(this);"
+  			/>
+
+	   </ssf:ifLoggedIn> 
+
+</div>	
+
+
+

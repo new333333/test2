@@ -25,37 +25,35 @@
  * 
  * 
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
- * are trademarks of SiteScape, Inc.
+ * are trademarks of SiteScape, Inc.     
  */
 %>
-<% // Tabs %>
-<%@ page import="com.sitescape.team.util.NLT" %>
-<%@ page import="com.sitescape.team.util.SPropsUtil" %>
-<%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
- <div class="ss_myStatus">
 
- 	  		<strong><ssf:nlt tag="relevance.userStatus"/></strong>
-
-	   <ssf:ifLoggedIn>
-			<script type="text/javascript">
-			  ss_statusCurrent = "${ssUser.status}";
-			</script>
-
-			<input type="text" cols="22" rows="2" class="ss_input_myStatus"
-			style="font-size:${ss_style_font_fineprint};" value="${ssUser.status}"
-  			onFocus="ss_setStatusBackground(this, 'focus');"
-  			onKeyPress="ss_updateStatusSoon(this, event);"
-  			onChange="ss_updateStatusNow(this);"
-  			onBlur="ss_updateStatusNow(this);ss_setStatusBackground(this, 'blur')"
-  			onMouseover="ss_setStatusBackground(this, 'mouseOver');"
-  			onMouseout="ss_setStatusBackgroundCheck(this);"
-  			/>
-
-	   </ssf:ifLoggedIn> 
-
-</div>	
-
-
+		  <ssf:ifLoggedIn>
+			<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
+				<a href="<ssf:url adapter="true" portletName="ss_forum" 
+					action="__ajax_relevance" actionUrl="false"><ssf:param 
+					name="operation" value="share_this_binder" /><ssf:param 
+					name="binderId" value="${ssBinder.id}" /></ssf:url>" 
+  					onClick="ss_openUrlInWindow(this, '_blank', '450px', '600px');return false;"
+					
+					<c:if test="${ssBinder.entityType == 'workspace'}"> 
+						title="<ssf:nlt tag="relevance.shareThisWorkspace"/>" >
+						<span><ssf:nlt tag="relevance.justShare"/></span>
+					</c:if>
+					<c:if test="${ssBinder.entityType == 'folder'}">
+  						<c:if test="${ssDefinitionFamily != 'calendar'}">
+  							title="<ssf:nlt tag="relevance.shareThisFolder"/>" >
+  							<span><ssf:nlt tag="relevance.justShare"/></span>
+  						</c:if>
+  						<c:if test="${ssDefinitionFamily == 'calendar'}">
+  							title="<ssf:nlt tag="relevance.shareThisCalendar"/>" >
+  							<span><ssf:nlt tag="relevance.justShare"/></span>
+  						</c:if>
+					</c:if>
+				</a>
+			</c:if>
+		  </ssf:ifLoggedIn>
 
