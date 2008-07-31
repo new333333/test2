@@ -373,6 +373,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_RELEVANCE_DASHBOARD_PAGE = "get_dashboard_page";
 	public static final String OPERATION_GET_WHATS_NEW_PAGE = "get_whats_new_page";
 	public static final String OPERATION_GET_WORKFLOW_STATES = "get_workflow_states";
+	public static final String OPERATION_GO_TO_ENTRY = "go_to_entry";
 	public static final String OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS = "hide_all_dashboard_components";
 	public static final String OPERATION_SET_BINDER_OWNER_ID = "set_binder_owner_id";
 	public static final String OPERATION_SET_DASHBOARD_TITLE = "set_dashboard_title";
@@ -985,6 +986,7 @@ public class WebKeys {
 
     public static final String PAGE_START_INDEX = "ssPageStartIndex";
     public static final String PAGE_GOTOPAGE_INDEX = "ssGoToPage";
+    public static final String PAGE_GOTOENTRY = "ssGoToEntry";
     public static final String PAGE_END_INDEX = "ssPageEndIndex";
     public static final String PAGE_TOTAL_RECORDS = "ssTotalRecords";
     public static final String PAGE_DISPLAY_VALUE = "ssPageDisplayValue";
@@ -1100,7 +1102,6 @@ public class WebKeys {
     public static final String VIEW_WORKAREA="forum/view_workarea";
     public static final String VIEW_WORKAREA_ACCESSORIES="forum/view_workarea_accessories";
     public static final String VIEW_WORKAREA_CONTEXT="forum/view_workarea_context";
-    public static final String VIEW_WORKAREA_NAVIGATION="forum/view_workarea_navigation";
     public static final String VIEW_WORKSPACE="forum/view_workspace";
     public static final String VIEW_WORKSPACE_EDIT="workspacetree/edit";
     public static final String VIEW_TEAM_MEMBERS="forum/view_team_members";

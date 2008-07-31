@@ -63,14 +63,14 @@
 					name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
 					name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 					name="endDate" value="${endDate}"/></c:if><ssf:param 
-					name="operation" value="save_folder_goto_page_info"/></ssf:url>" 
+					name="operation" value="go_to_entry"/></ssf:url>" 
 					onSubmit="return(ss_submitPage_${renderResponse.namespace}(this))">
 				
 			    <input name="ssGoToEntry" id="ssGoToEntry${renderResponse.namespace}" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
 				<a href="javascript: ;" 
 				<ssf:title tag="entry.goTo" />
-				onClick="ss_clickGoToPage_${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}'); return false;">
-				<img src="<html:rootPath/>images/pics/page/go.png" width="17" height="12" border="0" align="absmiddle" /></a>
+				onClick="ss_clickGoToEntry_${renderResponse.namespace}('ss_goToEntryForm_${renderResponse.namespace}');return false;">
+				<img src="<html:rootPath/>images/pics/page/go.png" width="25" height="12" border="0" align="absmiddle" /></a>
 				
 			</c:if>
 			<c:if test="${ssPageCount <= '1.0'}">
