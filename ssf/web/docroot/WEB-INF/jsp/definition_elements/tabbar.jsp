@@ -43,8 +43,5 @@
 	
 	<% // Recent Places %>
 	<jsp:include page="/WEB-INF/jsp/sidebars/recent_places.jsp" />
-	
 
-
-
-
+</div>

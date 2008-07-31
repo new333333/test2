@@ -37,6 +37,11 @@
 </ssf:ifnotadapter>
 <ssf:ifadapter>
 <body class="ss_style_body">
+<ssf:ifLoggedIn><c:if test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
+  <a class="ss_skiplink" href="${ss_accessibleUrl}"><img border="0"
+    <ssf:alt tag="accessible.enableAccessibleMode"/> 
+    src="<html:imagesPath/>pics/1pix.gif" /></a><%--
+		--%></c:if></ssf:ifLoggedIn>
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
 </ssf:ifadapter>
 <c:if test="${!empty ssReloadUrl}">

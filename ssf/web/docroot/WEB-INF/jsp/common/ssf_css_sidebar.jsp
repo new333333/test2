@@ -88,7 +88,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /*This is the title of each link box*/
 .ss_dropdownTitle{
 	text-indent: 2px;
-	margin-top:12px; 0 1px 0;		
+	margin-top:12px;		
 	}
 	
 /*This is the box style for the drop down menu open*/

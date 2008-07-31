@@ -173,11 +173,7 @@ function ss_loadJsFile(rootPath, jsFile) {
 }
 function ss_loadDojoFiles() {
 	if (ss_scripts_loaded && ss_scripts_loaded == "no") {
-// dojo_xxx		dojo.require("dojo.html.*");
-// dojo_xxx		dojo.require("dojo.lfx.*");
-// dojo_xxx		dojo.require("dojo.event.*");
-// dojo_xxx		dojo.require("dojo.lang.*");
-// dojo_xxx		dojo.require("dojo.dnd.*");
+		//Put dojo.require statements here
 	}
 }
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
@@ -288,12 +284,7 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 }
 </script>
 
-<ssf:ifLoggedIn><c:if test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
-  <a class="ss_skiplink" href="${ss_accessibleUrl}"><img border="0"
-    <ssf:alt tag="accessible.enableAccessibleMode"/> 
-    src="<html:imagesPath/>pics/1pix.gif" /></a><%--
-		--%></c:if></ssf:ifLoggedIn><%--
-
+<%--
 * The following line is used to call customer supplied customizations.
 * This jsp will be called at least once per page. 
 * (It can be called more than once on portlet pages, so be prepared for that.)
