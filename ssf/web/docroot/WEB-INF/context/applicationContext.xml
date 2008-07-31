@@ -1005,6 +1005,7 @@ text/calendar											  ics
 	<bean id="binderService" parent="wsProxyTemplate">
 		<property name="target">
 			<bean class="com.sitescape.team.remoting.ws.service.binder.attachments.BinderServiceImpl" parent="dependOnAllModulesTemplate">
+				<property name="coreDao"><ref bean="coreDao"/></property>
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
