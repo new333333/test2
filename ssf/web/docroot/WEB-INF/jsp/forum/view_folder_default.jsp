@@ -43,9 +43,33 @@
 <% // Navigation bar %>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
-<% // Tabs %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
-<div class="ss_clear"></div>
+<% // BEGIN SIDEBAR LAYOUT  %>
+	
+	  	   <div id="ss_sideNav_wrap"> <% // new sidebar format %>
+
+			<% // Status %>
+			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
+	
+			<% // "It" Bars %>
+			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_action_dispatch.jsp" />
+		
+			<% // RSS Feed %>
+			<div id="ss_leftNav">
+				<ul>
+					<li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" /></li>
+				</ul>
+ 			</div>
+	
+			<% // Recent Places %>
+			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
+
+			<% // Folder Sidebar %>
+    		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
+
+			<% // Workspace Tree %>    
+    		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tree.jsp" />
+
+	  	  </div> <% // end of new sidebar format %>
 
 <% // Navigation links %>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />

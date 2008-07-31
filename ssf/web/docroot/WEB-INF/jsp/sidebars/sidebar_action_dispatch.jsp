@@ -38,70 +38,14 @@
 	<ul>
                                
 		<li>
-		  <ssf:ifLoggedIn>
-			 <c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
-			   <a href="javascript: ;" 
-  				onClick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;"
-			 	<c:if test="${ssBinder.entityType == 'workspace'}">
-  			 		<c:if test="${ssBinder.definitionType != 12}">
-  						title="<ssf:nlt tag="relevance.trackThisWorkspace"/>" >
-  						<span><ssf:nlt tag="relevance.justTrack"/></span>
-  					</c:if>
-  			 		<c:if test="${ssBinder.definitionType == 12}">
-  						title="<ssf:nlt tag="relevance.trackThisPerson"/>" >
-  						<span><ssf:nlt tag="relevance.justTrack"/></span>
-  					</c:if>
-			 	</c:if>
-			 	<c:if test="${ssBinder.entityType == 'folder'}">
-  			 		<c:if test="${ssDefinitionFamily != 'calendar'}">
-  						title="<ssf:nlt tag="relevance.trackThisFolder"/>" >
-  						<span><ssf:nlt tag="relevance.justTrack"/></span>
-  					</c:if>
-  			 		<c:if test="${ssDefinitionFamily == 'calendar'}">
-  						title="<ssf:nlt tag="relevance.trackThisCalendar"/>" >
-  						<span><ssf:nlt tag="relevance.justTrack"/></span>
-  					</c:if>
-			 	</c:if>
-			  </a>
-			
-			  <div id="ss_track_this_ok${renderResponse.namespace}" 
-  				style="position:relative; display:none; visibility:hidden; top:5px; left:10px; z-index:500;
-         		border:1px solid black; padding-top:10px; padding-left: 10px; padding-bottom: 10px; padding-right: 10px; background-color:#ffffff; white-space:nowrap; margin-bottom:10px;">
-			  </div>
-			</c:if>
-		  </ssf:ifLoggedIn>
+			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_track.jsp" />
 		</li>
 		<li>
-		  <ssf:ifLoggedIn>
-			<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
-				<a href="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_relevance" actionUrl="false"><ssf:param 
-					name="operation" value="share_this_binder" /><ssf:param 
-					name="binderId" value="${ssBinder.id}" /></ssf:url>" 
-  					onClick="ss_openUrlInWindow(this, '_blank', '450px', '600px');return false;"
-					
-					<c:if test="${ssBinder.entityType == 'workspace'}"> 
-						title="<ssf:nlt tag="relevance.shareThisWorkspace"/>" >
-						<span><ssf:nlt tag="relevance.justShare"/></span>
-					</c:if>
-					<c:if test="${ssBinder.entityType == 'folder'}">
-  						<c:if test="${ssDefinitionFamily != 'calendar'}">
-  							title="<ssf:nlt tag="relevance.shareThisFolder"/>" >
-  							<span><ssf:nlt tag="relevance.justShare"/></span>
-  						</c:if>
-  						<c:if test="${ssDefinitionFamily == 'calendar'}">
-  							title="<ssf:nlt tag="relevance.shareThisCalendar"/>" >
-  							<span><ssf:nlt tag="relevance.justShare"/></span>
-  						</c:if>
-					</c:if>
-				</a>
-			</c:if>
-		  </ssf:ifLoggedIn>
+		  	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_share.jsp" />
 		</li>
-		<li><a href="#">Email IT</a></li>
-		<li><a href="#">RSS IT</a></li>
-		<li><a href="#">Meet</a></li>
-		<li><a href="#">Clipboard</a></li>
+		<li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" /></li>
+		<li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" /></li>
+		<li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" /></li>
 	</ul>
  </div>
 	

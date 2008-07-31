@@ -30,15 +30,6 @@
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-    <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
-        initOpen="true" sticky="true">
-		<c:if test="${!empty ssSidebarWsTree}">
-		<ssf:tree treeName="sidebarWsTree${renderResponse.namespace}" 
-		  treeDocument="${ssSidebarWsTree}" 
-		  highlightNode="${ssBinder.id}" 
-		  showIdRoutine="ss_treeShowId"
-		  namespace="${renderResponse.namespace}"
-		  rootOpen="true"
-		  nowrap="true"/>
-		</c:if>
-	</ssf:sidebarPanel>
+
+<a href="#">RSS IT xxx</a>
+

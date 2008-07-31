@@ -173,36 +173,50 @@ var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 <div id="ss_portlet_content" class="ss_style ss_portlet">
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 
+<% // BEGIN SIDEBAR LAYOUT  %>
 <ssf:ifnotaccessible>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
-    <td valign="top" class="ss_view_sidebar">
+    <td valign="top" class="ss_view_sidebar"> <% // old class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}"> %>
+     <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
+	
+	  <div id="ss_sideNav_wrap"> <% // new sidebar format %>
 
-	<% // Tabs %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
+		<% // Status %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
+	
+		<!-- "It Bars" -->
+		  <div id="ss_leftNav">
+			<ul>
+			 <li>
+		  		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_share.jsp" />
+			 </li>
+			 <li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" /></li>
+			 <li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" /></li>
+			 <li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" /></li>
+			</ul>
+ 		  </div>
+	
+		<% // Recent Places %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
 
-	<% // Folder Sidebar %>
+		<% // Folder Sidebar %>
+    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
+    	
+    	<% // Folder Tags %>
+    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_folder_tags.jsp" />
 
-    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
+		<% // Workspace Tree %>    
+    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tree.jsp" />
 
-
-    <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
-        initOpen="true" sticky="true">
-		<c:if test="${!empty ssSidebarWsTree}">
-		<ssf:tree treeName="sidebarWsTree${renderResponse.namespace}" 
-		  treeDocument="${ssSidebarWsTree}" 
-		  highlightNode="${ssBinder.id}" 
-		  showIdRoutine="ss_treeShowId"
-		  namespace="${renderResponse.namespace}"
-		  rootOpen="true"
-		  nowrap="true"/>
-		</c:if>
-	</ssf:sidebarPanel>
-
+	  </div> <% // end of new sidebar format %>
+	 </div> <% // end of ss_sidebarDiv %>
 	</td>
+
 	<td valign="top" class="ss_view_info">
 </ssf:ifnotaccessible>
+
 	    <div class="ss_style_color">
 </c:if>
 

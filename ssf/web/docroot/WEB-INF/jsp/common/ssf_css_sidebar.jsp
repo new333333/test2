@@ -134,7 +134,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	height: auto;
 	line-height: 170%;
 	padding: 8px 2px 12px 3px;
-	margin: 2px 0px 3px 8px;
+	margin: 3px 0px 3px 8px;
 	text-decoration: none;
 	}
 	
