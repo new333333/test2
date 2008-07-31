@@ -1736,8 +1736,9 @@ div.ss_box_top_rounded {
 /* Tree widget styles */
 .ss_treeWidget {
   background: url("<html:imagesPath/>pics/1pix.gif") fixed no-repeat;
-    margin-top:8px;
-    }
+  margin-top:8px;
+  text-indent:0px;
+  }
 .ss_twDiv {
   }
 .ss_twSpan, ss_twA {
