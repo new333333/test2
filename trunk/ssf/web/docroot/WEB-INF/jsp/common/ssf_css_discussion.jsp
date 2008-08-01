@@ -45,21 +45,25 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 #ss_column_L{
 	/* holder for left column */
+	vertical-align:top;
 	}
 #ss_column_R{
 	/* holder for left column */
 	height:100%;
+	vertical-align:top;
 	}	
 .ss_doublecolumn .ss_dblcolleft{		/* right column width */
 	right:49%;		
 	}
 .ss_doublecolumn .ss_dblcol1{
 	width:49%;						/* left column content width (column width minus left and right padding) */
-	left:50%;						/* (right column width) plus (left column padding) */
 	background-color:#fff;			/* left column background color */
+	position:relative;
+	float:left;
+	margin-right:2%;
 	}	
 .ss_doublecolumn .ss_dblcol2{
-	width:49%;						/* right column content width (column width minus left and right padding) */
+	width:100%;						/* right column content width (column width minus left and right padding) */
 	left:51%;						/* (right column column width) plus (left column left and right padding) plus (right column left padding) */
 	overflow:hidden;
 	}	
