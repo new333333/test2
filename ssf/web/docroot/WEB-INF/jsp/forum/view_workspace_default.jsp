@@ -45,11 +45,7 @@
 
 <% // BEGIN SIDEBAR LAYOUT  %>
 <ssf:ifnotaccessible>
-    <table cellpadding="0" cellspacing="0" border="0" width="100%">
-    <tbody>
-    <tr>
-    <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
-     <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
+
 	
 	  <div id="ss_sideNav_wrap"> <% // new sidebar format %>
 
@@ -58,6 +54,12 @@
 	
 		<% // "It" Bars %>
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_action_dispatch.jsp" />
+		<% // Test Feed %>
+		<div id="ss_leftNav">
+			<ul>
+				<li><a href="">Test Feed for view_worspace_default</a></li>
+			</ul>
+ 		</div>
 
 		<% // Recent Places %>
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
@@ -69,10 +71,8 @@
     	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tree.jsp" />
 
 	  </div> <% // end of new sidebar format %>
-	 </div> <% // end of ss_sidebarDiv %>
-	</td>
 
-	<td valign="top" class="ss_view_info">
+	
 </ssf:ifnotaccessible>
 
 <% // Navigation links %>
