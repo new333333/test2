@@ -50,8 +50,8 @@
 
 	<!-- MultipartResolver implementation (uses Jakarta Commons FileUpload) -->
 	<bean id="multipartResolver" 
-		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-	
+		class="com.sitescape.team.web.upload.MultipartResolverProgressListening">
+		
 		<!-- Maximum file size in bytes = Integer.MAX_VALUE = 0x7fffffff -->
 		<property name="maxUploadSize">
 			<value>2147483647</value>
@@ -72,6 +72,7 @@
 		<property name="defaultEncoding">
 			<value>${web.char.encoding}</value>
 		</property>
+
 	</bean>
 
 	<!-- Template for expressing dependencies on all modules.

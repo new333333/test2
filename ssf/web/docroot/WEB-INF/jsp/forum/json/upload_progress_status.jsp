@@ -1,4 +1,5 @@
-#*
+<%
+/**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
  * http://www.opensource.org/licenses/cpal_1.0. The CPAL is based on the Mozilla Public License Version 1.1
@@ -25,23 +26,34 @@
  * 
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
- *#
-#parse ("icecore.vm")
-<div style="#ss_entryContent()">
- <span style="#ss_labelAbove()">$property_caption</span>
- #if (${ssVisitor.Entity.getCustomAttribute($property_name)})
-
-	#if ((${ssVisitor.Entity.getCustomAttribute($property_name).Value.AllDayEvent} && $ssEvent_startString == $ssEvent_endString) || 
-			${ssVisitor.Entity.getCustomAttribute($property_name).Value.Duration.Interval} == 0)
-			${ssVisitor.getNLT("calendar.when")}: ${ssEvent_startString}<br />
-	#else
-			${ssVisitor.getNLT("calendar.start")}: ${ssEvent_startString}<br />
-			${ssVisitor.getNLT("calendar.end")}: ${ssEvent_endString}<br />
-	#end
-	#if (${ssEvent_repeatString})
-	    ${ssVisitor.getNLT("calendar.frequency")}: ${ssEvent_repeatString}
-    #end
-
-#end
-</div>
-
+ */
+%>
+<%@ page language="java" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+/*
+<c:choose>
+	<c:when test="${ss_ajaxStatus.ss_ajaxNotLoggedIn}">
+		{notLoggedIn: ${ss_ajaxStatus.ss_ajaxNotLoggedIn}}
+	</c:when>
+	<c:when test="${!empty ss_ajaxStatus.ss_operation_denied}">
+		{denied: "<c:out value="${ss_ajaxStatus.ss_operation_denied}" escapeXml="false"/>"}
+	</c:when>	
+	<c:otherwise>
+		{progress: ${ss_progress},
+			mbytes_read: ${ss_mbytes_read},
+			content_length: ${ss_content_length},
+			speed: ${ss_speed},
+			left_time: ${ss_left_time},
+			running_time: ${ss_running_time},
+			legendProgress: "<ssf:nlt tag="file.upload.progress.legend"><%--
+							--%><ssf:param name="value" value="${ss_progress}"/><%--
+							--%><ssf:param name="value" value="${ss_mbytes_read}"/><%--
+							--%><ssf:param name="value" value="${ss_content_length}"/><%--														
+						--%></ssf:nlt>",
+			legendTimeAndSpeed: "<ssf:nlt tag="file.upload.timeAndSpeed.legend"><%--
+							--%><ssf:param name="value" value="${ss_left_time_text}"/><%--
+							--%><ssf:param name="value" value="${ss_speed}"/><%--
+						--%></ssf:nlt>"}
+	</c:otherwise>
+</c:choose>
+*/

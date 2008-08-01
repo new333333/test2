@@ -35,8 +35,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
+import javax.mail.MessagingException;
+
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.sitescape.team.module.mail.impl.DefaultEmailPoster.FileHandler;
 
 public class FileUploadItem {
 
@@ -176,6 +180,21 @@ public class FileUploadItem {
 	 */
 	public String getOriginalFilename() {
 		return mf.getOriginalFilename();
+	}
+	
+	/**
+	 * Return the original filename in the client's filesystem. 
+	 * @return
+	 */
+	public String getContentId() {
+		if(mf instanceof FileHandler)
+			try {
+				return ((FileHandler) mf).getContentId();
+			} catch (MessagingException e) {
+				return null;
+			}
+		
+		return null;
 	}
 
 	public String getRepositoryName() {
