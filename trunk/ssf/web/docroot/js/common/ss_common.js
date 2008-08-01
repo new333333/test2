@@ -1351,7 +1351,7 @@ function ss_onSubmit(obj) {
     }
     for (var i = 0; i < ss_onSubmitList.length; i++) {
         if (ss_onSubmitList[i].formName == obj.name) {
-            if (!ss_onSubmitList[i].submitRoutine()) {result = false;}
+            if (!ss_onSubmitList[i].submitRoutine(obj)) {result = false;}
         }
     }
     return result && ss_validate(obj);
@@ -3416,7 +3416,7 @@ function ss_showAddAttachmentBrowse(binderId, entryId, namespace) {
 	frameObj.style.visibility = "visible";
 	
 	divObj.style.width = "360px";
-	divObj.style.height = "120px";
+	divObj.style.height = "150px";
 	
 	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
 	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
@@ -4236,9 +4236,11 @@ function ss_createPopupDiv(obj, divId) {
 }
 
 // Lightbox a dialog centered.  Optionally take an id to set focus on.
-function ss_showPopupDivCentered(divId, focusId) {
+function ss_showPopupDivCentered(divId, focusId, cancelable) {
 	var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
-	lightBox.onclick = function(e) {ss_cancelPopupDiv(divId);};
+	if (cancelable || typeof cancelable === undefined) {
+		lightBox.onclick = function(e) {ss_cancelPopupDiv(divId);};
+	}
 	var divObj = document.getElementById(divId);
     ss_moveObjectToBody(divObj); 
 	divObj.style.zIndex = parseInt(ssLightboxZ + 1);
@@ -6126,6 +6128,175 @@ function ss_requestLogin(obj, binderId, userWorkspaceId, userName) {
 function ss_setClass(divId, className) {
 	var divObj = document.getElementById(divId);
 	if (divObj != null) divObj.className = className;
+}
+
+function ss_getTimeZoneDate(date, timeZoneOffset) {
+	var utc = date.getTime();
+	var timeZoneTime = utc + timeZoneOffset;
+	return new Date(timeZoneTime);
+}
+
+function ss_getTimeZoneTime(hours, minutes, timeZoneOffset) {
+	var date = new Date();
+	date.setHours(hours);
+	date.setMinutes(minutes);
+	date = ss_getTimeZoneDate(date, timeZoneOffset);
+	return {hours: date.getHours(), minutes: date.getMinutes()};
+}
+
+function ss_printSchedulerTime(hoursObjId, minutesObjId, paneObjId, timeZoneOffset, locale) {
+	if (!document.getElementById || !hoursObjId || !minutesObjId || !paneObjId || typeof timeZoneOffset === undefined) {
+		return;
+	}
+	var hoursObj = document.getElementById(hoursObjId);
+	var minutesObj = document.getElementById(minutesObjId);	
+	var paneObj = document.getElementById(paneObjId);
+	if (!hoursObj|| !minutesObj || !paneObj) {
+		return;
+	}
+	var hours = hoursObj.options[hoursObj.selectedIndex].value;
+	var minutes = minutesObj.options[minutesObj.selectedIndex].value;
+	
+	var date = new Date();
+	date.setHours(hours);
+	date.setMinutes(minutes);
+	date = ss_getTimeZoneDate(date, timeZoneOffset);
+	
+	paneObj.innerHTML = dojo.date.format(date, {formatLength:"short", timePattern:"", selector:"timeOnly", locale: locale});
+}
+
+function ss_FileUploadProgressBar(container) {
+
+	var _MAX_PROGRESS_TO_SHOW_BAR = 20;
+
+	var _containerId = "ss_uploadFileProgressBar";
+
+	var _container = false;
+	
+	if (container) {
+		_container = container;
+	}
+	
+	var _progressBar = false;
+	
+	var _timeAndSpeed= false;
+	
+	var _initialized = false;
+	
+	var _progress = false;
+	
+	/* Returns true if needs more updates or false otherwise. */
+	/* Parameters:
+			progress - how many % done
+			mbytes_read - bytes already read (in MB)
+			content_length - bytes total to transfer (in MB)
+			speed - upload speed (in kB/sec)
+			left_time - approximated left time (in sec)
+			running_time  - time already gone (in sec)
+			legendProgress - example: "0:01 (at 120kB/sec)"
+			legendTimeAndSpeed - example: "100 MB / 1000 MB ( 10% )"
+	*/
+	this.update = function(data) {
+		if (!_initialized && data && data.progress > _MAX_PROGRESS_TO_SHOW_BAR) {
+			// it's fast upload, don't show progress bar at all
+			return false;
+		}
+		
+		if (!_initialized && data && data.progress <= _MAX_PROGRESS_TO_SHOW_BAR) {
+			_initProgressBar();
+		}
+		
+		if (data) {
+			_showProgress(data.progress, data.legendTimeAndSpeed, data.legendProgress);
+		}
+		if (data && data.progress < 100) {
+			return true;
+		}
+
+		return false;
+	}
+	
+	function _showProgress(progress, legendTimeAndSpeed, legendProgress) {
+		if (_progressBar && typeof progress !== undefined) {
+			_progressBar.style.width = progress + "%";
+		}
+		if (_timeAndSpeed && legendTimeAndSpeed) {
+			_timeAndSpeed.innerHTML = legendTimeAndSpeed;
+		}
+		if (_progress && legendProgress) {
+			_progress.innerHTML = legendProgress;
+		}
+	}
+	
+	function _initProgressBar() {
+		if (!document.createElement || !document.getElementById) {
+			return;
+		}
+		
+		var newContainer = false;
+		if (!_container) {
+			_container = document.createElement("div");
+			document.getElementsByTagName("body").item(0).appendChild(_container);
+					
+			_container.className = "ss_fileUploadProgressBarContainer";
+			_container.style.position="absolute";
+			newContainer = true;
+		}
+		
+		if (!_container.id) {
+			_container.id = _containerId;
+		}
+
+		var progressBar = document.createElement("div");
+		progressBar.className = "ss_progressBar";
+
+		_progressBar = document.createElement("div");
+
+		progressBar.appendChild(_progressBar);
+		_container.appendChild(progressBar);
+
+		var table = document.createElement("table");
+		var tableBody = document.createElement("tbody");
+		var row = document.createElement("tr");
+		_timeAndSpeed = document.createElement("td");
+		_timeAndSpeed.className = "ss_progressTimeSpeed";
+		_progress = document.createElement("td");
+		_progress.className = "ss_progress";
+
+		table.appendChild(tableBody);
+		tableBody.appendChild(row);
+		row.appendChild(_timeAndSpeed);
+		row.appendChild(_progress);
+		_container.appendChild(table);
+	
+		
+		if (newContainer) {
+			ss_showPopupDivCentered(_container.id, null, false);
+		} else {
+			_container.style.display = "";
+		}
+		_initialized = true;
+	}
+
+}
+
+ss_FileUploadProgressBar.reloadProgressStatus = function(progressBar, url) { 
+	dojo.xhrGet({
+    	url: url,
+		error: function(err) {
+		},
+		load: function(data) {
+					if (progressBar.update(data)) {
+			  		  	setTimeout(function() {
+			  		  		if (window.ss_FileUploadProgressBar.reloadProgressStatus) {// prevent error if window already unloaded
+				  		  		ss_FileUploadProgressBar.reloadProgressStatus(progressBar, url);
+				  		  	}
+			  		  	}, 1200);
+		  		  	}
+				},
+				handleAs: "json-comment-filtered",
+				preventCache: true
+	});
 }
 
 //After defining all the standard functions, identify the required dojo files

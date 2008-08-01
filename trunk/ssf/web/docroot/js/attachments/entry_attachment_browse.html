@@ -35,8 +35,39 @@
   font-family: Tahoma, Arial, sans-serif;
   font-size: 0.7em;
   }
+.ss_fileUploadProgressBarContainer {
+	padding: 5px;
+	background-color: #FAFAFA;
+	border: 1px solid black;
+}
+
+.ss_fileUploadProgressBarContainer .ss_progressBar {
+    height: 15px;
+    width: 320px;
+    background: #ffffff;
+    border: 1px solid #333333;
+    margin: 0;
+    padding-right: 5px;
+}
+.ss_fileUploadProgressBarContainer .ss_progressBar div {
+    height: 11px;
+    margin: 2px;
+    padding: 0px;
+    background: #333333;
+}
+.ss_fileUploadProgressBarContainer .ss_progressTimeSpeed, .ss_fileUploadProgressBarContainer .ss_progress {
+	width: 160px;
+	font-size: 10px;
+}
+.ss_fileUploadProgressBarContainer .ss_progressTimeSpeed {
+	text-align: left;
+}
+.ss_fileUploadProgressBarContainer .ss_progress {
+	text-align: right;
+}
 </style>
 <script type="text/javascript">
+
 var strNoFileWarningMessage = "";
 var strCloseDivFunction = "";
 
@@ -67,6 +98,25 @@ function ssCloseDiv() {
 	eval("parent."+strCloseDivFunction);
 }
 
+function ssSubmit() {
+	if (!window.uploadProgressBar) {// prevents many progress bars on one page
+	
+		// the uid binds upload request with upload status check request
+		var uid = new Date().valueOf();
+		var formName = document.getElementById("browseForm");
+		formName.action = formName.action + "&ss_upload_request_uid=" + uid;
+	
+		var url = parent.ss_buildAdapterUrl(parent.ss_AjaxBaseUrl, 
+									{operation:"get_upload_progress_status", 
+									ss_upload_request_uid: uid});								
+		window.uploadProgressBar = new parent.ss_FileUploadProgressBar(document.getElementById("ss_uploadFileProgressBar"));
+	  	setTimeout(function() {
+  		  	parent.ss_FileUploadProgressBar.reloadProgressStatus(window.uploadProgressBar, url);
+	  	}, 1500);
+	}
+	return checkForFile();
+}
+
 function checkForFile() {
 	var fileName = browseForm.ss_attachFile1.value;
 	if (fileName == "") {
@@ -87,15 +137,21 @@ function checkForFile() {
 	<tr>
 		<td width="100%">
 			<input id="ss_attachFile1" name="ss_attachFile1" type="file" size="35" />	
+			<input type="hidden" name="ss_upload_request_uid" value=""/>
 		</td>
 	</tr>
 	<tr>
 		<td width="100%">
-			<input type="submit" id="ssBrowseSubmit" name="ssBrowseSubmit" value="" onClick="return (checkForFile());" />&nbsp;&nbsp;
+			<div id="ss_uploadFileProgressBar" class="ss_fileUploadProgressBarContainer" style="display: none;"></div>
+		</td>
+	</tr>		
+	<tr>
+		<td width="100%">
+			<input type="submit" id="ssBrowseSubmit" name="ssBrowseSubmit" value="" onClick="return (ssSubmit());" />&nbsp;&nbsp;
 			<input type="submit" id="ssCloseBrowse" name="ssCloseBrowse" value="" onClick="ssCloseDiv(); return false;" />
 			<input type="hidden" id="ssCloseDivFunctionName" name="ssCloseDivFunctionName" value="" />
 		</td>
-	</tr>
+	</tr>	
 	<tr>
 		<td width="100%" class="ss_browseHelpText">
 			<div id="ssBrowseAddAttachment" name="ssBrowseAddAttachment"></div>

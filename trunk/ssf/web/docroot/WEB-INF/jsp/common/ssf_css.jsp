@@ -4928,6 +4928,32 @@ ul.placesForm, ul.placesForm li {
 	padding: 0;
 }
 
+.ss_fileUploadProgressBarContainer {
+	font-size: 10px;
+	padding: 5px;
+	background-color: #FAFAFA;
+	border: 1px solid black;
+}
+
+.ss_fileUploadProgressBarContainer .ss_progressBar {
+    height: 15px;
+    width: 320px;
+    background: #ffffff;
+    border: 1px solid #333333;
+    margin: 0;
+    padding-right: 5px;
+}
+.ss_fileUploadProgressBarContainer .ss_progressBar div {
+    height: 11px;
+    margin: 2px;
+    padding: 0px;
+    background: #333333;
+}
+.ss_fileUploadProgressBarContainer .ss_progressTimeSpeed, .ss_fileUploadProgressBarContainer .ss_progress {
+	width: 160px;
+}
+
+
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_dashboard.jsp" />
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_global_nav.jsp" />
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_discussion.jsp" />

@@ -45,6 +45,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.dom4j.Element;
 
@@ -1242,6 +1243,16 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         			if(isNew) {
         				entry.addAttachment(fAtt);
         			}
+        			
+        			String contentId = fui.getContentId();
+        			if (contentId != null && !"".equals(contentId)) {
+	        			String description = entry.getDescription().getText();
+	        			if (description != null && description.indexOf(contentId) > -1) {
+	        				description = description.replaceAll("\"cid:[\\s]*" + Pattern.quote(contentId) + "\"", "\"{{attachmentUrl: " + fAtt.getFileItem().getName() + "}}\"");
+	        				entry.getDescription().setText(description);
+	        			}
+        			}
+        			
         		}  else if (fui.getType() == FileUploadItem.TYPE_TITLE) {
         			String title = fui.getOriginalFilename();
         			CustomAttribute ca = entry.getCustomAttribute(fui.getName());
