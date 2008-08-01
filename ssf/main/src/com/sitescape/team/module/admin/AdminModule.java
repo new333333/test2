@@ -41,6 +41,7 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.jobs.ScheduleInfo;
+import com.sitescape.team.search.Node;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkArea;
@@ -178,5 +179,5 @@ public interface AdminModule {
     public void setWorkAreaOwner(WorkArea workArea, Long userId, boolean propagate) throws AccessControlException;
 	public void updateDefaultDefinitions(Long topId);
     
- 
+	public List<Node> getSearchNodes();
  }

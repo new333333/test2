@@ -296,7 +296,7 @@ public interface BinderModule {
      * @param binderId
      * @return Set of binderIds indexed
      */
-     public Set<Long> indexTree(Collection<Long> binderId, StatusTicket statusTicket) throws AccessControlException;
+     public Set<Long> indexTree(Collection<Long> binderId, StatusTicket statusTicket, String[] nodeIds) throws AccessControlException;
    
     /**
      * Modify a binder.  Optionally include files to add and attachments to delete 

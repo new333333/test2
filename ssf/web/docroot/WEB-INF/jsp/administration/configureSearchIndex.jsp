@@ -115,6 +115,16 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 
 <br>
 <br>
+<span class="ss_bold"><ssf:nlt tag="administration.configure.nodes.select" text="Select the nodes to apply the re-indexing to:"/></span>
+<br>
+<br>
+<c:if test="${!empty ssSearchNodes}">
+  <c:forEach var="node" items="${ssSearchNodes}">
+    <input type="checkbox" name="searchNodeId" value="${node.id}">${node.title} (${node.id})<br/>
+  </c:forEach>
+</c:if>
+<br>
+<br>
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" 
   value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">

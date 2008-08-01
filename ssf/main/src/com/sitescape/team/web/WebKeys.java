@@ -162,6 +162,7 @@ public class WebKeys {
 	public static final String URL_RANDOM_PLACEHOLDER = "ss_randomPlaceholder";
 	public static final String URL_REPORT_FLAVOR = "ss_reportFlavor";
 	public static final String URL_REPORT_TYPE = "ss_reportType";
+	public static final String URL_SEARCH_NODE_ID = "searchNodeId";
 	public static final String URL_START_DATE = "ss_startDate";
 	public static final String URL_STATUS_TICKET_ID = "ss_statusId";
 	public static final String URL_TAB_ID = "tabId";
@@ -915,6 +916,7 @@ public class WebKeys {
     public static final String TEAM_MEMBERSHIP="ssTeamMembership";
     public static final String TYPE="ss_type";
     public static final String TYPE2="ss_type2";
+    public static final String SEARCH_NODES="ssSearchNodes";
     public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
     public static final String SIDEBAR_WORKSPACE_TREE="ssSidebarWsTree";
     public static final String SIDEBAR_CURRENT_WORKSPACE="ssSidebarCurrentWorkspace";

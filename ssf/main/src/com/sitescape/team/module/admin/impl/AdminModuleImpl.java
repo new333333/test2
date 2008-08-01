@@ -84,6 +84,7 @@ import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.shared.AccessUtils;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.workspace.WorkspaceModule;
+import com.sitescape.team.search.Node;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.FunctionExistsException;
@@ -761,5 +762,9 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	   return result;
 
    }
+   
+	public List<Node> getSearchNodes() {
+		return getLuceneSessionFactory().getNodes();
+	}
 
 }

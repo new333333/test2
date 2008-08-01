@@ -47,6 +47,7 @@ import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.search.Node;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
@@ -70,6 +71,20 @@ public class ManageSearchIndexController extends  SAbstractController {
 			//Get the binders to be indexed
 			Collection<Long> ids = TreeHelper.getSelectedIds(formData);
 			
+			String[] nodeIds = (String[])formData.get(WebKeys.URL_SEARCH_NODE_ID);
+			if(nodeIds == null) {
+				// This is non-H/A environment.
+			}
+			else if(nodeIds.length > 0) {
+				// H/A environment, and user selected at least one node to update.
+			}
+			else {
+				// H/A environment, and user selected no node (probably mistakenly).
+				// In this case, there's no work to do.
+				response.setRenderParameters(formData);
+				return;
+			}
+			
 			// Create a new status ticket
 			StatusTicket statusTicket = WebStatusTicket.newStatusTicket(PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none"), request);
 			SimpleProfiler profiler = null; 
@@ -77,7 +92,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 				profiler = new SimpleProfiler("manageSearchIndex");
 				SimpleProfiler.setProfiler(profiler);
 			}
-			Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket);
+			Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket, nodeIds);
 			//if people selected and not yet index; index content only, not the whole ws tree
 			String idChoices = TreeHelper.getSelectedIdsAsString(formData);
 			if (idChoices.contains(usersAndGroups)) {
@@ -128,6 +143,12 @@ public class ManageSearchIndexController extends  SAbstractController {
     	rootElement.appendContent(wsTree.getRootElement());
  		model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
 		model.put(WebKeys.WORKSPACE_DOM_TREE, pTree);		
+		
+		List<Node> nodes = getAdminModule().getSearchNodes();
+		
+		if(nodes != null) {
+			model.put(WebKeys.SEARCH_NODES, nodes);
+		}
 			
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_SEARCH_INDEX, model);
 	}
