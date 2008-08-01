@@ -45,7 +45,7 @@ Boolean sticky = ParamUtil.getBoolean(request, "sticky", true);
 --%><c:set var="sticky" value="<%= sticky %>" /><%--
 --%><c:set var="divId" value="<%= id %>" /><%--
 --%><c:set var="divClass" value="<%= divClass %>" /><%--
---%><div class="ss_dropdownMenu"><%--
+--%><div class="ss_sidebarMenu"><%--
     --%><div <%--
         --%><c:if test="${initOpen}">class="ss_menuOpen"</c:if><%--
         --%><c:if test="${!initOpen}">class="ss_menuClosed"</c:if><%--

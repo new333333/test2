@@ -33,22 +33,22 @@
 
 <ssf:sidebarPanel title="sidebar.configure" id="ss_tooltags_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
 
- <div class="ss_dropdownTitle">Entry Display Style xx
-	<div class="ss_sub_dropdownMenu">
+ <div class="ss_sidebarTitle">Entry Display Style xx
+	<div class="ss_sub_sidebarMenu">
 
 	  <ssf:toolbar toolbar="${ssFolderActionsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
 	</div>
  </div>	
  
-  <div class="ss_dropdownTitle">Folder Display Style xx
-	<div class="ss_sub_dropdownMenu">
+  <div class="ss_sidebarTitle">Folder Display Style xx
+	<div class="ss_sub_sidebarMenu">
 
 	  <ssf:toolbar toolbar="${ssFolderViewsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
 	</div>
  </div>	
  
- <div class="ss_dropdownTitle">Theme xx
- 	<div class="ss_sub_dropdownMenu">
+ <div class="ss_sidebarTitle">Theme xx
+ 	<div class="ss_sub_sidebarMenu">
         <table width="100%">
           <tr>
             <td><label>
@@ -72,8 +72,8 @@
 	</div>
  </div>
  
-  <div class="ss_dropdownTitle"><ssf:nlt tag="misc.configureColumns"/>
- 	<div class="ss_sub_dropdownMenu">
+  <div class="ss_sidebarTitle"><ssf:nlt tag="misc.configureColumns"/>
+ 	<div class="ss_sub_sidebarMenu">
         <table width="100%">
           <tr>
             <td>
@@ -94,8 +94,8 @@
 	</div>
  </div>
  
-  <div class="ss_dropdownTitle">Entries Per Page xx
- 	<div class="ss_sub_dropdownMenu">
+  <div class="ss_sidebarTitle">Entries Per Page xx
+ 	<div class="ss_sub_sidebarMenu">
         <table width="100%">
           <tr>
             <td><form name="ss_recordsPerPage_${renderResponse.namespace}" id="ss_recordsPerPage_${renderResponse.namespace}" method="post" 

@@ -79,20 +79,20 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 	
 /*This is the border for all of the boxes*/
-.ss_myStatus, .ss_input_myStatus, .ss_dropdownMenu, .ss_sub_dropdownMenu{
+.ss_myStatus, .ss_input_myStatus, .ss_sidebarMenu, .ss_sub_sidebarMenu{
 	border-color: #5A9A98;
 	border-style: solid;
 	border-width: .01em;
 	}
 	
 /*This is the title of each link box*/
-.ss_dropdownTitle{
+.ss_sidebarTitle{
 	text-indent: 2px;
 	margin-top:12px;		
 	}
 	
 /*This is the box style for the drop down menu open*/
-.ss_dropdownMenu{
+.ss_sidebarMenu{
 	text-indent: 22px;
 	margin: 8px 8px 12px 8px;
 	margin-top: 8px;
@@ -113,7 +113,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color: transparent;
 	background-repeat: no-repeat;
 	}	
-.ss_dropdownMenu .ss_menuClosed a:hover {
+.ss_sidebarMenu .ss_menuClosed a:hover {
     Color: #5A9A98;
 	background-color: #CCFFFF;
 	border-color:#85D1D1;
@@ -122,13 +122,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	margin-bottom:3px;
 	}	
 
-.ss_dropdownTitle{
+.ss_sidebarTitle{
 	text-indent: 8px;
 	margin:12px 0px 1px 0px;
 	}
 	
 /*This is the box style for the blue menu boxes*/		
-.ss_sub_dropdownMenu {
+.ss_sub_sidebarMenu {
 	background-color: #DBE9E8;
 	width: 150px;
 	height: auto;
@@ -147,10 +147,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color:#003399;
 	text-decoration: none;
 	}
-.ss_sub_dropdownMenu a:hover {
+.ss_sub_sidebarMenu a:hover {
 	background-color: #ADD8E6;
 	}
-.ss_sub_dropdownMenu a{
+.ss_sub_sidebarMenu a{
 	text-decoration: underline;	
 	color:#003399;			
 	}
@@ -207,40 +207,3 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding: 5px;
 }
 
-/**********************************/
-/*This is the box style for the drop down menus (LEFTOVER CODE-- NOT USED)
-#ss_dropdownMenu a {
-    width: 180px;
-    margin: 8px;
-    text-decoration: none;
-    height: 24px;
-	}
-#ss_dropdownmenu a a:link, a:visited {	      
-    color: #666666;
-    display: block;
-	border-style: solid;
-	border-color: #5A9A98;
-	border-width: .2px;
-	background-color: #FFFFFF;
-    background: url(backgrounddropdowns.png)5px 2px;
-    padding: 8px 0 0 30px;
-	margin-bottom: 3px;
-	}
-#ss_dropdownMenu a:hover #current;
-	color: #5A9A98;
-    background: url(backgrounddropdowns.png) 5px -24px;
-	background-color: #CCFFFF;
-	border-color:#85D1D1;
-	border-width: .2px;
-    padding: 8px 0 0 35px;
-	margin-bottom:3px;
-	}
-  #ss_dropdown a:active {
-    color: #fff;
-    background: url(backgrounddropdowns.png) 5px -50px;
-	background-color: #5A9A98;
-    padding: 8px 0 0 35px;
-	margin-bottom: 3px;
-	}*/
-	
-/**********************************/

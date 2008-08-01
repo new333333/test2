@@ -33,7 +33,7 @@
 
 <ssf:sidebarPanel title="Team IT xxx" id="ss_meet_sidebar" divClass="ss_place_tags" initOpen="true" sticky="true">
 
-	<div class="ss_sub_dropdownMenu">
+	<div class="ss_sub_sidebarMenu">
 		<table width="100%"><tbody>
             <tr>
               <td class="ss_rollover"><a href="#">Manage Team </a></td>
