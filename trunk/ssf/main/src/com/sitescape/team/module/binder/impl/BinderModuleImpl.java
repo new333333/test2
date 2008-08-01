@@ -292,10 +292,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public Set<Long> indexTree(Long binderId) {
     	Set<Long> ids = new HashSet();
     	ids.add(binderId);
-    	return indexTree(ids, StatusTicket.NULL_TICKET);
+    	return indexTree(ids, StatusTicket.NULL_TICKET, null);
     }
     //optimization so we can manage the deletion to the searchEngine
-    public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket) {
+    public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket, String[] nodeIds) {
     	getCoreDao().flush(); //just incase
     	try {
     		//make list of binders we have access to first
@@ -314,8 +314,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	    	Set<Long> done = new HashSet();
 	    	if (checked.isEmpty()) return done;
 	
+	    	IndexSynchronizationManager.setNodeIds(nodeIds);
 			if (clearAll) {
-				LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession();
+				LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession(nodeIds);
 				try {
 					luceneSession.clearIndex();
 	

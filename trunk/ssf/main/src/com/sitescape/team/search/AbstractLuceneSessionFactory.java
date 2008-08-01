@@ -28,15 +28,21 @@
  */
 package com.sitescape.team.search;
 
+import java.util.List;
+
 public abstract class AbstractLuceneSessionFactory implements LuceneSessionFactory {
 
     public LuceneReadSession openReadSession() throws LuceneException {
         return openReadSession(SearchUtils.getIndexName());
     }    
     
-    public LuceneWriteSession openWriteSession() throws LuceneException {
+    public LuceneWriteSession openWriteSession(String[] nodeIds) throws LuceneException {
         return openWriteSession(SearchUtils.getIndexName());
     }    
+    
+    public List<Node> getNodes() {
+    	return null;
+    }
     
     /**
      * Open a <code>LuceneReadSession</code>.

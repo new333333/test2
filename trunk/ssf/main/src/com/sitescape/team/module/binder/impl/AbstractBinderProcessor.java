@@ -1439,7 +1439,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		//access to entries is not required to update the team acl
 		QueryBuilder qb = new QueryBuilder(false);
 		// add this query and list of ids to the lists we'll pass to updateDocs.
-   		LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession();
+   		LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession(null);
    		try {
    			luceneSession.updateDocuments(qb.buildQuery(qTree, true).getQuery(), field, value);
    		} finally {
@@ -1483,7 +1483,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  		//access to entries is not required to update the team acl
  		QueryBuilder qb = new QueryBuilder(false);
  		// add this query and list of ids to the lists we'll pass to updateDocs.
-    		LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession();
+    		LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession(null);
     		try {
     			luceneSession.updateDocuments(qb.buildQuery(qTree, true).getQuery(), field, value);
     		} finally {
@@ -1517,7 +1517,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  		//access to entries is not required to update the team acl
  		QueryBuilder qb = new QueryBuilder(false);
  		// add this query and list of ids to the lists we'll pass to updateDocs.
-    		LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession();
+    		LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession(null);
     		try {
     			luceneSession.updateDocuments(qb.buildQuery(qTree, true).getQuery(), field, value);
     		} finally {
