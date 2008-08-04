@@ -54,12 +54,6 @@
 	
 		<% // "It" Bars %>
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_action_dispatch.jsp" />
-		<% // Test Feed %>
-		<div id="ss_leftNav">
-			<ul>
-				<li><a href="">Test Feed for view_worspace_default</a></li>
-			</ul>
- 		</div>
 
 		<% // Recent Places %>
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
