@@ -35,7 +35,7 @@
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
 
-<c:set var="formName">${renderResponse.namespace}fm</c:set>
+<c:set var="formName" value="${renderResponse.namespace}fm"/>
 <script type="text/javascript">
 var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param 
 	name="binderId" value="${ssBinder.id}"/><ssf:param 
@@ -76,6 +76,60 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
    </div>
    <br/>
    <div id="ss_endPopup" class="ss_calPopupDiv"></div>
+   
+   <br/>
+   
+   <div>
+   
+   <input type="radio" name="ss_reportOptionType" value="shortReport" checked/> <ssf:nlt tag="administration.report.option.short"/>
+   
+   </div>
+   
+   <br/>
+   
+   <div style="margin-left:35px;">
+   
+   <ssf:nlt tag="administration.report.sort"/>
+   
+   <select name="ss_reportSortType">
+   <option value = "none_sort"><span class="ss_labelRight"><ssf:nlt tag="common.select.none"/></option>
+   <option value = "user_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.user"/></option>
+   <option value = "last_login_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.last_login"/></option>
+   <option value = "login_count_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.login_count"/></option>   
+   </select>
+   
+   </div>
+
+   <br/>
+
+   <div>
+
+   <input type="radio" name="ss_reportOptionType" value="longReport"/> <ssf:nlt tag="administration.report.option.long"/>
+   <br/>
+   
+   </div>
+  	
+   <div>	
+  
+   <ssf:ifnotaccessible>
+	<br>
+	<span class="ss_global_toolbar_label_text"><ssf:nlt tag="report.findUser"/></span>
+	</br>
+	</ssf:ifnotaccessible>
+	<br>
+	<!-- Find people -->
+	<ssf:ifnotaccessible>
+		<div class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton${renderResponse.namespace}"
+	     onMouseOver="this.style.cursor = 'pointer';">
+				      <ssf:find formName="ss_findUserForm${renderResponse.namespace}" formElement="users" 
+    type="user"/>
+		</div>
+	</ssf:ifnotaccessible>
+  
+   </div>
+   
+   <br/>
+      
    <div class="ss_buttonBarLeft">
     <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
