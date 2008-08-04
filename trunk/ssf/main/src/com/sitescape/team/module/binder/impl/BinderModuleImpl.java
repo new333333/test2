@@ -315,26 +315,42 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	    	if (checked.isEmpty()) return done;
 	
 	    	IndexSynchronizationManager.setNodeIds(nodeIds);
-			if (clearAll) {
-				LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession(nodeIds);
-				try {
-					luceneSession.clearIndex();
-	
-				} catch (Exception e) {
-					System.out.println("Exception:" + e);
-				} finally {
-					luceneSession.close();
+	    	try {
+				if (clearAll) {
+					LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession(nodeIds);
+					try {
+						luceneSession.clearIndex();
+		
+					} catch (Exception e) {
+						System.out.println("Exception:" + e);
+					} finally {
+						luceneSession.close();
+					}
+				} else {
+					//	delete all sub-binders - walk the ancestry list
+					// 	and delete all the entries under each folderid.
+					for (Binder binder:checked) {
+						IndexSynchronizationManager.deleteDocuments(new Term(Constants.ENTRY_ANCESTRY, binder.getId().toString()));
+					}
 				}
-			} else {
-				//	delete all sub-binders - walk the ancestry list
-				// 	and delete all the entries under each folderid.
-				for (Binder binder:checked) {
-					IndexSynchronizationManager.deleteDocuments(new Term(Constants.ENTRY_ANCESTRY, binder.getId().toString()));
-				}
-			}
-		   	for (Binder binder:checked) {
-		   		done.addAll(loadBinderProcessor(binder).indexTree(binder, done, statusTicket));
-		   	}
+			   	for (Binder binder:checked) {
+			   		done.addAll(loadBinderProcessor(binder).indexTree(binder, done, statusTicket));
+			   	}
+			   	// Normally, all updates to the index are managed by the framework so that
+			   	// the index update won't be made until after the related database transaction
+			   	// has committed successfully. This is to avoid the index going out of synch
+			   	// with the database under rollback situation. However, in this particular
+			   	// case, we need to take an exception and flush out all index changes before
+			   	// returning from the method so that the select node ids set above can be 
+			   	// applied during the flush. This does not violate the original design intention
+			   	// because, unlike other business operations, this operation is specifically
+			   	// written for index update only, and there is no corresponding update transaction
+			   	// on the database.
+			   	IndexSynchronizationManager.applyChanges();
+	    	}
+	    	finally {
+	    		IndexSynchronizationManager.clearNodeIds();
+	    	}
 		   	return done;
 		}
 		finally {
