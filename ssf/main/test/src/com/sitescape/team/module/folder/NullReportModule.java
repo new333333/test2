@@ -79,7 +79,7 @@ public class NullReportModule implements ReportModule {
 	}
 
 	public List<Map<String, Object>> generateLoginReport(Date startDate,
-			Date endDate) {
+			Date endDate, String optionType, String sortType) {
 		// TODO Auto-generated method stub
 		return null;
 	}
