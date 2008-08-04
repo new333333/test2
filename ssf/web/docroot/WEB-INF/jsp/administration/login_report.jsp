@@ -111,20 +111,15 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
   	
    <div>	
   
-   <ssf:ifnotaccessible>
 	<br>
 	<span class="ss_global_toolbar_label_text"><ssf:nlt tag="report.findUser"/></span>
 	</br>
-	</ssf:ifnotaccessible>
 	<br>
 	<!-- Find people -->
-	<ssf:ifnotaccessible>
 		<div class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton${renderResponse.namespace}"
 	     onMouseOver="this.style.cursor = 'pointer';">
-				      <ssf:find formName="ss_findUserForm${renderResponse.namespace}" formElement="users" 
-    type="user"/>
+		<ssf:find formName="${formName}" formElement="users" type="user"/>
 		</div>
-	</ssf:ifnotaccessible>
   
    </div>
    
