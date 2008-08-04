@@ -493,7 +493,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		Set<Exception> errors = deleteChildBinders(binder, deleteMirroredSourceForChildren, options);
    		if (!errors.isEmpty()) return errors;
    		loadBinderProcessor(binder).deleteBinder(binder, deleteMirroredSource, options);
-   		return null;
+   		return errors;
     }
     protected Set<Exception> deleteChildBinders(Binder binder, boolean deleteMirroredSource, Map options) {
     	//First process all child folders
