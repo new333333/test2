@@ -71,18 +71,16 @@ public class ManageSearchIndexController extends  SAbstractController {
 			//Get the binders to be indexed
 			Collection<Long> ids = TreeHelper.getSelectedIds(formData);
 			
-			String[] nodeIds = (String[])formData.get(WebKeys.URL_SEARCH_NODE_ID);
-			if(nodeIds == null) {
-				// This is non-H/A environment.
-			}
-			else if(nodeIds.length > 0) {
-				// H/A environment, and user selected at least one node to update.
-			}
-			else {
-				// H/A environment, and user selected no node (probably mistakenly).
-				// In this case, there's no work to do.
-				response.setRenderParameters(formData);
-				return;
+			String[] nodeIds = null;
+			String searchNodesPresent = PortletRequestUtils.getStringParameter(request, "searchNodesPresent", "");
+			if(searchNodesPresent.equals("1")) { // H/A environment
+				nodeIds = (String[])formData.get(WebKeys.URL_SEARCH_NODE_ID);
+				if(nodeIds == null || nodeIds.length == 0) {
+					// The user selected no node, probably by mistake.
+					// In this case, there's no work to perform.
+					response.setRenderParameters(formData);
+					return;
+				}
 			}
 			
 			// Create a new status ticket
