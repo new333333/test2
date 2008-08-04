@@ -28,6 +28,8 @@
  */
 package com.sitescape.team.module.report.impl;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -38,7 +40,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeMap;
 
 import org.hibernate.Criteria;
@@ -87,6 +88,7 @@ import com.sitescape.team.security.AccessControlManager;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.team.web.WebKeys;
 
 public class ReportModuleImpl extends HibernateDaoSupport implements ReportModule {
 	protected Set enabledTypes=new HashSet();
@@ -585,33 +587,118 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
     	return report;
 	}
 
-	public List<Map<String,Object>> generateLoginReport(final Date startDate, final Date endDate) {
+	public List<Map<String,Object>> generateLoginReport(final Date startDate, final Date endDate, String optionType, String sortType) {
 		getAdminModule().checkAccess(AdminOperation.report);
-		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
-		List result = (List) getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
 		
-				List auditTrail = session.createCriteria(LoginInfo.class)
-					.setProjection(Projections.projectionList()
-									.add(Projections.groupProperty("startBy"))
-									.add(Projections.max("startDate"))
-									.add(Projections.rowCount()))
-						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-						.add(Restrictions.ge("startDate", startDate))
-						.add(Restrictions.lt("startDate", endDate))
-					.list();
-				return auditTrail;
-			}});
-		//TODO: actually generate a report 
+		List result = new ArrayList();
+		
+		if(optionType.equals(WebKeys.URL_REPORT_OPTION_TYPE_SHORT)) {
+		
+			result = (List) getHibernateTemplate().execute(new HibernateCallback() {
+				public Object doInHibernate(Session session) throws HibernateException {
+		
+					List auditTrail = session.createCriteria(LoginInfo.class)
+						.setProjection(Projections.projectionList()
+										.add(Projections.groupProperty("startBy"))
+										.add(Projections.max("startDate"))
+										.add(Projections.rowCount()))
+							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
+							.add(Restrictions.ge("startDate", startDate))
+							.add(Restrictions.lt("startDate", endDate))
+						.list();
+					return auditTrail;
+				}});
+		
+			if(sortType.equals(ReportModule.USER_SORT)) {	
+				Collection sortedresult = sortLoginData(result, ReportModule.USER_ID_INDEX);
+				LinkedList userSortedList = new LinkedList(sortedresult);
+				return generateShortLoginReportList(userSortedList);
+			}
+			else if(sortType.equals(ReportModule.LAST_LOGIN_SORT)) {
+				Collection sortedresult = sortLoginData(result, ReportModule.LAST_LOGIN_INDEX);
+				LinkedList lastLoginSortedList = new LinkedList(sortedresult);
+				return generateShortLoginReportList(lastLoginSortedList);
+			}
+			else if(sortType.equals(ReportModule.LOGIN_COUNT_SORT)) {
+				Collection sortedresult = sortLoginData(result, ReportModule.LOGIN_COUNT_INDEX);
+				LinkedList loginCountSortedList = new LinkedList(sortedresult);
+				return generateShortLoginReportList(loginCountSortedList);
+			}
+			
+			return generateShortLoginReportList(result);
+		}
+		
+		else if(optionType.equals(WebKeys.URL_REPORT_OPTION_TYPE_LONG)) {
+		
+			result = (List) getHibernateTemplate().execute(new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException {
+			
+						List auditTrail = session.createCriteria(LoginInfo.class)
+							.setProjection(Projections.projectionList()
+											.add(Projections.property("startBy"))
+											.add(Projections.groupProperty("startDate")))
+								.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
+								.add(Restrictions.ge("startDate", startDate))
+								.add(Restrictions.lt("startDate", endDate))
+							.list();
+						return auditTrail;
+					}});
+			
+			return generateLongLoginReportList(result);
+		}
+		return result;
+	}
+	
+	private Collection sortLoginData(List result, int index) {
+		
+		TreeMap sortedresult = new TreeMap<Object, Object[]>();
+		
 		for(Object o : result) {
+			Object[] cols = (Object[]) o;
+			
+			if(index == ReportModule.LOGIN_COUNT_INDEX)
+				sortedresult.put(Float.parseFloat(cols[index] + "." + cols[ReportModule.USER_ID_INDEX]), cols);
+			else
+				sortedresult.put(cols[index], cols);	
+		}
+		return sortedresult.values();
+	}
+	
+	private LinkedList<Map<String,Object>> generateShortLoginReportList(List logins) {
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss aa");
+		
+		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+		
+		for(Object o : logins) {
 			Object[] cols = (Object[]) o;
 			Map<String, Object> row = new HashMap<String, Object>();
 			report.add(row);
 			row.put(ReportModule.USER_ID, cols[0]);
-			row.put(ReportModule.LAST_LOGIN, cols[1]);
+			
+			Timestamp temp = ((Timestamp) cols[1]);
+			
+			row.put(ReportModule.LAST_LOGIN, sdFormat.format(temp.getTime()));
 			row.put(ReportModule.LOGIN_COUNT, cols[2]);
 		}
-    	return report;
+		return report;
+	}
+	
+	private LinkedList<Map<String,Object>> generateLongLoginReportList(List logins) {
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss aa");
+		
+		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+		
+		for(Object o : logins) {
+			Object[] cols = (Object[]) o;
+			Map<String, Object> row = new HashMap<String, Object>();
+			report.add(row);
+			row.put(ReportModule.USER_ID, cols[0]);
+			
+			Timestamp temp = ((Timestamp) cols[1]);
+			
+			row.put(ReportModule.LOGIN_DATE, sdFormat.format(temp.getTime()));
+		}
+		return report;
 	}
 	
 	public List<Map<String,Object>> generateWorkflowStateReport(Collection binderIds, Date startDate, Date endDate) {
