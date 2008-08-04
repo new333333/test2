@@ -43,7 +43,7 @@
 			  ss_statusCurrent = "${ssUser.status}";
 			</script>
 
-			<input type="text" cols="22" rows="2" class="ss_input_myStatus"
+			<input type="text" cols="22" rows="2" wrap="virtual" wrap="soft" class="ss_input_myStatus"
 			style="font-size:${ss_style_font_fineprint};" value="${ssUser.status}"
   			onFocus="ss_setStatusBackground(this, 'focus');"
   			onKeyPress="ss_updateStatusSoon(this, event);"

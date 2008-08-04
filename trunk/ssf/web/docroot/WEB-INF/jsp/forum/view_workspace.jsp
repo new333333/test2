@@ -213,13 +213,6 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 	
 		<% // "It" Bars %>
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_action_dispatch.jsp" />
-		
-		<% // Test Feed %>
-		<div id="ss_leftNav">
-			<ul>
-				<li><a href="">Test Feed 2</a></li>
-			</ul>
- 		</div>
  		
 		<% // Recent Places %>
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />

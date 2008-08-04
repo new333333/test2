@@ -44,7 +44,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /*This is the wrap for the navigation */
 
 #ss_sideNav_wrap{
-	background: #FFF;
+	background: #FFF !important;
 	border-color: #CCCCCC;
 	border-style: solid;
 	border-width: .01em;
@@ -54,7 +54,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 #ss_sideNav_wrap, #ss_sideNav_wrap *{	
 	font-family: Arial;
-	font-size:12px;
+	font-size:${ss_style_font_smallprint};
 	color: #333333
 	}	
 	
@@ -63,19 +63,19 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background: transparent;
 	width: 172px;
 	height: auto;
-	margin: 12px 8px 6px 8px;
+	margin: 8px 8px 4px 8px;
 	padding: 4px 4px 8px 4px;
 	}
 .ss_input_myStatus{
-	background-color: #C90000;		/* #F3E9C5 */
+	background-color: #F3E9C5;
 	border-color: #5A9A98;
 	width: 146px;
-	height: 46px;
-	margin: 10px 0px 0px 8px;
+	height: 32px;
+	margin: 8px 0px 0px 8px;
 	<c:if test="<%= isIE %>">
-  		margin: 8px 0px 0px 0px;
+  		margin: 6px 0px 0px 0px;
  	</c:if>
-	padding: 12px 0px 12px 10px;	
+	padding: 8px 0px 8px 10px;	
 	}
 	
 /*This is the border for all of the boxes*/
@@ -84,7 +84,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-style: solid;
 	border-width: .01em;
 	}
-	
 /*This is the title of each link box*/
 .ss_sidebarTitle{
 	text-indent: 2px;
@@ -94,8 +93,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /*This is the box style for the drop down menu open*/
 .ss_sidebarMenu{
 	text-indent: 22px;
-	margin: 8px 8px 12px 8px;
-	margin-top: 8px;
+	margin: 3px 8px 6px 8px;
 	padding-top: 8px;
 	padding-right: 4px;
 	padding-bottom: 8px;
@@ -124,7 +122,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 .ss_sidebarTitle{
 	text-indent: 8px;
-	margin:12px 0px 1px 0px;
+	margin:3px 0px 1px 0px;
 	}
 	
 /*This is the box style for the blue menu boxes*/		
@@ -133,7 +131,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	width: 150px;
 	height: auto;
 	line-height: 170%;
-	padding: 8px 2px 12px 3px;
+	padding: 6px 2px 8px 3px;
 	margin: 3px 0px 3px 8px;
 	text-decoration: none;
 	}
@@ -159,7 +157,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 #ss_leftNav {
       width: 172px;
-      margin: 8px;
+      margin-left: 8px;
       margin-bottom: 2px;
         }
 #ss_leftNav ul {
@@ -174,10 +172,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
     display: block;
 	border-style: solid;
 	border-color: #5A9A98;
-	border-width: 0.2px;
+	border-width: .01em;
 	background-color: #FFFFFF;
     background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_bgd.png") 5px 2px;
-    padding: 8px 0 0 30px;
+    padding: 7px 0 0 25px;
 	margin-bottom: 3px;
     }		
 #ss_leftNav a:visited {
@@ -189,21 +187,21 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color: #CCFFFF;
 	border-color:#85D1D1;
 	border-width: .01em;
-    padding: 8px 0 0 35px;
+    padding: 7px 0 0 25px;
 	margin-bottom:3px;
      }
 #ss_leftNav li a:active {
     color: #fff;
     background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_bgd.png") 5px -50px;
 	background-color: #5A9A98;
-    padding: 8px 0 0 35px;
+    padding: 7px 0 0 25px;
 	margin-bottom: 3px;
     }
 .ss_menuSubTitle {
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: ${ss_style_font_fineprint};
 	line-height: 16px;
 	color: #333333;
-	padding: 5px;
+	padding: 1px;
 }
 
