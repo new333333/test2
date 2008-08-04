@@ -81,6 +81,7 @@ public class ReportDownloadController extends  SAbstractController {
 		columnNames.put(AuditTrail.AuditType.delete.name(), "report.columns.delete");
 		columnNames.put(ReportModule.LOGIN_COUNT, "report.columns.login_count");
 		columnNames.put(ReportModule.LAST_LOGIN, "report.columns.last_login");
+		columnNames.put(ReportModule.LOGIN_DATE, "report.columns.login_date");
 		columnNames.put(ReportModule.STATE, "report.columns.state");
 		columnNames.put(ReportModule.DEFINITION_ID, "report.columns.definition");
 		columnNames.put(ReportModule.AVERAGE, "report.columns.average");
@@ -108,6 +109,11 @@ public class ReportDownloadController extends  SAbstractController {
 		GregorianCalendar cal = new GregorianCalendar();
 		Date startDate = inputData.getDateValue(WebKeys.URL_START_DATE);
 		Date endDate = inputData.getDateValue(WebKeys.URL_END_DATE);
+		
+        String sortType = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_SORT_TYPE, "");
+        String optionType = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_OPTION_TYPE, "");
+        String searchText = ServletRequestUtils.getStringParameter(request, "searchText", "");
+        
 		if(endDate != null) {
 			cal.setTime(endDate);
 			cal.add(Calendar.DATE, 1);
@@ -134,8 +140,12 @@ public class ReportDownloadController extends  SAbstractController {
 						ReportModule.USER_ID, AuditTrail.AuditType.view.name(), AuditTrail.AuditType.add.name(),
 						AuditTrail.AuditType.modify.name(), AuditTrail.AuditType.delete.name()};
 			} else if ("login".equals(reportType)) {
-				report = getReportModule().generateLoginReport(startDate, endDate);
-				columns = new String[] {ReportModule.USER_ID, ReportModule.LOGIN_COUNT, ReportModule.LAST_LOGIN};
+				report = getReportModule().generateLoginReport(startDate, endDate, optionType, sortType);
+				
+				if(optionType.equals(WebKeys.URL_REPORT_OPTION_TYPE_SHORT))
+					columns = new String[] {ReportModule.USER_ID, ReportModule.LOGIN_COUNT, ReportModule.LAST_LOGIN};
+				else if(optionType.equals(WebKeys.URL_REPORT_OPTION_TYPE_LONG))
+					columns = new String[] {ReportModule.USER_ID, ReportModule.LOGIN_DATE};
 			} else if ("workflow".equals(reportType)) {
 				if(ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, "").equals("averages")) {
 					//Get the list of binders for reporting
