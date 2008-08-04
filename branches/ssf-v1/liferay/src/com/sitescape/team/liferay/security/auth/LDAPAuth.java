@@ -288,7 +288,10 @@ public class LDAPAuth implements Authenticator {
 
 		if (authMethod.equals(AUTH_METHOD_BIND)) {
 			try {
-				String userDN = binding.getName() + StringPool.COMMA + baseDN;
+				String userDN = binding.getName();
+				if(! "".equals(baseDN)) {
+					userDN = userDN + StringPool.COMMA + baseDN;
+				}
 
 				env.put(Context.SECURITY_PRINCIPAL, userDN);
 				env.put(Context.SECURITY_CREDENTIALS, password);
