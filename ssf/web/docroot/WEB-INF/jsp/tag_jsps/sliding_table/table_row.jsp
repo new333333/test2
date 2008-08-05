@@ -86,12 +86,12 @@
 			if (colStyle == null) colStyle = "";
 			if (slidingTableHeaderRow != null && slidingTableHeaderRow.booleanValue()) {
 %>
-  <th scope="col" class="ss_bold <%= colStyle %>" align="left" <%= widthAttr %> style="padding: 4px 2px 5px 5px; border:1px solid #6799C8; border-collapse: collapse;"><%= text %></th>
+  <th scope="col" class="ss_bold <%= colStyle %>" align="left" <%= widthAttr %> style="padding: 4px 2px 5px 5px; border:.4px solid #CCCCCC; border-collapse: collapse;"><%= text %></th>
 <%
 			} else {
 %>
   <td valign="top" <%= widthAttr %> class="ss_normal <%= colStyle %>"
-    style="padding: 4px 2px 5px 5px; border:1px solid #6799C8; border-collapse: collapse;"><%= text %></td>
+    style="padding: 4px 2px 5px 5px; border:.4px solid #CCCCCC; border-collapse: collapse;"><%= text %></td>
 <%
 			}
 		}

@@ -29,6 +29,7 @@
 package com.sitescape.team.portlet.binder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,15 +54,18 @@ import org.springframework.web.portlet.ModelAndView;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.tree.TreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.Clipboard;
@@ -101,6 +105,8 @@ public class AdvancedSearchController extends AbstractBinderController {
 			return ajaxGetEntryTypes(request, response);
 		} else if (op.equals(WebKeys.OPERATION_FIND_ENTRY_FIELDS_WIDGET)) {
 			return ajaxGetEntryFields(request, response);
+		} else if (op.equals(WebKeys.OPERATION_FIND_ENTRY_ATTRIBUTES_WIDGET)) {
+			return ajaxGetEntryAttributes(request, response);
 		} else if (op.equals(WebKeys.OPERATION_FIND_USERS_WIDGET)) {
 			return ajaxGetUsers(request, response);
 		} else if (op.equals(WebKeys.OPERATION_FIND_GROUPS_WIDGET)) {
@@ -140,7 +146,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		*/
 
        if (op.equals(WebKeys.SEARCH_RESULTS)) {
-        	model.putAll(BinderHelper.prepareSearchResultData(this, request, tabs));
+        	BinderHelper.prepareSearchResultData(this, request, tabs, model);
         	addPropertiesForFolderView(model);
         	buildToolbars(model, request);
 
@@ -327,21 +333,17 @@ public class AdvancedSearchController extends AbstractBinderController {
 		
 		Set workflows = new HashSet();
 		if (WebHelper.isUserLoggedIn(request)) {
-			String[] values = (PortletRequestUtils.getStringParameters(request, WebKeys.URL_ID_CHOICES));
-			for (int i = 0; i < values.length; i++) {
-				String[] valueSplited = values[i].split("\\s");
-				for (int j = 0; j < valueSplited.length; j++) {
-					if (valueSplited[j] != null && !"".equals(valueSplited[j])) {
-						String binderId = valueSplited[j].replaceFirst("searchFolders" + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
-						workflows.addAll(getDefinitionModule().getDefinitions(Long.valueOf(binderId), Boolean.TRUE, Definition.WORKFLOW));
-					}
-				}
+			Collection<Long> ids = TreeHelper.getSelectedIds(request.getParameterMap());
+			for (Long id:ids) {
+				try {
+					workflows.addAll(getDefinitionModule().getDefinitions(id, Boolean.TRUE, Definition.WORKFLOW));
+				} catch (Exception ex) {}
 			}
 			if (workflows.isEmpty()) workflows.addAll(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.WORKFLOW));
 		}
 		
 		Map model = new HashMap();
-		model.put(WebKeys.WORKFLOW_DEFINITION_MAP, DefinitionHelper.orderDefinitions(workflows));
+		model.put(WebKeys.WORKFLOW_DEFINITION_MAP, DefinitionHelper.orderDefinitions(workflows, false));
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/find_workflows_widget", model);
 	}
@@ -364,19 +366,15 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Map model = new HashMap();
 		Set entries = new HashSet();
 		if (WebHelper.isUserLoggedIn(request)) {
-			String[] values = (PortletRequestUtils.getStringParameters(request, WebKeys.URL_ID_CHOICES));
-			for (int i = 0; i < values.length; i++) {
-				String[] valueSplited = values[i].split("\\s");
-				for (int j = 0; j < valueSplited.length; j++) {
-					if (valueSplited[j] != null && !"".equals(valueSplited[j])) {
-						String binderId = valueSplited[j].replaceFirst("searchFolders" + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
-						entries.addAll(getDefinitionModule().getDefinitions(Long.valueOf(binderId), Boolean.TRUE, Definition.FOLDER_ENTRY));
-					}
-				}
+			Collection<Long> ids = TreeHelper.getSelectedIds(request.getParameterMap());
+			for (Long id:ids) {
+				try {
+					entries.addAll(getDefinitionModule().getDefinitions(id, Boolean.TRUE, Definition.FOLDER_ENTRY));
+				} catch (Exception ex) {}
 			}
 			if (entries.isEmpty()) entries.addAll(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.FOLDER_ENTRY));
 		}
-		model.put(WebKeys.ENTRY, DefinitionHelper.orderDefinitions(entries));
+		model.put(WebKeys.ENTRY, DefinitionHelper.orderDefinitions(entries, false));
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/find_entry_types_widget", model);
 	}
@@ -421,6 +419,41 @@ public class AdvancedSearchController extends AbstractBinderController {
 			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, valuesData);
 			return new ModelAndView("forum/json/find_entry_field_values_widget", model);
 		}
+ 	}
+	
+	private ModelAndView ajaxGetEntryAttributes(RenderRequest request, RenderResponse response) {
+		String entryField = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField, "");
+		String strBinderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
+		
+		Map model = new HashMap();
+		response.setContentType("text/json");
+		
+		Long binderId = null;
+		Binder binder = null;
+		if (!strBinderId.equals("")) {
+			binderId = Long.valueOf(strBinderId);
+			binder = getBinderModule().getBinder(binderId);
+			model.put(WebKeys.BINDER, binder);
+		}
+		//See if this request is for the list of attribute sets or the values within a set
+		if (binder == null || entryField.indexOf(",") == -1) {
+			//Return the list of attribute sets (or an empty set if the binder is not specified)
+			model.put(SearchFilterKeys.FilterElementNameField, entryField);
+			return new ModelAndView("forum/json/find_entry_attributes_widget", model);
+		}
+		//The field name is "elementName , index of set"
+		String elementName = entryField.substring(0, entryField.indexOf(","));
+		model.put(SearchFilterKeys.FilterElementNameField, elementName);
+		String elementValue = entryField.substring(entryField.indexOf(",")+1);
+		model.put(SearchFilterKeys.FilterElementValueField, elementValue);
+		//Get the list of attributes from the selected attribute set
+		CustomAttribute attr = binder.getCustomAttribute(elementName);
+		if (attr != null) {
+			CustomAttribute attrValues = 
+				binder.getCustomAttribute(elementName+DefinitionModule.ENTRY_ATTRIBUTES_SET+elementValue);
+			model.put(SearchFilterKeys.FilterElementValueSet, attrValues.getValueSet());
+		}
+		return new ModelAndView("forum/json/find_entry_attributes_value_widget", model);
  	}
 	
 	private ModelAndView ajaxGetUsers(RenderRequest request, RenderResponse response) {

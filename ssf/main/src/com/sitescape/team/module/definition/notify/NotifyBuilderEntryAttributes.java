@@ -41,12 +41,12 @@ import com.sitescape.team.web.util.DefinitionHelper;
 */
 public class NotifyBuilderEntryAttributes extends AbstractNotifyBuilder {
     public String getDefaultTemplate() {
-    	return "selectbox.vm";
+    	return "attributes.vm";
     }
 	   
     public void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
-    	Map selectboxSelections = DefinitionHelper.findSelectboxSelectionsAsMap(attr.getName(), visitor.getItem().getDocument());
-    	ctx.put("ssCaptions", selectboxSelections);
+    	Map attributeSelections = DefinitionHelper.findAttributeSelectionsAsMap(attr.getName(), visitor.getEntity());
+    	ctx.put("ssCaptions", attributeSelections);
     	super.build(visitor, template, ctx);
 	   }
 

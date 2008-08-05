@@ -104,31 +104,25 @@ function ss_indexingDone() {
 }
 
 
-function <%= wsTreeName %>_showId(forum, obj, action) {
-	if (obj.ownerDocument) {
-		var cDocument = obj.ownerDocument;
-	} else if (obj.document) {
-		cDocument = obj.document;
-	}
-	if (cDocument) {
-		var r = cDocument.getElementById("ss_tree_checkbox<%= wsTreeName %>" + action + forum);
-		if (r) {
-			if (r.checked !== undefined) {
-				r.checked = !r.checked;
-			}
-			if (r.onclick !== undefined) {
-				r.onclick();
-			}
-		}
-	}
-	return false;
+function <%= wsTreeName %>_showId(id, obj, action) {
+	return ss_checkTree(obj, "ss_tree_checkbox<%= wsTreeName %>id" + id);
 }
 
 </script>
 <ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
   rootOpen="true" topId="${ssWsDomTreeBinderId}" 
-  multiSelect="<%= new ArrayList() %>" multiSelectPrefix="search" />
+  multiSelect="<%= new ArrayList() %>" multiSelectPrefix="id" />
 
+<br>
+<br>
+<span class="ss_bold"><ssf:nlt tag="administration.configure.nodes.select" text="Select the nodes to apply the re-indexing to:"/></span>
+<br>
+<br>
+<c:if test="${!empty ssSearchNodes}">
+  <c:forEach var="node" items="${ssSearchNodes}">
+    <input type="checkbox" name="searchNodeId" value="${node.id}">${node.title} (${node.id})<br/>
+  </c:forEach>
+</c:if>
 <br>
 <br>
 <div class="ss_buttonBarLeft">

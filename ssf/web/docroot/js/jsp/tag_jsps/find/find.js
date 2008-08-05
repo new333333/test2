@@ -115,9 +115,10 @@ ssFind.configSingle = function(params) {
 	var binderId = ("binderId" in params) ? params.binderId : null;
 	var subFolders = ("subFolders" in params) ? params.subFolders : null;
 	var foldersOnly = ("foldersOnly" in params) ? params.foldersOnly : null;
+	var showUserTitleOnly = ("showUserTitleOnly" in params) ? params.showUserTitleOnly : null;
 	
 	findObj.single(prefix, clickRoutineObj, clickRoutine, viewUrl, viewAccesibleUrl, searchUrl,
-					leaveResultsVisible, listType, renderNamespace, binderId, subFolders, foldersOnly);
+					leaveResultsVisible, listType, renderNamespace, binderId, subFolders, foldersOnly, showUserTitleOnly);
 	
 	return findObj;
 }
@@ -144,6 +145,7 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 	this._singleBinderId;
 	this._singleSubFolders;
 	this._singleFoldersOnly;
+	this._showUserTitleOnly;
 	
 	var lastText = "";
 	var pageNumber = 0;
@@ -160,7 +162,7 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 	var onAddCallbacks = [];
 	var onDeleteCallbacks = [];
 
-	this.single = function(singlePrefix, singleClickRoutineObj, singleClickRoutine, singleViewUrl, singleViewAccesibleUrl, singleSearchUrl, singleLeaveResultsVisible, singleListType, singleRenderNamespace, singleBinderId, singleSubFolders, singleFoldersOnly) {
+	this.single = function(singlePrefix, singleClickRoutineObj, singleClickRoutine, singleViewUrl, singleViewAccesibleUrl, singleSearchUrl, singleLeaveResultsVisible, singleListType, singleRenderNamespace, singleBinderId, singleSubFolders, singleFoldersOnly, showUserTitleOnly) {
 		that._singlePrefix = singlePrefix;
 		if (!multiplePrefix && that._singlePrefix) {
 			thisObjectName = singlePrefix + "ssFind_Find";
@@ -177,6 +179,7 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 		that._singleBinderId = singleBinderId;
 		that._singleSubFolders = singleSubFolders;
 		that._singleFoldersOnly = singleFoldersOnly;
+		that._showUserTitleOnly = showUserTitleOnly;
 	}
 	
 	this.search = function (textObjId, elementName) {
@@ -268,6 +271,7 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 			ajaxRequest.addKeyValue("searchSubFolders", that._singleSubFolders);
 		}
 		ajaxRequest.addKeyValue("listDivId", "available_" + that._singlePrefix);
+		ajaxRequest.addKeyValue("showUserTitleOnly", that._showUserTitleOnly);
 		ajaxRequest.addKeyValue("namespace", that._singlePrefix);
 		ajaxRequest.setPostRequest(that.postFindRequest);
 		ajaxRequest.setData("prefix", that._singlePrefix);

@@ -31,6 +31,7 @@ package com.sitescape.team.remoting.ws.service.folder;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,10 +42,14 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Subscription;
+import com.sitescape.team.domain.Tag;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.EmptyInputData;
+import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
 import com.sitescape.team.remoting.ws.model.FolderEntryBrief;
@@ -187,8 +192,16 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		getFolderModule().addEntryWorkflow(binderId, entryId, definitionId, options);
 
 	}
+    public void folder_deleteEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId) {
+    	getFolderModule().deleteEntryWorkflow(binderId, entryId, definitionId);
+    }
 	public void folder_modifyWorkflowState(String accessToken, long binderId, long entryId, long stateId, String toState) {
 		getFolderModule().modifyWorkflowState(binderId, entryId, stateId, toState);
+	}
+	public void folder_setWorkflowResponse(String accessToken, long binderId, long entryId, long stateId, String question, String response) {
+		Map params = new HashMap();
+		params.put(question, response);
+		getFolderModule().setWorkflowResponse(binderId, entryId, stateId, new MapInputData(params));
 	}
 	public void folder_uploadFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
 		throw new UnsupportedOperationException();
@@ -269,7 +282,6 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			Iterator entryIterator = entrylist.listIterator();
 			while (entryIterator.hasNext()) {
 				FolderEntry entry  = (FolderEntry) entryIterator.next();
-				FolderEntryBrief entryBrief = new FolderEntryBrief();
 				entries.add(toFolderEntryBrief(entry));
 			}
 		}
@@ -328,5 +340,52 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	public void folder_deleteEntry(String accessToken, long binderId, long entryId) {
 		getFolderModule().deleteEntry(binderId, entryId);
 	}
-	
+    public long folder_copyEntry(String accessToken, long binderId, long entryId, long destinationId) {
+    	return getFolderModule().copyEntry(binderId, entryId, destinationId, null);
+    }
+    public void folder_moveEntry(String accessToken, long binderId, long entryId, long destinationId) {
+    	getFolderModule().moveEntry(binderId, entryId, destinationId, null);
+    }
+    public void folder_reserveEntry(String accessToken, long binderId, long entryId) {
+    	getFolderModule().reserveEntry(binderId, entryId);
+    }
+    public void folder_unreserveEntry(String accessToken, long binderId, long entryId) {
+    	getFolderModule().unreserveEntry(binderId, entryId);
+    }
+	public com.sitescape.team.remoting.ws.model.Subscription folder_getSubscription(String accessToken, long binderId, long entryId) {
+		FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
+		Subscription sub = getFolderModule().getSubscription(entry);
+		if (sub == null) return null;
+		return toSubscriptionModel(sub);
+		
+	}
+	public void folder_setSubscription(String accessToken, long binderId, long entryId, com.sitescape.team.remoting.ws.model.Subscription subscription) {
+		if (subscription == null || subscription.getStyles().length == 0) {
+			getFolderModule().setSubscription(binderId, entryId, null);
+			return;
+		}
+		Map subMap = new HashMap();
+		com.sitescape.team.remoting.ws.model.SubscriptionStyle[] styles = subscription.getStyles();
+		for (int i=0; i<styles.length; ++i) {
+			subMap.put(styles[i].getStyle(), styles[i].getEmailTypes());
+		}
+		getFolderModule().setSubscription(binderId, entryId, subMap);
+
+	}
+	public void folder_deleteEntryTag(String accessToken, long entryId, String tagId) {
+		getFolderModule().deleteTag(null, entryId, tagId);
+	}
+	public void folder_setEntryTag(String accessToken, com.sitescape.team.remoting.ws.model.Tag tag) {
+		getFolderModule().setTag(null, tag.getEntityId(), tag.getName(), tag.isPublic());
+	}
+	public com.sitescape.team.remoting.ws.model.Tag[] folder_getEntryTags(String accessToken, long entryId) {
+		Collection<Tag>tags = getFolderModule().getTags(getFolderModule().getEntry(null, entryId));
+		com.sitescape.team.remoting.ws.model.Tag[] results = new com.sitescape.team.remoting.ws.model.Tag[tags.size()];
+		int i=0;
+		for (Tag tag:tags) {
+			results[i++] = toTagModel(tag);
+		}
+		return results;
+	}
+
 }

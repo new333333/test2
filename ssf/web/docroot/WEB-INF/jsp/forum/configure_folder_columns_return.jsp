@@ -56,6 +56,8 @@
 <c:if test="${empty folderColumns || !empty folderColumns.author}"><c:set var="authorChecked" value="checked"/></c:if>
 <c:set var="dateChecked" value=""/>
 <c:if test="${empty folderColumns || !empty folderColumns.date}"><c:set var="dateChecked" value="checked"/></c:if>
+<c:set var="ratingChecked" value=""/>
+<c:if test="${empty folderColumns || !empty folderColumns.rating}"><c:set var="ratingChecked" value="checked"/></c:if>
 
 <div class="ss_style" align="left">
 <form method="post" onSubmit="ss_setActionUrl(this, ss_saveFolderColumnsUrl);">
@@ -75,6 +77,7 @@
   <input type="checkbox" name="html" ${htmlChecked}> <ssf:nlt tag="folder.column.Html"/><br/>
   <input type="checkbox" name="state" ${stateChecked}> <ssf:nlt tag="folder.column.State"/><br/>
   <input type="checkbox" name="date" ${dateChecked}> <ssf:nlt tag="folder.column.LastActivity"/><br/>
+  <input type="checkbox" name="rating" ${ratingChecked}> <ssf:nlt tag="folder.column.Rating"/><br/>
   <br/>
   
   <c:forEach var="def" items="${ssEntryDefinitionElementDataMap}">
@@ -93,6 +96,16 @@
          <input type="checkbox" name="customCol_${colName}" ${checked}> 
          <ssf:nlt tag="${ssEntryDefinitionMap[def.key].title}" checkIfTag="true"/> / 
          <ssf:nlt tag="${element.value.caption}" checkIfTag="true"/><br/>
+       </c:if>
+       <c:if test="${element.value.type == 'entryAttributes'}">
+         <c:forEach var="attributeSetName" items="${ssBinder.customAttributes[element.key].valueSet}">
+			<c:set var="checked" value=""/>
+			<c:set var="colName" value="${def.key},${element.value.type},${element.key}__set__${attributeSetName},${attributeSetName}"/>
+			<c:if test="${!empty folderColumns[colName]}"><c:set var="checked" value="checked"/></c:if>
+	         <input type="checkbox" name="customCol_${colName}" ${checked}> 
+	         <ssf:nlt tag="${ssEntryDefinitionMap[def.key].title}" checkIfTag="true"/> / 
+	         <ssf:nlt tag="${element.value.caption}: ${attributeSetName}" checkIfTag="true"/><br/>
+	     </c:forEach>
        </c:if>
   	</c:forEach>
   </c:forEach>

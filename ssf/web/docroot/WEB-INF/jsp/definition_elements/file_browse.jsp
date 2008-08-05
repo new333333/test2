@@ -82,9 +82,36 @@ var ${eName}_ok = 1;
  <c:if test='${! empty ssFolder}'>
   <div class="needed-because-of-ie-bug"><div id="ss_duplicateFileCheck_${eName}" style="display:none; visibility:hidden;" ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
   <input type="file" class="ss_text" name="${eName}" id="${eName}" ${width} onchange="ss_ajaxValidate(ss_findEntryForFileUrl, this,'${elementName}_label', 'ss_duplicateFileCheck_${eName}', '${repositoryName}');"/><br/>
+  <input type="hidden" name="ss_upload_request_uid" />
  </c:if>
  <c:if test='${empty ssFolder}'>
   <input type="file" class="ss_text" name="${eName}" id="${eName}" ${width}/><br/>
  </c:if>
+	<script type="text/javascript">	
+		function ${eName}_onAtatchmentFormSubmit(formObj) {
+			if (!window.uploadProgressBar) {// prevents many progress bars on one page
+			
+				// the uid binds upload request with upload status check request
+				var uid = new Date().valueOf();
+				var formAction = formObj.action;
+				if (!formAction || formAction.length == 0) {
+					formAction = document.location.href;
+				}
+				formObj.action = formAction + "&ss_upload_request_uid=" + uid;
+				
+				var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, 
+											{operation:"get_upload_progress_status", 
+											ss_upload_request_uid: uid});
+				window.uploadProgressBar = new ss_FileUploadProgressBar();
+			  	setTimeout(function() {
+		  		  	ss_FileUploadProgressBar.reloadProgressStatus(window.uploadProgressBar, url);
+			  	}, 1500);
+			}
+			return true;			
+		}
+	
+		ss_createOnSubmitObj('${eName}onsub', '${formName}', ${eName}_onAtatchmentFormSubmit);
+		 
+	</script> 
 </c:forEach>
 

@@ -149,10 +149,10 @@ public class BuildDefinitionDivs extends TagSupport {
 				buildDivs(configRoot, root, sb, hb, "");
 				buildDivs(root, root, sb, hb, "item");
 				buildDefaultDivs(sb, hb);
-				jspOut.print(hb.toString());
 			} else {	
 				buildDivs(root, root, sb, hb, "item");
 			}
+			jspOut.print(hb.toString());
 			jspOut.print(sb.toString());
 		}
 	    catch(Exception e) {
@@ -254,7 +254,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			buildPropertiesDivs(root, sourceRoot, sb, hb, filter);
 			
 			//Build the help divs
-			buildHelpDivs(root, sourceRoot, sb, hb, filter);
+//			buildHelpDivs(root, sourceRoot, sb, hb, filter);
 
 			//See if this element has any sub elements to do
 			if (Validator.isNull(this.option)) {
@@ -1204,11 +1204,8 @@ public class BuildDefinitionDivs extends TagSupport {
 							//Build a list of the remote apps
 							Map remoteApp = (Map)remoteAppList.get(i);
 							sb.append("<option value=\"").append(remoteApp.get("_docId")).append("\"");
-							Element remoteAppEle = (Element)sourceRoot.selectSingleNode("item[@type='form']/item[@name='"+propertyName+"']/properties/property[@name='remoteApp']");
-							if (remoteAppEle != null) {
-								if (remoteApp.get("_applicationName").equals(remoteAppEle.attributeValue("value", ""))) {
-									sb.append(" selected=\"selected\"");
-								}
+							if (remoteApp.get("_docId").equals(propertyValue0)) {
+								sb.append(" selected=\"selected\"");
 							}
 							sb.append(">").append(((String)remoteApp.get("title")).replaceAll("&", "&amp;"))
 								.append(" (").append(remoteApp.get("_applicationName")).append(")</option>\n");

@@ -125,12 +125,12 @@ if (typeof djConfig == "undefined") {
 	djConfig = { 
 		isDebug: false,
 		locale: '<ssf:convertLocaleToDojoStyle />',
-		parseWidgets: false,
+		// dojo_xxx     parseWidgets: false,
 		searchIds: []
 	};
 }
 </script>
-<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo/dojo.js"></script>
 <script type="text/javascript">
 var ss_scripts_loaded = "no";
 var scripts = document.getElementsByTagName("script");
@@ -148,6 +148,7 @@ var ss_rootPath;
 var ss_imagesPath;
 var ss_1pix;
 var ss_forumCssUrl;
+var ss_sliderCssUrl;
 var ss_forumColorsCssUrl;
 var ss_not_logged_in;
 var ss_rtc_not_configured;
@@ -172,11 +173,7 @@ function ss_loadJsFile(rootPath, jsFile) {
 }
 function ss_loadDojoFiles() {
 	if (ss_scripts_loaded && ss_scripts_loaded == "no") {
-		dojo.require("dojo.html.*");
-		dojo.require("dojo.lfx.*");
-		dojo.require("dojo.event.*");
-		dojo.require("dojo.lang.*");
-		dojo.require("dojo.dnd.*");
+		//Put dojo.require statements here
 	}
 }
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
@@ -185,6 +182,7 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_imagesPath = "<html:imagesPath/>";
 	
 	ss_forumCssUrl = ss_urlBase + ss_rootPath + "css/forum.css";
+	ss_sliderCssUrl = ss_urlBase + ss_rootPath + "css/slider_swing.css";
 	ss_1pix = ss_imagesPath + "pics/1pix.gif";
 	ss_forumColorsCssUrl = "<ssf:url webPath="viewCss">
 	    <ssf:param name="theme" value="${ssUser.theme}"/>
@@ -224,7 +222,7 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_loadJsFile(ss_rootPath, "js/common/taconite-client.js");
 	ss_loadJsFile(ss_rootPath, "js/common/taconite-parser.js");
-	ss_loadJsFile(ss_rootPath, "js/common/ss_dashboard_drag_and_drop.js");
+//dojo_xxx  	ss_loadJsFile(ss_rootPath, "js/common/ss_dashboard_drag_and_drop.js");
 }
 </script>
 <script type="text/javascript">
@@ -261,9 +259,11 @@ function ss_createStyleSheet(url, title, enabled) {
 	if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 		if (document.createStyleSheet) {
 			document.createStyleSheet(ss_forumCssUrl);
+			document.createStyleSheet(ss_sliderCssUrl);
 			document.createStyleSheet(ss_forumColorsCssUrl);
 		} else {
 			ss_createStyleSheet(ss_forumCssUrl);
+			ss_createStyleSheet(ss_sliderCssUrl);
 			ss_createStyleSheet(ss_forumColorsCssUrl);
 		}
 	}
@@ -284,10 +284,14 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 }
 </script>
 
-<ssf:ifLoggedIn><c:if test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
-  <a class="ss_skiplink" href="${ss_accessibleUrl}"><img border="0"
-    <ssf:alt tag="accessible.enableAccessibleMode"/> 
-    src="<html:imagesPath/>pics/1pix.gif" /></a><%--
-		--%></c:if></ssf:ifLoggedIn><%--
+<%--
+* The following line is used to call customer supplied customizations.
+* This jsp will be called at least once per page. 
+* (It can be called more than once on portlet pages, so be prepared for that.)
+* This jsp is called before any other Teaming content is displayed. 
+* However, it is not graranteed to be in the <head> section.
+* Jsp files added to the custom_jsps directory will not be overwritten during upgrades
+--%><jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_css_init.jsp" /><%--
+
 	--%></c:if><%--
 --%></c:if>

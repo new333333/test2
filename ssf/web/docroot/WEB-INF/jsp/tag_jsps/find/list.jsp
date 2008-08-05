@@ -60,7 +60,7 @@
 </c:choose>
 
 <input type="hidden" name="${ssFindFormElement}" id="${prefix}_ss_find_multiple_input"/>		
-<table class="ss_style" cellspacing="0px" cellpadding="0px" style="padding-bottom:5px;">
+<table class="ss_style" cellspacing="0" cellpadding="0" style="padding-bottom:5px;">
 <tbody>
 <tr>
 <td valign="top">
@@ -85,6 +85,7 @@
     singleItem="true"
     accessibilityText="${accessibilityText}"
     addCurrentUser="${ssFindAddCurrentUser}"
+    showUserTitleOnly="${ssShowUserTitleOnly}"
     /> 
     <c:if test="${ssFindListType == 'user'}">
       <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findUser"/></span></div>

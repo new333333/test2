@@ -106,7 +106,7 @@ function ss_buildClipboardUsersListTable(members, callbackData) {
 	
 		var hrefSelectAllObj = document.createElement("a");
 		hrefSelectAllObj.href = "javascript: //";
-		dojo.event.connect(hrefSelectAllObj, "onclick", function(evt) {
+		dojo.connect(hrefSelectAllObj, "onclick", function(evt) {
 			ss_clipboardUsersSelectAll(prefix);
 	    });		
 		hrefSelectAllObj.className = "ss_linkButton";
@@ -115,7 +115,7 @@ function ss_buildClipboardUsersListTable(members, callbackData) {
 
 		var hrefDeselectAllObj = document.createElement("a");
 		hrefDeselectAllObj.href = "javascript: //";
-		dojo.event.connect(hrefDeselectAllObj, "onclick", function(evt) {
+		dojo.connect(hrefDeselectAllObj, "onclick", function(evt) {
 			ss_clipboardUsersDeselectAll(prefix);
 	    });
 		hrefDeselectAllObj.className = "ss_linkButton";

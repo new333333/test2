@@ -85,10 +85,4 @@
          <portlet-ref>ss_mobile</portlet-ref>
       </instance>
    </deployment>
-   <deployment>
-      <instance>
-         <instance-id>ss_workarea-instance</instance-id>
-         <portlet-ref>ss_workarea</portlet-ref>
-      </instance>
-   </deployment>
 </deployments>

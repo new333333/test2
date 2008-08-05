@@ -31,6 +31,9 @@ package com.sitescape.team.remoting.ws;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import org.dom4j.Branch;
 import org.dom4j.Document;
@@ -39,6 +42,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.AverageRating;
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.Entry;
@@ -49,7 +53,10 @@ import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.Subscription;
+import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.domain.WorkflowResponse;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.ws.ElementBuilder;
@@ -166,6 +173,10 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryElem.addAttribute("emailAddress", (String) user.get(Constants.EMAIL_FIELD));
 		entryElem.addAttribute("type", (String) user.get(Constants.ENTRY_TYPE_FIELD));
 		entryElem.addAttribute("reserved", Boolean.toString(user.get(Constants.RESERVEDID_FIELD)!=null));
+		/*
+		 * I don't know how to get this from the map
+				entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
+		*/
 		String name = getPrincipalName(user);
 		if(name != null) entryElem.addAttribute("name", name);
 		
@@ -176,10 +187,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		if (user.containsKey(Constants.STATUS_FIELD)) entryElem.addAttribute("status", (String) user.get(Constants.STATUS_FIELD));
 		if (user.containsKey(Constants.SKYPEID_FIELD)) entryElem.addAttribute("skypeId", (String) user.get(Constants.SKYPEID_FIELD));
 		if (user.containsKey(Constants.TWITTERID_FIELD)) entryElem.addAttribute("twitterId", (String) user.get(Constants.TWITTERID_FIELD));
-/*
- * I don't know how to get this from the map
-		entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
-*/
+
 
 		return entryElem;
 	}
@@ -210,8 +218,10 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryModel.setDocNumber(entry.getDocNumber());
 		entryModel.setDocLevel(entry.getDocLevel());
 		entryModel.setHref(WebUrlUtil.getEntryViewURL(entry));
+		List<Workflow> wfs = new ArrayList();
 		for (WorkflowState state:entry.getWorkflowStates()) {
 			Workflow wfModel = new Workflow();
+			wfs.add(wfModel);
 			wfModel.setTokenId(state.getTokenId());
 			wfModel.setDefinitionId(state.getDefinition().getId());
 			wfModel.setState(state.getState());
@@ -219,10 +229,35 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 			if (state.getWorkflowChange() != null) {
 				wfModel.setModification(toTimestampModel(state.getWorkflowChange()));
 			}
-			entryModel.addWorkflow(wfModel);
+			List<com.sitescape.team.remoting.ws.model.WorkflowResponse> wfr = new ArrayList();
+			for (WorkflowResponse response: entry.getWorkflowResponses()) {
+				if (response.getDefinitionId().equals(wfModel.getDefinitionId())) {
+					com.sitescape.team.remoting.ws.model.WorkflowResponse wrModel = new com.sitescape.team.remoting.ws.model.WorkflowResponse();
+					wfr.add(wrModel);
+					wrModel.setQuestion(response.getName());
+					wrModel.setResponse(response.getResponse());
+					if (response.getResponseDate() != null) {
+						if (response.getResponderId() != null) {
+							try {
+								wrModel.setResponder(new Timestamp(getProfileModule().getEntry(null, response.getResponderId()).getName(), response.getResponseDate()));								
+							} catch (Exception ex) {
+								wrModel.setResponder(new Timestamp("", response.getResponseDate()));								
+							}
+						} else {
+							wrModel.setResponder(new Timestamp("", response.getResponseDate()));
+						}
+					}
+				}
+			}
+			wfModel.setResponses(wfr.toArray(new com.sitescape.team.remoting.ws.model.WorkflowResponse[wfr.size()]));
 		}
+		entryModel.setWorkflows(wfs.toArray(new Workflow[wfs.size()]));
 	}
-	
+	protected void fillBinderModel(com.sitescape.team.remoting.ws.model.Binder binderModel, Binder binder) {
+		// Binder common
+		fillDefinableEntityModel(binderModel, binder);
+		
+	}
 	protected void fillUserModel(com.sitescape.team.remoting.ws.model.User userModel, User user) {
 		// Principal common
 		fillPrincipalModel(userModel, user);
@@ -284,7 +319,8 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	protected void fillDefinableEntityModelStatic(com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity) {
 		entityModel.setId(entity.getId());
 		
-		entityModel.setParentBinderId(entity.getParentBinder().getId());
+		if (entity.getParentBinder() != null) 
+			entityModel.setParentBinderId(entity.getParentBinder().getId());
 		
 		if(entity.getEntryDef() != null)
 			entityModel.setDefinitionId(entity.getEntryDef().getId());
@@ -309,9 +345,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	}
 	
 	protected com.sitescape.team.remoting.ws.model.Timestamp toTimestampModel(HistoryStamp hs) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(hs.getDate());
-		return new Timestamp(hs.getPrincipal().getName(), cal);
+		return new Timestamp(hs.getPrincipal().getName(), hs.getDate());
 	}
 	
 	protected void fillDefinableEntityModelDefinable(final com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, final DefinableEntity entity) {
@@ -343,7 +377,24 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	protected com.sitescape.team.remoting.ws.model.Description toDescriptionModel(Description desc) {
 		return new com.sitescape.team.remoting.ws.model.Description(desc.getText(), desc.getFormat());
 	}
-	
+	protected com.sitescape.team.remoting.ws.model.Subscription toSubscriptionModel(Subscription subscription) {
+		com.sitescape.team.remoting.ws.model.Subscription model = new com.sitescape.team.remoting.ws.model.Subscription();
+		Map<Integer, String[]> styles = subscription.getStyles();
+		for (Map.Entry<Integer, String[]>me: styles.entrySet()) {
+			model.addStyle(me.getKey(), me.getValue());
+		}
+		
+		model.setEntityId(subscription.getId().getEntityId());
+		return model;
+	}
+	protected com.sitescape.team.remoting.ws.model.Tag toTagModel(Tag tag) {
+		com.sitescape.team.remoting.ws.model.Tag model = new com.sitescape.team.remoting.ws.model.Tag();
+		model.setId(tag.getId());
+		model.setName(tag.getName());
+		model.setPublic(tag.isPublic());
+		model.setEntityId(tag.getEntityIdentifier().getEntityId());
+		return model;
+	}
 	protected FolderEntryBrief toFolderEntryBrief(FolderEntry entry) {
 		FolderEntryBrief entryBrief = new FolderEntryBrief();
 		entryBrief.setId(entry.getId());
@@ -388,18 +439,18 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	}
 	
 	protected PrincipalBrief toPrincipalBrief(Principal principal) {
-		PrincipalBrief principalBrief = new PrincipalBrief();
-		principalBrief.setId(principal.getId());
-		principalBrief.setBinderId(principal.getParentBinder().getId());
-		principalBrief.setDefinitionId(principal.getEntryDef().getId());
-		principalBrief.setTitle(principal.getTitle());
-		principalBrief.setEmailAddress(principal.getEmailAddress());
-		principalBrief.setType(principal.getEntityType().toString());
-		principalBrief.setDisabled(Boolean.valueOf(principal.isDeleted()));
-		principalBrief.setReserved(principal.isReserved());
-		principalBrief.setName(principal.getName());
+		PrincipalBrief principalBrief = new PrincipalBrief(
+				principal.getId(),
+				principal.getParentBinder().getId(),
+				principal.getEntryDef().getId(),
+				principal.getTitle(),
+				principal.getEmailAddress(),
+				principal.getEntityType().toString(),
+				Boolean.valueOf(principal.isDisabled()),
+				principal.isReserved(),
+				principal.getName()
+				);
 		
 		return principalBrief;
-
 	}
 }

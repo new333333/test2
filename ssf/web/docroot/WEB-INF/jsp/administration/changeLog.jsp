@@ -116,11 +116,9 @@ function ss_saveChangeLogEntryId(id) {
 	    <option value="addEntry">addEntry</option>
 	    <option value="modifyEntry">modifyEntry</option>
 	    <option value="deleteEntry">deleteEntry</option>
-<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.Workflow">
 	    <option value="startWorkflow">startWorkflow</option>
 	    <option value="modifyWorkflowState">modifyWorkflowState</option>
 	    <option value="addWorkflowResponse">addWorkflowResponse</option>
-</ssf:ifAuthorizedByLicense>
 	    <option value="moveEntry">moveEntry</option>
 	    <option value="addFile">addFile</option>
 	    <option value="modifyFile">modifyFile</option>

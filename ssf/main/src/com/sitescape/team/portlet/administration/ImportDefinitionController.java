@@ -45,6 +45,7 @@ import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
+import org.dom4j.util.XMLErrorHandler;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -85,7 +86,7 @@ public class ImportDefinitionController extends  SAbstractController {
 								zipIn.closeEntry();
 							}
 						} else {
-							loadDefinitions(myFile.getOriginalFilename(), myFile.getInputStream(), binderId, replace, errors);
+							defs.add(loadDefinitions(myFile.getOriginalFilename(), myFile.getInputStream(), binderId, replace, errors));
 						}
 						myFile.getInputStream().close();
 					} catch (Exception fe) {
@@ -116,15 +117,16 @@ public class ImportDefinitionController extends  SAbstractController {
 	protected String loadDefinitions(String fileName, InputStream fIn, Long binderId, boolean replace, List errors)
 	{
 		try {
-			SAXReader xIn = new SAXReader();
-			Document doc = xIn.read(fIn);  
 			if (binderId == null) {
-				return getDefinitionModule().addDefinition(doc, null, null, null, replace).getId();
+				
+				return getDefinitionModule().addDefinition(fIn, null, null, null, replace).getId();
 			} else {
-				return getDefinitionModule().addDefinition(doc, getBinderModule().getBinder(binderId), null, null, replace).getId();				
+				return getDefinitionModule().addDefinition(fIn, getBinderModule().getBinder(binderId), null, null, replace).getId();				
 			}
 		} catch (Exception fe) {
-			errors.add((fileName==null ? "" : fileName) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
+			   // now lets output the errors as XML
+		     //writer.write(errorHandler.getErrors());
+		     errors.add((fileName==null ? "" : fileName) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
 		}
 		return null;
 	}

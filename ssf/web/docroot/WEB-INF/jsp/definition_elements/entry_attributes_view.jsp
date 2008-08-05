@@ -31,4 +31,63 @@
 <% //Binder attributes view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
+<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].valueSet}">
+<c:if test="${!empty ss_element_display_style && 
+    ss_element_display_style == 'tableAlignLeft'}">
+<c:if test="${!empty property_caption}">
+<tr>
+  <td class="ss_table_spacer_right" valign="top" align="right">
+    <span class="ss_bold">${property_caption}</span>
+  </td>
+</tr>
+</c:if>
+<tr>
+  <td valign="top">
+	<table border="1" cellpadding="5" cellspacing="4">
+	  <tr>
+      <c:forEach var="attributeSet" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}">
+        <th>${attributeSet}</th>
+      </c:forEach>
+      </tr>
+      <tr>
+	    <c:forEach var="attributeSet" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}">
+	      <td valign="top">
+	        <ul class="ss_nobullet">
+	          <c:set var="fullAttributeSetName" value="${property_name}__set__${attributeSet}"/>
+	          <c:forEach var="attributeName" items="${ssDefinitionEntry.customAttributes[fullAttributeSetName].valueSet}">
+			    <li><c:out value="${attributeName}" escapeXml="false"/></li>
+			  </c:forEach>
+	        </ul>
+	      </td>
+	    </c:forEach>
+	  </tr>
+	</table>
+  </td>
+</tr>
+</c:if>
 
+<c:if test="${empty ss_element_display_style || ss_element_display_style != 'tableAlignLeft'}">
+<div class="ss_entryContent">
+  <span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
+  <table border="1" cellpadding="5" cellspacing="4">
+	<tr>
+      <c:forEach var="attributeSet" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}">
+        <th>${attributeSet}</th>
+      </c:forEach>
+      </tr>
+      <tr>
+	    <c:forEach var="attributeSet" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}">
+	      <td valign="top">
+	        <ul class="ss_nobullet">
+	          <c:set var="fullAttributeSetName" value="${property_name}__set__${attributeSet}"/>
+	          <c:forEach var="attributeName" items="${ssDefinitionEntry.customAttributes[fullAttributeSetName].valueSet}">
+			    <li><c:out value="${attributeName}" escapeXml="false"/></li>
+			  </c:forEach>
+	        </ul>
+	      </td>
+	    </c:forEach>
+	</tr>
+  </table>
+</div>
+</c:if>
+</c:if>

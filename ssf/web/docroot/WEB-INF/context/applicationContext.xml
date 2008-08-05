@@ -50,8 +50,8 @@
 
 	<!-- MultipartResolver implementation (uses Jakarta Commons FileUpload) -->
 	<bean id="multipartResolver" 
-		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-	
+		class="com.sitescape.team.web.upload.MultipartResolverProgressListening">
+		
 		<!-- Maximum file size in bytes = Integer.MAX_VALUE = 0x7fffffff -->
 		<property name="maxUploadSize">
 			<value>2147483647</value>
@@ -72,6 +72,7 @@
 		<property name="defaultEncoding">
 			<value>${web.char.encoding}</value>
 		</property>
+
 	</bean>
 
 	<!-- Template for expressing dependencies on all modules.
@@ -114,6 +115,19 @@
 -->
 	<bean id="zoneInterceptor" class="com.sitescape.team.dao.interceptor.ZoneInterceptor"/>
 
+	<!-- Hibernate session factory -->
+	<bean id="sessionFactory" class="com.sitescape.team.spring.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="lobHandler"><ref bean="lobHandler"/></property>
+		<property name="configFiles">
+			<list>
+				<value>config/hibernate.cfg.xml</value>
+				<value>optional:config/hibernate-ext.cfg.xml</value>
+			</list>
+		</property>
+		<property name="entityInterceptor"><ref bean="zoneInterceptor"/></property>
+		
+		<!-- Hibernate properties are loaded from a separate file - hibernate.properties -->
+	</bean>
 	<bean id="hibernateConfiguration" class="com.sitescape.team.util.HibernateConfigurationFactory">
 		<property name="sessionFactoryBean"><ref bean="&amp;sessionFactory"/></property>
 	</bean>
@@ -414,8 +428,22 @@
 	<bean id="stringCheckUtil" class = "com.sitescape.team.util.stringcheck.StringCheckUtil" depends-on="sPropsUtil">
 	</bean>	
 	
-	<bean id="accessTokenManager" class="com.sitescape.team.security.accesstoken.impl.AccessTokenManagerImpl">
-		<property name="securityDao"><ref local="securityDao"/></property>							
+	<bean id="accessTokenManager" parent="baseTransactionProxy">
+		<property name="target">
+			<bean class="com.sitescape.team.security.accesstoken.impl.AccessTokenManagerImpl">
+				<property name="securityDao"><ref local="securityDao"/></property>							
+			</bean>
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="destroy*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="create*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="validate*">PROPAGATION_REQUIRED,readOnly</prop>
+			</props>
+		</property>
+
 	</bean>
 	
 	<!-- =========================== Business Components =========================== -->
@@ -529,12 +557,11 @@
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>
-				<prop key="addSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addEntryWorkflow">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="copyEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteEntryWorkflow">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteTag">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="deleteSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException,+com.sitescape.team.exception.UncheckedCodedException</prop>
 				<prop key="modifyWorkflowState">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="moveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
@@ -586,7 +613,7 @@
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>
-				<prop key="addSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException,+com.sitescape.team.exception.UncheckedCodedException</prop>
 				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
@@ -628,6 +655,17 @@
 			</bean>	
 		</property>
 	</bean>
+	<bean id="workflowFactory" class="com.sitescape.team.module.workflow.impl.WorkflowFactory">
+		<property name="hibernateSessionFactory"><ref bean="sessionFactory"/></property>
+	</bean> 
+	
+	<bean id="workflowModule" parent="baseTransactionProxy" depends-on="zoneConfig, workflowFactory" >
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.workflow.impl.WorkflowModuleImpl">
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+			</bean>
+		</property>
+	</bean>	
 
 	<bean id="dashboardModule" parent="baseTransactionProxy">
 		<property name="target">
@@ -967,7 +1005,8 @@ text/calendar											  ics
 	
 	<bean id="binderService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.service.binder.BinderServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.remoting.ws.service.binder.attachments.BinderServiceImpl" parent="dependOnAllModulesTemplate">
+				<property name="coreDao"><ref bean="coreDao"/></property>
 			</bean>
 		</property>
 		<property name="proxyInterfaces">

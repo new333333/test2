@@ -164,9 +164,6 @@ function ss_confirmDeleteConfig() {
  */ 
  %>
 
-	<% // Tabs %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
-
 	<% // Folder Sidebar %>
 
     <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />

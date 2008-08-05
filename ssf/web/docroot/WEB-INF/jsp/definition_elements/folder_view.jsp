@@ -42,6 +42,7 @@
 		ssFolderColumns.put("state", "state");
 		ssFolderColumns.put("author", "author");
 		ssFolderColumns.put("date", "date");
+		ssFolderColumns.put("rating", "rating");
 	}
 %>
 <c:set var="ssFolderColumns" value="<%= ssFolderColumns %>" scope="request"/>

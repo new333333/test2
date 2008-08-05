@@ -53,7 +53,7 @@
 %>
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
-dojo.require('dojo.widget.*');
+dojo.require('dijit._Widget');
 dojo.require('sitescape.widget.SelectPageable');
 dojo.require('sitescape.widget.MultiplePageableSelect');
 </script>
@@ -533,7 +533,7 @@ function ss_loadNextDiv(option, itemId, itemName, refItemId) {
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "definition_builder"); 
 	
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postLoadNextDivRequest);
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request

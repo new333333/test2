@@ -145,6 +145,7 @@ public interface ObjectKeys {
     //Default role titles
     public static final String ROLE_TITLE_VISITOR="__role.visitor";
     public static final String ROLE_TITLE_PARTICIPANT="__role.participant";
+    public static final String ROLE_TITLE_GUEST_PARTICIPANT="__role.guestParticipant";
     public static final String ROLE_TITLE_TEAM_MEMBER="__role.teamMember";
     public static final String ROLE_TITLE_BINDER_ADMIN="__role.binderAdmin";
     public static final String ROLE_TITLE_WORKSPACE_CREATOR="__role.workspaceCreator";
@@ -290,9 +291,8 @@ public interface ObjectKeys {
 	/********INPUT options parameters********/
 	//Passed to processors to force a database lock.  Used to reduce optimistic lock exceptions
 	public static final String INPUT_OPTION_FORCE_LOCK="com.sitescape.team.options.lock";
+	//default = Boolean.TRUE if INPUT_OPTION_COPY_NEW_BINDER=TRUE; Preserve old docnumbers when copy to a new folder;
 	public static final String INPUT_OPTION_PRESERVE_DOCNUMBER="com.sitescape.team.options.preserve.docnum";
-	//default=Boolean.TRUE; Copy a binder and all its child binders if true
-	public static final String INPUT_OPTION_COPY_BINDER_CASCADE="com.sitescape.team.options.cascade.copy";
 	//Default=Boolean.FALSE; When deleteing a profile entry, delete the associated workspace and all source/sub binders
 	public static final String INPUT_OPTION_DELETE_USER_WORKSPACE="com.sitescape.team.options.delete.userworkspace";
 	//migration flags
@@ -362,6 +362,8 @@ public interface ObjectKeys {
     //xml tags - some used in GenerateLdapList (as strings) - keep in sync
     public static final String XTAG_ATTRIBUTE_DATABASEID="databaseId";
     public static final String XTAG_ATTRIBUTE_NAME="name";
+    public static final String XTAG_ATTRIBUTE_STATE_CAPTION="stateCaption";
+    public static final String XTAG_ATTRIBUTE_THREAD_CAPTION="threadCaption";
     public static final String XTAG_ATTRIBUTE_TYPE="type";
     public static final String XTAG_ATTRIBUTE_INTERNALID="internalId";
     
@@ -490,6 +492,7 @@ public interface ObjectKeys {
     public static final String XTAG_WFS_DEFINITION="definition";
     public static final String XTAG_WFS_TIMER="timer";
     public static final String XTAG_WFS_THREAD="thread";
+    public static final String XTAG_WFS_PROCESS="process";
      
     //value of name= attribute XTAG_ELEMENT_TYPE_PROPERTY element XTAG_ELEMENT_TYPE_WORKFLOWRESPONSE
     public static final String XTAG_WFR_DEFINITION="definition";

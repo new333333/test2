@@ -31,6 +31,8 @@ package com.sitescape.team.remoting.ws.service.binder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -43,22 +45,46 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.comparator.BinderComparator;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.Subscription;
+import com.sitescape.team.domain.Tag;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.rss.util.UrlUtil;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
+import com.sitescape.team.remoting.ws.model.FolderBrief;
+import com.sitescape.team.remoting.ws.model.FolderCollection;
 import com.sitescape.team.remoting.ws.model.FunctionMembership;
 import com.sitescape.team.remoting.ws.model.PrincipalBrief;
 import com.sitescape.team.remoting.ws.model.TeamMemberCollection;
+import com.sitescape.team.remoting.ws.model.Timestamp;
 import com.sitescape.team.remoting.ws.util.DomInputData;
 import com.sitescape.team.remoting.ws.util.ModelInputData;
 import com.sitescape.team.security.function.Function;
+import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
+import com.sitescape.team.web.util.PermaLinkUtil;
+import com.sitescape.util.search.Constants;
 
 public class BinderServiceImpl extends BaseService implements BinderService, BinderServiceInternal {
+	private CoreDao coreDao;
+	
+	protected CoreDao getCoreDao() {
+		return coreDao;
+	}
+	public void setCoreDao(CoreDao coreDao) {
+		this.coreDao = coreDao;
+	}
+	
 	public long binder_addBinderWithXML(String accessToken, long parentId, String definitionId, String inputDataAsXML)
 	{
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
@@ -71,6 +97,26 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			throw new RemotingException(e);
 		}
 	}
+	public com.sitescape.team.remoting.ws.model.Subscription binder_getSubscription(String accessToken, long binderId) {
+		Binder binder = getBinderModule().getBinder(binderId);
+		Subscription sub = getBinderModule().getSubscription(binder);
+		if (sub == null) return null;
+		return toSubscriptionModel(sub);
+		
+	}
+	public void binder_setSubscription(String accessToken, long binderId, com.sitescape.team.remoting.ws.model.Subscription subscription) {
+		if (subscription == null || subscription.getStyles().length == 0) {
+			getBinderModule().setSubscription(binderId, null);
+			return;
+		}
+		Map subMap = new HashMap();
+		com.sitescape.team.remoting.ws.model.SubscriptionStyle[] styles = subscription.getStyles();
+		for (int i=0; i<styles.length; ++i) {
+			subMap.put(styles[i].getStyle(), styles[i].getEmailTypes());
+		}
+		getBinderModule().setSubscription(binderId, subMap);
+	}
+	
 	public void binder_setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations) {
 		HashMap wfs = new HashMap();
 		for (int i=0; i<workflowAssociations.length; i++) {
@@ -132,7 +178,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			 if (ids.isEmpty()) continue;
 			 wfms.put(func.getId(), ids);
 		}
-		getAdminModule().setWorkAreaFunctionMembershipInherited(binder, false); 
 		getAdminModule().setWorkAreaFunctionMemberships(binder, wfms);
 	}
 	public void binder_setFunctionMembershipInherited(String accessToken, long binderId, boolean inherit) {
@@ -147,6 +192,11 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		getBinderModule().indexBinder(binderId, true);
 	}
 	
+	public Long[] binder_indexTree(String accessToken, long binderId) {
+		Set<Long> binderIds = getBinderModule().indexTree(binderId);
+		Long[] array = new Long[binderIds.size()];
+		return binderIds.toArray(array);
+	}
 	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId) {
 		Binder binder = getBinderModule().getBinder(new Long(binderId));
 		SortedSet<Principal> principals = getBinderModule().getTeamMembers(binder, true);
@@ -170,7 +220,47 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		}
 	}
 	
-	public void binder_setFunctionMemberships(String accessToken, long binderId, FunctionMembership[] functionMemberships) {
+	public long binder_copyBinder(String accessToken, long sourceId, long destinationId, boolean cascade) {
+		return getBinderModule().copyBinder(sourceId, destinationId, cascade, null);
+	}
+	public String[] binder_deleteBinder(String accessToken, long binderId, boolean deleteMirroredSource) {
+		Set<Exception>errors = getBinderModule().deleteBinder(binderId, deleteMirroredSource, null);
+		String[] strErrors = new String[errors.size()];
+		int i=0;
+		for (Exception ex:errors) {
+			strErrors[i++] = ex.getLocalizedMessage();
+		}
+		return strErrors;
+	}
+	public void binder_moveBinder(String accessToken, long binderId, long destinationId) {
+		getBinderModule().moveBinder(binderId, destinationId, null);
+	}
+	public com.sitescape.team.remoting.ws.model.Binder binder_getBinder(String accessToken, long binderId, boolean includeAttachments) {
+
+		// Retrieve the raw binder.
+		Binder binder =  getBinderModule().getBinder(binderId);
+
+		com.sitescape.team.remoting.ws.model.Binder binderModel = 
+			new com.sitescape.team.remoting.ws.model.Binder(); 
+
+		fillBinderModel(binderModel, binder);
+		
+		return binderModel;
+	}
+	public void binder_modifyBinder(String accessToken, com.sitescape.team.remoting.ws.model.Binder binder) {
+		try {
+			getBinderModule().modifyBinder(binder.getId(), 
+				new ModelInputData(binder), null, null, null);
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}			
+	}
+	public void binder_uploadFile(String accessToken, long binderId, String fileUploadDataItemName, String fileName) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships) {
 		if(functionMemberships == null) return;
 		Binder binder = getBinderModule().getBinder(binderId);
 		List<Function> functions = getAdminModule().getFunctions();
@@ -201,7 +291,83 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			 if (ids.isEmpty()) continue;
 			 wfms.put(func.getId(), ids);
 		}
-		getAdminModule().setWorkAreaFunctionMembershipInherited(binder, false); 
 		getAdminModule().setWorkAreaFunctionMemberships(binder, wfms);
 	}
+	
+	public FolderCollection binder_getFolders(String accessToken, long binderId) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+        // Probably sorting by title isn't as important in web services as in browser UI, 
+        // but it wouldn't hurt either.
+        Comparator c = new BinderComparator(user.getLocale(),BinderComparator.SortByField.title);
+		Binder binder = getBinderModule().getBinder(binderId);		
+		Map searchResults = getBinderModule().getBinders(binder, new HashMap());
+		List searchBinders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
+	
+		List<FolderBrief> folderList = new ArrayList<FolderBrief>();
+		//get folders
+		Long id;
+		String title;
+		Timestamp creation;
+		Timestamp modification;
+		String permaLink;
+		String webdavUrl;
+		String rssUrl;
+		String icalUrl;
+		Folder folder;
+		for (int i=0; i<searchBinders.size(); ++i) {
+			Map search = (Map)searchBinders.get(i);
+			String entityType = (String)search.get(Constants.ENTITY_FIELD);
+			if (!EntityType.folder.name().equals(entityType)) 
+				continue;
+			id = Long.valueOf((String)search.get(Constants.DOCID_FIELD));
+			// Unfortunately, the search index does not contain path information for each
+			// binder/folder. Consequently, we need to retrieve each folder from the
+			// database in order to get that information, which is needed when constructing
+			// webdav url. Otherwise, this operation could have been highly efficient...
+			folder = null;
+			try {
+				folder = (Folder) getCoreDao().load(Folder.class, id);
+			}
+			catch(Exception e) {
+				logger.warn(e.toString());
+				continue;
+			}
+			if(folder == null) 
+				continue;
+			title = (String) search.get(Constants.TITLE_FIELD);
+			creation = new Timestamp((String) search.get(Constants.MODIFICATION_NAME_FIELD), (Date) search.get(Constants.MODIFICATION_DATE_FIELD));
+			modification = new Timestamp((String) search.get(Constants.CREATOR_NAME_FIELD), (Date) search.get(Constants.CREATION_DATE_FIELD));
+			permaLink = PermaLinkUtil.getURL(id, (String) search.get(Constants.ENTITY_FIELD));
+			// Construct webdav url regardless of whether this folder is a library binder or not. 
+			webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
+			rssUrl = UrlUtil.getFeedURL(null, id.toString()); // folder only
+			icalUrl = com.sitescape.team.ical.util.UrlUtil.getICalURL(null, id.toString(), null); // folder only
+			folderList.add(new FolderBrief(id, 
+					title,
+					creation,
+					modification,
+					permaLink,
+					webdavUrl,
+					rssUrl,
+					icalUrl));								
+		}
+		FolderBrief[] array = new FolderBrief[folderList.size()];
+		return new FolderCollection(binderId, folderList.toArray(array));
+	}
+	public void binder_deleteTag(String accessToken, long binderId, String tagId) {
+		getBinderModule().deleteTag(binderId, tagId);
+	}
+	public void binder_setTag(String accessToken, com.sitescape.team.remoting.ws.model.Tag tag) {
+		getBinderModule().setTag(tag.getEntityId(), tag.getName(), tag.isPublic());
+	}
+	public com.sitescape.team.remoting.ws.model.Tag[] binder_getTags(String accessToken, long binderId) {
+		Collection<Tag>tags = getBinderModule().getTags(getBinderModule().getBinder(binderId));
+		com.sitescape.team.remoting.ws.model.Tag[] results = new com.sitescape.team.remoting.ws.model.Tag[tags.size()];
+		int i=0;
+		for (Tag tag:tags) {
+			results[i++] = toTagModel(tag);
+		}
+		return results;
+	}
+
 }

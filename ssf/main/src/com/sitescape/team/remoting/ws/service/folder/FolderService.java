@@ -30,6 +30,8 @@ package com.sitescape.team.remoting.ws.service.folder;
 
 import com.sitescape.team.remoting.ws.model.FolderEntry;
 import com.sitescape.team.remoting.ws.model.FolderEntryCollection;
+import com.sitescape.team.remoting.ws.model.Subscription;
+import com.sitescape.team.remoting.ws.model.Tag;
 
 public interface FolderService {
 
@@ -38,7 +40,9 @@ public interface FolderService {
 	public FolderEntry folder_getEntry(String accessToken, long binderId, long entryId, boolean includeAttachments);
 
 	public void folder_addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId);
+    public void folder_deleteEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId);
 	public void folder_modifyWorkflowState(String accessToken, long binderId, long entryId, long stateId, String toState);
+	public void folder_setWorkflowResponse(String accessToken, long binderId, long entryId, long stateId, String question, String response); 
 	public void folder_uploadFile(String accessToken, long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
 	public void folder_uploadFileStaged(String accessToken, long binderId, long entryId, 
@@ -52,5 +56,16 @@ public interface FolderService {
 	public long folder_addReply(String accessToken, long parentEntryId, FolderEntry reply, String attachedFileName);
 	
 	public void folder_deleteEntry(String accessToken, long binderId, long entryId);
+    public long folder_copyEntry(String accessToken, long binderId, long entryId, long destinationId);
+    public void folder_moveEntry(String accessToken, long binderId, long entryId, long destinationId); 
+    public void folder_reserveEntry(String accessToken, long binderId, long entryId);
+    public void folder_unreserveEntry(String accessToken, long binderId, long entryId);
+
+    public Subscription folder_getSubscription(String accessToken, long binderId, long entryId);
+	public void folder_setSubscription(String accessToken, long binderId, long entryId, Subscription subscription); 
+	
+	public void folder_deleteEntryTag(String accessToken, long entryId, String tagId); 
+	public Tag[] folder_getEntryTags(String accessToken, long entryId);
+	public void folder_setEntryTag(String accessToken, Tag tag);
 
 }

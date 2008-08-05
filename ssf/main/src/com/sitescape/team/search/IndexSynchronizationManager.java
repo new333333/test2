@@ -51,6 +51,8 @@ public class IndexSynchronizationManager {
 	private static final ThreadLocal requests = new ThreadLocal();
 	
 	private static final ThreadLocal autoFlushTL = new ThreadLocal();
+	
+	private static final ThreadLocal nodeIdsTL = new ThreadLocal();
 
     private LuceneSessionFactory luceneSessionFactory;
     
@@ -134,6 +136,10 @@ public class IndexSynchronizationManager {
         autoFlushTL.set(Boolean.valueOf(autoFlush));
     }
     
+    public static void setNodeIds(String[] nodeIds) {
+    	nodeIdsTL.set(nodeIds);
+    }
+    
     public static void begin() {
         // If same thread was never re-used for another request or transaction
         // in the system, this initialization wouldn't be necessary, since 
@@ -155,7 +161,7 @@ public class IndexSynchronizationManager {
         
         try {
             if(hasWorkToDo()) {                
-		        LuceneSession luceneSession = getInstance().getLuceneSessionFactory().openSession();
+		        LuceneWriteSession luceneSession = getInstance().getLuceneSessionFactory().openWriteSession((String[]) nodeIdsTL.get());
 		        
 		        try {
 		            doCommit(luceneSession);
@@ -192,7 +198,7 @@ public class IndexSynchronizationManager {
             return false;
     }
     
-    private static void doCommit(LuceneSession luceneSession) {
+    private static void doCommit(LuceneWriteSession luceneSession) {
         
         Request request;
         Object obj;
@@ -247,6 +253,7 @@ public class IndexSynchronizationManager {
         if(list != null)
             list.clear();
         autoFlushTL.set(Boolean.FALSE);
+        nodeIdsTL.set(null);
     }
     
     private static class Request {

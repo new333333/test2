@@ -135,6 +135,7 @@ name="value" value="${ssBinder.title}"/></ssf:nlt></span>
 	method="post" name="${renderResponse.namespace}addfm">
 
 <br>
+<c:if test="${!empty ssBinderId}">
 		<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
 		  sourceDocument="${ssConfigDefinition}"
 		  configDocument="${ssConfigDefinition}"
@@ -142,6 +143,15 @@ name="value" value="${ssBinder.title}"/></ssf:nlt></span>
 		  itemName="${itemName}"
 		  owningBinderId="${ssBinderId}" 
 		/>
+</c:if>
+<c:if test="${empty ssBinderId}">
+		<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
+		  sourceDocument="${ssConfigDefinition}"
+		  configDocument="${ssConfigDefinition}"
+		  option="properties" 
+		  itemName="${itemName}"
+		/>
+</c:if>
 <br>		
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
 &nbsp;&nbsp;&nbsp;
@@ -159,22 +169,7 @@ name="value" value="${ssBinder.title}"/></ssf:nlt></span>
 <span class="ss_titlebold"><ssf:nlt tag="administration.copy.definition" /></span>
 <script type="text/javascript">
 function ${renderResponse.namespace}_showId(forum, obj) {
-	if (obj.ownerDocument) {
-		var cDocument = obj.ownerDocument;
-	} else if (obj.document) {
-		cDocument = obj.document;
-	}
-	if (cDocument) {
-		var r = cDocument.getElementById("ss_tree_radio${renderResponse.namespace}sourceDefinitionId" + forum);
-		if (r) {
-			if (r.checked !== undefined) {
-				r.checked = true;
-			}
-			if (r.onclick !== undefined) {
-				r.onclick();
-			}
-		}
-	}
+	return ss_checkTree(obj, "ss_tree_radio${renderResponse.namespace}sourceDefinitionId" + forum);
 }
 </script>
 <form class="ss_style ss_form" action="<ssf:url action="manage_definitions" actionUrl="true"><ssf:param 

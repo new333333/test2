@@ -474,6 +474,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	
     		Function visitorsRole = addVisitorsRole(top);
     		Function participantsRole = addParticipantsRole(top);
+    		Function guestParticipantRole = addGuestParticipantRole(top);
     		Function teamMemberRole = addTeamMemberRole(top);
     		Function binderRole = 	addBinderRole(top);
     		Function adminRole = addAdminRole(top);
@@ -563,12 +564,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		return top;
  	}
  	
-	protected void addZone(final String name, final String virtualHost) {
+	protected Long addZone(final String name, final String virtualHost) {
 		final String adminName = SZoneConfig.getAdminUserName(name);
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		RequestContextUtil.setThreadContext(name, adminName);
 		try {
-  	        getTransactionTemplate().execute(new TransactionCallback() {
+  	        return (Long) getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
 	    			IndexSynchronizationManager.begin();
 
@@ -580,7 +581,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 						zoneM.startScheduledJobs(zone);
 					}
 	    		
-	        		return null;
+	        		return zone.getId();
 	        	}
 	        });
 		} finally  {
@@ -744,6 +745,20 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.CREATOR_DELETE);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 //		function.addOperation(WorkAreaOperation.USER_SEE_ALL);
+		
+		//generate functionId
+		getFunctionManager().addFunction(function);
+		return function;
+	}
+
+	private Function addGuestParticipantRole(Workspace top) {
+		Function function = new Function();
+		function.setZoneId(top.getId());
+		function.setName(ObjectKeys.ROLE_TITLE_GUEST_PARTICIPANT);
+
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
+		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		
 		//generate functionId
 		getFunctionManager().addFunction(function);

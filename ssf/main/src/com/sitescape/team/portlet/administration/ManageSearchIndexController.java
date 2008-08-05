@@ -47,6 +47,7 @@ import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.search.Node;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
@@ -56,6 +57,7 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.tree.SearchTreeHelper;
+import com.sitescape.team.web.tree.TreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebStatusTicket;
@@ -66,22 +68,22 @@ public class ManageSearchIndexController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		String btnClicked = PortletRequestUtils.getStringParameter(request, "btnClicked", "");
 		if (formData.containsKey("okBtn") || btnClicked.equals("okBtn")) {
-			//Get the list of binders to be indexed
-			List<Long> ids = new ArrayList();
-			Boolean usersandgroups = false;
 			//Get the binders to be indexed
-			String[] values = (String[])formData.get(WebKeys.URL_ID_CHOICES);
-			for (int i = 0; i < values.length; i++) {
-				String[] valueSplited = values[i].split("\\s");
-				for (int j = 0; j < valueSplited.length; j++) {
-					if (valueSplited[j] != null && !"".equals(valueSplited[j])) {
-						String binderId = valueSplited[j].replaceFirst("search" + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
-						if (!usersAndGroups.equals(binderId)) ids.add(Long.valueOf(binderId));
-						else usersandgroups=true;
-					}
-				}
+			Collection<Long> ids = TreeHelper.getSelectedIds(formData);
+			
+			String[] nodeIds = (String[])formData.get(WebKeys.URL_SEARCH_NODE_ID);
+			if(nodeIds == null) {
+				// This is non-H/A environment.
 			}
-
+			else if(nodeIds.length > 0) {
+				// H/A environment, and user selected at least one node to update.
+			}
+			else {
+				// H/A environment, and user selected no node (probably mistakenly).
+				// In this case, there's no work to do.
+				response.setRenderParameters(formData);
+				return;
+			}
 			
 			// Create a new status ticket
 			StatusTicket statusTicket = WebStatusTicket.newStatusTicket(PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none"), request);
@@ -90,9 +92,10 @@ public class ManageSearchIndexController extends  SAbstractController {
 				profiler = new SimpleProfiler("manageSearchIndex");
 				SimpleProfiler.setProfiler(profiler);
 			}
-			Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket);
+			Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket, nodeIds);
 			//if people selected and not yet index; index content only, not the whole ws tree
-			if (usersandgroups) {
+			String idChoices = TreeHelper.getSelectedIdsAsString(formData);
+			if (idChoices.contains(usersAndGroups)) {
 				ProfileBinder pf = getProfileModule().getProfileBinder();
 				if (!idsIndexed.contains(pf.getId()))
 					getBinderModule().indexBinder(pf.getId(), true);
@@ -140,6 +143,12 @@ public class ManageSearchIndexController extends  SAbstractController {
     	rootElement.appendContent(wsTree.getRootElement());
  		model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
 		model.put(WebKeys.WORKSPACE_DOM_TREE, pTree);		
+		
+		List<Node> nodes = getAdminModule().getSearchNodes();
+		
+		if(nodes != null) {
+			model.put(WebKeys.SEARCH_NODES, nodes);
+		}
 			
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_SEARCH_INDEX, model);
 	}

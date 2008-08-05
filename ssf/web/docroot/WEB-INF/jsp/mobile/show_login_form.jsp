@@ -30,8 +30,41 @@
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
-<div class="ss_mobile">
-  <span><ssf:nlt tag="general.notLoggedIn"/></span>
+<div class="ss_style ss_portlet">
+<div style="padding:30px;">
+  <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
+  <fieldset class="ss_fieldset">
+    <legend class="ss_legend"><ssf:nlt tag="login.please"/></legend>
+    <table>
+      <tr>
+        <td valign="top">
+          <span><ssf:nlt tag="login.name"/></span><br/>
+          <input type="text" style="width:150px;" name="username"/>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top">
+          <span><ssf:nlt tag="login.password"/></span><br/>
+          <input type="password" style="width:150px;" name="password"/>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top">
+          <input type="checkbox" name="remember"/>
+          <span><ssf:nlt tag="login.remember"/></span>
+        </td>
+      </tr>
+    </table>
+    <br/>
+    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
+    <input type="hidden" name="url" value="${ssUrl}"/>
+  </fieldset>
+  </form>
+</div>
+<script type="text/javascript">
+	var formObj = self.document.getElementById('loginForm');
+	formObj.username.focus();
+</script>
 </div>
 
 </body>

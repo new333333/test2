@@ -75,6 +75,7 @@
 		      	  --%></c:when><%--		      	  
   		          --%><c:otherwise><%--
   		          	--%><c:out value="${entry.title}"/><%--
+  		          	--%><c:if test="${ssShowUserTitleOnly != 'true'}"> (${entry._loginName})</c:if><%--
   		          --%></c:otherwise></c:choose></span></a></li>
 			</c:forEach>			
 	      </ul>

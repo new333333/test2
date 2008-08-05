@@ -28,12 +28,14 @@
  */
 package com.sitescape.team.module.definition;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.xml.sax.SAXException;
 
 import com.sitescape.team.ObjectExistsException;
 import com.sitescape.team.domain.Binder;
@@ -52,7 +54,7 @@ public interface DefinitionModule {
 	public enum DefinitionOperation {
 		manageDefinition,
 	}
-	public Definition addDefinition(Document doc, Binder binder, String name, String title, boolean replace) throws AccessControlException;
+	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace) throws AccessControlException, Exception;
 	public Definition addDefinition(Binder binder, String name, String title, Integer type, InputDataAccessor inputData) throws AccessControlException;
 	/**
 	 * Adds an item to an item in a definition tree.
@@ -70,6 +72,7 @@ public interface DefinitionModule {
 	 */
 	public Element addItem(String defId, String itemId, String itemName, InputDataAccessor inputData) throws DefinitionInvalidException, AccessControlException;
 	public Definition addDefaultDefinition(Integer type);
+	public Definition copyDefinition(String id, Binder binder, String name, String title) throws AccessControlException;
 	public void copyItem(String defId, String sourceItemId, String targetItemId) throws DefinitionInvalidException, AccessControlException;
 	public void deleteDefinition(String id) throws AccessControlException;
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException, AccessControlException;
@@ -82,6 +85,10 @@ public interface DefinitionModule {
 	public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors, Integer type);
 	public Document getDefinitionConfig();
 	public Document getDefinitionAsXml(Definition def);
+	
+	public static String ENTRY_ATTRIBUTES_SET = "__set__";
+	public static String ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED = "__setMultipleAllowed__";
+	
 	/**
 	 * Routine to process the input data and return a map of only the entry data
 	 * 

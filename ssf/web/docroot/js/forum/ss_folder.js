@@ -50,12 +50,12 @@ function ss_highlightLineById(id) {
 			    			var rowIdPrev = ss_highlightedLine + "_" + j;
 						    var rowObjPrev = self.document.getElementById(rowIdPrev)
 						    if (rowObjPrev != null) {
-								dojo.html.removeClass(rowObjPrev, ss_highlightClassName);
+								dojo.removeClass(rowObjPrev, ss_highlightClassName);
 							}
 						}
 					}
 					ss_highlightedLine = id;
-					dojo.html.addClass(rowObj, ss_highlightClassName);
+					dojo.addClass(rowObj, ss_highlightClassName);
 					ss_clearUnseen(rowObj);
 			    }
 			    if (colObj != null) {
@@ -66,12 +66,12 @@ function ss_highlightLineById(id) {
 			    			var colIdPrev = ss_highlightedColLine + "_col_" + j;
 						    var colObjPrev = self.document.getElementById(colIdPrev)
 						    if (colObjPrev != null) {
-								dojo.html.removeClass(colObjPrev, ss_highlightClassName);
+								dojo.removeClass(colObjPrev, ss_highlightClassName);
 							}
 						}
 					}
 					ss_highlightedColLine = id;
-					dojo.html.addClass(colObj, ss_highlightColClassName);
+					dojo.addClass(colObj, ss_highlightColClassName);
 					ss_clearUnseen(colObj);
 			    }
     		}
@@ -80,11 +80,11 @@ function ss_highlightLineById(id) {
     } else {
 		//Found the id, this must be a single line; go highlight it
 		if (ss_highlightedLine != null) {
-			dojo.html.removeClass(ss_highlightedLine, ss_highlightClassName);
+			dojo.removeClass(ss_highlightedLine, ss_highlightClassName);
 		}
 		if (obj != null) {
 			ss_highlightedLine = obj;
-			dojo.html.addClass(ss_highlightedLine, ss_highlightClassName);
+			dojo.addClass(ss_highlightedLine, ss_highlightClassName);
 			ss_clearUnseen(obj);
 		}
 	}

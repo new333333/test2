@@ -134,6 +134,7 @@ public class WebKeys {
     public static final String URL_ENTRY_TITLE="title";
     public static final String URL_ENTRY_TYPE="entryType";
     public static final String URL_ENTRY_VIEW_STYLE="entryViewStyle";
+    public static final String URL_ENTRY_VIEW_STYLE2="entryViewStyle2";
     public static final String URL_ENTRY_VIEW_TYPE="entryViewType";
 	public static final String URL_FILE = "file";
 	public static final String URL_FILE_ID = "fileId";
@@ -160,7 +161,12 @@ public class WebKeys {
 	public static final String URL_RANDOM = "random";
 	public static final String URL_RANDOM_PLACEHOLDER = "ss_randomPlaceholder";
 	public static final String URL_REPORT_FLAVOR = "ss_reportFlavor";
+	public static final String URL_REPORT_SORT_TYPE = "ss_reportSortType";
+	public static final String URL_REPORT_OPTION_TYPE = "ss_reportOptionType";
+	public static final String URL_REPORT_OPTION_TYPE_SHORT = "shortReport";
+	public static final String URL_REPORT_OPTION_TYPE_LONG = "longReport";
 	public static final String URL_REPORT_TYPE = "ss_reportType";
+	public static final String URL_SEARCH_NODE_ID = "searchNodeId";
 	public static final String URL_START_DATE = "ss_startDate";
 	public static final String URL_STATUS_TICKET_ID = "ss_statusId";
 	public static final String URL_TAB_ID = "tabId";
@@ -197,6 +203,7 @@ public class WebKeys {
 	public static final String URL_ICAL_URL = "iCalURL";
 	public static final String URL_ICAL_SCHEDULE = "iCalSchedule";
 	public static final String URL_WINDOW_STATE = "windowState";
+	public static final String URL_UPLOAD_REQUEST_UID = "ss_upload_request_uid";
 	
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";
@@ -225,6 +232,7 @@ public class WebKeys {
     public static final String ACTION_ADD_TEAM_MEMBER = "add_team_member";
     public static final String ACTION_ADVANCED_SEARCH = "advanced_search";
     public static final String ACTION_IMPORT_FORUM_ENTRIES = "forum_import";
+    public static final String ACTION_MOBILE_AJAX = "__ajax_mobile";
     public static final String ACTION_MODIFY_BINDER = "modify_binder";
     public static final String ACTION_CLIPBOARD = "clipboard";
     public static final String ACTION_CONFIG_EMAIL="config_email";
@@ -284,6 +292,7 @@ public class WebKeys {
 	public static final String ACTION_ADD_MEETING="add_meeting";
 	public static final String ACTION_VIEW_CREDITS="view_credits";
 	public static final String ACTION_VIEW_EDITABLE_HISTORY="view_editable_history";
+	public static final String ACTION_VIEW_WORKFLOW_HISTORY="view_workflow_history";
 	
 	
 	//operations
@@ -331,6 +340,7 @@ public class WebKeys {
 	public static final String OPERATION_FIND_USERS_WIDGET = "get_users_widget";
 	public static final String OPERATION_FIND_GROUPS_WIDGET = "get_groups_widget";
 	public static final String OPERATION_FIND_TEAMS_WIDGET = "get_teams_widget";
+	public static final String OPERATION_FIND_ENTRY_ATTRIBUTES_WIDGET = "get_entry_attributes_widget";	
 	public static final String OPERATION_FIND_ENTRY_FIELDS_WIDGET = "get_entry_fields_widget";	
 	public static final String OPERATION_FIND_ENTRY_FOR_FILE = "find_entry_for_file";	
 	public static final String OPERATION_FIND_PLACES_SEARCH = "find_places_search";
@@ -369,6 +379,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_RELEVANCE_DASHBOARD_PAGE = "get_dashboard_page";
 	public static final String OPERATION_GET_WHATS_NEW_PAGE = "get_whats_new_page";
 	public static final String OPERATION_GET_WORKFLOW_STATES = "get_workflow_states";
+	public static final String OPERATION_GO_TO_ENTRY = "go_to_entry";
 	public static final String OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS = "hide_all_dashboard_components";
 	public static final String OPERATION_SET_BINDER_OWNER_ID = "set_binder_owner_id";
 	public static final String OPERATION_SET_DASHBOARD_TITLE = "set_dashboard_title";
@@ -450,7 +461,8 @@ public class WebKeys {
 	public static final String OPERATION_ATTACHE_MEETING_RECORDS = "attache_meeting_records";
 	public static final String OPERATION_SAVE_UESR_STATUS = "save_user_status";
 	public static final String OPERATION_SET_SIDEBAR_VISIBILITY = "set_sidebar_visibility";
-
+	public static final String OPERATION_GET_UPLOAD_PROGRESS_STATUS = "get_upload_progress_status";
+	
 	// MODEL TAGS & Attributes
 	public static final String ACCESS_CONTROL_MAP = "ss_accessControlMap";
 	public static final String ACCESS_FUNCTIONS_COUNT = "ss_accessFunctionsCount";
@@ -600,9 +612,7 @@ public class WebKeys {
     public static final String ENTRY_TITLE="ssEntryTitle";
     public static final String ENTRY_USER_LIST="assignedUsers";
     public static final String ENTRY_VIEW_STYLE="ss_entryViewStyle";
-    public static final String ENTRY_VIEW_STYLE_POPUP="entryViewStylePopup";
-    public static final String ENTRY_VIEW_STYLE_INLINE="entryViewStyleInline";
-    public static final String ENTRY_VIEW_STYLE_FULL="entryViewStyleFull";
+    public static final String ENTRY_VIEW_STYLE2="ss_entryViewStyle2";
     public static final String ENTRY_DUE_DATE="dueDate";
     public static final String MEETING_TOKEN="ssMeetingToken";
     public static final String MEETING_ERROR="ssMeetingError";
@@ -726,6 +736,7 @@ public class WebKeys {
     public static final String AJAX_STATUS="ss_ajaxStatus";
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
     public static final String NAMESPACE="ss_namespace";
+    public static final String NAMESPACE_RELEVANCE_DASHBOARD="ss_relevanceDashboardNamespace";
     public static final String MAIL_POSTING_USE_ALIASES="mail_posting_use_aliases"; 
     public static final String MAIL_POSTING_DUMMY_PASSWORD="_____"; 
     public static final String MANAGE_GROUPS_PAGE_TITLE_TAG="ssPageTitleTag";
@@ -742,6 +753,7 @@ public class WebKeys {
 	public static final String MY_TASKS = "ss_myTasks";
 	public static final String MY_TASKS_FOLDERS = "ss_myTasksFolders";
 	public static final String MY_TASKS_PAGE = "ss_myTasksPage";
+    public static final String MY_TAGS="ss_myTags"; 
     public static final String MY_TEAMS="ss_myTeams"; 
     public static final String NAMING_PREFIX="ssNamespace";
     public static final String NAVIGATION_LINK_TREE="ssNavigationLinkTree";
@@ -877,6 +889,7 @@ public class WebKeys {
     public static final String FIND_INSTANCE_CODE="ssFindInstanceCode";
     public static final String FIND_LEAVE_RESULTS_VISIBLE="ssFindLeaveResultsVisible";
     public static final String FIND_SEARCH_SUBFOLDERS="ssFindSearchSubFolders";
+    public static final String FIND_SHOW_USER_TITLE_ONLY="ssShowUserTitleOnly";
     public static final String FIND_FOLDERS_ONLY="ssFindFoldersOnly";
     public static final String FIND_ACCESSIBILITY_TEXT="accessibilityText";
     public static final String FIND_ADD_CURRENT_USER="ssFindAddCurrentUser";
@@ -907,6 +920,7 @@ public class WebKeys {
     public static final String TEAM_MEMBERSHIP="ssTeamMembership";
     public static final String TYPE="ss_type";
     public static final String TYPE2="ss_type2";
+    public static final String SEARCH_NODES="ssSearchNodes";
     public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
     public static final String SIDEBAR_WORKSPACE_TREE="ssSidebarWsTree";
     public static final String SIDEBAR_CURRENT_WORKSPACE="ssSidebarCurrentWorkspace";
@@ -980,6 +994,7 @@ public class WebKeys {
 
     public static final String PAGE_START_INDEX = "ssPageStartIndex";
     public static final String PAGE_GOTOPAGE_INDEX = "ssGoToPage";
+    public static final String PAGE_GOTOENTRY = "ssGoToEntry";
     public static final String PAGE_END_INDEX = "ssPageEndIndex";
     public static final String PAGE_TOTAL_RECORDS = "ssTotalRecords";
     public static final String PAGE_DISPLAY_VALUE = "ssPageDisplayValue";
@@ -1018,6 +1033,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_MANAGE_GROUPS="administration/manage_groups";
     public static final String VIEW_ADMIN_MANAGE_ZONES="administration/manage_zones";
     public static final String VIEW_ADMIN_REDIRECT="administration/view_admin_redirect";
+    public static final String VIEW_ADMIN_RELOAD_OPENER="administration/reload_opener";
     public static final String VIEW_ASPEN_TYPE="forum/select_portlet_type";
     public static final String VIEW_BINDER_CONFIGURE_EMAIL="binder/configureEmail";
     public static final String VIEW_BINDER_SENDMAIL="binder/sendMail";
@@ -1094,7 +1110,6 @@ public class WebKeys {
     public static final String VIEW_WORKAREA="forum/view_workarea";
     public static final String VIEW_WORKAREA_ACCESSORIES="forum/view_workarea_accessories";
     public static final String VIEW_WORKAREA_CONTEXT="forum/view_workarea_context";
-    public static final String VIEW_WORKAREA_NAVIGATION="forum/view_workarea_navigation";
     public static final String VIEW_WORKSPACE="forum/view_workspace";
     public static final String VIEW_WORKSPACE_EDIT="workspacetree/edit";
     public static final String VIEW_TEAM_MEMBERS="forum/view_team_members";

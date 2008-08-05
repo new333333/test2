@@ -28,9 +28,11 @@
  */
 package com.sitescape.team.remoting.ws.service.search;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +40,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -45,19 +48,22 @@ import org.dom4j.Element;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.report.ReportModule.ActivityInfo;
+import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
 import com.sitescape.team.remoting.ws.model.TeamBrief;
 import com.sitescape.team.remoting.ws.model.TeamCollection;
-import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.remoting.ws.model.Timestamp;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.team.web.tree.WebSvcTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
+import com.sitescape.team.web.util.PermaLinkUtil;
 import com.sitescape.util.search.Constants;
 
 public class SearchServiceImpl extends BaseService implements SearchService, SearchServiceInternal {
@@ -219,7 +225,10 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 		for(Map binder : myTeams) {
 			String binderIdStr = (String) binder.get(Constants.DOCID_FIELD);
 			Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
-			teamList.add(new TeamBrief(binderId, (String) binder.get(Constants.TITLE_FIELD)));
+			teamList.add(new TeamBrief(binderId, (String) binder.get(Constants.TITLE_FIELD),
+					new Timestamp((String) binder.get(Constants.CREATOR_NAME_FIELD), (Date) binder.get(Constants.CREATION_DATE_FIELD)),
+					new Timestamp((String) binder.get(Constants.MODIFICATION_NAME_FIELD), (Date) binder.get(Constants.MODIFICATION_DATE_FIELD)),
+					PermaLinkUtil.getURL(binderId, (String) binder.get(Constants.ENTITY_FIELD))));
 		}
 	
 		TeamBrief[] array = new TeamBrief[teamList.size()];

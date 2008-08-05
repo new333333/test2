@@ -42,6 +42,7 @@
   frame="border" rules="all">
 <col width="${ssDashboard.narrowFixedWidth}">
 <col width="100%">
+<tbody>
 <tr>
   <td colspan="2" class="ss_dashboardTable_off">
 			<div id="wide_top">

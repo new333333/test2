@@ -2,19 +2,6 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../dtd/spring-beans.dtd">
 
 <beans>
-	<!-- Hibernate session factory -->
-	<bean id="sessionFactory" class="com.sitescape.team.spring.orm.hibernate3.LocalSessionFactoryBean">
-		<property name="lobHandler"><ref bean="lobHandler"/></property>
-		<property name="configFiles">
-			<list>
-				<value>config/hibernate.cfg.xml</value>
-				<value>optional:config/hibernate-ext.cfg.xml</value>
-			</list>
-		</property>
-		<property name="entityInterceptor"><ref bean="zoneInterceptor"/></property>
-		
-		<!-- Hibernate properties are loaded from a separate file - hibernate.properties -->
-	</bean>
 	<!-- ========================= Data Access (DAO) Components ====================== -->
 	<bean id="folderDao" class="com.sitescape.team.dao.impl.FolderDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
@@ -24,7 +11,6 @@
 	<!-- ============================== Modules ============================= -->
 
 	<bean id="ldapModule"  class="com.sitescape.team.module.ldap.impl.NullLdapModuleImpl"/>
-	<bean id="workflowModule" class="com.sitescape.team.module.workflow.impl.NullWorkflowModuleImpl"/>
 	
 	<bean id="folderModuleTarget" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.folder.impl.BaseFolderModule">
 		<property name="definitionModule"><ref bean="definitionModule"/></property>

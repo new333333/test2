@@ -2,6 +2,10 @@ package com.sitescape.team.remoting.ws.util.attachments;
 
 import java.util.Iterator;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileTypeMap;
+
 import org.apache.axis.AxisFault;
 import org.apache.axis.Message;
 import org.apache.axis.MessageContext;
@@ -10,9 +14,12 @@ import org.apache.axis.attachments.Attachments;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.team.remoting.ws.BaseService;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.util.FileUtil;
 
-public class AttachmentsHelper extends BaseService {
+public class AttachmentsHelper  {
 
 	private final static Log logger = LogFactory.getLog(AttachmentsHelper.class);
 
@@ -39,6 +46,22 @@ public class AttachmentsHelper extends BaseService {
 		}
 		return attachments;
 	}
-
+	public static void handleAttachment(FileAttachment att, String webUrl)
+	{
+		DefinableEntity entity = att.getOwner().getEntity();
+		String shortFileName = FileUtil.getShortFileName(att.getFileItem().getName());	
+		DataSource ds = RepositoryUtil.getDataSourceVersioned(att.getRepositoryName(),
+				entity.getParentBinder(), 
+				entity, att.getFileItem().getName(), att.getHighestVersion().getVersionName(),
+				FileTypeMap.getDefaultFileTypeMap());
+		DataHandler dh = new DataHandler(ds);
+		MessageContext messageContext = MessageContext.getCurrentContext();
+		Message responseMessage = messageContext.getResponseMessage();
+		AttachmentPart part = new AttachmentPart(dh);
+		part.setContentLocation(webUrl);
+		part.setMimeHeader("Content-Disposition",
+				"attachment;filename=\"" + shortFileName + "\"");
+		responseMessage.addAttachmentPart(part);
+	}
 
 }

@@ -221,9 +221,12 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
+		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		Map model = new HashMap();
 		model.put(WebKeys.TYPE, type);
 		model.put(WebKeys.USER_PRINCIPAL, user);
+		model.put(WebKeys.NAMESPACE, namespace);
+		model.put(WebKeys.NAMESPACE_RELEVANCE_DASHBOARD, namespace);
 		setupDashboardBeans(this, type, request, response, model);
 		return new ModelAndView("forum/relevance_dashboard/ajax", model);
 	}
@@ -234,11 +237,14 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE, "0");
 		String direction = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DIRECTION, "next");
+		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		Map model = new HashMap();
 		model.put(WebKeys.TYPE, type);
 		model.put(WebKeys.PAGE_NUMBER, page);
 		model.put(WebKeys.DIRECTION, direction);
 		model.put(WebKeys.USER_PRINCIPAL, user);
+		model.put(WebKeys.NAMESPACE, namespace);
+		model.put(WebKeys.NAMESPACE_RELEVANCE_DASHBOARD, namespace);
 		setupDashboardPageBeans(this, type, request, response, model);
 		return new ModelAndView("forum/relevance_dashboard/ajax_page", model);
 	}

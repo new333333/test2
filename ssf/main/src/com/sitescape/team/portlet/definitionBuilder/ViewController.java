@@ -125,16 +125,13 @@ public class ViewController extends SAbstractController {
 					String name = PortletRequestUtils.getStringParameter(request,"propertyId_name", "");
 					String caption = PortletRequestUtils.getStringParameter(request, "propertyId_caption", "");
 					if (Validator.isNull(caption)) caption = name;
-					Definition def = getDefinitionModule().getDefinition(selectedItem);
-					Document doc = (Document)def.getDefinition().clone();
-					doc.getRootElement().addAttribute("internalId", "");
-					doc.getRootElement().addAttribute("databaseId", "");
+					Definition def;
 					if (Validator.isNotNull(name)) {
 						if (binderId == null) {
-							def = getDefinitionModule().addDefinition(doc, null, name, caption, false);			
+							def = getDefinitionModule().copyDefinition(selectedItem, null, name, caption);			
 							selectedItem = def.getId();
 						} else {
-							def = getDefinitionModule().addDefinition(doc, getBinderModule().getBinder(binderId), name, caption, false);			
+							def = getDefinitionModule().copyDefinition(selectedItem, getBinderModule().getBinder(binderId), name, caption);			
 							selectedItem = def.getId();
 								
 						}
@@ -145,7 +142,7 @@ public class ViewController extends SAbstractController {
 					} catch(NoDefinitionByTheIdException e) {
 							//If the id is already deleted, ignore the error
 					}
-					
+					selectedItem=null;
 				} else if (operation.equals("addItem")) {
 					//Add the new item
 					String itemId = PortletRequestUtils.getStringParameter(request,"selectedId", "");
@@ -196,9 +193,10 @@ public class ViewController extends SAbstractController {
 			response.setRenderParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
 			response.setRenderParameter(WebKeys.URL_OPERATION, "");
 
+		} else {
+			//Pass the selection id to be shown on to the rendering phase
+			response.setRenderParameter("selectedItem", selectedItem);
 		}
-		//Pass the selection id to be shown on to the rendering phase
-		response.setRenderParameter("selectedItem", selectedItem);
 	}
 		
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 

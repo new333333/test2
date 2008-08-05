@@ -30,41 +30,96 @@
 %>
 <% //Binder attributes form %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-
+  		
 <div class="ss_entryContent">
-  <span class="ss_labelRight">${property_caption}</span>
-  <table border="1">
-    <tr>
-    <td valign="top">
-      <table>
-      <c:forEach var="attributeSet" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}">
+  <span class="ss_labelRight">${property_caption}</span><br/>
+  <div class="ss_editorHints" style="padding-left:10px;"><em><ssf:nlt tag="attributes.tips"/> </em>
+  		<ssf:inlineHelp tag="ihelp.other.attributes.info"/></div>
+  <table cellpadding="1">
+  <tbody>
+    <tr><td valign="top">
+    <c:set var="attributeCounter" value="0"/> <% // set counter to zero (first pass) %>
+   		<c:forEach var="attributeSet" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}">
+  			<c:set var="attributeCounter" value="${attributeCounter + 1}"/>
+   		</c:forEach>
+
+	<c:set var="attributeCounter2" value="0"/>  <% // set counter to zero (second pass) %>
+	<c:set var="column2Seen" value="0"/>
+      
+   <c:forEach var="attributeSet" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}">
+    	<c:if test="${attributeCounter2 >= (attributeCounter/2) && column2Seen == '0'}">
+    		<c:set var="column2Seen" value="1"/>
+    		</td><!-- end of Column 1 -->
+			<!-- Start Right Column -->
+      		<td valign="top">
+  		</c:if>
+
+    	
+      <table  class="ss_attribute" cellpadding="2"><tbody>
         <tr>
-          <td valign="top">
-        	<input type="checkbox" name="${property_name}__delete__${attributeSet}" /> 
-        	xxx Attribute set name = ${attributeSet}<br/>
-        	<span style="padding-left:20px;">xxx multiple allowed</span>
+        	<td class="ss_bold" colspan="2" align="left">${attributeSet}
+          	</td></tr>
+          	 <tr><td colspan="2" valign="top" class="ss_smallprint ss_bold" align="left" style="padding-bottom:3px;"><ssf:nlt tag="attributes.deleteSet"/>
+          	 <input type="hidden" name="${property_name}__set__${attributeSet}" value="${attributeSet}"/>&nbsp&nbsp
+        	
+        	<input type="submit" class="ss_submit" name="${property_name}__delete__${attributeSet}" 
+		      value="<ssf:nlt tag="button.delete" text="Delete"/>" 
+		      onClick="ss_deleteAttributeSet(this, '${property_name}__delete__${attributeSet}');" /> 
+        	  
+		    
+		     
+		 
+		</td></tr>
+        	<tr><td class="ss_bold" colspan="2" align="left">
+        <span class="ss_smallprint" align="left"><ssf:nlt tag="attributes.delete"/></span>
+          	</td></tr>
+			
+        	<c:set var="attributes" value="${property_name}__set__${attributeSet}"/>
+        	<c:forEach var="attribute" items="${ssDefinitionEntry.customAttributes[attributes].valueSet}">
+        	<tr>
+        	 <td width="30%" align="left"><span class="ss_fineprint" align="left" style="padding-left:5px;">${attribute}</span>
+        	  </td>
+        	 <td>
+        	  <a href="javascript:;"
+      onClick="ss_deleteAttribute(this, '${property_name}__delete__${attribute}');return false;"
+    ><img border="0" valign="absmiddle" src="<html:imagesPath/>pics/1pix.gif" class="ss_generic_close"/></a> </td>
+        	  </tr>
+        	
+        	</c:forEach>
+        	<tr>
+        	<td colspan="2" class="ss_smallprint ss_bold">
         	<input type="checkbox" name="${property_name}__setMultipleAllowed__${attributeSet}" 
         	  <c:set var="attributeSetMA" value="${property_name}__setMultipleAllowed__${attributeSet}"/>
         	  <c:if test="${ssDefinitionEntry.customAttributes[attributeSetMA].value}">checked</c:if> /> 
         	<input type="hidden" name="${property_name}" value="${attributeSet}"/>
-        	<br/>
-        	<c:set var="attributes" value="${property_name}__set__${attributeSet}"/>
-        	<c:forEach var="attribute" items="${ssDefinitionEntry.customAttributes[attributes].valueSet}">
-        	  <input type="checkbox" name="${property_name}__delete__${attributeSet}__${attribute}" /> 
-        	  ${attribute}
-        	  <input type="hidden" name="${property_name}__set__${attributeSet}" value="${attribute}"/><br/>
-        	</c:forEach>
-        	<input type="text" name="${property_name}__set__${attributeSet}" size="40"/>
-        	<input class="ss_submit" type="submit" name="applyBtn" value="<ssf:nlt tag="button.add"/>" />
+        	<ssf:nlt tag="attributes.multiple"/>
+        	</td>
+        	<td>&nbsp;</td></tr>
+        	<tr><td colspan=2 style="padding:3px;">
+        	<span class="ss_fineprint ss_bold"><ssf:nlt tag="attributes.more"/></span><br/>
+        	<input type="text" name="${property_name}__set__${attributeSet}" size="40"/><br/>
+
           </td>
         </tr>
+        <tr><td colspan="2" style="padding:3px;" align="center">
+        	
+        	<input class="ss_submit" type="submit" name="applyBtn" value="<ssf:nlt tag="button.saveChanges"/>" />
+          </td>
+        </tr>
+        </tbody></table>
+        <c:set var="attributeCounter2" value="${attributeCounter2 + 1}"/>
+        
       </c:forEach>
-      </table>
+  	</td>
     <td valign="top">
-      <span class="ss_labelAbove">xxx Add a new category xxx</span>
+      <span class="ss_labelAbove"><ssf:nlt tag="attributes.add"/></span>
       <input type="text" name="${property_name}" size="40"/>
       <input class="ss_submit" type="submit" name="applyBtn" value="<ssf:nlt tag="button.add"/>" />
+      
+      
+      
     </td>
     </tr>
+    </tbody>
   </table>
 </div>

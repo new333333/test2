@@ -66,6 +66,8 @@ public class SearchFilterKeys {
 	public final static String FilterEntryDefIdField = "ss_entry_def_id";
 	public final static String FilterElementNameField = "elementName";
 	public final static String FilterElementValueField = "elementValue";
+	public final static String FilterElementValueValueField = "elementValueValue";
+	public final static String FilterElementValueSet = "elementValueSet";
 	
 	
 	public final static String FilterAnd = "filterTermsAnd";

@@ -56,6 +56,7 @@ import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.FolderConfigHelper;
+import com.sitescape.team.web.tree.TreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
@@ -134,14 +135,7 @@ public class ModifyEntryController extends SAbstractController {
 				setupReloadOpener(response, folderId, entryId);
 				
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
-				//must be move entry
-				String destinationIdString = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
-				Long destinationId = null;
-				try {
-					destinationId = Long.valueOf(destinationIdString.replaceAll("destination" + WebKeys.URL_ID_CHOICES_SEPARATOR, "").trim()); 
-				} catch (NumberFormatException e) {
-					// nothing to do
-				}				
+				Long destinationId = TreeHelper.getSelectedId(formData);
 				if (destinationId != null) {
 					PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 					portletSession.setAttribute(ObjectKeys.SESSION_SAVE_LOCATION_ID, destinationId);
@@ -151,14 +145,7 @@ public class ModifyEntryController extends SAbstractController {
 					setupViewEntry(response, folderId, entryId);
 				}
 			} else if (op.equals(WebKeys.OPERATION_COPY)) {
-				//must be copy entry
-				String destinationIdString = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
-				Long destinationId = null;
-				try {
-					destinationId = Long.valueOf(destinationIdString.replaceAll("destination" + WebKeys.URL_ID_CHOICES_SEPARATOR, "").trim()); 
-				} catch (NumberFormatException e) {
-					// nothing to do
-				}
+				Long destinationId = TreeHelper.getSelectedId(formData);
 				if (destinationId != null) {
 					PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 					portletSession.setAttribute(ObjectKeys.SESSION_SAVE_LOCATION_ID, destinationId);
@@ -256,6 +243,7 @@ public class ModifyEntryController extends SAbstractController {
 			model.put(WebKeys.SUBSCRIPTION, sub);
 			
 			model.put(WebKeys.FOLDER, entry.getParentFolder());
+			model.put(WebKeys.BINDER, entry.getParentFolder());
 			model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_FORM);
 			DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@type='form']");
 			if (elementToEdit.equals("")) {

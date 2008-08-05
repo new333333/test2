@@ -90,7 +90,7 @@ if (!window.ssSurvey) {
 			ss_questionsArray[ss_questionsCounter].type=type;
 		
 			var questionContainer = document.createElement('div');
-			dojo.html.setClass(questionContainer, "ss_questionContainer");
+			ss_setClass(questionContainer, "ss_questionContainer");
 			questionContainer.id = prefix + "question" + ss_questionsCounter;
 			dojo.byId(surveyContainerId).appendChild(questionContainer);
 			ss_addQuestionHeader(questionContainer);
@@ -106,7 +106,7 @@ if (!window.ssSurvey) {
 			questionHeader.id = prefix + "questionHeader"+ss_questionsCounter;
 			var removerLink = document.createElement('a');
 			removerLink.href = "javascript: //;";
-			dojo.event.connect(removerLink, "onclick", ss_callRemoveQuestion(that, ss_questionsCounter));
+			dojo.connect(removerLink, "onclick", ss_callRemoveQuestion(that, ss_questionsCounter));
 			var removerImg = document.createElement('img');
 			removerImg.setAttribute("src", ss_imagesPath + "pics/delete.gif");
 			removerLink.appendChild(removerImg);
@@ -187,8 +187,8 @@ if (!window.ssSurvey) {
 		
 		function ss_addDefaultAnswers(index, withDefaultOptions) {
 			var more = document.createElement('a');
-			dojo.html.setClass(more, "ss_button");
-			dojo.event.connect(more, "onclick", ss_callAddAnswerOption(that, index));
+			ss_setClass(more, "ss_button");
+			dojo.connect(more, "onclick", ss_callAddAnswerOption(that, index));
 			more.appendChild(document.createTextNode(that.locale.moreAnswers));
 			var answersList = document.createElement('ol');
 			answersList.id = prefix + "answers"+index;
@@ -342,7 +342,7 @@ if (!window.ssSurvey) {
 		
 			var removerLink = document.createElement('a');
 			removerLink.href = "javascript: //;";
-			dojo.event.connect(removerLink, "onclick", ss_callRemoveAnswer(that, index, lastAnswerNo));
+			dojo.connect(removerLink, "onclick", ss_callRemoveAnswer(that, index, lastAnswerNo));
 			var removerImg = document.createElement('img');
 			removerImg.setAttribute("src", ss_imagesPath + "pics/delete.gif");
 			removerLink.appendChild(removerImg);
@@ -425,7 +425,7 @@ ssSurvey.vote = function(formId, binderId, entryId, requiredQuestions, prefix) {
 		if (!hasAnswer) {
 			missingAnswers = true;
 			var questionConteinerObj = dojo.byId(prefix + "_question_" + qId);
-			dojo.html.addClass(questionConteinerObj, "ss_survey_required");
+			dojo.addClass(questionConteinerObj, "ss_survey_required");
 		}
 	}
 	
@@ -437,12 +437,12 @@ ssSurvey.vote = function(formId, binderId, entryId, requiredQuestions, prefix) {
 	var urlParams = {operation:"vote_survey", binderId:binderId, entryId:entryId};
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 
-	dojo.io.bind({
+	dojo.xhrGet({
     	url: url,
-		error: function(type, data, evt) {
+		error: function(err) {
 			alert(ss_not_logged_in);
 		},
-		load: function(type, data, evt) {
+		load: function(data) {
 			if (data.notLoggedIn) {
 				alert(ss_not_logged_in);
 			} else if (window["ss_reloadUrl"]) {
@@ -452,6 +452,7 @@ ssSurvey.vote = function(formId, binderId, entryId, requiredQuestions, prefix) {
 			}
 		},
 		mimetype: "text/json",
+		preventCache: true,
 		formNode: document.getElementById(formId)
 	});
 }
@@ -460,12 +461,12 @@ ssSurvey.removeVote = function(formId, binderId, entryId) {
 	var urlParams = {operation:"vote_survey_remove", binderId:binderId, entryId:entryId};
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 
-	dojo.io.bind({
+	dojo.xhrGet({
     	url: url,
-		error: function(type, data, evt) {
+		error: function(err) {
 			alert(ss_not_logged_in);
 		},
-		load: function(type, data, evt) {
+		load: function(data) {
 			if (data.notLoggedIn) {
 				alert(ss_not_logged_in);
 			} else if (window["ss_reloadUrl"]) {
@@ -475,6 +476,7 @@ ssSurvey.removeVote = function(formId, binderId, entryId) {
 			}
 		},
 		mimetype: "text/json",
+		preventCache: true,
 		formNode: document.getElementById(formId)
 	});
 }

@@ -27,14 +27,9 @@
  * are trademarks of SiteScape, Inc.
  */
 
-dojo.require("dojo.html.*");
-dojo.require("dojo.html.util");
-dojo.require("dojo.html.selection");
-dojo.require("dojo.event");
-dojo.require("dojo.date.common");
-dojo.require("dojo.date.format");
-dojo.require("dojo.lfx");
-dojo.require("dojo.io.IframeIO");
+
+dojo.require("dojo.date");
+dojo.require("dijit.dijit");
 
 
 function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard) {
@@ -59,40 +54,37 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard)
 	}
 	
 	this.loadEventsByDate = function(reqParams, date, calendarObj) {
-		dojo.io.bind({
+		dojo.xhrGet({
 	    	url: ss_buildAdapterUrl(ss_AjaxBaseUrl, mergeObj({operation: "find_calendar_events",
 										binderId: binderId, 
 										binderIds: calendarIds,
 										ssDashboardRequest: isDashboard,
 										calendarStickyId: stickyId}, reqParams)),
-			error: function(type, data, evt) {
+			handleAs: "json",
+			error: function(err) {
 				alert(ss_not_logged_in);
 			},
-			load: function(type, data, evt) {
+			load: function(data) {
 				calendarObj.addEvents(data, date);
 			},
-						
-			mimetype: "text/json",
-			preventCache: true,
-			method: "get"
+			preventCache: true
 		});
 	}
 	
 	this.loadEntryEvents = function(reqParams, calendarObj) {
-		dojo.io.bind({
+		dojo.xhrGet({
 	    	url: ss_buildAdapterUrl(ss_AjaxBaseUrl, mergeObj({operation: "find_calendar_events",
 											binderId: binderId, 
 											binderIds: calendarIds,
 											ssDashboardRequest: isDashboard}, reqParams)),
-			error: function(type, data, evt) {
+			handleAs: "json",
+			error: function(err) {
 				alert(ss_not_logged_in);
 			},
-			load: function(type, data, evt) {
+			load: function(data) {
 				calendarObj.addEvents(data);
 			},
-			mimetype: "text/json",
-			preventCache: true,
-			method: "get"
+			preventCache: true
 		});	 
 	}
 	
@@ -104,13 +96,12 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard)
 	 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, mergeObj({operation: "sticky_calendar_display_settings",
 								binderId: binderId, calendarStickyId: stickyId}, options));
 		
-		dojo.io.bind({
+		dojo.xhrGet({
 	    	url: url,
-			error: function(type, data, evt) {},
-			load: function(type, data, evt) {},
-			mimetype: "text/json",
-			preventCache: true,
-			method: "get"
+	    	handleAs: "json",
+			error: function(err) { },
+			load: function(data) { return data },
+			preventCache: true
 		});
 	}
 
@@ -312,10 +303,10 @@ function ss_calendarEngine(
 		ss_cal_Grid.workDayGrid();
 	}
 
-	function fadeAndDestroy(e, t) {
-	    dojo.lfx.fadeHide(e, t, dojo.lfx.easeIn, function(nodes) {
-	        dojo.lang.forEach(nodes, dojo.dom.removeNode);
-	    }).play();
+	function fadeAndDestroy(e, t) {	
+		dojo.fadeOut({node: e, duration: t,
+				      onEnd: function() { dojo._destroyElement(e)}
+			        }).play();
 	}
 
 	function getMonthName(date) {
@@ -328,7 +319,9 @@ function ss_calendarEngine(
 	
 	function getDayHeader(date) {
 		return that.locale.dayNamesShort[date.getDay()] + " " +
-					dojo.date.format(date, {formatLength: 'monthAndDayOnly', locale: that.locale.lang});
+		 			// The "monthAndDayOnly format is undocumented and unknown in any Dojo version!  Attempting to approximate in Dojo 1.1.1
+					//dojo.date.format(date, {formatLength: 'monthAndDayOnly', locale: that.locale.lang});
+					dojo.date.locale.format(date, {datePattern:"MMdd", selector:"date", locale: that.locale.lang});
 	}
 	
 	function getMinutesOfTheDay(date) {
@@ -564,18 +557,16 @@ function ss_calendarEngine(
 		    		this.firstDayToShow = this.currentDate;
 		    	}
 		    	
-	            dojo.html.hide(dojo.byId("ss_cal_MonthGridMaster" + instanceId));
-	            dojo.html.show(dojo.byId("ss_cal_DayGridMaster" + instanceId));
+	            dojo.style(dojo.byId("ss_cal_MonthGridMaster" + instanceId), "display", "none");
+	            dojo.style(dojo.byId("ss_cal_DayGridMaster" + instanceId), "display", "block");
 	
 	            this.drawDayHeader("ss_cal_dayGridHeader" + instanceId, this.gridSize, this.firstDayToShow);
 	            this.drawDayGrid("ss_cal_dayGridAllDay" + instanceId, ss_cal_CalData.today, this.gridSize, this.firstDayToShow, "ss_cal_allDay", 1); 
 	            this.drawDayGrid("ss_cal_dayGridHour" + instanceId, ss_cal_CalData.today, this.gridSize, this.firstDayToShow, "ss_cal_hourGrid", 0); 
 	            this.drawHourMarkers("ss_cal_hourHeader" + instanceId);
 	            if (!this.dayGridCreated && !this.readOnly) {
-	                // dojo.event.connect(dojo.byId("ss_cal_dayGridHour" + instanceId),  "onmousedown", function(evt) { ss_cal_CalEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridHour" + instanceId))});
-					dojo.event.browser.addListener(dojo.byId("ss_cal_dayGridHour" + instanceId),  "onmousedown", function(evt) { ss_cal_CalEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridHour" + instanceId))});
-	                // dojo.event.connect(dojo.byId("ss_cal_dayGridAllDay" + instanceId), "onmousedown", function(evt) { ss_cal_CalAllDayEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridAllDay" + instanceId))});
-					dojo.event.browser.addListener(dojo.byId("ss_cal_dayGridAllDay" + instanceId), "onmousedown", function(evt) { ss_cal_CalAllDayEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridAllDay" + instanceId))});
+					dojo.connect(dojo.byId("ss_cal_dayGridHour" + instanceId),  "onmousedown", function(evt) { ss_cal_CalEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridHour" + instanceId))});
+					dojo.connect(dojo.byId("ss_cal_dayGridAllDay" + instanceId), "onmousedown", function(evt) { ss_cal_CalAllDayEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridAllDay" + instanceId))});
 	                this.dayGridCreated = true;
 	            }
 				this.showCalendarDaysDescription(this.firstDayToShow);
@@ -583,9 +574,9 @@ function ss_calendarEngine(
 	        	var monthViewInfo = ss_cal_CalData.getMonthViewInfo(this.currentDate);
 	    		this.firstDayToShow = monthViewInfo.beginView;
 				if (dojo.byId("ss_cal_DayGridMaster" + instanceId)) {
-	            	dojo.html.hide(dojo.byId("ss_cal_DayGridMaster" + instanceId));
+	            	dojo.style(dojo.byId("ss_cal_DayGridMaster" + instanceId), "display", "none");
 				}
-	            dojo.html.show(dojo.byId("ss_cal_MonthGridMaster" + instanceId));
+	            dojo.style(dojo.byId("ss_cal_MonthGridMaster" + instanceId), "display", "block");
 	            
 				this.drawMonthGrid(ss_cal_CalData.today, this.currentDate, monthViewInfo);
 				this.showCalendarMonthDescription();
@@ -599,7 +590,7 @@ function ss_calendarEngine(
 	    showCalendarDaysDescription: function(firstDayToShow) {
 	    	var descr = firstDayToShow.getDate() + " " + getMonthNameShort(firstDayToShow) + " " + firstDayToShow.getFullYear();
 	
-	    	var lastDayToShow = dojo.date.add(firstDayToShow, dojo.date.dateParts.DAY, this.gridSize - 1);
+	    	var lastDayToShow = dojo.date.add(firstDayToShow, "day", this.gridSize - 1);
 	    	if (daysDiff(firstDayToShow, lastDayToShow) != 0) {
 	    		descr += " - ";
 	    		descr += lastDayToShow.getDate() + " " + getMonthNameShort(lastDayToShow) + " " + lastDayToShow.getFullYear();	
@@ -635,8 +626,6 @@ function ss_calendarEngine(
 	        var container = dojo.byId(containerId);
 	        var hourOffset = 0;
 	        var dayOffsetSize = this.dayOffsetSizes[howManyDays];
-	        var toDestroy = [];
-	        
 	        
 	        var todayMarker = dojo.byId(containerId + "_Today");
 	        if (!todayMarker) {
@@ -647,13 +636,8 @@ function ss_calendarEngine(
 	            todayMarker.style.display = "none";
 	            container.appendChild(todayMarker);
 	        }
-	        var v = dojo.dom.getFirstChildElement(container);
-	        while (v) {
-	            if (v.className == "ss_cal_dayRule") { toDestroy.push(v); };
-	            v = dojo.dom.getNextSiblingElement(v);
-	        }
-	        while (toDestroy.length) { dojo.dom.removeNode(toDestroy.pop()); }
-	
+	        
+	        dojo.query(".ss_cal_dayRule", container).foreach("dojo._destroyElement(item);");	
 	
 			var todayOffsetInView = 0;
 			var todayVisible = false;
@@ -672,15 +656,15 @@ function ss_calendarEngine(
 	            vrule.className = "ss_cal_dayRule";
 	            vrule.style.left = this.dayGridPositions[howManyDays][x] + "%";
 	            container.appendChild(vrule);
-	            currentDayToShow = dojo.date.add(currentDayToShow, dojo.date.dateParts.DAY, 1);
+	            currentDayToShow = dojo.date.add(currentDayToShow, "day", 1);
 	        }
 	        
 	        if (todayVisible) {
 				todayMarker.style.width = dayOffsetSize + "%";
 	            todayMarker.style.left = (todayOffsetInView * dayOffsetSize) + "%";
-	            dojo.html.show(todayMarker);
+	            dojo.style(todayMarker, "display", "block");
 	        } else {
-	        	dojo.html.hide(todayMarker);
+	        	dojo.style(todayMarker, "display", "none");
 	        }
 	
 	        if (!justVertical) {
@@ -705,14 +689,8 @@ function ss_calendarEngine(
 	        var hourOffset = 0;
 	        var dayOffsetSize = this.dayOffsetSizes[howManyDays];
 	
-	        var toDestroy = [];
-	        var v = dojo.dom.getFirstChildElement(container);
-	        while (v) {
-	            if (dojo.html.hasClass(v, "ss_cal_gridHeaderText")) { toDestroy.push(v); };
-	            v = dojo.dom.getNextSiblingElement(v);
-	        }
-	        while (toDestroy.length) { dojo.dom.removeNode(toDestroy.pop()); }
-	
+	        dojo.query(".ss_cal_gridHeaderText", container).foreach("dojo._destroyElement(item);");	
+
 			var currentDayToShow = firstDayToShow;
 	        for (var x = 0; x < howManyDays; x++) {
 	            var badge = document.createElement("div");
@@ -731,8 +709,7 @@ function ss_calendarEngine(
 	        	var mm = currentDayToShow.getMonth();
 	        	var dd = currentDayToShow.getDate();
 	        	(function(yyyy, mm, dd) {
-		        	// dojo.event.connect(changeViewLink, "onclick", function(evt) {
-					dojo.event.browser.addListener(changeViewLink, "onclick", function(evt) {
+					dojo.connect(changeViewLink, "onclick", function(evt) {
 							ss_cal_Events.switchView('daydirect', yyyy, mm, dd);
 	        			});
 	        	})(yyyy, mm, dd);
@@ -741,7 +718,7 @@ function ss_calendarEngine(
 	                                    
 	            container.appendChild(badge);
 	            
-	            currentDayToShow = dojo.date.add(currentDayToShow, dojo.date.dateParts.DAY, 1);
+	            currentDayToShow = dojo.date.add(currentDayToShow, "day", 1);
 	        }
 	    },
 		
@@ -787,20 +764,8 @@ function ss_calendarEngine(
 	        todayMarker.style.height = hOffsetSize + "%";
 	        todayMarker.style.display = "none";
 	        
-	        var toDestroy = [];
-	        var v = dojo.dom.getFirstChildElement(container);
-	        while (v) {
-	            if (v.className != "ss_cal_todayMarker") { toDestroy.push(v); };
-	            v = dojo.dom.getNextSiblingElement(v);
-	        }
-	        while (toDestroy.length) { dojo.dom.removeNode(toDestroy.pop()); }
-	
-	        var v = dojo.dom.getFirstChildElement(dojo.byId("ss_cal_monthGridHeader" + instanceId));
-	        while (v) {
-	            if (dojo.html.hasClass(v, "ss_cal_gridHeaderText")) { toDestroy.push(v); };
-	            v = dojo.dom.getNextSiblingElement(v);
-	        }
-	        while (toDestroy.length) { dojo.dom.removeNode(toDestroy.pop()); }
+	        dojo.query(".ss_cal_todayMarker", container).forEach("dojo._destroyElement(item);");	
+	        dojo.query(".ss_cal_gridHeaderText", container).forEach("dojo._destroyElement(item);");	
 	
 	        for (var x = 0; x < 7; x++) {
 	            var vrule = document.createElement("div");
@@ -860,9 +825,10 @@ function ss_calendarEngine(
 			var isToday = ss_cal_CalData.isToday(date);
 	    	if (isToday) {
 	    		var allDayBadge = dojo.byId("ss_cal_monthGridToday" + instanceId);
+	    		alert(allDayBadge)
 				allDayBadge.style.left = this.monthGridDayBadgeVOffsets[d] + "%";
 	            allDayBadge.style.top = this.monthGridDayBadgeHOffsets[this.monthGridWeeks][w] + "%";
-	            dojo.html.show(allDayBadge);
+	            dojo.style(allDayBadge, "display", "block");
 	    	} else {
 				var allDayBadge = document.createElement("div");
 		        allDayBadge.style.top = this.monthGridDayBadgeHOffsets[this.monthGridWeeks][w] + "%";
@@ -876,14 +842,14 @@ function ss_calendarEngine(
 			}
 			
 			(function() {
-				dojo.event.browser.addListener(allDayBadge, "onmouseover", function(evt) {
-					dojo.html.addClass(evt.target, "ss_cal_monthGridDayBadgeOverHighlight");
+				dojo.connect(allDayBadge, "onmouseover", function(evt) {
+					dojo.addClass(evt.target, "ss_cal_monthGridDayBadgeOverHighlight");
        			});
             })();
 			
 			(function() {
-				dojo.event.browser.addListener(allDayBadge, "onmouseout", function(evt) {
-					dojo.html.removeClass(evt.target, "ss_cal_monthGridDayBadgeOverHighlight");
+				dojo.connect(allDayBadge, "onmouseout", function(evt) {
+					dojo.removeClass(evt.target, "ss_cal_monthGridDayBadgeOverHighlight");
        			});
             })();
 			
@@ -892,7 +858,7 @@ function ss_calendarEngine(
 		    url += "&month=" + date.getMonth();
 		    url += "&dayOfMonth=" + date.getDate();
             (function() {
-				dojo.event.browser.addListener(allDayBadge, "onclick", function(evt) {
+				dojo.connect(allDayBadge, "onclick", function(evt) {
 				    ss_openUrlInPortlet(url, true);
 					return false;
        			});
@@ -912,7 +878,7 @@ function ss_calendarEngine(
             changeViewLink.href = "javascript: // ;";
             changeViewLink.innerHTML = date.getDate();
             (function(date) {
-				dojo.event.browser.addListener(changeViewLink, "onclick", function(evt) {
+				dojo.connect(changeViewLink, "onclick", function(evt) {
 							ss_cal_Events.switchView('daydirect', date.getFullYear(), date.getMonth(), date.getDate());
 	        			});
             })(date);
@@ -963,8 +929,14 @@ function ss_calendarEngine(
 	        outer = dojo.byId("ss_cal_dayGridWindowOuter" + instanceId);
 	        inner = dojo.byId("ss_cal_dayGridWindowInner" + instanceId);
 	
-	        dojo.lfx.propertyAnimation(outer, [{ property: "height", start: 500, end: 1008 }], 200).play();
-	   	    dojo.lfx.propertyAnimation(inner, [{ property: "top", start: -3 - (workDayStart * 42), end: -3 }], 200).play();
+	        dojo.animateProperty({node: outer,
+	              				  properties: { height: {start: 500, end: 1008} },
+	              				  duration: 200
+	              				 }).play();
+	   	    dojo.animateProperty({node: inner, 
+	   	    					  properties: {top: {start: -3 - (workDayStart * 42), end: -3} },
+	   	    					  duration: 200
+	   	    					 }).play();	   	    
 	        
 	        var celendarHoursSelector = dojo.byId(calendarHoursSelectorId);
 			if (celendarHoursSelector) {
@@ -995,8 +967,8 @@ function ss_calendarEngine(
 	        var outer = dojo.byId("ss_cal_dayGridWindowOuter" + instanceId);
 	        var inner = dojo.byId("ss_cal_dayGridWindowInner" + instanceId);
 			
-	       	dojo.lfx.propertyAnimation(outer, [{ property: "height", start: 1008, end: 500 }], 200).play();
-	       	dojo.lfx.propertyAnimation(inner, [{ property: "top", start: -3, end: -3 - (workDayStart* 42) }], 200).play();
+	       	dojo.animateProperty({node: outer, properties: { height: {start: 1008, end: 500} }, duration: 200}).play();
+	       	dojo.animateProperty({node: inner, properties: { top: {start: -3, end: -3 - (workDayStart* 42)} }, duration: 200}).play();
 	        
 	        var celendarHoursSelector = dojo.byId(calendarHoursSelectorId);
 			if (celendarHoursSelector) {
@@ -1020,7 +992,7 @@ function ss_calendarEngine(
 	    highlightDaySelectorMenuIcon: function() {
 	    	// all to inactive							
 	    	for (var i in viewSelectorHrefIds) {
-	    		dojo.html.setClass(document.getElementById(viewSelectorHrefIds[i]), viewSelectorHrefClasses[i]);
+	    		dojo.byId(viewSelectorHrefIds[i]).className = viewSelectorHrefClasses[i];
 	    	}
 	    	
 	    	// set current to active state
@@ -1028,7 +1000,7 @@ function ss_calendarEngine(
 	    	if (ss_cal_Grid.currentType == "day") {
 	    		hrefIndex = "days" + ss_cal_Grid.gridSize;
 	    	}
-	     	dojo.html.setClass(dojo.byId(viewSelectorHrefIds[hrefIndex]), viewSelectorHrefClasses[hrefIndex] + "Active");
+	     	dojo.byId(viewSelectorHrefIds[hrefIndex]).className = viewSelectorHrefClasses[hrefIndex] + "Active";
 	    }
 	}
 	
@@ -1045,17 +1017,17 @@ function ss_calendarEngine(
 	    mouseIsDown: function(evt, grid) {
 	        ss_cal_Events.cancelHover(false);
 	        //evt = (evt) ? evt : ((event) ? event : null);
-	        gridX = evt.clientX - dojo.html.abs(grid).x;
+	        gridX = evt.clientX - dojo.coords(grid).x;
 	        gridWidth = grid.offsetWidth;
 	        // Calculate day offsets.
 	        dayOffset = Math.floor((gridX / gridWidth)  / (1.0 / ss_cal_Grid.gridSize));
 	        var firstDayOnGrid = ss_cal_Grid.firstDayToShow;
-			this.currDay = dojo.date.add(firstDayOnGrid, dojo.date.dateParts.DAY, dayOffset);
+			this.currDay = dojo.date.add(firstDayOnGrid, "day", dayOffset);
 	        
 	        hourOffset = this.recordHourOffset(this.currDay.getFullYear(), this.currDay.getMonth(), this.currDay.getDate());
 	        this.currDispId = ss_cal_drawCalendarEvent(grid.id, ss_cal_Grid.gridSize, 1, 0, dayOffset, hourOffset, -1, "All day", "", "", false, {calendarId: defaultCalendarId});
 	        this.resetGridHeight();
-	        dojo.event.connect(dojo.body(), "onmouseup", this, "mouseIsUp");       
+	        dojo.connect(dojo.body(), "onmouseup", this, "mouseIsUp");       
 	        this.currEventData = {};
 	        this.currEventData.startDate = this.currDay;
 	        this.currEventData.start = -1;
@@ -1083,13 +1055,13 @@ function ss_calendarEngine(
 	            dojo.byId("ss_cal_dayGridWindowOuter" + instanceId).style.top = "1px";
 	            dojo.byId("ss_cal_dayGridWindowOuter" + instanceId).style.top = "0px";
 	        } else {
-	            dojo.lfx.propertyAnimation("ss_cal_dayGridAllDay" + instanceId, [{ property: "height", end: ((maxEvents + 1) * 21) }], 100).play();
+	            dojo.animateProperty({node: "ss_cal_dayGridAllDay" + instanceId, properties: { height: {end: ((maxEvents + 1) * 21)} }, duration: 100}).play();
 	        }
 	    },
 	
 	    mouseIsUp: function(evt) {
-	        if (!dojo.html.selection.isCollapsed()) { dojo.html.selection.collapse(true); }
-	        dojo.event.disconnect(dojo.body(), "onmouseup",   this, "mouseIsUp");
+	        if (!dijit.isCollapsed()) { dojo.doc.selection.collapse(true); }
+	        dojo.disconnect(dojo.body(), "onmouseup",   this, "mouseIsUp");
 	        
 	        ss_cal_newEventInfo(evt, this);
 	    },
@@ -1124,16 +1096,14 @@ function ss_calendarEngine(
 	    mouseIsDown: function(evt, grid) {
 	        ss_cal_Events.cancelHover(false);
 	        //evt = (evt) ? evt : ((event) ? event : null);
-	        //console.log(dojo.html.getTotalOffset(grid, "top", 0));
-	        //console.log(dojo.html.getAbsoluteY(grid));
 	        // The offset is affected by the enclosing "window" divs, so we factor it here.
-	        gridX = evt.clientX - dojo.html.abs(grid).x;
-	        gridY = (evt.clientY + document.body.scrollTop + document.documentElement.scrollTop) - dojo.html.getTotalOffset(grid, "top", 0);
+	        gridX = evt.clientX - dojo.coords(grid).x;
+	        gridY = (evt.clientY + document.body.scrollTop + document.documentElement.scrollTop) - dojo.coords(grid).t;
 	
 	        gridWidth = grid.offsetWidth;
 	        currGrid = grid;
-	        dojo.event.connect(dojo.body(), "onmousemove", this, "whataDrag");
-	        dojo.event.connect(dojo.body(), "onmouseup", this, "mouseIsUp");
+	        dojo.connect(dojo.body(), "onmousemove", this, "whataDrag");
+	        dojo.connect(dojo.body(), "onmouseup", this, "mouseIsUp");
 	    
 	        // Calculate hour and day offsets.
 	        hourOffset = Math.floor(gridY / 42);
@@ -1142,7 +1112,7 @@ function ss_calendarEngine(
 	        
 			var firstDayOnGrid = ss_cal_Grid.firstDayToShow;
 	
-			var currDay = dojo.date.add(firstDayOnGrid, dojo.date.dateParts.DAY, dayOffset);
+			var currDay = dojo.date.add(firstDayOnGrid, "day", dayOffset);
 			currDay.setHours(Math.floor(hourOffset));
 			currDay.setMinutes(0);
 			if ((gridY % 42) > 21) {
@@ -1163,7 +1133,7 @@ function ss_calendarEngine(
 			var currBoxOut = dojo.byId("calevt_out" + instanceId + this.currDispId);
 			
 	        gridX = (evt.clientX + document.body.scrollLeft);
-	        gridY = (evt.clientY + document.body.scrollTop + document.documentElement.scrollTop)  -  dojo.html.getTotalOffset(currGrid, "top", 0) - currBox.parentNode.offsetTop;
+	        gridY = (evt.clientY + document.body.scrollTop + document.documentElement.scrollTop)  -  dojo.coords(currGrid).t - currBox.parentNode.offsetTop;
 	        if (gridY > 12) {
 	            gridY = gridQuantum + Math.floor(gridY / gridQuantum) * gridQuantum;
 	            currBox.style.height = (gridY - 4) + "px";
@@ -1173,16 +1143,16 @@ function ss_calendarEngine(
 	        currBox.innerHTML = duration + ' min';
 	        this.currEventData.dur = duration;
 	
-	        if (!dojo.html.selection.isCollapsed()) { dojo.html.selection.collapse(true); }
+	        if (!dijit.isCollapsed()) { dojo.doc.selection.collapse(true); }
 	        evt.cancelBubble = true;
 	        return false;
 	    
 	    },
 	
 	    mouseIsUp: function(evt) {
-	        if (!dojo.html.selection.isCollapsed()) { dojo.html.selection.collapse(true); }
-	        dojo.event.disconnect(dojo.body(), "onmousemove", this, "whataDrag");
-	        dojo.event.disconnect(dojo.body(), "onmouseup",   this, "mouseIsUp");
+	        if (!dijit.isCollapsed()) { dojo.doc.selection.collapse(true); }
+	        dojo.disconnect(dojo.body(), "onmousemove", this, "whataDrag");
+	        dojo.disconnect(dojo.body(), "onmouseup",   this, "mouseIsUp");
 	        ss_cal_newEventInfo(evt, this);
 	    },
 	
@@ -1344,7 +1314,7 @@ function ss_calendarEngine(
 			// this.setMCollision(event.eventType, fullMonthKey, event.eventId);
 			this.setOrder(event.eventType, key, (Math.floor(event.start * 10) + 1011) + "/" + event.eventId);
 			
-			date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+			date = dojo.date.add(date, "day", 1);
 			var daysToEndOfEvent = daysDiff(date, event.endDate);
 			while (daysToEndOfEvent >= 0) {
 				fullMonthKey = date.getFullYear() + "/" + fullWithZeros(date.getMonth() ) + "/" + fullWithZeros(date.getDate());
@@ -1355,7 +1325,7 @@ function ss_calendarEngine(
 				// this.setMCollision(event.eventType, fullMonthKey, event.eventId);
 				this.setOrder(event.eventType, key, (0 + 1011) + "/" + event.eventId);
 				
-	    		date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+	    		date = dojo.date.add(date, "day", 1);
 				daysToEndOfEvent--;
 	    	}
 	    },
@@ -1364,11 +1334,11 @@ function ss_calendarEngine(
 	    	var date = event.startDate;
 	    	
 	    	this.decrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate() + "/" + date.getHours());
-	    	date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+	    	date = dojo.date.add(date, "day", 1);
 			var daysToEndOfEvent = daysDiff(date, event.endDate);
 	    	while (daysToEndOfEvent >= 0) {
 	    		this.decrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate() + "/0");
-	    		date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+	    		date = dojo.date.add(date, "day", 1);
 				daysToEndOfEvent--;
 	    	}
 	    },
@@ -1379,7 +1349,7 @@ function ss_calendarEngine(
 	    	while (daysToEndOfEvent >= 0) {
 				var key = date.getFullYear() + "/" + fullWithZeros(date.getMonth() ) + "/" + fullWithZeros(date.getDate());
 		        this.decrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate());
-				date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+				date = dojo.date.add(date, "day", 1);
 				daysToEndOfEvent--;
 	    	}
 	    },
@@ -1417,7 +1387,7 @@ function ss_calendarEngine(
 	    		}
 	    	}
 	    	
-	    	date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+	    	date = dojo.date.add(date, "day", 1);
 			var daysToEndOfEvent = daysDiff(date, event.endDate);
 	    	while (daysToEndOfEvent >= 0) {
 	    		key = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate();
@@ -1429,7 +1399,7 @@ function ss_calendarEngine(
 			    		}
 			    	}
 	    		}  
-				date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+				date = dojo.date.add(date, "day", 1);
 				daysToEndOfEvent--;
 	    	}
 	    },
@@ -1441,7 +1411,7 @@ function ss_calendarEngine(
 	
 	    undrawMonthEvents: function() {
 	        while (this.monthGridEvents.length) {
-	            dojo.dom.removeNode(dojo.byId("calevt" + instanceId + this.monthGridEvents.pop()));
+	            dojo._destroyElement(dojo.byId("calevt" + instanceId + this.monthGridEvents.pop()));
 	        }
 			for (var i = 0; i < this.monthEventIds.length; i++) {
 				if (this.eventData[this.monthEventIds[i]]) {
@@ -1456,7 +1426,7 @@ function ss_calendarEngine(
 	        	var eventDisplayIds = this.dayGridEvents[eventId];
 	        	for (var i in eventDisplayIds) {
 					if (eventDisplayIds[i]) {
-		            	dojo.dom.removeNode(dojo.byId("calevt" + instanceId + eventDisplayIds[i]).parentNode);
+		            	dojo._destroyElement(dojo.byId("calevt" + instanceId + eventDisplayIds[i]).parentNode);
 		            	delete eventDisplayIds[i];
 		           	}
 	            }	        	
@@ -1477,7 +1447,7 @@ function ss_calendarEngine(
 			ss_entryCount = 0;
 	        
 			var key, fullMonthKey;
-	        var lastDayToShow = dojo.date.add(ss_cal_Grid.firstDayToShow, dojo.date.dateParts.DAY, ss_cal_Grid.gridSize - 1);
+	        var lastDayToShow = dojo.date.add(ss_cal_Grid.firstDayToShow, "day", ss_cal_Grid.gridSize - 1);
 	        var date = ss_cal_Grid.firstDayToShow;
 			for (var gridDay = 0; gridDay < ss_cal_Grid.gridSize; gridDay++) {
 				key = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate();
@@ -1558,7 +1528,7 @@ function ss_calendarEngine(
 					}
 				}
 			
-				date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+				date = dojo.date.add(date, "day", 1);
 	        }
 	        this.collisionI = {};
 	        ss_cal_CalAllDayEvent.resetGridHeight();
@@ -1599,7 +1569,7 @@ function ss_calendarEngine(
 				}
 				
 				
-				date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+				date = dojo.date.add(date, "day", 1);
 				daysToEndOfMonthView--;
 			}		
 	    },
@@ -1630,9 +1600,11 @@ function ss_calendarEngine(
 	    cancelHover: function(animate) {
 	        if (this.overEventId != "") {
 	            if (animate) {
-	                dojo.lfx.html.fadeHide(hoverBox, 100).play();
+	                dojo.fadeHide({node: hoverBox, duration: 100,
+	                               onEnd: function() {dojo.style(hoverBox, "display", "none")}
+	                            }).play();
 	            } else {
-	                dojo.html.hide(hoverBox);
+	                dojo.style(hoverBox, "display", "none");
 	            }
 				hoverBox.innerHTML = "";
 	        } else {
@@ -1653,7 +1625,7 @@ function ss_calendarEngine(
 	            //console.log("Hover: " + eventId);
 	            this.hoverEventId = eventId + "-" + gridDay;
 	
-	            var ebox = dojo.html.abs(n);
+	            var ebox = dojo.coords(n);
 	            hoverBox.style.visibility = "visible";
 				var calEvtObj = dojo.byId("calevt" + instanceId + ss_cal_Events.dayGridEvents[e.eventId][gridDay]);
 				
@@ -1676,10 +1648,10 @@ function ss_calendarEngine(
 				
 				hoverContentBox.className = calStyle;
 				
-	            dojo.html.setOpacity(hoverBox,0);
-	            dojo.html.show(hoverBox);
-	            dojo.html.placeOnScreen(hoverBox, (ebox.left + 30), (ebox.top - hoverBox.offsetHeight - 20), 10, false, "TL");
-	            dojo.lfx.html.fadeIn(hoverBox, 200).play();
+	            dojo.style(hoverBox, "opacity", 0);
+	            dojo.style(hoverBox, "display", "block");
+	            dijit.placeOnScreen(hoverBox, { x: (ebox.l + 30), y: (ebox.t - hoverBox.offsetHeight - 20)}, "TL", false);
+	            dojo.fadeIn({node: hoverBox, duration: 200}).play();
 	        }
 	    },
 	
@@ -1704,8 +1676,8 @@ function ss_calendarEngine(
 	            case "week":
 					ss_cal_Grid.setGrid({size : 7, incr : 7});
 	
-	                var firstDayToShow = dojo.date.add(ss_cal_Grid.currentDate, dojo.date.dateParts.DAY, -(ss_cal_Grid.currentDate.getDay()));
-	                var lastDayToShow = dojo.date.add(firstDayToShow, dojo.date.dateParts.DAY, ss_cal_Grid.gridIncr);
+	                var firstDayToShow = dojo.date.add(ss_cal_Grid.currentDate, "day", -(ss_cal_Grid.currentDate.getDay()));
+	                var lastDayToShow = dojo.date.add(firstDayToShow, "day", ss_cal_Grid.gridIncr);
 	                
 	                dayToShow = firstDayToShow;
 	                if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
@@ -1716,8 +1688,8 @@ function ss_calendarEngine(
 	            case "fortnight":
 					ss_cal_Grid.setGrid({size : 14, incr : 14});
 	                
-	                var firstDayToShow = dojo.date.add(ss_cal_Grid.currentDate, dojo.date.dateParts.DAY, -(ss_cal_Grid.currentDate.getDay()));
-	                var lastDayToShow = dojo.date.add(firstDayToShow, dojo.date.dateParts.DAY, 14);
+	                var firstDayToShow = dojo.date.add(ss_cal_Grid.currentDate, "day", -(ss_cal_Grid.currentDate.getDay()));
+	                var lastDayToShow = dojo.date.add(firstDayToShow, "day", 14);
 	                
 	                dayToShow = firstDayToShow;
 	                if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
@@ -1728,8 +1700,8 @@ function ss_calendarEngine(
 	            case "workweek":
 					ss_cal_Grid.setGrid({size : 5, incr : 7});
 	                
-	                var firstDayToShow = dojo.date.add(ss_cal_Grid.currentDate, dojo.date.dateParts.DAY, -(ss_cal_Grid.currentDate.getDay()) + 1);
-	                var lastDayToShow = dojo.date.add(firstDayToShow, dojo.date.dateParts.DAY, ss_cal_Grid.gridIncr);
+	                var firstDayToShow = dojo.date.add(ss_cal_Grid.currentDate, "day", -(ss_cal_Grid.currentDate.getDay()) + 1);
+	                var lastDayToShow = dojo.date.add(firstDayToShow, "day", ss_cal_Grid.gridIncr);
 	                
 	                dayToShow = firstDayToShow;
 	                if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
@@ -1759,12 +1731,12 @@ function ss_calendarEngine(
 	                
 	            case "prev":
 					if (ss_cal_Grid.currentType == "month") {
-	            		dayToShow = dojo.date.add(ss_cal_Grid.currentDate, dojo.date.dateParts.MONTH, -1);
+	            		dayToShow = dojo.date.add(ss_cal_Grid.currentDate, "month", -1);
 	            	} else {
-						dayToShow = dojo.date.add(ss_cal_Grid.currentDate, dojo.date.dateParts.DAY, -ss_cal_Grid.gridIncr);
+						dayToShow = dojo.date.add(ss_cal_Grid.currentDate, "day", -ss_cal_Grid.gridIncr);
 					}
 	            	if (ss_cal_Grid.currentType != "month") {
-		                var lastDayToShow = dojo.date.add(dayToShow, dojo.date.dateParts.DAY, -ss_cal_Grid.gridIncr);
+		                var lastDayToShow = dojo.date.add(dayToShow, "day", -ss_cal_Grid.gridIncr);
 		                if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
 		                	requiredDay = lastDayToShow;
 		                }
@@ -1774,12 +1746,12 @@ function ss_calendarEngine(
 	                break;
 	            case "next":
 					if (ss_cal_Grid.currentType == "month") {
-	            		dayToShow = dojo.date.add(ss_cal_Grid.currentDate, dojo.date.dateParts.MONTH, 1);
+	            		dayToShow = dojo.date.add(ss_cal_Grid.currentDate, "month", 1);
 	            	} else {
-						dayToShow = dojo.date.add(ss_cal_Grid.currentDate, dojo.date.dateParts.DAY, ss_cal_Grid.gridIncr);
+						dayToShow = dojo.date.add(ss_cal_Grid.currentDate, "day", ss_cal_Grid.gridIncr);
 					}
 	            	if (ss_cal_Grid.currentType != "month") {
-		                var lastDayToShow = dojo.date.add(dayToShow, dojo.date.dateParts.DAY, ss_cal_Grid.gridIncr);
+		                var lastDayToShow = dojo.date.add(dayToShow, "day", ss_cal_Grid.gridIncr);
 		                if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
 		                	requiredDay = lastDayToShow;
 		                }
@@ -1879,15 +1851,13 @@ function ss_calendarEngine(
 	    ebox.className = "ss_cal_eventBox";
 	
 	    if (eventId != "") {
-	        // dojo.event.connect(ebox, "onmousedown", function(e) {
-			dojo.event.browser.addListener(ebox, "onmousedown", function(e) {
+			dojo.connect(ebox, "onmousedown", function(e) {
 	        	// prevent new events creation
 	        	if (!e) var e = window.event;
 				e.cancelBubble = true;
 				if (e.stopPropagation) e.stopPropagation();
 	        });
-	        // dojo.event.connect(ebox, "onmouseover", function(evt) { ss_cal_Events.requestHover(evt, eventId, day); });
-			dojo.event.browser.addListener(ebox, "onmouseover", function(evt) { ss_cal_Events.requestHover(evt, eventId, day); });
+			dojo.connect(ebox, "onmouseover", function(evt) { ss_cal_Events.requestHover(evt, eventId, day); });
 	    }
 	
 		var eventLength = 1;
@@ -1940,10 +1910,10 @@ function ss_calendarEngine(
 		addBottomCorners(ebox, calStyle);
 
 	    container.appendChild(ebox);
-	    dojo.html.setOpacity(ebox,0);
+	    dojo.style(ebox, "opacity", 0);
 	    var o = (title == "") ? 0.8 : 1.0;
 
-	    dojo.lfx.propertyAnimation(ebox, [{ property: "opacity", start: 0, end: o }], 200).play();
+	    dojo.animateProperty({node: ebox, properties: { opacity: {start: 0, end: o} }, duration: 200}).play();
 	    
 	    return ss_cal_Events.displayId;
 	}
@@ -2111,17 +2081,17 @@ function ss_calendarEngine(
 		var firstDayInCurrentWeekWithMoreThen3Events;
 		if (eventCount >= 3) {
 			var c = 0;
-			firstDayInCurrentWeekWithMoreThen3Events = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+			firstDayInCurrentWeekWithMoreThen3Events = dojo.date.add(date, "day", 1);
 			while (c < (6 - dayOfWeek)) {
 				var tEventList = ss_cal_Events.getDayEventsInMonthView(firstDayInCurrentWeekWithMoreThen3Events);
 				if (tEventList && tEventList.length > 3) {
 					break;
 				}
 				
-				firstDayInCurrentWeekWithMoreThen3Events = dojo.date.add(firstDayInCurrentWeekWithMoreThen3Events, dojo.date.dateParts.DAY, 1);
+				firstDayInCurrentWeekWithMoreThen3Events = dojo.date.add(firstDayInCurrentWeekWithMoreThen3Events, "day", 1);
 				c++;
 			}
-			if (daysDiff(firstDayInCurrentWeekWithMoreThen3Events, dojo.date.add(date, dojo.date.dateParts.DAY, 6 - dayOfWeek)) < 0) {
+			if (daysDiff(firstDayInCurrentWeekWithMoreThen3Events, dojo.date.add(date, "day", 6 - dayOfWeek)) < 0) {
 				 firstDayInCurrentWeekWithMoreThen3Events = undefined;
 			}
 		}
@@ -2213,7 +2183,7 @@ function ss_calendarEngine(
 				eventDaysLength = maxEventLenghtToShow;
 			}
 			
-			if (typeof e.position != "undefined" && e.position.week == week && daysDiff(dojo.date.add(e.position.date, dojo.date.dateParts.DAY, e.position.length - 1), date) <= 0 && (continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT || continues == ss_cal_Events.CONTINUES_LEFT) && dayOfWeek != 0) {
+			if (typeof e.position != "undefined" && e.position.week == week && daysDiff(dojo.date.add(e.position.date, "day", e.position.length - 1), date) <= 0 && (continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT || continues == ss_cal_Events.CONTINUES_LEFT) && dayOfWeek != 0) {
 				continue;
 			}
 			e.position = {pos: i, week: week, date: date, length: eventDaysLength};
@@ -2258,7 +2228,7 @@ function ss_calendarEngine(
 			
 	        container.appendChild(ebox);
 
-	        dojo.lfx.propertyAnimation(ebox, [{ property: "opacity", start: 0, end: 1 }], 200).play();     
+	        dojo.animateProperty({node: ebox, properties: { opacity: {start: 0, end: 1} }, duration: 200}).play();     
 	    }
 	
 	    if (eventCount > dayPositions.length) {
@@ -2282,8 +2252,7 @@ function ss_calendarEngine(
 			eboxInner.style.textAlign = "center";
 			
 			(function(eboxInner, dayOfWeek, container, vOffsetSize, week, hOffsetSize, eventCount, eventList, date) {
-				dojo.event.browser.addListener(eboxInner, "onclick", function(evt) {
-				// dojo.event.connect(eboxInner, "onclick", function(evt) {
+				dojo.connect(eboxInner, "onclick", function(evt) {
 					// create all events pane
 					var moreEventsDiv = document.createElement("div");
 					moreEventsDiv.className = "ss_calendar_more_box";
@@ -2361,14 +2330,12 @@ function ss_calendarEngine(
 					
 					
 					var lightBox = ss_showLightbox(null, null, null, "ss_lightBox_transparent");
-					// dojo.event.connect(lightBox, "onclick", function(evt) {
-					dojo.event.browser.addListener(lightBox, "onclick", function(evt) {
+					dojo.connect(lightBox, "onclick", function(evt) {
 						dojo.dom.removeNode(moreEventsDiv);
 						dojo.dom.removeNode(lightBox);
 					});
 					
-					// dojo.event.connect(moreEventsDiv, "onclick", function(evt) {
-					dojo.event.browser.addListener(moreEventsDiv, "onclick", function(evt) {
+					dojo.connect(moreEventsDiv, "onclick", function(evt) {
 						dojo.dom.removeNode(moreEventsDiv);
 						dojo.dom.removeNode(lightBox);
 					});
@@ -2381,7 +2348,7 @@ function ss_calendarEngine(
 			
 	        container.appendChild(ebox);
 					
-	        dojo.lfx.propertyAnimation(ebox, [{ property: "opacity", start: 0, end: 1 }], 250).play();
+	        dojo.animateProperty({node: ebox, properties: { opacity: {start: 0, end: 1} }, duration: 250}).play();
 	    }
 	
 	
@@ -2439,7 +2406,7 @@ if (!window["ss_calendar_import"]) {
 			
 			dojo.byId("ss_calendar_import_title").appendChild(document.createTextNode(props.title));
 	
-			dojo.event.connect(dojo.byId("ss_calendar_import_close"), "onclick", function(evt) {
+			dojo.connect(dojo.byId("ss_calendar_import_close"), "onclick", function(evt) {
 				ss_calendar_import.cancel();
 		    });
 
@@ -2474,13 +2441,14 @@ if (!window["ss_calendar_import"]) {
 			ss_toggleAjaxLoadingIndicator(box, true);			
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"uploadICalendarFile"});
 			dojo.debug("uploadFile");
-			dojo.io.bind({
+			dojo.xhrGet({
 		    	url: url,
-				error: function(type, data, evt) {
+		    	handleAs: "json",
+				error: function(err) {
 					alert(ss_not_logged_in);
 					ss_calendar_import.cancel();
 				},
-				load: function(type, data, evt) {
+				load: function(data) {
 					if (data && data.notLoggedIn) {
 						alert(ss_not_logged_in);
 					} else if (data && data.parseExceptionMsg) {
@@ -2501,8 +2469,7 @@ if (!window["ss_calendar_import"]) {
 					ss_calendar_import.cancel();
 				},
 				preventCache: true,
-				mimetype: "text/json",
-				formNode: dojo.byId("ss_calendar_import_form")
+				form: "ss_calendar_import_form"
 			});
 	
 		},
@@ -2511,13 +2478,14 @@ if (!window["ss_calendar_import"]) {
 			var box = dojo.byId("ss_calendar_importURL_form");
 			ss_toggleAjaxLoadingIndicator(box, true);
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"loadICalendarByURL"});
-			dojo.io.bind({
+			dojo.xhrGet({
 		    	url: url,
-				error: function(type, data, evt) {
+		    	handleAs: "json",
+				error: function(err) {
 					alert(ss_not_logged_in);
 					ss_calendar_import.cancel();
 				},
-				load: function(type, data, evt) {
+				load: function(data) {
 					if (data && data.notLoggedIn) {
 						alert(ss_not_logged_in);
 					} else if (data && data.parseExceptionMsg) {
@@ -2538,8 +2506,7 @@ if (!window["ss_calendar_import"]) {
 					ss_calendar_import.cancel();
 				},
 				preventCache: true,
-				mimetype: "text/json",
-				formNode: dojo.byId("ss_calendar_importURL_form")
+				form: "ss_calendar_importURL_form"
 			});
 	
 		},
@@ -2603,7 +2570,7 @@ if (!window.ss_calendar_settings) {
 			// Link into the document tree
 			document.getElementsByTagName("body").item(0).appendChild(calConfigureDiv);
 
-			dojo.event.connect(dojo.byId("ss_calendar_configure_close"), "onclick", function(evt) {
+			dojo.connect(dojo.byId("ss_calendar_configure_close"), "onclick", function(evt) {
 				ss_calendar_settings.cancel();
 		    });
 		    
@@ -2613,13 +2580,14 @@ if (!window.ss_calendar_settings) {
 		save : function () {
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"saveCalendarConfiguration"});
 			dojo.debug("save calendar configuration");
-			dojo.io.bind({
+			dojo.xhrGet({
 		    	url: url,
-				error: function(type, data, evt) {
+		    	handleAs: "json",		    	
+				error: function(err) {
 					alert(ss_not_logged_in);
 					ss_calendar_import.cancel();
 				},
-				load: function(type, data, evt) {
+				load: function(data) {
 					if (data && data.notLoggedIn) {
 						alert(ss_not_logged_in);
 					} else if (data && data.status == "ok") {
@@ -2630,8 +2598,7 @@ if (!window.ss_calendar_settings) {
 				  	document.location.reload();	  	
 				},
 				preventCache: true,
-				mimetype: "text/json",
-				formNode: dojo.byId("ss_calendar_settings_form")
+				form: "ss_calendar_settings_form"
 			});
 	
 		},
@@ -2646,7 +2613,10 @@ if (!window.ss_calendar_settings) {
 function ss_calendar_formatHour(hour, lang) {
 	var d = new Date();
 	d.setHours(hour);
-	var hourS = dojo.date.format(d, {formatLength: 'hourOnly', locale: lang});
+	// I have no idea what is expected of this...  not documented in any Dojo version
+	//var hourS = dojo.date.format(d, {formatLength: 'hourOnly', locale: lang});
+	// Best guess follows
+	var hourS = dojo.date.locale.format(d, {timePattern:'K',selector:'time', locale: lang});
 	// next line because dojo.date.format requires to use separators in pattern 
 	return hourS.replace(" ", "").toLowerCase();
 }

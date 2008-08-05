@@ -40,6 +40,8 @@
 <!-- Beginning of  Share/Track Buttons -->
 <div>
 	<ul style="padding-top: 2px; padding-left: 5px;">
+	<li><span>I thot We weren't using this View?
+	<br/>If true, should delete share_track.jsp and delete view_vertical.jsp</span></li>
 	<li>
 <c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
 <a style="display:inline;" 

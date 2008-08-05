@@ -92,6 +92,6 @@ public class LogFileController extends  SAbstractController {
 
 		model.put(WebKeys.DOWNLOAD_URL, WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_VIEW_FILE + "?viewType=zipped&fileId=" +
 				tempFile.getName() + "&" + WebKeys.URL_FILE_TITLE + "=logfiles.zip");
-		return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT, model);
+		return new ModelAndView("administration/close_button", model);
 	}
 }

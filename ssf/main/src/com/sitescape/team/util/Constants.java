@@ -49,4 +49,6 @@ public interface Constants {
 	public static final String TAB = "\t";
 	
 	public static final String NEWLINE = System.getProperty("line.separator");
+	
+	public static final String COMMA = ",";
 }

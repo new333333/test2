@@ -29,6 +29,8 @@
  */
 %>
 <%@ page import="java.util.TimeZone" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="com.sitescape.team.domain.User" %>
 <c:if test="${scheduleStringOnly}">
 <c:if test="${schedule.daily}">
 <ssf:nlt tag="schedule.everyday"/>
@@ -117,7 +119,7 @@
    
 	<span class="ss_labelRight"><ssf:nlt tag="schedule.attime"/></span>
    
-	<select name="${schedPrefix}schedHours" id="${schedPrefix}schedHours"<c:if test="${!schedule.repeatHours}">value="${schedule.hours}"</c:if>>
+	<select name="${schedPrefix}schedHours" id="${schedPrefix}schedHours" <c:if test="${!schedule.repeatHours}">value="${schedule.hours}"</c:if>>
 		<option <c:if test="${schedule.hours == '0'}">selected="selected"</c:if> value="00">00
 		<option <c:if test="${schedule.hours == '1'}">selected="selected"</c:if> value="01">01
 		<option <c:if test="${schedule.hours == '2'}">selected="selected"</c:if> value="02">02
@@ -159,6 +161,32 @@
 		<option <c:if test="${schedule.minutes == '55'}">selected="selected"</c:if> value="55">55
 	</select>
 &nbsp;<span class="ss_bold"><%= TimeZone.getDefault().getID() %></span>
+	<c:set var="defaultTimeZoneId" value="<%= TimeZone.getDefault().getID() %>" />
+	<c:if test="${defaultTimeZoneId != ssUser.timeZone.ID}">
+		<span class="ss_fineprint ss_bright">
+			
+		<ssf:nlt tag="schedule.timeInTimeZone">
+			<ssf:param name="value" useBody="true">
+				<span id='${schedPrefix}userTime'>${schedule.hours}:${schedule.minutes}</span>
+			</ssf:param>
+			<ssf:param name="value" value="${ssUser.timeZone.displayName}" />
+		</ssf:nlt>
+		 </span>
+		<%
+			User ssUser = (User) request.getAttribute("ssUser");
+		%>
+		<script type="text/javascript">
+			dojo.require('dojo.date.format');
+			dojo.addOnLoad(function() {
+				function toConnect() { 
+					ss_printSchedulerTime('${schedPrefix}schedHours', '${schedPrefix}schedMinutes', '${schedPrefix}userTime', <%= ssUser.getTimeZone().getOffset((new Date()).getTime()) %>, '${ssUser.locale}')
+				}
+				toConnect();
+				dojo.event.connect(dojo.byId("${schedPrefix}schedHours"),  "onchange", toConnect);
+				dojo.event.connect(dojo.byId("${schedPrefix}schedMinutes"),  "onchange", toConnect);
+			});
+		</script>
+	</c:if>
 <br/>
 
 

@@ -24,6 +24,7 @@ public class WorkflowStatus implements Serializable {
 	public void setRetrySeconds(int seconds) {
 		this.retrySeconds = seconds;
 	}
+	//params are passed into remoteApp
 	public Map getParams() {
 		return params;
 	}

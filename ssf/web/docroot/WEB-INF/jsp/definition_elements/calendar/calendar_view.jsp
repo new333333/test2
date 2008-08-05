@@ -54,26 +54,22 @@
 
 <% // Then include the navigation widgets for this view %>
 <c:set var="prefix" value="${renderResponse.namespace}" />
-			<% // Add the toolbars with the navigation widgets, commands and filter %>
-				<div align="left" class="ssPageNavi">
-				<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" >
-					<jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
-				</ssf:toolbar>
-				</div>
-			
-			<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
-				<% // Entry toolbar %>
-				<c:if test="${!empty ssEntryToolbar}">
-					<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
-				</c:if>
-				
-				<ssf:ifnotaccessible>
-					<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" skipSeparator="true">
-						<%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_select_events.jsp" %>
-					</ssf:toolbar>
-				</ssf:ifnotaccessible>
+<% // Add the toolbars with the navigation widgets, commands and filter %>
+<jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 
-			</ssf:toolbar>		    	
+<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
+	<% // Entry toolbar %>
+	<c:if test="${!empty ssEntryToolbar}">
+		<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
+	</c:if>
+	
+	<ssf:ifnotaccessible>
+		<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" skipSeparator="true">
+			<%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_select_events.jsp" %>
+		</ssf:toolbar>
+	</ssf:ifnotaccessible>
+
+</ssf:toolbar>		    	
 
 <ssf:ifaccessible>
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_content_accessible.jsp" %>

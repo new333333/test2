@@ -28,25 +28,37 @@
  */
 package com.sitescape.team.search;
 
-import com.sitescape.team.util.Utils;
+import java.util.List;
 
-/**
- *
- * @author Jong Kim
- */
 public abstract class AbstractLuceneSessionFactory implements LuceneSessionFactory {
 
-    public LuceneSession openSession() throws LuceneException {
-    	// We use zone key as the index name
-        return openSession(Utils.getZoneKey());
+    public LuceneReadSession openReadSession() throws LuceneException {
+        return openReadSession(SearchUtils.getIndexName());
     }    
     
+    public LuceneWriteSession openWriteSession(String[] nodeIds) throws LuceneException {
+        return openWriteSession(SearchUtils.getIndexName());
+    }    
+    
+    public List<Node> getNodes() {
+    	return null;
+    }
+    
     /**
-     * Open a <code>LuceneSession</code>.
+     * Open a <code>LuceneReadSession</code>.
      * 
      * @param indexName
      * @return
      * @throws LuceneException
      */
-    protected abstract LuceneSession openSession(String indexName) throws LuceneException;
+    protected abstract LuceneReadSession openReadSession(String indexName) throws LuceneException;
+    
+    /**
+     * Open a <code>LuceneWriteSession</code>.
+     * 
+     * @param indexName
+     * @return
+     * @throws LuceneException
+     */
+    protected abstract LuceneWriteSession openWriteSession(String indexName) throws LuceneException;
 }
