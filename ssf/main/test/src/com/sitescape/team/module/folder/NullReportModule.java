@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Binder;
@@ -79,7 +80,8 @@ public class NullReportModule implements ReportModule {
 	}
 
 	public List<Map<String, Object>> generateLoginReport(Date startDate,
-			Date endDate, String optionType, String sortType) {
+			Date endDate, String optionType, String sortType,
+			String sortType2, Set memberIds) {
 		// TODO Auto-generated method stub
 		return null;
 	}
