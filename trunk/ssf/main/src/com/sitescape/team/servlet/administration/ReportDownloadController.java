@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.Collection;
 import javax.activation.FileTypeMap;
@@ -56,10 +57,12 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workflow.WorkflowUtils;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.servlet.SAbstractController;
 import com.sitescape.team.web.tree.TreeHelper;
+import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
 
 public class ReportDownloadController extends  SAbstractController {
@@ -111,8 +114,13 @@ public class ReportDownloadController extends  SAbstractController {
 		Date endDate = inputData.getDateValue(WebKeys.URL_END_DATE);
 		
         String sortType = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_SORT_TYPE, "");
+        
+        String sortType2 = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_SORT_TYPE_2, "");
+        
         String optionType = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_OPTION_TYPE, "");
-        String searchText = ServletRequestUtils.getStringParameter(request, "searchText", "");
+        
+        Set memberIds = new HashSet();
+        if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
         
 		if(endDate != null) {
 			cal.setTime(endDate);
@@ -140,7 +148,8 @@ public class ReportDownloadController extends  SAbstractController {
 						ReportModule.USER_ID, AuditTrail.AuditType.view.name(), AuditTrail.AuditType.add.name(),
 						AuditTrail.AuditType.modify.name(), AuditTrail.AuditType.delete.name()};
 			} else if ("login".equals(reportType)) {
-				report = getReportModule().generateLoginReport(startDate, endDate, optionType, sortType);
+				report = getReportModule().generateLoginReport(startDate, endDate, optionType, 
+						sortType, sortType2, memberIds);
 				
 				if(optionType.equals(WebKeys.URL_REPORT_OPTION_TYPE_SHORT))
 					columns = new String[] {ReportModule.USER_ID, ReportModule.LOGIN_COUNT, ReportModule.LAST_LOGIN};
