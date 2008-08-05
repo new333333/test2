@@ -76,27 +76,38 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
     <tbody>
     <tr>
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
-    <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
 
-	<% // Tabs %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
+    <% // BEGIN SIDEBAR LAYOUT  %>
+    
+    	<div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
 
-	<% // Folder Sidebar %>
-    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
+	  	   <div id="ss_sideNav_wrap"> <% // new sidebar format %>
 
-	<c:if test="${!empty ssSidebarWsTree}">
-      <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
-        initOpen="true" sticky="true">
-		<ssf:tree treeName="sidebarWsTree${renderResponse.namespace}" 
-		  treeDocument="${ssSidebarWsTree}" 
-		  highlightNode="${ssBinder.id}" 
-		  showIdRoutine="ss_treeShowIdNoWS"
-		  namespace="${renderResponse.namespace}"
-		  rootOpen="true"
-		  nowrap="true"/>
-	  </ssf:sidebarPanel>
-	</c:if>
-	</div>
+			<% // Status %>
+			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
+	
+			<% // "It" Bars %>
+			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_action_dispatch.jsp" />
+		
+			<% // RSS Feed %>
+			<div id="ss_leftNav">
+				<ul>
+					<li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" /></li>
+				</ul>
+ 			</div>
+	
+			<% // Recent Places %>
+			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
+
+			<% // Folder Sidebar %>
+    		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
+
+			<% // Workspace Tree %>    
+    		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tree.jsp" />
+
+	  	  </div> <% // end of new sidebar format %>
+	 	 </div> <% // end of ss_sidebarDiv %>
+	
 	</td>
 	<td valign="top" class="ss_view_info">
 	    <div class="ss_style_color" >

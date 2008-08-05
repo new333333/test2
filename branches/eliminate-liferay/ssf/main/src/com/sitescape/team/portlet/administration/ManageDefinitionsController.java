@@ -101,8 +101,8 @@ public class ManageDefinitionsController extends  SAbstractController {
 		Binder binder = null;
 		try {
 			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-			model.put(WebKeys.BINDER_ID, binderId);
 			binder = getBinderModule().getBinder(binderId);
+			model.put(WebKeys.BINDER_ID, binderId);
 			model.put(WebKeys.BINDER, binder);
 		} catch (Exception ex) {};
 		//Set up the standard beans
@@ -311,14 +311,14 @@ public class ManageDefinitionsController extends  SAbstractController {
 	}
 	protected void fillChildElements(Element element, Integer type, Collection<Definition> definitions) {
 		//build sorted map of definitions
-		if (definitions == null) return;
+		if (definitions == null || type == null) return;
 		if (definitions.isEmpty()) element.getParent().addAttribute("hasChildren", "false");
 		List prunedDefs = new ArrayList();
 		for (Definition def:definitions) {
 			if (!type.equals(def.getType())) continue;
 			prunedDefs.add(def);
 		}
-		Map<String, Definition> sortedMap = DefinitionHelper.orderDefinitions(prunedDefs);
+		Map<String, Definition> sortedMap = DefinitionHelper.orderDefinitions(prunedDefs, true);
 		for (Map.Entry<String,Definition> me: sortedMap.entrySet()) {
 			Definition def = me.getValue();
 			Element curDefEle = element.addElement("child");

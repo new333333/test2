@@ -54,7 +54,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.docconverter.ITextConverterManager;
 import com.sitescape.team.docconverter.TextConverter;
 import com.sitescape.team.domain.Attachment;
@@ -68,7 +67,6 @@ import com.sitescape.team.domain.EntityDashboard;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Tag;
@@ -100,7 +98,8 @@ import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.IndexSynchronizationManager;
-import com.sitescape.team.search.LuceneSession;
+import com.sitescape.team.search.LuceneReadSession;
+import com.sitescape.team.search.LuceneWriteSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.search.filter.SearchFilter;
@@ -1294,7 +1293,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		logger.debug("Query is: " + soQuery.toString());
     	}
     	
-    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
     	Hits hits = null;
         try {
@@ -1440,7 +1439,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		//access to entries is not required to update the team acl
 		QueryBuilder qb = new QueryBuilder(false);
 		// add this query and list of ids to the lists we'll pass to updateDocs.
-   		LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+   		LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession(null);
    		try {
    			luceneSession.updateDocuments(qb.buildQuery(qTree, true).getQuery(), field, value);
    		} finally {
@@ -1484,7 +1483,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  		//access to entries is not required to update the team acl
  		QueryBuilder qb = new QueryBuilder(false);
  		// add this query and list of ids to the lists we'll pass to updateDocs.
-    		LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+    		LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession(null);
     		try {
     			luceneSession.updateDocuments(qb.buildQuery(qTree, true).getQuery(), field, value);
     		} finally {
@@ -1518,7 +1517,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  		//access to entries is not required to update the team acl
  		QueryBuilder qb = new QueryBuilder(false);
  		// add this query and list of ids to the lists we'll pass to updateDocs.
-    		LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+    		LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession(null);
     		try {
     			luceneSession.updateDocuments(qb.buildQuery(qTree, true).getQuery(), field, value);
     		} finally {

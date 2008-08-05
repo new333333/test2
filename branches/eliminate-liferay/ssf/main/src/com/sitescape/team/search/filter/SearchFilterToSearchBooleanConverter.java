@@ -52,6 +52,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.module.binder.BinderModule;
+import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.SpringContextUtil;
@@ -758,7 +759,13 @@ public class SearchFilterToSearchBooleanConverter {
 		    	    	child.setText(defId);
 	    			}
 	    			
-	    	    	field = andField.addElement(Constants.FIELD_ELEMENT);
+	    			if ("entryAttributes".equals(valueType)) {
+	    				String attributeSetName = value.split(",")[1];
+	    				value = value.split(",")[2];
+	    				elementName = elementName + DefinitionModule.ENTRY_ATTRIBUTES_SET + attributeSetName;
+	    			}
+	    			
+    				field = andField.addElement(Constants.FIELD_ELEMENT);
 	    			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, elementName);
 	    				   
     				if ("date".equals(valueType) || "date_time".equals(valueType)) {

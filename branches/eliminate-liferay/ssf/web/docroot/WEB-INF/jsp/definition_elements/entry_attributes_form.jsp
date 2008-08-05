@@ -30,6 +30,7 @@
 %>
 <% //Entry attributes form %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${!empty ssBinder.customAttributes[property_source].valueSet}">
 <div class="ss_entryContent">
   <span class="ss_labelRight">${property_caption}</span>
   <table border="1">
@@ -42,17 +43,19 @@
         	<select name="${property_name}__set__${attributeSet}"
         	  <c:if test="${ssBinder.customAttributes[sourceAttributeSetMA].value}"> multiple="multiple" </c:if>
         	>
-        	<c:set var="attributes" value="${property_source}__set__${attributeSet}"/>
+        	<c:set var="attributes" value="${property_name}__set__${attributeSet}"/>
         	<c:forEach var="attribute" items="${ssBinder.customAttributes[sourceAttributeSet].valueSet}">
          	  <option value="${attribute}"
-         	    <c:forEach var="attr" items="{ssDefinitionEntry.customAttributes[attributes].valueSet}">
+         	    <c:forEach var="attr" items="${ssDefinitionEntry.customAttributes[attributes].valueSet}">
          	      <c:if test="${attr == attribute}"> selected="selected" </c:if>
          	    </c:forEach>
          	  >${attribute}</option>
         	</c:forEach>
         	</select>
+        	<input type="hidden" name="${property_name}" value="${attributeSet}"/>
           </td>
       </c:forEach>
     </tr>
   </table>
 </div>
+</c:if>

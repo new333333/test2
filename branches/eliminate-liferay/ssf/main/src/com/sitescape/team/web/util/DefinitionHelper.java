@@ -48,6 +48,7 @@ import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.comparator.StringComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
@@ -95,13 +96,14 @@ public class DefinitionHelper {
 	 */	
 	public static SortedMap<String, Definition> getAvailableDefinitions(Long binderId, Integer defType) {
 		List<Definition> definitions = getInstance().getDefinitionModule().getDefinitions(binderId, Boolean.TRUE, defType);
-		return orderDefinitions(definitions);
+		return orderDefinitions(definitions, true);
 	}
-	public static TreeMap orderDefinitions(Collection<Definition> defs) {
+	public static TreeMap orderDefinitions(Collection<Definition> defs, Boolean includeDefinitionName) {
 		TreeMap<String, Definition> orderedDefinitions = new TreeMap(new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale()));
 		for (Definition def:defs) {
 			if (def.getBinderId() != null) continue;  //do global defs first
-			String title = NLT.getDef(def.getTitle()) + " (" + def.getName()  + ")";
+			String title = NLT.getDef(def.getTitle());
+			if (includeDefinitionName) title = title + " (" + def.getName()  + ")";
 			if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) {
 				title += " **" + NLT.get("__definition_deprecated");
 			}
@@ -415,13 +417,13 @@ public class DefinitionHelper {
     
     public static String findCaptionForAttribute(String attributeName, Document definitionConfig)
     {
-    	Node valueNode = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and properties/property[@name='name' and @value='"+attributeName+"']]/properties/property[@name='caption']/@value");
+    	Node valueNode = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]/properties/property[@name='caption']/@value");
     	if (valueNode == null) return "";
     	return valueNode.getStringValue();
     }
     
     public static String findAttributeType(String attributeName, Document definitionConfig) {
-    	Element node = (Element)definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and properties/property[@name='name' and @value='"+attributeName+"']]");
+    	Element node = (Element)definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
     	if (node == null) return "";
     	return node.attributeValue("name");
     }
@@ -439,7 +441,7 @@ public class DefinitionHelper {
   	if (definitionConfig == null) {
     		return Collections.EMPTY_MAP;
     	}
-    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='selectbox' and properties/property[@name='name' and @value='"+attributeName+"']]");
+    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='selectbox' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
     	if (node == null) {
     		return Collections.EMPTY_MAP;
     	}    	
@@ -473,7 +475,7 @@ public class DefinitionHelper {
     }
     
     public static List findSelectboxSelections(String attributeName, Document definitionConfig) {
-    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='selectbox' and properties/property[@name='name' and @value='"+attributeName+"']]");
+    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='selectbox' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
     	if (node == null) {
     		return Collections.EMPTY_LIST;
     	}
@@ -512,7 +514,7 @@ public class DefinitionHelper {
     }
     
     public static List findRadioSelections(String attributeName, Document definitionConfig) {
-    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='radio' and properties/property[@name='name' and @value='"+attributeName+"']]");
+    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='radio' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
     	if (node == null) {
     		return Collections.EMPTY_LIST;
     	}
@@ -545,7 +547,7 @@ public class DefinitionHelper {
     	return result;
     }
     public static Map findRadioSelectionsAsMap(String attributeName, Document definitionConfig) {
-       	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='radio' and properties/property[@name='name' and @value='"+attributeName+"']]");
+       	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='radio' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
     	if (node == null) {
     		return Collections.EMPTY_MAP;
     	}
@@ -577,6 +579,24 @@ public class DefinitionHelper {
 		return result;
     }
 
+    public static Map findAttributeSelectionsAsMap(String attributeName, DefinableEntity entity) {
+    	Map result = new HashMap();
+    	if (entity == null) {
+    		return result;
+    	}
+    	Binder binder = entity.getParentBinder();
+    	result.put(attributeName, binder.getCustomAttribute(attributeName).getValueSet());
+		Iterator attributeSetsIt = binder.getCustomAttribute(attributeName).getValueSet().iterator();
+		while (attributeSetsIt.hasNext()) {
+			String attributeSetName = (String)attributeSetsIt.next();
+			if (!attributeSetName.equals("")) {
+				attributeSetName = attributeName + DefinitionModule.ENTRY_ATTRIBUTES_SET + attributeSetName;
+				result.put(attributeSetName, binder.getCustomAttribute(attributeSetName).getValueSet());
+			}
+		}
+		return result;
+    }
+    
     public static String findFamily(Document definitionConfig) {
     	if (definitionConfig != null) {
     		org.dom4j.Element root = definitionConfig.getRootElement();
@@ -627,7 +647,7 @@ public class DefinitionHelper {
 		Document defDoc = def.getDefinition();
 		Element rootEle = defDoc.getRootElement();
 		String retVal = "";
-		Element itemEle = (Element) rootEle.selectSingleNode("//item[@type='form']//item/properties/property[@name='name' and @value='"+eleName+"']");
+		Element itemEle = (Element) rootEle.selectSingleNode("//item[@type='form']//item/properties/property[@name='name' and @value='"+eleName.replaceAll("'", "")+"']");
 		if (itemEle == null) return values;
 		itemEle = itemEle.getParent().getParent();
 		String itemType = itemEle.attributeValue("name");
@@ -637,7 +657,7 @@ public class DefinitionHelper {
 				String value = valueList[i].trim();
 				if (value.equals("")) continue;
 				//We have a value, now find the selectboxSelection item that corresponds to this value
-				Element selectboxSelectionEle = (Element) itemEle.selectSingleNode("./item[@name='selectboxSelection']/properties/property[@name='name' and @value='"+value+"']");
+				Element selectboxSelectionEle = (Element) itemEle.selectSingleNode("./item[@name='selectboxSelection']/properties/property[@name='name' and @value='"+value.replaceAll("'","")+"']");
 				if (selectboxSelectionEle != null) {
 					selectboxSelectionEle = selectboxSelectionEle.getParent().getParent();
 					Element selectboxSelectionCaptionEle = (Element) selectboxSelectionEle.selectSingleNode("./properties/property[@name='caption']");
@@ -659,7 +679,7 @@ public class DefinitionHelper {
 			String value = values.trim();
 			if (value.equals("")) return values;
 			//We have a value, now find the radioSelection item that corresponds to this value
-			Element radioSelectionEle = (Element) itemEle.selectSingleNode("./item[@name='radioSelection']/properties/property[@name='name' and @value='"+value+"']");
+			Element radioSelectionEle = (Element) itemEle.selectSingleNode("./item[@name='radioSelection']/properties/property[@name='name' and @value='"+value.replaceAll("'","")+"']");
 			if (radioSelectionEle != null) {
 				radioSelectionEle = radioSelectionEle.getParent().getParent();
 				Element radioSelectionCaptionEle = (Element) radioSelectionEle.selectSingleNode("./properties/property[@name='caption']");

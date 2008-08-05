@@ -39,6 +39,8 @@ import javax.xml.namespace.QName;
 import org.apache.axis.EngineConfiguration;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
+import org.apache.axis.encoding.ser.BeanDeserializerFactory;
+import org.apache.axis.encoding.ser.BeanSerializerFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -46,8 +48,49 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 import com.sitescape.team.client.ws.WebServiceClientUtil;
+import com.sitescape.team.client.ws.model.DefinableEntity;
 
 public abstract class WSClientBase {
+
+	Class[] modelClasses = new Class[] {
+			com.sitescape.team.client.ws.model.AttachmentsField.class,
+			com.sitescape.team.client.ws.model.Attachment.class,
+			com.sitescape.team.client.ws.model.AverageRating.class,
+			com.sitescape.team.client.ws.model.Binder.class,
+			com.sitescape.team.client.ws.model.CustomBooleanField.class,
+			com.sitescape.team.client.ws.model.CustomDateField.class,
+			com.sitescape.team.client.ws.model.DefinableEntity.class,
+			com.sitescape.team.client.ws.model.DefinitionBrief.class,
+			com.sitescape.team.client.ws.model.DefinitionCollection.class,
+			com.sitescape.team.client.ws.model.Description.class,
+			com.sitescape.team.client.ws.model.Entry.class,
+			com.sitescape.team.client.ws.model.Field.class,
+			com.sitescape.team.client.ws.model.FolderBrief.class,
+			com.sitescape.team.client.ws.model.FolderCollection.class,
+			com.sitescape.team.client.ws.model.FolderEntry.class,
+			com.sitescape.team.client.ws.model.FolderEntryBrief.class,
+			com.sitescape.team.client.ws.model.FolderEntryCollection.class,
+			com.sitescape.team.client.ws.model.FunctionMembership.class,
+			com.sitescape.team.client.ws.model.Group.class,
+			com.sitescape.team.client.ws.model.CustomLongArrayField.class,
+			com.sitescape.team.client.ws.model.Principal.class,
+			com.sitescape.team.client.ws.model.PrincipalBrief.class,
+			com.sitescape.team.client.ws.model.PrincipalCollection.class,
+			com.sitescape.team.client.ws.model.CustomStringArrayField.class,
+			com.sitescape.team.client.ws.model.CustomStringField.class,
+			com.sitescape.team.client.ws.model.SubscriptionStyle.class,
+			com.sitescape.team.client.ws.model.Subscription.class,
+			com.sitescape.team.client.ws.model.Tag.class,
+			com.sitescape.team.client.ws.model.TeamBrief.class,
+			com.sitescape.team.client.ws.model.TeamCollection.class,
+			com.sitescape.team.client.ws.model.TeamMemberCollection.class,
+			com.sitescape.team.client.ws.model.TemplateBrief.class,
+			com.sitescape.team.client.ws.model.TemplateCollection.class,
+			com.sitescape.team.client.ws.model.Timestamp.class,
+			com.sitescape.team.client.ws.model.User.class,
+			com.sitescape.team.client.ws.model.Workflow.class,
+			com.sitescape.team.client.ws.model.WorkflowResponse.class,
+	};
 
 	protected String host; // optional - default to localhost
 	protected String port; // optional - default to 8080
@@ -161,6 +204,13 @@ public abstract class WSClientBase {
 		// Invoke web service operation using Axis Call object.
 		Call call = prepareCall(serviceName, operation, args);
 		
+		if(serviceName.equalsIgnoreCase("TeamingService")) {
+			// The old Facade service does not require custom serializers/deserializers
+			// to be set up, because it passes arguments only in primitive types.
+			// The new TeamingService, however, does require it.
+			setupTypeMapping(call);
+		}
+		
 		if(inputAttachment != null)
 			attachInputFile(call, inputAttachment);
 		
@@ -171,6 +221,16 @@ public abstract class WSClientBase {
 		return result;
 	}
 
+	protected void setupTypeMapping(Call call) {
+		for(int i = 0; i < modelClasses.length; i++) {
+			QName qname = new QName("http://model.ws.remoting.team.sitescape.com", modelClasses[i].getSimpleName());
+			call.registerTypeMapping(modelClasses[i], 
+					qname, 
+					new BeanSerializerFactory(modelClasses[i], qname), 
+					new BeanDeserializerFactory(modelClasses[i], qname));
+		}
+	}
+	
 	protected Call prepareCall(String serviceName, String operation, Object[] args) throws Exception {
 		EngineConfiguration config = getCustomEngineConfiguration();
 
@@ -262,6 +322,65 @@ public abstract class WSClientBase {
 		catch(IOException e) {
 			System.out.println(e);
 		}
+	}
+	
+	Object fetch(String serviceName, String operation, Object[] args) throws Exception {
+		return fetch(serviceName, operation, args, null);
+	}
+
+	void fetchAndPrintXML(String serviceName, String operation, Object[] args) throws Exception {
+		String wsTreeAsXML = (String) fetch(serviceName, operation, args);
+
+		printXML(wsTreeAsXML);
+	}
+
+	void fetchAndPrintDE(String serviceName, String operation, Object[] args) throws Exception {
+		DefinableEntity entity = (DefinableEntity) fetch(serviceName, operation, args);
+
+		printDefinableEntity(entity);
+	}
+
+	void fetchAndPrintACK(String serviceName, String operation, Object[] args) throws Exception {
+		fetchAndPrintACK(serviceName, operation, args, null);
+	}
+	
+	void fetchAndPrintACK(String serviceName, String operation, Object[] args, String filename) throws Exception {
+		Object object = fetch(serviceName, operation, args, filename);
+		System.out.println("Successfully executed " + operation + " on " + serviceName);
+	}
+	
+	void printDefinableEntity(DefinableEntity entity) {
+		if(entity != null) {
+			System.out.println("Entity ID: " + entity.getId());
+			System.out.println("Entity title: " + entity.getTitle());
+		}
+		else {
+			System.out.println("No entity returned");
+		}
+	}
+	
+	void fetchAndPrintIdentifier(String serviceName, String operation, Object[] args) throws Exception {
+		fetchAndPrintIdentifier(serviceName, operation, args, null);
+	}
+	
+	void fetchAndPrintIdentifier(String serviceName, String operation, Object[] args, String filename) throws Exception {
+		Long ident = (Long) fetch(serviceName, operation, args, filename);
+
+		System.out.println(ident);
+	}
+
+	void fetchAndPrintString(String serviceName, String operation, Object[] args) throws Exception {
+		fetchAndPrintString(serviceName, operation, args, null);
+	}
+	
+	void fetchAndPrintString(String serviceName, String operation, Object[] args, String filename) throws Exception {
+		String str = (String) fetch(serviceName, operation, args, filename);
+
+		System.out.println(str);
+	}
+
+	Object fetch(String serviceName, String operation, Object[] args, String filename) throws Exception {
+		return invokeWithCall(serviceName, operation, args, ((filename != null)? new File(filename) : null), null);
 	}
 	
 }

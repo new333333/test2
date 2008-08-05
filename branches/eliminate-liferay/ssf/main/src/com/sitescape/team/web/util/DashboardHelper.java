@@ -81,6 +81,7 @@ import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.DomTreeHelper;
 import com.sitescape.team.web.tree.FolderConfigHelper;
+import com.sitescape.team.web.tree.TreeHelper;
 import com.sitescape.team.web.tree.WorkspaceConfigHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.util.GetterUtil;
@@ -1148,34 +1149,10 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					
 					//multi-select	
 					Set <String> folderIds = new HashSet();
-					if (originalComponentData.get(SearchFormSavedFolderIdList) instanceof String)
-						folderIds = LongIdUtil.getIdsAsStringSet((String)originalComponentData.get(SearchFormSavedFolderIdList));
+					folderIds.addAll(TreeHelper.getSelectedStringIds(formData, "ss_folder_id"));
 
-					//add first
-					//Get the folderIds out of the formData
-					Iterator itFormData = formData.keySet().iterator();
-					while (itFormData.hasNext()) {
-						String key = (String)itFormData.next();
-						if (key.matches("^ss_folder_id[0-9]+$")) {
-							folderIds.add(key.replaceFirst("^ss_folder_id", ""));
-						} else if (key.equals("ss_folder_id")) {
-							String id = PortletRequestUtils.getStringParameter(request, "ss_folder_id", null);
-							//single select
-							if ((id != null) && !folderIds.contains(id)) folderIds.add(id); 
-						}
-					}
-					if (formData.containsKey(WebKeys.URL_ID_CHOICES)) {
-						//If this is accessibile mode, the list isin idChoices
-						String idChoices = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
-						String[] idChoices2 = idChoices.split(" ");
-						for (int i = 0; i < idChoices2.length; i++) {
-							if (idChoices2[i].matches("^ss_folder_id" + WebKeys.URL_ID_CHOICES_SEPARATOR + "[0-9]+$")) {
-								folderIds.add(idChoices2[i].replaceFirst("^ss_folder_id" + WebKeys.URL_ID_CHOICES_SEPARATOR, ""));
-							}
-						}
-					}
 					//	Get the forums to be deleted
-					itFormData = formData.entrySet().iterator();
+					Iterator itFormData = formData.entrySet().iterator();
 					while (itFormData.hasNext()) {
 						Map.Entry me = (Map.Entry) itFormData.next();
 						if (((String)me.getKey()).startsWith("del_")) {
@@ -1270,7 +1247,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY.equals(cName)) {
 
 					//single select
-					List folderIds = new ArrayList();
+					Set<String> folderIds = new HashSet();
 					boolean chooseFolder = GetterUtil.getBoolean(PortletRequestUtils.getStringParameter(request, "chooseFolder", "false"), false);
 					if (chooseFolder && binder != null) {
 						String type = resolveFolderType(cName);
@@ -1285,16 +1262,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 							}
 						}
 					} else {
-						String id = PortletRequestUtils.getStringParameter(request, "ss_folder_id", null);
-						String idChoices = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
-						if (!idChoices.equals("")) {
-							//If this is accessibile mode, the id is in idChoices
-							if (idChoices.matches("^ss_folder_id" + WebKeys.URL_ID_CHOICES_SEPARATOR + "[0-9]+$")) {
-								folderIds.add(idChoices.replaceFirst("^ss_folder_id" + WebKeys.URL_ID_CHOICES_SEPARATOR, ""));
-							}
-						} else if (id != null) {
-							folderIds.add(id); 
-						}
+						folderIds.addAll(TreeHelper.getSelectedStringIds(request.getParameterMap(), "ss_folder_id"));
 					}
 					
 					SearchFilter searchFilter = new SearchFilter(true);
@@ -1305,7 +1273,6 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						searchFilter.addFolderIds(folderIds);
 						componentData.put(SearchFormSavedFolderIdList, LongIdUtil.getIdsAsString(folderIds));
 					}
-
 					componentData.put(SearchFormSavedSearchQuery, searchFilter
 							.getFilter().asXML());
 		
@@ -1315,17 +1282,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					if (users != null && !users.equals("")) componentData.put("users", users);
 					if (groups != null && !groups.equals("")) componentData.put("groups", groups);
 				} else if (ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE.equals(cName)) {
-					// in accessible mode topId commes as idChoices 
-					Long topId = null;
-					String idChoices = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
-					if (!idChoices.equals("")) {
-						//If this is accessibile mode, the id is in idChoices
-						if (idChoices.matches("^data_topId" + WebKeys.URL_ID_CHOICES_SEPARATOR + "[0-9]+$")) {
-							try {
-								topId = Long.parseLong(idChoices.replaceFirst("^data_topId" + WebKeys.URL_ID_CHOICES_SEPARATOR, ""));
-							} catch (NumberFormatException e) {}
-						}
-					}
+					Long topId = TreeHelper.getSelectedId(request.getParameterMap());
 					if (topId != null) {
 						componentData.put("topId", topId.toString());
 					}

@@ -107,7 +107,7 @@ try {
 		var hrefSelectAllObj = document.createElement("a");
 		hrefSelectAllObj.href = "javascript: //";
 //		hrefSelectAllObj.setAttribute("onClick", "ss_teamMembersSelectAll('" + prefix + "')");
-		dojo.event.connect(hrefSelectAllObj, "onclick", function(evt) {
+		dojo.connect(hrefSelectAllObj, "onclick", function(evt) {
 			ss_teamMembersSelectAll(prefix);
 	    });
 			
@@ -119,7 +119,7 @@ try {
 		var hrefDeselectAllObj = document.createElement("a");
 		hrefDeselectAllObj.href = "javascript: //";
 //		hrefDeselectAllObj.setAttribute("onClick", "ss_teamMembersDeselectAll('" + prefix + "')");
-		dojo.event.connect(hrefDeselectAllObj, "onclick", function(evt) {
+		dojo.connect(hrefDeselectAllObj, "onclick", function(evt) {
 			ss_teamMembersDeselectAll(prefix);
 	    });
 	    		

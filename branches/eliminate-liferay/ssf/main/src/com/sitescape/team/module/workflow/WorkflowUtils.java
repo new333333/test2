@@ -130,7 +130,26 @@ public class WorkflowUtils {
         	}
     	}
     	return stateCaption;
-    }    
+    }
+    
+    public static String getThreadCaption(Definition wfDef, String thread) {
+    	String threadCaption = "";
+    	//Find the actual caption of the thread
+    	if (wfDef != null) {
+    		Document wfDefDoc = wfDef.getDefinition();
+        	Element threadProperty = (Element) wfDefDoc.getRootElement().selectSingleNode("//item[@name='parallelThread']/properties/property[@name='name' and @value='"+thread+"']");
+        	if (threadProperty != null) {
+        		Element threadPropertyCaption = (Element) threadProperty.getParent().selectSingleNode("./property[@name='caption']");
+        		if (threadPropertyCaption != null) threadCaption = threadPropertyCaption.attributeValue("value", "");
+        	}
+        	if (threadCaption.equals("")) {
+        		threadCaption = thread;
+        	} else {
+        		threadCaption = NLT.getDef(threadCaption);
+        	}
+    	}
+    	return threadCaption;
+    }
 
 
     public static WfAcl getStateAcl(Definition wfDef, DefinableEntity entity, String stateName, WfAcl.AccessType type) {

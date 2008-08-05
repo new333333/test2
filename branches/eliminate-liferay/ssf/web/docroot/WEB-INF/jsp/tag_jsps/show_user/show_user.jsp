@@ -77,7 +77,7 @@
 			  		</c:when>
 			  		<c:otherwise>
 				  		<a href="javascript: //"
-				  		onclick="dojo.html.toggleShowing('ss_show_user_${ss_showUserInstanceCount}'); return false;" class="ss_fineprint"><ssf:nlt tag="showUser.group.members"><ssf:param name="value" value="${fn:length(ss_showUserGroupMembers)}"/></ssf:nlt></a>
+				  		onclick="ss_toggleShowDiv('ss_show_user_${ss_showUserInstanceCount}'); return false;" class="ss_fineprint"><ssf:nlt tag="showUser.group.members"><ssf:param name="value" value="${fn:length(ss_showUserGroupMembers)}"/></ssf:nlt></a>
 				  		<div id="ss_show_user_${ss_showUserInstanceCount}" style="display: none;">
 					  		<ul>
 								<c:forEach var="member" items="${ss_showUserGroupMembers}" >
@@ -112,7 +112,7 @@
 			    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span></a>
 			    <c:if test="${ss_showUserIsGroup}">
 			  		<a href="javascript: //"
-			  		onclick="dojo.html.toggleShowing('ss_show_user_${ss_showUserInstanceCount}'); return false;" class="ss_fineprint"><ssf:nlt tag="showUser.group.members"><ssf:param name="value" value="${fn:length(ss_showUserGroupMembers)}"/></ssf:nlt></a>
+			  		onclick="ss_toggleShowDiv('ss_show_user_${ss_showUserInstanceCount}'); return false;" class="ss_fineprint"><ssf:nlt tag="showUser.group.members"><ssf:param name="value" value="${fn:length(ss_showUserGroupMembers)}"/></ssf:nlt></a>
 			  		<div id="ss_show_user_${ss_showUserInstanceCount}" style="display: none;">
 				  		<ul>
 							<c:forEach var="member" items="${ss_showUserGroupMembers}" >

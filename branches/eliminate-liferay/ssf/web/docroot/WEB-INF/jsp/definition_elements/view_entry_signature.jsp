@@ -30,6 +30,7 @@
 %><%--
 --%><% //Entry signature view %><%--
 --%><%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${empty propertyValues_displayType || propertyValues_displayType[0] == 'inline'}">
 <table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
  <tr>
   <td valign="top" style="padding-left:10px;">
@@ -42,30 +43,30 @@
  </tr>
 </table>
 
-<c:if test="${!empty ssDefinitionEntry.modification.principal && 
-  ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
-<table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
- <tr>
-  <td valign="top" style="padding-left:30px;">
-	<div class="ss_entryContent ss_entrySignature">
-	  <span style="padding-right:8px;"><ssf:nlt tag="entry.modifiedBy"/></span>
+  <c:if test="${!empty ssDefinitionEntry.modification.principal && 
+    ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
+	<table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
+	 <tr>
+	  <td valign="top" style="padding-left:30px;">
+		<div class="ss_entryContent ss_entrySignature">
+		  <span style="padding-right:8px;"><ssf:nlt tag="entry.modifiedBy"/></span>
+	
+		  <ssf:showUser user="${ssDefinitionEntry.modification.principal}"/>
+	
+		</div>
+	  </td>
+	  <td valign="top" style="padding-left:15px;">
+		<div class="ss_entryContent ss_entrySignature">
+		<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+		     value="${ssDefinitionEntry.modification.date}" type="both" 
+			 timeStyle="medium" dateStyle="medium" />
+		</div>
+	  </td>
+	 </tr>
+	</table>
+  </c:if>
 
-	  <ssf:showUser user="${ssDefinitionEntry.modification.principal}"/>
-
-	</div>
-  </td>
-  <td valign="top" style="padding-left:15px;">
-	<div class="ss_entryContent ss_entrySignature">
-	<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-	     value="${ssDefinitionEntry.modification.date}" type="both" 
-		 timeStyle="medium" dateStyle="medium" />
-	</div>
-  </td>
- </tr>
-</table>
-</c:if>
-
-<c:if test="${!empty ssDefinitionEntry.reservation.principal}">
+  <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
 	<table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
 	 <tr>
 	  <td valign="top" style="padding-left:30px;">
@@ -80,4 +81,79 @@
 	  </td>
 	 </tr>
 	</table>
+  </c:if>
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  configElement="${item}" 
+  configJspStyle="${ssConfigJspStyle}" />
+</c:if>
+<c:if test="${propertyValues_displayType[0] == 'leftAligned'}">
+<div>
+<table>
+<tr>
+<td valign="top">
+  <c:out value="${property_caption}" />
+  <c:if test="${property_showPicture}">
+	<a href="<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
+		value="${ssDefinitionEntry.creation.principal.parentBinder.id}"/><ssf:param name="entryId" 
+		value="${ssDefinitionEntry.creation.principal.id}"/>
+    	<ssf:param name="newTab" value="1" />
+		</ssf:url>" <ssf:title tag="title.goto.profile.page" />
+	  onClick="ss_openUrlInPortlet(this.href);return false;">
+		<ssf:buddyPhoto style="ss_thumbnail_standalone ss_thumbnail_standalone_medium" 
+			photos="${ssDefinitionEntry.creation.principal.customAttributes['picture'].value}" 
+			folderId="${ssDefinitionEntry.creation.principal.parentBinder.id}" entryId="${ssDefinitionEntry.creation.principal.id}" />
+	</a><br/>
+  </c:if>
+<table cellspacing="0" cellpadding="0">
+ <tr>
+  <td valign="top">
+    <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
+  </td>
+ </tr>
+ <tr>
+  <td valign="top">
+  <c:set var="property_caption" value=""/>
+    <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
+  </td>
+ </tr>
+  <c:if test="${!empty ssDefinitionEntry.modification.principal && 
+    ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
+   <tr>
+    <td>
+		<div class="ss_entryContent ss_entrySignature">
+		  <span style="padding-right:8px;"><ssf:nlt tag="entry.modifiedBy"/></span><br/>
+		  <ssf:showUser user="${ssDefinitionEntry.modification.principal}"/>
+		</div>
+		<div class="ss_entryContent ss_entrySignature">
+		<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+		     value="${ssDefinitionEntry.modification.date}" type="both" 
+			 timeStyle="medium" dateStyle="medium" />
+		</div>
+	</td>
+   </tr>
+  </c:if>
+
+  <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
+   <tr>
+    <td>
+		<div class="ss_entryContent ss_entrySignature">
+		  <span style="padding-right:8px;">
+		  <ssf:nlt tag="entry.reservedBy"/>&nbsp;<img <ssf:alt tag="alt.locked"/> 
+		    src="<html:imagesPath/>pics/sym_s_caution.gif"/>
+		  </span><br/>
+		  <ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/>
+		</div>
+	</td>
+   </tr>
+  </c:if>
+</table>
+
+</td>
+<td valign="top" style="padding-left:10px;">
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  configElement="${item}" 
+  configJspStyle="${ssConfigJspStyle}" />
+</td>
+</tr>
+</table>
 </c:if>

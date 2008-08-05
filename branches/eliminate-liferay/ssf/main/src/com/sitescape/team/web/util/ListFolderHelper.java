@@ -1180,14 +1180,13 @@ public class ListFolderHelper {
 		hmRet.put(WebKeys.PAGE_NEXT, hmRetNext);
 		hmRet.put(WebKeys.PAGE_START_INDEX, "" + (intSearchOffset + 1));
 		
-		if (nextInternalValue >= intTotalRecordsFound) hmRet.put(WebKeys.PAGE_END_INDEX, "" + intTotalRecordsFound);
-		else hmRet.put(WebKeys.PAGE_END_INDEX, "" + nextInternalValue);
+		hmRet.put(WebKeys.PAGE_END_INDEX, "" + intTotalRecordsFound);
 		
 		return hmRet;
 	}
 	protected static void addEntryToolbar(AllModulesInjected bs, RenderRequest request, RenderResponse response, Binder folder, Toolbar entryToolbar, Map model) {
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
-		if (defaultEntryDefinitions.size() > 1) {
+		if (defaultEntryDefinitions != null && defaultEntryDefinitions.size() > 1) {
 			int count = 1;
 			Map dropdownQualifiers = new HashMap();
 			dropdownQualifiers.put("highlight", new Boolean(true));
@@ -1213,7 +1212,7 @@ public class ListFolderHelper {
 					model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
 				}
 			}
-		} else if (defaultEntryDefinitions.size() != 0) {
+		} else if (defaultEntryDefinitions != null && defaultEntryDefinitions.size() != 0) {
 			// Only one option
 			Definition def = (Definition) defaultEntryDefinitions.get(0);
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
@@ -1448,7 +1447,7 @@ public class ListFolderHelper {
 				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageSubscriptionsMenu");
 				folderToolbar.addToolbarMenu("3_administration", NLT.get("toolbar.manageFolderSubscriptions"), "", qualifiers);
 			
-				Subscription sub = bs.getBinderModule().getSubscription(folder.getId());
+				Subscription sub = bs.getBinderModule().getSubscription(folder);
 				qualifiers = new HashMap();
 				adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
 				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
@@ -1529,8 +1528,7 @@ public class ListFolderHelper {
 	
 		
 		//See if a "sort by" menu is needed
-		if (viewType.equals(Definition.VIEW_STYLE_DEFAULT) || 
-				viewType.equals(Definition.VIEW_STYLE_WIKI)|| 
+		if (viewType.equals(Definition.VIEW_STYLE_WIKI)|| 
 				viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
 			//Add a way to set the sorting
 			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folder.getId());
@@ -1855,7 +1853,7 @@ public class ListFolderHelper {
 			isAccessible = true;
 		}
 		
-		if (isAppletSupported && bs.getFolderModule().testAccess(folder, FolderOperation.addEntry) && !isAccessible) {
+		if (isAppletSupported && !folder.isMirroredAndReadOnly() && bs.getFolderModule().testAccess(folder, FolderOperation.addEntry) && !isAccessible) {
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "javascript: ss_showFolderAddAttachmentDropbox('" + response.getNamespace() + "', '" + folder.getId() + "','" + Boolean.toString(folder.isLibrary()) + "'); return false;");
 			footerToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);

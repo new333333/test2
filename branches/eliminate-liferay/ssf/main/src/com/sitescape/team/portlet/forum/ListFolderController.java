@@ -91,7 +91,7 @@ public class ListFolderController extends  SAbstractController {
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_COLUMNS)) {
 			if (formData.containsKey("okBtn")) {
 				Map columns = new LinkedHashMap();
-				String[] columnNames = new String[] {"number", "title", "comments", "size", "download", "html", "state", "author", "date"};
+				String[] columnNames = new String[] {"number", "title", "comments", "size", "download", "html", "state", "author", "date", "rating"};
 				for (int i = 0; i < columnNames.length; i++) {
 					columns.put(columnNames[i], PortletRequestUtils.getStringParameter(request, columnNames[i], ""));
 				}
@@ -176,7 +176,13 @@ public class ListFolderController extends  SAbstractController {
 			//getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.PAGE_ENTRIES_PER_PAGE, newEntriesPerPage);
 			getProfileModule().setUserProperty(user.getId(), ObjectKeys.PAGE_ENTRIES_PER_PAGE, newEntriesPerPage);
 			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
-		} 
+		} else if (op.equals(WebKeys.OPERATION_GO_TO_ENTRY)) {
+			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
+			String entryNumber = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_GOTOENTRY, "");
+			//Get the entryId from the entry number and add it to the request
+			Long entryId = null;
+			if (entryId != null) response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+		}
 
 		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 	}

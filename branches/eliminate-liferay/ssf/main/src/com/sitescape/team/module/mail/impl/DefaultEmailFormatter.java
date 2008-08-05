@@ -241,7 +241,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				if (notify.hasStyle(style)) {
 					userIds.add(notify.getId().getPrincipalId());
 					//The first in the list takes priority - should be entry subscription
-					if (!userSubs.containsKey(notify.getId().getPrincipalId())) userSubs.put(notify.getId().getPrincipalId(), notify.getStyle(style));
+					if (!userSubs.containsKey(notify.getId().getPrincipalId())) userSubs.put(notify.getId().getPrincipalId(), notify.getEmailTypes(style));
 				} 
 			}
 			List<User> us = getProfileDao().loadUsers(userIds, folder.getZoneId());
@@ -381,7 +381,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	
 		for (Subscription notify: subscriptions) {
 			if (notify.hasStyle(style)) {
-				userIds.put(notify.getId().getPrincipalId(), notify.getStyle(style));
+				userIds.put(notify.getId().getPrincipalId(), notify.getEmailTypes(style));
 			} 
 		}
 		

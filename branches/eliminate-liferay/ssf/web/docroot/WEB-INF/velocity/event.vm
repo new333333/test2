@@ -38,7 +38,9 @@
 			${ssVisitor.getNLT("calendar.start")}: ${ssEvent_startString}<br />
 			${ssVisitor.getNLT("calendar.end")}: ${ssEvent_endString}<br />
 	#end
-    ${ssVisitor.getNLT("calendar.frequency")}: ${ssEvent_repeatString}
+	#if (${ssEvent_repeatString})
+	    ${ssVisitor.getNLT("calendar.frequency")}: ${ssEvent_repeatString}
+    #end
 
 #end
 </div>

@@ -40,10 +40,14 @@ import com.sitescape.team.web.WebKeys;
 public class PermaLinkUtil {
 
 	public static String getURL(Binder binder) {
+		return getURL(binder.getEntityIdentifier().getEntityId(), binder.getEntityType().toString());
+	}
+	
+	public static String getURL(Long binderId, String entityType) {
 		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getEntityIdentifier().getEntityId().toString());
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, binder.getEntityType().toString());
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entityType);
 
 		return adapterUrl.toString();
 	}
@@ -52,6 +56,16 @@ public class PermaLinkUtil {
 		Long profileBinderId = getProfileModule().getProfileBinder().getId();
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, profileBinderId.toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId);
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.workspace.toString());
+		return adapterUrl.toString();
+	}
+	
+	public static String getWapLandingPageURL(HttpServletRequest request, String userId) {
+		Long profileBinderId = getProfileModule().getProfileBinder().getId();
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, profileBinderId.toString());
 		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId);
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.workspace.toString());

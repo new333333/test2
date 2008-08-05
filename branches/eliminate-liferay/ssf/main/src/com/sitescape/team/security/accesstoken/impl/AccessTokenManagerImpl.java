@@ -72,8 +72,18 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 			if(info != null) {
 				String digest = computeDigest(token.getScope(), info.getApplicationId(), info.getUserId(),
 						info.getBinderId(), info.getBinderAccessConstraints(), info.getSeed());
-				if(!digest.equals(token.getDigest()))
+				if(digest.equals(token.getDigest())) { // match
+					// Copy the following pieces of information from the tokeninfo into the accesstoken.
+					// This allows the application to access those information without having a direct
+					// access to the lower-level tokeninfo object (ie, just serves as temporary cache).
+					token.setApplicationId(info.getApplicationId());
+					token.setUserId(info.getUserId());
+					token.setBinderId(info.getBinderId());
+					token.setBinderAccessConstraints(info.getBinderAccessConstraints());
+				}
+				else { // invalid
 					throw new InvalidAccessTokenException(tokenStr);
+				}
 			}
 			else {
 				throw new InvalidAccessTokenException(tokenStr);				
@@ -93,7 +103,7 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 				
 		String digest = computeDigest(TokenScope.request, applicationId, userId, binderId, binderAccessConstraints, info.getSeed());
 		
-		return AccessToken.requestScopedToken(applicationId, userId, digest, binderId, binderAccessConstraints);
+		return AccessToken.requestScopedToken(info.getId(), digest);
 	}
 
 	public void destroyRequestScopedToken(AccessToken token) {

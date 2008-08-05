@@ -33,6 +33,7 @@
 <%@ page import="java.util.Date" %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 
+<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <div class="ss_folder_border">
 	<% // Add the toolbar with the navigation widgets, commands and filter %>
 	<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
@@ -45,6 +46,5 @@
 </div>
 <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <div class="ss_folder">
-<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/searchview/searchview_folder_listing.jsp" %>
 </div>

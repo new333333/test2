@@ -69,7 +69,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	</script>
 	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 
-	<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
+  <div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
@@ -78,16 +78,24 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
-	<% // Tabs %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
+	<% // BEGIN SIDEBAR LAYOUT  %>
 
-	<% // Folder Sidebar %>
+     <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
+	
+	  <div id="ss_sideNav_wrap"> <% // new sidebar format %>
 
-    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
+		<% // Status %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
+	
+		<% // Recent Places %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
 
-	</div>
+		<% // Folder Sidebar %>
+    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
 
-
+	  </div> <% // end of new sidebar format %>
+	 </div> <% // end of ss_sidebarDiv %>
+	
 	</td>
 	<td valign="top" class="ss_view_info">
 		<div class="ss_style_color">	

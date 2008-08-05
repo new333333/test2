@@ -90,13 +90,13 @@ import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.file.WriteFilesException;
-import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.search.IndexSynchronizationManager;
-import com.sitescape.team.search.LuceneSession;
+import com.sitescape.team.search.LuceneReadSession;
+import com.sitescape.team.search.LuceneWriteSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
@@ -292,10 +292,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public Set<Long> indexTree(Long binderId) {
     	Set<Long> ids = new HashSet();
     	ids.add(binderId);
-    	return indexTree(ids, StatusTicket.NULL_TICKET);
+    	return indexTree(ids, StatusTicket.NULL_TICKET, null);
     }
     //optimization so we can manage the deletion to the searchEngine
-    public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket) {
+    public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket, String[] nodeIds) {
     	getCoreDao().flush(); //just incase
     	try {
     		//make list of binders we have access to first
@@ -314,8 +314,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	    	Set<Long> done = new HashSet();
 	    	if (checked.isEmpty()) return done;
 	
+	    	IndexSynchronizationManager.setNodeIds(nodeIds);
 			if (clearAll) {
-				LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+				LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession(nodeIds);
 				try {
 					luceneSession.clearIndex();
 	
@@ -533,7 +534,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
            	
     }
      //no transaction    
-     public Long copyBinder(Long fromId, Long toId, Map options) {
+     public Long copyBinder(Long fromId, Long toId, boolean cascade, Map options) {
        	Binder source = loadBinder(fromId);
 		checkAccess(source, BinderOperation.copyBinder);
        	Binder destinationParent = loadBinder(toId);
@@ -545,10 +546,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
        	Map params = new HashMap();
        	if (options != null) params.putAll(options);
        	params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
+       	params.put(ObjectKeys.INPUT_OPTION_PRESERVE_DOCNUMBER, Boolean.TRUE);
        	//lock top level
    		Binder binder = loadBinderProcessor(source).copyBinder(source, destinationParent, params);
-   		Boolean cascade = (Boolean)params.get(ObjectKeys.INPUT_OPTION_COPY_BINDER_CASCADE);
-   		if (cascade == null) cascade = Boolean.TRUE;
        	if (cascade) doCopyChildren(source, binder);
        	return binder.getId();
      }
@@ -674,30 +674,21 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 	
     //inside write transaction    
-   public void addSubscription(Long binderId, Map<Integer,String[]> styles) {
-    	//getEntry check read access
-		Binder binder = loadBinder(binderId);
+   public void setSubscription(Long binderId, Map<Integer,String[]> styles) {
+		Binder binder = getBinder(binderId);
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Subscription s = getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
-		if (s == null) {
+		if (styles == null || styles.isEmpty()) {
+			if (s != null) getCoreDao().delete(s);
+		} else if (s == null) {
 			s = new Subscription(user.getId(), binder.getEntityIdentifier());
 			s.setStyles(styles);
 			getCoreDao().save(s);
 		} else s.setStyles(styles); 	
     }
-    public Subscription getSubscription(Long binderId) {
-    	//getBinder checks read access
-		Binder binder = getBinder(binderId);
-		User user = RequestContextHolder.getRequestContext().getUser();
+    public Subscription getSubscription(Binder binder) {
+ 		User user = RequestContextHolder.getRequestContext().getUser();
 		return getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
-    }
-    //inside write transaction    
-    public void deleteSubscription(Long binderId) {
-    	//delete your own
-		Binder binder = loadBinder(binderId);
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Subscription s = getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
-		if (s != null) getCoreDao().delete(s);
     }
 
     public Map executeSearchQuery(Criteria crit, int offset, int maxResults)
@@ -753,7 +744,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   		logger.debug("Query is in executeSearchQuery: " + soQuery.toString());
 	   	}
 
-	   	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+	   	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
 	   	try {
 	        hits = luceneSession.search(soQuery,so.getSortBy(),offset,maxResults);
 	   	} catch(Exception e) {
@@ -788,7 +779,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	    	QueryBuilder qb = new QueryBuilder(true);
 			so = qb.buildQuery(qTree);
 		}
-    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
         try {
 	        tags = luceneSession.getTags(so!=null?so.getQuery():null, wordroot, type);
@@ -965,7 +956,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     		logger.debug("Query is: " + so.getQuery().toString());
     	}
     	
-    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
     	Hits hits = null;
         try {
@@ -1310,7 +1301,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	if(logger.isDebugEnabled()) {
     		logger.debug("Query is: " + soQueryFinal.toString());
     	}
-    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
     	List results = new ArrayList();
     	Hits hits = null;

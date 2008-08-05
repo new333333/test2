@@ -42,7 +42,7 @@ dojo.declare(
 	this.dataType = [];
 
 	this.getData = function(/*String*/ url){
-		dojo.io.bind({
+		dojo.xhrGet({
 			url: url,
 			load: dojo.lang.hitch(this, function(type, data, evt){ 
 				var arrDataType = [];
@@ -83,6 +83,7 @@ dojo.widget.defineWidget(
 		weekStartsOn: null,
 		nextNodeRefs: new Array(),
 		widgetContainer: null,
+		widgetContainer2: null,
 		dataProviderClass: "sitescape.widget.FieldSelectDataProvider",		
 		removeKids: function () {
 			for (var i = 0; i < this.nextNodeRefs.length; i++) {
@@ -129,6 +130,9 @@ dojo.widget.defineWidget(
 				case "selectbox":
 					this.addSelectBoxField();
 					break;
+				case "entryAttributes":
+					this.addEntryAttributesField();
+					break;
 				default: /* input for title, text, description, attachFiles, textarea... */
 					this.addSimpleInputField();
 			}
@@ -161,6 +165,9 @@ dojo.widget.defineWidget(
 					break;					
 				case "selectbox":
 					this.addSelectBoxField(userValue, userValueLabel);
+					break;
+				case "entryAttributes":
+					this.addEntryAttributesField(userValue, userValueLabel);
 					break;
 				default: /* input for title, text, description, attachFiles, textarea... */
 					this.addSimpleInputField(userValue);
@@ -265,6 +272,34 @@ dojo.widget.defineWidget(
 			if (value && label) {
 				teamListWidgt.setValue(value);
 				teamListWidgt.setLabel(label);
+			}
+		},			
+
+		addEntryAttributesField: function(value, label) {
+			var localElementName="";
+			if (this.selectedResult && this.selectedResult[1]) localElementName=this.selectedResult[1];
+			var url = ss_searchBinderUrl + "&action=advanced_search&operation=get_entry_attributes_widget&searchText=&pager=&elementName="+localElementName+"";
+			if (localElementName.indexOf(",") == -1) {
+				var prop = {dataUrl:url, id:"elementValue" + this.searchFieldIndex, 
+					name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, 
+					nodeObj:this.widgetContainer, widgetContainer:this.widgetContainer, widgetContainer2:this.widgetContainer2, 
+					maxListLength : 12, autoComplete: false};
+				var entryAttributesWidgt = dojo.widget.createWidget("FieldSelect", prop, this.widgetContainer, "last");
+				this.nextNodeRefs.push(entryAttributesWidgt);
+				if (value && label) {
+					entryAttributesWidgt.setValue(value);
+					entryAttributesWidgt.setLabel(label);
+				}
+			} else {
+				var prop = {dataUrl:url, id:"elementValueValue" + this.searchFieldIndex, 
+					name:"elementValueValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, 
+					nodeObj:this.widgetContainer, maxListLength : 12, autoComplete: false};
+				var entryAttributesValueWidgt = dojo.widget.createWidget("SelectPageable", prop, this.widgetContainer2, "last");
+				this.nextNodeRefs.push(entryAttributesValueWidgt);
+				if (value && label) {
+					entryAttributesValueWidgt.setValue(value);
+					entryAttributesValueWidgt.setLabel(label);
+				}
 			}
 		},			
 

@@ -52,45 +52,5 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 		throw new UnsupportedOperationException("setSynchronizationSchedule operation is not supported in the base edition");
     }  
 
-	public boolean testAccess(FolderEntry entry, FolderOperation operation) {
-		switch (operation) {
-			case addEntryWorkflow:
-			case deleteEntryWorkflow:
-				return false;
-			default:
-				return super.testAccess(entry, operation);
-		}
-	}
-
-	
-	public void addEntryWorkflow(Long folderId, Long entryId, String definitionId, Map options) {
-		throw new UnsupportedOperationException("Workflow is not supported in the base edition");
-    }
-   //inside write transaction
-   public void deleteEntryWorkflow(Long parentFolderId, Long entryId, String definitionId) 
-   			throws AccessControlException {
-	   
-   }
-   public boolean testTransitionOutStateAllowed(FolderEntry entry, Long stateId) {
-		return false;
-    }
-	
-    public boolean testTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState) {
-		return false;
-    }
-    public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException {
-		throw new UnsupportedOperationException("Workflow is not supported in the base edition");
-    }
-	public Map<String, String> getManualTransitions(FolderEntry entry, Long stateId) {
-		return new HashMap();
-    }		
-
-	public Map getWorkflowQuestions(FolderEntry entry, Long stateId) {
-		return new HashMap();
-    }		
-
-    public void setWorkflowResponse(Long folderId, Long entryId, Long stateId, InputDataAccessor inputData) {
-		throw new UnsupportedOperationException("Workflow is not supported in the base edition");       
-    }
 
 }

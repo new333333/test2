@@ -19,6 +19,7 @@
 	<property name="upgradeVersion" access="field"/>
     <property name="mirrored"/>
     <property name="binderCount"/>
+    <property name="type" update="false" insert="false"/> 
     <property name="resourceDriverName" length="64"/>
     <property name="resourcePath" length="1024"/>
     <many-to-one name="parentBinder">

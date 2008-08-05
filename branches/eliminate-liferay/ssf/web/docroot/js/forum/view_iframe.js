@@ -252,7 +252,7 @@ function ss_divDrag(evt) {
 		        bodyObj.appendChild(lightBox);
 			}
 			lightBox.style.backgroundColor = "#ffffff";
-			dojo.html.setOpacity(lightBox, .1);
+			ss_setOpacity(lightBox, .1);
 		    lightBox.onclick = "ss_entryClearDrag();";
 		    lightBox.style.display = "block";
 		    lightBox.style.top = 0 + "px";
@@ -327,7 +327,7 @@ function ss_entryClearDrag() {
 	var lightBox = document.getElementById('ss_entry_light_box')
 	if (lightBox != null) {
 		//ss_debug('remove lightbox')
-		dojo.html.setOpacity(lightBox, 1);
+		ss_setOpacity(lightBox, 1);
 		lightBox.style.visibility = "hidden"
 	}
 }

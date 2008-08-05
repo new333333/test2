@@ -30,50 +30,9 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
-<%
-String wsTreeName = "email_" + renderResponse.getNamespace();
-%>
-<script type="text/javascript">
-function <%= wsTreeName %>_showId(id, obj, action) {
-	//Build a url to go to
-	var url = "<ssf:url action="ssActionPlaceHolder" actionUrl="false" ><ssf:param 
-			name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>"
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
-	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-	self.location.href = url;
-	return false;
-}
-</script>
-<div class="ss_style ss_portlet">
-<c:choose>
-<c:when test="${!empty ssWsDomTree}">
 
-<jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
-<form class="ss_style ss_form" name="${renderResponse.namespace}fm" 
-    id="${renderResponse.namespace}fm" method="post" 
-    action="<ssf:url action="config_email" actionUrl="true"/>">
-<div class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
-</div>
-	<table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="95%">
-	<tr align="left"><td><ssf:nlt tag="tree.choose_folder"/></td></tr>
-	<tr>
-		<td align="left">
-			<div>
-			<ssf:tree treeName="<%= wsTreeName %>"  treeDocument="${ssWsDomTree}" 
-			  topId="${ssWsDomTreeBinderId}" 
-			  rootOpen="true" showImages="false" />
-			</div>
-		</td>
-	</tr>
-	</table>
-	<br/>
-<div class="ss_buttonBarLeft">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
-</div>
-</form>
-</c:when>
-<c:otherwise>
+<div class="ss_style ss_portlet">
+
 <c:if test="${!empty ssException}">
 <span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
 </c:if>
@@ -81,8 +40,8 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <br/>
 <span class="ss_bold"><ssf:nlt tag="notify.forum.label"/>&nbsp;${ssBinder.title}</span><br/>
 
-<c:set var="ss_breadcrumbsShowIdRoutine" value="<%= wsTreeName + "_showId"%>" scope="request" />
-<c:set var="ss_breadcrumbsTreeName" value="<%= wsTreeName %>" scope="request" />
+<c:set var="ss_breadcrumbsShowIdRoutine" value="ss_treeShowIdNoWS" scope="request" />
+<c:set var="ss_breadcrumbsTreeName" value="${renderResponse.namespace}_tree" scope="request" />
 
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 <form class="ss_style ss_form" name="${renderResponse.namespace}fm" method="post" 
@@ -196,7 +155,4 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 </div>
 
 </form>
-
-</c:otherwise>
-</c:choose>
 </div>

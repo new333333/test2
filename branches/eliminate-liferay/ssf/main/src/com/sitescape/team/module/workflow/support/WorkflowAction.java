@@ -5,5 +5,5 @@ import com.sitescape.team.domain.WorkflowSupport;
 
 public interface WorkflowAction  {
 	public void execute(WorkflowSupport entry, WorkflowState state);
-	public void setHelper(WorkflowCalloutHelper helper);
+	public void setHelper(WorkflowCallout helper);
 }

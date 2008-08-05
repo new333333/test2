@@ -17,6 +17,7 @@
 	<classpathentry kind="src" path="taglib/src"/>
 	<classpathentry kind="src" path="indexer-lucene/src"/>
 	<classpathentry kind="src" path="util/src"/>
+	<classpathentry kind="src" path="apacheds-server-jndi/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ant.jar"/>
@@ -41,7 +42,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/hibernate3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxen.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/portlet.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/servlet.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/servlet.jar" sourcepath="C:/Documents and Settings/Joe/Desktop/spring-framework-2.5.4/src"/>
 	<classpathentry exported="true" kind="lib" path="lib/cglib.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jtds.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bsh.jar"/>
@@ -97,13 +98,30 @@
 	<classpathentry exported="true" kind="lib" path="ws-client/ssf-wsclient.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/velocity-tools-view.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-test.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc-portlet.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc-portlet.jar" sourcepath="C:/Documents and Settings/Joe/Desktop/spring-framework-2.5.4/src"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc.jar" sourcepath="C:/Documents and Settings/Joe/Desktop/spring-framework-2.5.4/src"/>
 	<classpathentry exported="true" kind="lib" path="lib/mina-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mina-filter-ssl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mina-integration-jmx.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/slf4j-api.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/subethasmtp.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/subethasmtp.jar" sourcepath="C:/Documents and Settings/Joe/Desktop/subethasmtp-2.0.1/src/smtp"/>
+	<classpathentry kind="lib" path="C:/ss/v8/ssf/lib/catalina.jar" sourcepath="c:/foo"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-net.jar"/>
+	<classpathentry kind="lib" path="lib/spring-ldap.jar" sourcepath="C:/Documents and Settings/Joe/Desktop/spring-ldap-1.2.1/src"/>
+	<classpathentry kind="lib" path="lib/spring-security-core.jar" sourcepath="C:/Documents and Settings/Joe/Desktop/ss-src/core/src/main/java"/>
+	<classpathentry kind="lib" path="lib/apacheds-core.jar"/>
+	<classpathentry kind="lib" path="lib/apacheds-core-shared.jar"/>
+	<classpathentry kind="lib" path="lib/apacheds-kerberos-shared.jar"/>
+	<classpathentry kind="lib" path="lib/apacheds-protocol-changepw.jar"/>
+	<classpathentry kind="lib" path="lib/apacheds-protocol-kerberos.jar"/>
+	<classpathentry kind="lib" path="lib/apacheds-protocol-ldap.jar"/>
+	<classpathentry kind="lib" path="lib/apacheds-protocol-shared.jar"/>
+	<classpathentry kind="lib" path="lib/backport-concurrent.jar"/>
+	<classpathentry kind="lib" path="lib/jdbm.jar"/>
+	<classpathentry kind="lib" path="lib/shared-asn1.jar"/>
+	<classpathentry kind="lib" path="lib/shared-asn1-codec.jar"/>
+	<classpathentry kind="lib" path="lib/shared-ldap.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-fileupload.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jbpm.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>

@@ -31,8 +31,8 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_dashboard_content" class="ss_doublecolumn">
-  <div id="ss_column_L" class="ss_colleft">
-      <div class="ss_col1">
+  <div id="ss_column_L" class="ss_dblcolleft">
+      <div class="ss_dblcol1">
       <!-- Start Left Column -->
       
 	<ssf:canvas id="relevanceTasks" type="inline" styleId="ss_tasks">
@@ -84,7 +84,8 @@
 	
         </div><!-- end of ss_col 1 -->
         <!-- Start Right Column -->
-      	<div id="ss_column_R" class="ss_col2">
+      	<div id="ss_column_R">
+      	<div class="ss_dblcol2">
       
 	<ssf:canvas id="relevanceCalendars" type="inline" styleId="ss_calendar">
 	<ssf:param name="title" useBody="true" >
@@ -105,7 +106,7 @@
 	</ssf:canvas>
 
       </div><!-- end of col2 (right column) -->
-      
+      </div><!-- end of ss_col_R (right column placeholder) -->
     </div><!-- end of col left -->
 
 </div><!-- end of content -->

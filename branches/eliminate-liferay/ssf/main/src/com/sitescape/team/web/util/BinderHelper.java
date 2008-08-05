@@ -48,6 +48,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
@@ -93,6 +94,8 @@ import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.portlet.forum.ViewController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.portletadapter.portlet.RenderRequestImpl;
+import com.sitescape.team.portletadapter.portlet.RenderResponseImpl;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.SearchUtils;
@@ -465,9 +468,14 @@ public class BinderHelper {
 	public static String getDisplayType(PortletRequest request) {
 		PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
 		String pName = pConfig.getPortletName();
+		boolean isWap = false;
+		if (request instanceof RenderRequestImpl) {
+			HttpServletRequest httpReq = ((RenderRequestImpl)request).getHttpServletRequest();
+			isWap = BrowserSniffer.is_wap_xhtml(httpReq);
+		}
 		//For liferay we use instances and the name will be changed slightly
 		//That is why we check for the name with contains
-		if (pName.contains(ViewController.FORUM_PORTLET))
+		if (pName.contains(ViewController.FORUM_PORTLET)) 
 			return ViewController.FORUM_PORTLET;
 		else if (pName.contains(ViewController.WORKSPACE_PORTLET))
 			return ViewController.WORKSPACE_PORTLET;
@@ -1585,14 +1593,20 @@ public class BinderHelper {
 				//Add the attributes
 				String name = ele.attributeValue("name");
 				attributeMap = new HashMap();
-				eleMap.put("attributes", attributeMap);
 				itAttr = ele.attributeIterator();
 				while (itAttr.hasNext()) {
 					Attribute attr = (Attribute) itAttr.next();
 					attributeMap.put(attr.getName(), attr.getValue());
 				}
 				//Add the data
-				eleMap.put(name, ele.getData());
+				if (Validator.isNull(name)) {
+					eleMap.put("attributes", attributeMap);
+					continue; //no way to add it
+				}
+				Map dataMap = new HashMap();
+				dataMap.put("attributes", attributeMap);
+				dataMap.put("value", ele.getData());
+				eleMap.put(name, dataMap);
 			}
 		}
 		return changeList;
@@ -1874,11 +1888,11 @@ public class BinderHelper {
 			else styles.put(Integer.valueOf(i), address);
 		}
 		if (!styles.isEmpty()) {
-			bs.getFolderModule().addSubscription(folderId, entryId, styles);
+			bs.getFolderModule().setSubscription(folderId, entryId, styles);
 			
 		} else if (Validator.isNotNull(subscribeElementPresent)) {
 			//The user turned off the subscription
-			bs.getFolderModule().deleteSubscription(folderId, entryId);
+			bs.getFolderModule().setSubscription(folderId, entryId, null);
 		}
 	}
 
@@ -1943,7 +1957,10 @@ public class BinderHelper {
 		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID, -1);
 		//new search
 		Tabs.TabEntry tab = tabs.findTab(Tabs.SEARCH, tabId);
-		if (tab == null) return prepareSearchResultData(bs, request, tabs);
+		if (tab == null) {
+			prepareSearchResultData(bs, request, tabs, model);
+			return model;
+		}
 		// get query and options from tab
 		Document searchQuery = tab.getQueryDoc();
 		Map options = getOptionsFromTab(tab);
@@ -1985,8 +2002,7 @@ public class BinderHelper {
 		return model;
 	}
 	
-	public static Map prepareSearchResultData(AllModulesInjected bs, RenderRequest request, Tabs tabs) {
-		Map model = new HashMap();
+	public static void prepareSearchResultData(AllModulesInjected bs, RenderRequest request, Tabs tabs, Map model) {
 
 		SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, bs.getDefinitionModule());
 		Document searchQuery = requestParser.getSearchQuery();
@@ -1996,11 +2012,10 @@ public class BinderHelper {
 		Tabs.TabEntry tab = tabs.addTab(searchQuery, options);
 		
 		prepareSearchResultPage(bs, results, model, searchQuery, options, tab);
-
-		return model;
 	}
 	
-	public static void prepareSearchResultPage (AllModulesInjected bs, Map results, Map model, Document query, Map options, Tabs.TabEntry tab) {
+	public static void prepareSearchResultPage (AllModulesInjected bs, Map results, Map model, Document query, 
+			Map options, Tabs.TabEntry tab) {
 		
 		model.put(WebKeys.URL_TAB_ID, tab.getTabId());
 		//save tab options

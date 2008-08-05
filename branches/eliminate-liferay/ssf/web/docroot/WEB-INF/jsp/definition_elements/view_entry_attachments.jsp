@@ -108,7 +108,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	</c:if>
 	
 	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-	  <% /* TODO: Add test if IC Broker is enabled (ICBrokerModule.isEnabled()) */ %>
+	  <% /* TODO: Add test if IC Broker is enabled (ICBrokerModule.isEnabled()) and	if user has zone name defined */ %>
 	  <a class="" title="<ssf:nlt tag="attachMeeting.attachResults"/>" 
 	    href="javascript: ;" 
 	    onClick="ss_showAttachMeetingRecords('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"

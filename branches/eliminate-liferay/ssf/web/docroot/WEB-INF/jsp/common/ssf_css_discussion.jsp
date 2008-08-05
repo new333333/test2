@@ -45,21 +45,25 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 #ss_column_L{
 	/* holder for left column */
+	vertical-align:top;
 	}
 #ss_column_R{
 	/* holder for left column */
 	height:100%;
+	vertical-align:top;
 	}	
-.ss_doublecolumn .ss_colleft{		/* right column width */
+.ss_doublecolumn .ss_dblcolleft{		/* right column width */
 	right:49%;		
 	}
-.ss_doublecolumn .ss_col1{
+.ss_doublecolumn .ss_dblcol1{
 	width:49%;						/* left column content width (column width minus left and right padding) */
-	left:50%;						/* (right column width) plus (left column padding) */
 	background-color:#fff;			/* left column background color */
+	position:relative;
+	float:left;
+	margin-right:2%;
 	}	
-.ss_doublecolumn .ss_col2{
-	width:49%;						/* right column content width (column width minus left and right padding) */
+.ss_doublecolumn .ss_dblcol2{
+	width:100%;						/* right column content width (column width minus left and right padding) */
 	left:51%;						/* (right column column width) plus (left column left and right padding) plus (right column left padding) */
 	overflow:hidden;
 	}	
@@ -72,13 +76,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		width:96%;
 		text-align:left;
 
+
 	}
 	#ss_diss_top
 	{
-		clear:both;
-		float: left;
+		/*clear:both;
+		float: left;*/
 		width: 100%;
-		overflow: hidden;
 		color: #526394;
 		font-family: Arial, Helvetica, sans-serif;
 
@@ -130,7 +134,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 #ss_folder_inset
 	{
-		margin:0% 5%;
+		margin:0% 5% 0% 5%;
 		width:90%;
 		text-align:left;
 
@@ -187,6 +191,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-image: url("<html:rootPath/>images/pics/discussion/blue_topic.png");
 	background-repeat: no-repeat;
 	background-position: 1% 1%;
+	color: #00ADef;
+}
+.ss_disc_sub_th1
+{
+	background-image: url("<html:rootPath/>images/pics/discussion/blue_topic.png");
+	background-repeat: no-repeat;
+	background-position: 4% 1%!important;
 	color: #00ADef;
 }
 .ss_disc_folder_th1
@@ -308,9 +319,17 @@ a.ss_new_thread:hover {
 	
 /**** INLINE NAVBAR STYLE ************/
 
-#ss_navbar_inline ul{
+#ss_navbar_inline {
 	margin:0px;
+	padding:1px 0px 0px 0px;
+	<c:if test="<%= isIE %>">
+ 		padding-top:3px;
+ 		padding-bottom:3px;
+ 	</c:if>
 	}
+#ss_navbar_inline ul{
+	margin:0px !important;
+	}	
 #ss_navbar_inline ul li{
 	display: inline!important;
 	white-space: nowrap;
@@ -329,69 +348,77 @@ a.ss_new_thread:hover {
 	}	
 .ss_navbar_current {
 	font-weight: bold !important;
-	text-decoration: underline;
+	border:solid 1px #999999 !important; /* text-decoration: underline; */
+	padding:2px 5px 2px 5px;
 	}	
+.ss_navbar_new {
+	text-align: center;
+	font-weight: bold !important;
+	border:solid 1px #FFFFFF !important; /* text-decoration: underline; */
+	padding:2px 5px 2px 5px;
+	background-color: #828282 !important;
+	
+	}
+.ss_navbar_new a {
+	color: #FFFFFF !important;
+	}	
+.ss_navbar_new a:hover {
+	color: #333333 !important;
+	}		
 
 /******* PAGINATION STYLES *************/
-
-.ss_paginationFont {
+.ss_pagination {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: ${ss_style_font_fineprint} !important;
-	padding-left: 5px;
-	padding-right: 2px;
-	white-space: nowrap;
-	padding-top: 2px;
-	height:26px !important;
-	<c:if test="<%= isIE %>">
-  		vertical-align:top;
-  		padding-top: 4px;
- 	</c:if>
-}
-
-.ss_paginationFont a{
-	border:solid 1px #DDDDDD !important;
-	margin-right:2px;
-}
-.ss_pageActive{
-	color:#408080!important;
-	font-weight:normal;
-	padding:8px 4px 0px 6px;
-}
-.ss_paginationFont a:link,
-.ss_paginationFont a:visited {
-	color:#333333;
-	padding:3px 6px 3px 6px;
-	text-decoration:none;
-	background-color:#E9F1F1 !important;
-	background:transparent !important;	
-}
-.ss_paginationFont a:hover{
-	border:solid 1px #666666 !important;
 	background-color: #CCDFDE !important;
+	height:38px !important;
+	margin-bottom: 5px;
+	}
+/***********This is the style sub-group for the "Go boxes" ***********/
+#ss_goBox {
+	height:38px !important;
+	<c:if test="<%= isIE %>">
+ 	height:38px !important;
+ 	</c:if>
+	}
+.ss_pagination_goTable {
+	height:40px !important;
+/*	background-color: #CCDFDE !important;
+	white-space: nowrap !important; */
 }
-.ss_paginationTextBox {
-	font-family: Arial, Helvetica, sans-serif;
-	line-height: 10px;
-	font-size: ${ss_style_font_finestprint} !important;
-	width: 22px;
-	border-top-width: 0.8px !important;
-	border-right-width: 0.4px;
-	border-bottom-width: 0.4px;
-	border-left-width: 0.4px !important;
-	border-top-style: solid !important;
-	border-right-style: none;
-	border-bottom-style: none;
-	border-left-style: solid !important;
-	border-top-color: #698F8E !important;
-	border-right-color: #698F8E;
-	border-bottom-color: #698F8E;
-	border-left-color: #698F8E !important;
-	padding-top: 1px;
-	margin-top: 2px;
-	margin-left: 5px;
+	
+.ss_paginationGo {
+	font-size: ${ss_style_font_fineprint} !important;
+	padding-left: 0px;
+	padding-right: 10px;
+	white-space: nowrap;
+	padding-top: 0px;
+	<c:if test="<%= isIE %>">
+ 		vertical-align:middle !important;
+ 		padding-top:0px;
+ 	</c:if>
+
 }
-.ss_pTB_no {
-	font-family: Arial, Helvetica, sans-serif;
+.ss_page_IE {
+		<c:if test="<%= isIE %>">
+ 		vertical-align:middle !important;
+ 		padding-top:10px;
+ 	</c:if>
+ 	}
+ .ss_page_IE2 {
+ 	font-size: ${ss_style_font_fineprint} !important;
+ 	
+ 	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 2px;
+	<c:if test="<%= isIE %>">
+  		padding-top: 2px;
+  		vertical-align:middle !important;
+  		padding-bottom: 10px;
+ 	</c:if>
+ 	overflow:hidden;
+ 	}	
+.ss_pTB_no {				/* This greys out the Go Box if only one page */
 	line-height: 10px;
 	font-size: ${ss_style_font_finestprint} !important;
 	width: 22px;
@@ -412,20 +439,101 @@ a.ss_new_thread:hover {
 	margin-left: 5px;
 	background-color:#D9D9D9 !important;
 }
-.ss_pagination {
-	background-color: #CCDFDE !important;
-	height:26px !important;
-	overflow:hidden;
-	}
-	
-.ss_pagination_table {
-	height:26px !important;
-	}	
-.ss_pagination_goTable {
-	height:26px !important;
-	background-color: #CCDFDE !important;
-}
+/***********This is the style sub-group for Page N of M ***********/
 .ss_paginationDiv {
 	background-color: #E9F1F1 !important;
+	height:40px !important;
 }
+.ss_pagination_table {
+	height:38px !important;
+/*	white-space: nowrap !important; */
+	}
+.ss_pagination_arrows {
+	vertical-align: middle;
+	padding-top: 1px;
+	padding-left: 0px !important;
+	padding-right: 0px !important;
+	<c:if test="<%= isIE %>">
+  		padding-top: 4px;
+ 	</c:if>
+	}
+.ss_paginationFont {
+	font-size: ${ss_style_font_fineprint} !important;
+	padding-left: 2px;
+	padding-right: 5px;
+	padding-top: 2px;
+	<c:if test="<%= isIE %>">
+  		margin-top: 5px;
+  		padding-top: 4px;
+ 	</c:if>
+ 	overflow:hidden;
+}
+
+.ss_paginationFont a{
+	border:solid 1px #DDDDDD !important;
+	margin-right:2px;
+}
+.ss_pageActive{
+	color:#408080!important;
+	font-weight:normal;
+	vertical-align:middle;
+	padding:3px 4px 0px 6px;
+	<c:if test="<%= isIE %>">
+  		padding:3px 4px 0px 6px;
+ 	</c:if>
+}
+.ss_pageNext {
+	color:#333333;
+	padding:3px 6px 3px 6px;
+	text-decoration:none;
+	background-color:#E9F1F1 !important;
+	background:transparent !important;	
+	border:solid 1px #DDDDDD !important;
+	margin-right:5px;
+}
+.ss_paginationFont a:link,
+.ss_paginationFont a:visited {
+	color:#333333;
+	padding:3px 6px 3px 6px;
+	text-decoration:none;
+	background-color:#E9F1F1 !important;
+	background:transparent !important;	
+}
+.ss_paginationFont a:hover{
+	border:solid 1px #666666 !important;
+	background-color: #CCDFDE !important;
+}
+.ss_paginationTextBox {
+	line-height: 10px;
+	font-size: ${ss_style_font_finestprint} !important;
+	width: 22px;
+	border-top-width: 0.8px !important;
+	border-right-width: 0.4px;
+	border-bottom-width: 0.4px;
+	border-left-width: 0.4px !important;
+	border-top-style: solid !important;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: solid !important;
+	border-top-color: #698F8E !important;
+	border-right-color: #698F8E;
+	border-bottom-color: #698F8E;
+	border-left-color: #698F8E !important;
+	padding-top: 1px;
+	margin-top: 2px;
+	margin-left: 5px;
+}
+
+/***** FORMS ATTRIBUTES STYLES ******/
+
+.ss_box_delete {
+	border: 0.3px solid #3D3D3D!important;
+	}
+.ss_attribute {
+	background-color: #DBEDFF!important;
+	border: 0.3px solid #999999!important;
+	margin-bottom: 5px;
+	margin-right: 3px;
+	}	
+
 /*************************************/

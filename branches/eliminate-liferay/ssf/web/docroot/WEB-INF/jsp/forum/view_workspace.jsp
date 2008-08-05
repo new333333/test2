@@ -32,7 +32,6 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <c:set var="showWorkspacePage" value="true"/>
 <ssf:ifnotadapter>
   <c:set var="showWorkspacePage" value="false"/>
@@ -42,6 +41,12 @@
 <body class="ss_style_body">
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
 </ssf:ifadapter>
+<ssf:ifLoggedIn><c:if test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
+  <a class="ss_skiplink" href="${ss_accessibleUrl}"><img border="0"
+    <ssf:alt tag="accessible.enableAccessibleMode"/> 
+    src="<html:imagesPath/>pics/1pix.gif" /></a><%--
+		--%></c:if></ssf:ifLoggedIn>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 
 <c:if test="${!empty ssReloadUrl}">
 	<script type="text/javascript">
@@ -193,34 +198,40 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 </td></tr>
 </table>
 </div>
+<% // BEGIN SIDEBAR LAYOUT  %>
 <ssf:ifnotaccessible>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
-    <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
+     <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
+	
+	  <div id="ss_sideNav_wrap"> <% // new sidebar format %>
 
-	<% // Tabs %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
+		<% // Status %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
+	
+		<% // "It" Bars %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_action_dispatch.jsp" />
+		
+		<% // Test Feed %>
+		<div id="ss_leftNav">
+			<ul>
+				<li><a href="">Test Feed 2</a></li>
+			</ul>
+ 		</div>
+ 		
+		<% // Recent Places %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
 
-	<% // Folder Sidebar %>
+		<% // Folder Sidebar %>
+    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
 
-    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
+		<% // Workspace Tree %>    
+    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tree.jsp" />
 
-    <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
-        initOpen="true" sticky="true">
-		<c:if test="${!empty ssSidebarWsTree}">
-		<ssf:tree treeName="sidebarWsTree${renderResponse.namespace}" 
-		  treeDocument="${ssSidebarWsTree}" 
-		  highlightNode="${ssBinder.id}" 
-		  showIdRoutine="ss_treeShowIdNoWS"
-		  namespace="${renderResponse.namespace}"
-		  rootOpen="true"
-		  nowrap="true"/>
-		</c:if>
-	</ssf:sidebarPanel>
-
-	</div>
+	  </div> <% // end of new sidebar format %>
+	 </div> <% // end of ss_sidebarDiv %>
 	</td>
 
 	<td valign="top" class="ss_view_info">

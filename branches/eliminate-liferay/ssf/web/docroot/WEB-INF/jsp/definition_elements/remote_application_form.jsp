@@ -35,8 +35,11 @@
 <span class="ss_labelAbove">${property_caption}</span>
 <select name="${property_name}">
   <option value=""><ssf:nlt tag="general.please_select"/></option>
+  <option value=""><ssf:nlt tag="common.select.none"/></option>
   <c:forEach var="application" items="${ss_remoteApplicationList}">
-    <option value="${application._docId}">${application.title}</option>
+    <option value="${application._docId}"
+    <c:if test="${ssDefinitionEntry.customAttributes[property_name].value == application._docId}">selected</c:if>
+    >${application.title}</option>
   </c:forEach>
 </select>
 </div>

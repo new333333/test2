@@ -337,22 +337,22 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 	}
 	
 	if (this._eventStartObj != null) {
-		dojo.event.connect(this._eventStartObj, "onValueChanged", function(evt) {
+		dojo.connect(this._eventStartObj, "onValueChanged", function(evt) {
 			that.changeStartDate(evt);
 		});
 	}
 	if (this._eventStartTimeObj != null) {
-		dojo.event.connect(this._eventStartTimeObj, "onValueChanged", function(evt) {
+		dojo.connect(this._eventStartTimeObj, "onValueChanged", function(evt) {
 			that.changeStartTime(evt);
 		});	
 	}
 	if (this._eventEndObj != null) {
-		dojo.event.connect(this._eventEndObj, "onValueChanged", function(evt) {
+		dojo.connect(this._eventEndObj, "onValueChanged", function(evt) {
 			that.changeEndDate(evt);
 		});
 	}
 	if (this._eventEndTimeObj != null) {
-		dojo.event.connect(this._eventEndTimeObj, "onValueChanged", function(evt) {
+		dojo.connect(this._eventEndTimeObj, "onValueChanged", function(evt) {
 			that.changeEndTime(evt);
 		});	
 	}	

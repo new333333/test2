@@ -89,13 +89,6 @@ public interface BinderModule {
        		Map fileItems, Map options)
     	throws AccessControlException, WriteFilesException;
 	/**
-	 * Subscribe to a binder.  Use to request notification of changes.
-	 * @param binderId
-	 * @param style
-	 */
-	public void addSubscription(Long binderId, Map<Integer,String[]> styles) 
-		throws AccessControlException;
-	/**
 	 * Check access to a binder, throwing an exception if access is denied.
 	 * @param binder
 	 * @param operation
@@ -115,11 +108,11 @@ public interface BinderModule {
 	 * Copy a binder to another location
 	 * @param sourceId
 	 * @param destinationId
-	 * @param cascade - True to copy child binders
-     * @param options - processing options or null (See INPUT_OPTION_COPY_BINDER_CASCADE)
+	 * @param cascade
+     * @param options - processing options or null 
 	 * @return
 	 */
-	public Long copyBinder(Long sourceId, Long destinationId, Map options)
+	public Long copyBinder(Long sourceId, Long destinationId, boolean cascade, Map options)
 		throws AccessControlException;
 	/**
 	 * Delete a binder including any sub-binders and entries.
@@ -146,11 +139,6 @@ public interface BinderModule {
 	public Set<Exception> deleteBinder(Long binderId, boolean deleteMirroredSource, Map options) 
 		throws AccessControlException;
 		
-	/**
-	 * Stop receiveing notifications that you have explicity requested.
-	 * @param binderId
-	 */
-	public void deleteSubscription(Long binderId);
 	/**
 	 * Delete a tag on a binder
 	 * @param binderId
@@ -254,10 +242,10 @@ public interface BinderModule {
     public List<Map> getSearchTags(String wordroot, String type); 
     /**
      * Get your subscription to this binder
-     * @param binderId
+     * @param binder
      * @return
      */
-	public Subscription getSubscription(Long binderId);
+	public Subscription getSubscription(Binder binder);
 	/**
 	 * Return community tags and the current users personal tags on the binder
 	 * @param binder
@@ -308,7 +296,7 @@ public interface BinderModule {
      * @param binderId
      * @return Set of binderIds indexed
      */
-     public Set<Long> indexTree(Collection<Long> binderId, StatusTicket statusTicket) throws AccessControlException;
+     public Set<Long> indexTree(Collection<Long> binderId, StatusTicket statusTicket, String[] nodeIds) throws AccessControlException;
    
     /**
      * Modify a binder.  Optionally include files to add and attachments to delete 
@@ -381,7 +369,14 @@ public interface BinderModule {
      */
     public void setProperty(Long binderId, String property, Object value)
     	throws AccessControlException;  
-    /**
+	/**
+	 * Subscribe to a binder.  Use to request notification of changes.
+	 * @param binderId
+	 * @param style = null or empty to delete
+	 */
+	public void setSubscription(Long binderId, Map<Integer,String[]> styles) 
+		throws AccessControlException;
+   /**
      * Create a new tag for this binder
      * @param binderId
      * @param newtag

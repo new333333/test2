@@ -38,6 +38,7 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
+import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
 
 /**
@@ -187,12 +188,20 @@ public class WorkflowState extends ZonedObject {
 		Element element = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_WORKFLOWSTATE);
 		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID, getId().toString());
 		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, getState());
-		
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_STATE_CAPTION, 
+				WorkflowUtils.getStateCaption(getDefinition(),getState()));
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_THREAD_CAPTION, 
+				WorkflowUtils.getThreadCaption(getDefinition(),getThreadName()));
+			
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_WFS_DEFINITION, getDefinition().getId());
 		if (getTimerId() != null)
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_WFS_TIMER, getTimerId());
 		if (!Validator.isNull(getThreadName())) 
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_WFS_THREAD, getThreadName());
+			element.addAttribute(ObjectKeys.XTAG_WFS_THREAD, getThreadName());
+		
+		String wfTitle = NLT.getDef(definition.getTitle());
+		element.addAttribute(ObjectKeys.XTAG_WFS_PROCESS, wfTitle);
+		
 		if (getWorkflowChange() != null) getWorkflowChange().addChangeLog(element, ObjectKeys.XTAG_WF_CHANGE);
 		return element;
     	

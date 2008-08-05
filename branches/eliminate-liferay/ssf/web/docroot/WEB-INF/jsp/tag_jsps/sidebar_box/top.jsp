@@ -45,14 +45,13 @@ Boolean sticky = ParamUtil.getBoolean(request, "sticky", true);
 --%><c:set var="sticky" value="<%= sticky %>" /><%--
 --%><c:set var="divId" value="<%= id %>" /><%--
 --%><c:set var="divClass" value="<%= divClass %>" /><%--
---%><div class="ss_sidebar_panel"><%--
-    --%><div class="ss_base_title_bar"><%--
-        --%><img <ssf:alt tag="alt.expand"/> src="<%--
-        --%><c:if test="${initOpen}"><html:imagesPath/>pics/flip_down16H.gif</c:if><%--
-        --%><c:if test="${!initOpen}"><html:imagesPath/>pics/flip_up16H.gif</c:if><%--
-        --%>" onClick="ss_showHideSidebarBox('${renderResponse.namespace}_${divId}', this, ${sticky}, '${divId}');" class="ss_toggler"/><%--
+--%><div class="ss_sidebarMenu"><%--
+    --%><div <%--
+        --%><c:if test="${initOpen}">class="ss_menuOpen"</c:if><%--
+        --%><c:if test="${!initOpen}">class="ss_menuClosed"</c:if><%--
+        --%> onClick="ss_showHideSidebarBox('${renderResponse.namespace}_${divId}', this, ${sticky}, '${divId}');"><%--
         --%><%= title %><%--
-        --%><div><img alt="" src="<html:imagesPath/>pics/1pix.gif" height="1" width="200"/></div><%--
+        --%><div><img alt="" src="<html:imagesPath/>pics/1pix.gif" height="1" width="180"/></div><%--
     --%></div><%--
 --%><div id="${renderResponse.namespace}_${divId}" style="overflow: hidden; <%--
 --%><c:if test="${initOpen}">visibility: visible; display: block;</c:if><%--

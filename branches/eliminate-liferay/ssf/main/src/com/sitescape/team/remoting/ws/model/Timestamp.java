@@ -30,6 +30,7 @@ package com.sitescape.team.remoting.ws.model;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Date;
 
 public class Timestamp implements Serializable {
 
@@ -43,6 +44,12 @@ public class Timestamp implements Serializable {
 		setDate(date);
 	}
 	
+	public Timestamp(String principal, Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		setPrincipal(principal);
+		setDate(cal);
+	}
 	public Calendar getDate() {
 		return date;
 	}

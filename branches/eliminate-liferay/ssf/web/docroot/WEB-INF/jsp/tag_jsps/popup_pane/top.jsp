@@ -47,7 +47,7 @@
    <td width="100%"><div class="ss_popup_top">
    <div class="ss_popup_title"><ssf:nlt tag="${titleTag}"/></div></div>
    </td>
-   <td width="40px"><div class="ss_popup_top">
+   <td width="40"><div class="ss_popup_top">
     <div onClick="${closeScript}" class="ss_popup_close"></div></div>
    </td>
   </tr>

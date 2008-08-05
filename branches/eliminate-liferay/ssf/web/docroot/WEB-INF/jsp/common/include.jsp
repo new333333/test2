@@ -32,19 +32,6 @@
 --%><%@ include file="/WEB-INF/jsp/common/common.jsp" %><%--
 --%><%@ page contentType="text/html; charset=UTF-8" %><%--
 
---%><%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %><%--
---%><%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %><%--
-
---%><portletadapter:defineObjects1/><%--
---%><%
-
-//Set up the user object
-if (com.sitescape.team.context.request.RequestContextHolder.getRequestContext() != null) {
-	com.sitescape.team.domain.User user = com.sitescape.team.context.request.RequestContextHolder.getRequestContext().getUser();
-	request.setAttribute("ssUser", user);
-}
-
-%><%--
 --%><c:set var="ssf_support_files_loaded_flag" value=""/><%--
 --%><ssf:ifadapter><%--
 	--%><c:if test="${empty ssf_support_files_loaded}"><%--
@@ -53,13 +40,11 @@ if (com.sitescape.team.context.request.RequestContextHolder.getRequestContext() 
     --%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+<jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_head.jsp" />
 <c:if test="${!empty ss_windowTitle}"><title>${ss_windowTitle}</title></c:if>
 </c:if><%--
 	--%></c:if><%--
-	--%><portletadapter:defineObjects2/><%--
 --%></ssf:ifadapter><%--
-
---%><ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter><%--
 
 --%><c:if test="${empty ssf_snippet}"><%--
 	--%><%@ include file="/WEB-INF/jsp/common/view_css.jsp" %><%--

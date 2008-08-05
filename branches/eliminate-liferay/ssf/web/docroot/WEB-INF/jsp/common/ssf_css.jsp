@@ -1186,6 +1186,7 @@ div.ss_sliding_table_column0 {
 div.ss_sliding_table_column1 {
   position: absolute; 
   visibility: hidden;
+  overflow:hidden;
   display: block; 
   border-left: #ffffff solid 1px;
   margin: 0px;
@@ -1198,6 +1199,7 @@ div.ss_sliding_table_column1 {
 div.ss_sliding_table_column {
   position: absolute; 
   visibility: hidden;
+  overflow:hidden;
   display: block; 
   border-left: ${ss_sliding_table_border_color} solid 1px;
   margin: 0px;
@@ -1734,8 +1736,9 @@ div.ss_box_top_rounded {
 /* Tree widget styles */
 .ss_treeWidget {
   background: url("<html:imagesPath/>pics/1pix.gif") fixed no-repeat;
-    margin-top:8px;
-    }
+  margin-top:8px;
+  text-indent:0px;
+  }
 .ss_twDiv {
   }
 .ss_twSpan, ss_twA {
@@ -1955,7 +1958,6 @@ div.ss_content_outer table, div.ss_portlet table, table.ss_style, div.ss_popup_b
 	font-size:1px;
 }
 .ss_decor-round-corners-top2 div {
-	background:none;
 }
 .ss_decor-round-corners-bottom2{
 	background:url(<html:imagesPath/>roundcorners2/border.gif) repeat-x bottom;
@@ -2158,7 +2160,7 @@ div.ss_sidebar_panel_featured {
   text-decoration:none;
 }
 
-/* TOOLBAR STYLES */
+/* TOOLBAR STYLES (change heights to 22px and no ka for boulder */
 
 .ss_sidebarImage {
 	background-image: url("<html:rootPath/>images/pics/navbar/bg_toolbar.gif");  
@@ -2168,14 +2170,14 @@ div.ss_sidebar_panel_featured {
 	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_lg.png"); 
 	background-position:top left;
 	background-repeat: no-repeat;
-	height:22px;
+	height:22px;		/* boulder 22px */
 	color:#FFF;
 	}
 .ss_sidebarSlidesm {
 	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_sm.png"); 
 	background-position:top left;
 	background-repeat: no-repeat;
-	height:22px;
+	height:22px;		/* boulder 22px */
 	color:#FFF;
 	}
 button { 
@@ -2241,7 +2243,7 @@ div.ss_actions_bar1_pane {
 	background-color: #AFAFAF;
 	border-bottom: 1px solid;
 	border-color: #FFF;
-	height: 22px;
+	height: 22px;		/* boulder 22px */
 	white-space: nowrap;
 }
 	
@@ -2536,10 +2538,11 @@ div.ss_dashboardContainer {
 	padding: 0px 0px 0px 0px;
 }
 div.ss_utils_bar {
-    float:right;
-    text-align:right;
+    float:right;		
+    text-align:right;	/* this was here */
 	margin-bottom:0px;
-	background:transparent none repeat scroll 0%;
+	background:transparent none repeat 0%;
+	background-attachment:scroll;
 	width:100%;
 }
 div.ss_line {
@@ -2549,14 +2552,15 @@ div.ss_line {
 	padding: 0px 0px 0px 0px;
 }
 ul.ss_utils_bar {
-	float: right;
+ 	float: right;		
 	list-style-type:none;
 	margin:0px;
 	padding:0px;
-	text-align:right;
+	text-align:right;	/* this was here */
 }
 div.ss_utils_bar ul.ss_utils_bar li {
-	float:left;
+	float:left;			
+/*	text-align: left;	 this is new */	
 	margin: 0px 5px 0px 0px;
 }
 div.ss_utils_bar ul.ss_utils_bar li a, div.ss_utils_bar ul.ss_utils_bar li a:visited {
@@ -2799,6 +2803,10 @@ div.ss_thumbnail_small_no_text img,  div.ss_thumbnail_standalone_small img {
     width: 50px;
     height: 50px;
     margin-right: 5px;    
+}
+.ss_thumbnail_standalone_medium img {
+    width: 90px;
+    height: 90px;
 }
 
 div.ss_thumbnail_small_buddies_list, div.ss_thumbnail_small_buddies_list img {
@@ -4378,7 +4386,6 @@ table.ss_milestones_list td.ss_overdue, table.ss_milestones_list td.ss_overdue a
 	z-index: 500;
 	background-color: ${ss_style_background_color_opaque};
 	border: 1px solid ${ss_form_border_color};
-	margin: 0px;
 	padding: 6px;
 	text-align: left;
 	font-size: ${ss_style_font_smallprint};
@@ -4812,10 +4819,9 @@ div.ssPageNavi table td {
 	background-color: #FFFFFF;
 }
 
-div.ss_results_pro_page {
-	position:relative;
-	top: 0px; 
-	margin:0px 2px; 
+.ss_results_pro_page {
+
+	margin-left:-1px; 
 	padding: 1px 4px 1px 4px;
 	border-top:solid #CCCCCC 1px; 
 	border-bottom:solid #CCCCCC 1px;  
@@ -4922,9 +4928,37 @@ ul.placesForm, ul.placesForm li {
 	padding: 0;
 }
 
+.ss_fileUploadProgressBarContainer {
+	font-size: 10px;
+	padding: 5px;
+	background-color: #FAFAFA;
+	border: 1px solid black;
+}
+
+.ss_fileUploadProgressBarContainer .ss_progressBar {
+    height: 15px;
+    width: 320px;
+    background: #ffffff;
+    border: 1px solid #333333;
+    margin: 0;
+    padding-right: 5px;
+}
+.ss_fileUploadProgressBarContainer .ss_progressBar div {
+    height: 11px;
+    margin: 2px;
+    padding: 0px;
+    background: #333333;
+}
+.ss_fileUploadProgressBarContainer .ss_progressTimeSpeed, .ss_fileUploadProgressBarContainer .ss_progress {
+	width: 160px;
+}
+
+
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_dashboard.jsp" />
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_global_nav.jsp" />
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_discussion.jsp" />
+<jsp:include page="/WEB-INF/jsp/common/ssf_css_forms.jsp" />
+<jsp:include page="/WEB-INF/jsp/common/ssf_css_sidebar.jsp" />
 
 <% // Place all CSS code above this line %>
 </c:if> <%// test="${empty ss_skipCssStyles || ss_skipCssStyles != true} %>

@@ -28,10 +28,10 @@
  */
 dojo.provide("sitescape.widget.WorkflowSelect");
 
-dojo.require("dojo.widget.Select");
-dojo.require("dojo.widget.*");
-dojo.require("dojo.html.*");
-dojo.require("dojo.widget.html.stabile");
+		dojo.require("dojox.widget.Select");
+		dojo.require("dojox.widget.*");
+// dojo_xxx		dojo.require("dojox.html.*");
+// dojo_xxx		dojo.require("dojo.widget.html.stabile");
 
 dojo.widget.defineWidget(
 	"sitescape.widget.WorkflowSelect",
@@ -41,6 +41,7 @@ dojo.widget.defineWidget(
 		stepsWidget : null,
 		searchFieldName: "",
 		widgetStepsRef : null,
+	    getSubSearchString: function() {return ""},
 		selectOption : function(/*Event*/ evt){
 			if (this.widgetStepsRef != null) this.widgetStepsRef.destroy();
 			sitescape.widget.WorkflowSelect.superclass.selectOption.call(this, evt);
@@ -64,15 +65,14 @@ dojo.widget.defineWidget(
 			}else{
 				// forces full population of results, if they click
 				// on the arrow it means they want to see more options
-				var idChoices = document.getElementById('t_searchForm_wsTreesearchFolders_idChoices');				
-				this.startSearch(idChoices.value);
+				this.startSearch(this.getSubSearchString());
 			}
 		},
 		loadWorkflowSteps: function(workflowId, stepsIds) {
 			stepsIds = stepsIds||[];
 			var stepsS = "|" + stepsIds.join("|") + "|";
 			this.stepsWidget.innerHTML = "";
-			dojo.io.bind({
+			dojo.xhrGet({
 				url: this.nestedUrl+"&workflowId="+workflowId,
 				load: dojo.lang.hitch(this, function(type, data, evt){ 
 					for (var i in data) {

@@ -46,6 +46,7 @@ import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.PermaLinkUtil;
 import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.util.BrowserSniffer;
 
 public class LoginFilter  implements Filter {
 
@@ -59,8 +60,13 @@ public class LoginFilter  implements Filter {
 		if(isAtRoot(req) && req.getMethod().equalsIgnoreCase("get")) {
 			// We're at the root URL. Re-direct the client to its workspace.
 			// Do this only if the request method is GET.
-			String workspaceUrl = getWorkspaceURL(req);
-			res.sendRedirect(workspaceUrl);
+			if (BrowserSniffer.is_wap_xhtml(req)) {
+				String landingPageUrl = getWapLandingPageURL(req);
+				res.sendRedirect(landingPageUrl);
+			} else {
+				String workspaceUrl = getWorkspaceURL(req);
+				res.sendRedirect(workspaceUrl);
+			}
 		}
 		else {
 			if(WebHelper.isGuestLoggedIn(req)) {
@@ -100,6 +106,20 @@ public class LoginFilter  implements Filter {
 		return (String) RunasTemplate.runasAdmin(new RunasCallback() {
 			public Object doAs() {
 				return PermaLinkUtil.getWorkspaceURL(req, userId);
+			}
+		}, WebHelper.getRequiredZoneName(req));									
+	}
+	
+	protected String getWapLandingPageURL(final HttpServletRequest req) {
+		final String userId;
+		if(WebHelper.isGuestLoggedIn(req))
+			userId = WebKeys.USERID_PLACEHOLDER;
+		else
+			userId = WebHelper.getRequiredUserId(req).toString();
+		
+		return (String) RunasTemplate.runasAdmin(new RunasCallback() {
+			public Object doAs() {
+				return PermaLinkUtil.getWapLandingPageURL(req, userId);
 			}
 		}, WebHelper.getRequiredZoneName(req));									
 	}

@@ -29,6 +29,7 @@
  */
 %>
 <form action="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+		name="binderId" value="${ssBinder.id}"/><ssf:param 
 		name="tabTitle" value=""/><ssf:param 
 		name="newTab" value="1"/></ssf:url>" method="post" id="advSearchForm">
 	<div id="ss_searchForm_container">

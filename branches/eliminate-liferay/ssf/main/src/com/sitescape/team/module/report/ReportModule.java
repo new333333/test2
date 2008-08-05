@@ -59,6 +59,7 @@ public interface ReportModule {
 	public static final String USER_ID = "user_id";
 	public static final String USER_TITLE = "user_title";
 	public static final String LAST_LOGIN = "last_login";
+	public static final String LOGIN_DATE = "login_date";
 	public static final String LOGIN_COUNT = "login_count";
 	public static final String STATE = "state";
 	public static final String DEFINITION_ID = "definition_id";
@@ -67,6 +68,15 @@ public interface ReportModule {
 	public static final String COUNT = "count";
 	public static final String SIZE = "size";
 	public static final String TYPE = "type";
+	
+	public static final Integer USER_ID_INDEX = 0;
+	public static final Integer LAST_LOGIN_INDEX = 1;
+	public static final Integer LOGIN_COUNT_INDEX = 2;
+
+	public static final String NONE_SORT = "none_sort";
+	public static final String USER_SORT = "user_sort";
+	public static final String LAST_LOGIN_SORT = "last_login_sort";
+	public static final String LOGIN_COUNT_SORT = "login_count_sort";
 	
 	public static class ActivityInfo
 	{
@@ -101,7 +111,7 @@ public interface ReportModule {
 	
 	public List<Map<String, Object>> generateReport(Collection ids, boolean byUser, Date startDate, Date endDate);
 	public List<Map<String, Object>> generateActivityReport(final Long binderId, final Long entryId);
-	public List<Map<String,Object>> generateLoginReport(Date startDate, Date endDate);
+	public List<Map<String,Object>> generateLoginReport(Date startDate, Date endDate, String optionType, String sortType);
 	public List<Map<String,Object>> generateWorkflowStateReport(Collection ids, Date startDate, Date endDate);
 	public List<Map<String,Object>> generateWorkflowStateCountReport(Collection ids);
 	public List<Map<String, Object>> generateQuotaReport(QuotaOption option, Long threshold);

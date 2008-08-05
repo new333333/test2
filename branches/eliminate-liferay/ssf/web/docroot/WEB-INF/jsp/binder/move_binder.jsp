@@ -32,22 +32,7 @@
 <c:set var="wsTreeName" value="${renderResponse.namespace}_wsTree"/>
 <script type="text/javascript">
 function ${wsTreeName}_showId(forum, obj, action) {
-	if (obj.ownerDocument) {
-		var cDocument = obj.ownerDocument;
-	} else if (obj.document) {
-		cDocument = obj.document;
-	}
-	if (cDocument) {
-		var r = cDocument.getElementById("ss_tree_radio${wsTreeName}destination" + forum);
-		if (r) {
-			if (r.checked !== undefined) {
-				r.checked = true;
-			}
-			if (r.onclick !== undefined) {
-				r.onclick();
-			}
-		}
-	}
+	return ss_checkTree(obj, "ss_tree_radio${wsTreeName}destination" + forum)
 }
 
 </script>

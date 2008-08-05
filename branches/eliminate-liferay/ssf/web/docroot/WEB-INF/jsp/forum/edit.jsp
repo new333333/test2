@@ -63,24 +63,8 @@ String wsTreeName = "editForum_" + renderResponse.getNamespace();
 <span class="ss_bold"><ssf:nlt tag="portlet.forum.select.forums"/></span>
 <br>
 <script type="text/javascript">
-function <%= wsTreeName %>_showId(forum, obj) {
-	if (obj.ownerDocument) {
-		var cDocument = obj.ownerDocument;
-	} else if (obj.document) {
-		cDocument = obj.document;
-	}
-	if (cDocument) {
-		var r = cDocument.getElementById("ss_tree_checkbox<%= wsTreeName %>id" + forum);
-		if (r) {
-			if (r.checked !== undefined) {
-				r.checked = !r.checked;
-			}
-			if (r.onclick !== undefined) {
-				r.onclick();
-			}
-		}
-	}
-	return false;
+function <%= wsTreeName %>_showId(id, obj) {
+	return ss_checkTree(obj, "ss_tree_checkbox<%= wsTreeName %>id" + id);
 }
 </script>
 <ssf:tree treeName="<%= wsTreeName %>"  treeDocument="${ssWsDomTree}" 

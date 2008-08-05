@@ -28,14 +28,35 @@
  */
 package com.sitescape.team.remoting.ws.service.binder;
 
+import com.sitescape.team.remoting.ws.model.Tag;
 import com.sitescape.team.remoting.ws.model.Binder;
+import com.sitescape.team.remoting.ws.model.FolderCollection;
 import com.sitescape.team.remoting.ws.model.FunctionMembership;
+import com.sitescape.team.remoting.ws.model.Subscription;
 import com.sitescape.team.remoting.ws.model.TeamMemberCollection;
 
 public interface BinderService {
-	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId);
-	
-	public void binder_setTeamMembers(String accessToken, long binderId, String[] memberNames);
+	/**
+	 * Add a new binder, without using a template
+	 * @param accessToken
+	 * @param binder
+	 * @return
+	 */
+	public long binder_addBinder(String accessToken, Binder binder);
+	public long binder_copyBinder(String accessToken, long sourceId, long destinationId, boolean cascade);
+	public String[] binder_deleteBinder(String accessToken, long binderId, boolean deleteMirroredSource); 
+	public Binder binder_getBinder(String accessToken, long binderId, boolean includeAttachments);
+	public void binder_moveBinder(String accessToken, long binderId, long destinationId);
+	public void binder_modifyBinder(String accessToken, Binder binder);
+	public void binder_uploadFile(String accessToken, long binderId, String fileUploadDataItemName, String fileName);
+
+	public void binder_deleteTag(String accessToken, long binderId, String tagId); 
+	public Tag[] binder_getTags(String accessToken, long binderId);
+	public void binder_setTag(String accessToken, Tag tag);
+
+	public void binder_indexBinder(String accessToken, long binderId);
+    public Long[] binder_indexTree(String accessToken, long binderId);
+
 	/**
 	 * 
 	 * @param accessToken
@@ -46,9 +67,14 @@ public interface BinderService {
 	public void binder_setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations);
 	public void binder_setFunctionMembershipInherited(String accessToken, long binderId, boolean inherit);
 	public void binder_setOwner(String accessToken, long binderId, long userId);
-	public void binder_indexBinder(String accessToken, long binderId);
 	
-	public long binder_addBinder(String accessToken, Binder binder);
 	
-	public void binder_setFunctionMemberships(String accessToken, long binderId, FunctionMembership[] functionMemberships);
+	public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships);
+
+	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId);	
+	public void binder_setTeamMembers(String accessToken, long binderId, String[] memberNames);
+
+	public Subscription binder_getSubscription(String accessToken, long binderId); 
+	public void binder_setSubscription(String accessToken, long binderId, Subscription subscription); 
+	public FolderCollection binder_getFolders(String accessToken, long binderId);
 }

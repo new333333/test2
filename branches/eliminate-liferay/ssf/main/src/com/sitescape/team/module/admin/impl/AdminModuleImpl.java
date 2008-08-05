@@ -86,6 +86,7 @@ import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.shared.AccessUtils;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.workspace.WorkspaceModule;
+import com.sitescape.team.search.Node;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.FunctionExistsException;
@@ -345,8 +346,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 				reader = new SAXReader(false);  
 				try {
 					in = new ClassPathResource(file).getInputStream();
-					Document doc = reader.read(in);
-					defs.add(getDefinitionModule().addDefinition(doc, null, null, null, true).getId());
+					defs.add(getDefinitionModule().addDefinition(in, null, null, null, true).getId());
 					getCoreDao().flush();
 				} catch (Exception ex) {
 					logger.error("Cannot read definition from file: " + file + " " + ex.getMessage());
@@ -460,6 +460,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
         				}
         			}
         		}
+           		workArea.setFunctionMembershipInherited(false);
 				processAccessChangeLog(workArea, ChangeLog.ACCESSMODIFY);
 				return null;
         	}});
@@ -705,6 +706,40 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	   return filterChangeLogs(getCoreDao().loadObjects(ChangeLog.class, filter, RequestContextHolder.getRequestContext().getZoneId())); 
    	
    }
+   
+   public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, String operation) {
+	   FilterControls filter = new FilterControls();
+	   filter.add("entityId", entityIdentifier.getEntityId());
+	   filter.add("entityType", entityIdentifier.getEntityType().name());
+	   if (!Validator.isNull(operation)) {
+		   filter.add("operation", operation);
+	   }
+	   OrderBy order = new OrderBy();
+	   order.addColumn("operationDate");	   
+	   filter.setOrderBy(order);
+	   
+	   List<ChangeLog> changeLogs = getCoreDao().loadObjects(ChangeLog.class, filter, RequestContextHolder.getRequestContext().getZoneId()); 
+	   
+	   List<ChangeLog> wfChangeLogs = filterWorkflowChanges(changeLogs);
+	   
+	   return filterChangeLogs(wfChangeLogs); 
+   	
+   }
+   
+   private List<ChangeLog> filterWorkflowChanges(List<ChangeLog> changeLogs) {
+	   List<ChangeLog> wfChangeLogs = new ArrayList<ChangeLog>();
+	   for (ChangeLog log: changeLogs) {
+		   if(log.getOperation().equals(ChangeLog.STARTWORKFLOW)
+               || log.getOperation().equals(ChangeLog.MODIFYWORKFLOWSTATEONREPLY)
+			   || log.getOperation().equals(ChangeLog.MODIFYWORKFLOWSTATE)
+			   || log.getOperation().equals(ChangeLog.ENDWORKFLOW)
+			   || log.getOperation().equals(ChangeLog.ADDWORKFLOWRESPONSE)
+			   || log.getOperation().equals(ChangeLog.WORKFLOWTIMEOUT)
+			   || log.getOperation().equals(ChangeLog.ADDENTRY))
+			   		wfChangeLogs.add(log);
+	   }
+	   return wfChangeLogs;
+   }
    private List<ChangeLog> filterChangeLogs(List<ChangeLog> changeLogs) {
 	   User user = RequestContextHolder.getRequestContext().getUser();
 	   if (user.isSuper()) return changeLogs;
@@ -729,6 +764,10 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	   return result;
 
    }
+   
+	public List<Node> getSearchNodes() {
+		return getLuceneSessionFactory().getNodes();
+	}
 
 	public List<AuthenticationConfig> getAuthenticationConfigs()
 	{

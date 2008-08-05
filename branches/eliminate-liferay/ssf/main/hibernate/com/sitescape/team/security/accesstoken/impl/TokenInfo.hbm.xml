@@ -20,7 +20,7 @@
 	    	<property name="applicationId"/>
 	    	<property name="userId"/>
 	    	<property name="binderId"/>
-	    	<property name="binderAccessConstraints" access="field"/>
+	    	<property name="binderAccessConstraints" type="integer" access="field"/>
 	    </subclass>
 	</class>
 </hibernate-mapping>

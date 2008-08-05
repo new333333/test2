@@ -73,13 +73,11 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
    <div id="ss_report_activityFlavorOptions" style="margin-left:20px;">
    <input type="checkbox" class="ss_check" name="ss_byUser" id="ss_byUser"/><label class="ss_checkbox_label"><ssf:nlt tag="administration.report.label.breakDown"/></label>
    </div>
-<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.Workflow">
    <input type="radio" class="ss_radio" name="reportFlavor" value="workflow" onclick="showOptions(this);return true;"/><label class="ss_radio_label"><ssf:nlt tag="administration.report.label.workflow"/></label>
    <div id="ss_report_workflowFlavorOptions" style="margin-left:20px;">
      <input type="radio" class="ss_radio" name="ss_reportFlavor" value="averages" checked="checked"/><label class="ss_radio_label"><ssf:nlt tag="administration.report.label.averages"/></label><br/>
      <input type="radio" class="ss_radio" name="ss_reportFlavor" value="current"/><label class="ss_radio_label"><ssf:nlt tag="administration.report.label.current"/></label><br/>   <br/>
    </div>
-</ssf:ifAuthorizedByLicense>
    <br/>
    <br/>
    <span class="ss_bold"><ssf:nlt tag="administration.report.forum"/></span>
@@ -87,7 +85,7 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
    <br/>
    <ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
      rootOpen="true" topId="${ssWsDomTreeBinderId}" 
-     multiSelect="<%= new ArrayList() %>" multiSelectPrefix="$type" />
+     multiSelect="<%= new ArrayList() %>" multiSelectPrefix="id" />
 
    <br/>
    <br/>
@@ -115,32 +113,16 @@ function showOptions(sel)
   var aOpt = document.getElementById('ss_report_activityFlavorOptions');
   var wOpt = document.getElementById('ss_report_workflowFlavorOptions');
   if(sel.value == "activity") {
-  	dojo.lfx.html.fadeIn(aOpt, 100).play();
-  	dojo.lfx.html.fade(wOpt,  {end:0.3}, 1000).play();
+  	dojo.fadeIn({node:aOpt, delay:100}).play();
+  	dojo.fadeOut({node:wOpt, end:0.3, delay:1000}).play();
   	document.getElementById('ss_reportType').value='binder';
   } else {
-  	dojo.lfx.html.fade(aOpt,  {end:0.3}, 1000).play();
-  	dojo.lfx.html.fadeIn(wOpt, 100).play();
+  	dojo.fadeOut({node:aOpt, end:0.3, delay:1000}).play();
+  	dojo.fadeIn({node:wOpt, delay:100}).play();
   	document.getElementById('ss_reportType').value='workflow';
   }
 }
-function <%= wsTreeName %>_showId(forum, obj, action) {
-	if (obj.ownerDocument) {
-		var cDocument = obj.ownerDocument;
-	} else if (obj.document) {
-		cDocument = obj.document;
-	}
-	if (cDocument) {
-		var r = cDocument.getElementById("ss_tree_checkbox<%= wsTreeName %>" + action + forum);
-		if (r) {
-			if (r.checked !== undefined) {
-				r.checked = !r.checked;
-			}
-			if (r.onclick !== undefined) {
-				r.onclick();
-			}
-		}
-	}
-	return false;
+function <%= wsTreeName %>_showId(id, obj, action) {
+	return ss_checkTree(obj, "ss_tree_checkbox<%= wsTreeName %>id" + id);	
 }
 </script>

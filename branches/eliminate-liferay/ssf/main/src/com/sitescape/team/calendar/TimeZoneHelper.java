@@ -45,7 +45,7 @@ public class TimeZoneHelper {
 
 	private static Map<String, String> cZoneIdConversion = new HashMap();
 	static {
-		
+		cZoneIdConversion.put("GMT", "GMT"); // leave it as it is (joda makes Etc/GMT)
 		cZoneIdConversion.put("ACDT", "Australia/Adelaide");
 		cZoneIdConversion.put("CSuT", "Australia/Adelaide");
 		cZoneIdConversion.put("ACST", "Australia/Darwin");
@@ -148,6 +148,9 @@ public class TimeZoneHelper {
 	public static TimeZone fixTimeZone(TimeZone timeZone) {
 		if (timeZone == null) {
 			return null;
+		}
+		if (timeZone.getID().equals("GMT")) {
+			return timeZone;
 		}
 				
 		String fixedId = fixTimeZoneId(timeZone.getID());

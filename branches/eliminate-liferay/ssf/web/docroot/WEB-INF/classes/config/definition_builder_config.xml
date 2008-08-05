@@ -108,7 +108,23 @@
 		<properties>
 <!-- don't want caption by default -->
 			<property name="caption" caption="__caption" type="text" value=""/>
+			<property name="showPicture" caption="__show_picture" type="boolean" default="false"/>
+			<property name="displayType" caption="__displayType" type="selectbox" default="inline">
+				<option name="inline" caption="__display_inline"/>
+				<option name="leftAligned" caption="__display_left_aligned"/>
+			</property>
 		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option name="titleView" caption="__title" />
+			<option name="entrySignatureView" caption="__entry_signature" />
+			<option name="descriptionView" caption="__description" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="entryWorkflow" caption="__entry_workflow" />
+			<option name="entryAttachments" caption="__entry_attachments" />
+			<option name="entryReplies" caption="__entry_replies" />
+			<option_select path="//item[@category='commonEntryViewData']" />
+			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
+		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_signature.jsp" />
@@ -223,6 +239,7 @@
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="title" initial="true" />
+			<option name="guestName" initial="true" />
 			<option name="description" initial="true" />
 			<option name="attachFiles" default="true" initial="true"/>
 			<option name="entryFormButtons" initial="true" />
@@ -301,6 +318,24 @@
 		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEvent"/>
 	</item>
 
+	<item name="guestName" caption="__guestName" type="data" multipleAllowed="false" 
+		category="entryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__guest.default.caption" />
+			<property name="name" caption="__data_name" type="text" readonly="true" value="_guestName"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean"
+				default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/entry_guest_name_form.jsp"/>
+		</jsps>
+		<index apply="true"
+			fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderGuestName"/>
+	</item>
+	
 	<item name="subscribe" caption="__subscribe" multipleAllowed="false" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__subscribe" />
@@ -340,6 +375,7 @@
 			<option name="entryWorkflow" caption="__entry_workflow" initial="true" />
 			<option name="entryAttachments" caption="__entry_attachments" initial="true" />
 			<option name="entryReplies" caption="__entry_replies" initial="true" />
+			<option_select path="//item[@category='entryViewData']" />
 			<option_select path="//item[@category='commonEntryViewData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 		</options>
@@ -371,6 +407,7 @@
 	    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item" 
 				optionCaption="__data_items_from_the_entry_form">
 				<exclude name="title" />
+				<exclude name="guestName" />
 				<exclude name="description" />
 				<exclude name="attachFiles" />
 		</option_entry_data>
@@ -2168,6 +2205,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/expandable_div.jsp" />
 		</jsps>
+		<help>ihelp.designers.expand_area</help>
 		<notify velocity="expandable_div.vm" />
 	</item>
 		
@@ -2232,6 +2270,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
 		</jsps>
+		<help>ihelp.designers.divider</help>
 		<notify velocity="divider.vm" />
 	</item>
 		
@@ -2461,6 +2500,7 @@
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
+		<help>ihelp.designers.custom_jsp</help>
 	</item>
 	<item name="remoteApp" caption="__remoteApp" type="data" category="entryData" display="form">
 		<properties>
@@ -2484,21 +2524,14 @@
 		<help>ihelp.designers.remote_app</help>
 	</item>
 		
-	<item name="remoteAppView" type="dataView" caption="__remoteApp" category="entryViewData" display="view">
+	<item name="remoteAppView" caption="__remoteApp" category="entryViewData" display="view">
 		<properties>
 			<property name="remoteApp" caption="__remoteApp" type="remoteApp"/>
 		</properties>
-		<options optionCaption="__standard_entry_options">
-			<option_select path="//item[@category='commonEntryViewData']" />
-			<option_select definitionType="5" path="//item[@category='folderViewData']" />
-			<option_select definitionType="6" path="//item[@category='profileViewData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
-			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
-			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
-			<option_select definitionType="1" path="//item[@category='entryViewData']" />
-			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
-		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/remote_application_entry_view.jsp" />
+		</jsps>
+		<help>ihelp.designers.remote_app</help>
 	</item>
 		
 <!-- Workflow items -->
@@ -2556,6 +2589,20 @@
 		</properties>
 	</item>
 
+	<item name="workflowRemoteApp" caption="__remoteApp">
+		<properties>
+			<property name="remoteApp" caption="__remoteApp" type="remoteApp"/>
+			<property name="variable" caption="__workflow_variable_name" type="text" 
+				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" >
+				<help>ihelp.workflow.remoteApp.variable</help>
+			</property>	
+			<property name="runAs" caption="__workflow_action_runas" type="selectbox">
+				<option name="currentuser" caption="__workflow_action_runas_currentuser"/>
+				<option name="entryowner" caption="__workflow_action_runas_entryowner"/>
+				<option name="binderowner" caption="__workflow_action_runas_binderowner"/>
+			</property>
+		</properties>
+	</item>
 	<item name="transitions" caption="__transitions" unique="./item[@name='transitions']">
 		<options>
 			<option name="transitionManual" />
@@ -2579,8 +2626,7 @@
 		</options>
 	</item>
 	
-	<item name="parallelThread" caption="__parallelThread" canBeDeleted="true" multipleAllowed="true" type="data"
-		feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
+	<item name="parallelThread" caption="__parallelThread" canBeDeleted="true" multipleAllowed="true" type="data">
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__data_name" type="text" unique="//item[@name='parallelThread']">
@@ -2593,7 +2639,7 @@
 		<help>ihelp.workflow.parallel</help>
 	</item>
 	
-	<item name="transitionOnModify" caption="__transition_on_modify" type="transition" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
+	<item name="transitionOnModify" caption="__transition_on_modify" type="transition" >
 		<properties>
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
@@ -2602,13 +2648,13 @@
 		</options>
 	</item>
 	
-	<item name="transitionOnCondition" caption="__transition_on_condition" type="transition" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
+	<item name="transitionOnCondition" caption="__transition_on_condition" type="transition" >
 		<properties>
 			<property name="class" caption="__workflow_condition_class" type="text" />
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 	</item>
-	<item name="transitionOnReply" caption="__transition_on_reply" type="transition" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
+	<item name="transitionOnReply" caption="__transition_on_reply" type="transition" >
 		<properties>
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
@@ -2617,7 +2663,7 @@
 		</options>
 	</item>
 
-	<item name="transitionOnResponse" caption="__transition_on_response" type="transition" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
+	<item name="transitionOnResponse" caption="__transition_on_response" type="transition" >
 		<properties>
 			<property name="question" caption="__workflow_question" type="text" />
 			<property name="response" caption="__workflow_response" type="text" />
@@ -2627,7 +2673,7 @@
 			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
 	</item>
-	<item name="transitionOnEntryData" caption="__transition_on_entry_data" type="transition" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
+	<item name="transitionOnEntryData" caption="__transition_on_entry_data" type="transition" >
 		<properties>
 			<property name="allMustMatch" caption="__matchEntryData" type="radio" default="true">
 				<option name="true" caption="__matchAll" />
@@ -2642,7 +2688,7 @@
 		</options>
 		<help>ihelp.workflow.condition</help>
 	</item>
-	<item name="transitionOnElapsedTime" caption="__transition_on_elapsed_time" type="transition" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
+	<item name="transitionOnElapsedTime" caption="__transition_on_elapsed_time" type="transition" >
 		<properties>
 			<property name="days" caption="__transition_on_days" type="text" 
 				characterMask="^[0-9]*$" />
@@ -2656,7 +2702,7 @@
 			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
 	</item>
-	<item name="transitionOnVariable" caption="__transition_on_variable" type="transition" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
+	<item name="transitionOnVariable" caption="__transition_on_variable" type="transition" >
 		<properties>
 			<property name="name" caption="__transition_on_variable_name" type="text" />
 			<property name="value" caption="__transition_on_variable_value" type="text" />
@@ -2677,7 +2723,7 @@
 	</item>
 	
 	<item name="workflowQuestion" caption="__workflow_question" type="workflowQuestion"
-		feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
+		>
 		<properties>
 			<property name="question" caption="__workflow_question_text" type="text" />
 			<property name="name" caption="__data_name" type="text" 
@@ -2698,7 +2744,7 @@
 		</properties>
 	</item>
 	
-	<item name="variable" caption="__workflow_variable" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
+	<item name="variable" caption="__workflow_variable" >
 		<properties>
 			<property name="value" caption="__workflow_variable_value" type="text" />
 			<property name="name" caption="__workflow_variable_name" type="text" 
@@ -2780,6 +2826,7 @@
 			<option name="moveEntry" />
 			<option name="copyEntry" />
 			<option name="workflowAction"/>
+			<option name="workflowRemoteApp"/>
 		</options>
 		<help>ihelp.workflow.on_entry</help>
 	</item>
@@ -2794,6 +2841,7 @@
 			<option name="moveEntry" />
 			<option name="copyEntry" />
 			<option name="workflowAction"/>
+			<option name="workflowRemoteApp"/>
 		</options>
 	</item>
 	<!-- not implemented yet -->
@@ -2827,20 +2875,20 @@
 			<property name="folder" caption="__toFolder" type="folderSelect" />
 		</properties>
 	</item>
-	<item name="startParallelThread" type="parallelThread" caption="__startParallelThread" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
+	<item name="startParallelThread" type="parallelThread" caption="__startParallelThread" >
 		<properties>
 			<property name="name" caption="__parallelStateName" type="itemSelect" path="//item[@name='parallelThread']" />
 		</properties>
 	</item>
 	
-	<item name="waitForParallelThread" caption="__waitForParallelThread" type="transition" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
+	<item name="waitForParallelThread" caption="__waitForParallelThread" type="transition" >
 		<properties>
 			<property name="name" caption="__parallelStateName" type="itemSelect" path="//item[@name='parallelThread']" multipleAllowed="true" />
 			<property name="toState" caption="__toStateAfterWait" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 	</item>
 	
-	<item name="stopParallelThread" caption="__stopParallelThread" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
+	<item name="stopParallelThread" caption="__stopParallelThread" >
 		<properties>
 			<property name="name" caption="__parallelStateName" type="itemSelect" path="//item[@name='parallelThread']" />
 		</properties>

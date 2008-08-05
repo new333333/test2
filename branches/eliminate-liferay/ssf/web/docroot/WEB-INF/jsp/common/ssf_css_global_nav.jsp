@@ -39,7 +39,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color:#EBEBEA;
 	border-color:#CCCCCC;
 	border: 1px;
-	padding-bottom:2px;
+	padding-bottom:2px;	
 	}
 
 	/*BRANDING*/
@@ -47,7 +47,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	width:100%;
 	margin-top: 0px !important;
 	padding: 0px !important;
-	height:60px;       /* Need to define specific height for graphics */
+	height:60px;       /* 60 px for Boulder Need to define specific height for graphics */
 	overflow:hidden;	/* This chops off any overhanging divs */
 	}	
 		
@@ -80,7 +80,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-family: Arial, Helvetica, sans-serif !important;
 	font-size: 10px !important;
 	color: #FFFFFF !important;
-	background-color: #5A9A98;
+	background-color: #5A9A98;		/* boulder: #5A9A98; kablink: #449EFF */
 	text-align: left;
 	margin:0px;
 	padding-left:3px;
@@ -97,7 +97,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-size: 1.0em !important;
 	font-weight: 100;
 	color: #FFFFFF !important;
-	background-color: #5A9A98;
+	background-color: #5A9A98;		/* boulder: #5A9A98; kablink: #449EFF */
 	padding-top: 10px;
 	padding-right: 4px;
 	padding-bottom: 0px;
@@ -121,7 +121,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color: #FF9000 !important;
 }
 .ss_masthead_top {
-	background-image: url("<html:rootPath/>images/pics/masthead/masthead_bg.png");  
+	background-image: url("<html:rootPath/>images/pics/masthead/masthead_bg.png");  /* kablink: masthead_ka.png */
 	background-repeat: repeat-y;
 	background-position: right;
 }
@@ -151,6 +151,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-style: oblique;
 	line-height: 16px;
 	padding-right: 10px;
+	white-space: nowrap;
+}
+.ss_mastheadName a{
+	color:#FFFFFF !important;
+}
+.ss_mastheadName a:hover{
+	color:#555555 !important;
 }
 .ss_mastheadtoplinks {
 
@@ -158,7 +165,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-family: Arial, Helvetica, sans-serif !important;
 	font-size: 11px !important;
 	font-weight: bold;
-	color: #5A9A98 !important;
+	color: #5A9A98 !important;		/* boulder: #5A9A98; kablink: #449EFF */
 	white-space:nowrap !important;
 }
 .ss_masthead_fullscreen {
@@ -170,17 +177,42 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color: #FFFFFF;
 }
 .ss_masthead_portals 
-	{color: #375E5C !important;}
+	{color: #375E5C !important;		/* boulder: #375E5C; kablink: #374C5D */
+	}
 	
 .ss_masthead_portals a
-	{color: #375E5C !important;}
+	{color: #375E5C !important;		/* boulder: #375E5C; kablink: #374C5D */
+	}
 .ss_masthead_portals a:hover{
 	color: #FF9000 !important;
 }	
 .ss_masthead_favorites a
-	{color: #5A9A98 !important;}
+	{color: #5A9A98 !important;		/* boulder: #5A9A98; kablink: #449EFF */
+	}
 ss_masthead_favorites a:hover{
 	color: #FF9000 !important;
+}
+	/* NEW CODE FOR SEARCH/FIND LINE */
+#ss_mastNav {
+	color:#FFFFFF;
+	font-size:12px;
+	font-weight:700;
+	padding:0px 1px 0px 5px;
+}
+
+#ss_mastNav ul {
+	border:0px none;
+	list-style-type:none;
+	margin:0px;
+	padding:0px 20px 0px 10px;
+}
+
+#ss_mastNav li {
+
+	font-family:Arial,Helvetica,sans-serif;
+	margin:0px;
+	padding:0px 3px 0px 5px;
+	display:inline !important;
 }
 
 
@@ -628,9 +660,9 @@ div.ss_global_toolbar_maximized table.ss_global_toolbar_maximized td {
 	text-align: center;
 	}
 div.ss_global_toolbar_show_portal {
-	background:url(<html:imagesPath/>icons/toolbar_show_portal.jpg) no-repeat top;
 	}
 div.ss_global_toolbar_hide_portal {
+	background:url(<html:imagesPath/>icons/toolbar_show_portal.jpg) no-repeat top;
 	background:url(<html:imagesPath/>icons/toolbar_hide_portal.jpg) no-repeat top;
 	}
 div.ss_global_toolbar_help {

@@ -41,7 +41,7 @@
 	<img border="0" src="<html:imagesPath/>trees/people.gif" />
 		<span class="${ss_showTeamTitleStyle}"><c:out value="${ss_showTeamTeam.title}" /></span>
 	<a href="javascript: //"
-	onclick="dojo.html.toggleShowing('ss_show_team_${ss_showTeamInstanceCount}'); return false;" class="ss_fineprint"><ssf:nlt tag="showTeam.team.members"><ssf:param name="value" value="${fn:length(ss_showTeamTeamMembers)}"/></ssf:nlt></a>
+	onclick="ss_toggleShowDiv('ss_show_team_${ss_showTeamInstanceCount}'); return false;" class="ss_fineprint"><ssf:nlt tag="showTeam.team.members"><ssf:param name="value" value="${fn:length(ss_showTeamTeamMembers)}"/></ssf:nlt></a>
 	<div id="ss_show_team_${ss_showTeamInstanceCount}" style="display: none;">
   		<ul>
 			<c:forEach var="member" items="${ss_showTeamTeamMembers}" >

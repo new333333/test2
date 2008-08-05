@@ -55,11 +55,11 @@
 </div>
 
   <c:forEach var="user" items="${ss_visitors}">
-  <div id="ss_col3_para" >
-		    <span><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
-		    <c:if test="${!empty user.status}">
-		      <div id="ss_im_status"><em>${user.status}</em></div>
-		    </c:if>
+    <div id="ss_col3_para" >
+	  <span><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
+	  <c:if test="${!empty user.status}">
+		<div id="ss_im_status"><em>${user.status}</em></div>
+	  </c:if>
     </div><!-- end of para -->
   </c:forEach>
 </div><!-- end of today -->

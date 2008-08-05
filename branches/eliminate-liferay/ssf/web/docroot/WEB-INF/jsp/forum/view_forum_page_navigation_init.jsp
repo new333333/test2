@@ -33,6 +33,9 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/slider/slider.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/slider/range.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/slider/timer.js"></script>
 <script type="text/javascript">
 var ss_baseBinderPageUrl${renderResponse.namespace} = '<ssf:url><ssf:param 
 	name="action" value="ssActionPlaceHolder"/><ssf:param 
@@ -44,9 +47,18 @@ var ss_baseBinderPageUrl${renderResponse.namespace} = '<ssf:url><ssf:param
 	name="endDate" value="ssEndDatePlaceHolder"/><ssf:param 
 	name="newTab" value="ssNewTabPlaceHolder"/></ssf:url>';
 
+var ss_pageNavigationSliderUrl${renderResponse.namespace} = '<ssf:url action="${action}" actionUrl="true"><ssf:param 
+	name="operation" value="save_folder_page_info"/><ssf:param 
+	name="binderId" value="${ssFolder.id}"/><ssf:param 
+	name="ssPageStartIndex" value="ss_pageIndexPlaceHolder"/><c:if test="${!empty cTag}"><ssf:param 
+	name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
+	name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
+	name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+	name="endDate" value="${endDate}"/></c:if></ssf:url>';
+	
 //Check the Page Number Before Submission
 function ss_goToPage_${renderResponse.namespace}(formObj) {
-	var strGoToPage = formObj.ssGoToPage.value;
+	var strGoToPage = formObj.ssGoToPage${renderResponse.namespace}.value;
 	var pageCount = <c:out value="${ssPageCount}"/>;
 	
 	if (strGoToPage == "") {
@@ -63,7 +75,7 @@ function ss_goToPage_${renderResponse.namespace}(formObj) {
 		return false;
 	}
 	if (strGoToPage > pageCount) {
-		formObj.ssGoToPage.value = pageCount;
+		formObj.ssGoToPage${renderResponse.namespace}.value = pageCount;
 	}
 	return true;
 }
@@ -79,10 +91,45 @@ function ss_clickGoToPage_${renderResponse.namespace}(strFormName) {
 	}
 }
 
+function ss_autoGoToPage${renderResponse.namespace}(formId, page) {
+	var formObj = document.getElementById(formId);
+	if (ss_userDisplayStyle == "accessible") {
+		if (ss_goToPage_${renderResponse.namespace}(formObj)) {
+			formObj.submit();
+		}
+	} else {
+		var pageIndex = parseInt((page - 1) * ${ssEntriesPerPage});
+		var url = ss_pageNavigationSliderUrl${renderResponse.namespace};
+		url = ss_replaceSubStr(url, "ss_pageIndexPlaceHolder", pageIndex);
+		ss_showFolderPageIndex(url, '${ssFolder.id}', pageIndex, 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');
+	}
+}
+
+function ss_clickGoToEntry_${renderResponse.namespace}(strFormName) {
+	var formObj = document.getElementById(strFormName);
+	var strGoToEntry = formObj.ssGoToEntry${renderResponse.namespace}.value;
+
+	if (strGoToEntry == "") {
+		alert("<ssf:nlt tag="folder.enterEntryNumber" />");
+		return false;	
+	}
+	if (strGoToEntry == "0") {
+		alert("<ssf:nlt tag="folder.enterValidEntryNumber" />");
+		return false;
+	}
+	var blnValueCheck = _isInteger(strGoToEntry);
+	if (!blnValueCheck) {
+		alert("<ssf:nlt tag="folder.enterValidEntryNumber" />");
+		return false;
+	}
+	formObj.submit();
+}
+
 //Change the number of entries to be displayed in a page
 function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, pageCountValue) {
 	var formObj = document.getElementById(strFormName);
 	formObj.ssEntriesPerPage.value = pageCountValue;
 	formObj.submit();
 }
+
 </script>

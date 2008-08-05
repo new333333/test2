@@ -71,9 +71,5 @@ public class FolderEntry extends Entry implements Serializable {
 		else
 			this.workflows = new ArrayList<Workflow>();
 	}
-	// Convenience method. Not part of the API. 
-	public void addWorkflow(Workflow workflow) {
-		this.workflows.add(workflow);
-	}
 
 }

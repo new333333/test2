@@ -91,7 +91,7 @@ public class WSImport extends WSClientBase
 			targetId = Long.valueOf(args[1]);
 		} else {
 			try {
-				targetId = (Long) wsImport.invokeWithCall("TemplateService", "addBinder", new Object[] {null, GlobalWorkspacesId, WorkspaceConfigId, safeName("Imported data " + (new Date()).toString())}, null, null);
+				targetId = (Long) wsImport.invokeWithCall("Facade", "addFolder", new Object[] {GlobalWorkspacesId, WorkspaceConfigId, safeName("Imported data " + (new Date()).toString())}, null, null);
 			} catch(Exception e) {
 				System.err.println("Could not create new import folder.");
 				e.printStackTrace();
@@ -131,7 +131,7 @@ public class WSImport extends WSClientBase
 					configId = DiscussionFolderConfigId;
 				}
 				String title = safeName(binder.attributeValue("title"));
-				myId = (Long) invokeWithCall("TemplateService", "addBinder", new Object[] {null, parentId, configId, title}, null, null);
+				myId = (Long) invokeWithCall("Facade", "addFolder", new Object[] {parentId, configId, title}, null, null);
 			}
 		}
 		// Build tree recursively
@@ -160,7 +160,7 @@ public class WSImport extends WSClientBase
 		Element root = document.getRootElement();
 		String definition = root.attributeValue("definitionId");
 		System.err.println(PAD.substring(0, depth) + "Entry " + root.attributeValue("id") + " - " + root.attributeValue("title"));
-		Long myId = (Long) invokeWithCall("FolderService", "addFolderEntry", new Object[] {null, parentId, definition, xml}, null, null);
+		Long myId = (Long) invokeWithCall("Facade", "addFolderEntry", new Object[] {parentId, definition, xml}, null, null);
 		File attachmentsFolder = new File(parentFolder, "Attach-"+entryFile.getName().substring(0, entryFile.getName().length()-4));
 		if(attachmentsFolder.exists() && attachmentsFolder.isDirectory()) {
 			createEntryAttachments(attachmentsFolder, myId, parentId, depth + 1);
@@ -173,7 +173,7 @@ public class WSImport extends WSClientBase
 		File[] attachments = attachmentsFolder.listFiles();
 		for(File f : attachments) {
 			System.out.println(PAD.substring(0, depth) + "Attachment: " + f.getName());
-			invokeWithCall("FolderService", "uploadFolderFile", new Object[] {null, folderId, entryId, "ss_attachFile1", f.getName()}, f, null);
+			invokeWithCall("Facade", "uploadFolderFile", new Object[] {folderId, entryId, "ss_attachFile1", f.getName()}, f, null);
 		}
 	}
 }

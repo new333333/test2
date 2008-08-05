@@ -29,16 +29,6 @@
  */
 %>
 <% //View the listing part of a wiki folder %>
-<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
-<%
-	boolean useAdaptor = true;
-	if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle()) &&
-			!ObjectKeys.GUEST_USER_INTERNALID.equals(ssUser.getInternalId())) {
-		useAdaptor = false;
-	}
-%>
-
-
         <div id="ss_wikiEntryDiv${renderResponse.namespace}">
           <iframe id="ss_wikiIframe${renderResponse.namespace}" 
             name="ss_wikiIframe${renderResponse.namespace}" 
@@ -52,7 +42,7 @@
     		    <c:set var="entryId" value="${ssEntryIdToBeShown}"/>
     		  </c:if>
     		  src="<ssf:url     
-		    		adapter="<%= useAdaptor %>" 
+		    		adapter="true" 
 		    		portletName="ss_forum" 
 		    		folderId="${ssFolder.id}" 
 		    		action="view_folder_entry" 

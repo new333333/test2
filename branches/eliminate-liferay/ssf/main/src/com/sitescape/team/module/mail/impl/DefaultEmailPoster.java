@@ -322,7 +322,13 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 					processText(folder, part.getContent(), inputData);
 				} else {
 					Object bContent = part.getContent();
-					if (bContent instanceof MimeMultipart) processMime(folder, (MimeMultipart)bContent, inputData, fileItems, iCalendars);
+					if (bContent instanceof MimeMultipart) {
+						processMime(folder, (MimeMultipart)bContent, inputData, fileItems, iCalendars);
+					} else if (part.getContentType().startsWith("image/")) {
+						// no file name, no text/html,no text/plain, no multipart
+						// so check if it's inline image - this pattern is used by GroupWise (tested with 7.0.2)
+						fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
+					}
 				}
 			}
 			
@@ -333,6 +339,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		BodyPart part;
 		String fileName;
 		String type;
+		String contentId;
 		int size;
 		
 		public FileHandler(BodyPart part) throws MessagingException {
@@ -340,6 +347,19 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 			fileName = part.getFileName();
 			type = part.getContentType();
 			size = part.getSize();
+			
+			String[] contentIds = part.getHeader("Content-ID");
+			if (contentIds != null && contentIds.length > 0 && 
+					contentIds[0] != null && contentIds[0].length() > 1) {
+				contentId = contentIds[0].substring(1, contentIds[0].length() - 1);
+				if (fileName == null) {
+					fileName = contentId;
+				}
+			}
+		}
+		
+		public String getContentId() throws MessagingException {
+			return contentId;
 		}
 		/**
 		 * Return the name of the parameter in the multipart form.

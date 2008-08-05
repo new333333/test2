@@ -112,8 +112,8 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 </script>
 
 
+<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <div class="ss_folder_border">
-
 <% // Add the toolbar with the navigation widgets, commands and filter %>
 <ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
  <% // Entry toolbar %>
@@ -123,6 +123,5 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 </div>
 <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <div class="ss_folder">
-<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/blog/blog_folder_listing.jsp" %>
 </div>

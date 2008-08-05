@@ -65,6 +65,7 @@ import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.workspace.WorkspaceModule;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
@@ -79,6 +80,7 @@ import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.Favorites;
+import com.sitescape.team.web.util.PermaLinkUtil;
 import com.sitescape.team.web.util.PortletPreferencesUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
@@ -104,8 +106,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 
-		if (!WebHelper.isUserLoggedIn(request)) {
-			return ajaxMobileLogin(request, response);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			return ajaxMobileLogin(this, request, response);
 		}
 		
 		//The user is logged in
@@ -119,7 +122,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			return ajaxMobileShowEntry(request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_LOGIN)) {
-			return ajaxMobileLogin(request, response);
+			return ajaxMobileLogin(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE)) {
 			return ajaxMobileFrontPage(request, response);
@@ -134,9 +137,13 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	} 
 
 
-	private ModelAndView ajaxMobileLogin(RenderRequest request, 
+	private ModelAndView ajaxMobileLogin(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
+		BinderHelper.setupStandardBeans(bs, request, response, model);
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+		model.put(WebKeys.URL, adapterUrl);
 		return new ModelAndView("mobile/show_login_form", model);
 	}
 	

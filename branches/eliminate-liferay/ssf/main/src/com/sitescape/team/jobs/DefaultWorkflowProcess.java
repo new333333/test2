@@ -48,8 +48,11 @@ import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.module.folder.FolderModule;
+import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workflow.support.WorkflowScheduledAction;
 import com.sitescape.team.module.workflow.support.WorkflowStatus;
+import com.sitescape.team.module.workflow.support.WorkflowCallout;
+import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SpringContextUtil;
 
@@ -73,7 +76,11 @@ public class DefaultWorkflowProcess extends SSStatefulJob implements WorkflowPro
        	} catch (NoObjectByTheIdException no) {
     		removeJobOnError(context, no);
     		return;
+      	} catch (AccessControlException acc) {
+    		removeJobOnError(context, acc);
+    		return;
     	}
+
        	Long stateId = new Long(jobDataMap.getLong("stateId"));
        	WorkflowState state = entry.getWorkflowState(stateId);
        	//workflow done, remove job
@@ -87,8 +94,17 @@ public class DefaultWorkflowProcess extends SSStatefulJob implements WorkflowPro
        		actionClass = ReflectHelper.classForName(actionName);
        		WorkflowScheduledAction job = (WorkflowScheduledAction)actionClass.newInstance();
        		WorkflowStatus status = (WorkflowStatus)jobDataMap.get("workflowStatus");
-       		if (job.execute(entry, state, status)) {
+       		if (job.execute(entryId, stateId, status)) {
+       			//reload incase execute took a long time
+       	   		entry = folderModule.getEntry(null, entryId);
+       	   		state = entry.getWorkflowState(stateId);
        			removeJob(context);
+       			if (state != null && job instanceof WorkflowCallout) {
+       				//could be a naming issue for variables if multiple remote apps run simultaneously for the same entry
+       				WorkflowModule wf = (WorkflowModule)SpringContextUtil.getBean("workflowModule");
+       				wf.setWorkflowVariables(entry, state, ((WorkflowCallout)job).getVariables());
+       				wf.modifyWorkflowStateOnChange(entry);
+       			}
        		} else {
        			//update jobdata
        			jobDataMap.put("workflowStatus", status);
@@ -108,6 +124,8 @@ public class DefaultWorkflowProcess extends SSStatefulJob implements WorkflowPro
        		throw new ConfigurationException("Cannot instantiate Workflowprocess of type '"	+ actionClass + "'");
 		} catch (SchedulerException se) {			
 			throw new ConfigurationException(se.getLocalizedMessage());			
+		} catch (NoObjectByTheIdException no) {
+   			removeJob(context);			
 		}
     }
 	public void remove(WorkflowSupport entry, WorkflowState wfState) {

@@ -35,7 +35,7 @@
 <c:if test="${ssEntry == ssDefinitionEntry}" >
   <c:if test="${!empty ssFolderEntryDescendants}">
 
-<div class="ss_entryContent" style="padding-top:15px;">
+<div class="ss_entryContent" style="padding:15px 20px 0px 30px;">
 <c:if test="${!empty property_caption}">
 <span class="ss_largerprint ss_bold"><c:out value="${property_caption}"/></span>
 <br/>

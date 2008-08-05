@@ -68,6 +68,7 @@ function ss_showForumEntryInIframe(url) {
 }
 </script>
 
+<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <div class="ss_folder_border">
 <% // Add the toolbar with the navigation widgets, commands and filter %>
 <ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
@@ -78,6 +79,5 @@ function ss_showForumEntryInIframe(url) {
 </div>
 <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <div class="ss_folder" id="ss_photo_folder_div">
-<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/photo/photo_folder_listing.jsp" %>
 </div>

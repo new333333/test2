@@ -36,6 +36,8 @@ import org.dom4j.Document;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.model.DefinableEntity;
@@ -51,12 +53,19 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 
 
 	public long migration_addFolderEntryWithXML(String accessToken, long binderId, String definitionId,
-			String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+			String inputDataAsXML, String creator, Calendar creationDate, String modifier, 
+			Calendar modificationDate, boolean subscribe) {
 		HashMap options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
     	options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
 		getTimestamps(options, creator, creationDate, modifier, modificationDate);
-		return addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, null, options);
+		long entryId = addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, null, options);
+		if (subscribe) {
+			Map<Integer,String[]> styles = new HashMap();
+			styles.put(Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION, new String[]{Principal.PRIMARY_EMAIL});
+			getFolderModule().setSubscription(binderId, entryId, styles);
+		}
+		return entryId;
 	}
 
 	public long migration_addReplyWithXML(String accessToken, long binderId, long parentId, String definitionId,
@@ -156,12 +165,18 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 		}
 	}
 
-	public long migration_addFolderEntry(String accessToken, FolderEntry entry) {
+	public long migration_addFolderEntry(String accessToken, FolderEntry entry, boolean subscribe) {
 		HashMap options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
     	options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
  		getTimestamps(options, entry);
-		return addFolderEntry(accessToken, entry, null, options);
+		Long entryId = addFolderEntry(accessToken, entry, null, options);
+		if (subscribe) {
+			Map<Integer,String[]> styles = new HashMap();
+			styles.put(Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION, new String[]{Principal.PRIMARY_EMAIL});
+			getFolderModule().setSubscription(entry.getParentBinderId(), entryId, styles);
+		}
+		return entryId;
 	}
 
 	public long migration_addReply(String accessToken, long parentEntryId, FolderEntry reply) {
