@@ -124,7 +124,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 #ss_folder_inset{
 	margin:0% 5% 0% 5%;
-	width:100%;
+	width:75%;
 	text-align:left;
 	}
 
@@ -136,7 +136,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 #ss_topic_title{
 	padding-left: 28px;
 	padding-top: 2px;
-	padding-bottom: 1px;
+	padding-bottom: 3px;
 	font-size:1.2em;
 	font-style:italic;
 	font-weight: 200;
