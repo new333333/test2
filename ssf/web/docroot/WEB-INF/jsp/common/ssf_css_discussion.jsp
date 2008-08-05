@@ -71,14 +71,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /* TOP PART OF DISCUSSION TOPIC PAGE */	
 	
 	#ss_diss_inset{
-		width:80%;
-		text-align:left;
+		width:95%;
 	}
 	#ss_diss_top
 	{
-		/*clear:both;
-		float: left;*/
-		width: 100%;
+		width: 90%;
 		color: #777;
 			}	
 	#ss_topic_box { 
@@ -127,7 +124,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 #ss_folder_inset{
 	margin:0% 5% 0% 5%;
-	width:90%;
+	width:100%;
 	text-align:left;
 	}
 
@@ -146,12 +143,18 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-family: 'Lucida Sans', 'Lucida Grande', sans-serif;	
 	color:#5A9A98!important;
 	}
-#ss_title_th1{
+.ss_title_th1{
 	color:#5A9A98!important;
 	font-size:.89em;
 	letter-spacing:-2;
 	font-weight:300;
-	}
+	}	
+.ss_title_th1 a{
+	color:#5A9A98!important;
+}	
+.ss_title_th1 a:hover{
+	color: #777!important;	
+	}	
 .ss_title_count{
 	color:#777!important;
 	font-size:10px;
@@ -167,9 +170,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-size:10px;
 	font-style: normal;
 	}
-#ss_topic_title span{
-	color:#5A9A98;
-}
 #ss_topic_nav{
 	text-align:left;
 	margin:1%;
