@@ -1177,6 +1177,7 @@ div.ss_sliding_table_column0 {
   border-right: ${ss_sliding_table_border_color} 1px solid;
   border-bottom: ${ss_sliding_table_border_color} 1px solid;
   border-top:${ss_sliding_table_border_color} 1px solid;
+  margin: 0px;
 }
 .ss_sliding_table_column0 * {
   color: ${ss_sliding_table_text_color};
@@ -1190,6 +1191,7 @@ div.ss_sliding_table_column1 {
   display: block; 
   border-left: #cccccc solid 1px;
   font-size: ${ss_style_font_normalprint} !important;
+  margin: 0px;
 }
 .ss_sliding_table_column1 * {
   color: ${ss_sliding_table_text_color};
@@ -1202,16 +1204,18 @@ div.ss_sliding_table_column {
   overflow:hidden;
   display: block; 
   border-left: ${ss_sliding_table_border_color} solid 1px;
+  margin: 0px;
 }
 .ss_sliding_table_column * {
   color: ${ss_sliding_table_text_color};
   white-space:nowrap;
 }
 .ss_sliding_table_info_popup {
+  position:absolute;
   visibility: hidden;
   display:block; 
-  margin-left: 1px;
-  padding-left:0px;
+  margin-left: 0px;
+  padding-left:1px;
 }
 .ss_sliding_table_row0 {
   background-color: ${ss_sliding_table_row0_background_color}; 
@@ -1254,12 +1258,12 @@ div.ss_sliding_table_column {
   color: ${ss_sliding_table_link_hover_color} !important;
 }
 table.ss_mouseOverInfo {
-  position:absolute;
+  position:relative;
   left:1px;
   top:1px;
 }
 .ss_mouseOverInfo span {
-  position:absolute;
+  position:relative;
   left:-1px;
   top:0px;
   border:1px solid black;

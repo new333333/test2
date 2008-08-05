@@ -80,7 +80,8 @@
     <c:set var="ss_binderNumbers" value="${ss_binderUnseenCounts[binder._docId].count}"/>
 		 <c:choose>
 			<c:when test="${ss_binderNumbers == '0'}">
-				<span class="ss_title_count">(${ss_binderUnseenCounts[binder._docId].count} New) </span>
+				<span class="ss_title_count">(<ssf:nlt tag="New"><ssf:param name="value" 
+				  value="${ss_binderUnseenCounts[binder._docId].count}"/></ssf:nlt>) </span>
 			</c:when>
 			<c:otherwise>
 				<span class="ss_title_count"><a href=""><strong>(${ss_binderUnseenCounts[binder._docId].count} New) </strong></a></span>
