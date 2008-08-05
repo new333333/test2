@@ -33,7 +33,8 @@
 <jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <div id="ss_dashboard_content">
 <div id="ss_folder_inset">
-<table><tbody><tr><td valign="top">
+<table width="100%">
+	<tbody><tr><td valign="top" width="50%">
 
 <div id="ss_topic">
 	<c:set var="binderCounter" value="0"/> <% // set binder counter to zero (first pass) %>
@@ -79,7 +80,7 @@
     </a> </span>
     <c:set var="ss_binderNumbers1" value="${ss_binderUnseenCounts[binder._docId].count}"/>
 		 <c:choose>
-			<c:when test="${ss_binderNumbers == '0'}">
+			<c:when test="${ss_binderNumbers1 == '0'}">
 				<span class="ss_title_count">(<ssf:nlt tag="New"><ssf:param name="value" 
 				  value="${ss_binderUnseenCounts[binder._docId].count}"/></ssf:nlt>) </span>
 			</c:when>
@@ -119,7 +120,7 @@
 		 <c:choose>
 			<c:when test="${ss_binderNumbers2 == '0'}">
 				<span class="ss_title_count">(<ssf:nlt tag="New"><ssf:param name="value" 
-				  value="${ss_binderUnseenCounts[subBinder._docId].count}"/></ssf:nlt>)</span>
+				  value="${ss_binderUnseenCounts[subBinder._docId].count}"/></ssf:nlt>) </span>
 			</c:when>
 			<c:otherwise>
 				<span class="ss_title_count"><a href="">(<ssf:nlt tag="New"><ssf:param name="value" 
