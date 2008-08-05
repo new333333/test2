@@ -37,7 +37,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <%@ page import="java.util.Date" %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 <ssf:sidebarPanel title="__definition_default_folder_wiki" id="ss_folder_sidebar" divClass="ss_blog_sidebar"
-    initOpen="true" sticky="true">
+    initOpen="false" sticky="true">
    
 	  <ssHelpSpot helpId="workspaces_folders/misc_tools/wiki_controls" offsetX="0" 
 	    title="<ssf:nlt tag="helpSpot.wikiControls"/>"></ssHelpSpot>
@@ -219,8 +219,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 </ssf:sidebarPanel>
 
 <% // Folder Tools %>
-	<% // folder views, folder actions, themes, configure columns, and entries per page %>
-<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure.jsp" />
+	<% // folder views, folder actions, themes, (no configure columns) and entries per page %>
+<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure2.jsp" />
 
 <% // Folder Tagss %>
 <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_folder_tags.jsp" />
