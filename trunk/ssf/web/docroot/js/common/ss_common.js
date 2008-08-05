@@ -2594,9 +2594,11 @@ var ss_helpSystem = {
 	        	if (nodes[i].getAttribute("align") == "center") {
 	        		left += parseInt(dojo.marginBox(nodes[i]).w / 2);
 	        	} else if (nodes[i].getAttribute("align") == "right") {
-	        		left += dojomarginBox(nodes[i]).w;
+	        		left += dojo.marginBox(nodes[i]).w;
 	        	}
 	        }
+	        if (top < 0) top = 0;
+	        if (left < 0) left = 0;
 	        helpSpotNode.style.top = top + "px";
 	        helpSpotNode.style.left = left + "px";
 	        bodyObj.appendChild(helpSpotNode);
@@ -3027,7 +3029,7 @@ var ss_helpSystem = {
 	},
 
 	hideHelpPanel : function(obj) {
-	    while (dojo.dom.hasParent(obj)) {
+	    while (obj && obj.parentNode) {
 	        var n = obj.parentNode;
 	    	if (dojo.hasClass(n, "ss_popup_panel_outer")) {
 	    		if (n.id) {
@@ -4041,14 +4043,14 @@ function ssFavorites(namespace) {
 	function readFavoriteList() {
 		var container = dojo.byId("ss_favorites_list" + namespace);
 		// Get the ul inside
-	    var ul = dojo.dom.getFirstChildElement(container);
+	    var ul = dojox.data.dom.getFirstChildElement(container);
 	    // Walk the list items
-	    var li = dojo.dom.getFirstChildElement(ul);
+	    var li = dojox.data.dom.getFirstChildElement(ul);
 	    var favs = new Array();
 	    while (li) {
 	    	// Ids = "ss_favorite_N"
 	    	favs.push(li.id.substr(12));
-		    li = dojo.dom.getNextSiblingElement(li);
+		    li = dojox.data.dom.getNextSiblingElement(li);
 	    }    
 	    return favs.join(" ");
 	}
@@ -4076,33 +4078,33 @@ function ssFavorites(namespace) {
 		// Clear any prior activity
 		while (deletedFavorites.length) {deletedFavorites.pop() };
 		// Get the ul inside
-	    var ul = dojo.dom.getFirstChildElement(container);
+	    var ul = dojox.data.dom.getFirstChildElement(container);
 	    // Walk the list items
-	    var li = dojo.dom.getFirstChildElement(ul);
+	    var li = dojox.data.dom.getFirstChildElement(ul);
 	    while (li) {
-	    	var cb = dojo.dom.getFirstChildElement(li);
+	    	var cb = dojox.data.dom.getFirstChildElement(li);
 	    	if (enable) {
 		    	ss_showDivObj(cb);
 		    } else {
 		    	ss_hideDivObj(cb);
 		    }
-		    li = dojo.dom.getNextSiblingElement(li);
+		    li = dojox.data.dom.getNextSiblingElement(li);
 	    }    
 	}
 
 	function getSelectedFavorites() {
 		var container = dojo.byId("ss_favorites_list" + namespace);
 		// Get the ul inside
-	    var ul = dojo.dom.getFirstChildElement(container);
+	    var ul = dojox.data.dom.getFirstChildElement(container);
 	    // Walk the list items
-	    var li = dojo.dom.getFirstChildElement(ul);
+	    var li = dojox.data.dom.getFirstChildElement(ul);
 	    var selected = new Array();
 	    while (li) {
-	    	var cb = dojo.dom.getFirstChildElement(li);
+	    	var cb = dojox.data.dom.getFirstChildElement(li);
 	    	if (cb.checked) {
 	    		selected.push(li);
 	    	}
-		    li = dojo.dom.getNextSiblingElement(li);
+		    li = dojox.data.dom.getNextSiblingElement(li);
 	    }    
 	    return selected;
 	}
@@ -4111,7 +4113,7 @@ function ssFavorites(namespace) {
 	this.deleteSelectedFavorites = function() {
 	    var toDelete = getSelectedFavorites();
 	    dojo.forEach(toDelete, recordDeletedFavorite) 
-	    dojo.forEach(toDelete, dojo.dom.removeNode)
+	    dojo.forEach(toDelete, dojox.data.dom.removeNode)
 	}
 
 	function recordDeletedFavorite(node) {
@@ -4155,15 +4157,15 @@ function ss_findOwningElement(obj, eleName) {
 }
 
 function ss_moveElementUp(node) {
-	var prior = dojo.dom.getPreviousSiblingElement(node);
+	var prior = dojox.data.dom.getPreviousSiblingElement(node);
 	if (prior) {
-		dojo.dom.insertBefore(dojo.dom.removeNode(node), prior);
+		dojox.data.dom.insertBefore(dojox.data.dom.removeNode(node), prior);
 	}
 }
 function ss_moveElementDown(node) {
-	var next = dojo.dom.getNextSiblingElement(node);
+	var next = dojox.data.dom.getNextSiblingElement(node);
 	if (next) {
-		dojo.dom.insertAfter(dojo.dom.removeNode(node), next);
+		dojox.data.dom.insertAfter(dojox.data.dom.removeNode(node), next);
 	}
 }
 
@@ -5541,7 +5543,7 @@ function ss_buddyPhotoLoadError (imgObj, src) {
 }
 
 function ss_tagSearchObj(obj) {
-    var tag = dojo.dom.textContent(obj);
+    var tag = dojox.data.dom.textContent(obj);
 	var searchUrl = "";
    	try { searchUrl = ss_tagSearchResultUrl; } catch(e) {searchUrl=""}
 	if (searchUrl == "") { try { searchUrl = self.parent.ss_tagSearchResultUrl } catch(e) {searchUrl=""} }
@@ -6303,3 +6305,4 @@ ss_FileUploadProgressBar.reloadProgressStatus = function(progressBar, url) {
 dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
 dojo.require("dojo.io.iframe");
+dojo.require("dojox.data.dom");
