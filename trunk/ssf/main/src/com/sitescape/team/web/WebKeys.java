@@ -162,6 +162,7 @@ public class WebKeys {
 	public static final String URL_RANDOM_PLACEHOLDER = "ss_randomPlaceholder";
 	public static final String URL_REPORT_FLAVOR = "ss_reportFlavor";
 	public static final String URL_REPORT_SORT_TYPE = "ss_reportSortType";
+	public static final String URL_REPORT_SORT_TYPE_2 = "ss_reportSortType_2";
 	public static final String URL_REPORT_OPTION_TYPE = "ss_reportOptionType";
 	public static final String URL_REPORT_OPTION_TYPE_SHORT = "shortReport";
 	public static final String URL_REPORT_OPTION_TYPE_LONG = "longReport";
