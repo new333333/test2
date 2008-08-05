@@ -54,55 +54,56 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <div align="center">
 <div id="ss_diss_inset" >
 
-<c:set var="actionVar" value="view_ws_listing"/>
-<c:if test="${ssDefinitionEntry.parentBinder.entityType == 'folder'}">
-  <c:set var="actionVar" value="view_folder_listing"/>
-</c:if>
+   <div align="left">
+	<c:set var="actionVar" value="view_ws_listing"/>
+		<c:if test="${ssDefinitionEntry.parentBinder.entityType == 'folder'}">
+  		  <c:set var="actionVar" value="view_folder_listing"/>
+		</c:if>
 
-<span class="ss_link_1">
-  &gt;&gt;<a class="ss_link_1" href="<ssf:url action="${actionVar}" binderId="${ssDefinitionEntry.parentBinder.id}"/>"
-  >${ssDefinitionEntry.parentBinder.title}</a>&nbsp;&nbsp;
-</span>
-<span style="">
-  <img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle">&nbsp;<a
-  href="<ssf:url action="view_folder_listing" binderId="${ssBinder.id}"/>">${ssBinder.title}</a>
-</span>
-<br/><br/>
-<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
-<div class="ss_folder_border">
-	<% // Add the toolbar with the navigation widgets, commands and filter %>
-	<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">			
+		<span class="ss_link_1">
+  		  &gt;&gt;<a class="ss_link_1" href="<ssf:url action="${actionVar}" binderId="${ssDefinitionEntry.parentBinder.id}"/>"
+  		  >${ssDefinitionEntry.parentBinder.title}</a>&nbsp;&nbsp;
+		</span>
+		<span style="">
+  			<img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle">&nbsp;<a
+  			href="<ssf:url action="view_folder_listing" binderId="${ssBinder.id}"/>">${ssBinder.title}</a>
+		</span>
+		<br/><br/>
+		<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
+	  <div class="ss_folder_border">
+		<% // Add the toolbar with the navigation widgets, commands and filter %>
+		<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">			
 		<% // Entry toolbar %>
 		<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />			
-	</ssf:toolbar>
-<div class="ss_clear"></div>
-</div>
-
+		</ssf:toolbar>
+		<div class="ss_clear"></div>
+	  </div>
+	</div><!-- end of 2nd breadcrumb area -->
 <% // filter toolbar %>
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" />
 
 <div id="ss_folder_table_parent" class="ss_folder">
 
-<c:set var="slidingTableTableStyle" value=""/>
-<c:if test="${slidingTableStyle == 'fixed'}">
-  <c:set var="slidingTableTableStyle" value="ss_borderTable"/>
-</c:if>
-<ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="${slidingTableStyle}" 
- height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}" tableStyle="${slidingTableTableStyle}">
+	<c:set var="slidingTableTableStyle" value=""/>
+	<c:if test="${slidingTableStyle == 'fixed'}">
+  		<c:set var="slidingTableTableStyle" value="ss_borderTable"/>
+	</c:if>
+	<ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="${slidingTableStyle}" 
+ 	  height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}" tableStyle="${slidingTableTableStyle}">
 
-<c:set var="slidingTableRowStyle" value=""/>
-<c:set var="slidingTableColStyle" value=""/>
-<c:if test="${slidingTableStyle == 'fixed'}">
-  <c:set var="slidingTableRowStyle" value=""/>
-  <c:set var="slidingTableColStyle" value=""/>
-</c:if>
+	<c:set var="slidingTableRowStyle" value=""/>
+	<c:set var="slidingTableColStyle" value=""/>
+	<c:if test="${slidingTableStyle == 'fixed'}">
+  		<c:set var="slidingTableRowStyle" value=""/>
+  		<c:set var="slidingTableColStyle" value=""/>
+	</c:if>
 
-<ssf:slidingTableRow style="${slidingTableRowStyle}" headerRow="true">
-  <c:if test="${!empty ssFolderColumns['number']}">
+	<ssf:slidingTableRow style="${slidingTableRowStyle}" headerRow="true">
+  	<c:if test="${!empty ssFolderColumns['number']}">
     <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="6%">
 
-    <a href="<ssf:url binderId="${ssFolder.id}" action="${action}" actionUrl="true"><ssf:param 
+      <a href="<ssf:url binderId="${ssFolder.id}" action="${action}" actionUrl="true"><ssf:param 
     	name="operation" value="save_folder_sort_info"/><ssf:param 
     	name="ssFolderSortBy" value="_sortNum"/><c:choose><c:when 
     	test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'true'}"><ssf:param 
@@ -712,7 +713,9 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 </c:forEach>
 </ssf:slidingTable>
 </div>
-</div></div><!-- end of centered inset area -->
+</div>
+
+</div><!-- end of centered inset area -->
 
 <c:forEach var="entry2" items="${ssFolderEntries}" >
   <div id="ss_folderEntryTitle_${entry2._docId}" class="ss_hover_over" 
