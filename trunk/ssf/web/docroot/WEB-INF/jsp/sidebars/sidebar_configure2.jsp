@@ -28,9 +28,8 @@
  * are trademarks of SiteScape, Inc.     
  */
 %>
-
-<% // Former Folder Tools %>
-	<% // folder views, folder actions, themes, configure columns, and entries per page %>
+<% // Former Folder Tools for Blogs, Photo Albums, and Wikis %>
+	<% // folder views, folder actions, themes, (no configure columns) and entries per page %>
 	
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${ssDefinitionEntry.entityType == 'folder'}">
@@ -75,22 +74,7 @@
        
 	</div>
  </div>
- 
-  <div class="ss_sidebarTitle"><ssf:nlt tag="misc.configureColumns"/>
- 	<div class="ss_sub_sidebarMenu">
-        <table width="100%">
-          <tr>
-            <td>
-            
-             <% // configure columns area %>
-				<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_columns.jsp" />
-				
-		    </td>
-          </tr>
-        </table>
-       
-	</div>
- </div>
+
  
   <div class="ss_sidebarTitle">Entries Per Page xx
  	<div class="ss_sub_sidebarMenu">
