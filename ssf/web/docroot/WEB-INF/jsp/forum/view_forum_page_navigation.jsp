@@ -51,7 +51,7 @@
 			
 				
 			<c:if test="${ssPageCount > '1.0'}">
-			    <span><label for="ssGoToEntry${renderResponse.namespace}"><ssf:nlt tag="entry.goTo"/> xxx</label></span>
+			    <span><label for="ssGoToEntry${renderResponse.namespace}"><ssf:nlt tag="entry.goTo"/></label></span>
 			
 			    </td>
 			    <td valign="middle"  class="ss_paginationGo ss_page_IE">
@@ -70,7 +70,7 @@
 				<a href="javascript: ;" 
 				<ssf:title tag="entry.goTo" />
 				onClick="ss_clickGoToEntry_${renderResponse.namespace}('ss_goToEntryForm_${renderResponse.namespace}');return false;">
-				<img src="<html:rootPath/>images/pics/page/go.png" width="25" height="12" border="0" align="absmiddle" /></a>
+				<img src="<html:rootPath/>images/pics/page/go.png" width="17" height="12" border="0" align="absmiddle" /></a>
 				
 			</c:if>
 			<c:if test="${ssPageCount <= '1.0'}">
@@ -137,7 +137,7 @@
 						<input class="slider-input" id="ss_page_slider_input${renderResponse.namespace}"/>
 					</div>
 					<div id="ss_pageNavPageDiv${renderResponse.namespace}" class="ss_style"
-					  style="position:absolute; display:none; border:1px black solid; background-color:#ffffff;"></div>
+					  style="position:absolute; display:none; border:1px #333 background-color:#fff;"></div>
 					</c:if>
 					</ssf:ifnotaccessible>
 					<ssf:nlt tag="title.page.n_of_m">

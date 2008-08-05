@@ -42,6 +42,7 @@ form_header {
 	font-family:Georgia, "Times New Roman", Times, serif;
 	font-weight:normal;
 	color:#666;
+	letter-spacing: -1px;
 	}
 ss_h2 {
 	font-size: 24px;
@@ -66,7 +67,6 @@ ss_h2 {
 }
 
 .ss_FormTableHeading {
-	font-family: Arial, Helvetica, sans-serif;
 	font-size: 10px;
 	font-weight: bold;
 	color: #333333;
@@ -83,7 +83,7 @@ ss_h2 {
 	display: table-row;
 }
 .ss_dataTable {
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: ${ss_style_font_family};
 	font-size: 10px;
 	letter-spacing: 1px;
 	text-align: left;
@@ -96,7 +96,7 @@ ss_h2 {
 	border: 0.1px solid #EFEFEF;
 }
 .ss_dataTableTD {
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: ${ss_style_font_family};
 	font-size: 10px;
 	letter-spacing: normal;
 	text-align: left;
@@ -120,7 +120,7 @@ ss_h2 {
 	margin: 2px;
 }
 .ss_dataTableMid {
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: ${ss_style_font_family};
 	font-size: 10px;
 	letter-spacing: normal;
 	text-align: center;

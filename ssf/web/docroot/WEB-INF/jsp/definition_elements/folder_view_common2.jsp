@@ -59,11 +59,11 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   <c:set var="actionVar" value="view_folder_listing"/>
 </c:if>
 
-<span class="ss_largerprint ss_link_1 ss_bold">
+<span class="ss_link_1">
   &gt;&gt;<a class="ss_link_1" href="<ssf:url action="${actionVar}" binderId="${ssDefinitionEntry.parentBinder.id}"/>"
   >${ssDefinitionEntry.parentBinder.title}</a>&nbsp;&nbsp;
 </span>
-<span style="color:#546292; font-weight:bold">
+<span style="">
   <img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle">&nbsp;<a
   href="<ssf:url action="view_folder_listing" binderId="${ssBinder.id}"/>">${ssBinder.title}</a>
 </span>
