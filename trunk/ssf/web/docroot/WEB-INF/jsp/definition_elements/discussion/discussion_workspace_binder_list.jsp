@@ -61,7 +61,7 @@
 
   <c:if test="${binder._entityType == 'workspace'}">
     <div id="ss_topic_title" class="ss_disc_th1">
-    <span>(${ss_binderUnseenCounts[binder._docId].count})</span> 
+   
     <a 
     <c:if test="${binder._entityType == 'workspace'}">
       href="<ssf:url 
@@ -75,7 +75,8 @@
     </c:if>
     >
       <span class="ss_title_th1">${binder.title}</span>
-    </a>
+    </a> 
+    <span class="ss_title_count">(${ss_binderUnseenCounts[binder._docId].count} New) </span> 
     <br/>
     </div><!-- end of ss_topic_title -->
     <div id="ss_topic_desc"><ssf:markup type="view" binderId="${binder._docId}">
@@ -93,9 +94,8 @@
       <c:if test="${subBinder._entityType == 'workspace' || subBinder._entityType == 'profiles'}">
       <div id="ss_topic_title" class="ss_disc_sub_th1">
         <div style="padding-left:10px;">
-        
-        <span>(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
-        <a 
+        <span class="ss_title_count">(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
+        <a> 
           <c:if test="${subBinder._entityType == 'workspace'}">
             href="<ssf:url action="view_ws_listing" binderId="${subBinder._docId}"/>"
           </c:if>
@@ -114,7 +114,7 @@
       <c:if test="${subBinder._entityType == 'profiles'}">
         <div style="padding-left:10px;">
         <span style="padding-right:10px;">profiles</span>
-        <span>(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
+        <span class="ss_title_count">(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
         <a href="<ssf:url action="view_profiles_listing" binderId="${subBinder._docId}"/>">
           <span>${subBinder.title}</span>
         </a>
@@ -125,10 +125,10 @@
       <div id="ss_topic_thread">
         <div style="padding-left:10px;">
        		<img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle" <ssf:alt tag="folder"/>/> 
-        	<span>(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
         	<a href="<ssf:url action="view_folder_listing" binderId="${subBinder._docId}"/>">
           		<span>${subBinder.title}</span>
         	</a>
+        	<span class="ss_title_count">(${ss_binderUnseenCounts[subBinder._docId].count})</span>
         	<br/>
         </div><!-- end of left padding -->
        </div><!-- end of folder thread -->
@@ -139,11 +139,10 @@
   
   <c:if test="${binder._entityType == 'folder'}">
   <div id="ss_topic_title" class="ss_disc_folder_th1">
-   
-    <span>(${ss_binderUnseenCounts[binder._docId].count})</span> 
     <a href="<ssf:url action="view_folder_listing" binderId="${binder._docId}"/>">
       <span class="ss_title_th1">${binder.title}</span>
-    </a>
+    </a> 
+    <span class="ss_title_count">(${ss_binderUnseenCounts[binder._docId].count})</span> 
     <br/>
     </div><!-- end of ss_topic_title -->
     <div id="ss_topic_desc"><ssf:markup type="view" binderId="${binder._docId}">

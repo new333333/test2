@@ -553,9 +553,12 @@ div.ss_canvas {
 	}	
 	/* PEOPLE LINKS */
 .ss_link_1, .ss_link_1 span { 
-	text-decoration: none;
-	font-weight: normal;
-	color: #00ADEF!important;
+	font-size: 16px;
+	font-style: italic;
+	text-weight: 200;
+	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
+	letter-spacing:-1px;
+	color:#5A9A98!important;
 	}
 	/* PLACES LINKS*/	
 .ss_link_2, .ss_link_2 span	{
@@ -619,7 +622,7 @@ div.ss_canvas {
 #ss_tabsC {
     float:left;
     width:100%;
-    background:#C9CFE0;
+    background:transparent;
     font-size:93%;
     line-height:normal;
     border-bottom: 1px solid #666;

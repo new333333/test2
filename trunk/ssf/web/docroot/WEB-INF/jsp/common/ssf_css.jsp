@@ -329,7 +329,7 @@ div.ss_global_toolbar_quick input {
   color: ${ss_form_element_text_color};
   font-size: ${ss_style_font_fineprint};
   font-family: ${ss_style_folder_view_font_family};  
-  border: solid .01em #999;
+  border: solid .4px #999;
 }
 div.ss_style textarea {
   padding: 0px 0px 0px 2px;
@@ -338,7 +338,7 @@ div.ss_style input[type="text"],
 div.ss_style input[type="password"],
 div.ss_style select,
 div.ss_global_toolbar_quick input {
-  padding: 2px;
+  padding: 0px;
 }
 
   
@@ -1176,7 +1176,7 @@ div.ss_sliding_table_column0 {
   border-left: ${ss_sliding_table_border_color} 1px solid;
   border-right: ${ss_sliding_table_border_color} 1px solid;
   border-bottom: ${ss_sliding_table_border_color} 1px solid;
-  margin: 0px;
+  border-top:${ss_sliding_table_border_color} 1px solid;
 }
 .ss_sliding_table_column0 * {
   color: ${ss_sliding_table_text_color};
@@ -1188,13 +1188,13 @@ div.ss_sliding_table_column1 {
   visibility: hidden;
   overflow:hidden;
   display: block; 
-  border-left: #ffffff solid 1px;
-  margin: 0px;
+  border-left: #cccccc solid 1px;
   font-size: ${ss_style_font_normalprint} !important;
 }
 .ss_sliding_table_column1 * {
   color: ${ss_sliding_table_text_color};
   white-space:nowrap;
+  text-decoration: none;
 }
 div.ss_sliding_table_column {
   position: absolute; 
@@ -1202,18 +1202,16 @@ div.ss_sliding_table_column {
   overflow:hidden;
   display: block; 
   border-left: ${ss_sliding_table_border_color} solid 1px;
-  margin: 0px;
 }
 .ss_sliding_table_column * {
   color: ${ss_sliding_table_text_color};
   white-space:nowrap;
 }
 .ss_sliding_table_info_popup {
-  position: absolute; 
   visibility: hidden;
   display:block; 
-  margin-left: 0px;
-  padding-left:1px;
+  margin-left: 1px;
+  padding-left:0px;
 }
 .ss_sliding_table_row0 {
   background-color: ${ss_sliding_table_row0_background_color}; 
@@ -1226,7 +1224,7 @@ div.ss_sliding_table_column {
   font-family: ${ss_style_folder_view_font_family} !important;
 }
 .ss_highlightEntry {
-  background-color: ${ss_folder_line_highlight_color} !important;
+  background-color: #FAFAFA !important;
 }
 .ss_sliding_table_info_popup * {
   color: ${ss_sliding_table_text_color};
@@ -1256,12 +1254,12 @@ div.ss_sliding_table_column {
   color: ${ss_sliding_table_link_hover_color} !important;
 }
 table.ss_mouseOverInfo {
-  position:relative;
+  position:absolute;
   left:1px;
   top:1px;
 }
 .ss_mouseOverInfo span {
-  position:relative;
+  position:absolute;
   left:-1px;
   top:0px;
   border:1px solid black;
@@ -1280,7 +1278,7 @@ table.ss_mouseOverInfo {
 
 /* Parent Folder 
 #ss_folder_table_parent{
-	width:98%;
+	width:100%;
 	}
 	*/
 /* Folder */
@@ -2318,31 +2316,25 @@ ul.ss_actions_bar1.ss_actions_bar_submenu {
 ul.ss_actions_bar li {
 	float:left;
 	display: inline;
-	margin: 0px 0px 0px 0px;
+	margin: 0px;
 	white-space: nowrap;
 }
-
 .ss_actions_bar li.ss_toolBarItem {
 	border: 0px;
 	margin: 0px;
 	padding: 0px;
 	background-color: inherit;
 }
-
-
-
 .ss_actions_bar li.ss_toolBarItem ul {
 	float: left;
 	display: inline;
 	margin: 0px;
 	padding: 0px;
 }
-
 .ss_actions_bar li.ss_toolBarItem .ss_toolBarItemTxt {
 	float: left;
 	margin-top: 0px;
 }
-
 .ss_actions_bar li.ss_actions_bar_separator {
 	border-right: 0px;
 	border-top: 0px;
@@ -2351,7 +2343,6 @@ ul.ss_actions_bar li {
 	width: 0px;
 	padding: 0px;
 }
-
 .ss_actions_bar form {
 	display: inline;
 	background-color: transparent;
@@ -2367,7 +2358,7 @@ ul.ss_actions_bar li {
 }
 
 .ss_actions_bar li a, .ss_actions_bar li a:visited {
-	color:${ss_style_text_color} !important;
+	color: #ffffff !important;
 	display:block;
 	padding:0px 7px;
 }
@@ -2434,7 +2425,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar1 {
 }
 
 div.ss_actions_bar_submenu ul.ss_actions_bar2 {
-  background-color: ${ss_toolbar_border_color};
+  background-color: #DDE5EF;
   background-image: none;
   opacity: 0.95;
  <c:if test="<%= isIE %>">
@@ -2581,12 +2572,13 @@ div.ss_utils_bar ul.ss_utils_bar li a span {
 }
 
 div.ss_utils_bar_submenu {
-	background-color: #ECECEC;
+	background-color: #EFEFEF;
 	margin:0px;
 	padding:0px;
 	text-align:left;
 	position:absolute;
 	display: none;
+	
 	visibility: hidden;
 	z-index:500;
 	border: 1px solid #CCCCCC;

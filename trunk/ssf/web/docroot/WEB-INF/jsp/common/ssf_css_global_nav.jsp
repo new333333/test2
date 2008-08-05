@@ -57,7 +57,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color:#FFFFFF;
 	background-position:center;
 	display:block;
-	font-family:Arial, Helvetica, sans-serif;
+	font-family:${ss_style_font_family};
 	font-size:0.6em;
 	height:10px;
 	text-align:left;
@@ -100,8 +100,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color: #5A9A98;		/* boulder: #5A9A98; kablink: #449EFF */
 	padding-top: 10px;
 	padding-right: 4px;
-	padding-bottom: 0px;
-	padding-left: 0px;
 	white-space:nowrap !important;
 }
 .ss_find {
@@ -144,7 +142,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	position: relative;
 }
 .ss_mastheadName {
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: ${ss_style_font_family};
 	font-size: 14px;
 	font-weight: normal;
 	color: #FFFFFF;
@@ -171,7 +169,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_masthead_fullscreen {
 
 	background-position: left center;
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: ${ss_style_font_family};
 	font-size: 11px;
 	font-weight: normal;
 	color: #FFFFFF;
@@ -303,46 +301,7 @@ a.ss_buttonSTButton:active span {
     padding: 2px 0 1px 8px; /* push text down 1px */
 	}		
 
-	/* NAVIGATION BUTTONS FOR MY TEAMS, FAVORITES */	
 
-#ss_top_nav_buttontwo{
-	height:14px;
-	padding-top:0px;	/* adding in the following to make right sided div */
-	float:left;
-	vertical-align:top;	
-	margin-right:5px;
-	}
-#ss_top_nav_buttontwo a {
-	font-family:  Arial, sans-serif;
-	font-size: 9px;
-	color: #FFFFFF;
-	letter-spacing: 1px;
-	}
-#ss_top_nav_buttontwo ul{
-	margin:0px;
-	padding:0px;
-	padding-left:10px;
-	list-style:none;
-	width:100%;
-	text-align:left;
-	float:left;
-	}
-#ss_top_nav_buttontwo ul li{
-	display:inline;
-	float:left;
-	margin:0px 1px 0px 0px;
-	}
-#ss_top_nav_buttontwo ul li a{
-	float:left;
-	color:#FFF;
-	background-color: #526394;
-	padding:4px 10px 2px 10px;
-	height:14px;
-	}
-#ss_top_nav_buttontwo ul li a:hover{
-	color: #FFF;
-	background-color: #00ADEF;
-	}	
 	
 	/* NAVIGATION BUTTONS FOR PORTAL, EXPANDED VIEW, AND MY WORKSPACE */		
 	
@@ -732,8 +691,7 @@ div.ss_global_toolbar_findUser_text span {
 	border: 1px solid #7F9DB9;
 	}
 div.ss_global_toolbar_search_text {
-    width:100px;
-	color:#484848;
+    color:#484848;
 	text-align:center;
 	padding:0px !important;
 	}

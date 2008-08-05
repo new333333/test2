@@ -108,11 +108,8 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
   <ssHelpSpot helpId="workspaces_folders/misc_tools/folder_table" offsetX="0" 
     title="<ssf:nlt tag="helpSpot.folderTable"/>"></ssHelpSpot>
 <div id="${ss_slidingTableId}_2" 
- style="margin:2px; padding-bottom:2px;
- border-left: #6799C8 1px solid;
- border-right: #6799C8 1px solid;
- border-bottom: #6799C8 1px solid;
- " width="98%"
+ style="margin:1px; padding-bottom:2px;
+ " width="100%"
  onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 
 <div id="col0" class="ss_style ss_sliding_table_column0" width="100%" style="padding-left:1px;">
