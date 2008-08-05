@@ -681,7 +681,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
  <c:if test="${!empty ssFolderColumns['rating']}">
    <ssf:slidingTableColumn  style="${slidingTableColStyle}">
      <c:if test="${!empty entry1._rating}">
-		<table style="border-spacing:0px; border-width:thin;"><tbody><tr>
+		
 			<%
 				String iRating = String.valueOf(java.lang.Math.round(Float.valueOf(entry1.get("_rating").toString())));
 			%>
@@ -689,22 +689,22 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			<c:if test="${sRating > 0}">
 				<c:forEach var="i" begin="0" end="${sRating - 1}" step="1">
 			
-				  <td><img border="0" 
+				  <img border="0" 
 				    <ssf:alt tag="alt.goldStar"/>
 				    src="<html:imagesPath/>pics/star_gold.gif"/>
-				  </td>
+				 
 			
 				</c:forEach>
 			</c:if>
 			
 			<c:if test="${sRating < 5}">
 				<c:forEach var="i" begin="${sRating}" end="4" step="1">
-				  <td><img <ssf:alt tag="alt.grayStar"/> border="0" 
+				  <img <ssf:alt tag="alt.grayStar"/> border="0" 
 					    src="<html:imagesPath/>pics/star_gray.gif" />
-				  </td>
+				  
 				</c:forEach>
 			</c:if>
-		</tr></tbody></table>
+		
      </c:if>&nbsp;
    </ssf:slidingTableColumn>
  </c:if>
