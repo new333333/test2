@@ -60,7 +60,6 @@ public class TeamingServiceClientWithStub {
 		FolderEntry entry;
 		checkBinder();
 		//checkEntry();
-		//checkTags
 		//getFolderEntryWSSecurity(85, 47, true);
 		//getFolderEntry(85, 80, true);
 		
@@ -80,7 +79,7 @@ public class TeamingServiceClientWithStub {
 		
 		//getFolderEntries(33);
 		
-		//getPrincipal(2, 1);
+		//getPrincipal(1);
 		
 		//getPrincipals(2, 5);
 	}
@@ -161,7 +160,7 @@ public class TeamingServiceClientWithStub {
 			Binder testFolder3 = modifyBinder(stub.binder_getBinder(null, testFolder3Id, false));
 			testFolder3 = uploadBinderFiles(testFolder3);
 		} finally {
-			//stub.binder_deleteBinder(null, testFolder1.getId(), true);
+			stub.binder_deleteBinder(null, testFolder1.getId(), true);
 		}
 	}
 	public static void checkEntrySubscriptions(long entryId) throws Exception {
@@ -493,24 +492,24 @@ public class TeamingServiceClientWithStub {
 		System.out.println("ID of the deleted entry: " + entryId);
 	}
 
-	public static void getUser(long binderId, long principalId) throws Exception {
+	public static void getUser(long principalId) throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 		
-		User user = stub.profile_getUser(null, binderId, principalId);
+		User user = stub.profile_getUser(null, principalId);
 		
 		System.out.println("User title: " + user.getTitle());
 	}
 
-	public static void getGroup(long binderId, long principalId) throws Exception {
+	public static void getGroup(long principalId) throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 		
-		Group group = stub.profile_getGroup(null, binderId, principalId);
+		Group group = stub.profile_getGroup(null, principalId);
 		
 		System.out.println("Group title: " + group.getTitle());
 	}

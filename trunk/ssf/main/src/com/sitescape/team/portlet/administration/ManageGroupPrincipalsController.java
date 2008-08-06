@@ -104,12 +104,12 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 			updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 			updates.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 			updates.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals);
-			getProfileModule().modifyEntry(binderId, groupId, new MapInputData(updates));
+			getProfileModule().modifyEntry( groupId, new MapInputData(updates));
 			response.setRenderParameter(WebKeys.URL_ENTRY_ID, groupId.toString());
 
 		} else if (formData.containsKey("deleteBtn")) {
 			Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
-			getProfileModule().deleteEntry(binderId, groupId, null);
+			getProfileModule().deleteEntry(groupId, null);
 			
 		} else {
 			response.setRenderParameters(formData);
@@ -147,7 +147,7 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 			String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 			model.put(WebKeys.NAMESPACE, namespace);
 			model.put(WebKeys.BINDER_ID, binder.getId());
-			GroupPrincipal group = (GroupPrincipal)getProfileModule().getEntry(binder.getId(), groupId);		
+			GroupPrincipal group = (GroupPrincipal)getProfileModule().getEntry(groupId);		
 			model.put(WebKeys.GROUP, group);
 			List memberList = group.getMembers();
 			Set ids = new HashSet();

@@ -584,7 +584,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		
 		Map updates = new HashMap();
 		updates.put(ObjectKeys.FIELD_PRINCIPAL_THEME, uiTheme);
-		getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
+		getProfileModule().modifyEntry(user.getId(), new MapInputData(updates));
 	}
 	
 	private void ajaxShowHideHelpControlPanel(ActionRequest request,
@@ -1287,7 +1287,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 			ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("applyBtn") || formData.containsKey("okBtn")) {
-			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 			Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
 			String title = PortletRequestUtils.getStringParameter(request, "title", "");
 			String description = PortletRequestUtils.getStringParameter(request, "description", "");
@@ -1298,7 +1297,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 			updates.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 			updates.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals);
-			getProfileModule().modifyEntry(binderId, groupId, new MapInputData(updates));
+			getProfileModule().modifyEntry(groupId, new MapInputData(updates));
 		}
 	}
 	
@@ -1690,7 +1689,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.BINDER_ID, binderId);
-		Group group = (Group)getProfileModule().getEntry(binderId, groupId);		
+		Group group = (Group)getProfileModule().getEntry(groupId);		
 		model.put(WebKeys.GROUP, group);
 		List memberList = group.getMembers();
 		Set ids = new HashSet();

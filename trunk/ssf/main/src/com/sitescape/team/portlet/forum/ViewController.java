@@ -92,7 +92,7 @@ public class ViewController  extends SAbstractController {
 			Map<String,Object> updates = new HashMap<String,Object>();
 			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
+			getProfileModule().modifyEntry(user.getId(), new MapInputData(updates));
 		}
 		response.setRenderParameters(request.getParameterMap());
 		try {response.setWindowState(request.getWindowState());} catch(Exception e){};

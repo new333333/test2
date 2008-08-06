@@ -300,7 +300,6 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 	private ModelAndView ajaxMobileShowWorkspace(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		User user = RequestContextHolder.getRequestContext().getUser();
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Workspace binder;
@@ -459,7 +458,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			   	
 				//Do a search to find the first few items that match the search text
 				options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
-				Map entries = getProfileModule().getUsers(user.getParentBinder().getId(), options);
+				Map entries = getProfileModule().getUsers(options);
 				model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
 				model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 				view = "mobile/find_people";

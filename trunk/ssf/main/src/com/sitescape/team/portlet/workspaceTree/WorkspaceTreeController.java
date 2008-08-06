@@ -63,7 +63,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			Map<String,Object> updates = new HashMap<String,Object>();
 			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
+			getProfileModule().modifyEntry(user.getId(), new MapInputData(updates));
 		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -76,7 +76,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
         	MapInputData  inputData = new MapInputData (updates);
         	updates.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
-			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), inputData);
+			getProfileModule().modifyEntry(user.getId(), inputData);
         }
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		if (binderId == null) return BinderHelper.CommonPortletDispatch(this, request, response);

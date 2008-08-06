@@ -56,8 +56,7 @@ public class NameSearchServlet extends HttpServlet {
 	
 	private static final String TEAMING_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/TeamingService";
 	
-	private static final Long PROFILE_BINDER_ID = Long.valueOf(2);
-	
+
 	private static final String PARAMETER_NAME_VERSION = "ss_version";
 	private static final String PARAMETER_NAME_APPLICATION_ID = "ss_application_id";
 	private static final String PARAMETER_NAME_USER_ID = "ss_user_id";
@@ -109,7 +108,7 @@ public class NameSearchServlet extends HttpServlet {
 	}
 
 	private String getUserTitle(TeamingServiceSoapBindingStub stub, String accessToken, Long userId) throws ServiceException, DocumentException, RemoteException {
-		User user = stub.profile_getUser(accessToken, PROFILE_BINDER_ID, userId);
+		User user = stub.profile_getUser(accessToken, userId);
 		
 		return user.getTitle();
 	}

@@ -53,7 +53,6 @@ public class ImportProfilesController extends  SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
-			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 			Map fileMap=null;
 			if (request instanceof MultipartFileSupport) {
 				fileMap = ((MultipartFileSupport) request).getFileMap();
@@ -63,7 +62,7 @@ public class ImportProfilesController extends  SAbstractController {
 		    	Document doc = xIn.read(fIn);   
 		    	fIn.close();
 		
-		    	getProfileModule().addEntries(binderId, doc, null);
+		    	getProfileModule().addEntries(doc, null);
 			} else {
 				response.setRenderParameters(formData);
 			}

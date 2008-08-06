@@ -652,7 +652,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 			if (binder instanceof Folder)
 				entry = bs.getFolderModule().getEntry(binderId, entryId);
 			else
-				entry = bs.getProfileModule().getEntry(binderId, entryId);
+				entry = bs.getProfileModule().getEntry(entryId);
 			objMap.put(ENTRY, entry);
 
 			// Check folder(s) representing definition item. 

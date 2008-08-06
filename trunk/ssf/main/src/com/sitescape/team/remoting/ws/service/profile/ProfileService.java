@@ -36,13 +36,13 @@ public interface ProfileService {
 
 	public PrincipalCollection profile_getPrincipals(String accessToken, int firstRecord, int maxRecords);
 
-	public User profile_getUser(String accessToken, long binderId, long userId);
+	public User profile_getUser(String accessToken, long userId);
 	
-	public Group profile_getGroup(String accessToken, long binderId, long groupId);
+	public Group profile_getGroup(String accessToken, long groupId);
 	
 	public void profile_addUserToGroup(String accessToken, long userId, String username, long groupId);
 	
-	public void profile_deletePrincipal(String accessToken, long binderId, long principalId);
+	public void profile_deletePrincipal(String accessToken, long principalId);
 	
 	public long profile_addUserWorkspace(String accessToken, long userId);
 	

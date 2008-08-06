@@ -301,7 +301,7 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 							    	child.setText(Constants.ENTRY_TYPE_APPLICATION);
 							    	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
 							    	
-									Map searchResults = profileModule.getApplications(profileModule.getProfileBinder().getId(), options);
+									Map searchResults = profileModule.getApplications(options);
 									List remoteAppList = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
 									req.setAttribute(WebKeys.REMOTE_APPLICATION_LIST, remoteAppList);
 								}

@@ -82,7 +82,7 @@ public class PrintNumberOfUsersJob extends QuartzJobBean {
 	private void doIt(JobExecutionContext ctx) {
 		// This method simply prints the current count of the registered users in the system.
 		
-		int count = getProfileModule().getUsers(getProfileModule().getProfileBinder().getId()).size();
+		int count = getProfileModule().getUsers().size();
 		
 		System.out.println("(" + new Date().toString() + ") " 
 				+ this.getClass().getSimpleName() 
