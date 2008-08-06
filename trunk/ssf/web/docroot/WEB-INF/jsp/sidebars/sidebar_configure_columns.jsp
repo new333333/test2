@@ -43,5 +43,5 @@
 			<ssf:param name="binderId" value="${ssBinder.id}" />
 			<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
 			</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
-		    <span class="ss_tabs_title"><ssf:nlt tag="misc.configureColumns"/></span> </a> 
+		    <span class=""><ssf:nlt tag="misc.configureColumns"/></span> </a> 
 

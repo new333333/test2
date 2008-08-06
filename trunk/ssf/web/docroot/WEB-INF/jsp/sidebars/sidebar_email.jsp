@@ -34,5 +34,5 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 
-<a href="#">Email IT xxx</a>
+<a href="#"><ssf:nlt tag="profile.abv.element.emailAddress"/></a>
 

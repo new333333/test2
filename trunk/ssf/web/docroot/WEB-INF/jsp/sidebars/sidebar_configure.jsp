@@ -35,50 +35,105 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${ssDefinitionEntry.entityType == 'folder'}">
 
-<ssf:sidebarPanel title="sidebar.configure" id="ss_tooltags_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
+<ssf:sidebarPanel title="sidebar.configure" id="ss_folderTags_sidebar" divClass="ss_place_tags" initOpen="false" sticky="false">
 
- <div class="ss_sidebarTitle">Entry Display Style xx
+ <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.entryDisplay"/> 
 	<div class="ss_sub_sidebarMenu">
 
 	  <ssf:toolbar toolbar="${ssFolderActionsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
 	</div>
  </div>	
  
-  <div class="ss_sidebarTitle">Folder Display Style xx
+  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.folderDisplay"/> 
 	<div class="ss_sub_sidebarMenu">
 
 	  <ssf:toolbar toolbar="${ssFolderViewsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
 	</div>
  </div>	
- 
- <div class="ss_sidebarTitle">Theme xx
+   <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.entryDisplay"/> 
  	<div class="ss_sub_sidebarMenu">
-        <table width="100%">
+        <table width="100%"><tbody>
           <tr>
             <td><label>
-              <input type="radio" name="Folder Display Style" value="radio" />
-              High Contrast </label></td>
+              <input type="radio" name="ss_entryDisplayStyle" value="radio" />
+              <ssf:nlt tag="sidebar.overlay"/>  </label></td>
           </tr>
           <tr>
             <td><label>
-              <input type="radio" name="Folder Display Style" value="radio" />
-              Business 
-              Blue</label></td>
+              <input type="radio" name="ss_entryDisplayStyle" value="radio" />
+              <ssf:nlt tag="sidebar.popup"/>  </label></td>
           </tr>
           <tr>
             <td class= "ss_rollover"><label>
-              <input type="radio" name="Folder Display Style" value="radio" />
-              Novell Gray 
+              <input type="radio" name="ss_entryDisplayStyle" value="radio" />
+              <ssf:nlt tag="sidebar.new.page"/> 
             </label></td>
           </tr>
-        </table>
+          
+        </tbody></table>
+      </div> 
+	</div>
+  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.folderDisplay"/> 
+ 	<div class="ss_sub_sidebarMenu">
+        <table width="100%"><tbody>
+          <tr>
+            <td><label>
+              <input type="radio" name="ss_folderDisplayStyle" value="radio" />
+              <ssf:nlt tag="javax.portlet.blog.short-title"/>  </label></td> 
+          </tr>
+          <tr>
+            <td><label>
+              <input type="radio" name="ss_folderDisplayStyle" value="radio" />
+              <ssf:nlt tag="javax.portlet.wiki.short-title"/> </label></td>
+          </tr>
+          <tr>
+            <td class= "ss_rollover"><label>
+              <input type="radio" name="ss_folderDisplayStyle" value="radio" />
+              Discussion List xxx 
+            </label></td>
+          </tr>
+          <tr>
+            <td class= "ss_rollover"><label>
+              <input type="radio" name="ss_folderDisplayStyle" value="radio" />
+              Discussion Table xxx
+            </label></td>
+          </tr>
+          <tr>
+            <td class= "ss_rollover"><label>
+              <input type="radio" name="ss_folderDisplayStyle" value="radio" />
+              <ssf:nlt tag="relevance.trackedCalendar"/> 
+            </label></td>
+          </tr>
+        </tbody></table>
+       </div>
+	</div>
+ <div class="ss_sidebarTitle">Theme xx
+ 	<div class="ss_sub_sidebarMenu">
+        <table width="100%"><tbody>
+          <tr>
+            <td><label>
+              <input type="radio" name="ss_themeDisplayStyle" value="radio" />
+              High Contrast xxx</label></td>
+          </tr>
+          <tr>
+            <td><label>
+              <input type="radio" name="ss_themeDisplayStyle" value="radio" />
+              Business Blue xxx </label></td>
+          </tr>
+          <tr>
+            <td class= "ss_rollover"><label>
+              <input type="radio" name="ss_themeDisplayStyle" value="radio" />
+              Novell Gray xxx
+            </label></td>
+          </tr>
+        </tbody></table>
        
 	</div>
  </div>
  
   <div class="ss_sidebarTitle"><ssf:nlt tag="misc.configureColumns"/>
  	<div class="ss_sub_sidebarMenu">
-        <table width="100%">
+        <table width="100%"><tbody>
           <tr>
             <td>
             
@@ -87,14 +142,14 @@
 				
 		    </td>
           </tr>
-        </table>
+        </tbody></table>
        
 	</div>
  </div>
  
   <div class="ss_sidebarTitle">Entries Per Page xx
  	<div class="ss_sub_sidebarMenu">
-        <table width="100%">
+        <table width="100%"><tbody>
           <tr>
             <td><form name="ss_recordsPerPage_${renderResponse.namespace}" id="ss_recordsPerPage_${renderResponse.namespace}" method="post" 
 			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
@@ -150,7 +205,7 @@
 			  
 			</form></td>
           </tr>
-        </table>
+        </tbody></table>
        
 	</div>
  </div>
