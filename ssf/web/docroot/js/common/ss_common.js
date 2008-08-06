@@ -1085,7 +1085,7 @@ function ss_showHide(objId){
 	return false;
 }
 
-function ss_showHideSidebarBox(divId, imgObj, sticky, id) {
+function ss_showHideTaskList(divId, imgObj, sticky, id) {
 	var urlParams = {id:id};
 	if (ss_showHide(divId)) {
 		urlParams.operation="show_sidebar_panel";
@@ -1093,6 +1093,23 @@ function ss_showHideSidebarBox(divId, imgObj, sticky, id) {
 		urlParams.operation = "hide_sidebar_panel";
 	}		
 	ss_toggleImage(imgObj, "flip_up16H.gif", "flip_down16H.gif");
+	if (sticky) {
+		ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams));
+	}
+}
+
+function ss_showHideSidebarBox(divId, divObj, sticky, id) {
+	var urlParams = {id:id};
+	if (ss_showHide(divId)) {
+		urlParams.operation="show_sidebar_panel";
+	} else {
+		urlParams.operation = "hide_sidebar_panel";
+	}		
+	if (divObj.className == "ss_menuOpen") {
+		divObj.className = "ss_menuClosed"
+	} else {
+		divObj.className = "ss_menuOpen"
+	}
 	if (sticky) {
 		ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams));
 	}
