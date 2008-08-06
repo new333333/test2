@@ -663,11 +663,12 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						List auditTrail = session.createCriteria(LoginInfo.class)
 							.setProjection(Projections.projectionList()
 											.add(Projections.property("startBy"))
-											.add(Projections.groupProperty("startDate")))
+											.add(Projections.property("startDate")))
 								.add(Expression.in("startBy",tempIds.toArray()))
 								.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
 								.add(Restrictions.ge("startDate", startDate))
 								.add(Restrictions.lt("startDate", endDate))
+								.addOrder(Order.asc("startDate"))
 							.list();
 						return auditTrail;
 				}});				
@@ -679,10 +680,11 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 							List auditTrail = session.createCriteria(LoginInfo.class)
 								.setProjection(Projections.projectionList()
 												.add(Projections.property("startBy"))
-												.add(Projections.groupProperty("startDate")))
+												.add(Projections.property("startDate")))
 									.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
 									.add(Restrictions.ge("startDate", startDate))
 									.add(Restrictions.lt("startDate", endDate))
+									.addOrder(Order.asc("startDate"))
 								.list();
 							return auditTrail;
 					}});
