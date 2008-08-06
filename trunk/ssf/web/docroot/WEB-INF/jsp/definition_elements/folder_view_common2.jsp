@@ -698,7 +698,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
  <c:if test="${!empty ssFolderColumns['rating']}">
    <ssf:slidingTableColumn  style="${slidingTableColStyle}">
      <c:if test="${!empty entry1._rating}">
-		
+		<span class = "ss_nowrap">
 			<%
 				String iRating = String.valueOf(java.lang.Math.round(Float.valueOf(entry1.get("_rating").toString())));
 			%>
@@ -721,7 +721,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 				  
 				</c:forEach>
 			</c:if>
-		
+		</span>
      </c:if>&nbsp;
    </ssf:slidingTableColumn>
  </c:if>
