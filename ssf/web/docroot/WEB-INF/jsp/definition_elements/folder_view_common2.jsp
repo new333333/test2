@@ -391,7 +391,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	String seenStyle = "";
 	String seenStyleAuthor = "";
 	String seenStyleFine = "class=\"ss_fineprint\"";
-	if (!ssSeenMap.checkIfSeen(entry1)) {
+	if (0 == 1 && !ssSeenMap.checkIfSeen(entry1)) {
 		seenStyle = "class=\"ss_unseen\"";
 		seenStyleAuthor="ss_unseen";
 		seenStyleFine = "class=\"ss_unseen ss_fineprint\"";
@@ -418,7 +418,13 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 		if (!srFileID.contains(",")) oneFile = true;
 	}
 %>
-<c:set var="seenStyleburst" value="<%= seenStyle %>"/>
+<c:set var="seenStyleburst" value=""/>
+
+<%
+	if (!ssSeenMap.checkIfSeen(entry1)) {
+		%><c:set var="seenStyleburst" value="1"/><%
+	}
+%>
 
 <c:set var="hasFile2" value="<%= hasFile %>"/>
 <c:set var="oneFile2" value="<%= oneFile %>"/>
@@ -447,8 +453,19 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   <ssf:slidingTableColumn style="${slidingTableColStyle}">
   <!-- to keep sunburst in line -->
     <c:if test="${!empty seenStyleburst}">
-	  		<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" <ssf:alt tag="alt.new"/> />&nbsp;
+    
+  <a id="ss_sunburstDiv${entry1._docId}" href="javascript: ;" 
+  onClick="ss_hideSunburst('${entry1._docId}', '${ssFolder.id}');return false;"
+><span 
+  style="display:${ss_sunburstVisibilityHide};"
+  id="ss_sunburstShow${renderResponse.namespace}" 
+  class="ss_fineprint">
+  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" <ssf:alt tag="alt.new"/> />&nbsp;
+  </span>
+  </a>
+    
 	</c:if>
+	
   	<a  class="ss_new_thread"
   	href="<ssf:url     
     adapter="<%= useAdaptor %>" 
