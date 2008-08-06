@@ -766,5 +766,9 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	public List<Node> getSearchNodes() {
 		return getLuceneSessionFactory().getNodes();
 	}
+	
+	public void setSearchNodeAccessMode(String nodeId, String accessMode) {
+		// TODO $$$$$
+	}
 
 }
