@@ -47,6 +47,7 @@ import com.sitescape.team.remoting.ws.BaseService;
 import com.sitescape.team.remoting.ws.util.attachments.AttachmentsHelper;
 import com.sitescape.team.remoting.ws.util.attachments.AxisMultipartFile;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
+import com.sitescape.util.Validator;
 
 public class AttachmentUtilities {
 
@@ -60,14 +61,14 @@ public class AttachmentUtilities {
 	protected FolderModule getFolderModule() { return owningService.getFolderModule(); }
 	protected IcalModule getIcalModule() { return owningService.getIcalModule(); }
 	
-	public void uploadFolderFile(long binderId, long entryId, 
+	public void uploadFolderFile(Long binderId, Long entryId, 
 			String fileUploadDataItemName, String fileName) {
 		
 		uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName, null, null, null);
 	}
-	public void uploadFolderFile(long binderId, long entryId, 
+	public void uploadFolderFile(Long binderId, Long entryId, 
 				String fileUploadDataItemName, String fileName, String modifier, Calendar modificationDate, Map options) {
-			
+		if (Validator.isNull(fileUploadDataItemName)) fileUploadDataItemName="ss_attachFile1";
 		fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
 		File originalFile = new File(fileName);
 		fileName = StringCheckUtil.check(originalFile.getName());
@@ -97,7 +98,7 @@ public class AttachmentUtilities {
 		
 		try {
 			// Finally invoke the business method. 
-			getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
+			getFolderModule().modifyEntry(binderId, entryId, 
 				new EmptyInputData(), fileItems, null, null, options);
 		}
 		catch(WriteFilesException e) {
@@ -106,39 +107,6 @@ public class AttachmentUtilities {
 	}
 	
 	protected Map getFileAttachments(String fileUploadDataItemName, String[] fileNames) {
-
-		// Get all the attachments
-		AttachmentPart[] attachments;
-		try {
-			attachments = AttachmentsHelper.getMessageAttachments();
-		} catch (AxisFault e) {
-			throw new RemotingException(e);
-		}
-
-		// Create a map of file item names to items 
-		Map fileItems = new HashMap();
-		int i = 0;
-		for(AttachmentPart attachment : attachments) {
-			DataHandler dh;
-			try {
-					dh = attachment.getDataHandler();
-			} catch (SOAPException e) {
-				throw new RemotingException(e);
-			}
-	
-			// Wrap it up in a datastructure expected by our app.
-			String name = null;
-			if(i < fileNames.length) {
-				name = fileNames[i];
-			} else {
-				name = "attachment" + (i+1);
-			}
-			AxisMultipartFile mf = new AxisMultipartFile(name, dh);
-			
-			fileItems.put(fileUploadDataItemName + (i+1), mf);
-			i = i+1;
-		}
-		
-		return fileItems;
+		return AttachmentsHelper.getFileAttachments(fileUploadDataItemName, fileNames);
 	}
 }

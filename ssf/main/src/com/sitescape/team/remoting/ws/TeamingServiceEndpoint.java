@@ -35,6 +35,7 @@ import javax.xml.rpc.server.ServiceLifecycle;
 
 import com.sitescape.team.remoting.ws.model.Binder;
 import com.sitescape.team.remoting.ws.model.DefinitionCollection;
+import com.sitescape.team.remoting.ws.model.DefinitionBrief;
 import com.sitescape.team.remoting.ws.model.FolderCollection;
 import com.sitescape.team.remoting.ws.model.FolderEntry;
 import com.sitescape.team.remoting.ws.model.FolderEntryCollection;
@@ -134,6 +135,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public Binder binder_getBinder(String accessToken, long binderId, boolean includeAttachments) {
 		return getBinderService().binder_getBinder(accessToken, binderId, includeAttachments);
 	}
+	public Binder binder_getBinderByPathName(String accessToken, String pathName, boolean includeAttachments) {
+		return getBinderService().binder_getBinderByPathName(accessToken, pathName, includeAttachments);
+	}
 	public void binder_moveBinder(String accessToken, long binderId, long destinationId) {
 		getBinderService().binder_moveBinder(accessToken, binderId, destinationId);
 	}
@@ -210,11 +214,22 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public String definition_getDefinitionsAsXML(String accessToken) {
 		return getDefinitionService().definition_getDefinitionsAsXML(accessToken);
 	}*/
-	public void folder_addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId) {
-		getFolderService().folder_addEntryWorkflow(accessToken, binderId, entryId, definitionId);
+	public FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments) {
+		return getFolderService().folder_getEntry(accessToken, entryId, includeAttachments);
 	}
-    public void folder_deleteEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId) {
-    	getFolderService().folder_deleteEntryWorkflow(accessToken, binderId, entryId, definitionId);
+
+	public FolderEntryCollection folder_getEntries(String accessToken, long binderId) {
+		return getFolderService().folder_getEntries(accessToken, binderId);
+	}
+
+	public FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName) {
+		return getFolderService().folder_getEntryByFileName(accessToken, binderId, fileName);
+	}
+	public void folder_addEntryWorkflow(String accessToken, long entryId, String definitionId) {
+		getFolderService().folder_addEntryWorkflow(accessToken, entryId, definitionId);
+	}
+    public void folder_deleteEntryWorkflow(String accessToken, long entryId, String definitionId) {
+    	getFolderService().folder_deleteEntryWorkflow(accessToken, entryId, definitionId);
     }
 	/*
 	public long folder_addEntryWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
@@ -223,11 +238,11 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public long folder_addReplyWithXML(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName) {
 		return getFolderService().folder_addReplyWithXML(accessToken, binderId, parentId, definitionId, inputDataAsXML, attachedFileName);
 	}*/
-	public void folder_modifyWorkflowState(String accessToken, long binderId, long entryId, long stateId, String toState) {
-		getFolderService().folder_modifyWorkflowState(accessToken, binderId, entryId, stateId, toState);
+	public void folder_modifyWorkflowState(String accessToken, long entryId, long stateId, String toState) {
+		getFolderService().folder_modifyWorkflowState(accessToken, entryId, stateId, toState);
 	}
-	public void folder_setWorkflowResponse(String accessToken, long binderId, long entryId, long stateId, String question, String response) {
-		getFolderService().folder_setWorkflowResponse(accessToken, binderId, entryId, stateId, question, response);
+	public void folder_setWorkflowResponse(String accessToken, long entryId, long stateId, String question, String response) {
+		getFolderService().folder_setWorkflowResponse(accessToken,  entryId, stateId, question, response);
 	}
 	/*
 	public String folder_getEntriesAsXML(String accessToken, long binderId) {
@@ -242,32 +257,32 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void folder_synchronizeMirroredFolder(String accessToken, long binderId) {
 		getFolderService().folder_synchronizeMirroredFolder(accessToken, binderId);
 	}
-	public void folder_uploadFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
-		getFolderService().folder_uploadFile(accessToken, binderId, entryId, fileUploadDataItemName, fileName);
+	public void folder_uploadFile(String accessToken,long entryId, String fileUploadDataItemName, String fileName) {
+		getFolderService().folder_uploadFile(accessToken, entryId, fileUploadDataItemName, fileName);
 	}
-	public void folder_uploadFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
-		getFolderService().folder_uploadFileStaged(accessToken, binderId, entryId, fileUploadDataItemName, fileName, stagedFileRelativePath);
+	public void folder_uploadFileStaged(String accessToken, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
+		getFolderService().folder_uploadFileStaged(accessToken, entryId, fileUploadDataItemName, fileName, stagedFileRelativePath);
 	}
-	public void folder_deleteEntry(String accessToken, long binderId, long entryId) {
-		getFolderService().folder_deleteEntry(accessToken, binderId, entryId);
+	public void folder_deleteEntry(String accessToken, long entryId) {
+		getFolderService().folder_deleteEntry(accessToken, entryId);
 	}
-    public long folder_copyEntry(String accessToken, long binderId, long entryId, long destinationId) {
-    	return getFolderService().folder_copyEntry(accessToken, binderId, entryId, destinationId);
+    public long folder_copyEntry(String accessToken, long entryId, long destinationId) {
+    	return getFolderService().folder_copyEntry(accessToken, entryId, destinationId);
     }
-    public void folder_moveEntry(String accessToken, long binderId, long entryId, long destinationId) {
-       	getFolderService().folder_moveEntry(accessToken, binderId, entryId, destinationId);
+    public void folder_moveEntry(String accessToken, long entryId, long destinationId) {
+       	getFolderService().folder_moveEntry(accessToken, entryId, destinationId);
     }
-    public void folder_reserveEntry(String accessToken, long binderId, long entryId) {
-       	getFolderService().folder_reserveEntry(accessToken, binderId, entryId);
+    public void folder_reserveEntry(String accessToken, long entryId) {
+       	getFolderService().folder_reserveEntry(accessToken, entryId);
     }
-    public void folder_unreserveEntry(String accessToken, long binderId, long entryId) {
-       	getFolderService().folder_unreserveEntry(accessToken, binderId, entryId);
+    public void folder_unreserveEntry(String accessToken, long entryId) {
+       	getFolderService().folder_unreserveEntry(accessToken, entryId);
     }
-	public Subscription folder_getSubscription(String accessToken, long binderId, long entryId) {
-		return getFolderService().folder_getSubscription(accessToken, binderId, entryId);
+	public Subscription folder_getSubscription(String accessToken, long entryId) {
+		return getFolderService().folder_getSubscription(accessToken, entryId);
 	}
-	public void folder_setSubscription(String accessToken, long binderId, long entryId, Subscription subscription) {
-		getFolderService().folder_setSubscription(accessToken, binderId, entryId, subscription);
+	public void folder_setSubscription(String accessToken, long entryId, Subscription subscription) {
+		getFolderService().folder_setSubscription(accessToken, entryId, subscription);
 	}
 	public void folder_deleteEntryTag(String accessToken, long entryId, String tagId) {
 		getFolderService().folder_deleteEntryTag(accessToken, entryId, tagId);
@@ -277,6 +292,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	}
 	public void folder_setEntryTag(String accessToken, Tag tag) {
 		getFolderService().folder_setEntryTag(accessToken, tag);
+	}
+	public void folder_setRating(String accessToken, long entryId, long value) {
+		getFolderService().folder_setRating(accessToken, entryId, value);
 	}
 	public void ical_uploadCalendarEntriesWithXML(String accessToken, long folderId, String iCalDataAsXML) {
 		getIcalService().ical_uploadCalendarEntriesWithXML(accessToken, folderId, iCalDataAsXML);
@@ -370,14 +388,6 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		getZoneService().zone_modifyZone(accessToken, zoneName, virtualHost, mailDomain);
 	}
 
-	public FolderEntry folder_getEntry(String accessToken, long binderId, long entryId, boolean includeAttachments) {
-		return getFolderService().folder_getEntry(accessToken, binderId, entryId, includeAttachments);
-	}
-
-	public FolderEntryCollection folder_getEntries(String accessToken, long binderId) {
-		return getFolderService().folder_getEntries(accessToken, binderId);
-	}
-
 	public PrincipalCollection profile_getPrincipals(String accessToken, int firstRecord, int maxRecords) {
 		return getProfileService().profile_getPrincipals(accessToken, firstRecord, maxRecords);
 	}
@@ -393,6 +403,15 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 
 	public DefinitionCollection definition_getDefinitions(String accessToken) {
 		return getDefinitionService().definition_getDefinitions(accessToken);
+	}
+	public DefinitionCollection definition_getLocalDefinitions(String accessToken, long binderId, boolean includeAncestors) {
+		return getDefinitionService().definition_getLocalDefinitions(accessToken, binderId, includeAncestors);
+	}
+	public DefinitionBrief definition_getDefinitionByName(String accessToken, String name) {
+		return getDefinitionService().definition_getDefinitionByName(accessToken, name);
+	}
+	public DefinitionBrief definition_getLocalDefinitionByName(String accessToken, long binderId, String name, boolean includeAncestors) {
+		return getDefinitionService().definition_getLocalDefinitionByName(accessToken, binderId, name, includeAncestors);
 	}
 
 	public TeamCollection search_getTeams(String accessToken) {

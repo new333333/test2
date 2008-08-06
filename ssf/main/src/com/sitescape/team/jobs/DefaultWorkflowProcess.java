@@ -74,7 +74,7 @@ public class DefaultWorkflowProcess extends SSStatefulJob implements WorkflowPro
     			return;
     		}
        	} catch (NoObjectByTheIdException no) {
-    		removeJobOnError(context, no);
+    		removeJob(context);
     		return;
       	} catch (AccessControlException acc) {
     		removeJobOnError(context, acc);

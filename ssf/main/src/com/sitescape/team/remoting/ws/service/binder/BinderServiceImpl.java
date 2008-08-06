@@ -50,6 +50,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
@@ -112,7 +113,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		Map subMap = new HashMap();
 		com.sitescape.team.remoting.ws.model.SubscriptionStyle[] styles = subscription.getStyles();
 		for (int i=0; i<styles.length; ++i) {
-			subMap.put(styles[i].getStyle(), styles[i].getEmailTypes());
+			subMap.put(Integer.valueOf(styles[i].getStyle()), styles[i].getEmailTypes());
 		}
 		getBinderModule().setSubscription(binderId, subMap);
 	}
@@ -240,6 +241,16 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		// Retrieve the raw binder.
 		Binder binder =  getBinderModule().getBinder(binderId);
 
+		com.sitescape.team.remoting.ws.model.Binder binderModel = 
+			new com.sitescape.team.remoting.ws.model.Binder(); 
+
+		fillBinderModel(binderModel, binder);
+		
+		return binderModel;
+	}
+	public com.sitescape.team.remoting.ws.model.Binder binder_getBinderByPathName(String accessToken, String pathName, boolean includeAttachments) {
+		Binder binder = getBinderModule().getBinderByPathName(pathName);
+		if (binder == null) throw new NoBinderByTheNameException(pathName);
 		com.sitescape.team.remoting.ws.model.Binder binderModel = 
 			new com.sitescape.team.remoting.ws.model.Binder(); 
 
