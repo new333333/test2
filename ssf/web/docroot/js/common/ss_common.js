@@ -6120,6 +6120,28 @@ function ss_showHideSidebar(namespace) {
 	ajaxRequest.sendRequest();  //Send the request
 }
 
+//Routine to hide the sunburst
+function ss_hideSunburst(s_id, s_binderId) {
+	var divObj = self.document.getElementById('ss_sunburstDiv'+s_id);
+
+		//Hide it
+   		dojo.fadeOut({node: divObj, end: 0, delay: 400, onEnd: function() {
+		    	divObj.style.visibility = "hidden";
+		    	divObj.style.display = "none";
+
+   		}}).play();
+
+	ssf_onLayoutChange()
+	ss_setupStatusMessageDiv();
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, 
+		{operation:"set_sunburst_visibility", 
+		entryId:s_id,
+		binderId:s_binderId}, "");
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.setPostRequest(ss_postRequestAlertError);
+	ajaxRequest.sendRequest();  //Send the request
+}
+
 //Routine to get the current url and post it to the login controller so we can return here after logging in
 function ss_requestLogin(obj, binderId, userWorkspaceId, userName) {
 	//If we are looking at the guest user workspace, don't return here. Go to the new user's workspace
