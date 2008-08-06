@@ -47,6 +47,7 @@ import com.sitescape.team.domain.EntityDashboard;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.PostingDef;
+import com.sitescape.team.domain.SearchNodeInfo;
 import com.sitescape.team.domain.SimpleName;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
@@ -177,4 +178,19 @@ public interface CoreDao {
     public SimpleName loadSimpleNameByEmailAddress(String emailAddress, Long zoneId);
     
     public List<SimpleName> loadSimpleNames(Long binderId, Long zoneId);
+    
+    /**
+     * Returns <code>SearchNodeInfo</code> matching the criteria, or <code>null</code> if no match is found.
+     * 
+     * @param nodeId
+     * @param indexName
+     * @return
+     */
+    public SearchNodeInfo loadSearchNodeInfo(String nodeId, String indexName);
+    
+    /**
+     * Purge search node info of the specified index.
+     * @param indexName
+     */
+    public void purgeSearchNodeInfo(String indexName);
 }

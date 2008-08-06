@@ -42,7 +42,5 @@ public interface Node {
 	
 	public String getAccessMode();
 	
-	public void setAccessMode(String accessMode);
-	
 	public Map<String,String> getDisplayProperties();
 }
