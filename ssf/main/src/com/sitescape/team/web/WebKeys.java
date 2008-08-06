@@ -465,6 +465,7 @@ public class WebKeys {
 	public static final String OPERATION_ATTACHE_MEETING_RECORDS = "attache_meeting_records";
 	public static final String OPERATION_SAVE_UESR_STATUS = "save_user_status";
 	public static final String OPERATION_SET_SIDEBAR_VISIBILITY = "set_sidebar_visibility";
+	public static final String OPERATION_SET_SUNBURST_VISIBILITY = "set_sunburst_visibility";
 	public static final String OPERATION_GET_UPLOAD_PROGRESS_STATUS = "get_upload_progress_status";
 	
 	// MODEL TAGS & Attributes
