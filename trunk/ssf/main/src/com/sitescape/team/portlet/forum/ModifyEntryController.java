@@ -31,6 +31,7 @@ package com.sitescape.team.portlet.forum;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,12 +47,15 @@ import org.springframework.web.portlet.ModelAndView;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -156,8 +160,49 @@ public class ModifyEntryController extends SAbstractController {
 			}
 			
 		} else if (formData.containsKey("editElementBtn")) {
+			Map inputData = new HashMap(formData);
+			//Before modifying the entry, check if the user is only modifying one section
+			if (inputData.containsKey(WebKeys.URL_ELEMENT_TO_EDIT) && 
+					inputData.containsKey(WebKeys.URL_SECTION_TO_EDIT)) {
+				String elementToEdit = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ELEMENT_TO_EDIT, "");
+				String sectionToEdit = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SECTION_TO_EDIT, "");
+				if (!sectionToEdit.equals("")) {
+					String newSectionText = PortletRequestUtils.getStringParameter(request, elementToEdit, "");
+					//This is a request to edit just one section of the text; get the section to be edited
+					FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
+					//Start by getting the original full text of the element in the entry
+					String elementText = "";
+					if (elementToEdit.equals("description")) {
+						elementText = entry.getDescription().getText();
+					} else {
+						CustomAttribute ca = entry.getCustomAttribute(elementToEdit);
+						elementText = ca.getValue().toString();
+					}
+					//Next, split that text into its sections
+					List<Map> bodyParts = WebHelper.markupSplitBySection(elementText);
+					String newElementText = "";
+					//Now, find the section being edited and replace the original section text with the new text
+					for (Map part : bodyParts) {
+						String sectionNumber = (String) part.get("sectionNumber");
+						if (sectionNumber == null) sectionNumber = "";
+						String prefix = (String) part.get("prefix");
+						if (prefix == null) prefix = "";
+						String sectionText = (String) part.get("sectionText");
+						if (sectionText == null) sectionText = "";
+						
+						newElementText = newElementText +  prefix;
+						if (sectionToEdit.equals(sectionNumber)) {
+							newElementText = newElementText +  newSectionText;
+						} else {
+							newElementText = newElementText + sectionText;
+						}
+					}
+					//Finally, replace the section text with the new full element text in the input data
+					inputData.put(elementToEdit, newElementText);
+				}
+			}
 			getFolderModule().modifyEntry(folderId, entryId, 
-					new MapInputData(formData), null, null, null, null);
+					new MapInputData(inputData), null, null, null, null);
 			setupReloadOpener(response, folderId, entryId);
 
 		} else if (formData.containsKey("cancelBtn")) {
@@ -249,8 +294,32 @@ public class ModifyEntryController extends SAbstractController {
 			if (elementToEdit.equals("")) {
 				path = WebKeys.VIEW_MODIFY_ENTRY;
 			} else {
-				DefinitionHelper.getDefinitionElement(entry.getEntryDef(), model, elementToEdit);
-				path = WebKeys.VIEW_MODIFY_ENTRY_ELEMENT;
+				if (DefinitionHelper.getDefinitionElement(entry.getEntryDef(), model, elementToEdit)) {
+					String sectionToEdit = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SECTION_TO_EDIT, "");
+					model.put(WebKeys.SECTION_NUMBER, sectionToEdit);
+					if (!sectionToEdit.equals("")) {
+						//This is a request to edit just one section of the text; get the section to be edited
+						String elementText = "";
+						if (elementToEdit.equals("description")) {
+							elementText = entry.getDescription().getText();
+						} else {
+							CustomAttribute ca = entry.getCustomAttribute(elementToEdit);
+							elementText = ca.getValue().toString();
+						}
+						List<Map> bodyParts = WebHelper.markupSplitBySection(elementText);
+						String sectionText = "";
+						for (Map part : bodyParts) {
+							if (sectionToEdit.equals(part.get("sectionNumber"))) {
+								sectionText = (String) part.get("sectionText");
+								break;
+							}
+						}
+						model.put(WebKeys.SECTION_TEXT, sectionText);
+					}
+					path = WebKeys.VIEW_MODIFY_ENTRY_ELEMENT;
+				} else {
+					path = WebKeys.VIEW_MODIFY_ENTRY;
+				}
 			}
 		} 
 			

@@ -39,6 +39,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.dom4j.Document;
@@ -65,24 +67,32 @@ import com.sitescape.util.servlet.StringServletResponse;
  * @author Peter Hurley
  *
  */
-public class DisplayConfiguration extends TagSupport {
+public class DisplayConfiguration extends BodyTagSupport implements ParamAncestorTag {
 	private static final long serialVersionUID=1L;
     private Document configDefinition;
     private Element configElement;
     private String configJspStyle;
     private boolean processThisItem = false;
     private DefinableEntity entry;
+	private Map _params;
     
     private ProfileModule profileModule;
     
-	public int doStartTag() throws JspException {
+	public int doStartTag() {
+		return EVAL_BODY_BUFFERED;
+	}
+
+	public int doAfterBody() {
+		return SKIP_BODY;
+	}
+
+	public int doEndTag() throws JspException {
 		profileModule = (ProfileModule)SpringContextUtil.getBean("profileModule");
 		DefinitionConfigurationBuilder configBuilder=DefinitionHelper.getDefinitionBuilderConfig();
 		try {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
-			
 			if (this.configDefinition == null) {
 					throw new JspException("No configuration definition available for this item.");
 			} else if (this.configElement != null) {
@@ -157,10 +167,15 @@ public class DisplayConfiguration extends TagSupport {
 							if (!Validator.isNull(jsp)) {
 								RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 									
-								ServletRequest req = null;
-								req = new DynamicServletRequest(
-										(HttpServletRequest)pageContext.getRequest());
+								ServletRequest req = new DynamicServletRequest(httpReq);
 									
+								if (_params != null ) {
+									Iterator _it = _params.entrySet().iterator();
+									while (_it.hasNext()) {
+										Map.Entry me = (Map.Entry) _it.next();
+										req.setAttribute((String) me.getKey(), (String)me.getValue());
+									}
+								}
 								req.setAttribute("item", nextItem);
 								req.setAttribute(WebKeys.CONFIG_DEFINITION, this.configDefinition);
 								req.setAttribute(WebKeys.CONFIG_ELEMENT, this.configElement);
@@ -330,15 +345,12 @@ public class DisplayConfiguration extends TagSupport {
 	    	this.configJspStyle = null;
 	    	this.processThisItem = false;
 	    	this.entry = null;
+			this._params = null;
 	    }
 	    
-		return SKIP_BODY;
+	    return EVAL_PAGE;
 	}
 
-	public int doEndTag() throws JspException {
-		return EVAL_PAGE;
-	}
-	
 	public void setConfigDefinition(Document configDefinition) {
 	    this.configDefinition = configDefinition;
 	}
@@ -360,6 +372,12 @@ public class DisplayConfiguration extends TagSupport {
 	    this.entry = entry;
 	}
 
+	public void addParam(String name, String value) {
+		if (_params == null) {
+			_params = new HashMap();
+		}
+		_params.put(name, value);
+	}
 }
 
 

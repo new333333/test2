@@ -36,6 +36,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -799,6 +800,60 @@ public class WebHelper {
 			return inputString;
 		}
      	return outputString.replaceAll(specialAmp, "&");
+	}
+	
+	//Routine to split a body of text into sections
+	public static List markupSplitBySection(String body) {
+		List bodyParts = new ArrayList();
+    	int loopDetector = 0;
+    	Pattern p0 = Pattern.compile("(==[=]*)([^=]*)(==[=]*)");
+    	Matcher m0 = p0.matcher(body);
+    	if (m0.find()) {
+			Map part = new HashMap();
+			part.put("prefix", body.substring(0, m0.start(0)));
+			bodyParts.add(part);
+			body = body.substring(m0.start(0), body.length());
+    	}
+    	
+    	int sectionNumber = 0;
+    	Pattern p1 = Pattern.compile("(==[=]*)([^=]*)(==[=]*)");
+    	Matcher m1 = p1.matcher(body);
+    	while (m1.find()) {
+    		if (loopDetector > 2000) {
+	        	logger.error("Error processing markup [6]: " + body);
+    			return bodyParts;
+    		}
+    		loopDetector++;
+			Map part = new HashMap();
+    		//Get the section title
+    		String title = m1.group(2).trim();
+    		if (title == null) title = "";
+			
+    		part.put("sectionTitle", title);
+    		part.put("sectionNumber", String.valueOf(sectionNumber));
+    		
+			String equalSigns = m1.group(1).trim();
+			int sectionDepth = Integer.valueOf(equalSigns.length());
+			if (sectionDepth > 4) sectionDepth = 4;
+			sectionDepth--;
+			part.put("sectionTitleClass", "ss_sectionHeader" + String.valueOf(sectionDepth));
+			
+			body = body.substring(m1.end(), body.length());
+	    	Pattern p2 = Pattern.compile("(==[=]*)([^=]*)(==[=]*)");
+	    	Matcher m2 = p2.matcher(body);
+	    	if (m2.find()) {
+				part.put("sectionBody", body.substring(0, m2.start(0)));
+				body = body.substring(m2.start(0), body.length());
+	    	} else {
+	    		part.put("sectionBody", body);
+	    	}
+	    	part.put("sectionText", m1.group(1) + m1.group(2) + m1.group(3) + part.get("sectionBody"));
+			bodyParts.add(part);
+			m1 = p1.matcher(body);
+    		
+			sectionNumber++;
+		}
+		return bodyParts;
 	}
 	
 	//Routine to compute a normalized title

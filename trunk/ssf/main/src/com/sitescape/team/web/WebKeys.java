@@ -122,7 +122,7 @@ public class WebKeys {
 	public static final String URL_DISPLAY_TYPE="displayType";
     public static final String URL_DIV_ID="divId";
     public static final String URL_DOWNLOAD_FILE="download";
-	public static final String URL_ELEMENT_TO_EDIT = "element";
+	public static final String URL_ELEMENT_TO_EDIT = "_element";
 	public static final String URL_END_DATE = "ss_endDate";
 	public static final String URL_ENTITY_ID = "entityId";
     public static final String URL_ENTITY_TYPE="entityType";
@@ -168,6 +168,8 @@ public class WebKeys {
 	public static final String URL_REPORT_OPTION_TYPE_LONG = "longReport";
 	public static final String URL_REPORT_TYPE = "ss_reportType";
 	public static final String URL_SEARCH_NODE_ID = "searchNodeId";
+	public static final String URL_SECTION_PLACEHOLDER = "ss_sectionPlaceholder";
+	public static final String URL_SECTION_TO_EDIT = "_section";
 	public static final String URL_START_DATE = "ss_startDate";
 	public static final String URL_STATUS_TICKET_ID = "ss_statusId";
 	public static final String URL_TAB_ID = "tabId";
@@ -896,6 +898,8 @@ public class WebKeys {
     public static final String FIND_ACCESSIBILITY_TEXT="accessibilityText";
     public static final String FIND_ADD_CURRENT_USER="ssFindAddCurrentUser";
     
+    public static final String SECTION_NUMBER="ss_sectionNumber";
+    public static final String SECTION_TEXT="ss_sectionText";
     public static final String SHOW_USER_SHOW_PRESENCE="ss_showUserShowPresence";
     public static final String SHOW_USER_TITLE_STYLE="ss_showUserTitleStyle";
     public static final String SHOW_USER_USER="ss_showUserUser";

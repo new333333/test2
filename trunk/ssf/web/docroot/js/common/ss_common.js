@@ -5150,13 +5150,18 @@ var ss_editWidthOffset = 20;
 var ss_editHeightOffset = 100;
 var ss_editScreenWidthOfset = 60;
 var ss_editScreenHeightOfset = 60;
-function ss_editablePopUp(url, sourceDivId) {
+function ss_editablePopUp(url, sourceDivId, sectionNumber) {
 	var width = parseInt(ss_getDivWidth(sourceDivId) + ss_editWidthOffset);
 	var height = parseInt(ss_getDivHeight(sourceDivId) + ss_editHeightOffset);
 	if (width < ss_minEditWidth) width = ss_minEditWidth;
 	if (height < ss_minEditHeight) height = ss_minEditHeight;
 	if (width > parseInt(screen.width - ss_editScreenWidthOfset)) width = parseInt(screen.width - ss_editScreenWidthOfset)
 	if (height > parseInt(screen.height - ss_editScreenHeightOfset)) height = parseInt(screen.height - ss_editScreenHeightOfset)
+	if (typeof sectionNumber != "undefined") {
+		url = ss_replaceSubStr(url, "ss_sectionPlaceholder", sectionNumber);
+	} else {
+		url = ss_replaceSubStr(url, "ss_sectionPlaceholder", "");
+	}
 	self.window.open(url, '_blank', 'width='+width+',height='+height+',directories=no,location=no,menubar=no,resizable=yes,scrollbars=yes,status=no,toolbar=no');
 }
 

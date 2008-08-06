@@ -486,6 +486,21 @@ div.ss_editableTab a, div.ss_editableTab a:hover {
   text-decoration: none;
 }
 
+.ss_sectionHeader1 {
+  font-size: ${ss_style_font_largerprint};
+  font-weight: bold;
+}
+
+.ss_sectionHeader2 {
+  font-size: ${ss_style_font_largeprint};
+  font-weight: bold;
+}
+
+.ss_sectionHeader3 {
+  font-size: ${ss_style_font_normalprint};
+  font-weight: bold;
+}
+
 
 div.ss_replies .ss_editableTab {
 	background-color: ${ss_replies_background_color};
