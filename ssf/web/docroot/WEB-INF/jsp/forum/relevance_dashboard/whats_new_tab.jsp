@@ -38,7 +38,7 @@
 
 	<ssf:canvas id="relevanceTracked" type="inline" styleId="ss_shared">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_tracked_img">
+		<div id="ss_title" class="ss_pt_title ss_green ss_tracked_img">
 		  <ssf:nlt tag="relevance.whatsNewTracked"/>
 		</div>
 	</ssf:param>
@@ -49,7 +49,7 @@
 	
 	<ssf:canvas id="relevanceFolders" type="inline" styleId="ss_trackedItems">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_tracked_img">
+		<div id="ss_title" class="ss_pt_title ss_green ss_tracked_img">
 		  <ssf:nlt tag="relevance.trackedFolders"/>
 	    </div>
 	</ssf:param>
@@ -62,38 +62,35 @@
 
 	<ssf:canvas id="relevanceWhatsNewSite" type="inline" styleId="ss_trackedItems">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue">
+		<div id="ss_title" class="ss_pt_title ss_green">
           <ssf:nlt tag="relevance.whatsNewSite"/>
         </div>
 	</ssf:param>
 		<div id="ss_dashboardWhatsNewSite${renderResponse.namespace}">
-		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_site.jsp" />
-		</div>
+		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_site.jsp" /></div>
 	</ssf:canvas>
 
 	<ssf:canvas id="relevanceHot" type="inline" styleId="ss_whatshot">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.whatsHot"/></div>
+		<div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.whatsHot"/></div>
 	</ssf:param>
 		<div id="ss_dashboardWhatsHot${renderResponse.namespace}">
 		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_hot.jsp" />
 		</div>
 	</ssf:canvas>
-	
       </div><!-- end of col2 -->
+      
       <div id="ss_col3" class="ss_col3">	
-
 	<ssf:canvas id="relevancePeople" type="inline" styleId="ss_trackedPeople">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_ping_img">
-		  <ssf:nlt tag="relevance.trackedPeople"/>
-		</div>
+		<div id="ss_title" class="ss_pt_title ss_green ss_ping_img ss_para">
+		  <ssf:nlt tag="relevance.trackedPeople"/></div>
 	</ssf:param>
 	  <c:set var="ss_show_tracked_item_delete_button" value="true" scope="request"/>
 	  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_buddies.jsp" />
 	</ssf:canvas>
-
-      </div><!-- end of col3 -->
+		
+		</div><!-- end of col3 -->
     </div><!-- end of col left -->
   </div><!-- end of col mid -->
 </div><!-- end of content -->
