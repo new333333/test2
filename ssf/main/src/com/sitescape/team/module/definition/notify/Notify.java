@@ -51,6 +51,11 @@ public class Notify {
 		full,
 		text,
 		interactive;
+		public boolean includeICalAsAlternative() {
+			if (this.equals(NotifyType.full) || 
+					this.equals(NotifyType.interactive)) return true;
+			return false;
+		}
 	};
 	
 	protected NotifyType type=NotifyType.summary;
