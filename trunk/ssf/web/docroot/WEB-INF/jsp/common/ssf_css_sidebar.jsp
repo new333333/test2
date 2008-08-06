@@ -156,7 +156,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /* This is for the box style links */
 
 #ss_leftNav {
-      width: 172px;
+      width: 182px;
       margin-left: 8px;
       margin-bottom: 2px;
         }

@@ -30,7 +30,7 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div id="ss_para">
+<div id="ss_para_activity">
 <div id="ss_nextPage" align="right">
 <c:if test="${ss_activitiesPage > '0'}">
 <a href="javascript: ;" 
