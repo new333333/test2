@@ -64,6 +64,9 @@ import com.sitescape.team.util.stringcheck.StringCheckUtil;
 public class FolderServiceImpl extends BaseService implements FolderService, FolderServiceInternal {
 
 	
+	public void folder_uploadFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
+		throw new UnsupportedOperationException();
+	}
 	public String folder_getEntriesAsXML(String accessToken, long binderId) {
 		com.sitescape.team.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));
 
@@ -185,33 +188,29 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		}
 	}
 
-	public void folder_addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId) {
-		addEntryWorkflow(accessToken, binderId, entryId, definitionId, null);
+	public void folder_addEntryWorkflow(String accessToken, long entryId, String definitionId) {
+		getFolderModule().addEntryWorkflow(null, entryId, definitionId, null);
 	}
-	protected void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, Map options) {
-		getFolderModule().addEntryWorkflow(binderId, entryId, definitionId, options);
-
-	}
-    public void folder_deleteEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId) {
-    	getFolderModule().deleteEntryWorkflow(binderId, entryId, definitionId);
+   public void folder_deleteEntryWorkflow(String accessToken, long entryId, String definitionId) {
+    	getFolderModule().deleteEntryWorkflow(null, entryId, definitionId);
     }
-	public void folder_modifyWorkflowState(String accessToken, long binderId, long entryId, long stateId, String toState) {
-		getFolderModule().modifyWorkflowState(binderId, entryId, stateId, toState);
+	public void folder_modifyWorkflowState(String accessToken, long entryId, long stateId, String toState) {
+		getFolderModule().modifyWorkflowState(null, entryId, stateId, toState);
 	}
-	public void folder_setWorkflowResponse(String accessToken, long binderId, long entryId, long stateId, String question, String response) {
+	public void folder_setWorkflowResponse(String accessToken, long entryId, long stateId, String question, String response) {
 		Map params = new HashMap();
 		params.put(question, response);
-		getFolderModule().setWorkflowResponse(binderId, entryId, stateId, new MapInputData(params));
+		getFolderModule().setWorkflowResponse(null, entryId, stateId, new MapInputData(params));
 	}
-	public void folder_uploadFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
+	public void folder_uploadFile(String accessToken, long entryId, String fileUploadDataItemName, String fileName) {
 		throw new UnsupportedOperationException();
 	}
 
-	public void folder_uploadFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
-		uploadFolderFileStaged(accessToken, binderId, entryId, fileUploadDataItemName, fileName, 
+	public void folder_uploadFileStaged(String accessToken, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
+		uploadFolderFileStaged(accessToken, null, entryId, fileUploadDataItemName, fileName, 
 				stagedFileRelativePath, null, null, null);
 	}
-	protected void uploadFolderFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, 
+	protected void uploadFolderFileStaged(String accessToken, Long binderId, Long entryId, String fileUploadDataItemName, String fileName, 
 			String stagedFileRelativePath, String modifier, Calendar modificationDate, Map options) {
 		boolean enable = SPropsUtil.getBoolean("staging.upload.files.enable", false);
 		if(enable) {
@@ -232,7 +231,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			
 			try {
 				// Finally invoke the business method. 
-				getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
+				getFolderModule().modifyEntry(binderId, entryId, 
 					new EmptyInputData(), fileItems, null, null, options);
 				// If you're here, the transaction was successful. 
 				// Check if we need to delete the staged file or not.
@@ -254,13 +253,23 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		getFolderModule().synchronize(binderId, null);
 	}
 
-	public com.sitescape.team.remoting.ws.model.FolderEntry folder_getEntry(String accessToken, long binderId, long entryId, boolean includeAttachments) {
-		Long bId = new Long(binderId);
-		Long eId = new Long(entryId);
-
+	public com.sitescape.team.remoting.ws.model.FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName) {
 		// Retrieve the raw entry.
 		FolderEntry entry = 
-			getFolderModule().getEntry(bId, eId);
+			getFolderModule().getLibraryFolderEntryByFileName(getFolderModule().getFolder(binderId), fileName);
+
+		com.sitescape.team.remoting.ws.model.FolderEntry entryModel = 
+			new com.sitescape.team.remoting.ws.model.FolderEntry(); 
+
+		fillFolderEntryModel(entryModel, entry);
+		
+		return entryModel;
+		
+	}
+	public com.sitescape.team.remoting.ws.model.FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments) {
+		// Retrieve the raw entry.
+		FolderEntry entry = 
+			getFolderModule().getEntry(null, entryId);
 
 		com.sitescape.team.remoting.ws.model.FolderEntry entryModel = 
 			new com.sitescape.team.remoting.ws.model.FolderEntry(); 
@@ -337,39 +346,39 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		}			
 	}
 
-	public void folder_deleteEntry(String accessToken, long binderId, long entryId) {
-		getFolderModule().deleteEntry(binderId, entryId);
+	public void folder_deleteEntry(String accessToken, long entryId) {
+		getFolderModule().deleteEntry(null, entryId);
 	}
-    public long folder_copyEntry(String accessToken, long binderId, long entryId, long destinationId) {
-    	return getFolderModule().copyEntry(binderId, entryId, destinationId, null);
+    public long folder_copyEntry(String accessToken, long entryId, long destinationId) {
+    	return getFolderModule().copyEntry(null, entryId, destinationId, null);
     }
-    public void folder_moveEntry(String accessToken, long binderId, long entryId, long destinationId) {
-    	getFolderModule().moveEntry(binderId, entryId, destinationId, null);
+    public void folder_moveEntry(String accessToken, long entryId, long destinationId) {
+    	getFolderModule().moveEntry(null, entryId, destinationId, null);
     }
-    public void folder_reserveEntry(String accessToken, long binderId, long entryId) {
-    	getFolderModule().reserveEntry(binderId, entryId);
+    public void folder_reserveEntry(String accessToken,  long entryId) {
+    	getFolderModule().reserveEntry(null, entryId);
     }
-    public void folder_unreserveEntry(String accessToken, long binderId, long entryId) {
-    	getFolderModule().unreserveEntry(binderId, entryId);
+    public void folder_unreserveEntry(String accessToken, long entryId) {
+    	getFolderModule().unreserveEntry(null, entryId);
     }
-	public com.sitescape.team.remoting.ws.model.Subscription folder_getSubscription(String accessToken, long binderId, long entryId) {
-		FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
+	public com.sitescape.team.remoting.ws.model.Subscription folder_getSubscription(String accessToken, long entryId) {
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		Subscription sub = getFolderModule().getSubscription(entry);
 		if (sub == null) return null;
 		return toSubscriptionModel(sub);
 		
 	}
-	public void folder_setSubscription(String accessToken, long binderId, long entryId, com.sitescape.team.remoting.ws.model.Subscription subscription) {
+	public void folder_setSubscription(String accessToken, long entryId, com.sitescape.team.remoting.ws.model.Subscription subscription) {
 		if (subscription == null || subscription.getStyles().length == 0) {
-			getFolderModule().setSubscription(binderId, entryId, null);
+			getFolderModule().setSubscription(null, entryId, null);
 			return;
 		}
 		Map subMap = new HashMap();
 		com.sitescape.team.remoting.ws.model.SubscriptionStyle[] styles = subscription.getStyles();
 		for (int i=0; i<styles.length; ++i) {
-			subMap.put(styles[i].getStyle(), styles[i].getEmailTypes());
+			subMap.put(Integer.valueOf(styles[i].getStyle()), styles[i].getEmailTypes());
 		}
-		getFolderModule().setSubscription(binderId, entryId, subMap);
+		getFolderModule().setSubscription(null, entryId, subMap);
 
 	}
 	public void folder_deleteEntryTag(String accessToken, long entryId, String tagId) {
@@ -386,6 +395,9 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			results[i++] = toTagModel(tag);
 		}
 		return results;
+	}
+	public void folder_setRating(String accessToken, long entryId, long value) {
+		getFolderModule().setUserRating(null, entryId, value);
 	}
 
 }

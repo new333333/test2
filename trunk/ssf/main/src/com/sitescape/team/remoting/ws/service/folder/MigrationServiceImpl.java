@@ -98,7 +98,7 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
 		options.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE, startState);
 		getTimestamps(options, null, null, modifier, modificationDate);
-		addEntryWorkflow(accessToken, binderId, entryId, definitionId, options);
+		getFolderModule().addEntryWorkflow(binderId, entryId, definitionId, options);
 	}
 	public long migration_addBinderWithXML(String accessToken, long parentId, String definitionId,
 			String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {

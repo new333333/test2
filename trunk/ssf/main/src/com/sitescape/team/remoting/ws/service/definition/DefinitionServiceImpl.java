@@ -78,5 +78,26 @@ public class DefinitionServiceImpl extends BaseService implements DefinitionServ
 		DefinitionBrief[] array = new DefinitionBrief[list.size()];
 		return new DefinitionCollection(list.toArray(array));
 	}
+	public DefinitionCollection definition_getLocalDefinitions(String accessToken, long binderId, boolean includeAncestors) {
+		List<Definition> defs = getDefinitionModule().getDefinitions(binderId, includeAncestors);
+
+		List<DefinitionBrief> list = new ArrayList<DefinitionBrief>();
+		
+		for (Definition def:defs) {
+			list.add(new DefinitionBrief(def.getId(), def.getInternalId(), def.getType(), def.getName(), def.getTitle()));			
+		}
+
+		DefinitionBrief[] array = new DefinitionBrief[list.size()];
+		return new DefinitionCollection(list.toArray(array));
+		
+	}
+	public DefinitionBrief definition_getDefinitionByName(String accessToken, String name) {
+		Definition def = getDefinitionModule().getDefinitionByName(null, Boolean.TRUE, name);
+		return new DefinitionBrief(def.getId(), def.getInternalId(), def.getType(), def.getName(), def.getTitle());	
+	}
+	public DefinitionBrief definition_getLocalDefinitionByName(String accessToken, long binderId, String name, boolean includeAncestors) {
+		Definition def = getDefinitionModule().getDefinitionByName(getBinderModule().getBinder(binderId), includeAncestors, name);
+		return new DefinitionBrief(def.getId(), def.getInternalId(), def.getType(), def.getName(), def.getTitle());	
+	}
 
 }

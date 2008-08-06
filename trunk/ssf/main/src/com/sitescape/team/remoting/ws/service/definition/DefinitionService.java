@@ -29,10 +29,14 @@
 package com.sitescape.team.remoting.ws.service.definition;
 
 import com.sitescape.team.remoting.ws.model.DefinitionCollection;
+import com.sitescape.team.remoting.ws.model.DefinitionBrief;
 
 public interface DefinitionService {
 
 	public String definition_getDefinitionAsXML(String accessToken, String definitionId);
-
+	//get All globally defined definitions
 	public DefinitionCollection definition_getDefinitions(String accessToken);
+	public DefinitionCollection definition_getLocalDefinitions(String accessToken, long binderId, boolean includeAncestors);
+	public DefinitionBrief definition_getDefinitionByName(String accessToken, String name);
+	public DefinitionBrief definition_getLocalDefinitionByName(String accessToken, long binderId, String name, boolean includeAncestors);
 }

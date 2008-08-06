@@ -37,15 +37,15 @@ public interface FolderService {
 
 	public FolderEntryCollection folder_getEntries(String accessToken, long binderId);
 
-	public FolderEntry folder_getEntry(String accessToken, long binderId, long entryId, boolean includeAttachments);
-
-	public void folder_addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId);
-    public void folder_deleteEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId);
-	public void folder_modifyWorkflowState(String accessToken, long binderId, long entryId, long stateId, String toState);
-	public void folder_setWorkflowResponse(String accessToken, long binderId, long entryId, long stateId, String question, String response); 
-	public void folder_uploadFile(String accessToken, long binderId, long entryId, 
+	public FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments);
+	public FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName);
+	public void folder_addEntryWorkflow(String accessToken, long entryId, String definitionId);
+    public void folder_deleteEntryWorkflow(String accessToken, long entryId, String definitionId);
+	public void folder_modifyWorkflowState(String accessToken, long entryId, long stateId, String toState);
+	public void folder_setWorkflowResponse(String accessToken, long entryId, long stateId, String question, String response); 
+	public void folder_uploadFile(String accessToken, long entryId, 
 			String fileUploadDataItemName, String fileName);
-	public void folder_uploadFileStaged(String accessToken, long binderId, long entryId, 
+	public void folder_uploadFileStaged(String accessToken, long entryId, 
 			String fileUploadDataItemName, String fileName, String stagedFileRelativePath);
 	public void folder_synchronizeMirroredFolder(String accessToken, long binderId);
 	
@@ -55,17 +55,17 @@ public interface FolderService {
 	
 	public long folder_addReply(String accessToken, long parentEntryId, FolderEntry reply, String attachedFileName);
 	
-	public void folder_deleteEntry(String accessToken, long binderId, long entryId);
-    public long folder_copyEntry(String accessToken, long binderId, long entryId, long destinationId);
-    public void folder_moveEntry(String accessToken, long binderId, long entryId, long destinationId); 
-    public void folder_reserveEntry(String accessToken, long binderId, long entryId);
-    public void folder_unreserveEntry(String accessToken, long binderId, long entryId);
+	public void folder_deleteEntry(String accessToken, long entryId);
+    public long folder_copyEntry(String accessToken, long entryId, long destinationId);
+    public void folder_moveEntry(String accessToken, long entryId, long destinationId); 
+    public void folder_reserveEntry(String accessToken, long entryId);
+    public void folder_unreserveEntry(String accessToken, long entryId);
 
-    public Subscription folder_getSubscription(String accessToken, long binderId, long entryId);
-	public void folder_setSubscription(String accessToken, long binderId, long entryId, Subscription subscription); 
+    public Subscription folder_getSubscription(String accessToken, long entryId);
+	public void folder_setSubscription(String accessToken, long entryId, Subscription subscription); 
 	
 	public void folder_deleteEntryTag(String accessToken, long entryId, String tagId); 
 	public Tag[] folder_getEntryTags(String accessToken, long entryId);
 	public void folder_setEntryTag(String accessToken, Tag tag);
-
+	public void folder_setRating(String accessToken, long entryId, long value);
 }
