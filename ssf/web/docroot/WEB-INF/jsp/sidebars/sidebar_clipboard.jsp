@@ -23,7 +23,7 @@
  * Display of Attribution Information is required in Larger Works which are defined in the CPAL as a
  * work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
  * 
- * 
+ * <ssf:nlt tag="toolbar.menu.clipboard">
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.     
  */
@@ -33,5 +33,5 @@
 <%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<a href="#">Clipboard xxx </a>
+<a href="#">Clipboard</a>
 

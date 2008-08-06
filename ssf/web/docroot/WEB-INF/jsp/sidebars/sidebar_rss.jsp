@@ -31,5 +31,5 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 
-<a href="#">RSS IT xxx</a>
+<a href="#"><ssf:nlt tag="sidebar.rss"/></a>
 

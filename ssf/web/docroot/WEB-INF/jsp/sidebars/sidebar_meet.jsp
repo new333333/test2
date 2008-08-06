@@ -31,5 +31,5 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 
-<a href="#">Meet xxx</a>
+<a href="#"><ssf:nlt tag="toolbar.menu.addMeeting"/></a>
 
