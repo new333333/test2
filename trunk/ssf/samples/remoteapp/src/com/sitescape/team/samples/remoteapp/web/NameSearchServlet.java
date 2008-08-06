@@ -167,6 +167,6 @@ public class NameSearchServlet extends HttpServlet {
 		// binder ID and enry ID, etc. Useful only for one-off testing.
 		File file = new File("C:/junk/junk1/chinese-application.doc");
 		WebServiceClientUtil.attachFile(stub, file);
-		stub.folder_uploadFile(accessToken, 33, 9, "upload", "chinese-application.doc");
+		stub.folder_uploadFile(accessToken, 9, "upload", "chinese-application.doc");
 	}
 }
