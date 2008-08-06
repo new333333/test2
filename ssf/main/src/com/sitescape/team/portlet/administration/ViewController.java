@@ -209,14 +209,42 @@ public class ViewController extends  SAbstractController {
 		if (getBinderModule().testAccess(top, BinderOperation.indexBinder)) {
 			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.configure_search_index"));
-			element.addAttribute("image", "bullet");
+			element.addAttribute("image", "bullet");			
 			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_FOLDER_INDEX_CONFIGURE);
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			elements.put(element.attributeValue("title"), element);
+			elements.put(element.attributeValue("title"), element);		
+			
+			if (getAdminModule().getSearchNodes() != null) {
+				element.addAttribute("displayOnly", "true");
+				// index
+				Element indexElem = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+				indexElem.addAttribute("title", NLT.get("administration.search.title.index"));
+				indexElem.addAttribute("image", "bullet");			
+				indexElem.addAttribute("id", String.valueOf(nextId++));
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_FOLDER_INDEX_CONFIGURE);
+				url.setWindowState(WindowState.MAXIMIZED);
+				url.setPortletMode(PortletMode.VIEW);
+				indexElem.addAttribute("url", url.toString());
+				element.add(indexElem);
+				// index
+				Element nodesElem = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+				nodesElem.addAttribute("title", NLT.get("administration.search.title.nodes"));
+				nodesElem.addAttribute("image", "bullet");			
+				nodesElem.addAttribute("id", String.valueOf(nextId++));
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_FOLDER_SEARCH_NODES_CONFIGURE);
+				url.setWindowState(WindowState.MAXIMIZED);
+				url.setPortletMode(PortletMode.VIEW);
+				nodesElem.addAttribute("url", url.toString());
+				element.add(nodesElem);
+			}
+			else {
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_FOLDER_INDEX_CONFIGURE);
+				url.setWindowState(WindowState.MAXIMIZED);
+				url.setPortletMode(PortletMode.VIEW);
+				element.addAttribute("url", url.toString());
+			}
 		}
 
 		//Manage groups

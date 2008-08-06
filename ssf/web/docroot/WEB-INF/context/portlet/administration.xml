@@ -10,6 +10,7 @@
 	<bean id="adminConfigureRolesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureRolesController" />
 	<bean id="adminConfigurePostingJobController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigurePostingJobController" />
 	<bean id="adminConfigureSearchIndexController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageSearchIndexController" />
+	<bean id="adminConfigureSearchNodesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageSearchNodesController" />
 	<bean id="adminImportDefinitionController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ImportDefinitionController" />
 	<bean id="adminLogFileController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LogFileController" />
 	<bean id="adminConfigureConfigurationController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureConfigurationController" />
@@ -43,6 +44,7 @@
 						<entry key="configure_roles"><ref bean="adminConfigureRolesController"/></entry>
 						<entry key="configure_posting_job"><ref bean="adminConfigurePostingJobController"/></entry>
 						<entry key="configure_index"><ref bean="adminConfigureSearchIndexController"/></entry>
+						<entry key="configure_search_nodes"><ref bean="adminConfigureSearchNodesController"/></entry>
 						<entry key="configure_configuration"><ref bean="adminConfigureConfigurationController"/></entry>
 						<entry key="import_definition"><ref bean="adminImportDefinitionController"/></entry>
 						<entry key="get_log_files"><ref bean="adminLogFileController"/></entry>

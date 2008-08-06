@@ -29,7 +29,9 @@
 package com.sitescape.team.search.local;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.DisposableBean;
@@ -102,5 +104,9 @@ implements DisposableBean, LocalLuceneSessionFactoryMBean {
 			LuceneHelper.unlock(indexDirPath);
 		}
 		
+	}
+
+	public Map<String, String> getDisplayProperties() {
+		return Collections.EMPTY_MAP; // unsupported
 	}
 }

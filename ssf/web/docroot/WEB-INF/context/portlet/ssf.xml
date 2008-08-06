@@ -72,6 +72,7 @@
 	<bean id="adminConfigureRolesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureRolesController" />
 	<bean id="adminConfigurePostingJobController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigurePostingJobController" />
 	<bean id="adminConfigureSearchIndexController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageSearchIndexController" />
+	<bean id="adminConfigureSearchNodesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageSearchNodesController" />
 	<bean id="adminLogFileController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LogFileController" />
 	<bean id="adminManageGroupsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageGroupsController" />
 	<bean id="adminManageApplicationsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageApplicationsController" />
@@ -156,6 +157,7 @@
 						<entry key="configure_roles"><ref bean="adminConfigureRolesController"/></entry>
 						<entry key="configure_posting_job"><ref bean="adminConfigurePostingJobController"/></entry>
 						<entry key="configure_index"><ref bean="adminConfigureSearchIndexController"/></entry>
+						<entry key="configure_search_nodes"><ref bean="adminConfigureSearchNodesController"/></entry>
 						<entry key="get_log_files"><ref bean="adminLogFileController"/></entry>
 						<entry key="manage_groups"><ref bean="adminManageGroupsController"/></entry>
 						<entry key="manage_applications"><ref bean="adminManageApplicationsController"/></entry>
