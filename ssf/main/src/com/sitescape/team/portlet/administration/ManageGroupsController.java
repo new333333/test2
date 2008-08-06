@@ -41,7 +41,7 @@ public class ManageGroupsController extends ManageGroupPrincipalsController {
 
 	protected void addGroupPrincipal(Long binderId, MapInputData inputData, Map fileMap) 
 	throws AccessControlException, WriteFilesException {
-		getProfileModule().addGroup(binderId, null, inputData, fileMap, null);
+		getProfileModule().addGroup(null, inputData, fileMap, null);
 	}
 	
 	protected String allIndividualsGroupName() {
@@ -49,7 +49,7 @@ public class ManageGroupsController extends ManageGroupPrincipalsController {
 	}
 	
 	protected Map getGroupPrincipals(Long binderId, Map options) {
-		return getProfileModule().getGroups(binderId, options);
+		return getProfileModule().getGroups(options);
 	}
 
 	protected String getViewName() {

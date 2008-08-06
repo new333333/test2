@@ -124,7 +124,7 @@ public class WorkspaceTreeHelper {
 		//see if it is a user workspace - can also get directly to user ws by a binderId
 		//so don't assume anything here.  This just allows us to handle users without a workspace.
 		if (entryId != null) {
-			Long workspaceId = bs.getProfileModule().getEntryWorkspaceId(binderId, entryId);
+			Long workspaceId = bs.getProfileModule().getEntryWorkspaceId(entryId);
 			if (workspaceId == null && user.getId().equals(entryId)) {
 				//This is the user trying to access his or her own workspace; try to create it
 				binder = bs.getProfileModule().addUserWorkspace(user, null);
@@ -145,7 +145,7 @@ public class WorkspaceTreeHelper {
 				} catch (NoBinderByTheIdException nb) {
 					//User workspace does not yet exist
 					User entry = null;
-					entry = (User)bs.getProfileModule().getEntry(binderId, entryId);
+					entry = (User)bs.getProfileModule().getEntry(entryId);
 					model.put(WebKeys.USER_PRINCIPAL, entry);
 					return WebKeys.VIEW_NO_USER_WORKSPACE;
 				} catch(AccessControlException e) {
@@ -163,7 +163,7 @@ public class WorkspaceTreeHelper {
 				}
 			} else {
 				User entry = null;
-				entry = (User)bs.getProfileModule().getEntry(binderId, entryId);
+				entry = (User)bs.getProfileModule().getEntry(entryId);
 				model.put(WebKeys.USER_PRINCIPAL, entry);
 				return WebKeys.VIEW_NO_USER_WORKSPACE;
 			}
@@ -211,7 +211,7 @@ public class WorkspaceTreeHelper {
 				if (owner != null) {
 					//	turn owner into real object = not hibernate proxy
 					try {
-						User u = (User)bs.getProfileModule().getEntry(owner.getParentBinder().getId(), owner.getId());
+						User u = (User)bs.getProfileModule().getEntry(owner.getId());
 						model.put(WebKeys.PROFILE_CONFIG_ENTRY, u);							
 						Document profileDef = u.getEntryDef().getDefinition();
 						model.put(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);

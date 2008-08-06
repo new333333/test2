@@ -239,7 +239,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 					if (response.getResponseDate() != null) {
 						if (response.getResponderId() != null) {
 							try {
-								wrModel.setResponder(new Timestamp(getProfileModule().getEntry(null, response.getResponderId()).getName(), response.getResponseDate()));								
+								wrModel.setResponder(new Timestamp(getProfileModule().getEntry(response.getResponderId()).getName(), response.getResponseDate()));								
 							} catch (Exception ex) {
 								wrModel.setResponder(new Timestamp("", response.getResponseDate()));								
 							}

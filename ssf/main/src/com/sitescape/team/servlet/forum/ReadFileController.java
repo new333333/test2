@@ -108,12 +108,12 @@ public class ReadFileController extends SAbstractController {
 						} catch (Exception e) {}
 						if (entity == null) {
 							try {
-								entity = getProfileModule().getEntry(binderId, entryId);
+								entity = getProfileModule().getEntry(entryId);
 							} catch (Exception e) {}
 						}
 						
 					} else {
-						entity = getProfileModule().getEntry(binderId, entryId);
+						entity = getProfileModule().getEntry(entryId);
 					}
 					parent = entity.getParentBinder();
 				} else {

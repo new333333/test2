@@ -345,8 +345,8 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public long profile_addUserWorkspace(String accessToken, long userId) {
 		return getProfileService().profile_addUserWorkspace(accessToken, userId);
 	}
-	public void profile_deletePrincipal(String accessToken, long binderId, long principalId) {
-		getProfileService().profile_deletePrincipal(accessToken, binderId, principalId);
+	public void profile_deletePrincipal(String accessToken, long principalId) {
+		getProfileService().profile_deletePrincipal(accessToken, principalId);
 	}
 	/*
 	public String profile_getPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords) {
@@ -392,12 +392,12 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getProfileService().profile_getPrincipals(accessToken, firstRecord, maxRecords);
 	}
 
-	public User profile_getUser(String accessToken, long binderId, long userId) {
-		return getProfileService().profile_getUser(accessToken, binderId, userId);
+	public User profile_getUser(String accessToken, long userId) {
+		return getProfileService().profile_getUser(accessToken, userId);
 	}
 
-	public Group profile_getGroup(String accessToken, long binderId, long groupId) {
-		return getProfileService().profile_getGroup(accessToken, binderId, groupId);
+	public Group profile_getGroup(String accessToken, long groupId) {
+		return getProfileService().profile_getGroup(accessToken, groupId);
 	}
 
 
