@@ -41,7 +41,7 @@
 	<c:if test="${!empty ssDashboard.beans[componentId].ssFolderList}">
 		<table>
 			<tr>
-				<td><img border="0" src="<html:imagesPath/><c:choose><c:when test="${hitCount > 0}">pics/flip_up16H.gif</c:when><c:otherwise>pics/flip_down16H.gif</c:otherwise></c:choose>" onclick="ss_showHideSidebarBox('${prefix}_ss_dashboard_folder_list', this, true, 'ss_navigator_box');"/></td><td></td>
+				<td><img border="0" src="<html:imagesPath/><c:choose><c:when test="${hitCount > 0}">pics/flip_up16H.gif</c:when><c:otherwise>pics/flip_down16H.gif</c:otherwise></c:choose>" onclick="ss_showHideTaskList('${prefix}_ss_dashboard_folder_list', this, true, 'ss_navigator_box');"/></td><td></td>
 			</tr>
 			<tr><td></td>
 				<td><table class="ss_style" cellspacing="0" cellpadding="0" id="${prefix}_ss_dashboard_folder_list" style="<c:choose><c:when test="${hitCount > 0}">display: none; visibility: hidden; </c:when><c:otherwise>display: table; visibility: visible; </c:otherwise></c:choose>">
