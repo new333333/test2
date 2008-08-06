@@ -212,6 +212,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				ajaxSaveUserStatus(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SET_SIDEBAR_VISIBILITY)) {
 				ajaxSetSidebarVisibility(request, response);
+			} else if (op.equals(WebKeys.OPERATION_SET_SUNBURST_VISIBILITY)) {
+				ajaxSetSunburstVisibility(request, response);
 			}
 		}
 	}
@@ -2155,6 +2157,16 @@ public class AjaxController  extends SAbstractControllerRetry {
 		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
 		Map properties = userProperties.getProperties();
 		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_SIDEBAR_VISIBILITY, visibility);
+	}
+	
+	private void ajaxSetSunburstVisibility(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Long entryId = PortletRequestUtils.getLongParameter(request, "entryId");
+		Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");
+		
+		getProfileModule().setSeen(user.getId(),getFolderModule().getEntry(binderId, entryId));
 	}
 	
 	private ModelAndView ajaxGetSearchQueryName(RenderRequest request, RenderResponse response) throws PortletRequestBindingException {
