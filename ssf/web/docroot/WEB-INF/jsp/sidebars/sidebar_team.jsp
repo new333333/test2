@@ -35,18 +35,32 @@
 
 	<div class="ss_sub_sidebarMenu">
 		<table width="100%"><tbody>
+		  <c:if test="${!empty ss_toolbar_team_view_url}">
+			<tr class="ss_rollover">
+              <td><a href="${ss_toolbar_team_view_url}"><ssf:nlt tag="team.viewTeamMembership"/></a></td>
+            </tr>
+          </c:if>
+		  <c:if test="${!empty ss_toolbar_team_add_url}">
             <tr>
-              <td class="ss_rollover"><a href="#">Manage Team </a></td>
+              <td class="ss_rollover"><a href="${ss_toolbar_team_add_url}"
+                onClick="ss_openUrlInWindow(this, '_blank', 500, 600);return false;"
+              ><ssf:nlt tag="team.manageTeam"/></a></td>
             </tr>
+          </c:if>
+		  <c:if test="${!empty ss_toolbar_team_sendmail_url}">
+			<tr>
+              <td class="ss_rollover"><a href="${ss_toolbar_team_sendmail_url}"
+                onClick="ss_openUrlInWindow(this, '_blank', 600, 800);return false;"
+              ><ssf:nlt tag="team.sendMail"/></a></td>
+            </tr>
+          </c:if>
+		  <c:if test="${!empty ss_toolbar_team_meet_url}">
             <tr class="ss_rollover">
-              <td><a href="#">Team Meeting </a></td>
+              <td><a href="${ss_toolbar_team_meet_url}"
+                onClick="ss_openUrlInWindow(this, '_blank', 500, 600);return false;"
+              ><ssf:nlt tag="team.startTeamMeeting"/></a></td>
             </tr>
-			  <tr>
-              <td class="ss_rollover"><a href="#">Team Mail  </a></td>
-            </tr>
-			 <tr class="ss_rollover">
-              <td><a href="#">Team Membership </a></td>
-			
+          </c:if>
 		</tbody></table>
 	</div>
 
