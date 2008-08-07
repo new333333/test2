@@ -23,7 +23,7 @@
  * Display of Attribution Information is required in Larger Works which are defined in the CPAL as a
  * work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
  * 
- * 
+ * <ssf:nlt tag="toolbar.menu.clipboard">
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.     
  */
@@ -33,8 +33,39 @@
 <%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
+<div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.folderDisplay"/> 
+ 	<div class="ss_sub_sidebarMenu">
+        <table width="100%"><tbody>
+          <tr>
+            <td><label>
+              <input type="radio" name="ss_folderDisplayStyle" value="radio" />
+              <ssf:nlt tag="javax.portlet.blog.short-title"/>  </label></td> 
+          </tr>
+          <tr>
+            <td><label>
+              <input type="radio" name="ss_folderDisplayStyle" value="radio" />
+              <ssf:nlt tag="javax.portlet.wiki.short-title"/> </label></td>
+          </tr>
+          <tr>
+            <td class= "ss_rollover"><label>
+              <input type="radio" name="ss_folderDisplayStyle" value="radio" />
+              Discussion List xxx 
+            </label></td>
+          </tr>
+          <tr>
+            <td class= "ss_rollover"><label>
+              <input type="radio" name="ss_folderDisplayStyle" value="radio" />
+              Discussion Table xxx
+            </label></td>
+          </tr>
+          <tr>
+            <td class= "ss_rollover"><label>
+              <input type="radio" name="ss_folderDisplayStyle" value="radio" />
+              <ssf:nlt tag="relevance.trackedCalendar"/> 
+            </label></td>
+          </tr>
+        </tbody></table>
+       </div>
+	</div>
+	
 
-<a href="#"><ssf:nlt tag="profile.abv.element.emailAddress"/></a>
-		 
-		 
-		 

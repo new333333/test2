@@ -45,7 +45,7 @@
 		</li>
 		<li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" /></li>
 		<li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" /></li>
-		<li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" /></li>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" />
 	</ul>
  </div>
 	
