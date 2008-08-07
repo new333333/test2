@@ -30,6 +30,20 @@
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
+<c:if test="${!empty ssFooterToolbar.RSS.url}">
+  <script type="text/javascript">
+	//Add the rss feed info
+	if (self.document.getElementById("ss_rssLink") == null) {
+		var ss_linkEle = document.createElement("link");
+		ss_linkEle.setAttribute("id", "ss_rssLink");
+		ss_linkEle.setAttribute("rel", "alternate");
+		ss_linkEle.setAttribute("type", "application/rss+xml");
+		ss_linkEle.setAttribute("title", "RSS feed");
+		ss_linkEle.setAttribute("href", "${ssFooterToolbar.RSS.url}");
+		document.getElementsByTagName("head")[0].appendChild(ss_linkEle);
+	}
+  </script>
+</c:if>
 
-<a href="#"><ssf:nlt tag="sidebar.rss"/></a>
+<a href="${ss_toolbar_subscribe_rss}" onClick="ss_showPermalink(this);return false;"><ssf:nlt tag="sidebar.rss"/></a>
 
