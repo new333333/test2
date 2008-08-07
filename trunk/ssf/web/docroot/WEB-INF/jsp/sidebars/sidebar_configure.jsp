@@ -107,30 +107,9 @@
         </tbody></table>
        </div>
 	</div>
- <div class="ss_sidebarTitle">Theme xx
- 	<div class="ss_sub_sidebarMenu">
-        <table width="100%"><tbody>
-          <tr>
-            <td><label>
-              <input type="radio" name="ss_themeDisplayStyle" value="radio" />
-              High Contrast xxx</label></td>
-          </tr>
-          <tr>
-            <td><label>
-              <input type="radio" name="ss_themeDisplayStyle" value="radio" />
-              Business Blue xxx </label></td>
-          </tr>
-          <tr>
-            <td class= "ss_rollover"><label>
-              <input type="radio" name="ss_themeDisplayStyle" value="radio" />
-              Novell Gray xxx
-            </label></td>
-          </tr>
-        </tbody></table>
-       
-	</div>
- </div>
- 
+	
+<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_theme.jsp" /> 
+
   <div class="ss_sidebarTitle"><ssf:nlt tag="misc.configureColumns"/>
  	<div class="ss_sub_sidebarMenu">
         <table width="100%"><tbody>
