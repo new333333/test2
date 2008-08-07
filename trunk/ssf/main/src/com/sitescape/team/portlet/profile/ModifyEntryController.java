@@ -68,7 +68,7 @@ public class ModifyEntryController extends SAbstractController {
 			String deleteWs = PortletRequestUtils.getStringParameter(request, "deleteWs", null);
 			Map options = new HashMap();
 			options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, GetterUtil.getBoolean(deleteWs, false));
-			getProfileModule().deleteEntry(entryId, null);			
+			getProfileModule().deleteEntry(entryId, options);			
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
