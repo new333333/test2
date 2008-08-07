@@ -50,31 +50,7 @@
 	</div>
  </div>	
  
- <div class="ss_sidebarTitle">Theme xx
- 	<div class="ss_sub_sidebarMenu">
-        <table width="100%">
-          <tr>
-            <td><label>
-              <input type="radio" name="Folder Display Style" value="radio" />
-              High Contrast </label></td>
-          </tr>
-          <tr>
-            <td><label>
-              <input type="radio" name="Folder Display Style" value="radio" />
-              Business 
-              Blue</label></td>
-          </tr>
-          <tr>
-            <td class= "ss_rollover"><label>
-              <input type="radio" name="Folder Display Style" value="radio" />
-              Novell Gray 
-            </label></td>
-          </tr>
-        </table>
-       
-	</div>
- </div>
-
+<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_theme.jsp" /> 
  
   <div class="ss_sidebarTitle">Entries Per Page xx
  	<div class="ss_sub_sidebarMenu">
