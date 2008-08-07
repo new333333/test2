@@ -693,7 +693,7 @@ public class WorkspaceTreeHelper {
 		qualifiers = new HashMap();
 					
 		// The "Teams" menu
-		toolbar.addToolbarMenu("5_team", NLT.get("toolbar.teams"));
+		//toolbar.addToolbarMenu("5_team", NLT.get("toolbar.teams"));
 			
 		//Add
 		if (bs.getBinderModule().testAccess(workspace, BinderOperation.manageTeamMembers)) {
@@ -705,7 +705,8 @@ public class WorkspaceTreeHelper {
 			qualifiers.put("popup", Boolean.TRUE);
 			qualifiers.put("popupWidth", "500");
 			qualifiers.put("popupHeight", "600");
-			toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.addMember"), adapterUrl.toString(), qualifiers);
+			//toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.addMember"), adapterUrl.toString(), qualifiers);
+			model.put(WebKeys.TOOLBAR_TEAM_ADD_URL, adapterUrl.toString());
 		}
 		// View
 		url = response.createRenderURL();
@@ -713,7 +714,8 @@ public class WorkspaceTreeHelper {
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SHOW_TEAM_MEMBERS);
 		url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
-		toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.view"), url);
+		//toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.view"), url);
+		model.put(WebKeys.TOOLBAR_TEAM_VIEW_URL, url.toString());
 			
 		// Sendmail
 		if (Validator.isNotNull(user.getEmailAddress()) && 
@@ -724,7 +726,8 @@ public class WorkspaceTreeHelper {
 			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
 			qualifiers = new HashMap();
 			qualifiers.put("popup", Boolean.TRUE);
-			toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.sendmail"), adapterUrl.toString(), qualifiers);
+			//toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.sendmail"), adapterUrl.toString(), qualifiers);
+			model.put(WebKeys.TOOLBAR_TEAM_SENDMAIL_URL, adapterUrl.toString());
 		}
 		
 		// Meet
@@ -735,7 +738,8 @@ public class WorkspaceTreeHelper {
 			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
 			qualifiers = new HashMap();
 			qualifiers.put("popup", Boolean.TRUE);
-			toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.meet"), adapterUrl.toString(), qualifiers);
+			//toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.meet"), adapterUrl.toString(), qualifiers);
+			model.put(WebKeys.TOOLBAR_TEAM_MEET_URL, adapterUrl.toString());
 		}
 
 		
@@ -770,7 +774,8 @@ public class WorkspaceTreeHelper {
 				}
 			}
 			qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "], '" + forumId + "');return false;");
-			footerToolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "", qualifiers);
+			//footerToolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "", qualifiers);
+			model.put(WebKeys.TOOLBAR_CLIPBOARD_IDS, contributorIds);
 		}
 		
 		// send mail
@@ -782,7 +787,8 @@ public class WorkspaceTreeHelper {
 			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
 			qualifiers = new HashMap();
 			qualifiers.put("popup", Boolean.TRUE);
-			footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
+			//footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
+			model.put(WebKeys.TOOLBAR_SENDMAIL_URL, adapterUrl.toString());
 		}
 
 		// start meeting
@@ -793,7 +799,8 @@ public class WorkspaceTreeHelper {
 			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
 			qualifiers = new HashMap();
 			qualifiers.put("popup", Boolean.TRUE);
-			footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
+			//footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
+			model.put(WebKeys.TOOLBAR_MEETING_URL, adapterUrl.toString());
 		}
 		
 		//Theme
@@ -802,7 +809,9 @@ public class WorkspaceTreeHelper {
 			qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
 					NLT.get("ui.availableThemeIds") + "', '" +
 					NLT.get("ui.availableThemeNames") + "'); return false;");
-			footerToolbar.addToolbarMenu("themeChanger", NLT.get("toolbar.menu.changeUiTheme"), "javascript: ;", qualifiers);
+			//footerToolbar.addToolbarMenu("themeChanger", NLT.get("toolbar.menu.changeUiTheme"), "javascript: ;", qualifiers);
+			model.put(WebKeys.TOOLBAR_THEME_IDS, NLT.get("ui.availableThemeIds"));
+			model.put(WebKeys.TOOLBAR_THEME_NAMES, NLT.get("ui.availableThemeNames"));
 		}
 		
 
