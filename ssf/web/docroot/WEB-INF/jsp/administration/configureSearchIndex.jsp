@@ -123,7 +123,9 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <br>
 <c:if test="${!empty ssSearchNodes}">
   <c:forEach var="node" items="${ssSearchNodes}">
-    <input type="checkbox" name="searchNodeId" value="${node.id}" <c:if test="${node.accessMode == 'offline'}">disabled</c:if>>${node.title} (${node.id})<br/>
+    <input type="checkbox" name="searchNodeId" value="${node.id}" <c:if test="${node.accessMode == 'offline'}">disabled</c:if>>
+    ${node.title} (${node.id}) - <ssf:nlt tag="administration.search.node.accessmode.${node.accessMode}"/>
+    <br/>
   </c:forEach>
   <input type="hidden" name="searchNodesPresent" value="1"/>
 </c:if>
