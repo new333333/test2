@@ -219,7 +219,7 @@ Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHe
 		ss_linkEle.setAttribute("id", "ss_rssLink");
 		ss_linkEle.setAttribute("rel", "alternate");
 		ss_linkEle.setAttribute("type", "application/rss+xml");
-		ss_linkEle.setAttribute("title", "RSS feed");
+		ss_linkEle.setAttribute("title", "RSS<c:if test="${!empty ssBinder.title}"> - ${ssBinder.title}</c:if>");
 		ss_linkEle.setAttribute("href", "${ssFooterToolbar.RSS.url}");
 		document.getElementsByTagName("head")[0].appendChild(ss_linkEle);
 	}
