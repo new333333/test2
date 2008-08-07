@@ -31,7 +31,8 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 
-<ssf:sidebarPanel title="Team IT xxx" id="ss_team_sidebar" divClass="ss_place_tags" initOpen="true" sticky="true">
+<ssf:sidebarPanel title="<%= NLT.get("toolbar.teams") %>" id="ss_team_sidebar" 
+  divClass="ss_place_tags" initOpen="true" sticky="true">
 
 	<div class="ss_sub_sidebarMenu">
 		<table width="100%"><tbody>
