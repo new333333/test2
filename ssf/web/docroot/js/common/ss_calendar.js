@@ -29,6 +29,7 @@
 
 
 dojo.require("dojo.date");
+dojo.require("dojo.date.locale");
 dojo.require("dijit.dijit");
 
 
@@ -637,7 +638,7 @@ function ss_calendarEngine(
 	            container.appendChild(todayMarker);
 	        }
 	        
-	        dojo.query(".ss_cal_dayRule", container).foreach("dojo._destroyElement(item);");	
+	        dojo.query(".ss_cal_dayRule", container).forEach("dojo._destroyElement(item);");	
 	
 			var todayOffsetInView = 0;
 			var todayVisible = false;
@@ -689,7 +690,7 @@ function ss_calendarEngine(
 	        var hourOffset = 0;
 	        var dayOffsetSize = this.dayOffsetSizes[howManyDays];
 	
-	        dojo.query(".ss_cal_gridHeaderText", container).foreach("dojo._destroyElement(item);");	
+	        dojo.query(".ss_cal_gridHeaderText", container).forEach("dojo._destroyElement(item);");	
 
 			var currentDayToShow = firstDayToShow;
 	        for (var x = 0; x < howManyDays; x++) {
@@ -764,8 +765,22 @@ function ss_calendarEngine(
 	        todayMarker.style.height = hOffsetSize + "%";
 	        todayMarker.style.display = "none";
 	        
-	        dojo.query(".ss_cal_todayMarker", container).forEach("dojo._destroyElement(item);");	
-	        dojo.query(".ss_cal_gridHeaderText", container).forEach("dojo._destroyElement(item);");	
+	
+	        var toDestroy = [];
+	        var v = container.firstChild;
+	        while (v) {
+	            if (v.className != "ss_cal_todayMarker") { toDestroy.push(v); };
+	            v = v.nextSibling;
+	        }
+	        while (toDestroy.length) { dojo._destroyElement(toDestroy.pop()); }
+	
+	        var v = dojo.byId("ss_cal_monthGridHeader" + instanceId).firstChild;
+	        while (v) {
+	            if (dojo.hasClass(v, "ss_cal_gridHeaderText")) { toDestroy.push(v); };
+	            v = v.nextSibling;
+	        }
+	        while (toDestroy.length) { dojo._destroyElement(toDestroy.pop()); }
+	
 	
 	        for (var x = 0; x < 7; x++) {
 	            var vrule = document.createElement("div");
@@ -825,7 +840,6 @@ function ss_calendarEngine(
 			var isToday = ss_cal_CalData.isToday(date);
 	    	if (isToday) {
 	    		var allDayBadge = dojo.byId("ss_cal_monthGridToday" + instanceId);
-	    		alert(allDayBadge)
 				allDayBadge.style.left = this.monthGridDayBadgeVOffsets[d] + "%";
 	            allDayBadge.style.top = this.monthGridDayBadgeHOffsets[this.monthGridWeeks][w] + "%";
 	            dojo.style(allDayBadge, "display", "block");
