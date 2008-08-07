@@ -33,6 +33,7 @@
 <%@ page import="com.sitescape.team.util.SPropsUtil" %>
 <%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 
  <div class="ss_myStatus">
 
@@ -40,18 +41,18 @@
 
 	   <ssf:ifLoggedIn>
 			<script type="text/javascript">
-			  ss_statusCurrent = "${ssUser.status}";
+			  ss_statusCurrent = "<%= java.net.URLEncoder.encode(ssUser.getStatus()) %>";
 			</script>
 
-			<input type="text" cols="22" rows="2" wrap="virtual" wrap="soft" class="ss_input_myStatus"
-			style="font-size:${ss_style_font_fineprint};" value="${ssUser.status}"
+			<textarea cols="22" rows="2" wrap="virtual" wrap="soft" class="ss_input_myStatus"
+			style="font-size:${ss_style_font_fineprint};" 
   			onFocus="ss_setStatusBackground(this, 'focus');"
   			onKeyPress="ss_updateStatusSoon(this, event);"
   			onChange="ss_updateStatusNow(this);"
   			onBlur="ss_updateStatusNow(this);ss_setStatusBackground(this, 'blur')"
   			onMouseover="ss_setStatusBackground(this, 'mouseOver');"
   			onMouseout="ss_setStatusBackgroundCheck(this);"
-  			/>
+  			/>${ssUser.status}</textarea>
 
 	   </ssf:ifLoggedIn> 
 

@@ -706,8 +706,8 @@ function ss_updateStatusNow(obj) {
 		ss_statusTimer = null;
 	}
 	if (obj != null) {
-	    if (ss_statusCurrent != obj.value) {
-			ss_statusCurrent = obj.value;
+	    if (ss_statusCurrent != escape(obj.value)) {
+			ss_statusCurrent = escape(obj.value);
 			var status = ss_replaceSubStrAll(obj.value, "\"", "&quot;");
 			
 			ss_setupStatusMessageDiv();
