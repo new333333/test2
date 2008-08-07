@@ -949,9 +949,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	public void addUserToGroup(Long userId, String username, Long groupId) {
 		Group group = (Group)getProfileDao().loadGroup(groupId, RequestContextHolder.getRequestContext().getZoneId());		
 		checkAccess(group, ProfileOperation.modifyEntry);   
-		UserPrincipal user;
-		if (Validator.isNotNull(username)) {			
-			user = getProfileDao().findUserByName(username, RequestContextHolder.getRequestContext().getZoneName());
+		Principal user;
+		if (Validator.isNotNull(username)) {	
+			//could be user or group
+			user = getProfileDao().findPrincipalByName(username, RequestContextHolder.getRequestContext().getZoneId());
 		} else {
 			user = getProfileDao().loadUserPrincipal(userId, RequestContextHolder.getRequestContext().getZoneId(), true);
 		}
@@ -980,8 +981,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         Definition definition;
         if (!Validator.isNull(definitionId))
         	definition = getCoreDao().loadDefinition(definitionId, binder.getZoneId());
-        else // get the default
-        	definition = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_APPLICATION_VIEW);
+        else {
+        	// get the default
+           	if(clazz.equals(User.class))
+        		definition = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_ENTRY_VIEW);
+           	else
+           		definition = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_APPLICATION_VIEW);
+        }
         try {
         	return loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options).getId();
         } catch (DataIntegrityViolationException de) {
