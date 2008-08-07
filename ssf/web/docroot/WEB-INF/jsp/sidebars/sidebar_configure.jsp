@@ -37,98 +37,40 @@
 
 <ssf:sidebarPanel title="sidebar.configure" id="ss_folderTags_sidebar" divClass="ss_place_tags" initOpen="false" sticky="false">
 
- <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.entryDisplay"/> 
+ <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.personalPref"/> 
 	<div class="ss_sub_sidebarMenu">
-
-	  <ssf:toolbar toolbar="${ssFolderActionsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
+		<table width="100%" style="margin-left: 7px;"><tbody>
+		  <tr><td>
+	  			<ssf:toolbar toolbar="${ssFolderActionsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
+	  	  </td></tr>
+	  	  <tr><td>
+	  			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_theme.jsp" /> 
+	  	  </td></tr>	
+	  	</tbody></table>  	
 	</div>
  </div>	
  
-  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.folderDisplay"/> 
+  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.folderConfiguration"/> 
 	<div class="ss_sub_sidebarMenu">
 
 	  <ssf:toolbar toolbar="${ssFolderViewsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
 	</div>
  </div>	
-   <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.entryDisplay"/> 
- 	<div class="ss_sub_sidebarMenu">
-        <table width="100%"><tbody>
-          <tr>
-            <td><label>
-              <input type="radio" name="ss_entryDisplayStyle" value="radio" />
-              <ssf:nlt tag="sidebar.overlay"/>  </label></td>
-          </tr>
-          <tr>
-            <td><label>
-              <input type="radio" name="ss_entryDisplayStyle" value="radio" />
-              <ssf:nlt tag="sidebar.popup"/>  </label></td>
-          </tr>
-          <tr>
-            <td class= "ss_rollover"><label>
-              <input type="radio" name="ss_entryDisplayStyle" value="radio" />
-              <ssf:nlt tag="sidebar.new.page"/> 
-            </label></td>
-          </tr>
-          
-        </tbody></table>
-      </div> 
-	</div>
-  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.folderDisplay"/> 
- 	<div class="ss_sub_sidebarMenu">
-        <table width="100%"><tbody>
-          <tr>
-            <td><label>
-              <input type="radio" name="ss_folderDisplayStyle" value="radio" />
-              <ssf:nlt tag="javax.portlet.blog.short-title"/>  </label></td> 
-          </tr>
-          <tr>
-            <td><label>
-              <input type="radio" name="ss_folderDisplayStyle" value="radio" />
-              <ssf:nlt tag="javax.portlet.wiki.short-title"/> </label></td>
-          </tr>
-          <tr>
-            <td class= "ss_rollover"><label>
-              <input type="radio" name="ss_folderDisplayStyle" value="radio" />
-              Discussion List xxx 
-            </label></td>
-          </tr>
-          <tr>
-            <td class= "ss_rollover"><label>
-              <input type="radio" name="ss_folderDisplayStyle" value="radio" />
-              Discussion Table xxx
-            </label></td>
-          </tr>
-          <tr>
-            <td class= "ss_rollover"><label>
-              <input type="radio" name="ss_folderDisplayStyle" value="radio" />
-              <ssf:nlt tag="relevance.trackedCalendar"/> 
-            </label></td>
-          </tr>
-        </tbody></table>
-       </div>
-	</div>
-	
-<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_theme.jsp" /> 
-
+   
+  
   <div class="ss_sidebarTitle"><ssf:nlt tag="misc.configureColumns"/>
  	<div class="ss_sub_sidebarMenu">
-        <table width="100%"><tbody>
-          <tr>
-            <td>
+
             
              <% // configure columns area %>
 				<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_columns.jsp" />
-				
-		    </td>
-          </tr>
-        </tbody></table>
        
 	</div>
  </div>
  
-  <div class="ss_sidebarTitle">Entries Per Page xx
+  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.entryPage"/>
  	<div class="ss_sub_sidebarMenu">
-        <table width="100%"><tbody>
+        <table width="100%" style="margin-left: 7px;"><tbody>
           <tr>
             <td><form name="ss_recordsPerPage_${renderResponse.namespace}" id="ss_recordsPerPage_${renderResponse.namespace}" method="post" 
 			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
@@ -143,7 +85,7 @@
 			    <input type="hidden" name="ssEntriesPerPage" />
 			
 				
-				  <span class="ss_tabs_title ss_results_pro_page">
+				  
 	
 				  <ssf:menu title="${ssPageMenuControlTitle}" 
 				    titleId="ss_selectEntriesTitle${renderResponse.namespace}" 
@@ -180,7 +122,7 @@
 				   				
 				  </ssf:menu>
 
-			    </span>
+			   
 			  
 			</form></td>
           </tr>

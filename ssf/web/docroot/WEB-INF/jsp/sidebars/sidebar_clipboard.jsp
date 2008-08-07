@@ -33,5 +33,22 @@
 <%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<a href="#">Clipboard</a>
+<c:set var="answer" value=""/>
+  <c:forEach var="contributorId" items="${ss_toolbar_clipboard_ids}">
+    <c:if test="${!empty answer}"><c:set var="answer" value="${answer}, "/></c:if>
+    <c:set var="answer" value="${answer}${contributorId}"/>
+  </c:forEach>
+
+<li> <% // to set the beginning of the list %>
+  <a href="${ss_muster.showForm}"
+    onClick="ss_muster.showForm('ss_muster_users', '${answer}', '${ssBinder.id}');return false;"
+  >
+    <span>Clipboard XXX</span>
+  </a>
+</li>
+              
+
+
+
+
 
