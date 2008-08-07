@@ -28,20 +28,13 @@
  */
 package com.sitescape.team.task;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.portlet.PortletSession;
 
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -51,13 +44,9 @@ import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.search.SearchFieldResult;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.search.filter.SearchFilter;
-import com.sitescape.team.search.filter.SearchFilterKeys;
-import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.DefinitionHelper;
-import com.sitescape.team.web.util.PortletRequestUtils;
 
 public class TaskHelper {
 	
@@ -219,8 +208,7 @@ public class TaskHelper {
 	
 	private static boolean isTaskEntryType(FolderEntry entry) {
 		Definition entryDef = entry.getEntryDef();
-		String family = DefinitionHelper.findFamily(entryDef.getDefinition());
-		
+		String family = DefinitionUtils.getFamily(entryDef.getDefinition());		
 		return isTaskEntryType(family);
 	}
 	
@@ -230,7 +218,7 @@ public class TaskHelper {
 
 	public static void adjustTaskAttributesDependencies(FolderEntry entry, Map formData, String newPriority, String newStatus, String newCompleted) {
 		Definition entryDef = entry.getEntryDef();
-		String family = DefinitionHelper.findFamily(entryDef.getDefinition());
+		String family = DefinitionUtils.getFamily(entryDef.getDefinition());
 		TaskHelper.adjustTaskAttributesDependencies(entry, family, formData, newPriority, newStatus, newCompleted);
 	}
 	

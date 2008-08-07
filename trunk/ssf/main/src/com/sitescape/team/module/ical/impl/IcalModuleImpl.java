@@ -90,6 +90,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.joda.time.DateTimeZone;
 import org.joda.time.YearMonthDay;
 
@@ -114,7 +115,7 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.ResolveIds;
-import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.util.cal.DayAndPosition;
 
 /**
@@ -581,7 +582,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	private ComponentType getComponentType(DefinableEntity entry) {
 		Definition entryDef = entry.getEntryDef();
 		
-		String family = DefinitionHelper.findFamily(entryDef.getDefinition());
+		String family = DefinitionUtils.getFamily(entryDef.getDefinition());
 
 		if (family != null && family.equals(ObjectKeys.FAMILY_TASK)) {
 			return ComponentType.Task;
@@ -660,9 +661,24 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 
 		return vToDo;
 	}
+	private List findUserListAttributes(Document definitionConfig) {
+		List result = new ArrayList();
+		
+    	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and @name='user_list']/properties/property[@name='name']/@value");
+    	if (nodes == null) {
+    		return result;
+    	}
+    	
+    	Iterator it = nodes.iterator();
+    	while (it.hasNext()) {
+    		Node node = (Node)it.next();
+    		result.add(node.getStringValue());
+    	}
+    	return result;
+	}
 
 	private void setComponentAttendee(Component component, DefinableEntity entry) {
-		Iterator userListsIt = DefinitionHelper.findUserListAttributes(entry.getEntryDef().getDefinition()).iterator();
+		Iterator userListsIt = findUserListAttributes(entry.getEntryDef().getDefinition()).iterator();
 		while (userListsIt.hasNext()) {
 			String attributeName = (String)userListsIt.next();
 		

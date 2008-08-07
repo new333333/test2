@@ -71,7 +71,7 @@ import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.TagUtil;
-import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
 import static com.sitescape.util.search.Constants.*;
@@ -378,8 +378,8 @@ public class EntityIndexUtils {
     public static void addFamily(Document doc, DefinableEntity entry, boolean fieldsOnly) {
         if (entry.getEntryDef() != null) {
         	org.dom4j.Document def = entry.getEntryDef().getDefinition();
-        	String family = DefinitionHelper.findFamily(def);
-        	if (family != null) {
+        	String family = DefinitionUtils.getFamily(def);
+        	if (Validator.isNotNull(family)) {
       			Field eField = new Field(FAMILY_FIELD, family, Field.Store.NO, Field.Index.UN_TOKENIZED);
     	       	doc.add(eField);	
         	}
