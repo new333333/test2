@@ -309,7 +309,7 @@ public interface BinderModule {
      * @throws WriteFilesException
      */
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 
-    		Map fileItems, Collection deleteAttachments, Map options)
+    		Map fileItems, Collection<String> deleteAttachments, Map options)
     	throws AccessControlException, WriteFilesException;
     /**
      * Modify who gets email notifications. 

@@ -370,7 +370,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 
     //no transaction    
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 
-    		Map fileItems, Collection deleteAttachments, Map options) throws AccessControlException, WriteFilesException {
+    		Map fileItems, Collection<String> deleteAttachments, Map options) throws AccessControlException, WriteFilesException {
     	final Binder binder = loadBinder(binderId);
     	
    		if (inputData.exists(ObjectKeys.FIELD_BINDER_MIRRORED)) {
@@ -389,8 +389,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		checkAccess(binder, BinderOperation.modifyBinder);
     	List atts = new ArrayList();
     	if (deleteAttachments != null) {
-    		for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {
-    			String id = (String)iter.next();
+    		for (String id:deleteAttachments) {
     			Attachment a = binder.getAttachment(id);
     			if (a != null) atts.add(a);
     		}
