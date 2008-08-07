@@ -675,7 +675,7 @@ div.ss_canvas {
  #ss_tabsC a span {
     float:left;
     display:block;
-    background:url("<html:rootPath/>images/pics/tabrightF.gif") no-repeat right top;
+    background:url("<html:rootPath/>images/pics/tabsrightf2.gif") no-repeat right top;
     padding:5px 15px 4px 6px;
     white-space:nowrap !important;
 

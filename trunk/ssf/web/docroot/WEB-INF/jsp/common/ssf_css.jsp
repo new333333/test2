@@ -1996,8 +1996,8 @@ div.ss_content_outer table, div.ss_portlet table, table.ss_style, div.ss_popup_b
 
 td.ss_view_sidebar {
     width: 200px;
-    background-color: #D8D8D8;
-    border-right: 6px solid #FFFFFF;
+    background-color: #FFF;
+    border-right: 6px solid #FFF;
 }
 
 td.ss_view_info {
