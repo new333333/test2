@@ -58,7 +58,8 @@ public class TeamingServiceClientWithStub {
 	
 	public static void main(String[] args) throws Exception {
 		FolderEntry entry;
-		checkBinder();
+		checkUsers();
+		//checkBinder();
 		//checkEntry();
 		//getFolderEntryWSSecurity(85, 47, true);
 		//getFolderEntry(85, 80, true);
@@ -498,7 +499,7 @@ public class TeamingServiceClientWithStub {
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 		
-		User user = stub.profile_getUser(null, principalId);
+		User user = stub.profile_getUser(null, principalId, false);
 		
 		System.out.println("User title: " + user.getTitle());
 	}
@@ -509,7 +510,7 @@ public class TeamingServiceClientWithStub {
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 		
-		Group group = stub.profile_getGroup(null, principalId);
+		Group group = stub.profile_getGroup(null, principalId, false);
 		
 		System.out.println("Group title: " + group.getTitle());
 	}
@@ -530,6 +531,57 @@ public class TeamingServiceClientWithStub {
 			System.out.println("(" + i + ") id=" + entries[i].getId() + ", name=" + entries[i].getName() + ", type=" + entries[i].getType() + ", title=" + entries[i].getTitle() + ", email=" + entries[i].getEmailAddress()); 
 		}
 	}
+	public static void checkUsers() throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+
+		User testUser = new User();
+		testUser.setName("Jodi");
+		testUser.setFirstName("Jodi");
+		testUser.setMiddleName("Anne");
+		testUser.setLastName("Tester");
+		testUser.setEmailAddress("boulder@foo.bar");
+		long testUserId = stub.profile_addUser(null, testUser);
+		stub.profile_addUserWorkspace(null, testUserId);
+		testUser = stub.profile_getUser(null, testUserId, false);
+		if (!"Jodi Anne Tester".equals(testUser.getTitle())) System.out.println("Title not set");
+		testUser.setZonName("jodi");
+		stub.profile_modifyUser(null, testUser);
+		testUser = stub.profile_getUser(null, testUserId, false);
+		if (!"jodi".equals(testUser.getZonName())) System.out.println("Modify of zonName failed");
+		try {
+			testUser = uploadUserFile(testUser);
+			Attachment[] atts = testUser.getAttachmentsField().getAttachments();
+			stub.profile_removeFile(null, testUserId, atts[0].getFileName());
+			testUser = stub.profile_getUserByName(null, "jodi", false);
+			if (testUser.getAttachmentsField().getAttachments().length != atts.length-1) 
+				System.out.println("removeFile failed");
+		} finally {
+			stub.profile_deletePrincipal(null, testUser.getId(), true);
+		}
+	}
+	public static User uploadUserFile(User user) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+
+		File file = new File("C:/junk/junk1/Water lilies.jpg");		
+		WebServiceClientUtil.attachFile(stub, file);
+		stub.profile_uploadFile(null, user.getId(), "picture", "Jong Image.jpg"); //will add to attachments 
+		System.out.println("Picture uploaded for the user : " + user.getId());
+		
+		user = stub.profile_getUser(null, user.getId(), true);
+		System.out.println("(WSS) Number of attachments downloaded = " + WebServiceClientUtil.extractFiles(stub, null));				
+		Attachment[] atts = user.getAttachmentsField().getAttachments();
+		for (int i=0; i<atts.length; ++i) {
+			System.out.println("Attachment: " + atts[i].getFileName() + " " + atts[i].getHref());
+		}
+		return user;
+	}
+
 	private static Long getGlobalWorkspace(TeamingServiceSoapBindingStub stub) throws Exception {
 		
 		String xml = stub.search_getWorkspaceTreeAsXML(null, -1, 2, "");

@@ -48,9 +48,9 @@ public class TeamingServiceClientWithCall extends WSClientBase
 			if(args[0].equals("getWorkspaceTree")) {
 				wsClient.fetchAndPrintXML("TeamingService", "search_getWorkspaceTreeAsXML", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), (args.length > 3)?args[3]:""});
 			} else if(args[0].equals("getUser")) {
-				wsClient.fetchAndPrintDE("TeamingService", "profile_getUser", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2])});
+				wsClient.fetchAndPrintDE("TeamingService", "profile_getUser", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("getGroup")) {
-				wsClient.fetchAndPrintDE("TeamingService", "profile_getGroup", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2])});
+				wsClient.fetchAndPrintDE("TeamingService", "profile_getGroup", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("getPrincipals")) {
 				wsClient.fetch("TeamingService", "profile_getPrincipals", new Object[] {null, Integer.parseInt(args[1]), Integer.parseInt(args[2])});
 			} else if(args[0].equals("getFolderEntries")) {
@@ -60,17 +60,17 @@ public class TeamingServiceClientWithCall extends WSClientBase
 			} else if(args[0].equals("getTeams")) {
 				wsClient.fetchAndPrintACK("TeamingService", "search_getTeams", new Object[] {null});
 			} else if(args[0].equals("getFolderEntry")) {
-				wsClient.fetchAndPrintDE("TeamingService", "folder_getEntry", new Object[] {null, Long.parseLong(args[1]),Long.parseLong(args[2]), Boolean.parseBoolean(args[3])});			
+				wsClient.fetchAndPrintDE("TeamingService", "folder_getEntry", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});			
 			} else if(args[0].equals("getDefinition")) {
 				wsClient.fetchAndPrintXML("TeamingService", "definition_getDefinitionAsXML", new Object[] {null, args[1]});
 			} else if(args[0].equals("addWorkflow")) {
-				wsClient.fetchAndPrintACK("TeamingService", "folder_addEntryWorkflow", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3]});
+				wsClient.fetchAndPrintACK("TeamingService", "folder_addEntryWorkflow", new Object[] {null, Long.parseLong(args[1]), args[2]});
 			} else if(args[0].equals("modifyWorkflow")) {
-				wsClient.fetchAndPrintACK("TeamingService", "folder_modifyWorkflowState", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), Long.parseLong(args[3]), args[4]});
+				wsClient.fetchAndPrintACK("TeamingService", "folder_modifyWorkflowState", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3]});
 			} else if(args[0].equals("uploadFile")) {
-				wsClient.fetchAndPrintACK("TeamingService", "folder_uploadFile", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]}, args[4]);
+				wsClient.fetchAndPrintACK("TeamingService", "folder_uploadFile", new Object[] {null, Long.parseLong(args[1]), args[2], args[3]}, args[3]);
 			} else if(args[0].equals("uploadFileStaged")) {
-				wsClient.fetchAndPrintACK("TeamingService", "folder_uploadFileStaged", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5]});
+				wsClient.fetchAndPrintACK("TeamingService", "folder_uploadFileStaged", new Object[] {null, Long.parseLong(args[1]), args[2], args[3], args[4]});
 			} else if(args[0].equals("uploadCalendar")) {
 				String s = readText(args[2]);
 				System.out.println("XML: " + s);
@@ -194,22 +194,22 @@ public class TeamingServiceClientWithCall extends WSClientBase
 	private static void printUsage() {
 		System.out.println("Usage:");
 		System.out.println("getWorkspaceTree <workspace id> <depth> [<page>]");
-		System.out.println("getUser <binder id> <user id>");
-		System.out.println("getGroup <binder id> <group id>");
+		System.out.println("getUser  <user id>  <includeAttachments>");
+		System.out.println("getGroup  <group id>  <includeAttachments>");
 		System.out.println("getPrincipals <first> <max>");
 		System.out.println("getFolderEntries <folder id>");
 		System.out.println("getTeamMembers <binder id>");
 		System.out.println("getTeams");
-		System.out.println("getFolderEntry <folder id> <entry id> <includeAttachments>");
+		System.out.println("getFolderEntry <entry id> <includeAttachments>");
 		System.out.println("getDefinition <definition id>");
 		System.out.println("getDefinitions");
 		System.out.println("getTemplates");
 		System.out.println("setDefinitions <binder id> <comma separated definitionIds> <comma separated definitionId,workflowId>");
 		System.out.println("setTeamMembers <binder id> <comma separated names>");
-		System.out.println("addWorkflow <folder id> <entry id> <definition id>");
-		System.out.println("modifyWorkflow <folder id> <entry id> <state id> <toState");
-		System.out.println("uploadFile <folder id> <entry id> <fileDataFieldName> <filename>");
-		System.out.println("uploadFileStaged <folder id> <entry id> <fileDataFieldName> <fileName> <stagedFileRelativePath>");
+		System.out.println("addWorkflow <entry id> <definition id>");
+		System.out.println("modifyWorkflow <entry id> <state id> <toState");
+		System.out.println("uploadFile <entry id> <fileDataFieldName> <filename>");
+		System.out.println("uploadFileStaged  <entry id> <fileDataFieldName> <fileName> <stagedFileRelativePath>");
 		System.out.println("uploadCalendar <folder id> <xmlFilename> [<iCalFilename>]");
 		System.out.println("search <xmlFilename> <offset> <maxResults>");
 		System.out.println("addUserToGroup <user id> <group id>");
