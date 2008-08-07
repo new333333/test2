@@ -48,6 +48,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
@@ -61,6 +62,7 @@ import com.sitescape.team.domain.WorkflowControlledEntry;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.definition.notify.NotifyBuilderUtil;
 import com.sitescape.team.module.definition.notify.NotifyVisitor;
@@ -349,6 +351,11 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				return NLT.get("notify.subject", notify.getLocale()) + " " + binder.toString();
 			return subject;
 		} else {
+			String family = DefinitionUtils.getFamily(entry.getEntryDef().getDefinition());
+			if (ObjectKeys.FAMILY_CALENDAR.equals(family) || ObjectKeys.FAMILY_TASK.equals(family)) {
+				//subscribers to calendar want the subject to look like ical subject
+				return entry.getTitle();
+			}
 			StringBuffer buf = new StringBuffer();
 			buf.append(NLT.get("notify.subject.entry", notify.getLocale()));
 			buf.append(":");
