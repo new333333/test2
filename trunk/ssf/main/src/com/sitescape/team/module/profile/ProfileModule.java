@@ -156,6 +156,12 @@ public interface ProfileModule {
 	 */
 	public void deleteUserByName(String userName,  Map options);
 	/**
+	 * Get a principal by name
+	 * @param name
+	 * @return
+	 */
+	public Principal getEntry(String name);
+	/**
 	 * Get a principal
 	 * @param userId
 	 * @return
@@ -169,6 +175,12 @@ public interface ProfileModule {
 	 * @return
 	 */
 	public Long getEntryWorkspaceId(Long principaId);
+	/**
+	 * Get a group by name
+	 * @param name
+	 * @return
+	 */
+	public Group getGroup(String name);
 	/**
 	 * Return search results for user groups
 	 * @return
@@ -241,6 +253,12 @@ public interface ProfileModule {
      * @return
      */
     public UserProperties getUserProperties(Long userId, Long folderId);
+    /**
+     * Get user by name
+     * @param name
+     * @return
+     */
+    public User getUser(String name);
     /**
 	 * Return search results for users
      * @return
@@ -383,8 +401,13 @@ public interface ProfileModule {
 	 * @return
 	 */
 	public boolean testAccess(Principal entry, ProfileOperation operation);
-
-	 /**
+	/**
+	 * Get application group by name
+	 * @param name
+	 * @return
+	 */
+	public ApplicationGroup getApplicationGroup(String name);
+	/**
 	  * Add a new application group
 	  * @param definitionId
 	  * @param inputData
@@ -459,7 +482,12 @@ public interface ProfileModule {
      */
 	public SortedSet<GroupPrincipal> getGroupPrincipals(Collection<Long> groupIds)
 		throws AccessControlException;
-
+	/**
+	 * Get application by name
+	 * @param name
+	 * @return
+	 */
+	public Application getApplication(String name);
     /**
 	 * Return search results for applications
      * @return

@@ -26,13 +26,25 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.remoting.ws.service.profile;
+package com.sitescape.team.domain;
 
-public interface ProfileServiceInternal {
+import com.sitescape.team.NoObjectByTheNameException;
 
-	public String profile_getPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords);
-	
-	public String profile_getPrincipalAsXML(String accessToken, long binderId, long principalId);
-	
+public class NoApplicationByTheNameException extends NoObjectByTheNameException {
+    private static final String NoApplicationByTheNameException_ErrorCode = "errorcode.no.application.by.the.name";
+    
+    public NoApplicationByTheNameException(String applicationName) {
+        super(NoApplicationByTheNameException_ErrorCode, applicationName);
+    }
+    public NoApplicationByTheNameException(String applicationName, String message) {
+        super(NoApplicationByTheNameException_ErrorCode, applicationName, message);
+    }
+    public NoApplicationByTheNameException(String applicationName, String message, Throwable cause) {
+        super(NoApplicationByTheNameException_ErrorCode,applicationName, message, cause);
+    }
+    public NoApplicationByTheNameException(String applicationName, Throwable cause) {
+        super(NoApplicationByTheNameException_ErrorCode, applicationName, cause);
+    }
 
 }
+

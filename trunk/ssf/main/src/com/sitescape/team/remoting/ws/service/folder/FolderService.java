@@ -43,6 +43,7 @@ public interface FolderService {
     public void folder_deleteEntryWorkflow(String accessToken, long entryId, String definitionId);
 	public void folder_modifyWorkflowState(String accessToken, long entryId, long stateId, String toState);
 	public void folder_setWorkflowResponse(String accessToken, long entryId, long stateId, String question, String response); 
+	public void folder_removeFile(String accessToken, long entryId, String fileName);
 	public void folder_uploadFile(String accessToken, long entryId, 
 			String fileUploadDataItemName, String fileName);
 	public void folder_uploadFileStaged(String accessToken, long entryId, 

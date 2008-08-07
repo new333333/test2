@@ -108,7 +108,7 @@ public class NameSearchServlet extends HttpServlet {
 	}
 
 	private String getUserTitle(TeamingServiceSoapBindingStub stub, String accessToken, Long userId) throws ServiceException, DocumentException, RemoteException {
-		User user = stub.profile_getUser(accessToken, userId);
+		User user = stub.profile_getUser(accessToken, userId, false);
 		
 		return user.getTitle();
 	}

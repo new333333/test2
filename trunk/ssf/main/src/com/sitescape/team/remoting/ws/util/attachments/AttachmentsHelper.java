@@ -76,12 +76,12 @@ public class AttachmentsHelper  {
 				"attachment;filename=\"" + shortFileName + "\"");
 		responseMessage.addAttachmentPart(part);
 	}
-	public static Map getFileAttachments(String fileUploadDataItemName, String[] fileNames) {
+	public static Map<String, AxisMultipartFile> getFileAttachments(String fileUploadDataItemName, String[] fileNames) {
 
 		// Get all the attachments
 		AttachmentPart[] attachments;
 		try {
-			attachments = AttachmentsHelper.getMessageAttachments();
+			attachments = getMessageAttachments();
 		} catch (AxisFault e) {
 			throw new RemotingException(e);
 		}
@@ -111,5 +111,31 @@ public class AttachmentsHelper  {
 		}
 		
 		return fileItems;
+	}
+	public static Map<String, AxisMultipartFile> getFileAttachment(String fileUploadDataItemName, String fileName) {
+
+		// Get all the attachments
+		AttachmentPart[] attachments;
+		try {
+			attachments = AttachmentsHelper.getMessageAttachments();
+		} catch (AxisFault e) {
+			throw new RemotingException(e);
+		}
+
+		//Extract the first attachment. (Since in this case we have only one attachment sent)
+		DataHandler dh;
+		try {
+			dh = attachments[0].getDataHandler();
+		} catch (SOAPException e) {
+			throw new RemotingException(e);
+		}
+
+		// Wrap it up in a datastructure expected by our app.
+		AxisMultipartFile mf = new AxisMultipartFile(fileName, dh, null, null); 
+		// Create a map of file item names to items 
+		Map fileItems = new HashMap();
+		fileItems.put(fileUploadDataItemName, mf);
+		return fileItems;
+
 	}
 }

@@ -29,14 +29,8 @@
 package com.sitescape.team.remoting.ws.service.folder.attachments;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Calendar;
-import javax.activation.DataHandler;
-import javax.xml.soap.SOAPException;
-
-import org.apache.axis.AxisFault;
-import org.apache.axis.attachments.AttachmentPart;
+import java.util.Map;
 
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
@@ -45,7 +39,6 @@ import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
 import com.sitescape.team.remoting.ws.util.attachments.AttachmentsHelper;
-import com.sitescape.team.remoting.ws.util.attachments.AxisMultipartFile;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.util.Validator;
 
@@ -73,29 +66,8 @@ public class AttachmentUtilities {
 		File originalFile = new File(fileName);
 		fileName = StringCheckUtil.check(originalFile.getName());
 
-		// Get all the attachments
-		AttachmentPart[] attachments;
-		try {
-			attachments = AttachmentsHelper.getMessageAttachments();
-		} catch (AxisFault e) {
-			throw new RemotingException(e);
-		}
-
-		//Extract the first attachment. (Since in this case we have only one attachment sent)
-		DataHandler dh;
-		try {
-			dh = attachments[0].getDataHandler();
-		} catch (SOAPException e) {
-			throw new RemotingException(e);
-		}
-
 		// Wrap it up in a datastructure expected by our app.
-		AxisMultipartFile mf = new AxisMultipartFile(fileName, dh, modifier, modificationDate==null?null:modificationDate.getTime());
-		
-		// Create a map of file item names to items 
-		Map fileItems = new HashMap();
-		fileItems.put(fileUploadDataItemName, mf);
-		
+		Map fileItems = AttachmentsHelper.getFileAttachment(fileUploadDataItemName, fileName);
 		try {
 			// Finally invoke the business method. 
 			getFolderModule().modifyEntry(binderId, entryId, 

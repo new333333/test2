@@ -50,6 +50,7 @@ public interface BinderService {
 	public void binder_moveBinder(String accessToken, long binderId, long destinationId);
 	public void binder_modifyBinder(String accessToken, Binder binder);
 	public void binder_uploadFile(String accessToken, long binderId, String fileUploadDataItemName, String fileName);
+	public void binder_removeFile(String accessToken, long binderId, String fileName);
 
 	public void binder_deleteTag(String accessToken, long binderId, String tagId); 
 	public Tag[] binder_getTags(String accessToken, long binderId);

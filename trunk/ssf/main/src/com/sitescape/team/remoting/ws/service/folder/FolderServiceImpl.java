@@ -43,6 +43,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Subscription;
@@ -66,6 +67,20 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	
 	public void folder_uploadFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
 		throw new UnsupportedOperationException();
+	}
+	public void folder_removeFile(String accessToken, long entryId, String fileName) {
+		try {
+			FolderEntry entry = getFolderModule().getEntry(null, entryId);
+			FileAttachment att = entry.getFileAttachment(fileName);
+			if (att == null) return;
+			List deletes = new ArrayList();
+			deletes.add(att.getId());
+			getFolderModule().modifyEntry(null, entryId, new EmptyInputData(), null, deletes, null, null);
+			
+		}	catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}			
+
 	}
 	public String folder_getEntriesAsXML(String accessToken, long binderId) {
 		com.sitescape.team.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));
