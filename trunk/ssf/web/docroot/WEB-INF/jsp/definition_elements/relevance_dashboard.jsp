@@ -111,7 +111,7 @@
 	  <c:if test="${ssRDCurrentTab == 'activities'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
 	  href="javascript: ;"
 		onClick="ss_selectRelevanceTab(this, 'activities', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
-		<span style="padding-right:10px;"><ssf:nlt tag="relevance.tab.activities"/></span></a></li>
+		<span><ssf:nlt tag="relevance.tab.activities"/> xxxxx Please fix xxxxx</span></a></li>
 
   </ul>
 </div>
