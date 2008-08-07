@@ -70,7 +70,19 @@
 </div>
 <%
 	if (!ssSeenMap.checkIfSeen(title_entry)) {
-		%><img border="0" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
+		%>
+		
+		<a id="ss_sunburstDiv${ssDefinitionEntry.id}" href="javascript: ;" 
+		  onClick="ss_hideSunburst('${ssDefinitionEntry.id}', '${ssFolder.id}');return false;"
+		><span 
+		  style="display:${ss_sunburstVisibilityHide};"
+		  id="ss_sunburstShow${renderResponse.namespace}" 
+		  class="ss_fineprint">
+		  	<img border="0" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.gif">
+		  </span>
+		  </a>
+		
+		<%
 	}
 %>
 <div class="ss_header_bar_title_text">
