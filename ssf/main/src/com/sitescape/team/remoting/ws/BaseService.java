@@ -357,17 +357,33 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
 			public void visit(Element entryElement, Element flagElement, Map args)
 			{
+				
                 if (flagElement.attributeValue("apply").equals("true")) {
                 	String fieldBuilder = flagElement.attributeValue("elementBuilder");
-					String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
-					if (Validator.isNull(nameValue)) {nameValue = entryElement.attributeValue("name");}
-                	ElementBuilderUtil.buildElement(entryElem, entityModel, entity, entryElement.attributeValue("name"), nameValue, fieldBuilder, context);
+                	String typeValue = entryElement.attributeValue("name");
+  					String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
+					if (Validator.isNull(nameValue)) {nameValue = typeValue;}
+                	ElementBuilderUtil.buildElement(entryElem, entityModel, entity, typeValue, nameValue, fieldBuilder, context);
                 }
 			}
 			public String getFlagElementName() { return "webService"; }
 		};
 		
 		getDefinitionModule().walkDefinition(entity, visitor, null);
+		//see if attachments have been handled
+		Element root = entity.getEntryDef().getDefinition().getRootElement();
+		if (root == null) return;
+		Element attachments = (Element)root.selectSingleNode("//item[@name='attachFiles']");
+		if (attachments != null) return; // already processed
+      	//Force processing of attachments.  Not all forms will have an attachment element,
+    	//but this is the only code that actually sends the files, even if they
+    	//are part of a graphic or file element.  So force attachment processing to pick up all files
+		attachments = (Element)getDefinitionModule().getDefinitionConfig().getRootElement().selectSingleNode("//item[@name='attachFiles']");
+		Element flagElem = (Element) attachments.selectSingleNode("webService");
+		ElementBuilderUtil.buildElement(entryElem, entityModel, entity, "attachFiles", DefinitionUtils.getPropertyValue(attachments, "name"),
+				flagElem.attributeValue("elementBuilder"), context);
+        	 		 
+
 	}
 
 	protected com.sitescape.team.remoting.ws.model.AverageRating toAverageRatingModel(AverageRating ar) {
