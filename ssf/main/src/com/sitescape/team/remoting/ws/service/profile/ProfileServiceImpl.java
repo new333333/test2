@@ -38,17 +38,18 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
 import com.sitescape.team.remoting.ws.model.PrincipalBrief;
 import com.sitescape.team.remoting.ws.model.PrincipalCollection;
-import com.sitescape.team.remoting.ws.util.DomInputData;
 import com.sitescape.team.remoting.ws.util.ModelInputData;
-import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
 public class ProfileServiceImpl extends BaseService implements ProfileService, ProfileServiceInternal {
 
@@ -89,56 +90,16 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		
 		return xml;
 	}
-	
-	public long profile_addUserWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
-		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
-
-		Document doc = getDocument(inputDataAsXML);
 		
-		try {
-			return getProfileModule().addUser(definitionId, new DomInputData(doc, getIcalModule()), null, null).longValue();
-		}
-		catch(WriteFilesException e) {
-			throw new RemotingException(e);
-		}
-
-	}
-	
-	public long profile_addGroupWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
-		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
-
-		Document doc = getDocument(inputDataAsXML);
-		
-		try {
-			return getProfileModule().addGroup(definitionId, new DomInputData(doc, getIcalModule()), null, null).longValue();
-		}
-		catch(WriteFilesException e) {
-			throw new RemotingException(e);
-		}
-
-	}
-	
 	public void profile_addUserToGroup(String accessToken, long userId, String username, long groupId) {
 		getProfileModule().addUserToGroup(Long.valueOf(userId), username, Long.valueOf(groupId));
 	}
-	
-	public void profile_modifyPrincipalWithXML(String accessToken, long binderId, long principalId, String inputDataAsXML) {
-		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
-
-		Document doc = getDocument(inputDataAsXML);
 		
+	public void profile_deletePrincipal(String accessToken, long principalId, boolean deleteWorkspace) {
 		try {
-			getProfileModule().modifyEntry(new Long(principalId), new DomInputData(doc, getIcalModule()));
-		}
-		catch(WriteFilesException e) {
-			throw new RemotingException(e);
-		}
-
-	}
-	
-	public void profile_deletePrincipal(String accessToken, long principalId) {
-		try {
-			getProfileModule().deleteEntry(new Long(principalId), null);
+			Map options = new HashMap();
+			options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, Boolean.valueOf(deleteWorkspace));
+			getProfileModule().deleteEntry(new Long(principalId), options);
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -169,7 +130,11 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 				principals.toArray(array));
 	}
 		
-	public com.sitescape.team.remoting.ws.model.Group profile_getGroup(String accessToken, long groupId) {
+	public com.sitescape.team.remoting.ws.model.Group profile_getGroupByName(String accessToken, String groupName, boolean includeAttachments) {
+		Group group = getProfileModule().getGroup(groupName);
+		return profile_getGroup(accessToken, group.getId(), includeAttachments);
+	}
+	public com.sitescape.team.remoting.ws.model.Group profile_getGroup(String accessToken, long groupId, boolean includeAttachments) {
 		Long gId = Long.valueOf(groupId);
 		
 		// Retrieve the raw entry.
@@ -186,8 +151,11 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		
 		return groupModel;
 	}
-	
-	public com.sitescape.team.remoting.ws.model.User profile_getUser(String accessToken, long userId) {
+	public com.sitescape.team.remoting.ws.model.User profile_getUserByName(String accessToken, String userName, boolean includeAttachments) {
+		User user = getProfileModule().getUser(userName);
+		return profile_getUser(accessToken, user.getId(), includeAttachments);
+	}
+	public com.sitescape.team.remoting.ws.model.User profile_getUser(String accessToken, long userId, boolean includeAttachments) {
 		Long uId = Long.valueOf(userId);
 		
 		// Retrieve the raw entry.
@@ -239,6 +207,22 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}
+	}
+	public void profile_uploadFile(String accessToken, long principalId, String fileUploadDataItemName, String fileName) {
+		throw new UnsupportedOperationException();
+	}
+	public void profile_removeFile(String accessToken, long principalId, String fileName) {
+		try {
+			Principal entry = getProfileModule().getEntry(principalId);
+			FileAttachment att = entry.getFileAttachment(fileName);
+			if (att == null) return;
+			List deletes = new ArrayList();
+			deletes.add(att.getId());
+			getProfileModule().modifyEntry(principalId, new EmptyInputData(), null, deletes, null, null);			
+		}	catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}			
+
 	}
 
 }

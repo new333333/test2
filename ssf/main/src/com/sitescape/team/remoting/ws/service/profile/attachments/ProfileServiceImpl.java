@@ -1,6 +1,7 @@
-package com.sitescape.team.remoting.ws.service.binder.attachments;
+package com.sitescape.team.remoting.ws.service.profile.attachments;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.sitescape.team.domain.FileAttachment;
@@ -11,10 +12,9 @@ import com.sitescape.team.remoting.ws.util.attachments.AttachmentsHelper;
 import com.sitescape.team.remoting.ws.util.attachments.CalendarHelper;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.util.Validator;
-public class BinderServiceImpl extends com.sitescape.team.remoting.ws.service.binder.BinderServiceImpl {
-	
-	public void binder_uploadFile(String accessToken, long binderId, 
-			String fileUploadDataItemName, String fileName) {
+
+public class ProfileServiceImpl extends com.sitescape.team.remoting.ws.service.profile.ProfileServiceImpl {
+	public void profile_uploadFile(String accessToken, long principalId, String fileUploadDataItemName, String fileName) {
 		if (Validator.isNull(fileUploadDataItemName)) fileUploadDataItemName="ss_attachFile1";
 		fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
 		File originalFile = new File(fileName);
@@ -25,8 +25,7 @@ public class BinderServiceImpl extends com.sitescape.team.remoting.ws.service.bi
 		
 		try {
 			// Finally invoke the business method. 
-			getBinderModule().modifyBinder(new Long(binderId),  
-				new EmptyInputData(), fileItems, null, null);
+			getProfileModule().modifyEntry(principalId, new EmptyInputData(), fileItems, null, null, null);
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -38,20 +37,19 @@ public class BinderServiceImpl extends com.sitescape.team.remoting.ws.service.bi
 		return AttachmentsHelper.getFileAttachments(fileUploadDataItemName, fileNames);
 	}
 
-	public com.sitescape.team.remoting.ws.model.Binder binder_getBinder(String accessToken, long binderId, boolean includeAttachments) {
+	public com.sitescape.team.remoting.ws.model.Group profile_getGroup(String accessToken, long groupId, boolean includeAttachments) {
 		handleAttachments(includeAttachments);
 
-		com.sitescape.team.remoting.ws.model.Binder binderModel = super.binder_getBinder(accessToken, binderId, includeAttachments);
-		CalendarHelper.handleEvents(this, getBinderModule().getBinder(binderId));
-		return binderModel;
+		com.sitescape.team.remoting.ws.model.Group groupModel = super.profile_getGroup(accessToken, groupId, includeAttachments);
+		CalendarHelper.handleEvents(this, getProfileModule().getEntry(groupId));
+		return groupModel;
 	}
-	public com.sitescape.team.remoting.ws.model.Binder binder_getBinderByPathName(String accessToken, String pathName, boolean includeAttachments) {
+	public com.sitescape.team.remoting.ws.model.User profile_getUser(String accessToken, long userId, boolean includeAttachments) {
 		handleAttachments(includeAttachments);
 
-		com.sitescape.team.remoting.ws.model.Binder binderModel = super.binder_getBinderByPathName(accessToken, pathName, includeAttachments);
-		CalendarHelper.handleEvents(this, getBinderModule().getBinder(binderModel.getId()));
-		return binderModel;
-		
+		com.sitescape.team.remoting.ws.model.User userModel = super.profile_getUser(accessToken, userId, includeAttachments);
+		CalendarHelper.handleEvents(this, getProfileModule().getEntry(userId));
+		return userModel;
 	}
 	protected void handleAttachments(boolean includeAttachments) {
 		if(includeAttachments) {

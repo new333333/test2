@@ -1050,7 +1050,7 @@ text/calendar											  ics
 	
 	<bean id="profileService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.service.profile.ProfileServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.remoting.ws.service.profile.attachments.ProfileServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">

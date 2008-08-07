@@ -50,6 +50,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
@@ -58,6 +59,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.rss.util.UrlUtil;
+import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
@@ -269,6 +271,20 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 	}
 	public void binder_uploadFile(String accessToken, long binderId, String fileUploadDataItemName, String fileName) {
 		throw new UnsupportedOperationException();
+	}
+	public void binder_removeFile(String accessToken, long binderId, String fileName) {
+		try {
+			Binder binder = getBinderModule().getBinder(binderId);
+			FileAttachment att = binder.getFileAttachment(fileName);
+			if (att == null) return;
+			List deletes = new ArrayList();
+			deletes.add(att.getId());
+			getBinderModule().modifyBinder(binderId, new EmptyInputData(), null, deletes, null);
+			
+		}	catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}			
+
 	}
 
 	public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships) {

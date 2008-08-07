@@ -144,6 +144,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void binder_modifyBinder(String accessToken, Binder binder) {
 		getBinderService().binder_modifyBinder(accessToken, binder);
 	}
+	public void binder_removeFile(String accessToken, long binderId, String fileName) {
+		getBinderService().binder_removeFile(accessToken, binderId, fileName);
+	}
 
 	public void binder_uploadFile(String accessToken, long binderId, String fileUploadDataItemName, String fileName) {
 		getBinderService().binder_uploadFile(accessToken, binderId, fileUploadDataItemName, fileName);
@@ -257,6 +260,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void folder_synchronizeMirroredFolder(String accessToken, long binderId) {
 		getFolderService().folder_synchronizeMirroredFolder(accessToken, binderId);
 	}
+	public void folder_removeFile(String accessToken, long entryId, String fileName) {
+		getFolderService().folder_removeFile(accessToken, entryId, fileName);
+	}
 	public void folder_uploadFile(String accessToken,long entryId, String fileUploadDataItemName, String fileName) {
 		getFolderService().folder_uploadFile(accessToken, entryId, fileUploadDataItemName, fileName);
 	}
@@ -332,22 +338,22 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void migration_uploadFolderFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath, String modifier, Calendar modificationDate) {
 		getMigrationService().migration_uploadFolderFileStaged(accessToken, binderId, entryId, fileUploadDataItemName, fileName, stagedFileRelativePath, modifier, modificationDate);
 	}
-	/*
-	public long profile_addGroupWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
-		return getProfileService().profile_addGroupWithXML(accessToken, binderId, definitionId, inputDataAsXML);
-	}
-	public long profile_addUserWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
-		return getProfileService().profile_addUserWithXML(accessToken, binderId, definitionId, inputDataAsXML);
-	}*/
 	public void profile_addUserToGroup(String accessToken, long userId, String username, long groupId) {
 		getProfileService().profile_addUserToGroup(accessToken, userId, username, groupId);
 	}
 	public long profile_addUserWorkspace(String accessToken, long userId) {
 		return getProfileService().profile_addUserWorkspace(accessToken, userId);
 	}
-	public void profile_deletePrincipal(String accessToken, long principalId) {
-		getProfileService().profile_deletePrincipal(accessToken, principalId);
+	public void profile_deletePrincipal(String accessToken, long principalId, boolean deleteWorkspace) {
+		getProfileService().profile_deletePrincipal(accessToken, principalId, deleteWorkspace);
 	}
+	public void profile_removeFile(String accessToken, long principalId, String fileName) {
+		getProfileService().profile_removeFile(accessToken, principalId, fileName);
+	}
+	public void profile_uploadFile(String accessToken, long principalId, String fileUploadDataItemName, String fileName) {
+		getProfileService().profile_uploadFile(accessToken, principalId, fileUploadDataItemName, fileName);
+	}
+
 	/*
 	public String profile_getPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords) {
 		return getProfileService().profile_getPrincipalsAsXML(accessToken, firstRecord, maxRecords);
@@ -355,9 +361,7 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public String profile_getPrincipalAsXML(String accessToken, long binderId, long principalId) {
 		return getProfileService().profile_getPrincipalAsXML(accessToken, binderId, principalId);
 	}
-	public void profile_modifyPrincipalWithXML(String accessToken, long binderId, long principalId, String inputDataAsXML) {
-		getProfileService().profile_modifyPrincipalWithXML(accessToken, binderId, principalId, inputDataAsXML);
-	}*/
+	*/
 	public String search_getHotContent(String accessToken, String limitType, Long binderId) {
 		return getSearchService().search_getHotContent(accessToken, limitType, binderId);
 	}
@@ -392,14 +396,19 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getProfileService().profile_getPrincipals(accessToken, firstRecord, maxRecords);
 	}
 
-	public User profile_getUser(String accessToken, long userId) {
-		return getProfileService().profile_getUser(accessToken, userId);
+	public User profile_getUser(String accessToken, long userId, boolean includeAttachments) {
+		return getProfileService().profile_getUser(accessToken, userId, includeAttachments);
+	}
+	public User profile_getUserByName(String accessToken, String userName, boolean includeAttachments) {
+		return getProfileService().profile_getUserByName(accessToken, userName, includeAttachments);
 	}
 
-	public Group profile_getGroup(String accessToken, long groupId) {
-		return getProfileService().profile_getGroup(accessToken, groupId);
+	public Group profile_getGroup(String accessToken, long groupId, boolean includeAttachments) {
+		return getProfileService().profile_getGroup(accessToken, groupId, includeAttachments);
 	}
-
+	public Group profile_getGroupByName(String accessToken, String groupName, boolean includeAttachments) {
+		return getProfileService().profile_getGroupByName(accessToken, groupName, includeAttachments);
+	}
 
 	public DefinitionCollection definition_getDefinitions(String accessToken) {
 		return getDefinitionService().definition_getDefinitions(accessToken);
