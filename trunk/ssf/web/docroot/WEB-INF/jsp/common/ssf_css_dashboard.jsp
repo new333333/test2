@@ -400,7 +400,7 @@ div.ss_canvas {
 	color:#555;
 	}
 	/* ACTIVITIES */
-#ss_activity{
+.ss_activity{
 	margin: 1% 1% 5% 15px;
 	color:#555;
 	}
@@ -489,7 +489,7 @@ div.ss_canvas {
 	padding-left: 15px;	
 	}
 .ss_paraD{                    
-	background-color:tr;
+	background-color:transparent;
 	padding-bottom: 15px;
 	}	
 /* TIMEBLOCK STYLES */	
@@ -653,7 +653,7 @@ div.ss_canvas {
     font-size:93%;
     line-height:normal;
     border-bottom: 1px solid #666;
-    border-right: 10px solid #EFEFEF;
+    border-right: 10px solid #666;
     margin-top:0px
       }
  #ss_tabsC ul {
