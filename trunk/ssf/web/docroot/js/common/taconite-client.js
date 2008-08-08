@@ -343,6 +343,7 @@ function ss_AjaxRequest(url) {
     }
 
     var handleStateChange = function(ajaxRequest) {
+        if(ajaxRequest.getXMLHttpRequestObject() == null) return;
         if(ajaxRequest.getXMLHttpRequestObject().readyState != 4) {
             return;
         }
@@ -361,10 +362,12 @@ function ss_AjaxRequest(url) {
             }
 
             var nodes = null;
-            try {
-            	nodes = ajaxRequest.getXMLHttpRequestObject().responseXML.documentElement.childNodes;
-            }
-        	catch(e) {}
+            if (ajaxRequest.getXMLHttpRequestObject().responseXML != null) {
+	            try {
+	            	nodes = ajaxRequest.getXMLHttpRequestObject().responseXML.documentElement.childNodes;
+	            }
+	        	catch(e) {}
+	        }
             
             var parser = null;
             var parseInBrowser = "";

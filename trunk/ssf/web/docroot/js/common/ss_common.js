@@ -680,7 +680,7 @@ function ss_moveObjectToBody(obj) {
 
 //Functions to save the user status
 function ss_updateStatusSoon(obj, evt) {
-	if ((typeof evt.which == "undefined" || !evt.which) && typeof event == "undefined") return;
+	if ((typeof evt == "undefined" || typeof evt.which == "undefined" || !evt.which) && typeof event == "undefined") return;
 	
 	ss_statusObj = obj;
 	if (ss_statusTimer != null) {
@@ -688,8 +688,17 @@ function ss_updateStatusSoon(obj, evt) {
 		ss_statusTimer = null;
 	}
     var charCode = (evt.which) ? evt.which : event.keyCode
-    if (charCode == 10 || charCode == 13) {
+    //check for tab or cr; tab or 2 cr's signals the end of the input
+    if (charCode == 9) {
     	ss_updateStatusNow(obj)
+    } else if (charCode == 10 || charCode == 13) {
+    	if (obj.value.length >= 2 && (obj.value.charCodeAt(obj.value.length - 1) == 10 || 
+    			obj.value.charCodeAt(obj.value.length - 1) == 13)) {
+    		//Double cr also ends new status
+    		ss_updateStatusNow(obj)
+    	} else {
+    		ss_setStatusBackground(obj, 'focus');
+    	}
     } else {
 		ss_setStatusBackground(obj, 'focus');
     }
@@ -713,13 +722,24 @@ function ss_updateStatusNow(obj) {
 			ss_setupStatusMessageDiv();
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_user_status", status:status}, "");
 			var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-			ajaxRequest.setPostRequest(ss_postRequestAlertError);
+			var divObj = ss_findOwningElement(obj, "div");
+			ajaxRequest.addKeyValue("ss_statusId", divObj.id);
+			ajaxRequest.setData("ss_statusId", divObj.id);
+			ajaxRequest.setPostRequest(ss_postUpdateStatus);
 			ajaxRequest.sendRequest();  //Send the request
 			setTimeout('ss_flashStatus();', 200);
 		}
 		ss_setStatusBackground(obj, 'blur');
 	}
 }
+function ss_postUpdateStatus(obj) {
+	var divId = obj.getData("ss_statusId");
+	if (divId != "") {
+		var divObj = self.document.getElementById(divId);
+		ss_executeJavascript(divObj)
+	}
+}
+
 function ss_setStatusBackground(obj, op) {
 	ss_statusObj = obj;
 	if (op == 'focus') {

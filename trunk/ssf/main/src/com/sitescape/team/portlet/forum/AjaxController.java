@@ -50,6 +50,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -441,6 +443,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 					op.equals(WebKeys.OPERATION_SHOW_SIDEBAR_PANEL) || 
 					op.equals(WebKeys.OPERATION_HIDE_SIDEBAR_PANEL)) {
 			return new ModelAndView("forum/fetch_url_return");			
+		} else if (op.equals(WebKeys.OPERATION_SAVE_UESR_STATUS)) {
+			return ajaxGetUserStatus(request, response);
 		}
 
 		return ajaxReturn(request, response);
@@ -2143,6 +2147,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 			ActionResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String status = PortletRequestUtils.getStringParameter(request, "status", "");
+    	Pattern p = Pattern.compile("([\\s]*)$");
+    	Matcher m = p.matcher(status);
+    	if (m.find()) {
+			//Trim any trailing whitespace
+    		status = status.substring(0, m.start(0));
+    	}
 		if (!status.equals(user.getStatus())) {
 			getProfileModule().setStatus(status);
 			getReportModule().addStatusInfo(user);
@@ -2604,5 +2614,16 @@ public class AjaxController  extends SAbstractControllerRetry {
 			}
 		}
 	}
-		
+
+	private ModelAndView ajaxGetUserStatus(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		User user = RequestContextHolder.getRequestContext().getUser();
+		model.put(WebKeys.USER_PRINCIPAL, user);
+		String statusId = PortletRequestUtils.getStringParameter(request, "ss_statusId", "");
+		model.put("ss_statusId", statusId);
+		response.setContentType("text/xml");
+		return new ModelAndView("forum/save_status_return", model);
+	}
+	
 }

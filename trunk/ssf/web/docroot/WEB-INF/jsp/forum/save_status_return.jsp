@@ -28,36 +28,16 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% // Status %>
-<%@ page import="com.sitescape.team.util.NLT" %>
-<%@ page import="com.sitescape.team.util.SPropsUtil" %>
-<%@ page import="com.sitescape.util.PropertyNotFoundException" %>
+<%@ page session="false" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
-<c:if test="${empty ss_statusId}">
-  <c:set var="ss_statusId" value="ss_myStatus${renderResponse.namespace}" scope="request"/>
+<%@ page contentType="text/xml; charset=UTF-8" %>
+<taconite-root xml:space="preserve">
+<%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
+
+<c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
+
+	<taconite-replace contextNodeID="${ss_statusId}" parseInBrowser="true">
+	  <%@ include file="/WEB-INF/jsp/sidebars/sidebar_status.jsp" %>
+	</taconite-replace>
 </c:if>
-
- <div class="ss_myStatus" id="${ss_statusId}">
-
- 	  		<strong><ssf:nlt tag="relevance.userStatus"/></strong>
-
-	   <ssf:ifLoggedIn>
-			<script type="text/javascript">
-			  ss_statusCurrent = "<%= java.net.URLEncoder.encode(ssUser.getStatus()) %>";
-			</script>
-
-			<textarea cols="22" rows="2" id="ss_status_textarea${renderResponse.namespace}"
-			wrap="virtual" class="ss_input_myStatus"
-			style="font-size:10px;" 
-  			onFocus="ss_setStatusBackground(this, 'focus');"
-  			onKeyPress="ss_updateStatusSoon(this, event);"
-  			onChange="ss_updateStatusNow(this);"
-  			onBlur="ss_updateStatusNow(this);ss_setStatusBackground(this, 'blur')"
-  			onMouseover="ss_setStatusBackground(this, 'mouseOver');"
-  			onMouseout="ss_setStatusBackgroundCheck(this);"
-  			>${ssUser.status}</textarea>
-
-	   </ssf:ifLoggedIn> 
-
-  </div>
+</taconite-root>
