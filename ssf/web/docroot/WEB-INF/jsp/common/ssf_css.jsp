@@ -374,6 +374,14 @@ div.ss_global_toolbar_quick input {
   font-size: ${ss_style_font_smallprint};
   font-family: ${ss_style_folder_view_font_family};  
   }
+ .ss_text_login {
+  background-color:#E0E0E0 !important;	/* ${ss_form_element_color} */
+  color: ${ss_form_element_text_color};
+  padding: 3px !important;
+  height: 14px;
+  font-size: ${ss_style_font_normalprint};
+  font-family: ${ss_style_folder_view_font_family};  
+  } 
 
 
 
