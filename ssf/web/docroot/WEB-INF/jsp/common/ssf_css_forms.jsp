@@ -138,3 +138,20 @@ ss_h2 {
 	background-position: right;
 	text-align: right;
 }
+
+/********* CLIPBOARD POPUP ************/
+.ss_stylePopup ul {
+	padding-left: 1% !important;
+	margin-left: 0px;
+	margin-top: 5px;
+	margin-bottom: 15px;
+	margin-right: 0px;
+	}
+.ss_stylePopup {
+	font-family: ${ss_style_font_family};
+	font-weight: inherit;
+	font-size: ${ss_style_font_size}; 
+	background-color: ${ss_style_background_color};
+	color: ${ss_style_text_color}; 
+}
+
