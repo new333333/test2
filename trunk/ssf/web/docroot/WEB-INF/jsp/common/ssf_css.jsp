@@ -93,7 +93,6 @@ body.ss_style_body {
   background-color: ${ss_style_background_color};
   color: ${ss_style_text_color};
 }
-
 .ss_style td, .ss_style th {
   font-family: ${ss_style_folder_view_font_family};
   font-size: 12px; 
@@ -2102,11 +2101,12 @@ div.ss_sidebar_panel_featured {
 .ss_base_title_bar {
 	background-color: ${ss_toolbar1_background_color};
 	color: #333;
-	font-size: 12px;
+	font-size: ${ss_normalprint};
+	font-weight: bold;
 	font-family: ${ss_style_title_font_family};
-	padding-bottom: 1px;
-	padding-top: 2px;
-	padding-left:10px;
+	padding-bottom: 3px;
+	padding-top: 5px;
+	padding-left: 5px;
 	padding-right: 5px;
 	}
 .ss_title_bar {

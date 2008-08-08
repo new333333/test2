@@ -4868,11 +4868,8 @@ function ss_Clipboard () {
 			usersCheckboxes = new Array();
 
 			var ulObj = document.createElement("ul");
-			ulObj.style.marginLeft = "0";
-			ulObj.style.marginTop = "5px";
-			ulObj.style.marginBottom = "15px";
-			ulObj.style.marginRight = "0";
-			ulObj.style.padding = "0";
+			ulObj.className = 'ss_stylePopup';
+			ulObj.style.listStyle = "none";
 
 			var lastIndex = 0;
 			for (var i = 0; i < data.length; i++) {
@@ -4922,6 +4919,7 @@ function ss_Clipboard () {
 	}
 
 	function createUserLI (index, userId, userTitle) {
+		
 		var liObj = document.createElement("li");
 	
 		var inputObj = document.createElement("input");
