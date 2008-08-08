@@ -43,7 +43,7 @@
   <a href="${ss_muster.showForm}"
     onClick="ss_muster.showForm('ss_muster_users', '${answer}', '${ssBinder.id}');return false;"
   >
-    <span>Clipboard XXX</span>
+    <span><ssf:nlt tag="sidebar.clipboard"/></span>
   </a>
 </li>
               
