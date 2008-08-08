@@ -43,8 +43,8 @@
 		<li>
 		  	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_share.jsp" />
 		</li>
-		<li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" /></li>
-		<li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" /></li>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" />
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" />
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" />
 	</ul>
  </div>

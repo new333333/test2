@@ -31,5 +31,17 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 
-<a href="#"><ssf:nlt tag="toolbar.menu.addMeeting"/></a>
+<c:set var="answer" value=""/>
+  <c:forEach var="contributorId" items="${ss_toolbar_meeting_ids}">
+    <c:if test="${!empty answer}"><c:set var="answer" value="${answer}, "/></c:if>
+    <c:set var="answer" value="${answer}${contributorId}"/>
+  </c:forEach>
+
+<li> <% // to set the beginning of the list %>
+  <a href="${ss_toolbar_meeting_url}"
+    onClick="show_team_members('show_team_members', '${answer}', '${ssBinder.id}');return false;"
+  >
+    <span><ssf:nlt tag="toolbar.menu.addMeeting"/></span>
+  </a>
+</li>
 
