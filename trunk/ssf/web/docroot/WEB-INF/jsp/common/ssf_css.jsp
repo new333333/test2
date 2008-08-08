@@ -2003,7 +2003,7 @@ div.ss_content_outer table, div.ss_portlet table, table.ss_style, div.ss_popup_b
 
 td.ss_view_sidebar {
     width: 200px!important;
-    background-color: #FFF;
+    background-color: #FF9C38;
     border-right: 6px solid #FFF;
 }
 

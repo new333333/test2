@@ -51,6 +51,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	width: 198px;
 	height:auto;
 	margin-right: 6px;
+	overflow:hidden;
 	}
 #ss_sideNav_wrap, #ss_sideNav_wrap *{	
 	font-family: Arial;
@@ -94,6 +95,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_sidebarMenu{
 	text-indent: 22px;
 	margin: 3px 8px 6px 8px;
+	width: 174px;
+	<c:if test="<%= isIE %>">
+		width: 172px;
+ 	</c:if>	
 	padding-top: 8px;
 	padding-right: 4px;
 	padding-bottom: 8px;
