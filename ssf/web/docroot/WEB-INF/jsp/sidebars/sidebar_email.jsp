@@ -33,22 +33,31 @@
 <%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
+<c:if test="${!empty ss_toolbar_sendmail_url}">
+<c:if test="${!ss_toolbar_sendmail_post}">
+	<li>
+	  <a href="${ss_toolbar_sendmail_url}"
+	    onClick="ss_toolbarPopupUrl(this.href);return false;"
+	  >
+	    <span><ssf:nlt tag="profile.abv.element.emailAddress"/></span>
+	  </a>
+	</li>
+</c:if>
 
-
-
-<c:set var="answer" value=""/>
-  <c:forEach var="contributorId" items="${ss_toolbar_sendmail_ids}">
-    <c:if test="${!empty answer}"><c:set var="answer" value="${answer}, "/></c:if>
-    <c:set var="answer" value="${answer}${contributorId}"/>
-  </c:forEach>
-  
-<li> <% // to set the beginning of the list %>
-  <a href="${ss_toolbar_sendmail_url}"
-    onClick="sendMail('ssUsersIdsToAdd', '${answer}');return false;"
-  >
-    <span><ssf:nlt tag="profile.abv.element.emailAddress"/></span>
-  </a>
-</li>
-		 
-		 
-		 
+<c:if test="${ss_toolbar_sendmail_post}">
+	<c:set var="contributorIdList" value=""/>
+	<c:forEach var="contributorId" items="${ss_toolbar_sendmail_ids}">
+	  <c:if test="${!empty contributorIdList}"><c:set var="contributorIdList" value="${contributorIdList}, "/></c:if>
+	  <c:set var="contributorIdList" value="${contributorIdList}${contributorId}"/>
+	</c:forEach>
+	<li>
+		<form class="inline" action="${ss_toolbar_sendmail_url}" method="post" 
+		  target="footerToolbarOptionWnd"
+		>
+		<input type="hidden" name="ssUsersIdsToAdd" value="${contributorIdList}"/>
+		<a href="javascript: ;" onclick="ss_toolbarPopupUrl('', 'footerToolbarOptionWnd'); ss_submitParentForm(this); "
+		><span><ssf:nlt tag="profile.abv.element.emailAddress"/></span></a>
+		</form>
+	</li>
+</c:if>
+</c:if>

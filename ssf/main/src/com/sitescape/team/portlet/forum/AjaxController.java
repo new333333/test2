@@ -582,6 +582,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			ActionResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String uiTheme = PortletRequestUtils.getStringParameter(request, "theme", "");
+		if (uiTheme.equals(ObjectKeys.USER_THEME_DEFAULT)) uiTheme = "";
 		if (uiTheme.length() > 50) {
 			uiTheme = uiTheme.substring(0,50);
 		} 

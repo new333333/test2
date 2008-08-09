@@ -33,6 +33,7 @@
 <%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
+<c:if test="${ss_toolbar_clipboard_show}">
 <c:set var="answer" value=""/>
   <c:forEach var="contributorId" items="${ss_toolbar_clipboard_ids}">
     <c:if test="${!empty answer}"><c:set var="answer" value="${answer}, "/></c:if>
@@ -46,9 +47,4 @@
     <span><ssf:nlt tag="sidebar.clipboard"/></span>
   </a>
 </li>
-              
-
-
-
-
-
+</c:if>
