@@ -1624,6 +1624,21 @@ public class ListFolderHelper {
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
 						NLT.get("folder.column.LastActivity"), url, qualifiers);
 			}
+			
+			//rating
+			if (so.contains("rating")) {
+				qualifiers = new HashMap();
+				if (searchSortBy.equals(Constants.RATING_FIELD)) 
+					qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.RATING_FIELD);
+				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true");
+				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
+						NLT.get("folder.column.Rating"), url, qualifiers);
+			}
 		}
 		
 		//	The "Display styles" menu
@@ -1808,6 +1823,7 @@ public class ListFolderHelper {
 			qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "]" + ", '" + forumId + "');return false;");
 			//footerToolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "#", qualifiers);
 			model.put(WebKeys.TOOLBAR_CLIPBOARD_IDS, contributorIds);
+			model.put(WebKeys.TOOLBAR_CLIPBOARD_SHOW, Boolean.TRUE);
 		}
 		
 		// email
@@ -1824,6 +1840,7 @@ public class ListFolderHelper {
 			if (!op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
 				qualifiers.put("post", Boolean.TRUE);
 				qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
+				model.put(WebKeys.TOOLBAR_SENDMAIL_POST, Boolean.TRUE);
 			}
 			//footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 			model.put(WebKeys.TOOLBAR_SENDMAIL_URL, adapterUrl.toString());
@@ -1844,6 +1861,7 @@ public class ListFolderHelper {
 			if (!op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
 				qualifiers.put("post", Boolean.TRUE);
 				qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
+				model.put(WebKeys.TOOLBAR_MEETING_POST, Boolean.TRUE);
 			}
 			//footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
 			model.put(WebKeys.TOOLBAR_MEETING_URL, adapterUrl.toString());

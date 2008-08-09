@@ -867,7 +867,9 @@ public class WebKeys {
     public static final String SIMPLE_URL_NAME_NOT_ALLOWED_ERROR="ss_simpleUrlNameNotAllowedError";
     public static final String SNIPPET="ss_snippet";
     public static final String TOOLBAR_CLIPBOARD_IDS="ss_toolbar_clipboard_ids";
+    public static final String TOOLBAR_CLIPBOARD_SHOW="ss_toolbar_clipboard_show";
     public static final String TOOLBAR_SENDMAIL_IDS="ss_toolbar_sendmail_ids";
+    public static final String TOOLBAR_SENDMAIL_POST="ss_toolbar_sendmail_post";
     public static final String TOOLBAR_SENDMAIL_URL="ss_toolbar_sendmail_url";
     public static final String TOOLBAR_TEAM_ADD_URL="ss_toolbar_team_add_url";
     public static final String TOOLBAR_TEAM_MEET_URL="ss_toolbar_team_meet_url";
@@ -876,6 +878,7 @@ public class WebKeys {
     public static final String TOOLBAR_THEME_IDS="ss_toolbar_theme_ids";
     public static final String TOOLBAR_THEME_NAMES="ss_toolbar_theme_names";
     public static final String TOOLBAR_MEETING_IDS="ss_toolbar_meeting_ids";
+    public static final String TOOLBAR_MEETING_POST="ss_toolbar_meeting_post";
     public static final String TOOLBAR_MEETING_URL="ss_toolbar_meeting_url";
     public static final String TOOLBAR_SUBSCRIBE_EMAIL="ss_toolbar_subscribe_email";
     public static final String TOOLBAR_SUBSCRIBE_RSS="ss_toolbar_subscribe_rss";

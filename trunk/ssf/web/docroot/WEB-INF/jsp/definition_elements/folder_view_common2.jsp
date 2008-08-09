@@ -354,9 +354,9 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     	name="operation" value="save_folder_sort_info"/><ssf:param 
     	name="binderId" value="${ssFolder.id}"/><ssf:param 
     	name="ssFolderSortBy" value="_rating"/><c:choose><c:when 
-    	test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'false'}"><ssf:param 
-    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
-    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></ssf:url>"
+    	test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'true'}"><ssf:param 
+    	name="ssFolderSortDescend" value="false"/></c:when><c:otherwise><ssf:param 
+    	name="ssFolderSortDescend" value="true"/></c:otherwise></c:choose></ssf:url>"
 	
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'false'}">
