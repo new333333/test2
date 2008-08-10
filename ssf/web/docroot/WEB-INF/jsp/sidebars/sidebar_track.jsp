@@ -30,8 +30,11 @@
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-		  <ssf:ifLoggedIn>
-			 <c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
+<ssf:ifLoggedIn>
+	<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
+		<div id="ss_leftNav">
+		  <ul>
+			<li>
 			   <a href="javascript: ;" 
   				onClick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;"
 			 	<c:if test="${ssBinder.entityType == 'workspace'}">
@@ -60,8 +63,11 @@
   				style="position:relative; display:none; visibility:hidden; top:5px; left:10px; z-index:500;
          		border:1px solid black; padding-top:10px; padding-left: 10px; padding-bottom: 10px; padding-right: 10px; background-color:#ffffff; white-space:nowrap; margin-bottom:10px;">
 			  </div>
-			</c:if>
-		  </ssf:ifLoggedIn>
+			</li>
+		  </ul>
+		</div>
+	</c:if>
+</ssf:ifLoggedIn>
 
 
 

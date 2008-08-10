@@ -51,9 +51,15 @@
 			 <li>
 		  		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_share.jsp" />
 			 </li>
-			 <li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" /></li>
-			 <li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" /></li>
-			 <li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" /></li>
+			 <li>
+			 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" />
+			 </li>
+			 <li>
+			 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" />
+			 </li>
+			 <li>
+			 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" />
+			 </li>
 			</ul>
  		  </div>
 	
