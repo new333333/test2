@@ -42,9 +42,6 @@
 
 <div class="ss_buddies">
 
-  <table cellpadding="0" cellspacing="0" width="100%">
-	<tr>
-	<td valign="top">
 	<div class="ss_buddiesListHeader">		
 		<img border="0" <ssf:alt/>
 		  src="<html:brandedImagesPath/>icons/group.gif"/> 
@@ -54,47 +51,6 @@
 		  <span class="ss_fineprint ss_light"><ssf:nlt tag="teamMembersList.count"/>:</span> 
 		  <span class="ss_fineprint ss_bold">${ssTeamMembersCount}</span>		
 	</div>
-	</td>
-	<td>&nbsp;</td>
-	<td valign="top" align="right">
-	  <div align="left" style="float:right; padding-right: 2px; padding-bottom: 2px;">
-	  <ul>
-		<ssf:ifAccessAllowed binder = "${ssBinder}" operation = "manageTeamMembers">
-		    <li><a class="ss_linkButton" href="<ssf:url 
-		    		adapter="true" 
-		    		portletName="ss_forum" 
-		    		action="add_team_member" 
-		    		actionUrl="true"><ssf:param 
-		    		name="binderId" value="${ssBinder.id}"/><ssf:param 
-		    		name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
-		    	  onClick="ss_openUrlInPortlet(this.href, true, 600, 600);return false"
-		    	><ssf:nlt tag="toolbar.teams.addMember"/></a></li>
-		</ssf:ifAccessAllowed>
-		<c:if test="${!empty ssUser.emailAddress}">
-	    <li><a class="ss_linkButton" href="<ssf:url 
-	    		adapter="true" 
-	    		portletName="ss_forum" 
-	    		action="send_email" 
-	    		actionUrl="true"><ssf:param 
-	    		name="binderId" value="${ssBinder.id}"/><ssf:param 
-	    		name="appendTeamMembers" value="true"/></ssf:url>"
-	    	  onClick="ss_openUrlInPortlet(this.href, true, 600, 600);return false"
-	    	><ssf:nlt tag="toolbar.teams.sendmail"/></a></li>
-	    </c:if>
-	    <li><a class="ss_linkButton" href="<ssf:url 
-	    		adapter="true" 
-	    		portletName="ss_forum" 
-	    		action="add_meeting" 
-	    		actionUrl="true"><ssf:param 
-	    		name="binderId" value="${ssBinder.id}"/><ssf:param 
-	    		name="appendTeamMembers" value="true"/></ssf:url>"
-	    	  onClick="ss_openUrlInPortlet(this.href, true, 600, 600);return false"
-	    	><ssf:nlt tag="toolbar.teams.meet"/></a></li>
-	  </ul>
-	  </div>
-	</td>
-	</tr>
-  </table>
 <c:if test="${ssConfigJspStyle != 'template'}">	
 	<table class="ss_buddiesList" cellpadding="0" cellspacing="0">
 	

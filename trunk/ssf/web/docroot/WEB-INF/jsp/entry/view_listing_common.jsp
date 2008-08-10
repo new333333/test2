@@ -179,39 +179,7 @@ var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
     <tbody>
     <tr>
     <td valign="top" class="ss_view_sidebar"> <% // old class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}"> %>
-     <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
-	
-	  <div id="ss_sideNav_wrap"> <% // new sidebar format %>
-
-		<% // Status %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
-	
-		<!-- "It Bars" -->
-		  <div id="ss_leftNav">
-			<ul>
-			 <li>
-		  		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_share.jsp" />
-			 </li>
-			 <li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" /></li>
-			 <li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" /></li>
-			 <li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" /></li>
-			</ul>
- 		  </div>
-	
-		<% // Recent Places %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
-
-		<% // Folder Sidebar %>
-    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
-    	
-    	<% // Folder Tags %>
-    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_folder_tags.jsp" />
-
-		<% // Workspace Tree %>    
-    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tree.jsp" />
-
-	  </div> <% // end of new sidebar format %>
-	 </div> <% // end of ss_sidebarDiv %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
 
 	<td valign="top" class="ss_view_info">

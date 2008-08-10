@@ -31,7 +31,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${ssDefinitionEntry.entityType == 'folder'}">
 
-<ssf:sidebarPanel title="Tag IT xxx" id="ss_placetags_sidebar" divClass="ss_place_tags" initOpen="true" sticky="true">
+<ssf:sidebarPanel title="sidebar.tags.folder" id="ss_placetags_sidebar" divClass="ss_place_tags" initOpen="true" sticky="true">
 
   <c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
 <%@ page import="com.sitescape.util.BrowserSniffer" %>

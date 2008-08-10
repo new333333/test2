@@ -31,8 +31,11 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 
-		  <ssf:ifLoggedIn>
-			<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
+<ssf:ifLoggedIn>
+	<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
+		<div id="ss_leftNav">
+		  <ul>
+			<li>
 				<a href="<ssf:url adapter="true" portletName="ss_forum" 
 					action="__ajax_relevance" actionUrl="false"><ssf:param 
 					name="operation" value="share_this_binder" /><ssf:param 
@@ -54,6 +57,9 @@
   						</c:if>
 					</c:if>
 				</a>
-			</c:if>
-		  </ssf:ifLoggedIn>
+			</li>
+		  </ul>
+		</div>
+	</c:if>
+</ssf:ifLoggedIn>
 

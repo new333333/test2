@@ -34,17 +34,21 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:if test="${ss_toolbar_clipboard_show}">
-<c:set var="answer" value=""/>
-  <c:forEach var="contributorId" items="${ss_toolbar_clipboard_ids}">
-    <c:if test="${!empty answer}"><c:set var="answer" value="${answer}, "/></c:if>
-    <c:set var="answer" value="${answer}${contributorId}"/>
-  </c:forEach>
-
-<li> <% // to set the beginning of the list %>
-  <a href="${ss_muster.showForm}"
-    onClick="ss_muster.showForm('ss_muster_users', '${answer}', '${ssBinder.id}');return false;"
-  >
-    <span><ssf:nlt tag="sidebar.clipboard"/></span>
-  </a>
-</li>
+		<div id="ss_leftNav">
+		  <ul>
+			<li>
+			<c:set var="answer" value=""/>
+			  <c:forEach var="contributorId" items="${ss_toolbar_clipboard_ids}">
+			    <c:if test="${!empty answer}"><c:set var="answer" value="${answer}, "/></c:if>
+			    <c:set var="answer" value="${answer}${contributorId}"/>
+			  </c:forEach>
+			
+			  <a href="${ss_muster.showForm}"
+			    onClick="ss_muster.showForm('ss_muster_users', '${answer}', '${ssBinder.id}');return false;"
+			  >
+			    <span><ssf:nlt tag="sidebar.clipboard"/></span>
+			  </a>
+			</li>
+		  </ul>
+		</div>
 </c:if>

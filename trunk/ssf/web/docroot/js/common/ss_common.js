@@ -460,6 +460,7 @@ function ss_showPermalink(obj) {
 		//Create the div
 	    divObj = document.createElement("div");
 	    divObj.setAttribute("id", "ss_permalink_display_div");
+	    divObj.style.zIndex = ssPopupZ;
 	    divObj.className = "ss_style ss_popupMenu ss_permalink";
 	    divObj2 = document.createElement("div");
 	    inputObj = document.createElement("input");

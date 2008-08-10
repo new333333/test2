@@ -70,28 +70,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
     <tbody>
     <tr>
     <td valign="top" class="ss_view_sidebar">
-
-	<% // Navigation bar %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
-
-	<% // Status %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/status.jsp" />	
-	
-	<% // Share and Track %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/share_track.jsp" />
-	
-	<% // Recent Places %>
-	<jsp:include page="/WEB-INF/jspsidebars/recent_places.jsp" />
-
-	<% // Folder Sidebar %>
-
-    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
-
-	<% // Workspace Tree %>
-
-    <%@ include file="/WEB-INF/jsp/sidebars/workspace_tree.jsp" %>
-
-
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
 	<td valign="top" class="ss_view_info">
 

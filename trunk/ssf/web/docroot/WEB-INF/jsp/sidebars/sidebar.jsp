@@ -25,41 +25,57 @@
  * 
  * 
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
- * are trademarks of SiteScape, Inc.     
+ * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
-<%@ page import="com.sitescape.team.util.SPropsUtil" %>
-<%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%
+boolean isIE = BrowserSniffer.is_ie(request);
+%>
+<% // BEGIN SIDEBAR LAYOUT  %>
+    
+<div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
 
-<c:if test="${!empty ss_toolbar_sendmail_url}">
-		<div id="ss_leftNav">
-		  <ul>
-			<li>
-			<c:if test="${!ss_toolbar_sendmail_post}">
-				  <a href="${ss_toolbar_sendmail_url}"
-				    onClick="ss_toolbarPopupUrl(this.href);return false;"
-				  >
-				    <span><ssf:nlt tag="profile.abv.element.emailAddress"/></span>
-				  </a>
-			</c:if>
-			
-			<c:if test="${ss_toolbar_sendmail_post}">
-				<c:set var="contributorIdList" value=""/>
-				<c:forEach var="contributorId" items="${ss_toolbar_sendmail_ids}">
-				  <c:if test="${!empty contributorIdList}"><c:set var="contributorIdList" value="${contributorIdList}, "/></c:if>
-				  <c:set var="contributorIdList" value="${contributorIdList}${contributorId}"/>
-				</c:forEach>
-					<form class="inline" action="${ss_toolbar_sendmail_url}" method="post" 
-					  target="footerToolbarOptionWnd"
-					>
-					<input type="hidden" name="ssUsersIdsToAdd" value="${contributorIdList}"/>
-					<a href="javascript: ;" onclick="ss_toolbarPopupUrl('', 'footerToolbarOptionWnd'); ss_submitParentForm(this); "
-					><span><ssf:nlt tag="profile.abv.element.emailAddress"/></span></a>
-					</form>
-			</c:if>
-			</li>
-		  </ul>
-		</div>
-</c:if>
+	<div id="ss_sideNav_wrap"> <% // new sidebar format %>
+
+	<% // Status %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
+	
+	<% // Track %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_track.jsp" />
+	
+	<% // Share %>
+  	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_share.jsp" />
+	
+	<% // Recent Places %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
+
+	<% // Workspace Tree %>    
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tree.jsp" />
+
+	<% // Folder Tools %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
+
+	<% // Team Sidebar %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_team.jsp" />
+
+	<% // Folder or Workspace Tags %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tags.jsp" />
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_folder_tags.jsp" />
+
+	<% // Email %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" />
+	
+	<% // Meet %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" />
+	
+	<% // Clipboard %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" />
+		
+	<% // RSS Feed %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" /></li>
+	
+	</div> <% // end of new sidebar format %>
+</div> <% // end of ss_sidebarDiv %>
+	
