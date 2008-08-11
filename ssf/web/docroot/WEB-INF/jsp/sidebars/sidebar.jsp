@@ -34,9 +34,7 @@
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <% // BEGIN SIDEBAR LAYOUT  %>
-    
 <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
-
 	<div id="ss_sideNav_wrap"> <% // new sidebar format %>
 
 	<% // Status %>
@@ -56,6 +54,18 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 	<% // Folder Tools %>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
+
+	<!-- Saved searches -->
+	<jsp:include page="/WEB-INF/jsp/search/save_search.jsp" />
+							
+	<!-- Search Places rating  -->
+	<jsp:include page="/WEB-INF/jsp/search/rating_places.jsp" />
+
+	<!-- Search People rating  -->
+	<jsp:include page="/WEB-INF/jsp/search/rating_people.jsp" />
+
+	<!-- Search Tag cloud -->
+	<jsp:include page="/WEB-INF/jsp/search/tags.jsp" />
 
 	<% // Team Sidebar %>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_team.jsp" />

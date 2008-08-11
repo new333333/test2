@@ -33,7 +33,8 @@
 <%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<c:if test="${!empty ss_toolbar_sendmail_url}">
+<c:if test="${!ss_searchResultsPage}">
+	<c:if test="${!empty ss_toolbar_sendmail_url}">
 		<div id="ss_leftNav">
 		  <ul>
 			<li>
@@ -62,4 +63,5 @@
 			</li>
 		  </ul>
 		</div>
+	</c:if>
 </c:if>

@@ -189,7 +189,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
   class="ss_fineprint ss_sidebarSlidesm"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
   style="padding-left:9px; display:${ss_sidebarVisibilityHide};"
   id="ss_sidebarShow${renderResponse.namespace}" 
-  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/> www</span></a>
+  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
 </td>
 </ssf:ifnotaccessible>
 
@@ -198,7 +198,6 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 </td></tr>
 </table>
 </div>
-<% // BEGIN SIDEBAR LAYOUT  %>
 <ssf:ifnotaccessible>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>

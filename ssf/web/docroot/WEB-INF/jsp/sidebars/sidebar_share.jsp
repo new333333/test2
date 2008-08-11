@@ -29,37 +29,36 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-
-
-<ssf:ifLoggedIn>
-	<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
-		<div id="ss_leftNav">
-		  <ul>
-			<li>
-				<a href="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_relevance" actionUrl="false"><ssf:param 
-					name="operation" value="share_this_binder" /><ssf:param 
-					name="binderId" value="${ssBinder.id}" /></ssf:url>" 
-  					onClick="ss_openUrlInWindow(this, '_blank', '450px', '600px');return false;"
-					
-					<c:if test="${ssBinder.entityType == 'workspace'}"> 
-						title="<ssf:nlt tag="relevance.shareThisWorkspace"/>" >
-						<span><ssf:nlt tag="relevance.justShare"/></span>
-					</c:if>
-					<c:if test="${ssBinder.entityType == 'folder'}">
-  						<c:if test="${ssDefinitionFamily != 'calendar'}">
-  							title="<ssf:nlt tag="relevance.shareThisFolder"/>" >
-  							<span><ssf:nlt tag="relevance.justShare"/></span>
-  						</c:if>
-  						<c:if test="${ssDefinitionFamily == 'calendar'}">
-  							title="<ssf:nlt tag="relevance.shareThisCalendar"/>" >
-  							<span><ssf:nlt tag="relevance.justShare"/></span>
-  						</c:if>
-					</c:if>
-				</a>
-			</li>
-		  </ul>
-		</div>
-	</c:if>
-</ssf:ifLoggedIn>
-
+<c:if test="${!ss_searchResultsPage}">
+	<ssf:ifLoggedIn>
+		<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
+			<div id="ss_leftNav">
+			  <ul>
+				<li>
+					<a href="<ssf:url adapter="true" portletName="ss_forum" 
+						action="__ajax_relevance" actionUrl="false"><ssf:param 
+						name="operation" value="share_this_binder" /><ssf:param 
+						name="binderId" value="${ssBinder.id}" /></ssf:url>" 
+	  					onClick="ss_openUrlInWindow(this, '_blank', '450px', '600px');return false;"
+						
+						<c:if test="${ssBinder.entityType == 'workspace'}"> 
+							title="<ssf:nlt tag="relevance.shareThisWorkspace"/>" >
+							<span><ssf:nlt tag="relevance.justShare"/></span>
+						</c:if>
+						<c:if test="${ssBinder.entityType == 'folder'}">
+	  						<c:if test="${ssDefinitionFamily != 'calendar'}">
+	  							title="<ssf:nlt tag="relevance.shareThisFolder"/>" >
+	  							<span><ssf:nlt tag="relevance.justShare"/></span>
+	  						</c:if>
+	  						<c:if test="${ssDefinitionFamily == 'calendar'}">
+	  							title="<ssf:nlt tag="relevance.shareThisCalendar"/>" >
+	  							<span><ssf:nlt tag="relevance.justShare"/></span>
+	  						</c:if>
+						</c:if>
+					</a>
+				</li>
+			  </ul>
+			</div>
+		</c:if>
+	</ssf:ifLoggedIn>
+</c:if>
