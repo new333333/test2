@@ -80,10 +80,10 @@
     <ssf:param name="box_show_close_icon" value="true" />
     <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
   <iframe id="ss_showentryframe${renderResponse.namespace}" 
-    name="ss_showentryframe${renderResponse.namespace}" style="width:95%; 
+    name="ss_showentryframe${renderResponse.namespace}" style="width:99%; 
     display:block; position:relative; left:5px;"
     src="<html:rootPath/>js/forum/null.html" 
-    height="95%" width="95%" 
+    height="99%" width="99%" 
     onLoad="if (self.ss_setEntryDivHeight && self.document.getElementById('ss_showentrydiv') && self.document.getElementById('ss_showentrydiv').style.display != 'none') ss_setEntryDivHeight();" 
     frameBorder="0" >xxx</iframe>
   </ssf:box>
