@@ -192,28 +192,26 @@ public class ViewPermalinkController  extends SAbstractController {
 		} else {
 	        user = RequestContextHolder.getRequestContext().getUser();
 	 		
-			if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-				//See if the user has access to the item being requested
-				if (!binderId.equals("")) {
-					try {
-						//See if this user can access the binder
-						Binder binder = getBinderModule().getBinder(new Long(binderId));
-						model.put(WebKeys.BINDER, binder);
-						if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
-							//See if the user can access the entry, too
-							getFolderModule().getEntry(new Long(binderId), new Long(entryId));
-						}
-					} catch(AccessControlException ac) {
-						//Set up the standard beans
-						BinderHelper.setupStandardBeans(this, request, response, model, new Long(binderId));
-						if (WebHelper.isUserLoggedIn(request) && 
-								!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-							//Access is not allowed
-							return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
-						} else {
-							//Please log in
-							return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
-						}
+			//See if the user has access to the item being requested
+			if (!binderId.equals("")) {
+				try {
+					//See if this user can access the binder
+					Binder binder = getBinderModule().getBinder(new Long(binderId));
+					model.put(WebKeys.BINDER, binder);
+					if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
+						//See if the user can access the entry, too
+						getFolderModule().getEntry(new Long(binderId), new Long(entryId));
+					}
+				} catch(AccessControlException ac) {
+					//Set up the standard beans
+					BinderHelper.setupStandardBeans(this, request, response, model, new Long(binderId));
+					if (WebHelper.isUserLoggedIn(request) && 
+							!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+						//Access is not allowed
+						return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
+					} else {
+						//Please log in
+						return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
 					}
 				}
 			}
