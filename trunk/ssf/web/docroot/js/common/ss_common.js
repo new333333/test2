@@ -6133,8 +6133,9 @@ function ss_showHideSidebar(namespace) {
 		    	divObj.style.visibility = "hidden";
 		    	divObj.style.display = "none";
 				tdObj.className = '';
-				sidebarShow.style.display = 'none'
-				sidebarHide.style.display = 'block'
+				sidebarShow.style.display = 'none';
+				sidebarHide.style.display = 'block';
+				ssf_onLayoutChange();
    		}}).play();
    		sidebarVisibility = "none";
 	} else {
