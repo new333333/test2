@@ -6159,7 +6159,7 @@ function ss_showHideSidebar(namespace) {
 
 //Routine to hide the sunburst
 function ss_hideSunburst(s_id, s_binderId) {
-	var divObj = self.document.getElementById('ss_sunburstDiv'+s_id);
+	var divObj = self.document.getElementById('ss_sunburstDiv'+s_binderId+'_'+s_id);
 
 		//Hide it
    		dojo.fadeOut({node: divObj, end: 0, delay: 400, onEnd: function() {
