@@ -454,7 +454,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   <!-- to keep sunburst in line -->
     <c:if test="${!empty seenStyleburst}">
     
-  <a id="ss_sunburstDiv${entry1._docId}" href="javascript: ;" 
+  <a id="ss_sunburstDiv${ssFolder.id}_${entry1._docId}" href="javascript: ;" 
   onClick="ss_hideSunburst('${entry1._docId}', '${ssFolder.id}');return false;"
 ><span 
   style="display:${ss_sunburstVisibilityHide};"
