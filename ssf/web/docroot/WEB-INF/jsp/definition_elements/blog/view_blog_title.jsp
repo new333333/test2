@@ -72,7 +72,7 @@
 	if (!ssSeenMap.checkIfSeen(title_entry)) {
 		%>
 		
-		<a id="ss_sunburstDiv${ssDefinitionEntry.id}" href="javascript: ;" 
+		<a id="ss_sunburstDiv${ssFolder.id}_${ssDefinitionEntry.id}" href="javascript: ;" 
 		  onClick="ss_hideSunburst('${ssDefinitionEntry.id}', '${ssFolder.id}');return false;"
 		><span 
 		  style="display:${ss_sunburstVisibilityHide};"
