@@ -44,6 +44,10 @@ public class Restrictions
 		return new Junction.Disjunction();
 	}
 
+	public static Junction.Not not()
+	{
+		return new Junction.Not();
+	}
 	
 	abstract static class FieldCriterion implements Criterion
 	{

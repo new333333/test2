@@ -107,8 +107,14 @@ import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.util.Validator;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.util.search.Constants;
 import com.sitescape.util.search.Criteria;
+import com.sitescape.util.search.Order;
+import static com.sitescape.util.search.Restrictions.in;
+import static com.sitescape.util.search.Restrictions.eq;
+import static com.sitescape.util.search.Restrictions.between;
+
 /**
  * @author Janet McCann
  *
@@ -751,23 +757,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 	protected Map executeSearchQuery(SearchObject so, int offset, int maxResults) {
         List entries = new ArrayList();
-        Hits hits = new Hits(0);
-
-	   	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
-
-	   	if(logger.isDebugEnabled()) {
-	   		logger.debug("Query is in executeSearchQuery: " + soQuery.toString());
-	   	}
-
-	   	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
-	   	try {
-	        hits = luceneSession.search(soQuery,so.getSortBy(),offset,maxResults);
-	   	} catch(Exception e) {
-	   		System.out.println("Exception:" + e);
-	   	} finally {
-	   		luceneSession.close();
-	    }
-
+        Hits hits = executeLuceneQuery(so, offset, maxResults);
 	    entries = SearchUtils.getSearchEntries(hits);
 	    SearchUtils.extendPrincipalsInfo(entries, getProfileDao(), Constants.CREATORID_FIELD);
 
@@ -779,7 +769,27 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	return retMap; 
 	}	
     
+	private Hits executeLuceneQuery(SearchObject so, int offset, int maxResults) {
+		Hits hits = new Hits(0);
 
+		Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
+
+		if(logger.isDebugEnabled()) {
+			logger.debug("Query is in executeSearchQuery: " + soQuery.toString());
+		}
+
+		LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
+		try {
+			hits = luceneSession.search(soQuery,so.getSortBy(),offset,maxResults);
+		} catch(Exception e) {
+			System.out.println("Exception:" + e);
+		} finally {
+			luceneSession.close();
+		}
+		return hits;
+
+		
+	}
 
 	public List<Map> getSearchTags(String wordroot, String type) {
 		ArrayList tags;
@@ -924,62 +934,20 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public List<Map> getTeamMemberships(Long userId) {
 
 		// We use search engine to get the list of binders.
+		Criteria crit = new Criteria()
+			.add(eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER))
+			.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
 		
-		// create empty search filter
-		org.dom4j.Document qTree = SearchUtils.getInitalSearchDocument(null, null);
-		
-		Element rootElement = qTree.getRootElement();
-		Element boolElement = rootElement.element(Constants.AND_ELEMENT);
-		
-		// look for binders only
-		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
-    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOC_TYPE_FIELD);
-		field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
-    	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-       	child.setText(Constants.DOC_TYPE_BINDER);
-
     	// look for user
        	Principal prin = RequestContextHolder.getRequestContext().getUser();
        	if (!userId.equals(prin.getId())) prin = getProfileDao().loadPrincipal(userId, prin.getZoneId(), true);
        	Set<Long> ids = getProfileDao().getPrincipalIds(prin);
        	if (ids.isEmpty()) return Collections.EMPTY_LIST;
-       	if (ids.size() > 1) {
-       		Element orField2 = boolElement.addElement(Constants.OR_ELEMENT);
-       		for (Long id:ids) {
-       			field = orField2.addElement(Constants.FIELD_ELEMENT);
-       			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.TEAM_MEMBERS_FIELD);
-       			field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
-       			child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-       			child.setText(id.toString());
-       		}
-       	} else {
-  			field = boolElement.addElement(Constants.FIELD_ELEMENT);
-   			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.TEAM_MEMBERS_FIELD);
-   			field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
-   			child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-   			child.setText(userId.toString());
-       		
-       	}
+       	crit.add(in(Constants.TEAM_MEMBERS_FIELD, LongIdUtil.getIdsAsStringSet(ids)));
     	QueryBuilder qb = new QueryBuilder(true);
-    	SearchObject so = qb.buildQuery(qTree);
-	   	//Set the sort order
-	   	SortField[] fields = new SortField[] {new SortField(Constants.SORT_TITLE_FIELD, SortField.AUTO, false)};
-	   	so.setSortBy(fields);
-   	
-    	if(logger.isDebugEnabled()) {
-    		logger.debug("Query is: " + qTree.asXML());
-    		logger.debug("Query is: " + so.getQuery().toString());
-    	}
+    	SearchObject so = qb.buildQuery(crit.toQuery());
     	
-    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
-        
-    	Hits hits = null;
-        try {
-	        hits = luceneSession.search(so.getQuery(), so.getSortBy(), 0, Integer.MAX_VALUE);
-        }
-        finally {
-            luceneSession.close();
-        }
+    	Hits hits = executeLuceneQuery(so, 0, Integer.MAX_VALUE);
         if (hits == null) return new ArrayList();
     	return SearchUtils.getSearchEntries(hits);	    
     }	
@@ -1107,7 +1075,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     protected void buildBinderDomTree(Element current, Binder top, Comparator c, 
     		DomTreeBuilder domTreeHelper, int levels) {
     	Element next; 
-    	
+    	int maxBucketSize = SPropsUtil.getInt("wsTree.maxBucketSize");
     	int domTreeType;
     	if (EntityIdentifier.EntityType.folder.equals(top.getEntityType())) {
     		domTreeType = DomTreeBuilder.TYPE_FOLDER;
@@ -1121,7 +1089,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	--levels;
 		TreeSet ws = new TreeSet(c);
 		List searchBinders = null;
-		if (levels >= 0 && (!domTreeHelper.getPage().equals("") || top.getBinderCount() > 10)) {  //what is the best number to avoid search??
+		if (levels >= 0 && (!domTreeHelper.getPage().equals("") || top.getBinderCount() > maxBucketSize)) {  //what is the best number to avoid search??
 			//do search
 			if (domTreeHelper.getPage().equals("")) {
 				Map options = new HashMap();
@@ -1130,14 +1098,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 				searchBinders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
 				int results = (Integer)searchResults.get(ObjectKeys.TOTAL_SEARCH_COUNT);
 				if (results > SPropsUtil.getInt("wsTree.maxBucketSize")) { //just to get started
-					searchResults = buildBinderVirtualTree(current, top, domTreeHelper, results);
+					searchResults = buildBinderVirtualTree(current, top, domTreeHelper, results, maxBucketSize);
 					//If no results are returned, the work was completed in buildBinderVirtualTree and we can exit now
 					if (searchResults == null) return;
 					searchBinders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
 				}
 			} else {
 				//We are looking for a virtual page
-				Map searchResults = buildBinderVirtualTree(current, top, domTreeHelper, 0);
+				Map searchResults = buildBinderVirtualTree(current, top, domTreeHelper, 0, maxBucketSize);
 				//If no results are returned, the work was completed in buildBinderVirtualTree and we can exit now
 				if (searchResults == null) return;
 				searchBinders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
@@ -1225,9 +1193,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	
     }
     //Build a list of buckets (or get the final page)
-    protected Map buildBinderVirtualTree(Element current, Binder top, DomTreeBuilder domTreeHelper, int totalHits) {
+/**    protected Map buildBinderVirtualTree(Element current, Binder top, DomTreeBuilder domTreeHelper, int totalHits, int maxBucketSize) {
     	Element next;
-    	int maxBucketSize = SPropsUtil.getInt("wsTree.maxBucketSize");
     	int skipLength = maxBucketSize;
     	if (totalHits > maxBucketSize) {
     		skipLength = totalHits / maxBucketSize;
@@ -1338,6 +1305,109 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	            	soQueryFinal = singleBucketSO.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
 	        	}
 	        	hits = luceneSession.search(soQueryFinal, soFinal.getSortBy(), 0, -1);
+	        }
+        }
+        finally {
+            luceneSession.close();
+        }
+        //See if we are at the end of the bucket search
+        if (hits != null) {
+    	    List entries = SearchUtils.getSearchEntries(hits);
+    	    //SearchUtils.extendPrincipalsInfo(entries, getProfileDao());
+                   
+            Map retMap = new HashMap();
+            retMap.put(ObjectKeys.SEARCH_ENTRIES,entries);
+            retMap.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(hits.getTotalHits()));
+            retMap.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(hits.length()));
+     
+            domTreeHelper.setPage("");
+        	return retMap; 
+        }
+        //Build the virtual tree
+        String page = domTreeHelper.getPage();
+        if (!page.equals("")) page += ".";
+        for (int i = 0; i < results.size(); i++) {
+        	List result = (List) results.get(i);
+        	Map skipMap = new HashMap();
+        	skipMap.put(DomTreeBuilder.SKIP_TUPLE, result);
+        	skipMap.put(DomTreeBuilder.SKIP_PAGE, page + String.valueOf(i));
+        	skipMap.put(DomTreeBuilder.SKIP_BINDER_ID, top.getId().toString());
+			next = current.addElement(DomTreeBuilder.NODE_CHILD);
+			if (domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_SKIPLIST, skipMap, next) == null) current.remove(next);
+        }
+        return null;
+    }
+    **/
+    //Build a list of buckets (or get the final page)
+    protected Map buildBinderVirtualTree(Element current, Binder top, DomTreeBuilder domTreeHelper, int totalHits, int maxBucketSize) {
+    	Element next;
+    	int skipLength = maxBucketSize;
+    	if (totalHits > maxBucketSize) {
+    		skipLength = totalHits / maxBucketSize;
+    		if (skipLength < maxBucketSize) skipLength = maxBucketSize;
+    	}
+
+    	//See if this has a page already set
+    	List tuple = domTreeHelper.getTuple();
+    	String tuple1 = "";
+    	String tuple2 = "";
+    	if (tuple != null && tuple.size() >= 2) {
+    		tuple1 = (String) tuple.get(0);
+    		tuple2 = (String) tuple.get(1);
+    	}
+    	QueryBuilder qb = new QueryBuilder(true);
+  
+        
+    	List results = new ArrayList();
+    	Hits hits = null;
+    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
+  	   	try {
+  		   Criteria crit = new Criteria()
+ 			.add(eq(Constants.BINDERS_PARENT_ID_FIELD, top.getId().toString()))
+ 			.add(eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
+  	    	if (totalHits == 0) {
+    	    	crit.add(between(Constants.NORM_TITLE, tuple1, tuple2))
+       				.addOrder(new Order(Constants.NORM_TITLE, true));
+
+    	    	//Create the Lucene query
+    	    	SearchObject searchObject = qb.buildQuery(crit.toQuery());
+    			Query query = searchObject.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
+    			if(logger.isDebugEnabled()) {
+    				logger.debug("Query is in executeSearchQuery: " + query.toString());
+    			}
+   	    	
+    			//We have to figure out the size of the pool before building the buckets
+    			Hits testHits = luceneSession.search(query, searchObject.getSortBy(), 0, maxBucketSize);
+    			totalHits = testHits.getTotalHits();
+    			if (totalHits > maxBucketSize) {
+    				skipLength = testHits.getTotalHits() / maxBucketSize;
+    				if (skipLength < maxBucketSize) skipLength = maxBucketSize;
+    			}
+    		}
+	        if (totalHits > skipLength) {
+	           	SearchObject searchObject = qb.buildQuery(crit.toQuery());
+	           	Query query = searchObject.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice   	
+	           	if(logger.isDebugEnabled()) {
+	           		logger.debug("Query is: " + searchObject.toString());
+	           	}
+	           	//no order here
+	        	results = luceneSession.getNormTitles(query, tuple1, tuple2, skipLength);
+	        }
+	        if (results == null || results.size() <= 1) {
+	        	//We must be at the end of the buckets; now get the real entries
+ 	        	if ("".equals(tuple1) && "".equals(tuple2)) {
+      				crit.addOrder(new Order(Constants.NORM_TITLE, true));
+	           	} else {
+    	    		crit.add(between(Constants.NORM_TITLE, tuple1, tuple2))
+       					.addOrder(new Order(Constants.NORM_TITLE, true));
+
+	           	}
+ 	        	SearchObject searchObject = qb.buildQuery(crit.toQuery());
+ 	   			Query query = searchObject.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
+    			if(logger.isDebugEnabled()) {
+    				logger.debug("Query is in executeSearchQuery: " + query.toString());
+    			}
+    			hits = luceneSession.search(query, searchObject.getSortBy(), 0, -1);
 	        }
         }
         finally {
