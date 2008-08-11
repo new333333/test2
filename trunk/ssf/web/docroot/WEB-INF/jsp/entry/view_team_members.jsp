@@ -91,7 +91,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 			  class="ss_fineprint ss_sidebarSlidesm"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
 			  style="padding-left:9px; display:${ss_sidebarVisibilityHide};"
 			  id="ss_sidebarShow${renderResponse.namespace}" 
-			  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/> xxx</span></a>
+			  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
 		</td><td valign="top">
 		<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 		</td></tr>

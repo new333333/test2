@@ -34,8 +34,9 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.entryDisplay"/> 
- 	<div class="ss_sub_sidebarMenu">
-        <table width="100%"><tbody>
+	<div class="ss_sub_sidebarMenu">
+        <table width="100%">
+         <tbody>
           <tr>
             <td><label>
               <input type="radio" name="ss_entryDisplayStyle" value="radio" />
@@ -52,8 +53,8 @@
               <ssf:nlt tag="sidebar.new.page"/> 
             </label></td>
           </tr>
-          
-        </tbody></table>
-      </div> 
-	</div>
+         </tbody>
+        </table>
+	</div> 
+</div>
 

@@ -60,7 +60,7 @@
   class="ss_fineprint ss_sidebarSlidesm"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
   style="padding-left:9px; display:${ss_sidebarVisibilityHide};"
   id="ss_sidebarShow${renderResponse.namespace}" 
-  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/> sss</span></a>
+  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
 </td><td valign="top">
 <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 </td></tr>
@@ -70,41 +70,8 @@
     <tbody>
     <tr>
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
-    <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
-
-	<% // BEGIN SIDEBAR LAYOUT  %>
-	
-	  <div id="ss_sideNav_wrap"> <% // new sidebar format %>
-
-		<% // Status %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
-		
-		<% // Meet Tab %>
-		<div id="ss_leftNav">
-			<ul>
-				<li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" /></li>
-			</ul>
- 		</div>
-	
-		<% // Recent Places %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
-
-		<!-- Saved searches -->
-		<jsp:include page="/WEB-INF/jsp/search/save_search.jsp" />
-								
-		<!-- Places rating - Moved to the new file -->
-		<jsp:include page="/WEB-INF/jsp/search/rating_places.jsp" />
-
-		<!-- People rating - Moved to the new file -->
-		<jsp:include page="/WEB-INF/jsp/search/rating_people.jsp" />
-
-		<!-- Tags -->
-		<jsp:include page="/WEB-INF/jsp/search/tags.jsp" />
-
-
-
-	  </div> <% // end of new sidebar format %>
-	 </div> <% // end of ss_sidebarDiv %>
+		<c:set var="ss_searchResultsPage" value="true" scope="request" />
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
 	<td class="ss_view_info" valign="top">
 

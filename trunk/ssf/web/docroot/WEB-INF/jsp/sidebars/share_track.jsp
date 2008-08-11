@@ -34,69 +34,68 @@
 <%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<ssf:sidebarPanel title="relevance.shareTrack" id="ss_share_sidebar" divClass="ss_place_tags" initOpen="true" sticky="true">
-<ssf:ifLoggedIn>
-
-<!-- Beginning of  Share/Track Buttons -->
-<div>
-	<ul style="padding-top: 2px; padding-left: 5px;">
-	<li><span>I thot We weren't using this View?
-	<br/>If true, should delete share_track.jsp and delete view_vertical.jsp</span></li>
+<c:if test="${!ss_searchResultsPage}">
+	<ssf:sidebarPanel title="relevance.shareTrack" id="ss_share_sidebar" divClass="ss_place_tags" initOpen="true" sticky="true">
+	<ssf:ifLoggedIn>
+	
+	<!-- Beginning of  Share/Track Buttons -->
+	<div>
+		<ul style="padding-top: 2px; padding-left: 5px;">
+		<li><span>I thot We weren't using this View?
+		<br/>If true, should delete share_track.jsp and delete view_vertical.jsp</span></li>
+		<li>
+	<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
+	<a style="display:inline;" 
+	  href="<ssf:url adapter="true" portletName="ss_forum" 
+			action="__ajax_relevance" actionUrl="false"><ssf:param 
+			name="operation" value="share_this_binder" /><ssf:param 
+			name="binderId" value="${ssBinder.id}" /></ssf:url>" 
+	  onClick="ss_openUrlInWindow(this, '_blank', '450px', '600px');return false;"
+	<c:if test="${ssBinder.entityType == 'workspace'}"> 
+		title="<ssf:nlt tag="relevance.shareThisWorkspace"/>" >
+		<span class="ss_tabs_title"><ssf:nlt tag="relevance.justShare"/></span></c:if>
+	<c:if test="${ssBinder.entityType == 'folder'}">
+	  <c:if test="${ssDefinitionFamily != 'calendar'}">
+	  	title="<ssf:nlt tag="relevance.shareThisFolder"/>" >
+	  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justShare"/></span></c:if>
+	  <c:if test="${ssDefinitionFamily == 'calendar'}">
+	  	title="<ssf:nlt tag="relevance.shareThisCalendar"/>" >
+	  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justShare"/></span></c:if>
+	</c:if>
+	</a>
+	</c:if>
+	</li>
+	
 	<li>
-<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
-<a style="display:inline;" 
-  href="<ssf:url adapter="true" portletName="ss_forum" 
-		action="__ajax_relevance" actionUrl="false"><ssf:param 
-		name="operation" value="share_this_binder" /><ssf:param 
-		name="binderId" value="${ssBinder.id}" /></ssf:url>" 
-  onClick="ss_openUrlInWindow(this, '_blank', '450px', '600px');return false;"
-<c:if test="${ssBinder.entityType == 'workspace'}"> 
-	title="<ssf:nlt tag="relevance.shareThisWorkspace"/>" >
-	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justShare"/></span></c:if>
-<c:if test="${ssBinder.entityType == 'folder'}">
-  <c:if test="${ssDefinitionFamily != 'calendar'}">
-  	title="<ssf:nlt tag="relevance.shareThisFolder"/>" >
-  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justShare"/></span></c:if>
-  <c:if test="${ssDefinitionFamily == 'calendar'}">
-  	title="<ssf:nlt tag="relevance.shareThisCalendar"/>" >
-  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justShare"/></span></c:if>
+	<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
+	<a href="javascript: ;" 
+	  onClick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;"
+	<c:if test="${ssBinder.entityType == 'workspace'}">
+	  <c:if test="${ssBinder.definitionType != 12}">
+	  title="<ssf:nlt tag="relevance.trackThisWorkspace"/>" >
+	  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
+	  <c:if test="${ssBinder.definitionType == 12}">
+	  	title="<ssf:nlt tag="relevance.trackThisPerson"/>" >
+	  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
+	</c:if>
+	<c:if test="${ssBinder.entityType == 'folder'}">
+	  <c:if test="${ssDefinitionFamily != 'calendar'}">
+	  	title="<ssf:nlt tag="relevance.trackThisFolder"/>" >
+	  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
+	  <c:if test="${ssDefinitionFamily == 'calendar'}">
+	  	title="<ssf:nlt tag="relevance.trackThisCalendar"/>" >
+	  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
+	</c:if>
+	</a>
+	<div id="ss_track_this_ok${renderResponse.namespace}" 
+	  style="position:relative; display:none; visibility:hidden; top:5px; left:10px; z-index:500;
+	         border:1px solid black; padding-top:10px; padding-left: 10px; padding-bottom: 10px; padding-right: 10px; background-color:#ffffff; white-space:nowrap; margin-bottom:10px;"></div>
+	</div>
+	</c:if>
+	</li>
+	
+	<!-- end of share and track buttons div -->
+	
+	</ssf:ifLoggedIn> 
+	</ssf:sidebarPanel>
 </c:if>
-</a>
-</c:if>
-</li>
-
-<li>
-<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
-<a href="javascript: ;" 
-  onClick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;"
-<c:if test="${ssBinder.entityType == 'workspace'}">
-  <c:if test="${ssBinder.definitionType != 12}">
-  title="<ssf:nlt tag="relevance.trackThisWorkspace"/>" >
-  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
-  <c:if test="${ssBinder.definitionType == 12}">
-  	title="<ssf:nlt tag="relevance.trackThisPerson"/>" >
-  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
-</c:if>
-<c:if test="${ssBinder.entityType == 'folder'}">
-  <c:if test="${ssDefinitionFamily != 'calendar'}">
-  	title="<ssf:nlt tag="relevance.trackThisFolder"/>" >
-  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
-  <c:if test="${ssDefinitionFamily == 'calendar'}">
-  	title="<ssf:nlt tag="relevance.trackThisCalendar"/>" >
-  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
-</c:if>
-</a>
-<div id="ss_track_this_ok${renderResponse.namespace}" 
-  style="position:relative; display:none; visibility:hidden; top:5px; left:10px; z-index:500;
-         border:1px solid black; padding-top:10px; padding-left: 10px; padding-bottom: 10px; padding-right: 10px; background-color:#ffffff; white-space:nowrap; margin-bottom:10px;"></div>
-</div>
-</c:if>
-</li>
-
-<!-- end of share and track buttons div -->
-
-</ssf:ifLoggedIn> 
-</ssf:sidebarPanel>
-
-
-
