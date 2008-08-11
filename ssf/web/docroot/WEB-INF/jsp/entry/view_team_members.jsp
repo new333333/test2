@@ -38,8 +38,8 @@
 String folderViewStyle = DefinitionUtils.getViewType(ssConfigDefinition);
 if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "folder";
 %>
-<c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}"/>
-<c:if test="${empty ss_sidebarVisibility}"><c:set var="ss_sidebarVisibility" value="block"/></c:if>
+<c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}" scope="request"/>
+<c:if test="${empty ss_sidebarVisibility}"><c:set var="ss_sidebarVisibility" value="block" scope="request"/></c:if>
 <c:if test="${ss_sidebarVisibility == 'none'}">
   <c:set var="ss_sidebarVisibilityShow" value="block"/>
   <c:set var="ss_sidebarVisibilityHide" value="none"/>
