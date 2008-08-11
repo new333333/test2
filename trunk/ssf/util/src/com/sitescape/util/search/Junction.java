@@ -60,4 +60,16 @@ abstract public class Junction implements Criterion
 			return Constants.AND_ELEMENT;
 		}
 	}
+	public static class Not extends Junction
+	{
+		public Not()
+		{
+			super();
+		}
+
+		public String getOp()
+		{
+			return Constants.NOT_ELEMENT;
+		}
+	}
 }

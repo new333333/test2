@@ -64,7 +64,17 @@ public class LongIdUtil {
 		}
 		return memberIds;		
 	}
-	
+	public static Set<String> getIdsAsStringSet(Collection ids) {
+		Set<String> memberIds = new HashSet();
+		if (ids != null) {
+			Iterator it = ids.iterator();
+			while (it.hasNext()) {
+				Object id = it.next();
+				memberIds.add(id.toString());
+			}
+		}
+		return memberIds;		
+	}
 	public static Set<Long> getIdsAsLongSet(String ids) {
 		if(ids == null) return new HashSet<Long>();
 		if (ids.contains(",")) return getIdsAsLongSet(ids, COMMA_SEPARATOR);
@@ -124,5 +134,5 @@ public class LongIdUtil {
 		}
 		return buf.toString();
 	}
-	
+
 }

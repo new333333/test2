@@ -28,6 +28,9 @@
  */
 package com.sitescape.team.module.file.impl;
 
+import static com.sitescape.util.search.Restrictions.conjunction;
+import static com.sitescape.util.search.Restrictions.eq;
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -35,7 +38,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -47,17 +49,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.dom4j.Element;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.search.Query;
+import org.dom4j.Element;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.FileCopyUtils;
 
+import com.sitescape.team.InternalException;
+import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.docconverter.IHtmlConverterManager;
@@ -71,7 +75,6 @@ import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FileItem;
 import com.sitescape.team.domain.HistoryStamp;
-import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Reservable;
 import com.sitescape.team.domain.ReservedByAnotherUserException;
 import com.sitescape.team.domain.TitleException;
@@ -109,13 +112,10 @@ import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.util.WebHelper;
-import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.util.KeyValuePair;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
-import com.sitescape.team.InternalException;
-import com.sitescape.team.UncheckedIOException;
-import com.sitescape.team.ObjectKeys;
+import com.sitescape.util.search.Criteria;
 
 /**
  * This implementing class utilizes transactional demarcation strategies that 
@@ -891,39 +891,18 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 
 	public Map<String,Long> getChildrenFileNames(Binder binder) {
-		// We use search engine to get the list of file names in the specified folder.
-		
-		// create empty search filter
-		org.dom4j.Document qTree = SearchUtils.getInitalSearchDocument(null, null);
-		
-		/*
-		Element filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
-		Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterElementName, BasicIndexUtils.DOC_TYPE_FIELD);
-		Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-		filterTermValueEle.setText(BasicIndexUtils.DOC_TYPE_ATTACHMENT);
-		*/
-		
-		
-		Element rootElement = qTree.getRootElement();
-		Element boolElement = rootElement.element(Constants.AND_ELEMENT);
-		//boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
-		
 		// look for the specific binder id
-		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
-    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.BINDER_ID_FIELD);
-    	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-    	child.setText(binder.getId().toString());
-
     	// look only for attachments
-    	field = boolElement.addElement(Constants.FIELD_ELEMENT);
-    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOC_TYPE_FIELD);
-    	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-    	child.setText(Constants.DOC_TYPE_ATTACHMENT);
-
-    	QueryBuilder qb = new QueryBuilder(true);
-    	SearchObject so = qb.buildQuery(qTree);
-    	
+    	Criteria crit = new Criteria()
+    	    .add(conjunction()	
+    			.add(eq(Constants.BINDER_ID_FIELD, binder.getId().toString()))
+   				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_ATTACHMENT))
+     		);
+		// We use search engine to get the list of file names in the specified folder.
+		QueryBuilder qb = new QueryBuilder(true);
+    	org.dom4j.Document qTree = crit.toQuery(); //save for debug
+		SearchObject so = qb.buildQuery(qTree);   	
+   	
     	// create Lucene query    	
     	Query soQuery = so.getQuery();
     	    	
