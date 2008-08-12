@@ -300,6 +300,7 @@ public class ListFolderHelper {
 			if (binder== null) {
 				view = "binder/deleted_binder";
 			} else if(configElement == null) {
+				buildFolderToolbars(bs, request, response, (Folder)binder, binderId.toString(), model, viewType);
 				view = WebKeys.VIEW_NO_DEFINITION;
 			} else if (op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
 				model.put(WebKeys.SHOW_TEAM_MEMBERS, true);

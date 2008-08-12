@@ -34,75 +34,66 @@
 <ssf:ifadapter>
 <body class="ss_style_body">
 </ssf:ifadapter>
-<ssf:ifnotadapter>
+
 <div id="ss_portlet_content" class="ss_style ss_portlet">
-<% // Navigation bar %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+	<c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}" scope="request"/>
+	<c:if test="${empty ss_sidebarVisibility}"><c:set var="ss_sidebarVisibility" value="block" scope="request"/></c:if>
+	<c:if test="${ss_sidebarVisibility == 'none'}">
+	  <c:set var="ss_sidebarVisibilityShow" value="block"/>
+	  <c:set var="ss_sidebarVisibilityHide" value="none"/>
+	  <c:set var="ss_sidebarTdStyle" value=""/>
+	</c:if>
+	<c:if test="${ss_sidebarVisibility != 'none'}">
+	  <c:set var="ss_sidebarVisibilityShow" value="none"/>
+	  <c:set var="ss_sidebarVisibilityHide" value="block"/>
+	  <c:set var="ss_sidebarTdStyle" value="ss_view_sidebar"/>
+	</c:if>
 	
-	<% // BEGIN SIDEBAR LAYOUT  %>	
-	<div id="ss_sideNav_wrap"> <% // new sidebar format %>
-
-		<% // Status %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
-	
-		<!-- "It Bars" -->
-		  <div id="ss_leftNav">
-			<ul>
-			 <li>
-		  		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_share.jsp" />
-			 </li>
-			 <li>
-			 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" />
-			 </li>
-			 <li>
-			 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" />
-			 </li>
-			 <li>
-			 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" />
-			 </li>
-			</ul>
- 		  </div>
-	
-		<% // Recent Places %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
-
-		<% // Folder Sidebar %>
-    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
-    	
-    	<% // Folder Tags %>
-    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_folder_tags.jsp" />
-
-		<% // Workspace Tree %>    
-    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tree.jsp" />
-
-	  </div> <% // end of new sidebar format %>
-
-<div class="ss_tab_canvas">
-<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
-   <div class="ss_style_color" >
-
-</ssf:ifnotadapter>
-
-<div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer" style="margin:0px; padding:0px;">
-<p style="text-align:center;">
-<c:if test="${!empty entryMoved}">
-<ssf:nlt tag="entry.moved">
-<ssf:param name="value" value="${entryMoved.pathName}"/>
-</ssf:nlt>
-</c:if>
-<c:if test="${empty entryMoved}">
-<ssf:nlt tag="entry.deleted"/>
-</c:if>
-</p>
-
-</div>
-
-<ssf:ifnotadapter>
+	<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
+		<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
+		<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
+		<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
+		<div class="ss_actions_bar1_pane ss_sidebarImage" width="100%">
+			<table cellspacing="0" cellpadding="0" width="100%">
+				<tr><td valign="middle">
+				<a href="javascript: ;" 
+				  onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
+				><span style="padding-left:9px; display:${ss_sidebarVisibilityShow};"
+				  id="ss_sidebarHide${renderResponse.namespace}" 
+				  class="ss_fineprint ss_sidebarSlidesm"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
+				  style="padding-left:9px; display:${ss_sidebarVisibilityHide};"
+				  id="ss_sidebarShow${renderResponse.namespace}" 
+				  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
+				</td><td valign="top">
+				<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
+				</td></tr>
+			</table>
+		</div>
+	    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+	    <tbody>
+		    <tr>
+		    <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
+				<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
+			</td>
+			<td valign="top" class="ss_view_info">
+			    <div class="ss_style_color" >
+					<p style="text-align:center; padding-top:30px;">
+						<c:if test="${!empty entryMoved}">
+						<ssf:nlt tag="entry.moved">
+						<ssf:param name="value" value="${entryMoved.pathName}"/>
+						</ssf:nlt>
+						</c:if>
+						<c:if test="${empty entryMoved}">
+						<ssf:nlt tag="entry.deleted"/>
+						</c:if>
+					</p>
+				</div>
+			</td>
+			</tr>
+		</tbody>
+		</table>
 	</div>
 </div>
-
-</ssf:ifnotadapter>
-
 <ssf:ifadapter>
 </body>
 </html>
