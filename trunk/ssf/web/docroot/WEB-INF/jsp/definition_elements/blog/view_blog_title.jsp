@@ -73,6 +73,7 @@
 		%>
 		
 		<a id="ss_sunburstDiv${ssFolder.id}_${ssDefinitionEntry.id}" href="javascript: ;" 
+		  title="<ssf:nlt tag="sunburst.click"/>"
 		  onClick="ss_hideSunburst('${ssDefinitionEntry.id}', '${ssFolder.id}');return false;"
 		><span 
 		  style="display:${ss_sunburstVisibilityHide};"
