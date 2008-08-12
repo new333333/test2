@@ -42,9 +42,9 @@ import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.security.authentication.AuthenticationException;
+import com.sitescape.team.util.EncryptUtil;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SpringContextUtil;
-import com.sitescape.util.PasswordEncryptor;
 
 /**
  * This class implements standard <code>CallbackHandler</code> interface
@@ -74,7 +74,7 @@ public class PWCallback implements CallbackHandler {
         			String pwType = pc.getPasswordType();
         			if(pwType != null && pwType.equals(WSConstants.PASSWORD_TEXT)) { // wsse:PasswordText
         				String clearPassword = pc.getPassword();
-        				String encryptedPasword = PasswordEncryptor.encrypt(clearPassword);
+        				String encryptedPasword = EncryptUtil.encryptPassword(clearPassword);
         				if(encryptedPasword.equals(userEncryptedPassword)) {
         					// Encrypted passwords (digest values) match.
         					// Pass the clear text password (passed in from the client), rather 

@@ -32,8 +32,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.sitescape.team.util.SPropsUtil;
-
 /**
  * Miscellaneous utilities.
  */
@@ -41,17 +39,21 @@ public class PasswordEncryptor {
 	
     private static Long PASSWORD_DIGEST=new Long(32958);
 
-    private static final String ALGORITHM = SPropsUtil.getString("user.password.encryption.algorithm", "MD5");
-    
-    public static String encrypt(String password) {
+    /**
+     * Encrypt the password using the specified algorithm.
+     * @param algorithm available values are SHA, SHA-256, and MD5.
+     * @param password
+     * @return
+     */
+    public static String encrypt(String algorithm, String password) {
     	// If algorithm is MD5, do NOT ever call encrypt(). Instead, call encryptMD5
     	// which uses slightly different (and non-standard) encoding when converting
-    	// computed bytes into a hex string. This is to maintain backward compatibility
-    	// with existing installations that use MD5.
-    	if(ALGORITHM.equals("MD5"))
+    	// computed bytes into a hex string. This is to maintain compatibility with
+    	// earlier versions of the product.
+    	if(algorithm.equals("MD5")) // Use old code
     		return encryptMD5(password, PASSWORD_DIGEST);
-    	else
-    		return encrypt(ALGORITHM, password, PASSWORD_DIGEST);
+    	else // Use new code
+    		return encrypt(algorithm, password, PASSWORD_DIGEST);
     }
     
 	private static String encryptMD5(String password, Long digestSeed) {

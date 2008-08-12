@@ -47,10 +47,7 @@ import java.util.TreeSet;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.util.EncryptUtil;
-import com.sitescape.team.util.NLT;
-import com.sitescape.util.PasswordEncryptor;
 import com.sitescape.util.Validator;
-import com.sitescape.team.ObjectKeys;
 
 /**
  * @hibernate.subclass discriminator-value="U" dynamic-update="true" node="User"
@@ -262,7 +259,7 @@ public class User extends Principal {
 	 * @param clearTextPassword clear text password
 	 */
 	public void setPassword(String clearTextPassword) {
-		this.password = PasswordEncryptor.encrypt(clearTextPassword);
+		this.password = EncryptUtil.encryptPassword(clearTextPassword);
 	}
 	
     /**
