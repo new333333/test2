@@ -118,8 +118,9 @@ public class ViewPermalinkController  extends SAbstractController {
 			url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");
 		} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
 			String displayStyle = user.getDisplayStyle();
-			if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			if (ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE.equals(displayStyle) || 
+					(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) &&
+					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()))) {
 				url.setParameter(WebKeys.URL_ACTION, "view_folder_entry");
 			} else {
 				try {
