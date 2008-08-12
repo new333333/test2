@@ -32,8 +32,12 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import com.sitescape.util.PasswordEncryptor;
+
 public class EncryptUtil {
 
+    private static final String PASSWORD_ENCRYPTION_ALGORITHM = SPropsUtil.getString("user.password.encryption.algorithm", "MD5");
+    
 	public static String encryptSHA1(String... input) {
 		return encrypt("SHA-1", input);
 	}
@@ -65,5 +69,9 @@ public class EncryptUtil {
 			// this will occur when the .getBytes("UTF-8") returns a null.
 			return new StringBuffer().toString();
 		}
+	}
+	
+	public static String encryptPassword(String password) {
+		return PasswordEncryptor.encrypt(PASSWORD_ENCRYPTION_ALGORITHM, password);
 	}
 }

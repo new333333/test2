@@ -46,7 +46,6 @@ import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.util.EncryptUtil;
-import com.sitescape.util.PasswordEncryptor;
 import com.sitescape.util.Validator;
 
 /**
@@ -290,7 +289,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	 * @param clearTextPassword clear text password
 	 */
 	public void setPassword(String clearTextPassword) {
-		this.password = PasswordEncryptor.encrypt(clearTextPassword);
+		this.password = EncryptUtil.encryptPassword(clearTextPassword);
 	}
 	
     /**
