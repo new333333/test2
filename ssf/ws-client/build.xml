@@ -7,6 +7,14 @@
 	<property name="jar.file" value="ssf-wsclient.jar"/>
 	<property name="client.url" value="http://localhost:8080/ssr/ws" />
 	
+	<!-- This overrides the imported definition -->
+	<path id="project.classpath">
+	<pathelement path="${project.dir}/ws-client/classes" />
+		<pathelement path="${project.dir}/util/classes" />
+		<pathelement location="${project.dir}/ws-client/ssf-wsclient.jar"/>
+		<fileset dir="../lib" includes="*.jar" />
+	</path>
+
 	<target name="clean">
 		<delete dir="${classes.dir}" />
 		<delete dir="${generated.dir}" />
