@@ -71,7 +71,7 @@ public class PWCallbackDigest implements CallbackHandler {
                 	// accomplished through the use of the available password encryption 
                 	// class. For non-Java based WS clients, the exact same encryption 
                 	// steps will need to be translated and applied. 
-                	String encryptedPassword = PasswordEncryptor.encrypt("test");
+                	String encryptedPassword = PasswordEncryptor.encrypt("MD5", "test");
                 	//System.out.println("Client: Aspen-encrypted password is [" + encryptedPassword + "]");
                 	pc.setPassword(encryptedPassword);
                 }
