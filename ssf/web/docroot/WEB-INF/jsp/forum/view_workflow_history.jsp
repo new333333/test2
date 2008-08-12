@@ -48,7 +48,7 @@
 >
 <table width="75%" border="0" align="center" cellpadding="0" cellspacing="0" class="ss_formWrap">
   <tr>
-    <div height="267"><td class="form_header"><ssf:nlt tag="entry.workflowHistory"/></td></div>
+    <td class="ss_form_header"><div height="267"><ssf:nlt tag="entry.workflowHistory"/></div></td>
 	 <div class="ss_formButton">
 	 	<input type="button" name="Button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;"/>
 	 </div>
@@ -105,10 +105,6 @@
 						  ${workflow.value.attributes.stateCaption}&nbsp
 						<br>
 					  </c:forEach>
-					</td>
-					
-					<td class="ss_dataTableTD">
-					<c:out value="${change.definition}"/>
 					</td>
 				</tr>
 			</c:forEach>
