@@ -161,7 +161,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /* This is for the box style links */
 
 #ss_leftNav {
-      width: 182px;
+      width: 184px;
       margin-left: 8px;
       margin-bottom: 2px;
         }
@@ -172,7 +172,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
          }
         
 #ss_leftNav li a {
-	height: 24px;
     color: #666666;
     display: block;
 	border-style: solid;
