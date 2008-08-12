@@ -31,7 +31,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!ss_searchResultsPage}">
 	<ssf:ifLoggedIn>
-		<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
+		<c:if test="${empty ssEntry && !empty ssBinder && ssBinder.entityType != 'profiles'}">
 			<div id="ss_leftNav">
 			  <ul>
 				<li>

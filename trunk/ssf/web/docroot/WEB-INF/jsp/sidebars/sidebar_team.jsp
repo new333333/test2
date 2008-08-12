@@ -29,7 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${!ss_searchResultsPage}">
+<c:if test="${!ss_searchResultsPage && !empty ss_toolbar_team_view_url}">
 	<ssf:sidebarPanel title="<%= NLT.get("toolbar.teams") %>" id="ss_team_sidebar" 
 	  divClass="ss_place_tags" initOpen="false" sticky="true">
 	

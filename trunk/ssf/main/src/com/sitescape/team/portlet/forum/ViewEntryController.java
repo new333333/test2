@@ -267,6 +267,7 @@ public class ViewEntryController extends  SAbstractController {
 
 			//Build the navigation beans
 			BinderHelper.buildNavigationLinkBeans(this, fe.getParentBinder(), model);
+			BinderHelper.buildWorkspaceTreeBean(this, fe.getParentBinder(), model, null);
 				
 			//only want to update visits when first enter.  Don't want cancels on modifies
 			//to increment count

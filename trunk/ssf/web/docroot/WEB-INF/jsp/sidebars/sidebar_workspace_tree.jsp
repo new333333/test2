@@ -29,7 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${!ss_searchResultsPage}">
+<c:if test="${!ss_searchResultsPage && !empty ssSidebarWsTree}">
     <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
         initOpen="true" sticky="true">
 		<c:if test="${!empty ssSidebarWsTree}">
