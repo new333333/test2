@@ -84,6 +84,7 @@
 	   									<% if (!ssSeenMap.checkIfSeen(entry)) { %>
 									    
 										  <a id="ss_sunburstDiv${entry._binderId}_${entry._docId}" href="javascript: ;" 
+										  title="<ssf:nlt tag="sunburst.click"/>"
 										  onClick="ss_hideSunburst('${entry._docId}', '${entry._binderId}');return false;"
 										><span 
 										  style="display:${ss_sunburstVisibilityHide};"
