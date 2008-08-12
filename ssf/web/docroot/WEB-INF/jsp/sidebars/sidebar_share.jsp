@@ -43,16 +43,20 @@
 						
 						<c:if test="${ssBinder.entityType == 'workspace'}"> 
 							title="<ssf:nlt tag="relevance.shareThisWorkspace"/>" >
-							<span><ssf:nlt tag="relevance.justShare"/></span>
+							<span><ssf:nlt tag="relevance.shareThisWorkspace"/></span>
 						</c:if>
-						<c:if test="${ssBinder.entityType == 'folder'}">
+						<c:if test="${ssBinder.entityType == 'folder' && !empty ssEntry}"> 
+							title="<ssf:nlt tag="relevance.shareThisEntry"/>" >
+							<span><ssf:nlt tag="relevance.shareThisEntry"/></span>
+						</c:if>
+						<c:if test="${ssBinder.entityType == 'folder' && empty ssEntry}">
 	  						<c:if test="${ssDefinitionFamily != 'calendar'}">
 	  							title="<ssf:nlt tag="relevance.shareThisFolder"/>" >
-	  							<span><ssf:nlt tag="relevance.justShare"/></span>
+	  							<span><ssf:nlt tag="relevance.shareThisFolder"/></span>
 	  						</c:if>
 	  						<c:if test="${ssDefinitionFamily == 'calendar'}">
 	  							title="<ssf:nlt tag="relevance.shareThisCalendar"/>" >
-	  							<span><ssf:nlt tag="relevance.justShare"/></span>
+	  							<span><ssf:nlt tag="relevance.shareThisCalendar"/></span>
 	  						</c:if>
 						</c:if>
 					</a>

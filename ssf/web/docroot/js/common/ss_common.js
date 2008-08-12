@@ -502,7 +502,7 @@ function ss_showPermalink(obj) {
 		divObj.style.left = x + "px";		
 	}
 	//Signal that the layout changed
-	if (ssf_onLayoutChange) ssf_onLayoutChange();
+	if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
 	
 }
 //Routine to go to a binder when it is clicked
