@@ -106,6 +106,3 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <% // Folder Tools %>
 	<% // folder views, folder actions, themes, (no configure columns) and entries per page %>
 <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure2.jsp" />
-
-<% // Folder Tagss %>
-<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_folder_tags.jsp" />

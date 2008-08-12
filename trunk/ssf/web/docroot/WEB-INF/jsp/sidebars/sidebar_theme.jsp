@@ -32,9 +32,8 @@
 
 <c:if test="${!empty ss_toolbar_theme_ids}">
 
-		<a href="javascript: ;"
-  		   onClick="ss_changeUITheme('${ss_toolbar_theme_ids}', '${ss_toolbar_theme_names}'); return false;" 
-		   ><ssf:nlt tag="sidebar.theme"/></a>
+	<a href="javascript: ;"
+	  onClick="ss_changeUITheme('${ss_toolbar_theme_ids}', '${ss_toolbar_theme_names}'); return false;" 
+	><ssf:nlt tag="sidebar.themeChange"/></a>
 
 </c:if>
-
