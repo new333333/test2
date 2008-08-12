@@ -28,20 +28,16 @@
  * are trademarks of SiteScape, Inc.     
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
-<%@ page import="com.sitescape.team.util.SPropsUtil" %>
-<%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-
-	 	<a href="<ssf:url
-			adapter="true" 
-			portletName="ss_forum" 
-			action="__ajax_request" 
-			actionUrl="true" >
-			<ssf:param name="operation" value="configure_folder_columns" />
-			<ssf:param name="binderId" value="${ssBinder.id}" />
-			<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-			</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
-		    <span class=""><ssf:nlt tag="misc.configureColumns"/></span> </a> 
-
+ 	<a href="<ssf:url
+		adapter="true" 
+		portletName="ss_forum" 
+		action="__ajax_request" 
+		actionUrl="true" >
+		<ssf:param name="operation" value="configure_folder_columns" />
+		<ssf:param name="binderId" value="${ssBinder.id}" />
+		<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
+		</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
+	    <span><ssf:nlt tag="misc.configureColumns"/></span>
+	</a> 

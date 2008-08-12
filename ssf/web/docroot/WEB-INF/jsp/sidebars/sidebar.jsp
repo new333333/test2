@@ -86,6 +86,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<% // RSS Feed %>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" /></li>
 	
+	<% // Personal Preferences %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_personal.jsp" /></li>
+	
 	</div> <% // end of new sidebar format %>
 </div> <% // end of ss_sidebarDiv %>
 	
