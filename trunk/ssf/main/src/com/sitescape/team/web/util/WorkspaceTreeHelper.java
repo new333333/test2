@@ -309,11 +309,15 @@ public class WorkspaceTreeHelper {
 		}
 		
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
-		if ((obj == null) || (obj.equals(""))) 
+		if ((obj == null) || (obj.equals(""))) {
+			buildWorkspaceToolbar(bs, request, response, model, (Workspace)binder, binder.getId().toString());
 			return WebKeys.VIEW_NO_DEFINITION;
+		}
 		obj = model.get(WebKeys.CONFIG_DEFINITION);
-		if ((obj == null) || (obj.equals(""))) 
+		if ((obj == null) || (obj.equals(""))) {
+			buildWorkspaceToolbar(bs, request, response, model, (Workspace)binder, binder.getId().toString());
 			return WebKeys.VIEW_NO_DEFINITION;
+		}
 		
 		return WebKeys.VIEW_WORKSPACE;
 	}

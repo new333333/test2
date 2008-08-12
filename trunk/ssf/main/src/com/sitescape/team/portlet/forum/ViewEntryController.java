@@ -56,6 +56,7 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.NoFolderEntryByTheIdException;
 import com.sitescape.team.domain.Principal;
@@ -209,7 +210,15 @@ public class ViewEntryController extends  SAbstractController {
 					fe = getShowEntry(entryId, formData, request, response, folderId, model, entryViewType);
 				} catch (NoFolderEntryByTheIdException nf) {
 					Folder newFolder = getFolderModule().locateEntry(Long.valueOf(entryId));
-					if (newFolder == null) throw nf;
+					if (newFolder == null) {
+						//entry doesn't exist; see if parent folder exists
+						Binder folder = null;
+						try {
+							folder = getBinderModule().getBinder(folderId);
+							BinderHelper.buildWorkspaceTreeBean(this, folder, model, null);
+						} catch(Exception e) {}
+						throw nf;
+					}
 					model.put("entryMoved", newFolder);
 					throw nf;
 				} catch(OperationAccessControlExceptionNoName e) {
@@ -267,7 +276,14 @@ public class ViewEntryController extends  SAbstractController {
 
 			//Build the navigation beans
 			BinderHelper.buildNavigationLinkBeans(this, fe.getParentBinder(), model);
-			BinderHelper.buildWorkspaceTreeBean(this, fe.getParentBinder(), model, null);
+			Binder workspaceBinder = null;
+			Folder folder = (Folder)fe.getParentBinder();
+			if (folder.isTop()) {
+				workspaceBinder = folder.getParentBinder();
+			} else {
+				workspaceBinder = folder.getTopFolder().getParentBinder();
+			}
+			BinderHelper.buildWorkspaceTreeBean(this, workspaceBinder, model, null);
 				
 			//only want to update visits when first enter.  Don't want cancels on modifies
 			//to increment count

@@ -156,33 +156,13 @@ function ss_confirmDeleteConfig() {
     <tbody>
     <tr>
     <td valign="top" class="ss_view_sidebar">
-
-<% // Navigation bar 
-/* Doesn't work for admin portlet
- *	
- *	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
- */ 
- %>
-
-	<% // Folder Sidebar %>
-
-    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
-
-    <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
-        initOpen="true" sticky="true">
-		<c:if test="${!empty ssSidebarWsTree}">
-		<ssf:tree treeName="sidebarWsTree${renderResponse.namespace}" 
-		  treeDocument="${ssSidebarWsTree}" 
-		  highlightNode="${ssBinder.id}" 
-		  showIdRoutine="ss_treeShowId"
-		  rootOpen="true"
-		  nowrap="true"/>
-		</c:if>
-	</ssf:sidebarPanel>
-
-	</div>
-
-
+		<% // BEGIN SIDEBAR LAYOUT  %>
+		<div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
+			<div id="ss_sideNav_wrap"> <% // new sidebar format %>
+				<% // Folder Tools %>
+				<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
+			</div> <% // end of new sidebar format %>
+		</div> <% // end of ss_sidebarDiv %>
 	</td>
 	<td valign="top" class="ss_view_info">
 
