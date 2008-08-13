@@ -27,7 +27,7 @@ import org.springframework.security.providers.ldap.authenticator.BindAuthenticat
 import com.sitescape.team.asmodule.zonecontext.ZoneContextHolder;
 import com.sitescape.team.domain.AuthenticationConfig;
 import com.sitescape.team.domain.ZoneInfo;
-import com.sitescape.team.module.admin.AdminModule;
+import com.sitescape.team.module.ldap.LdapModule;
 import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.util.SZoneConfig;
 
@@ -38,9 +38,9 @@ public class ZoneAwareAuthenticationProvider implements AuthenticationProvider, 
 	public ZoneModule getZoneModule() { return zoneModule; }
 	public void setZoneModule(ZoneModule zoneModule) { this.zoneModule = zoneModule; }
 	
-	private AdminModule adminModule;
-	public AdminModule getAdminModule() { return adminModule; }
-	public void setAdminModule(AdminModule adminModule) { this.adminModule = adminModule; }
+	private LdapModule ldapModule;
+	public LdapModule getLdapModule() { return ldapModule; }
+	public void setLdapModule(LdapModule ldapModule) { this.ldapModule = ldapModule; }
 	
 	protected Map<Long, ProviderManager> authenticators = null;
 	
@@ -75,29 +75,30 @@ public class ZoneAwareAuthenticationProvider implements AuthenticationProvider, 
 	protected List<AuthenticationProvider> createProvidersForZone(ZoneInfo zoneInfo) throws Exception
 	{
 		List<AuthenticationProvider> providers = new LinkedList<AuthenticationProvider>();
-		for(AuthenticationConfig config : getAdminModule().getAuthenticationConfigs(zoneInfo.getZoneId())) {
-			DefaultSpringSecurityContextSource contextSource = new DefaultSpringSecurityContextSource(config.getUrl());
-			contextSource.setAnonymousReadOnly(true);
-			contextSource.afterPropertiesSet();
-			
-			SsfContextMapper contextMapper = new SsfContextMapper(getZoneModule(), config.getMappings());
-
-			Document doc = DocumentHelper.parseText(config.getUserSearches());
-			for(Object o : doc.selectNodes("//userSearch")) {
-				Node node = (Node) o;
-				String baseDn = node.selectSingleNode("baseDn").getText();
-				String search = node.selectSingleNode("search").getText();
-				boolean searchSubtree = "true".equals(node.selectSingleNode("@searchSubtree").getText());
+		for(AuthenticationConfig config : getLdapModule().getAuthenticationConfigs(zoneInfo.getZoneId())) {
+			String search = "(" + config.getUserIdAttribute() + "={0})";
+			if(config.getUserSearches().size() > 0) {
+				DefaultSpringSecurityContextSource contextSource = new DefaultSpringSecurityContextSource(config.getUrl());
+				contextSource.setAnonymousReadOnly(true);
+				contextSource.afterPropertiesSet();
 				
-				BindAuthenticator authenticator = new BindAuthenticator(contextSource);
-				FilterBasedLdapUserSearch userSearch = new FilterBasedLdapUserSearch(baseDn,search,contextSource);
-				if(!searchSubtree) {
-					userSearch.setSearchSubtree(false);
+				SsfContextMapper contextMapper = new SsfContextMapper(getZoneModule(), config.getMappings());
+	
+				for(AuthenticationConfig.SearchInfo us : config.getUserSearches()) {
+					BindAuthenticator authenticator = new BindAuthenticator(contextSource);
+					String filter = search;
+					if(us.getFilter()!= "") {
+						filter = "(&"+search+us.getFilter()+")";
+					}
+					FilterBasedLdapUserSearch userSearch = new FilterBasedLdapUserSearch(us.getBaseDn(), filter, contextSource);
+					if(!us.isSearchSubtree()) {
+						userSearch.setSearchSubtree(false);
+					}
+					authenticator.setUserSearch(userSearch);
+					LdapAuthenticationProvider ldap = new LdapAuthenticationProvider(authenticator);
+					ldap.setUserDetailsContextMapper(contextMapper);
+					providers.add(ldap);
 				}
-				authenticator.setUserSearch(userSearch);
-				LdapAuthenticationProvider ldap = new LdapAuthenticationProvider(authenticator);
-				ldap.setUserDetailsContextMapper(contextMapper);
-				providers.add(ldap);
 			}
 		}
 /*

@@ -499,6 +499,7 @@ public class WebKeys {
 	public static final String APPLICATION_GROUPS="ssApplicationGroups";
     public static final String APPLICATION_LIST="ss_applicationList";
 	public static final String ATTACHMENTS_TYPE="attachments";
+	public static final String AUTHENTICATION_CONFIGS="ssAuthenticationConfigs";
 	public static final String BINDER="ssBinder";
 	public static final String BINDER_ID="ssBinderId";
 	public static final String BINDER_IS_LIBRARY="ssBinderIsLibrary";

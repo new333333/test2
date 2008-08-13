@@ -228,7 +228,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			case manageMail:
 			case manageTemplate:
 			case manageErrorLogs:
-			case manageAuthentication:
   				getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
    				break;
 			case report:
@@ -767,36 +766,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
    
 	public List<Node> getSearchNodes() {
 		return getLuceneSessionFactory().getNodes();
-	}
-
-	public List<AuthenticationConfig> getAuthenticationConfigs()
-	{
-		return getAuthenticationConfigs(RequestContextHolder.getRequestContext().getZoneId());
-	}
-	public List<AuthenticationConfig> getAuthenticationConfigs(Long zoneId)
-	{
-		FilterControls filter = new FilterControls(); 
-		OrderBy order = new OrderBy();
-		order.addColumn("position");	   
-		filter.setOrderBy(order);
-
-		return (List<AuthenticationConfig>) getCoreDao().loadObjects(AuthenticationConfig.class, filter, zoneId);
-	}
-
-	public void setAuthenticationConfigs(List<AuthenticationConfig> configs)
-	{
-		checkAccess(AdminOperation.manageAuthentication);
-		int nextPosition = 10;
-		for(AuthenticationConfig config : configs) {
-			config.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
-			config.setPosition(nextPosition);
-			if(config.getId() != null) {
-				getCoreDao().update(config);
-			} else {
-				getCoreDao().save(config);
-			}
-			nextPosition += 10;
-		}
 	}
 
 }

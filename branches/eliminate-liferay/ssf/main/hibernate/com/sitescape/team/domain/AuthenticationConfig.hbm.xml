@@ -9,8 +9,12 @@
     </id>
     <property name="zoneId" access="field"/>
     <property name="url"/>
-    <property name="mappings" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
-    <property name="userSearches" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
+    <property name="userIdAttribute"/>
+    <property name="mappings" type="com.sitescape.team.domain.AuthenticationMappingsUserType"/>
+    <property name="userSearches" type="com.sitescape.team.domain.AuthenticationSearchInfoUserType"/>
+    <property name="groupSearches" type="com.sitescape.team.domain.AuthenticationSearchInfoUserType"/>
+    <property name="principal"/>
+    <property name="credentials"/>
     <property name="position"/>
   </class>
 </hibernate-mapping>
