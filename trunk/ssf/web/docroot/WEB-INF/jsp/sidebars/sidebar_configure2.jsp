@@ -30,25 +30,23 @@
 %>
 <% // Former Folder Tools for Blogs, Photo Albums, and Wikis %>
 	<% // folder views, folder actions, themes, (no configure columns) and entries per page %>
-	
+
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${ssDefinitionEntry.entityType == 'folder'}">
 
 <ssf:sidebarPanel title="sidebar.configure" id="ss_tooltags_sidebar" divClass="ss_place_tags" 
   initOpen="false" sticky="false">
 
+<c:if test="${!empty ssFolderViewsToolbar}">
   <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.folderConfiguration"/> 
 	<div class="ss_sub_sidebarMenu">
 	  <ssf:toolbar toolbar="${ssFolderViewsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
 	</div>
   </div>	
+</c:if>
    
-  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.entryPage"/>
- 	<div class="ss_sub_sidebarMenu">
-        <% // configure entries per page %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_entriesPerPage.jsp" />
-	</div>
-  </div>
+  <% // configure entries per page %>
+  <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_entriesPerPage.jsp" />
  
 </ssf:sidebarPanel>
 </c:if>

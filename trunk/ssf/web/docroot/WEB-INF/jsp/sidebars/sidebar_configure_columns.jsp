@@ -30,14 +30,18 @@
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
- 	<a href="<ssf:url
-		adapter="true" 
-		portletName="ss_forum" 
-		action="__ajax_request" 
-		actionUrl="true" >
-		<ssf:param name="operation" value="configure_folder_columns" />
-		<ssf:param name="binderId" value="${ssBinder.id}" />
-		<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-		</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
-	    <span><ssf:nlt tag="misc.configureColumns"/></span>
-	</a> 
+  <div class="ss_sidebarTitle"><ssf:nlt tag="misc.configureColumns"/>
+ 	<div class="ss_sub_sidebarMenu">
+	 	<a href="<ssf:url
+			adapter="true" 
+			portletName="ss_forum" 
+			action="__ajax_request" 
+			actionUrl="true" >
+			<ssf:param name="operation" value="configure_folder_columns" />
+			<ssf:param name="binderId" value="${ssBinder.id}" />
+			<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
+			</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
+		    <span><ssf:nlt tag="misc.configureColumns"/></span>
+		</a> 
+	</div>
+  </div>

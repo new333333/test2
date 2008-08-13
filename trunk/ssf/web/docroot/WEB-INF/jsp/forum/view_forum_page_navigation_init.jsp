@@ -31,6 +31,7 @@
 <% // Common folder page number navigation %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
+<c:if test="${!empty ssPageCount}">
 
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/slider/slider.js"></script>
@@ -131,5 +132,6 @@ function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, page
 	formObj.ssEntriesPerPage.value = pageCountValue;
 	formObj.submit();
 }
-
 </script>
+
+</c:if>

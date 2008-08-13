@@ -31,6 +31,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // Common folder page number navigation %>
 <%@ page import="com.sitescape.team.util.NLT" %>
+<c:if test="${!empty ssPageCount}">
 <c:if test="${ssPageLast == '0'}"><c:set var="ssPageLast" value="1" scope="request"/></c:if>
 
 <ssf:skipLink tag="<%= NLT.get("skip.paging.links") %>" id="navigationLinks_${renderResponse.namespace}">
@@ -285,3 +286,4 @@ ss_pageSlider${renderResponse.namespace}.setMaximum(${ssPageLast})
 </c:if>
 
 </ssf:skipLink>
+</c:if>
