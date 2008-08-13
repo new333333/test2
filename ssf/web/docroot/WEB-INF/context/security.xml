@@ -12,7 +12,7 @@
 		depends-on="springAuthenticationBeans">
         <s:custom-authentication-provider />
 		<property name="zoneModule"><ref bean="zoneModule"/></property>
-		<property name="adminModule"><ref bean="adminModule"/></property>
+		<property name="ldapModule"><ref bean="ldapModule"/></property>
 	</bean>
 	
     <s:http session-fixation-protection="newSession">

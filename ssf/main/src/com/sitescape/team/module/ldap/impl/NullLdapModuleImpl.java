@@ -28,11 +28,16 @@
  */
 package com.sitescape.team.module.ldap.impl;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.naming.NamingException;
 
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.AuthenticationConfig;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.ldap.LdapConfig;
+import com.sitescape.team.module.ldap.LdapSchedule;
 import com.sitescape.team.module.ldap.LdapModule;
 
 public class NullLdapModuleImpl extends CommonDependencyInjection implements LdapModule {
@@ -40,11 +45,11 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 		return false;
 	}
 
-	public LdapConfig getLdapConfig() {
+	public LdapSchedule getLdapSchedule() {
 		return null;
 	}
 
-	public void setLdapConfig(LdapConfig config) {
+	public void setLdapSchedule(LdapSchedule schedule) {
 	}
 
 	public void syncAll() throws NamingException {
@@ -52,5 +57,17 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 
 	public void syncUser(Long userId) throws NoUserByTheNameException, NamingException {
 	}
+	
+	public List<AuthenticationConfig> getAuthenticationConfigs()
+	{
+		return getAuthenticationConfigs(RequestContextHolder.getRequestContext().getZoneId());
+	}
+	public List<AuthenticationConfig> getAuthenticationConfigs(Long zoneId)
+	{
+		return new LinkedList<AuthenticationConfig>();
+	}
 
+	public void setAuthenticationConfigs(List<AuthenticationConfig> configs)
+	{
+	}
 }

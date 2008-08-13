@@ -28,6 +28,8 @@
  */
 package com.sitescape.team.portlet.administration;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
@@ -36,9 +38,15 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import javax.naming.NamingException;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Node;
 import org.springframework.web.portlet.ModelAndView;
 
-import com.sitescape.team.module.ldap.LdapConfig;
+import com.sitescape.team.domain.AuthenticationConfig;
+import com.sitescape.team.module.ldap.LdapSchedule;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -51,38 +59,73 @@ public class ConfigureLdapController extends  SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
-			LdapConfig config = getLdapModule().getLdapConfig();
-			if (config != null) {
-				config.setSchedule(ScheduleHelper.getSchedule(request, null));
-				config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));	
-				config.setUserDelete(PortletRequestUtils.getBooleanParameter(request, "userDelete", false));
-				config.setUserWorkspaceDelete(PortletRequestUtils.getBooleanParameter(request, "userWorkspaceDelete", false));
-				config.setGroupDelete(PortletRequestUtils.getBooleanParameter(request, "groupDelete", false));
-				config.setUserRegister(PortletRequestUtils.getBooleanParameter(request, "userRegister", false));
-				config.setGroupRegister(PortletRequestUtils.getBooleanParameter(request, "groupRegister", false));
-				config.setUserSync(PortletRequestUtils.getBooleanParameter(request, "userSync", false));
-				config.setGroupsBasedn(PortletRequestUtils.getStringParameter(request, "groupBasedn", ""));
-				config.setMembershipSync(PortletRequestUtils.getBooleanParameter(request, "membershipSync", false));
-				config.setUserUrl(PortletRequestUtils.getStringParameter(request, "userUrl", ""));
-				config.setUserPrincipal(PortletRequestUtils.getStringParameter(request, "userPrincipal", ""));
-				config.setUserCredential(PortletRequestUtils.getStringParameter(request, "userCredentials", ""));
-				config.setUserIdMapping(PortletRequestUtils.getStringParameter(request, "userIdMapping", ""));
-				String[] mappings = StringUtil.split(PortletRequestUtils.getStringParameter(request, "userMappings", ""), "\n");
-				Map maps = new HashMap();
-				for (int i=0; i<mappings.length; ++i) {
-					String m = mappings[i];
-					if (Validator.isNull(m)) continue;
-					String[] vals = StringUtil.split(m, "=");
-					if (vals.length != 2) continue;
-					maps.put(vals[1].trim(), vals[0].trim());
+			LdapSchedule schedule = getLdapModule().getLdapSchedule();
+			if (schedule != null) {
+				schedule.getScheduleInfo().setSchedule(ScheduleHelper.getSchedule(request, null));
+				schedule.getScheduleInfo().setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));	
+				schedule.setUserDelete(PortletRequestUtils.getBooleanParameter(request, "userDelete", false));
+				schedule.setUserWorkspaceDelete(PortletRequestUtils.getBooleanParameter(request, "userWorkspaceDelete", false));
+				schedule.setGroupDelete(PortletRequestUtils.getBooleanParameter(request, "groupDelete", false));
+				schedule.setUserRegister(PortletRequestUtils.getBooleanParameter(request, "userRegister", false));
+				schedule.setGroupRegister(PortletRequestUtils.getBooleanParameter(request, "groupRegister", false));
+				schedule.setUserSync(PortletRequestUtils.getBooleanParameter(request, "userSync", false));
+				schedule.setMembershipSync(PortletRequestUtils.getBooleanParameter(request, "membershipSync", false));
+				
+				LinkedList<AuthenticationConfig> configList = new LinkedList<AuthenticationConfig>();
+				try {
+					Document doc = DocumentHelper.parseText(PortletRequestUtils.getStringParameter(request, "ldapConfigDoc", "<doc/>"));
+					for(Object o : doc.selectNodes("//ldapConfig")) {
+						Node cNode = (Node) o;
+						String principal = cNode.selectSingleNode("principal").getText();
+						String credentials = cNode.selectSingleNode("credentials").getText();
+						String url = cNode.selectSingleNode("url").getText();
+						String userIdAttribute = cNode.selectSingleNode("userIdAttribute").getText();
+						String[] mappings = StringUtil.split(cNode.selectSingleNode("mappings").getText(), "\n");
+						LinkedList<AuthenticationConfig.SearchInfo> userQueries = new LinkedList<AuthenticationConfig.SearchInfo>();
+						List foo = cNode.selectNodes("userSearches/search");
+						for(Object o2 : foo) {
+							Node sNode = (Node) o2;
+							String baseDn = sNode.selectSingleNode("baseDn").getText();
+							String filter = sNode.selectSingleNode("filter").getText();
+							String ss = sNode.selectSingleNode("searchSubtree").getText();
+							userQueries.add(new AuthenticationConfig.SearchInfo(baseDn, filter, ss.equals("true")));
+						}
+						LinkedList<AuthenticationConfig.SearchInfo> groupQueries = new LinkedList<AuthenticationConfig.SearchInfo>();
+						foo = cNode.selectNodes("groupSearches/search");
+						for(Object o2 : foo) {
+							Node sNode = (Node) o2;
+							String baseDn = sNode.selectSingleNode("baseDn").getText();
+							String filter = sNode.selectSingleNode("filter").getText();
+							String ss = sNode.selectSingleNode("searchSubtree").getText();
+							groupQueries.add(new AuthenticationConfig.SearchInfo(baseDn, filter, ss.equals("true")));
+						}
+						HashMap<String, String> maps = new HashMap<String, String>();
+						for (int i=0; i<mappings.length; ++i) {
+							String m = mappings[i];
+							if (Validator.isNull(m)) continue;
+							String[] vals = StringUtil.split(m, "=");
+							if (vals.length != 2) continue;
+							maps.put(vals[1].trim(), vals[0].trim());
+						}
+						AuthenticationConfig c =
+							new AuthenticationConfig(url, userIdAttribute, maps, userQueries, groupQueries, principal, credentials);
+						Node idNode = cNode.selectSingleNode("id");
+						if(idNode != null) {
+							c.setId(idNode.getText());
+						}
+						configList.add(c);
+					}
+				} catch(DocumentException e) {
+					// Hmm.  What to do here?
 				}
-				config.setUserMappings(maps);
+				getLdapModule().setAuthenticationConfigs(configList);
+
 				boolean runNow = PortletRequestUtils.getBooleanParameter(request, "runnow", false);
 				if (runNow) {
-					boolean enabled = config.isEnabled();
+					boolean enabled = schedule.getScheduleInfo().isEnabled();
 					//disable the schedule first
-					config.setEnabled(false);
-					getLdapModule().setLdapConfig(config);
+					schedule.getScheduleInfo().setEnabled(false);
+					getLdapModule().setLdapSchedule(schedule);
 					try {
 						getLdapModule().syncAll();
 					} catch (NamingException ne) {
@@ -94,12 +137,12 @@ public class ConfigureLdapController extends  SAbstractController {
 					} finally {
 						//set it back
 						if (enabled) {
-							config.setEnabled(enabled);
-							getLdapModule().setLdapConfig(config);
+							schedule.getScheduleInfo().setEnabled(enabled);
+							getLdapModule().setLdapSchedule(schedule);
 						}
 					}
 				} else {
-					getLdapModule().setLdapConfig(config);
+					getLdapModule().setLdapSchedule(schedule);
 					
 				}
 			}
@@ -113,7 +156,8 @@ public class ConfigureLdapController extends  SAbstractController {
 
 		Map model = new HashMap();
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
-		model.put(WebKeys.LDAP_CONFIG, getLdapModule().getLdapConfig());
+		model.put(WebKeys.LDAP_CONFIG, getLdapModule().getLdapSchedule());
+		model.put(WebKeys.AUTHENTICATION_CONFIGS, getLdapModule().getAuthenticationConfigs());
 		model.put("runnow", request.getParameter("runnow"));
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_LDAP, model);
 		

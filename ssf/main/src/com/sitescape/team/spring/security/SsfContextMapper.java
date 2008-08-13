@@ -30,7 +30,7 @@ public class SsfContextMapper  implements UserDetailsContextMapper {
 	}
 	
 	/* For programmatic creation */
-	public SsfContextMapper(ZoneModule zoneModule, String mappings)
+	public SsfContextMapper(ZoneModule zoneModule, Map<String,String> mappings)
 	{
 		this();
 		setZoneModule(zoneModule);
@@ -53,24 +53,11 @@ public class SsfContextMapper  implements UserDetailsContextMapper {
 	{
 	}
 
-	public void setMappings(String mappings)
+	public void setMappings(Map<String,String> mappings)
 	{
-		Document doc = null;
-		
-		try {
-			doc = DocumentHelper.parseText(mappings);
-		} catch(Exception e) {
-			logger.warn("Unable to parse attribute mapping: " + mappings);
-			return;
-		}
-		
-		for(Object o : doc.selectNodes("//mapping")) {
-			Node node = (Node) o;
-			String attr = node.selectSingleNode("@from").getText();
-			String field = node.selectSingleNode("@to").getText();
-			attributeMap.put(attr, field);
-		}
+		this.attributeMap = mappings;
 	}
+
 	static class SsfUserDetails extends HashMap<String,String> implements UserDetails
 	{
 		String username;
