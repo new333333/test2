@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.remoting.ws;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Map;
@@ -155,6 +156,8 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 			entryElem.addAttribute("lastName", ((User)entry).getLastName());
 			entryElem.addAttribute("zonName", ((User)entry).getZonName());
 			entryElem.addAttribute("status", ((User)entry).getStatus());
+			SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss aa");
+			entryElem.addAttribute("statusDate", sdFormat.format(((User)entry).getStatusDate()));
 			entryElem.addAttribute("skypeId", ((User)entry).getSkypeId());
 			entryElem.addAttribute("twitterId", ((User)entry).getTwitterId());
 		}
@@ -185,6 +188,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		if (user.containsKey(Constants.LASTNAME_FIELD)) entryElem.addAttribute("lastName", (String) user.get(Constants.LASTNAME_FIELD));
 		if (user.containsKey(Constants.ZONNAME_FIELD)) entryElem.addAttribute("zonName", (String) user.get(Constants.ZONNAME_FIELD));
 		if (user.containsKey(Constants.STATUS_FIELD)) entryElem.addAttribute("status", (String) user.get(Constants.STATUS_FIELD));
+		if (user.containsKey(Constants.STATUS_DATE_FIELD)) entryElem.addAttribute("statusDate", (String) user.get(Constants.STATUS_DATE_FIELD));
 		if (user.containsKey(Constants.SKYPEID_FIELD)) entryElem.addAttribute("skypeId", (String) user.get(Constants.SKYPEID_FIELD));
 		if (user.containsKey(Constants.TWITTERID_FIELD)) entryElem.addAttribute("twitterId", (String) user.get(Constants.TWITTERID_FIELD));
 

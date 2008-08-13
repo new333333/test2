@@ -2156,6 +2156,7 @@ public class AjaxController  extends SAbstractControllerRetry {
     	}
 		if (!status.equals(user.getStatus())) {
 			getProfileModule().setStatus(status);
+			getProfileModule().setStatusDate(new Date());
 			getReportModule().addStatusInfo(user);
 		}
 	}

@@ -68,6 +68,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected String skypeId="";
     protected String twitterId="";
     protected String status="";
+    protected Date statusDate;
     private SortedSet groupNames; // sorted set of group names; this field is computed
 	public User() {
     }
@@ -311,6 +312,17 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 			this.status = status;
 		}
 	}	
+	/**
+	 * @hibernate.property 
+	 * @return
+	 */
+	public Date getStatusDate() {
+		return statusDate;
+	}
+	public void setStatusDate(Date statusDate) {
+		this.statusDate = statusDate;
+	}
+
     /**
      * Returns digest seed value or <code>null</code> if it was never set.
      * 
