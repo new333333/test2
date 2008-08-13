@@ -53,7 +53,7 @@
 
 			<textarea cols="22" rows="2" id="ss_status_textarea${renderResponse.namespace}"
 			wrap="virtual" class="ss_input_myStatus"
-			style="font-size:10px;" 
+			style="ss_input_myStatus" 
   			onFocus="ss_setStatusBackground(this, 'focus');"
   			onKeyPress="ss_updateStatusSoon(this, event, <%= ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH %>);"
   			onChange="ss_updateStatusNow(this);"

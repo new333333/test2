@@ -157,12 +157,10 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 <c:if test="${showWorkspacePage}">
 	<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 	<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
-
 	<script type="text/javascript">
 		var ss_reloadUrl = "${ss_reloadUrl}";
 		var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 	</script>
-
 	<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}" scope="request"/>
@@ -184,16 +182,16 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 <td valign="middle">
 <a href="javascript: ;" 
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
-><span style="padding-left:9px; display:${ss_sidebarVisibilityShow};"
+><span style="padding-left:20px; display:${ss_sidebarVisibilityShow};"
   id="ss_sidebarHide${renderResponse.namespace}" 
   class="ss_fineprint ss_sidebarSlidesm"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
-  style="padding-left:9px; display:${ss_sidebarVisibilityHide};"
+  style="padding-left:20px; display:${ss_sidebarVisibilityHide};"
   id="ss_sidebarShow${renderResponse.namespace}" 
   class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
 </td>
 </ssf:ifnotaccessible>
 
-<td valign="top">
+<td valign="middle">
 <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 </td></tr>
 </table>
@@ -205,7 +203,6 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
-
 	<td valign="top" class="ss_view_info">
 </ssf:ifnotaccessible>
 		<div class="ss_tab_canvas">

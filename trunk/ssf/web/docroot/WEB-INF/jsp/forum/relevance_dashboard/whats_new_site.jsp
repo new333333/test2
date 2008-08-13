@@ -31,37 +31,37 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-<div id="ss_para">
-<div align="right">
-<c:if test="${ss_trackedSitePage > '0'}">
-<a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'newSite', '${ss_trackedSitePage}', 'previous', 'ss_dashboardWhatsNewSite', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-  title="<ssf:nlt tag="general.previousPage"/>"/>
-</a>
-</c:if>
-<c:if test="${empty ss_trackedSitePage || ss_trackedSitePage <= '0'}">
-<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
-</c:if>
-<c:if test="${!empty ss_whatsNew}">
-<a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'newSite', '${ss_trackedSitePage}', 'next', 'ss_dashboardWhatsNewSite', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-  title="<ssf:nlt tag="general.nextPage"/>"/>
-</a>
-</c:if>
-<c:if test="${empty ss_whatsNew}">
-<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
-</c:if>
-</div>
-<div id="ss_hints"><em><ssf:nlt tag="relevance.hint.newTrackedSite"/></em></div>
+	<div id="ss_para">
+		<div align="right">
+			<c:if test="${ss_trackedSitePage > '0'}">
+				<a href="javascript: ;" 
+  				onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'newSite', '${ss_trackedSitePage}', 'previous', 'ss_dashboardWhatsNewSite', '${ss_relevanceDashboardNamespace}');return false;">
+					<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
+ 		 				title="<ssf:nlt tag="general.previousPage"/>"/>
+				</a>
+			</c:if>
+		<c:if test="${empty ss_trackedSitePage || ss_trackedSitePage <= '0'}">
+					<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
+			</c:if>
+		<c:if test="${!empty ss_whatsNew}">
+				<a href="javascript: ;" 
+  				onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'newSite', '${ss_trackedSitePage}', 'next', 'ss_dashboardWhatsNewSite', '${ss_relevanceDashboardNamespace}');return false;">
+					<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
+  						title="<ssf:nlt tag="general.nextPage"/>"/>
+				</a>
+			</c:if>
+			<c:if test="${empty ss_whatsNew}">
+					<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+			</c:if>
+	</div>
+	
+		
+		<div id="ss_hints"><em><ssf:nlt tag="relevance.hint.newTrackedSite"/></em></div>
 <div id="ss_today">
   <div id="ss_mydocs_para" >
   <c:forEach var="entry" items="${ss_whatsNew}">
     <jsp:useBean id="entry" type="java.util.Map" />
     <li>
-	 
-	 
 		<c:set var="isDashboard" value="yes"/>
 		<ssf:titleLink hrefClass="ss_link_2"
 			entryId="${entry._docId}" binderId="${entry._binderId}" 
@@ -73,25 +73,18 @@
 				  action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
 			</ssf:param>
 			<c:out value="${entry.title}" escapeXml="false"/>
-		</ssf:titleLink>
-	 
+		</ssf:titleLink>	 
 	  <br/>
-	  <span>
-	  
-		<ssf:showUser user="<%=(com.sitescape.team.domain.User)entry.get("_principal")%>" titleStyle="ss_link_1" /> 
-	  
-	  </span>
-	  
+	  <span>	  
+		<ssf:showUser user="<%=(com.sitescape.team.domain.User)entry.get("_principal")%>" titleStyle="ss_link_1" />  
+	  </span>  
 	  <span class="ss_link_4">
 	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
       value="${entry._modificationDate}" type="both" 
 	  timeStyle="short" dateStyle="medium" />
-	  </span>
-	   
-	  <span class="ss_link_2">
-	  
+	  </span>  
+	  <span class="ss_link_2">  
 		<c:set var="path" value=""/>
-
 		<c:if test="${!empty ss_whatsNewFolders[entry._binderId]}">
 			<c:set var="path" value="${ss_whatsNewFolders[entry._binderId]}"/>
 			<c:set var="title" value="${ss_whatsNewFolders[entry._binderId].title} (${ss_whatsNewFolders[entry._binderId].parentBinder.title})"/>

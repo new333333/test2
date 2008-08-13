@@ -47,7 +47,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background: #FFF !important;
 	border-color: #CCCCCC;
 	border-style: solid;
-	border-width: .01em;
+	border-width: 0;
 	width: 198px;
 	height:auto;
 	margin-right: 6px;
@@ -62,21 +62,30 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /*********  STATUS BOX **********/	
 .ss_myStatus{
 	background: transparent;
-	width: 172px;
+	width: 176px;
 	height: auto;
 	margin: 8px 8px 4px 8px;
-	padding: 4px 4px 8px 4px;
+	padding: 4px 4px 4px 4px;
+	background: #EFEFEF;
+	}
+.ss_status_textarea{
+	font-size: 10px;
+	background-color:#E9F1F1!important;
 	}
 .ss_input_myStatus{
 	background-color: #F3E9C5;
 	border-color: #5A9A98;
-	width: 146px;
-	height: 32px;
-	margin: 8px 0px 0px 8px;
+	width: 160px;
+	height: 42px;
+	margin: 8px 0px 8px 8px;
 	<c:if test="<%= isIE %>">
   		margin: 6px 0px 0px 0px;
  	</c:if>
 	padding: 8px 0px 8px 10px;	
+	}
+/*This is the border for all of the boxes*/
+.ss_setStatusBackground{
+	background-color: #5A9A98;
 	}
 	
 /*This is the border for all of the boxes*/
@@ -93,11 +102,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 /*This is the box style for the drop down menu open*/
 .ss_sidebarMenu{
-	text-indent: 22px;
-	margin: 3px 8px 6px 8px;
-	width: 174px;
+	text-indent: 30px;
+	margin: 3px 8px 3px 8px;
+	width: 176px;
 	<c:if test="<%= isIE %>">
-		width: 172px;
+		width: 174px;
  	</c:if>	
 	padding-top: 8px;
 	padding-right: 4px;
@@ -179,7 +188,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-width: .01em;
 	background-color: #FFFFFF;
     background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_bgd.png") 5px 2px;
-    padding: 7px 0 0 25px;
+    padding: 7px 0 7px 30px;
 	margin-bottom: 3px;
     }		
 #ss_leftNav a:visited {
@@ -191,14 +200,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color: #CCFFFF;
 	border-color:#85D1D1;
 	border-width: .01em;
-    padding: 7px 0 0 25px;
+    padding: 7px 0 7px 30px;
 	margin-bottom:3px;
      }
 #ss_leftNav li a:active {
     color: #fff;
     background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_bgd.png") 5px -50px;
 	background-color: #5A9A98;
-    padding: 7px 0 0 25px;
+    padding: 7px 0 7px 30px;
 	margin-bottom: 3px;
     }
 .ss_menuSubTitle {
@@ -207,5 +216,76 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	line-height: 16px;
 	color: #333333;
 	padding: 1px;
+}
+/* TOOLBAR STYLES (change heights to 22px and no ka for boulder */
+
+.ss_sidebarImage {
+	background-image: url("<html:rootPath/>images/pics/navbar/bg_toolbar.gif");  
+	background-repeat: repeat-x;
+}
+.ss_sidebarSlide {
+	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_lg.gif"); 
+	background-position:top left;
+	background-repeat: no-repeat;
+	height:22px;		/* boulder 22px */
+	color:#FFF;
+	padding-left: 20px;
+	}
+.ss_sidebarSlidesm {
+	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_sm.png"); 
+	background-position:top left;
+	background-repeat: no-repeat;
+	height:22px;		/* boulder 22px */
+	color:#FFF;
+	padding-left: 20px;
+	}
+button { 
+  border:0; 
+  cursor:pointer; 
+  padding:0 20px 0 0; 
+  text-align:center; 
+}
+button span {
+	position:relative;
+	display:block;
+	white-space:nowrap;
+	padding:0 0 0 25px;
+}
+
+/*AQUA buttons*/
+.ss_toolbar_submitBtn {
+	font-size:.8em;
+	background-color: transparent !important;
+	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_right.png");
+	background-repeat: no-repeat;
+	background-position: right;
+	 <c:if test="<%= isIE %>">
+  		background-position: top right!important;
+ 	</c:if>
+	
+}
+.ss_toolbar_submitBtn span {
+	line-height:20px;
+	height: 20px;
+	color:#fff;
+	background-color: transparent !important;
+	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_left.png");
+	background-repeat: no-repeat;
+	background-position: left;
+		 <c:if test="<%= isIE %>">
+  		background-position: top left!important;
+ 	</c:if>
+}
+.ss_toolbar_submitBtn:hover {
+	background-color: transparent !important;
+	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_right_hover.png");
+	background-repeat: no-repeat;
+	background-position: right;
+}
+.ss_toolbar_submitBtn:hover span {
+	background-color: transparent !important;
+	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_left_hover.png");
+	background-repeat: no-repeat;
+	background-position: left;
 }
 
