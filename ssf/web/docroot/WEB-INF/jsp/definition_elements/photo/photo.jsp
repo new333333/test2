@@ -62,10 +62,6 @@ function ss_setPhotoIframeSize${renderResponse.namespace}() {
 	}
 }
 
-function ss_showForumEntryInIframe(url) {
-	self.location.href = url;
-	return false;
-}
 </script>
 
 <%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
