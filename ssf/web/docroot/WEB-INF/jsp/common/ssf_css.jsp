@@ -326,20 +326,26 @@ div.ss_global_toolbar_quick input {
   background-color: #FFFFFF;
   background-image: none;
   color: ${ss_form_element_text_color};
+  font-size: ${ss_style_font_size};
+  font-family: ${ss_style_folder_view_font_family};  
+}
+div.ss_global_toolbar_quick input{
+	background-color: #FFFFFF;
+  background-image: none;
+  color: ${ss_form_element_text_color};
   font-size: ${ss_style_font_fineprint};
   font-family: ${ss_style_folder_view_font_family};  
   border: solid .4px #999;
+  padding: 2px;
 }
 div.ss_style textarea {
   padding: 0px 0px 0px 2px;
 }
 div.ss_style input[type="text"],
 div.ss_style input[type="password"],
-div.ss_style select,
-div.ss_global_toolbar_quick input {
+div.ss_style select, {
   padding: 0px;
 }
-
   
 .ss_form textarea {
   background-color: ${ss_form_element_color};
@@ -1910,8 +1916,7 @@ div.ss_content_outer {
     background-color: ${ss_style_background_color};
 }
 .ss_content_window {
-	padding:0px 0px;
-	
+	padding:0px 0px;	
 }
 .ss_content_window_compact {
 	padding:0px;
@@ -1923,25 +1928,19 @@ div.ss_content_outer {
 	border-bottom: 1px solid ${ss_style_border_color_dark_hue};
 	border-top: none;
 }
-
 .ss_content_window_content_off {
 	padding: 0px;
 	border: 0px none;
 }
-
 .ss_clear {
 	clear:both;
 	height:1px;
 	font-size:0px;
 }
-
-
 div.ss_content_outer table, div.ss_portlet table, table.ss_style, div.ss_popup_body table, table.ss_popup {
 	border-collapse: separate;
-	border-spacing: 0px;
-	
+	border-spacing: 0px;	
 }
-
 
 /* round corners: */
 
@@ -2000,35 +1999,28 @@ div.ss_content_outer table, div.ss_portlet table, table.ss_style, div.ss_popup_b
 	padding:0px 0px 0px 0px;
     background-color: ${ss_style_background_color};
 }
-
 td.ss_view_sidebar {
     width: 200px!important;
-    background-color: #FF9C38;
+    background-color: transparent;
     border-right: 6px solid #FFF;
 }
-
 td.ss_view_info {
 	padding-left: 0;
 }
-
-
 img.ss_generic_close {
     background:url(<html:imagesPath/>tabs/tab_delete.gif) no-repeat left 0px;
     width:9px;
     height: 9px;
 }
-
 a:hover img.ss_generic_close {
     background-position:  left -9px;
 }
-
 img.ss_print_button {
 	position:relative;
     background:url(<html:imagesPath/>icons/printer.gif) no-repeat left -16px;
     width:16px;
     height: 16px;
 }
-
 a:hover img.ss_print_button {
     background-position:  left 0px;
 }
@@ -2184,77 +2176,6 @@ div.ss_sidebar_panel_featured {
   color: #333333;
   text-decoration:none;
 }
-
-/* TOOLBAR STYLES (change heights to 22px and no ka for boulder */
-
-.ss_sidebarImage {
-	background-image: url("<html:rootPath/>images/pics/navbar/bg_toolbar.gif");  
-	background-repeat: repeat-x;
-}
-.ss_sidebarSlide {
-	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_lg.png"); 
-	background-position:top left;
-	background-repeat: no-repeat;
-	height:22px;		/* boulder 22px */
-	color:#FFF;
-	}
-.ss_sidebarSlidesm {
-	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_sm.png"); 
-	background-position:top left;
-	background-repeat: no-repeat;
-	height:22px;		/* boulder 22px */
-	color:#FFF;
-	}
-button { 
-  border:0; 
-  cursor:pointer; 
-  padding:0 20px 0 0; 
-  text-align:center; 
-}
-button span {
-	position:relative;
-	display:block;
-	white-space:nowrap;
-	padding:0 0 0 25px;
-}
-
-/*AQUA buttons*/
-.ss_toolbar_submitBtn {
-	font-size:.8em;
-	background-color: transparent !important;
-	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_right.png");
-	background-repeat: no-repeat;
-	background-position: right;
-	 <c:if test="<%= isIE %>">
-  		background-position: top right!important;
- 	</c:if>
-	
-}
-.ss_toolbar_submitBtn span {
-	line-height:20px;
-	height: 20px;
-	color:#fff;
-	background-color: transparent !important;
-	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_left.png");
-	background-repeat: no-repeat;
-	background-position: left;
-		 <c:if test="<%= isIE %>">
-  		background-position: top left!important;
- 	</c:if>
-}
-.ss_toolbar_submitBtn:hover {
-	background-color: transparent !important;
-	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_right_hover.png");
-	background-repeat: no-repeat;
-	background-position: right;
-}
-.ss_toolbar_submitBtn:hover span {
-	background-color: transparent !important;
-	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_left_hover.png");
-	background-repeat: no-repeat;
-	background-position: left;
-}
-	
 	
 /* actions: */
 

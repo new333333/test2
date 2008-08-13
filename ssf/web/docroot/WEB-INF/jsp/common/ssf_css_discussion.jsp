@@ -157,18 +157,16 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}	
 .ss_title_count{
 	color:#777!important;
-	font-size:10px;
+	font-size:9px;
 	font-style: normal;
+	font-family: Arial, Helvetica, sans-serif;
+	letter-spacing: -2;
 	}
 .ss_title_count a{
 	color:red!important;
-	font-size:10px;
-	font-style: normal;
 	}
 .ss_title_count a:hover{
 	color:#777!important;
-	font-size:10px;
-	font-style: normal;
 	}
 #ss_topic_nav{
 	text-align:left;

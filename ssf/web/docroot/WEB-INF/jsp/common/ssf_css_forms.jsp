@@ -44,13 +44,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color:#666;
 	letter-spacing: -1px;
 	}
-.ss_h2 {
-	font-size: 24px;
-	letter-spacing: -1px;
-}
-
-
-.ss_formWrap {
+.ss_table_wrap {
 	display: table;
 	border-top-width: 24px;
 	border-right-width: thin;
@@ -64,62 +58,53 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding-right: 25px;
 	padding-bottom: 25px;
 	padding-left: 25px;
-}
-
-.ss_FormTableHeading {
+	}
+.ss_table_heading {
 	font-size: 10px;
 	font-weight: bold;
 	color: #333333;
-	background-color: #cccccc;
-	text-align: center;
+	background-color: #EFEFEF;
+	text-align: left;
 	letter-spacing: normal;
-	border-right-style: none;
-	border-top-style: none;
-	border-bottom-style: none;
-	border-left-style: none;
-}
-.ss_oddRow {
+	padding: 0 0 0 5px;
+	}
+.ss_table_oddRow {
 	background-color: #E4EFEF;
 	display: table-row;
-}
-.ss_dataTable {
+	}
+.ss_table_data {
 	font-family: ${ss_style_font_family};
 	font-size: 10px;
 	letter-spacing: 1px;
 	text-align: left;
 	display: inline-table;
 	margin: 0px;
-	padding-top: 0px;
-	padding-right: 0px;
-	padding-bottom: 0px;
-	padding-left: 0px;
+	padding: 0 0 0 5px;
 	border: 0.1px solid #EFEFEF;
-}
-.ss_dataTableTD {
+	}
+.ss_table_data_TD {
 	font-family: ${ss_style_font_family};
 	font-size: 10px;
 	letter-spacing: normal;
 	text-align: left;
 	display: table-cell;
-	border-top-width: thin;
-	border-right-width: thin;
 	border-bottom-width: thin;
-	border-left-width: thin;
 	border-top-style: none;
-	border-right-style: none;
 	border-bottom-style: solid;
-	border-left-style: none;
-	border-top-color: #999999;
-	border-right-color: #999999;
-	border-bottom-color: #999999;
-	border-left-color: #999999;
-	padding-top: 6px;
-	padding-right: 0px;
-	padding-bottom: 6px;
-	padding-left: 0px;
+	border-bottom-color: #CCCCCC;
+	padding: 6px 3px 6px 3px;
 	margin: 2px;
-}
-.ss_dataTableMid {
+	}
+.ss_table_data_TD: hover {
+	background-color: #F2F2F2;
+	}
+.ss_table_data_mid{
+ 	text-align: center;
+ 	border-bottom: solid thin #CCCCCC;
+	padding: 6px 0 6px 0;
+	margin: 2px;
+ 	}		
+.ss_table_data_Mid {
 	font-family: ${ss_style_font_family};
 	font-size: 10px;
 	letter-spacing: normal;
@@ -129,15 +114,15 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding-left: 2px;
 	border-bottom-width: thin;
 	border-bottom-style: solid;
-	border-bottom-color: #999999;
+	border-bottom-color: #CCCCCC;
 	padding-bottom: 4px;
 	padding-top: 4px;
 	margin: 2px;
-}
+	}
 .ss_formButton {
 	background-position: right;
 	text-align: right;
-}
+	}
 
 /********* CLIPBOARD POPUP ************/
 .ss_stylePopup ul {
