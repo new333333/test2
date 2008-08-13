@@ -387,6 +387,11 @@ public interface ProfileModule {
      * @param status
      */
     public void setStatus(String status);
+    /**
+     * Set status.  Sets the status of the current user
+     * @param status
+     */
+    public void setStatusDate(Date statusDate);
      /**
      * Test access to a binder
      * @param binder

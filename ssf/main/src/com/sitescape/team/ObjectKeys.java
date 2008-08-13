@@ -435,6 +435,7 @@ public interface ObjectKeys {
     public static final String XTAG_USER_SKYPEID="skypeId";
     public static final String XTAG_USER_TWITTERID="twitterId";
     public static final String XTAG_USER_STATUS="status";
+    public static final String XTAG_USER_STATUS_DATE="statusDate";
     public static final String XTAG_USER_TIMEZONE="timeZone";
     //values of name= attributes on XTAG_ELEMENT_TYPE_PROPERTY for user
     public static final String XTAG_USER_DISPLAYSTYLE="displayStyle";

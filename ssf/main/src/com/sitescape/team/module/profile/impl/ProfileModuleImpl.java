@@ -381,6 +381,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	    User user = RequestContextHolder.getRequestContext().getUser();
 	    user.setStatus(status);
    }  	
+   //RW transaction
+   public void setStatusDate(Date statusDate) {
+	    User user = RequestContextHolder.getRequestContext().getUser();
+	    user.setStatusDate(statusDate);
+   }  	
    //RO transaction
    public Group getGroup(String name) {
 	  Principal p = getProfileDao().findPrincipalByName(name, RequestContextHolder.getRequestContext().getZoneId());
