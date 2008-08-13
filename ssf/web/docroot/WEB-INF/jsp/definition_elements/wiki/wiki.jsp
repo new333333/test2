@@ -153,7 +153,24 @@ var ss_wikiTabCurrent_${renderResponse.namespace} = document.getElementById('ss_
 			    onClick="ss_loadWikiEntryInParent(this, '${entry1._docId}');return false;" 
 		    </ssf:ifaccessible>
 		    
-		    ><c:if test="${empty entry1.title}"
+		    >
+		    
+   			<% if (!ssSeenMap.checkIfSeen(entry1)) { %>
+								    
+			  <a id="ss_sunburstDiv${entry1._binderId}_${entry1._docId}" href="javascript: ;" 
+			  title="<ssf:nlt tag="sunburst.click"/>"
+			  onClick="ss_hideSunburst('${entry1._docId}', '${entry1._binderId}');return false;"
+			><span 
+			  style="display:${ss_sunburstVisibilityHide};"
+			  id="ss_sunburstShow${renderResponse.namespace}" 
+			  class="ss_fineprint">
+			 	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" <ssf:alt tag="alt.new"/> />&nbsp;
+			  </span>
+			  </a>
+							    
+			<% } %>
+		    
+		    <c:if test="${empty entry1.title}"
 		    ><span id="folderLine_${entry1._docId}" class="ss_smallprint <%= seenStyleFine %>"
 		      >--<ssf:nlt tag="entry.noTitle"/>--</span
 		    ></c:if><span id="folderLine_${entry1._docId}" class="ss_smallprint <%= seenStyle %>"
