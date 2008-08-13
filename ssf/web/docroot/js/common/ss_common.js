@@ -680,7 +680,7 @@ function ss_moveObjectToBody(obj) {
 }
 
 //Functions to save the user status
-function ss_updateStatusSoon(obj, evt) {
+function ss_updateStatusSoon(obj, evt, maxLength) {
 	if ((typeof evt == "undefined" || typeof evt.which == "undefined" || !evt.which) && typeof event == "undefined") return;
 	
 	ss_statusObj = obj;
@@ -688,6 +688,9 @@ function ss_updateStatusSoon(obj, evt) {
 		clearTimeout(ss_statusTimer)
 		ss_statusTimer = null;
 	}
+	//If the string is too long to fit in the database, truncate it
+	if (obj.value.length >= maxLength) obj.value = obj.value.substr(0,maxLength-1);
+	
     var charCode = (evt.which) ? evt.which : event.keyCode
     //check for tab or cr; tab or 2 cr's signals the end of the input
     if (charCode == 9) {
@@ -719,24 +722,18 @@ function ss_updateStatusNow(obj) {
 	    if (ss_statusCurrent != escape(obj.value)) {
 			ss_statusCurrent = escape(obj.value);
 			var status = ss_replaceSubStrAll(obj.value, "\"", "&quot;");
-			
-			ss_setupStatusMessageDiv();
+
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_user_status", status:status}, "");
-			var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 			var divObj = ss_findOwningElement(obj, "div");
-			ajaxRequest.addKeyValue("ss_statusId", divObj.id);
-			ajaxRequest.setData("ss_statusId", divObj.id);
-			ajaxRequest.setPostRequest(ss_postUpdateStatus);
-			ajaxRequest.sendRequest();  //Send the request
-			setTimeout('ss_flashStatus();', 200);
+			ss_fetch_url(url, ss_postUpdateStatusNow, divObj.id)
 		}
 		ss_setStatusBackground(obj, 'blur');
 	}
 }
-function ss_postUpdateStatus(obj) {
-	var divId = obj.getData("ss_statusId");
-	if (divId != "") {
-		var divObj = self.document.getElementById(divId);
+function ss_postUpdateStatusNow(s, id) {
+	var divObj = self.document.getElementById(id);
+	if (divObj != null) {
+		divObj.innerHTML = s;
 		ss_executeJavascript(divObj)
 	}
 }

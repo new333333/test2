@@ -2155,6 +2155,9 @@ public class AjaxController  extends SAbstractControllerRetry {
     		status = status.substring(0, m.start(0));
     	}
 		if (!status.equals(user.getStatus())) {
+			if (status.length() > ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH) {
+				status = status.substring(0, ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH);
+			}
 			getProfileModule().setStatus(status);
 			getProfileModule().setStatusDate(new Date());
 			getReportModule().addStatusInfo(user);
@@ -2624,7 +2627,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.USER_PRINCIPAL, user);
 		String statusId = PortletRequestUtils.getStringParameter(request, "ss_statusId", "");
 		model.put("ss_statusId", statusId);
-		response.setContentType("text/xml");
 		return new ModelAndView("forum/save_status_return", model);
 	}
 	

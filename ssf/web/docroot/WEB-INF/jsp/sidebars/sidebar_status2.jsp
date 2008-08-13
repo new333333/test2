@@ -28,6 +28,35 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page session="false" %>
-<%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
-<%@ include file="/WEB-INF/jsp/sidebars/sidebar_status2.jsp" %>
+<% // Status %>
+<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="com.sitescape.team.util.SPropsUtil" %>
+<%@ page import="com.sitescape.util.PropertyNotFoundException" %>
+<%@ page import="com.sitescape.team.ObjectKeys" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
+<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
+<c:if test="${ssUser.internalId != guestInternalId}">
+	<c:if test="${!empty ssUser.statusDate}">
+	  <span style="float:right;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+        value="${ssUser.statusDate}" type="both" 
+	    timeStyle="short" dateStyle="short" /></span>
+	</c:if>
+	<strong><ssf:nlt tag="relevance.userStatus"/></strong>
+	<ssf:ifLoggedIn>
+			<script type="text/javascript">
+			  ss_statusCurrent = "<%= java.net.URLEncoder.encode(ssUser.getStatus()) %>";
+			</script>
+
+			<textarea cols="22" rows="2" id="ss_status_textarea${renderResponse.namespace}"
+			wrap="virtual" class="ss_input_myStatus"
+			style="font-size:10px;" 
+  			onFocus="ss_setStatusBackground(this, 'focus');"
+  			onKeyPress="ss_updateStatusSoon(this, event, <%= ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH %>);"
+  			onChange="ss_updateStatusNow(this);"
+  			onBlur="ss_updateStatusNow(this);ss_setStatusBackground(this, 'blur')"
+  			onMouseover="ss_setStatusBackground(this, 'mouseOver');"
+  			onMouseout="ss_setStatusBackgroundCheck(this);"
+  			><c:out value="${ssUser.status}" escapeXml="true"/></textarea>
+	</ssf:ifLoggedIn> 
+</c:if>

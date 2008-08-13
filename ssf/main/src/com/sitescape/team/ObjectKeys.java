@@ -241,6 +241,9 @@ public interface ObjectKeys {
     public static final String FI_ADAPTER = "fiAdapter";
 	public static final String PI_SYNCH_TO_SOURCE = "_synchToSource";
     
+    //User and Principal objects
+    public static final int USER_STATUS_DATABASE_FIELD_LENGTH = 256;
+
     //User properties
     public static final String USER_DISPLAY_STYLE_ACCESSIBLE = "accessible";
     public static final String USER_DISPLAY_STYLE_IFRAME = "iframe";
