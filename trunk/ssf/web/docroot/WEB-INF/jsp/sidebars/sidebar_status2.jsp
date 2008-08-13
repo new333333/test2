@@ -45,7 +45,10 @@
 	<strong><ssf:nlt tag="relevance.userStatus"/></strong>
 	<ssf:ifLoggedIn>
 			<script type="text/javascript">
-			  ss_statusCurrent = "<%= java.net.URLEncoder.encode(ssUser.getStatus()) %>";
+			  ss_statusCurrent = "";
+			  <c:if test="${!empty ssUser.status}">
+			    ss_statusCurrent = "<%= java.net.URLEncoder.encode(ssUser.getStatus()) %>";
+			  </c:if>
 			</script>
 
 			<textarea cols="22" rows="2" id="ss_status_textarea${renderResponse.namespace}"
