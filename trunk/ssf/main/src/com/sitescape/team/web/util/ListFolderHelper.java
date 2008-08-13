@@ -1246,6 +1246,8 @@ public class ListFolderHelper {
 		Toolbar folderViewsToolbar = new Toolbar();
 		Toolbar dashboardToolbar = new Toolbar();
 		Toolbar footerToolbar = new Toolbar();
+		Toolbar whatsNewToolbar = new Toolbar();
+		
 		AdaptedPortletURL adapterUrl;
 		Map qualifiers;
 		PortletURL url;
@@ -1875,6 +1877,32 @@ public class ListFolderHelper {
 			footerToolbar.addToolbarMenu("webdavUrl", NLT.get("toolbar.menu.webdavUrl"), webdavUrl, qualifiers);
 		}
 		
+		//Set up the whatsNewToolbar links
+		//What's new
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		adapterUrl.setParameter(WebKeys.URL_TYPE, "whatsNew");
+		adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
+		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+		qualifiers = new HashMap();
+		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'whatsNew', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
+		whatsNewToolbar.addToolbarMenu("whatsnew", NLT.get("toolbar.menu.whatsNew"), 
+				adapterUrl.toString(), qualifiers);
+		
+		// What's unseen
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		adapterUrl.setParameter(WebKeys.URL_TYPE, "unseen");
+		adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
+		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+		qualifiers = new HashMap();
+		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'unseen', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
+		whatsNewToolbar.addToolbarMenu("unseen", NLT.get("toolbar.menu.whatsUnseen"), 
+				adapterUrl.toString(), qualifiers);
+
+		
 		boolean isAppletSupported = SsfsUtil.supportApplets();
         
         boolean isAccessible = false;
@@ -1906,6 +1934,7 @@ public class ListFolderHelper {
 		model.put(WebKeys.FOLDER_VIEWS_TOOLBAR,  folderViewsToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_ACTIONS_TOOLBAR,  folderActionsToolbar.getToolbar());
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
+		model.put(WebKeys.WHATS_NEW_TOOLBAR,  whatsNewToolbar.getToolbar());
 	}
 	
 

@@ -993,6 +993,7 @@ public class WebKeys {
     public static final String WHATS_NEW_TRACKED_CALENDARS="ss_whatsNewTrackedCalendars";
     public static final String WHATS_NEW_TRACKED_CALENDAR_IDS="ss_whatsNewTrackedCalendarIds";
     public static final String WHATS_NEW_TRACKED_CALENDAR_FOLDERS="ss_whatsNewTrackedCalendarFolders";
+    public static final String WHATS_NEW_TOOLBAR="ss_whatsNewToolbar";
     public static final String WIKI_HOMEPAGE_ENTRY_ID="ss_wikiHomepageEntryId";
     public static final String WINDOW_STATE="ss_windowState";
     public static final String WORKAREA_OPERATIONS="ssWorkAreaOperations";

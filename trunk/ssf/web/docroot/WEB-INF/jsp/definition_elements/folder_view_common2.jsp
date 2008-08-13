@@ -75,6 +75,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 		<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">			
 		<% // Entry toolbar %>
 		<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />			
+		<ssf:toolbar toolbar="${ss_whatsNewToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />			
 		</ssf:toolbar>
 		<div class="ss_clear"></div>
 	  </div>
