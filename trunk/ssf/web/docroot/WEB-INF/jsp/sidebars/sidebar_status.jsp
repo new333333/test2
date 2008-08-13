@@ -42,6 +42,11 @@
   </c:if>
 
   <div class="ss_myStatus" id="${ss_statusId}">
+	<c:if test="${!empty ssUser.statusDate}">
+	  <span style="float:right;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+        value="${ssUser.statusDate}" type="both" 
+	    timeStyle="short" dateStyle="short" /></span>
+	</c:if>
 	<strong><ssf:nlt tag="relevance.userStatus"/></strong>
 	<ssf:ifLoggedIn>
 			<script type="text/javascript">
