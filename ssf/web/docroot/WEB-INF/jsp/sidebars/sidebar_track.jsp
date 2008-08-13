@@ -31,7 +31,8 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!ss_searchResultsPage}">
 	<ssf:ifLoggedIn>
-		<c:if test="${empty ssEntry && !empty ssBinder && ssBinder.entityType != 'profiles'}">
+		<c:if test="${(empty ssEntry || ssEntry.entityType != 'folderEntry') && 
+				!empty ssBinder && ssBinder.entityType != 'profiles'}">
 			<div id="ss_leftNav">
 			  <ul>
 				<li>
@@ -39,22 +40,22 @@
 	  				onClick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;"
 				 	<c:if test="${ssBinder.entityType == 'workspace'}">
 	  			 		<c:if test="${ssBinder.definitionType != 12}">
-	  						title="<ssf:nlt tag="relevance.trackThisWorkspace"/>" >
-	  						<span><ssf:nlt tag="relevance.justTrack"/></span>
+	  						title="<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>" >
+	  						<span><ssf:nlt tag="relevance.trackThisWorkspace"/></span>
 	  					</c:if>
 	  			 		<c:if test="${ssBinder.definitionType == 12}">
-	  						title="<ssf:nlt tag="relevance.trackThisPerson"/>" >
-	  						<span><ssf:nlt tag="relevance.justTrack"/></span>
+	  						title="<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>" >
+	  						<span><ssf:nlt tag="relevance.trackThisPerson"/></span>
 	  					</c:if>
 				 	</c:if>
 				 	<c:if test="${ssBinder.entityType == 'folder'}">
 	  			 		<c:if test="${ssDefinitionFamily != 'calendar'}">
-	  						title="<ssf:nlt tag="relevance.trackThisFolder"/>" >
-	  						<span><ssf:nlt tag="relevance.justTrack"/></span>
+	  						title="<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>" >
+	  						<span><ssf:nlt tag="relevance.trackThisFolder"/></span>
 	  					</c:if>
 	  			 		<c:if test="${ssDefinitionFamily == 'calendar'}">
-	  						title="<ssf:nlt tag="relevance.trackThisCalendar"/>" >
-	  						<span><ssf:nlt tag="relevance.justTrack"/></span>
+	  						title="<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>" >
+	  						<span><ssf:nlt tag="relevance.trackThisCalendar"/></span>
 	  					</c:if>
 				 	</c:if>
 				  </a>

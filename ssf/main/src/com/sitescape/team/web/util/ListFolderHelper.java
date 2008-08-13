@@ -243,7 +243,7 @@ public class ListFolderHelper {
 			//Build a reload url
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-			if (binder != null) reloadUrl.setParameter(WebKeys.URL_BINDER_PARENT_ID, 
+			if (binder != null && binder.getParentBinder() != null) reloadUrl.setParameter(WebKeys.URL_BINDER_PARENT_ID, 
 					binder.getParentBinder().getId().toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_ENTRY_ID_PLACE_HOLDER);

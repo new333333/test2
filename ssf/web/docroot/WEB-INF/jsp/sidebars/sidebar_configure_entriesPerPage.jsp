@@ -29,55 +29,60 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-
-    <table width="100%" style="margin-left: 7px;"><tbody>
-      <tr>
-        <td><form name="ss_recordsPerPage_${renderResponse.namespace}" 
-                id="ss_recordsPerPage_${renderResponse.namespace}" method="post" 
-			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-				name="binderId" value="${ssFolder.id}"/>
-				<c:if test="${!empty cTag}"><ssf:param 
-				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
-				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
-				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
-				name="endDate" value="${endDate}"/></c:if><ssf:param 
-				name="operation" value="change_entries_on_page"/></ssf:url>">
-		    
-		    <input type="hidden" name="ssEntriesPerPage" />
-		
-			  <ssf:menu title="${ssPageMenuControlTitle}" 
-			    titleId="ss_selectEntriesTitle${renderResponse.namespace}" 
-			    titleClass="ss_compact" menuClass="ss_actions_bar4 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
+<c:if test="${!empty ssPageMenuControlTitle}">
+  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.entryPage"/>
+ 	<div class="ss_sub_sidebarMenu">
+	    <table width="100%" style="margin-left: 7px;"><tbody>
+	      <tr>
+	        <td><form name="ss_recordsPerPage_${renderResponse.namespace}" 
+	                id="ss_recordsPerPage_${renderResponse.namespace}" method="post" 
+				    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+					name="binderId" value="${ssFolder.id}"/>
+					<c:if test="${!empty cTag}"><ssf:param 
+					name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
+					name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
+					name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+					name="endDate" value="${endDate}"/></c:if><ssf:param 
+					name="operation" value="change_entries_on_page"/></ssf:url>">
+			    
+			    <input type="hidden" name="ssEntriesPerPage" />
 			
-				<ul class="ss_actions_bar4 ss_actions_bar_submenu" style="width:150px;">
-				<li>
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '5');return false;">
-						<ssf:nlt tag="entry.shown"><ssf:param name="value" value="5"/></ssf:nlt>
-					</a>
-				</li>
-				<li>	
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '10');return false;">
-						<ssf:nlt tag="entry.shown"><ssf:param name="value" value="10"/></ssf:nlt>
-					</a>
-				</li>
-				<li>
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '25');return false;">
-						<ssf:nlt tag="entry.shown"><ssf:param name="value" value="25"/></ssf:nlt>
-					</a>
-				</li>
-				<li>
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '50');return false;">
-						<ssf:nlt tag="entry.shown"><ssf:param name="value" value="50"/></ssf:nlt>
-					</a>
-				</li>
-				<li>
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '100');return false;">
-						<ssf:nlt tag="entry.shown"><ssf:param name="value" value="100"/></ssf:nlt>
-					</a>
-				</li>
-				</ul>
-
-			  </ssf:menu>
-		</form></td>
-      </tr>
-    </tbody></table>
+				  <ssf:menu title="${ssPageMenuControlTitle}" 
+				    titleId="ss_selectEntriesTitle${renderResponse.namespace}" 
+				    titleClass="ss_compact" menuClass="ss_actions_bar4 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
+				
+					<ul class="ss_actions_bar4 ss_actions_bar_submenu" style="width:150px;">
+					<li>
+						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '5');return false;">
+							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="5"/></ssf:nlt>
+						</a>
+					</li>
+					<li>	
+						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '10');return false;">
+							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="10"/></ssf:nlt>
+						</a>
+					</li>
+					<li>
+						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '25');return false;">
+							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="25"/></ssf:nlt>
+						</a>
+					</li>
+					<li>
+						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '50');return false;">
+							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="50"/></ssf:nlt>
+						</a>
+					</li>
+					<li>
+						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '100');return false;">
+							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="100"/></ssf:nlt>
+						</a>
+					</li>
+					</ul>
+	
+				  </ssf:menu>
+			</form></td>
+	      </tr>
+	    </tbody></table>
+	</div>
+  </div>
+</c:if>

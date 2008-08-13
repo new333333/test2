@@ -38,25 +38,19 @@
 <ssf:sidebarPanel title="sidebar.configure" id="ss_folderTags_sidebar" divClass="ss_place_tags" 
   initOpen="false" sticky="false">
 
+<c:if test="${!empty ssFolderViewsToolbar}">
   <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.folderConfiguration"/> 
 	<div class="ss_sub_sidebarMenu">
 	  <ssf:toolbar toolbar="${ssFolderViewsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
 	</div>
   </div>	
+</c:if>
    
-  <div class="ss_sidebarTitle"><ssf:nlt tag="misc.configureColumns"/>
- 	<div class="ss_sub_sidebarMenu">
-        <% // configure columns area %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_columns.jsp" />
-	</div>
-  </div>
+  <% // configure columns area %>
+  <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_columns.jsp" />
  
-  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.entryPage"/>
- 	<div class="ss_sub_sidebarMenu">
-        <% // configure entries per page %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_entriesPerPage.jsp" />
-	</div>
-  </div>
+  <% // configure entries per page %>
+  <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_entriesPerPage.jsp" />
  
 </ssf:sidebarPanel>
 </c:if>

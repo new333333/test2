@@ -68,41 +68,8 @@
     <tbody>
     <tr>
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
-    <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
-
-	<% // BEGIN SIDEBAR LAYOUT  %>
-	
-	  <div id="ss_sideNav_wrap"> <% // new sidebar format %>
-
-		<% // Status %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
-		
-		<% // Meet Tab %>
-		<div id="ss_leftNav">
-			<ul>
-				<li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" /></li>
-			</ul>
- 		</div>
-	
-		<% // Recent Places %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
-
-		<!-- Saved searches -->
-		<jsp:include page="/WEB-INF/jsp/search/save_search.jsp" />
-								
-		<!-- Places rating - Moved to the new file (take this out???) -->
-		<jsp:include page="/WEB-INF/jsp/search/rating_places.jsp" />
-
-		<!-- People rating - Moved to the new file (take this out???) -->
-		<jsp:include page="/WEB-INF/jsp/search/rating_people.jsp" />
-
-		<!-- Tags (take this out???)-->
-		<jsp:include page="/WEB-INF/jsp/search/tags.jsp" />
-
-	  </div> <% // end of new sidebar format %>
-	 </div> <% // end of ss_sidebarDiv %>
-
-	</div>
+		<c:set var="ss_searchResultsPage" value="true" scope="request" />
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
 	<td valign="top" class="ss_view_info">
 			
