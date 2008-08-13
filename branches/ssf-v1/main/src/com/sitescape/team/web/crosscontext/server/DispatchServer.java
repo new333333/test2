@@ -156,7 +156,8 @@ public class DispatchServer extends GenericServlet {
 			if(contextZoneName == null)
 				contextZoneName = SZoneConfig.getDefaultZoneName();
 			// Use admin as the context user for this operation.
-			String adminName = SZoneConfig.getAdminUserName(contextZoneName);
+			String adminName = SZoneConfig.getAdminUserName(contextZoneName);		
+			User admin = getProfileDao().findUserByName(adminName, contextZoneName);
 			
 			String oldScreenName = req.getParameter(CrossContextConstants.OLD_SCREEN_NAME);
 			String newScreenName = req.getParameter(CrossContextConstants.SCREEN_NAME);
@@ -171,7 +172,7 @@ public class DispatchServer extends GenericServlet {
 				
 				RequestContext oldCtx = RequestContextHolder.getRequestContext();
 				try {
-					RequestContextUtil.setThreadContext(user);
+					RequestContextUtil.setThreadContext(admin);
 					
 					HashMap map = new HashMap();
 					map.put("name", newScreenName);
@@ -205,7 +206,8 @@ public class DispatchServer extends GenericServlet {
 				contextZoneName = SZoneConfig.getDefaultZoneName();
 			// Use admin (rather than the user being deleted) as the context user for this operation.
 			String adminName = SZoneConfig.getAdminUserName(contextZoneName);
-			
+			User admin = getProfileDao().findUserByName(adminName, contextZoneName);
+	
 			String screenName = req.getParameter(CrossContextConstants.SCREEN_NAME);
 			
 			boolean closeSession = false;
@@ -214,12 +216,12 @@ public class DispatchServer extends GenericServlet {
 				closeSession = true;
 			}
 			try {
-				User user = getProfileDao().findUserByName(screenName, contextZoneName);
+				User user = getProfileDao().findUserByNameIncludingDisabled(screenName, contextZoneName);
 				
 				RequestContext oldCtx = RequestContextHolder.getRequestContext();
 				
 				try {
-					RequestContextUtil.setThreadContext(user);
+					RequestContextUtil.setThreadContext(admin);
 					
 					boolean deleteWS = 
 						SPropsUtil.getBoolean(PORTAL_PROFILE_DELETE_USER_WORKSPACE, 
@@ -229,6 +231,58 @@ public class DispatchServer extends GenericServlet {
 				}
 				finally {
 					RequestContextHolder.setRequestContext(oldCtx); // Restore old context	
+				}
+			} catch (NoUserByTheNameException e) {
+				// The user doesn't exist on the Teaming side.
+				// This is possible, so don't throw an error.
+				logger.warn(e.toString());
+				return;
+			} catch (WriteFilesException e) {
+				logger.error(e.getLocalizedMessage(), e);
+				throw new ServletException(e.getLocalizedMessage());
+			}
+			finally {
+				if (closeSession) 
+					SessionUtil.sessionStop();
+			}
+		}
+		else if(operation.equals(CrossContextConstants.OPERATION_UPDATE_USER_ACTIVE)) {
+			HttpServletRequest request = (HttpServletRequest) req;
+			
+			String contextZoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
+			if(contextZoneName == null)
+				contextZoneName = SZoneConfig.getDefaultZoneName();
+			// Use admin as the context user for this operation.
+			String adminName = SZoneConfig.getAdminUserName(contextZoneName);
+			User admin = getProfileDao().findUserByName(adminName, contextZoneName);
+
+			String screenName = req.getParameter(CrossContextConstants.SCREEN_NAME);
+			
+			boolean active = Boolean.parseBoolean(req.getParameter(CrossContextConstants.USER_ACTIVE));
+			
+			boolean closeSession = false;
+			if (!SessionUtil.sessionActive()) {
+				SessionUtil.sessionStartup();	
+				closeSession = true;
+			}
+			try {
+				User user = getProfileDao().findUserByNameIncludingDisabled(screenName, contextZoneName);
+				if(user.isActive() != active) {
+					RequestContext oldCtx = RequestContextHolder.getRequestContext();
+					
+					try {
+						RequestContextUtil.setThreadContext(admin);
+						
+						HashMap map = new HashMap();
+						map.put("disabled", Boolean.valueOf(!active));
+		
+						getProfileModule().modifyEntry(user.getParentBinder().getId(), 
+							user.getId(), new MapInputData(map));
+
+					}
+					finally {
+						RequestContextHolder.setRequestContext(oldCtx); // Restore old context	
+					}
 				}
 			} catch (NoUserByTheNameException e) {
 				// The user doesn't exist on the Teaming side.

@@ -116,16 +116,18 @@ public class EditUserAction extends com.liferay.portlet.enterpriseadmin.action.E
 		String companyWebId = PortalUtil.getCompany(req).getWebId();
 		User user;
 		for (int i = 0; i < deleteUserIds.length; i++) {
+			user = UserLocalServiceUtil.getUserById(deleteUserIds[i]);
+			
 			if (cmd.equals(Constants.DEACTIVATE) ||
 				cmd.equals(Constants.RESTORE)) {
 
 				boolean active = !cmd.equals(Constants.DEACTIVATE);
 
 				UserServiceUtil.updateActive(deleteUserIds[i], active);
+				
+				synchUserActive(companyWebId, user.getScreenName(), active);
 			}
 			else {
-				user = UserLocalServiceUtil.getUserById(deleteUserIds[i]);
-				
 				// In ideal world, software will never fail. Since that's not where
 				// we live, we need to think about damage control in the rare
 				// cases of failure. If we successfully delete an user from Liferay
@@ -155,6 +157,22 @@ public class EditUserAction extends com.liferay.portlet.enterpriseadmin.action.E
 		if(contextCompanyWebId != null)
 			req.setParameter(CrossContextConstants.ZONE_NAME, contextCompanyWebId);
 		req.setParameter(CrossContextConstants.SCREEN_NAME, userScreenName);
+		
+		NullServletResponse res = new NullServletResponse();
+		
+		SiteScapeBridgeUtil.include(req, res);
+	}
+	
+	protected void synchUserActive(String contextCompanyWebId, String userScreenName, boolean active)
+	throws Exception {
+		AttributesAndParamsOnlyServletRequest req = 
+			new AttributesAndParamsOnlyServletRequest(SiteScapeBridgeUtil.getSSFContextPath());
+
+		req.setParameter(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_UPDATE_USER_ACTIVE);
+		if(contextCompanyWebId != null)
+			req.setParameter(CrossContextConstants.ZONE_NAME, contextCompanyWebId);
+		req.setParameter(CrossContextConstants.SCREEN_NAME, userScreenName);
+		req.setParameter(CrossContextConstants.USER_ACTIVE, String.valueOf(active));
 		
 		NullServletResponse res = new NullServletResponse();
 		
