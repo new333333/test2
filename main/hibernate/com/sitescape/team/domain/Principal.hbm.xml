@@ -94,4 +94,5 @@
     </subclass>
   </class>
   <query name="find-User-Company"><![CDATA[from com.sitescape.team.domain.User user where lower(user.name)=:userName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
+  <query name="find-User-Company-Including-Disabled"><![CDATA[from com.sitescape.team.domain.User user where lower(user.name)=:userName and user.zoneId=:zoneId and user.deleted=false]]></query>
 </hibernate-mapping>

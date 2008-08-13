@@ -367,6 +367,27 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         );
     }
     
+    public User findUserByNameIncludingDisabled(final String userName, String zoneName) {
+    	final Binder top = getCoreDao().findTopWorkspace(zoneName);
+        return (User)getHibernateTemplate().execute(
+           new HibernateCallback() {
+               public Object doInHibernate(Session session) throws HibernateException {
+            	   //returns both active and inactive users
+            	   User user = (User)session.getNamedQuery("find-User-Company-Including-Disabled")
+                        		.setString(ParameterNames.USER_NAME, userName.toLowerCase())
+                        		.setLong(ParameterNames.ZONE_ID, top.getId())
+                        		.setCacheable(true)
+                        		.uniqueResult();
+                   //query ensures user is not deleted and not disabled
+            	   if (user == null) {
+                       throw new NoUserByTheNameException(userName); 
+                   }
+                   return user;
+               }
+           }
+        );
+    }
+    
     public ProfileBinder getProfileBinder(Long zoneId) {
     	return (ProfileBinder)getCoreDao().loadReservedBinder(ObjectKeys.PROFILE_ROOT_INTERNALID, zoneId);
     }

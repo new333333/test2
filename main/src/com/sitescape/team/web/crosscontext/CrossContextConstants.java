@@ -49,9 +49,11 @@ public abstract class CrossContextConstants {
 	public static final String AUTHENTICATOR="com.sitescape.crosscontext.portal.authenticator";
 	public static final String OLD_SCREEN_NAME = "com.sitescape.crosscontext.portal.oldScreenName";
 	public static final String SCREEN_NAME = "com.sitescape.crosscontext.portal.screenName";
+	public static final String USER_ACTIVE = "com.sitescape.crosscontext.portal.userActive";
 	// Operation names
 	public static final String OPERATION_AUTHENTICATE = "authenticate";
 	public static final String OPERATION_CREATE_SESSION = "createSession";
 	public static final String OPERATION_MODIFY_SCREEN_NAME = "modifyScreenName";
 	public static final String OPERATION_DELETE_USER = "deleteUser";
+	public static final String OPERATION_UPDATE_USER_ACTIVE = "updateUserActive";
 }

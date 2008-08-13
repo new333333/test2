@@ -68,6 +68,11 @@ public class LoginPostAction extends AbstractAction {
 			if(user == null)
 				throw new ActionException("User not found");
 
+			// If the user is currently inactive (ie, disabled), then don't bother with it.
+			// The portal will deny the user subsequent access to the system any way.
+			if(!user.isActive())
+				return;
+			
 			String password = PortalUtil.getUserPassword(req);
 			if(password == null)
 				password = ""; // I'm not sure if we should allow this...

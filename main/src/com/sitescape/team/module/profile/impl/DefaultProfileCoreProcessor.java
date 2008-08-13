@@ -298,6 +298,9 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
        	if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_NAME) && !entryData.containsKey(ObjectKeys.FIELD_PRINCIPAL_NAME)) {
     		entryData.put(ObjectKeys.FIELD_PRINCIPAL_NAME, inputData.getSingleValue(ObjectKeys.FIELD_PRINCIPAL_NAME));
     	}
+       	if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_DISABLED) && !entryData.containsKey(ObjectKeys.FIELD_PRINCIPAL_DISABLED)) {
+    		entryData.put(ObjectKeys.FIELD_PRINCIPAL_DISABLED, inputData.getSingleObject(ObjectKeys.FIELD_PRINCIPAL_DISABLED));
+    	}
        	String name = (String)entryData.get(ObjectKeys.FIELD_PRINCIPAL_NAME);
        	String foreignName = (String)entryData.get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME);
        	if (Validator.isNotNull(name)) {

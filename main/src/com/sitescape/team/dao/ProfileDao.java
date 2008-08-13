@@ -99,8 +99,10 @@ public interface ProfileDao {
  	 * @throws NoWorkspaceByTheNameException
  	 */
  	public User findUserByName(String principalName, String zoneName) 
- 		throws NoUserByTheNameException, NoWorkspaceByTheNameException;
-    
+		throws NoUserByTheNameException, NoWorkspaceByTheNameException;
+ 	public User findUserByNameIncludingDisabled(String principalName, String zoneName) 
+		throws NoUserByTheNameException, NoWorkspaceByTheNameException;
+
  	public Set<Long> getAllGroupMembership(Long principalId, Long zoneId);
  	public List<Long> getMembership(Long groupId, Long zoneId);
 	public Set<Long> getPrincipalIds(User user);
