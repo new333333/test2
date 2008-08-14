@@ -121,7 +121,7 @@
 		<tr><td>
 		  <table class="ss_tag_pane_color"><tbody><tr><td>
 		    <!-- input type="text" class="ss_text" name="personalTag" / -->
-		<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="personalTag" type="personalTags" width="70px" singleItem="true" accessibilityText="title.add.personal.tags" />
+		<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="personalTag" type="personalTags" displayValueOnly="true" width="70px" singleItem="true" accessibilityText="title.add.personal.tags" />
 		    </td><td>
 		      <a class="ss_linkButton" href="javascript:;" 
 		        onClick="ss_tagAdd('${ss_tagViewNamespace}', '${ss_tagDivNumber}', '${ssBinder.id}', '${ss_tagObject.entityType}', '${ss_tagObject.id}');setTimeout('document.ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}.reset()', 100);return false;"
@@ -146,7 +146,7 @@
 		    <!--input type="text" class="ss_text" name="communityTag"/ -->
 		   
 		<ssf:ifAccessAllowed binder = "${ssBinder}" operation = "manageTag">    
-		<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="communityTag" type="communityTags" width="70px" singleItem="true" accessibilityText="title.add.community.tags" />
+		<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="communityTag" type="communityTags" displayValueOnly="true" width="70px" singleItem="true" accessibilityText="title.add.community.tags" />
 		</ssf:ifAccessAllowed>
 		   
 		    </td><td style="padding-left:4px;">

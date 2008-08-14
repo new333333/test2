@@ -33,7 +33,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
-<body class="ss_style_body" onLoad="window.focus();">
+<body class="ss_style_body tundra" onLoad="window.focus();">
 </ssf:ifaccessible>
 
 <div class="ss_indent_medium">

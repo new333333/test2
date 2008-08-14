@@ -31,7 +31,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <ssf:ifadapter>
-<body>
+<body class="tundra">
 </ssf:ifadapter>
 <script type="text/javascript">
 	var width = ss_getWindowWidth()/2;

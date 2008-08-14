@@ -28,11 +28,45 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page language="java" pageEncoding="UTF-8"%>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<% // This is JSON type AJAX response  %>
-{
-<c:forEach var="step" items="${ssWorkflowDefinitionStateData}" varStatus="status">
-	"<ssf:escapeJavaScript value="${step.key}"/>":"<ssf:escapeJavaScript value="${step.value.caption}"/>"<c:if test="${!status.last}">,</c:if>
-</c:forEach>
-}
+<% // The default profile listing view  %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
+<ssf:ifadapter>
+<body class="ss_style_body tundra">
+</ssf:ifadapter>
+
+<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
+
+<div class="ss_style ss_portlet">
+
+<% // Navigation bar %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+
+	<% // BEGIN SIDEBAR LAYOUT  %>
+	
+	  <div id="ss_sideNav_wrap"> <% // new sidebar format %>
+
+		<% // Status %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
+	
+		<% // Recent Places %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
+
+		<% // Folder Sidebar %>
+    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
+
+	  </div> <% // end of new sidebar format %>
+
+<% // Toolbar %>
+<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar2 ss_actions_bar" />
+
+<% // List of users %>
+<%@ include file="/WEB-INF/jsp/definition_elements/profile_list.jsp" %>
+
+</div>
+
+<ssf:ifadapter>
+</body>
+</html>
+</ssf:ifadapter>
+

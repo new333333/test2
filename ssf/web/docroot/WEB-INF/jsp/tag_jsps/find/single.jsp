@@ -42,111 +42,97 @@
 	<c:set var="ss_find_js_loaded" value="1" scope="request"/>
 </c:if>
    
-<div class="ss_style_trans">
-	<div style="margin:0px; padding:0px;">
-		<ssf:ifaccessible>
-	 		<label for="ss_findUser_searchText_${prefix}"><ssf:nlt tag="${accessibilityText}" /></label>
-	 	</ssf:ifaccessible>
-	
-	    <img src="<html:imagesPath/>pics/1pix.gif" <ssf:alt/>
-    	onload="window['findSingle${prefix}'] = ssFind.configSingle({
-    					thisName: 'findSingle${prefix}',
-    					findMultipleObj: '${ssFindMultipleObj}', 
-    					prefix: '${prefix}', 
-    					clickRoutineObj: '${ssFindClickRoutineObj}', 
-    					clickRoutine: '${ssFindClickRoutine}',
-						<c:choose>
-							<c:when test="${ssFindListType == 'places'}">
-								viewUrl: '<ssf:url adapter="true" portletName="ss_forum" 
-								    action="view_permalink"
-								    binderId="ss_binderIdPlaceholder">
-								    <ssf:param name="entityType" value="ss_entityTypePlaceholder" />
-								</ssf:url>',
-								viewAccesibleUrl: '',
-								searchUrl: '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_find" actionUrl="false">
-									<ssf:param name="operation" value="find_places_search" />
-								</ssf:url>',
-							</c:when>
-							<c:when test="${ssFindListType == 'tags' || ssFindListType == 'personalTags' || ssFindListType == 'communityTags'}">
-								<ssf:ifnotadapter>
-									viewUrl: '<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
-										name="searchTags" value="ss_tagPlaceHolder"/><ssf:param 
-										name="operation" value="ss_searchResults"/><ssf:param 
-										name="tabTitle" value="ss_tagPlaceHolder"/><ssf:param 
-										name="newTab" value="1"/><ssf:param 
-										name="searchItemType" value="workspace"/><ssf:param 
-										name="searchItemType" value="folder"/><ssf:param 
-										name="searchItemType" value="user"/><ssf:param 
-										name="searchItemType" value="entry"/><ssf:param 
-										name="searchItemType" value="reply"/>
-									</ssf:url>'
-								</ssf:ifnotadapter>
-								<ssf:ifadapter>
-									viewUrl: window.ss_tagSearchResultUrl?window.ss_tagSearchResultUrl:''
-								</ssf:ifadapter>,
-								viewAccesibleUrl: '',
-								searchUrl: '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_find" actionUrl="false">
-									<ssf:param name="operation" value="find_tag_search" />
-								</ssf:url>',
-							</c:when>	
-							<c:when test="${ssFindListType == 'entries'}">
-								viewUrl: '<ssf:url adapter="true" portletName="ss_forum" 
-								    action="view_permalink"
-								    binderId="${ssBinder.id}"
-								    entryId="ss_entryIdPlaceholder">
-									    <ssf:param name="entityType" value="folderEntry" />
-								</ssf:url>',
-								viewAccesibleUrl: '<ssf:url adapter="false" portletName="ss_forum" 
-								    folderId="${ssFolder.id}" action="view_folder_entry" 
-								    entryId="ss_entryIdPlaceholder" actionUrl="true">
-								</ssf:url>',
-								searchUrl: '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_find" actionUrl="false">
-									<ssf:param name="operation" value="find_entries_search" />
-								</ssf:url>',					
-							</c:when>
-							<c:otherwise>
-								<%-- user  --%>
-								viewUrl: '<ssf:url action="view_ws_listing">
-									<ssf:param name="binderId" value="${ssUser.parentBinder.id}"/>
-									<ssf:param name="entryId" value="ss_entryIdPlaceholder"/>
-								</ssf:url>',
-								viewAccesibleUrl: '',
-								searchUrl: '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_find" actionUrl="false">
-									<ssf:param name="operation" value="find_user_search" />
-									<ssf:param name="addCurrentUser" value="${ssFindAddCurrentUser}" />
-							   	</ssf:url>',
-							</c:otherwise>
-						</c:choose>    
-			      		leaveResultsVisible: '${ssFindLeaveResultsVisible}', 
-			      		listType: '${ssFindListType}', 
-			      		renderNamespace: '${renderResponse.namespace}',
-			      		binderId: '${binderId}',
-			      		subFolders: '${ssFindSearchSubFolders}',
-			      		foldersOnly: '${ssFindFoldersOnly}',
-			      		showUserTitleOnly: '${ssShowUserTitleOnly}' 
-    			}); " />
-		<textarea 
-		    class="ss_text" style="height:14px; width:${ssFindElementWidth}; overflow:hidden;" 
-		    name="${ssFindFormElement}" 
-		    id="ss_findUser_searchText_${prefix}"
-<%--		    onkeyup="window['findSingle${prefix}'].ss_findUserSearch('${prefix}', this.id, '${ssFindFormElement}${ssFindInstanceCount}', '${ssFindListType}');" --%>
-		    onkeyup="window['findSingle${prefix}'].search(this.id, '${ssFindFormElement}${ssFindInstanceCount}');"
-		    onblur="window['findSingle${prefix}'].blurTextArea();"
-		    <c:if test="${!empty label}">
-		    	title="${label}"
-		    </c:if>
-	    ></textarea>
-	
-		<div id="ss_findUser_searchText_bottom_${prefix}" style="padding:0px; margin:0px;"></div>
-		<div id="ss_findUserNavBarDiv_${prefix}" 
-		    class="ss_typeToFindResults" style="display:none; visibility:hidden;"
-		    onmouseover="window['findSingle${prefix}'].mouseOverList()"
-		    onmouseout="window['findSingle${prefix}'].mouseOutList()">
-		    <div id="available_${prefix}">
-		      <ul>
-		      </ul>
-		    </div>
-		</div>
-		<input type="hidden" name="${ssFindFormElement}${ssFindInstanceCount}"/>
-	</div>
-</div>
+
+<ssf:ifaccessible>
+	<label for="ss_combobox_autocomplete_${prefix}"><ssf:nlt tag="${accessibilityText}" /></label>
+</ssf:ifaccessible>
+
+<textarea 
+    class="ss_combobox_autocomplete"
+    style="width: ${ssFindElementWidth};"
+    name="${ssFindFormElement}" 
+    id="ss_combobox_autocomplete_${prefix}"
+    <c:if test="${!empty label}">
+    	title="${label}"
+    </c:if>
+></textarea>
+
+<img src="<html:imagesPath/>pics/1pix.gif" <ssf:alt/>
+onload="dojo.addOnLoad(function(){
+				window['findSingle${prefix}'] = ssFind.configSingle({
+				inputId: 'ss_combobox_autocomplete_${prefix}',
+				findMultipleObj: '${ssFindMultipleObj}', 
+				prefix: '${prefix}', 
+				displayValue: '${ssDisplayValue}',
+				displayValueOnly: '${ssDisplayValueOnly}',
+				clickRoutineObj: '${ssFindClickRoutineObj}', 
+				clickRoutine: '${ssFindClickRoutine}',
+				<c:choose>
+					<c:when test="${ssFindListType == 'places'}">
+						viewUrl: '<ssf:url adapter="true" portletName="ss_forum" 
+						    action="view_permalink"
+						    binderId="ss_binderIdPlaceholder">
+						    <ssf:param name="entityType" value="ss_entityTypePlaceholder" />
+						</ssf:url>',
+						viewAccesibleUrl: '',
+						searchUrl: '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_find" actionUrl="false">
+							<ssf:param name="operation" value="find_places_search" />
+						</ssf:url>',
+					</c:when>
+					<c:when test="${ssFindListType == 'tags' || ssFindListType == 'personalTags' || ssFindListType == 'communityTags'}">
+						<ssf:ifnotadapter>
+							viewUrl: '<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+								name="searchTags" value="ss_tagPlaceHolder"/><ssf:param 
+								name="operation" value="ss_searchResults"/><ssf:param 
+								name="tabTitle" value="ss_tagPlaceHolder"/><ssf:param 
+								name="searchItemType" value="workspace"/><ssf:param 
+								name="searchItemType" value="folder"/><ssf:param 
+								name="searchItemType" value="user"/><ssf:param 
+								name="searchItemType" value="entry"/><ssf:param 
+								name="searchItemType" value="reply"/>
+							</ssf:url>'
+						</ssf:ifnotadapter>
+						<ssf:ifadapter>
+							viewUrl: window.ss_tagSearchResultUrl?window.ss_tagSearchResultUrl:''
+						</ssf:ifadapter>,
+						viewAccesibleUrl: '',
+						searchUrl: '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_find" actionUrl="false">
+							<ssf:param name="operation" value="find_tag_search" />
+						</ssf:url>',
+					</c:when>	
+					<c:when test="${ssFindListType == 'entries'}">
+						viewUrl: '<ssf:url adapter="true" portletName="ss_forum" 
+						    action="view_permalink"
+						    binderId="${ssBinder.id}"
+						    entryId="ss_entryIdPlaceholder">
+							    <ssf:param name="entityType" value="folderEntry" />
+						</ssf:url>',
+						viewAccesibleUrl: '<ssf:url adapter="false" portletName="ss_forum" 
+						    folderId="${ssFolder.id}" action="view_folder_entry" 
+						    entryId="ss_entryIdPlaceholder" actionUrl="true">
+						</ssf:url>',
+						searchUrl: '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_find" actionUrl="false">
+							<ssf:param name="operation" value="find_entries_search" />
+						</ssf:url>',					
+					</c:when>
+					<c:otherwise>
+						<%-- find user --%>
+						viewUrl: '<ssf:url action="view_ws_listing">
+							<ssf:param name="binderId" value="${ssUser.parentBinder.id}"/>
+							<ssf:param name="entryId" value="ss_entryIdPlaceholder"/>
+						</ssf:url>',
+						viewAccesibleUrl: '',
+						searchUrl: '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_find" actionUrl="false">
+							<ssf:param name="operation" value="find_user_search" />
+							<ssf:param name="addCurrentUser" value="${ssFindAddCurrentUser}" />
+					   	</ssf:url>',
+					</c:otherwise>
+				</c:choose>    
+	      		leaveResultsVisible: '${ssFindLeaveResultsVisible}', 
+	      		listType: '${ssFindListType}', 
+	      		renderNamespace: '${renderResponse.namespace}',
+	      		binderId: '${binderId}',
+	      		subFolders: '${ssFindSearchSubFolders}',
+	      		foldersOnly: '${ssFindFoldersOnly}',
+	      		showUserTitleOnly: '${ssShowUserTitleOnly}' 
+		})}); " />    		

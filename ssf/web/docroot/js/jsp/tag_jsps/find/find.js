@@ -26,34 +26,27 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
+dojo.require("dojox.fx");
+dojo.require("dojox.uuid.generateRandomUuid");
+
 
 if (typeof ssFind === "undefined" || !ssFind) {
     var ssFind = {};
-	ssFind.objectsByFormName = {};
 	
-	ssFind.getObjectByFormName = function(formName, elementName) {
-		if (ssFind.objectsByFormName && ssFind.objectsByFormName[formName] && 
-				ssFind.objectsByFormName[formName][elementName]) {
-			return ssFind.objectsByFormName[formName][elementName];
-		}
-		return null;
-	}
 	
-	ssFind.addObjectByFormName = function(formName, elementName, obj) {
-		if (!("objectsByFormName" in ssFind)) {
-			ssFind.objectsByFormName = {};
-		}
+	ssFind.createMultiple = function(params) {
+		var prefix = ("prefix" in params) ? params.prefix : null;
+		var elementName = ("elementName" in params) ? params.elementName : null;
 		
-		if (!(formName in ssFind.objectsByFormName)) {
-			ssFind.objectsByFormName[formName] = {};
-		}
-		
-		ssFind.objectsByFormName[formName][elementName] = obj;
+		var container = ("container" in params) ? params.container : false;
+		var label = ("label" in params) ? params.label : "";
+		var inputId = ssFind.createMultipleFromTemplate(container, prefix, elementName, label);
+		params.inputId = inputId;
+		params.findMultipleObj = ssFind.configMultiple(params);
+		params.clickRoutine = "addValueByElement";
+		params.clickRoutineObj = params.findMultipleObj;
+		ssFind.configSingle(params);
 	}
-}
-
-
-
 /*
  	Properties:
  		prefix - used to find HTML elements by idS
@@ -64,15 +57,16 @@ if (typeof ssFind === "undefined" || !ssFind) {
 		elementName - find data name					
  */
 ssFind.configMultiple = function(params) {
-	var thisName = ("thisName" in params) ? params.thisName : null;
 	var prefix = ("prefix" in params) ? params.prefix : null;
 	var clickRoutineObj = ("clickRoutineObj" in params) ? params.clickRoutineObj : null;	
 	var clickRoutine = ("clickRoutine" in params) ? params.clickRoutine : null;
+	var displayValue = ("displayValue" in params) ? params.displayValue : null;
+	var displayValueOnly = ("displayValueOnly" in params) ? params.displayValueOnly : null;
 	
 	var formName = ("formName" in params) ? params.formName : null;
-	var elementName = ("elementName" in params) ? params.elementName : null;	
-	
-	var obj = new ssFind.Find(thisName, prefix, clickRoutineObj, clickRoutine);
+	var elementName = ("elementName" in params) ? params.elementName : null;
+		
+	var obj = new ssFind.Find(prefix, clickRoutineObj, clickRoutine, displayValue, displayValueOnly);
 	
 	ssFind.addObjectByFormName(formName, elementName, obj);
 	
@@ -92,17 +86,19 @@ ssFind.configSingle = function(params) {
 		
 	// find already defined Find object (created by find multiple)
 	var findMultipleObjName = ("findMultipleObj" in params) ? params.findMultipleObj : null;
-	if (findMultipleObjName != null && findMultipleObjName != "" && window[findMultipleObjName] != null) {
+	if (findMultipleObjName != null && typeof findMultipleObjName == "string" && findMultipleObjName != "" && window[findMultipleObjName] != null) {
 		findObj = window[findMultipleObjName];
+	} else if (findMultipleObjName != null && typeof findMultipleObjName == "object") {
+		findObj = findMultipleObjName;
 	}
 	
 	// no multiple, create new Find object
 	if (findObj == null) {
-		var thisName = ("thisName" in params) ? params.thisName : null;
-		findObj = new ssFind.Find(thisName);
+		findObj = new ssFind.Find();
 	}
 	
 	// initialize single find
+	var inputId = ("inputId" in params) ? params.inputId : null;
 	var prefix = ("prefix" in params) ? params.prefix : null;
 	var clickRoutineObj = ("clickRoutineObj" in params) ? params.clickRoutineObj : null;	
 	var clickRoutine = ("clickRoutine" in params) ? params.clickRoutine : null;
@@ -115,23 +111,31 @@ ssFind.configSingle = function(params) {
 	var binderId = ("binderId" in params) ? params.binderId : null;
 	var subFolders = ("subFolders" in params) ? params.subFolders : null;
 	var foldersOnly = ("foldersOnly" in params) ? params.foldersOnly : null;
-	var showUserTitleOnly = ("showUserTitleOnly" in params) ? params.showUserTitleOnly : null;
-	
-	findObj.single(prefix, clickRoutineObj, clickRoutine, viewUrl, viewAccesibleUrl, searchUrl,
-					leaveResultsVisible, listType, renderNamespace, binderId, subFolders, foldersOnly, showUserTitleOnly);
+	var showUserTitleOnly = ("showUserTitleOnly" in params) ? params.showUserTitleOnly : false;
+	var displayArrow = ("displayArrow" in params) ? (params.displayArrow != "false" ? true : false) : false;
+	var displayValue = ("displayValue" in params) ? (params.displayValue != "false" ? true : false) : false;
+	var displayValueOnly = ("displayValueOnly" in params) ? (params.displayValueOnly != "false" ? true : false) : false;
+	var addCurrentUserToResult = ("addCurrentUserToResult" in params) ? (params.addCurrentUserToResult != "false" ? true : false) : false;
+		
+	findObj.single(inputId, prefix, clickRoutineObj, clickRoutine, viewUrl, viewAccesibleUrl, searchUrl,
+					leaveResultsVisible, listType, renderNamespace, binderId, subFolders, foldersOnly, showUserTitleOnly, displayArrow, displayValue, displayValueOnly, addCurrentUserToResult);
 	
 	return findObj;
 }
 
 
-ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multipleClickRoutine) {
+ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRoutine, displayValue, displayValueOnly) {
 	var that = this;
 	
-	var thisObjectName = thisName;
+	this.inputId = false;
+	this._inputObj = false;
 	
 	this._multiplePrefix = multiplePrefix;
 	this._multipleClickRoutineObj = multipleClickRoutineObj;
 	this._multipleClickRoutine = multipleClickRoutine;
+	
+	this._displayValue = displayValue;
+	this._displayValueOnly = displayValueOnly;
 
 	this._singlePrefix;
 	this._singleClickRoutineObj;
@@ -146,13 +150,22 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 	this._singleSubFolders;
 	this._singleFoldersOnly;
 	this._showUserTitleOnly;
+	this._displayArrow = false;
+	this._addCurrentUserToResult = false;
+	
+	this._listContainer = false;
+	this._listContainerInnerDiv = false;
+	this._searchResultsList = false;
+	this._nextPrevTableObj = false;
+	this._arrowDown = false;
+	this._hiddenInputSelectedId = false;
+	this._hiddenInputSelectedType = false;
 	
 	var lastText = "";
 	var pageNumber = 0;
 	var pageNumberBefore = 0;
 	var searchInProgress = false;
-	var searchLastTextObjId;
-	var searchLastElement;
+	var textWaitingForSearch = false;
 	var searchWaiting = false;
 	var searchStartMs;
 	var searchText;
@@ -161,13 +174,87 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 	
 	var onAddCallbacks = [];
 	var onDeleteCallbacks = [];
-
-	this.single = function(singlePrefix, singleClickRoutineObj, singleClickRoutine, singleViewUrl, singleViewAccesibleUrl, singleSearchUrl, singleLeaveResultsVisible, singleListType, singleRenderNamespace, singleBinderId, singleSubFolders, singleFoldersOnly, showUserTitleOnly) {
-		that._singlePrefix = singlePrefix;
-		if (!multiplePrefix && that._singlePrefix) {
-			thisObjectName = singlePrefix + "ssFind_Find";
-			window[thisObjectName] = that;
+	
+	this.init = function() {
+		if (that.inputId) {
+			that._inputObj = document.getElementById(that.inputId);
 		}
+		
+		if (that._inputObj) {
+			dojo.connect(that._inputObj, "onkeyup", function() {
+				that.search();
+			});
+			dojo.connect(that._inputObj, "onblur", function() {
+				that.blurTextArea();
+			});
+		}
+		
+		
+		that._listContainer = document.createElement("div");
+		that._listContainer.id = "ss_autoCompleteComboBoxListContainer_" + that._singlePrefix;
+		that._listContainer.className = "ss_typeToFindResults";
+		that._listContainer.style.display = "none";
+		dojo.connect(that._listContainer, "onmouseover", function() {
+			that.mouseOverList();
+		});	
+		dojo.connect(that._listContainer, "onmouseout", function() {
+			that.mouseOutList();
+		});
+			
+		that._listContainerInnerDiv = document.createElement("div");
+		that._listContainerInnerDiv.id = "available_" + that._singlePrefix;
+		that._listContainerInnerDiv.style.padding = "2px";
+		that._listContainerInnerDiv.style.margin = "2px";
+		
+		that._searchResultsList = document.createElement("ul");
+
+		that._listContainerInnerDiv.appendChild(that._searchResultsList);
+		that._listContainer.appendChild(that._listContainerInnerDiv);
+		document.getElementsByTagName( "body" ).item(0).appendChild(that._listContainer);
+			
+		that._hiddenInputSelectedId = document.createElement("input");
+		that._hiddenInputSelectedId.type = "hidden";
+		that._hiddenInputSelectedId.id = that._inputObj.id + "_selected";
+		that._hiddenInputSelectedId.name = that._inputObj.name + "_selected";
+		that._inputObj.parentNode.insertBefore(that._hiddenInputSelectedId, that._inputObj.nextSibling); 
+		
+		that._hiddenInputSelectedType = document.createElement("input");
+		that._hiddenInputSelectedType.type = "hidden";
+		that._hiddenInputSelectedType.id = that._inputObj.id + "_type";
+		that._hiddenInputSelectedType.name = that._inputObj.name + "_type";
+		that._inputObj.parentNode.insertBefore(that._hiddenInputSelectedType, that._inputObj.nextSibling); 
+		
+		
+		
+		if (that._displayArrow) {
+/*
+			that._arrowDown = document.createElement("a");
+			// TODO style
+			that._arrowDown.style.border = "0.01em solid #999999";
+//			that._arrowDown.style.cssFloat = "right";
+			that._arrowDown.style.height = "13px";
+			that._arrowDown.style.width = "13px";
+//			that._inputObj.style.cssFloat = "right";
+			
+			var imgObj = document.createElement("img");
+			imgObj.style.height = "13px";
+			imgObj.style.width = "13px";			
+			imgObj.style.border = "0";
+			imgObj.src = ss_imagesPath + "icons/arrow_down_combobox.gif";
+			
+			that._arrowDown.appendChild(imgObj);
+			
+			that._inputObj.parentNode.insertBefore(that._arrowDown, that._inputObj.nextSibling); 
+			*/
+		}	
+	}
+
+	this.single = function(inputId, singlePrefix, singleClickRoutineObj, singleClickRoutine, singleViewUrl, singleViewAccesibleUrl, singleSearchUrl, singleLeaveResultsVisible, singleListType, singleRenderNamespace, singleBinderId, singleSubFolders, singleFoldersOnly, showUserTitleOnly, displayArrow, displayValue, displayValueOnly, addCurrentUserToResult) {
+		that.inputId = inputId;
+		if (that.inputId) {
+			that._inputObj = document.getElementById(that.inputId);
+		}
+		that._singlePrefix = singlePrefix;
 		that._singleClickRoutineObj = singleClickRoutineObj;
 		that._singleClickRoutine = singleClickRoutine;
 		that._singleViewUrl = singleViewUrl;
@@ -180,24 +267,47 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 		that._singleSubFolders = singleSubFolders;
 		that._singleFoldersOnly = singleFoldersOnly;
 		that._showUserTitleOnly = showUserTitleOnly;
+		that._displayArrow = displayArrow;
+		that._displayValue = displayValue;
+		that._displayValueOnly = displayValueOnly;
+		that._addCurrentUserToResult = addCurrentUserToResult;
+		that.init();
 	}
 	
-	this.search = function (textObjId, elementName) {
-		var textObj = document.getElementById(textObjId);
-		var text = textObj.value;
+	this.setValue = function(id, txt, type) {
+		that._inputObj.value = txt;
+		that._hiddenInputSelectedId.value = id;
+		that._hiddenInputSelectedType.value = type;
+	}
+	
+	this.getSingleValue = function() {
+		return that._inputObj.value;
+	}
+
+	this.getSingleId = function() {
+		return that._hiddenInputSelectedId.value;
+	}
+	
+	this.getSingleType = function() {
+		return that._hiddenInputSelectedType.value;
+	}
+	
+	this.search = function (searchText) {
+		var text = that._inputObj.value;
+		if (searchText) {
+			text = searchText;
+		}
 		if (text.trim() != lastText.trim()) {
 			pageNumber = 0;
 			pageNumberBefore = 0;
 		}
 		ss_setupStatusMessageDiv();
-		ss_moveDivToBody('ss_findUserNavBarDiv' + that._singlePrefix);
 		//Are we already doing a search?
 		if (searchInProgress) {
 			//Yes, hold this request until the current one finishes
 			lastText = text;
-			searchLastTextObjId = textObjId;
-			searchLastElement = elementName;
 			searchWaiting = true;
+			textWaitingForSearch = text;
 			var d = new Date();
 			var curr_msec = d.getTime();
 			if (searchStartMs == 0 || curr_msec < parseInt(searchStartMs + 1000)) {
@@ -213,8 +323,6 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 		}
 		searchInProgress = true;
 		searchWaiting = false;
-		searchLastTextObjId = textObjId;
-		searchLastElement = elementName;
 		lastText = text;
 	 	//Save the text in case the user changes the search type
 	 	searchText = text;
@@ -231,22 +339,20 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 	 		}
 	 	}
 	 	if (crFound == 1) {
-	 		textObj.value = newText;
-	 		text = textObj.value;
-			var ulObj = document.getElementById('available_'+that._singlePrefix)
-			var liObjs = ulObj.getElementsByTagName('li');
+	 		that._inputObj.value = newText;
+	 		text = that._inputObj.value;
+			var liObjs = that._listContainer.getElementsByTagName('li');
 			if (liObjs.length == 1) {
-				that._selectItem(liObjs[0]);
+				that.selectItem(liObjs[0]);
 				return;
 			}
 	 	}
 	 	//Fade the previous selections
 	 	var savedColor = "#000000";
-	 	var divObj = document.getElementById('available_' + that._singlePrefix);
-	 	if (divObj != null && divObj.style && divObj.style.color) {
-	 		savedColor = divObj.style.color;
+	 	if (that._listContainerInnerDiv != null && that._listContainerInnerDiv.style && that._listContainerInnerDiv.style.color) {
+	 		savedColor = that._listContainerInnerDiv.style.color;
 	 	}
-	 	if (divObj != null) divObj.style.color = "#cccccc";
+	 	if (that._listContainerInnerDiv != null) that._listContainerInnerDiv.style.color = "#cccccc";
 	
 	 	ss_debug("//"+text+"//")
 		var searchText = text;
@@ -254,104 +360,201 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 			if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
 		}
 		if (ss_userDisplayStyle == 'accessible') {
-			that._searchAccessible(searchText, elementName, crFound);
+			that._searchAccessible(searchText, crFound);
 			searchInProgress = false;
 			return;
 		}
-		var ajaxRequest = new ss_AjaxRequest(that._singleSearchUrl); //Create AjaxRequest object
-		ajaxRequest.addKeyValue("searchText", searchText);
-		ajaxRequest.addKeyValue("maxEntries", "10");
-		ajaxRequest.addKeyValue("pageNumber", pageNumber);
-		ajaxRequest.addKeyValue("findObjectName", thisObjectName);
-		ajaxRequest.addKeyValue("findType", that._singleListType);
-		if (that._singleBinderId != null) { 
-			ajaxRequest.addKeyValue("binderId", that._singleBinderId);
-		}
-		if (that._singleSubFolders != null) { 
-			ajaxRequest.addKeyValue("searchSubFolders", that._singleSubFolders);
-		}
-		ajaxRequest.addKeyValue("listDivId", "available_" + that._singlePrefix);
-		ajaxRequest.addKeyValue("showUserTitleOnly", that._showUserTitleOnly);
-		ajaxRequest.addKeyValue("namespace", that._singlePrefix);
-		ajaxRequest.setPostRequest(that.postFindRequest);
-		ajaxRequest.setData("prefix", that._singlePrefix);
-		ajaxRequest.setData("elementName", elementName);
-		ajaxRequest.setData("savedColor", savedColor);
-		ajaxRequest.setData("crFound", crFound);
-		ajaxRequest.setUseGET();
-		ajaxRequest.sendRequest();  //Send the request
+		
+		dojo.xhrGet({
+	    	url: that._singleSearchUrl  + "&searchText=" + searchText 
+										+ "&maxEntries=10" 
+										+ "&pageNumber=" + pageNumber 
+										+ "&findType=" + that._singleListType 
+										+ (that._singleBinderId != null?"&binderId=" + that._singleBinderId:"")
+										+ (that._singleSubFolders != null?"&searchSubFolders=" + that._singleSubFolders: "")
+										+ "&listDivId=" + that._listContainerInnerDiv.id
+										+ "&showUserTitleOnly=" + that._showUserTitleOnly
+										+ "&namespace=" + that._singlePrefix
+										+ "&addCurrentUser=" + that._addCurrentUserToResult,
+			error: function (err) {
+				alert(ss_not_logged_in);
+			},
+			load: function (data) {
+				searchInProgress = false;
+				
+				if (!data || !data.items || data.items.length == 0) {
+					that._listContainer.display = "none";
+					return;
+				}
+				
+				that._clearSearchResultsList();
+				
+				for (var i = 0; i < data.items.length; i++) {
+					that._addListElement(data.items[i]);
+				}
+				
+				that._addNextPrevToSearchList(data);
+			
+				that.showResultList();
+				
+			 	//Show this at full brightness
+			 	that._listContainerInnerDiv.style.color = savedColor;
+				
+				//See if there is another search request to be done
+				if (searchWaiting) {
+					(function(textWaitingForSearch) {
+						setTimeout(function () {
+							that.search(textWaitingForSearch)
+						}, 100);
+					})(textWaitingForSearch);
+				}
+			
+				//See if the user typed a return. If so, see if there is a unique value to go to
+				if (crFound == 1) {
+					var liObjs = that._listContainerInnerDiv.getElementsByTagName('li');
+					if (liObjs.length == 1) {
+						setTimeout(function (){that.selectItem0();}, 100);
+						return;
+					}
+				}
+			},
+			handleAs: "json-comment-filtered",
+			preventCache: true
+		});
 	}
 	
-	this.postFindRequest = function (obj) {
-		//See if there was an error
-		if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-			alert(ss_not_logged_in);
-		}
-		searchInProgress = false;
-	
-		var ulObj = document.getElementById('available_'+that._singlePrefix);
-		var liObjs = ulObj.getElementsByTagName('li');
-		if (liObjs.length == 0) {
-			ss_hideDiv('ss_findUserNavBarDiv_' + that._singlePrefix);
-			return;
-		}
-	
-		that.showSelections();
+	this._addListElement = function (item) {
+		var liObj = document.createElement("li");
+		liObj.id = "ss_find_id_" + (item.id || item.name);
 		
-	 	//Show this at full brightness
-		var divObj = document.getElementById('ss_findUserNavBarDiv_' + that._singlePrefix);
-	 	divObj = document.getElementById('available_' + that._singlePrefix);
-	 	if (divObj != null) divObj.style.color = obj.getData('savedColor');
-		
-		//See if there is another search request to be done
-		if (searchWaiting) {
-			(function(searchLastTextObjId, searchLastElement) {
-				setTimeout(function () {
-					that.search(searchLastTextObjId, searchLastElement)
-				}, 100);
-			})(searchLastTextObjId, searchLastElement);
-		}
-	
-		//See if the user typed a return. If so, see if there is a unique value to go to
-		if (obj.getData('crFound') == 1) {
-			var ulObj = document.getElementById('available_' + that._singlePrefix);
-			var liObjs = ulObj.getElementsByTagName('li');
-			if (liObjs.length == 1) {
-				setTimeout(function (){that.selectItem0();}, 100);
-				return;
+		var hrefObj = document.createElement("a");
+		hrefObj.href = "javascript: //";
+		dojo.connect(hrefObj, "onclick", function(evt) {
+			// in setIdAndValue?? that._hiddenInputSelectedId.value = item.id || item.name;
+			// if (that._singleListType == "personalTags" || that._singleListType == "communityTags") {
+			if (that._displayValue || that._displayValueOnly) {
+				that.setValue(item.id || item.name, item.name, item.type);
 			}
+			if (!that._displayValueOnly) {
+				that.selectItem(liObj, item.type);
+			}
+			return false;
+	    });
+		
+		var spanObj = document.createElement("span");
+		spanObj.innerHTML = item.name;
+		
+		hrefObj.appendChild(spanObj);
+		liObj.appendChild(hrefObj);
+		that._searchResultsList.appendChild(liObj);
+	}
+	
+	this._clearSearchResultsList = function() {
+		if (that._searchResultsList && that._searchResultsList.hasChildNodes()) {
+		    while (that._searchResultsList.childNodes.length >= 1 ) {
+		        that._searchResultsList.removeChild(that._searchResultsList.firstChild);       
+		    }
+		}
+		
+		if (that._listContainerInnerDiv && that._nextPrevTableObj) {
+			try {
+				that._listContainerInnerDiv.removeChild(that._nextPrevTableObj);
+			} catch(err){}
+		}
+	}
+
+	this._addNextPrevToSearchList = function(data) {
+		var hasPrev = data.pageNumber;
+		var hasNext = (data.count + data.pageNumber * data.pageSize < data.totalHits);
+		if (hasPrev || hasNext) {
+			that._nextPrevTableObj = document.createElement("table");
+			that._nextPrevTableObj.className = "ss_typeToFindNav";
+			that._nextPrevTableObj.cellpadding = "0";
+			that._nextPrevTableObj.cellspacing = "0";
+			
+			var tbodyObj = document.createElement("tbody");
+			that._nextPrevTableObj.appendChild(tbodyObj);
+			
+			var trObj = document.createElement("tr");
+			tbodyObj.appendChild(trObj);
+			
+			var tdPrevObj = document.createElement("td");
+			tdPrevObj.style.width = "50%";
+			tdPrevObj.style.textAlign = "left";
+			trObj.appendChild(tdPrevObj);
+			
+			if (hasPrev) {
+				var hrefPrevObj = document.createElement("a");
+				hrefPrevObj.href = "javascript:;";
+				dojo.connect(hrefPrevObj, "onclick", function(evt) {
+					that.prevPage();
+					return false;
+			    });
+				tdPrevObj.appendChild(hrefPrevObj);
+				
+				var imgPrevObj = document.createElement("img");
+				imgPrevObj.style.border = "0";
+				imgPrevObj.style.marginRight = "20px";
+				imgPrevObj.title = data.prevLabel;
+				imgPrevObj.src = ss_imagesPath + "pics/sym_arrow_left_.gif";
+				hrefPrevObj.appendChild(imgPrevObj);
+			}
+			
+			var tdNextObj = document.createElement("td");
+			tdNextObj.style.width = "50%";
+			tdNextObj.style.textAlign = "right";
+			trObj.appendChild(tdNextObj);
+			
+			if (hasNext) {
+				var hrefNextObj = document.createElement("a");
+				hrefNextObj.href = "javascript:;";
+				dojo.connect(hrefNextObj, "onclick", function(evt) {
+					that.nextPage();
+					return false;
+			    });
+				tdNextObj.appendChild(hrefNextObj);
+				
+				var imgNextObj = document.createElement("img");
+				imgNextObj.style.border = "0";
+				imgNextObj.style.marginLeft = "20px";
+				imgNextObj.title = data.nextLabel;
+				imgNextObj.src = ss_imagesPath + "pics/sym_arrow_right_.gif";
+				hrefNextObj.appendChild(imgNextObj);
+			}
+			
+			
+			that._searchResultsList.parentNode.insertBefore(that._nextPrevTableObj, that._searchResultsList.nextSibling); 
 		}
 	}
 	
-	this.showSelections = function() {
-		var divObj = document.getElementById('ss_findUserNavBarDiv_' + that._singlePrefix);
-		ss_moveDivToBody('ss_findUserNavBarDiv_' + that._singlePrefix);
-		ss_setObjectTop(divObj, parseInt(ss_getDivTop("ss_findUser_searchText_bottom_" + that._singlePrefix) + divTopOffset))
-		ss_setObjectLeft(divObj, parseInt(ss_getDivLeft("ss_findUser_searchText_bottom_" + that._singlePrefix)))
-		ss_showDivActivate('ss_findUserNavBarDiv_' + that._singlePrefix);
+	this.showResultList = function() {
+		ss_setObjectTop(that._listContainer, parseInt(ss_getDivTop(that._inputObj) + ss_getObjectHeight(that._inputObj) + divTopOffset));
+		ss_setObjectLeft(that._listContainer, parseInt(ss_getDivLeft(that._inputObj)))
+		ss_showDivActivate(that._listContainer.id);
 	}
 	
 	this.selectItem0 = function () {
-		var ulObj = document.getElementById('available_' + that._singlePrefix);
-		var liObjs = ulObj.getElementsByTagName('li');
+		var liObjs = that._listContainerInnerDiv.getElementsByTagName('li');
 		if (liObjs.length == 1) {
-			that._selectItem(liObjs[0])
+			that.selectItem(liObjs[0]);
 		}
 	}
 	
 	//Routine called when item is clicked
-	this._selectItem = function(obj, entityType) {
+	this.selectItem = function(obj, entityType) {
 		if (!obj || !obj.id ||obj.id == undefined) return false;
-		var id = ss_replaceSubStr(obj.id, 'ss_findUser_id_', "");
+		var id = ss_replaceSubStr(obj.id, 'ss_find_id_', "");
 		if (that._singleClickRoutine != "") {
 			that._callRoutineSingle(id, obj, entityType);
 		} else {
 			if (that._singleListType == "tags" || that._singleListType == "communityTags" || that._singleListType == "personalTags") {
 				var url = ss_replaceSubStrAll(that._singleViewUrl, 'ss_tagPlaceHolder', id);
 				self.location.href = url;
+			} else if (that._singleListType == "workflows") {
+				// no link to show
 			} else if (that._singleListType == "entries") {
 				var url = ss_replaceSubStr(that._singleViewUrl, 'ss_entryIdPlaceholder', id);
-				self.location.href = url;
+				self.location.href = url;				
 			} else if (that._singleListType == "places") {
 			    var url = that._singleViewUrl; 
 				url = ss_replaceSubStr(url, 'ss_binderIdPlaceholder', id);
@@ -360,7 +563,7 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 					self.location.href = url;
 				}
 				return false;
-			} else { // user
+			} else { // users
 				var url = ss_replaceSubStr(that._singleViewUrl, 'ss_entryIdPlaceholder', id);
 				self.location.href = url;
 			}
@@ -370,10 +573,10 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 	//Routine called when item is clicked in accessible mode
 	this.selectItemAccessible = function(obj, entityType) {
 		if (that._singleListType != "entries") {
-			return that._selectItem(obj, entityType);
+			return that.selectItem(obj, entityType);
 		} else {
 			if (!obj || !obj.id ||obj.id == undefined) return false;
-			var id = ss_replaceSubStr(obj.id, 'ss_findUser_id_', "");
+			var id = ss_replaceSubStr(obj.id, 'ss_find_id_', "");
 			var url = that._singleViewAccesibleUrl; 
 			url = ss_replaceSubStr(url, 'ss_entryIdPlaceholder', id);
 			self.location.href = url;
@@ -383,30 +586,33 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 	this.nextPage = function() {
 		pageNumberBefore = pageNumber;
 		pageNumber++;
-		that.search(searchLastTextObjId, searchLastElement);
+		that.search();
 	}	
 
 	this.prevPage = function() {
 		pageNumberBefore = pageNumber;
 		pageNumber--;
 		if (pageNumber < 0) pageNumber = 0;
-		that.search(searchLastTextObjId, searchLastElement);
+		that.search();
 	}
 
 	this.close = function() {
 		pageNumber = 0;
 		pageNumberBefore = 0;
-		
-		var textObj = document.getElementById('ss_findUser_searchText_' + that._singlePrefix);
+
+		// TODO: accessible mode here		
+		var textObj = document.getElementById('ss_combobox_autocomplete_' + that._singlePrefix);
 		if (textObj == null) {
-			textObj = self.parent.document.getElementById('ss_findUser_searchText_' + that._singlePrefix);
+			textObj = self.parent.document.getElementById('ss_combobox_autocomplete_' + that._singlePrefix);
 		}
 		if (textObj != null) textObj.focus();
 	}
 
 	this.blurTextArea = function() {
 		if (!isMouseOverList) {
-			setTimeout(function() { ss_hideDiv('ss_findUserNavBarDiv_' + that._singlePrefix) } , 200);
+			setTimeout(function() { 
+				that._listContainer.display = "none";
+			} , 200);
 		}
 	}
 
@@ -418,7 +624,7 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 		isMouseOverList = false;
 	}
 
-	this._searchAccessible = function(searchText, elementName, crFound) {
+	this._searchAccessible = function(searchText, crFound) {
 		//In accessibility mode, wait for the user to type cr
 		if (!crFound && parseInt(pageNumber) == 0 && 
 				parseInt(pageNumberBefore) == 0) return;
@@ -427,7 +633,7 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 	    var iframeObj = self.document.getElementById("ss_findIframe");
 	    var iframeDivObjParent = self.parent.document.getElementById("ss_findIframeDiv");
 	    var iframeObjParent = self.parent.document.getElementById("ss_findIframe");
-	    var textObj = self.document.getElementById('ss_findUser_searchText_bottom_'+that._singlePrefix);
+	    var textObj = that._inputObj; // TODO: change positionnig - was after div
 	    if (iframeDivObjParent == null && iframeDivObj == null) {
 		    iframeDivObj = self.document.createElement("div");
 		    iframeDivObjParent = iframeDivObj;
@@ -445,7 +651,7 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 		    closeDivObj.style.padding = "6px";
 		    iframeDivObj.appendChild(closeDivObj);
 		    var aObj = self.document.createElement("a");
-			aObj.setAttribute("href", "javascript: ;");
+			aObj.setAttribute("href", "javascript: ;");		
 			dojo.connect(aObj, "onclick", function(evt) {
 				ss_hideDiv('ss_findIframeDiv');
 				that.close();
@@ -458,17 +664,19 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 	    }
 	    if (iframeDivObj == null) iframeDivObj = iframeDivObjParent;
 	    if (iframeObj == null) iframeObj = iframeObjParent;
-	    if (self.parent == self && textObj != null) {
-	    	var x = dojo.coords(textObj, true).x
-	    	var y = dojo.coords(textObj, true).y
-		    ss_setObjectTop(iframeDivObj, y + "px");
+	    // if (self.parent == self && textObj != null) {
+	    	var x = dojo.coords(textObj, true).x;
+	    	var y = dojo.coords(textObj, true).y;
+		    ss_setObjectTop(iframeDivObj, y + ss_getObjectHeight(textObj) + "px");
 		    ss_setObjectLeft(iframeDivObj, x + "px");
-		}
+		// }
 		ss_showDiv("ss_findIframeDiv");
+		var objId = dojox.uuid.generateRandomUuid();
+		window[objId] = that;
 		var urlParams = {operation:"find_user_search", searchText:searchText,
 						maxEntries:"10", pageNumber: pageNumber,
-						findType: that._singleListType, listDivId:"available_" + that._singlePrefix,
-						namespace: that._singlePrefix};
+						findType: that._singleListType, listDivId: that._listContainerInnerDiv.id,
+						namespace: that._singlePrefix, findObjectName: objId};
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_find");
 	    if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
 			self.location.href = url;
@@ -507,8 +715,10 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 	
 	this._callRoutineMultiple = function(id, txt, callbacks) {
 		var obj = window;
-		if (that._multipleClickRoutineObj && window[that._multipleClickRoutineObj]) {
+		if (that._multipleClickRoutineObj && typeof that._multipleClickRoutineObj == "string" && window[that._multipleClickRoutineObj]) {
 			obj = window[that._multipleClickRoutineObj];
+		} else if (that._multipleClickRoutineObj && typeof that._multipleClickRoutineObj == "object") {
+			obj = that._multipleClickRoutineObj;
 		}
 
 		if (that._multipleClickRoutine && obj && obj[that._multipleClickRoutine]) {
@@ -521,8 +731,10 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 
 	this._callRoutineSingle = function(id, obj, entityType) {
 		var callbackObj = window;
-		if (that._singleClickRoutineObj && window[that._singleClickRoutineObj]) {
+		if (that._singleClickRoutineObj && typeof that._singleClickRoutineObj == "string" && window[that._singleClickRoutineObj]) {
 			callbackObj = window[that._singleClickRoutineObj];
+		} else if (that._singleClickRoutineObj && typeof that._singleClickRoutineObj == "object") {
+			callbackObj = that._singleClickRoutineObj;
 		}
 		if (that._singleClickRoutine && callbackObj && callbackObj[that._singleClickRoutine]) {
 			var objMethod = callbackObj[that._singleClickRoutine];
@@ -531,9 +743,11 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 			} else {
 				objMethod.apply(this, [id, obj]);
 			}
+		} else if (that._singleClickRoutine && typeof that._singleClickRoutine == "function") {
+			that._singleClickRoutine();
 		}
 		if (that._singleLeaveResultsVisible) {
-			setTimeout(function() {that.showSelections()}, 200);
+			setTimeout(function() {that.showResultList()}, 200);
 		}
 	}
 
@@ -588,8 +802,7 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 	}
 	
 	this._highlight = function(obj) {
-		//This option did not get ported to dojo 0.9 
-		//dojo.lfx.html.highlight(obj, "#FFFF33", 500).play();
+		dojox.fx.highlight({node:obj, color:'#FFFF33', duration:500}).play();
 	}
 	
 	this.addListener = function(on, callback) {
@@ -600,5 +813,64 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 			onDeleteCallbacks.push(callback);
 		}
 	}
+	
+}
 
+	// for pure js widget creation
+	ssFind.multipleTemplateStartListHTML = 
+		  "<input type=\"hidden\" name=\"${formElement}\" id=\"${prefix}_ss_find_multiple_input\"/>"
+		+ "<table class=\"ss_style ss_combobox_autocomplete_list\" cellspacing=\"0\" cellpadding=\"0\">"
+		+ "<tbody><tr><td><textarea class=\"ss_combobox_autocomplete\" name=\"${formElement}_single\" id=\"${inputId}\"></textarea>"
+		+ "<div><span class=\"ss_fineprint\">${label}</span></div>"
+		+ "</td><td>"
+		+ "<ul id=\"added_${prefix}\">";
+		/* TODO: list initial values are not implemented yet
+					<c:forEach var=\"item\" items=\"${ssFindUserList}\">
+						<li id=\"<c:out value=\"${item.id}\"/>\" ><c:out value=\"${item.title}\"/>
+							<a href=\"javascript: ;\" 
+								onclick=\"window['findMultiple${prefix}'].removeValueByElement(this, '<c:out value=\"${item.id}\"/>', '<c:out value=\"${item.title}\"/>'); return false;\"
+								><img <ssf:alt tag=\"alt.delete\"/> 
+									src=\"<html:imagesPath/>pics/sym_s_delete.gif\"/></a>
+						</li>
+					</c:forEach>
+		*/
+		
+		
+	ssFind.multipleTemplateEndListHTML = "</ul></td></tr></tbody></table>";
+	
+	ssFind.createMultipleFromTemplate = function(container, prefix, formElement, label) {
+		var inputId = "ss_combobox_autocomplete_" + prefix;
+		container.innerHTML = ssFind.multipleTemplateStartListHTML.replace(/\$\{prefix\}/g, prefix)
+										.replace(/\$\{formElement\}/g, formElement)
+										.replace(/\$\{label\}/g, label)
+										.replace(/\$\{inputId\}/g, inputId)	 + ssFind.multipleTemplateEndListHTML;
+		return inputId;
+	}
+
+	/*
+	 	Collect all ssFind.Find objects by formName and elementName for later reference.
+	 	Used by event scheduler to refer attendee list.
+	 */
+	ssFind.objectsByFormName = {};
+	
+	ssFind.getObjectByFormName = function(formName, elementName) {
+		if (ssFind.objectsByFormName && ssFind.objectsByFormName[formName] && 
+				ssFind.objectsByFormName[formName][elementName]) {
+			return ssFind.objectsByFormName[formName][elementName];
+		}
+		return null;
+	}
+	
+	ssFind.addObjectByFormName = function(formName, elementName, obj) {
+		if (!("objectsByFormName" in ssFind)) {
+			ssFind.objectsByFormName = {};
+		}
+		
+		if (!(formName in ssFind.objectsByFormName)) {
+			ssFind.objectsByFormName[formName] = {};
+		}
+		
+		ssFind.objectsByFormName[formName][elementName] = obj;
+	}
+	
 }
