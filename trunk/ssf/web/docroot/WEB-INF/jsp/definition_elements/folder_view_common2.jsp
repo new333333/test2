@@ -70,18 +70,18 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 		</span>
 		<br/><br/>
 		<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
-	  <div class="ss_folder_border">
-		<% // Add the toolbar with the navigation widgets, commands and filter %>
-		<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">			
-		<% // Entry toolbar %>
-		<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />			
-		<ssf:toolbar toolbar="${ss_whatsNewToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />			
-		</ssf:toolbar>
-		<div class="ss_clear"></div>
-	  </div>
+		<% // filter toolbar %>
+	    <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
+	    <div class="ss_folder_border">
+		  <% // Add the toolbar with the navigation widgets, commands and filter %>
+		  <ssf:toolbar style="ss_actions_bar2 ss_actions_bar">			
+		    <% // Entry toolbar %>
+		    <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />			
+		    <ssf:toolbar toolbar="${ss_whatsNewToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />			
+		  </ssf:toolbar>
+		  <div class="ss_clear"></div>
+	    </div>
 	</div><!-- end of 2nd breadcrumb area -->
-<% // filter toolbar %>
-<jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" />
 
 <div id="ss_whatsNewDiv${ss_namespace}">
