@@ -546,15 +546,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	if (!isIECheck || !ext.equals(".ppt")) {
 		//Don't show ppt file urls for IE. Powerpoint 2007 doesn't work with these urls
 %>
-      <a href="<ssf:url 
-	    webPath="readFile"
-	    folderId="${entry1._binderId}"
-	    entryId="${entry1._docId}" 
-	    entityType="${entry1._entityType}" >
-	    <ssf:param name="fileId" value="${entry1._fileID}"/>
-	    <ssf:param name="fileTime" value="${entry1._fileTime}"/>
-	    <ssf:param name="fileName" value="${entry1._fileName}"/>
-	    </ssf:url>"  class="ss_download_link"
+      <a href="<ssf:fileUrl search="${entry1}"/>" class="ss_download_link"
 		onClick="return ss_openUrlInWindow(this, '_blank');"
 	  ><span><ssf:nlt tag="entry.download"/></span></a>
 <%

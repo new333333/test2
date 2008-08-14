@@ -190,14 +190,7 @@
 												isDashboard="no" useBinderFunction="<%= strUseBinderMethod %>" isFile="yes">
 												
 												<ssf:param name="url" useBody="true">
-													<ssf:url webPath="readFile" 
-													    binderId="${entry._binderId}"
-													    entryId="${entry._docId}"
-													    entityType="${entry._entityType}">
-														<ssf:param name="fileId" value="${entry._fileID}"/>
-														<ssf:param name="fileTime" value="${entry._fileTime}"/>
-														<ssf:param name="fileName" value="${entry._fileName}"/>
-													</ssf:url>
+													<ssf:fileUrl search="${entry}"/>
 												</ssf:param>
 												
 										    	<c:out value="${entry._fileName}"/>
@@ -260,12 +253,8 @@
 				<c:when test="${entry._entityType == 'user' && entry._docType == 'entry'}">
 							<div class="ss_thumbnail">
 								<c:if test="${!empty entry._fileID}"><img alt="<ssf:nlt tag="alt.entry"/>"
-								  src="<ssf:url webPath="viewFile" binderId="${entry._binderId}" entryId="${entry._docId}" >
-		    										<ssf:param name="entityType" value="${entry._entityType}"/>
-													<ssf:param name="fileId" value="${entry._fileID}"/>
-													<ssf:param name="fileTime" value="${entry._fileTime}"/>
-												    <ssf:param name="viewType" value="thumbnail"/>
-												    </ssf:url>" />
+								
+								  src="<ssf:fileUrl webPath="readThumbnail" search="${entry}"/> />
 								</c:if>
 								<c:if test="${empty entry._fileID}"><img alt="<ssf:nlt tag="alt.entry"/>"
 								  src="<html:brandedImagesPath/>pics/thumbnail_no_photo.jpg"/></c:if>
@@ -336,14 +325,7 @@
 											isDashboard="no" useBinderFunction="no" isFile="yes">
 											
 											<ssf:param name="url" useBody="true">
-												<ssf:url webPath="readFile" 
-													binderId="${entry._binderId}"
-		    										entityType="${entry._entityType}"
-													entryId="${entry._docId}">
-													<ssf:param name="fileId" value="${entry._fileID}"/>
-													<ssf:param name="fileTime" value="${entry._fileTime}"/>
-													<ssf:param name="fileName" value="${entry._fileName}"/>
-												</ssf:url>
+												<ssf:fileUrl search="${entry}"/>
 											</ssf:param>
 	
 									    	<c:out value="${entry._fileName}"/>
@@ -502,20 +484,13 @@
 								<div class="ss_entryHeader">
 									<h3 class="ss_entryTitle">
 											<ssf:titleLink 
-												entryId="${entry._docId}" binderId="${entry._binderId}" 
+												entryId="${entry._docId}" binderId="${entry._docId}" 
 												entityType="${entry._entityType}"  
 												namespace="${ss_namespace}" 
 												isDashboard="no" useBinderFunction="no" isFile="yes">
 												
 												<ssf:param name="url" useBody="true">
-													<ssf:url webPath="readFile" 
-														binderId="${entry._binderId}"
-		    											entityType="${entry._entityType}"
-														entryId="${entry._docId}">
-														<ssf:param name="fileId" value="${entry._fileID}"/>
-														<ssf:param name="fileTime" value="${entry._fileTime}"/>
-														<ssf:param name="fileName" value="${entry._fileName}"/>
-													</ssf:url>
+													<ssf:fileUrl search="${entry}"/>
 												</ssf:param>
 												
 										    	<c:out value="${entry._fileName}"/>

@@ -141,6 +141,7 @@ public class WebKeys {
 	public static final String URL_FILE_NAME = "fileName";
 	public static final String URL_FILE_TIME = "fileTime";
 	public static final String URL_FILE_TITLE = "fileTitle";
+	public static final String URL_FILE_VERSION = "fileVersion";
 	public static final String URL_FILE_VIEW_TYPE = "viewType";
 	public static final String URL_GROUP_ID="groupId";
 	public static final String URL_ADD_DEFAULT_ENTRY_FROM_INFRAME = "addEntryFromIFrame";
@@ -269,7 +270,9 @@ public class WebKeys {
 	public static final String ACTION_LICENSE_REPORT="license_report";
 	public static final String ACTION_LOGIN_REPORT="login_report";
 	public static final String ACTION_POSTINGJOB_CONFIGURE="configure_posting_job";
-	public static final String ACTION_READFILE="readFile";
+	public static final String ACTION_READ_FILE="readFile";
+	public static final String ACTION_READ_SCALED="readScaledFile";
+	public static final String ACTION_READTHUMB_NAIL="readThumbnail";
 	public static final String ACTION_RELOAD_OPENER="reload_opener";
 	public static final String ACTION_RELOAD_OPENER_PARENT="reload_opener_parent";
 	public static final String ACTION_APPLET_RESPONSE="applet_response";
