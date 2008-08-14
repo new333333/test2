@@ -28,6 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page import="com.sitescape.team.ObjectKeys" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 
@@ -38,6 +39,7 @@
 <c:if test="${empty isDashboard}">
 	<c:set var="isDashboard" value="no"/>
 </c:if>
+
 
 		<ul class="ss_searchResult">
 		<c:forEach var="entry" items="${ssFolderEntries}" varStatus="status">
@@ -75,7 +77,25 @@
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
 									<h3 class="ss_entryTitle">
+
 	
+
+
+	   									<% if (!ssSeenMap.checkIfSeen(entry)) { %>
+									    
+										  <a id="ss_sunburstDiv${entry._binderId}_${entry._docId}" href="javascript: ;" 
+										  title="<ssf:nlt tag="sunburst.click"/>"
+										  onClick="ss_hideSunburst('${entry._docId}', '${entry._binderId}');return false;"
+										><span 
+										  style="display:${ss_sunburstVisibilityHide};"
+										  id="ss_sunburstShow${renderResponse.namespace}" 
+										  class="ss_fineprint">
+										  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" <ssf:alt tag="alt.new"/> />&nbsp;
+										  </span>
+										  </a>
+										    
+										<% } %>
+										
 										<ssf:titleLink 
 											entryId="${entry._docId}" binderId="${entry._binderId}" 
 											entityType="${entry._entityType}"  

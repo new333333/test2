@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.util.Validator;
 /**
@@ -84,6 +85,7 @@ public class Group extends UserPrincipal implements GroupPrincipal {
   	} 	
     
     public void addMember(IPrincipal member) {
+    	if (!(member instanceof UserPrincipal)) throw new NotSupportedException("Must be a User or Group");
 		if (members == null) members = new ArrayList();
     	if (members.contains(member)) return;
     	members.add(member);

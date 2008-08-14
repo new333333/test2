@@ -596,20 +596,7 @@ public class DefinitionHelper {
 		}
 		return result;
     }
-    
-    public static String findFamily(Document definitionConfig) {
-    	if (definitionConfig != null) {
-    		org.dom4j.Element root = definitionConfig.getRootElement();
-	      	if (root != null) {
-	      		org.dom4j.Element family = (org.dom4j.Element) root.selectSingleNode("./properties/property[@name='family']");
-	      		if (family != null && !family.attributeValue("value", "").equals("")) {
-	      			return family.attributeValue("value", "");
-	      		}
-	      	}
-    	}
-    	return null;
-    }
-    
+      
     
 	public static List findPlacesAttributes(Document definitionConfig) {
 		List result = new ArrayList();
@@ -627,21 +614,6 @@ public class DefinitionHelper {
     	return result;
 	}
     
-	public static List findUserListAttributes(Document definitionConfig) {
-		List result = new ArrayList();
-		
-    	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and @name='user_list']/properties/property[@name='name']/@value");
-    	if (nodes == null) {
-    		return result;
-    	}
-    	
-    	Iterator it = nodes.iterator();
-    	while (it.hasNext()) {
-    		Node node = (Node)it.next();
-    		result.add(node.getStringValue());
-    	}
-    	return result;
-	}
 	
 	public static String getCaptionsFromValues(Definition def, String eleName, String values) {
 		Document defDoc = def.getDefinition();

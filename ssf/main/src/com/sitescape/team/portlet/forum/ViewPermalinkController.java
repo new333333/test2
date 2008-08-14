@@ -118,8 +118,9 @@ public class ViewPermalinkController  extends SAbstractController {
 			url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");
 		} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
 			String displayStyle = user.getDisplayStyle();
-			if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			if (ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE.equals(displayStyle) || 
+					(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) &&
+					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()))) {
 				url.setParameter(WebKeys.URL_ACTION, "view_folder_entry");
 			} else {
 				try {
@@ -192,28 +193,26 @@ public class ViewPermalinkController  extends SAbstractController {
 		} else {
 	        user = RequestContextHolder.getRequestContext().getUser();
 	 		
-			if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-				//See if the user has access to the item being requested
-				if (!binderId.equals("")) {
-					try {
-						//See if this user can access the binder
-						Binder binder = getBinderModule().getBinder(new Long(binderId));
-						model.put(WebKeys.BINDER, binder);
-						if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
-							//See if the user can access the entry, too
-							getFolderModule().getEntry(new Long(binderId), new Long(entryId));
-						}
-					} catch(AccessControlException ac) {
-						//Set up the standard beans
-						BinderHelper.setupStandardBeans(this, request, response, model, new Long(binderId));
-						if (WebHelper.isUserLoggedIn(request) && 
-								!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-							//Access is not allowed
-							return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
-						} else {
-							//Please log in
-							return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
-						}
+			//See if the user has access to the item being requested
+			if (!binderId.equals("")) {
+				try {
+					//See if this user can access the binder
+					Binder binder = getBinderModule().getBinder(new Long(binderId));
+					model.put(WebKeys.BINDER, binder);
+					if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
+						//See if the user can access the entry, too
+						getFolderModule().getEntry(new Long(binderId), new Long(entryId));
+					}
+				} catch(AccessControlException ac) {
+					//Set up the standard beans
+					BinderHelper.setupStandardBeans(this, request, response, model, new Long(binderId));
+					if (WebHelper.isUserLoggedIn(request) && 
+							!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+						//Access is not allowed
+						return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
+					} else {
+						//Please log in
+						return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
 					}
 				}
 			}

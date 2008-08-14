@@ -29,26 +29,48 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-
-
-<ssf:sidebarPanel title="Team IT xxx" id="ss_meet_sidebar" divClass="ss_place_tags" initOpen="true" sticky="true">
-
-	<div class="ss_sub_sidebarMenu">
-		<table width="100%"><tbody>
-            <tr>
-              <td class="ss_rollover"><a href="#">Manage Team </a></td>
-            </tr>
-            <tr class="ss_rollover">
-              <td><a href="#">Team Meeting </a></td>
-            </tr>
-			  <tr>
-              <td class="ss_rollover"><a href="#">Team Mail  </a></td>
-            </tr>
-			 <tr class="ss_rollover">
-              <td><a href="#">Team Membership </a></td>
-			
-		</tbody></table>
-	</div>
-
-</ssf:sidebarPanel>
-
+<c:if test="${!ss_searchResultsPage && !empty ss_toolbar_team_view_url}">
+	<ssf:sidebarPanel title="<%= NLT.get("toolbar.teams") %>" id="ss_team_sidebar" 
+	  divClass="ss_place_tags" initOpen="false" sticky="true">
+	
+		<div class="ss_sub_sidebarMenu">
+			<table width="100%" style="margin-left: 7px;"><tbody>
+			  <c:if test="${!empty ss_toolbar_team_view_url}">
+				<tr>
+	              <td>
+	                <a href="${ss_toolbar_team_view_url}"><ssf:nlt tag="team.viewTeamMembership"/></a>
+	              </td>
+	            </tr>
+	          </c:if>
+			  <c:if test="${!empty ss_toolbar_team_add_url}">
+	            <tr>
+	              <td>
+	              	<a href="${ss_toolbar_team_add_url}"
+	                  onClick="ss_openUrlInWindow(this, '_blank', 500, 600);return false;"
+	                 ><ssf:nlt tag="team.manageTeam"/></a>
+	              </td>
+	            </tr>
+	          </c:if>
+			  <c:if test="${!empty ss_toolbar_team_sendmail_url}">
+				<tr>
+	              <td>
+	              	<a href="${ss_toolbar_team_sendmail_url}"
+	                  onClick="ss_openUrlInWindow(this, '_blank', 600, 800);return false;"
+	                ><ssf:nlt tag="team.sendMail"/></a>
+	              </td>
+	            </tr>
+	          </c:if>
+			  <c:if test="${!empty ss_toolbar_team_meet_url}">
+	            <tr>
+	              <td>
+	              	<a href="${ss_toolbar_team_meet_url}"
+	                  onClick="ss_openUrlInWindow(this, '_blank', 500, 600);return false;"
+	                  ><ssf:nlt tag="team.startTeamMeeting"/></a>
+	              </td>
+	            </tr>
+	          </c:if>
+			</tbody></table>
+		</div>
+	
+	</ssf:sidebarPanel>
+</c:if>

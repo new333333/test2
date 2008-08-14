@@ -34,7 +34,7 @@
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <ssf:sidebarPanel id="ss_folder_sidebar" divClass="ss_blog_sidebar"
-                  title="__definition_default_folder_blog" initOpen="true" sticky="true">
+                  title="__definition_default_folder_blog" initOpen="false" sticky="true">
 	  <ssHelpSpot helpId="workspaces_folders/misc_tools/blog_controls" offsetX="0" 
          <c:if test="<%= isIE %>">
            offsetY="25"
@@ -105,8 +105,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 </ssf:sidebarPanel>
 
 <% // Folder Tools %>
-	<% // folder views, folder actions, themes, configure columns, and entries per page %>
-<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure.jsp" />
+	<% // folder views, folder actions, themes, (no configure columns) and entries per page %>
+<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure2.jsp" />
 
 <% // Folder Tagss %>
 <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_folder_tags.jsp" />

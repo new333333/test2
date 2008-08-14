@@ -140,6 +140,10 @@ public class IndexSynchronizationManager {
     	nodeIdsTL.set(nodeIds);
     }
     
+    public static void clearNodeIds() {
+    	nodeIdsTL.set(null);
+    }
+    
     public static void begin() {
         // If same thread was never re-used for another request or transaction
         // in the system, this initialization wouldn't be necessary, since 
@@ -253,7 +257,6 @@ public class IndexSynchronizationManager {
         if(list != null)
             list.clear();
         autoFlushTL.set(Boolean.FALSE);
-        nodeIdsTL.set(null);
     }
     
     private static class Request {

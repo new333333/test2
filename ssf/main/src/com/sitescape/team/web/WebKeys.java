@@ -122,7 +122,7 @@ public class WebKeys {
 	public static final String URL_DISPLAY_TYPE="displayType";
     public static final String URL_DIV_ID="divId";
     public static final String URL_DOWNLOAD_FILE="download";
-	public static final String URL_ELEMENT_TO_EDIT = "element";
+	public static final String URL_ELEMENT_TO_EDIT = "_element";
 	public static final String URL_END_DATE = "ss_endDate";
 	public static final String URL_ENTITY_ID = "entityId";
     public static final String URL_ENTITY_TYPE="entityType";
@@ -162,11 +162,14 @@ public class WebKeys {
 	public static final String URL_RANDOM_PLACEHOLDER = "ss_randomPlaceholder";
 	public static final String URL_REPORT_FLAVOR = "ss_reportFlavor";
 	public static final String URL_REPORT_SORT_TYPE = "ss_reportSortType";
+	public static final String URL_REPORT_SORT_TYPE_2 = "ss_reportSortType_2";
 	public static final String URL_REPORT_OPTION_TYPE = "ss_reportOptionType";
 	public static final String URL_REPORT_OPTION_TYPE_SHORT = "shortReport";
 	public static final String URL_REPORT_OPTION_TYPE_LONG = "longReport";
 	public static final String URL_REPORT_TYPE = "ss_reportType";
 	public static final String URL_SEARCH_NODE_ID = "searchNodeId";
+	public static final String URL_SECTION_PLACEHOLDER = "ss_sectionPlaceholder";
+	public static final String URL_SECTION_TO_EDIT = "_section";
 	public static final String URL_START_DATE = "ss_startDate";
 	public static final String URL_STATUS_TICKET_ID = "ss_statusId";
 	public static final String URL_TAB_ID = "tabId";
@@ -272,6 +275,7 @@ public class WebKeys {
 	public static final String ACTION_APPLET_RESPONSE="applet_response";
 	public static final String ACTION_RELOAD_PARENT="reload_parent";
 	public static final String ACTION_FOLDER_INDEX_CONFIGURE="configure_index";
+	public static final String ACTION_FOLDER_SEARCH_NODES_CONFIGURE="configure_search_nodes";
 	public static final String ACTION_DEFINITION_IMPORT="import_definition";
 	public static final String ACTION_DEFINITION_EXPORT="export_definition";
 	public static final String ACTION_CONFIGURATION="configure_configuration";
@@ -461,6 +465,7 @@ public class WebKeys {
 	public static final String OPERATION_ATTACHE_MEETING_RECORDS = "attache_meeting_records";
 	public static final String OPERATION_SAVE_UESR_STATUS = "save_user_status";
 	public static final String OPERATION_SET_SIDEBAR_VISIBILITY = "set_sidebar_visibility";
+	public static final String OPERATION_SET_SUNBURST_VISIBILITY = "set_sunburst_visibility";
 	public static final String OPERATION_GET_UPLOAD_PROGRESS_STATUS = "get_upload_progress_status";
 	
 	// MODEL TAGS & Attributes
@@ -862,6 +867,22 @@ public class WebKeys {
     public static final String SIMPLE_URL_NAME_EXISTS_ERROR="ss_simpleUrlNameExistsError";
     public static final String SIMPLE_URL_NAME_NOT_ALLOWED_ERROR="ss_simpleUrlNameNotAllowedError";
     public static final String SNIPPET="ss_snippet";
+    public static final String TOOLBAR_CLIPBOARD_IDS="ss_toolbar_clipboard_ids";
+    public static final String TOOLBAR_CLIPBOARD_SHOW="ss_toolbar_clipboard_show";
+    public static final String TOOLBAR_SENDMAIL_IDS="ss_toolbar_sendmail_ids";
+    public static final String TOOLBAR_SENDMAIL_POST="ss_toolbar_sendmail_post";
+    public static final String TOOLBAR_SENDMAIL_URL="ss_toolbar_sendmail_url";
+    public static final String TOOLBAR_TEAM_ADD_URL="ss_toolbar_team_add_url";
+    public static final String TOOLBAR_TEAM_MEET_URL="ss_toolbar_team_meet_url";
+    public static final String TOOLBAR_TEAM_SENDMAIL_URL="ss_toolbar_team_sendmail_url";
+    public static final String TOOLBAR_TEAM_VIEW_URL="ss_toolbar_team_view_url";
+    public static final String TOOLBAR_THEME_IDS="ss_toolbar_theme_ids";
+    public static final String TOOLBAR_THEME_NAMES="ss_toolbar_theme_names";
+    public static final String TOOLBAR_MEETING_IDS="ss_toolbar_meeting_ids";
+    public static final String TOOLBAR_MEETING_POST="ss_toolbar_meeting_post";
+    public static final String TOOLBAR_MEETING_URL="ss_toolbar_meeting_url";
+    public static final String TOOLBAR_SUBSCRIBE_EMAIL="ss_toolbar_subscribe_email";
+    public static final String TOOLBAR_SUBSCRIBE_RSS="ss_toolbar_subscribe_rss";
     public static final String TRACKED_PLACES_PAGE="ss_trackedPlacesPage";
     public static final String TRACKED_SITE_PAGE="ss_trackedSitePage";
     public static final String WHATS_HOT_PAGE="ss_whatsHotPage";
@@ -895,6 +916,8 @@ public class WebKeys {
     public static final String FIND_ACCESSIBILITY_TEXT="accessibilityText";
     public static final String FIND_ADD_CURRENT_USER="ssFindAddCurrentUser";
     
+    public static final String SECTION_NUMBER="ss_sectionNumber";
+    public static final String SECTION_TEXT="ss_sectionText";
     public static final String SHOW_USER_SHOW_PRESENCE="ss_showUserShowPresence";
     public static final String SHOW_USER_TITLE_STYLE="ss_showUserTitleStyle";
     public static final String SHOW_USER_USER="ss_showUserUser";
@@ -953,6 +976,7 @@ public class WebKeys {
 	public static final String URL = "ssUrl";
 	public static final String USER_ID = "com.sitescape.userId";
 	public static final String USER_LIST = "ss_userList";
+    public static final String USER_ATTRIBUTES="ssUserAttributes";
     public static final String USER_PROPERTIES="ssUserProperties";
     public static final String USER_FOLDER_PROPERTIES="ssUserFolderProperties";
     public static final String USER_WORKSPACE="ss_userWorkspace";
@@ -971,6 +995,7 @@ public class WebKeys {
     public static final String WHATS_NEW_TRACKED_CALENDARS="ss_whatsNewTrackedCalendars";
     public static final String WHATS_NEW_TRACKED_CALENDAR_IDS="ss_whatsNewTrackedCalendarIds";
     public static final String WHATS_NEW_TRACKED_CALENDAR_FOLDERS="ss_whatsNewTrackedCalendarFolders";
+    public static final String WHATS_NEW_TOOLBAR="ss_whatsNewToolbar";
     public static final String WIKI_HOMEPAGE_ENTRY_ID="ss_wikiHomepageEntryId";
     public static final String WINDOW_STATE="ss_windowState";
     public static final String WORKAREA_OPERATIONS="ssWorkAreaOperations";
@@ -1024,6 +1049,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING_JOB="administration/configurePostingJob";
     public static final String VIEW_ADMIN_CONFIGURE_SEARCH_INDEX="administration/configureSearchIndex";
+    public static final String VIEW_ADMIN_CONFIGURE_SEARCH_NODES="administration/configureSearchNodes";
     public static final String VIEW_ADMIN_IMPORT_PROFILES ="administration/importProfiles"; 
     public static final String VIEW_ADMIN_IMPORT_ALL_DEFINITIONS_CONFIRM ="administration/importAllDefinitionsConfirm"; 
     public static final String VIEW_ADMIN_IMPORT_DEFINITIONS ="administration/importDefinitions"; 

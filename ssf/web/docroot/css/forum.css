@@ -1,4 +1,4 @@
-/* ------------------------------------------------------------------------ */
+ /* ------------------------------------------------------------------------ */
 /* general styles, used most everywhere */
 
 /*
@@ -52,7 +52,10 @@ div.xportlet-box {
   padding:0px;
   
   }  
-  
+.ss_selected {
+  background-color:#CECECE;
+  }
+    
 .ss_indent_small {
   margin: 2px 2px 2px 2px;
   }

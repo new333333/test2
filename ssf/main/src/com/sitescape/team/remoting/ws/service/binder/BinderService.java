@@ -46,9 +46,11 @@ public interface BinderService {
 	public long binder_copyBinder(String accessToken, long sourceId, long destinationId, boolean cascade);
 	public String[] binder_deleteBinder(String accessToken, long binderId, boolean deleteMirroredSource); 
 	public Binder binder_getBinder(String accessToken, long binderId, boolean includeAttachments);
+	public Binder binder_getBinderByPathName(String accessToken, String pathName, boolean includeAttachments);
 	public void binder_moveBinder(String accessToken, long binderId, long destinationId);
 	public void binder_modifyBinder(String accessToken, Binder binder);
 	public void binder_uploadFile(String accessToken, long binderId, String fileUploadDataItemName, String fileName);
+	public void binder_removeFile(String accessToken, long binderId, String fileName);
 
 	public void binder_deleteTag(String accessToken, long binderId, String tagId); 
 	public Tag[] binder_getTags(String accessToken, long binderId);
@@ -77,4 +79,5 @@ public interface BinderService {
 	public Subscription binder_getSubscription(String accessToken, long binderId); 
 	public void binder_setSubscription(String accessToken, long binderId, Subscription subscription); 
 	public FolderCollection binder_getFolders(String accessToken, long binderId);
+	   
 }

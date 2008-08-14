@@ -181,4 +181,6 @@ public interface AdminModule {
 	public void updateDefaultDefinitions(Long topId);
     
 	public List<Node> getSearchNodes();
+	
+	public void setSearchNodeAccessMode(String nodeId, String accessMode);
  }

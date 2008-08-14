@@ -23,50 +23,38 @@
  * Display of Attribution Information is required in Larger Works which are defined in the CPAL as a
  * work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
  * 
- * 
+ * <ssf:nlt tag="toolbar.menu.clipboard">
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
- * are trademarks of SiteScape, Inc.
+ * are trademarks of SiteScape, Inc.     
  */
 %>
-<% // The default profile listing view  %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
-<ssf:ifadapter>
-<body class="ss_style_body">
-</ssf:ifadapter>
+<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="com.sitescape.team.util.SPropsUtil" %>
+<%@ page import="com.sitescape.util.PropertyNotFoundException" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
-
-<div class="ss_style ss_portlet">
-
-<% // Navigation bar %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
-
-	<% // BEGIN SIDEBAR LAYOUT  %>
-	
-	  <div id="ss_sideNav_wrap"> <% // new sidebar format %>
-
-		<% // Status %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
-	
-		<% // Recent Places %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
-
-		<% // Folder Sidebar %>
-    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
-
-	  </div> <% // end of new sidebar format %>
-
-<% // Toolbar %>
-<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar2 ss_actions_bar" />
-
-<% // List of users %>
-<%@ include file="/WEB-INF/jsp/definition_elements/profile_list.jsp" %>
-
+<div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.entryDisplay"/> 
+	<div class="ss_sub_sidebarMenu">
+        <table width="100%">
+         <tbody>
+          <tr>
+            <td><label>
+              <input type="radio" name="ss_entryDisplayStyle" value="radio" />
+              <ssf:nlt tag="sidebar.overlay"/>  </label></td>
+          </tr>
+          <tr>
+            <td><label>
+              <input type="radio" name="ss_entryDisplayStyle" value="radio" />
+              <ssf:nlt tag="sidebar.popup"/>  </label></td>
+          </tr>
+          <tr>
+            <td class= "ss_rollover"><label>
+              <input type="radio" name="ss_entryDisplayStyle" value="radio" />
+              <ssf:nlt tag="sidebar.new.page"/> 
+            </label></td>
+          </tr>
+         </tbody>
+        </table>
+	</div> 
 </div>
-
-<ssf:ifadapter>
-</body>
-</html>
-</ssf:ifadapter>
 

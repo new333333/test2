@@ -48,6 +48,18 @@
 	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
 		  onClick="self.window.close();return false;"/>
 </div>
+  <div>
+	<div id="funkyDiv" style="width:500px">
+		<ul>
+			<li><a href='#wah'>Wah</a></li>
+		</ul>
+		<div id='wah'></div>
+    </div>
+    <button id="ldapAddConnection" class="ss_submit"><ssf:nlt tag="ldap.connection.add" /></button>
+  </div>
+<div class="ss_divider"></div>
+<br/>
+
 <table class="ss_style" border ="0" cellspacing="0" cellpadding="3">
 <tr><td> 
 <input type="checkbox" id="enabled" name="enabled" <c:if test="${ssLdapConfig.enabled}">checked</c:if>/>
@@ -62,16 +74,6 @@
 <ssf:expandableArea title="<%= NLT.get("ldap.schedule") %>">
 <c:set var="schedule" value="${ssLdapConfig.schedule}"/>
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
-<div class="ss_divider"></div>
-</ssf:expandableArea>
-<br/>
-
-<ssf:expandableArea title="<%= NLT.get("ldap.connection") %>">
-  <div>
-	<div id="funkyDiv" style="width:500px">
-    </div>
-    <button id="ldapAddConnection ss_submit"><ssf:nlt tag="ldap.connection.add" /></button>
-  </div>
 <div class="ss_divider"></div>
 </ssf:expandableArea>
 <br/>
@@ -119,30 +121,126 @@
 <input type="hidden" name="ldapConfigDoc" id="ldapConfigDoc" value=""/>
 </form>
 </div>
-<script type="text/javascript" src="<html:rootPath/>js/jquery.js" djConfig="parseOnLoad: true"></script>
+<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery.js"></script>
 <script type="text/javascript">
      jQuery.noConflict();
 </script>
+<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery-ui-personalized.js"></script>
 
 <style type="text/css">
+.ui-tabs-hide { display: none; }
 .invalid .errorMessage { display: inline; }
-.errorMessage { display: none; }
-</style>
+.errorMessage { display: none; color: red; }
+.invalid label { color: red; }
+@import "flora.css";
 
+/* Caution! Ensure accessibility in print and other media types... */
+@media projection, screen { /* Use class for showing/hiding tab content, so that visibility can be better controlled in different media types... */
+    .ui-tabs-hide {
+        display: none;
+    }
+}
+
+/* Hide useless elements in print layouts... */
+@media print {
+    .ui-tabs-nav {
+        display: none;
+    }
+}
+
+/* Skin */
+.ui-tabs-nav, .ui-tabs-panel {
+}
+.ui-tabs-nav {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 3px;
+}
+.ui-tabs-nav:after { /* clearing without presentational markup, IE gets extra treatment */
+    display: block;
+    clear: both;
+    content: " ";
+}
+.ui-tabs-nav li {
+    float: left;
+    margin: 0 0 0 2px;
+    font-weight: bold;
+}
+.ui-tabs-nav a, .ui-tabs-nav a span {
+    float: left; /* fixes dir=ltr problem and other quirks IE */
+    padding: 0 12px;
+}
+.ui-tabs-nav a {
+    margin: 5px 0 0; /* position: relative makes opacity fail for disabled tab in IE */
+    padding-left: 0;
+    background-position: 100% 0;
+    text-decoration: none;
+    white-space: nowrap; /* @ IE 6 */
+    outline: 0; /* @ Firefox, prevent dotted border after click */    
+	font-size: 12px;
+}
+.ui-tabs-nav a:link, .ui-tabs-nav a:visited {
+}
+.ui-tabs-nav .ui-tabs-selected a {
+    position: relative;
+    z-index: 2;
+	font-size: 14px;
+}
+.ui-tabs-nav a span {
+    padding-top: 1px;
+    padding-right: 0;
+    height: 20px;
+    line-height: 20px;
+	font-size: 12px;
+	color: #666;
+}
+.ui-tabs-nav .ui-tabs-selected a span {
+    padding-top: 0;
+	color: #000;
+}
+
+.ui-tabs-nav .ui-tabs-selected a:link, .ui-tabs-nav .ui-tabs-selected a:visited { /* @ Opera, use pseudo classes otherwise it confuses cursor... */
+    cursor: text;
+}
+.ui-tabs-nav a:hover, .ui-tabs-nav a:focus, .ui-tabs-nav a:active,
+.ui-tabs-nav .ui-tabs-unselect a:hover, .ui-tabs-nav .ui-tabs-unselect a:focus, .ui-tabs-nav .ui-tabs-unselect a:active { /* @ Opera, we need to be explicit again here now... */
+    cursor: pointer;
+}
+.ui-tabs-panel {
+    border: 1px solid #519e2d;
+    padding: 10px;
+    background: #fff; /* declare background color for container to avoid distorted fonts in IE while fading */
+}
+
+
+/* Additional IE specific bug fixes... */
+* html .ui-tabs-nav { /* auto clear @ IE 6 & IE 7 Quirks Mode */
+    display: inline-block;
+}
+*:first-child+html .ui-tabs-nav  { /* auto clear @ IE 7 Standards Mode - do not group selectors, otherwise IE 6 will ignore complete rule (because of the unknown + combinator)... */
+    display: inline-block;
+}
+
+</style>
+  
 <script type="text/javascript">
 
 ssPage = {
-
+	nextId : 1,
+	currentTab : 0,
+	
 	createBindings : function($container)
 	{
-		jQuery(".ldapTitle", $container).click(function() {
-			jQuery(this).next().toggle();
-		});
 		jQuery(".ldapUrl", $container).change(function() {
 			jQuery(this).parent().parent().find(".ldapTitle span").text(jQuery(this).val());
+			var id = jQuery(this).parent().parent().attr("id");
+			jQuery("#funkyDiv > ul li > a[href='#" + id + "']").text(jQuery(this).val());
 		});
 		jQuery(".ldapDelete", $container).click(function() {
-			if(ss_confirm("Really delete configuration for", jQuery(this).parent().find("span").text())) {
+			var title = jQuery("#funkyDiv > ul li").eq(ssPage.currentTab).find("span").text();
+			if(ss_confirm("Really delete configuration for", title)) {
+				var id = jQuery(this).parent().parent().attr("id");
+				jQuery("#funkyDiv > ul").tabs("remove", ssPage.currentTab);
 				jQuery(this).parent().parent().remove();
 			}
 			return false;
@@ -159,7 +257,7 @@ ssPage = {
 		$newSearch
 			.find('.ldapBaseDn').val(baseDn).end()
 			.find('.ldapFilter').val(filter).end()
-			.find('.ldapSearchSubtree').val((ss=="true")).end();
+			.find('.ldapSearchSubtree').val([ss]).end();
 		jQuery("button.deleteSearch", $newSearch).click(function() {
 			if(ss_confirm("Really delete this search specification")) {
 				jQuery(this).parent().remove();
@@ -174,7 +272,8 @@ ssPage = {
 	{
 		var label = "New LDAP connection";
 		if(url != "") { label = url; }
-		var $pane = jQuery('#ldapTemplate').children().clone();
+		var id = "ldapConn" + ssPage.nextId++;
+		var $pane = jQuery('#ldapTemplate').children().clone().hide().attr("id", id);
 		$pane.find(".ldapTitle span").text(label).end()
 			 .find(".ldapUrl").val(url).end()
 			 .find(".ldapUserIdAttribute").val(userIdAttribute).end()
@@ -187,14 +286,21 @@ ssPage = {
 		jQuery.each(groupSearches, function() {
 			ssPage.createSearchEntry($pane.find(".ldapGroupSearches .ldapSearchList"), this.baseDn, this.filter, this.searchSubtree);
 		});
+		if(userSearches.length == 0 && groupSearches.length == 0) {
+			ssPage.createSearchEntry($pane.find(".ldapUserSearches .ldapSearchList"), "", "", "true");
+		}
 		jQuery('#funkyDiv').append($pane);
+
+		var index = jQuery("#funkyDiv > ul").tabs("length");
+		jQuery("#funkyDiv > ul").tabs("add", '#'+ id, label);
+		jQuery("#funkyDiv > ul").tabs("select", index);
+
 		ssPage.createBindings($pane);
 		return $pane;
 	},
 	
 	addConnection : function() {
-		var $pane = ssPage.createConnection("", "uid", [], [], [], "", "");
-		ssPage.createSearchEntry($pane.find(".ldapUserSearches .ldapSearchList"), "", "", "true");
+		var $pane = ssPage.createConnection("", "uid", ssPage.defaultUserMappings, [], [], "", "");
 		return false;
 	},
 	
@@ -296,35 +402,51 @@ jQuery(document).ready(function() {
 	});
 });
 </script>
-<c:forEach var="config" items="${ssAuthenticationConfigs}">
-	<c:set var="mappings" value="${config.mappings}"/>
-	<jsp:useBean id="mappings" type="java.util.Map"/>
-	<%
-	StringBuffer mapText = new StringBuffer();
-	for (java.util.Iterator iter=mappings.entrySet().iterator(); iter.hasNext();) {
-		java.util.Map.Entry me = (java.util.Map.Entry)iter.next();
-		mapText.append(me.getValue() + "=" + me.getKey() + "\\n");
-	}
-	%>
-	<script type="text/javascript">
-		jQuery(document).ready(function() {
-			var initialUserSearches = [
+<script type="text/javascript">
+	jQuery(document).ready(function() {
+		<c:set var="defmappings" value="${ssUserAttributes}"/>
+		<jsp:useBean id="defmappings" type="java.util.Map"/>
+		<%
+		StringBuffer mapText = new StringBuffer();
+		for (java.util.Iterator iter=defmappings.entrySet().iterator(); iter.hasNext();) {
+			java.util.Map.Entry me = (java.util.Map.Entry)iter.next();
+			mapText.append(me.getValue() + "=" + me.getKey() + "\\n");
+		}
+		%>
+		ssPage.defaultUserMappings = "<%=mapText.toString()%>";
+	
+		jQuery("#funkyDiv > ul").tabs();
+	<c:forEach var="config" items="${ssAuthenticationConfigs}">
+		<c:set var="mappings" value="${config.mappings}"/>
+		<jsp:useBean id="mappings" type="java.util.Map"/>
+		<%
+		mapText = new StringBuffer();
+		for (java.util.Iterator iter=mappings.entrySet().iterator(); iter.hasNext();) {
+			java.util.Map.Entry me = (java.util.Map.Entry)iter.next();
+			mapText.append(me.getValue() + "=" + me.getKey() + "\\n");
+		}
+		%>
+		var initialUserSearches = [ ];
 		<c:forEach var="userSearch" items="${config.userSearches}">
-				{ baseDn: "${userSearch.baseDn}", filter: "${userSearch.filter}", searchSubtree: "${userSearch.searchSubtree}" },
+			initialUserSearches.push({ baseDn: "${userSearch.baseDn}", filter: "${userSearch.filter}", searchSubtree: "${userSearch.searchSubtree}" });
 		</c:forEach>
-			];
-			var initialGroupSearches = [
+		var initialGroupSearches = [ ];
 		<c:forEach var="groupSearch" items="${config.groupSearches}">
-				{ baseDn: "${groupSearch.baseDn}", filter: "${groupSearch.filter}", searchSubtree: "${groupSearch.searchSubtree}" },
+			initialGroupSearches.push({ baseDn: "${groupSearch.baseDn}", filter: "${groupSearch.filter}", searchSubtree: "${groupSearch.searchSubtree}" });
 		</c:forEach>
-			];
-			var $pane = ssPage.createConnection("${config.url}", "${config.userIdAttribute}",
-											    "<%=mapText.toString()%>", initialUserSearches, initialGroupSearches,
-												"${config.principal}", "${config.credentials}");
-			$pane.append(jQuery('<span style="display:none" class="ldapId">${config.id}</span>'));
+		var $pane = ssPage.createConnection("${config.url}", "${config.userIdAttribute}",
+										    "<%=mapText.toString()%>", initialUserSearches, initialGroupSearches,
+											"${config.principal}", "${config.credentials}");
+		$pane.append(jQuery('<span style="display:none" class="ldapId">${config.id}</span>'));
+	</c:forEach>
+	
+		jQuery('#funkyDiv > ul').bind('tabsshow', function(event, ui) {
+			ssPage.currentTab = ui.index;
 		});
-	</script>
-</c:forEach>
+		jQuery("#funkyDiv > ul").tabs("select", 0);
+		jQuery("#funkyDiv > ul").tabs("remove", 0);
+	});
+</script>
 
 </div>
 
@@ -360,16 +482,16 @@ jQuery(document).ready(function() {
 </div>
 
 <div id="ldapSearchTemplate" style="display:none">
-	<div>
+	<div class="ldapSearch">
 		<div>
-			<span class="errorMessage">The value of this distinguished name is not valid.  Please fix it and try again.</span>
-			<input class="ldapBaseDn" value=""/>
+			<div class="errorMessage"><ssf:nlt tag="ldap.error.invalid"><ssf:param name="value" value="<%=NLT.get("ldap.error.baseDn")%>"/></ssf:nlt></div>
+			<label><ssf:nlt tag="ldap.search.baseDn" /></label><input class="ldapBaseDn" value=""/>
 		</div>
 		<div>
-			<span class="errorMessage">The value of this search filter is not valid.  Please fix it and try again.</span>
-			<input class="ldapFilter" value=""/>
+			<div class="errorMessage"><ssf:nlt tag="ldap.error.invalid"><ssf:param name="value" value="<%=NLT.get("ldap.error.filter")%>"/></ssf:nlt></div>
+			<label><ssf:nlt tag="ldap.search.filter" /></label><input class="ldapFilter" value=""/>
 		</div>
-		<input type="checkbox" class="ldapSearchSubtree"/><span>Search subtree</span>
+		<input type="checkbox" class="ldapSearchSubtree" value="true"/><span><ssf:nlt tag="ldap.search.searchSubtree" /></span>
 		<button class="deleteSearch ss_submit"><ssf:nlt tag="ldap.search.delete" /></button>
 	</div>
 </div>

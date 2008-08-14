@@ -37,7 +37,7 @@
       
 	<ssf:canvas id="relevanceTasks" type="inline" styleId="ss_tasks">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_tasks_img"><ssf:nlt tag="relevance.tasks"/></div>
+		<div id="ss_title" class="ss_pt_title ss_green ss_tasks_img"><ssf:nlt tag="relevance.tasks"/></div>
 	</ssf:param>
 		<div id="ss_dashboardTasks${renderResponse.namespace}">
 		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
@@ -47,7 +47,7 @@
 <c:if test="1 == 0">
 	<ssf:canvas id="relevanceEmail" type="inline" styleId="ss_email">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_email_img"> <ssf:nlt tag="relevance.email"/> 
+		<div id="ss_title" class="ss_pt_title ss_green ss_email_img"> <ssf:nlt tag="relevance.email"/> 
 			</div>
 	</ssf:param>
 	 <div id="ss_para">
@@ -67,7 +67,7 @@
 	
 	<ssf:canvas id="relevanceBookmarks" type="inline" styleId="ss_bookmarks">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_bookmarks_img"> <ssf:nlt tag="relevance.bookmarks"/> 
+		<div id="ss_title" class="ss_pt_title ss_green ss_bookmarks_img"> <ssf:nlt tag="relevance.bookmarks"/> 
 				</div>
 	</ssf:param>
 		<div id="ss_para">
@@ -89,7 +89,7 @@
       
 	<ssf:canvas id="relevanceCalendars" type="inline" styleId="ss_calendar">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_cal_img"> 
+		<div id="ss_title" class="ss_pt_title ss_green ss_cal_img"> 
 		  <ssf:nlt tag="relevance.calendar"/> 
 		</div>
 	</ssf:param>
@@ -98,7 +98,7 @@
 
 	<ssf:canvas id="relevanceFolders" type="inline" styleId="ss_trackedItems">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_tracked_img">
+		<div id="ss_title" class="ss_pt_title ss_green ss_tracked_img">
 		  <ssf:nlt tag="relevance.trackedCalendars"/>
 	    </div>
 	</ssf:param>

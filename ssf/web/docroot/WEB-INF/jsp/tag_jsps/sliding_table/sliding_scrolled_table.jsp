@@ -226,7 +226,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 <td class="<%= rowStyle %>" ><div style="position:absolute; left:-9px; top:0px;"><a id="drag<%= String.valueOf(iCol + 1) %>" style="text-decoration:none;"
   onMousedown="ss_slidingTableStartDragCol(this, 'col<%= String.valueOf(iCol + 1) %>');"
   ><span class="<%= rowStyle %>" 
-  style="cursor:w-resize; cursor:col-resize; color:darkgreen; 
+  style="cursor:w-resize; cursor:col-resize; color:#333; 
   font-size:small; text-decoration:none;
   background-position:center left;
   background-image:url(<html:imagesPath/>pics/sym_s_arrows_eastwest.gif);

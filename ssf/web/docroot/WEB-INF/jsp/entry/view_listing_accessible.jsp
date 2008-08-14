@@ -66,6 +66,9 @@
  <div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer" style="margin:0px; padding:0px;">
  <%@ include file="/WEB-INF/jsp/entry/view_accessible.jsp" %>
  </div>
+ <div>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
+ </div>
     </c:if>
   </c:if>
   <c:if test="<%= reloadCaller %>">

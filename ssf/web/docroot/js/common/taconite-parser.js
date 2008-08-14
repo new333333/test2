@@ -225,6 +225,7 @@ function XhtmlToDOMParser(xml){
         function getReplace(domNode,xml){
                 getInsertAfter(domNode,xml);
                 domNode.parentNode.removeChild(domNode);
+                ss_executeJavascript(domNode);
         }
         function getDelete(domNode) {
                 domNode.parentNode.removeChild(domNode);

@@ -587,28 +587,51 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
     	return report;
 	}
 
-	public List<Map<String,Object>> generateLoginReport(final Date startDate, final Date endDate, String optionType, String sortType) {
+	public List<Map<String,Object>> generateLoginReport(final Date startDate, final Date endDate, 
+			String optionType, String sortType, String sortType2, Set memberIds) {
 		getAdminModule().checkAccess(AdminOperation.report);
 		
 		List result = new ArrayList();
 		
 		if(optionType.equals(WebKeys.URL_REPORT_OPTION_TYPE_SHORT)) {
-		
-			result = (List) getHibernateTemplate().execute(new HibernateCallback() {
-				public Object doInHibernate(Session session) throws HibernateException {
-		
-					List auditTrail = session.createCriteria(LoginInfo.class)
-						.setProjection(Projections.projectionList()
-										.add(Projections.groupProperty("startBy"))
-										.add(Projections.max("startDate"))
-										.add(Projections.rowCount()))
-							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-							.add(Restrictions.ge("startDate", startDate))
-							.add(Restrictions.lt("startDate", endDate))
-						.list();
-					return auditTrail;
-				}});
-		
+
+			if(memberIds.size() != 0) {
+				
+				final Set tempIds = memberIds;
+				
+				result = (List) getHibernateTemplate().execute(new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException {
+			
+						List auditTrail = session.createCriteria(LoginInfo.class)
+							.setProjection(Projections.projectionList()
+											.add(Projections.groupProperty("startBy"))
+											.add(Projections.max("startDate"))
+											.add(Projections.rowCount()))
+								.add(Expression.in("startBy",tempIds.toArray()))											
+								.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
+								.add(Restrictions.ge("startDate", startDate))
+								.add(Restrictions.lt("startDate", endDate))
+							.list();
+						return auditTrail;
+					}});				
+			}
+			else {
+				result = (List) getHibernateTemplate().execute(new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException {
+			
+						List auditTrail = session.createCriteria(LoginInfo.class)
+							.setProjection(Projections.projectionList()
+											.add(Projections.groupProperty("startBy"))
+											.add(Projections.max("startDate"))
+											.add(Projections.rowCount()))
+								.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
+								.add(Restrictions.ge("startDate", startDate))
+								.add(Restrictions.lt("startDate", endDate))
+							.list();
+						return auditTrail;
+					}});
+			}
+			
 			if(sortType.equals(ReportModule.USER_SORT)) {	
 				Collection sortedresult = sortLoginData(result, ReportModule.USER_ID_INDEX);
 				LinkedList userSortedList = new LinkedList(sortedresult);
@@ -629,21 +652,50 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		}
 		
 		else if(optionType.equals(WebKeys.URL_REPORT_OPTION_TYPE_LONG)) {
-		
-			result = (List) getHibernateTemplate().execute(new HibernateCallback() {
+			
+			if(memberIds.size() != 0) {
+				
+				final Set tempIds = memberIds;
+				
+				result = (List) getHibernateTemplate().execute(new HibernateCallback() {
 					public Object doInHibernate(Session session) throws HibernateException {
 			
 						List auditTrail = session.createCriteria(LoginInfo.class)
 							.setProjection(Projections.projectionList()
 											.add(Projections.property("startBy"))
-											.add(Projections.groupProperty("startDate")))
+											.add(Projections.property("startDate")))
+								.add(Expression.in("startBy",tempIds.toArray()))
 								.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
 								.add(Restrictions.ge("startDate", startDate))
 								.add(Restrictions.lt("startDate", endDate))
+								.addOrder(Order.asc("startDate"))
 							.list();
 						return auditTrail;
+				}});				
+			}
+			else {
+				result = (List) getHibernateTemplate().execute(new HibernateCallback() {
+						public Object doInHibernate(Session session) throws HibernateException {
+				
+							List auditTrail = session.createCriteria(LoginInfo.class)
+								.setProjection(Projections.projectionList()
+												.add(Projections.property("startBy"))
+												.add(Projections.property("startDate")))
+									.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
+									.add(Restrictions.ge("startDate", startDate))
+									.add(Restrictions.lt("startDate", endDate))
+									.addOrder(Order.asc("startDate"))
+								.list();
+							return auditTrail;
 					}});
+			}
+			if(sortType2.equals(ReportModule.USER_SORT)) {	
+				Collection sortedresult = sortLoginData(result, ReportModule.USER_ID_INDEX);
+				LinkedList userSortedList = new LinkedList(sortedresult);
+				return generateLongLoginReportList(userSortedList);
+			}
 			
+			//default sort is by login date - nothing needs to be done
 			return generateLongLoginReportList(result);
 		}
 		return result;
@@ -658,6 +710,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			
 			if(index == ReportModule.LOGIN_COUNT_INDEX)
 				sortedresult.put(Float.parseFloat(cols[index] + "." + cols[ReportModule.USER_ID_INDEX]), cols);
+			else if (index == ReportModule.USER_ID_INDEX)
+				sortedresult.put(getProfileDao().loadUser((Long)cols[ReportModule.USER_ID_INDEX],RequestContextHolder.getRequestContext().getZoneId()).getName() 
+						+ cols[ReportModule.LOGIN_DATE_INDEX], cols);
 			else
 				sortedresult.put(cols[index], cols);	
 		}

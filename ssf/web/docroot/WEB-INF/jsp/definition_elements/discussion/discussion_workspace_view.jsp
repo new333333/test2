@@ -35,13 +35,15 @@
 <c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
 <div align="center">
 <div id="ss_diss_inset" class="discussionView">
-<div id="ss_diss_top">
-  <div id="ss_topic_box">
-	<h1>${ssDefinitionEntry.title}</h1>
+  <div id="ss_diss_top" align="center">
+
+   <div id="ss_topic_box">
+    <div id="ss_topic_box_h1">${ssDefinitionEntry.title}</div>
 	<span><ssf:markup type="view" entity="${ssDefinitionEntry}"><c:out 
        value="${ssDefinitionEntry.description.text}" escapeXml="false"/></ssf:markup></span>
-  </div><!-- end of box -->
-</div><!-- end of top -->
+   </div><!-- end of box -->
+
+  </div><!-- end of top -->
 
 
 

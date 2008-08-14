@@ -76,6 +76,12 @@
 <input type="button" value="<ssf:nlt tag="button.cancel"/>" onClick="self.window.close();return false;"/>
 
 </form>
+<br/>
+<br/>
+<div>
+  <span class="ss_italic"><ssf:nlt tag="relevance.shareHint"/></span>
+</div>
+
 </div>
 <ssf:ifadapter>
 </body>

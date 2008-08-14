@@ -28,8 +28,16 @@
  */
 package com.sitescape.team.module.binder.impl;
 
+import static com.sitescape.util.search.Restrictions.conjunction;
+import static com.sitescape.util.search.Restrictions.disjunction;
+import static com.sitescape.util.search.Restrictions.eq;
+import static com.sitescape.util.search.Restrictions.in;
+import static com.sitescape.util.search.Restrictions.not;
+
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,14 +46,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Calendar;
-import java.lang.reflect.Constructor;
 
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -114,6 +119,7 @@ import com.sitescape.team.util.StatusTicket;
 import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
+import com.sitescape.util.search.Criteria;
 
 /**
  *
@@ -1429,180 +1435,78 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  		if (ownerId != null) value = ownerId.toString();
  		doFieldUpdate(binders, Constants.BINDER_OWNER_ACL_FIELD, value);    		
      }
-     
+     private void executeUpdateQuery(Criteria crit, String field, String value) {
+ 		//don't need to add access check to update of acls
+ 		//access to entries is not required to update the team acl
+ 		QueryBuilder qb = new QueryBuilder(false);
+ 		// add this query and list of ids to the lists we'll pass to updateDocs.
+    		LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession(null);
+    		try {
+    			//ignore acls when updateing acls
+    			luceneSession.updateDocuments(qb.buildQuery(crit.toQuery(), true).getQuery(), field, value);
+    		} finally {
+    			luceneSession.close();
+     	}    		   	
+   	 
+     }
      //this will update the binder, its attachments and entries, and subfolders and entries that inherit
-     private void doFieldUpdate(Binder binder, List<Long>notBinders, String field, String value) {
+     private void doFieldUpdate(Binder binder, List<Long>notBinderIds, String field, String value) {
  		// Now, create a query which can be used by the index update method to modify all the
 		// entries, replies, attachments, and binders(workspaces) in the index 
-		org.dom4j.Document qTree = buildQueryforUpdate(binder, notBinders);
-		//don't need to add access check to update of acls
-		//access to entries is not required to update the team acl
-		QueryBuilder qb = new QueryBuilder(false);
-		// add this query and list of ids to the lists we'll pass to updateDocs.
-   		LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession(null);
-   		try {
-   			luceneSession.updateDocuments(qb.buildQuery(qTree, true).getQuery(), field, value);
-   		} finally {
-   			luceneSession.close();
-    	}    		   	
+ 		Criteria crit = new Criteria()
+  			.add(eq(Constants.ENTRY_ANCESTRY, binder.getId().toString()));
+ 		
+		if (!notBinderIds.isEmpty()) {	
+			crit.add(not()
+				.add(in(Constants.ENTRY_ANCESTRY, LongIdUtil.getIdsAsStringSet(notBinderIds)))
+			);
+ 		}
+		executeUpdateQuery(crit, field, value);
     }
-     //this will update the binder, its attachments and entries, and subfolders and entries that inherit
-     //this code assumes all doc_types have the field being updated
-  	private org.dom4j.Document buildQueryforUpdate(Binder binder, Collection<Long> notBinders) {
-		org.dom4j.Document qTree = DocumentHelper.createDocument();
-		Element qTreeRootElement = qTree.addElement(Constants.QUERY_ELEMENT);
-		//get the binder and all the entrys, replies, subBinders and their attachments
-		// or (__entryAncestry: and not __entryAncestry:{} )
-		Element ancestorElement = qTreeRootElement.addElement(Constants.AND_ELEMENT);
-	 
-		Element ancestors = ancestorElement.addElement(Constants.FIELD_ELEMENT);
-		ancestors.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.ENTRY_ANCESTRY);
-		Element child = ancestors.addElement(Constants.FIELD_TERMS_ELEMENT);
-		child.setText(binder.getId().toString());
-		if (!notBinders.isEmpty()) {	
-			Element notAncestors = ancestorElement.addElement(Constants.NOT_ELEMENT);
-			Element ancestorOrElement = notAncestors.addElement(Constants.OR_ELEMENT);
-			for (Long id:notBinders) {
-				Element fieldI = ancestorOrElement.addElement(Constants.FIELD_ELEMENT);
-				fieldI.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ENTRY_ANCESTRY);
-				Element childI = fieldI.addElement(Constants.FIELD_TERMS_ELEMENT);
-				childI.setText(id.toString());
-			}
-			
-		}
 
-	   	return qTree;
-	}
 
   	//this will update just the binder, its attachments and entries only
      private void doFieldUpdate(Binder binder, String field, String value) {
   		// Now, create a query which can be used by the index update method to modify all the
  		// entries, replies, attachments, and binders(workspaces) in the index 
- 		org.dom4j.Document qTree = buildQueryforUpdate(binder);
- 		//don't need to add access check to update of acls
- 		//access to entries is not required to update the team acl
- 		QueryBuilder qb = new QueryBuilder(false);
- 		// add this query and list of ids to the lists we'll pass to updateDocs.
-    		LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession(null);
-    		try {
-    			luceneSession.updateDocuments(qb.buildQuery(qTree, true).getQuery(), field, value);
-    		} finally {
-    			luceneSession.close();
-     	}    		   	
+    	//_binderId= OR (_docId= AND (_docType=binder OR _attType=binder)) 
+    	Criteria crit = new Criteria()
+    	.add(disjunction()
+    		.add(eq(Constants.BINDER_ID_FIELD, binder.getId().toString())) // get all the entries, replies and their attachments using parentBinder
+    		.add(conjunction()	//gt binder itself (_docId= AND (_docType=binder OR _attType=binder)) 
+    			.add(eq(Constants.DOCID_FIELD, binder.getId().toString()))
+    			.add(disjunction()
+    				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_BINDER))
+    				.add(eq(Constants.ATTACHMENT_TYPE_FIELD, Constants.ATTACHMENT_TYPE_BINDER))
+    			)
+    		)
+    	);
+		executeUpdateQuery(crit, field, value);
      }
-     //this will update just the binder, its attachments and entries only
-     //this code assumes all doc_types have the field being updated
-    private org.dom4j.Document buildQueryforUpdate(Binder binder) {
- 		org.dom4j.Document qTree = DocumentHelper.createDocument();
-		Element qTreeRootElement = qTree.addElement(Constants.QUERY_ELEMENT);
-		Element qTreeOrElement = qTreeRootElement.addElement(Constants.OR_ELEMENT);
-    	// get all the entries, replies and their attachments using parentBinder
-    	// _binderId 
-   		Element field = qTreeOrElement.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.BINDER_ID_FIELD);
-		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-		child.setText(binder.getId().toString());   	
  
-	   	// Get the binder and its attachments
-		buildQueryForBinder(qTreeOrElement, binder);
- 
- 	   	return qTree;
- 	}
     private void doFieldUpdate(Collection<Binder>binders, String field, String value) {
      	if (binders.isEmpty()) return;
  		// Now, create a query which can be used by the index update method to modify all the
  		// entries, replies, attachments, and binders(workspaces) in the index 
- 		org.dom4j.Document qTree = buildQueryforUpdate(binders);
- 		//don't need to add access check to update of acls
- 		//access to entries is not required to update the team acl
- 		QueryBuilder qb = new QueryBuilder(false);
- 		// add this query and list of ids to the lists we'll pass to updateDocs.
-    		LuceneWriteSession luceneSession = getLuceneSessionFactory().openWriteSession(null);
-    		try {
-    			luceneSession.updateDocuments(qb.buildQuery(qTree, true).getQuery(), field, value);
-    		} finally {
-    			luceneSession.close();
-     	}    		
-     	
+       	//_binderId= OR (_docId= AND (_docType=binder OR _attType=binder)) 
+		ArrayList<String>ids = new ArrayList();
+		for (Binder b:binders) {
+			ids.add(b.getId().toString());
+		}
+	   	Criteria crit = new Criteria()
+    	.add(disjunction()
+    		.add(in(Constants.BINDER_ID_FIELD, ids)) // get all the entries, replies and their attachments using parentBinder
+    		.add(conjunction()   	// Get all the binder's themselves  (_docType=binder OR _attType=binder) AND (_docId= OR _docId= OR ... )    				  
+    			.add(in(Constants.DOCID_FIELD, ids))
+    			.add(disjunction()     					  
+    				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_BINDER))
+    				.add(eq(Constants.ATTACHMENT_TYPE_FIELD, Constants.ATTACHMENT_TYPE_BINDER))
+    			)
+    		)
+    	);
+		executeUpdateQuery(crit, field, value);
      }
-	private org.dom4j.Document buildQueryforUpdate(Collection<Binder> binders) {
-		org.dom4j.Document qTree = DocumentHelper.createDocument();
-		Element qTreeRootElement = qTree.addElement(Constants.QUERY_ELEMENT);
-		Element qTreeOrElement = qTreeRootElement.addElement(Constants.OR_ELEMENT);
-    	Element qTreeAndElement = qTreeOrElement.addElement(Constants.AND_ELEMENT);
- 
-    	Element idsOrElement = qTreeAndElement.addElement((Constants.OR_ELEMENT));
-    	List binderIds = new ArrayList();
-    	//get all the entrys, replies and their attachments
-    	// _binderId and doctypes:{entry, attachment}
-    	for (Binder b:binders) {
-    		Element field = idsOrElement.addElement(Constants.FIELD_ELEMENT);
-			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.BINDER_ID_FIELD);
-			Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-			child.setText(b.getId().toString());
-			binderIds.add(b.getId());
-    	}
-    	
-    	Element typeOrElement = qTreeAndElement.addElement((Constants.OR_ELEMENT));
-    	for (int i =0; i < docTypes.length; i++) {
-    		Element field = typeOrElement.addElement(Constants.FIELD_ELEMENT);
-			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOC_TYPE_FIELD);
-			Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-			child.setText(docTypes[i]);
-    	}
-    	// Get all the binder's themselves
-     	// (_docType=binder OR _attType=binder) AND (_docId= OR _docId= OR ... ) 
-    	buildQueryForBinders(qTreeOrElement, binderIds);
-    	return qTree;
-	}
-	
-	private void buildQueryForBinder(Element parent, Binder binder) {
-    	// Get the binder and its attachments
-     	// _docId= AND (_docType=binder OR _attType=binder)) 
-     	Element andElement = parent.addElement((Constants.AND_ELEMENT));
-     	Element field = andElement.addElement(Constants.FIELD_ELEMENT);
-    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOCID_FIELD);
-    	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-    	child.setText(binder.getId().toString());
-     	   	 
-     	Element bOrElement = andElement.addElement((Constants.OR_ELEMENT));
-     	field = bOrElement.addElement(Constants.FIELD_ELEMENT);
- 		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOC_TYPE_FIELD);
- 		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
- 		child.setText(Constants.DOC_TYPE_BINDER);
-		
-     	field = bOrElement.addElement(Constants.FIELD_ELEMENT);
- 		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ATTACHMENT_TYPE_FIELD);
- 		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
- 		child.setText(Constants.ATTACHMENT_TYPE_BINDER);
- 		
-     }
-  	     
-	private void buildQueryForBinders(Element parent, Collection<Long> binderIds) {
-    	// Get the binder and its attachments
-     	// (_docType=binder OR _attType=binder) AND (_docId= OR _docId- OR  ... ) 
-     	Element andElement = parent.addElement((Constants.AND_ELEMENT));
-     	   	 
-     	Element typeOrElement = andElement.addElement((Constants.OR_ELEMENT));
-     	Element field = typeOrElement.addElement(Constants.FIELD_ELEMENT);
- 		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOC_TYPE_FIELD);
- 		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
- 		child.setText(Constants.DOC_TYPE_BINDER);
-		
-     	field = typeOrElement.addElement(Constants.FIELD_ELEMENT);
- 		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ATTACHMENT_TYPE_FIELD);
- 		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
- 		child.setText(Constants.ATTACHMENT_TYPE_BINDER);
- 
- 		Element binderOrElement = andElement.addElement((Constants.OR_ELEMENT));
-	   	for (Long id:binderIds) {
-    		field = binderOrElement.addElement(Constants.FIELD_ELEMENT);
-			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOCID_FIELD);
-			child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-			child.setText(id.toString());
-    	}
 
-     }
 
     //***********************************************************************************************************
     public void indexBinder(Binder binder, boolean includeEntries) {

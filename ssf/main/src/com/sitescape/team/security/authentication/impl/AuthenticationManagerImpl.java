@@ -50,9 +50,9 @@ import com.sitescape.team.security.authentication.AuthenticationManager;
 import com.sitescape.team.security.authentication.DigestDoesNotMatchException;
 import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.team.security.authentication.UserDoesNotExistException;
+import com.sitescape.team.util.EncryptUtil;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SessionUtil;
-import com.sitescape.util.PasswordEncryptor;
 
 public class AuthenticationManagerImpl implements AuthenticationManager,InitializingBean {
 	protected Log logger = LogFactory.getLog(getClass());
@@ -175,7 +175,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 						+ zoneName + "," + username + "]", e);
     	}
     	
-   		if(!PasswordEncryptor.encrypt(password).equals(user.getPassword())) {
+   		if(!EncryptUtil.encryptPassword(password).equals(user.getPassword())) {
    			// Password does not match.
    			if(passwordAutoSynch) {
    				// Change the user's password to the value passed in. 

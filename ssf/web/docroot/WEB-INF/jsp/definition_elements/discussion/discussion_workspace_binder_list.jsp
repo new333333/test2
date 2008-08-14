@@ -33,7 +33,8 @@
 <jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <div id="ss_dashboard_content">
 <div id="ss_folder_inset">
-<table><tbody><tr><td valign="top">
+<table width="100%">
+	<tbody><tr><td valign="top" width="50%">
 
 <div id="ss_topic">
 	<c:set var="binderCounter" value="0"/> <% // set binder counter to zero (first pass) %>
@@ -61,7 +62,8 @@
 
   <c:if test="${binder._entityType == 'workspace'}">
     <div id="ss_topic_title" class="ss_disc_th1">
-    <span>(${ss_binderUnseenCounts[binder._docId].count})</span> 
+   
+    <span class="ss_title_th1">
     <a 
     <c:if test="${binder._entityType == 'workspace'}">
       href="<ssf:url 
@@ -74,8 +76,19 @@
         binderId="${binder._docId}"/>"
     </c:if>
     >
-      <span class="ss_title_th1">${binder.title}</span>
-    </a>
+      ${binder.title}
+    </a> </span>
+    <c:set var="ss_binderNumbers1" value="${ss_binderUnseenCounts[binder._docId].count}"/>
+		 <c:choose>
+			<c:when test="${ss_binderNumbers1 == '0'}">
+				<span class="ss_title_count">(<ssf:nlt tag="New"><ssf:param name="value" 
+				  value="${ss_binderUnseenCounts[binder._docId].count}"/></ssf:nlt>) </span>
+			</c:when>
+			<c:otherwise>
+				<span class="ss_title_count"><a href="">(<ssf:nlt tag="New"><ssf:param name="value" 
+				  value="${ss_binderUnseenCounts[binder._docId].count}"/></ssf:nlt>) </a></span>
+			</c:otherwise>
+		 </c:choose>
     <br/>
     </div><!-- end of ss_topic_title -->
     <div id="ss_topic_desc"><ssf:markup type="view" binderId="${binder._docId}">
@@ -93,8 +106,7 @@
       <c:if test="${subBinder._entityType == 'workspace' || subBinder._entityType == 'profiles'}">
       <div id="ss_topic_title" class="ss_disc_sub_th1">
         <div style="padding-left:10px;">
-        
-        <span>(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
+        <span class="ss_title_th1">
         <a 
           <c:if test="${subBinder._entityType == 'workspace'}">
             href="<ssf:url action="view_ws_listing" binderId="${subBinder._docId}"/>"
@@ -102,8 +114,19 @@
           <c:if test="${subBinder._entityType == 'profiles'}">
             href="<ssf:url action="view_profiles_listing" binderId="${subBinder._docId}"/>"
           </c:if>
-        ><span>${subBinder.title}</span>
-        </a>
+        >${subBinder.title}
+        </a></span>
+         <c:set var="ss_binderNumbers2" value="${ss_binderUnseenCounts[subBinder._docId].count}"/>
+		 <c:choose>
+			<c:when test="${ss_binderNumbers2 == '0'}">
+				<span class="ss_title_count">(<ssf:nlt tag="New"><ssf:param name="value" 
+				  value="${ss_binderUnseenCounts[subBinder._docId].count}"/></ssf:nlt>) </span>
+			</c:when>
+			<c:otherwise>
+				<span class="ss_title_count"><a href="">(<ssf:nlt tag="New"><ssf:param name="value" 
+				  value="${ss_binderUnseenCounts[subBinder._docId].count}"/></ssf:nlt>) </a></span>
+			</c:otherwise>
+		 </c:choose>
         <br/>
         <div><ssf:markup type="view" binderId="${subBinder._docId}">
 		<ssf:textFormat formatAction="limitedDescription" 
@@ -114,10 +137,21 @@
       <c:if test="${subBinder._entityType == 'profiles'}">
         <div style="padding-left:10px;">
         <span style="padding-right:10px;">profiles</span>
-        <span>(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
+         
         <a href="<ssf:url action="view_profiles_listing" binderId="${subBinder._docId}"/>">
           <span>${subBinder.title}</span>
         </a>
+        <c:set var="ss_binderNumbers3" value="${ss_binderUnseenCounts[subBinder._docId].count}"/>
+		 <c:choose>
+			<c:when test="${ss_binderNumbers3 == '0'}">
+				<span class="ss_title_count">(<ssf:nlt tag="New"><ssf:param name="value" 
+				  value="${ss_binderUnseenCounts[subBinder._docId].count}"/></ssf:nlt>) </span>
+			</c:when>
+			<c:otherwise>
+				<span class="ss_title_count"><a href="">(<ssf:nlt tag="New"><ssf:param name="value" 
+				  value="${ss_binderUnseenCounts[subBinder._docId].count}"/></ssf:nlt>) </a></span>
+			</c:otherwise>
+		 </c:choose>
         <br/>
         </div>
       </c:if>
@@ -125,10 +159,21 @@
       <div id="ss_topic_thread">
         <div style="padding-left:10px;">
        		<img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle" <ssf:alt tag="folder"/>/> 
-        	<span>(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
         	<a href="<ssf:url action="view_folder_listing" binderId="${subBinder._docId}"/>">
           		<span>${subBinder.title}</span>
         	</a>
+        	<c:set var="ss_binderNumbers4" value="${ss_binderUnseenCounts[subBinder._docId].count}"/>
+		 	<c:choose>
+			<c:when test="${ss_binderNumbers4 == '0'}">
+				<span class="ss_title_count">(<ssf:nlt tag="New"><ssf:param name="value" 
+				  value="${ss_binderUnseenCounts[subBinder._docId].count}"/></ssf:nlt>) </span>
+			</c:when>
+			<c:otherwise>
+				<span class="ss_title_count"><a href="">(<ssf:nlt tag="New"><ssf:param name="value" 
+				  value="${ss_binderUnseenCounts[subBinder._docId].count}"/></ssf:nlt>) </a></span>
+			</c:otherwise>
+		 </c:choose>
+        	
         	<br/>
         </div><!-- end of left padding -->
        </div><!-- end of folder thread -->
@@ -139,11 +184,22 @@
   
   <c:if test="${binder._entityType == 'folder'}">
   <div id="ss_topic_title" class="ss_disc_folder_th1">
-   
-    <span>(${ss_binderUnseenCounts[binder._docId].count})</span> 
+    <span class="ss_title_th1">
     <a href="<ssf:url action="view_folder_listing" binderId="${binder._docId}"/>">
-      <span class="ss_title_th1">${binder.title}</span>
-    </a>
+      ${binder.title}
+    </a></span> 
+    		<c:set var="ss_binderNumbers5" value="${ss_binderUnseenCounts[binder._docId].count}"/>
+		 	<c:choose>
+			<c:when test="${ss_binderNumbers5 == '0'}">
+				<span class="ss_title_count">(<ssf:nlt tag="New"><ssf:param name="value" 
+				  value="${ss_binderUnseenCounts[binder._docId].count}"/></ssf:nlt>) </span>
+			</c:when>
+			<c:otherwise>
+				<span class="ss_title_count"><a href="">(<ssf:nlt tag="New"><ssf:param name="value" 
+				  value="${ss_binderUnseenCounts[binder._docId].count}"/></ssf:nlt>) </a></span>
+			</c:otherwise>
+		 </c:choose>
+    
     <br/>
     </div><!-- end of ss_topic_title -->
     <div id="ss_topic_desc"><ssf:markup type="view" binderId="${binder._docId}">

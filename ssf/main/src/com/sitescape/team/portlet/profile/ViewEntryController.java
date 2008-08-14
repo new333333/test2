@@ -82,7 +82,7 @@ public class ViewEntryController extends SAbstractController {
 			return new ModelAndView(viewPath, model);
 		}
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_ENTRY);
-		Principal entry = getProfileModule().getEntry(binderId, entryId);
+		Principal entry = getProfileModule().getEntry(entryId);
 		
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);

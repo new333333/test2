@@ -42,8 +42,8 @@ var ssMyTeams${renderResponse.namespace} = new ssTeams('${renderResponse.namespa
 </script>
 <c:if test="${ssUserProperties.debugMode}">
 <!-- Start of debug window -->
-  <div style="border:1px solid black;">
-  <div style="background-color:#CECECE; border-bottom:1px solid black; width:100%;">
+  <div style="border:1px solid #333;">
+  <div style="background-color:#CECECE; border-bottom:1px solid #333; width:100%;">
     <table cellspacing="0" cellpadding="0" style="background-color:#CECECE; width:100%;">
     <tr>
     <td>Debug window</td>
@@ -774,7 +774,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		<span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.edit" 
 			text="Edit Favorites"/></span></a>
   </div>
-  <hr style="width: 90%" class="ss_att_divider"/>
+  <hr style="width: 100%" class="ss_att_divider"/>
   <div class="ss_style_trans" id="ss_favorites${renderResponse.namespace}" align="left">
 	  <div style="float: right;" id="ss_favorites_loading${renderResponse.namespace}"><ssf:nlt tag="Loading"/></div>
 	  <div id="ss_favorites_list${renderResponse.namespace}">&nbsp;</div>

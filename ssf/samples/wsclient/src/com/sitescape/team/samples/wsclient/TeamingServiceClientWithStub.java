@@ -31,19 +31,15 @@ package com.sitescape.team.samples.wsclient;
 import java.io.File;
 
 import org.apache.axis.EngineConfiguration;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import com.sitescape.team.client.ws.TeamingServiceSoapBindingStub;
 import com.sitescape.team.client.ws.TeamingServiceSoapServiceLocator;
 import com.sitescape.team.client.ws.WebServiceClientUtil;
-import com.sitescape.team.client.ws.model.Binder;
-import com.sitescape.team.client.ws.model.FolderEntry;
-import com.sitescape.team.client.ws.model.FolderEntryBrief;
-import com.sitescape.team.client.ws.model.FolderEntryCollection;
-import com.sitescape.team.client.ws.model.User;
-import com.sitescape.team.client.ws.model.Group;
-import com.sitescape.team.client.ws.model.PrincipalBrief;
-import com.sitescape.team.client.ws.model.PrincipalCollection;
-import com.sitescape.team.client.ws.model.Tag;
+import com.sitescape.team.client.ws.model.*;
 
 /**
  * This WS client program uses JAX-RPC compliant client binding classes 
@@ -62,8 +58,9 @@ public class TeamingServiceClientWithStub {
 	
 	public static void main(String[] args) throws Exception {
 		FolderEntry entry;
-		//checkBinder(29);
-		checkTags(29);
+		checkUsers();
+		//checkBinder();
+		//checkEntry();
 		//getFolderEntryWSSecurity(85, 47, true);
 		//getFolderEntry(85, 80, true);
 		
@@ -83,7 +80,7 @@ public class TeamingServiceClientWithStub {
 		
 		//getFolderEntries(33);
 		
-		//getPrincipal(2, 1);
+		//getPrincipal(1);
 		
 		//getPrincipals(2, 5);
 	}
@@ -92,33 +89,224 @@ public class TeamingServiceClientWithStub {
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
-		Tag tag = new Tag();
-		tag.setEntityId(binderId);
-		tag.setName("tag1");
-		stub.binder_setTag(null, tag);
-		tag.setName("tag2");
-		stub.binder_setTag(null, tag);
-		Tag[] tags = stub.binder_getTags(null, binderId);
-		System.out.println("Begin tags");
-		if (tags.length != 2) System.out.println("Number of tags expected=2, actual=" + tags.length);
-		for (int i=0; i<tags.length; ++i) {			
-			if (!tag.getName().equals("tag1") && !tag.getName().equals("tag2")) {
-				System.out.println("Unexpected tag=" + tag.getName());
-			}
+		Tag[] tags = setupTags(binderId);
+		for (int i=0; i<tags.length; ++i) {
+			stub.binder_setTag(null, tags[i]);			
 		}
+		tags = stub.binder_getTags(null, binderId);
+		validateTags(tags);
+		stub.binder_deleteTag(null, binderId, tags[0].getId());
+		tags = stub.binder_getTags(null, binderId);
+		if (tags.length != 1) System.out.println("Number of tags expected=1, actual=" + tags.length);
 		System.out.println("End tags");
 		
 	}
-	public static void checkBinder(long binderId) throws Exception {
+	public static void checkEntryTags(long entryId) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		Tag[] tags = setupTags(entryId);
+		for (int i=0; i<tags.length; ++i) {
+			stub.folder_setEntryTag(null, tags[i]);			
+		}
+		tags = stub.folder_getEntryTags(null, entryId);
+		validateTags(tags);
+		stub.folder_deleteEntryTag(null, entryId, tags[0].getId());
+		tags = stub.folder_getEntryTags(null, entryId);
+		if (tags.length != 1) System.out.println("Number of tags expected=1, actual=" + tags.length);
+		System.out.println("End tags");
+		
+	}
+	private static Tag[] setupTags(long entityId) {
+		Tag tag1 = new Tag();
+		tag1.setEntityId(entityId);
+		tag1.setName("tag1");
+		Tag tag2 = new Tag();
+		tag2.setName("tag2");
+		tag2.setEntityId(entityId);
+		return new Tag[] {tag1, tag2};
+	}
+	private static void validateTags(Tag[] tags) {
+		if (tags.length != 2) System.out.println("Number of tags expected=2, actual=" + tags.length);
+		for (int i=0; i<tags.length; ++i) {			
+			if (!tags[i].getName().equals("tag1") && !tags[i].getName().equals("tag2")) {
+				System.out.println("Unexpected tag=" + tags[i].getName());
+			}
+		}		
+	}
+	public static void checkBinder() throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 
-		Binder binder = stub.binder_getBinder(null, binderId, true);
-		stub.binder_indexBinder(null, binderId);
-		stub.binder_indexTree(null, binderId);
+		Binder testFolder1 = getTestFolder("MyTestingFolder");
+		Binder testFolder2 = new Binder();
+		testFolder2.setTitle("MyTestingFolder3");
+		testFolder2.setDefinitionId(testFolder1.getDefinitionId());
+		testFolder2.setParentBinderId(testFolder1.getId());
+		try {
+			stub.binder_indexBinder(null, testFolder1.getId());
+			stub.binder_indexTree(null, testFolder1.getId());
+			//add new binder without config
+			long testFolder2Id = stub.binder_addBinder(null, testFolder2);
+			checkTags(testFolder1.getId());
+			checkBinderSubscriptions(testFolder1.getId());
+			//move new binder to under global
+			stub.binder_moveBinder(null, testFolder2Id, testFolder1.getParentBinderId());
+			//copy binder back to under test folder
+			long testFolder3Id = stub.binder_copyBinder(null, testFolder2Id, testFolder1.getId(), true);			
+			stub.binder_deleteBinder(null, testFolder2Id, true);
+			Binder testFolder3 = modifyBinder(stub.binder_getBinder(null, testFolder3Id, false));
+			testFolder3 = uploadBinderFiles(testFolder3);
+		} finally {
+			stub.binder_deleteBinder(null, testFolder1.getId(), true);
+		}
+	}
+	public static void checkEntrySubscriptions(long entryId) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		Subscription subscription = setupSubscription(entryId);
+		stub.folder_setSubscription(null, entryId, subscription);
+		subscription = stub.folder_getSubscription(null, entryId);
+		validateSubscription(subscription);
+	}
+	public static void checkBinderSubscriptions(long binderId) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		Subscription subscription = setupSubscription(binderId);
+		stub.binder_setSubscription(null, binderId, subscription);
+		subscription = stub.binder_getSubscription(null, binderId);
+		validateSubscription(subscription);
+	}
+
+	private static Subscription setupSubscription(long entityId) {
+		SubscriptionStyle style3 = new SubscriptionStyle();
+		SubscriptionStyle style2 = new SubscriptionStyle();
+		style3.setStyle(3);
+		style3.setEmailTypes(new String[] {"_primary","_mobile"});
+		style2.setStyle(2);
+		style2.setEmailTypes(new String[] {"_text","_mobile"});
+		Subscription subscription = new Subscription();
+		subscription.setStyles(new SubscriptionStyle[] {style3, style2});
+		return subscription;
+	}
+	private static void validateSubscription(Subscription subscription) {
+		SubscriptionStyle[] styles = subscription.getStyles();
+		if (styles.length != 2) System.out.println("Expect 2 subscriptions styles, got " + styles.length);
+		for (int i=0; i<styles.length; ++i) {
+			String [] emails = styles[i].getEmailTypes();
+			if (emails.length != 2) System.out.println("Expect 2 emailTypes, got " + emails.length);
+			if (styles[i].getStyle() == 1) {
+				if (emails[0].equals("_primary") || emails[0].equals("_mobile")) continue;
+				if (emails[1].equals("_primary") || emails[1].equals("_mobile")) continue;
+				System.out.println("Unexpected emailTypes " + emails);
+				
+			} else if (styles[i].getStyle() == 2) {
+				if (emails[0].equals("_text") || emails[0].equals("_mobile")) continue;
+				if (emails[1].equals("_text") || emails[1].equals("_mobile")) continue;				
+				System.out.println("Unexpected emailTypes " + emails);
+			}			
+		}
 		
+	}
+	public static void checkEntry()  throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		Binder testFolder = getTestFolder("MyTestingFolder");
+		try {
+			FolderEntry testEntry = new FolderEntry();
+			testEntry.setDescription(new Description(1,"This entry was added by web-services.  Workflow is next"));
+			testEntry.setParentBinderId(testFolder.getId());
+			testEntry.setTitle("Added by web-services");
+			File file = new File("C:/junk/junk1/debug.txt");		
+			WebServiceClientUtil.attachFile(stub, file);
+			long testEntryId = stub.folder_addEntry(null, testEntry, "debug1.txt");
+			testEntry = stub.folder_getEntry(null, testEntryId, true);
+			System.out.println("(WSS) Number of attachments downloaded = " + WebServiceClientUtil.extractFiles(stub, null));
+			checkWorkflow(testEntryId);
+			checkEntryTags(testEntryId);
+			checkEntrySubscriptions(testEntryId);
+			stub.folder_setRating(null, testEntryId, 4);
+			testEntry = stub.folder_getEntry(null, testEntryId, false);
+			if (!testEntry.getAverageRating().getAverageRating().equals(Double.valueOf(4))) System.out.println("Error unexpected average ");
+			file = new File("C:/junk/junk1/debug.txt");		
+			WebServiceClientUtil.attachFile(stub, file);
+			stub.folder_uploadFile(null, testEntry.getId(), "", "debug2.txt");
+			testEntry = stub.folder_getEntry(null, testEntryId, true);
+			System.out.println("(WSS) Number of attachments downloaded = " + WebServiceClientUtil.extractFiles(stub, null));
+
+			long copiedEntryId = stub.folder_copyEntry(null, testEntryId, testFolder.getId());
+			Binder testFolder2 = getTestFolder("MyTestingFolder2");
+			stub.folder_moveEntry(null, copiedEntryId, testFolder2.getId());
+			FolderEntry movedEntry = stub.folder_getEntry(null, copiedEntryId, false);
+			if (!movedEntry.getParentBinderId().equals(Long.valueOf(testFolder2.getId()))) System.out.println("Error - entry not moved");
+			stub.binder_deleteBinder(null, testFolder2.getId(), true);
+			stub.folder_deleteEntry(null, testEntryId);
+		} finally {
+			stub.binder_deleteBinder(null, testFolder.getId(), true);
+		}
+		
+	}
+	public static void checkWorkflow(long entryId)  throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		FolderEntry	entry = stub.folder_getEntry(null, entryId, false);
+		DefinitionBrief def = stub.definition_getLocalDefinitionByName(null, entry.getParentBinderId(), "testworkflow", true);
+		stub.folder_addEntryWorkflow(null, entryId, def.getId());
+		entry = stub.folder_getEntry(null, entryId, false);
+		Workflow[] wfs = entry.getWorkflows();
+		boolean found = false;
+		for (int i=0; i<wfs.length; ++i) {
+			if ("state1".equals(wfs[i].getState())) {
+				found=true;
+				break;
+			}
+		}
+		if (!found) System.out.println("Error, expecting state1");
+		stub.folder_modifyWorkflowState(null, entryId, wfs[0].getTokenId(), "state2");
+		entry = stub.folder_getEntry(null, entryId, false);
+		wfs = entry.getWorkflows();
+		found = false;
+		for (int i=0; i<wfs.length; ++i) {
+			if ("state2".equals(wfs[i].getState())) {
+				found=true;
+				break;
+			}
+		}
+		if (!found) System.out.println("Error, expecting state2");
+		stub.folder_setWorkflowResponse(null,  entryId, wfs[0].getTokenId(), "dayquestion", "sundayresponse");
+		entry = stub.folder_getEntry(null, entryId, false);
+		wfs	= entry.getWorkflows();
+		found = false;
+		for (int i=0; i<wfs.length; ++i) {
+			if ("itssunday".equals(wfs[i].getState())) {
+				WorkflowResponse[] wfr = wfs[i].getResponses();
+				if (wfr.length == 1) {
+					if ("dayquestion".equals(wfr[0].getQuestion()) &&
+							"sundayresponse".equals(wfr[0].getResponse())) {
+						found=true;
+						break;
+						
+					}
+				}
+			}
+		}
+		if (!found) System.out.println("Error, expecting itssunday with response sundayresponse");
+		int count = wfs.length;
+		stub.folder_deleteEntryWorkflow(null,  entryId, def.getId());
+		entry = stub.folder_getEntry(null,  entryId, false);
+		wfs = entry.getWorkflows();
+		if (wfs.length != count-1) System.out.println("Error workflow not deleted");
 		
 	}
 	
@@ -131,7 +319,7 @@ public class TeamingServiceClientWithStub {
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialWSSecurity(stub, USERNAME, PASSWORD, true);
 
-		FolderEntry entry = stub.folder_getEntry(null, binderId, entryId, includeAttachments);
+		FolderEntry entry = stub.folder_getEntry(null, entryId, includeAttachments);
 		
 		System.out.println("(WSS) Entry title: " + entry.getTitle());
 		
@@ -146,7 +334,7 @@ public class TeamingServiceClientWithStub {
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 
-		FolderEntry entry = stub.folder_getEntry(null, binderId, entryId, includeAttachments);
+		FolderEntry entry = stub.folder_getEntry(null, entryId, includeAttachments);
 		
 		System.out.println("Entry title: " + entry.getTitle());
 		System.out.println("Entry description: " + entry.getDescription().getText());
@@ -201,11 +389,11 @@ public class TeamingServiceClientWithStub {
 
 		File file = new File("C:/junk/junk1/Water lilies.jpg");		
 		WebServiceClientUtil.attachFile(stub, file);
-		stub.folder_uploadFile(null, binderId, entryId, "myPicture", "Jong Image.jpg");
+		stub.folder_uploadFile(null, entryId, "myPicture", "Jong Image.jpg");
 		
 		file = new File("C:/junk/junk1/Book1.xls");		
 		WebServiceClientUtil.attachFile(stub, file);
-		stub.folder_uploadFile(null, binderId, entryId, "myFile", "Jong Book.xls");
+		stub.folder_uploadFile(null, entryId, "myFile", "Jong Book.xls");
 				
 		System.out.println("Files uploaded for the entry : " + entryId);
 	}
@@ -260,6 +448,39 @@ public class TeamingServiceClientWithStub {
 		
 		System.out.println("ID of the modified entry: " + entry.getId());
 	}
+	public static Binder modifyBinder(Binder binder) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+
+		binder.setTitle(binder.getTitle() + " (Modified)");
+		binder.getDescription().setText(binder.getDescription().getText() + " (Modified)");
+		
+		stub.binder_modifyBinder(null, binder);
+		stub.binder_getBinder(null, binder.getId(), true);
+		
+		System.out.println("ID of the modified binder: " + binder.getId());
+		return binder;
+	}
+	public static Binder uploadBinderFiles(Binder binder) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+
+		File file = new File("C:/junk/junk1/Water lilies.jpg");		
+		WebServiceClientUtil.attachFile(stub, file);
+		stub.binder_uploadFile(null, binder.getId(), "", "Jong Image.jpg"); //will add to attachments 
+		
+		file = new File("C:/junk/junk1/debug.txt");		
+		WebServiceClientUtil.attachFile(stub, file);
+		stub.binder_uploadFile(null, binder.getId(), "", "Jong Book.xls");
+		binder = stub.binder_getBinder(null, binder.getId(), true);
+		System.out.println("(WSS) Number of attachments downloaded = " + WebServiceClientUtil.extractFiles(stub, null));				
+		System.out.println("Files uploaded for the binder : " + binder.getId());
+		return binder;
+	}
 
 	public static void deleteFolderEntry(long binderId, long entryId) throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
@@ -267,29 +488,29 @@ public class TeamingServiceClientWithStub {
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 
-		stub.folder_deleteEntry(null, binderId, entryId);
+		stub.folder_deleteEntry(null, entryId);
 		
 		System.out.println("ID of the deleted entry: " + entryId);
 	}
 
-	public static void getUser(long binderId, long principalId) throws Exception {
+	public static void getUser(long principalId) throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 		
-		User user = stub.profile_getUser(null, binderId, principalId);
+		User user = stub.profile_getUser(null, principalId, false);
 		
 		System.out.println("User title: " + user.getTitle());
 	}
 
-	public static void getGroup(long binderId, long principalId) throws Exception {
+	public static void getGroup(long principalId) throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 		
-		Group group = stub.profile_getGroup(null, binderId, principalId);
+		Group group = stub.profile_getGroup(null, principalId, false);
 		
 		System.out.println("Group title: " + group.getTitle());
 	}
@@ -310,6 +531,90 @@ public class TeamingServiceClientWithStub {
 			System.out.println("(" + i + ") id=" + entries[i].getId() + ", name=" + entries[i].getName() + ", type=" + entries[i].getType() + ", title=" + entries[i].getTitle() + ", email=" + entries[i].getEmailAddress()); 
 		}
 	}
+	public static void checkUsers() throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 
+		User testUser = new User();
+		testUser.setName("Jodi");
+		testUser.setFirstName("Jodi");
+		testUser.setMiddleName("Anne");
+		testUser.setLastName("Tester");
+		testUser.setEmailAddress("boulder@foo.bar");
+		long testUserId = stub.profile_addUser(null, testUser);
+		stub.profile_addUserWorkspace(null, testUserId);
+		testUser = stub.profile_getUser(null, testUserId, false);
+		if (!"Jodi Anne Tester".equals(testUser.getTitle())) System.out.println("Title not set");
+		testUser.setZonName("jodi");
+		stub.profile_modifyUser(null, testUser);
+		testUser = stub.profile_getUser(null, testUserId, false);
+		if (!"jodi".equals(testUser.getZonName())) System.out.println("Modify of zonName failed");
+		try {
+			testUser = uploadUserFile(testUser);
+			Attachment[] atts = testUser.getAttachmentsField().getAttachments();
+			stub.profile_removeFile(null, testUserId, atts[0].getFileName());
+			testUser = stub.profile_getUserByName(null, "jodi", false);
+			if (testUser.getAttachmentsField().getAttachments().length != atts.length-1) 
+				System.out.println("removeFile failed");
+		} finally {
+			stub.profile_deletePrincipal(null, testUser.getId(), true);
+		}
+	}
+	public static User uploadUserFile(User user) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 
+		File file = new File("C:/junk/junk1/Water lilies.jpg");		
+		WebServiceClientUtil.attachFile(stub, file);
+		stub.profile_uploadFile(null, user.getId(), "picture", "Jong Image.jpg"); //will add to attachments 
+		System.out.println("Picture uploaded for the user : " + user.getId());
+		
+		user = stub.profile_getUser(null, user.getId(), true);
+		System.out.println("(WSS) Number of attachments downloaded = " + WebServiceClientUtil.extractFiles(stub, null));				
+		Attachment[] atts = user.getAttachmentsField().getAttachments();
+		for (int i=0; i<atts.length; ++i) {
+			System.out.println("Attachment: " + atts[i].getFileName() + " " + atts[i].getHref());
+		}
+		return user;
+	}
+
+	private static Long getGlobalWorkspace(TeamingServiceSoapBindingStub stub) throws Exception {
+		
+		String xml = stub.search_getWorkspaceTreeAsXML(null, -1, 2, "");
+		try {
+			Document document = DocumentHelper.parseText(xml);
+			Element ws = (Element)document.getRootElement().selectSingleNode("./child[@title='Global Workspaces']");
+			return Long.valueOf(ws.attributeValue("id"));
+		} catch (DocumentException e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+	private static TemplateBrief getTemplateByName(TeamingServiceSoapBindingStub stub, String name) throws Exception {
+		TemplateCollection templates = stub.template_getTemplates(null);
+		TemplateBrief[] array = templates.getTemplates();
+		for (int i=0; i<array.length; ++i) {
+			TemplateBrief template = array[i];
+			if (name.equals(template.getName())) return template;
+		}
+		return null;
+	}
+	private static Binder getTestFolder(String title) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		long gblId = getGlobalWorkspace(stub);
+		try {
+			return stub.binder_getBinderByPathName(null, "/Workspaces/Global Workspaces/" + title, false);
+		} catch (Exception ex) {
+			TemplateBrief tb = getTemplateByName(stub, "_folder");
+			return stub.binder_getBinder(null, stub.template_addBinder(null, gblId, tb.getId(), title), false);
+
+		}
+	}
 }

@@ -29,52 +29,24 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${ssDefinitionEntry.entityType == 'folder'}">
-
-<ssf:sidebarPanel title="sidebar.tags.tools" id="ss_tooltags_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
-
-<div>
-	<ul style="padding-top: 2px; padding-left: 5px;">
-	<li>
-	  <ssf:toolbar toolbar="${ssFolderViewsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
-	</li>
-	<li>
-	  <ssf:toolbar toolbar="${ssFolderActionsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
-	</li>
-	
-	<li>
-
-		<% // configure columns area %>
-	 	<a href="<ssf:url
-			adapter="true" 
-			portletName="ss_forum" 
-			action="__ajax_request" 
-			actionUrl="true" >
-			<ssf:param name="operation" value="configure_folder_columns" />
-			<ssf:param name="binderId" value="${ssBinder.id}" />
-			<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-			</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
-		    <span class="ss_tabs_title"><ssf:nlt tag="misc.configureColumns"/></span> </a> 
-
-	</li>
-
-			<li style="margin-top:2px;">
-			<% // Show number of entries per page %>
-			<form name="ss_recordsPerPage_${renderResponse.namespace}" id="ss_recordsPerPage_${renderResponse.namespace}" method="post" 
-			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-				name="binderId" value="${ssFolder.id}"/>
-				<c:if test="${!empty cTag}"><ssf:param 
-				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
-				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
-				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
-				name="endDate" value="${endDate}"/></c:if><ssf:param 
-				name="operation" value="change_entries_on_page"/></ssf:url>">
+<c:if test="${!empty ssPageMenuControlTitle}">
+  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.entryPage"/>
+ 	<div class="ss_sub_sidebarMenu">
+	    <table width="100%" style="margin-left: 7px;"><tbody>
+	      <tr>
+	        <td><form name="ss_recordsPerPage_${renderResponse.namespace}" 
+	                id="ss_recordsPerPage_${renderResponse.namespace}" method="post" 
+				    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+					name="binderId" value="${ssFolder.id}"/>
+					<c:if test="${!empty cTag}"><ssf:param 
+					name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
+					name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
+					name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+					name="endDate" value="${endDate}"/></c:if><ssf:param 
+					name="operation" value="change_entries_on_page"/></ssf:url>">
 			    
 			    <input type="hidden" name="ssEntriesPerPage" />
 			
-				
-				  <span class="ss_tabs_title ss_results_pro_page">
-	
 				  <ssf:menu title="${ssPageMenuControlTitle}" 
 				    titleId="ss_selectEntriesTitle${renderResponse.namespace}" 
 				    titleClass="ss_compact" menuClass="ss_actions_bar4 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
@@ -106,16 +78,11 @@
 						</a>
 					</li>
 					</ul>
-					
-				   				
+	
 				  </ssf:menu>
-
-			    </span>
-			  
-			</form>
-				</li></ul>
-			</div>
-</ssf:sidebarPanel>
+			</form></td>
+	      </tr>
+	    </tbody></table>
+	</div>
+  </div>
 </c:if>
-
-<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_folder_tags.jsp" />

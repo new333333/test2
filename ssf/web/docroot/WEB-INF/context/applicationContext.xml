@@ -80,6 +80,7 @@
 	<bean id="dependOnAllModulesTemplate" lazy-init="true" abstract="true">
 		<property name="templateModule"><ref bean="templateModule"/></property>
 		<property name="adminModule"><ref bean="adminModule"/></property>
+		<property name="authenticationModule"><ref bean="authenticationModule"/></property>
 		<property name="binderModule"><ref bean="binderModule"/></property>
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="folderModule"><ref bean="folderModule"/></property>
@@ -519,7 +520,18 @@
 				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setPostingSchedule">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException,+com.sitescape.team.exception.UncheckedCodedException</prop>
+				<prop key="setSearchNodeAccessMode">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
+		</property>
+	</bean>
+
+	<bean id="authenticationModule" parent="baseTransactionProxy" depends-on="springAuthenticationBeans">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.authentication.impl.AuthenticationModuleImpl">
+				<property name="zoneModule"><ref bean="zoneModule"/></property>
+				<!-- The _authenticationManager bean is defined by Spring Security (via the <http> entry in security.xml) -->
+				<property name="providerManager"><ref bean="_authenticationManager"/></property>
+			</bean>
 		</property>
 	</bean>
 
@@ -1049,7 +1061,7 @@ text/calendar											  ics
 	
 	<bean id="profileService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.service.profile.ProfileServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.remoting.ws.service.profile.attachments.ProfileServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">

@@ -241,6 +241,9 @@ public interface ObjectKeys {
     public static final String FI_ADAPTER = "fiAdapter";
 	public static final String PI_SYNCH_TO_SOURCE = "_synchToSource";
     
+    //User and Principal objects
+    public static final int USER_STATUS_DATABASE_FIELD_LENGTH = 256;
+
     //User properties
     public static final String USER_DISPLAY_STYLE_ACCESSIBLE = "accessible";
     public static final String USER_DISPLAY_STYLE_IFRAME = "iframe";
@@ -270,6 +273,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_BUSINESS_CARD_PREFIX="businessCardShow_";
     public static final String USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK="calendarFirstDayOfWeek";
     public static final String USER_PROPERTY_CALENDAR_WORK_DAY_START="calendarWorkDayStart";
+    public static final String USER_THEME_DEFAULT="default";
     
     //workflow definition names
     public static final String WORKFLOW_START_STATE = "__start_state";
@@ -434,6 +438,7 @@ public interface ObjectKeys {
     public static final String XTAG_USER_SKYPEID="skypeId";
     public static final String XTAG_USER_TWITTERID="twitterId";
     public static final String XTAG_USER_STATUS="status";
+    public static final String XTAG_USER_STATUS_DATE="statusDate";
     public static final String XTAG_USER_TIMEZONE="timeZone";
     //values of name= attributes on XTAG_ELEMENT_TYPE_PROPERTY for user
     public static final String XTAG_USER_DISPLAYSTYLE="displayStyle";

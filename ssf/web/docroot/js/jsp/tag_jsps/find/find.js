@@ -446,7 +446,7 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 		    iframeDivObj.appendChild(closeDivObj);
 		    var aObj = self.document.createElement("a");
 			aObj.setAttribute("href", "javascript: ;");
-			dojo.event.connect(aObj, "onclick", function(evt) {
+			dojo.connect(aObj, "onclick", function(evt) {
 				ss_hideDiv('ss_findIframeDiv');
 				that.close();
 		    });
@@ -459,8 +459,8 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 	    if (iframeDivObj == null) iframeDivObj = iframeDivObjParent;
 	    if (iframeObj == null) iframeObj = iframeObjParent;
 	    if (self.parent == self && textObj != null) {
-	    	var x = dojo.html.getAbsolutePosition(textObj, true).x
-	    	var y = dojo.html.getAbsolutePosition(textObj, true).y
+	    	var x = dojo.coords(textObj, true).x
+	    	var y = dojo.coords(textObj, true).y
 		    ss_setObjectTop(iframeDivObj, y + "px");
 		    ss_setObjectLeft(iframeDivObj, x + "px");
 		}
@@ -490,7 +490,7 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 		newLiObj.innerHTML = spanObj.innerHTML;
 		var newAnchorObj = document.createElement("a");
 		newAnchorObj.setAttribute("href", "javascript: ;");
-		dojo.event.connect(newAnchorObj, "onclick", function(evt) {
+		dojo.connect(newAnchorObj, "onclick", function(evt) {
 			that.removeValueByElement(evt.target.parentNode, id, spanObj.innerHTML);
 	    });	
 		var newImgObj = document.createElement("img");
@@ -588,7 +588,8 @@ ssFind.Find = function(thisName, multiplePrefix, multipleClickRoutineObj, multip
 	}
 	
 	this._highlight = function(obj) {
-		dojo.lfx.html.highlight(obj, "#FFFF33", 500).play();
+		//This option did not get ported to dojo 0.9 
+		//dojo.lfx.html.highlight(obj, "#FFFF33", 500).play();
 	}
 	
 	this.addListener = function(on, callback) {

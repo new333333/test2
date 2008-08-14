@@ -460,6 +460,7 @@ function ss_showPermalink(obj) {
 		//Create the div
 	    divObj = document.createElement("div");
 	    divObj.setAttribute("id", "ss_permalink_display_div");
+	    divObj.style.zIndex = ssPopupZ;
 	    divObj.className = "ss_style ss_popupMenu ss_permalink";
 	    divObj2 = document.createElement("div");
 	    inputObj = document.createElement("input");
@@ -501,7 +502,7 @@ function ss_showPermalink(obj) {
 		divObj.style.left = x + "px";		
 	}
 	//Signal that the layout changed
-	if (ssf_onLayoutChange) ssf_onLayoutChange();
+	if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
 	
 }
 //Routine to go to a binder when it is clicked
@@ -679,17 +680,29 @@ function ss_moveObjectToBody(obj) {
 }
 
 //Functions to save the user status
-function ss_updateStatusSoon(obj, evt) {
-	if ((typeof evt.which == "undefined" || !evt.which) && typeof event == "undefined") return;
+function ss_updateStatusSoon(obj, evt, maxLength) {
+	if ((typeof evt == "undefined" || typeof evt.which == "undefined" || !evt.which) && typeof event == "undefined") return;
 	
 	ss_statusObj = obj;
 	if (ss_statusTimer != null) {
 		clearTimeout(ss_statusTimer)
 		ss_statusTimer = null;
 	}
+	//If the string is too long to fit in the database, truncate it
+	if (obj.value.length >= maxLength) obj.value = obj.value.substr(0,maxLength-1);
+	
     var charCode = (evt.which) ? evt.which : event.keyCode
-    if (charCode == 10 || charCode == 13) {
+    //check for tab or cr; tab or 2 cr's signals the end of the input
+    if (charCode == 9) {
     	ss_updateStatusNow(obj)
+    } else if (charCode == 10 || charCode == 13) {
+    	if (obj.value.length >= 2 && (obj.value.charCodeAt(obj.value.length - 1) == 10 || 
+    			obj.value.charCodeAt(obj.value.length - 1) == 13)) {
+    		//Double cr also ends new status
+    		ss_updateStatusNow(obj)
+    	} else {
+    		ss_setStatusBackground(obj, 'focus');
+    	}
     } else {
 		ss_setStatusBackground(obj, 'focus');
     }
@@ -706,20 +719,25 @@ function ss_updateStatusNow(obj) {
 		ss_statusTimer = null;
 	}
 	if (obj != null) {
-	    if (ss_statusCurrent != obj.value) {
-			ss_statusCurrent = obj.value;
+	    if (ss_statusCurrent != escape(obj.value)) {
+			ss_statusCurrent = escape(obj.value);
 			var status = ss_replaceSubStrAll(obj.value, "\"", "&quot;");
-			
-			ss_setupStatusMessageDiv();
+
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_user_status", status:status}, "");
-			var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-			ajaxRequest.setPostRequest(ss_postRequestAlertError);
-			ajaxRequest.sendRequest();  //Send the request
-			setTimeout('ss_flashStatus();', 200);
+			var divObj = ss_findOwningElement(obj, "div");
+			ss_fetch_url(url, ss_postUpdateStatusNow, divObj.id)
 		}
 		ss_setStatusBackground(obj, 'blur');
 	}
 }
+function ss_postUpdateStatusNow(s, id) {
+	var divObj = self.document.getElementById(id);
+	if (divObj != null) {
+		divObj.innerHTML = s;
+		ss_executeJavascript(divObj)
+	}
+}
+
 function ss_setStatusBackground(obj, op) {
 	ss_statusObj = obj;
 	if (op == 'focus') {
@@ -1085,7 +1103,7 @@ function ss_showHide(objId){
 	return false;
 }
 
-function ss_showHideSidebarBox(divId, imgObj, sticky, id) {
+function ss_showHideTaskList(divId, imgObj, sticky, id) {
 	var urlParams = {id:id};
 	if (ss_showHide(divId)) {
 		urlParams.operation="show_sidebar_panel";
@@ -1093,6 +1111,23 @@ function ss_showHideSidebarBox(divId, imgObj, sticky, id) {
 		urlParams.operation = "hide_sidebar_panel";
 	}		
 	ss_toggleImage(imgObj, "flip_up16H.gif", "flip_down16H.gif");
+	if (sticky) {
+		ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams));
+	}
+}
+
+function ss_showHideSidebarBox(divId, divObj, sticky, id) {
+	var urlParams = {id:id};
+	if (ss_showHide(divId)) {
+		urlParams.operation="show_sidebar_panel";
+	} else {
+		urlParams.operation = "hide_sidebar_panel";
+	}		
+	if (divObj.className == "ss_menuOpen") {
+		divObj.className = "ss_menuClosed"
+	} else {
+		divObj.className = "ss_menuOpen"
+	}
 	if (sticky) {
 		ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams));
 	}
@@ -2594,9 +2629,11 @@ var ss_helpSystem = {
 	        	if (nodes[i].getAttribute("align") == "center") {
 	        		left += parseInt(dojo.marginBox(nodes[i]).w / 2);
 	        	} else if (nodes[i].getAttribute("align") == "right") {
-	        		left += dojomarginBox(nodes[i]).w;
+	        		left += dojo.marginBox(nodes[i]).w;
 	        	}
 	        }
+	        if (top < 0) top = 0;
+	        if (left < 0) left = 0;
 	        helpSpotNode.style.top = top + "px";
 	        helpSpotNode.style.left = left + "px";
 	        bodyObj.appendChild(helpSpotNode);
@@ -3027,7 +3064,7 @@ var ss_helpSystem = {
 	},
 
 	hideHelpPanel : function(obj) {
-	    while (dojo.dom.hasParent(obj)) {
+	    while (obj && obj.parentNode) {
 	        var n = obj.parentNode;
 	    	if (dojo.hasClass(n, "ss_popup_panel_outer")) {
 	    		if (n.id) {
@@ -4041,14 +4078,14 @@ function ssFavorites(namespace) {
 	function readFavoriteList() {
 		var container = dojo.byId("ss_favorites_list" + namespace);
 		// Get the ul inside
-	    var ul = dojo.dom.getFirstChildElement(container);
+	    var ul = dojox.data.dom.getFirstChildElement(container);
 	    // Walk the list items
-	    var li = dojo.dom.getFirstChildElement(ul);
+	    var li = dojox.data.dom.getFirstChildElement(ul);
 	    var favs = new Array();
 	    while (li) {
 	    	// Ids = "ss_favorite_N"
 	    	favs.push(li.id.substr(12));
-		    li = dojo.dom.getNextSiblingElement(li);
+		    li = dojox.data.dom.getNextSiblingElement(li);
 	    }    
 	    return favs.join(" ");
 	}
@@ -4076,33 +4113,33 @@ function ssFavorites(namespace) {
 		// Clear any prior activity
 		while (deletedFavorites.length) {deletedFavorites.pop() };
 		// Get the ul inside
-	    var ul = dojo.dom.getFirstChildElement(container);
+	    var ul = dojox.data.dom.getFirstChildElement(container);
 	    // Walk the list items
-	    var li = dojo.dom.getFirstChildElement(ul);
+	    var li = dojox.data.dom.getFirstChildElement(ul);
 	    while (li) {
-	    	var cb = dojo.dom.getFirstChildElement(li);
+	    	var cb = dojox.data.dom.getFirstChildElement(li);
 	    	if (enable) {
 		    	ss_showDivObj(cb);
 		    } else {
 		    	ss_hideDivObj(cb);
 		    }
-		    li = dojo.dom.getNextSiblingElement(li);
+		    li = dojox.data.dom.getNextSiblingElement(li);
 	    }    
 	}
 
 	function getSelectedFavorites() {
 		var container = dojo.byId("ss_favorites_list" + namespace);
 		// Get the ul inside
-	    var ul = dojo.dom.getFirstChildElement(container);
+	    var ul = dojox.data.dom.getFirstChildElement(container);
 	    // Walk the list items
-	    var li = dojo.dom.getFirstChildElement(ul);
+	    var li = dojox.data.dom.getFirstChildElement(ul);
 	    var selected = new Array();
 	    while (li) {
-	    	var cb = dojo.dom.getFirstChildElement(li);
+	    	var cb = dojox.data.dom.getFirstChildElement(li);
 	    	if (cb.checked) {
 	    		selected.push(li);
 	    	}
-		    li = dojo.dom.getNextSiblingElement(li);
+		    li = dojox.data.dom.getNextSiblingElement(li);
 	    }    
 	    return selected;
 	}
@@ -4111,7 +4148,7 @@ function ssFavorites(namespace) {
 	this.deleteSelectedFavorites = function() {
 	    var toDelete = getSelectedFavorites();
 	    dojo.forEach(toDelete, recordDeletedFavorite) 
-	    dojo.forEach(toDelete, dojo.dom.removeNode)
+	    dojo.forEach(toDelete, dojox.data.dom.removeNode)
 	}
 
 	function recordDeletedFavorite(node) {
@@ -4155,15 +4192,15 @@ function ss_findOwningElement(obj, eleName) {
 }
 
 function ss_moveElementUp(node) {
-	var prior = dojo.dom.getPreviousSiblingElement(node);
+	var prior = dojox.data.dom.getPreviousSiblingElement(node);
 	if (prior) {
-		dojo.dom.insertBefore(dojo.dom.removeNode(node), prior);
+		dojox.data.dom.insertBefore(dojox.data.dom.removeNode(node), prior);
 	}
 }
 function ss_moveElementDown(node) {
-	var next = dojo.dom.getNextSiblingElement(node);
+	var next = dojox.data.dom.getNextSiblingElement(node);
 	if (next) {
-		dojo.dom.insertAfter(dojo.dom.removeNode(node), next);
+		dojox.data.dom.insertAfter(dojox.data.dom.removeNode(node), next);
 	}
 }
 
@@ -4849,11 +4886,8 @@ function ss_Clipboard () {
 			usersCheckboxes = new Array();
 
 			var ulObj = document.createElement("ul");
-			ulObj.style.marginLeft = "0";
-			ulObj.style.marginTop = "5px";
-			ulObj.style.marginBottom = "15px";
-			ulObj.style.marginRight = "0";
-			ulObj.style.padding = "0";
+			ulObj.className = 'ss_stylePopup';
+			ulObj.style.listStyle = "none";
 
 			var lastIndex = 0;
 			for (var i = 0; i < data.length; i++) {
@@ -4903,6 +4937,7 @@ function ss_Clipboard () {
 	}
 
 	function createUserLI (index, userId, userTitle) {
+		
 		var liObj = document.createElement("li");
 	
 		var inputObj = document.createElement("input");
@@ -5148,13 +5183,18 @@ var ss_editWidthOffset = 20;
 var ss_editHeightOffset = 100;
 var ss_editScreenWidthOfset = 60;
 var ss_editScreenHeightOfset = 60;
-function ss_editablePopUp(url, sourceDivId) {
+function ss_editablePopUp(url, sourceDivId, sectionNumber) {
 	var width = parseInt(ss_getDivWidth(sourceDivId) + ss_editWidthOffset);
 	var height = parseInt(ss_getDivHeight(sourceDivId) + ss_editHeightOffset);
 	if (width < ss_minEditWidth) width = ss_minEditWidth;
 	if (height < ss_minEditHeight) height = ss_minEditHeight;
 	if (width > parseInt(screen.width - ss_editScreenWidthOfset)) width = parseInt(screen.width - ss_editScreenWidthOfset)
 	if (height > parseInt(screen.height - ss_editScreenHeightOfset)) height = parseInt(screen.height - ss_editScreenHeightOfset)
+	if (typeof sectionNumber != "undefined") {
+		url = ss_replaceSubStr(url, "ss_sectionPlaceholder", sectionNumber);
+	} else {
+		url = ss_replaceSubStr(url, "ss_sectionPlaceholder", "");
+	}
 	self.window.open(url, '_blank', 'width='+width+',height='+height+',directories=no,location=no,menubar=no,resizable=yes,scrollbars=yes,status=no,toolbar=no');
 }
 
@@ -5541,7 +5581,7 @@ function ss_buddyPhotoLoadError (imgObj, src) {
 }
 
 function ss_tagSearchObj(obj) {
-    var tag = dojo.dom.textContent(obj);
+    var tag = dojox.data.dom.textContent(obj);
 	var searchUrl = "";
    	try { searchUrl = ss_tagSearchResultUrl; } catch(e) {searchUrl=""}
 	if (searchUrl == "") { try { searchUrl = self.parent.ss_tagSearchResultUrl } catch(e) {searchUrl=""} }
@@ -6090,8 +6130,9 @@ function ss_showHideSidebar(namespace) {
 		    	divObj.style.visibility = "hidden";
 		    	divObj.style.display = "none";
 				tdObj.className = '';
-				sidebarShow.style.display = 'none'
-				sidebarHide.style.display = 'block'
+				sidebarShow.style.display = 'none';
+				sidebarHide.style.display = 'block';
+				ssf_onLayoutChange();
    		}}).play();
    		sidebarVisibility = "none";
 	} else {
@@ -6108,6 +6149,28 @@ function ss_showHideSidebar(namespace) {
 	ssf_onLayoutChange()
 	ss_setupStatusMessageDiv();
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"set_sidebar_visibility", visibility:sidebarVisibility}, "");
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.setPostRequest(ss_postRequestAlertError);
+	ajaxRequest.sendRequest();  //Send the request
+}
+
+//Routine to hide the sunburst
+function ss_hideSunburst(s_id, s_binderId) {
+	var divObj = self.document.getElementById('ss_sunburstDiv'+s_binderId+'_'+s_id);
+
+		//Hide it
+   		dojo.fadeOut({node: divObj, end: 0, delay: 400, onEnd: function() {
+		    	divObj.style.visibility = "hidden";
+		    	divObj.style.display = "none";
+
+   		}}).play();
+
+	ssf_onLayoutChange()
+	ss_setupStatusMessageDiv();
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, 
+		{operation:"set_sunburst_visibility", 
+		entryId:s_id,
+		binderId:s_binderId}, "");
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.setPostRequest(ss_postRequestAlertError);
 	ajaxRequest.sendRequest();  //Send the request
@@ -6303,3 +6366,4 @@ ss_FileUploadProgressBar.reloadProgressStatus = function(progressBar, url) {
 dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
 dojo.require("dojo.io.iframe");
+dojo.require("dojox.data.dom");

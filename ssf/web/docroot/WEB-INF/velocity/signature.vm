@@ -28,6 +28,58 @@
  *#
 #parse ("icecore.vm")
 <div style="#ss_entryContent()">
+#if (1 == 0)
+## looks crappy in mail without picture
+##if ($propertyValues_displayType.get(0) == 'leftAligned')
+
+<table>
+<tr>
+<td valign="top">
+#if ($property_caption)
+${property_caption}&nbsp;&nbsp;
+#end
+<table cellspacing="0" cellpadding="0">
+ <tr>
+  <td valign="top">
+
+#if ($ssVisitor.Entity.Creation.Principal)
+#ss_getUserLink($ssVisitor.Entity.Creation.Principal)&nbsp;
+#end		
+#if ($ssVisitor.Entity.PostedBy)
+    ($ssVisitor.getNLT("entry.postedBy")&nbsp;$esc.html(${ssVisitor.Entity.PostedBy}))&nbsp;
+#end 
+  </td>
+ </tr>
+ <tr>
+  <td valign="top">
+    $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})
+ 
+  </td>
+ </tr>
+
+#if ($ssVisitor.Entity.Modification.Principal && 
+  $ssVisitor.Entity.Modification.Date.Time gt $ssVisitor.Entity.Creation.Date.Time)
+ <tr>
+  <td valign="top">
+	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$ssVisitor.getNLT("entry.modifiedBy")&nbsp;
+#ss_getUserLink($ssVisitor.Entity.Modification.Principal)&nbsp;
+  </td>
+ </tr>
+ <tr>
+  <td valign="top">
+   $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Modification.Date})
+  </td>
+ </tr>
+#end
+</table>
+
+</td>
+<td valign="top" style="padding-left:10px;">
+$ssVisitor.visit()
+</td>
+</tr>
+</table>
+#else
 #if ($property_caption)
 ${property_caption}&nbsp;&nbsp;
 #end
@@ -47,6 +99,8 @@ ${property_caption}&nbsp;&nbsp;
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$ssVisitor.getNLT("entry.modifiedBy")&nbsp;
 #ss_getUserLink($ssVisitor.Entity.Modification.Principal)&nbsp;
    $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Modification.Date})
+#end
+$ssVisitor.visit()
 #end
 </div>
 

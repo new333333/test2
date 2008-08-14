@@ -52,8 +52,4 @@ public interface LdapModule {
 
 	public void syncAll() throws NamingException;
 	public void syncUser(Long userId) throws NoUserByTheNameException,NamingException;
-	
-	public List<AuthenticationConfig> getAuthenticationConfigs(Long zoneId);
-	public List<AuthenticationConfig> getAuthenticationConfigs();
-	public void setAuthenticationConfigs(List<AuthenticationConfig> configs);
 }

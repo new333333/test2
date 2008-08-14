@@ -490,7 +490,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 				options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
 			}
 			
-			Map entries = getProfileModule().getUsers(currentUser.getParentBinder().getId(), options);
+			Map entries = getProfileModule().getUsers(options);
 			users = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
 		
 			
@@ -571,7 +571,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 				options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
 			}
 			
-			Map entries = getProfileModule().getGroups(currentUser.getParentBinder().getId(), options);
+			Map entries = getProfileModule().getGroups(options);
 			users = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
 		
 			

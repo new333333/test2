@@ -38,11 +38,19 @@
 String folderViewStyle = DefinitionUtils.getViewType(ssConfigDefinition);
 if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "folder";
 %>
+<c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}" scope="request"/>
+<c:if test="${empty ss_sidebarVisibility}"><c:set var="ss_sidebarVisibility" value="block" scope="request"/></c:if>
+<c:if test="${ss_sidebarVisibility == 'none'}">
+  <c:set var="ss_sidebarVisibilityShow" value="block"/>
+  <c:set var="ss_sidebarVisibilityHide" value="none"/>
+  <c:set var="ss_sidebarTdStyle" value=""/>
+</c:if>
+<c:if test="${ss_sidebarVisibility != 'none'}">
+  <c:set var="ss_sidebarVisibilityShow" value="none"/>
+  <c:set var="ss_sidebarVisibilityHide" value="block"/>
+  <c:set var="ss_sidebarTdStyle" value="ss_view_sidebar"/>
+</c:if>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
-<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
-
-	<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
-
 	<script type="text/javascript">
 		//Define the variables needed by the javascript routines
 		var ss_iframe_box_div_name = 'ss_iframe_box_div';
@@ -69,47 +77,53 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	</script>
 	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 
-  <div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
+<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
+	<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
+	<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
+	<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
+	<div class="ss_actions_bar1_pane ss_sidebarImage" width="100%">
+		<table cellspacing="0" cellpadding="0" width="100%">
+		<tr><td valign="middle">
+			<a href="javascript: ;" 
+			  onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
+			><span style="padding-left:9px; display:${ss_sidebarVisibilityShow};"
+			  id="ss_sidebarHide${renderResponse.namespace}" 
+			  class="ss_fineprint ss_sidebarSlidesm"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
+			  style="padding-left:9px; display:${ss_sidebarVisibilityHide};"
+			  id="ss_sidebarShow${renderResponse.namespace}" 
+			  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
+		</td><td valign="top">
+		<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
+		</td></tr>
+		</table>
+	</div>
+
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
-    <td valign="top" class="ss_view_sidebar">
-
-	<% // Navigation bar %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
-
-	<% // BEGIN SIDEBAR LAYOUT  %>
-
-     <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
-	
-	  <div id="ss_sideNav_wrap"> <% // new sidebar format %>
-
-		<% // Status %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
-	
-		<% // Recent Places %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
-
-		<% // Folder Sidebar %>
-    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
-
-	  </div> <% // end of new sidebar format %>
-	 </div> <% // end of ss_sidebarDiv %>
-	
+    <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
 	<td valign="top" class="ss_view_info">
-		<div class="ss_style_color">	
-			<div class="ss_content_inner">
-				<% // Navigation links %>
-				<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
-				<br/>
-				<%@ include file="/WEB-INF/jsp/forum/list_team_members.jsp" %>
+	    <div class="ss_style_color" >
+  	<c:choose>
+  		<c:when test="${ss_showTeamMembers}">
+			<% // Navigation links %>
+			<%@ include file="/WEB-INF/jsp/forum/list_team_members.jsp" %>
+			
+			<c:if test="${!empty ss_reloadUrl}">
+				<div style="text-align: right; "><a href="<c:out value="${ss_reloadUrl}" />"><ssf:nlt tag="__return_to" /> <ssf:nlt tag="__folder_view" /></a></div>
+			</c:if>
+			
+		</c:when>
+		<c:otherwise>
 
-				<c:if test="${!empty ss_reloadUrl}">
-					<div style="text-align: right; padding-right: 2px; padding-bottom: 2px;"><a class="ss_linkButton" href="<c:out value="${ss_reloadUrl}" />"><ssf:nlt tag="__return_to" /> <ssf:nlt tag="__folder_view" /></a></div>
-				</c:if>
-			</div>
- 		</div>
+			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+					  configElement="${ssConfigElement}" 
+					  configJspStyle="${ssConfigJspStyle}" />
+		</c:otherwise>
+	</c:choose>
+		</div>
 		<% // Footer toolbar %>
 		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
 	</td>
@@ -117,6 +131,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	</tbody>
 	</table>
 </div>
+
 <script type="text/javascript">
 ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));
 </script>

@@ -28,135 +28,29 @@
  * are trademarks of SiteScape, Inc.     
  */
 %>
+
+<% // Former Folder Tools %>
+	<% // folder views, folder actions, themes, configure columns, and entries per page %>
+	
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${ssDefinitionEntry.entityType == 'folder'}">
 
-<ssf:sidebarPanel title="sidebar.configure" id="ss_tooltags_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
+<ssf:sidebarPanel title="sidebar.configure" id="ss_folderTags_sidebar" divClass="ss_place_tags" 
+  initOpen="false" sticky="false">
 
- <div class="ss_sidebarTitle">Entry Display Style xx
+<c:if test="${!empty ssFolderViewsToolbar}">
+  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.folderConfiguration"/> 
 	<div class="ss_sub_sidebarMenu">
-
-	  <ssf:toolbar toolbar="${ssFolderActionsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
-	</div>
- </div>	
- 
-  <div class="ss_sidebarTitle">Folder Display Style xx
-	<div class="ss_sub_sidebarMenu">
-
 	  <ssf:toolbar toolbar="${ssFolderViewsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
 	</div>
- </div>	
+  </div>	
+</c:if>
+   
+  <% // configure columns area %>
+  <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_columns.jsp" />
  
- <div class="ss_sidebarTitle">Theme xx
- 	<div class="ss_sub_sidebarMenu">
-        <table width="100%">
-          <tr>
-            <td><label>
-              <input type="radio" name="Folder Display Style" value="radio" />
-              High Contrast </label></td>
-          </tr>
-          <tr>
-            <td><label>
-              <input type="radio" name="Folder Display Style" value="radio" />
-              Business 
-              Blue</label></td>
-          </tr>
-          <tr>
-            <td class= "ss_rollover"><label>
-              <input type="radio" name="Folder Display Style" value="radio" />
-              Novell Gray 
-            </label></td>
-          </tr>
-        </table>
-       
-	</div>
- </div>
+  <% // configure entries per page %>
+  <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_entriesPerPage.jsp" />
  
-  <div class="ss_sidebarTitle"><ssf:nlt tag="misc.configureColumns"/>
- 	<div class="ss_sub_sidebarMenu">
-        <table width="100%">
-          <tr>
-            <td>
-             <% // configure columns area %>
-	 			<a href="<ssf:url
-				 adapter="true" 
-				 portletName="ss_forum" 
-				 action="__ajax_request" 
-				 actionUrl="true" >
-				 <ssf:param name="operation" value="configure_folder_columns" />
-				 <ssf:param name="binderId" value="${ssBinder.id}" />
-				 <ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-				 </ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
-		    	 <span class="ss_tabs_title"><ssf:nlt tag="misc.configureColumns"/></span> </a> </td>
-          </tr>
-        </table>
-       
-	</div>
- </div>
- 
-  <div class="ss_sidebarTitle">Entries Per Page xx
- 	<div class="ss_sub_sidebarMenu">
-        <table width="100%">
-          <tr>
-            <td><form name="ss_recordsPerPage_${renderResponse.namespace}" id="ss_recordsPerPage_${renderResponse.namespace}" method="post" 
-			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-				name="binderId" value="${ssFolder.id}"/>
-				<c:if test="${!empty cTag}"><ssf:param 
-				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
-				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
-				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
-				name="endDate" value="${endDate}"/></c:if><ssf:param 
-				name="operation" value="change_entries_on_page"/></ssf:url>">
-			    
-			    <input type="hidden" name="ssEntriesPerPage" />
-			
-				
-				  <span class="ss_tabs_title ss_results_pro_page">
-	
-				  <ssf:menu title="${ssPageMenuControlTitle}" 
-				    titleId="ss_selectEntriesTitle${renderResponse.namespace}" 
-				    titleClass="ss_compact" menuClass="ss_actions_bar4 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
-				
-					<ul class="ss_actions_bar4 ss_actions_bar_submenu" style="width:150px;">
-					<li>
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '5');return false;">
-							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="5"/></ssf:nlt>
-						</a>
-					</li>
-					<li>	
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '10');return false;">
-							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="10"/></ssf:nlt>
-						</a>
-					</li>
-					<li>
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '25');return false;">
-							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="25"/></ssf:nlt>
-						</a>
-					</li>
-					<li>
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '50');return false;">
-							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="50"/></ssf:nlt>
-						</a>
-					</li>
-					<li>
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '100');return false;">
-							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="100"/></ssf:nlt>
-						</a>
-					</li>
-					</ul>
-					
-				   				
-				  </ssf:menu>
-
-			    </span>
-			  
-			</form></td>
-          </tr>
-        </table>
-       
-	</div>
- </div>
-
 </ssf:sidebarPanel>
 </c:if>
-

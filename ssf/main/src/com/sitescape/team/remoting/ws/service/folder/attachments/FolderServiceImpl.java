@@ -36,8 +36,11 @@ public class FolderServiceImpl extends com.sitescape.team.remoting.ws.service.fo
 
 	AttachmentUtilities attachmentUtilities = new AttachmentUtilities(this);
 	
-	public void folder_uploadFile(String accessToken, long binderId, long entryId, 
+	public void folder_uploadFile(String accessToken, long entryId, 
 			String fileUploadDataItemName, String fileName) {
+		attachmentUtilities.uploadFolderFile(null, entryId, fileUploadDataItemName, fileName);
+	}
+	public void folder_uploadFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
 		attachmentUtilities.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
 	}
 	protected Map getFileAttachments(String fileUploadDataItemName, String[] fileNames)
@@ -55,12 +58,12 @@ public class FolderServiceImpl extends com.sitescape.team.remoting.ws.service.fo
 		return xml;
 	}
 
-	public com.sitescape.team.remoting.ws.model.FolderEntry folder_getEntry(String accessToken, long binderId, long entryId, boolean includeAttachments) {
+	public com.sitescape.team.remoting.ws.model.FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments) {
 		handleAttachments(includeAttachments);
 		
-		com.sitescape.team.remoting.ws.model.FolderEntry entryModel = super.folder_getEntry(accessToken, binderId, entryId, includeAttachments);
+		com.sitescape.team.remoting.ws.model.FolderEntry entryModel = super.folder_getEntry(accessToken, entryId, includeAttachments);
 
-		CalendarHelper.handleEvents(this, getFolderModule().getEntry(binderId, entryId));
+		CalendarHelper.handleEvents(this, getFolderModule().getEntry(null, entryId));
 		return entryModel;
 	}
 

@@ -37,8 +37,8 @@
 <c:set var="ss_urlWindowState" value="maximized"/>
 <c:set var="ss_urlWindowState" value=""/>
 <c:set var="numTabs" value="0"/>
-<ssf:sidebarPanel title="sidebar.history" id="ss_history_box" initOpen="true" sticky="true">
-<ul style="padding-top: 2px; padding-left: 5px;">
+<ssf:sidebarPanel title="sidebar.history" id="ss_history_box" initOpen="false" sticky="true">
+<ul style="padding-top: 2px; padding-left: 0px; margin:0px;">
 <c:forEach var="tab" items="${ss_tabs.tabList}">
 <jsp:useBean id="tab" type="com.sitescape.team.web.util.Tabs.TabEntry" />
   <c:set var="numTabs" value="${numTabs + 1}"/>

@@ -32,7 +32,7 @@
 <ssf:ifadapter>
 <body class="ss_style_body">
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
-<div class="ss_style ss_portlet">
+<div class="ss_style ss_portlet ss_content_outer">
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <div class="ss_clear_float"></div>
 </ssf:ifadapter>
@@ -42,23 +42,23 @@
     <legend class="ss_legend"><ssf:nlt tag="login.please"/></legend>
     <table>
       <tr>
-        <td valign="top" align="right">
+        <td valign="middle" align="right">
           <span><ssf:nlt tag="login.name"/></span>
         </td>
         <td valign="top" style="padding-left:4px;">
-          <input type="text" size="40" name="j_username"/>
+          <input type="text" class="ss_text_login" size="40" name="j_username"/>
         </td>
       </tr>
       <tr>
-        <td valign="top" align="right">
+        <td valign="middle" align="right">
           <span><ssf:nlt tag="login.password"/></span>
         </td>
         <td valign="top" style="padding-left:4px;">
-          <input type="password" size="40" name="j_password"/>
+          <input class="ss_text_login" type="password" size="40" name="j_password"/>
         </td>
       </tr>
       <tr>
-        <td valign="top" align="right">
+        <td valign="middle" align="right">
           <span><ssf:nlt tag="login.remember"/></span>
         </td>
         <td valign="top" style="padding-left:4px;">

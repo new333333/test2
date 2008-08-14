@@ -45,7 +45,6 @@ public class SsfContextMapper  implements UserDetailsContextMapper {
 											GrantedAuthority[] authority)
 	{
 		SsfUserDetails details =new SsfUserDetails(ctx, attributeMap, username, authority); 
-		AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()), username, "", true, false, true, details, null);
 		return details;
 	}
 	

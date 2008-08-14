@@ -243,7 +243,7 @@ public class ListFolderHelper {
 			//Build a reload url
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-			if (binder != null) reloadUrl.setParameter(WebKeys.URL_BINDER_PARENT_ID, 
+			if (binder != null && binder.getParentBinder() != null) reloadUrl.setParameter(WebKeys.URL_BINDER_PARENT_ID, 
 					binder.getParentBinder().getId().toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_ENTRY_ID_PLACE_HOLDER);
@@ -300,6 +300,7 @@ public class ListFolderHelper {
 			if (binder== null) {
 				view = "binder/deleted_binder";
 			} else if(configElement == null) {
+				buildFolderToolbars(bs, request, response, (Folder)binder, binderId.toString(), model, viewType);
 				view = WebKeys.VIEW_NO_DEFINITION;
 			} else if (op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
 				model.put(WebKeys.SHOW_TEAM_MEMBERS, true);
@@ -1245,6 +1246,8 @@ public class ListFolderHelper {
 		Toolbar folderViewsToolbar = new Toolbar();
 		Toolbar dashboardToolbar = new Toolbar();
 		Toolbar footerToolbar = new Toolbar();
+		Toolbar whatsNewToolbar = new Toolbar();
+		
 		AdaptedPortletURL adapterUrl;
 		Map qualifiers;
 		PortletURL url;
@@ -1445,7 +1448,7 @@ public class ListFolderHelper {
 			if (!user.isShared()) {
 				qualifiers = new HashMap();
 				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageSubscriptionsMenu");
-				folderToolbar.addToolbarMenu("3_administration", NLT.get("toolbar.manageFolderSubscriptions"), "", qualifiers);
+				//folderToolbar.addToolbarMenu("3_administration", NLT.get("toolbar.manageFolderSubscriptions"), "", qualifiers);
 			
 				Subscription sub = bs.getBinderModule().getSubscription(folder);
 				qualifiers = new HashMap();
@@ -1456,31 +1459,34 @@ public class ListFolderHelper {
 				adapterUrl.setParameter("rn", "ss_randomNumberPlaceholder");			
 				qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_menu');return false;");
 				if (sub == null) {
-					folderToolbar.addToolbarMenuItem("3_administration", "", 
-							NLT.get("toolbar.menu.subscribeToFolder"), adapterUrl.toString(), qualifiers);	
+					//folderToolbar.addToolbarMenuItem("3_administration", "", 
+							//NLT.get("toolbar.menu.subscribeToFolder"), adapterUrl.toString(), qualifiers);	
+					model.put(WebKeys.TOOLBAR_SUBSCRIBE_EMAIL, adapterUrl.toString());
 				} else {
-					folderToolbar.addToolbarMenuItem("3_administration", "", 
-							NLT.get("toolbar.menu.subscriptionToFolder"), adapterUrl.toString(), qualifiers);			
+					//folderToolbar.addToolbarMenuItem("3_administration", "", 
+							//NLT.get("toolbar.menu.subscriptionToFolder"), adapterUrl.toString(), qualifiers);
+					model.put(WebKeys.TOOLBAR_SUBSCRIBE_EMAIL, adapterUrl.toString());
 				}
 			} else {
 				qualifiers = new HashMap();
-				folderToolbar.addToolbarMenu("3_administration", NLT.get("toolbar.manageFolderSubscriptions"), "", qualifiers);
+				//folderToolbar.addToolbarMenu("3_administration", NLT.get("toolbar.manageFolderSubscriptions"), "", qualifiers);
 
 			}
 			//RSS link 
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 			String rssUrl = UrlUtil.getFeedURL(request, forumId);
-			if (rssUrl != null && !rssUrl.equals(""))
-				folderToolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.rss"), 
-						rssUrl, qualifiers);
+			if (rssUrl != null && !rssUrl.equals("")) {
+				//folderToolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.rss"), rssUrl, qualifiers);
+				model.put(WebKeys.TOOLBAR_SUBSCRIBE_RSS, rssUrl.toString());
+			}
 		}
 		
 		// list team members
 		qualifiers = new HashMap();			
 			
 		//The "Teams" menu
-		folderToolbar.addToolbarMenu("5_team", NLT.get("toolbar.teams"));
+		//folderToolbar.addToolbarMenu("5_team", NLT.get("toolbar.teams"));
 			
 		//Add
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageTeamMembers)) {
@@ -1492,7 +1498,8 @@ public class ListFolderHelper {
 			qualifiers.put("popup", Boolean.TRUE);
 			qualifiers.put("popupWidth", "500");
 			qualifiers.put("popupHeight", "600");
-			folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.addMember"), adapterUrl.toString(), qualifiers);
+			//folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.addMember"), adapterUrl.toString(), qualifiers);
+			model.put(WebKeys.TOOLBAR_TEAM_ADD_URL, adapterUrl.toString());
 		}
 		//View
 		url = response.createRenderURL();
@@ -1500,7 +1507,8 @@ public class ListFolderHelper {
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SHOW_TEAM_MEMBERS);
 		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-		folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.view"), url);
+		//folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.view"), url);
+		model.put(WebKeys.TOOLBAR_TEAM_VIEW_URL, url.toString());
 			
 		//Sendmail
 		if (Validator.isNotNull(user.getEmailAddress()) && 
@@ -1511,7 +1519,8 @@ public class ListFolderHelper {
 			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
 			qualifiers = new HashMap();
 			qualifiers.put("popup", Boolean.TRUE);
-			folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.sendmail"), adapterUrl.toString(), qualifiers);
+			//folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.sendmail"), adapterUrl.toString(), qualifiers);
+			model.put(WebKeys.TOOLBAR_TEAM_SENDMAIL_URL, adapterUrl.toString());
 		}
 		
 		//Meet
@@ -1523,7 +1532,8 @@ public class ListFolderHelper {
 			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
 			qualifiers = new HashMap();
 			qualifiers.put("popup", Boolean.TRUE);
-			folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.meet"), adapterUrl.toString(), qualifiers);
+			//folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.meet"), adapterUrl.toString(), qualifiers);
+			model.put(WebKeys.TOOLBAR_TEAM_MEET_URL, adapterUrl.toString());
 		}
 	
 		
@@ -1616,6 +1626,21 @@ public class ListFolderHelper {
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true");
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
 						NLT.get("folder.column.LastActivity"), url, qualifiers);
+			}
+			
+			//rating
+			if (so.contains("rating")) {
+				qualifiers = new HashMap();
+				if (searchSortBy.equals(Constants.RATING_FIELD)) 
+					qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.RATING_FIELD);
+				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true");
+				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
+						NLT.get("folder.column.Rating"), url, qualifiers);
 			}
 		}
 		
@@ -1799,7 +1824,9 @@ public class ListFolderHelper {
 				}
 			}
 			qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "]" + ", '" + forumId + "');return false;");
-			footerToolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "#", qualifiers);
+			//footerToolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "#", qualifiers);
+			model.put(WebKeys.TOOLBAR_CLIPBOARD_IDS, contributorIds);
+			model.put(WebKeys.TOOLBAR_CLIPBOARD_SHOW, Boolean.TRUE);
 		}
 		
 		// email
@@ -1816,8 +1843,11 @@ public class ListFolderHelper {
 			if (!op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
 				qualifiers.put("post", Boolean.TRUE);
 				qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
+				model.put(WebKeys.TOOLBAR_SENDMAIL_POST, Boolean.TRUE);
 			}
-			footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
+			//footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
+			model.put(WebKeys.TOOLBAR_SENDMAIL_URL, adapterUrl.toString());
+			model.put(WebKeys.TOOLBAR_SENDMAIL_IDS, contributorIds);
 		}
 
 		// start meeting
@@ -1834,8 +1864,11 @@ public class ListFolderHelper {
 			if (!op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
 				qualifiers.put("post", Boolean.TRUE);
 				qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
+				model.put(WebKeys.TOOLBAR_MEETING_POST, Boolean.TRUE);
 			}
-			footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
+			//footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
+			model.put(WebKeys.TOOLBAR_MEETING_URL, adapterUrl.toString());
+			model.put(WebKeys.TOOLBAR_MEETING_IDS, contributorIds);
 		}
 		if (folder.isLibrary() && !webdavUrl.equals("")) {
 			qualifiers = new HashMap();
@@ -1843,6 +1876,32 @@ public class ListFolderHelper {
 			qualifiers.put("folder", webdavUrl);
 			footerToolbar.addToolbarMenu("webdavUrl", NLT.get("toolbar.menu.webdavUrl"), webdavUrl, qualifiers);
 		}
+		
+		//Set up the whatsNewToolbar links
+		//What's new
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		adapterUrl.setParameter(WebKeys.URL_TYPE, "whatsNew");
+		adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
+		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+		qualifiers = new HashMap();
+		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'whatsNew', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
+		whatsNewToolbar.addToolbarMenu("whatsnew", NLT.get("toolbar.menu.whatsNew"), 
+				adapterUrl.toString(), qualifiers);
+		
+		// What's unseen
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		adapterUrl.setParameter(WebKeys.URL_TYPE, "unseen");
+		adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
+		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+		qualifiers = new HashMap();
+		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'unseen', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
+		whatsNewToolbar.addToolbarMenu("unseen", NLT.get("toolbar.menu.whatsUnseen"), 
+				adapterUrl.toString(), qualifiers);
+
 		
 		boolean isAppletSupported = SsfsUtil.supportApplets();
         
@@ -1864,7 +1923,9 @@ public class ListFolderHelper {
 			qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
 					NLT.get("ui.availableThemeIds") + "', '" +
 					NLT.get("ui.availableThemeNames") + "'); return false;");
-			footerToolbar.addToolbarMenu("themeChanger", NLT.get("toolbar.menu.changeUiTheme"), "javascript: ;", qualifiers);
+			//footerToolbar.addToolbarMenu("themeChanger", NLT.get("toolbar.menu.changeUiTheme"), "javascript: ;", qualifiers);
+			model.put(WebKeys.TOOLBAR_THEME_IDS, NLT.get("ui.availableThemeIds"));
+			model.put(WebKeys.TOOLBAR_THEME_NAMES, NLT.get("ui.availableThemeNames"));
 		}
 		
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
@@ -1873,6 +1934,7 @@ public class ListFolderHelper {
 		model.put(WebKeys.FOLDER_VIEWS_TOOLBAR,  folderViewsToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_ACTIONS_TOOLBAR,  folderActionsToolbar.getToolbar());
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
+		model.put(WebKeys.WHATS_NEW_TOOLBAR,  whatsNewToolbar.getToolbar());
 	}
 	
 

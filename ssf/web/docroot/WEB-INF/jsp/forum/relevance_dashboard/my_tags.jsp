@@ -30,7 +30,7 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div id="ss_today">
+<div id="ss_tags">
 
   <div id="ss_col3_para" >
     <c:forEach var="tag" items="${ss_myTags}">

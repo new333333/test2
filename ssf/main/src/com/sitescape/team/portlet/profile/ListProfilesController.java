@@ -76,7 +76,7 @@ public class ListProfilesController extends   SAbstractController {
 		if (op.equals(WebKeys.OPERATION_SET_DISPLAY_STYLE)) {
 			Map updates = new HashMap();
 			updates.put("displayStyle", PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
+			getProfileModule().modifyEntry(user.getId(), new MapInputData(updates));
 			response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 		} else if (op.equals(WebKeys.OPERATION_SELECT_FILTER)) {
 				getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_USER_FILTER, 
@@ -179,9 +179,9 @@ public class ListProfilesController extends   SAbstractController {
 		if (!Validator.isNull(searchFilterName)) {
 			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
 			options.put(ObjectKeys.SEARCH_SEARCH_FILTER, (Document)searchFilters.get(searchFilterName));
-			users = getProfileModule().getUsers(binderId, options);
+			users = getProfileModule().getUsers(options);
 		} else {
-			users = getProfileModule().getUsers(binderId, options);
+			users = getProfileModule().getUsers(options);
 		}
 		ProfileBinder binder = (ProfileBinder)users.get(ObjectKeys.BINDER);
 		model.put(WebKeys.BINDER, binder);

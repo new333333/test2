@@ -34,10 +34,5 @@ public interface ProfileServiceInternal {
 	
 	public String profile_getPrincipalAsXML(String accessToken, long binderId, long principalId);
 	
-	public long profile_addUserWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML);
-	
-	public long profile_addGroupWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML);
-	
-	public void profile_modifyPrincipalWithXML(String accessToken, long binderId, long principalId, String inputDataAsXML);
-	
+
 }

@@ -191,7 +191,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 */
 	public void uploadFolderFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName) {
-		this.folderService.folder_uploadFile(null, binderId, entryId, fileUploadDataItemName, fileName);
+		((FolderServiceInternal)this.folderService).folder_uploadFile(null, binderId, entryId, fileUploadDataItemName, fileName);
 	}
 	
 	/**

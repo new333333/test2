@@ -31,6 +31,7 @@ package com.sitescape.team.taglib;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.RenderRequest;
@@ -100,6 +101,7 @@ public class EditableTag extends BodyTagSupport {
 				editUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			}
 			editUrl.setParameter(WebKeys.URL_ELEMENT_TO_EDIT, this.element);
+			editUrl.setParameter(WebKeys.URL_SECTION_TO_EDIT, WebKeys.URL_SECTION_PLACEHOLDER);
 			
 			// Top
 			String jsp = "/WEB-INF/jsp/tag_jsps/editable/top.jsp";
@@ -120,19 +122,27 @@ public class EditableTag extends BodyTagSupport {
 			pageContext.getOut().print(res.getString());
 
 			// Body
-
-			pageContext.getOut().print(_bodyContent);
+			
+			//Break the body into its sections
+			List<Map> bodyParts = WebHelper.markupSplitBySection(_bodyContent);
+			if (bodyParts.size() > 1) {
+				jsp = "/WEB-INF/jsp/tag_jsps/editable/sections.jsp";
+				rd = httpReq.getRequestDispatcher(jsp);
+				req.setAttribute("parts", bodyParts);			
+				res = new StringServletResponse(httpRes);
+				rd.include(req, res);
+				pageContext.getOut().print(res.getString());
+			} else {
+				//There is just one section
+				pageContext.getOut().print(_bodyContent);
+			}
 
 			// Bottom
 
 			jsp = "/WEB-INF/jsp/tag_jsps/editable/bottom.jsp";
-
 			rd = httpReq.getRequestDispatcher(jsp);
-
 			res = new StringServletResponse(httpRes);
-
 			rd.include(req, res);
-
 			pageContext.getOut().print(res.getString());
 
 			return EVAL_PAGE;

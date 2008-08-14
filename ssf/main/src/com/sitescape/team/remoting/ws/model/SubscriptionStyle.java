@@ -1,17 +1,17 @@
 package com.sitescape.team.remoting.ws.model;
 import java.io.Serializable;
 public class SubscriptionStyle implements Serializable {
-	private Integer style;
+	private int style;
 	private String[] emailTypes;
 	
-	public SubscriptionStyle(Integer style, String[] emailTypes) {
+	public SubscriptionStyle(int style, String[] emailTypes) {
 		this.style = style;
 		this.emailTypes = emailTypes;
 	}
-	public Integer getStyle() {
+	public int getStyle() {
 		return style;
 	}
-	public void setStyle(Integer style) {
+	public void setStyle(int style) {
 		this.style = style;
 	}
 	public String[] getEmailTypes() {

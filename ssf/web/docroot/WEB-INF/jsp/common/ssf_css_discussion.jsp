@@ -70,43 +70,34 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 /* TOP PART OF DISCUSSION TOPIC PAGE */	
 	
-	#ss_diss_inset
-	{
-		
-		width:96%;
-		text-align:left;
-
-
+	#ss_diss_inset{
+		width:95%;
 	}
 	#ss_diss_top
 	{
-		/*clear:both;
-		float: left;*/
-		width: 100%;
-		color: #526394;
-		font-family: Arial, Helvetica, sans-serif;
-
-	}
-		
+		width: 90%;
+		color: #777;
+			}	
 	#ss_topic_box { 
-		margin:1%;
-		margin-bottom:2em;
-		border: 1px #29447B solid; 
-		padding: 0% 10px 2% 10px;
-		font-size:10px;
+		margin: 1% 0 1% 0;
+		border: 1px #CCCCCC solid; 
+		padding: 0% 5% 3% 3%;
+		font-size: 12px;
+		font-style: italic;
 		font-family: 'Lucida Sans', 'Lucida Grande', sans-serif;
+		line-height: 18px;
 		text-align:left;
 		vertical-align:top;
-		background-color:#DEE7E7;
+		background-color:#f2f2f2;
 		}
-		
-	#ss_topic_box h1
-	{
-		padding-top:0px;
-		padding-bottom:4px;
+	#ss_topic_box_h1{
+		margin: 1% 0 1% 0;
 		font-size: 20px;
 		font-style: italic;
-		font-weight: bold;
+		text-weight: 200;
+		font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
+		letter-spacing:-2px;
+		color:#5A9A98!important;
 	}
 	
 	#ss_topic_folder
@@ -121,8 +112,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		text-align:left;
 	}
 	
-	.ss_topic_folder_thread
-	{	
+	.ss_topic_folder_thread{	
 		color: #526394;
 		font-size:14px;
 		font-style:normal;
@@ -132,53 +122,57 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 /* DISCUSSION TOPIC FOLDER */	
 
-#ss_folder_inset
-	{
-		margin:0% 5% 0% 5%;
-		width:90%;
-		text-align:left;
-
+#ss_folder_inset{
+	margin:0% 5% 0% 5%;
+	width:75%;
+	text-align:left;
 	}
 
-#ss_topic
-{
-	padding: 0;
-	margin: 2% 0px 2% 5px;
-	color:#333333;
+#ss_topic{
+	margin: 2% 25% 2% 5px;
+	color:#555;
 	font-family: Arial, Helvetica, sans-serif;
-
-}
-#ss_topic_title
-{
+	}
+#ss_topic_title{
 	padding-left: 28px;
 	padding-top: 2px;
 	padding-bottom: 3px;
-	font-size:14px;
-	font-weight:bold;
+	font-size:1.2em;
 	font-style:italic;
+	font-weight: 200;
 	font-family: 'Lucida Sans', 'Lucida Grande', sans-serif;	
-}
-
-.ss_title_th1
-{
-	color:#00ADef!important;
-	font-size:14px;
-	font-weight:bold;
-}
-#ss_topic_title span
-{
-	color:#333333 !important;
-	font-size:14px;
-	font-weight:bold;
-}
-#ss_topic_nav
-{
+	color:#5A9A98!important;
+	}
+.ss_title_th1{
+	color:#5A9A98!important;
+	font-size:.89em;
+	letter-spacing:-2;
+	font-weight:300;
+	}	
+.ss_title_th1 a{
+	color:#5A9A98!important;
+}	
+.ss_title_th1 a:hover{
+	color: #777!important;	
+	}	
+.ss_title_count{
+	color:#777!important;
+	font-size:9px;
+	font-style: normal;
+	font-family: Arial, Helvetica, sans-serif;
+	letter-spacing: -2;
+	}
+.ss_title_count a{
+	color:red!important;
+	}
+.ss_title_count a:hover{
+	color:#777!important;
+	}
+#ss_topic_nav{
 	text-align:left;
 	margin:1%;
-
 	}
-.ss_disc_next 
-{	
+.ss_disc_next {	
 	background-color:#6B737B;
 	color:#FFFFFF;
 	font-weight:bold;
@@ -186,22 +180,19 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 /* TOPIC FOLDER THEMES */
 
-.ss_disc_th1
-{
+.ss_disc_th1{
 	background-image: url("<html:rootPath/>images/pics/discussion/blue_topic.png");
 	background-repeat: no-repeat;
 	background-position: 1% 1%;
 	color: #00ADef;
 }
-.ss_disc_sub_th1
-{
+.ss_disc_sub_th1{
 	background-image: url("<html:rootPath/>images/pics/discussion/blue_topic.png");
 	background-repeat: no-repeat;
 	background-position: 4% 1%!important;
 	color: #00ADef;
 }
-.ss_disc_folder_th1
-{
+.ss_disc_folder_th1{
 	background-image: url("<html:rootPath/>images/icons/folder_blue.gif");
 	background-repeat: no-repeat;
 	background-position: 1% 1%;
@@ -219,35 +210,31 @@ boolean isIE = BrowserSniffer.is_ie(request);
 #ss_topic_desc{
 	font-size:11px;
 	line-height:13px;
-	padding-left:40px;
+	padding-left:px;
 	padding-right:2px;
-	padding-bottom:5px;
-	color:#333333;
+	padding-bottom:1px;
+	color:#777;
+	font-style: italic;
 	margin-right:5px;
 	margin-bottom:5px;
+	font-weight: 500;
 	}
 #ss_topic_thread{
-	font-size:11px;
-	line-height:13px;
-	padding-left:40px;
+	font-size:12px;
+	line-height:15px;
+	padding-left:15px;
 	padding-right:2px;
-	padding-bottom:0px;
-	color:#666666;
+	font-weight: 800;
+	color:#777;
 	margin-right:5px;
 	margin-bottom:2px;
 	}	
-#ss_topic_thread a
-{
-	font-size: 11px;
-	line-height: 13px;
-	font-weight: bold;
-	padding-right: 2px;
-	padding-bottom: 0px;
-	color: #639;
-	margin-right: 5px;
-	margin-bottom: 2px;
-}		
-
+#ss_topic_thread a{
+	color: #555;
+	}		
+#ss_topic_thread a:hover{
+	color: #CCC !important;
+	}
 /**********************************/
 
 /*  DISCUSSION TOPIC TABLE STYLES */
@@ -368,11 +355,11 @@ a.ss_new_thread:hover {
 
 /******* PAGINATION STYLES *************/
 .ss_pagination {
-	font-family: Arial, Helvetica, sans-serif;
+	
 	font-size: ${ss_style_font_fineprint} !important;
 	background-color: #CCDFDE !important;
 	height:38px !important;
-	margin-bottom: 5px;
+	margin-bottom: 0px;
 	}
 /***********This is the style sub-group for the "Go boxes" ***********/
 #ss_goBox {

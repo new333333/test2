@@ -99,6 +99,7 @@
 		</div>
 
 		<c:set var="ssFolderEntries" value="${ssResultEntries}" />
+		<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 		<%@ include file="/WEB-INF/jsp/search/result_list.jsp" %>
 		
 		<div id="ss_searchResult_header">

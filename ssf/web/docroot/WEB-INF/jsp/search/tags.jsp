@@ -29,31 +29,34 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<% // Search results tags %>
-<ssf:sidebarPanel title="searchResult.tagsTitle" id="ss_rating_tags" divClass="ss_rating_box_content"
-    initOpen="true" sticky="false">
-<h5><ssf:nlt tag="tags.community"/></h5>
-<p class="ss_tags_cloud">
-<c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
-	<span class="${tag.searchResultsRatingCSS}">
-		<a href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
-				name="searchCommunityTags_hidden" value="${tag.ssTag}"/><ssf:param 
+<c:if test="${ss_searchResultsPage}">
+	<% // Search results tags %>
+	<ssf:sidebarPanel title="searchResult.tagsTitle" id="ss_rating_tags" divClass="ss_rating_box_content"
+	    initOpen="true" sticky="false">
+	<h5><ssf:nlt tag="tags.community"/></h5>
+	<p class="ss_tags_cloud">
+	<c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
+		<span class="${tag.searchResultsRatingCSS}">
+			<a href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+					name="searchCommunityTags_hidden" value="${tag.ssTag}"/><ssf:param 
+					name="operation" value="ss_searchResults"/><ssf:param 
+					name="tabTitle" value="ss_tagPlaceHolder"/><ssf:param 
+					name="newTab" value="1"/></ssf:url>">${tag.ssTag}</a>
+		</span>
+	</c:forEach>
+	</p>
+	
+	<h5><ssf:nlt tag="tags.personal"/></h5>
+	<p class="ss_tags_cloud">
+	<c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
+		<span class="${tag.searchResultsRatingCSS}"><a 
+				href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+				name="searchPersonalTags_hidden" value="${tag.ssTag}"/><ssf:param 
 				name="operation" value="ss_searchResults"/><ssf:param 
 				name="tabTitle" value="ss_tagPlaceHolder"/><ssf:param 
-				name="newTab" value="1"/></ssf:url>">${tag.ssTag}</a>
-	</span>
-</c:forEach>
-</p>
+				name="newTab" value="1"/></ssf:url>">${tag.ssTag}</a></span>
+	</c:forEach>
+	</p>
+	</ssf:sidebarPanel>
+</c:if>
 
-<h5><ssf:nlt tag="tags.personal"/></h5>
-<p class="ss_tags_cloud">
-<c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
-	<span class="${tag.searchResultsRatingCSS}"><a 
-			href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
-			name="searchPersonalTags_hidden" value="${tag.ssTag}"/><ssf:param 
-			name="operation" value="ss_searchResults"/><ssf:param 
-			name="tabTitle" value="ss_tagPlaceHolder"/><ssf:param 
-			name="newTab" value="1"/></ssf:url>">${tag.ssTag}</a></span>
-</c:forEach>
-</p>
-</ssf:sidebarPanel>
