@@ -304,6 +304,21 @@ function ss_calendarEngine(
 		ss_cal_Grid.workDayGrid();
 	}
 
+
+	function clearSelection() {
+		var sel;
+		if (document.selection && document.selection.empty) {
+			document.selection.empty();
+		} else if (window.getSelection) {
+			sel = window.getSelection();
+			var body = document.getElementsByTagName("body")[0];
+			sel.collapse(body, 0);
+			if(sel && sel.removeAllRanges) {
+				sel.removeAllRanges();
+			}
+		}
+	}
+
 	function fadeAndDestroy(e, t) {	
 		dojo.fadeOut({node: e, duration: t,
 				      onEnd: function() { dojo._destroyElement(e)}
@@ -1027,6 +1042,7 @@ function ss_calendarEngine(
 	
 	    allDayCount:  {},
 	    currEventData: {},
+	    mouseUpHanle: null,
 	
 	    mouseIsDown: function(evt, grid) {
 	        ss_cal_Events.cancelHover(false);
@@ -1041,7 +1057,7 @@ function ss_calendarEngine(
 	        hourOffset = this.recordHourOffset(this.currDay.getFullYear(), this.currDay.getMonth(), this.currDay.getDate());
 	        this.currDispId = ss_cal_drawCalendarEvent(grid.id, ss_cal_Grid.gridSize, 1, 0, dayOffset, hourOffset, -1, "All day", "", "", false, {calendarId: defaultCalendarId});
 	        this.resetGridHeight();
-	        dojo.connect(dojo.body(), "onmouseup", this, "mouseIsUp");       
+	        mouseUpHandle = dojo.connect(dojo.body(), "onmouseup", this, "mouseIsUp");       
 	        this.currEventData = {};
 	        this.currEventData.startDate = this.currDay;
 	        this.currEventData.start = -1;
@@ -1074,8 +1090,8 @@ function ss_calendarEngine(
 	    },
 	
 	    mouseIsUp: function(evt) {
-	        if (!dijit.isCollapsed()) { dojo.doc.selection.collapse(true); }
-	        dojo.disconnect(dojo.body(), "onmouseup",   this, "mouseIsUp");
+	        if (!dijit.isCollapsed()) { clearSelection(); }
+	        dojo.disconnect(mouseUpHandle);
 	        
 	        ss_cal_newEventInfo(evt, this);
 	    },
@@ -1090,11 +1106,13 @@ function ss_calendarEngine(
 	        this.resetGridHeight()
 	    },	
 	
+	
 	    reset: function() {    
 	        for (var i in this.allDayCount) {
 	        	delete this.allDayCount[i];
 	        }
 	    }
+	    
 	
 	}
 	
@@ -1105,6 +1123,8 @@ function ss_calendarEngine(
 	    currGrid: null,
 	    currDispId: null,
 	    currEventData: {},
+	    dragHandle: null,
+	    mouseUpHandle: null,
 	
 	
 	    mouseIsDown: function(evt, grid) {
@@ -1112,12 +1132,17 @@ function ss_calendarEngine(
 	        //evt = (evt) ? evt : ((event) ? event : null);
 	        // The offset is affected by the enclosing "window" divs, so we factor it here.
 	        gridX = evt.clientX - dojo.coords(grid).x;
-	        gridY = (evt.clientY + document.body.scrollTop + document.documentElement.scrollTop) - dojo.coords(grid).t;
+	        gridY = evt.clientY - dojo.coords(grid).y;
 	
 	        gridWidth = grid.offsetWidth;
+	        //console.log("mouseIsDown ex:%d ey: %d", evt.clientX, evt.clientY);
+	        //console.log("mouseIsDown  x:%d y:%d w:%d", gridX, gridY, gridWidth);
+	        //console.log(dojo.coords(grid));
+	        //console.log(dojo.coords(grid,true));
+	 
 	        currGrid = grid;
-	        dojo.connect(dojo.body(), "onmousemove", this, "whataDrag");
-	        dojo.connect(dojo.body(), "onmouseup", this, "mouseIsUp");
+	        dragHandle = dojo.connect(dojo.body(), "onmousemove", this, "whataDrag");
+	        mouseUpHandle = dojo.connect(dojo.body(), "onmouseup", this, "mouseIsUp");
 	    
 	        // Calculate hour and day offsets.
 	        hourOffset = Math.floor(gridY / 42);
@@ -1143,11 +1168,12 @@ function ss_calendarEngine(
 	    whataDrag: function(evt) {
 	        //evt = (evt) ? evt : ((event) ? event : null);
 	        var gridQuantum = 3.5 * 6;  // 30 minutes
+	        //console.log("whataDrag: ", this.currDispId); 
 	        var currBox = dojo.byId("calevt" + instanceId + this.currDispId);
 			var currBoxOut = dojo.byId("calevt_out" + instanceId + this.currDispId);
 			
-	        gridX = (evt.clientX + document.body.scrollLeft);
-	        gridY = (evt.clientY + document.body.scrollTop + document.documentElement.scrollTop)  -  dojo.coords(currGrid).t - currBox.parentNode.offsetTop;
+	        gridX = evt.clientX + document.body.scrollLeft;
+	        gridY = evt.clientY - dojo.coords(currGrid).y - currBox.parentNode.offsetTop;
 	        if (gridY > 12) {
 	            gridY = gridQuantum + Math.floor(gridY / gridQuantum) * gridQuantum;
 	            currBox.style.height = (gridY - 4) + "px";
@@ -1157,16 +1183,16 @@ function ss_calendarEngine(
 	        currBox.innerHTML = duration + ' min';
 	        this.currEventData.dur = duration;
 	
-	        if (!dijit.isCollapsed()) { dojo.doc.selection.collapse(true); }
+	        if (!dijit.isCollapsed()) { clearSelection(); }
 	        evt.cancelBubble = true;
 	        return false;
 	    
 	    },
 	
 	    mouseIsUp: function(evt) {
-	        if (!dijit.isCollapsed()) { dojo.doc.selection.collapse(true); }
-	        dojo.disconnect(dojo.body(), "onmousemove", this, "whataDrag");
-	        dojo.disconnect(dojo.body(), "onmouseup",   this, "mouseIsUp");
+	        if (!dijit.isCollapsed()) { clearSelection(); }
+	        dojo.disconnect(dragHandle);
+	        dojo.disconnect(mouseUpHandle);
 	        ss_cal_newEventInfo(evt, this);
 	    },
 	
@@ -1614,7 +1640,7 @@ function ss_calendarEngine(
 	    cancelHover: function(animate) {
 	        if (this.overEventId != "") {
 	            if (animate) {
-	                dojo.fadeHide({node: hoverBox, duration: 100,
+	                dojo.fadeOut({node: hoverBox, duration: 100,
 	                               onEnd: function() {dojo.style(hoverBox, "display", "none")}
 	                            }).play();
 	            } else {
@@ -1639,7 +1665,9 @@ function ss_calendarEngine(
 	            //console.log("Hover: " + eventId);
 	            this.hoverEventId = eventId + "-" + gridDay;
 	
-	            var ebox = dojo.coords(n);
+	            var ebox = dojo.coords(n, true);
+	            //console.log("ebox coords: ");
+	            //console.log(ebox);
 	            hoverBox.style.visibility = "visible";
 				var calEvtObj = dojo.byId("calevt" + instanceId + ss_cal_Events.dayGridEvents[e.eventId][gridDay]);
 				
@@ -1664,7 +1692,8 @@ function ss_calendarEngine(
 				
 	            dojo.style(hoverBox, "opacity", 0);
 	            dojo.style(hoverBox, "display", "block");
-	            dijit.placeOnScreen(hoverBox, { x: (ebox.l + 30), y: (ebox.t - hoverBox.offsetHeight - 20)}, "TL", false);
+	            //console.log("Hover at: %d, %d", (ebox.x+30), (ebox.y - 20));
+	            dijit.placeOnScreen(hoverBox, { x: (ebox.x + 30), y: (ebox.y - hoverBox.offsetHeight - 20)}, "TL", false);
 	            dojo.fadeIn({node: hoverBox, duration: 200}).play();
 	        }
 	    },
