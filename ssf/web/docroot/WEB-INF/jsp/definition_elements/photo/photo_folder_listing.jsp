@@ -61,25 +61,9 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 			    <div>
 			    <a onMouseOver="ss_showHoverOver(this, 'ss_photoTitle_${fileEntry._docId}')" 
 			      onMouseOut="ss_hideHoverOver('ss_photoTitle_${fileEntry._docId}')"
-			      href="<ssf:url 
-				    webPath="readFile"
-				    folderId="${fileEntry._binderId}"
-				    entryId="${fileEntry._docId}" >
-	    			<ssf:param name="entityType" value="${fileEntry._entityType}"/>
-				    <ssf:param name="fileId" value="<%= _fileId %>"/>
-				    <ssf:param name="fileTime" value="<%= _fileTime %>"/>
-				    <ssf:param name="fileName" value="${fileEntry._fileName}"/>
-				    </ssf:url>"
+			      href="<ssf:fileUrl search="${fileEntry}"/>"
 					onClick="return ss_openUrlInWindow(this, '_blank');">
-			    <img <ssf:alt text="${fileEntry.title}"/> border="0" src="<ssf:url 
-			    webPath="viewFile"
-			    folderId="${fileEntry._binderId}"
-			    entryId="${fileEntry._docId}" >
-	    		<ssf:param name="entityType" value="${fileEntry._entityType}"/>
-			    <ssf:param name="fileId" value="<%= _fileId %>"/>
-			    <ssf:param name="fileTime" value="<%= _fileTime %>"/>
-			    <ssf:param name="viewType" value="thumbnail"/>
-			    </ssf:url>"></a><br\>
+			    <img <ssf:alt text="${fileEntry.title}"/> border="0" src="<ssf:fileUrl webPath="readThumbnail" search="${fileEntry}"/>"></a><br\>
 			    <a 
 				    href="<ssf:url     
 				    adapter="<%= useAdaptor %>" 

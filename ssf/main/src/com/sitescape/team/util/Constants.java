@@ -45,6 +45,8 @@ public interface Constants {
 	public static final String EQUAL = "=";
 	
 	public static final String AMPERSAND = "&";
+
+	public static final String ESCAPED_AMPERSAND = "&amp;";
 	
 	public static final String TAB = "\t";
 	

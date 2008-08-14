@@ -123,15 +123,8 @@
 	<a href="javascript:;" onClick="ss_showThisImage(this);return false;"><img 
 	  align="middle" id="ss_profilePicture${renderResponse.namespace}"
 	  border="0" 
-	  src="<ssf:url 
-	    webPath="viewFile"
-	    folderId="${ssDefinitionEntry.parentBinder.id}"
-	    entryId="${ssDefinitionEntry.id}"
-	    entityType="${ssDefinitionEntry.entityType}" >
-	    <ssf:param name="fileId" value="${selection.id}"/>
-	    <ssf:param name="viewType" value="scaled"/>
-    	<ssf:param name="fileTime" value="${selection.modification.date.time}"/>
-	    </ssf:url>" alt="${property_caption}" /></a>
+	  src="<ssf:fileUrl webPath="readScaledFile" file="${selection}"/>"
+		alt="${property_caption}" /></a>
   </c:if>
   <c:set var="pictureCount" value="${pictureCount + 1}"/>
 </c:forEach>
@@ -205,15 +198,8 @@
   <c:forEach var="selection" items="${selections}">
 	<div><a href="javascript:;" onClick="ss_showThisImage(this);return false;"
 	  onMouseover="ss_showProfileImg(this, 'ss_profilePicture${renderResponse.namespace}'); return false;">
-	<img <ssf:alt text="${selection.fileItem.name}"/> border="0" src="<ssf:url 
-	    webPath="viewFile"
-	    folderId="${ssDefinitionEntry.parentBinder.id}"
-	    entryId="${ssDefinitionEntry.id}"
-	    entityType="${ssDefinitionEntry.entityType}" >
-	    <ssf:param name="fileId" value="${selection.id}"/>
-	    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
-	    <ssf:param name="viewType" value="thumbnail"/>
-	    </ssf:url>" /></a></div>
+	<img <ssf:alt text="${selection.fileItem.name}"/> border="0" src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>" />
+	</a></div>
   </c:forEach>
   </div>
 </td>

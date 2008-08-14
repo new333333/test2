@@ -1752,6 +1752,40 @@
 	</tag>
 
 	<tag>
+		<name>fileUrl</name>
+		<tag-class>com.sitescape.team.taglib.FileUrlTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>file</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.team.domain.FileAttachment</type>
+		</attribute>		
+		<attribute>
+			<name>search</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.Map</type>
+		</attribute>		
+		<attribute>
+			<name>entity</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.team.domain.DefinableEntity</type>
+		</attribute>		
+		<attribute>
+			<name>fileId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>webPath</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+
+	<tag>
 		<name>velocity</name>
 		<tag-class>com.sitescape.team.taglib.VelocityTag</tag-class>
 		<body-content>JSP</body-content>

@@ -116,13 +116,7 @@
     <li>
 	  
 	  <span class="ss_link_3">
-	  	<a target="_blank" href="<ssf:url 
-					    webPath="viewFile"
-					    folderId="${entry2.parentBinder.id}"
-					    entryId="${entry2.id}"
-					    entityType="${entry2.entityType}" >
-					    <ssf:param name="fileId" value="${entryMap.file_id}"/>
-					    </ssf:url>">${entryMap.description}</a>
+	  	<a target="_blank" href="<ssf:fileUrl entity="${entry2}" fileId="${entryMap.file_id}"/>">${entryMap.description}</a>
 	  </span>
 	  <br/>
 	  <span>
