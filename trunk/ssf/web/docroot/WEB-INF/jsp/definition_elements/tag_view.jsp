@@ -68,7 +68,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
 		onClick="ss_tagShow('${ss_tagViewNamespace}','${ss_tagDivNumber}'); return false;"
 	</ssf:ifnotaccessible>
 	<ssf:title tag="title.open.tag.menu" />
-><div class="ss_iconed_label ss_add_tag"><ssf:nlt tag="tags.tags"/></div></a>
+><span class="ss_iconed_label ss_add_tag"><ssf:nlt tag="tags.tags"/></span></a>
   <div id="ss_tags_anchor${ss_tagViewNamespace}_${ss_tagDivNumber}">
   </div>
 </td>
