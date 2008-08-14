@@ -69,15 +69,13 @@ public interface ProfileModule {
 	}
 	/**
 	 * Add profile entries. 
-	 * @param binderId
 	 * @param doc
 	 * @param options - additional processing options or null (See ObjectKeys.INPUT_OPTION_DELETE_USE_WORKSPACE)
 	 * @throws AccessControlException
 	 */
-	 public void addEntries(Long binderId, Document doc, Map options) throws AccessControlException;
+	 public void addEntries(Document doc, Map options) throws AccessControlException;
 	 /**
 	  * Add a new group
-	  * @param binderId
 	  * @param definitionId
 	  * @param inputData
 	  * @param fileItems - may be null
@@ -86,11 +84,10 @@ public interface ProfileModule {
 	  * @throws AccessControlException
 	  * @throws WriteFilesException
 	  */
-	 public Long addGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
+	 public Long addGroup(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
 		throws AccessControlException, WriteFilesException;
 	 /**
 	  * Add a new user
-	  * @param binderId
 	  * @param definitionId
 	  * @param inputData
 	  * @param fileItems - may be null
@@ -99,7 +96,7 @@ public interface ProfileModule {
 	  * @throws AccessControlException
 	  * @throws WriteFilesException
 	  */
-	 public Long addUser(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
+	 public Long addUser(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
 		throws AccessControlException, WriteFilesException;
 	 /**
 	  * Add a user as a member of a group.  If username is <code>not null</code> then find the user by name,
@@ -145,13 +142,12 @@ public interface ProfileModule {
 	public void checkAccess(Principal entry, ProfileOperation operation) throws AccessControlException;
 	/**
 	 * Delete an entry.  If the entry is a user, will not delete the user workspace by default
-	 * @param binderId
-	 * @param id - group or use id
+	 * @param entryId - group or use id
 	 * @param options - additional processing options or null (See ObjectKeys.INPUT_OPTION_DELETE_USE_WORKSPACE)
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	public void deleteEntry(Long binderId, Long id, Map options)
+	public void deleteEntry( Long entryId, Map options)
 		throws AccessControlException, WriteFilesException;
 	/**
 	 * Delete a user.
@@ -160,37 +156,45 @@ public interface ProfileModule {
 	 */
 	public void deleteUserByName(String userName,  Map options);
 	/**
+	 * Get a principal by name
+	 * @param name
+	 * @return
+	 */
+	public Principal getEntry(String name);
+	/**
 	 * Get a principal
-	 * @param binderId
 	 * @param userId
 	 * @return
 	 * @throws AccessControlException
 	 */
-	public Principal getEntry(Long binderId, Long userId)
+	public Principal getEntry(Long userId)
 		throws AccessControlException;
 	/**
 	 * Get the workspace for a user
-	 * @param binderId
 	 * @param principaId
 	 * @return
 	 */
-	public Long getEntryWorkspaceId(Long binderId, Long principaId);
+	public Long getEntryWorkspaceId(Long principaId);
+	/**
+	 * Get a group by name
+	 * @param name
+	 * @return
+	 */
+	public Group getGroup(String name);
 	/**
 	 * Return search results for user groups
-	 * @param binderId - id of profileBinder
 	 * @return
 	 * @throws AccessControlException
 	 */
-    public Map getGroups(Long binderId) 
+    public Map getGroups() 
     	throws AccessControlException;
     /**
      * Same as {@link getGroups(Long) getGroups} except additional search options may be supplied
-     * @param binderId - id of profileBinder
      * @param searchOptions
      * @return
      * @throws AccessControlException
      */
-    public Map getGroups(Long binderId, Map searchOptions)
+    public Map getGroups(Map searchOptions)
     	throws AccessControlException;
     /**
      * Return set of user groups, sorted by title
@@ -215,7 +219,7 @@ public interface ProfileModule {
  	 * @return
  	 * @throws AccessControlException
  	 */
-	public Map getPrincipals(Long binderId, Map searchOptions) throws AccessControlException;
+	public Map getPrincipals(Map searchOptions) throws AccessControlException;
 	/**
 	 * Load principals using name
 	 * @param names
@@ -250,19 +254,23 @@ public interface ProfileModule {
      */
     public UserProperties getUserProperties(Long userId, Long folderId);
     /**
-	 * Return search results for users
-     * @param binderId - id of profileBinder
+     * Get user by name
+     * @param name
      * @return
      */
-	public Map getUsers(Long binderId);
+    public User getUser(String name);
+    /**
+	 * Return search results for users
+     * @return
+     */
+	public Map getUsers();
     /**
      * Same as {@link #getUsers(Long)} except additional search options may be supplied
      * 
-     * @param binderId - id of profileBinder
      * @param searchOptions
      * @return
      */
-	public Map getUsers(Long binderId, Map searchOptions);
+	public Map getUsers(Map searchOptions);
 	/**
 	 * Return set of users, sorted by title
 	 * @param ids
@@ -292,8 +300,7 @@ public interface ProfileModule {
 	public void indexEntry(Principal entry);
 	/**
 	 * Modify existing principal
-	 * @param binderId
-	 * @param id
+	 * @param entryId
 	 * @param inputData
 	 * @param fileItems - may be null
 	 * @param deleteAttachments - may be null
@@ -302,18 +309,17 @@ public interface ProfileModule {
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData, 
+	public void modifyEntry(Long entryId, InputDataAccessor inputData, 
 			   Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 
 			throws AccessControlException, WriteFilesException;
 	/**
 	 * Modify existing principal
-	 * @param binderId
-	 * @param id
+	 * @param entryId
 	 * @param inputData
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
+	public void modifyEntry(Long entryId, InputDataAccessor inputData) 
 		throws AccessControlException, WriteFilesException;
 	  
 	/**
@@ -381,6 +387,11 @@ public interface ProfileModule {
      * @param status
      */
     public void setStatus(String status);
+    /**
+     * Set status.  Sets the status of the current user
+     * @param status
+     */
+    public void setStatusDate(Date statusDate);
      /**
      * Test access to a binder
      * @param binder
@@ -395,10 +406,14 @@ public interface ProfileModule {
 	 * @return
 	 */
 	public boolean testAccess(Principal entry, ProfileOperation operation);
-
-	 /**
+	/**
+	 * Get application group by name
+	 * @param name
+	 * @return
+	 */
+	public ApplicationGroup getApplicationGroup(String name);
+	/**
 	  * Add a new application group
-	  * @param binderId
 	  * @param definitionId
 	  * @param inputData
 	  * @param fileItems - may be null
@@ -407,12 +422,11 @@ public interface ProfileModule {
 	  * @throws AccessControlException
 	  * @throws WriteFilesException
 	  */
-	 public Long addApplicationGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
+	 public Long addApplicationGroup(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
 		throws AccessControlException, WriteFilesException;
 	 
 	 /**
 	  * Add a new application
-	  * @param binderId
 	  * @param definitionId
 	  * @param inputData
 	  * @param fileItems - may be null
@@ -421,26 +435,24 @@ public interface ProfileModule {
 	  * @throws AccessControlException
 	  * @throws WriteFilesException
 	  */
-	 public Long addApplication(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
+	 public Long addApplication(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
 		throws AccessControlException, WriteFilesException;
 
 	/**
 	 * Return search results for application groups
-	 * @param binderId - id of profileBinder
 	 * @return
 	 * @throws AccessControlException
 	 */
-	public Map getApplicationGroups(Long binderId)
+	public Map getApplicationGroups()
 			throws AccessControlException;
 
 	/**
 	 * Same as {@link getApplicationGroups(Long) getApplicationGroups} except additional search options may be supplied
-	 * @param binderId - id of profileBinder
 	 * @param searchOptions
 	 * @return
 	 * @throws AccessControlException
 	 */
-	public Map getApplicationGroups(Long binderId, Map searchOptions)
+	public Map getApplicationGroups(Map searchOptions)
 			throws AccessControlException;
 
 	/**
@@ -454,20 +466,18 @@ public interface ProfileModule {
 
 	/**
 	 * Return search results for group principals (includes both user groups and application groups)
-	 * @param binderId - id of profileBinder
 	 * @return
 	 * @throws AccessControlException
 	 */
-    public Map getGroupPrincipals(Long binderId) 
+    public Map getGroupPrincipals() 
     	throws AccessControlException;
     /**
      * Same as {@link getGroupPrincipals(Long) getGroupPrincipals} except additional search options may be supplied
-     * @param binderId - id of profileBinder
      * @param searchOptions
      * @return
      * @throws AccessControlException
      */
-    public Map getGroupPrincipals(Long binderId, Map searchOptions)
+    public Map getGroupPrincipals(Map searchOptions)
     	throws AccessControlException;
     /**
      * Return set of group principals, sorted by title (includes both user groups and application groups)
@@ -477,21 +487,24 @@ public interface ProfileModule {
      */
 	public SortedSet<GroupPrincipal> getGroupPrincipals(Collection<Long> groupIds)
 		throws AccessControlException;
-
+	/**
+	 * Get application by name
+	 * @param name
+	 * @return
+	 */
+	public Application getApplication(String name);
     /**
 	 * Return search results for applications
-     * @param binderId - id of profileBinder
      * @return
      */
-	public Map getApplications(Long binderId);
+	public Map getApplications();
     /**
      * Same as {@link #getApplications(Long)} except additional search options may be supplied
      * 
-     * @param binderId - id of profileBinder
      * @param searchOptions
      * @return
      */
-	public Map getApplications(Long binderId, Map searchOptions);
+	public Map getApplications(Map searchOptions);
 	/**
 	 * Return set of applications, sorted by title.
 	 * If <code>ids</code> is <code>null</code>, it returns all applications.
@@ -503,18 +516,16 @@ public interface ProfileModule {
 
     /**
 	 * Return search results for individual principals (includes both users and applications)
-     * @param binderId - id of profileBinder
-     * @return
+      * @return
      */
-	public Map getIndividualPrincipals(Long binderId);
+	public Map getIndividualPrincipals();
     /**
      * Same as {@link #getIndividualPrincipals(Long)} except additional search options may be supplied
      * 
-     * @param binderId - id of profileBinder
      * @param searchOptions
      * @return
      */
-	public Map getIndividualPrincipals(Long binderId, Map searchOptions);
+	public Map getIndividualPrincipals(Map searchOptions);
 	/**
 	 * Return set of individual principals, sorted by title (includes both users and applications)
 	 * @param ids

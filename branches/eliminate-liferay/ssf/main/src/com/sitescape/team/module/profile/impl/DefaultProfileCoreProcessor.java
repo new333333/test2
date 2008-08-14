@@ -366,7 +366,11 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     			entryData.put(ObjectKeys.FIELD_USER_EMAIL_TEXT, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL_TEXT));
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_TIMEZONE) && !entryData.containsKey(ObjectKeys.FIELD_USER_TIMEZONE)) {
-    			entryData.put(ObjectKeys.FIELD_USER_TIMEZONE, TimeZoneHelper.fixTimeZone((TimeZone)inputData.getSingleObject(ObjectKeys.FIELD_USER_TIMEZONE)));
+    			Object tz = inputData.getSingleObject(ObjectKeys.FIELD_USER_TIMEZONE);
+    			if (tz instanceof TimeZone)
+    				entryData.put(ObjectKeys.FIELD_USER_TIMEZONE, TimeZoneHelper.fixTimeZone((TimeZone)tz));
+    			else
+    				entryData.put(ObjectKeys.FIELD_USER_TIMEZONE, TimeZoneHelper.fixTimeZone(TimeZone.getTimeZone((String)tz)));
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_PASSWORD) && !entryData.containsKey(ObjectKeys.FIELD_USER_PASSWORD)) {
     			entryData.put(ObjectKeys.FIELD_USER_PASSWORD, inputData.getSingleValue(ObjectKeys.FIELD_USER_PASSWORD));

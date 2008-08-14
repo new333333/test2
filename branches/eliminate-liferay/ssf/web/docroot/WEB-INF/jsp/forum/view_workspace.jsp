@@ -157,16 +157,14 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 <c:if test="${showWorkspacePage}">
 	<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 	<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
-
 	<script type="text/javascript">
 		var ss_reloadUrl = "${ss_reloadUrl}";
 		var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 	</script>
-
 	<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
-<c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}"/>
-<c:if test="${empty ss_sidebarVisibility}"><c:set var="ss_sidebarVisibility" value="block"/></c:if>
+<c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}" scope="request"/>
+<c:if test="${empty ss_sidebarVisibility}"><c:set var="ss_sidebarVisibility" value="block" scope="request"/></c:if>
 <c:if test="${ss_sidebarVisibility == 'none'}">
   <c:set var="ss_sidebarVisibilityShow" value="block"/>
   <c:set var="ss_sidebarVisibilityHide" value="none"/>
@@ -184,56 +182,27 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 <td valign="middle">
 <a href="javascript: ;" 
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
-><span style="padding-left:9px; display:${ss_sidebarVisibilityShow};"
+><span style="padding-left:20px; display:${ss_sidebarVisibilityShow};"
   id="ss_sidebarHide${renderResponse.namespace}" 
   class="ss_fineprint ss_sidebarSlidesm"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
-  style="padding-left:9px; display:${ss_sidebarVisibilityHide};"
+  style="padding-left:20px; display:${ss_sidebarVisibilityHide};"
   id="ss_sidebarShow${renderResponse.namespace}" 
-  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/> www</span></a>
+  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
 </td>
 </ssf:ifnotaccessible>
 
-<td valign="top">
+<td valign="middle">
 <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 </td></tr>
 </table>
 </div>
-<% // BEGIN SIDEBAR LAYOUT  %>
 <ssf:ifnotaccessible>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
-     <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
-	
-	  <div id="ss_sideNav_wrap"> <% // new sidebar format %>
-
-		<% // Status %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
-	
-		<% // "It" Bars %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_action_dispatch.jsp" />
-		
-		<% // Test Feed %>
-		<div id="ss_leftNav">
-			<ul>
-				<li><a href="">Test Feed 2</a></li>
-			</ul>
- 		</div>
- 		
-		<% // Recent Places %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
-
-		<% // Folder Sidebar %>
-    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
-
-		<% // Workspace Tree %>    
-    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tree.jsp" />
-
-	  </div> <% // end of new sidebar format %>
-	 </div> <% // end of ss_sidebarDiv %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
-
 	<td valign="top" class="ss_view_info">
 </ssf:ifnotaccessible>
 		<div class="ss_tab_canvas">

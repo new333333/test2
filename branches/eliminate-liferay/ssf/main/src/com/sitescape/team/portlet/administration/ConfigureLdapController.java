@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.portlet.administration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +43,13 @@ import javax.naming.NamingException;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.dom4j.Node;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.domain.AuthenticationConfig;
 import com.sitescape.team.module.ldap.LdapSchedule;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -118,7 +121,7 @@ public class ConfigureLdapController extends  SAbstractController {
 				} catch(DocumentException e) {
 					// Hmm.  What to do here?
 				}
-				getLdapModule().setAuthenticationConfigs(configList);
+				getAuthenticationModule().setAuthenticationConfigs(configList);
 
 				boolean runNow = PortletRequestUtils.getBooleanParameter(request, "runnow", false);
 				if (runNow) {
@@ -155,9 +158,18 @@ public class ConfigureLdapController extends  SAbstractController {
 			RenderResponse response) throws Exception {
 
 		Map model = new HashMap();
+
+    	Map attributes = new LinkedHashMap();
+    	List mappings  = SZoneConfig.getElements("ldapConfiguration/userMapping/mapping");
+    	for(int i=0; i < mappings.size(); i++) {
+    		Element next = (Element) mappings.get(i);
+    		attributes.put(next.attributeValue("from"), next.attributeValue("to"));
+    	}
+    	model.put(WebKeys.USER_ATTRIBUTES, attributes);
+
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 		model.put(WebKeys.LDAP_CONFIG, getLdapModule().getLdapSchedule());
-		model.put(WebKeys.AUTHENTICATION_CONFIGS, getLdapModule().getAuthenticationConfigs());
+		model.put(WebKeys.AUTHENTICATION_CONFIGS, getAuthenticationModule().getAuthenticationConfigs());
 		model.put("runnow", request.getParameter("runnow"));
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_LDAP, model);
 		

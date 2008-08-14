@@ -28,9 +28,19 @@
  */
 package com.sitescape.team.search;
 
+import java.util.Map;
+
 public interface Node {
 
+	public static final String ACCESS_MODE_READ_WRITE	= "readwrite";
+	public static final String ACCESS_MODE_WRITE_ONLY	= "writeonly";
+	public static final String ACCESS_MODE_OFFLINE		= "offline";
+	
 	public String getId();
 	
 	public String getTitle();
+	
+	public String getAccessMode();
+	
+	public Map<String,String> getDisplayProperties();
 }

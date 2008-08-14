@@ -50,6 +50,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -67,7 +69,6 @@ import org.dom4j.Document;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
@@ -132,8 +133,6 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractControllerRetry;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
-import com.sitescape.team.web.upload.FileUploadProgressListener;
-import com.sitescape.team.web.upload.ProgressListenerSessionResolver;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.Favorites;
@@ -215,6 +214,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				ajaxSaveUserStatus(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SET_SIDEBAR_VISIBILITY)) {
 				ajaxSetSidebarVisibility(request, response);
+			} else if (op.equals(WebKeys.OPERATION_SET_SUNBURST_VISIBILITY)) {
+				ajaxSetSunburstVisibility(request, response);
 			}
 		}
 	}
@@ -442,12 +443,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 					op.equals(WebKeys.OPERATION_SHOW_SIDEBAR_PANEL) || 
 					op.equals(WebKeys.OPERATION_HIDE_SIDEBAR_PANEL)) {
 			return new ModelAndView("forum/fetch_url_return");			
-		} else if (op.equals(WebKeys.OPERATION_GET_UPLOAD_PROGRESS_STATUS)) {
-			return ajaxGetUploadProgressStatus(request, response);
+		} else if (op.equals(WebKeys.OPERATION_SAVE_UESR_STATUS)) {
+			return ajaxGetUserStatus(request, response);
 		}
 
 		return ajaxReturn(request, response);
 	} 
+
 
 	private void ajaxSaveFolderPage(ActionRequest request, ActionResponse response) throws Exception {
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
@@ -580,13 +582,14 @@ public class AjaxController  extends SAbstractControllerRetry {
 			ActionResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String uiTheme = PortletRequestUtils.getStringParameter(request, "theme", "");
+		if (uiTheme.equals(ObjectKeys.USER_THEME_DEFAULT)) uiTheme = "";
 		if (uiTheme.length() > 50) {
 			uiTheme = uiTheme.substring(0,50);
 		} 
 		
 		Map updates = new HashMap();
 		updates.put(ObjectKeys.FIELD_PRINCIPAL_THEME, uiTheme);
-		getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
+		getProfileModule().modifyEntry(user.getId(), new MapInputData(updates));
 	}
 	
 	private void ajaxShowHideHelpControlPanel(ActionRequest request,
@@ -1289,7 +1292,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 			ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("applyBtn") || formData.containsKey("okBtn")) {
-			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 			Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
 			String title = PortletRequestUtils.getStringParameter(request, "title", "");
 			String description = PortletRequestUtils.getStringParameter(request, "description", "");
@@ -1300,7 +1302,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 			updates.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 			updates.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals);
-			getProfileModule().modifyEntry(binderId, groupId, new MapInputData(updates));
+			getProfileModule().modifyEntry(groupId, new MapInputData(updates));
 		}
 	}
 	
@@ -1692,7 +1694,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.BINDER_ID, binderId);
-		Group group = (Group)getProfileModule().getEntry(binderId, groupId);		
+		Group group = (Group)getProfileModule().getEntry(groupId);		
 		model.put(WebKeys.GROUP, group);
 		List memberList = group.getMembers();
 		Set ids = new HashSet();
@@ -2146,8 +2148,18 @@ public class AjaxController  extends SAbstractControllerRetry {
 			ActionResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String status = PortletRequestUtils.getStringParameter(request, "status", "");
+    	Pattern p = Pattern.compile("([\\s]*)$");
+    	Matcher m = p.matcher(status);
+    	if (m.find()) {
+			//Trim any trailing whitespace
+    		status = status.substring(0, m.start(0));
+    	}
 		if (!status.equals(user.getStatus())) {
+			if (status.length() > ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH) {
+				status = status.substring(0, ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH);
+			}
 			getProfileModule().setStatus(status);
+			getProfileModule().setStatusDate(new Date());
 			getReportModule().addStatusInfo(user);
 		}
 	}
@@ -2159,6 +2171,16 @@ public class AjaxController  extends SAbstractControllerRetry {
 		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
 		Map properties = userProperties.getProperties();
 		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_SIDEBAR_VISIBILITY, visibility);
+	}
+	
+	private void ajaxSetSunburstVisibility(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Long entryId = PortletRequestUtils.getLongParameter(request, "entryId");
+		Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");
+		
+		getProfileModule().setSeen(user.getId(),getFolderModule().getEntry(binderId, entryId));
 	}
 	
 	private ModelAndView ajaxGetSearchQueryName(RenderRequest request, RenderResponse response) throws PortletRequestBindingException {
@@ -2597,43 +2619,15 @@ public class AjaxController  extends SAbstractControllerRetry {
 			}
 		}
 	}
-		
-	private ModelAndView ajaxGetUploadProgressStatus(RenderRequest request, RenderResponse response) {
+
+	private ModelAndView ajaxGetUserStatus(RenderRequest request, 
+			RenderResponse response) throws Exception {
 		Map model = new HashMap();
-		
-		String uploadRequestUid = PortletRequestUtils.getStringParameter(request, WebKeys.URL_UPLOAD_REQUEST_UID, "");
-		
-		FileUploadProgressListener progressListener = ProgressListenerSessionResolver.get(request.getPortletSession(), uploadRequestUid);
-	
-		if (progressListener != null) {
-			
-			model.put("ss_progress", progressListener.getPercentDone());
-			model.put("ss_mbytes_read", progressListener.getReadMB());
-			model.put("ss_content_length", progressListener.getContentLengthMB());
-			model.put("ss_speed", (int)progressListener.getUploadSpeedKBproSec());
-			
-			int runnigSeconds = progressListener.getRunnigSeconds();
-			int runnigHours = (int)runnigSeconds/60/60;
-			int runnigMinutes = (int)(runnigSeconds - runnigHours*60*60)/60;
-			int runnigOnlySeconds = runnigSeconds - runnigHours*60*60 - runnigMinutes*60;
-			
-			model.put("ss_running_time", runnigSeconds);
-			model.put("ss_running_time_text", String.format((runnigHours > 0 ? "%1$02d:" : "") + "%2$02d:%3$02d", runnigHours, runnigMinutes, runnigOnlySeconds));
-			
-			int leftSeconds = progressListener.getTimeLeftSeconds();
-			int leftHours = (int)leftSeconds/60/60;
-			int leftMinutes = (int)(leftSeconds - leftHours*60*60)/60;
-			int leftOnlySeconds = leftSeconds - leftHours*60*60 - leftMinutes*60;
-			
-			model.put("ss_left_time", leftSeconds);
-			model.put("ss_left_time_text", String.format((leftHours > 0 ? "%1$02d:" : "") + "%2$02d:%3$02d", leftHours, leftMinutes, leftOnlySeconds));
-			
-			if (progressListener.isFinished()) {
-				ProgressListenerSessionResolver.remove(request.getPortletSession(), uploadRequestUid);
-			}
-		}
-		
-		response.setContentType("text/xml");
-		return new ModelAndView("forum/json/upload_progress_status", model);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		model.put(WebKeys.USER_PRINCIPAL, user);
+		String statusId = PortletRequestUtils.getStringParameter(request, "ss_statusId", "");
+		model.put("ss_statusId", statusId);
+		return new ModelAndView("forum/save_status_return", model);
 	}
+	
 }

@@ -123,8 +123,7 @@ public class NotifyBuilderUtil implements InitializingBean {
 			//	Get a list of all of the items in the definition
 			Element entryItem = (Element)root.selectSingleNode("//item[@name='entryView']");
 			if (entryItem == null) return;
-	    	Element entryType = entryItem.getParent(); //should be entryType
-	    	params.put("com.sitescape.team.notify.params.family",DefinitionUtils.getPropertyValue(entryType, "family"));
+	    	params.put("com.sitescape.team.notify.params.family",DefinitionUtils.getFamily(definitionTree));
 	    	buildElements(entity, entryItem, notifyDef, writer, params, true);
 		}
 

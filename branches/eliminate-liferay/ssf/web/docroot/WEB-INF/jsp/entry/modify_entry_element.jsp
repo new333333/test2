@@ -46,7 +46,10 @@ function ss_positionWindow() {
   configElement="${ssConfigElement}" 
   configJspStyle="${ssConfigJspStyle}"
   entry="${ssEntry}"
-  processThisItem="true" />
+  processThisItem="true" >
+  <ssf:param name="ss_sectionNumber" value="${ss_sectionNumber}"/>
+  <ssf:param name="ss_sectionText" value="${ss_sectionText}"/>
+</ssf:displayConfiguration>
 </td></tr></table>
 <br/>
 <input type="submit" name="editElementBtn" value="<ssf:nlt tag="button.ok"/>"/>&nbsp;&nbsp;&nbsp;<input

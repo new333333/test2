@@ -38,8 +38,8 @@ String folderViewStyle = DefinitionUtils.getViewType(ssConfigDefinition);
 if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "folder";
 %>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
-<c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}"/>
-<c:if test="${empty ss_sidebarVisibility}"><c:set var="ss_sidebarVisibility" value="block"/></c:if>
+<c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}" scope="request"/>
+<c:if test="${empty ss_sidebarVisibility}"><c:set var="ss_sidebarVisibility" value="block" scope="request"/></c:if>
 <c:if test="${ss_sidebarVisibility == 'none'}">
   <c:set var="ss_sidebarVisibilityShow" value="block"/>
   <c:set var="ss_sidebarVisibilityHide" value="none"/>
@@ -67,7 +67,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
   class="ss_fineprint ss_sidebarSlidesm"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
   style="padding-left:9px; display:${ss_sidebarVisibilityHide};"
   id="ss_sidebarShow${renderResponse.namespace}" 
-  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/> ppp</span></a>
+  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
 </td><td valign="top">
 <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 </td></tr>
@@ -77,38 +77,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
     <tbody>
     <tr>
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
-    
-    <% // BEGIN SIDEBAR LAYOUT  %>
-    	
-     	  <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
-	
-	  	   <div id="ss_sideNav_wrap"> <% // new sidebar format %>
-
-			<% // Status %>
-			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
-	
-			<% // "It" Bars %>
-			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_action_dispatch.jsp" />
-		
-			<% // RSS Feed %>
-			<div id="ss_leftNav">
-				<ul>
-					<li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" /></li>
-				</ul>
- 			</div>
-	
-			<% // Recent Places %>
-			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
-
-			<% // Folder Sidebar %>
-    		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
-
-			<% // Workspace Tree %>    
-    		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tree.jsp" />
-
-	  	  </div> <% // end of new sidebar format %>
-	 	 </div> <% // end of ss_sidebarDiv %>
-	 	 
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
 	<td valign="top" class="ss_view_info">
 	    <div class="ss_style_color">

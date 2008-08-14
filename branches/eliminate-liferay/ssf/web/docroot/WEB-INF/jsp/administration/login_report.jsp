@@ -56,7 +56,7 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
 </div>
    <br/>
    <br/>
-   <span class="ss_bold"><ssf:nlt tag="administration.report.login"/></span>
+   <span class="ss_bold"><ssf:nlt tag="administration.report.login2"/></span>
    <br/>
    <br/>
    <ssf:nlt tag="administration.report.dates"/>
@@ -78,6 +78,20 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
    <div id="ss_endPopup" class="ss_calPopupDiv"></div>
    
    <br/>
+   
+   <div>	
+  
+	</br>
+	<br>
+	<!-- Find people -->
+		<div class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton${renderResponse.namespace}"
+	     onMouseOver="this.style.cursor = 'pointer';">
+		<ssf:find formName="${formName}" formElement="users" type="user"/>
+		</div>
+  
+   </div>
+  
+   <br>  
    
    <div>
    
@@ -108,25 +122,21 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
    <br/>
    
    </div>
-  	
-   <div>	
-  
-   <ssf:ifnotaccessible>
-	<br>
-	<span class="ss_global_toolbar_label_text"><ssf:nlt tag="report.findUser"/></span>
-	</br>
-	</ssf:ifnotaccessible>
-	<br>
-	<!-- Find people -->
-	<ssf:ifnotaccessible>
-		<div class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton${renderResponse.namespace}"
-	     onMouseOver="this.style.cursor = 'pointer';">
-				      <ssf:find formName="ss_findUserForm${renderResponse.namespace}" formElement="users" 
-    type="user"/>
-		</div>
-	</ssf:ifnotaccessible>
-  
+
+   <br/>
+
+   <div style="margin-left:35px;">
+   
+   <ssf:nlt tag="administration.report.sort"/>
+   
+   <select name="ss_reportSortType_2">
+   <option value = "login_date_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.login_date"/></option>   
+   <option value = "user_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.user"/></option>
+   </select>
+   
    </div>
+
+   <br/>
    
    <br/>
       

@@ -76,6 +76,7 @@
   <c:if test="${property_name != 'description' && property_name != 'branding'}" >
     <c:set var="textValue" value="${ssDefinitionEntry.customAttributes[property_name].value.text}"/>
   </c:if>
+  <c:if test="${!empty ss_sectionText}"><c:set var="textValue" value="${ss_sectionText}"/></c:if>
 </c:if>
 <div class="ss_entryContent">
 

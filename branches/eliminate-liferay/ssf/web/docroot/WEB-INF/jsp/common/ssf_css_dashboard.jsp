@@ -61,7 +61,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}	
 /* 3 COLUMN PAGE STYLE SETTINGS */
 .ss_tricolumn{	/* 3 Column page style */
-	background-color: #C9CFE0; /* right column background color */
+	background-color: #DBE9E8; /* right column background color */
 	} 
 .ss_tricolumn .ss_colmid{
 	right: 20%;
@@ -194,37 +194,37 @@ div.ss_canvas {
 #ss_tasks_para {
 	list-style-type: square!important;
 	padding-top:5px;
-
 	}
 	/*COMMON STYLE ITEMS*/	
 #ss_hints{
-	font-size: 11px;
+	font-size: 12px;
 	line-height: 13px;
 	padding-right: 2px;
 	padding-bottom:5px;
-	color:#1176D4;
+	color:#f63;
 	margin-right: 5px;
 	margin-bottom: 5px;
+	font-family:'Lucida Sans','Lucida Grande',sans-serif;
+	font-style: italic;
 	}
 #ss_nextPage{			/* to use when need to display left right arrows */
-	margin-top:0px;
-	border-bottom:dashed 1px #777777;
-	margin-bottom:5px;
+	border-bottom:dotted 1px #5A9A98;
+	margin:5px;
+	padding-right: 5px;
 	
 	}
 #ss_col3_para {			/* to use for 3rd column displays */
 	padding-top:5px;
-	margin:5px;
-
+	margin:5px 0 5px 4px;
 	}			
-	/*TRACKED ITEMS*/
+	/*TRACKED ITEMS*/	
 #ss_trackedItems{
 	margin: 1% 0 2% 0;
-	color:#444444;
+	color:#555;
 	}
 #ss_trackedPeople{
-	color:#444444;
-	background-color:#CCD2E3;
+	color:#555;
+	background-color:transparent;
 	line-height: 1.6em;
 	}
 #ss_im_status{
@@ -232,15 +232,14 @@ div.ss_canvas {
 	line-height: 13px;
 	padding-left:4px;
 	padding-bottom:1px;
-	border: 1px dotted #666666;
-	color:#555555;
-	background: #FFFFFF;
+	border: 1px dotted #555;
+	color:#555;
+	background: #FFF;
+	margin-bottom: 1.4em;
 	}
 .ss_im_status_active{
 	font-weight: bold;
-	background: #FFFBD6!important;
-	
-
+	background: #FFFBD6!important;	
 	}					
 	/*CALENDAR*/
 #ss_calendar{
@@ -248,7 +247,7 @@ div.ss_canvas {
 	margin: 1% 0 5% 0;
 	color:#444444;
 	padding: 0.5% 0 0px;
-	color: #666666;
+	color: #555555;
 	line-height: 1.5em;
 	}
 #ss_visit_para {
@@ -259,7 +258,7 @@ div.ss_canvas {
 	list-style-type: square;
 	padding-top:3px;
 	padding-bottom:3px;
-	border-bottom:1px dotted #666666;}
+	border-bottom:1px dotted #555555;}
 	
 	/* ACTIVE LINKS  VISITOR */
 #ss_visit_para a{
@@ -274,7 +273,7 @@ div.ss_canvas {
 	
 	/*VIEWED ITEMS*/
 #ss_viewedItems {
-	line-height:1.6em;
+	line-height:1.2em;
 	}
 #ss_viewedItems .ss_v_entries ul{
 	list-style-type: none;
@@ -287,8 +286,8 @@ div.ss_canvas {
 	background-position: 1% 1%;
 	padding-left: 30px;
 	padding-top: 3px;
-	padding-bottom: 3px;
-	border-bottom:1px dotted #666666;
+	padding-bottom: 1.6em;
+	border-bottom:1px dotted #5A9A98;
 	}
 #ss_viewedItems .ss_v_attachments ul{
 	list-style-type: none;
@@ -301,8 +300,8 @@ div.ss_canvas {
 	background-position: 1% 1%;
 	padding-left: 30px;
 	padding-top: 3px;
-	padding-bottom: 3px;
-	border-bottom:1px dotted #666666;
+	padding-bottom: 1.6em;
+	border-bottom:1px dotted #5A9A98;
 	}	
 	/* ACTIVE LINKS - VIEWED ITEMS*/	
 #ss_viewedItems a{
@@ -311,7 +310,7 @@ div.ss_canvas {
 	/* ACTIVE HOVER LINKS */
 #ss_viewedItems a:hover{
 	text-decoration:underline;
-	color:#ECB456 !important;
+	color:#555 !important;
 	background-color:#CCCCCC !important;
 	}
 	/*CALENDAR*/
@@ -322,7 +321,7 @@ div.ss_canvas {
 	list-style-type: square;
 	padding-top:3px;
 	padding-bottom:3px;
-	border-bottom:1px dotted #666666;
+	border-bottom:1px dotted #5A9A98;
 	}
 	/* CALENDAR ACTIVE LINKS */
 #ss_cal_para a{
@@ -336,14 +335,15 @@ div.ss_canvas {
 	}
 	/*MY DOCUMENTS*/
 #ss_mydocs_para {
-	line-height:1.6em;
+	line-height:1.2em;
 	padding:5px 0 0 15px;
 	
 	}
 #ss_mydocs_para li{
 	list-style-type: square;
 	padding-bottom:0px;
-	border-bottom:1px dotted #0C4E84;
+	border-bottom:1px dotted #5A9A98;
+	padding-bottom: 1.6em;
 	}
 	/* ACTIVE LINK */
 #ss_mydocs_para a {					
@@ -363,55 +363,64 @@ div.ss_canvas {
 	line-height: 1.6em;
 	}
 #ss_hot_para {
-	line-height:1.6em;
+	line-height:1.2em;
 	padding-top:1px;
 	}
 #ss_hot_para li{
 	list-style-type: square;	
-	border-bottom:1px dotted #0C4E84;
+	border-bottom:1px dotted #5A9A98;
 	margin:0pt 0pt 0pt 15px;
+	padding-bottom: 1.6em;
 	}	
 	
 	/* SURVEY*/
 #ss_survey{
 	margin: 1% 0 5% 0;
-	color:#444444;
-	border:1px solid #A7A9AC;
+	color:#555;
+	border:1px solid #5A9A98;
+	}
+	/*TAGS*/
+#ss_tags{
+	font-size: 14px;
+	color: #CCCCCC !important;
+	line-height: 18px;
+	margin-left: 4px !important;
+	background: #FFF;
+	border: dotted 1px #5A9A98;
 	}
 	/* NOTES */
 #ss_notes{
 	margin: 1% 0 5% 0;
-	color:#444444;
-	border:1px solid #A7A9AC;
+	color:#555;
+	border:1px solid #5A9A98;
 	}
 	/* BOOKMARKS */
 #ss_bookmarks{
 	margin: 1% 0 5% 0;
-	color:#444444;
+	color:#555;
 	}
 	/* ACTIVITIES */
-#ss_activity{
-	margin: 1% 0 5% 0;
-	color:#444444;
+.ss_activity{
+	margin: 1% 1% 5% 15px;
+	color:#555;
 	}
 	/* WHATS NEW */
 #ss_whatsnew{
 	margin: 2% 0 5% 0;
-	color:#333333;
+	color:#555;
 	}
 	/* PERSONAL TRACKER */
 #ss_personaltracker{
 	margin: 1% 0 5% 0;
-	color:#444444;
+	color:#555;
 	border:1px solid #A7A9AC;
 
 	}
 	/* EMAIL */
 #ss_email{
 	margin: 1% 0 5% 0;
-	color:#333333;
+	color:#555;
 	font-family:  Arial, sans serif;
-
 	line-height: 1.5em;
 	padding: 0;
 	}
@@ -422,9 +431,11 @@ div.ss_canvas {
 	}
 #ss_title{
 	margin: 0px 0px 2px 0px;
-	font-size: 14px;
-	font-weight: 400;
-	color: #333;
+	font-size: 16px;
+	font-weight: 500;
+	letter-spacing: -1 !important;
+	color: #555;
+	font-family: 'Lucida Sans','Lucida Grande',sans-serif;
 	}
 .ss_title_im{
 	background: #FFFFFF;
@@ -437,14 +448,19 @@ div.ss_canvas {
 
 /*  BOX TITLES */
 .ss_pt_title{
-	color: #000000;
+	color: #555;
 	font-size:14px;
 	padding: 2px 0px 2px 5px;
 	width:100%;
+	font-family:'Lucida Sans','Lucida Grande',sans-serif;
+	font-style: italic;
 	}
 /*  BOX TITLE COLORS   */
 .ss_blue{
 	background-color: #CCD2E3;
+	}
+.ss_green{
+	background-color: #transparent;
 	}
 .ss_orange{	
 	background-color: #F93;
@@ -461,7 +477,7 @@ div.ss_canvas {
 .ss_pt_para ul li{
 	margin-left: -10px;
 	list-style-type: disc;
-	border-bottom:1px dotted #666666;	
+	border-bottom:1px dotted #5A9A98;	
 	}
 .ss_prioValue{
 	font-weight:bold;
@@ -469,11 +485,11 @@ div.ss_canvas {
 	}
 /* BACKGROUND COLORS */	
 .ss_paraC{
-	background-color:#DEE7EE;
+	background-color:transparent;
 	padding-left: 15px;	
 	}
 .ss_paraD{                    
-	background-color:#DEE7EE;
+	background-color:transparent;
 	padding-bottom: 15px;
 	}	
 /* TIMEBLOCK STYLES */	
@@ -513,23 +529,34 @@ div.ss_canvas {
 /* to use when need to display twitter status of person */
 .ss_status{						
 	font-style: italic;
-	font-size: 11px;
+	font-size: 11px;				
 	line-height: 1.6em;
 	padding: 5px 0 15px 20px;
 }
 #ss_para {
-	border: 1px dotted #cccccc;
+	border: 1px dotted #5A9A98;
 	padding-left: 15px;
 	padding-bottom: 15px;
 	color: #555555;
 	margin-top: 1%;
+	line-height: 1.2em;
 	}
+
 #ss_para ul{
 	color:#555555;
 	}
 #ss_para ul li{
 	list-style-type: square;
 	margin-left:-10px;
+	}
+#ss_para_activity {
+	border: 1px dotted #5A9A98;
+	padding-left: 15px;
+	padding-bottom: 15px;
+	color: #555555;
+	margin-top: 1%;
+	line-height: 1.6em;
+	list-style-type: square;
 	}
 	
 /* =========== LINK STYLES===================== */	
@@ -542,7 +569,7 @@ div.ss_canvas {
 	color: #555555;
 	}
 #ss_para a:hover{
-	color:#ECB456 !important;
+	color:#555!important;
 	background:#CCC!important;
 	}
 #ss_para a:visited{
@@ -553,32 +580,35 @@ div.ss_canvas {
 	}	
 	/* PEOPLE LINKS */
 .ss_link_1, .ss_link_1 span { 
-	text-decoration: none;
-	font-weight: normal;
-	color: #00ADEF!important;
+	font-size:12px;
+	font-style: italic;
+	text-weight: 200;
+	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
+	letter-spacing:-1px;
+	color:#5A9A98!important;
 	}
 	/* PLACES LINKS*/	
 .ss_link_2, .ss_link_2 span	{
 	text-decoration: underline!important;
-	color:#4AAA42!important;
-	font-size:10px!important;
+	color:#777!important;
+	font-size:11px!important;
 	}
 	/* ENTRY LINKS*/	
 .ss_link_3, .ss_link_3 span	{
-	color:#666666!important;
+	color:#555!important;
 	font-size:12px!important;
 	font-weight: bold !important;
 	}
 .ss_link_4, .ss_link_4 span{
 	text-decoration: none!important;
-	color:#999999!important;
-	font-size:9px!important;
+	color:#888!important;
+	font-size:11px!important;
 	padding-left:6px;
 	}
 .ss_link_5, .ss_link_5 span	{
 	text-decoration: underline!important;
-	color:#4AAA42!important;
-	font-size:10px!important;
+	color:#888!important;
+	font-size:11 px!important;
 	line-height:14px;
 	}			
 /* ============ End link styles =========================== */		
@@ -619,12 +649,12 @@ div.ss_canvas {
 #ss_tabsC {
     float:left;
     width:100%;
-    background:#C9CFE0;
+    background:transparent;
     font-size:93%;
     line-height:normal;
     border-bottom: 1px solid #666;
-    border-right: 10px solid #EFEFEF;
-    margin-top:0px;
+    border-right: 10px solid #666;
+    margin-top:0px
       }
  #ss_tabsC ul {
     margin: 0px!important;
@@ -645,7 +675,7 @@ div.ss_canvas {
  #ss_tabsC a span {
     float:left;
     display:block;
-    background:url("<html:rootPath/>images/pics/tabrightF.gif") no-repeat right top;
+    background:url("<html:rootPath/>images/pics/tabsrightf2.gif") no-repeat right top;
     padding:5px 15px 4px 6px;
     white-space:nowrap !important;
 
@@ -734,7 +764,7 @@ div.ss_canvas {
 	padding-right:1%;
 	}
 #ss_tracker{
-	position:absolute;
+	position:absolute;KKKKKK
 	display:none;
 	visibility:hidden;
 	border:1px solid black;

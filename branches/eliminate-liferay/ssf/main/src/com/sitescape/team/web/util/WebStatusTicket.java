@@ -104,6 +104,6 @@ public class WebStatusTicket implements StatusTicket {
 	}
 	
 	private static WebStatusTicket completedTicket = new WebStatusTicket(null, "__COMPLETE__") {
-			public String getStatus() { return NLT.get("status.complete"); }
+			public String getStatus() { return NLT.get("status.complete", "Completed"); }
 	};
 }

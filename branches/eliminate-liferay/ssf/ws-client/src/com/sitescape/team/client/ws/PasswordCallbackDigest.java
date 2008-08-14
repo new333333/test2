@@ -78,7 +78,10 @@ public class PasswordCallbackDigest implements CallbackHandler {
                 	// the supplied class must be translated in the platform's language.
                 	// And at runtime the same encryption must be applied to the password
                 	// before handing it over to the WS-Security for digest computation.
-                	String encryptedPassword = PasswordEncryptor.encrypt(password);
+                	// Note: You need to know which encryption algorithm the Teaming server
+                	// uses to encrypt user passwords, and pass that information to the
+                	// encrypt method call below.
+                	String encryptedPassword = PasswordEncryptor.encrypt("MD5", password);
                 	//System.out.println(encryptedPassword);
                 	pc.setPassword(encryptedPassword);
                 }

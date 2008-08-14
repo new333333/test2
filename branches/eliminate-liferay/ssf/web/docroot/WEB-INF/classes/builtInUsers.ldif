@@ -29,21 +29,21 @@ sn: Mitty
 uid: wmitty
 userPassword: password
 
-dn: cn=user,ou=groups,dc=teaming
+dn: cn=users,ou=groups,dc=teaming
 objectclass: top
 objectclass: groupOfNames
-cn: user
+cn: users
 member: uid=admin,ou=people,dc=teaming
 member: uid=wmitty,ou=people,dc=teaming
 
-dn: cn=teller,ou=groups,dc=teaming
+dn: cn=dreamers,ou=groups,dc=teaming
 objectclass: top
 objectclass: groupOfNames
-cn: teller
+cn: dreamers
 member: uid=wmitty,ou=people,dc=teaming
 
-dn: cn=supervisor,ou=groups,dc=teaming
+dn: cn=supervisors,ou=groups,dc=teaming
 objectclass: top
 objectclass: groupOfNames
-cn: supervisor
+cn: supervisors
 member: uid=admin,ou=people,dc=teaming

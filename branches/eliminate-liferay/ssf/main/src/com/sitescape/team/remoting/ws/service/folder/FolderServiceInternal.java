@@ -39,5 +39,6 @@ public interface FolderServiceInternal {
 	public void folder_modifyEntryWithXML(String accessToken, long binderId, long entryId, String inputDataAsXML);
 	
 	public long folder_addReplyWithXML(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName);
+	public void folder_uploadFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName);
 
 }

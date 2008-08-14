@@ -48,6 +48,7 @@ JDBM 1.0 (required for Apache DS)
 JDOM 1.0
 Joda-Time 1.5.2
 jQuery 1.2.6
+jQuery UI Tabs 1.5.2
 Json-lib 1.1 for jdk15
 JSTL 1.0.5
 JSTL Implementation (from Apache) 1.0.6

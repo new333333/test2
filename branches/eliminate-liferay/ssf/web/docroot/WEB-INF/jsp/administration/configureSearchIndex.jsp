@@ -118,10 +118,16 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <span class="ss_bold"><ssf:nlt tag="administration.configure.nodes.select" text="Select the nodes to apply the re-indexing to:"/></span>
 <br>
 <br>
+<ssf:nlt tag="administration.configure.nodes.select.detail"/>
+<br>
+<br>
 <c:if test="${!empty ssSearchNodes}">
   <c:forEach var="node" items="${ssSearchNodes}">
-    <input type="checkbox" name="searchNodeId" value="${node.id}">${node.title} (${node.id})<br/>
+    <input type="checkbox" name="searchNodeId" value="${node.id}" <c:if test="${node.accessMode == 'offline'}">disabled</c:if>>
+    ${node.title} (${node.id}) - <ssf:nlt tag="administration.search.node.accessmode.${node.accessMode}"/>
+    <br/>
   </c:forEach>
+  <input type="hidden" name="searchNodesPresent" value="1"/>
 </c:if>
 <br>
 <br>

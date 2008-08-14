@@ -33,7 +33,7 @@ import java.io.Serializable;
 public class Description implements Serializable {
 
 	private String text;
-	private int format;
+	private int format=1;//html default
 	
 	public Description() {}
 	

@@ -65,6 +65,7 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.PostingDef;
+import com.sitescape.team.domain.SearchNodeInfo;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
@@ -87,6 +88,7 @@ import com.sitescape.team.module.shared.AccessUtils;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.search.Node;
+import com.sitescape.team.search.SearchUtils;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.FunctionExistsException;
@@ -766,6 +768,21 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
    
 	public List<Node> getSearchNodes() {
 		return getLuceneSessionFactory().getNodes();
+	}
+	
+	public void setSearchNodeAccessMode(String nodeId, String accessMode) {
+		SearchNodeInfo searchNodeInfo = getCoreDao().loadSearchNodeInfo(nodeId, SearchUtils.getIndexName());
+		if(searchNodeInfo != null) {
+			if(!accessMode.equals(searchNodeInfo.getAccessMode())) {
+				searchNodeInfo.setAccessMode(accessMode);
+				getCoreDao().update(searchNodeInfo);
+			}
+		}
+		else {
+			searchNodeInfo = new SearchNodeInfo(nodeId, SearchUtils.getIndexName());
+			searchNodeInfo.setAccessMode(accessMode);
+			getCoreDao().save(searchNodeInfo);
+		}
 	}
 
 }

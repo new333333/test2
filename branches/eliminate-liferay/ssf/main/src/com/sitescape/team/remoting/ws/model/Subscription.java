@@ -13,17 +13,14 @@ public class Subscription implements Serializable {
 	public void setEntityId(Long entityId) {
 		this.entityId = entityId;
 	}
-	public SubscriptionStyle getStyle(Integer style) {
-		return subscriptionMap.get(style);
-	}
-	public void addStyle(Integer style, String[]emailTypes) {
-		subscriptionMap.put(style, new SubscriptionStyle(style, emailTypes));
+	public void addStyle(int style, String[]emailTypes) {
+		subscriptionMap.put(Integer.valueOf(style), new SubscriptionStyle(style, emailTypes));
 	}
 	public void addStyle(SubscriptionStyle subscription) {
-		subscriptionMap.put(subscription.getStyle(), subscription);
+		subscriptionMap.put(Integer.valueOf(subscription.getStyle()), subscription);
 	}
-	public void removeStyle(Integer style) {
-		subscriptionMap.remove(style);
+	public void removeStyle(int style) {
+		subscriptionMap.remove(Integer.valueOf(style));
 	}
 	public SubscriptionStyle[] getStyles() {
 		SubscriptionStyle[] array = new SubscriptionStyle[subscriptionMap.size()];
@@ -33,7 +30,7 @@ public class Subscription implements Serializable {
 		this.subscriptionMap = new HashMap<Integer,SubscriptionStyle>();
 		if (subscriptions != null) {
 			for(int i = 0; i < subscriptions.length; i++) {
-				this.subscriptionMap.put(subscriptions[i].getStyle(), subscriptions[i]);
+				this.subscriptionMap.put(Integer.valueOf(subscriptions[i].getStyle()), subscriptions[i]);
 			}
 		}
 	}

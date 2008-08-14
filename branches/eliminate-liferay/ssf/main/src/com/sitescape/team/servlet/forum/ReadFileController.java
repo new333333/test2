@@ -71,96 +71,110 @@ public class ReadFileController extends SAbstractController {
 		
 		String[] args = pathInfo.split("/");
 		//We expect the url to be formatted as /readFile/entityType/binderId/entryId/fileId/fileTime/filename.ext
+		//To support sitescape forum, where folder structures were allowed on an entry, the url may contain more pathinfo.
 		//  If there is no entryId (in the case where the file is in the binder itself), the entryId is set to "-"
-		if (args.length >= 6) {
-			try {
-				String strEntityType = args[2];
-				Long binderId = Long.valueOf(args[3]);
-				Long entryId = null;
-				if (!args[4].equals("-")) {
-					//There is an entryId specified
-					entryId = Long.valueOf(args[4]);
-				}
-				String fileId = args[5];
-				String fileTime = args[6];
-
-				DefinableEntity entity = null;
-				Binder parent;
-				EntityIdentifier.EntityType entityType = null;
-				try {
-					entityType = EntityIdentifier.EntityType.valueOf(strEntityType);
-				} catch(Exception e) {
-					entityType = EntityIdentifier.EntityType.none;
-				}
-				if (entityType.equals(EntityIdentifier.EntityType.folder) || entityType.equals(EntityIdentifier.EntityType.workspace) ||
-						entityType.equals(EntityIdentifier.EntityType.profiles)) {
-					//the entry is the binder
-					if (entryId == null) entryId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
-					entity = getBinderModule().getBinder(entryId);
-					parent = (Binder) entity;
-				} else if (entryId != null) {
-					if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) {
-						entity = getFolderModule().getEntry(binderId, entryId);
-					} else if (entityType.equals(EntityIdentifier.EntityType.none)) {
-						//Try to figure out what type of entity this is
-						try {
-							entity = getFolderModule().getEntry(binderId, entryId);
-						} catch (Exception e) {}
-						if (entity == null) {
-							try {
-								entity = getProfileModule().getEntry(binderId, entryId);
-							} catch (Exception e) {}
-						}
-						
-					} else {
-						entity = getProfileModule().getEntry(binderId, entryId);
-					}
-					parent = entity.getParentBinder();
-				} else {
-					parent = getBinderModule().getBinder(binderId);
-					entity = parent;
-				}
-				//Set up the beans needed by the jsps
-				FileAttachment fa = null;
-				if (!fileId.equals("")) fa = (FileAttachment)entity.getAttachment(fileId);
-
-				if (fa != null) {
-					String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
-					String contentType = mimeTypes.getContentType(shortFileName);
-					response.setContentType(contentType);
-					response.setHeader("Cache-Control", "private");
-					if (fileTime.equals("")) {
-						response.setHeader("Cache-Control", "private");
-					}
-					String attachment = "";
-					if (FileHelper.checkIfAttachment(contentType)) attachment = "attachment; ";
-					response.setHeader("Content-Disposition",
-							attachment + "filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\"");
-					
-					SimpleDateFormat df = (SimpleDateFormat)DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL);
-					Date d = fa.getModification().getDate();
-					df.applyPattern("EEE, dd MMM yyyy kk:mm:ss zzz");
-					response.setHeader("Last-Modified", df.format(d));
-					try {
-						response.setHeader("Content-Length", 
-								String.valueOf(FileHelper.getLength(parent, entity, fa)));
-						getFileModule().readFile(parent, entity, fa, response.getOutputStream());
-						getReportModule().addFileInfo(AuditType.download, fa);
-					}
-					catch(Exception e) {
-						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
-					}
-				}
-				try {
-					response.getOutputStream().flush();
-				}
-				catch(Exception ignore) {}
-
-			} catch(Exception e) {
-				//Bad format of url; just return null
-				response.getOutputStream().print(NLT.get("file.error.unknownFile"));
+		if (args.length < 8) return null;
+		
+		try {
+			String strEntityType = args[2];
+			Long binderId = Long.valueOf(args[3]);
+			Long entryId = null;
+			if (!args[4].equals("-")) {
+				//There is an entryId specified
+				entryId = Long.valueOf(args[4]);
 			}
+			String fileId = args[5];
+			String fileTime = args[6];
+
+			DefinableEntity entity = null;
+			Binder parent;
+			EntityIdentifier.EntityType entityType = null;
+			try {
+				entityType = EntityIdentifier.EntityType.valueOf(strEntityType);
+			} catch(Exception e) {
+				entityType = EntityIdentifier.EntityType.none;
+			}
+			if (entityType.equals(EntityIdentifier.EntityType.folder) || entityType.equals(EntityIdentifier.EntityType.workspace) ||
+					entityType.equals(EntityIdentifier.EntityType.profiles)) {
+				//the entry is the binder
+				if (entryId == null) entryId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+				entity = getBinderModule().getBinder(entryId);
+				parent = (Binder) entity;
+			} else if (entryId != null) {
+				if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) {
+					entity = getFolderModule().getEntry(binderId, entryId);
+				} else if (entityType.equals(EntityIdentifier.EntityType.none)) {
+					//Try to figure out what type of entity this is
+					try {
+						entity = getFolderModule().getEntry(binderId, entryId);
+					} catch (Exception e) {}
+					if (entity == null) {
+						try {
+							entity = getProfileModule().getEntry(entryId);
+						} catch (Exception e) {}
+					}
+						
+				} else {
+					entity = getProfileModule().getEntry(entryId);
+				}
+			
+				parent = entity.getParentBinder();
+			} else {
+				parent = getBinderModule().getBinder(binderId);
+				entity = parent;
+			}
+			//Set up the beans needed by the jsps
+			FileAttachment fa = null;
+			if (args.length > 8) {
+				//this is an old forum folder structure
+				StringBuffer path = new StringBuffer(entity.getParentBinder().getPathName());
+				for (int i=7; i<args.length-1; ++i) {
+					path.append("/" + args[i]);
+				}
+				parent = getBinderModule().getBinderByPathName(path.toString());
+				entity = getFolderModule().getLibraryFolderEntryByFileName((com.sitescape.team.domain.Folder)parent, args[args.length-1]);
+				fa = (FileAttachment)entity.getFileAttachment(args[args.length-1]);
+			} else if (Validator.isNotNull(fileId)) {
+				fa = (FileAttachment)entity.getAttachment(fileId);
+			}
+
+			if (fa != null) {
+				String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
+				String contentType = mimeTypes.getContentType(shortFileName);
+				response.setContentType(contentType);
+				response.setHeader("Cache-Control", "private");
+				if (fileTime.equals("")) {
+					response.setHeader("Cache-Control", "private");
+				}
+				String attachment = "";
+				if (FileHelper.checkIfAttachment(contentType)) attachment = "attachment; ";
+				response.setHeader("Content-Disposition",
+						attachment + "filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\"");
+					
+				SimpleDateFormat df = (SimpleDateFormat)DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL);
+				Date d = fa.getModification().getDate();
+				df.applyPattern("EEE, dd MMM yyyy kk:mm:ss zzz");
+				response.setHeader("Last-Modified", df.format(d));
+				try {
+					response.setHeader("Content-Length", 
+							String.valueOf(FileHelper.getLength(parent, entity, fa)));
+					getFileModule().readFile(parent, entity, fa, response.getOutputStream());
+					getReportModule().addFileInfo(AuditType.download, fa);
+				}
+				catch(Exception e) {
+					response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
+				}
+			}
+			try {
+				response.getOutputStream().flush();
+			}
+			catch(Exception ignore) {}
+
+		} catch(Exception e) {
+			//Bad format of url; just return null
+			response.getOutputStream().print(NLT.get("file.error.unknownFile"));
 		}
+		
 		return null;
 	}
 }

@@ -93,7 +93,6 @@ body.ss_style_body {
   background-color: ${ss_style_background_color};
   color: ${ss_style_text_color};
 }
-
 .ss_style td, .ss_style th {
   font-family: ${ss_style_folder_view_font_family};
   font-size: 12px; 
@@ -327,20 +326,26 @@ div.ss_global_toolbar_quick input {
   background-color: #FFFFFF;
   background-image: none;
   color: ${ss_form_element_text_color};
+  font-size: ${ss_style_font_size};
+  font-family: ${ss_style_folder_view_font_family};  
+}
+div.ss_global_toolbar_quick input{
+	background-color: #FFFFFF;
+  background-image: none;
+  color: ${ss_form_element_text_color};
   font-size: ${ss_style_font_fineprint};
   font-family: ${ss_style_folder_view_font_family};  
-  border: solid .01em #999;
+  border: solid .4px #999;
+  padding: 2px;
 }
 div.ss_style textarea {
   padding: 0px 0px 0px 2px;
 }
 div.ss_style input[type="text"],
 div.ss_style input[type="password"],
-div.ss_style select,
-div.ss_global_toolbar_quick input {
-  padding: 2px;
+div.ss_style select, {
+  padding: 0px;
 }
-
   
 .ss_form textarea {
   background-color: ${ss_form_element_color};
@@ -374,6 +379,14 @@ div.ss_global_toolbar_quick input {
   font-size: ${ss_style_font_smallprint};
   font-family: ${ss_style_folder_view_font_family};  
   }
+ .ss_text_login {
+  background-color:#E0E0E0 !important;	/* ${ss_form_element_color} */
+  color: ${ss_form_element_text_color};
+  padding: 3px !important;
+  height: 14px;
+  font-size: ${ss_style_font_normalprint};
+  font-family: ${ss_style_folder_view_font_family};  
+  } 
 
 
 
@@ -484,6 +497,21 @@ div.ss_editableTab {
 
 div.ss_editableTab a, div.ss_editableTab a:hover {
   text-decoration: none;
+}
+
+.ss_sectionHeader1 {
+  font-size: ${ss_style_font_largerprint};
+  font-weight: bold;
+}
+
+.ss_sectionHeader2 {
+  font-size: ${ss_style_font_largeprint};
+  font-weight: bold;
+}
+
+.ss_sectionHeader3 {
+  font-size: ${ss_style_font_normalprint};
+  font-weight: bold;
 }
 
 
@@ -1176,6 +1204,7 @@ div.ss_sliding_table_column0 {
   border-left: ${ss_sliding_table_border_color} 1px solid;
   border-right: ${ss_sliding_table_border_color} 1px solid;
   border-bottom: ${ss_sliding_table_border_color} 1px solid;
+  border-top:${ss_sliding_table_border_color} 1px solid;
   margin: 0px;
 }
 .ss_sliding_table_column0 * {
@@ -1188,13 +1217,14 @@ div.ss_sliding_table_column1 {
   visibility: hidden;
   overflow:hidden;
   display: block; 
-  border-left: #ffffff solid 1px;
-  margin: 0px;
+  border-left: #cccccc solid 1px;
   font-size: ${ss_style_font_normalprint} !important;
+  margin: 0px;
 }
 .ss_sliding_table_column1 * {
   color: ${ss_sliding_table_text_color};
   white-space:nowrap;
+  text-decoration: none;
 }
 div.ss_sliding_table_column {
   position: absolute; 
@@ -1209,7 +1239,7 @@ div.ss_sliding_table_column {
   white-space:nowrap;
 }
 .ss_sliding_table_info_popup {
-  position: absolute; 
+  position:absolute;
   visibility: hidden;
   display:block; 
   margin-left: 0px;
@@ -1226,7 +1256,7 @@ div.ss_sliding_table_column {
   font-family: ${ss_style_folder_view_font_family} !important;
 }
 .ss_highlightEntry {
-  background-color: ${ss_folder_line_highlight_color} !important;
+  background-color: #FAFAFA !important;
 }
 .ss_sliding_table_info_popup * {
   color: ${ss_sliding_table_text_color};
@@ -1280,7 +1310,7 @@ table.ss_mouseOverInfo {
 
 /* Parent Folder 
 #ss_folder_table_parent{
-	width:98%;
+	width:100%;
 	}
 	*/
 /* Folder */
@@ -1886,8 +1916,7 @@ div.ss_content_outer {
     background-color: ${ss_style_background_color};
 }
 .ss_content_window {
-	padding:0px 0px;
-	
+	padding:0px 0px;	
 }
 .ss_content_window_compact {
 	padding:0px;
@@ -1899,25 +1928,19 @@ div.ss_content_outer {
 	border-bottom: 1px solid ${ss_style_border_color_dark_hue};
 	border-top: none;
 }
-
 .ss_content_window_content_off {
 	padding: 0px;
 	border: 0px none;
 }
-
 .ss_clear {
 	clear:both;
 	height:1px;
 	font-size:0px;
 }
-
-
 div.ss_content_outer table, div.ss_portlet table, table.ss_style, div.ss_popup_body table, table.ss_popup {
 	border-collapse: separate;
-	border-spacing: 0px;
-	
+	border-spacing: 0px;	
 }
-
 
 /* round corners: */
 
@@ -1976,35 +1999,28 @@ div.ss_content_outer table, div.ss_portlet table, table.ss_style, div.ss_popup_b
 	padding:0px 0px 0px 0px;
     background-color: ${ss_style_background_color};
 }
-
 td.ss_view_sidebar {
-    width: 200px;
-    background-color: #D8D8D8;
-    border-right: 6px solid #FFFFFF;
+    width: 200px!important;
+    background-color: transparent;
+    border-right: 6px solid #FFF;
 }
-
 td.ss_view_info {
 	padding-left: 0;
 }
-
-
 img.ss_generic_close {
     background:url(<html:imagesPath/>tabs/tab_delete.gif) no-repeat left 0px;
     width:9px;
     height: 9px;
 }
-
 a:hover img.ss_generic_close {
     background-position:  left -9px;
 }
-
 img.ss_print_button {
 	position:relative;
     background:url(<html:imagesPath/>icons/printer.gif) no-repeat left -16px;
     width:16px;
     height: 16px;
 }
-
 a:hover img.ss_print_button {
     background-position:  left 0px;
 }
@@ -2077,11 +2093,12 @@ div.ss_sidebar_panel_featured {
 .ss_base_title_bar {
 	background-color: ${ss_toolbar1_background_color};
 	color: #333;
-	font-size: 12px;
+	font-size: ${ss_normalprint};
+	font-weight: bold;
 	font-family: ${ss_style_title_font_family};
-	padding-bottom: 1px;
-	padding-top: 2px;
-	padding-left:10px;
+	padding-bottom: 3px;
+	padding-top: 5px;
+	padding-left: 5px;
 	padding-right: 5px;
 	}
 .ss_title_bar {
@@ -2159,77 +2176,6 @@ div.ss_sidebar_panel_featured {
   color: #333333;
   text-decoration:none;
 }
-
-/* TOOLBAR STYLES (change heights to 22px and no ka for boulder */
-
-.ss_sidebarImage {
-	background-image: url("<html:rootPath/>images/pics/navbar/bg_toolbar.gif");  
-	background-repeat: repeat-x;
-}
-.ss_sidebarSlide {
-	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_lg.png"); 
-	background-position:top left;
-	background-repeat: no-repeat;
-	height:22px;		/* boulder 22px */
-	color:#FFF;
-	}
-.ss_sidebarSlidesm {
-	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_sm.png"); 
-	background-position:top left;
-	background-repeat: no-repeat;
-	height:22px;		/* boulder 22px */
-	color:#FFF;
-	}
-button { 
-  border:0; 
-  cursor:pointer; 
-  padding:0 20px 0 0; 
-  text-align:center; 
-}
-button span {
-	position:relative;
-	display:block;
-	white-space:nowrap;
-	padding:0 0 0 25px;
-}
-
-/*AQUA buttons*/
-.ss_toolbar_submitBtn {
-	font-size:.8em;
-	background-color: transparent !important;
-	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_right.png");
-	background-repeat: no-repeat;
-	background-position: right;
-	 <c:if test="<%= isIE %>">
-  		background-position: top right!important;
- 	</c:if>
-	
-}
-.ss_toolbar_submitBtn span {
-	line-height:20px;
-	height: 20px;
-	color:#fff;
-	background-color: transparent !important;
-	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_left.png");
-	background-repeat: no-repeat;
-	background-position: left;
-		 <c:if test="<%= isIE %>">
-  		background-position: top left!important;
- 	</c:if>
-}
-.ss_toolbar_submitBtn:hover {
-	background-color: transparent !important;
-	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_right_hover.png");
-	background-repeat: no-repeat;
-	background-position: right;
-}
-.ss_toolbar_submitBtn:hover span {
-	background-color: transparent !important;
-	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_left_hover.png");
-	background-repeat: no-repeat;
-	background-position: left;
-}
-	
 	
 /* actions: */
 
@@ -2275,6 +2221,15 @@ table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	font-family: ${ss_style_title_font_family};
 }
 
+table.ss_actions_bar3_pane, table.ss_actions_bar3_pane td {
+	background-color: #AFC8E3;
+	width: 100%;
+	height: 20px;
+	padding: 4px 0px 0px 0px;
+	margin: 0px;
+	border-collapse: collapse;
+	border-spacing: 0px;
+}
 
 table.ss_actions_bar4_pane {
     background-image: url(<html:imagesPath/>pics/background_actionbar4.gif);
@@ -2318,31 +2273,25 @@ ul.ss_actions_bar1.ss_actions_bar_submenu {
 ul.ss_actions_bar li {
 	float:left;
 	display: inline;
-	margin: 0px 0px 0px 0px;
+	margin: 0px;
 	white-space: nowrap;
 }
-
 .ss_actions_bar li.ss_toolBarItem {
 	border: 0px;
 	margin: 0px;
 	padding: 0px;
 	background-color: inherit;
 }
-
-
-
 .ss_actions_bar li.ss_toolBarItem ul {
 	float: left;
 	display: inline;
 	margin: 0px;
 	padding: 0px;
 }
-
 .ss_actions_bar li.ss_toolBarItem .ss_toolBarItemTxt {
 	float: left;
 	margin-top: 0px;
 }
-
 .ss_actions_bar li.ss_actions_bar_separator {
 	border-right: 0px;
 	border-top: 0px;
@@ -2351,7 +2300,6 @@ ul.ss_actions_bar li {
 	width: 0px;
 	padding: 0px;
 }
-
 .ss_actions_bar form {
 	display: inline;
 	background-color: transparent;
@@ -2367,7 +2315,7 @@ ul.ss_actions_bar li {
 }
 
 .ss_actions_bar li a, .ss_actions_bar li a:visited {
-	color:${ss_style_text_color} !important;
+	color: #ffffff !important;
 	display:block;
 	padding:0px 7px;
 }
@@ -2434,7 +2382,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar1 {
 }
 
 div.ss_actions_bar_submenu ul.ss_actions_bar2 {
-  background-color: ${ss_toolbar_border_color};
+  background-color: #DDE5EF;
   background-image: none;
   opacity: 0.95;
  <c:if test="<%= isIE %>">
@@ -2581,12 +2529,13 @@ div.ss_utils_bar ul.ss_utils_bar li a span {
 }
 
 div.ss_utils_bar_submenu {
-	background-color: #ECECEC;
+	background-color: #EFEFEF;
 	margin:0px;
 	padding:0px;
 	text-align:left;
 	position:absolute;
 	display: none;
+	
 	visibility: hidden;
 	z-index:500;
 	border: 1px solid #CCCCCC;

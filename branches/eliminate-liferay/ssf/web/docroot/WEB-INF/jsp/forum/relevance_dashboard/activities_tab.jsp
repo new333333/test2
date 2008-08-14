@@ -37,7 +37,7 @@
 
 	<ssf:canvas id="relevanceVisitedEntries" type="inline" styleId="ss_documents">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue">
+		<div id="ss_title" class="ss_pt_title ss_green">
 		  <ssf:nlt tag="relevance.visitedEntries">
 		    <ssf:param name="value" value="${ssBinder.owner.title}"/>
 		  </ssf:nlt>
@@ -50,7 +50,7 @@
 	
 	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_documents">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_recentfolder_image">
+		<div id="ss_title" class="ss_pt_title ss_green ss_recentfolder_image">
 		  <ssf:nlt tag="relevance.documents">
 		    <ssf:param name="value" value="${ssBinder.owner.title}"/>
 		  </ssf:nlt>
@@ -66,7 +66,7 @@
 
 	<ssf:canvas id="relevanceActivities" type="inline" styleId="ss_shared">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.activities"/></div>
+		<div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.activities"/></div>
 	</ssf:param>
 		<div id="ss_dashboardActivities${renderResponse.namespace}">
 		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities.jsp" />
@@ -75,7 +75,7 @@
 
 	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_shared">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue"> <ssf:nlt tag="relevance.sharedItems"/> </div>
+		<div id="ss_title" class="ss_pt_title ss_green"> <ssf:nlt tag="relevance.sharedItems"/> </div>
 	</ssf:param>
 		<div id="ss_dashboardShared${renderResponse.namespace}">
 		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/shared_items.jsp" />
@@ -87,7 +87,7 @@
 
 	<ssf:canvas id="relevanceVisitors" type="inline" styleId="ss_people">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.visitedInPastTwoWeeks"/></div>
+		<div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.visitedInPastTwoWeeks"/></div>
 	</ssf:param>
 		<div id="ss_dashboardVisitors${renderResponse.namespace}">
 		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/visitors.jsp" />
@@ -96,7 +96,7 @@
 
 	<ssf:canvas id="relevanceTags" type="inline" styleId="ss_people">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.myTags"/></div>
+		<div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.myTags"/></div>
 	</ssf:param>
 		<div id="ss_dashboardMyTags${renderResponse.namespace}">
 		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tags.jsp" />

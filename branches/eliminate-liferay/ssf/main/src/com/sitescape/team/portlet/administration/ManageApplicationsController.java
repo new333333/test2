@@ -75,7 +75,7 @@ public class ManageApplicationsController extends  SAbstractController {
 				} else {
 					fileMap = new HashMap();
 				}
-				getProfileModule().addApplication(binderId, null, inputData, fileMap, null);
+				getProfileModule().addApplication(null, inputData, fileMap, null);
 			} catch (ObjectExistsException oee) {
 				response.setRenderParameter(WebKeys.EXCEPTION, oee.getLocalizedMessage() + ": [" + name + "].");
 			}
@@ -96,12 +96,12 @@ public class ManageApplicationsController extends  SAbstractController {
 			updates.put(ObjectKeys.FIELD_APPLICATION_POST_URL, postUrl);
 			updates.put(ObjectKeys.FIELD_APPLICATION_TIMEOUT, timeout);
 			updates.put(ObjectKeys.FIELD_APPLICATION_TRUSTED, trusted);
-			getProfileModule().modifyEntry(binderId, applicationId, new MapInputData(updates));
+			getProfileModule().modifyEntry(applicationId, new MapInputData(updates));
 			response.setRenderParameter(WebKeys.URL_ENTRY_ID, applicationId.toString());
 
 		} else if (formData.containsKey("deleteBtn")) {
 			Long applicationId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
-			getProfileModule().deleteEntry(binderId, applicationId, null);
+			getProfileModule().deleteEntry(applicationId, null);
 			
 		} else {
 			response.setRenderParameters(formData);
@@ -126,7 +126,7 @@ public class ManageApplicationsController extends  SAbstractController {
     	child.setText(Constants.ENTRY_TYPE_APPLICATION);
     	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
     	
-		Map searchResults = getProfileModule().getApplications(binder.getId(), options);
+		Map searchResults = getProfileModule().getApplications(options);
 		List applications = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
 		Map model = new HashMap();
 		model.put(WebKeys.BINDER, binder);
@@ -137,7 +137,7 @@ public class ManageApplicationsController extends  SAbstractController {
 			String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 			model.put(WebKeys.NAMESPACE, namespace);
 			model.put(WebKeys.BINDER_ID, binder.getId());
-			Application application = (Application)getProfileModule().getEntry(binder.getId(), applicationId);		
+			Application application = (Application)getProfileModule().getEntry(applicationId);		
 			model.put(WebKeys.APPLICATION, application);			
 		}
 		

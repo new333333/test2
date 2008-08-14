@@ -202,6 +202,14 @@
 		</copy>
 	</target>
 	
+	<target name="deploy-jsp-only">
+		<copy todir="${app.server.ssf.dir}/WEB-INF/jsp">
+			<fileset dir="${web.dir}/WEB-INF/jsp"
+				includes="**/*.jsp"
+			/>
+		</copy>
+	</target>
+	
 	<target name="deploy" depends="make-all-generated-files,deploy-light">
 	</target>
 	

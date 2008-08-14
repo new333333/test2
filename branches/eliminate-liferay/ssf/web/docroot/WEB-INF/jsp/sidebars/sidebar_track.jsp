@@ -29,39 +29,44 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-
-		  <ssf:ifLoggedIn>
-			 <c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
-			   <a href="javascript: ;" 
-  				onClick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;"
-			 	<c:if test="${ssBinder.entityType == 'workspace'}">
-  			 		<c:if test="${ssBinder.definitionType != 12}">
-  						title="<ssf:nlt tag="relevance.trackThisWorkspace"/>" >
-  						<span><ssf:nlt tag="relevance.justTrack"/></span>
-  					</c:if>
-  			 		<c:if test="${ssBinder.definitionType == 12}">
-  						title="<ssf:nlt tag="relevance.trackThisPerson"/>" >
-  						<span><ssf:nlt tag="relevance.justTrack"/></span>
-  					</c:if>
-			 	</c:if>
-			 	<c:if test="${ssBinder.entityType == 'folder'}">
-  			 		<c:if test="${ssDefinitionFamily != 'calendar'}">
-  						title="<ssf:nlt tag="relevance.trackThisFolder"/>" >
-  						<span><ssf:nlt tag="relevance.justTrack"/></span>
-  					</c:if>
-  			 		<c:if test="${ssDefinitionFamily == 'calendar'}">
-  						title="<ssf:nlt tag="relevance.trackThisCalendar"/>" >
-  						<span><ssf:nlt tag="relevance.justTrack"/></span>
-  					</c:if>
-			 	</c:if>
-			  </a>
-			
-			  <div id="ss_track_this_ok${renderResponse.namespace}" 
-  				style="position:relative; display:none; visibility:hidden; top:5px; left:10px; z-index:500;
-         		border:1px solid black; padding-top:10px; padding-left: 10px; padding-bottom: 10px; padding-right: 10px; background-color:#ffffff; white-space:nowrap; margin-bottom:10px;">
-			  </div>
-			</c:if>
-		  </ssf:ifLoggedIn>
-
-
-
+<c:if test="${!ss_searchResultsPage}">
+	<ssf:ifLoggedIn>
+		<c:if test="${(empty ssEntry || ssEntry.entityType != 'folderEntry') && 
+				!empty ssBinder && ssBinder.entityType != 'profiles'}">
+			<div id="ss_leftNav">
+			  <ul>
+				<li>
+				   <a href="javascript: ;" 
+	  				onClick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;"
+				 	<c:if test="${ssBinder.entityType == 'workspace'}">
+	  			 		<c:if test="${ssBinder.definitionType != 12}">
+	  						title="<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>" >
+	  						<span><ssf:nlt tag="relevance.trackThisWorkspace"/></span>
+	  					</c:if>
+	  			 		<c:if test="${ssBinder.definitionType == 12}">
+	  						title="<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>" >
+	  						<span><ssf:nlt tag="relevance.trackThisPerson"/></span>
+	  					</c:if>
+				 	</c:if>
+				 	<c:if test="${ssBinder.entityType == 'folder'}">
+	  			 		<c:if test="${ssDefinitionFamily != 'calendar'}">
+	  						title="<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>" >
+	  						<span><ssf:nlt tag="relevance.trackThisFolder"/></span>
+	  					</c:if>
+	  			 		<c:if test="${ssDefinitionFamily == 'calendar'}">
+	  						title="<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>" >
+	  						<span><ssf:nlt tag="relevance.trackThisCalendar"/></span>
+	  					</c:if>
+				 	</c:if>
+				  </a>
+				
+				  <div id="ss_track_this_ok${renderResponse.namespace}" 
+	  				style="position:relative; display:none; visibility:hidden; top:5px; left:10px; z-index:500;
+	         		border:1px solid black; padding-top:10px; padding-left: 10px; padding-bottom: 10px; padding-right: 10px; background-color:#ffffff; white-space:nowrap; margin-bottom:10px;">
+				  </div>
+				</li>
+			  </ul>
+			</div>
+		</c:if>
+	</ssf:ifLoggedIn>
+</c:if>

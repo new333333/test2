@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.remoting.ws;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Map;
@@ -155,6 +156,8 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 			entryElem.addAttribute("lastName", ((User)entry).getLastName());
 			entryElem.addAttribute("zonName", ((User)entry).getZonName());
 			entryElem.addAttribute("status", ((User)entry).getStatus());
+			SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss aa");
+			entryElem.addAttribute("statusDate", sdFormat.format(((User)entry).getStatusDate()));
 			entryElem.addAttribute("skypeId", ((User)entry).getSkypeId());
 			entryElem.addAttribute("twitterId", ((User)entry).getTwitterId());
 		}
@@ -185,6 +188,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		if (user.containsKey(Constants.LASTNAME_FIELD)) entryElem.addAttribute("lastName", (String) user.get(Constants.LASTNAME_FIELD));
 		if (user.containsKey(Constants.ZONNAME_FIELD)) entryElem.addAttribute("zonName", (String) user.get(Constants.ZONNAME_FIELD));
 		if (user.containsKey(Constants.STATUS_FIELD)) entryElem.addAttribute("status", (String) user.get(Constants.STATUS_FIELD));
+		if (user.containsKey(Constants.STATUS_DATE_FIELD)) entryElem.addAttribute("statusDate", (String) user.get(Constants.STATUS_DATE_FIELD));
 		if (user.containsKey(Constants.SKYPEID_FIELD)) entryElem.addAttribute("skypeId", (String) user.get(Constants.SKYPEID_FIELD));
 		if (user.containsKey(Constants.TWITTERID_FIELD)) entryElem.addAttribute("twitterId", (String) user.get(Constants.TWITTERID_FIELD));
 
@@ -239,7 +243,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 					if (response.getResponseDate() != null) {
 						if (response.getResponderId() != null) {
 							try {
-								wrModel.setResponder(new Timestamp(getProfileModule().getEntry(null, response.getResponderId()).getName(), response.getResponseDate()));								
+								wrModel.setResponder(new Timestamp(getProfileModule().getEntry(response.getResponderId()).getName(), response.getResponseDate()));								
 							} catch (Exception ex) {
 								wrModel.setResponder(new Timestamp("", response.getResponseDate()));								
 							}
@@ -357,17 +361,33 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
 			public void visit(Element entryElement, Element flagElement, Map args)
 			{
+				
                 if (flagElement.attributeValue("apply").equals("true")) {
                 	String fieldBuilder = flagElement.attributeValue("elementBuilder");
-					String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
-					if (Validator.isNull(nameValue)) {nameValue = entryElement.attributeValue("name");}
-                	ElementBuilderUtil.buildElement(entryElem, entityModel, entity, entryElement.attributeValue("name"), nameValue, fieldBuilder, context);
+                	String typeValue = entryElement.attributeValue("name");
+  					String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
+					if (Validator.isNull(nameValue)) {nameValue = typeValue;}
+                	ElementBuilderUtil.buildElement(entryElem, entityModel, entity, typeValue, nameValue, fieldBuilder, context);
                 }
 			}
 			public String getFlagElementName() { return "webService"; }
 		};
 		
 		getDefinitionModule().walkDefinition(entity, visitor, null);
+		//see if attachments have been handled
+		Element root = entity.getEntryDef().getDefinition().getRootElement();
+		if (root == null) return;
+		Element attachments = (Element)root.selectSingleNode("//item[@name='attachFiles']");
+		if (attachments != null) return; // already processed
+      	//Force processing of attachments.  Not all forms will have an attachment element,
+    	//but this is the only code that actually sends the files, even if they
+    	//are part of a graphic or file element.  So force attachment processing to pick up all files
+		attachments = (Element)getDefinitionModule().getDefinitionConfig().getRootElement().selectSingleNode("//item[@name='attachFiles']");
+		Element flagElem = (Element) attachments.selectSingleNode("webService");
+		ElementBuilderUtil.buildElement(entryElem, entityModel, entity, "attachFiles", DefinitionUtils.getPropertyValue(attachments, "name"),
+				flagElem.attributeValue("elementBuilder"), context);
+        	 		 
+
 	}
 
 	protected com.sitescape.team.remoting.ws.model.AverageRating toAverageRatingModel(AverageRating ar) {

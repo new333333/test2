@@ -77,7 +77,7 @@ public class ListFolderController extends  SAbstractController {
 			Map<String,Object> updates = new HashMap<String,Object>();
 			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
+			getProfileModule().modifyEntry(user.getId(), new MapInputData(updates));
 			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
 		} else if (op.equals(WebKeys.OPERATION_SET_DISPLAY_DEFINITION)) {
 			getProfileModule().setUserProperty(user.getId(), binderId, 

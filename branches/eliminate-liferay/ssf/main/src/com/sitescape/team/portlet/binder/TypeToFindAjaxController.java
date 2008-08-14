@@ -108,15 +108,14 @@ public class TypeToFindAjaxController extends SAbstractController {
 	   	
 
 		//Do a search to find the first few users who match the search text
-		User u = RequestContextHolder.getRequestContext().getUser();
 		Map users = new HashMap();
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
 		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
 		if (findType.equals(WebKeys.FIND_TYPE_GROUP)) {
-			users = getProfileModule().getGroups(u.getParentBinder().getId(), options);
+			users = getProfileModule().getGroups(options);
 		} else {
-			users = getProfileModule().getUsers(u.getParentBinder().getId(), options);
+			users = getProfileModule().getUsers(options);
 		}
 		model.put(WebKeys.USERS, users.get(ObjectKeys.SEARCH_ENTRIES));
 		model.put(WebKeys.USER_IDS_TO_SKIP, userIdsToSkip);
@@ -259,11 +258,11 @@ public class TypeToFindAjaxController extends SAbstractController {
 			model.put(WebKeys.ENTRIES, tagsPage);
 			model.put(WebKeys.SEARCH_TOTAL_HITS, Integer.valueOf(tags.size()));
 		} else if (findType.equals(WebKeys.FIND_TYPE_GROUP)) {
-			Map entries = getProfileModule().getGroups(user.getParentBinder().getId(), options);
+			Map entries = getProfileModule().getGroups(options);
 			model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
 			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 		} else if (findType.equals(WebKeys.FIND_TYPE_USER)) {
-			Map entries = getProfileModule().getUsers(user.getParentBinder().getId(), options);
+			Map entries = getProfileModule().getUsers(options);
 			
 			int page = 0;
 			try {
@@ -282,12 +281,12 @@ public class TypeToFindAjaxController extends SAbstractController {
 			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 			model.put(WebKeys.FIND_SHOW_USER_TITLE_ONLY, showUserTitleOnly);
 		} else if (findType.equals(WebKeys.FIND_TYPE_APPLICATION_GROUP)) {
-			Map entries = getProfileModule().getApplicationGroups(user.getParentBinder().getId(), options);
+			Map entries = getProfileModule().getApplicationGroups(options);
 			model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
 			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 			model.put(WebKeys.FIND_SHOW_USER_TITLE_ONLY, showUserTitleOnly);
 		} else if (findType.equals(WebKeys.FIND_TYPE_APPLICATION)) {
-			Map entries = getProfileModule().getApplications(user.getParentBinder().getId(), options);
+			Map entries = getProfileModule().getApplications(options);
 			model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
 			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 		}

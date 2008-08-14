@@ -32,33 +32,8 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <div class="ss_style ss_portlet">
-<span><i>[This forum has not been configured yet.]</i></span>
-<br/>
-<br/>
-<table class="ss_style" border="0" cellpadding="4" cellspacing="0" width="100%">
-<th align="left">Forum administration menu</th>
-<tr><td></td></tr>
-<tr>
-	<td>
-		<ul>
-			<li>
-				<a class="gamma" 
-				  href="<ssf:url action="configure_forum" ><ssf:param 
-				  	name="binderId" value="${ssBinder.id}" /><ssf:param 
-				  	name="binderType" value="${ssBinder.entityType}"/></ssf:url>">Configure</a>
-			</li>
-			<li>
-				<a class="gamma" 
-				  href="<ssf:url action="definition_builder"  actionUrl="true"><ssf:param 
-				  	name="binderId" value="${ssBinder.id}"/><ssf:param 
-				  	name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
-				>Definition builder</a>
-			</li>
-		</ul>
-	</td>
-</tr>
-</table>
-
+<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
+<span class="ss_bold"><ssf:nlt tag="binder.noDefinition"/></span>
 </div>
 
 

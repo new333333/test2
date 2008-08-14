@@ -28,10 +28,8 @@
  */
 package com.sitescape.team.portlet.forum;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,19 +44,15 @@ import org.springframework.web.portlet.ModelAndView;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.WorkflowState;
-import com.sitescape.team.module.workflow.WorkflowUtils;
+import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
-import com.sitescape.team.web.util.DefinitionHelper;
-import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.StringUtil;
-
 /**
  * @author Peter Hurley
  *
@@ -127,7 +121,9 @@ public class SendEntryMailController extends SAbstractController {
 		model.put(WebKeys.BINDER, folder);
 
 		List userIds = PortletRequestUtils.getLongListParameters(request, WebKeys.USER_IDS_TO_ADD);
-		model.put(WebKeys.USERS, getProfileModule().getUsers(new HashSet(userIds)));
+		try {
+			model.put(WebKeys.USERS, getProfileModule().getUsers(new HashSet(userIds)));
+		} catch (AccessControlException ex) {} //cannot search for users?
 		
 		return new ModelAndView(WebKeys.VIEW_BINDER_SENDMAIL, model);
 	}

@@ -8,13 +8,6 @@
 		<s:custom-filter position="FIRST"/>
 	</bean>
 	
-	<bean id="zoneAwareAuthenticationProvider" class="com.sitescape.team.spring.security.ZoneAwareAuthenticationProvider"
-		depends-on="springAuthenticationBeans">
-        <s:custom-authentication-provider />
-		<property name="zoneModule"><ref bean="zoneModule"/></property>
-		<property name="ldapModule"><ref bean="ldapModule"/></property>
-	</bean>
-	
     <s:http session-fixation-protection="newSession">
         <s:intercept-url pattern="/ws/**" access="ROLE_ANONYMOUS" />
         <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED,ROLE_ANONYMOUS" />

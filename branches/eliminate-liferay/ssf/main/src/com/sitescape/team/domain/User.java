@@ -46,7 +46,6 @@ import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.util.EncryptUtil;
-import com.sitescape.util.PasswordEncryptor;
 import com.sitescape.util.Validator;
 
 /**
@@ -69,6 +68,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected String skypeId="";
     protected String twitterId="";
     protected String status="";
+    protected Date statusDate;
     private SortedSet groupNames; // sorted set of group names; this field is computed
 	public User() {
     }
@@ -290,7 +290,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	 * @param clearTextPassword clear text password
 	 */
 	public void setPassword(String clearTextPassword) {
-		this.password = PasswordEncryptor.encrypt(clearTextPassword);
+		this.password = EncryptUtil.encryptPassword(clearTextPassword);
 	}
 	
     /**
@@ -312,6 +312,17 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 			this.status = status;
 		}
 	}	
+	/**
+	 * @hibernate.property 
+	 * @return
+	 */
+	public Date getStatusDate() {
+		return statusDate;
+	}
+	public void setStatusDate(Date statusDate) {
+		this.statusDate = statusDate;
+	}
+
     /**
      * Returns digest seed value or <code>null</code> if it was never set.
      * 

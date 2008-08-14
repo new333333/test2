@@ -46,22 +46,22 @@
 		<ssf:param name="operation" value="modifyEntry" />
 		</ssf:url>"
 >
-<table width="75%" border="0" align="center" cellpadding="0" cellspacing="0" class="ss_formWrap">
+<table width="75%" border="0" align="center" cellpadding="0" cellspacing="0" class="ss_table_wrap">
   <tr>
-    <div height="267"><td class="form_header"><ssf:nlt tag="entry.workflowHistory"/></td></div>
+    <td class="ss_form_header"><div height="267"><ssf:nlt tag="entry.workflowHistory"/></div>
 	 <div class="ss_formButton">
 	 	<input type="button" name="Button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;"/>
 	 </div>
 	 <br/>
-    	<table width="75%" align="center" border="0" cellpadding="0" cellspacing="0">
+    	<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
     		<tr>
-				<th width="3.75%" class="ss_FormTableHeading"><ssf:nlt tag="entry.eventNumber"/></th>
-				<th width="15%" class="ss_FormTableHeading"><ssf:nlt tag="entry.modifiedOn"/></th>
-				<th width="7.5%" class="ss_FormTableHeading"><ssf:nlt tag="entry.modifiedBy"/></th>
-				<th width="15%" class="ss_FormTableHeading"><ssf:nlt tag="entry.operation"/></th>
-				<th width="15%" class="ss_FormTableHeading"><ssf:nlt tag="entry.processName"/></th>
-				<th width="11.25%" class="ss_FormTableHeading"><p><ssf:nlt tag="entry.threadName"/></p></th>
-				<th width="7.5%" class="ss_FormTableHeading"><ssf:nlt tag="entry.state"/></th>
+				<th width="4.75%" class="ss_table_heading"><ssf:nlt tag="entry.eventNumber"/></th>
+				<th width="14%" class="ss_table_heading"><ssf:nlt tag="entry.modifiedOn"/></th>
+				<th width="10.5%" class="ss_table_heading"><ssf:nlt tag="entry.modifiedBy"/></th>
+				<th width="10%" class="ss_table_heading"><ssf:nlt tag="entry.operation"/></th>
+				<th width="13%" class="ss_table_heading"><ssf:nlt tag="entry.processName"/></th>
+				<th width="13.25%" class="ss_table_heading"><p><ssf:nlt tag="entry.threadName"/></p></th>
+				<th width="7.5%" class="ss_table_heading"><ssf:nlt tag="entry.state"/></th>
 			</tr>
 			
 			<c:set var="odd" value="${false}"/>
@@ -69,46 +69,42 @@
 			<c:forEach var="change" items="${ss_changeLogList}">
 				<c:set var="odd" value= "${not odd}"/>
 				
-				<tr <c:if test="${odd == 'true'}">class="ss_oddRow"</c:if>>		
-					<td class="ss_dataTableMid">
+				<tr <c:if test="${odd == 'true'}">class="ss_table_oddRow "</c:if>>		
+					<td width="4.75%" class="ss_table_data_mid">
 					  ${change.folderEntry.attributes.logVersion}&nbsp
 					</td>
 					
-					<td class="ss_dataTableTD">
+					<td width="14%" class="ss_table_data_TD">
 					 ${change.folderEntry.attributes.modifiedOn}&nbsp
 					</td>
 					
-					<td class="ss_dataTableTD">
+					<td width="10.5%" class="ss_table_data_TD">
 					 ${change.folderEntry.attributes.modifiedBy}&nbsp
 					</td>
 					
-					<td class="ss_dataTableTD">
+					<td width="10%" class="ss_table_data_TD">
 					  <ssf:nlt tag="workflow.${change.folderEntry.attributes.operation}"/>&nbsp
 					</td>
 					
-					<td class="ss_dataTableTD">			
+					<td width="13%"class="ss_table_data_TD">			
 					  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
 						  ${workflow.value.attributes.process}&nbsp
 						<br>
 					  </c:forEach>
 					</td>
 					
-					<td class="ss_dataTableTD">
+					<td width="13.25" class="ss_table_data_TD">
 					  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
 						  ${workflow.value.attributes.threadCaption}&nbsp
 						<br>
 					  </c:forEach>
 					</td>
 					
-					<td class="ss_dataTableTD">
+					<td width="7.5" class="ss_table_data_TD">
 					  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
 						  ${workflow.value.attributes.stateCaption}&nbsp
 						<br>
 					  </c:forEach>
-					</td>
-					
-					<td class="ss_dataTableTD">
-					<c:out value="${change.definition}"/>
 					</td>
 				</tr>
 			</c:forEach>
@@ -117,8 +113,7 @@
 	 
 	 <div class="ss_formButton">
 	 	<input type="button" name="Button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;"/>
-	 </div>
-	 
+	 </div>	 
 <tr>
 <td valign="top" nowrap>
 </td>

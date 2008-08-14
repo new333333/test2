@@ -1193,7 +1193,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				    	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 				    	child.setText(Constants.ENTRY_TYPE_APPLICATION);
 				    	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
-						Map searchResults = profileModule.getApplications(profileModule.getProfileBinder().getId(), options);
+						Map searchResults = profileModule.getApplications(options);
 						List remoteAppList = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
 						int size = remoteAppList.size();
 						if (size <= 0) size = 1;

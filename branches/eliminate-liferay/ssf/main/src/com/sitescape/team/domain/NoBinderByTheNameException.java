@@ -37,16 +37,16 @@ import com.sitescape.team.NoObjectByTheNameException;
 public class NoBinderByTheNameException extends NoObjectByTheNameException {
     private static final String NoBinderByTheNameException_ErrorCode = "errorcode.no.binder.by.the.name";
     
-    public NoBinderByTheNameException(String userName) {
-        super(NoBinderByTheNameException_ErrorCode, userName);
+    public NoBinderByTheNameException(String name) {
+        super(NoBinderByTheNameException_ErrorCode, name);
     }
-    public NoBinderByTheNameException(String userName, String message) {
-        super(NoBinderByTheNameException_ErrorCode, userName, message);
+    public NoBinderByTheNameException(String name, String message) {
+        super(NoBinderByTheNameException_ErrorCode, name, message);
     }
-    public NoBinderByTheNameException(String userName, String message, Throwable cause) {
-        super(NoBinderByTheNameException_ErrorCode,userName, message, cause);
+    public NoBinderByTheNameException(String name, String message, Throwable cause) {
+        super(NoBinderByTheNameException_ErrorCode,name, message, cause);
     }
-    public NoBinderByTheNameException(String userName, Throwable cause) {
-        super(NoBinderByTheNameException_ErrorCode, userName, cause);
+    public NoBinderByTheNameException(String name, Throwable cause) {
+        super(NoBinderByTheNameException_ErrorCode, name, cause);
     }
 }

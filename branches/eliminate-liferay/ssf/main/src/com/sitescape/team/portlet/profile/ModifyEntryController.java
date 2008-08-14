@@ -68,7 +68,7 @@ public class ModifyEntryController extends SAbstractController {
 			String deleteWs = PortletRequestUtils.getStringParameter(request, "deleteWs", null);
 			Map options = new HashMap();
 			options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, GetterUtil.getBoolean(deleteWs, false));
-			getProfileModule().deleteEntry(binderId, entryId, null);			
+			getProfileModule().deleteEntry(entryId, options);			
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
@@ -90,7 +90,7 @@ public class ModifyEntryController extends SAbstractController {
 				}
 				
 			}
-			getProfileModule().modifyEntry(binderId, entryId, new MapInputData(formData), fileMap, deleteAtts, null, null);
+			getProfileModule().modifyEntry(entryId, new MapInputData(formData), fileMap, deleteAtts, null, null);
 
 			//See if there was a request to reorder the graphic files
 			String graphicFileIds = PortletRequestUtils.getStringParameter(request, "_graphic_id_order", "");
@@ -124,9 +124,8 @@ public class ModifyEntryController extends SAbstractController {
 		RenderResponse response) throws Exception {
 
 		Map model = new HashMap();	
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-		Principal entry  = getProfileModule().getEntry(binderId, entryId);
+		Principal entry  = getProfileModule().getEntry(entryId);
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.OPERATION_DELETE)) {
 			model.put(WebKeys.ENTRY, entry);

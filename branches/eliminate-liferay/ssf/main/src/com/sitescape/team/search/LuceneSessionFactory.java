@@ -29,6 +29,7 @@
 package com.sitescape.team.search;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Creates <code>LuceneSession</code>s.
@@ -64,4 +65,11 @@ public interface LuceneSessionFactory {
     public LuceneWriteSession openWriteSession(String[] nodeIds) throws LuceneException;
     
     public List<Node> getNodes();
+    
+    /**
+     * Return display properties if the operation is supported. Otherwise, returns
+     * an empty map.
+     * @return
+     */
+    public Map<String,String> getDisplayProperties();
 }

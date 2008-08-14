@@ -57,7 +57,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 <jsp:include page="/WEB-INF/jsp/definition_elements/photo/photo.jsp" />
 </c:if>
 <c:if test="${empty ss_folderViewStyle || ss_folderViewStyle == 'folder'}">
-<jsp:include page="/WEB-INF/jsp/definition_elements/searchview/searchview.jsp" />
+<jsp:include page="/WEB-INF/jsp/definition_elements/folder_view.jsp" />
 </c:if>
 <c:if test="${ss_folderViewStyle == 'guestbook'}">
 <jsp:include page="/WEB-INF/jsp/definition_elements/guestbook/guestbook.jsp" />

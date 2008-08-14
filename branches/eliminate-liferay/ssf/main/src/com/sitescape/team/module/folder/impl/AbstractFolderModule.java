@@ -27,6 +27,9 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.module.folder.impl;
+import static com.sitescape.util.search.Restrictions.between;
+import static com.sitescape.util.search.Restrictions.eq;
+import static com.sitescape.util.search.Restrictions.in;
 
 import java.io.InputStream;
 import java.text.ParseException;
@@ -48,8 +51,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -112,6 +113,7 @@ import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
+import com.sitescape.util.search.Criteria;
 /**
  *
  * @author Jong Kim
@@ -560,43 +562,21 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     }
  
     protected Hits getRecentEntries(Collection<Folder> folders) {
-    	Hits results = null;
-       	// Build the query
-    	org.dom4j.Document qTree = DocumentHelper.createDocument();
-    	Element rootElement = qTree.addElement(Constants.QUERY_ELEMENT);
-    	Element andElement = rootElement.addElement(Constants.AND_ELEMENT);
-    	Element field,child;
-    	//choose 1 of the folders
-    	Element orElement = andElement.addElement(Constants.OR_ELEMENT);
-    	Iterator itFolders = folders.iterator();
-    	while (itFolders.hasNext()) {
-    		Folder folder = (Folder) itFolders.next();
-        	field = orElement.addElement(Constants.FIELD_ELEMENT);
-        	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.BINDER_ID_FIELD);
-        	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-    		child.setText(folder.getId().toString());
-    	}
-    	//choose only entries/ not replies
-    	field = andElement.addElement(Constants.FIELD_ELEMENT);
-    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ENTRY_TYPE_FIELD);
-    	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-		child.setText(Constants.ENTRY_TYPE_ENTRY);
-
-		//choose a range of dates
-    	Element rangeElement = andElement.addElement(Constants.RANGE_ELEMENT);
-    	rangeElement.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.LASTACTIVITY_DAY_FIELD);
-    	rangeElement.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, Constants.INCLUSIVE_TRUE);
-    	Element startRange = rangeElement.addElement(Constants.RANGE_START);
-    	Date now = new Date();
+		ArrayList<String>ids = new ArrayList();
+		for (Folder f:folders) {
+			ids.add(f.getId().toString());
+		}
+	   	Date now = new Date();
     	Date startDate = new Date(now.getTime() - ObjectKeys.SEEN_MAP_TIMEOUT);
-    	startRange.addText(EntityIndexUtils.formatDayString(startDate));
-    	Element finishRange = rangeElement.addElement(Constants.RANGE_FINISH);
-    	finishRange.addText(EntityIndexUtils.formatDayString(now));
 
-     	
+    	Criteria crit = new Criteria()
+    		.add(eq(Constants.ENTRY_TYPE_FIELD,Constants.ENTRY_TYPE_ENTRY))  //choose only entries/ not replies
+    		.add(in(Constants.BINDER_ID_FIELD, ids))
+    		.add(between(Constants.LASTACTIVITY_DAY_FIELD,EntityIndexUtils.formatDayString(startDate), EntityIndexUtils.formatDayString(now)));
+    	Hits results = null;
     	//Create the Lucene query
     	QueryBuilder qb = new QueryBuilder(true);
-    	SearchObject so = qb.buildQuery(qTree);
+    	SearchObject so = qb.buildQuery(crit.toQuery());
     	
     	if(logger.isDebugEnabled())
     		logger.debug("Query is: " + so.getQueryString());

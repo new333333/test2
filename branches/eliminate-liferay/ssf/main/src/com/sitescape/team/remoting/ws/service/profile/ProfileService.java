@@ -36,13 +36,15 @@ public interface ProfileService {
 
 	public PrincipalCollection profile_getPrincipals(String accessToken, int firstRecord, int maxRecords);
 
-	public User profile_getUser(String accessToken, long binderId, long userId);
+	public User profile_getUser(String accessToken, long userId, boolean includeAttachments);
+	public User profile_getUserByName(String accessToken, String userName, boolean includeAttachments);
 	
-	public Group profile_getGroup(String accessToken, long binderId, long groupId);
+	public Group profile_getGroup(String accessToken, long groupId, boolean includeAttachments);
+	public Group profile_getGroupByName(String accessToken, String groupName, boolean includeAttachments);
 	
 	public void profile_addUserToGroup(String accessToken, long userId, String username, long groupId);
 	
-	public void profile_deletePrincipal(String accessToken, long binderId, long principalId);
+	public void profile_deletePrincipal(String accessToken, long principalId, boolean deleteWorkspace);
 	
 	public long profile_addUserWorkspace(String accessToken, long userId);
 	
@@ -53,5 +55,9 @@ public interface ProfileService {
 	public void profile_modifyUser(String accessToken, User user);
 	
 	public void profile_modifyGroup(String accessToken, Group group);
-		
+	
+	public void profile_removeFile(String accessToken, long principalId, String fileName);
+	
+	public void profile_uploadFile(String accessToken, long principalId, String fileUploadDataItemName, String fileName);
+	
 }

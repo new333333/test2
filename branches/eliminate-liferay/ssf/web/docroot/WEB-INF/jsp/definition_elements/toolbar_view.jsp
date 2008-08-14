@@ -216,7 +216,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
                         --%> id="${toolbarMenuCategoryItem.value.qualifiers.textId}"<%--
                     --%></c:if><%--
                     --%><c:if test="${toolbarMenuCategoryItem.value.qualifiers.selected}"><%--
-                        --%> class="ss_bold"<%--
+                        --%> class="ss_bold ss_selected"<%--
                     --%></c:if><%--
                     --%>><c:out value="${toolbarMenuCategoryItem.key}" /><%--
                     --%></span><%--
@@ -355,7 +355,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
                         --%> id="${toolbarMenu.value.qualifiers.textId}"<%--
                     --%></c:if><%--
                     --%><c:if test="${toolbarMenu.value.qualifiers.selected}"><%--
-                        --%> class="ss_bold"<%--
+                        --%> class="ss_bold ss_selected"<%--
                     --%></c:if><%--
                     --%>><%--
                     --%><c:if test="${!empty toolbarMenu.value.qualifiers.icon}"><%--
@@ -407,7 +407,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
                    --%> id="${toolbarMenu.value.qualifiers.textId}"<%--
                    --%></c:if><%--
                    --%><c:if test="${toolbarMenu.value.qualifiers.selected}"><%--
-                       --%> class="ss_bold"<%--
+                       --%> class="ss_bold ss_selected"<%--
                     --%></c:if><%--
                     --%>><c:out value="${toolbarMenu.value.title}" /><%--
                     --%></span><%--
@@ -424,7 +424,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
                     --%> id="${toolbarMenu.value.qualifiers.textId}"<%--
                 --%></c:if><%--
                 --%><c:if test="${toolbarMenu.value.qualifiers.selected}"><%--
-                --%> class="ss_bold"<%--
+                --%> class="ss_bold ss_selected"<%--
                 --%></c:if><%--
                 --%>><c:out value="${toolbarMenu.value.title}" /><%--
                 --%></span><%--

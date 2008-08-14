@@ -123,6 +123,10 @@ public class DefinitionUtils {
 		return null;
 
    }
+   public static String getFamily(Document document) {
+	   return getPropertyValue(document.getRootElement(), "family"); 
+   }
+
    public static Map getOptionalArgs(Element indexingElem) {
        Map map = new HashMap();
        for (Iterator it = indexingElem.selectNodes("./args/arg")

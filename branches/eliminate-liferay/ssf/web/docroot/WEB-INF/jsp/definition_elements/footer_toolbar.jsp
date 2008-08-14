@@ -214,12 +214,15 @@ Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHe
 --%><script type="text/javascript">
 <c:if test="${!empty ssFooterToolbar.RSS.url}">
 	//Add the rss feed info
-	var linkEle = document.createElement("link");
-	linkEle.setAttribute("rel", "alternate");
-	linkEle.setAttribute("type", "application/rss+xml");
-	linkEle.setAttribute("title", "RSS feed");
-	linkEle.setAttribute("href", "${ssFooterToolbar.RSS.url}");
-	document.getElementsByTagName("head")[0].appendChild(linkEle);
+	if (self.document.getElementById("ss_rssLink") == null) {
+		var ss_linkEle = document.createElement("link");
+		ss_linkEle.setAttribute("id", "ss_rssLink");
+		ss_linkEle.setAttribute("rel", "alternate");
+		ss_linkEle.setAttribute("type", "application/rss+xml");
+		ss_linkEle.setAttribute("title", "RSS<c:if test="${!empty ssBinder.title}"> - ${ssBinder.title}</c:if>");
+		ss_linkEle.setAttribute("href", "${ssFooterToolbar.RSS.url}");
+		document.getElementsByTagName("head")[0].appendChild(ss_linkEle);
+	}
 </c:if>
 	
 var iFrameFolderAttachmentInvokedOnce${ssFolder.id}${renderResponse.namespace} = "false"

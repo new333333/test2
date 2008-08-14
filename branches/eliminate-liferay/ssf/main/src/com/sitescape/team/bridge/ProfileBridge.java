@@ -64,8 +64,7 @@ public class ProfileBridge {
 		try {
 			User user = getProfileDao().findUserByName(oldScreenName, zoneName);
 
-			getProfileModule().modifyEntry(user.getParentBinder().getId(),
-					user.getId(), new MapInputData(map));
+			getProfileModule().modifyEntry(user.getId(), new MapInputData(map));
 		} catch (NoUserByTheNameException e) {
 			// The user doesn't exist on the Teaming side.
 			// This is possible, so don't throw an error.

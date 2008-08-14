@@ -1336,7 +1336,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			throw new DefinitionInvalidException("definition.error.noElement", new Object[] {defId});
 		//We have found both the source and the target ids; do the move
 		if (position.equals("into")) {
-			if (checkTargetOptions(definitionTree, targetItem, sourceItem)) {
+			if (checkTargetOptions(definitionTree, targetItem, sourceItem, false)) {
 				//Detach the source item
 				sourceItem.detach();
 				//Add it to the target element
@@ -1348,7 +1348,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		} else if (position.equals("above")) {
 			//Get the parent of the target item
 			Element targetParent = (Element) targetItem.getParent();
-			if (checkTargetOptions(definitionTree, targetParent, sourceItem)) {
+			if (checkTargetOptions(definitionTree, targetParent, sourceItem, false)) {
 				//Detach the source item
 				sourceItem.detach();
 				List targetParentContent = targetParent.content();
@@ -1362,7 +1362,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		} else if (position.equals("below")) {
 			//Get the parent of the target item
 			Element targetParent = (Element) targetItem.getParent();
-			if (checkTargetOptions(definitionTree, targetParent, sourceItem)) {
+			if (checkTargetOptions(definitionTree, targetParent, sourceItem, false)) {
 				//Detach the source item
 				sourceItem.detach();
 				List targetParentContent = targetParent.content();
@@ -1395,7 +1395,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
 		//We have found both the source and the target ids; do the move
 		//Check that the target area is allowed to receive one of these types
-		if (checkTargetOptions(definitionTree, targetItem, sourceItem)) {
+		if (checkTargetOptions(definitionTree, targetItem, sourceItem, true)) {
 			//Detach the source item
 			Element newItem = (Element)sourceItem.clone();
 			int nextId = Integer.valueOf(root.attributeValue("nextId")).intValue();
@@ -1417,7 +1417,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 		
 	//Routine to check that the source item is allowed to be added to the target item type
-	private boolean checkTargetOptions(Document definitionTree, Element target, Element source) {
+	private boolean checkTargetOptions(Document definitionTree, Element target, Element source, boolean copyOperation) {
 		String targetItemType = target.attributeValue("name");
 		String sourceItemType = source.attributeValue("name");
 		
@@ -1455,20 +1455,22 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 		//None found, this isn't allowed
 		if (!found) return false;
-		if ("false".equals(sourceItem.attributeValue("multipleAllowed")) && 
+		if (copyOperation) {
+			if ("false".equals(sourceItem.attributeValue("multipleAllowed")) && 
 				target.getDocument().getRootElement().selectSingleNode("//item[@name='"+sourceItemType+"']") != null) return false;
 
-		if ("false".equals(sourceItem.attributeValue("multipleAllowedInParent")) && 
-				target.selectSingleNode("item[@name='"+sourceItemType+"']") != null) return false;
-
-		//now check unique constraints
-		String uniquePath = sourceItem.attributeValue("unique");
-		if (Validator.isNull(uniquePath)) return true;
-		//There is a request for uniqueness, so get the list from the definition file
-		List<Element> items = target.selectNodes(uniquePath);
-		if (items.isEmpty()) return true;
-		return false;
-
+			if ("false".equals(sourceItem.attributeValue("multipleAllowedInParent")) && 
+					target.selectSingleNode("item[@name='"+sourceItemType+"']") != null) return false;
+	
+			//now check unique constraints
+			String uniquePath = sourceItem.attributeValue("unique");
+			if (Validator.isNull(uniquePath)) return true;
+			//There is a request for uniqueness, so get the list from the definition file
+			List<Element> items = target.selectNodes(uniquePath);
+			if (items.isEmpty()) return true;
+			return false;
+		}
+		return true;
 	}
 
 	private int populateNewDefinitionTree(Element source, Element target, final Element configRoot, int id, boolean includeDefault) {

@@ -73,7 +73,7 @@ public class AddEntryController extends SAbstractController {
 				fileMap = new HashMap();
 			}
 			MapInputData inputData = new MapInputData(formData);
-			entryId= getProfileModule().addUser(binderId, entryType, inputData, fileMap, null);
+			entryId= getProfileModule().addUser(entryType, inputData, fileMap, null);
 			setupViewEntry(response, binderId, entryId);
 			//flag reload of folder listing
 			response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
