@@ -134,6 +134,7 @@
 %>
 <c:set var="nextEntry" value="<%= nextEntry %>"/>
 <li>
+<div class="ss_treeWidget">
 <a
   href="<ssf:url 
   folderId="${ssDefinitionEntry.parentBinder.id}" 
@@ -141,11 +142,10 @@
   action="view_folder_entry"/>"
   onClick="return(ss_navigation_goto(this.href));"
 >
-<c:if test="${empty nextEntry.title}" >
---<ssf:nlt tag="entry.noTitle" />--
-</c:if>
-<c:out value="${nextEntry.title}" /><img border="0" <ssf:alt/>
-  style="width:1px;height:14px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
+<span><c:if test="${empty nextEntry.title}" >--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${nextEntry.title}" /></span>
+<img class="ss_twNone" border="0" <ssf:alt/>
+  src="<html:imagesPath/>pics/1pix.gif"/></a><br/>
+</div>
 </li>
 <li style="padding-top:11px;">//</li>
 <%
@@ -155,6 +155,8 @@
 
 <li>
 <c:if test="${ssDefinitionEntry.entityType == 'folderEntry' || empty ssNavigationLinkTree[ssDefinitionEntry.id]}">
+<div style="display:inline">
+<div class="ss_treeWidget">
 <a
 <c:if test="${ssDefinitionEntry.entityType == 'folderEntry'}">
   href="<ssf:url 
@@ -174,11 +176,11 @@
 </c:if>
   onClick="return(ss_navigation_goto(this.href));"
 >
-<c:if test="${empty ssDefinitionEntry.title}" >
---<ssf:nlt tag="entry.noTitle" />--
-</c:if>
-<c:out value="${ssDefinitionEntry.title}" /><img border="0" <ssf:alt/>
-  style="width:1px;height:14px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
+<span><c:if test="${empty ssDefinitionEntry.title}" >--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${ssDefinitionEntry.title}" /></span>
+<img class="ss_twNone" border="0" <ssf:alt/>
+  src="<html:imagesPath/>pics/1pix.gif"/></a><br/>
+</div>
+</div>
 </c:if>
 <c:if test="${ssDefinitionEntry.entityType != 'folderEntry' && !empty ssNavigationLinkTree[ssDefinitionEntry.id]}">
 <div style="display:inline">
