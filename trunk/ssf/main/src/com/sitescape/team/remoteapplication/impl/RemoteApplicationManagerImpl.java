@@ -266,6 +266,9 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 		catch(IOException e) {
 			throw new RemoteApplicationException(applicationId, e.toString(), e);
 		}
+		finally {
+			getAccessTokenManager().destroyRequestScopedToken(accessToken);
+		}
 	}
 
 	/*
