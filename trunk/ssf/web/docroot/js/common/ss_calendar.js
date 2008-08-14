@@ -160,7 +160,7 @@ function ss_calendarEngine(
 		workDayGridTitle: "Work day",
 		fullDayGridTitle: "Full day",
 		entriesLabel: "entries",
-		lang: djConfig&&djConfig["locale"]?djConfig["locale"]:"en"
+		lang: window.dojo&&dojo.locale?dojo.locale:"en"
 	};
 	
 	this.NUMBER_OF_DEFINED_CALENDAR_STYLES = 5;
@@ -2543,7 +2543,7 @@ if (!window.ss_calendar_settings) {
 			workDayStartsAtLabel: "Work day starts at",
 			dayNames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
 			submitLabel: "Save",
-			lang: djConfig&&djConfig["locale"]?djConfig["locale"]:"en"
+			lang: window.dojo&&dojo.locale?dojo.locale:"en"
 		},
 		
 		configure : function(weekFirstDay, workDayStart) {

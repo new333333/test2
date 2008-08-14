@@ -200,7 +200,7 @@ public class WebKeys {
 	public static final String URL_ZONE_NAME = "zoneName";
 	public static final String URL_VIRTUAL_HOST = "virtualHost";
 	public static final String URL_ID_CHOICES = "idChoices";
-	public static final String URL_ID_CHOICES_SEPARATOR = "%";
+	public static final String URL_ID_CHOICES_SEPARATOR = "_";
 	public static final String URL_ID_CHOICES_REMOVE = "idChoicesRemove";
 	public static final String URL_URL = "url";
 	public static final String URL_ICAL_URL = "iCalURL";
@@ -340,19 +340,15 @@ public class WebKeys {
     public static final String OPERATION_DASHBOARD_SEARCH_MORE="search_more";
     public static final String OPERATION_DASHBOARD_TEAM_MORE="team_more";
 	public static final String OPERATION_FIND_ENTRIES_SEARCH = "find_entries_search";
-	public static final String OPERATION_FIND_ENTRY_TYPES_WIDGET = "get_entry_types_widget";
-	public static final String OPERATION_FIND_USERS_WIDGET = "get_users_widget";
-	public static final String OPERATION_FIND_GROUPS_WIDGET = "get_groups_widget";
-	public static final String OPERATION_FIND_TEAMS_WIDGET = "get_teams_widget";
 	public static final String OPERATION_FIND_ENTRY_ATTRIBUTES_WIDGET = "get_entry_attributes_widget";	
-	public static final String OPERATION_FIND_ENTRY_FIELDS_WIDGET = "get_entry_fields_widget";	
 	public static final String OPERATION_FIND_ENTRY_FOR_FILE = "find_entry_for_file";	
 	public static final String OPERATION_FIND_PLACES_SEARCH = "find_places_search";
 	public static final String OPERATION_FIND_TAG_SEARCH = "find_tag_search";
-	public static final String OPERATION_FIND_TAG_WIDGET = "get_tags_widget";	
-	public static final String OPERATION_FIND_USER_SEARCH = "find_user_search";
-	public static final String OPERATION_FIND_WORKFLOWS_WIDGET = "get_workflows_widget";	
-	public static final String OPERATION_FIND_WORKFLOW_STEP_WIDGET = "get_workflow_step_widget";	
+	public static final String OPERATION_FIND_WORKFLOWS_SEARCH = "find_workflows_search";
+	public static final String OPERATION_FIND_WORKFLOW_STEPS_SEARCH = "find_workflow_steps_search";	
+	public static final String OPERATION_FIND_ENTRY_TYPES_SEARCH = "find_entry_types_search";
+	public static final String OPERATION_FIND_ENTRY_FIELDS_SEARCH = "find_entry_fields_search";
+	public static final String OPERATION_FIND_USER_SEARCH = "find_user_search";	
 	public static final String OPERATION_GET_ACCESS_CONTROL_TABLE = "get_access_control_table";
 	public static final String OPERATION_ADD_ATTACHMENT_OPTIONS = "add_attachment_options";
 	public static final String OPERATION_ADD_FOLDER_ATTACHMENT_OPTIONS = "add_folder_attachment_options";
@@ -914,6 +910,8 @@ public class WebKeys {
     public static final String FIND_FOLDERS_ONLY="ssFindFoldersOnly";
     public static final String FIND_ACCESSIBILITY_TEXT="accessibilityText";
     public static final String FIND_ADD_CURRENT_USER="ssFindAddCurrentUser";
+    public static final String FIND_DISPLAY_VALUE="ssDisplayValue";
+    public static final String FIND_DISPLAY_VALUE_ONLY="ssDisplayValueOnly";
     
     public static final String SECTION_NUMBER="ss_sectionNumber";
     public static final String SECTION_TEXT="ss_sectionText";

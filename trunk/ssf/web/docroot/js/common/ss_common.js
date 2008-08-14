@@ -1493,13 +1493,17 @@ function ss_getObjAbsY(obj) {
     return y
 }
 
-function ss_getDivTop(divName) {
-    var obj = self.document.getElementById(divName);
+function ss_getDivTop(selector) {
+	if (selector && selector.nodeType) {
+		var obj = selector;
+	} else {
+		var obj = self.document.getElementById(selector);
+	}
     if (!obj) return 0;
     return dojo.coords(obj, true).y;
 
     var top = 0;
-    var obj = self.document.getElementById(divName)
+    var obj = self.document.getElementById(selector)
     while (1) {
         if (!obj) {break}
         top += parseInt(obj.offsetTop)
@@ -1509,14 +1513,18 @@ function ss_getDivTop(divName) {
     return parseInt(top);
 }
 
-function ss_getDivLeft(divName) {
-    var obj = self.document.getElementById(divName);
+function ss_getDivLeft(selector) {
+	if (selector && selector.nodeType) {
+		var obj = selector;
+	} else {
+		var obj = self.document.getElementById(selector);
+	}
     if (!obj) return 0;
     return dojo.coords(obj, true).x;
     
     var left = 0;
     if (ss_isNSN || ss_isNSN6 || ss_isMoz5) {
-        var obj = self.document.getElementById(divName)
+        var obj = self.document.getElementById(selector)
         while (1) {
             if (!obj) {break}
             left += parseInt(obj.offsetLeft)
@@ -1524,7 +1532,7 @@ function ss_getDivLeft(divName) {
             obj = obj.offsetParent
         }
     } else {
-        var obj = self.document.all[divName]
+        var obj = self.document.all[selector]
         while (1) {
             if (!obj) {break}
             left += obj.offsetLeft
@@ -5215,10 +5223,6 @@ function ss_submitParentForm(htmlObj) {
 	}
 }
 
-function ss_putValueInto(objId, value) {
-	document.getElementById(objId).value = value;
-}
-
 function ss_ajaxValidate(url, obj, labelId, msgBoxId) {
 	ss_setupStatusMessageDiv();
  	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
@@ -6004,14 +6008,14 @@ function ss_saveTreeId(obj, treeName, placeId, idChoicesInputId) {
 		
 	if (obj.type == 'radio') {
 		if (idChoices != null && typeof idChoices !== "undefined") {
-			if (idChoices.value && idChoices.value != (obj.name + "%" + obj.value)) {
+			if (idChoices.value && idChoices.value != (obj.name + "_" + obj.value)) {
 				selected = parent.document.getElementById("ss_tree_radio" + treeName + idChoices.value);
 				if (selected && selected.checked) {
 					selected.checked = false;
 				}
 			}
 		
-			idChoices.value = obj.name + "%" + obj.value;
+			idChoices.value = obj.name + "_" + obj.value;
 			if (treeName) {
 
 				// accessible mode only - unselect last choice if visible 

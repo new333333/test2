@@ -33,9 +33,6 @@
 <c:set var="treeName" value="${ssComponentId}${renderResponse.namespace}"/>
 
 <script type="text/javascript">
-	dojo.require('dojox.widget.*');
-	dojo.require('sitescape.widget.SelectPageable');
-
 	function ${treeName}_showId(forum, obj) {
 		return ss_checkTree(obj, "ss_tree_checkbox${treeName}ss_folder_id" + forum)
 	}

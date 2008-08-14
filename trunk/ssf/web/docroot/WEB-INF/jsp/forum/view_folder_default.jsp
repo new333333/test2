@@ -28,69 +28,65 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% // The main workspace view  %>
+<% // The default folder view  %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%
-String wsTreeName = renderResponse.getNamespace() + "_wsTree";
-%>
 <ssf:ifadapter>
 <body class="ss_style_body tundra">
 </ssf:ifadapter>
 
-<script type="text/javascript">
-function <%= wsTreeName %>_showId(id, obj, action) {
-	if (typeof ss_workarea_showId !== "undefined") {
-		return ss_workarea_showId(id, action);
-	}
-	//Build a url to go to
-	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
-			name="action" value="ssActionPlaceHolder"/><portlet:param 
-			name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>"
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
-	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-	self.location.href = url;
-	return false;
-}
-</script>
-
-<c:if test="${!empty ssReloadUrl}">
-	<script type="text/javascript">
-		//Open the current url in the opener window
-		ss_reloadOpener('<c:out value="${ssReloadUrl}" escapeXml="false"/>')
-	</script>
-</c:if>
-
-<c:if test="${empty ssReloadUrl}">
-
-<script type="text/javascript">
-var ss_reloadUrl = "${ss_reloadUrl}";
-var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
-</script>
-
-<c:if test="${empty ssBinder}">
-	<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
-	<% // Navigation bar %>
-	<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
-    </div>
+<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
+<jsp:useBean id="ssFolder" type="com.sitescape.team.domain.Binder" scope="request" />
 
 <div class="ss_style ss_portlet">
-<c:if test="${!empty ssWsDomTree}">
-<jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
-	<ssf:tree treeName="<%= wsTreeName %>" 
-	  topId="${ssWsDomTreeBinderId}" 
-	  treeDocument="<%= ssWsDomTree %>"  
-	  rootOpen="true"
-	  showIdRoutine="<%= wsTreeName + "_showId" %>"
-	  namespace="${renderResponse.namespace}"
-	  />
-</c:if>
-</div>	
-</c:if>
-</c:if>
+
+<% // Navigation bar %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+
+<% // BEGIN SIDEBAR LAYOUT  %>
+	
+	  	   <div id="ss_sideNav_wrap"> <% // new sidebar format %>
+
+			<% // Status %>
+			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
+	
+			<% // "It" Bars %>
+			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_action_dispatch.jsp" />
+		
+			<% // RSS Feed %>
+			<div id="ss_leftNav">
+				<ul>
+					<li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" /></li>
+				</ul>
+ 			</div>
+	
+			<% // Recent Places %>
+			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
+
+			<% // Folder Sidebar %>
+    		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
+
+			<% // Workspace Tree %>    
+    		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tree.jsp" />
+
+	  	  </div> <% // end of new sidebar format %>
+
+<% // Navigation links %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
+
+<% // Toolbar %>
+<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar" />
+
+<% // Show the folder default parts %>
+
+<% // Folder listing %>
+
+<%@ include file="/WEB-INF/jsp/definition_elements/folder_list.jsp" %>
+
+</div>
 
 <ssf:ifadapter>
-	</body>
+</body>
 </html>
 </ssf:ifadapter>
+
