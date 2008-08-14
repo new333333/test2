@@ -478,6 +478,7 @@ public class WorkspaceTreeHelper {
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		Toolbar dashboardToolbar = new Toolbar();
+		Toolbar whatsNewToolbar = new Toolbar();
 		Map qualifiers;
 		AdaptedPortletURL adapterUrl;
 
@@ -817,11 +818,38 @@ public class WorkspaceTreeHelper {
 			model.put(WebKeys.TOOLBAR_THEME_IDS, NLT.get("ui.availableThemeIds"));
 			model.put(WebKeys.TOOLBAR_THEME_NAMES, NLT.get("ui.availableThemeNames"));
 		}
+
+		//Set up the whatsNewToolbar links
+		//What's new
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		adapterUrl.setParameter(WebKeys.URL_TYPE, "whatsNew");
+		adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
+		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+		qualifiers = new HashMap();
+		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'whatsNew', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
+		whatsNewToolbar.addToolbarMenu("whatsnew", NLT.get("toolbar.menu.whatsNew"), 
+				adapterUrl.toString(), qualifiers);
 		
+		// What's unseen
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		adapterUrl.setParameter(WebKeys.URL_TYPE, "unseen");
+		adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
+		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+		qualifiers = new HashMap();
+		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'unseen', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
+		whatsNewToolbar.addToolbarMenu("unseen", NLT.get("toolbar.menu.whatsUnseen"), 
+				adapterUrl.toString(), qualifiers);
+
+
 
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
+		model.put(WebKeys.WHATS_NEW_TOOLBAR,  whatsNewToolbar.getToolbar());
 	}
 	
 	private static String[] collectContributorIds(Workspace workspace) {
