@@ -35,35 +35,33 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.FileHelper;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.FileUtil;
-public class ReadFileController extends AbstractReadFileController {
+public class ReadThumbnailController extends AbstractReadFileController {
 	
 	
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-		// Assuming that the full request URL was http://localhost:8080/ssf/s/readFile/xxx/123/456/789/junk.doc,
-		// the following call returns "/readFile/xxx/123/456/789/junk.doc" portion of the URL.
 		if (!WebHelper.isUserLoggedIn(request)) {
 			response.getOutputStream().print(NLT.get("login.please"));
 			return null;
 		}
+		// Assuming that the full request URL was http://localhost:8080/ssf/s/readThumbnail/xxx/123/456/789/jversion/unk.doc,
+		// the following call returns "/readThumbnail/xxx/123/456/789/version/junk.doc" portion of the URL.
 		String pathInfo = request.getPathInfo();
 		
 		String[] args = pathInfo.split(Constants.SLASH);
-		//We expect the url to be formatted as /readFile/entityType/binderId/entryId/fileId/fileTime/fileVersion/filename.ext
+		//We expect the url to be formatted as /readThumbnail/entityType/binderId/entryId/fileId/fileTime/fileVersion/filename.ext
 		//To support sitescape forum, where folder structures were allowed on an entry, the url may contain more pathinfo.
 		//For a binder, the entityId = binderId 
 		//fileVersion=last, read latest
-		//fileTime is present for browser cachinge
+		//fileTime is present for browser caching
 		//filename is present for browser handling of relative files
 		if (args.length < 9) return null;
 		
@@ -85,31 +83,23 @@ public class ReadFileController extends AbstractReadFileController {
 			}
 
 			if (fa != null) {
-				String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
-				String contentType = getFileTypeMap().getContentType(shortFileName);
-				response.setContentType(contentType);
 				response.setHeader("Cache-Control", "private");
-				String attachment = "";
-				if (FileHelper.checkIfAttachment(contentType)) attachment = "attachment; ";
 				response.setHeader("Content-Disposition",
-						attachment + "filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\"");
-				response.setHeader("Last-Modified", formatDate(fa.getModification().getDate()));	
+							"filename=\"" + FileHelper.encodeFileName(request, FileUtil.getShortFileName(fa.getFileItem().getName())) + "\"");				
+				response.setHeader("Last-Modified", formatDate(fa.getModification().getDate()));
 				try {
-					Binder parent = getBinder(entity);
-					response.setHeader("Content-Length", 
-							String.valueOf(FileHelper.getLength(parent, entity, fa)));
-					getFileModule().readFile(parent, entity, fa, response.getOutputStream());
-					getReportModule().addFileInfo(AuditType.download, fa);
+					response.setContentType("image/jpeg");
+					getFileModule().readThumbnailFile(getBinder(entity), entity, fa, response.getOutputStream());
 				}
 				catch(Exception e) {
 					response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
 				}
-			}
-			try {
-				response.getOutputStream().flush();
-			}
-			catch(Exception ignore) {}
 
+				try {
+					response.getOutputStream().flush();
+				}
+				catch(Exception ignore) {}
+			}
 		} catch(Exception e) {
 			//Bad format of url; just return null
 			response.getOutputStream().print(NLT.get("file.error.unknownFile"));
