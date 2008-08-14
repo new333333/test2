@@ -3200,7 +3200,7 @@ div.ss_cal_dayGridWindowOuter {
 }
 
 div.ss_cal_dayGridWindowInner {
-  position: absolute;
+  position: relative;
   top: -255px;    /* Note: This is modified dynamically in the element */
 }
 
