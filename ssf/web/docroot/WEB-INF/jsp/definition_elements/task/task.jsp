@@ -62,14 +62,20 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 <div class="ss_folder_border">
 <% // Add the toolbar with the navigation widgets, commands and filter %>
 <ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
-<% // Entry toolbar %>
-<c:if test="${!empty ssEntryToolbar}">
-<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
-</c:if>
+ <% // Entry toolbar %>
+ <c:if test="${!empty ssEntryToolbar}">
+  <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
+ </c:if>
+ <ssf:toolbar toolbar="${ss_whatsNewToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />			
 </ssf:toolbar>
 <div class="ss_clear"></div>
 </div>
 <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
+<div id="ss_whatsNewDiv${ss_namespace}">
+<c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
+<%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>
+</c:if>
+</div>
 <div class="ss_folder" id="ss_task_folder_div">
 <%@ include file="/WEB-INF/jsp/definition_elements/task/task_nav_bar.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/task/task_folder_listing.jsp" %>
