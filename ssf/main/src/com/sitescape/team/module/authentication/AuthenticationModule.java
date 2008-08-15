@@ -35,6 +35,7 @@ import javax.naming.NamingException;
 
 import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.NoUserByTheNameException;
+import com.sitescape.team.domain.ZoneInfo;
 
 /**
  * @author Janet McCann
@@ -45,6 +46,9 @@ public interface AuthenticationModule {
 		manageAuthentication
 	}
 	public boolean testAccess(AuthenticationOperation operation);
+	
+	public void addZone(ZoneInfo zoneInfo) throws Exception;
+	public void removeZone(Long zoneId);
 
 	public List<LdapConnectionConfig> getLdapConnectionConfigs(Long zoneId);
 	public List<LdapConnectionConfig> getLdapConnectionConfigs();
