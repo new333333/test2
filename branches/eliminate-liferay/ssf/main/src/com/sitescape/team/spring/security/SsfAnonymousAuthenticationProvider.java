@@ -13,17 +13,18 @@ import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
 public class SsfAnonymousAuthenticationProvider extends
 		AnonymousAuthenticationProvider {
 
-	private ZoneModule zoneModule;
-	public ZoneModule getZoneModule() { return zoneModule; }
-	public void setZoneModule(ZoneModule zoneModule) { this.zoneModule = zoneModule; }
-
+	protected String zoneName;
+	public SsfAnonymousAuthenticationProvider(String zoneName)
+	{
+		this.zoneName = zoneName;
+	}
 	@Override
 	public Authentication authenticate(Authentication authentication)
 		throws AuthenticationException
 	{
 		authentication = super.authenticate(authentication);
 		if(authentication != null) {
-			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()), authentication.getName(), "", true, false, true, new HashMap(), null);
+			AuthenticationManagerUtil.authenticate(zoneName, authentication.getName(), "", true, false, true, new HashMap(), null);
 		}
 		return authentication;
 	}

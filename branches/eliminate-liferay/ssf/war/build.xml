@@ -21,7 +21,6 @@
 			<fileset dir="${project.dir}/main" includes="ssf-main.jar" />
 			<fileset dir="${project.dir}/util" includes="ssf-util.jar" />
 			<fileset dir="${project.dir}/commons-httpclient-contrib" includes="ssf-commons-httpclient-contrib.jar" />
-			<fileset dir="${project.dir}/apacheds-server-jndi" includes="ssf-apacheds-server-jndi.jar" />
 			<fileset dir="${project.dir}/lucene-contrib" includes="ssf-lucene-contrib.jar" />
 			<fileset dir="${project.dir}/slide-webdavclient" includes="ssf-slide-webdavclient.jar" />
 			<fileset dir="${project.dir}/taglib" includes="ssf-taglib.jar" />
