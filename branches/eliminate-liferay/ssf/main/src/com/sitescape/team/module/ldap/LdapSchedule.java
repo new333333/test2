@@ -34,7 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.sitescape.team.domain.AuthenticationConfig;
+import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.jobs.Schedule;
 import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.util.GetterUtil;

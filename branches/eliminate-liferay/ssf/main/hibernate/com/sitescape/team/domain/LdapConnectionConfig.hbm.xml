@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping auto-import="false">
-  <class table="SS_AuthenticationConfig" name="com.sitescape.team.domain.AuthenticationConfig">
+  <class table="SS_LdapConnectionConfig" name="com.sitescape.team.domain.LdapConnectionConfig">
     <id unsaved-value="null" name="id">
       <column name="id" sql-type="char(32)"/>
       <generator class="uuid.hex"/>

@@ -33,7 +33,7 @@ import java.util.List;
 
 import javax.naming.NamingException;
 
-import com.sitescape.team.domain.AuthenticationConfig;
+import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.NoUserByTheNameException;
 
 /**
@@ -46,7 +46,7 @@ public interface AuthenticationModule {
 	}
 	public boolean testAccess(AuthenticationOperation operation);
 
-	public List<AuthenticationConfig> getAuthenticationConfigs(Long zoneId);
-	public List<AuthenticationConfig> getAuthenticationConfigs();
-	public void setAuthenticationConfigs(List<AuthenticationConfig> configs);
+	public List<LdapConnectionConfig> getLdapConnectionConfigs(Long zoneId);
+	public List<LdapConnectionConfig> getLdapConnectionConfigs();
+	public void setLdapConnectionConfigs(List<LdapConnectionConfig> configs);
 }
