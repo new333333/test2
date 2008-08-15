@@ -55,11 +55,19 @@ public class BaseZoneModule extends AbstractZoneModule {
 	}
 
 	public List<ZoneInfo> getZoneInfos() {
+		ZoneInfo info = getZoneInfo(getZoneIdByZoneName(SZoneConfig.getDefaultZoneName()));
+		return Arrays.asList(new ZoneInfo[] {info});
+	}
+
+	public ZoneInfo getZoneInfo(Long zoneId) {
 		ZoneInfo info = new ZoneInfo();
 		info.setZoneName(SZoneConfig.getDefaultZoneName());
-		info.setZoneId(getZoneIdByZoneName(info.getZoneName()));
+		if(!zoneId.equals(getZoneIdByZoneName(info.getZoneName()))) {
+			return null;
+		}
+		info.setZoneId(zoneId);
 		info.setVirtualHost(getVirtualHost(info.getZoneName()));
-		return Arrays.asList(new ZoneInfo[] {info});
+		return info;
 	}
 
 	public void checkAccess() throws AccessControlException {

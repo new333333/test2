@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_AuthenticationConfig" name="com.sitescape.team.domain.AuthenticationConfig">
+    <cache usage="read-write"/>
+    <id unsaved-value="null" name="zoneId"/>
+    <property name="allowLocalLogin"/>
+    <property name="allowAnonymousAccess"/>
+    <property name="allowSelfRegistration"/>
+    <property name="lastUpdate"/>
+  </class>
+</hibernate-mapping>

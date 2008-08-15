@@ -34,6 +34,7 @@ import com.sitescape.team.asmodule.zonecontext.ZoneContextHolder;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.OrderBy;
+import com.sitescape.team.domain.AuthenticationConfig;
 import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.ZoneInfo;
 import com.sitescape.team.module.authentication.AuthenticationModule;
@@ -78,11 +79,13 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 
 	protected Map<Long, SsfAnonymousAuthenticationProvider> anonymousProviders = null;
 	protected Map<Long, SsfAuthenticationProvider> localProviders = null;
+	protected Map<Long, Long> lastUpdates = null;
 
 	public AuthenticationModuleImpl() {
 		authenticators = new HashMap<Long, ProviderManager>();
 		anonymousProviders = new HashMap<Long, SsfAnonymousAuthenticationProvider>();
 		localProviders = new HashMap<Long, SsfAuthenticationProvider>();
+		lastUpdates = new HashMap<Long, Long>();
 	}
 
 	public boolean testAccess(AuthenticationOperation operation) {
@@ -101,34 +104,82 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 	}
 
 	public void afterPropertiesSet() throws Exception {
+/*
 		for (ZoneInfo zoneInfo : getZoneModule().getZoneInfos()) {
-			logger.debug("Setting authentication info for zone "
-					+ zoneInfo.getZoneName() + ", host "
-					+ zoneInfo.getVirtualHost());
-			ProviderManager pm = new ProviderManager();
-
-			SsfAnonymousAuthenticationProvider anonymousProvider = new SsfAnonymousAuthenticationProvider(zoneInfo.getZoneName());
-			anonymousProvider.setKey(getKeyForZone(zoneInfo));
-			anonymousProvider.afterPropertiesSet();
-			anonymousProviders.put(zoneInfo.getZoneId(), anonymousProvider);
-			
-			SsfAuthenticationProvider localProvider = new SsfAuthenticationProvider(zoneInfo.getZoneName());
-			localProviders.put(zoneInfo.getZoneId(), localProvider);
-			
-			authenticators.put(zoneInfo.getZoneId(), pm);
-
-			rebuildProvidersForZone(zoneInfo.getZoneId());
+			addZone(zoneInfo);
 		}
+		*/
 		getProviderManager().getProviders().add(this);
 	}
 
+	public void addZone(ZoneInfo zoneInfo) throws Exception
+	{
+		if(authenticators.containsKey(zoneInfo.getId())) {
+			logger.error("Duplicate zone added to AuthenticationModule: " + zoneInfo.getId() + " " + zoneInfo.getZoneName());
+			throw new Exception("Duplicate zone added to AuthenticationModule");
+		}
+		logger.debug("Setting authentication info for zone "
+				+ zoneInfo.getZoneName() + ", host "
+				+ zoneInfo.getVirtualHost());
+		ProviderManager pm = new ProviderManager();
+
+		SsfAnonymousAuthenticationProvider anonymousProvider = new SsfAnonymousAuthenticationProvider(zoneInfo.getZoneName());
+		anonymousProvider.setKey(getKeyForZone(zoneInfo));
+		anonymousProvider.afterPropertiesSet();
+		anonymousProviders.put(zoneInfo.getZoneId(), anonymousProvider);
+		
+		SsfAuthenticationProvider localProvider = new SsfAuthenticationProvider(zoneInfo.getZoneName());
+		localProviders.put(zoneInfo.getZoneId(), localProvider);
+		
+		authenticators.put(zoneInfo.getZoneId(), pm);
+
+		rebuildProvidersForZone(zoneInfo.getZoneId());
+	}
+	
+	public void removeZone(Long zoneId)
+	{
+		if(authenticators.containsKey(zoneId)) {
+			authenticators.remove(zoneId);
+			anonymousProviders.remove(zoneId);
+			localProviders.remove(zoneId);
+			lastUpdates.remove(zoneId);
+		}
+	}
+
+	protected void ensureZoneIsConfigured(Long zoneId) throws Exception
+	{
+		ZoneInfo zoneInfo = getZoneModule().getZoneInfo(zoneId);
+		if(zoneInfo == null) {
+			removeZone(zoneId);
+		} else {
+			if(! authenticators.containsKey(zoneId)) {
+				addZone(zoneInfo);
+			}
+			AuthenticationConfig authConfig = getAuthenticationConfigForZone(zoneId);
+			if(authConfig.getLastUpdate().compareTo(lastUpdates.get(zoneId)) > 0) {
+				try {
+					rebuildProvidersForZone(zoneId);
+				} catch(Exception e) {
+					logger.error("Unable to rebuild providers for zone " + zoneId);
+				}
+			}
+		}
+	}
+	
 	protected void rebuildProvidersForZone(Long zoneId) throws Exception {
+		AuthenticationConfig authConfig = getAuthenticationConfigForZone(zoneId);
+		
 		ProviderManager pm = authenticators.get(zoneId);
 		List<AuthenticationProvider> providers = createProvidersForZone(zoneId);
-		//providers.add(localProviders.get(zoneId));
-		providers.add(anonymousProviders.get(zoneId));
+		if(authConfig.isAllowLocalLogin()) {
+			providers.add(localProviders.get(zoneId));
+		}
+		if(authConfig.isAllowAnonymousAccess()) {
+			providers.add(anonymousProviders.get(zoneId));
+		}
 
 		pm.setProviders(providers);
+		lastUpdates.put(zoneId, authConfig.getLastUpdate());
 	}
 
 	protected String getKeyForZone(ZoneInfo zoneInfo) {
@@ -214,6 +265,12 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException
     {
     	Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
+    	try {
+    		ensureZoneIsConfigured(zone);
+    	} catch(Exception e) {
+    		logger.error("Unable to configure authentication for zone " + zone);
+    		throw new AuthenticationServiceException("Unable to configure authentication for zone " + zone, e);
+    	}
     	if(authenticators.containsKey(zone)) {
        		Authentication result = null;
     		try {
@@ -224,10 +281,10 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
     			return result;
     		} catch(UsernameNotFoundException e) {
     		}
+    		if(SZoneConfig.getAdminUserName(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName())).equals(authentication.getName())) {
+    			return localProviders.get(zone).authenticate(authentication);
+    		}
     	}
-		if(SZoneConfig.getAdminUserName(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName())).equals(authentication.getName())) {
-			return localProviders.get(zone).authenticate(authentication);
-		}
     	throw new UsernameNotFoundException("No such user");
     }
 
@@ -258,6 +315,12 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 	public boolean supports(Class authentication) {
 		Long zone = getZoneModule().getZoneIdByVirtualHost(
 				ZoneContextHolder.getServerName());
+    	try {
+    		ensureZoneIsConfigured(zone);
+    	} catch(Exception e) {
+    		logger.error("Unable to configure authentication for zone " + zone);
+    		throw new AuthenticationServiceException("Unable to configure authentication for zone " + zone, e);
+    	}
 		if (authenticators.containsKey(zone)) {
 			for (Object o : authenticators.get(zone).getProviders()) {
 				AuthenticationProvider p = (AuthenticationProvider) o;
@@ -265,9 +328,10 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 					return true;
 				}
 			}
+			return (localProviders.get(zone).supports(authentication) ||
+					anonymousProviders.get(zone).supports(authentication));
 		}
-		return (localProviders.get(zone).supports(authentication) ||
-				anonymousProviders.get(zone).supports(authentication));
+		return false;
 	}
 
 	public List<LdapConnectionConfig> getLdapConnectionConfigs() {
@@ -313,11 +377,13 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 		for (LdapConnectionConfig config : notFound.values()) {
 			getCoreDao().delete(config);
 		}
-		try {
-			rebuildProvidersForZone(zoneId);
-		} catch (Exception e) {
-			logger.error("Unable to update authentication providers for zone "
-					+ zoneId, e);
-		}
+		AuthenticationConfig authConfig = getAuthenticationConfigForZone(zoneId);
+		authConfig.markAsUpdated();
+		getCoreDao().update(authConfig);
+	}
+	
+	protected AuthenticationConfig getAuthenticationConfigForZone(Long zoneId)
+	{
+		return (AuthenticationConfig) getCoreDao().load(AuthenticationConfig.class, zoneId);
 	}
 }
