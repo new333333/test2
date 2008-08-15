@@ -57,7 +57,7 @@ public class SsfContextMapper  implements UserDetailsContextMapper {
 		this.attributeMap = mappings;
 	}
 
-	static class SsfUserDetails extends HashMap<String,String> implements UserDetails
+	public static class SsfUserDetails extends HashMap<String,String> implements UserDetails
 	{
 		String username;
 		GrantedAuthority[] authorities;
@@ -72,6 +72,12 @@ public class SsfContextMapper  implements UserDetailsContextMapper {
 					this.put(mapping.get(attr), value);
 				}
 			}
+		}
+		
+		public SsfUserDetails(String username)
+		{
+			this.username = username;
+			this.authorities = new GrantedAuthority[0];
 		}
 
 		public GrantedAuthority[] 	getAuthorities() {

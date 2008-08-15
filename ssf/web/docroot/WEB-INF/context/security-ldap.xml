@@ -7,7 +7,7 @@
 	<bean id="springAuthenticationBeans" class="com.sitescape.team.spring.security.SpringAuthenticationBeans">
 		<property name="globalProviders">
 			<map>
-				<entry key="ldapOne" value-ref="fallbackAuthenticationProvider"/>
+				<entry key="ldapOne" value-ref="ldapOne"/>
 			</map>
 		</property>
 		<property name="zoneSpecificProviders">
@@ -20,13 +20,11 @@
 			</map>
 		</property>
 		<property name="zoneModule"><ref bean="zoneModule"/></property>
-		<property name="defaultProvider" ref="fallbackAuthenticationProvider"/>
 	</bean>
-
-
-	<bean id="_apacheDirectoryServerContainer" class="java.lang.String"/>
 	
-    <bean id="fallbackContextSource" class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">
+	<bean id="ssfContextMapper" class="com.sitescape.team.spring.security.SsfContextMapper"/>
+
+    <bean id="contextSourceA" class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">
         <constructor-arg value="ldap://192.168.3.197:389/"/>
     </bean>
 
@@ -35,15 +33,15 @@
     </bean>
 
 
-    <bean id="fallbackAuthenticationProvider" class="org.springframework.security.providers.ldap.LdapAuthenticationProvider">
+    <bean id="ldapOne" class="org.springframework.security.providers.ldap.LdapAuthenticationProvider">
 		<constructor-arg>
 			<bean class="org.springframework.security.providers.ldap.authenticator.BindAuthenticator">
-				<constructor-arg ref="fallbackContextSource" />
+				<constructor-arg ref="contextSourceA" />
 				<property name="userSearch">
 					<bean id="userSearchOne" class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch">
 					  <constructor-arg index="0" value="o=novell"/>
 					  <constructor-arg index="1" value="(uid={0})"/>
-					  <constructor-arg index="2" ref="fallbackContextSource" />
+					  <constructor-arg index="2" ref="contextSourceA" />
 					  <property name="searchSubtree" value="false"/>
 					</bean>
 				</property>

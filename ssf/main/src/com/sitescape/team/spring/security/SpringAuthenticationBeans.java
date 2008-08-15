@@ -31,7 +31,6 @@ public class SpringAuthenticationBeans implements InitializingBean, ApplicationC
 	protected Log logger = LogFactory.getLog(getClass());
 
 	protected Map<Long, Map<String, AuthenticationProvider>> providersByZone;
-	protected AuthenticationProvider defaultProvider = null;
 	protected Map globalProviders = null;
 	protected Map zoneSpecificProviders = null;
 	protected ApplicationContext ac;
@@ -69,14 +68,6 @@ public class SpringAuthenticationBeans implements InitializingBean, ApplicationC
 		return instance;
 	}
 	
-	public AuthenticationProvider getDefaultProvider() {
-		return defaultProvider;
-	}
-
-	public void setDefaultProvider(AuthenticationProvider defaultProvider) {
-		this.defaultProvider = defaultProvider;
-	}
-
 	public Map getGlobalProviders() {
 		return globalProviders;
 	}
@@ -118,9 +109,6 @@ public class SpringAuthenticationBeans implements InitializingBean, ApplicationC
 	
 	public void afterPropertiesSet() throws Exception
 	{
-		if(defaultProvider == null) {
-			throw new ConfigurationException("defaultProvider must be supplied for SpringAuthenticationBeans");
-		}
 		providersByZone = new HashMap<Long, Map<String, AuthenticationProvider>>();
 		for(ZoneInfo zoneInfo : getZoneModule().getZoneInfos()) {
 			Map<String, AuthenticationProvider> authenticationBeans = new HashMap<String, AuthenticationProvider>();
@@ -149,15 +137,6 @@ public class SpringAuthenticationBeans implements InitializingBean, ApplicationC
 				}
 			}
 		}
-
-		DefaultListableBeanFactory factory = new DefaultListableBeanFactory(ac);
-		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
-		Document doc = DocumentHelper.parseText("<beans xmlns=\"http://www.springframework.org/schema/beans\"     xmlns:s=\"http://www.springframework.org/schema/security\"     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"     xsi:schemaLocation=\"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.1.xsd\">          <bean id=\"contextSourceC\" class=\"org.springframework.security.ldap.DefaultSpringSecurityContextSource\">         <constructor-arg value=\"ldap://192.168.3.197:389/\"/>     </bean>       <bean id=\"dynamicLdap\" class=\"org.springframework.security.providers.ldap.LdapAuthenticationProvider\"> 		<constructor-arg> 			<bean class=\"org.springframework.security.providers.ldap.authenticator.BindAuthenticator\"> 				<constructor-arg ref=\"contextSourceC\" /> 				<property name=\"userSearch\"> 					<bean id=\"userSearchOne\" class=\"org.springframework.security.ldap.search.FilterBasedLdapUserSearch\"> 					  <constructor-arg index=\"0\" value=\"ou=Field Service,ou=aspendemocouid,o=novell\"/> 					  <constructor-arg index=\"1\" value=\"(uid={0})\"/> 					  <constructor-arg index=\"2\" ref=\"contextSourceC\" /> 					  <property name=\"searchSubtree\" value=\"false\"/> 					</bean> 				</property> 			</bean> 		</constructor-arg> 		<property name=\"userDetailsContextMapper\"><ref bean=\"ssfContextMapper\"/></property>     </bean>  </beans>");
-		org.dom4j.io.DOMWriter d4Writer = new org.dom4j.io.DOMWriter();
-		org.w3c.dom.Document w3doc = d4Writer.write(doc);
-		reader.registerBeanDefinitions(w3doc, new DescriptiveResource("foo"));
-		
-		addProviderToZone(getZoneModule().getZoneIdByZoneName("liferay.com"), "dynamicLdap", (AuthenticationProvider) factory.getBean("dynamicLdap"));
 	}
 	
 	public AuthenticationProvider findProvider(Long zoneId, String name)

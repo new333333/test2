@@ -28,6 +28,7 @@ import org.springframework.security.providers.AuthenticationProvider;
 import org.springframework.security.providers.ProviderManager;
 import org.springframework.security.providers.ldap.LdapAuthenticationProvider;
 import org.springframework.security.providers.ldap.authenticator.BindAuthenticator;
+import org.springframework.security.userdetails.UsernameNotFoundException;
 
 import com.sitescape.team.asmodule.zonecontext.ZoneContextHolder;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -43,28 +44,45 @@ import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.spring.security.SpringAuthenticationBeans;
 import com.sitescape.team.spring.security.SsfAnonymousAuthenticationProvider;
+import com.sitescape.team.spring.security.SsfAuthenticationProvider;
 import com.sitescape.team.spring.security.SsfContextMapper;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.util.Validator;
 
-public class AuthenticationModuleImpl extends CommonDependencyInjection implements AuthenticationModule, AuthenticationProvider, InitializingBean {
+public class AuthenticationModuleImpl extends CommonDependencyInjection
+		implements AuthenticationModule, AuthenticationProvider,
+		InitializingBean {
 	protected Log logger = LogFactory.getLog(getClass());
 
 	private ZoneModule zoneModule;
-	public ZoneModule getZoneModule() { return zoneModule; }
-	public void setZoneModule(ZoneModule zoneModule) { this.zoneModule = zoneModule; }
-	
+
+	public ZoneModule getZoneModule() {
+		return zoneModule;
+	}
+
+	public void setZoneModule(ZoneModule zoneModule) {
+		this.zoneModule = zoneModule;
+	}
+
 	private ProviderManager providerManager;
-	public ProviderManager getProviderManager() { return providerManager; }
-	public void setProviderManager(ProviderManager providerManager) { this.providerManager = providerManager; }
+
+	public ProviderManager getProviderManager() {
+		return providerManager;
+	}
+
+	public void setProviderManager(ProviderManager providerManager) {
+		this.providerManager = providerManager;
+	}
 
 	protected Map<Long, ProviderManager> authenticators = null;
+
 	protected Map<Long, SsfAnonymousAuthenticationProvider> anonymousProviders = null;
-	
-	public AuthenticationModuleImpl()
-	{
+	protected Map<Long, SsfAuthenticationProvider> localProviders = null;
+
+	public AuthenticationModuleImpl() {
 		authenticators = new HashMap<Long, ProviderManager>();
 		anonymousProviders = new HashMap<Long, SsfAnonymousAuthenticationProvider>();
+		localProviders = new HashMap<Long, SsfAuthenticationProvider>();
 	}
 
 	public boolean testAccess(AuthenticationOperation operation) {
@@ -75,20 +93,28 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection implemen
 			return false;
 		}
 	}
+
 	protected void checkAccess(AuthenticationOperation operation) {
-		getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
+		getAccessControlManager().checkOperation(
+				RequestContextHolder.getRequestContext().getZone(),
+				WorkAreaOperation.SITE_ADMINISTRATION);
 	}
 
-	public void afterPropertiesSet() throws Exception
-	{
-		for(ZoneInfo zoneInfo : getZoneModule().getZoneInfos()) {
-			logger.debug("Setting authentication info for zone " + zoneInfo.getZoneName() + ", host " + zoneInfo.getVirtualHost());
+	public void afterPropertiesSet() throws Exception {
+		for (ZoneInfo zoneInfo : getZoneModule().getZoneInfos()) {
+			logger.debug("Setting authentication info for zone "
+					+ zoneInfo.getZoneName() + ", host "
+					+ zoneInfo.getVirtualHost());
 			ProviderManager pm = new ProviderManager();
-			SsfAnonymousAuthenticationProvider anonymousProvider = new SsfAnonymousAuthenticationProvider();
+
+			SsfAnonymousAuthenticationProvider anonymousProvider = new SsfAnonymousAuthenticationProvider(zoneInfo.getZoneName());
 			anonymousProvider.setKey(getKeyForZone(zoneInfo));
-			anonymousProvider.setZoneModule(getZoneModule());
 			anonymousProvider.afterPropertiesSet();
 			anonymousProviders.put(zoneInfo.getZoneId(), anonymousProvider);
+			
+			SsfAuthenticationProvider localProvider = new SsfAuthenticationProvider(zoneInfo.getZoneName());
+			localProviders.put(zoneInfo.getZoneId(), localProvider);
+			
 			authenticators.put(zoneInfo.getZoneId(), pm);
 
 			rebuildProvidersForZone(zoneInfo.getZoneId());
@@ -96,184 +122,202 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection implemen
 		getProviderManager().getProviders().add(this);
 	}
 
-	protected void rebuildProvidersForZone(Long zoneId) throws Exception
-	{
+	protected void rebuildProvidersForZone(Long zoneId) throws Exception {
 		ProviderManager pm = authenticators.get(zoneId);
 		List<AuthenticationProvider> providers = createProvidersForZone(zoneId);
+		//providers.add(localProviders.get(zoneId));
 		providers.add(anonymousProviders.get(zoneId));
 
 		pm.setProviders(providers);
 	}
 
-	protected String getKeyForZone(ZoneInfo zoneInfo)
-	{
+	protected String getKeyForZone(ZoneInfo zoneInfo) {
 		return SZoneConfig.getGuestUserName(zoneInfo.getZoneName());
 	}
 
-	protected List<AuthenticationProvider> createProvidersForZone(Long zoneId) throws Exception
-	{
+	protected List<AuthenticationProvider> createProvidersForZone(Long zoneId)
+			throws Exception {
 		List<AuthenticationProvider> providers = new LinkedList<AuthenticationProvider>();
-		for(AuthenticationConfig config : getAuthenticationConfigs(zoneId)) {
+		for (AuthenticationConfig config : getAuthenticationConfigs(zoneId)) {
 			String search = "(" + config.getUserIdAttribute() + "={0})";
-			if(config.getUserSearches().size() > 0) {
-				DefaultSpringSecurityContextSource contextSource = new DefaultSpringSecurityContextSource(config.getUrl());
-				if(Validator.isNotNull(config.getPrincipal())) {
+			if (config.getUserSearches().size() > 0) {
+				DefaultSpringSecurityContextSource contextSource = new DefaultSpringSecurityContextSource(
+						config.getUrl());
+				if (Validator.isNotNull(config.getPrincipal())) {
 					contextSource.setUserDn(config.getPrincipal());
 					contextSource.setPassword(config.getCredentials());
 				} else {
 					contextSource.setAnonymousReadOnly(true);
 				}
 				contextSource.afterPropertiesSet();
-				
-				SsfContextMapper contextMapper = new SsfContextMapper(getZoneModule(), config.getMappings());
-	
-				for(AuthenticationConfig.SearchInfo us : config.getUserSearches()) {
-					BindAuthenticator authenticator = new BindAuthenticator(contextSource);
+
+				SsfContextMapper contextMapper = new SsfContextMapper(
+						getZoneModule(), config.getMappings());
+
+				for (AuthenticationConfig.SearchInfo us : config
+						.getUserSearches()) {
+					BindAuthenticator authenticator = new BindAuthenticator(
+							contextSource);
 					String filter = search;
-					if(us.getFilter()!= "") {
-						filter = "(&"+search+us.getFilter()+")";
+					if (us.getFilter() != "") {
+						filter = "(&" + search + us.getFilter() + ")";
 					}
-					FilterBasedLdapUserSearch userSearch = new FilterBasedLdapUserSearch(us.getBaseDn(), filter, contextSource);
-					if(!us.isSearchSubtree()) {
+					FilterBasedLdapUserSearch userSearch = new FilterBasedLdapUserSearch(
+							us.getBaseDn(), filter, contextSource);
+					if (!us.isSearchSubtree()) {
 						userSearch.setSearchSubtree(false);
 					}
 					authenticator.setUserSearch(userSearch);
-					LdapAuthenticationProvider ldap = new LdapAuthenticationProvider(authenticator);
+					LdapAuthenticationProvider ldap = new LdapAuthenticationProvider(
+							authenticator);
 					ldap.setUseAuthenticationRequestCredentials(true);
 					ldap.setUserDetailsContextMapper(contextMapper);
 					providers.add(ldap);
 				}
 			}
 		}
-		
-/*
- * Don't forget to allow for custom authenticators.  This isn't how to do it, but it reminds you that
- * the custom authenticator beans are registered with SpringAuthenticationBeans
- *
 
-		if(zoneInfo.getZoneName().equals("monkeyco")) {
-			providers.add(SpringAuthenticationBeans.getInstance().findProvider(zoneInfo.getZoneId(), "ldapTwo"));
-		} else {
-			providers.add(SpringAuthenticationBeans.getInstance().findProvider(zoneInfo.getZoneId(), "dynamicLdap"));			
-		}
-*/
-		if(providers.size() == 0) {
-			providers.add(SpringAuthenticationBeans.getInstance().getDefaultProvider());
-		}
+		/*
+		 * Don't forget to allow for custom authenticators. This isn't how to do
+		 * it, but it reminds you that the custom authenticator beans are
+		 * registered with SpringAuthenticationBeans
+		 * 
+		 * 
+		 * if(zoneInfo.getZoneName().equals("monkeyco")) {
+		 * providers.add(SpringAuthenticationBeans.getInstance().findProvider(zoneInfo.getZoneId(),
+		 * "ldapTwo")); } else {
+		 * providers.add(SpringAuthenticationBeans.getInstance().findProvider(zoneInfo.getZoneId(),
+		 * "dynamicLdap")); }
+		 */
 		return providers;
 	}
 
 	/**
-     * Performs authentication with the same contract as {@link
-     * org.springframework.security.AuthenticationManager#authenticate(Authentication)}.
-     * Delegates the authentication to the AuthenticationManager configured for the zone
-     * to which the request was directed.
-     *
-     * @param authentication the authentication request object.
-     *
-     * @return a fully authenticated object including credentials. May return <code>null</code> if the
-     *         <code>AuthenticationProvider</code> is unable to support authentication of the passed
-     *         <code>Authentication</code> object. In such a case, the next <code>AuthenticationProvider</code> that
-     *         supports the presented <code>Authentication</code> class will be tried.
-     *
-     * @throws AuthenticationException if authentication fails.
-     */
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException
+	 * Performs authentication with the same contract as {@link
+	 * org.springframework.security.AuthenticationManager#authenticate(Authentication)}.
+	 * Delegates the authentication to the AuthenticationManager configured for
+	 * the zone to which the request was directed.
+	 * 
+	 * @param authentication
+	 *            the authentication request object.
+	 * 
+	 * @return a fully authenticated object including credentials. May return
+	 *         <code>null</code> if the <code>AuthenticationProvider</code>
+	 *         is unable to support authentication of the passed
+	 *         <code>Authentication</code> object. In such a case, the next
+	 *         <code>AuthenticationProvider</code> that supports the presented
+	 *         <code>Authentication</code> class will be tried.
+	 * 
+	 * @throws AuthenticationException
+	 *             if authentication fails.
+	 */
+	public Authentication authenticate(Authentication authentication) throws AuthenticationException
     {
     	Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
     	if(authenticators.containsKey(zone)) {
-    		Authentication result = authenticators.get(zone).authenticate(authentication);
-    		if(result != null) {
+       		Authentication result = null;
+    		try {
+     			result = authenticators.get(zone).authenticate(authentication);
     			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
-    													(String) result.getName(), (String) result.getCredentials(),
-    													true, true, true, (Map) result.getPrincipal(), null);
-    		}
-    		return result;
-    	}
-    	throw new AuthenticationServiceException("No authenticator configured for zone: " + zone);
-    }
-
-    /**
-     * Returns <code>true</code> if this <Code>AuthenticationProvider</code> supports the indicated
-     * <Code>Authentication</code> object.
-     * Delegates the decision to the providers of the AuthenticationManager configured for the zone
-     * to which the request was directed.
-     * <p>
-     * Returning <code>true</code> does not guarantee an <code>AuthenticationProvider</code> will be able to
-     * authenticate the presented instance of the <code>Authentication</code> class. It simply indicates it can support
-     * closer evaluation of it. An <code>AuthenticationProvider</code> can still return <code>null</code> from the
-     * {@link #authenticate(Authentication)} method to indicate another <code>AuthenticationProvider</code> should be
-     * tried.
-     * </p>
-     * <p>Selection of an <code>AuthenticationProvider</code> capable of performing authentication is
-     * conducted at runtime the <code>ProviderManager</code>.</p>
-     *
-     * @param authentication DOCUMENT ME!
-     *
-     * @return <code>true</code> if the implementation can more closely evaluate the <code>Authentication</code> class
-     *         presented
-     */
-    public boolean supports(Class authentication)
-    {
-    	Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
-    	if(authenticators.containsKey(zone)) {
-    		for(Object o : authenticators.get(zone).getProviders()) {
-    			AuthenticationProvider p = (AuthenticationProvider) o;
-    			if(p.supports(authentication)) {
-    				return true;
-    			}
+    					(String) result.getName(), (String) result.getCredentials(),
+    					true, true, true, (Map) result.getPrincipal(), null);
+    			return result;
+    		} catch(UsernameNotFoundException e) {
     		}
     	}
-    	return SpringAuthenticationBeans.getInstance().getDefaultProvider().supports(authentication);
+		if(SZoneConfig.getAdminUserName(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName())).equals(authentication.getName())) {
+			return localProviders.get(zone).authenticate(authentication);
+		}
+    	throw new UsernameNotFoundException("No such user");
     }
 
-    public List<AuthenticationConfig> getAuthenticationConfigs()
-	{
-		return getAuthenticationConfigs(RequestContextHolder.getRequestContext().getZoneId());
+	/**
+	 * Returns <code>true</code> if this <Code>AuthenticationProvider</code>
+	 * supports the indicated <Code>Authentication</code> object. Delegates
+	 * the decision to the providers of the AuthenticationManager configured for
+	 * the zone to which the request was directed.
+	 * <p>
+	 * Returning <code>true</code> does not guarantee an <code>AuthenticationProvider</code>
+	 * will be able to authenticate the presented instance of the <code>Authentication</code>
+	 * class. It simply indicates it can support closer evaluation of it. An
+	 * <code>AuthenticationProvider</code> can still return <code>null</code>
+	 * from the {@link #authenticate(Authentication)} method to indicate another
+	 * <code>AuthenticationProvider</code> should be tried.
+	 * </p>
+	 * <p>
+	 * Selection of an <code>AuthenticationProvider</code> capable of
+	 * performing authentication is conducted at runtime the <code>ProviderManager</code>.
+	 * </p>
+	 * 
+	 * @param authentication
+	 *            DOCUMENT ME!
+	 * 
+	 * @return <code>true</code> if the implementation can more closely
+	 *         evaluate the <code>Authentication</code> class presented
+	 */
+	public boolean supports(Class authentication) {
+		Long zone = getZoneModule().getZoneIdByVirtualHost(
+				ZoneContextHolder.getServerName());
+		if (authenticators.containsKey(zone)) {
+			for (Object o : authenticators.get(zone).getProviders()) {
+				AuthenticationProvider p = (AuthenticationProvider) o;
+				if (p.supports(authentication)) {
+					return true;
+				}
+			}
+		}
+		return (localProviders.get(zone).supports(authentication) ||
+				anonymousProviders.get(zone).supports(authentication));
 	}
-	public List<AuthenticationConfig> getAuthenticationConfigs(Long zoneId)
-	{
-		FilterControls filter = new FilterControls(); 
+
+	public List<AuthenticationConfig> getAuthenticationConfigs() {
+		return getAuthenticationConfigs(RequestContextHolder
+				.getRequestContext().getZoneId());
+	}
+
+	public List<AuthenticationConfig> getAuthenticationConfigs(Long zoneId) {
+		FilterControls filter = new FilterControls();
 		OrderBy order = new OrderBy();
-		order.addColumn("position");	   
+		order.addColumn("position");
 		filter.setOrderBy(order);
 
-		return (List<AuthenticationConfig>) getCoreDao().loadObjects(AuthenticationConfig.class, filter, zoneId);
+		return (List<AuthenticationConfig>) getCoreDao().loadObjects(
+				AuthenticationConfig.class, filter, zoneId);
 	}
 
-	public void setAuthenticationConfigs(List<AuthenticationConfig> configs)
-	{
+	public void setAuthenticationConfigs(List<AuthenticationConfig> configs) {
 		checkAccess(AuthenticationOperation.manageAuthentication);
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 
 		int nextPosition = 10;
-		for(AuthenticationConfig config : configs) {
+		for (AuthenticationConfig config : configs) {
 			config.setZoneId(zoneId);
 			config.setPosition(nextPosition);
-			if(config.getId() != null) {
+			if (config.getId() != null) {
 				getCoreDao().update(config);
 			} else {
 				getCoreDao().save(config);
 			}
 			nextPosition += 10;
 		}
-		
+
 		HashMap<String, AuthenticationConfig> notFound = new HashMap<String, AuthenticationConfig>();
-		for(AuthenticationConfig config : getAuthenticationConfigs(zoneId)) {
+		for (AuthenticationConfig config : getAuthenticationConfigs(zoneId)) {
 			notFound.put(config.getId(), config);
 		}
 
-		for(AuthenticationConfig config : configs) {
+		for (AuthenticationConfig config : configs) {
 			notFound.remove(config.getId());
 		}
 
-		for(AuthenticationConfig config : notFound.values()) {
+		for (AuthenticationConfig config : notFound.values()) {
 			getCoreDao().delete(config);
 		}
 		try {
 			rebuildProvidersForZone(zoneId);
-		} catch(Exception e) {
-			logger.error("Unable to update authentication providers for zone " + zoneId, e);
+		} catch (Exception e) {
+			logger.error("Unable to update authentication providers for zone "
+					+ zoneId, e);
 		}
 	}
 }
