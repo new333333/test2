@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.sitescape.team.domain.AuthenticationConfig;
+import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.Description;

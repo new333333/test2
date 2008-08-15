@@ -34,7 +34,7 @@ import com.sitescape.team.asmodule.zonecontext.ZoneContextHolder;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.OrderBy;
-import com.sitescape.team.domain.AuthenticationConfig;
+import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.ZoneInfo;
 import com.sitescape.team.module.authentication.AuthenticationModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
@@ -138,7 +138,7 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 	protected List<AuthenticationProvider> createProvidersForZone(Long zoneId)
 			throws Exception {
 		List<AuthenticationProvider> providers = new LinkedList<AuthenticationProvider>();
-		for (AuthenticationConfig config : getAuthenticationConfigs(zoneId)) {
+		for (LdapConnectionConfig config : getLdapConnectionConfigs(zoneId)) {
 			String search = "(" + config.getUserIdAttribute() + "={0})";
 			if (config.getUserSearches().size() > 0) {
 				DefaultSpringSecurityContextSource contextSource = new DefaultSpringSecurityContextSource(
@@ -154,7 +154,7 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 				SsfContextMapper contextMapper = new SsfContextMapper(
 						getZoneModule(), config.getMappings());
 
-				for (AuthenticationConfig.SearchInfo us : config
+				for (LdapConnectionConfig.SearchInfo us : config
 						.getUserSearches()) {
 					BindAuthenticator authenticator = new BindAuthenticator(
 							contextSource);
@@ -270,27 +270,27 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 				anonymousProviders.get(zone).supports(authentication));
 	}
 
-	public List<AuthenticationConfig> getAuthenticationConfigs() {
-		return getAuthenticationConfigs(RequestContextHolder
+	public List<LdapConnectionConfig> getLdapConnectionConfigs() {
+		return getLdapConnectionConfigs(RequestContextHolder
 				.getRequestContext().getZoneId());
 	}
 
-	public List<AuthenticationConfig> getAuthenticationConfigs(Long zoneId) {
+	public List<LdapConnectionConfig> getLdapConnectionConfigs(Long zoneId) {
 		FilterControls filter = new FilterControls();
 		OrderBy order = new OrderBy();
 		order.addColumn("position");
 		filter.setOrderBy(order);
 
-		return (List<AuthenticationConfig>) getCoreDao().loadObjects(
-				AuthenticationConfig.class, filter, zoneId);
+		return (List<LdapConnectionConfig>) getCoreDao().loadObjects(
+				LdapConnectionConfig.class, filter, zoneId);
 	}
 
-	public void setAuthenticationConfigs(List<AuthenticationConfig> configs) {
+	public void setLdapConnectionConfigs(List<LdapConnectionConfig> configs) {
 		checkAccess(AuthenticationOperation.manageAuthentication);
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 
 		int nextPosition = 10;
-		for (AuthenticationConfig config : configs) {
+		for (LdapConnectionConfig config : configs) {
 			config.setZoneId(zoneId);
 			config.setPosition(nextPosition);
 			if (config.getId() != null) {
@@ -301,16 +301,16 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 			nextPosition += 10;
 		}
 
-		HashMap<String, AuthenticationConfig> notFound = new HashMap<String, AuthenticationConfig>();
-		for (AuthenticationConfig config : getAuthenticationConfigs(zoneId)) {
+		HashMap<String, LdapConnectionConfig> notFound = new HashMap<String, LdapConnectionConfig>();
+		for (LdapConnectionConfig config : getLdapConnectionConfigs(zoneId)) {
 			notFound.put(config.getId(), config);
 		}
 
-		for (AuthenticationConfig config : configs) {
+		for (LdapConnectionConfig config : configs) {
 			notFound.remove(config.getId());
 		}
 
-		for (AuthenticationConfig config : notFound.values()) {
+		for (LdapConnectionConfig config : notFound.values()) {
 			getCoreDao().delete(config);
 		}
 		try {

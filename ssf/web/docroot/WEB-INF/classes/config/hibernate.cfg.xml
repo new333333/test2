@@ -41,7 +41,7 @@
 	    <mapping resource="com/sitescape/team/security/function/WorkAreaFunctionMembership.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/Attachment.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/AuditTrail.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/AuthenticationConfig.hbm.xml"/>
+	    <mapping resource="com/sitescape/team/domain/LdapConnectionConfig.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/Binder.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/ChangeLog.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/CustomAttribute.hbm.xml"/>

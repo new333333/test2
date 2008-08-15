@@ -47,7 +47,7 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.springframework.web.portlet.ModelAndView;
 
-import com.sitescape.team.domain.AuthenticationConfig;
+import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.module.ldap.LdapSchedule;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.web.WebKeys;
@@ -74,7 +74,7 @@ public class ConfigureLdapController extends  SAbstractController {
 				schedule.setUserSync(PortletRequestUtils.getBooleanParameter(request, "userSync", false));
 				schedule.setMembershipSync(PortletRequestUtils.getBooleanParameter(request, "membershipSync", false));
 				
-				LinkedList<AuthenticationConfig> configList = new LinkedList<AuthenticationConfig>();
+				LinkedList<LdapConnectionConfig> configList = new LinkedList<LdapConnectionConfig>();
 				try {
 					Document doc = DocumentHelper.parseText(PortletRequestUtils.getStringParameter(request, "ldapConfigDoc", "<doc/>"));
 					for(Object o : doc.selectNodes("//ldapConfig")) {
@@ -84,23 +84,23 @@ public class ConfigureLdapController extends  SAbstractController {
 						String url = cNode.selectSingleNode("url").getText();
 						String userIdAttribute = cNode.selectSingleNode("userIdAttribute").getText();
 						String[] mappings = StringUtil.split(cNode.selectSingleNode("mappings").getText(), "\n");
-						LinkedList<AuthenticationConfig.SearchInfo> userQueries = new LinkedList<AuthenticationConfig.SearchInfo>();
+						LinkedList<LdapConnectionConfig.SearchInfo> userQueries = new LinkedList<LdapConnectionConfig.SearchInfo>();
 						List foo = cNode.selectNodes("userSearches/search");
 						for(Object o2 : foo) {
 							Node sNode = (Node) o2;
 							String baseDn = sNode.selectSingleNode("baseDn").getText();
 							String filter = sNode.selectSingleNode("filter").getText();
 							String ss = sNode.selectSingleNode("searchSubtree").getText();
-							userQueries.add(new AuthenticationConfig.SearchInfo(baseDn, filter, ss.equals("true")));
+							userQueries.add(new LdapConnectionConfig.SearchInfo(baseDn, filter, ss.equals("true")));
 						}
-						LinkedList<AuthenticationConfig.SearchInfo> groupQueries = new LinkedList<AuthenticationConfig.SearchInfo>();
+						LinkedList<LdapConnectionConfig.SearchInfo> groupQueries = new LinkedList<LdapConnectionConfig.SearchInfo>();
 						foo = cNode.selectNodes("groupSearches/search");
 						for(Object o2 : foo) {
 							Node sNode = (Node) o2;
 							String baseDn = sNode.selectSingleNode("baseDn").getText();
 							String filter = sNode.selectSingleNode("filter").getText();
 							String ss = sNode.selectSingleNode("searchSubtree").getText();
-							groupQueries.add(new AuthenticationConfig.SearchInfo(baseDn, filter, ss.equals("true")));
+							groupQueries.add(new LdapConnectionConfig.SearchInfo(baseDn, filter, ss.equals("true")));
 						}
 						HashMap<String, String> maps = new HashMap<String, String>();
 						for (int i=0; i<mappings.length; ++i) {
@@ -110,8 +110,8 @@ public class ConfigureLdapController extends  SAbstractController {
 							if (vals.length != 2) continue;
 							maps.put(vals[1].trim(), vals[0].trim());
 						}
-						AuthenticationConfig c =
-							new AuthenticationConfig(url, userIdAttribute, maps, userQueries, groupQueries, principal, credentials);
+						LdapConnectionConfig c =
+							new LdapConnectionConfig(url, userIdAttribute, maps, userQueries, groupQueries, principal, credentials);
 						Node idNode = cNode.selectSingleNode("id");
 						if(idNode != null) {
 							c.setId(idNode.getText());
@@ -121,7 +121,7 @@ public class ConfigureLdapController extends  SAbstractController {
 				} catch(DocumentException e) {
 					// Hmm.  What to do here?
 				}
-				getAuthenticationModule().setAuthenticationConfigs(configList);
+				getAuthenticationModule().setLdapConnectionConfigs(configList);
 
 				boolean runNow = PortletRequestUtils.getBooleanParameter(request, "runnow", false);
 				if (runNow) {
@@ -169,7 +169,7 @@ public class ConfigureLdapController extends  SAbstractController {
 
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 		model.put(WebKeys.LDAP_CONFIG, getLdapModule().getLdapSchedule());
-		model.put(WebKeys.AUTHENTICATION_CONFIGS, getAuthenticationModule().getAuthenticationConfigs());
+		model.put(WebKeys.LDAP_CONNECTION_CONFIGS, getAuthenticationModule().getLdapConnectionConfigs());
 		model.put("runnow", request.getParameter("runnow"));
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_LDAP, model);
 		

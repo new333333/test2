@@ -416,7 +416,7 @@ jQuery(document).ready(function() {
 		ssPage.defaultUserMappings = "<%=mapText.toString()%>";
 	
 		jQuery("#funkyDiv > ul").tabs();
-	<c:forEach var="config" items="${ssAuthenticationConfigs}">
+	<c:forEach var="config" items="${ssLdapConnectionConfigs}">
 		<c:set var="mappings" value="${config.mappings}"/>
 		<jsp:useBean id="mappings" type="java.util.Map"/>
 		<%

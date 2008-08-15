@@ -33,7 +33,7 @@ import java.util.List;
 
 import javax.naming.NamingException;
 
-import com.sitescape.team.domain.AuthenticationConfig;
+import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.NoUserByTheNameException;
 
 /**

@@ -24,7 +24,7 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
  
     @Override
     protected Object nullSafeGetInternal(ResultSet resultSet, String[] names, Object owner, LobHandler lobHandler) throws SQLException{ 
-        List<AuthenticationConfig.SearchInfo> result = new LinkedList<AuthenticationConfig.SearchInfo>();
+        List<LdapConnectionConfig.SearchInfo> result = new LinkedList<LdapConnectionConfig.SearchInfo>();
         if (!resultSet.wasNull()) {
 			String searches = lobHandler.getClobAsString(resultSet,names[0]);
     		try {
@@ -34,7 +34,7 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
     				String baseDn = node.selectSingleNode("baseDn").getText();
     				String filter = node.selectSingleNode("filter").getText();
     				boolean searchSubtree = "true".equals(node.selectSingleNode("@searchSubtree").getText());
-    				result.add(new AuthenticationConfig.SearchInfo(baseDn, filter, searchSubtree));
+    				result.add(new LdapConnectionConfig.SearchInfo(baseDn, filter, searchSubtree));
     			}
     		} catch(Exception e) {
     			logger.warn("Unable to parse searches: " + searches);
@@ -47,9 +47,9 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
         if (null == value) { 
             preparedStatement.setNull(index, Types.CLOB); 
         } else {
-        	List<AuthenticationConfig.SearchInfo> searches = (List<AuthenticationConfig.SearchInfo>) value;
+        	List<LdapConnectionConfig.SearchInfo> searches = (List<LdapConnectionConfig.SearchInfo>) value;
     		StringBuffer xml = new StringBuffer("<searches>");
-    		for(AuthenticationConfig.SearchInfo us : searches) {
+    		for(LdapConnectionConfig.SearchInfo us : searches) {
     			xml.append("<search searchSubtree=\"" + (us.isSearchSubtree()?"true":"false") + "\">");
     			xml.append("<baseDn>"+us.getBaseDn()+"</baseDn>");
     			xml.append("<filter>"+us.getFilter()+"</filter>");
@@ -62,7 +62,7 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
     } 
  
     public Object deepCopy(Object value) throws HibernateException{ 
-        return new LinkedList<AuthenticationConfig.SearchInfo>((List<AuthenticationConfig.SearchInfo>) value); 
+        return new LinkedList<LdapConnectionConfig.SearchInfo>((List<LdapConnectionConfig.SearchInfo>) value); 
     } 
  
     public boolean isMutable() { 
@@ -78,6 +78,6 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
     } 
  
     public Object replace(Object original, Object target, Object owner) throws HibernateException { 
-        return new LinkedList<AuthenticationConfig.SearchInfo>((List<AuthenticationConfig.SearchInfo>) original); 
+        return new LinkedList<LdapConnectionConfig.SearchInfo>((List<LdapConnectionConfig.SearchInfo>) original); 
     }
 }
