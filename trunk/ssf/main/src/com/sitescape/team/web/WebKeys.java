@@ -204,6 +204,7 @@ public class WebKeys {
 	public static final String URL_ID_CHOICES_SEPARATOR = "_";
 	public static final String URL_ID_CHOICES_REMOVE = "idChoicesRemove";
 	public static final String URL_URL = "url";
+	public static final String URL_USER_ID = "userId";
 	public static final String URL_ICAL_URL = "iCalURL";
 	public static final String URL_ICAL_SCHEDULE = "iCalSchedule";
 	public static final String URL_WINDOW_STATE = "windowState";
@@ -466,6 +467,7 @@ public class WebKeys {
 	public static final String OPERATION_SET_SIDEBAR_VISIBILITY = "set_sidebar_visibility";
 	public static final String OPERATION_SET_SUNBURST_VISIBILITY = "set_sunburst_visibility";
 	public static final String OPERATION_GET_UPLOAD_PROGRESS_STATUS = "get_upload_progress_status";
+	public static final String OPERATION_VIEW_MINIBLOG = "view_miniblog";
 	
 	// MODEL TAGS & Attributes
 	public static final String ACCESS_CONTROL_MAP = "ss_accessControlMap";
@@ -747,6 +749,10 @@ public class WebKeys {
     public static final String MARKUP_FORM="form"; 
     public static final String MARKUP_FILE="file"; 
     public static final String MARKUP_VIEW="view"; 
+    public static final String MINIBLOG_ACCESS_DENIED="ss_miniblog_access_denied"; 
+    public static final String MINIBLOG_STATUSES="ss_miniblog_statuses"; 
+    public static final String MINIBLOG_USER="ss_miniblog_user"; 
+    public static final String MINIBLOG_USER_ID="ss_miniblog_user_id"; 
     public static final String MOBILE_BINDER_LIST="ss_mobileBinderList"; 
     public static final String MOBILE_PAGE_SIZE="15"; 
 	public static final String MY_CALENDAR_ENTRIES = "ss_myCalendarEntries";
