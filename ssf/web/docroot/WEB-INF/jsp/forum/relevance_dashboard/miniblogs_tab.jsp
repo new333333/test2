@@ -28,31 +28,35 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
-<c:if test="${ss_type == 'entriesViewed'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
-</c:if>
-<c:if test="${ss_type == 'newTracked'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tracked.jsp" />
-</c:if>
-<c:if test="${ss_type == 'newSite'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_site.jsp" />
-</c:if>
-<c:if test="${ss_type == 'docs'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
-</c:if>
-<c:if test="${ss_type == 'hot'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_hot.jsp" />
-</c:if>
-<c:if test="${ss_type == 'tasks'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
-</c:if>
-<c:if test="${ss_type == 'miniblogs'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/miniblogs.jsp" />
-</c:if>
-<c:if test="${ss_type == 'shared'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/shared_items.jsp" />
-</c:if>
-<c:if test="${ss_type == 'visitors'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/visitors.jsp" />
-</c:if>
+<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<div id="ss_dashboard_content" class="ss_doublecolumn">
+  <div id="ss_column_L" class="ss_colleft">
+      <div id="ss_col1" class="ss_col1">
+
+		<ssf:canvas id="relevanceMiniblogs" type="inline" styleId="ss_shared">
+		<ssf:param name="title" useBody="true" >
+			<div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.miniblogs"/></div>
+		</ssf:param>
+			<div id="ss_dashboardActivities${renderResponse.namespace}">
+			  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/miniblogs.jsp" />
+			</div>
+		</ssf:canvas>
+
+      </div><!-- end of ss_col 1 -->
+      <div id="ss_column_R" class="ss_col2">
+
+		<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_shared">
+		<ssf:param name="title" useBody="true" >
+			<div id="ss_title" class="ss_pt_title ss_green"> <ssf:nlt tag="relevance.sharedItems"/> </div>
+		</ssf:param>
+			<div id="ss_dashboardShared${renderResponse.namespace}">
+			  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/shared_items.jsp" />
+			</div>
+		</ssf:canvas>
+
+      </div><!-- end of col2 -->
+  </div><!-- end of col left -->
+</div><!-- end of content -->
+<div class="ss_clear_float"></div>
+

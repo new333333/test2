@@ -33,30 +33,30 @@
 <div id="ss_dashboard_content" class="ss_doublecolumn">
   <div id="ss_column_L" class="ss_colleft">
       <div class="ss_col1">
-      <!-- Start Left Column -->
+        <!-- Start Left Column -->
 
-	<ssf:canvas id="relevanceVisitedEntries" type="inline" styleId="ss_documents">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.visitedEntries"/></div>
-	</ssf:param>
-		<div id="ss_dashboardEntriesViewed${renderResponse.namespace}">
-		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
-		</div>
-	</ssf:canvas>
+	    <ssf:canvas id="relevanceVisitedEntries" type="inline" styleId="ss_documents">
+	    <ssf:param name="title" useBody="true" >
+		  <div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.visitedEntries"/></div>
+	    </ssf:param>
+		  <div id="ss_dashboardEntriesViewed${renderResponse.namespace}">
+		    <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
+		  </div>
+	    </ssf:canvas>
 	
-        </div><!-- end of ss_col 1 -->
-        <!-- Start Right Column -->
-      	<div id="ss_column_R" class="ss_col2">
+      </div><!-- end of ss_col 1 -->
+      <!-- Start Right Column -->
+      <div id="ss_column_R" class="ss_col2">
 
-	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_documents">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_green ss_recentfolder_image"><ssf:nlt tag="relevance.documents"/></div>
-	</ssf:param>
-		<div id="ss_dashboardDocs${renderResponse.namespace}">
-		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
-		</div>
-	</ssf:canvas>
-	
+		<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_documents">
+		<ssf:param name="title" useBody="true" >
+			<div id="ss_title" class="ss_pt_title ss_green ss_recentfolder_image"><ssf:nlt tag="relevance.documents"/></div>
+		</ssf:param>
+			<div id="ss_dashboardDocs${renderResponse.namespace}">
+			  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
+			</div>
+		</ssf:canvas>
+		
       </div><!-- end of col2 (right column) -->
       
     </div><!-- end of col left -->

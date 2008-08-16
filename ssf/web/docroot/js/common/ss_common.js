@@ -4577,6 +4577,12 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
         m += '<td id="skypeId' + screenName + '"><a class="ss_graymenu" href="skype:' + skypeId + '?call">' +ss_ostatus_skype+'</a></td></tr>';
     }
 
+    //View MiniBlog
+    m += '<tr>';
+    m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgminiblog' +ssNamespace+'"></td>';
+    m += '<td id="miniblog' + userId + '"><a class="ss_graymenu" href="javascript: ;" ';
+    m += 'onClick="ss_viewMiniBlog(\'' + userId + '\', true);return false;">' +ss_ostatus_miniblog+'</a></td></tr>';
+
     m += '</table>'
 
 	if (divId == '') {
@@ -4649,6 +4655,15 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
 	        	}
 	        }
 	    }
+	}
+}
+
+function ss_viewMiniBlog(userId, popup) {
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"view_miniblog", userId:userId, randomNumber:ss_random++});
+	if (popup) {
+		self.window.open(url, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no,width=500px,height=500px");
+	} else {
+		self.location.href = url;
 	}
 }
 

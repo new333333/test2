@@ -35,19 +35,6 @@
     <div class="ss_colleft">
       <div id="ss_col1" class="ss_col1">
 
-	<ssf:canvas id="relevanceVisitedEntries" type="inline" styleId="ss_documents">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_green">
-		  <ssf:nlt tag="relevance.visitedEntries">
-		    <ssf:param name="value" value="${ssBinder.owner.title}"/>
-		  </ssf:nlt>
-		</div>
-	</ssf:param>
-		<div id="ss_dashboardEntriesViewed${renderResponse.namespace}">
-		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
-		</div>
-	</ssf:canvas>
-	
 	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_documents">
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_green ss_recentfolder_image">
@@ -64,24 +51,19 @@
         </div><!-- end of ss_col 1 -->
       <div id="ss_col2" class="ss_col2">
 
-	<ssf:canvas id="relevanceActivities" type="inline" styleId="ss_shared">
+	<ssf:canvas id="relevanceVisitedEntries" type="inline" styleId="ss_documents">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.activities"/></div>
+		<div id="ss_title" class="ss_pt_title ss_green">
+		  <ssf:nlt tag="relevance.visitedEntries">
+		    <ssf:param name="value" value="${ssBinder.owner.title}"/>
+		  </ssf:nlt>
+		</div>
 	</ssf:param>
-		<div id="ss_dashboardActivities${renderResponse.namespace}">
-		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities.jsp" />
+		<div id="ss_dashboardEntriesViewed${renderResponse.namespace}">
+		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
 		</div>
 	</ssf:canvas>
-
-	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_shared">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_green"> <ssf:nlt tag="relevance.sharedItems"/> </div>
-	</ssf:param>
-		<div id="ss_dashboardShared${renderResponse.namespace}">
-		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/shared_items.jsp" />
-		</div>
-	</ssf:canvas>
-
+	
       </div><!-- end of col2 -->
       <div id="ss_col3" class="ss_col3">
 
