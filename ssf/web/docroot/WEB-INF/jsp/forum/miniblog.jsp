@@ -39,7 +39,7 @@ function ss_showMiniblog${renderResponse.namespace}(id, obj) {
 </script>
 
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
-<div class="ss_style ss_portlet ss_content_outer">
+<div class="ss_style ss_portlet ss_content_window_content">
   <div>
     <div style="float:right;">
 	      <span class="ss_labelAbove"><ssf:nlt tag="navigation.findPerson"/></span>
@@ -48,7 +48,7 @@ function ss_showMiniblog${renderResponse.namespace}(id, obj) {
 		    leaveResultsVisible="false"
 		    width="100px" singleItem="true"/> 
 	</div>
-    <div><h2>xxx MiniBlog xxx</h2></div>
+    <div><h2><ssf:nlt tag="miniblog"/></h2></div>
     <div class="ss_clear_float"></div>
     <h3><ssf:showUser user="${ss_miniblog_user}"/></h3>
     
