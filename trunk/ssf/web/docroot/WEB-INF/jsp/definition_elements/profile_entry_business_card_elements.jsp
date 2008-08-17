@@ -149,10 +149,6 @@
 <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.title}"/></span> 
 <span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}"/>)</span>
 </c:if>
-<c:if test="${!empty ssDefinitionEntry.status}">
-<br/>
-<span class="ss_normalprint ss_italic">${ssDefinitionEntry.status}</span>
-</c:if>
 </div>
 
  <table class="ss_transparent" style="border-spacing: 10px 2px;">
@@ -188,6 +184,32 @@
  
  </table>
 
+<c:if test="${!empty ssDefinitionEntry.status}">
+<div align="left" style="padding-top:10px;">
+	<table cellspacing="0" cellpadding="0">
+	<tr>
+		<td>
+			<a href="javascript: ;" onClick="ss_viewMiniBlog('${ssDefinitionEntry.id}', true);return false;"
+			  style="text-decoration:underline;">
+				<span class="ss_bold"><ssf:nlt tag="miniblog"/></span>
+			</a>
+		</td>
+		<td style="padding-left:10px;">
+			<span class="ss_smallprint">
+			  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+			    value="${ssDefinitionEntry.statusDate}" type="both" 
+			    timeStyle="short" dateStyle="short" />
+			</span>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<span class="ss_normalprint ss_italic">${ssDefinitionEntry.status}</span>
+		</td>
+	</tr>
+	</table>
+</div>
+</c:if>
 
 <c:if test="${pictureCount > 1}">
 <table width="99%">

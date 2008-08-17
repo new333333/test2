@@ -41,8 +41,12 @@
       onClick="ss_trackedPeopleDelete(this, '${user.id}');"/>
     </c:if>
     <c:if test="${!empty user.status}">
-    <div id="ss_im_status"><em>${user.status}</em></div>
-   
+	    <div>
+			<span class="ss_smallprint"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+			  value="${user.statusDate}" type="both" 
+			  timeStyle="short" dateStyle="short" /></span>
+	    </div>
+	    <div id="ss_im_status"><em>${user.status}</em></div>
     </c:if>
     </div><!-- end of para -->
     
