@@ -2567,7 +2567,7 @@ if (!window.ss_calendar_settings) {
 		divId : "ss_calendar_configure_div",
 		
 		locale: {
-			title: "Calendar settings",
+			title: "Calendar Settings",
 			weekStartsOnLabel: "Week starts on",
 			workDayStartsAtLabel: "Work day starts at",
 			dayNames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
