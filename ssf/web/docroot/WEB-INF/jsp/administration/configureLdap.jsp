@@ -49,6 +49,14 @@
 		  onClick="self.window.close();return false;"/>
 </div>
   <div>
+    <div>
+		<input type="checkbox" id="allowAnonymous" name="allowAnonymous" <c:if test="${ssAuthenticationConfig.allowAnonymousAccess}">checked</c:if>/>
+			<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowAnonymous"/></span><br/>
+		<input type="checkbox" id="allowLocalLogin" name="allowLocalLogin" <c:if test="${ssAuthenticationConfig.allowLocalLogin}">checked</c:if>/>
+			<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowLocalLogin"/></span><br/>
+		<input type="checkbox" id="allowSelfRegistration" name="allowSelfRegistration" <c:if test="${ssAuthenticationConfig.allowSelfRegistration}">checked</c:if>/>
+			<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowSelfRegistration"/></span><br/>
+    </div>
 	<div id="funkyDiv" style="width:500px">
 		<ul>
 			<li><a href='#wah'>Wah</a></li>
@@ -228,6 +236,8 @@
 ssPage = {
 	nextId : 1,
 	currentTab : 0,
+	defaultUserFilter: "${ssDefaultUserFilter}",
+	defaultGroupFilter: "${ssDefaultGroupFilter}",
 	
 	createBindings : function($container)
 	{
@@ -245,8 +255,12 @@ ssPage = {
 			}
 			return false;
 		});	
-		jQuery("button.addSearch", $container).click(function() {
-			ssPage.createSearchEntry(jQuery(this).prev(), "", "", "true");
+		jQuery(".ldapUserSearches button.addSearch", $container).click(function() {
+			ssPage.createSearchEntry(jQuery(this).prev(), "", ssPage.defaultUserFilter, "true");
+			return false;
+		});
+		jQuery(".ldapGroupSearches button.addSearch", $container).click(function() {
+			ssPage.createSearchEntry(jQuery(this).prev(), "", ssPage.defaultGroupFilter, "false");
 			return false;
 		});
 	},

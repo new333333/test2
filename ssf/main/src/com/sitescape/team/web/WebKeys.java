@@ -504,7 +504,7 @@ public class WebKeys {
 	public static final String APPLICATION_GROUPS="ssApplicationGroups";
     public static final String APPLICATION_LIST="ss_applicationList";
 	public static final String ATTACHMENTS_TYPE="attachments";
-	public static final String LDAP_CONNECTION_CONFIGS="ssLdapConnectionConfigs";
+	public static final String AUTHENTICATION_CONFIG="ssAuthenticationConfig";
 	public static final String BINDER="ssBinder";
 	public static final String BINDER_ID="ssBinderId";
 	public static final String BINDER_IS_LIBRARY="ssBinderIsLibrary";
@@ -578,6 +578,8 @@ public class WebKeys {
     public static final String DEBUG_ON="on";
     public static final String DEBUG_OFF="off";
     public static final String DEFAULT_FOLDER_DEFINITION="ssDefaultFolderDefinition";
+    public static final String DEFAULT_GROUP_FILTER="ssDefaultGroupFilter";
+    public static final String DEFAULT_USER_FILTER="ssDefaultUserFilter";
     public static final String DEFINITION="ssDefinition";
     public static final String DEFINITION_ID="ssDefinitionId";
     public static final String DEFINITION_BINDER="ssDefinitionBinder";
@@ -713,6 +715,7 @@ public class WebKeys {
     public static final String LAST_BINDER_VIEWED="ssLastBinderViewed";
     public static final String LAST_BINDER_ENTITY_TYPE="ssLastBinderEntityType";
     public static final String LDAP_CONFIG="ssLdapConfig";
+	public static final String LDAP_CONNECTION_CONFIGS="ssLdapConnectionConfigs";
     public static final String LICENSE_DATA="ssLicenseData";
     public static final String LICENSE_KEY="ssLicenseKey";
     public static final String LICENSE_ISSUED="ssLicenseIssued";
