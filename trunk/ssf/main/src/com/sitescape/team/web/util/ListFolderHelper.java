@@ -1248,6 +1248,14 @@ public class ListFolderHelper {
 		Toolbar footerToolbar = new Toolbar();
 		Toolbar whatsNewToolbar = new Toolbar();
 		
+		boolean isAppletSupported = SsfsUtil.supportApplets();
+        boolean isAccessible = false;
+		String displayStyle = user.getDisplayStyle();
+		if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
+				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			isAccessible = true;
+		}
+		
 		AdaptedPortletURL adapterUrl;
 		Map qualifiers;
 		PortletURL url;
@@ -1644,6 +1652,14 @@ public class ListFolderHelper {
 			}
 		}
 		
+		if (isAppletSupported && !folder.isMirroredAndReadOnly() && 
+				bs.getFolderModule().testAccess(folder, FolderOperation.addEntry) && 
+				!isAccessible) {
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "javascript: ss_showFolderAddAttachmentDropbox('" + response.getNamespace() + "', '" + folder.getId() + "','" + Boolean.toString(folder.isLibrary()) + "'); return false;");
+			entryToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
+		}
+		
 		//	The "Display styles" menu
 		folderViewsToolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_views"));
 		//Get the definitions available for use in this folder
@@ -1902,21 +1918,6 @@ public class ListFolderHelper {
 		whatsNewToolbar.addToolbarMenu("unseen", NLT.get("toolbar.menu.whatsUnseen"), 
 				adapterUrl.toString(), qualifiers);
 
-		
-		boolean isAppletSupported = SsfsUtil.supportApplets();
-        
-        boolean isAccessible = false;
-		String displayStyle = user.getDisplayStyle();
-		if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-			isAccessible = true;
-		}
-		
-		if (isAppletSupported && !folder.isMirroredAndReadOnly() && bs.getFolderModule().testAccess(folder, FolderOperation.addEntry) && !isAccessible) {
-			qualifiers = new HashMap();
-			qualifiers.put("onClick", "javascript: ss_showFolderAddAttachmentDropbox('" + response.getNamespace() + "', '" + folder.getId() + "','" + Boolean.toString(folder.isLibrary()) + "'); return false;");
-			footerToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
-		}
 		
 		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			qualifiers = new HashMap();

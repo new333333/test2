@@ -81,6 +81,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 		  </ssf:toolbar>
 		  <div class="ss_clear"></div>
 	    </div>
+		<jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
 	</div><!-- end of 2nd breadcrumb area -->
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" />
 
