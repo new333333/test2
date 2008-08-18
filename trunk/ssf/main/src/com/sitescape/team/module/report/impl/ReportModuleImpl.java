@@ -312,9 +312,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 							.add(Projections.property("startDate"))))
 					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
 				    .add(Restrictions.in("transactionType", new Object[] {AuditType.userStatus.name()}))
-					.add(Restrictions.in("startBy", userIds))
-					.add(Restrictions.ge("startDate", startDate))
-					.add(Restrictions.lt("startDate", endDate));
+					.add(Restrictions.in("startBy", userIds));
+				if (startDate != null) crit.add(Restrictions.ge("startDate", startDate));
+				if (endDate != null) crit.add(Restrictions.lt("startDate", endDate));
 				crit.addOrder(Order.desc("startDate"));
 				return crit.list();
 				

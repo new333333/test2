@@ -34,7 +34,16 @@
 </ssf:ifadapter>
 <script type="text/javascript">
 function ss_showMiniblog${renderResponse.namespace}(id, obj) {
-	ss_viewMiniBlog(id, false);
+	ss_viewMiniBlog(id, '0', false);
+}
+function ss_showMiniblogPage${renderResponse.namespace}(id, currentPage, direction) {
+	var page = parseInt(currentPage);
+	if (direction == 'next') page = parseInt(page + 1);
+	if (direction == 'previous') {
+		page = parseInt(page - 1);
+		if (page < 0) page = 0;
+	}
+	ss_viewMiniBlog(id, page, false);
 }
 </script>
 
@@ -53,6 +62,29 @@ function ss_showMiniblog${renderResponse.namespace}(id, obj) {
     <h3><ssf:showUser user="${ss_miniblog_user}"/></h3>
     
   </div>
+  <div id="ss_nextPage" align="right">
+	<c:if test="${ss_miniblogPage > '0'}">
+	<a href="javascript: ;" 
+	  onClick="ss_showMiniblogPage${renderResponse.namespace}('${ss_miniblog_user.id}', '${ss_miniblogPage}', 'previous');return false;">
+	<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
+	  title="<ssf:nlt tag="general.previousPage"/>"/>
+	</a>
+	</c:if>
+	<c:if test="${empty ss_miniblogPage || ss_miniblogPage <= '0'}">
+	<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
+	</c:if>
+	<c:if test="${!empty ss_miniblog_statuses}">
+	<a href="javascript: ;" 
+	  onClick="ss_showMiniblogPage${renderResponse.namespace}('${ss_miniblog_user.id}', '${ss_miniblogPage}', 'next');return false;">
+	<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
+	  title="<ssf:nlt tag="general.nextPage"/>"/>
+	</a>
+	</c:if>
+	<c:if test="${empty ss_miniblog_statuses}">
+	<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+	</c:if>
+  </div>
+  
   <table>
   <tr>
   <td valign="top" align="center">

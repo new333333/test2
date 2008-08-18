@@ -751,6 +751,7 @@ public class WebKeys {
     public static final String MARKUP_VIEW="view"; 
     public static final String MINIBLOG_ACCESS_DENIED="ss_miniblog_access_denied"; 
     public static final String MINIBLOG_STATUSES="ss_miniblog_statuses"; 
+    public static final String MINIBLOG_PAGE="ss_miniblogPage"; 
     public static final String MINIBLOG_USER="ss_miniblog_user"; 
     public static final String MINIBLOG_USER_ID="ss_miniblog_user_id"; 
     public static final String MOBILE_BINDER_LIST="ss_mobileBinderList"; 
