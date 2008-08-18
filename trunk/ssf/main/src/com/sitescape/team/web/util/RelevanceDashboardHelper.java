@@ -506,9 +506,9 @@ public class RelevanceDashboardHelper {
 	
 	private static void setupViewedEntriesBean(AllModulesInjected bs, Binder binder, Map model) {
 		//What entries have I visited?
-		if (binder != null) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		if (binder != null && user.getId().equals(binder.getOwnerId())) {
 			String page = "0";
-			User user = RequestContextHolder.getRequestContext().getUser();
 			String displayStyle = user.getDisplayStyle();
 			if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
 					ObjectKeys.RELEVANCE_PAGE_ENTRIES_VIEWED.equals(model.get(WebKeys.TYPE2))) 

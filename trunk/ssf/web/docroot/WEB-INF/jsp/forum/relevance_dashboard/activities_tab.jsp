@@ -51,6 +51,7 @@
         </div><!-- end of ss_col 1 -->
       <div id="ss_col2" class="ss_col2">
 
+	<c:if test="${ssBinder.owner.id == ssUser.id}">
 	<ssf:canvas id="relevanceVisitedEntries" type="inline" styleId="ss_documents">
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_green">
@@ -63,6 +64,7 @@
 		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
 		</div>
 	</ssf:canvas>
+	</c:if>
 	
       </div><!-- end of col2 -->
       <div id="ss_col3" class="ss_col3">
