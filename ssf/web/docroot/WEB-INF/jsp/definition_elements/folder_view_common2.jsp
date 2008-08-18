@@ -44,9 +44,8 @@ if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle()) &&
 	useAdaptor = false;
 }
 String ssFolderTableHeight = "";
-Map ssFolderPropertiesMap = ssUserFolderProperties.getProperties();
-if (ssFolderPropertiesMap != null && ssFolderPropertiesMap.containsKey("folderEntryHeight")) {
-	ssFolderTableHeight = (String) ssFolderPropertiesMap.get("folderEntryHeight");
+if (ssUserFolderProperties != null && ssUserFolderProperties.containsKey("folderEntryHeight")) {
+	ssFolderTableHeight = (String) ssUserFolderProperties.get("folderEntryHeight");
 }
 if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") || 
 		ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
