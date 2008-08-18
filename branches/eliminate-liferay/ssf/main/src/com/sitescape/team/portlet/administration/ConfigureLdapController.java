@@ -47,6 +47,7 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.springframework.web.portlet.ModelAndView;
 
+import com.sitescape.team.domain.AuthenticationConfig;
 import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.module.ldap.LdapSchedule;
 import com.sitescape.team.util.SZoneConfig;
@@ -73,6 +74,11 @@ public class ConfigureLdapController extends  SAbstractController {
 				schedule.setGroupRegister(PortletRequestUtils.getBooleanParameter(request, "groupRegister", false));
 				schedule.setUserSync(PortletRequestUtils.getBooleanParameter(request, "userSync", false));
 				schedule.setMembershipSync(PortletRequestUtils.getBooleanParameter(request, "membershipSync", false));
+
+				AuthenticationConfig authConfig = getAuthenticationModule().getAuthenticationConfig();
+				authConfig.setAllowAnonymousAccess(PortletRequestUtils.getBooleanParameter(request, "allowAnonymous", false));
+				authConfig.setAllowLocalLogin(PortletRequestUtils.getBooleanParameter(request, "allowLocalLogin", false));
+				authConfig.setAllowSelfRegistration(PortletRequestUtils.getBooleanParameter(request, "allowSelfRegistration", false));
 				
 				LinkedList<LdapConnectionConfig> configList = new LinkedList<LdapConnectionConfig>();
 				try {
@@ -166,10 +172,13 @@ public class ConfigureLdapController extends  SAbstractController {
     		attributes.put(next.attributeValue("from"), next.attributeValue("to"));
     	}
     	model.put(WebKeys.USER_ATTRIBUTES, attributes);
-
+    	model.put(WebKeys.DEFAULT_USER_FILTER, SZoneConfig.getString("ldapConfiguration/userFilter"));
+    	model.put(WebKeys.DEFAULT_GROUP_FILTER, SZoneConfig.getString("ldapConfiguration/groupFilter"));
+    
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 		model.put(WebKeys.LDAP_CONFIG, getLdapModule().getLdapSchedule());
 		model.put(WebKeys.LDAP_CONNECTION_CONFIGS, getAuthenticationModule().getLdapConnectionConfigs());
+		model.put(WebKeys.AUTHENTICATION_CONFIG, getAuthenticationModule().getAuthenticationConfig());
 		model.put("runnow", request.getParameter("runnow"));
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_LDAP, model);
 		

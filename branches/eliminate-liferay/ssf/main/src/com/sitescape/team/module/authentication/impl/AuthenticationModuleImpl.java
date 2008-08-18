@@ -104,15 +104,10 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 	}
 
 	public void afterPropertiesSet() throws Exception {
-/*
-		for (ZoneInfo zoneInfo : getZoneModule().getZoneInfos()) {
-			addZone(zoneInfo);
-		}
-		*/
 		getProviderManager().getProviders().add(this);
 	}
 
-	public void addZone(ZoneInfo zoneInfo) throws Exception
+	protected void addZone(ZoneInfo zoneInfo) throws Exception
 	{
 		if(authenticators.containsKey(zoneInfo.getId())) {
 			logger.error("Duplicate zone added to AuthenticationModule: " + zoneInfo.getId() + " " + zoneInfo.getZoneName());
@@ -136,7 +131,7 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 		rebuildProvidersForZone(zoneInfo.getZoneId());
 	}
 	
-	public void removeZone(Long zoneId)
+	protected void removeZone(Long zoneId)
 	{
 		if(authenticators.containsKey(zoneId)) {
 			authenticators.remove(zoneId);
@@ -380,6 +375,11 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 		AuthenticationConfig authConfig = getAuthenticationConfigForZone(zoneId);
 		authConfig.markAsUpdated();
 		getCoreDao().update(authConfig);
+	}
+	
+	public AuthenticationConfig getAuthenticationConfig()
+	{
+		return getAuthenticationConfigForZone(RequestContextHolder.getRequestContext().getZoneId());
 	}
 	
 	protected AuthenticationConfig getAuthenticationConfigForZone(Long zoneId)
