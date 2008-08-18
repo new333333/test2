@@ -123,6 +123,7 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 </ssf:toolbar>
 <div class="ss_clear"></div>
 </div>
+<jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
 <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <div id="ss_whatsNewDiv${ss_namespace}">
 <c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">

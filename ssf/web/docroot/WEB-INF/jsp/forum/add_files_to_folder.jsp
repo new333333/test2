@@ -28,33 +28,19 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% // Survey view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ page import="java.util.Date" %>
-<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
-
-<script type="text/javascript" src="<html:rootPath/>js/common/guestbook.js"></script>
-
-<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
-<jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
-<div class="ss_folder_border" >
-<% // Add the toolbar with the navigation widgets, commands and filter %>
-<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
- <% // Entry toolbar %>
- <c:if test="${!empty ssEntryToolbar}">
-  <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
- </c:if>
- <ssf:toolbar toolbar="${ss_whatsNewToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />			
-</ssf:toolbar>
-<div class="ss_clear"></div>
-</div>
-<jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
-<jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
-<div id="ss_whatsNewDiv${ss_namespace}">
-<c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
-<%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>
+<c:if test="${ssFolder.entityType == 'folder'}">
+	<div id="ss_div_folder_dropbox${ssFolder.id}${renderResponse.namespace}" 
+	  class="ss_border_light" style="visibility:hidden;display:none;">
+		<div align="right">
+			<a onClick="ss_hideFolderAddAttachmentDropbox('${renderResponse.namespace}','${ssFolder.id}'); return false;"><img 
+				<ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>icons/close_off.gif"/>
+			</a>
+		</div>
+		<iframe frameborder="0" scrolling="no" 
+		    id="ss_iframe_folder_dropbox${ssFolder.id}${renderResponse.namespace}" 
+		    name="ss_iframe_folder_dropbox${ssFolder.id}${renderResponse.namespace}" 
+		    src="<html:rootPath/>js/forum/null.html" 
+		    height="80%" width="100%">xxx</iframe>
+	</div>
 </c:if>
-</div>
-<div class="ss_folder">
-<%@ include file="/WEB-INF/jsp/definition_elements/survey/survey_folder_listing.jsp" %>
-</div>
