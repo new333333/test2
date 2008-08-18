@@ -48,10 +48,6 @@ public class ReadThumbnailController extends AbstractReadFileController {
 	
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-		if (!WebHelper.isUserLoggedIn(request)) {
-			response.getOutputStream().print(NLT.get("login.please"));
-			return null;
-		}
 		// Assuming that the full request URL was http://localhost:8080/ssf/s/readThumbnail/xxx/123/456/789/jversion/unk.doc,
 		// the following call returns "/readThumbnail/xxx/123/456/789/version/junk.doc" portion of the URL.
 		String pathInfo = request.getPathInfo();
