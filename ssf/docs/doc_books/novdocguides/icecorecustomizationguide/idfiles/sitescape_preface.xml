@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0"?>
 
 <targets>
 
@@ -8,7 +8,7 @@
 
  <target id="bbmq9uc" pid="preface" name="BridgeHead" level="1"> <text>Software and Documentation Version</text> </target>
 
- <target id="b9yxnfu" pid="preface" name="BridgeHead" level="1"> <text>Contents of this Manual</text> </target>
+ <target id="ban8e22" pid="preface" name="BridgeHead" level="1"> <text>Additional Documentation</text> </target>
 
  <target id="b9yxnfv" pid="preface" name="BridgeHead" level="1"> <text>Conventions</text> </target>
 
@@ -32,8 +32,6 @@
 
  <target id="bcuwqc6" pid="preface" name="row" level="2"> <text>..., paramSyntax1  |  paramSyntax2,...</text> </target>
 
- <target id="bck6g0h" pid="preface" name="row" level="2"> <text>(V1+)</text> </target>
-
- <target id="ban8e22" pid="preface" name="BridgeHead" level="1"> <text>Additional Documentation</text> </target>
+ <target id="bck6g0h" pid="preface" name="row" level="2"> <text>(V1—V1.0.3)</text> </target>
 
 </targets>
