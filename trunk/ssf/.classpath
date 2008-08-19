@@ -107,5 +107,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/commons-net.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-fileupload.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jbpm.jar"/>
+	<classpathentry kind="lib" path="lib/spring-ldap.jar"/>
+	<classpathentry kind="lib" path="lib/spring-security-core.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
