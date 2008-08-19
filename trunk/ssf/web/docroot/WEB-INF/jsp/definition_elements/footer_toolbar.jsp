@@ -191,6 +191,22 @@ Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHe
 		
 	--%></div><%--
 
+	--%><div id="ss_div_folder_dropbox${ssFolder.id}${renderResponse.namespace}" class="ss_border_light" style="visibility:hidden;display:none;"><%--
+		
+		--%><div align="right"><%--
+			--%><a onClick="ss_hideFolderAddAttachmentDropbox('${renderResponse.namespace}','${ssFolder.id}'); return false;"><img <%--
+				--%> <ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>icons/close_off.gif"/><%--
+			--%></a><%--
+		--%></div><%--
+	
+		--%><iframe frameborder="0" scrolling="no" 
+		    id="ss_iframe_folder_dropbox${ssFolder.id}${renderResponse.namespace}" 
+		    name="ss_iframe_folder_dropbox${ssFolder.id}${renderResponse.namespace}" 
+		    src="<html:rootPath/>js/forum/null.html" 
+		    height="80%" width="100%">xxx</iframe><%--
+	
+	--%></div><%--
+
 --%></c:if><%--
 
 --%></ssf:skipLink><%--

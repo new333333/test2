@@ -52,18 +52,14 @@ public class AttachmentsField extends Field implements Serializable {
 	public static class Attachment {
 		private String id;
 		private String fileName;
-		private Timestamp creation;
-		private Timestamp modification;
 		private long length; // The length, in bytes, of the attachment
 		private String href;
 		
 		public Attachment() {}
 		
-		public Attachment(String id, String fileName, Timestamp creation, Timestamp modification, long length, String href) {
+		public Attachment(String id, String fileName, long length, String href) {
 			this.id = id;
 			this.fileName = fileName;
-			this.creation = creation;
-			this.modification = modification;
 			this.length = length;
 			this.href = href;
 		}
@@ -84,22 +80,6 @@ public class AttachmentsField extends Field implements Serializable {
 			this.fileName = fileName;
 		}
 	
-		public Timestamp getCreation() {
-			return creation;
-		}
-
-		public void setCreation(Timestamp creation) {
-			this.creation = creation;
-		}
-
-		public Timestamp getModification() {
-			return modification;
-		}
-
-		public void setModification(Timestamp modification) {
-			this.modification = modification;
-		}
-
 		public String getHref() {
 			return href;
 		}

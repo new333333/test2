@@ -35,18 +35,24 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.FileHelper;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.FileUtil;
 public class ReadScaledFileController extends AbstractReadFileController {
 	
 	
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
+		if (!WebHelper.isUserLoggedIn(request)) {
+			response.getOutputStream().print(NLT.get("login.please"));
+			return null;
+		}
 		// Assuming that the full request URL was http://localhost:8080/ssf/s/readFile/xxx/123/456/789/junk.doc,
 		// the following call returns "/readFile/xxx/123/456/789/junk.doc" portion of the URL.
 		String pathInfo = request.getPathInfo();
