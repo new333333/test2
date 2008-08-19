@@ -505,6 +505,7 @@ public class WebKeys {
 	public static final String APPLICATION_GROUPS="ssApplicationGroups";
     public static final String APPLICATION_LIST="ss_applicationList";
 	public static final String ATTACHMENTS_TYPE="attachments";
+	public static final String AUTHENTICATION_CONFIG="ssAuthenticationConfig";
 	public static final String BINDER="ssBinder";
 	public static final String BINDER_ID="ssBinderId";
 	public static final String BINDER_IS_LIBRARY="ssBinderIsLibrary";
@@ -578,6 +579,8 @@ public class WebKeys {
     public static final String DEBUG_ON="on";
     public static final String DEBUG_OFF="off";
     public static final String DEFAULT_FOLDER_DEFINITION="ssDefaultFolderDefinition";
+    public static final String DEFAULT_GROUP_FILTER="ssDefaultGroupFilter";
+    public static final String DEFAULT_USER_FILTER="ssDefaultUserFilter";
     public static final String DEFINITION="ssDefinition";
     public static final String DEFINITION_ID="ssDefinitionId";
     public static final String DEFINITION_BINDER="ssDefinitionBinder";
@@ -713,6 +716,7 @@ public class WebKeys {
     public static final String LAST_BINDER_VIEWED="ssLastBinderViewed";
     public static final String LAST_BINDER_ENTITY_TYPE="ssLastBinderEntityType";
     public static final String LDAP_CONFIG="ssLdapConfig";
+	public static final String LDAP_CONNECTION_CONFIGS="ssLdapConnectionConfigs";
     public static final String LICENSE_DATA="ssLicenseData";
     public static final String LICENSE_KEY="ssLicenseKey";
     public static final String LICENSE_ISSUED="ssLicenseIssued";
@@ -751,7 +755,6 @@ public class WebKeys {
     public static final String MARKUP_VIEW="view"; 
     public static final String MINIBLOG_ACCESS_DENIED="ss_miniblog_access_denied"; 
     public static final String MINIBLOG_STATUSES="ss_miniblog_statuses"; 
-    public static final String MINIBLOG_PAGE="ss_miniblogPage"; 
     public static final String MINIBLOG_USER="ss_miniblog_user"; 
     public static final String MINIBLOG_USER_ID="ss_miniblog_user_id"; 
     public static final String MOBILE_BINDER_LIST="ss_mobileBinderList"; 
@@ -983,6 +986,7 @@ public class WebKeys {
 	public static final String URL = "ssUrl";
 	public static final String USER_ID = "com.sitescape.userId";
 	public static final String USER_LIST = "ss_userList";
+    public static final String USER_ATTRIBUTES="ssUserAttributes";
     public static final String USER_PROPERTIES="ssUserProperties";
     public static final String USER_PROPERTIES_OBJ="ssUserPropertyObj";
     public static final String USER_FOLDER_PROPERTIES="ssUserFolderProperties";
@@ -1150,7 +1154,7 @@ public class WebKeys {
     public static final String VIEW_TEAM_MEMBERS="forum/view_team_members";
     
     //servlet paths
-    public static final String SERVLET_LOGIN="portalLogin";
+    public static final String SERVLET_LOGIN="j_spring_security_check";
     public static final String SERVLET_LOGOUT="portalLogout";
     public static final String SERVLET_VIEW_FILE="viewFile";
     public static final String SERVLET_VIEW_CSS="viewCss";

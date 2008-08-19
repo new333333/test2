@@ -1224,18 +1224,11 @@ public class ListFolderHelper {
 		//Build the toolbar arrays
 		Toolbar folderToolbar = new Toolbar();
 		Toolbar entryToolbar = new Toolbar();
+		Toolbar folderActionsToolbar = new Toolbar();
 		Toolbar folderViewsToolbar = new Toolbar();
 		Toolbar dashboardToolbar = new Toolbar();
 		Toolbar footerToolbar = new Toolbar();
 		Toolbar whatsNewToolbar = new Toolbar();
-		
-		boolean isAppletSupported = SsfsUtil.supportApplets();
-        boolean isAccessible = false;
-		String displayStyle = user.getDisplayStyle();
-		if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-			isAccessible = true;
-		}
 		
 		AdaptedPortletURL adapterUrl;
 		Map qualifiers;
@@ -1633,14 +1626,6 @@ public class ListFolderHelper {
 			}
 		}
 		
-		if (isAppletSupported && !folder.isMirroredAndReadOnly() && 
-				bs.getFolderModule().testAccess(folder, FolderOperation.addEntry) && 
-				!isAccessible) {
-			qualifiers = new HashMap();
-			qualifiers.put("onClick", "javascript: ss_showFolderAddAttachmentDropbox('" + response.getNamespace() + "', '" + folder.getId() + "','" + Boolean.toString(folder.isLibrary()) + "'); return false;");
-			entryToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
-		}
-		
 		//	The "Display styles" menu
 		folderViewsToolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_views"));
 		//Get the definitions available for use in this folder
@@ -1677,51 +1662,111 @@ public class ListFolderHelper {
 		}
 		
 		//Folder action menu
-		Toolbar folderActionsToolbar = new Toolbar();
-		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
-			//Folder action menu
-			//Build the standard toolbar
-			BinderHelper.buildFolderActionsToolbar(bs, request, response, folderActionsToolbar, forumId);
+		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
+				(viewType.equals(Definition.VIEW_STYLE_DEFAULT) 
+				|| viewType.equals(Definition.VIEW_STYLE_BLOG) 
+				|| viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM) 
+				|| viewType.equals(Definition.VIEW_STYLE_GUESTBOOK) 
+				|| viewType.equals(Definition.VIEW_STYLE_TASK) 
+				|| viewType.equals(Definition.VIEW_STYLE_TABLE)
+				|| viewType.equals(Definition.VIEW_STYLE_CALENDAR)
+				|| viewType.equals(Definition.VIEW_STYLE_FILE)
+				|| viewType.equals(""))) {
+			//Only show these options if in the folder table style and not in accessible mode
+			folderActionsToolbar.addToolbarMenu("4_display_styles", NLT.get("toolbar.folder_actions"));
 			
-			if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
-					(viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
-							viewType.equals(Definition.VIEW_STYLE_TASK)) &&
-					bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {
-				
-				
-				String titleFromFile = NLT.get("calendar.import.window.title.fromFile");
-				String titleByURL = NLT.get("calendar.import.window.title.byURL");
-				String legendFromFile = NLT.get("calendar.import.window.legend.fromFile");
-				String legendByURL = NLT.get("calendar.import.window.legend.byURL");
-				String btnFromFile = NLT.get("calendar.import.window.upload.fromFile");
-				String btnByURL = NLT.get("calendar.import.window.upload.byURL");
-				String optionTitle = NLT.get("toolbar.menu.calendarImport");
-				String importFromFile = NLT.get("toolbar.menu.calendarImport.fromFile");
-				String importByURL = NLT.get("toolbar.menu.calendarImport.byURL");
-				if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
-					titleFromFile = NLT.get("task.import.window.title.fromFile");
-					titleByURL = NLT.get("task.import.window.title.byURL");
-					legendFromFile = NLT.get("task.import.window.legend.fromFile");
-					legendByURL = NLT.get("task.import.window.legend.byURL");
-					btnFromFile = NLT.get("task.import.window.upload.fromFile");
-					btnByURL = NLT.get("task.import.window.upload.byURL");
-					optionTitle = NLT.get("toolbar.menu.taskImport");
-					importFromFile = NLT.get("toolbar.menu.taskImport.fromFile");
-					importByURL = NLT.get("toolbar.menu.taskImport.byURL");				
-				}
-				
-				folderActionsToolbar.addToolbarMenu("5_calendar", optionTitle);	
-				
-				Map qualifiersByFile = new HashMap();
-				qualifiersByFile.put("onClick", "ss_calendar_import.importFormFromFile({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
-						titleFromFile + "', legend: '" + legendFromFile + "', btn: '" + btnFromFile + "'});return false;");
-				folderActionsToolbar.addToolbarMenuItem("5_calendar", "calendar", importFromFile, "#", qualifiersByFile);
-				
-				Map qualifiersByURL = new HashMap();
-				qualifiersByURL.put("onClick", "ss_calendar_import.importFormByURL({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
-						titleByURL + "', legend: '" + legendByURL + "', btn: '" + btnByURL + "'});return false;");
-				folderActionsToolbar.addToolbarMenuItem("5_calendar", "calendar", importByURL, "#", qualifiersByURL);
+			/** Vertical mode has been removed
+			//Hemanth: Display Show entries at bottom folder action option only for the Table view
+			if (viewType.equals(Definition.VIEW_STYLE_TABLE)) {
+				//vertical
+				qualifiers = new HashMap();
+				if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) 
+					qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
+				entryToolbar.addToolbarMenuItem("4_display_styles", "styles", 
+						NLT.get("toolbar.menu.display_style_vertical"), url, qualifiers);
 			}
+			*/
+			
+			//iframe
+			qualifiers = new HashMap();
+			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) 
+				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
+			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
+					NLT.get("toolbar.menu.display_style_iframe"), url, qualifiers);
+			//newpage
+			qualifiers = new HashMap();
+			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE)) 
+				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE);
+			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
+					NLT.get("toolbar.menu.display_style_newpage"), url, qualifiers);
+			//popup
+			qualifiers = new HashMap();
+			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) 
+				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
+			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
+					NLT.get("toolbar.menu.display_style_popup"), url, qualifiers);
+		}
+		
+		//Folder action menu
+		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
+				(viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
+						viewType.equals(Definition.VIEW_STYLE_TASK)) &&
+				bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {
+			
+			
+			String titleFromFile = NLT.get("calendar.import.window.title.fromFile");
+			String titleByURL = NLT.get("calendar.import.window.title.byURL");
+			String legendFromFile = NLT.get("calendar.import.window.legend.fromFile");
+			String legendByURL = NLT.get("calendar.import.window.legend.byURL");
+			String btnFromFile = NLT.get("calendar.import.window.upload.fromFile");
+			String btnByURL = NLT.get("calendar.import.window.upload.byURL");
+			String optionTitle = NLT.get("toolbar.menu.calendarImport");
+			String importFromFile = NLT.get("toolbar.menu.calendarImport.fromFile");
+			String importByURL = NLT.get("toolbar.menu.calendarImport.byURL");
+			if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
+				titleFromFile = NLT.get("task.import.window.title.fromFile");
+				titleByURL = NLT.get("task.import.window.title.byURL");
+				legendFromFile = NLT.get("task.import.window.legend.fromFile");
+				legendByURL = NLT.get("task.import.window.legend.byURL");
+				btnFromFile = NLT.get("task.import.window.upload.fromFile");
+				btnByURL = NLT.get("task.import.window.upload.byURL");
+				optionTitle = NLT.get("toolbar.menu.taskImport");
+				importFromFile = NLT.get("toolbar.menu.taskImport.fromFile");
+				importByURL = NLT.get("toolbar.menu.taskImport.byURL");				
+			}
+			
+			
+			folderActionsToolbar.addToolbarMenu("5_calendar", optionTitle);	
+			
+			Map qualifiersByFile = new HashMap();
+			qualifiersByFile.put("onClick", "ss_calendar_import.importFormFromFile({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
+					titleFromFile + "', legend: '" + legendFromFile + "', btn: '" + btnFromFile + "'});return false;");
+			folderActionsToolbar.addToolbarMenuItem("5_calendar", "calendar", importFromFile, "#", qualifiersByFile);
+			
+			Map qualifiersByURL = new HashMap();
+			qualifiersByURL.put("onClick", "ss_calendar_import.importFormByURL({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
+					titleByURL + "', legend: '" + legendByURL + "', btn: '" + btnByURL + "'});return false;");
+			folderActionsToolbar.addToolbarMenuItem("5_calendar", "calendar", importByURL, "#", qualifiersByURL);
 		}
 		
 		//Build the "Manage dashboard" toolbar
@@ -1839,6 +1884,21 @@ public class ListFolderHelper {
 		whatsNewToolbar.addToolbarMenu("unseen", NLT.get("toolbar.menu.whatsUnseen"), 
 				adapterUrl.toString(), qualifiers);
 
+		
+		boolean isAppletSupported = SsfsUtil.supportApplets();
+        
+        boolean isAccessible = false;
+		String displayStyle = user.getDisplayStyle();
+		if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
+				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			isAccessible = true;
+		}
+		
+		if (isAppletSupported && !folder.isMirroredAndReadOnly() && bs.getFolderModule().testAccess(folder, FolderOperation.addEntry) && !isAccessible) {
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "javascript: ss_showFolderAddAttachmentDropbox('" + response.getNamespace() + "', '" + folder.getId() + "','" + Boolean.toString(folder.isLibrary()) + "'); return false;");
+			footerToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
+		}
 		
 		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			qualifiers = new HashMap();

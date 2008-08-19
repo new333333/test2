@@ -89,7 +89,6 @@ function ss_confirmSetWikiHomepage() {
  <ssf:toolbar toolbar="${ss_whatsNewToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />			
 </ssf:toolbar>
 <div class="ss_clear"></div>
-<jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
 <div id="ss_whatsNewDiv${ss_namespace}">
 <c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
 <%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>

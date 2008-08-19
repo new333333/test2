@@ -42,7 +42,7 @@
           <span><ssf:nlt tag="login.name"/></span>
         </td>
         <td valign="top" style="padding-left:4px;">
-          <input type="text" size="40" name="username"/>
+          <input type="text" size="40" name="j_username"/>
         </td>
       </tr>
       <tr>
@@ -50,13 +50,13 @@
           <span><ssf:nlt tag="login.password"/></span>
         </td>
         <td valign="top" style="padding-left:4px;">
-          <input type="password" size="40" name="password"/>
+          <input type="password" size="40" name="j_password"/>
         </td>
       </tr>
     </table>
     <br/>
     <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
-    <input type="hidden" name="url" value="${ssUrl}"/>
+    <input type="hidden" name="spring-security-redirect" value="${ssUrl}"/>
   </fieldset>
   </form>
 </div>

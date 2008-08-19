@@ -316,7 +316,7 @@ public class BinderHelper {
 			model.put(WebKeys.LOGIN_URL, loginUrl.toString());
 			String logoutUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_LOGOUT;
 			model.put(WebKeys.LOGOUT_URL, logoutUrl);
-			String loginPostUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_LOGIN;
+			String loginPostUrl = WebUrlUtil.getSSFContextRootURL(request) + WebKeys.SERVLET_LOGIN;
 			model.put(WebKeys.LOGIN_POST_URL, loginPostUrl);
 		}
 		User user = null;
@@ -2569,57 +2569,6 @@ public class BinderHelper {
 			int result = this.getCount() < p.getCount() ? 1 : 0;
 			return result;
 			}
-	}
-	
-	public static void buildFolderActionsToolbar(AllModulesInjected bs, RenderRequest request, 
-			RenderResponse response, Toolbar folderActionsToolbar, String forumId) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-        String userDisplayStyle = user.getDisplayStyle();
-        if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
-        
-		AdaptedPortletURL adapterUrl;
-		Map qualifiers;
-		PortletURL url;
-
-        //Folder action menu
-		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
-			//Only show these options if not in accessible mode
-			folderActionsToolbar.addToolbarMenu("4_display_styles", NLT.get("toolbar.folder_actions"));
-			
-			//iframe
-			qualifiers = new HashMap();
-			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) 
-				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
-			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
-					NLT.get("toolbar.menu.display_style_iframe"), url, qualifiers);
-			//newpage
-			qualifiers = new HashMap();
-			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE)) 
-				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE);
-			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
-					NLT.get("toolbar.menu.display_style_newpage"), url, qualifiers);
-			//popup
-			qualifiers = new HashMap();
-			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) 
-				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
-			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
-					NLT.get("toolbar.menu.display_style_popup"), url, qualifiers);
-		}
-	}
+	}	
 
 }

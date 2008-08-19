@@ -31,6 +31,7 @@ package com.sitescape.team.web.portlet;
 import org.springframework.web.portlet.mvc.SimpleFormController;
 
 import com.sitescape.team.module.admin.AdminModule;
+import com.sitescape.team.module.authentication.AuthenticationModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
 import com.sitescape.team.module.definition.DefinitionModule;
@@ -53,6 +54,7 @@ implements AllModulesInjected {
 	private WorkspaceModule workspaceModule;
 	private FolderModule folderModule;
 	private AdminModule adminModule;
+	private AuthenticationModule authenticationModule;
 	private ProfileModule profileModule;
 	private DefinitionModule definitionModule;
 	private WorkflowModule workflowModule;
@@ -94,6 +96,14 @@ implements AllModulesInjected {
 	
 	public AdminModule getAdminModule() {
 		return adminModule;
+	}
+
+	public void setAuthenticationModule(AuthenticationModule authenticationModule) {
+		this.authenticationModule = authenticationModule;
+	}
+	
+	public AuthenticationModule getAuthenticationModule() {
+		return authenticationModule;
 	}
 
 	public void setProfileModule(ProfileModule profileModule) {

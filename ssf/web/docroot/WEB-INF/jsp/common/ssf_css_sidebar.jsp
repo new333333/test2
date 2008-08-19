@@ -224,11 +224,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-repeat: repeat-x;
 }
 .ss_sidebarSlide {
-	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_lg.png"); 
+	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_lg.gif"); 
 	background-position:top left;
 	background-repeat: no-repeat;
 	height:22px;		/* boulder 22px */
 	color:#FFF;
+	padding-left: 20px;
 	}
 .ss_sidebarSlidesm {
 	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_sm.png"); 
@@ -236,13 +237,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-repeat: no-repeat;
 	height:22px;		/* boulder 22px */
 	color:#FFF;
+	padding-left: 20px;
 	}
-.ss_hideShow {
-	font-size: 12px;
-	padding-left:20px;
-	padding-top: 5px;
-	}
-	
 button { 
   border:0; 
   cursor:pointer; 

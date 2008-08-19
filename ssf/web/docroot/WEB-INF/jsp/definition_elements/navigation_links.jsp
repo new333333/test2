@@ -64,141 +64,138 @@
   </c:if>
     title="<ssf:nlt tag="helpSpot.breadCrumbs"/>"></ssHelpSpot>
 
-  <ul>
-	<c:if test="${!empty ssDefinitionEntry.parentBinder}">
-	  <c:set var="parentBinder" value="${ssDefinitionEntry.parentBinder}"/>
-	  <jsp:useBean id="parentBinder" type="java.lang.Object" />
-	  <%
-		Stack parentTree = new Stack();
-		while (parentBinder != null) {
-			//if (((Binder)parentBinder).getEntityType().equals(com.sitescape.team.domain.EntityIdentifier.EntityType.profiles)) break;
-			parentTree.push(parentBinder);
-			parentBinder = ((Binder)parentBinder).getParentBinder();
-		}
-		while (!parentTree.empty()) {
-			Binder nextBinder = (Binder) parentTree.pop();
-	  %>
-	 <c:set var="nextBinder" value="<%= nextBinder %>"/>
-     <li>
-	   <c:if test="${empty ssNavigationLinkTree[nextBinder.id]}">
-	  	<a
-		  <c:if test="${nextBinder.entityType == 'folder'}">
-  			href="<ssf:url 
-  			folderId="${nextBinder.id}" 
-  			action="view_folder_listing"/>"
-		  </c:if>
-		  <c:if test="${nextBinder.entityType == 'workspace'}">
-  		  	href="<ssf:url 
-  		  	folderId="${nextBinder.id}" 
-  		  	action="view_ws_listing"/>"
-		  </c:if>
-		  <c:if test="${nextBinder.entityType == 'profiles'}">
-  	  	  	href="<ssf:url 
-  		  	folderId="${nextBinder.id}" 
-  		  	action="view_profile_listing"/>"
-		  </c:if>
-  		  onClick="return(ss_navigation_goto(this.href));"
-	  	  >
-	      <c:if test="${empty nextBinder.title}" >
-			--<ssf:nlt tag="entry.noTitle" />--
-	  	  </c:if>
-	  	  <c:out value="${nextBinder.title}" />
-		</a>
-   	  </c:if>
-      <c:if test="${!empty ssNavigationLinkTree[nextBinder.id]}">
-		<div style="display:inline">
-		  <ssf:tree treeName="${ss_breadcrumbsTreeName}${nextBinder.id}${renderResponse.namespace}" 
-  		  treeDocument="${ssNavigationLinkTree[nextBinder.id]}" 
-  		  topId="${nextBinder.id}" rootOpen="false" showImages="false" 
-  		  showIdRoutine="${ss_breadcrumbsShowIdRoutine}"
-  		  namespace="${renderResponse.namespace}" />
-		</div>
-      </c:if>
-	 </li>
-	 <li style="padding-top:11px;">//</li>
-  	 <%
-	   }
-  	 %>
-	</c:if>
+<ul>
+<c:if test="${!empty ssDefinitionEntry.parentBinder}">
+<c:set var="parentBinder" value="${ssDefinitionEntry.parentBinder}"/>
+<jsp:useBean id="parentBinder" type="java.lang.Object" />
+<%
+	Stack parentTree = new Stack();
+	while (parentBinder != null) {
+		//if (((Binder)parentBinder).getEntityType().equals(com.sitescape.team.domain.EntityIdentifier.EntityType.profiles)) break;
+		parentTree.push(parentBinder);
+		parentBinder = ((Binder)parentBinder).getParentBinder();
+	}
+	while (!parentTree.empty()) {
+		Binder nextBinder = (Binder) parentTree.pop();
+%>
+<c:set var="nextBinder" value="<%= nextBinder %>"/>
+<li>
+<c:if test="${empty ssNavigationLinkTree[nextBinder.id]}">
+<a
+<c:if test="${nextBinder.entityType == 'folder'}">
+  href="<ssf:url 
+  folderId="${nextBinder.id}" 
+  action="view_folder_listing"/>"
+</c:if>
+<c:if test="${nextBinder.entityType == 'workspace'}">
+  href="<ssf:url 
+  folderId="${nextBinder.id}" 
+  action="view_ws_listing"/>"
+</c:if>
+<c:if test="${nextBinder.entityType == 'profiles'}">
+  href="<ssf:url 
+  folderId="${nextBinder.id}" 
+  action="view_profile_listing"/>"
+</c:if>
+  onClick="return(ss_navigation_goto(this.href));"
+>
+<c:if test="${empty nextBinder.title}" >
+--<ssf:nlt tag="entry.noTitle" />--
+</c:if>
+<c:out value="${nextBinder.title}" /></a>
+</c:if>
+<c:if test="${!empty ssNavigationLinkTree[nextBinder.id]}">
+<div style="display:inline">
+<ssf:tree treeName="${ss_breadcrumbsTreeName}${nextBinder.id}${renderResponse.namespace}" 
+  treeDocument="${ssNavigationLinkTree[nextBinder.id]}" 
+  topId="${nextBinder.id}" rootOpen="false" showImages="false" 
+  showIdRoutine="${ss_breadcrumbsShowIdRoutine}"
+  namespace="${renderResponse.namespace}" />
+</div>
+</c:if>
+</li>
+<li style="padding-top:11px;">//</li>
+<%
+	}
+%>
+</c:if>
 
-	<c:if test="${ssDefinitionEntry.entityType == 'folderEntry' && !empty ssDefinitionEntry.parentEntry}">
-	  <c:set var="parentEntry" value="${ssDefinitionEntry.parentEntry}"/>
-	  <jsp:useBean id="parentEntry" type="java.lang.Object" />
-	  <%
-		Stack parentEntryTree = new Stack();
-		while (parentEntry != null) {
-			parentEntryTree.push(parentEntry);
-			parentEntry = ((FolderEntry)parentEntry).getParentEntry();
-		}
-		while (!parentEntryTree.empty()) {
-			FolderEntry nextEntry = (FolderEntry) parentEntryTree.pop();
-	  %>
-	  <c:set var="nextEntry" value="<%= nextEntry %>"/>
-	 <li>
-	  <div class="ss_treeWidget">
-		<a
-  		  href="<ssf:url 
-  		  folderId="${ssDefinitionEntry.parentBinder.id}" 
-  		  entryId="${nextEntry.id}" 
-  		  action="view_folder_entry"/>"
-  		  onClick="return(ss_navigation_goto(this.href));"
-		>
-		  <span><c:if test="${empty nextEntry.title}" >--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${nextEntry.title}" /></span>
-		  <img class="ss_twNone" border="0" <ssf:alt/>
-  			src="<html:imagesPath/>pics/1pix.gif"/>
-  		</a><br/>
-	  </div>
-	 </li>
-	 <li style="padding-top:11px;">//</li>
-	  <%
-		}
-	  %>
-	</c:if>
+<c:if test="${ssDefinitionEntry.entityType == 'folderEntry' && !empty ssDefinitionEntry.parentEntry}">
+<c:set var="parentEntry" value="${ssDefinitionEntry.parentEntry}"/>
+<jsp:useBean id="parentEntry" type="java.lang.Object" />
+<%
+	Stack parentEntryTree = new Stack();
+	while (parentEntry != null) {
+		parentEntryTree.push(parentEntry);
+		parentEntry = ((FolderEntry)parentEntry).getParentEntry();
+	}
+	while (!parentEntryTree.empty()) {
+		FolderEntry nextEntry = (FolderEntry) parentEntryTree.pop();
+%>
+<c:set var="nextEntry" value="<%= nextEntry %>"/>
+<li>
+<div class="ss_treeWidget">
+<a
+  href="<ssf:url 
+  folderId="${ssDefinitionEntry.parentBinder.id}" 
+  entryId="${nextEntry.id}" 
+  action="view_folder_entry"/>"
+  onClick="return(ss_navigation_goto(this.href));"
+>
+<span><c:if test="${empty nextEntry.title}" >--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${nextEntry.title}" /></span>
+<img class="ss_twNone" border="0" <ssf:alt/>
+  src="<html:imagesPath/>pics/1pix.gif"/></a><br/>
+</div>
+</li>
+<li style="padding-top:11px;">//</li>
+<%
+	}
+%>
+</c:if>
 
-	 <li>
-		<c:if test="${ssDefinitionEntry.entityType == 'folderEntry' || empty ssNavigationLinkTree[ssDefinitionEntry.id]}">
-			<div style="display:inline">
-			  <div class="ss_treeWidget">
-				<a
-					<c:if test="${ssDefinitionEntry.entityType == 'folderEntry'}">
-  					  href="<ssf:url 
-  					  folderId="${ssDefinitionEntry.parentBinder.id}" 
-  					  entryId="${ssDefinitionEntry.id}" 
-  					  action="view_folder_entry"/>"
-	 				</c:if>
-					<c:if test="${ssDefinitionEntry.entityType == 'folder'}">
-  			 		  href="<ssf:url 
-  			 		  folderId="${ssDefinitionEntry.id}" 
-  			 		  action="view_folder_listing"/>"
-					</c:if>
-					<c:if test="${ssDefinitionEntry.entityType == 'workspace'}">
-  			 		  href="<ssf:url 
-  			 		  folderId="${ssDefinitionEntry.id}" 
-  			 		  action="view_ws_listing"/>"
-					</c:if>
-  			 		onClick="return(ss_navigation_goto(this.href));"
-			 	>
-		  		<span><c:if test="${empty ssDefinitionEntry.title}" >--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${ssDefinitionEntry.title}" /></span>
-		  		<img class="ss_twNone" border="0" <ssf:alt/>
-  					src="<html:imagesPath/>pics/1pix.gif"/>
-  			  </a><br/>
-			 </div>
-			</div>
-	  </c:if>
-	  <c:if test="${ssDefinitionEntry.entityType != 'folderEntry' && !empty ssNavigationLinkTree[ssDefinitionEntry.id]}">
-		<div style="display:inline">
-			<ssf:tree treeName="${ss_breadcrumbsTreeName}${ssDefinitionEntry.id}${renderResponse.namespace}" 
-  			  treeDocument="${ssNavigationLinkTree[ssDefinitionEntry.id]}" 
-  			  topId="${ssDefinitionEntry.id}" rootOpen="false" 
-  			  showImages="false" showIdRoutine="${ss_breadcrumbsShowIdRoutine}" 
-  			  namespace="${renderResponse.namespace}"
-  			  highlightNode="${ssDefinitionEntry.id}" />
-		</div>
-	  </c:if>
-	 </li>
-   </ul>
- </div>
- <div class="ss_clear_float"></div>
+<li>
+<c:if test="${ssDefinitionEntry.entityType == 'folderEntry' || empty ssNavigationLinkTree[ssDefinitionEntry.id]}">
+<div style="display:inline">
+<div class="ss_treeWidget">
+<a
+<c:if test="${ssDefinitionEntry.entityType == 'folderEntry'}">
+  href="<ssf:url 
+  folderId="${ssDefinitionEntry.parentBinder.id}" 
+  entryId="${ssDefinitionEntry.id}" 
+  action="view_folder_entry"/>"
+</c:if>
+<c:if test="${ssDefinitionEntry.entityType == 'folder'}">
+  href="<ssf:url 
+  folderId="${ssDefinitionEntry.id}" 
+  action="view_folder_listing"/>"
+</c:if>
+<c:if test="${ssDefinitionEntry.entityType == 'workspace'}">
+  href="<ssf:url 
+  folderId="${ssDefinitionEntry.id}" 
+  action="view_ws_listing"/>"
+</c:if>
+  onClick="return(ss_navigation_goto(this.href));"
+>
+<span><c:if test="${empty ssDefinitionEntry.title}" >--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${ssDefinitionEntry.title}" /></span>
+<img class="ss_twNone" border="0" <ssf:alt/>
+  src="<html:imagesPath/>pics/1pix.gif"/></a><br/>
+</div>
+</div>
+</c:if>
+<c:if test="${ssDefinitionEntry.entityType != 'folderEntry' && !empty ssNavigationLinkTree[ssDefinitionEntry.id]}">
+<div style="display:inline">
+<ssf:tree treeName="${ss_breadcrumbsTreeName}${ssDefinitionEntry.id}${renderResponse.namespace}" 
+  treeDocument="${ssNavigationLinkTree[ssDefinitionEntry.id]}" 
+  topId="${ssDefinitionEntry.id}" rootOpen="false" 
+  showImages="false" showIdRoutine="${ss_breadcrumbsShowIdRoutine}" 
+  namespace="${renderResponse.namespace}"
+  highlightNode="${ssDefinitionEntry.id}" />
+</div>
+</c:if>
+</li>
+</ul>
+</div>
+<div class="ss_clear_float"></div>
 
- </ssf:skipLink>
+</ssf:skipLink>
 </c:if>

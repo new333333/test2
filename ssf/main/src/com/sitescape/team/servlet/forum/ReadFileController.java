@@ -43,6 +43,7 @@ import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.FileHelper;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.FileUtil;
 public class ReadFileController extends AbstractReadFileController {
 	
@@ -51,6 +52,10 @@ public class ReadFileController extends AbstractReadFileController {
             HttpServletResponse response) throws Exception {
 		// Assuming that the full request URL was http://localhost:8080/ssf/s/readFile/xxx/123/456/789/junk.doc,
 		// the following call returns "/readFile/xxx/123/456/789/junk.doc" portion of the URL.
+		if (!WebHelper.isUserLoggedIn(request)) {
+			response.getOutputStream().print(NLT.get("login.please"));
+			return null;
+		}
 		String pathInfo = request.getPathInfo();
 		
 		String[] args = pathInfo.split(Constants.SLASH);

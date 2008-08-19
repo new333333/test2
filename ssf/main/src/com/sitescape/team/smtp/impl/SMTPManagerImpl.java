@@ -221,11 +221,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		private User determineSender(String from, String hostname)
 		{
 			Long zone = getZoneModule().getZoneIdByVirtualHost(hostname);
-			//Run as background processing agent, same as other posting jobs.  The processer will do the rest of this.
-			User user = getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, zone);
-			if (user != null) RequestContextUtil.setThreadContext(user).resolve();
-			return user;
-		/*	List<Principal> ps = getProfileDao().loadPrincipalByEmail(from, zone);
+			List<Principal> ps = getProfileDao().loadPrincipalByEmail(from, zone);
 			User user = null;
 			for (Principal p:ps) {
 	            //Make sure it is a user
@@ -245,7 +241,6 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 				RequestContextUtil.setThreadContext(user).resolve();
 			}
 			return user;
-			*/
 		}
 	}
 }

@@ -189,7 +189,7 @@
 	<table cellspacing="0" cellpadding="0">
 	<tr>
 		<td>
-			<a href="javascript: ;" onClick="ss_viewMiniBlog('${ssDefinitionEntry.id}', '0', true);return false;"
+			<a href="javascript: ;" onClick="ss_viewMiniBlog('${ssDefinitionEntry.id}', true);return false;"
 			  style="text-decoration:underline;">
 				<span class="ss_bold"><ssf:nlt tag="miniblog"/></span>
 			</a>

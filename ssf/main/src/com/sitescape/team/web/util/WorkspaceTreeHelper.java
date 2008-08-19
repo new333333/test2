@@ -471,7 +471,6 @@ public class WorkspaceTreeHelper {
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		Toolbar dashboardToolbar = new Toolbar();
-		Toolbar folderActionsToolbar = new Toolbar();
 		Toolbar whatsNewToolbar = new Toolbar();
 		Map qualifiers;
 		AdaptedPortletURL adapterUrl;
@@ -838,14 +837,12 @@ public class WorkspaceTreeHelper {
 		whatsNewToolbar.addToolbarMenu("unseen", NLT.get("toolbar.menu.whatsUnseen"), 
 				adapterUrl.toString(), qualifiers);
 
-		//Build the folder actions toolbar
-		BinderHelper.buildFolderActionsToolbar(bs, request, response, folderActionsToolbar, forumId);
+
 
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
 		model.put(WebKeys.WHATS_NEW_TOOLBAR,  whatsNewToolbar.getToolbar());
-		model.put(WebKeys.FOLDER_ACTIONS_TOOLBAR,  folderActionsToolbar.getToolbar());
 	}
 	
 	private static String[] collectContributorIds(Workspace workspace) {
