@@ -30,7 +30,7 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<body class="ss_style_body">
+<body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
 

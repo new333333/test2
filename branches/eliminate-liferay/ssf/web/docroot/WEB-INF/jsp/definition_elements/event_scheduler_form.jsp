@@ -39,10 +39,10 @@ dojo.addOnLoad(function() {
 					${prefix}scheduler = ssEventScheduler.create({
 							containerId: '${prefix}schedule',
 							userListObj: ssFind.getObjectByFormName('${formName}', '${propertyValues_sourceUserListElement[0]}'),
-							eventStartObj: dojo.widget.byId('event_start_${propertyValues_sourceEventElement[0]}'),
-							eventStartTimeObj: dojo.widget.byId('event_start_time_${propertyValues_sourceEventElement[0]}'),
-							eventEndObj: dojo.widget.byId('event_end_${propertyValues_sourceEventElement[0]}'),
-							eventEndTimeObj: dojo.widget.byId('event_end_time_${propertyValues_sourceEventElement[0]}'),
+							eventStartObj: dijit.byId('event_start_${propertyValues_sourceEventElement[0]}'),
+							eventStartTimeObj: dijit.byId('event_start_time_${propertyValues_sourceEventElement[0]}'),
+							eventEndObj: dijit.byId('event_end_${propertyValues_sourceEventElement[0]}'),
+							eventEndTimeObj: dijit.byId('event_end_time_${propertyValues_sourceEventElement[0]}'),
 							userListDataName: "${propertyValues_sourceUserListElement[0]}",
 							binderId: "${ssFolder.id}",
 							entryId: "${ssEntry.id}"

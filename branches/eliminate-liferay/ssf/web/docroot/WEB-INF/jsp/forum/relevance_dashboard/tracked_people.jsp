@@ -28,12 +28,27 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ page language="java" pageEncoding="UTF-8"%>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<% // This is JSON type AJAX response  %>
-{
-<c:forEach var="entry" items="${ssEntry}" varStatus="status">
-	"<ssf:escapeJavaScript value="${entry.value.id}"/>":"<ssf:escapeJavaScript value="${entry.key}"/>"<c:if test="${!status.last}">,</c:if>
+<div id="today">
+<c:forEach var="user" items="${ss_trackedPeople}">
+
+    <div id="ss_col3_para" > 
+    <ssf:showUser user="${user}" titleStyle="ss_link_1" />
+    <c:if test="${ss_show_tracked_item_delete_button == 'true'}">
+    <img style="padding:4px 0px 0px 2px;" align="texttop"
+      src="<html:rootPath/>images/pics/delete.gif"
+      onClick="ss_trackedPeopleDelete(this, '${user.id}');"/>
+    </c:if>
+    <c:if test="${!empty user.status}">
+	    <div>
+			<span class="ss_smallprint"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+			  value="${user.statusDate}" type="both" 
+			  timeStyle="short" dateStyle="short" /></span>
+	    </div>
+	    <div id="ss_im_status"><em>${user.status}</em></div>
+    </c:if>
+    </div><!-- end of para -->
+    
 </c:forEach>
-}
+</div><!-- end of today -->

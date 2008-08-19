@@ -57,8 +57,9 @@
   </c:if>
   <c:if test="${ssDefinitionEntry.popularity > 1}">
     <ssf:nlt tag="popularity.visits"><ssf:param 
-      name="value" value="${ssDefinitionEntry.popularity}"/></ssf:nlt></span>
+      name="value" value="${ssDefinitionEntry.popularity}"/></ssf:nlt>
   </c:if>
+</span>
 </c:if>
 <c:if test="${empty ssDefinitionEntry.popularity}">
 <span class="ss_muted_label_small"><ssf:nlt tag="popularity.visits.none" /></span>
@@ -74,8 +75,9 @@
   </c:if>
   <c:if test="${ssDefinitionEntry.totalReplyCount > 1}">
     <ssf:nlt tag="popularity.comments"><ssf:param 
-      name="value" value="${ssDefinitionEntry.totalReplyCount}"/></ssf:nlt></span>
+      name="value" value="${ssDefinitionEntry.totalReplyCount}"/></ssf:nlt>
   </c:if>
+</span>
 </c:if>
 <c:if test="${ssDefinitionEntry.totalReplyCount == 0}">
 <span class="ss_muted_label_small"><ssf:nlt tag="popularity.comments.none" /></span>

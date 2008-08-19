@@ -33,7 +33,7 @@
 
 
 <ssf:ifadapter>
-	<body>
+	<body class="tundra">
 </ssf:ifadapter>
 <jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 		<script type="text/javascript">

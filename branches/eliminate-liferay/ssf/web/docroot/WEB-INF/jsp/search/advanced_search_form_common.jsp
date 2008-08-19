@@ -32,13 +32,24 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.sitescape.team.util.CalendarHelper" %>
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
+<style type="text/css">
+        @import "<html:rootPath />js/dojo/dijit/themes/tundra/tundra.css";
+        @import "<html:rootPath />js/dojo/dojo/resources/dojo.css"
+</style>
+
 <script type="text/javascript">
-var ss_user_locale = "${ssUser.locale.language}";
-var ss_searchBinderUrl = "<ssf:url adapter="true" portletName="ss_forum" actionUrl="true" ><ssf:param 
-	name="binderId" value="${ssBinder.id}"/></ssf:url>";
+
+	var ss_user_locale = "${ssUser.locale.language}";
+	var ss_searchBinderUrl = "<ssf:url adapter="true" portletName="ss_forum" actionUrl="true" ><ssf:param 
+		name="binderId" value="${ssBinder.id}"/></ssf:url>";
+		
+	dojo.addOnLoad(function() {
+			dojo.addClass(document.body, "tundra");
+		}
+	);
 </script>
 
-	<div id="ss_searchForm_container">
+	<div id="ss_searchForm_container" class="tundra">
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">
 				<c:if test="${!filterDefinition}">
@@ -173,8 +184,6 @@ var ss_searchBinderUrl = "<ssf:url adapter="true" portletName="ss_forum" actionU
 					</c:if>
 					
 				</table>
-				<!-- <ssf:nlt tag="searchForm.searchJoiner"/>: <input type="radio" name="searchJoinerAnd" value="true" id="searchJoinerAnd" checked="true"/><ssf:nlt tag="searchForm.searchJoiner.And"/>
-					<input type="radio" name="searchJoinerAnd" id="searchJoinerOr" value="false"/><ssf:nlt tag="searchForm.searchJoiner.Or"/> -->
 			</div>
 		</div>
 		<c:if test="${! empty ss_filterMap.additionalFilters}">
@@ -282,10 +291,4 @@ var ss_searchBinderUrl = "<ssf:url adapter="true" portletName="ss_forum" actionU
 			<input type="hidden" name="searchTypes" id="searchTypes" value=""/>
 		</div>
 	</div>
-<script type="text/javascript">
-function ss_showAdvancedSearchForm() {
-	//ss_showAdditionalOptions('ss_searchForm_additionalFilters', 'ss_search_more_options_txt_${ssNamespace}', '${ssNamespace}');
-}
-ss_createOnLoadObj("ss_showAdvancedSearchForm", ss_showAdvancedSearchForm);
 
-</script>

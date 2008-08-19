@@ -34,7 +34,7 @@
 <ul style="#ss_ul()">
 #foreach ($selection in ${ssVisitor.Entity.FileAttachments})
 <li style="#ss_li()"><a style="text-decoration:underline;" 
-			href="$ssVisitor.getFileLink(${ssVisitor.Entity.ParentBinder.Id}, ${ssVisitor.Entity.Id}, ${ssVisitor.Entity.EntityType.name()}, ${selection.Id})">
+			href="$ssVisitor.getFileLink(${selection})">
 			${selection.fileItem.name}</a></li>
 #end
 
@@ -50,7 +50,7 @@
 		</td>
 	#else
 		<td style="font-size:10px;font-weight:bold;padding-left:0px;" width="25%"><a style="text-decoration: none;" 
-			href="$ssVisitor.getFileLink(${ssVisitor.Entity.ParentBinder.Id}, ${ssVisitor.Entity.Id}, ${ssVisitor.Entity.EntityType.name()}, ${selection.Id})">
+			href="$ssVisitor.getFileLink(${selection})">
 			${selection.fileItem.name}</a>
 		</td>
 	#end

@@ -36,7 +36,7 @@
 String wsTreeName = renderResponse.getNamespace() + "_wsTree";
 %>
 <ssf:ifadapter>
-<body class="ss_style_body">
+<body class="ss_style_body tundra">
 </ssf:ifadapter>
 
 <script type="text/javascript">

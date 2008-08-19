@@ -28,16 +28,55 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ page language="java" pageEncoding="UTF-8"%>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<% // This is JSON type AJAX response  %>
-[
-<c:set var="first" value="1"/>
-<c:forEach var="field" items="${ssEntryDefinitionElementData}">
-	<c:if test="${field.value.type != 'textarea'}">
-		<c:if test="${first!=1}">,</c:if><c:set var="first" value="0"/>
-		["<ssf:escapeJavaScript value="${fn:substringAfter(field.key, '|')}"/>", "<ssf:escapeJavaScript value="${field.value.caption}"/>", "<ssf:escapeJavaScript value="${field.value.type}"/>"]
-	</c:if>
-</c:forEach>
-]
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<ssf:ifadapter>
+<body class="ss_style_body">
+</ssf:ifadapter>
+<script type="text/javascript">
+function ss_showMiniblog${renderResponse.namespace}(id, obj) {
+	ss_viewMiniBlog(id, false);
+}
+</script>
+
+<div id="ss_pseudoPortalDiv${renderResponse.namespace}">
+<div class="ss_style ss_portlet ss_content_window_content">
+  <div>
+    <div style="float:right;">
+	      <span class="ss_labelAbove"><ssf:nlt tag="navigation.findPerson"/></span>
+	      <ssf:find type="user"
+		    clickRoutine="ss_showMiniblog${renderResponse.namespace}"
+		    leaveResultsVisible="false"
+		    width="100px" singleItem="true"/> 
+	</div>
+    <div><h2><ssf:nlt tag="miniblog"/></h2></div>
+    <div class="ss_clear_float"></div>
+    <h3><ssf:showUser user="${ss_miniblog_user}"/></h3>
+    
+  </div>
+  <table>
+  <tr>
+  <td valign="top" align="center">
+	  <ssf:buddyPhoto style="ss_thumbnail_standalone ss_thumbnail_standalone_small" 
+					photos="${ss_miniblog_user.customAttributes['picture'].value}" 
+					folderId="${ss_miniblog_user.parentBinder.id}" entryId="${ss_miniblog_user.id}" />
+  </td>
+  <td valign="top" style="padding-left:20px;">
+	  <ul>
+	  <c:forEach var="status" items="${ss_miniblog_statuses}">
+	    <li style="padding-bottom:10px;">
+		  <span><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+					      value="${status.date}" type="both" 
+						  timeStyle="short" dateStyle="short" /></span><br/>
+		  <span class="ss_italic">${status.description}</span>
+	    </li>
+	  </c:forEach>
+	  </ul>
+  </td>
+  </tr>
+  </table>
+</div>
+</div>
+<ssf:ifadapter>
+</body>
+</html>
+</ssf:ifadapter>

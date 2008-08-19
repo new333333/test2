@@ -33,6 +33,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/guestbook/guestbook_sign.jsp" %>
 
 <c:forEach var="entry" items="${ssFolderEntries}" >
+<jsp:useBean id="entry" type="java.util.HashMap" />
 <table class="ss_guestbook" width="100%">
 		<tr>
 			<td class="ss_miniBusinessCard" style="padding-bottom: 5px;">
@@ -40,6 +41,22 @@
 			</td>
 			<td class="ss_guestbookContainer">
 				<span class="ss_entryTitle ss_normalprint">
+				
+   				<% if (!ssSeenMap.checkIfSeen(entry)) { %>
+				    
+				  <a id="ss_sunburstDiv${entry._binderId}_${entry._docId}" href="javascript: ;" 
+				  title="<ssf:nlt tag="sunburst.click"/>"
+				  onClick="ss_hideSunburst('${entry._docId}', '${entry._binderId}');return false;"
+				><span 
+				  style="display:${ss_sunburstVisibilityHide};"
+				  id="ss_sunburstShow${renderResponse.namespace}" 
+				  class="ss_fineprint">
+				  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" <ssf:alt tag="alt.new"/> />&nbsp;
+				  </span>
+				  </a>
+					    
+				<% } %>
+				
 				<ssf:titleLink action="view_folder_entry" entryId="${entry._docId}" 
 					binderId="${entry._binderId}" entityType="${entry._entityType}" 
 					namespace="${renderResponse.namespace}">

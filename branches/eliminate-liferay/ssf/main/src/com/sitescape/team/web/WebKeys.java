@@ -141,6 +141,7 @@ public class WebKeys {
 	public static final String URL_FILE_NAME = "fileName";
 	public static final String URL_FILE_TIME = "fileTime";
 	public static final String URL_FILE_TITLE = "fileTitle";
+	public static final String URL_FILE_VERSION = "fileVersion";
 	public static final String URL_FILE_VIEW_TYPE = "viewType";
 	public static final String URL_GROUP_ID="groupId";
 	public static final String URL_ADD_DEFAULT_ENTRY_FROM_INFRAME = "addEntryFromIFrame";
@@ -200,9 +201,10 @@ public class WebKeys {
 	public static final String URL_ZONE_NAME = "zoneName";
 	public static final String URL_VIRTUAL_HOST = "virtualHost";
 	public static final String URL_ID_CHOICES = "idChoices";
-	public static final String URL_ID_CHOICES_SEPARATOR = "%";
+	public static final String URL_ID_CHOICES_SEPARATOR = "_";
 	public static final String URL_ID_CHOICES_REMOVE = "idChoicesRemove";
 	public static final String URL_URL = "url";
+	public static final String URL_USER_ID = "userId";
 	public static final String URL_ICAL_URL = "iCalURL";
 	public static final String URL_ICAL_SCHEDULE = "iCalSchedule";
 	public static final String URL_WINDOW_STATE = "windowState";
@@ -269,7 +271,9 @@ public class WebKeys {
 	public static final String ACTION_LICENSE_REPORT="license_report";
 	public static final String ACTION_LOGIN_REPORT="login_report";
 	public static final String ACTION_POSTINGJOB_CONFIGURE="configure_posting_job";
-	public static final String ACTION_READFILE="readFile";
+	public static final String ACTION_READ_FILE="readFile";
+	public static final String ACTION_READ_SCALED="readScaledFile";
+	public static final String ACTION_READTHUMB_NAIL="readThumbnail";
 	public static final String ACTION_RELOAD_OPENER="reload_opener";
 	public static final String ACTION_RELOAD_OPENER_PARENT="reload_opener_parent";
 	public static final String ACTION_APPLET_RESPONSE="applet_response";
@@ -340,19 +344,15 @@ public class WebKeys {
     public static final String OPERATION_DASHBOARD_SEARCH_MORE="search_more";
     public static final String OPERATION_DASHBOARD_TEAM_MORE="team_more";
 	public static final String OPERATION_FIND_ENTRIES_SEARCH = "find_entries_search";
-	public static final String OPERATION_FIND_ENTRY_TYPES_WIDGET = "get_entry_types_widget";
-	public static final String OPERATION_FIND_USERS_WIDGET = "get_users_widget";
-	public static final String OPERATION_FIND_GROUPS_WIDGET = "get_groups_widget";
-	public static final String OPERATION_FIND_TEAMS_WIDGET = "get_teams_widget";
 	public static final String OPERATION_FIND_ENTRY_ATTRIBUTES_WIDGET = "get_entry_attributes_widget";	
-	public static final String OPERATION_FIND_ENTRY_FIELDS_WIDGET = "get_entry_fields_widget";	
 	public static final String OPERATION_FIND_ENTRY_FOR_FILE = "find_entry_for_file";	
 	public static final String OPERATION_FIND_PLACES_SEARCH = "find_places_search";
 	public static final String OPERATION_FIND_TAG_SEARCH = "find_tag_search";
-	public static final String OPERATION_FIND_TAG_WIDGET = "get_tags_widget";	
-	public static final String OPERATION_FIND_USER_SEARCH = "find_user_search";
-	public static final String OPERATION_FIND_WORKFLOWS_WIDGET = "get_workflows_widget";	
-	public static final String OPERATION_FIND_WORKFLOW_STEP_WIDGET = "get_workflow_step_widget";	
+	public static final String OPERATION_FIND_WORKFLOWS_SEARCH = "find_workflows_search";
+	public static final String OPERATION_FIND_WORKFLOW_STEPS_SEARCH = "find_workflow_steps_search";	
+	public static final String OPERATION_FIND_ENTRY_TYPES_SEARCH = "find_entry_types_search";
+	public static final String OPERATION_FIND_ENTRY_FIELDS_SEARCH = "find_entry_fields_search";
+	public static final String OPERATION_FIND_USER_SEARCH = "find_user_search";	
 	public static final String OPERATION_GET_ACCESS_CONTROL_TABLE = "get_access_control_table";
 	public static final String OPERATION_ADD_ATTACHMENT_OPTIONS = "add_attachment_options";
 	public static final String OPERATION_ADD_FOLDER_ATTACHMENT_OPTIONS = "add_folder_attachment_options";
@@ -467,6 +467,7 @@ public class WebKeys {
 	public static final String OPERATION_SET_SIDEBAR_VISIBILITY = "set_sidebar_visibility";
 	public static final String OPERATION_SET_SUNBURST_VISIBILITY = "set_sunburst_visibility";
 	public static final String OPERATION_GET_UPLOAD_PROGRESS_STATUS = "get_upload_progress_status";
+	public static final String OPERATION_VIEW_MINIBLOG = "view_miniblog";
 	
 	// MODEL TAGS & Attributes
 	public static final String ACCESS_CONTROL_MAP = "ss_accessControlMap";
@@ -752,6 +753,10 @@ public class WebKeys {
     public static final String MARKUP_FORM="form"; 
     public static final String MARKUP_FILE="file"; 
     public static final String MARKUP_VIEW="view"; 
+    public static final String MINIBLOG_ACCESS_DENIED="ss_miniblog_access_denied"; 
+    public static final String MINIBLOG_STATUSES="ss_miniblog_statuses"; 
+    public static final String MINIBLOG_USER="ss_miniblog_user"; 
+    public static final String MINIBLOG_USER_ID="ss_miniblog_user_id"; 
     public static final String MOBILE_BINDER_LIST="ss_mobileBinderList"; 
     public static final String MOBILE_PAGE_SIZE="15"; 
 	public static final String MY_CALENDAR_ENTRIES = "ss_myCalendarEntries";
@@ -918,6 +923,8 @@ public class WebKeys {
     public static final String FIND_FOLDERS_ONLY="ssFindFoldersOnly";
     public static final String FIND_ACCESSIBILITY_TEXT="accessibilityText";
     public static final String FIND_ADD_CURRENT_USER="ssFindAddCurrentUser";
+    public static final String FIND_DISPLAY_VALUE="ssDisplayValue";
+    public static final String FIND_DISPLAY_VALUE_ONLY="ssDisplayValueOnly";
     
     public static final String SECTION_NUMBER="ss_sectionNumber";
     public static final String SECTION_TEXT="ss_sectionText";
