@@ -988,7 +988,9 @@ public class WebKeys {
 	public static final String USER_LIST = "ss_userList";
     public static final String USER_ATTRIBUTES="ssUserAttributes";
     public static final String USER_PROPERTIES="ssUserProperties";
+    public static final String USER_PROPERTIES_OBJ="ssUserPropertyObj";
     public static final String USER_FOLDER_PROPERTIES="ssUserFolderProperties";
+    public static final String USER_FOLDER_PROPERTIES_OBJ="ssUserFolderPropertyObj";
     public static final String USER_WORKSPACE="ss_userWorkspace";
     public static final String VISITORS="ss_visitors";
     public static final String VISITORS_PAGE="ss_visitorsPage";

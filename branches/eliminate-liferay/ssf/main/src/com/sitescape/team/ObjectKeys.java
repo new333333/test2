@@ -260,7 +260,8 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_DISPLAY_DEFINITION = "displayDefinition";
     public static final String USER_PROPERTY_HELP_CPANEL_SHOW = "help_cpanel_show";
     public static final String USER_PROPERTY_RELEVANCE_MAP = "relevanceMap";
-    public static final String USER_PROPERTY_SEARCH_FILTERS = "searchFilters";
+    public static final String USER_PROPERTY_SEARCH_FILTERS_V1 = "searchFilters";//obsolete
+    public static final String USER_PROPERTY_SEARCH_FILTERS = "searchFilterMap";
     public static final String USER_PROPERTY_USER_FILTER = "userFilter";
     public static final String USER_PROPERTY_FAVORITES = "userFavorites";
     public static final String USER_PROPERTY_FOLDER_COLUMNS = "userFolderColumns";
