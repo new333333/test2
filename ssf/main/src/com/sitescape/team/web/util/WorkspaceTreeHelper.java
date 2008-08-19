@@ -171,6 +171,8 @@ public class WorkspaceTreeHelper {
 			entryId = null;
 		}
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
+		UserProperties userProperties = (UserProperties)model.get(WebKeys.USER_PROPERTIES_OBJ);
+		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 
  		//Remember the last binder viewed
 		String namespace = response.getNamespace();
@@ -230,18 +232,8 @@ public class WorkspaceTreeHelper {
 			}
 
 			//Set up more standard beans
-			Map userProperties = bs.getProfileModule().getUserProperties(user.getId()).getProperties();
-			model.put(WebKeys.USER_PROPERTIES, userProperties);
-			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
-			model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
-			DashboardHelper.getDashboardMap(binder, userProperties, model);
+			DashboardHelper.getDashboardMap(binder, userProperties.getProperties(), model);
 //			model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
-			String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
-			Document searchFilter = null;
-			if (searchFilterName != null && !searchFilterName.equals("")) {
-				Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
-				searchFilter = (Document)searchFilters.get(searchFilterName);
-			}
 			//See if the user has selected a specific view to use
 			String userDefaultDef = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 			DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
@@ -251,6 +243,7 @@ public class WorkspaceTreeHelper {
 				model.put(WebKeys.SHOW_TEAM_MEMBERS, true);
 				getTeamMembers(bs, formData, request, response, (Workspace)binder, model);
 			} else {
+				Document searchFilter = BinderHelper.getSearchFilter(bs, userFolderProperties);
 				Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
 				String viewType = DefinitionUtils.getViewType(configDocument);
 				if (viewType == null) viewType = "";
