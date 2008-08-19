@@ -163,7 +163,7 @@ public class ViewController extends  SAbstractController {
 
 		//Ldap configuration
 		if (getLdapModule().testAccess(LdapOperation.manageLdap)) {
-			if (getLdapModule().getLdapSchedule() != null) {
+			if (getLdapModule().getLdapConfig() != null) {
 				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 				element.addAttribute("title", NLT.get("administration.configure_ldap"));
 				element.addAttribute("image", "bullet");

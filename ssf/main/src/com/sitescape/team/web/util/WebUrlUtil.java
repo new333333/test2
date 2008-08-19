@@ -353,11 +353,6 @@ public class WebUrlUtil {
 		return webUrl.toString();
 	}
 
-	public static String getSSFContextRootURL(PortletRequest req) {
-		boolean secure = ((req != null)? req.isSecure() : false);
-		return getSSFContextRootURL(req, secure,
-				secure?WEB_PROTOCOL_CONTEXT_HTTP:WEB_PROTOCOL_CONTEXT_HTTPS).toString();
-	}
 	private static StringBuffer getSSFContextRootURL(PortletRequest req, Boolean secure, int webProtocol) {
 		StringBuffer sb = getHostAndPort(WebApp.SSF, req, secure, webProtocol, false);
 				

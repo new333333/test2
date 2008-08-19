@@ -107,13 +107,25 @@
 			propertyFile="replace.properties">
 			<replacefilter 
 				token="@@LOGIN_FILTER@@"
-				property="standalone.*.web.loginfilter"/>
+				value="&lt;!-- If running under Liferay Portal, uncomment the following --&gt;${line.separator}&lt;!--${line.separator}@@LOGIN_FILTER@@${line.separator}--&gt;${line.separator}"/>
+			<replacefilter 
+				token="@@LOGIN_FILTER@@"
+				property="liferayportal.*.web.loginfilter"/>		
+			<!-- If putting portlet.tld in WEB-INF is a widely accepted convention among
+			     many portals, we might want to consider including it by default and then 
+			     optionally comment it out for select portals such as Liferay. -->
 			<replacefilter 
 				token="@@TAGLIB_PORTLET@@"
-				property="standalone.*.web.taglib.portlet"/>			
+				value="&lt;!-- If running under JBoss Portal, uncomment the following --&gt;${line.separator}&lt;!--${line.separator}@@TAGLIB_PORTLET@@${line.separator}--&gt;${line.separator}"/>
+			<replacefilter 
+				token="@@TAGLIB_PORTLET@@"
+				property="jbossportal.jbosstomcat.web.taglib.portlet"/>			
 			<replacefilter 
 				token="@@SECURITY@@"
-				property="standalone.*.web.security"/>			
+				value="&lt;!-- If running under JBoss Portal, uncomment the following --&gt;${line.separator}&lt;!--${line.separator}@@SECURITY@@${line.separator}--&gt;${line.separator}"/>
+			<replacefilter 
+				token="@@SECURITY@@"
+				property="jbossportal.jbosstomcat.web.security"/>			
 		</replace>
 	</target>
 		
@@ -192,7 +204,7 @@
 	<target name="deploy-light">
 		<copy todir="${app.server.ssf.dir}" overwrite="true">
 			<fileset dir="${web.dir}"
-				includes="WEB-INF/context/applicationContext.xml,WEB-INF/context/additionalContext.xml,WEB-INF/context/security.xml"
+				includes="WEB-INF/context/applicationContext.xml,WEB-INF/context/additionalContext.xml"
 			/>
 		</copy>
 		<copy todir="${app.server.ssf.dir}">

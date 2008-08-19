@@ -2186,7 +2186,7 @@ div.ss_sidebar_panel_featured {
 }
 
 div.ss_actions_bar1_pane {
-	background-color: #AFAFAF;
+	background-color: none;
 	border-bottom: 1px solid;
 	border-color: #FFF;
 	height: 22px;		/* boulder 22px */
@@ -2196,7 +2196,7 @@ div.ss_actions_bar1_pane {
 table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	background-color: ${ss_toolbar2_background_color};
 	width: 100%;
-	height: 24px;
+	height: 2px;
 	padding: 0px;
 	margin: 0px;
 	border-collapse: collapse;
@@ -2263,7 +2263,7 @@ ul.ss_actions_bar1.ss_actions_bar_submenu {
 .ss_actions_bar {
 	list-style-type:none;	
 	padding: 0px 0px 0px 0px;
-	height: 20px;
+	height: 22px;
 	margin: 0px;
 }
 

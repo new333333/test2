@@ -29,11 +29,8 @@
 
 package com.sitescape.team.module.ldap;
 
-import java.util.List;
-
 import javax.naming.NamingException;
 
-import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.NoUserByTheNameException;
 
 /**
@@ -43,12 +40,11 @@ import com.sitescape.team.domain.NoUserByTheNameException;
 public interface LdapModule {
 	public enum LdapOperation {
 		manageLdap,
-		manageAuthentication
 	}
 	public boolean testAccess(LdapOperation operation);
 
-	public LdapSchedule getLdapSchedule();
-	public void setLdapSchedule(LdapSchedule schedule);
+	public LdapConfig getLdapConfig();
+	public void setLdapConfig(LdapConfig config);
 
 	public void syncAll() throws NamingException;
 	public void syncUser(Long userId) throws NoUserByTheNameException,NamingException;

@@ -124,13 +124,6 @@ public interface ZoneModule {
 	public List<ZoneInfo> getZoneInfos();
 	
 	/**
-	 * Returns a specific <code>ZoneInfo</code> object. 
-	 * 
-	 * @return
-	 */
-	public ZoneInfo getZoneInfo(Long zoneId);
-	
-	/**
 	 * Tests whether the user has a right to add/update/delete zone.
 	 * 
 	 * @return

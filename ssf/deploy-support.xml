@@ -20,7 +20,6 @@
 	
 	<target name="deploy-war" depends="deploy-init">
 		<property name="deploy.war.dir" value="${app.server.deploy.dir}" />
-		<property name="deploy-support.war.dir" value="."/>
 		
 		<if>
 			<or>
@@ -31,7 +30,7 @@
 			<then>
 				<delete dir="${deploy.war.dir}/${deploy-support.war.name}" includeemptydirs="true"/>
 				<!--<copy file="${deploy-support.war.name}.war" todir="${deploy.war.dir}" />-->
-				<unwar src="${deploy-support.war.dir}/${deploy-support.war.name}.war" dest="${deploy.war.dir}/${deploy-support.war.name}"/>
+				<unwar src="${deploy-support.war.name}.war" dest="${deploy.war.dir}/${deploy-support.war.name}"/>
 			</then>
 			<elseif>
 				<or>
@@ -40,7 +39,7 @@
 				</or>
 				<then>
 					<delete dir="${deploy.war.dir}/${deploy-support.war.name}.war" includeemptydirs="true"/>
-					<unwar src="${deploy-support.war.dir}/${deploy-support.war.name}.war" dest="${deploy.war.dir}/${deploy-support.war.name}.war"/>
+					<unwar src="${deploy-support.war.name}.war" dest="${deploy.war.dir}/${deploy-support.war.name}.war"/>
 				</then>
 			</elseif>
 		</if>

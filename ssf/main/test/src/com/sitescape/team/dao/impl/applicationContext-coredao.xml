@@ -27,7 +27,6 @@
 	    <value>com/sitescape/team/security/function/WorkAreaFunctionMembership.hbm.xml</value>
 	    <value>com/sitescape/team/domain/Attachment.hbm.xml</value>
 	    <value>com/sitescape/team/domain/AuditTrail.hbm.xml</value>
-	    <value>com/sitescape/team/domain/AuthenticationConfig.hbm.xml</value>
 	    <value>com/sitescape/team/domain/Binder.hbm.xml</value>
 	    <value>com/sitescape/team/domain/ChangeLog.hbm.xml</value>
 	    <value>com/sitescape/team/domain/CustomAttribute.hbm.xml</value>
@@ -35,7 +34,6 @@
 	    <value>com/sitescape/team/domain/Definition.hbm.xml</value>
 	    <value>com/sitescape/team/domain/Event.hbm.xml</value>
 	    <value>com/sitescape/team/domain/FolderEntry.hbm.xml</value>
-	    <value>com/sitescape/team/domain/LdapConnectionConfig.hbm.xml</value>
 	    <value>com/sitescape/team/domain/LibraryEntry.hbm.xml</value>
 	    <value>com/sitescape/team/domain/LicenseStats.hbm.xml</value>
 	    <value>com/sitescape/team/domain/Membership.hbm.xml</value>
