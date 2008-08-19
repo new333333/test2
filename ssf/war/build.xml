@@ -26,7 +26,7 @@
 			<fileset dir="${project.dir}/taglib" includes="ssf-taglib.jar" />
 			<fileset dir="${project.dir}/indexer-lucene" includes="ssf-lucenecommon.jar" />
 			<fileset dir="${project.dir}/lib" includes="${libraries.current}" />
-			<fileset dir="${project.dir}/lib" includes="jms.jar,mail.jar" />
+			<fileset dir="${project.dir}/lib" includes="jms.jar" />
 		</copy>
 
 		<copy todir="${temp.dir}/applets">
