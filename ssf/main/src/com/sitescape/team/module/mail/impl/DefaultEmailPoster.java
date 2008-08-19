@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.mail.BodyPart;
+import javax.mail.Part;
 import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessageRemovedException;
@@ -117,7 +118,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 			}
 		}
 		Definition def = getReplyDefinition(folder, parentDocId);
-		processContent(folder, msg, inputData, fileItems, iCalendars);
+		processPart(folder, msg, inputData, fileItems, iCalendars);
 		getFolderModule().addReply(folder.getId(), parentDocId, def == null? null:def.getId(), new MapInputData(inputData), fileItems, null);
 		msg.setFlag(Flags.Flag.DELETED, true);
 	}
@@ -132,7 +133,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 			}
 		}
 		Definition def = getEntryDefinition(folder);
-		processContent(folder, msg, inputData, fileItems, iCalendars);
+		processPart(folder, msg, inputData, fileItems, iCalendars);
 		AttendedEntries entryIdsFromICalendars = new AttendedEntries();
 		if (!fileItems.isEmpty()) {
 			entryIdsFromICalendars.addAll(processICalAttachments(folder, def, inputData, fileItems, iCalendars));
@@ -223,18 +224,46 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		return user;
 	}
 	//override to provide alternate processing 
-	protected void processContent(Folder folder, Message msg, Map inputData, Map fileItems, List iCalendars ) throws Exception {
-		Object content = msg.getContent();
-		if (msg.isMimeType("text/plain")) {
-			processText(folder, content, inputData);
-		} else if (msg.isMimeType("text/html")) {
-			processHTML(folder, content, inputData);
-		} else if (msg.isMimeType(MailModule.CONTENT_TYPE_CALENDAR)) {
-			processICalendar(folder, content, iCalendars);						
-		} else if (content instanceof MimeMultipart) {
-			processMime(folder, (MimeMultipart)content, inputData, fileItems, iCalendars);
+	protected void processPart(Folder folder, Part part, Map inputData, Map fileItems, List iCalendars) throws MessagingException, IOException {
+		if (part.isMimeType(MailModule.CONTENT_TYPE_CALENDAR)) {
+			processICalendar(folder, part.getContent(), iCalendars);
+		} else { 
+			//old mailers may not use disposition, and instead put the name in the content-type
+			//java mail handles this.
+			String fileName = part.getFileName();
+			if (Validator.isNotNull(fileName)) {
+				fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
+			} else if (part.isMimeType("text/html")) {
+				processHTML(folder, part.getContent(), inputData);
+			} else if (part.isMimeType("text/plain")) {
+				processText(folder, part.getContent(), inputData);
+			} else {
+				Object bContent = part.getContent();
+				if (bContent instanceof MimeMultipart) {
+					processMultiPart(folder, (MimeMultipart)bContent, inputData, fileItems, iCalendars);
+				} else if (part.getContentType().startsWith("image/")) {
+					// no file name, no text/html,no text/plain, no multipart
+					// so check if it's inline image - this pattern is used by GroupWise (tested with 7.0.2)
+					fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
+				}
+			}
+		}
+	}	
+	//override to provide alternate processing 
+	protected void processMultiPart(Folder folder, MimeMultipart content, Map inputData, Map fileItems, List iCalendars) throws MessagingException, IOException {
+		int count = content.getCount();
+		for (int i=0; i<count; ++i ) {
+			BodyPart part = content.getBodyPart(i);
+			Object bContent = part.getContent();
+			if (bContent instanceof MimeMultipart) {
+				processMultiPart(folder, (MimeMultipart)bContent, inputData, fileItems, iCalendars);
+			} else {
+				processPart(folder, part, inputData, fileItems, iCalendars);
+			}
 		}
 	}
+
+	
 	//override to provide alternate processing 
 	protected void processText(Folder folder, Object content, Map inputData) {
 		if (inputData.containsKey(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) return;
@@ -303,46 +332,15 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		return entryIdsFromICalendars;
 		
 	}
-	//override to provide alternate processing 
-	protected void processMime(Folder folder, MimeMultipart content, Map inputData, Map fileItems, List iCalendars) throws MessagingException, IOException {
-		int count = content.getCount();
-		for (int i=0; i<count; ++i ) {
-			BodyPart part = content.getBodyPart(i);
-			if (part.isMimeType(MailModule.CONTENT_TYPE_CALENDAR)) {
-				processICalendar(folder, part.getContent(), iCalendars);
-			} else { 
-				//old mailers may not use disposition, and instead put the name in the content-type
-				//java mail handles this.
-				String fileName = part.getFileName();
-				if (Validator.isNotNull(fileName)) {
-					fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
-				} else if (part.isMimeType("text/html")) {
-					processHTML(folder, part.getContent(), inputData);
-				} else if (part.isMimeType("text/plain")) {
-					processText(folder, part.getContent(), inputData);
-				} else {
-					Object bContent = part.getContent();
-					if (bContent instanceof MimeMultipart) {
-						processMime(folder, (MimeMultipart)bContent, inputData, fileItems, iCalendars);
-					} else if (part.getContentType().startsWith("image/")) {
-						// no file name, no text/html,no text/plain, no multipart
-						// so check if it's inline image - this pattern is used by GroupWise (tested with 7.0.2)
-						fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
-					}
-				}
-			}
-			
-		}
-	}
 	
 	public class FileHandler implements org.springframework.web.multipart.MultipartFile {
-		BodyPart part;
+		Part part;
 		String fileName;
 		String type;
 		String contentId;
 		int size;
 		
-		public FileHandler(BodyPart part) throws MessagingException {
+		public FileHandler(Part part) throws MessagingException {
 			this.part = part;
 			fileName = part.getFileName();
 			type = part.getContentType();
