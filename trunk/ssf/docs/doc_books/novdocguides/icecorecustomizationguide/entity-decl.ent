@@ -25,9 +25,9 @@
 <!-- ============================================================= -->
 
 <!-- please change product to anything that makes sense in your current release -->
-<!ENTITY product       "Novell Teaming">
-<!ENTITY product_short       "Teaming">
-<!ENTITY conf_prod_name "Novell Conferencing">
+<!ENTITY product       "kablink">
+<!ENTITY product_short       "kablink">
+<!ENTITY conf_prod_name "kablink Conferencing">
 <!ENTITY conf_prod_name_short "Conferencing">
 
 
