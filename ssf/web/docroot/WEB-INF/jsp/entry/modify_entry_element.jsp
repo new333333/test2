@@ -30,7 +30,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <ssf:ifadapter>
-<body onLoad="ss_positionWindow();">
+<body onLoad="ss_positionWindow();" class="tundra">
 <script type="text/javascript">
 var ss_scrollHeightFudge = 60
 function ss_positionWindow() {

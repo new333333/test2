@@ -33,7 +33,7 @@
 <%@ include file="/WEB-INF/jsp/common/view_css.jsp" %>
 
 <ssf:ifadapter>
-<body>
+<body class="tundra">
 </ssf:ifadapter>
 
 <div class="ss_style ss_portlet">

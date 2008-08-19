@@ -1493,13 +1493,17 @@ function ss_getObjAbsY(obj) {
     return y
 }
 
-function ss_getDivTop(divName) {
-    var obj = self.document.getElementById(divName);
+function ss_getDivTop(selector) {
+	if (selector && selector.nodeType) {
+		var obj = selector;
+	} else {
+		var obj = self.document.getElementById(selector);
+	}
     if (!obj) return 0;
     return dojo.coords(obj, true).y;
 
     var top = 0;
-    var obj = self.document.getElementById(divName)
+    var obj = self.document.getElementById(selector)
     while (1) {
         if (!obj) {break}
         top += parseInt(obj.offsetTop)
@@ -1509,14 +1513,18 @@ function ss_getDivTop(divName) {
     return parseInt(top);
 }
 
-function ss_getDivLeft(divName) {
-    var obj = self.document.getElementById(divName);
+function ss_getDivLeft(selector) {
+	if (selector && selector.nodeType) {
+		var obj = selector;
+	} else {
+		var obj = self.document.getElementById(selector);
+	}
     if (!obj) return 0;
     return dojo.coords(obj, true).x;
     
     var left = 0;
     if (ss_isNSN || ss_isNSN6 || ss_isMoz5) {
-        var obj = self.document.getElementById(divName)
+        var obj = self.document.getElementById(selector)
         while (1) {
             if (!obj) {break}
             left += parseInt(obj.offsetLeft)
@@ -1524,7 +1532,7 @@ function ss_getDivLeft(divName) {
             obj = obj.offsetParent
         }
     } else {
-        var obj = self.document.all[divName]
+        var obj = self.document.all[selector]
         while (1) {
             if (!obj) {break}
             left += obj.offsetLeft
@@ -4569,6 +4577,12 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
         m += '<td id="skypeId' + screenName + '"><a class="ss_graymenu" href="skype:' + skypeId + '?call">' +ss_ostatus_skype+'</a></td></tr>';
     }
 
+    //View MiniBlog
+    m += '<tr>';
+    m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgminiblog' +ssNamespace+'"></td>';
+    m += '<td id="miniblog' + userId + '"><a class="ss_graymenu" href="javascript: ;" ';
+    m += 'onClick="ss_viewMiniBlog(\'' + userId + '\', true);return false;">' +ss_ostatus_miniblog+'</a></td></tr>';
+
     m += '</table>'
 
 	if (divId == '') {
@@ -4641,6 +4655,15 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
 	        	}
 	        }
 	    }
+	}
+}
+
+function ss_viewMiniBlog(userId, popup) {
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"view_miniblog", userId:userId, randomNumber:ss_random++});
+	if (popup) {
+		self.window.open(url, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no,width=500px,height=500px");
+	} else {
+		self.location.href = url;
 	}
 }
 
@@ -5213,10 +5236,6 @@ function ss_submitParentForm(htmlObj) {
 	} else if (htmlObj.parentNode) {
 		ss_submitParentForm(htmlObj.parentNode);
 	}
-}
-
-function ss_putValueInto(objId, value) {
-	document.getElementById(objId).value = value;
 }
 
 function ss_ajaxValidate(url, obj, labelId, msgBoxId) {
@@ -6004,14 +6023,14 @@ function ss_saveTreeId(obj, treeName, placeId, idChoicesInputId) {
 		
 	if (obj.type == 'radio') {
 		if (idChoices != null && typeof idChoices !== "undefined") {
-			if (idChoices.value && idChoices.value != (obj.name + "%" + obj.value)) {
+			if (idChoices.value && idChoices.value != (obj.name + "_" + obj.value)) {
 				selected = parent.document.getElementById("ss_tree_radio" + treeName + idChoices.value);
 				if (selected && selected.checked) {
 					selected.checked = false;
 				}
 			}
 		
-			idChoices.value = obj.name + "%" + obj.value;
+			idChoices.value = obj.name + "_" + obj.value;
 			if (treeName) {
 
 				// accessible mode only - unselect last choice if visible 

@@ -58,6 +58,9 @@
     <div id="ss_col3_para" >
 	  <span><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
 	  <c:if test="${!empty user.status}">
+		<div><span class="ss_smallprint"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+        value="${user.statusDate}" type="both" 
+	    timeStyle="short" dateStyle="short" /></span></div>
 		<div id="ss_im_status"><em>${user.status}</em></div>
 	  </c:if>
     </div><!-- end of para -->

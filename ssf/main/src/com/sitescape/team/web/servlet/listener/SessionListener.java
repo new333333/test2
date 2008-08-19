@@ -32,6 +32,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
+import com.sitescape.team.asmodule.bridge.BridgeUtil;
 import com.sitescape.team.runas.RunasCallback;
 import com.sitescape.team.runas.RunasTemplate;
 import com.sitescape.team.security.accesstoken.AccessTokenManager;
@@ -44,6 +45,23 @@ public class SessionListener implements HttpSessionListener {
 	}
 
 	public void sessionDestroyed(HttpSessionEvent se) {
+		// This listener is invoked in the same thread executing portal-side code
+		// as side effect of the portal session being invalidated. Consequently,
+		// the context classloader is that of the portal web app, which is
+		// inappropriate for executing Teaming side code. Therefore, we need
+		// to switch the context classloader for the duration of this call.
+		ClassLoader clSave = Thread.currentThread().getContextClassLoader();
+		
+		try {
+			Thread.currentThread().setContextClassLoader(BridgeUtil.getClassLoader());
+			doSessionDestroyed(se);
+		}
+		finally {
+			Thread.currentThread().setContextClassLoader(clSave);
+		}
+	}
+		
+	private void doSessionDestroyed(HttpSessionEvent se) {
 		HttpSession ses = se.getSession();
 		
 		final String infoId = (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);

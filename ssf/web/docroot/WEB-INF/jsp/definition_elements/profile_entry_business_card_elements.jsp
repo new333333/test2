@@ -123,15 +123,8 @@
 	<a href="javascript:;" onClick="ss_showThisImage(this);return false;"><img 
 	  align="middle" id="ss_profilePicture${renderResponse.namespace}"
 	  border="0" 
-	  src="<ssf:url 
-	    webPath="viewFile"
-	    folderId="${ssDefinitionEntry.parentBinder.id}"
-	    entryId="${ssDefinitionEntry.id}"
-	    entityType="${ssDefinitionEntry.entityType}" >
-	    <ssf:param name="fileId" value="${selection.id}"/>
-	    <ssf:param name="viewType" value="scaled"/>
-    	<ssf:param name="fileTime" value="${selection.modification.date.time}"/>
-	    </ssf:url>" alt="${property_caption}" /></a>
+	  src="<ssf:fileUrl webPath="readScaledFile" file="${selection}"/>"
+		alt="${property_caption}" /></a>
   </c:if>
   <c:set var="pictureCount" value="${pictureCount + 1}"/>
 </c:forEach>
@@ -155,10 +148,6 @@
 <c:if test="${!empty ssDefinitionEntry.title}">
 <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.title}"/></span> 
 <span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}"/>)</span>
-</c:if>
-<c:if test="${!empty ssDefinitionEntry.status}">
-<br/>
-<span class="ss_normalprint ss_italic">${ssDefinitionEntry.status}</span>
 </c:if>
 </div>
 
@@ -195,6 +184,32 @@
  
  </table>
 
+<c:if test="${!empty ssDefinitionEntry.status}">
+<div align="left" style="padding-top:10px;">
+	<table cellspacing="0" cellpadding="0">
+	<tr>
+		<td>
+			<a href="javascript: ;" onClick="ss_viewMiniBlog('${ssDefinitionEntry.id}', true);return false;"
+			  style="text-decoration:underline;">
+				<span class="ss_bold"><ssf:nlt tag="miniblog"/></span>
+			</a>
+		</td>
+		<td style="padding-left:10px;">
+			<span class="ss_smallprint">
+			  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+			    value="${ssDefinitionEntry.statusDate}" type="both" 
+			    timeStyle="short" dateStyle="short" />
+			</span>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<span class="ss_normalprint ss_italic">${ssDefinitionEntry.status}</span>
+		</td>
+	</tr>
+	</table>
+</div>
+</c:if>
 
 <c:if test="${pictureCount > 1}">
 <table width="99%">
@@ -205,15 +220,8 @@
   <c:forEach var="selection" items="${selections}">
 	<div><a href="javascript:;" onClick="ss_showThisImage(this);return false;"
 	  onMouseover="ss_showProfileImg(this, 'ss_profilePicture${renderResponse.namespace}'); return false;">
-	<img <ssf:alt text="${selection.fileItem.name}"/> border="0" src="<ssf:url 
-	    webPath="viewFile"
-	    folderId="${ssDefinitionEntry.parentBinder.id}"
-	    entryId="${ssDefinitionEntry.id}"
-	    entityType="${ssDefinitionEntry.entityType}" >
-	    <ssf:param name="fileId" value="${selection.id}"/>
-	    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
-	    <ssf:param name="viewType" value="thumbnail"/>
-	    </ssf:url>" /></a></div>
+	<img <ssf:alt text="${selection.fileItem.name}"/> border="0" src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>" />
+	</a></div>
   </c:forEach>
   </div>
 </td>

@@ -10,9 +10,11 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.WebUrlUtil;
 
 public class NotifyVisitor {
 	protected Log logger = LogFactory.getLog(getClass());
@@ -91,13 +93,20 @@ public class NotifyVisitor {
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, type);
 		return adapterUrl.toString();
 	}
-	public String getFileLink(Long binderId, Long entityId, String type, String fileId) {
+	public String getFileLink(FileAttachment attachment) {
+		DefinableEntity entity = attachment.getOwner().getEntity();
+		//use permalink to force login
 		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		if (entityId != null) adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entityId.toString());
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, type);
-		adapterUrl.setParameter(WebKeys.URL_FILE_ID, fileId);
+		if (entity.getEntityType().isBinder()) {
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
+			
+		} else {
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entity.getId().toString());
+		}
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entity.getEntityType().name());
+		adapterUrl.setParameter(WebKeys.URL_FILE_ID, attachment.getId());
 		return adapterUrl.toString();
 	}
 

@@ -195,7 +195,16 @@ public class FileAttachment extends Attachment {
 	   }
 	   return null;
    }  
- 
+   public VersionAttachment findFileVersionByNumber(int versionNumber) {
+	   if (fileVersions == null) fileVersions=new ArrayList();
+	   for(int i = 0; i < fileVersions.size(); i++) {
+		   VersionAttachment v = (VersionAttachment) fileVersions.get(i);
+		   if(v.getVersionNumber() == versionNumber)
+			   return v;
+	   }
+	   return null;
+   }  
+
     public boolean update(Object newVal) {
     	boolean changed = super.update(newVal);
     	FileAttachment f = (FileAttachment)newVal;

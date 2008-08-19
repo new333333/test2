@@ -28,134 +28,74 @@
  */
 package com.sitescape.team.servlet.forum;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Arrays;
 
-import javax.activation.FileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.AuditTrail.AuditType;
+import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.FileHelper;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.servlet.SAbstractController;
+import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.FileUtil;
-import com.sitescape.util.Validator;
-
-public class ReadFileController extends SAbstractController {
+public class ReadFileController extends AbstractReadFileController {
 	
-	private FileTypeMap mimeTypes;
-
-	protected FileTypeMap getFileTypeMap() {
-		return mimeTypes;
-	}
-	public void setFileTypeMap(FileTypeMap mimeTypes) {
-		this.mimeTypes = mimeTypes;
-	}
 	
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 		// Assuming that the full request URL was http://localhost:8080/ssf/s/readFile/xxx/123/456/789/junk.doc,
 		// the following call returns "/readFile/xxx/123/456/789/junk.doc" portion of the URL.
+		if (!WebHelper.isUserLoggedIn(request)) {
+			response.getOutputStream().print(NLT.get("login.please"));
+			return null;
+		}
 		String pathInfo = request.getPathInfo();
 		
-		String[] args = pathInfo.split("/");
-		//We expect the url to be formatted as /readFile/entityType/binderId/entryId/fileId/fileTime/filename.ext
+		String[] args = pathInfo.split(Constants.SLASH);
+		//We expect the url to be formatted as /readFile/entityType/binderId/entryId/fileId/fileTime/fileVersion/filename.ext
 		//To support sitescape forum, where folder structures were allowed on an entry, the url may contain more pathinfo.
-		//  If there is no entryId (in the case where the file is in the binder itself), the entryId is set to "-"
-		if (args.length < 8) return null;
+		//For a binder, the entityId = binderId 
+		//fileVersion=last, read latest
+		//fileTime is present for browser cachinge
+		//filename is present for browser handling of relative files
+		if (args.length < 9) return null;
 		
 		try {
 			String strEntityType = args[2];
 			Long binderId = Long.valueOf(args[3]);
-			Long entryId = null;
-			if (!args[4].equals("-")) {
-				//There is an entryId specified
-				entryId = Long.valueOf(args[4]);
-			}
-			String fileId = args[5];
-			String fileTime = args[6];
-
-			DefinableEntity entity = null;
-			Binder parent;
-			EntityIdentifier.EntityType entityType = null;
-			try {
-				entityType = EntityIdentifier.EntityType.valueOf(strEntityType);
-			} catch(Exception e) {
-				entityType = EntityIdentifier.EntityType.none;
-			}
-			if (entityType.equals(EntityIdentifier.EntityType.folder) || entityType.equals(EntityIdentifier.EntityType.workspace) ||
-					entityType.equals(EntityIdentifier.EntityType.profiles)) {
-				//the entry is the binder
-				if (entryId == null) entryId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
-				entity = getBinderModule().getBinder(entryId);
-				parent = (Binder) entity;
-			} else if (entryId != null) {
-				if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) {
-					entity = getFolderModule().getEntry(binderId, entryId);
-				} else if (entityType.equals(EntityIdentifier.EntityType.none)) {
-					//Try to figure out what type of entity this is
-					try {
-						entity = getFolderModule().getEntry(binderId, entryId);
-					} catch (Exception e) {}
-					if (entity == null) {
-						try {
-							entity = getProfileModule().getEntry(entryId);
-						} catch (Exception e) {}
-					}
-						
-				} else {
-					entity = getProfileModule().getEntry(entryId);
-				}
-			
-				parent = entity.getParentBinder();
-			} else {
-				parent = getBinderModule().getBinder(binderId);
-				entity = parent;
-			}
+			Long entityId = Long.valueOf(args[4]);
+			DefinableEntity entity = getEntity(strEntityType, binderId, entityId);
 			//Set up the beans needed by the jsps
 			FileAttachment fa = null;
-			if (args.length > 8) {
-				//this is an old forum folder structure
-				StringBuffer path = new StringBuffer(entity.getParentBinder().getPathName());
-				for (int i=7; i<args.length-1; ++i) {
-					path.append("/" + args[i]);
+			if (args.length > 9 && entity instanceof FolderEntry) {
+				fa = getAttachment((FolderEntry)entity, Arrays.asList(args).subList(8, args.length).toArray());
+				//entity may have changed
+				if (fa != null) {
+					entity = fa.getOwner().getEntity();
 				}
-				parent = getBinderModule().getBinderByPathName(path.toString());
-				entity = getFolderModule().getLibraryFolderEntryByFileName((com.sitescape.team.domain.Folder)parent, args[args.length-1]);
-				fa = (FileAttachment)entity.getFileAttachment(args[args.length-1]);
-			} else if (Validator.isNotNull(fileId)) {
-				fa = (FileAttachment)entity.getAttachment(fileId);
+			} else {
+				fa = getAttachment(entity, args[5], args[7]);
 			}
 
 			if (fa != null) {
 				String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
-				String contentType = mimeTypes.getContentType(shortFileName);
+				String contentType = getFileTypeMap().getContentType(shortFileName);
 				response.setContentType(contentType);
 				response.setHeader("Cache-Control", "private");
-				if (fileTime.equals("")) {
-					response.setHeader("Cache-Control", "private");
-				}
 				String attachment = "";
 				if (FileHelper.checkIfAttachment(contentType)) attachment = "attachment; ";
 				response.setHeader("Content-Disposition",
 						attachment + "filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\"");
-					
-				SimpleDateFormat df = (SimpleDateFormat)DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL);
-				Date d = fa.getModification().getDate();
-				df.applyPattern("EEE, dd MMM yyyy kk:mm:ss zzz");
-				response.setHeader("Last-Modified", df.format(d));
+				response.setHeader("Last-Modified", formatDate(fa.getModification().getDate()));	
 				try {
+					Binder parent = getBinder(entity);
 					response.setHeader("Content-Length", 
 							String.valueOf(FileHelper.getLength(parent, entity, fa)));
 					getFileModule().readFile(parent, entity, fa, response.getOutputStream());
