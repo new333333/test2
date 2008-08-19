@@ -28,41 +28,65 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
+<% // The default folder view  %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<div id="ss_pseudoPortalDiv${renderResponse.namespace}">
-<div class="ss_portlet_style ss_portlet">
-<div style="padding:30px;">
-  <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
-  <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="login.please"/></legend>
-    <table>
-      <tr>
-        <td valign="top" align="right">
-          <span><ssf:nlt tag="login.name"/></span>
-        </td>
-        <td valign="top" style="padding-left:4px;">
-          <input type="text" size="40" name="username"/>
-        </td>
-      </tr>
-      <tr>
-        <td valign="top" align="right">
-          <span><ssf:nlt tag="login.password"/></span>
-        </td>
-        <td valign="top" style="padding-left:4px;">
-          <input type="password" size="40" name="password"/>
-        </td>
-      </tr>
-    </table>
-    <br/>
-    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
-    <input type="hidden" name="url" value="${ssUrl}"/>
-  </fieldset>
-  </form>
+<%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
+<ssf:ifadapter>
+<body class="ss_style_body tundra">
+</ssf:ifadapter>
+
+<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
+<jsp:useBean id="ssFolder" type="com.sitescape.team.domain.Binder" scope="request" />
+
+<div class="ss_style ss_portlet">
+
+<% // Navigation bar %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+
+<% // BEGIN SIDEBAR LAYOUT  %>
+	
+	  	   <div id="ss_sideNav_wrap"> <% // new sidebar format %>
+
+			<% // Status %>
+			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
+	
+			<% // "It" Bars %>
+			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_action_dispatch.jsp" />
+		
+			<% // RSS Feed %>
+			<div id="ss_leftNav">
+				<ul>
+					<li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" /></li>
+				</ul>
+ 			</div>
+	
+			<% // Recent Places %>
+			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
+
+			<% // Folder Sidebar %>
+    		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
+
+			<% // Workspace Tree %>    
+    		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tree.jsp" />
+
+	  	  </div> <% // end of new sidebar format %>
+
+<% // Navigation links %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
+
+<% // Toolbar %>
+<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar" />
+
+<% // Show the folder default parts %>
+
+<% // Folder listing %>
+
+<%@ include file="/WEB-INF/jsp/definition_elements/folder_list.jsp" %>
+
 </div>
-</div>
-</div>
-<script type="text/javascript">
-	var formObj = self.document.getElementById('loginForm');
-	formObj.username.focus();
-</script>
+
+<ssf:ifadapter>
+</body>
+</html>
+</ssf:ifadapter>
+

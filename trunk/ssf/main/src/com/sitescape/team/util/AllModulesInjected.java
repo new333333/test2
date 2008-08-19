@@ -29,7 +29,6 @@
 package com.sitescape.team.util;
 
 import com.sitescape.team.module.admin.AdminModule;
-import com.sitescape.team.module.authentication.AuthenticationModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
 import com.sitescape.team.module.definition.DefinitionModule;
@@ -77,10 +76,6 @@ public interface AllModulesInjected {
 	void setAdminModule(AdminModule adminModule);
 
 	AdminModule getAdminModule();
-
-	void setAuthenticationModule(AuthenticationModule authenticationModule);
-
-	AuthenticationModule getAuthenticationModule();
 
 	void setProfileModule(ProfileModule profileModule);
 

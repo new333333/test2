@@ -46,7 +46,7 @@ public class AuthenticationManagerUtil {
 		return (User) RunasTemplate.runasAdmin(new RunasCallback() {
 			public Object doAs() {
 				return getAuthenticationManager().authenticate(zoneName,
-						username, password, createUser, passwordAutoSynch,
+						username, password, true, passwordAutoSynch,
 						ignorePassword, updates, authenticatorName);
 			}
 		}, zoneName);

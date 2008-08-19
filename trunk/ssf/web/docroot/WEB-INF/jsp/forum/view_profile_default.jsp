@@ -1,3 +1,4 @@
+<%
 /**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
@@ -26,31 +27,46 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
+%>
+<% // The default profile listing view  %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
+<ssf:ifadapter>
+<body class="ss_style_body tundra">
+</ssf:ifadapter>
 
-package com.sitescape.team.module.authentication;
+<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 
-import java.util.List;
+<div class="ss_style ss_portlet">
 
-import javax.naming.NamingException;
+<% // Navigation bar %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
-import com.sitescape.team.domain.AuthenticationConfig;
-import com.sitescape.team.domain.LdapConnectionConfig;
-import com.sitescape.team.domain.NoUserByTheNameException;
-import com.sitescape.team.domain.ZoneInfo;
+	<% // BEGIN SIDEBAR LAYOUT  %>
+	
+	  <div id="ss_sideNav_wrap"> <% // new sidebar format %>
 
-/**
- * @author Janet McCann
- *
- */
-public interface AuthenticationModule {
-	public enum AuthenticationOperation {
-		manageAuthentication
-	}
-	public boolean testAccess(AuthenticationOperation operation);
+		<% // Status %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
+	
+		<% // Recent Places %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
 
-	public AuthenticationConfig getAuthenticationConfig();
+		<% // Folder Sidebar %>
+    	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
 
-	public List<LdapConnectionConfig> getLdapConnectionConfigs(Long zoneId);
-	public List<LdapConnectionConfig> getLdapConnectionConfigs();
-	public void setLdapConnectionConfigs(List<LdapConnectionConfig> configs);
-}
+	  </div> <% // end of new sidebar format %>
+
+<% // Toolbar %>
+<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar2 ss_actions_bar" />
+
+<% // List of users %>
+<%@ include file="/WEB-INF/jsp/definition_elements/profile_list.jsp" %>
+
+</div>
+
+<ssf:ifadapter>
+</body>
+</html>
+</ssf:ifadapter>
+

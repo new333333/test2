@@ -241,12 +241,15 @@ public class WebHelper {
 		}
 		else { // session doesn't exist
 			String username = getRemoteUserName(request);
-			if(username == null) {
-				username = SZoneConfig.getGuestUserName(getZoneNameByVirtualHost(request));
+			if(username != null) {
+				// we can create a new session and put context in it
+				ses = request.getSession();
+				putContext(ses, getProfileDao().findUserByName(username, getZoneIdByVirtualHost(request)));
 			}
-			// we can create a new session and put context in it
-			ses = request.getSession();
-			putContext(ses, getProfileDao().findUserByName(username, getZoneIdByVirtualHost(request)));
+			else {
+				// since we don't have username we must not create a new session here
+				throw new IllegalStateException("No valid session - Illegal request sequence");
+			}
 		}
 		
 		return ses;

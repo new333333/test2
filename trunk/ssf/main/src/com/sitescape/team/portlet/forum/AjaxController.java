@@ -2636,7 +2636,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxViewMiniBlog(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
-		int pageStart = 0;
+		String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE, "0");
+		int pageStart = Integer.valueOf(page) * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
 		Long userId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_USER_ID);
 		Principal p = null;
 		Boolean miniblogAccessAllowed = false;
@@ -2648,14 +2649,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 		
 		model.put(WebKeys.MINIBLOG_USER_ID, userId);
 		model.put(WebKeys.MINIBLOG_USER, p);
+		model.put(WebKeys.MINIBLOG_PAGE, page);
 		model.put(WebKeys.MINIBLOG_ACCESS_DENIED, miniblogAccessAllowed);
 		
 		if (miniblogAccessAllowed) {
 			Long[] userIds = new Long[]{userId};
-			GregorianCalendar start = new GregorianCalendar();
-		    //get activities over last 2 weeks
-			start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
-			List statuses = getReportModule().getUsersStatuses(userIds, start.getTime(), new java.util.Date(), 
+			List statuses = getReportModule().getUsersStatuses(userIds, null, null, 
 					pageStart + Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
 			if (statuses != null && statuses.size() > pageStart) {
 				model.put(WebKeys.MINIBLOG_STATUSES, statuses.subList(pageStart, statuses.size()));

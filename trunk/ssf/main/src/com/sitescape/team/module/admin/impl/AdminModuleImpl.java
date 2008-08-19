@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,7 +55,6 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.OrderBy;
-import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.DefinableEntity;
@@ -239,6 +237,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			default:
    				throw new NotSupportedException(operation.toString(), "checkAccess");
 		}
+
    	}
 
     public List<PostingDef> getPostings() {

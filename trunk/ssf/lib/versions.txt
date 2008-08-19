@@ -17,7 +17,7 @@ Commons DBCP 1.2.2
 Commons Fileupload 1.2 (from spring distribution)
 Commons HttpClient 3.1 (from spring distribution)
 Commons io 1.3.1 (from spring distribution)
-Commons Lang 2.4
+Commons Lang 2.0
 Commons Net 1.4.1 (for SendMail test program)
 Commons Logging 1.1.1 (from spring distribution)
 Commons Transaction 1.1.1pre1
@@ -45,8 +45,6 @@ JBPM 3.1.4 (not using/shipping jbpm-identity;added sequence name patch to *.hbm.
 JCR 1.0
 JDOM 1.0
 Joda-Time 1.5.2
-jQuery 1.2.6
-jQuery UI Tabs 1.5.2
 Json-lib 1.1 for jdk15
 JSTL 1.0.5
 JSTL Implementation (from Apache) 1.0.6
@@ -60,8 +58,8 @@ Liferay portal-service.jar 4.3.0
 Liferay util-java.jar 4.3.0
 Log4j 1.2.15 (from spring distribution)
 Lucene 1.9.1+indexupdater
-MINA (Apache) mina-core.jar 1.1.6
-MINA (Apache) mina-filter-ssl.jar 1.1.6
+MINA (Apache) mina-core.jar 1.1.3
+MINA (Apache) mina-filter-ssl.jar 1.1.3
 MINA (Apache) mina-integration-jmx.jar 1.1.3
 mysql-connector-java-5.0.4-bin.jar
 opensaml 1.0.1 (SAML implementation; used by WSS4J)
@@ -80,9 +78,7 @@ Slide WebDAV client library 2.1
 Spring 2.5.4
 Spring test 2.5.4 (comes with Spring)
 Spring MVC spring-webmvc 2.5.4 (comes with Spring)
-Spring LDAP 1.2.1
 Spring Portlet spring-webmvc-portlet 2.5.4 (comes with Spring)
-Spring Security 2.0.3
 Struts 1.2.9 (removed META-INF/MANIFEST.MF) - Copied from Liferay 4.1.2
 SubEthaSMTP subethasmtp.jar 2.0.1
 Trove 1.0.2
@@ -101,6 +97,3 @@ jurt.jar
 jut.jar
 ridl.jar
 unoil.jar					(end OpenOffice 2.0 Jars)
-
-util-taglib.jar, util-bridges.jar - copied from Liferay 4.3, can be removed after we eliminate references to taglibs from jsps
-

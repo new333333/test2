@@ -1,7 +1,5 @@
 package com.sitescape.team.module.zone.impl;
 
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import com.sitescape.team.domain.Workspace;
@@ -12,7 +10,6 @@ import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
 
 public class BaseZoneModule extends AbstractZoneModule {
-
 	public void writeZone(String zoneName, String virtualHost) {
 		logger.info("Cannot write zone " + zoneName + " - Open source edition does not support multi zone");
 	}
@@ -55,19 +52,7 @@ public class BaseZoneModule extends AbstractZoneModule {
 	}
 
 	public List<ZoneInfo> getZoneInfos() {
-		ZoneInfo info = getZoneInfo(getZoneIdByZoneName(SZoneConfig.getDefaultZoneName()));
-		return Arrays.asList(new ZoneInfo[] {info});
-	}
-
-	public ZoneInfo getZoneInfo(Long zoneId) {
-		ZoneInfo info = new ZoneInfo();
-		info.setZoneName(SZoneConfig.getDefaultZoneName());
-		if(!zoneId.equals(getZoneIdByZoneName(info.getZoneName()))) {
-			return null;
-		}
-		info.setZoneId(zoneId);
-		info.setVirtualHost(getVirtualHost(info.getZoneName()));
-		return info;
+		return null; // meaningless in open edition
 	}
 
 	public void checkAccess() throws AccessControlException {

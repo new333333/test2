@@ -28,41 +28,19 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<div id="ss_pseudoPortalDiv${renderResponse.namespace}">
-<div class="ss_portlet_style ss_portlet">
-<div style="padding:30px;">
-  <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
-  <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="login.please"/></legend>
-    <table>
-      <tr>
-        <td valign="top" align="right">
-          <span><ssf:nlt tag="login.name"/></span>
-        </td>
-        <td valign="top" style="padding-left:4px;">
-          <input type="text" size="40" name="username"/>
-        </td>
-      </tr>
-      <tr>
-        <td valign="top" align="right">
-          <span><ssf:nlt tag="login.password"/></span>
-        </td>
-        <td valign="top" style="padding-left:4px;">
-          <input type="password" size="40" name="password"/>
-        </td>
-      </tr>
-    </table>
-    <br/>
-    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
-    <input type="hidden" name="url" value="${ssUrl}"/>
-  </fieldset>
-  </form>
-</div>
-</div>
-</div>
-<script type="text/javascript">
-	var formObj = self.document.getElementById('loginForm');
-	formObj.username.focus();
-</script>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${ssFolder.entityType == 'folder'}">
+	<div id="ss_div_folder_dropbox${ssFolder.id}${renderResponse.namespace}" 
+	  class="ss_border_light" style="visibility:hidden;display:none;">
+		<div align="right">
+			<a onClick="ss_hideFolderAddAttachmentDropbox('${renderResponse.namespace}','${ssFolder.id}'); return false;"><img 
+				<ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>icons/close_off.gif"/>
+			</a>
+		</div>
+		<iframe frameborder="0" scrolling="no" 
+		    id="ss_iframe_folder_dropbox${ssFolder.id}${renderResponse.namespace}" 
+		    name="ss_iframe_folder_dropbox${ssFolder.id}${renderResponse.namespace}" 
+		    src="<html:rootPath/>js/forum/null.html" 
+		    height="80%" width="100%">xxx</iframe>
+	</div>
+</c:if>
