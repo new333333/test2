@@ -73,7 +73,11 @@ import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.team.runas.RunasCallback;
+import com.sitescape.team.runas.RunasTemplate;
+import com.sitescape.team.security.accesstoken.AccessTokenManager;
 import com.sitescape.team.util.FileUploadItem;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.SpringContextUtil;
@@ -221,15 +225,12 @@ public class WebHelper {
 	public static HttpSession getRequiredSession(HttpServletRequest request) 
 	throws IllegalStateException {
 		HttpSession ses = request.getSession(false);
-		
+		String username = null;
 		if(ses != null) { // session already exists
-			if(ses.getAttribute(WebKeys.USER_NAME) == null) {
-				String username = getRemoteUserName(request);
-				if(username != null) {
-					// put the context into the existing session
-					putContext(ses, getProfileDao().findUserByName(username, getZoneIdByVirtualHost(request)));
-				}
-				else {
+			username = (String) ses.getAttribute(WebKeys.USER_NAME);
+			if(username == null) {
+				username = getRemoteUserName(request);
+				if(username == null) {
 					// Neither the session nor the request contains username.
 					// The session must have been created via some invalid means
 					// (programmic error) or side effect (portal/app server 
@@ -240,13 +241,56 @@ public class WebHelper {
 			}
 		}
 		else { // session doesn't exist
-			String username = getRemoteUserName(request);
+			username = getRemoteUserName(request);
 			if(username == null) {
 				username = SZoneConfig.getGuestUserName(getZoneNameByVirtualHost(request));
 			}
 			// we can create a new session and put context in it
 			ses = request.getSession();
-			putContext(ses, getProfileDao().findUserByName(username, getZoneIdByVirtualHost(request)));
+		}
+		
+		// put the context into the existing session
+		final User user = getProfileDao().findUserByName(username, getZoneIdByVirtualHost(request));
+		
+		Long oldUserId = (Long) ses.getAttribute(WebKeys.USER_ID);
+		putContext(ses, user);
+
+		final String infoId = (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);
+		final HttpSession session = ses;
+		if(infoId == null) { 
+			if(!user.isShared() || 
+					SPropsUtil.getBoolean("remoteapp.interactive.token.support.guest", true)) { // create a new info object
+				// Make sure to run it in the user's context.			
+				RunasTemplate.runas(new RunasCallback() {
+					public Object doAs() {
+						String infoId = getAccessTokenManager().createTokenInfoSession(user.getId());
+						session.setAttribute(WebKeys.TOKEN_INFO_ID, infoId);
+						return null;
+					}
+				}, user);						
+			}
+		}
+		else if (!user.getId().equals(oldUserId)) {
+			// The portal is re-using the same session while changing the owner(user). 
+			if(!user.isShared() || 
+					SPropsUtil.getBoolean("remoteapp.interactive.token.support.guest", true)) { // create a new info object
+				RunasTemplate.runas(new RunasCallback() {
+					public Object doAs() {
+						getAccessTokenManager().updateTokenInfoSession(infoId, user.getId());
+						return null;
+					}
+				}, user);						
+			}
+			else {
+				// The current user is guest and the configuration doesn't allow guest to use interactive tokens.
+				// Run this in the old user's context.			
+				RunasTemplate.runas(new RunasCallback() {
+					public Object doAs() {
+						getAccessTokenManager().destroyTokenInfoSession(infoId);
+						return null;
+					}
+				}, user.getZoneId(), oldUserId);									
+			}
 		}
 		
 		return ses;
@@ -980,6 +1024,9 @@ public class WebHelper {
 	}
 	private static ProfileDao getProfileDao() {
 		return (ProfileDao) SpringContextUtil.getBean("profileDao");
+	}
+	private static AccessTokenManager getAccessTokenManager() {
+		return (AccessTokenManager) SpringContextUtil.getBean("accessTokenManager");
 	}
 
 	public static String getTokenInfoId(HttpServletRequest request) {
