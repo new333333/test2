@@ -123,41 +123,89 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	var wDiv = document.createElement('div');
 	wDiv.id = "placeholderWorkflow"+orderNo;
 	workflowsContainer.appendChild(wDiv);
-	var sDiv = document.createElement('ul');
-	sDiv.id = "workflowSteps"+orderNo;
-	sDiv.setAttribute("style", "display:inline; float: left; padding-left: 5px; ");
-	div.appendChild(sDiv);
+	var stepsContainer = document.createElement('ul');
+	stepsContainer.id = "workflowSteps"+orderNo;
+	stepsContainer.setAttribute("style", "display:inline; float: left; padding-left: 5px; ");
+	div.appendChild(stepsContainer);
+	
 	document.getElementById('ss_workflows_options').appendChild(div);
-		
-	var properties = {name:"searchWorkflow"+orderNo+"", id:"searchWorkflow"+orderNo+"",getSubSearchString:ss_getSelectedBinders,
-	 dataUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_workflows_widget&idChoices=%{searchString}&randomNumber="+ss_random++, 
-	 nestedUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_workflow_step_widget&randomNumber="+ss_random++, stepsWidget:sDiv, searchFieldName:"searchWorkflowStep"+orderNo, mode: "remote",
-								maxListLength : 10,	autoComplete: false};
-	var wfWidget = dijit.widget.createWidget("WorkflowSelect", properties, document.getElementById("placeholderWorkflow"+orderNo+""));
 
+	var textAreaWorkflowsObj = document.createElement('textArea');
+	textAreaWorkflowsObj.className = "ss_combobox_autocomplete";
+    textAreaWorkflowsObj.name = "searchWorkflow" + orderNo;
+    textAreaWorkflowsObj.id = "searchWorkflow" + orderNo;
+	
+	wDiv.appendChild(textAreaWorkflowsObj);
+	
+	var findWorkflows = ssFind.configSingle({
+				inputId: "searchWorkflow" + orderNo,
+				prefix: "searchWorkflow" + orderNo, 
+				searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_workflows_search",
+	      		listType: "workflows",
+				displayValue: true,
+				clickRoutine: function () {
+					var workflowId = findWorkflows.getSingleId();
+					var defaultStepsIds = workflowId == wfIdValue ? stepsValue : [];
+					var stepsS = "|" + defaultStepsIds.join("|") + "|";
+					stepsContainer.innerHTML = "";
+					dojo.xhrGet({
+						url: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_workflow_steps_search&workflowId=" + workflowId,
+						load: function(data) { 
+							for (var i in data) {
+								var liObj = document.createElement("li");
+								stepsContainer.appendChild(liObj);
+								var chckboxId = stepsContainer.id + workflowId+i;
+								var chkbox = document.createElement("input");
+								chkbox.type = "checkbox";
+								chkbox.value = i;
+								chkbox.id = chckboxId;
+								chkbox.name = "searchWorkflowStep" + orderNo;
+								liObj.appendChild(chkbox);
+								if (stepsS.indexOf("|" + i + "|") > -1) {
+									chkbox.checked = true;
+								}		
+								var label = document.createElement("label");
+								label.setAttribute("style", "padding-left: 5px;");
+								label.appendChild(document.createTextNode(data[i]));
+								liObj.appendChild(label);
+								label.htmlFor =  chckboxId;
+							}
+						},
+						handleAs: "json-comment-filtered",
+						preventCache: true
+					});
+				},
+				displayArrow: true
+		});
+	
 	if (wfIdValue!=null && wfIdValue!=""){
-		wfWidget.setDefaultValue(wfIdValue, ss_searchWorkflows[wfIdValue], stepsValue);
-	}
+		findWorkflows.setValue(wfIdValue, ss_searchWorkflows[wfIdValue]);
+		findWorkflows.selectItem({id: wfIdValue});
+	}	
 	
 	var brObj = document.createElement('br');
 	brObj.setAttribute("style", "clear: both; ");
 	div.appendChild(brObj);
 	
-	return wfWidget;
+	return findWorkflows;
 }
+
+
+
+
 function ss_getSelectedBinders() {
 	var value = "";
 	var obj = document.getElementById('search_currentFolder');
 	if (obj !== undefined && obj != null && obj.checked) {
 		obj = document.getElementById('search_dashboardFolders');
-		return 	" searchFolders%" + obj.value;
+		return 	" searchFolders_" + obj.value;
 	}
 	obj = document.getElementById('t_searchForm_wsTreesearchFolders_idChoices');				
 	if (obj !== undefined && obj != null) value = obj.value;
 	obj = document.getElementById('search_currentAndSubfolders');
 	if (obj !== undefined && obj != null && obj.checked) {
 		//don't allow duplicates
-		var id = " searchFolders%" + obj.name.substr(13);
+		var id = " searchFolders_" + obj.name.substr(13);
 		var re = new RegExp(id + " ", "g");
 		value = value.replace(re, " ");
 		re = new RegExp(id + "$", "g");
@@ -176,19 +224,206 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	div.appendChild(remover);
 	div.appendChild(document.createTextNode(" " + ss_nlt_searchFormLabelEntry + ": "));
 	
-	var eDiv = document.createElement('div');
-	eDiv.id = "placeholderEntry"+orderNo;
-	div.appendChild(eDiv);
-	var sDiv = document.createElement('div');
-	sDiv.id = "entryFields"+orderNo;
-	sDiv.setAttribute("style", "display:inline;");
-	div.appendChild(sDiv);
-	var sDiv2 = document.createElement('div');
-	sDiv2.id = "entryFieldsValue"+orderNo;
-	sDiv2.setAttribute("style", "display:inline;");
-	div.appendChild(sDiv2);
+	var entryTypeDiv = document.createElement('div');
+	entryTypeDiv.id = "placeholderEntry"+orderNo;
+	div.appendChild(entryTypeDiv);
+	
+	var fieldsDiv = document.createElement('div');
+	fieldsDiv.id = "entryFields"+orderNo;
+	fieldsDiv.setAttribute("style", "display:inline;");
+	div.appendChild(fieldsDiv);
+	
+	var fieldValueDiv = document.createElement('div');
+	fieldValueDiv.id = "entryFieldsValue"+orderNo;
+	fieldValueDiv.setAttribute("style", "display:inline;");
+	div.appendChild(fieldValueDiv);
+	
+	var fieldValue2Div = document.createElement('div');
+	fieldValue2Div.id = "entryFieldsValue2"+orderNo;
+	fieldValue2Div.setAttribute("style", "display:inline;");
+	div.appendChild(fieldValue2Div);
+		
 	document.getElementById('ss_entries_options').appendChild(div);
 
+
+
+	var entryInputId = "ss_entry_def_id" + orderNo;
+	
+	var textAreaEntriesObj = document.createElement('textArea');
+	textAreaEntriesObj.className = "ss_combobox_autocomplete";
+    textAreaEntriesObj.name = entryInputId;
+    textAreaEntriesObj.id = entryInputId;
+	
+	entryTypeDiv.appendChild(textAreaEntriesObj);
+	
+	var findEntries = ssFind.configSingle({
+		inputId: entryInputId,
+		prefix: entryInputId, 
+		searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_entry_types_search",
+  		listType: "entry_fields",
+		displayValue: true,
+		displayArrow: true,
+		clickRoutine: function () {
+			ss_removeAllChildren(fieldsDiv);
+			ss_removeAllChildren(fieldValueDiv);
+			ss_removeAllChildren(fieldValue2Div);
+			
+			var entryTypeId = findEntries.getSingleId();
+			var fieldsInputId = "elementName" + orderNo;
+			
+			var textAreaFieldsObj = document.createElement('textArea');
+			textAreaFieldsObj.className = "ss_combobox_autocomplete";
+		    textAreaFieldsObj.name = fieldsInputId;
+		    textAreaFieldsObj.id = fieldsInputId;
+			
+			fieldsDiv.appendChild(textAreaFieldsObj);
+			
+			var findEntryFields = ssFind.configSingle({
+				inputId: fieldsInputId,
+				prefix: fieldsInputId, 
+				searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_entry_fields_search&ss_entry_def_id=" + entryTypeId,
+	      		listType: "entry_fields",
+				displayValue: true,
+				displayArrow: true,
+				clickRoutine: function () {
+					var fieldValueWidget = dijit.byId("elementValue" + orderNo + "_selected");
+					if (fieldValueWidget && fieldValueWidget.destroy) {
+						fieldValueWidget.destroy();
+					}
+					var fieldValue2Widget = dijit.byId("elementValue" + orderNo + "_selected" + "0");
+					if (fieldValue2Widget && fieldValue2Widget.destroy) {
+						fieldValue2Widget.destroy();
+					}
+
+					ss_removeAllChildren(fieldValueDiv);
+					ss_removeAllChildren(fieldValue2Div);
+			
+					var currentFieldId = findEntryFields.getSingleId();
+					var currentFieldName = findEntryFields.getSingleValue();
+					var fieldType = findEntryFields.getSingleType();
+					
+					if (fieldType == "date" || fieldType == "event") {
+						var dateValue = "";
+						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
+							dateValue = new Date(value);
+						}
+						addDateField(orderNo, fieldValueDiv, currentFieldId, fieldName, dateValue);
+					} else if (fieldType == "date_time") {
+						var dateValue = "";
+						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
+							dateValue = new Date(value);
+						}
+						addDateTimeField(orderNo, fieldValueDiv, fieldValue2Div, currentFieldId, fieldName, dateValue);
+					} else if (fieldType == "user_list") {
+						var idToSet = false;
+						var labelToSet = false;
+						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
+							idToSet = value;
+							labelToSet= valueLabel;
+						}
+						addUserListField(orderNo, fieldValueDiv, currentFieldId, fieldName, idToSet, labelToSet);					
+					} else if (fieldType == "group_list") {
+						var idToSet = false;
+						var labelToSet = false;
+						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
+							idToSet = value;
+							labelToSet= valueLabel;
+						}
+						addGroupListField(orderNo, fieldValueDiv, currentFieldId, fieldName, idToSet, labelToSet);					
+					} else if (fieldType == "team_list") {
+						var idToSet = false;
+						var labelToSet = false;
+						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
+							idToSet = value;
+							labelToSet= valueLabel;
+						}
+						addTeamListField(orderNo, fieldValueDiv, currentFieldId, fieldName, idToSet, labelToSet);					
+					} else if (fieldType == "checkbox" || fieldType == "radio" || fieldType == "selectbox") {
+						var idToSet = false;
+						var labelToSet = false;
+						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
+							idToSet = value;
+							labelToSet= valueLabel;
+						}
+						dojo.xhrGet({
+					    	url: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_entry_fields_search&ss_entry_def_id=" + entryTypeId + "&elementName=" + currentFieldId,
+							load: function (data) {
+								var selectObj = document.createElement("select");
+								selectObj.name = "elementValue" + orderNo + "_selected";
+								selectObj.id = "elementValue" + orderNo + "_selected";
+								for (var i in data) {
+									var optionObj = document.createElement("option");
+									optionObj.value = i;
+									optionObj.selected = (idToSet == i);
+									optionObj.innerHTML = data[i];
+									selectObj.appendChild(optionObj);
+								}
+								fieldValue2Div.appendChild(selectObj);
+							},
+							handleAs: "json-comment-filtered",
+							preventCache: true
+						});
+					} else if (fieldType == "entryAttributes") {
+						// TODO!
+						/*var idToSet = false;
+						var labelToSet = false;					
+						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
+							idToSet = value;
+							labelToSet= valueLabel;
+						}*/
+						
+						var textAreaAttributesFieldsObj = document.createElement('textArea');
+						textAreaAttributesFieldsObj.className = "ss_combobox_autocomplete";
+					    textAreaAttributesFieldsObj.name = "elementValue" + orderNo;
+					    textAreaAttributesFieldsObj.id = "elementValue" + orderNo;
+						
+						fieldValue2Div.appendChild(textAreaAttributesFieldsObj);
+						
+						var findAttributeFields = ssFind.configSingle({
+							inputId: "elementValue" + orderNo,
+							prefix: "elementValue" + orderNo, 
+							/* searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_entry_fields_search&ss_entry_def_id=" + entryTypeId, */
+							searchUrl: ss_AjaxBaseUrl + "&action=advanced_search&operation=get_entry_attributes_widget&elementName="+currentFieldId+"&binderId=71",
+				      		listType: "entry_fields",
+							displayValue: true,
+							displayArrow: true
+						});
+							
+					} else {// TODO: entryAttributes field!!
+						var idToSet = false;
+						var labelToSet = false;					
+						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
+							idToSet = value;
+							labelToSet= valueLabel;
+						}
+						var inpt = document.createElement('input');
+						inpt.type = "text";
+						inpt.id = "elementValue" + orderNo + "_selected";
+						inpt.name = "elementValue" + orderNo + "_selected";
+						if (labelToSet) {
+							inpt.value = labelToSet;
+						}
+						fieldValue2Div.appendChild(inpt);
+					}
+					
+				}
+			});
+			
+			if (entryId && fieldName && entryTypeId == entryId) {
+				findEntryFields.setValue(fieldName, ss_searchFields[entryId+"-"+fieldName], ss_searchFieldsTypes[entryId+"-"+fieldName]);
+				findEntryFields.selectItem({id: fieldName});
+			}
+		}		
+	});
+	
+	if (entryId) {
+		findEntries.setValue(entryId, ss_searchEntries[entryId]);
+		findEntries.selectItem({id: entryId});
+		// , fieldName, ss_searchFields[entryId+"-"+fieldName], 
+		// value, ss_searchFieldsTypes[entryId+"-"+fieldName], valueLabel);
+	}	
+	
+/*
 	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", 
 		getSubSearchString:ss_getSelectedBinders,
 		dataUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_entry_types_widget&idChoices=%{searchString}&randomNumber="+ss_random++, 
@@ -199,6 +434,102 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	if (entryId && entryId != "") {
 		entryWidget.setDefaultValue(entryId, ss_searchEntries[entryId], fieldName, ss_searchFields[entryId+"-"+fieldName], value, ss_searchFieldsTypes[entryId+"-"+fieldName], valueLabel);
 	}
+*/	
+}
+
+function addDateField(orderNo, container, fieldId, fieldName, value) {
+	var localContainer = document.createElement("input");
+	localContainer.type = "text";
+	container.appendChild(localContainer);
+	
+	return [new dijit.form.DateTextBox({value: value, 
+								id: "elementValue" + orderNo + "_selected", 
+								name: "elementValue" + orderNo + "_selected",
+								autoComplete: false}, 
+							localContainer)];
+}
+
+function addDateTimeField(orderNo, dateContainer, timeContainer, fieldId, fieldName, value) {
+	var widgets = [];
+	widgets.push(addDateField(orderNo, dateContainer, fieldId, fieldName, value));
+	
+	var localContainer = document.createElement("input");
+	localContainer.type = "text";
+	timeContainer.appendChild(localContainer);
+	
+	widgets.push(new dijit.form.TimeTextBox({value: value, 
+								id: "elementValue" + orderNo + "_selected" + "0",
+								name: "elementValue" + orderNo + "_selected" + "0",
+								autoComplete: false}, 
+							localContainer));
+	return widgets;
+}
+
+function addUserListField(orderNo, container, fieldId, fieldName, id, name) {
+	var textAreaUserListObj = document.createElement('textArea');
+	textAreaUserListObj.className = "ss_combobox_autocomplete";
+    textAreaUserListObj.name = "elementValue" + orderNo;
+    textAreaUserListObj.id = "elementValue" + orderNo;
+	
+	container.appendChild(textAreaUserListObj);
+	
+	var findUsers = ssFind.configSingle({
+				inputId: "elementValue" + orderNo,
+				prefix: "elementValue" + orderNo, 
+				searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_user_search",
+	      		listType: "user",
+				displayValue: true,
+				displayArrow: true,
+				addCurrentUserToResult: true
+		});
+	
+	if (id && name) {
+		findUsers.setValue(id, name);
+	}	
+}
+
+function addGroupListField(orderNo, container, fieldId, fieldName, id, name) {
+	var textAreaUserListObj = document.createElement('textArea');
+	textAreaUserListObj.className = "ss_combobox_autocomplete";
+    textAreaUserListObj.name = "elementValue" + orderNo;
+    textAreaUserListObj.id = "elementValue" + orderNo;
+	
+	container.appendChild(textAreaUserListObj);
+	
+	var findGroups = ssFind.configSingle({
+				inputId: "elementValue" + orderNo,
+				prefix: "elementValue" + orderNo, 
+				searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_user_search",
+	      		listType: "group",
+				displayValue: true,
+				displayArrow: true
+		});
+	
+	if (id && name) {
+		findGroups.setValue(id, name);
+	}	
+}
+
+function addTeamListField(orderNo, container, fieldId, fieldName, id, name) {
+	var textAreaUserListObj = document.createElement('textArea');
+	textAreaUserListObj.className = "ss_combobox_autocomplete";
+    textAreaUserListObj.name = "elementValue" + orderNo;
+    textAreaUserListObj.id = "elementValue" + orderNo;
+	
+	container.appendChild(textAreaUserListObj);
+	
+	var findTeams = ssFind.configSingle({
+				inputId: "elementValue" + orderNo,
+				prefix: "elementValue" + orderNo, 
+				searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_user_search",
+	      		listType: "teams",
+				displayValue: true,
+				displayArrow: true
+		});
+	
+	if (id && name) {
+		findTeams.setValue(id, name);
+	}	
 }
 
 function ss_addTag(orderNo, communityTagValue, personalTagValue) {
@@ -211,33 +542,54 @@ function ss_addTag(orderNo, communityTagValue, personalTagValue) {
 
 	var pDiv = document.createElement('div');
 	pDiv.id = "placeholderPersonal"+orderNo;
+	pDiv.style.display = "inline";
+	
 	var cDiv = document.createElement('div');
 	cDiv.id = "placeholderCommunity"+orderNo;
+	cDiv.style.display = "inline";
 
 	div.appendChild(document.createTextNode(" " + ss_nlt_tagsCommunityTags + ": "));
 	div.appendChild(cDiv);
 	div.appendChild(document.createTextNode(" " + ss_nlt_tagsPersonalTags + ": "));
 	div.appendChild(pDiv);
 	document.getElementById('ss_tags_options').appendChild(div);
+
+	var textAreaCommunityTagsObj = document.createElement('textArea');
+	textAreaCommunityTagsObj.className = "ss_combobox_autocomplete";
+    textAreaCommunityTagsObj.name = "searchCommunityTags" + orderNo;
+    textAreaCommunityTagsObj.id = "searchCommunityTags" + orderNo;
 	
-	var url = ss_AjaxBaseUrl + "&action=advanced_search&operation=get_tags_widget&searchText=%{searchString}&pager=%{pagerString}&randomNumber="+ss_random++;
-	var propertiesCommunity = {name:"searchCommunityTags"+orderNo+"", 
-								id:"searchCommunityTags"+orderNo+"", 
-								dataUrl:url+"&findType=communityTags", 								
-								maxListLength : 12,	autoComplete: false};
-	var propertiesPersonal = {name:"searchPersonalTags"+orderNo+"", 
-								id:"searchPersonalTags"+orderNo+"", 
-								dataUrl:url+"&findType=personalTags", 
-								maxListLength : 12,	autoComplete: false};
-	var communityTagWidget = dojox.widget.createWidget("SelectPageable", propertiesCommunity, document.getElementById("placeholderCommunity"+orderNo+""));
-	var personalTagWidget = dojox.widget.createWidget("SelectPageable", propertiesPersonal, document.getElementById("placeholderPersonal"+orderNo+""));
+	cDiv.appendChild(textAreaCommunityTagsObj);
+	
+	var findCommunityTags = ssFind.configSingle({
+				inputId: "searchCommunityTags" + orderNo,
+				prefix: "searchCommunityTags" + orderNo, 
+				searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_tag_search", 
+	      		listType: "communityTags",
+				displayValueOnly: true,
+				displayArrow: true
+		});
 	if (communityTagValue && communityTagValue != "") {
-		communityTagWidget.setValue(communityTagValue);
-		communityTagWidget.setLabel(communityTagValue);
+		findCommunityTags.setValue(communityTagValue, communityTagValue);
 	}
+	
+	var textAreaPersonalTagsObj = document.createElement('textArea');
+	textAreaPersonalTagsObj.className = "ss_combobox_autocomplete";
+    textAreaPersonalTagsObj.name = "searchPersonalTags" + orderNo;
+    textAreaPersonalTagsObj.id = "searchPersonalTags" + orderNo;
+	
+	pDiv.appendChild(textAreaPersonalTagsObj);
+	
+	var findPersonalTags = ssFind.configSingle({
+				inputId: "searchPersonalTags" + orderNo,
+				prefix: "searchPersonalTags" + orderNo, 
+				searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_tag_search", 
+	      		listType: "personalTags",
+				displayValueOnly: true,
+				displayArrow: true
+		});
 	if (personalTagValue && personalTagValue != "") {
-		personalTagWidget.setValue(personalTagValue);
-		personalTagWidget.setLabel(personalTagValue);
+		findPersonalTags.setValue(personalTagValue, personalTagValue);
 	}
 }
 
@@ -256,17 +608,27 @@ function ss_addAuthor(orderNo, authorId, authorName) {
 	div.appendChild(aDiv);
 	document.getElementById('ss_authors_options').appendChild(div);
 	
-	var url = ss_AjaxBaseUrl + "&action=advanced_search&operation=get_users_widget&searchText=%{searchString}&pager=%{pagerString}&randomNumber="+ss_random++;
-	var props = {name : "searchAuthors"+orderNo+"", 
-					id : "searchAuthors"+orderNo+"", 
-					dataUrl:url,
-					maxListLength : 12,
-					autoComplete: false};
-	var usersWidget = dojox.widget.createWidget("SelectPageable", props, document.getElementById("placeholderAuthor"+orderNo+""));
-	if (authorId && authorName && authorId!="" && authorName!="") {
-		usersWidget.setValue(authorId);
-		usersWidget.setLabel(authorName);
-	}
+	
+	var textAreaAuthorObj = document.createElement('textArea');
+	textAreaAuthorObj.className = "ss_combobox_autocomplete";
+    textAreaAuthorObj.name = "searchAuthors" + orderNo;
+    textAreaAuthorObj.id = "searchAuthors" + orderNo;
+	
+	aDiv.appendChild(textAreaAuthorObj);
+	
+	var findAuthors = ssFind.configSingle({
+				inputId: "searchAuthors" + orderNo,
+				prefix: "searchAuthors" + orderNo, 
+				searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_user_search",
+	      		listType: "user",
+				displayValue: true,
+				displayArrow: true,
+				addCurrentUserToResult: true
+		});
+	
+	if (authorId && authorName) {
+		findAuthors.setValue(authorId, authorName);
+	}	
 }
 
 function ss_addLastActivity(orderNo, initialDaysNumber) {
@@ -320,12 +682,15 @@ function ss_addDate(orderNo, type, startDate, endDate) {
 	div.appendChild(remover);
 	div.appendChild(document.createTextNode(" " + ss_searchFormLabelDate + ": "));
 	
-	var sdDiv = document.createElement('div');
-	sdDiv.id = "placeholderStartDate"+orderNo;
-	div.appendChild(sdDiv);
-	var edDiv = document.createElement('div');
-	edDiv.id = "placeholderEndDate"+orderNo;
-	div.appendChild(edDiv);
+	var placeholderStartDateObj = document.createElement('input');
+	placeholderStartDateObj.id = "placeholderStartDate"+orderNo;
+	placeholderStartDateObj.type = "text"
+	div.appendChild(placeholderStartDateObj);
+	
+	var placeholderEndDateObj = document.createElement('input');
+	placeholderEndDateObj.type = "text";
+	placeholderEndDateObj.id = "placeholderEndDate"+orderNo;
+	div.appendChild(placeholderEndDateObj);
 	
 	if (type == 'creation')	document.getElementById('ss_creationDates_options').appendChild(div);
 	else document.getElementById('ss_modificationDates_options').appendChild(div);
@@ -334,19 +699,20 @@ function ss_addDate(orderNo, type, startDate, endDate) {
 
 	if (!endDate)
 		endDate = '';
-
-	dojox.widget.createWidget("DropdownDatePickerActivateByInput", 
-								{value:startDate, 
-								lang: djConfig&&djConfig["locale"]?djConfig["locale"]:"en", 
+	
+	var startDateWidget = new dijit.form.DateTextBox({value: ss_parseSimpleDate(startDate), 
 								weekStartsOn: ss_weekStartsOn,
 								id:'searchStartDate'+orderNo, 
 								name:'searchStartDate'+orderNo,
 								maxListLength : 10,	
 								autoComplete: false}, 
-							document.getElementById("placeholderStartDate"+orderNo+""));
-
-	dojox.widget.createWidget("DropdownDatePickerActivateByInput", {value:endDate, lang: djConfig&&djConfig["locale"]?djConfig["locale"]:"en", weekStartsOn: ss_weekStartsOn, id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo,
-								maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderEndDate"+orderNo+""));
+							placeholderStartDateObj);
+							
+	var endDateWidget = new dijit.form.DateTextBox({value: ss_parseSimpleDate(endDate), 
+								id:'searchEndDate'+orderNo, 
+								name:'searchEndDate'+orderNo,
+								maxListLength : 10,	autoComplete: false}, 
+							placeholderEndDateObj);
 }
 
 /* check/uncheck checkboxes in tree on click in the place name */
@@ -372,6 +738,13 @@ function ss_search() {
 	document.getElementById('ss_advSearchForm').submit();
 }
 
+function ss_removeAllChildren(domObj) {
+	if (domObj && domObj.hasChildNodes()) {
+	    while (domObj.childNodes.length >= 1 ) {
+	        domObj.removeChild( domObj.firstChild );       
+	    } 
+	}
+}
 
 
 
@@ -408,7 +781,6 @@ function ss_showAdditionalOptions(objId, txtContainerId, namespace) {
 	var ssSearchParseAdvancedFormInputObj = document.getElementById("ssSearchParseAdvancedForm" + namespace);
 	if (ssSearchParseAdvancedFormInputObj) {
 		ssSearchParseAdvancedFormInputObj.value = "true";
-	// <input type="hidden" name="ssSearchParseAdvancedForm" value="true" />
 	}
 	
 	ss_showHide(objId);
@@ -568,5 +940,18 @@ function ss_nameAlreadyInUse(queryName) {
 	}
 }
 
+function ss_parseSimpleDate(date) {
+	if (!date) {
+		return date;
+	}
+	
+	if (date.length != 10) {
+		return date;
+	}
+	var y = date.substr(0, 4) * 1;
+	var m = date.substr(5, 2) * 1 - 1;
+	var d = date.substr(8, 2) * 1;
+	return new Date(y, m, d);
+}
 
 

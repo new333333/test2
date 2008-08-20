@@ -47,7 +47,7 @@ function ss_saveChangeLogEntryId(id) {
 </script>
 
 </head>
-<body>
+<body class="tundra">
 <c:if test="${empty ssBinderId}">
   <span class="ss_fineprint"><ssf:nlt tag="changeLog.selectFolder"/></span>
 </c:if>

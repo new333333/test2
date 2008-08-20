@@ -59,6 +59,7 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 
 
 <%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
+<jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 <div class="ss_folder_border">
 <% // Add the toolbar with the navigation widgets, commands and filter %>
 <ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
@@ -70,6 +71,7 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 </ssf:toolbar>
 <div class="ss_clear"></div>
 </div>
+<jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
 <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <div id="ss_whatsNewDiv${ss_namespace}">
 <c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">

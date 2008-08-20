@@ -32,11 +32,13 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <ssf:sidebarPanel title="sidebar.personalPref" id="ss_personal_sidebar" divClass="ss_place_tags" initOpen="false" sticky="false">
 
+  <c:if test="${!empty ssFolderActionsToolbar}">
   <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.entryDisplay"/> 
 	<div class="ss_sub_sidebarMenu">
 	  	<ssf:toolbar toolbar="${ssFolderActionsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
 	</div>
-  </div>	
+  </div>
+  </c:if>	
 
   <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.theme"/> 
 	<div class="ss_sub_sidebarMenu">

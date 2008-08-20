@@ -35,7 +35,7 @@ package com.sitescape.team.domain;
 
 import java.util.Map;
 import java.util.HashMap;
-
+import java.util.Collection;
 import org.dom4j.Document;
 
 import com.sitescape.team.domain.UserPropertiesPK;
@@ -95,6 +95,13 @@ public class UserProperties extends ZonedObject {
     public void setProperty(String key, Object value) {
  	   if (value instanceof Object[]) throw new IllegalArgumentException("Arrays not supported");
  	   if (value instanceof Document) throw new IllegalArgumentException("XML docs not supported");
+ 	   if (value instanceof java.util.Collection) {
+ 		   //check the members
+ 		   for (Object obj:(Collection)value) {
+ 			   if (obj instanceof Object[]) throw new IllegalArgumentException("Arrays not supported");
+ 		 	   if (obj instanceof Document) throw new IllegalArgumentException("XML docs not supported");			   
+ 		   }
+ 	   }
  	   //only update if it changes; to reduce writes
     	if (userProperties.containsKey(key)) {
     		if (value == null) userProperties.remove(key);

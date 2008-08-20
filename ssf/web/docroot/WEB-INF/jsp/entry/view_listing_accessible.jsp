@@ -36,7 +36,7 @@
     <c:set var="showFolderPage" value="false"/>
 </ssf:ifnotadapter>
 <ssf:ifadapter>
-<body class="ss_style_body">
+<body class="ss_style_body tundra">
 <ssf:ifLoggedIn><c:if test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
   <a class="ss_skiplink" href="${ss_accessibleUrl}"><img border="0"
     <ssf:alt tag="accessible.enableAccessibleMode"/> 

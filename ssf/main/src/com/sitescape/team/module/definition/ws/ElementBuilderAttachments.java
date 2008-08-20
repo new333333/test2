@@ -35,8 +35,10 @@ import org.dom4j.Element;
 
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.team.remoting.ws.model.AttachmentsField;
+import com.sitescape.team.remoting.ws.model.Timestamp;
 import com.sitescape.team.remoting.ws.model.AttachmentsField.Attachment;
 
 public class ElementBuilderAttachments extends AbstractElementBuilder {
@@ -46,14 +48,17 @@ public class ElementBuilderAttachments extends AbstractElementBuilder {
 			attachments = new ArrayList<Attachment>();
 		for (FileAttachment att:entity.getFileAttachments()) {
 			if (att != null && att.getFileItem() != null) {
-				String webUrl = DefinitionUtils.getViewURL(entity, att); 
+				String webUrl = WebUrlUtil.getFileUrl(WebKeys.ACTION_READ_FILE, att); 
 				if(element != null) {
 					Element value = element.addElement("file");
 					value.setText(att.getFileItem().getName());
 					value.addAttribute("href", webUrl);
 				}
 				if(attachments != null)
-					attachments.add(new Attachment(att.getId(), att.getFileItem().getName(), att.getFileItem().getLength(), webUrl));
+					attachments.add(new Attachment(att.getId(), att.getFileItem().getName(),
+							new Timestamp(att.getCreation().getPrincipal().getName(), att.getCreation().getDate()),
+							new Timestamp(att.getModification().getPrincipal().getName(), att.getModification().getDate()),
+							att.getFileItem().getLength(), webUrl));
 				context.handleAttachment(att, webUrl);
 			}
 		}

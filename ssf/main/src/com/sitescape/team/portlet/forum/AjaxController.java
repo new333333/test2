@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -445,6 +446,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return new ModelAndView("forum/fetch_url_return");			
 		} else if (op.equals(WebKeys.OPERATION_SAVE_UESR_STATUS)) {
 			return ajaxGetUserStatus(request, response);
+		} else if (op.equals(WebKeys.OPERATION_VIEW_MINIBLOG)) {
+			return ajaxViewMiniBlog(request, response);
 		}
 
 		return ajaxReturn(request, response);
@@ -2628,6 +2631,36 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String statusId = PortletRequestUtils.getStringParameter(request, "ss_statusId", "");
 		model.put("ss_statusId", statusId);
 		return new ModelAndView("forum/save_status_return", model);
+	}
+	
+	private ModelAndView ajaxViewMiniBlog(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE, "0");
+		int pageStart = Integer.valueOf(page) * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
+		Long userId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_USER_ID);
+		Principal p = null;
+		Boolean miniblogAccessAllowed = false;
+		try {
+			p = getProfileModule().getEntry(userId);
+			getBinderModule().getBinder(p.getWorkspaceId());
+			miniblogAccessAllowed = true;
+		} catch(AccessControlException e) {}
+		
+		model.put(WebKeys.MINIBLOG_USER_ID, userId);
+		model.put(WebKeys.MINIBLOG_USER, p);
+		model.put(WebKeys.MINIBLOG_PAGE, page);
+		model.put(WebKeys.MINIBLOG_ACCESS_DENIED, miniblogAccessAllowed);
+		
+		if (miniblogAccessAllowed) {
+			Long[] userIds = new Long[]{userId};
+			List statuses = getReportModule().getUsersStatuses(userIds, null, null, 
+					pageStart + Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
+			if (statuses != null && statuses.size() > pageStart) {
+				model.put(WebKeys.MINIBLOG_STATUSES, statuses.subList(pageStart, statuses.size()));
+			}
+		}
+		return new ModelAndView("forum/miniblog", model);
 	}
 	
 }

@@ -17,7 +17,6 @@
 	<classpathentry kind="src" path="taglib/src"/>
 	<classpathentry kind="src" path="indexer-lucene/src"/>
 	<classpathentry kind="src" path="util/src"/>
-	<classpathentry kind="src" path="apacheds-server-jndi/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ant.jar"/>
@@ -54,7 +53,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/commons-discovery.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/saaj.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/wsdl4j.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring.jar" sourcepath="C:/Documents and Settings/Joe/Desktop/spring-framework-2.5.4/src"/>
 	<classpathentry exported="true" kind="lib" path="lib/wss4j.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xmlrpc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/addressing.jar"/>
@@ -123,5 +122,7 @@
 	<classpathentry kind="lib" path="lib/shared-ldap.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-fileupload.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jbpm.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-ldap.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-core.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>

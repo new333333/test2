@@ -42,7 +42,10 @@
         value="${ssUser.statusDate}" type="both" 
 	    timeStyle="short" dateStyle="short" /></span>
 	</c:if>
-	<strong><ssf:nlt tag="relevance.userStatus"/></strong>
+	<a href="javascript: ;" onClick="ss_viewMiniBlog('${ssUser.id}', '0', true);return false;"
+	  title="<ssf:nlt tag="miniblog.title"/>" style="text-decoration:underline;">
+	   <strong><ssf:nlt tag="relevance.userStatus"/></strong>
+	</a>
 	<ssf:ifLoggedIn>
 			<script type="text/javascript">
 			  ss_statusCurrent = "";

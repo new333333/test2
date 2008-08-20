@@ -55,8 +55,8 @@ import javax.portlet.RenderResponse;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
+import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.AbstractIntervalView;
@@ -90,7 +90,6 @@ import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.security.AccessControlException;
-import com.sitescape.team.security.function.OperationAccessControlExceptionNoName;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
@@ -176,7 +175,9 @@ public class ListFolderHelper {
 		
 		//Set up the standard beans
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
-		
+		UserProperties userProperties = (UserProperties)model.get(WebKeys.USER_PROPERTIES_OBJ);
+		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
+
 		//See if the entry to be shown is also included
 		String entryIdToBeShown = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		if (entryIdToBeShown.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) entryIdToBeShown = "";
@@ -229,8 +230,6 @@ public class ListFolderHelper {
 	
 			request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 	
-			Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
-			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
 				
 			//Set up more standard beans
 			//These have been documented, so don't delete any
@@ -238,7 +237,6 @@ public class ListFolderHelper {
 			model.put(WebKeys.FOLDER, binder);
 			model.put(WebKeys.DEFINITION_ENTRY, binder);
 			model.put(WebKeys.ENTRY, binder);
-			model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 	
 			//Build a reload url
 			PortletURL reloadUrl = response.createRenderURL();
@@ -252,7 +250,7 @@ public class ListFolderHelper {
 		
 			model.put(WebKeys.SEEN_MAP, bs.getProfileModule().getUserSeenMap(user.getId()));
 			if (binder != null) {
-				DashboardHelper.getDashboardMap(binder, userProperties, model);
+				DashboardHelper.getDashboardMap(binder, userProperties.getProperties(), model);
 				//See if the user has selected a specific view to use
 				DefinitionHelper.getDefinitions(binder, model, 
 						(String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
@@ -262,11 +260,10 @@ public class ListFolderHelper {
 			model.put(WebKeys.TABS, tab.getTabs());		
 			//check tabs based on operation
 			
-			Map options = new HashMap();				
-			options.putAll(getSearchFilter(bs, request, userFolderProperties));
+			Map options = getSearchFilter(bs, request, userFolderProperties);
 			
 			//determine page starts/ counts
-			initPageCounts(bs, request, userProperties, tab, options);
+			initPageCounts(bs, request, userProperties.getProperties(), tab, options);
 	
 			Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
 			Element configElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
@@ -332,18 +329,9 @@ public class ListFolderHelper {
 			
 	}
 	
-	public static Map getSearchFilter(AllModulesInjected bs, RenderRequest request, 
-			UserProperties userFolderProperties) {
+	public static Map getSearchFilter(AllModulesInjected bs, RenderRequest request, UserProperties userFolderProperties) {
 		Map result = new HashMap();
-		
-		//Determine the Search Filter
-		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
-		Document searchFilter = null;
-		if (Validator.isNotNull(searchFilterName)) {
-			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
-			searchFilter = (Document)searchFilters.get(searchFilterName);
-		}
-		result.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
+		result.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(bs, userFolderProperties));
 		String searchTitle = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TITLE, "");
 		if (!searchTitle.equals("")) {
 			result.put(ObjectKeys.SEARCH_TITLE, searchTitle);
@@ -516,9 +504,6 @@ public class ListFolderHelper {
 	private static Map findCalendarEvents(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Binder binder, Map model) throws PortletRequestBindingException {
 		Map folderEntries = new HashMap();
-		Map options = new HashMap();
-		
-		model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 		Long binderId = binder.getId();
 		
 		int year = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_YEAR, -1);
@@ -541,9 +526,7 @@ public class ListFolderHelper {
 		model.put(WebKeys.CALENDAR_GRID_TYPE, ((EventsViewHelper.Grid)grids.get(binderId.toString())).type);
 		model.put(WebKeys.CALENDAR_GRID_SIZE, ((EventsViewHelper.Grid)grids.get(binderId.toString())).size);
 		
-		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
-		options.putAll(getSearchFilter(bs, request, userFolderProperties));
-		
+		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 		TimeZone timeZone = user.getTimeZone();
 		
 		Calendar calCurrentDate = new GregorianCalendar(timeZone);
@@ -590,7 +573,7 @@ public class ListFolderHelper {
        	}
        	
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-		
+		Map options = getSearchFilter(bs, request, userFolderProperties);
 		options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
        	// options.put(ObjectKeys.SEARCH_EVENT_DAYS, getExtViewDayDates(calStartDateRange, calEndDateRange));
        	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervalView.getVisibleInterval());
@@ -796,8 +779,7 @@ public class ListFolderHelper {
 		}
 		BinderHelper.buildWorkspaceTreeBean(bs, workspaceBinder, model, null);
 		
-		String forumId = folderId.toString();
-		buildFolderToolbars(bs, req, response, folder, forumId, model, viewType);
+		buildFolderToolbars(bs, req, response, folder, folderId.toString(), model, viewType);
 		return BinderHelper.getViewListingJsp(bs, viewType);
 	}
 	
@@ -1242,11 +1224,18 @@ public class ListFolderHelper {
 		//Build the toolbar arrays
 		Toolbar folderToolbar = new Toolbar();
 		Toolbar entryToolbar = new Toolbar();
-		Toolbar folderActionsToolbar = new Toolbar();
 		Toolbar folderViewsToolbar = new Toolbar();
 		Toolbar dashboardToolbar = new Toolbar();
 		Toolbar footerToolbar = new Toolbar();
 		Toolbar whatsNewToolbar = new Toolbar();
+		
+		boolean isAppletSupported = SsfsUtil.supportApplets();
+        boolean isAccessible = false;
+		String displayStyle = user.getDisplayStyle();
+		if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
+				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			isAccessible = true;
+		}
 		
 		AdaptedPortletURL adapterUrl;
 		Map qualifiers;
@@ -1541,7 +1530,7 @@ public class ListFolderHelper {
 		if (viewType.equals(Definition.VIEW_STYLE_WIKI)|| 
 				viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
 			//Add a way to set the sorting
-			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folder.getId());
+			UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 			String searchSortBy = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY);
 			if (searchSortBy == null) searchSortBy = "";
 			entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.folder_sortBy"));
@@ -1644,6 +1633,14 @@ public class ListFolderHelper {
 			}
 		}
 		
+		if (isAppletSupported && !folder.isMirroredAndReadOnly() && 
+				bs.getFolderModule().testAccess(folder, FolderOperation.addEntry) && 
+				!isAccessible) {
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "javascript: ss_showFolderAddAttachmentDropbox('" + response.getNamespace() + "', '" + folder.getId() + "','" + Boolean.toString(folder.isLibrary()) + "'); return false;");
+			entryToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
+		}
+		
 		//	The "Display styles" menu
 		folderViewsToolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_views"));
 		//Get the definitions available for use in this folder
@@ -1680,111 +1677,51 @@ public class ListFolderHelper {
 		}
 		
 		//Folder action menu
-		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
-				(viewType.equals(Definition.VIEW_STYLE_DEFAULT) 
-				|| viewType.equals(Definition.VIEW_STYLE_BLOG) 
-				|| viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM) 
-				|| viewType.equals(Definition.VIEW_STYLE_GUESTBOOK) 
-				|| viewType.equals(Definition.VIEW_STYLE_TASK) 
-				|| viewType.equals(Definition.VIEW_STYLE_TABLE)
-				|| viewType.equals(Definition.VIEW_STYLE_CALENDAR)
-				|| viewType.equals(Definition.VIEW_STYLE_FILE)
-				|| viewType.equals(""))) {
-			//Only show these options if in the folder table style and not in accessible mode
-			folderActionsToolbar.addToolbarMenu("4_display_styles", NLT.get("toolbar.folder_actions"));
+		Toolbar folderActionsToolbar = new Toolbar();
+		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+			//Folder action menu
+			//Build the standard toolbar
+			BinderHelper.buildFolderActionsToolbar(bs, request, response, folderActionsToolbar, forumId);
 			
-			/** Vertical mode has been removed
-			//Hemanth: Display Show entries at bottom folder action option only for the Table view
-			if (viewType.equals(Definition.VIEW_STYLE_TABLE)) {
-				//vertical
-				qualifiers = new HashMap();
-				if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) 
-					qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
-				entryToolbar.addToolbarMenuItem("4_display_styles", "styles", 
-						NLT.get("toolbar.menu.display_style_vertical"), url, qualifiers);
+			if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
+					(viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
+							viewType.equals(Definition.VIEW_STYLE_TASK)) &&
+					bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {
+				
+				
+				String titleFromFile = NLT.get("calendar.import.window.title.fromFile");
+				String titleByURL = NLT.get("calendar.import.window.title.byURL");
+				String legendFromFile = NLT.get("calendar.import.window.legend.fromFile");
+				String legendByURL = NLT.get("calendar.import.window.legend.byURL");
+				String btnFromFile = NLT.get("calendar.import.window.upload.fromFile");
+				String btnByURL = NLT.get("calendar.import.window.upload.byURL");
+				String optionTitle = NLT.get("toolbar.menu.calendarImport");
+				String importFromFile = NLT.get("toolbar.menu.calendarImport.fromFile");
+				String importByURL = NLT.get("toolbar.menu.calendarImport.byURL");
+				if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
+					titleFromFile = NLT.get("task.import.window.title.fromFile");
+					titleByURL = NLT.get("task.import.window.title.byURL");
+					legendFromFile = NLT.get("task.import.window.legend.fromFile");
+					legendByURL = NLT.get("task.import.window.legend.byURL");
+					btnFromFile = NLT.get("task.import.window.upload.fromFile");
+					btnByURL = NLT.get("task.import.window.upload.byURL");
+					optionTitle = NLT.get("toolbar.menu.taskImport");
+					importFromFile = NLT.get("toolbar.menu.taskImport.fromFile");
+					importByURL = NLT.get("toolbar.menu.taskImport.byURL");				
+				}
+				
+				folderActionsToolbar.addToolbarMenu("5_calendar", optionTitle);	
+				
+				Map qualifiersByFile = new HashMap();
+				qualifiersByFile.put("onClick", "ss_calendar_import.importFormFromFile({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
+						titleFromFile + "', legend: '" + legendFromFile + "', btn: '" + btnFromFile + "'});return false;");
+				folderActionsToolbar.addToolbarMenuItem("5_calendar", "calendar", importFromFile, "#", qualifiersByFile);
+				
+				Map qualifiersByURL = new HashMap();
+				qualifiersByURL.put("onClick", "ss_calendar_import.importFormByURL({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
+						titleByURL + "', legend: '" + legendByURL + "', btn: '" + btnByURL + "'});return false;");
+				folderActionsToolbar.addToolbarMenuItem("5_calendar", "calendar", importByURL, "#", qualifiersByURL);
 			}
-			*/
-			
-			//iframe
-			qualifiers = new HashMap();
-			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) 
-				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
-			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
-					NLT.get("toolbar.menu.display_style_iframe"), url, qualifiers);
-			//newpage
-			qualifiers = new HashMap();
-			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE)) 
-				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE);
-			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
-					NLT.get("toolbar.menu.display_style_newpage"), url, qualifiers);
-			//popup
-			qualifiers = new HashMap();
-			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) 
-				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
-			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
-					NLT.get("toolbar.menu.display_style_popup"), url, qualifiers);
-		}
-		
-		//Folder action menu
-		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
-				(viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
-						viewType.equals(Definition.VIEW_STYLE_TASK)) &&
-				bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {
-			
-			
-			String titleFromFile = NLT.get("calendar.import.window.title.fromFile");
-			String titleByURL = NLT.get("calendar.import.window.title.byURL");
-			String legendFromFile = NLT.get("calendar.import.window.legend.fromFile");
-			String legendByURL = NLT.get("calendar.import.window.legend.byURL");
-			String btnFromFile = NLT.get("calendar.import.window.upload.fromFile");
-			String btnByURL = NLT.get("calendar.import.window.upload.byURL");
-			String optionTitle = NLT.get("toolbar.menu.calendarImport");
-			String importFromFile = NLT.get("toolbar.menu.calendarImport.fromFile");
-			String importByURL = NLT.get("toolbar.menu.calendarImport.byURL");
-			if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
-				titleFromFile = NLT.get("task.import.window.title.fromFile");
-				titleByURL = NLT.get("task.import.window.title.byURL");
-				legendFromFile = NLT.get("task.import.window.legend.fromFile");
-				legendByURL = NLT.get("task.import.window.legend.byURL");
-				btnFromFile = NLT.get("task.import.window.upload.fromFile");
-				btnByURL = NLT.get("task.import.window.upload.byURL");
-				optionTitle = NLT.get("toolbar.menu.taskImport");
-				importFromFile = NLT.get("toolbar.menu.taskImport.fromFile");
-				importByURL = NLT.get("toolbar.menu.taskImport.byURL");				
-			}
-			
-			
-			folderActionsToolbar.addToolbarMenu("5_calendar", optionTitle);	
-			
-			Map qualifiersByFile = new HashMap();
-			qualifiersByFile.put("onClick", "ss_calendar_import.importFormFromFile({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
-					titleFromFile + "', legend: '" + legendFromFile + "', btn: '" + btnFromFile + "'});return false;");
-			folderActionsToolbar.addToolbarMenuItem("5_calendar", "calendar", importFromFile, "#", qualifiersByFile);
-			
-			Map qualifiersByURL = new HashMap();
-			qualifiersByURL.put("onClick", "ss_calendar_import.importFormByURL({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
-					titleByURL + "', legend: '" + legendByURL + "', btn: '" + btnByURL + "'});return false;");
-			folderActionsToolbar.addToolbarMenuItem("5_calendar", "calendar", importByURL, "#", qualifiersByURL);
 		}
 		
 		//Build the "Manage dashboard" toolbar
@@ -1902,21 +1839,6 @@ public class ListFolderHelper {
 		whatsNewToolbar.addToolbarMenu("unseen", NLT.get("toolbar.menu.whatsUnseen"), 
 				adapterUrl.toString(), qualifiers);
 
-		
-		boolean isAppletSupported = SsfsUtil.supportApplets();
-        
-        boolean isAccessible = false;
-		String displayStyle = user.getDisplayStyle();
-		if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-			isAccessible = true;
-		}
-		
-		if (isAppletSupported && !folder.isMirroredAndReadOnly() && bs.getFolderModule().testAccess(folder, FolderOperation.addEntry) && !isAccessible) {
-			qualifiers = new HashMap();
-			qualifiers.put("onClick", "javascript: ss_showFolderAddAttachmentDropbox('" + response.getNamespace() + "', '" + folder.getId() + "','" + Boolean.toString(folder.isLibrary()) + "'); return false;");
-			footerToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
-		}
 		
 		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			qualifiers = new HashMap();
@@ -2038,10 +1960,6 @@ public class ListFolderHelper {
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 
 		Map folderEntries = new HashMap();
-		
-		User user = RequestContextHolder.getRequestContext().getUser();
-		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
-		options.putAll(getSearchFilter(bs, request, userFolderProperties));
 		
 		String filterTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.TASK_FILTER_TYPE, null);
 		TaskHelper.FilterType filterType = TaskHelper.setTaskFilterType(portletSession, filterTypeParam != null ? TaskHelper.FilterType.valueOf(filterTypeParam) : null);

@@ -32,7 +32,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <ssf:ifadapter>
-<body class="ss_style_body">
+<body class="ss_style_body tundra">
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
 </ssf:ifadapter>
 <c:if test="${!empty ssReloadUrl}">
