@@ -187,8 +187,14 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 		for (LdapConnectionConfig config : getLdapConnectionConfigs(zoneId)) {
 			String search = "(" + config.getUserIdAttribute() + "={0})";
 			if (config.getUserSearches().size() > 0) {
-				DefaultSpringSecurityContextSource contextSource = new DefaultSpringSecurityContextSource(
+				DefaultSpringSecurityContextSource contextSource = null;
+				try {
+					contextSource = new DefaultSpringSecurityContextSource(
 						config.getUrl());
+				} catch(Exception e) {
+					logger.debug("Unable to create LDAP context for url: " + config.getUrl());
+					continue;
+				}
 				if (Validator.isNotNull(config.getPrincipal())) {
 					contextSource.setUserDn(config.getPrincipal());
 					contextSource.setPassword(config.getCredentials());
@@ -388,6 +394,7 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 		if(config == null) {
 			config = new AuthenticationConfig();
 			config.setZoneId(zoneId);
+			getCoreDao().save(config);
 		}
 		return config;
 	}

@@ -301,7 +301,7 @@ ssPage = {
 			ssPage.createSearchEntry($pane.find(".ldapGroupSearches .ldapSearchList"), this.baseDn, this.filter, this.searchSubtree);
 		});
 		if(userSearches.length == 0 && groupSearches.length == 0) {
-			ssPage.createSearchEntry($pane.find(".ldapUserSearches .ldapSearchList"), "", "", "true");
+			ssPage.createSearchEntry($pane.find(".ldapUserSearches .ldapSearchList"), "", ssPage.defaultUserFilter, "true");
 		}
 		jQuery('#funkyDiv').append($pane);
 
@@ -310,6 +310,7 @@ ssPage = {
 		jQuery("#funkyDiv > ul").tabs("select", index);
 
 		ssPage.createBindings($pane);
+		$pane.show();
 		return $pane;
 	},
 	
