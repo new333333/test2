@@ -28,67 +28,29 @@
  */
 package com.sitescape.team.portlet.forum;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
+import javax.servlet.http.HttpSession;
 
-import org.dom4j.Document;
+import org.springframework.security.AuthenticationException;
+import org.springframework.security.ui.AbstractProcessingFilter;
 import org.springframework.web.portlet.ModelAndView;
 
-import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.comparator.BinderComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.module.binder.BinderModule.BinderOperation;
-import com.sitescape.team.module.folder.FolderModule.FolderOperation;
-import com.sitescape.team.domain.Definition;
-import com.sitescape.team.domain.EntityIdentifier;
-import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.ProfileBinder;
-import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.module.workspace.WorkspaceModule;
-import com.sitescape.team.search.filter.SearchFilter;
-import com.sitescape.team.search.filter.SearchFilterKeys;
-import com.sitescape.team.search.filter.SearchFilterRequestParser;
-import com.sitescape.team.security.function.WorkAreaOperation;
-import com.sitescape.team.util.AllModulesInjected;
-import com.sitescape.team.util.NLT;
+import com.sitescape.team.portletadapter.portlet.PortletRequestImpl;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractControllerRetry;
-import com.sitescape.team.web.tree.DomTreeBuilder;
-import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
-import com.sitescape.team.web.util.Clipboard;
-import com.sitescape.team.web.util.DefinitionHelper;
-import com.sitescape.team.web.util.Favorites;
-import com.sitescape.team.web.util.PortletPreferencesUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
-import com.sitescape.team.web.util.Tabs;
-import com.sitescape.team.web.util.WebHelper;
-import com.sitescape.team.web.util.WebStatusTicket;
 import com.sitescape.team.web.util.WebUrlUtil;
-import com.sitescape.team.web.util.WorkspaceTreeHelper;
 import com.sitescape.util.Validator;
-import com.sitescape.util.search.Constants;
-import com.sitescape.team.util.LongIdUtil;
 /**
  * @author Peter Hurley
  *
@@ -113,7 +75,7 @@ public class LoginController  extends SAbstractControllerRetry {
 		Map<String,Object> model = new HashMap<String,Object>();
 		
 		Long binderId = user.getWorkspaceId();
-		if (!binderId.equals("")) {
+		if (binderId != null) {
 			try {
 				//See if this user can access the binder
 				Binder binder = getBinderModule().getBinder(new Long(binderId));
@@ -125,7 +87,16 @@ public class LoginController  extends SAbstractControllerRetry {
 		//Set up the standard beans
 		BinderHelper.setupStandardBeans(this, request, response, model, binderId);
 		String url = PortletRequestUtils.getStringParameter(request, WebKeys.URL_URL, "");
-		model.put(WebKeys.URL, url);
+		if(Validator.isNotNull(url)) {
+			model.put(WebKeys.URL, url);
+		}
+        HttpSession session = ((PortletRequestImpl) request).getHttpServletRequest().getSession();
+    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    	if(ex != null) {
+    		model.put(WebKeys.LOGIN_ERROR, ex.getMessage());
+    		session.removeAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    	}
+
 		return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
 	} 
 }
