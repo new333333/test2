@@ -328,6 +328,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 *
 	 */
 	public void receivePostings() {
+		String folderName="inbox";
 		String prefix, auth;
 		List<String> posters = getMailPosters(RequestContextHolder.getRequestContext().getZoneName());
 		List<PostingDef> allPostings = getCoreDao().loadPostings(RequestContextHolder.getRequestContext().getZoneId());
@@ -392,7 +393,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 						store.connect();
 					}
 					if (!aliases.isEmpty()) {
-						mFolder = store.getFolder("inbox");				
+						mFolder = store.getFolder(folderName);				
 						mFolder.open(javax.mail.Folder.READ_WRITE);
 					
 						//	determine which alias a message belongs to and post it
@@ -412,6 +413,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 						try {mFolder.close(true);} catch (Exception ex) {};
 					}
 					//now see if we have a privledged account
+					//don't even know if this works
 					for (PostingDef postingDef: useUserName) {
 						try {
 							javax.mail.Folder[] mailFolders = store.getUserNamespaces(postingDef.getEmailAddress());
@@ -423,7 +425,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 							EmailPoster processor = (EmailPoster)processorManager.getProcessor(folder,EmailPoster.PROCESSOR_KEY);
 							for (int j=0; j<mailFolders.length; ++j) {
 								mFolder = mailFolders[j];
-								if ("inbox".equals(mFolder.getFullName())) {
+								if (folderName.equals(mFolder.getFullName())) {
 									try {
 										mFolder.open(javax.mail.Folder.READ_WRITE);
 										sendErrors(folder, postingDef,  sender, processor.postMessages(folder, postingDef.getEmailAddress(), mFolder.getMessages(), session));							
@@ -441,11 +443,14 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			} catch (AuthenticationFailedException ax) {
 				logger.error("Error posting mail from [" + hostName + "] " + getMessage(ax));
 				continue;
+			} catch (MessagingException mx) {
+				logger.error("Error posting mail from [" + hostName + "] " + getMessage(mx));
+				continue;
 			} catch (Exception ex) {
-				//Close connection and expunge
-				if (mFolder != null) try {mFolder.close(true);} catch (Exception ex1) {};
 				logger.error("Error posting mail from [" + hostName + "]", ex);
 			} finally  {
+				//Close folder and expunge
+				if (mFolder != null && mFolder.isOpen()) try {mFolder.close(true);} catch (Exception ex1) {};
 				//Close connection 
 				if (store != null) try {store.close();} catch (Exception ex) {};
 			}
@@ -456,11 +461,14 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				EmailPoster processor = (EmailPoster)processorManager.getProcessor(folder,EmailPoster.PROCESSOR_KEY);
 				try {
 					store.connect(null, postingDef.getEmailAddress(), postingDef.getPassword());
-					mFolder = store.getFolder("inbox");				
+					mFolder = store.getFolder(folderName);				
 					mFolder.open(javax.mail.Folder.READ_WRITE);
 					sendErrors(folder, postingDef, sender, processor.postMessages(folder, postingDef.getEmailAddress(), mFolder.getMessages(), session));							
 				} catch (AuthenticationFailedException ax) {
 					logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress() + " " + getMessage(ax));
+					continue;
+				} catch (MessagingException mx) {
+					logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress() + " " + getMessage(mx));
 					continue;
 				} catch (Exception ex) {
 					logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress(), ex);
@@ -473,7 +481,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			}
 
 		}		
-		
 	}
 	private String getMessage(Exception ex) {
 		if (Validator.isNotNull(ex.getLocalizedMessage())) return ex.getLocalizedMessage();
