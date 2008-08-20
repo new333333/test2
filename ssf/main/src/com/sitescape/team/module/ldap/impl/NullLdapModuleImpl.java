@@ -32,7 +32,7 @@ import javax.naming.NamingException;
 
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.ldap.LdapConfig;
+import com.sitescape.team.module.ldap.LdapSchedule;
 import com.sitescape.team.module.ldap.LdapModule;
 
 public class NullLdapModuleImpl extends CommonDependencyInjection implements LdapModule {
@@ -40,11 +40,11 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 		return false;
 	}
 
-	public LdapConfig getLdapConfig() {
+	public LdapSchedule getLdapSchedule() {
 		return null;
 	}
 
-	public void setLdapConfig(LdapConfig config) {
+	public void setLdapSchedule(LdapSchedule schedule) {
 	}
 
 	public void syncAll() throws NamingException {
@@ -52,5 +52,4 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 
 	public void syncUser(Long userId) throws NoUserByTheNameException, NamingException {
 	}
-
 }

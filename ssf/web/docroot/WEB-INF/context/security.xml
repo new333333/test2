@@ -1,0 +1,31 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:s="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.1.xsd">
+
+	<bean id="zoneGrabbingFilter" class="com.sitescape.team.spring.security.ZoneGrabbingFilter">
+		<s:custom-filter position="FIRST"/>
+	</bean>
+	
+    <s:http session-fixation-protection="newSession">
+        <s:intercept-url pattern="/ws/**" access="ROLE_ANONYMOUS" />
+        <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED,ROLE_ANONYMOUS" />
+
+        <s:form-login/>
+        <s:anonymous granted-authority="ROLE_ANONYMOUS" username="guest"  />
+        <s:logout />
+
+    </s:http>
+
+	<bean id="_anonymousProcessingFilter"
+	      class="com.sitescape.team.spring.security.ZoneAwareAnonymousProcessingFilter">
+		<property name="key" value="thisIsIgnored"/>
+		<property name="userAttribute" value="guest,ROLE_ANONYMOUS"/>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+	</bean>
+
+	<bean id="springAuthenticationBeans" class="com.sitescape.team.spring.security.SpringAuthenticationBeans">
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+	</bean>
+</beans>
