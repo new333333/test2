@@ -28,35 +28,45 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page contentType="text/xml; charset=UTF-8" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-/*
-{
-<c:choose>
-	<c:when test="${ss_ajaxStatus.ss_ajaxNotLoggedIn}">
-		notLoggedIn : ${ss_ajaxStatus.ss_ajaxNotLoggedIn} 
-	</c:when>
-	<c:otherwise>
-		<c:set var="count" value="0"/>
+
+<%@ page contentType="text/xml; charset=UTF-8" %>
+<taconite-root xml:space="preserve">
+<%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
+
+
+<c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
+
+	<taconite-replace contextNodeID="<c:out value="${ss_divId}"/>" parseInBrowser="true">
+	  <c:set var="count" value="0"/>
+	  <div id="<c:out value="${ss_divId}"/>" style="padding:2px;margin:2px;">
 		<c:if test="${empty ssEntries}">
 			<c:if test="${ssTagLengthWarning != null}">
-				'items': [{id: 'error', 
-					name: '<ssf:escapeJavaScript value="${ssTagLengthWarning}"/>'}]
+				<ul>
+				<li><c:out value="${ssTagLengthWarning}"/></li>
+				</ul>
 			</c:if>
-		</c:if>	
-		  
+		</c:if>	  
 		<c:if test="${!empty ssEntries}">
-	      'items': [
-			<c:forEach var="entry" items="${ssEntries}" varStatus="status">
+	      <ul>
+			<c:forEach var="entry" items="${ssEntries}">
 			  <c:set var="count" value="${count + 1}"/>
-			  {'id': '<c:choose><%--
-		          --%><c:when test="${!empty entry.ssTag}"><%--
+			  <li id="ss_findUser_id_<c:choose><%--
+		          --%><c:when test="${ssFindType == 'personalTags' || ssFindType == 'communityTags' || ssFindType == 'tags' }"><%--
 		      		--%><c:out value="${entry.ssTag}"/><%--
 		      	  --%></c:when><%--
   		          --%><c:otherwise><%--
   		          	--%><c:out value="${entry._docId}"/><%--
-  		          --%></c:otherwise></c:choose>',
-  		        'name': '<c:choose><%--
+  		          --%></c:otherwise></c:choose>"><a 
+			    onClick="<c:choose><%--
+		    			--%><c:when test="${ssFindType == 'personalTags' || ssFindType == 'communityTags'}"><%--
+		    				--%>ss_putValueInto('ss_findUser_searchText_${ss_namespace}', '${entry.ssTag}');<%--
+		    			--%></c:when><%--
+						--%><c:otherwise><%--
+							--%>window['${findObjectName}']._selectItem(this.parentNode, '${entry._entityType}');return false;<%--
+						--%></c:otherwise><%--
+			   		 --%></c:choose>" 
+			    href="javascript: ;"><span style="white-space:nowrap;"><c:choose><%--
 		          --%><c:when test="${!empty entry.ssTag}"><%--
 		      		--%><c:out value="${entry.ssTag}"/><%--
 		      	  --%></c:when><%--
@@ -65,23 +75,26 @@
 		      	  --%></c:when><%--		      	  
   		          --%><c:otherwise><%--
   		          	--%><c:out value="${entry.title}"/><%--
-  		          	--%><c:if test="${ssShowUserTitleOnly != 'true' && !empty entry._loginName}"> (${entry._loginName})</c:if><%--
-  		          --%></c:otherwise></c:choose>',
-  		          'type': '${entry._entityType}'
-  		    }<c:if test="${!status.last}">,</c:if>
+  		          	--%><c:if test="${ssShowUserTitleOnly != 'true'}"> (${entry._loginName})</c:if><%--
+  		          --%></c:otherwise></c:choose></span></a></li>
 			</c:forEach>			
-	      ],
-	      
-	      'pageNumber': ${ss_pageNumber},
-	      'count': ${count},
-	      'pageSize': ${ss_pageSize},
-	      'totalHits': ${ss_searchTotalHits},
-	      
-	      'prevLabel': '<ssf:nlt tag="general.Previous"/>',
-	      'nextLabel': '<ssf:nlt tag="general.Next"/>'
-	      
+	      </ul>
+          <c:if test="${ss_searchTotalHits > ss_pageSize}">
+			<table class="ss_typeToFindNav" cellpadding="0" cellspacing="0" border="0"><tbody>
+			<tr><td width="10%">
+            <c:if test="${ss_pageNumber > 0}">
+              <a href="javascript:;" onClick="window['${findObjectName}'].prevPage();return false;"
+              ><img border="0" style="margin-right: 20px;" title="<ssf:nlt tag="general.Previous"/>" src="<html:imagesPath/>pics/sym_arrow_left_.gif"/></a>
+             </c:if>
+             </td><td width="80%"></td><td width="10%">
+            <c:if test="${count + ss_pageNumber * ss_pageSize < ss_searchTotalHits}">
+              <a href="javascript: ;" onClick="window['${findObjectName}'].nextPage();return false;"
+              ><img border="0" style="margin-left: 20px;" title="<ssf:nlt tag="general.Next"/>" src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
+            </c:if>
+           </td></tr></tbody></table>
+           </c:if>
 		</c:if>
-	</c:otherwise>
-</c:choose>
-}
-*/
+	  </div>
+	</taconite-replace>
+</c:if>
+</taconite-root>

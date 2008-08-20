@@ -38,6 +38,9 @@
 <jsp:useBean id="ssComponentId" type="java.lang.String" scope="request" />
 
 <script type="text/javascript">
+	dojo.require('dijit._Widget');
+	dojo.require('sitescape.widget.SelectPageable');
+
 	function ${treeName}_showId(forum, obj) {
 		return ss_checkTree(obj, "ss_tree_checkbox${treeName}ss_folder_id" + forum);	
 	}
@@ -164,3 +167,17 @@
 				/>
 			</div>
 </td></tr></table>
+<%--
+<script type="text/javascript">
+	djConfig.searchIds.push("assignedTo_${renderResponse.namespace}");
+	
+	dojo.addOnLoad(function () {
+		<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.assignedTo}">
+			var assignetToWidget${renderResponse.namespace} = dojo.widget.byId("assignedTo_${renderResponse.namespace}");
+			assignetToWidget${renderResponse.namespace}.setValue("${ssDashboard.dashboard.components[ssComponentId].data.assignedTo}");
+			assignetToWidget${renderResponse.namespace}.setLabel("${ssDashboard.dashboard.components[ssComponentId].data.assignedToName}");
+		</c:if>
+	});
+
+</script>
+--%>

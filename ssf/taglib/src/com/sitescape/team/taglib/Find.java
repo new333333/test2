@@ -69,8 +69,6 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
     private String accessibilityText;
     private Boolean addCurrentUser;
     private Boolean showUserTitleOnly;
-    private Boolean displayValue;
-    private Boolean displayValueOnly;
     
 	private Map _params;
 
@@ -95,8 +93,6 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			if (leaveResultsVisible == null) leaveResultsVisible = false;
 			if (searchSubFolders == null) searchSubFolders = false;
 			if (showUserTitleOnly == null) showUserTitleOnly = false;
-			if (displayValue == null) displayValue = false;
-			if (displayValueOnly == null) displayValueOnly = false;
 			if (foldersOnly == null) foldersOnly = false;
 			if (addCurrentUser == null) addCurrentUser = false;
 			this.instanceCount = UUID.randomUUID().toString();
@@ -129,8 +125,6 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			req.setAttribute(WebKeys.FIND_LEAVE_RESULTS_VISIBLE, this.leaveResultsVisible.toString());
 			req.setAttribute(WebKeys.FIND_SEARCH_SUBFOLDERS, this.searchSubFolders.toString());
 			req.setAttribute(WebKeys.FIND_SHOW_USER_TITLE_ONLY, this.showUserTitleOnly.toString());
-			req.setAttribute(WebKeys.FIND_DISPLAY_VALUE, this.displayValue.toString());
-			req.setAttribute(WebKeys.FIND_DISPLAY_VALUE_ONLY, this.displayValueOnly.toString());
 			req.setAttribute(WebKeys.URL_BINDER_ID, this.binderId);
 			req.setAttribute(WebKeys.FIND_ACCESSIBILITY_TEXT, this.accessibilityText);
 			req.setAttribute(WebKeys.FIND_ADD_CURRENT_USER, this.addCurrentUser);
@@ -156,8 +150,6 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			this.binderId = "";
 			this.searchSubFolders = false;
 			this.showUserTitleOnly = false;
-			this.displayValue = false;
-			this.displayValueOnly = false;
 			this.foldersOnly = false;
 			this.instanceCount = null;
 			this.accessibilityText = null;
@@ -234,14 +226,6 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 	
 	public void setShowUserTitleOnly(Boolean showUserTitleOnly) {
 	    this.showUserTitleOnly = showUserTitleOnly;
-	}
-	
-	public void setDisplayValue(Boolean displayValue) {
-	    this.displayValue = displayValue;
-	}
-	
-	public void setDisplayValueOnly(Boolean displayValueOnly) {
-	    this.displayValueOnly = displayValueOnly;
 	}
 	
 	public void setFoldersOnly(Boolean foldersOnly) {

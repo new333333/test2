@@ -40,7 +40,7 @@
 		    name="binderId" value="${ssBinder.id}"/><ssf:param 
 		    name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
 		    onSubmit="return ss_onSubmit(this);">
-<input type="hidden" id="t_searchForm_wsTreesearchFolders_idChoices" name="idChoices" value="searchFolders_${ssBinder.id}"/>
+<input type="hidden" id="t_searchForm_wsTreesearchFolders_idChoices" name="idChoices" value="searchFolders%${ssBinder.id}"/>
 
 			<div class="ss_buttonBarRight">
 				<input type="submit" class="ss_submit" name="okBtn" onClick="ss_buttonSelect('ok');"

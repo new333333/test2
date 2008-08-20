@@ -113,13 +113,6 @@
 		onClick="ss_selectRelevanceTab(this, 'activities', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
 		<span><ssf:nlt tag="relevance.tab.activities"/></span></a></li>
 
-	<li <c:if test="${ssRDCurrentTab == 'miniblogs'}">class="ss_tabsCCurrent"</c:if>>
-	<a 
-	  <c:if test="${ssRDCurrentTab == 'miniblogs'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
-	  href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'miniblogs', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
-		<span><ssf:nlt tag="relevance.tab.miniblogs"/></span></a></li>
-
   </ul>
 </div>
 <ssf:ifnotaccessible>

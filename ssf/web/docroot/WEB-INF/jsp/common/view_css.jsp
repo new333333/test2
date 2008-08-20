@@ -119,8 +119,23 @@ var ss_baseRootPathUrl = '<html:rootPath/>';
 			%><%--
 
 		--%>
+<script type="text/javascript">
+// Dojo configuration
+if (typeof djConfig == "undefined") {
+	djConfig = { 
+		isDebug: false,
+		locale: '<ssf:convertLocaleToDojoStyle />',
+		// dojo_xxx     parseWidgets: false,
+		searchIds: []
+	};
+}
+</script>
+<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo/dojo.js" djConfig="parseOnLoad: true"></script>
+<style type="text/css">
+    @import "<html:rootPath/>js/dojo/dijit/themes/tundra/tundra.css";
+    @import "<html:rootPath/>js/dojo/dojo/resources/dojo.css"
+</style>
 
-<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo/dojo.js" djConfig="isDebug: false, locale: '<ssf:convertLocaleToDojoStyle />', parseOnLoad: true"></script>
 <script type="text/javascript">
 var ss_scripts_loaded = "no";
 var scripts = document.getElementsByTagName("script");

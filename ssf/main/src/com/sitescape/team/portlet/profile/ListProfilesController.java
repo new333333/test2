@@ -146,11 +146,11 @@ public class ListProfilesController extends   SAbstractController {
 		}
 
 	   	User user = RequestContextHolder.getRequestContext().getUser();
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		
 		//Set up the standard beans
 		BinderHelper.setupStandardBeans(this, request, response, model, binderId);
-		UserProperties userProperties = (UserProperties)model.get(WebKeys.USER_PROPERTIES_OBJ);
-		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 		//Build a reload url
@@ -164,6 +164,7 @@ public class ListProfilesController extends   SAbstractController {
 		Map users = null;
 		Map options = new HashMap();
 		
+		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
 		options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(ObjectKeys.LISTING_MAX_PAGE_SIZE));
 		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.TITLE1_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
@@ -173,15 +174,23 @@ public class ListProfilesController extends   SAbstractController {
 		model.put(WebKeys.TABS, tab.getTabs());
 		
 		//determine page starts/ counts
-		initPageCounts(request, userProperties.getProperties(), tab, options);
-		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(this, userFolderProperties));
-		users = getProfileModule().getUsers(options);
+		initPageCounts(request, userProperties, tab, options);
+		
+		if (!Validator.isNull(searchFilterName)) {
+			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+			options.put(ObjectKeys.SEARCH_SEARCH_FILTER, (Document)searchFilters.get(searchFilterName));
+			users = getProfileModule().getUsers(options);
+		} else {
+			users = getProfileModule().getUsers(options);
+		}
 		ProfileBinder binder = (ProfileBinder)users.get(ObjectKeys.BINDER);
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.FOLDER, binder);
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		
 		model.put(WebKeys.ENTRIES, users.get(ObjectKeys.SEARCH_ENTRIES));
+		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 		
 		model.putAll(getSearchAndPagingModels(users, options));		
@@ -190,7 +199,7 @@ public class ListProfilesController extends   SAbstractController {
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 		model.put(WebKeys.PAGE_MENU_CONTROL_TITLE, NLT.get("folder.Page", new Object[]{options.get(ObjectKeys.SEARCH_MAX_HITS)}));
 		
-		DashboardHelper.getDashboardMap(binder, userProperties.getProperties(), model);
+		DashboardHelper.getDashboardMap(binder, userProperties, model);
 		DefinitionHelper.getDefinitions(binder, model);
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 		if ((obj == null) || (obj.equals(""))) 
@@ -378,26 +387,27 @@ public class ListProfilesController extends   SAbstractController {
         User user = RequestContextHolder.getRequestContext().getUser();
         String userDisplayStyle = user.getDisplayStyle();
         if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
+        PortletURL url;
         String binderId = binder.getId().toString();
 		Toolbar dashboardToolbar = new Toolbar();
         
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
-		AdaptedPortletURL adapterUrl;
+		
 		//The "Administration" menu
-		Map qualifiers = new HashMap();
-		qualifiers.put("popup", new Boolean(true));
 		boolean adminMenuCreated=false;
 		toolbar.addToolbarMenu("1_administration", NLT.get("toolbar.manageThisWorkspace"));
 		if (getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
 			adminMenuCreated=true;
-			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
-			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.configuration"), adapterUrl.toString(), qualifiers);
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
+			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
+			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.configuration"), url);
 			//Modify
-			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
@@ -410,15 +420,15 @@ public class ListProfilesController extends   SAbstractController {
 		//Access control
 		if (getAdminModule().testAccess(binder, AdminOperation.manageFunctionMembership)) {
 			adminMenuCreated = true;
-			qualifiers = new HashMap();
+			Map qualifiers = new HashMap();
 			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.accessControlMenu");
-			qualifiers.put("popup", new Boolean(true));
-			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
-			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.accessControl"), adapterUrl.toString(), qualifiers);
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
+			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
+			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.accessControl"), url, qualifiers);
 		}
+		
 		//	The "Manage dashboard" menu
 		BinderHelper.buildDashboardToolbar(request, response, this, binder, dashboardToolbar, model);
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());

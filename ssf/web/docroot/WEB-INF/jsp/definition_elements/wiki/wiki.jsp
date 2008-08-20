@@ -122,7 +122,6 @@ var ss_wikiTabCurrent_${renderResponse.namespace} = document.getElementById('ss_
 
 <div id="ss_wiki_directory_div${renderResponse.namespace}" style="display:none;">
   <%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
-  <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
   <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
   <div class="ss_folder" >
        <table cellspacing="0" cellpadding="0">

@@ -282,7 +282,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 				model.put(WebKeys.USER_PROPERTIES, userProperties);
 				UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), config.getId());
-				model.put(WebKeys.USER_FOLDER_PROPERTIES_OBJ, userFolderProperties);
+				model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 				//See if the user has selected a specific view to use
 				String userDefaultDef = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 				DefinitionHelper.getDefinitions(config, model, userDefaultDef);

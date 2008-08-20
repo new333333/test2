@@ -246,7 +246,7 @@ function dodiff()
 
 
 <ssf:ifadapter>
-<body class="tundra">
+<body>
 </ssf:ifadapter>
 
 <div class="ss_style ss_portlet">

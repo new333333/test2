@@ -38,17 +38,11 @@
 <c:set var="dateId2" value="dp2_${evid}" />
 <c:set var="endrangeId" value="endRange_${evid}" />
 
-<style type="text/css">
-        @import "<html:rootPath />js/dojo/dijit/themes/tundra/tundra.css";
-        @import "<html:rootPath />js/dojo/dojo/resources/dojo.css"
-</style>
-
 <script type="text/javascript">
-	dojo.require("dojo.parser");
-	dojo.require("dijit.form.DateTextBox");
-	dojo.require("dijit.form.TimeTextBox");
-	dojo.require("dijit.form.DateTextBoxEventEditor");
-	dojo.require("dijit.form.TimeTextBoxEventEditor");
+	dojo.require('sitescape.widget.DropdownDatePickerActivateByInput');
+	dojo.require('sitescape.widget.DropdownTimePickerActivateByInput');
+	dojo.require('sitescape.widget.DropdownEventDatePicker');
+	dojo.require('sitescape.widget.DropdownEventTimePicker');
 </script>
 
 <script type="text/javascript" src="<html:rootPath />js/common/ss_event.js"></script>
@@ -70,23 +64,31 @@
 	</c:otherwise>
 </c:choose>
 
-<div class="ss_event_editor tundra">
+<div class="ss_event_editor">
 	<table class="ss_style">
 		<tr>
 			<td class="contentbold"><ssf:nlt tag="event.start" />:</td>
 			<td>
-                
-				<input type="text" dojoType="dijit.form.DateTextBoxEventEditor" 
+				<div dojoType="DropdownEventDatePicker" 
+					widgetId="event_start_${prefix}" 
 					name="${dateId}_fullDate" 
-					id="event_start_${prefix}"
+					id="${dateId}_${prefix}"
 					lang="<ssf:convertLocaleToDojoStyle />"
+					<c:choose>
+					    <c:when test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
+						    weekStartsOn="${ssUserProperties.calendarFirstDayOfWeek - 1}"
+					    </c:when>
+					    <c:otherwise>
+					    	weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
+					    </c:otherwise>
+					</c:choose>
 					<c:if test="${!empty startDate}">
 						value="<fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
 					</c:if>
 					startDateWidgetId="event_start_${prefix}"
 					startTimeWidgetId="event_start_time_${prefix}"
 					endDateWidgetId="event_end_${prefix}"
-					endTimeWidgetId="event_end_time_${prefix}" />
+					endTimeWidgetId="event_end_time_${prefix}"></div>
 			</td>
 			<td>
 				<span id="${prefix}eventStartTime"
@@ -94,24 +96,25 @@
 						style="display: none; "
 					</c:if>
 					>
-					<input type="text" dojoType="dijit.form.TimeTextBoxEventEditor"
-						id="event_start_time_${prefix}" 
+					<div dojoType="DropdownEventTimePicker"
+						widgetId="event_start_time_${prefix}" 
 						name="${dateId}_0_fullTime" 
+						id="${dateId}_time_${prefix}"
 						lang="<ssf:convertLocaleToDojoStyle />" 	
 						<c:choose>
 							<c:when test="${initEvent.allDayEvent}">
-								value="T08:00:00"
+								value="08:00:00"
 							</c:when>
 							<c:otherwise>
 								<c:if test="${!empty startDate}">
-									value="T<fmt:formatDate value="${startDate}" pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
+									value="<fmt:formatDate value="${startDate}" pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
 								</c:if>
 							</c:otherwise>
 						</c:choose>
 						startDateWidgetId="event_start_${prefix}"
 						startTimeWidgetId="event_start_time_${prefix}"
 						endDateWidgetId="event_end_${prefix}"
-						endTimeWidgetId="event_end_time_${prefix}" />
+						endTimeWidgetId="event_end_time_${prefix}"></div>
 						
 					<input type="hidden" name="${dateId}_timezoneid" value="${ssUser.timeZone.ID}" />
 					<input type="hidden" name="${dateId}_skipTime" id="${dateId}_skipTime_${prefix}"
@@ -143,17 +146,26 @@
 			<tr>
 				<td class="contentbold"><ssf:nlt tag="event.end" />:</td>
 				<td>
-					<input type="text" dojoType="dijit.form.DateTextBoxEventEditor" 
-						id="event_end_${prefix}" 
+					<div dojoType="DropdownEventDatePicker" 
+						widgetId="event_end_${prefix}" 
 						name="${dateId2}_fullDate" 
+						id="${dateId2}_${prefix}"
 						lang="<ssf:convertLocaleToDojoStyle />" 
+						<c:choose>
+						    <c:when test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
+							    weekStartsOn="${ssUserProperties.calendarFirstDayOfWeek - 1}"
+						    </c:when>
+						    <c:otherwise>
+						    	weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
+						    </c:otherwise>
+						</c:choose>
 						<c:if test="${!empty endDate}">			
 							value="<fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
 						</c:if>
 						startDateWidgetId="event_start_${prefix}"
 						startTimeWidgetId="event_start_time_${prefix}"
 						endDateWidgetId="event_end_${prefix}"
-						endTimeWidgetId="event_end_time_${prefix}" />
+						endTimeWidgetId="event_end_time_${prefix}"></div>
 				</td>
 				<td>
 					<span id="${prefix}eventEndTime"
@@ -161,24 +173,25 @@
 							style="display: none; "
 						</c:if>			
 						>
-						<input type="text" dojoType="dijit.form.TimeTextBoxEventEditor"
-							id="event_end_time_${prefix}" 
+						<div dojoType="DropdownEventTimePicker"
+							widgetId="event_end_time_${prefix}" 
 							name="${dateId2}_0_fullTime" 
+							id="${dateId2}_time_${prefix}"
 							lang="<ssf:convertLocaleToDojoStyle />" 
 							<c:choose>
 								<c:when test="${initEvent.allDayEvent}">
-									value="T08:30:00"
+									value="08:30:00"
 								</c:when>
 								<c:otherwise>
 									<c:if test="${!empty endDate}">	
-										value="T<fmt:formatDate value="${endDate}" pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
+										value="<fmt:formatDate value="${endDate}" pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
 									</c:if>
 								</c:otherwise>
 							</c:choose>						
 							startDateWidgetId="event_start_${prefix}"
 							startTimeWidgetId="event_start_time_${prefix}"
 							endDateWidgetId="event_end_${prefix}"
-							endTimeWidgetId="event_end_time_${prefix}" />
+							endTimeWidgetId="event_end_time_${prefix}"></div>
 							
 						<input type="hidden" name="${dateId2}_timezoneid" value="${ssUser.timeZone.ID}" />
 						<input type="hidden" name="${dateId2}_skipTime" id="${dateId2}_skipTime_${prefix}"
@@ -377,14 +390,23 @@
 							onchange="${prefix}_rangeRowMarker.mark(this, '${prefix}_rangeSel_until_row')" /> 
 						<label for="${prefix}_rangeSel_until"><ssf:nlt tag="event.repeat_until" /> </label>
 
-						<input type="text" dojoType="dijit.form.DateTextBox" 
-						id="repeat_until_${prefix}" 
+						<div dojoType="DropdownDatePickerActivateByInput" 
+						widgetId="repeat_until_${prefix}" 
 						name="${endrangeId}_fullDate" 
+						id="${endrangeId}_${prefix}"
 						lang="<ssf:convertLocaleToDojoStyle />" 
+						<c:choose>
+						    <c:when test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
+							    weekStartsOn="${ssUserProperties.calendarFirstDayOfWeek - 1}"
+						    </c:when>
+						    <c:otherwise>
+						    	weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
+						    </c:otherwise>
+						</c:choose>
 						<c:if test="${!empty initEvent.until}">
 							value="<fmt:formatDate value="${initEvent.until.time}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
 						</c:if>
-						/>
+						></div>
     
 					</td>
 				</tr>
@@ -488,7 +510,7 @@
 		</c:choose>
 	
 		dojo.addOnLoad( function() { 
-			dojo.connect(dijit.byId("repeat_until_${prefix}"), "onValueChanged", function() { 
+			dojo.connect(dojo.widget.byId("repeat_until_${prefix}"), "onValueChanged", function() { 
 				${prefix}_checkRadio('${prefix}_rangeSel_until');
 				${prefix}_rangeRowMarker.mark(document.getElementById('${prefix}_rangeSel_until'), '${prefix}_rangeSel_until_row');
 			});
@@ -503,10 +525,13 @@
 	</c:if>
 	
 	<script type="text/javascript">
-		dojo.addOnLoad(function() {
-				dojo.addClass(document.body, "tundra");
-			}
-		);
+	
+		djConfig.searchIds.push("${dateId}_${prefix}");
+		djConfig.searchIds.push("${dateId2}_${prefix}");
+		djConfig.searchIds.push("${endrangeId}_${prefix}");
+		djConfig.searchIds.push("${dateId}_time_${prefix}");
+		djConfig.searchIds.push("${dateId2}_time_${prefix}");
+	
 		function ${prefix}_onEventFormSubmit() {
 		
 			var eventTimeZoneSensitiveObj = document.getElementById("timeZoneSensitive_${evid}");

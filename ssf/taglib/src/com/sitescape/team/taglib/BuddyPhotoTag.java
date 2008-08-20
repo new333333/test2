@@ -79,7 +79,6 @@ public class BuddyPhotoTag extends BodyTagSupport {
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext
 					.getResponse();
 						
-			httpReq.setAttribute("thumbnail", null);
 			if (photos != null) {
 				httpReq.setAttribute("thumbnail", this.photos.iterator().next());
 			}

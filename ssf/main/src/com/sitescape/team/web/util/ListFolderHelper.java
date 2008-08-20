@@ -55,8 +55,8 @@ import javax.portlet.RenderResponse;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
+import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.AbstractIntervalView;
@@ -90,6 +90,7 @@ import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.security.function.OperationAccessControlExceptionNoName;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
@@ -175,9 +176,7 @@ public class ListFolderHelper {
 		
 		//Set up the standard beans
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
-		UserProperties userProperties = (UserProperties)model.get(WebKeys.USER_PROPERTIES_OBJ);
-		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
-
+		
 		//See if the entry to be shown is also included
 		String entryIdToBeShown = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		if (entryIdToBeShown.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) entryIdToBeShown = "";
@@ -230,6 +229,8 @@ public class ListFolderHelper {
 	
 			request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 	
+			Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
+			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
 				
 			//Set up more standard beans
 			//These have been documented, so don't delete any
@@ -237,6 +238,7 @@ public class ListFolderHelper {
 			model.put(WebKeys.FOLDER, binder);
 			model.put(WebKeys.DEFINITION_ENTRY, binder);
 			model.put(WebKeys.ENTRY, binder);
+			model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 	
 			//Build a reload url
 			PortletURL reloadUrl = response.createRenderURL();
@@ -250,7 +252,7 @@ public class ListFolderHelper {
 		
 			model.put(WebKeys.SEEN_MAP, bs.getProfileModule().getUserSeenMap(user.getId()));
 			if (binder != null) {
-				DashboardHelper.getDashboardMap(binder, userProperties.getProperties(), model);
+				DashboardHelper.getDashboardMap(binder, userProperties, model);
 				//See if the user has selected a specific view to use
 				DefinitionHelper.getDefinitions(binder, model, 
 						(String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
@@ -260,10 +262,11 @@ public class ListFolderHelper {
 			model.put(WebKeys.TABS, tab.getTabs());		
 			//check tabs based on operation
 			
-			Map options = getSearchFilter(bs, request, userFolderProperties);
+			Map options = new HashMap();				
+			options.putAll(getSearchFilter(bs, request, userFolderProperties));
 			
 			//determine page starts/ counts
-			initPageCounts(bs, request, userProperties.getProperties(), tab, options);
+			initPageCounts(bs, request, userProperties, tab, options);
 	
 			Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
 			Element configElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
@@ -329,9 +332,18 @@ public class ListFolderHelper {
 			
 	}
 	
-	public static Map getSearchFilter(AllModulesInjected bs, RenderRequest request, UserProperties userFolderProperties) {
+	public static Map getSearchFilter(AllModulesInjected bs, RenderRequest request, 
+			UserProperties userFolderProperties) {
 		Map result = new HashMap();
-		result.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(bs, userFolderProperties));
+		
+		//Determine the Search Filter
+		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
+		Document searchFilter = null;
+		if (Validator.isNotNull(searchFilterName)) {
+			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+			searchFilter = (Document)searchFilters.get(searchFilterName);
+		}
+		result.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
 		String searchTitle = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TITLE, "");
 		if (!searchTitle.equals("")) {
 			result.put(ObjectKeys.SEARCH_TITLE, searchTitle);
@@ -504,6 +516,9 @@ public class ListFolderHelper {
 	private static Map findCalendarEvents(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Binder binder, Map model) throws PortletRequestBindingException {
 		Map folderEntries = new HashMap();
+		Map options = new HashMap();
+		
+		model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 		Long binderId = binder.getId();
 		
 		int year = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_YEAR, -1);
@@ -526,7 +541,9 @@ public class ListFolderHelper {
 		model.put(WebKeys.CALENDAR_GRID_TYPE, ((EventsViewHelper.Grid)grids.get(binderId.toString())).type);
 		model.put(WebKeys.CALENDAR_GRID_SIZE, ((EventsViewHelper.Grid)grids.get(binderId.toString())).size);
 		
-		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
+		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
+		options.putAll(getSearchFilter(bs, request, userFolderProperties));
+		
 		TimeZone timeZone = user.getTimeZone();
 		
 		Calendar calCurrentDate = new GregorianCalendar(timeZone);
@@ -573,7 +590,7 @@ public class ListFolderHelper {
        	}
        	
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-		Map options = getSearchFilter(bs, request, userFolderProperties);
+		
 		options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
        	// options.put(ObjectKeys.SEARCH_EVENT_DAYS, getExtViewDayDates(calStartDateRange, calEndDateRange));
        	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervalView.getVisibleInterval());
@@ -779,7 +796,8 @@ public class ListFolderHelper {
 		}
 		BinderHelper.buildWorkspaceTreeBean(bs, workspaceBinder, model, null);
 		
-		buildFolderToolbars(bs, req, response, folder, folderId.toString(), model, viewType);
+		String forumId = folderId.toString();
+		buildFolderToolbars(bs, req, response, folder, forumId, model, viewType);
 		return BinderHelper.getViewListingJsp(bs, viewType);
 	}
 	
@@ -1523,7 +1541,7 @@ public class ListFolderHelper {
 		if (viewType.equals(Definition.VIEW_STYLE_WIKI)|| 
 				viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
 			//Add a way to set the sorting
-			UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
+			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folder.getId());
 			String searchSortBy = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY);
 			if (searchSortBy == null) searchSortBy = "";
 			entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.folder_sortBy"));
@@ -2020,6 +2038,10 @@ public class ListFolderHelper {
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 
 		Map folderEntries = new HashMap();
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
+		options.putAll(getSearchFilter(bs, request, userFolderProperties));
 		
 		String filterTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.TASK_FILTER_TYPE, null);
 		TaskHelper.FilterType filterType = TaskHelper.setTaskFilterType(portletSession, filterTypeParam != null ? TaskHelper.FilterType.valueOf(filterTypeParam) : null);

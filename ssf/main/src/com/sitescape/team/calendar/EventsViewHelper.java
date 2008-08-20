@@ -53,7 +53,6 @@ import org.apache.lucene.document.DateTools;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Event;
-import com.sitescape.team.domain.PersistentObject;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -76,24 +75,6 @@ public class EventsViewHelper {
 			this.type = type;
 			this.size = size;
 		}
-		//need to implement this for hibernate equality
-	    public boolean equals(Object obj) {
-	        if(this == obj)
-	            return true;
-
-	        if (obj == null) 
-	            return false;
-	        
-	        if (!(obj instanceof Grid)) return false;
-	        Grid grid = (Grid) obj;
-	        if (this.type != null) {
-	        	if (!this.type.equals(grid.type)) return false;
-	        } else if (grid.type != null) return false;
-	        if (this.size != null) {
-	        	if (!this.size.equals(grid.size)) return false;
-	        } else if (grid.size != null) return false;
-	    	return true;
-	    }
 	}
 	
 	public static final String[] monthNames = { 

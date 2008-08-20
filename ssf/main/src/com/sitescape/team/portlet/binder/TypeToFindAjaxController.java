@@ -1,15 +1,9 @@
 package com.sitescape.team.portlet.binder;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,7 +19,6 @@ import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.search.filter.SearchFilter;
@@ -33,8 +26,6 @@ import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
-import com.sitescape.team.web.tree.TreeHelper;
-import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.Validator;
@@ -74,45 +65,95 @@ public class TypeToFindAjaxController extends SAbstractController {
 					op.equals(WebKeys.OPERATION_FIND_PLACES_SEARCH) || 
 					op.equals(WebKeys.OPERATION_FIND_ENTRIES_SEARCH) || 
 					op.equals(WebKeys.OPERATION_FIND_TAG_SEARCH)) {
-				return ajaxFind(request, response);
-		} else if (op.equals(WebKeys.OPERATION_FIND_WORKFLOWS_SEARCH)) {
-			return ajaxWorkflowsListSearch(request, response);
-		} else if (op.equals(WebKeys.OPERATION_FIND_WORKFLOW_STEPS_SEARCH)) {
-			return ajaxGetWorkflowSteps(request, response);			
-		} else if (op.equals(WebKeys.OPERATION_FIND_ENTRY_TYPES_SEARCH)) {
-			return ajaxEntryTypesListSearch(request, response);
-		} else if (op.equals(WebKeys.OPERATION_FIND_ENTRY_FIELDS_SEARCH)) {
-			return ajaxGetEntryFields(request, response);
-		}
-		response.setContentType("text/xml");
-		return new ModelAndView("forum/ajax_return");
+				return ajaxFindUserSearch(request, response);
+		} else if (op.equals(WebKeys.OPERATION_USER_LIST_SEARCH)) {
+			return ajaxUserListSearch(request, response);
+		} 
+			response.setContentType("text/xml");
+			return new ModelAndView("forum/ajax_return");
 	}
 	
-	private ModelAndView ajaxFind(RenderRequest request, 
+	private ModelAndView ajaxUserListSearch(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();;
+		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+		String searchType = PortletRequestUtils.getStringParameter(request, "searchType", "");
+		String findType = PortletRequestUtils.getStringParameter(request, "findType", "");
+		String listDivId = PortletRequestUtils.getStringParameter(request, "listDivId", "");
+		String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "");
+		String[] idsToSkip = PortletRequestUtils.getStringParameter(request, "idsToSkip", "").split(" ");
+		
+		Map userIdsToSkip = new HashMap();
+		for (int i = 0; i < idsToSkip.length; i++) {
+			if (!idsToSkip[i].equals("")) userIdsToSkip.put(idsToSkip[i], Long.valueOf(idsToSkip[i]));
+		}
+		
+		String nameType = Constants.LASTNAME_FIELD;
+		if (searchType.equals("firstName")) nameType = Constants.FIRSTNAME_FIELD;
+		if (searchType.equals("loginName")) nameType = Constants.LOGINNAME_FIELD;
+		if (searchType.equals("groupName")) nameType = Constants.GROUPNAME_FIELD;
+		if (searchType.equals("title")) nameType = Constants.TITLE_FIELD;
+		    	     	
+		//Build the search query
+		Document searchFilter = DocumentHelper.createDocument();
+		Element sfRoot = searchFilter.addElement(SearchFilterKeys.FilterRootName);
+		Element filterTerms = sfRoot.addElement(SearchFilterKeys.FilterTerms);
+		Element filterTerm = filterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeEntryDefinition);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, nameType);
+		if (searchText.length() > 0) {
+			Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
+			filterTermValueEle.setText(searchText);
+		}
+	   	
+
+		//Do a search to find the first few users who match the search text
+		Map users = new HashMap();
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
+		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
+		if (findType.equals(WebKeys.FIND_TYPE_GROUP)) {
+			users = getProfileModule().getGroups(options);
+		} else {
+			users = getProfileModule().getUsers(options);
+		}
+		model.put(WebKeys.USERS, users.get(ObjectKeys.SEARCH_ENTRIES));
+		model.put(WebKeys.USER_IDS_TO_SKIP, userIdsToSkip);
+		model.put(WebKeys.FIND_TYPE, findType);
+		model.put(WebKeys.DIV_ID, listDivId);
+		response.setContentType("text/xml");
+		return new ModelAndView("forum/user_list_search", model);
+	}
+	
+
+	private ModelAndView ajaxFindUserSearch(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
 		String findType = PortletRequestUtils.getStringParameter(request, "findType", "");
+		String listDivId = PortletRequestUtils.getStringParameter(request, "listDivId", "");
 		String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "10");
 		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "0");
 		String foldersOnly = PortletRequestUtils.getStringParameter(request, "foldersOnly", "false");
+		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 		String binderId = PortletRequestUtils.getStringParameter(request, "binderId", "");
+		String findObjectName = PortletRequestUtils.getStringParameter(request, "findObjectName", "");
+		String searchSubFolders = PortletRequestUtils.getStringParameter(request, "searchSubFolders", "");
 		String showUserTitleOnly = PortletRequestUtils.getStringParameter(request, "showUserTitleOnly", "false");
 		boolean addCurrentUser = PortletRequestUtils.getBooleanParameter(request, "addCurrentUser", false);
-		String findObjectName = PortletRequestUtils.getStringParameter(request, "findObjectName", "");
-		
-		
 		Integer startingCount = Integer.parseInt(pageNumber) * Integer.parseInt(maxEntries);
 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map options = new HashMap();
-		String view = "forum/json/find_search_result";
+		String view = "forum/find_search_result";
 		String viewAccessible = "forum/find_search_result_accessible";	
 		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
 		options.put(ObjectKeys.SEARCH_OFFSET, startingCount);
 		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
+		
+		model.put(WebKeys.DIV_ID, listDivId);
 		
 		if(op.equals(WebKeys.OPERATION_FIND_TAG_SEARCH)) {
 		
@@ -253,6 +294,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		model.put(WebKeys.PAGE_SIZE, maxEntries);
 		model.put(WebKeys.PAGE_NUMBER, pageNumber);
 		model.put("findObjectName", findObjectName);
+		model.put(WebKeys.NAMESPACE, namespace);
 		
 		
 		if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle()) &&
@@ -278,222 +320,4 @@ public class TypeToFindAjaxController extends SAbstractController {
 	   	return false;
 	}
 
-	private ModelAndView ajaxEntryTypesListSearch(RenderRequest request, RenderResponse response) {
-		Map model = new HashMap();;
-		
-		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
-		int maxEntries = PortletRequestUtils.getIntParameter(request, "maxEntries", 10);
-		int pageNumber = PortletRequestUtils.getIntParameter(request, "pageNumber", 0);
-		
-		while (searchText.endsWith("*")) {
-			searchText = searchText.substring(0, searchText.length() - 1); 
-		}
-		
-		Set<Definition> entries = new HashSet();
-		if (WebHelper.isUserLoggedIn(request)) {
-			Collection<Long> ids = TreeHelper.getSelectedIds(request.getParameterMap());
-			for (Long id:ids) {
-				try {
-					entries.addAll(getDefinitionModule().getDefinitions(id, Boolean.TRUE, Definition.FOLDER_ENTRY));
-				} catch (Exception ex) {}
-			}
-			if (entries.isEmpty()) entries.addAll(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.FOLDER_ENTRY));
-		}
-		
-		Map<String, Definition> entriesOrdered = DefinitionHelper.orderDefinitions(entries, false);
-		
-		List entriesResult = new ArrayList();
-		for (Map.Entry<String, Definition> mapEntry : entriesOrdered.entrySet()) {
-			String title = mapEntry.getKey();
-			if (title != null && title.toLowerCase().startsWith(searchText.toLowerCase())) {
-				Map entryType = new HashMap();
-				entryType.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
-				entryType.put(Constants.DOCID_FIELD, mapEntry.getValue().getId());
-				entriesResult.add(entryType);
-			}
-		}
-		
-		int totalHits = entriesResult.size();
-		
-		int indexLast = (maxEntries * pageNumber) + maxEntries;
-		if (entriesResult.size() < maxEntries * pageNumber) {
-			entriesResult.clear();
-		} else {
-			if (entriesResult.size() < ((maxEntries * pageNumber) + maxEntries)) {
-				indexLast = entriesResult.size();
-			}
-			entriesResult = entriesResult.subList(maxEntries * pageNumber, indexLast);
-		}
-		
-		model.put(WebKeys.ENTRIES, entriesResult);
-		model.put(WebKeys.SEARCH_TOTAL_HITS, totalHits);
-		
-		model.put(WebKeys.PAGE_SIZE, maxEntries);
-		model.put(WebKeys.PAGE_NUMBER, pageNumber);	
-		
-		response.setContentType("text/json");
-		
-		return new ModelAndView("forum/json/find_search_result", model);
-		
-//		model.put(WebKeys.ENTRY, DefinitionHelper.orderDefinitions(entries, false));
-//		response.setContentType("text/json");
-//		return new ModelAndView("forum/json/find_entry_types_widget", model);
-
-	}
-
-
-	private ModelAndView ajaxWorkflowsListSearch(RenderRequest request, RenderResponse response) {
-		Map model = new HashMap();;
-		
-		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
-		int maxEntries = PortletRequestUtils.getIntParameter(request, "maxEntries", 10);
-		int pageNumber = PortletRequestUtils.getIntParameter(request, "pageNumber", 0);
-		
-		while (searchText.endsWith("*")) {
-			searchText = searchText.substring(0, searchText.length() - 1); 
-		}
-		
-		Set<Definition> workflows = new HashSet();
-		if (WebHelper.isUserLoggedIn(request)) {
-			Collection<Long> ids = TreeHelper.getSelectedIds(request.getParameterMap());
-			for (Long id:ids) {
-				try {
-					workflows.addAll(getDefinitionModule().getDefinitions(id, Boolean.TRUE, Definition.WORKFLOW));
-				} catch (Exception ex) {}
-			}
-			if (workflows.isEmpty()) workflows.addAll(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.WORKFLOW));
-		}
-		
-		Map<String, Definition> workflowsOrdered = DefinitionHelper.orderDefinitions(workflows, false);
-		
-		List workflowsResult = new ArrayList();
-		for (Map.Entry<String, Definition> mapEntry : workflowsOrdered.entrySet()) {
-			String title = mapEntry.getKey();
-			if (title != null && title.toLowerCase().startsWith(searchText.toLowerCase())) {
-				Map workflow = new HashMap();
-				workflow.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
-				workflow.put(Constants.DOCID_FIELD, mapEntry.getValue().getId());
-				workflowsResult.add(workflow);
-			}
-		}
-		
-		int totalHits = workflowsResult.size();
-		
-		int indexLast = (maxEntries * pageNumber) + maxEntries;
-		if (workflowsResult.size() < maxEntries * pageNumber) {
-			workflowsResult.clear();
-		} else {
-			if (workflowsResult.size() < ((maxEntries * pageNumber) + maxEntries)) {
-				indexLast = workflowsResult.size();
-			}
-			workflowsResult = workflowsResult.subList(maxEntries * pageNumber, indexLast);
-		}
-		
-		model.put(WebKeys.ENTRIES, workflowsResult);
-		model.put(WebKeys.SEARCH_TOTAL_HITS, totalHits);
-		
-		model.put(WebKeys.PAGE_SIZE, maxEntries);
-		model.put(WebKeys.PAGE_NUMBER, pageNumber);
-		
-		response.setContentType("text/json");
-		
-		return new ModelAndView("forum/json/find_search_result", model);
-	}	
-	
-	private ModelAndView ajaxGetWorkflowSteps(RenderRequest request, RenderResponse response) {
-		String workflowId = PortletRequestUtils.getStringParameter(request, "workflowId", "");
-		Map model = new HashMap();
-		
-		Map stateData = new HashMap();
-		if (WebHelper.isUserLoggedIn(request)) {
-			stateData = getDefinitionModule().getWorkflowDefinitionStates(workflowId);
-		}
-		model.put(WebKeys.WORKFLOW_DEFINTION_STATE_DATA, stateData);
-		
-		response.setContentType("text/json");
-		return new ModelAndView("forum/json/find_workflow_steps", model);
-	}
-	
-	private ModelAndView ajaxGetEntryFields(RenderRequest request, RenderResponse response) {
-		String entryTypeId = PortletRequestUtils.getStringParameter(request,WebKeys.FILTER_ENTRY_DEF_ID, "");
-		String entryField = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField, "");
-		
-		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
-		int maxEntries = PortletRequestUtils.getIntParameter(request, "maxEntries", 10);
-		int pageNumber = PortletRequestUtils.getIntParameter(request, "pageNumber", 0);
-		
-		while (searchText.endsWith("*")) {
-			searchText = searchText.substring(0, searchText.length() - 1); 
-		}
-		
-		Map model = new HashMap();
-		response.setContentType("text/json");
-		
-		Map<String, Map> fieldsData = new HashMap();
-		if (WebHelper.isUserLoggedIn(request)) {
-			fieldsData = getDefinitionModule().getEntryDefinitionElements(entryTypeId);
-		}
-	
-		if (entryField.equals("")) {		
-			SortedMap<String, Map> fieldsDataSortedByCaption = new TreeMap();
-			Iterator<Map.Entry<String, Map>> it = fieldsData.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry<String, Map> mapEntry = it.next();
-				fieldsDataSortedByCaption.put((String)mapEntry.getValue().get("caption"), mapEntry.getValue());
-			}
-			
-			List fieldsResult = new ArrayList();
-			for (Map.Entry<String, Map> mapEntry : fieldsDataSortedByCaption.entrySet()) {
-				String title = (String)mapEntry.getKey();
-				String type = (String)mapEntry.getValue().get("type");
-				if (title != null && title.toLowerCase().startsWith(searchText.toLowerCase()) && 
-						!"attachFiles".equals(type) && !"file".equals(type) && 
-						!"graphic".equals(type) && !"profileEntryPicture".equals(type) && 
-						!"description".equals(type) && !"htmlEditorTextarea".equals(type) &&
-						!"eventScheduler".equals(type)) {
-					Map field = new HashMap();
-					field.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
-					field.put(Constants.DOCID_FIELD, (String)mapEntry.getValue().get("name"));
-					field.put(WebKeys.ENTITY_TYPE, type);
-					fieldsResult.add(field);
-				}
-			}
-			
-			int totalHits = fieldsResult.size();
-			
-			int indexLast = (maxEntries * pageNumber) + maxEntries;
-			if (fieldsResult.size() < maxEntries * pageNumber) {
-				fieldsResult.clear();
-			} else {
-				if (fieldsResult.size() < ((maxEntries * pageNumber) + maxEntries)) {
-					indexLast = fieldsResult.size();
-				}
-				fieldsResult = fieldsResult.subList(maxEntries * pageNumber, indexLast);
-			}
-			
-			model.put(WebKeys.ENTRIES, fieldsResult);
-			model.put(WebKeys.SEARCH_TOTAL_HITS, totalHits);
-			
-			model.put(WebKeys.PAGE_SIZE, maxEntries);
-			model.put(WebKeys.PAGE_NUMBER, pageNumber);
-			
-			return new ModelAndView("forum/json/find_search_result", model);
-		} else {
-			Map valuesData = new HashMap();
-			if (WebHelper.isUserLoggedIn(request)) {
-				Map entryFieldMap = (Map) fieldsData.get(entryField); 
-				if (entryFieldMap != null) {
-					valuesData = (Map) entryFieldMap.get("values");
-					String fieldType = (String)entryFieldMap.get("type");
-					if (valuesData == null && "checkbox".equals(fieldType)) {
-						valuesData = new HashMap();
-						valuesData.put(Boolean.TRUE.toString(), NLT.get("searchForm.checkbox.selected"));
-						valuesData.put(Boolean.FALSE.toString(), NLT.get("searchForm.checkbox.unselected"));
-					}
-				}
-			}
-			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, valuesData);
-			return new ModelAndView("forum/json/find_entry_field_values_widget", model);
-		}
- 	}	
 }

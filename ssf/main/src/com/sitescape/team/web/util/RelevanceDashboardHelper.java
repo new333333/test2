@@ -118,14 +118,12 @@ public class RelevanceDashboardHelper {
 			setupWhatsNewDashboardBeans(bs, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_ACTIVITIES.equals(type)) {
+			setupSharedItemsBeans(bs, userWorkspace, model);
+			setupActivitiesBean(bs, userWorkspace, model);
+			setupVisitorsBeans(bs, userWorkspace, model);
 			setupViewedEntriesBean(bs, userWorkspace, model);
 			setupDocumentsBeans(bs, userWorkspace, model);
-			setupVisitorsBeans(bs, userWorkspace, model);
 			setupMyTagsBeans(bs, model);
-			
-		} else if (ObjectKeys.RELEVANCE_DASHBOARD_MINIBLOGS.equals(type)) {
-			setupSharedItemsBeans(bs, userWorkspace, model);
-			setupMiniblogsBean(bs, userWorkspace, model);
 		}
 	}
 	
@@ -146,8 +144,8 @@ public class RelevanceDashboardHelper {
 			setupTrackedPlacesBeans(bs, userWorkspace, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_NEW_SITE.equals(type)) {
 			setupWhatsNewSite(bs, userWorkspace, model);
-		} else if (ObjectKeys.RELEVANCE_PAGE_MINIBLOGS.equals(type)) {
-			setupMiniblogsBean(bs, userWorkspace, model);
+		} else if (ObjectKeys.RELEVANCE_PAGE_ACTIVITIES.equals(type)) {
+			setupActivitiesBean(bs, userWorkspace, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_DOCS.equals(type)) {
 			setupDocumentsBeans(bs, userWorkspace, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_HOT.equals(type)) {
@@ -506,9 +504,9 @@ public class RelevanceDashboardHelper {
 	
 	private static void setupViewedEntriesBean(AllModulesInjected bs, Binder binder, Map model) {
 		//What entries have I visited?
-		User user = RequestContextHolder.getRequestContext().getUser();
-		if (binder != null && user.getId().equals(binder.getOwnerId())) {
+		if (binder != null) {
 			String page = "0";
+			User user = RequestContextHolder.getRequestContext().getUser();
 			String displayStyle = user.getDisplayStyle();
 			if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
 					ObjectKeys.RELEVANCE_PAGE_ENTRIES_VIEWED.equals(model.get(WebKeys.TYPE2))) 
@@ -530,7 +528,7 @@ public class RelevanceDashboardHelper {
 		}
 	}
 	
-	private static void setupMiniblogsBean(AllModulesInjected bs, Binder binder, Map model) {
+	private static void setupActivitiesBean(AllModulesInjected bs, Binder binder, Map model) {
 		//What activities have been happening?
 		if (binder != null) {
 			String page = "0";
@@ -562,8 +560,8 @@ public class RelevanceDashboardHelper {
 				GregorianCalendar start = new GregorianCalendar();
 			    //get activities over last 2 weeks
 				start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
-				List activities = bs.getReportModule().getUsersStatuses(userIds, start.getTime(), 
-						new java.util.Date(), 
+				List activities = bs.getReportModule().getUsersActivities(binder.getOwnerId(),
+						userIds, start.getTime(), new java.util.Date(), 
 						pageStart + Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
 				if (activities != null && activities.size() > pageStart) {
 					model.put(WebKeys.ACTIVITIES, activities.subList(pageStart, activities.size()));

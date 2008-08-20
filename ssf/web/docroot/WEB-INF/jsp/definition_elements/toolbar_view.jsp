@@ -319,6 +319,9 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
                         --%> folder="<c:out value="${toolbarMenu.value.qualifiers.folder}" />"<%--
                         --%> target="_blank"<%--
                     --%></c:if><%--
+                    --%><c:if test="${!empty toolbarMenu.value.qualifiers.onClick}"><%--
+                        --%> onClick="${spin} ${toolbarMenu.value.qualifiers.onClick}"<%--
+                    --%></c:if><%--
                     --%><c:if test="${!empty spin and empty toolbarMenu.value.qualifiers.onClick}"><%--
                         --%> onClick="${spin}"<%--
                     --%></c:if><%--

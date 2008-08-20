@@ -724,6 +724,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   	return executeSearchQuery(so, offset, maxResults);
 	}
 
+	public Map executeSearchQuery(Document searchQuery) {
+		return executeSearchQuery(searchQuery, null);
+	}
+
 	public Map executeSearchQuery(Document searchQuery, Map options) {
        	Document qTree = SearchUtils.getInitalSearchDocument(searchQuery, options);
     	SearchUtils.getQueryFields(qTree, options); 

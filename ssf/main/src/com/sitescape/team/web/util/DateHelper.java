@@ -194,7 +194,6 @@ public class DateHelper {
 			// but this is user client time zone what is NOT the same like user profile time zone.
 			String timeString = inputData.getSingleValue(timePrefix + "fullTime");
 			if (!"".equals(timeString)) {
-				timeString = timeString.replaceFirst("T", "");
 				if (timeString.indexOf("-") > -1) {
 					timeString = timeString.substring(0, timeString.indexOf("-"));
 				}

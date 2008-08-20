@@ -39,7 +39,7 @@
 	</script>
 
 <script type="text/javascript">
-	//dojo.require("dojo.lfx.rounded");
+	dojo.require("dojo.lfx.rounded");
 	
 	function ss_getMonthCalendarEvents${prefix}() {
 		var formObj = document.getElementById("ssCalNavBar${prefix}");

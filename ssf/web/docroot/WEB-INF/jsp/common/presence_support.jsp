@@ -62,23 +62,22 @@ ss_presencePopupGraphics["skype"].src = '<html:imagesPath/>pics/SkypeBlue_16x16.
 
 
 var ss_ostatus_none = ' <ssf:nlt tag="presence.none"/>'
-var ss_ostatus_away = ' <ssf:nlt tag="presence.isAway"/>';
-var ss_ostatus_online = ' <ssf:nlt tag="presence.isOnline"/>';
-var ss_ostatus_offline = ' <ssf:nlt tag="presence.isOffline"/>';
+var ss_ostatus_away = ' <ssf:nlt tag="presence.isAway" text="is away"/>';
+var ss_ostatus_online = ' <ssf:nlt tag="presence.isOnline" text="is online"/>';
+var ss_ostatus_offline = ' <ssf:nlt tag="presence.isOffline" text="is offline"/>';
 var ss_ostatus_at = '<ssf:nlt tag="presence.statusAt" text="status at"/>';
-var ss_ostatus_sendIm = '<ssf:nlt tag="presence.sendIM"/>';
-var ss_ostatus_startIm = '<ssf:nlt tag="presence.startIM"/>';
-var ss_ostatus_schedIm = '<ssf:nlt tag="presence.scheduleMeeting"/>';
-var ss_ostatus_call = '<ssf:nlt tag="presence.call"/>';
+var ss_ostatus_sendIm = '<ssf:nlt tag="presence.sendIM" text="Send instant message..."/>';
+var ss_ostatus_startIm = '<ssf:nlt tag="presence.startIM" text="Start instant meeting..."/>';
+var ss_ostatus_schedIm = '<ssf:nlt tag="presence.scheduleMeeting" text="Schedule a meeting..."/>';
+var ss_ostatus_call = '<ssf:nlt tag="presence.call" text="Call..."/>';
 
-var ss_pagePermalink = "${ssPermalink}";
-var ss_ostatus_sendMail = '<ssf:nlt tag="presence.sendMail" />';
+var ss_pagePermalink = "${ssPermalink}"
+var ss_ostatus_sendMail = '<ssf:nlt tag="presence.sendMail" text="Send mail"/>';
 
-var ss_ostatus_outlook = '<ssf:nlt tag="presence.addToOutlook"/>';
-var ss_ostatus_clipboard = '<ssf:nlt tag="presence.addToClipboard"/>';
+var ss_ostatus_outlook = '<ssf:nlt tag="presence.addToOutlook" text="Add to Outlook contacts..."/>';
+var ss_ostatus_clipboard = '<ssf:nlt tag="presence.addToClipboard" text="Add to clipboard"/>';
 
-var ss_ostatus_skype = '<ssf:nlt tag="presence.callUsingSkype" />';
-var ss_ostatus_miniblog = '<ssf:nlt tag="presence.viewMiniBlog" />';
+var ss_ostatus_skype = '<ssf:nlt tag="presence.callUsingSkype" text="Call using Skype"/>';
 
 </script>
 <c:set var="ss_presence_support_loaded" value="1" scope="request"/>

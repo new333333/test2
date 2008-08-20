@@ -91,7 +91,15 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					      <ssf:param name="value" value="${selection.fileItem.name}" />
 				    	</ssf:title>
 					><img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
-					  src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/></a>
+					  src="<ssf:url 
+					    webPath="viewFile"
+					    folderId="${ssDefinitionEntry.parentBinder.id}"
+					    entryId="${ssDefinitionEntry.id}"
+					    entityType="${ssDefinitionEntry.entityType}" >
+					    <ssf:param name="fileId" value="${selection.id}"/>
+					    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
+					    <ssf:param name="viewType" value="thumbnail"/>
+					    </ssf:url>"/></a>
 				</ssf:isFileEditorConfiguredForOS>
 			</ssf:editorTypeToUseForEditInPlace>
 			
@@ -101,7 +109,15 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						entity="${ssDefinitionEntry}"
 						fileAttachment="${selection}"/>"
 				><img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
-					  src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/></a>
+					  src="<ssf:url 
+					    webPath="viewFile"
+					    folderId="${ssDefinitionEntry.parentBinder.id}"
+					    entryId="${ssDefinitionEntry.id}"
+					    entityType="${ssDefinitionEntry.entityType}" >
+					    <ssf:param name="fileId" value="${selection.id}"/>
+					    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
+					    <ssf:param name="viewType" value="thumbnail"/>
+					    </ssf:url>"/></a>
 			</ssf:editorTypeToUseForEditInPlace>
 
 		  </div>
@@ -149,17 +165,41 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 %>
 		<td valign="top" width="80" rowspan="${thumbRowSpan}">
 		<div class="ss_thumbnail_gallery ss_thumbnail_small"> 
-			<a style="text-decoration: none;" href="<ssf:fileUrl file="${selection}"/>" 
+			<a style="text-decoration: none;" href="<ssf:url 
+					    webPath="readFile"
+					    folderId="${ssDefinitionEntry.parentBinder.id}"
+					    entryId="${ssDefinitionEntry.id}"
+					    entityType="${ssDefinitionEntry.entityType}" >
+					    <ssf:param name="fileId" value="${selection.id}"/>
+					    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
+					    <ssf:param name="fileName" value="${selection.fileItem.name}"/>
+					    </ssf:url>" 
 					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
 					
 				    <ssf:title tag="title.open.file">
 					    <ssf:param name="value" value="${selection.fileItem.name}" />
 				    </ssf:title>
-					     ><img border="0" <ssf:alt text="${selection.fileItem.name}"/> src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/></a>
+					     ><img border="0" <ssf:alt text="${selection.fileItem.name}"/> src="<ssf:url 
+		    webPath="viewFile"
+		    folderId="${ssDefinitionEntry.parentBinder.id}"
+		    entryId="${ssDefinitionEntry.id}"
+		    entityType="${ssDefinitionEntry.entityType}" >
+		    <ssf:param name="fileId" value="${selection.id}"/>
+		    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
+		    <ssf:param name="viewType" value="thumbnail"/>
+		    </ssf:url>"/></a>
 	    </div>
 		</td>
 		<td style="height:20px;" class="ss_att_title" width="25%"><a style="text-decoration: none;" 
-						href="<ssf:fileUrl file="${selection}"/>" 
+						href="<ssf:url 
+					    webPath="readFile"
+					    folderId="${ssDefinitionEntry.parentBinder.id}"
+					    entryId="${ssDefinitionEntry.id}"
+					    entityType="${ssDefinitionEntry.entityType}" >
+					    <ssf:param name="fileId" value="${selection.id}"/>
+					    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
+					    <ssf:param name="fileName" value="${selection.fileItem.name}"/>
+					    </ssf:url>" 
 					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
 
 				    <ssf:title tag="title.open.file">
@@ -281,7 +321,15 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						
 				<td class="ss_att_title" width="25%" style="padding-left: 5px; font-weight: normal;">
 				<a style="text-decoration: none;"
-				  href="<ssf:fileUrl file="${fileVersion}"/>" 
+				  href="<ssf:url 
+				    webPath="viewFile"
+				    folderId="${ssDefinitionEntry.parentBinder.id}"
+				    entryId="${ssDefinitionEntry.id}"
+				    entityType="${ssDefinitionEntry.entityType}" >
+				    <ssf:param name="fileId" value="${selection.id}"/>
+				    <ssf:param name="versionId" value="${fileVersion.id}"/>
+				    <ssf:param name="fileTime" value="${fileVersion.modification.date.time}"/>
+				    </ssf:url>"
 					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
 					
 				    <ssf:title tag="title.open.file.version">

@@ -46,11 +46,39 @@ if (isIECheck) strBrowserType = "ie";
 <div>
 <table cellpadding="0" cellspacing="0">
 <tbody>
+<c:set var="selectionCount" value="0"/>
 <c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" >
+  <jsp:useBean id="selection" type="com.sitescape.team.domain.FileAttachment" />
+<%
+	String fn = selection.getFileItem().getName();
+	String ext = "";
+	if (fn.lastIndexOf(".") >= 0) ext = fn.substring(fn.lastIndexOf("."));
+%>
+
+  <c:set var="selectionCount" value="${selectionCount + 1}"/>
+  <c:set var="versionCount" value="0"/>
+  <c:forEach var="fileVersion" items="${selection.fileVersionsUnsorted}">
+    <c:set var="versionCount" value="${versionCount + 1}"/>
+  </c:forEach>
+  <c:set var="thumbRowSpan" value="${versionCount}"/>
+  <c:if test="${versionCount > 1}">
+    <c:set var="thumbRowSpan" value="${thumbRowSpan + 2}"/>
+  </c:if>
+  <c:if test="${versionCount == 1}">
+    <c:set var="thumbRowSpan" value="1"/>
+  </c:if>
 	  <tr>
 		<td class="ss_att_title">
 		  <a style="text-decoration: none;" 
-			href="<ssf:fileUrl file="${selection}"/>" 
+			href="<ssf:url 
+		    webPath="readFile"
+		    folderId="${ssDefinitionEntry.parentBinder.id}"
+		    entryId="${ssDefinitionEntry.id}"
+		    entityType="${ssDefinitionEntry.entityType}" >
+		    <ssf:param name="fileId" value="${selection.id}"/>
+		    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
+		    <ssf:param name="fileName" value="${selection.fileItem.name}"/>
+		    </ssf:url>" 
 		    <ssf:title tag="title.open.file">
 			    <ssf:param name="value" value="${selection.fileItem.name}" />
 		    </ssf:title>

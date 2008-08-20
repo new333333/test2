@@ -2074,7 +2074,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					
 					String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");	
 					if (Validator.isNull(nameValue)) nameValue = itemName;
-					itemData.put("name", nameValue);
 						
 					String captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption");							
 					if (Validator.isNull(captionValue)) captionValue = nameValue;							

@@ -52,6 +52,11 @@
 	if (nodeOpen.equals("")) {nodeOpen = " ";}
 %>
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/find.js"></script>
+<script type="text/javascript">
+dojo.require('dijit._Widget');
+dojo.require('sitescape.widget.SelectPageable');
+dojo.require('sitescape.widget.MultiplePageableSelect');
+</script>
 
 <script type="text/javascript">
 
@@ -329,13 +334,17 @@ function getConditionSelectbox(obj, op, op2) {
 }
 
 function ss_createUserList(name) {
-	var userListObj = ssFind.createMultiple({
-							prefix: "definitionBuilder", 
-							elementName: name,
-							container: document.getElementById("conditionOperand"),
-							listType: "user",
-							searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_user_search"
-						});
+	if (!name || name == "") name = 'conditionElementValue';
+	
+	var url = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>&operation=get_users_widget&searchText=%{searchString}&pager=%{pagerString}";
+	var props = {name : "select_"+name, 
+				 id : "select_"+name, 
+				 dataUrl:url,
+				 maxListLength : 12,
+				 autoComplete: false,
+				 hiddenFormElementName: name,
+				 imgRootPath: "<html:imagesPath/>"};
+	var usersWidget = dojo.widget.createWidget("MultiplePageableSelect", props, document.getElementById("conditionOperand"), "last");
 }
 
 function ss_postLoadGetConditionRequest() {

@@ -32,7 +32,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <ssf:ifadapter>
-<body class="ss_style_body tundra">
+<body class="ss_style_body">
 </ssf:ifadapter>
 <div id="ss_portlet_content" class="ss_style ss_portlet">
 

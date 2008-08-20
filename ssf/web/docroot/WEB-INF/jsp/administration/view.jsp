@@ -35,7 +35,7 @@
 </ssf:ifnotadapter>
 
 <ssf:ifadapter>
-<body class="ss_style_body tundra">
+<body class="ss_style_body">
 <div id="ss_pseudoAdministrationPortalDiv${renderResponse.namespace}">
 </ssf:ifadapter>
 

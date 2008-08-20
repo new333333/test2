@@ -31,7 +31,7 @@
 <%@ page import="java.util.ArrayList" %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<body class="ss_style_body tundra">
+<body class="ss_style_body">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
 <c:set var="formName">${renderResponse.namespace}fm</c:set>
