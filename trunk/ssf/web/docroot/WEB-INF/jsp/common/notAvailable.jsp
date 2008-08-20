@@ -36,4 +36,7 @@
 
 <spring:message code="exception.contactAdmin"/></p>
 
-<p style="text-align:center;"><a href="<portlet:renderURL portletMode="view" windowState="normal"/>">- <spring:message code="button.home"/> -</a></p>
+<p style="text-align:center;"><a href="<ssf:url action="view_ws_listing"
+			    		binderId="${ssUser.workspaceId}">
+			    		<ssf:param name="newTab" value="1"/>
+						</ssf:url>">- <spring:message code="button.home"/> -</a></p>
