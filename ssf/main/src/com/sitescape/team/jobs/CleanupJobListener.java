@@ -67,15 +67,16 @@ public class CleanupJobListener implements JobListener {
 	/* (non-Javadoc)
 	 * @see org.quartz.JobListener#jobToBeExecuted(org.quartz.JobExecutionContext)
 	 */
-	public void jobToBeExecuted(JobExecutionContext arg0) {
-		// do nothing
+	public void jobToBeExecuted(JobExecutionContext ctx) {
+		if (logger.isDebugEnabled())
+			logger.debug("Starting job " + ctx.getJobDetail().getFullName());
 
 	}
 
 	/* (non-Javadoc)
 	 * @see org.quartz.JobListener#jobExecutionVetoed(org.quartz.JobExecutionContext)
 	 */
-	public void jobExecutionVetoed(JobExecutionContext arg0) {
+	public void jobExecutionVetoed(JobExecutionContext ctx) {
 		// do nothing
 
 	}
@@ -98,6 +99,9 @@ public class CleanupJobListener implements JobListener {
 				} else if (UnscheduleJob.equals(result)) {
 					logger.info("Unscheduling job " + job.getFullName());
 					scheduler.unscheduleJob(job.getName(), job.getGroup());
+				} else {
+					if (logger.isDebugEnabled())
+							logger.debug("Completed job " + job.getFullName());
 				}
 			} else {
 				if (DeleteJobOnError.equals(result)) {
