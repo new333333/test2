@@ -45,14 +45,14 @@ Boolean sticky = ParamUtil.getBoolean(request, "sticky", true);
 --%><c:set var="sticky" value="<%= sticky %>" /><%--
 --%><c:set var="divId" value="<%= id %>" /><%--
 --%><c:set var="divClass" value="<%= divClass %>" /><%--
---%><div class="ss_sidebarMenu"><%--
-    --%><div <%--
-        --%><c:if test="${initOpen}">class="ss_menuOpen"</c:if><%--
-        --%><c:if test="${!initOpen}">class="ss_menuClosed"</c:if><%--
+--%><div class="ss_sidebarMenu" onmouseover="this.className='ss_mouseOver';" onmouseout="this.className='ss_sidebarMenu';"><%--
+    --%><a <%--
+        --%><c:if test="${initOpen}">class="ss_menuOpen" </c:if><%--
+        --%><c:if test="${!initOpen}">class="ss_menuClosed" </c:if><%--
         --%> onClick="ss_showHideSidebarBox('${renderResponse.namespace}_${divId}', this, ${sticky}, '${divId}');"><%--
         --%><%= title %><%--
         --%><div><img alt="" src="<html:imagesPath/>pics/1pix.gif" height="1" width="180"/></div><%--
-    --%></div><%--
+    --%></a><%--
 --%><div id="${renderResponse.namespace}_${divId}" style="overflow: hidden; <%--
 --%><c:if test="${initOpen}">visibility: visible; display: block;</c:if><%--
 --%><c:if test="${!initOpen}">visibility: hidden; display: none;</c:if><%--

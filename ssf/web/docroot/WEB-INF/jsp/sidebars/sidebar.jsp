@@ -74,7 +74,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_team.jsp" />
 
 	<% // Folder or Workspace Tags %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tags.jsp" />
+	<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_folder_tags.jsp" />
 
 	<% // Meet %>

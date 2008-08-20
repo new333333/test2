@@ -32,14 +32,10 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <div class="ss_actions_bar1_pane ss_sidebarImage" align="right">
-<table cellspacing="0" cellpadding="0" border="0" width="90%"><tbody><tr>
-<td class="ss_actions_bar1" style="white-space:nowrap;">
+
 
 <c:if test="${!empty ssFolderToolbar}">
 <ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar"/>
 </c:if>
 
-</td>
-
-</tr></tbody></table>
 </div>

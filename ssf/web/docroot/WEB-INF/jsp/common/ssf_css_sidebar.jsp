@@ -64,10 +64,16 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background: transparent;
 	width: 176px;
 	height: auto;
-	margin: 8px 8px 4px 8px;
+	margin: 8px 8px 3px 8px;
 	padding: 4px 4px 4px 4px;
-	background: #EFEFEF;
+	background-color: #EFEFEF;
 	}
+/* .ss_statusMouseOver {		***DOESN'T WORK YET.  ADD IN SIDEBAR_STATUS.JSP WHEN DOES***
+	background-color: #CCFFFF;
+	width: 176px;
+	margin: 8px 8px 3px 8px;
+	padding: 4px 4px 4px 4px;
+		}	*/ 
 .ss_status_textarea{
 	font-size: 10px;
 	background-color:#E9F1F1!important;
@@ -89,7 +95,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 	
 /*This is the border for all of the boxes*/
-.ss_myStatus, .ss_input_myStatus, .ss_sidebarMenu, .ss_sub_sidebarMenu{
+.ss_myStatus, .ss_input_myStatus, .ss_sidebarMenu, .ss_sub_sidebarMenu, .ss_mouseOver{
 	border-color: #5A9A98;
 	border-style: solid;
 	border-width: .01em;
@@ -99,33 +105,48 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	text-indent: 2px;
 	margin-top:12px;		
 	}
+
+/*This is the title of each link in Recent Places */	
+.ss_tabs_title {
+	font-size: ${ss_style_font_smallprint}!important;
+	margin-left: 11px;
+}	
 	
 /*This is the box style for the drop down menu open*/
 .ss_sidebarMenu{
-	text-indent: 30px;
+	/* text-indent: 5px; */
 	margin: 3px 8px 3px 8px;
 	width: 176px;
 	<c:if test="<%= isIE %>">
 		width: 174px;
  	</c:if>	
-	padding-top: 8px;
-	padding-right: 4px;
-	padding-bottom: 8px;
-	padding-left: 4px;
-	}
+ 	padding: 8px 4px 8px 4px;
+	}	
 .ss_menuOpen {
 	background-image:  url("<html:rootPath/>images/pics/sidebar/backgrounddropdowns.png");
-	background-position: 0px -57px;
+	background-position: 1px -57px;
 	background-color: transparent;
 	background-repeat: no-repeat;
+	padding-left: 27px;
 	}	
 .ss_menuClosed {
 	background-image: url("<html:rootPath/>images/pics/sidebar/backgrounddropdowns.png");
-	background-position: 0px -30px;
+	background-position: 1px -31px;
 	background-color: transparent;
 	background-repeat: no-repeat;
+	padding-left: 27px;
 	}	
-.ss_sidebarMenu .ss_menuClosed a:hover {
+.ss_mouseOver {
+	background-color: #CCFFFF;
+	margin: 3px 8px 3px 8px;
+	width: 176px;
+	<c:if test="<%= isIE %>">
+		width: 174px;
+ 	</c:if>	
+ 	padding: 8px 4px 8px 4px;
+		}	
+	
+/* .ss_sidebarMenu .ss_menuClosed a:hover {
     Color: #5A9A98;
 	background-color: #CCFFFF;
 	border-color:#85D1D1;
@@ -133,7 +154,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
     padding: 8px 0 0 35px;
 	margin-bottom:3px;
 	}	
+.ss_sidebarMenu a:hover {
+    Color: #5A9A98;
+	background-color: #CCFFFF;
 
+	} */
 .ss_sidebarTitle{
 	text-indent: 8px;
 	margin:3px 0px 1px 0px;
@@ -188,6 +213,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-width: .01em;
 	background-color: #FFFFFF;
     background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_bgd.png") 5px 2px;
+    background-repeat: no-repeat !important;
     padding: 7px 0 7px 30px;
 	margin-bottom: 3px;
     }		
@@ -197,6 +223,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 #ss_leftNav li a:hover {
     color: #5A9A98;
     background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_bgd.png") 5px -24px;
+    background-repeat: no-repeat !important;
 	background-color: #CCFFFF;
 	border-color:#85D1D1;
 	border-width: .01em;
@@ -206,6 +233,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 #ss_leftNav li a:active {
     color: #fff;
     background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_bgd.png") 5px -50px;
+    background-repeat: no-repeat !important;
 	background-color: #5A9A98;
     padding: 7px 0 7px 30px;
 	margin-bottom: 3px;
@@ -238,7 +266,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color:#FFF;
 	}
 .ss_hideShow {
-	font-size: 12px;
+	font-size: ${ss_style_font_smallprint};
 	padding-left:20px;
 	padding-top: 5px;
 	}
