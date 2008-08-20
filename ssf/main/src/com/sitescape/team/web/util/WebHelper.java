@@ -222,44 +222,29 @@ public class WebHelper {
 		return ses;
 	}
 	
+	/*
+	 * getRequiredSession relies on getting a brand-new session if an anonymous user authenticates,
+	 *   so be sure that you set session-fixation-protection="newSession" in the spring security setup
+	 */
 	public static HttpSession getRequiredSession(HttpServletRequest request) 
 	throws IllegalStateException {
-		HttpSession ses = request.getSession(false);
-		String username = null;
-		if(ses != null) { // session already exists
-			username = (String) ses.getAttribute(WebKeys.USER_NAME);
+		HttpSession ses = request.getSession();
+		final String infoId = (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);
+		if(infoId == null) { 
+			String username = (String) ses.getAttribute(WebKeys.USER_NAME);
 			if(username == null) {
 				username = getRemoteUserName(request);
-				if(username == null) {
-					// Neither the session nor the request contains username.
-					// The session must have been created via some invalid means
-					// (programmic error) or side effect (portal/app server 
-					// environment). In this case we shouldn't allow the caller 
-					// to proceed normally.
-					throw new IllegalStateException("No valid session - Illegal request sequence.");
-				}
 			}
-		}
-		else { // session doesn't exist
-			username = getRemoteUserName(request);
 			if(username == null) {
 				username = SZoneConfig.getGuestUserName(getZoneNameByVirtualHost(request));
 			}
-			// we can create a new session and put context in it
-			ses = request.getSession();
-		}
-		
-		// put the context into the existing session
-		final User user = getProfileDao().findUserByName(username, getZoneIdByVirtualHost(request));
-		
-		Long oldUserId = (Long) ses.getAttribute(WebKeys.USER_ID);
-		putContext(ses, user);
+			// put the context into the existing session
+			final User user = getProfileDao().findUserByName(username, getZoneIdByVirtualHost(request));
+			putContext(ses, user);
 
-		final String infoId = (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);
-		final HttpSession session = ses;
-		if(infoId == null) { 
 			if(!user.isShared() || 
 					SPropsUtil.getBoolean("remoteapp.interactive.token.support.guest", true)) { // create a new info object
+				final HttpSession session = ses;
 				// Make sure to run it in the user's context.			
 				RunasTemplate.runas(new RunasCallback() {
 					public Object doAs() {
@@ -268,28 +253,6 @@ public class WebHelper {
 						return null;
 					}
 				}, user);						
-			}
-		}
-		else if (!user.getId().equals(oldUserId)) {
-			// The portal is re-using the same session while changing the owner(user). 
-			if(!user.isShared() || 
-					SPropsUtil.getBoolean("remoteapp.interactive.token.support.guest", true)) { // create a new info object
-				RunasTemplate.runas(new RunasCallback() {
-					public Object doAs() {
-						getAccessTokenManager().updateTokenInfoSession(infoId, user.getId());
-						return null;
-					}
-				}, user);						
-			}
-			else {
-				// The current user is guest and the configuration doesn't allow guest to use interactive tokens.
-				// Run this in the old user's context.			
-				RunasTemplate.runas(new RunasCallback() {
-					public Object doAs() {
-						getAccessTokenManager().destroyTokenInfoSession(infoId);
-						return null;
-					}
-				}, user.getZoneId(), oldUserId);									
 			}
 		}
 		

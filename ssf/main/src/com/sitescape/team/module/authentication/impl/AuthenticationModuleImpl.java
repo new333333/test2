@@ -44,7 +44,6 @@ import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.spring.security.SpringAuthenticationBeans;
-import com.sitescape.team.spring.security.SsfAnonymousAuthenticationProvider;
 import com.sitescape.team.spring.security.SsfAuthenticationProvider;
 import com.sitescape.team.spring.security.SsfContextMapper;
 import com.sitescape.team.util.SZoneConfig;
@@ -77,13 +76,11 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 
 	protected Map<Long, ProviderManager> authenticators = null;
 
-	protected Map<Long, SsfAnonymousAuthenticationProvider> anonymousProviders = null;
 	protected Map<Long, SsfAuthenticationProvider> localProviders = null;
 	protected Map<Long, Long> lastUpdates = null;
 
 	public AuthenticationModuleImpl() {
 		authenticators = new HashMap<Long, ProviderManager>();
-		anonymousProviders = new HashMap<Long, SsfAnonymousAuthenticationProvider>();
 		localProviders = new HashMap<Long, SsfAuthenticationProvider>();
 		lastUpdates = new HashMap<Long, Long>();
 	}
@@ -117,11 +114,6 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 				+ zoneInfo.getZoneName() + ", host "
 				+ zoneInfo.getVirtualHost());
 		ProviderManager pm = new ProviderManager();
-
-		SsfAnonymousAuthenticationProvider anonymousProvider = new SsfAnonymousAuthenticationProvider(zoneInfo.getZoneName());
-		anonymousProvider.setKey(getKeyForZone(zoneInfo));
-		anonymousProvider.afterPropertiesSet();
-		anonymousProviders.put(zoneInfo.getZoneId(), anonymousProvider);
 		
 		SsfAuthenticationProvider localProvider = new SsfAuthenticationProvider(zoneInfo.getZoneName());
 		localProviders.put(zoneInfo.getZoneId(), localProvider);
@@ -135,7 +127,6 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 	{
 		if(authenticators.containsKey(zoneId)) {
 			authenticators.remove(zoneId);
-			anonymousProviders.remove(zoneId);
 			localProviders.remove(zoneId);
 			lastUpdates.remove(zoneId);
 		}
@@ -168,9 +159,6 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 		List<AuthenticationProvider> providers = createProvidersForZone(zoneId);
 		if(authConfig.isAllowLocalLogin()) {
 			providers.add(localProviders.get(zoneId));
-		}
-		if(authConfig.isAllowAnonymousAccess()) {
-			providers.add(anonymousProviders.get(zoneId));
 		}
 
 		pm.setProviders(providers);
@@ -329,8 +317,7 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 					return true;
 				}
 			}
-			return (localProviders.get(zone).supports(authentication) ||
-					anonymousProviders.get(zone).supports(authentication));
+			return (localProviders.get(zone).supports(authentication));
 		}
 		return false;
 	}
@@ -388,7 +375,7 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 		return getAuthenticationConfigForZone(RequestContextHolder.getRequestContext().getZoneId());
 	}
 	
-	protected AuthenticationConfig getAuthenticationConfigForZone(Long zoneId)
+	public AuthenticationConfig getAuthenticationConfigForZone(Long zoneId)
 	{
 		AuthenticationConfig config =(AuthenticationConfig) getCoreDao().load(AuthenticationConfig.class, zoneId);
 		if(config == null) {

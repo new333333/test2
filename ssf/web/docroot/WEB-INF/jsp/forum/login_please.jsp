@@ -48,6 +48,7 @@
         <td valign="top" style="padding-left:4px;">
           <input type="text" class="ss_text_login" size="40" name="j_username"/>
         </td>
+		<td>&nbsp;</td>
       </tr>
       <tr>
         <td valign="middle" align="right">
@@ -65,16 +66,24 @@
           <input type="checkbox" name="remember"/>
         </td>
       </tr>
+      <c:if test="${!empty ss_loginError}">
+        <tr>
+		  <td>&nbsp;</td>
+          <td colspan="2"><ssf:nlt tag="errorcode.login.failed"/></td>
+        </tr>
+      </c:if>
     </table>
     <br/>
     <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
+<c:if test="${!empty ssUrl}">
     <input type="hidden" name="spring-security-redirect" value="${ssUrl}"/>
+</c:if>
   </fieldset>
   </form>
 </div>
 <script type="text/javascript">
 	var formObj = self.document.getElementById('loginForm');
-	formObj.username.focus();
+	formObj.j_username.focus();
 </script>
 <ssf:ifadapter>
 </div>

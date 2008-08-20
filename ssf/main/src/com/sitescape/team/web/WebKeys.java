@@ -203,7 +203,7 @@ public class WebKeys {
 	public static final String URL_ID_CHOICES = "idChoices";
 	public static final String URL_ID_CHOICES_SEPARATOR = "_";
 	public static final String URL_ID_CHOICES_REMOVE = "idChoicesRemove";
-	public static final String URL_URL = "url";
+	public static final String URL_URL = "spring-security-redirect";
 	public static final String URL_USER_ID = "userId";
 	public static final String URL_ICAL_URL = "iCalURL";
 	public static final String URL_ICAL_SCHEDULE = "iCalSchedule";
@@ -1156,7 +1156,7 @@ public class WebKeys {
     
     //servlet paths
     public static final String SERVLET_LOGIN="j_spring_security_check";
-    public static final String SERVLET_LOGOUT="portalLogout";
+    public static final String SERVLET_LOGOUT="j_spring_security_logout";
     public static final String SERVLET_VIEW_FILE="viewFile";
     public static final String SERVLET_VIEW_CSS="viewCss";
     public static final String SERVLET_DOWNLOAD_REPORT="reportDownload";

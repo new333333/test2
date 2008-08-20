@@ -49,6 +49,7 @@ public interface AuthenticationModule {
 	public boolean testAccess(AuthenticationOperation operation);
 
 	public AuthenticationConfig getAuthenticationConfig();
+	public AuthenticationConfig getAuthenticationConfigForZone(Long zoneId);
 
 	public List<LdapConnectionConfig> getLdapConnectionConfigs(Long zoneId);
 	public List<LdapConnectionConfig> getLdapConnectionConfigs();
