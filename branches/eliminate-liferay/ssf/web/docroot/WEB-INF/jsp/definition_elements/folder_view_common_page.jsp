@@ -38,10 +38,10 @@ boolean isIECheck = BrowserSniffer.is_ie(request);
 String strBrowserType = "";
 if (isIECheck) strBrowserType = "ie";
 %>
-<jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
+<jsp:useBean id="ssUserFolderProperties" type="com.sitescape.team.domain.UserProperties" scope="request" />
 <jsp:useBean id="ssBinder" type="com.sitescape.team.domain.Binder" scope="request" />
 <%
-	Map ssFolderColumns = (Map) ssUserFolderProperties.get("userFolderColumns");
+	Map ssFolderColumns = (Map) ssUserFolderProperties.getProperty("userFolderColumns");
 	if (ssFolderColumns == null) ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
 	if (ssFolderColumns == null) {
 		ssFolderColumns = new java.util.HashMap();

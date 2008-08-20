@@ -203,11 +203,11 @@ public class SearchFilterRequestParser {
 		} else {
 			for (int i = 0; i < types.length; i++) {
 				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeEntry)) {
-					String entryTypeId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterEntryDefIdField.concat(numbers[i]).concat("_selected"), "");
+					String entryTypeId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterEntryDefIdField.concat(numbers[i]), "");
 					
-					String entryFieldId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField.concat(numbers[i].concat("_selected")), SearchFilter.AllEntries);
-					String[] value = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]).concat("_selected"));
-					String value2 = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]).concat("_selected").concat("0"), null);
+					String entryFieldId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField.concat(numbers[i]), SearchFilter.AllEntries);
+					String[] value = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]));
+					String value2 = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]).concat("0"), null);
 					String[] valueValue = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueValueField.concat(numbers[i]));
 					if (valueValue != null) {
 						for (int j = 0; j < value.length; j++) {
@@ -217,9 +217,6 @@ public class SearchFilterRequestParser {
 						}
 					}
 					if (value != null && value2 != null) {
-						if (value2.startsWith("T")) {
-							value2 = value2.replace("T", "");
-						}
 						String[] allValues = new String[value.length + 1];
 						System.arraycopy(value, 0, allValues, 0, value.length);
 						allValues[allValues.length - 1] = value2;
@@ -261,7 +258,7 @@ public class SearchFilterRequestParser {
 			Map<String, SearchFilter.Workflow> workflowsMap = new HashMap();
 			for (int i = 0; i < types.length; i++) {
 				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeWorkflow)) {
-					String workflowId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchWorkflowId.concat(numbers[i]).concat("_selected"), "");
+					String workflowId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchWorkflowId.concat(numbers[i]), "");
 					String[] workflowSteps =  PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchWorkflowStep.concat(numbers[i]));
 					if (!workflowId.equals("")) {
 						if (workflowsMap.containsKey(workflowId)) {
@@ -294,8 +291,8 @@ public class SearchFilterRequestParser {
 		}
 		
 		if (!parseAdvancedOptions) {
-			String[] authorTitles = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchAuthors.concat("_hidden"));
-			String[] authorIds = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchAuthors.concat("_selected").concat("_hidden"));
+			String[] authorTitles = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchAuthors.concat("_selected").concat("_hidden"));
+			String[] authorIds = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchAuthors.concat("_hidden"));
 			for (int i = 0; i < authorIds.length; i++) {
 				String authorTitle = authorTitles[i];
 				String authorId = authorIds[i];
@@ -308,8 +305,8 @@ public class SearchFilterRequestParser {
 		} else {
 			for (int i=0; i < types.length; i++) {
 				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeAuthor)) {
-					String authorTitle = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchAuthors.concat(numbers[i]), "");
-					String authorId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchAuthors.concat(numbers[i]).concat("_selected"), "");
+					String authorTitle = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchAuthors.concat(numbers[i]).concat("_selected"), "");
+					String authorId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchAuthors.concat(numbers[i]), "");
 					if (!authorId.equals("")) {
 						creators.add(new SearchFilter.Creator(authorId, authorTitle));
 					} else if (!authorTitle.equals("")) {

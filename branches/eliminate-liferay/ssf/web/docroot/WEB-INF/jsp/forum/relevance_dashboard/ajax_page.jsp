@@ -47,8 +47,8 @@
 <c:if test="${ss_type == 'tasks'}">
   <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
 </c:if>
-<c:if test="${ss_type == 'miniblogs'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/miniblogs.jsp" />
+<c:if test="${ss_type == 'activities'}">
+  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities.jsp" />
 </c:if>
 <c:if test="${ss_type == 'shared'}">
   <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/shared_items.jsp" />

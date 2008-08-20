@@ -37,7 +37,6 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
@@ -46,6 +45,9 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.profile.ProfileModule;
+import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.search.filter.SearchFilterToMapConverter;
@@ -53,6 +55,7 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
+
 
 /**
  * @author Peter Hurley
@@ -75,7 +78,7 @@ public class FilterController extends AbstractBinderController {
 				UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 				Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
 				if (searchFilters == null) searchFilters = new HashMap();
-				searchFilters.put(SearchFilter.getFilterName(searchFilter), searchFilter.asXML());
+				searchFilters.put(SearchFilter.getFilterName(searchFilter), searchFilter);
 				
 				//Save the updated search filters
 				getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
@@ -115,15 +118,16 @@ public class FilterController extends AbstractBinderController {
 		
 		Map model = new HashMap();
 		Map formData = request.getParameterMap();
+		User user = RequestContextHolder.getRequestContext().getUser();
 		
 		//Get the name of the selected filter (if one is selected)
 		String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilter", "");
 		model.put(WebKeys.FILTER_SELECTED_FILTER_NAME, selectedSearchFilter);
 		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()));
 			
-		UserProperties userFolderProperties = getProfileModule().getUserProperties(null, binderId);
-		Map searchFilters = (Map)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
-		if (searchFilters == null) searchFilters = BinderHelper.convertV1Filters(this, userFolderProperties);
+		UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), binderId);
+		Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
 		model.put(WebKeys.FILTER_SEARCH_FILTERS, searchFilters);
 		Map searchFilterData = new HashMap();
 		model.put(WebKeys.SEARCH_FILTER_MAP, searchFilterData);
@@ -136,9 +140,8 @@ public class FilterController extends AbstractBinderController {
 			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER, model);
 		} else if (formData.containsKey("modifyBtn") || formData.containsKey("deleteTerm")) {
 			//Build a bean that contains all of the fields to be shown
-			String filter = (String)searchFilters.get(selectedSearchFilter);
-			if (filter != null) {
-				SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(this, DocumentHelper.parseText(filter));
+			if (searchFilters.containsKey(selectedSearchFilter)) {
+				SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(this, (Document)searchFilters.get(selectedSearchFilter));
 				model.putAll(searchFilterConverter.convertAndPrepareFormData());
 			}
 			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER, model);

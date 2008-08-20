@@ -107,17 +107,9 @@ public class ConvertLocaleToDojoStyle extends BodyTagSupport {
 	
 	private static Map<String, List<String>> supportedDojoLanguageCoutries = new HashMap<String, List<String>>();
 	static {
-		supportedDojoLanguageCoutries.put("de", Arrays.asList(new String[]{"DE"}));
 		supportedDojoLanguageCoutries.put("en", Arrays.asList(new String[]{"GB", "US"}));
-		supportedDojoLanguageCoutries.put("es", Arrays.asList(new String[]{"ES"}));
-		supportedDojoLanguageCoutries.put("fi", Arrays.asList(new String[]{"FI"}));
-		supportedDojoLanguageCoutries.put("fr", Arrays.asList(new String[]{"FR"}));
-		supportedDojoLanguageCoutries.put("it", Arrays.asList(new String[]{"IT"}));
-		supportedDojoLanguageCoutries.put("ja", Arrays.asList(new String[]{"JP"}));
-		supportedDojoLanguageCoutries.put("ko", Arrays.asList(new String[]{"KR"}));
-		supportedDojoLanguageCoutries.put("nl", Arrays.asList(new String[]{"NL"}));
 		supportedDojoLanguageCoutries.put("pt", Arrays.asList(new String[]{"BR"}));
-		supportedDojoLanguageCoutries.put("zh", Arrays.asList(new String[]{"CN", "TW"}));
+		supportedDojoLanguageCoutries.put("zh", Arrays.asList(new String[]{"CN", "HK", "TW"}));
 	}
 	
 	private String convertLocale(Locale locale) {

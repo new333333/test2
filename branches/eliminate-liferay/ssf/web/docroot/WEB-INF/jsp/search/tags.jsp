@@ -34,7 +34,7 @@
 	<ssf:sidebarPanel title="searchResult.tagsTitle" id="ss_rating_tags" divClass="ss_rating_box_content"
 	    initOpen="true" sticky="false">
 	<h5><ssf:nlt tag="tags.community"/></h5>
-	<div class="ss_tags_cloud">
+	<p class="ss_tags_cloud">
 	<c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
 		<span class="${tag.searchResultsRatingCSS}">
 			<a href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
@@ -44,10 +44,10 @@
 					name="newTab" value="1"/></ssf:url>">${tag.ssTag}</a>
 		</span>
 	</c:forEach>
-	</div>
+	</p>
 	
 	<h5><ssf:nlt tag="tags.personal"/></h5>
-	<div class="ss_tags_cloud">
+	<p class="ss_tags_cloud">
 	<c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
 		<span class="${tag.searchResultsRatingCSS}"><a 
 				href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
@@ -56,7 +56,7 @@
 				name="tabTitle" value="ss_tagPlaceHolder"/><ssf:param 
 				name="newTab" value="1"/></ssf:url>">${tag.ssTag}</a></span>
 	</c:forEach>
-	</div>
+	</p>
 	</ssf:sidebarPanel>
 </c:if>
 

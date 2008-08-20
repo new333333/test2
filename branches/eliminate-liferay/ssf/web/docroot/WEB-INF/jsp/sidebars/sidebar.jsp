@@ -67,9 +67,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<!-- Search Tag cloud -->
 	<jsp:include page="/WEB-INF/jsp/search/tags.jsp" />
 
-	<% // Email %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" />
-	
 	<% // Team Sidebar %>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_team.jsp" />
 
@@ -77,6 +74,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tags.jsp" />
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_folder_tags.jsp" />
 
+	<% // Email %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" />
+	
 	<% // Meet %>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" />
 	
@@ -84,10 +84,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" />
 		
 	<% // RSS Feed %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" />
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" /></li>
 	
 	<% // Personal Preferences %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_personal.jsp" />
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_personal.jsp" /></li>
 	
 	</div> <% // end of new sidebar format %>
 </div> <% // end of ss_sidebarDiv %>

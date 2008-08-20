@@ -30,5 +30,6 @@
 %>
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation_init.jsp" />
 <div>
+<jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" />
 </div>

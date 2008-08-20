@@ -58,7 +58,6 @@
 	    <mapping resource="com/sitescape/team/domain/PostingDef.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/Principal.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/Ratings.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/SearchNodeInfo.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/SeenMap.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/SharedEntity.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/SimpleName.hbm.xml"/>

@@ -28,35 +28,41 @@
  */
 package com.sitescape.team.portlet.forum;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.RequestDispatcher;
 
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.module.shared.AccessUtils;
-import com.sitescape.team.portletadapter.AdaptedPortletURL;
-import com.sitescape.team.runas.RunasCallback;
-import com.sitescape.team.runas.RunasTemplate;
-import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.team.module.shared.AccessUtils;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.runas.RunasCallback;
+import com.sitescape.team.runas.RunasTemplate;
+import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.web.util.WebUrlUtil;
-import com.sitescape.util.Validator;
+
 
 /**
  * @author Peter Hurley
@@ -66,20 +72,16 @@ public class ViewPermalinkController  extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		String entityType= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, "");
 		String fileId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
 		String newTab= PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
 		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
-		EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.none;
-		DefinableEntity entity = null;
-		try {
-			entityType = EntityIdentifier.EntityType.valueOf(PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, ""));
-		} catch(Exception ignore) {};
 		
 		User user = null;
 		Long zoneId = WebHelper.getZoneIdByVirtualHost(request);
 		if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
 			user = AccessUtils.getZoneGuestUser(zoneId);
-			if (user == null || Validator.isNull(binderId) || 
+			if (user == null || binderId.equals("") || 
 					!getBinderModule().checkAccess(new Long(binderId), user)) {
 				//User must log in to see this
 	 			response.setRenderParameters(request.getParameterMap());
@@ -87,48 +89,34 @@ public class ViewPermalinkController  extends SAbstractController {
 			}
 		} else {
 	        user = RequestContextHolder.getRequestContext().getUser();
-			if (Validator.isNull(binderId) || 
+			if (binderId.equals("") || 
 					!getBinderModule().checkAccess(new Long(binderId), user)) {
 				//User must log in to see this
 	 			response.setRenderParameters(request.getParameterMap());
 	 			return;
 			}
 		}
- 		if (Validator.isNotNull(fileId)) {
- 			if (entityType.isBinder()) {
- 				entity = getBinderModule().getBinder(Long.valueOf(binderId));
- 			} if (entityType.isPrincipal()) {
- 				entity = getProfileModule().getEntry(Long.valueOf(entryId));
- 			} else {
- 				entity = getFolderModule().getEntry(Long.valueOf(binderId), Long.valueOf(entryId));
- 			}
- 			FileAttachment attachment = (FileAttachment)entity.getAttachment(fileId);
- 			if (attachment != null) {
- 				response.sendRedirect(WebUrlUtil.getFileUrl(WebKeys.ACTION_READ_FILE, attachment));
- 				return;
- 			}
- 			
- 		}
+ 		
  		//It is ok to see this request, get the url to use for this request
 		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
-		if (Validator.isNotNull(binderId)) url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-		if (Validator.isNotNull(entryId)) url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-		if (Validator.isNotNull(entryTitle)) url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
-		url.setParameter(WebKeys.URL_ENTITY_TYPE, entityType.name());
-		if (Validator.isNotNull(newTab)) url.setParameter(WebKeys.URL_NEW_TAB, newTab);
+		if (!binderId.equals("")) url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+		if (!entryId.equals("")) url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+		if (!entryTitle.equals("")) url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
+		if (!entityType.equals("")) url.setParameter(WebKeys.URL_ENTITY_TYPE, entityType);
+		if (!newTab.equals("")) url.setParameter(WebKeys.URL_NEW_TAB, newTab);
 		
 		if (entityType.equals("") && !binderId.equals("")) {
 			try {
 				Binder binder = getBinderModule().getBinder(new Long(binderId));
-				entityType = binder.getEntityType();
+				entityType = binder.getEntityType().name();
 			} catch(Exception e) {}
 		}
-		if (entityType.equals(EntityIdentifier.EntityType.workspace) || 
-				entityType.equals(EntityIdentifier.EntityType.user)) {
+		if (entityType.equals(EntityIdentifier.EntityType.workspace.toString()) || 
+				entityType.equals(EntityIdentifier.EntityType.user.toString())) {
 			url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
-		} else if (entityType.equals(EntityIdentifier.EntityType.folder)) {
+		} else if (entityType.equals(EntityIdentifier.EntityType.folder.toString())) {
 			url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");
-		} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) {
+		} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
 			String displayStyle = user.getDisplayStyle();
 			if (ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE.equals(displayStyle) || 
 					(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) &&

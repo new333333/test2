@@ -27,7 +27,6 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.web.util;
-import java.util.Map;
 
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -36,14 +35,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.EntityIdentifier;
-import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.VersionAttachment;
 import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
-import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
@@ -282,77 +276,7 @@ public class WebUrlUtil {
 		catch(Exception e) {}
 		return entryUrl;
 	}
-	public static String getFileUrl(String path, FileAttachment fAtt) {
-		DefinableEntity entity = fAtt.getOwner().getEntity();
-		Long binderId = entity.getParentBinder().getId();
-		if (entity.getEntityIdentifier().getEntityType().isBinder()) {
-			binderId = entity.getId();
-		}
-
-		if (fAtt instanceof VersionAttachment) {
-			VersionAttachment version = (VersionAttachment)fAtt;
-			return getFileUrl(path, binderId.toString(), entity.getId().toString(), entity.getEntityType().name(), version.getParentAttachment().getId(), 
-					String.valueOf(version.getModification().getDate().getTime()), String.valueOf(version.getVersionNumber()), 
-					version.getFileItem().getName());
-		}
-		return getFileUrl(path, binderId.toString(), entity.getId().toString(), entity.getEntityType().name(), fAtt.getId(), 
-				String.valueOf(fAtt.getModification().getDate().getTime()), null, 
-				fAtt.getFileItem().getName());
-	}
-	public static String getFileUrl(String path, Map searchResults) {
-		EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.valueOf((String)searchResults.get(com.sitescape.util.search.Constants.ENTITY_FIELD));
-		String entityId = (String)searchResults.get(com.sitescape.util.search.Constants.DOCID_FIELD);
-		String binderId = entityId;
-		if (!entityType.isBinder()) {
-			binderId = (String)searchResults.get(com.sitescape.util.search.Constants.BINDER_ID_FIELD);
-		}
-		String docType = (String)searchResults.get(com.sitescape.util.search.Constants.DOC_TYPE_FIELD);
-		if (com.sitescape.util.search.Constants.DOC_TYPE_ATTACHMENT.equals(docType)) {
-			//search results are an attachment
-			String fileId = (String)searchResults.get(com.sitescape.util.search.Constants.FILE_ID_FIELD);
-			String fileTime = (String)searchResults.get(com.sitescape.util.search.Constants.FILE_TIME_FIELD);
-			String fileName = (String)searchResults.get(com.sitescape.util.search.Constants.FILENAME_FIELD);
-			//only index the latest attachment, so no version info needed
-			return getFileUrl(path, binderId, entityId, entityType.name(), fileId, fileTime, null, fileName);
-		} else {
-			String fileId,fileTime,fileName;
-			Object fileIdResult = searchResults.get(com.sitescape.util.search.Constants.FILE_ID_FIELD);
-			Object fileTimeResult = searchResults.get(com.sitescape.util.search.Constants.FILE_TIME_FIELD);
-			Object fileNameResult = searchResults.get(com.sitescape.util.search.Constants.FILENAME_FIELD);
-			//since their may be more than one attachment, we get what is hopefull a consistent picture of the first one.
-			if (fileIdResult instanceof SearchFieldResult) {
-				fileId = ((SearchFieldResult)fileIdResult).getValueArray().get(0).toString();
-			} else {
-				fileId = fileIdResult.toString();
-			}
-			if (fileTimeResult instanceof SearchFieldResult) {
-				fileTime = ((SearchFieldResult)fileTimeResult).getValueArray().get(0).toString();
-			} else {
-				fileTime = fileTimeResult.toString();
-			}
-			if (fileNameResult instanceof SearchFieldResult) {
-				fileName = ((SearchFieldResult)fileNameResult).getValueArray().get(0).toString();
-			} else {
-				fileName = fileNameResult.toString();
-			}
-			return getFileUrl(path, binderId, entityId, entityType.name(), fileId, fileTime, null, fileName);
-			
-		}
-
-	}
-	private static String getFileUrl(String path, String binderId, String entityId, String entityType, String attId, String attDate, String version, String name) {
-		if (Validator.isNull(version)) version = "last";
-		StringBuffer webUrl = new StringBuffer(WebUrlUtil.getServletRootURL() + path);
-		webUrl.append(Constants.SLASH + entityType);
-		webUrl.append(Constants.SLASH + binderId);
-		webUrl.append(Constants.SLASH + entityId);
-		webUrl.append(Constants.SLASH + attId);
-		webUrl.append(Constants.SLASH + attDate);
-		webUrl.append(Constants.SLASH + version);					
-		webUrl.append(Constants.SLASH + name);
-		return webUrl.toString();
-	}
-
+	
 	public static String getSSFContextRootURL(PortletRequest req) {
 		boolean secure = ((req != null)? req.isSecure() : false);
 		return getSSFContextRootURL(req, secure,

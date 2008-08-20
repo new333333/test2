@@ -54,8 +54,15 @@
 	<img 
 	  align="middle" id="ss_profilePicture"
 	  border="0" 
-	  src="<ssf:fileUrl webPath="readScaledFile" file="${selection}"/>"
-	  alt="${property_caption}" /></a>
+	  src="<ssf:url 
+	    webPath="viewFile"
+	    folderId="${ssWorkspaceCreator.parentBinder.id}"
+	    entryId="${ssWorkspaceCreator.id}"
+	    entityType="${ssWorkspaceCreator.entityType}" >
+	    <ssf:param name="fileId" value="${selection.id}"/>
+	    <ssf:param name="viewType" value="scaled"/>
+    	<ssf:param name="fileTime" value="${selection.modification.date.time}"/>
+	    </ssf:url>" alt="${property_caption}" /></a>
    </c:if>
    <c:set var="pictureCount" value="${pictureCount + 1}"/>
   </c:forEach>

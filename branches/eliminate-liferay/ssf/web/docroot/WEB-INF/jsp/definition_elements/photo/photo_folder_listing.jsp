@@ -61,26 +61,25 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 			    <div>
 			    <a onMouseOver="ss_showHoverOver(this, 'ss_photoTitle_${fileEntry._docId}')" 
 			      onMouseOut="ss_hideHoverOver('ss_photoTitle_${fileEntry._docId}')"
-			      href="<ssf:fileUrl search="${fileEntry}"/>"
+			      href="<ssf:url 
+				    webPath="readFile"
+				    folderId="${fileEntry._binderId}"
+				    entryId="${fileEntry._docId}" >
+	    			<ssf:param name="entityType" value="${fileEntry._entityType}"/>
+				    <ssf:param name="fileId" value="<%= _fileId %>"/>
+				    <ssf:param name="fileTime" value="<%= _fileTime %>"/>
+				    <ssf:param name="fileName" value="${fileEntry._fileName}"/>
+				    </ssf:url>"
 					onClick="return ss_openUrlInWindow(this, '_blank');">
-			    <img <ssf:alt text="${fileEntry.title}"/> border="0" src="<ssf:fileUrl webPath="readThumbnail" search="${fileEntry}"/>"></a><br\>
-			    
-			    <% if (!ssSeenMap.checkIfSeen(fileEntry)) { %>
-								    
-				 <a id="ss_sunburstDiv${fileEntry._binderId}_${fileEntry._docId}" href="javascript: ;" 
-				 title="<ssf:nlt tag="sunburst.click"/>"
-				 onClick="ss_hideSunburst('${fileEntry._docId}', '${fileEntry._binderId}');return false;"
-				><span 
-				  style="display:${ss_sunburstVisibilityHide};"
-				  id="ss_sunburstShow${renderResponse.namespace}" 
-				  class="ss_fineprint">
-				  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" 
-				  		style="width:12px;height:12px;" <ssf:alt tag="alt.new"/> />&nbsp;
-				  </span>
-				  </a>
-					    
-				<% } %>			    
-			    
+			    <img <ssf:alt text="${fileEntry.title}"/> border="0" src="<ssf:url 
+			    webPath="viewFile"
+			    folderId="${fileEntry._binderId}"
+			    entryId="${fileEntry._docId}" >
+	    		<ssf:param name="entityType" value="${fileEntry._entityType}"/>
+			    <ssf:param name="fileId" value="<%= _fileId %>"/>
+			    <ssf:param name="fileTime" value="<%= _fileTime %>"/>
+			    <ssf:param name="viewType" value="thumbnail"/>
+			    </ssf:url>"></a><br\>
 			    <a 
 				    href="<ssf:url     
 				    adapter="<%= useAdaptor %>" 
@@ -99,26 +98,9 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 			
 			  <c:if test="${empty fileEntry._fileID}">
 			
-			    <div>			    			    
+			    <div>
 			    <img <ssf:alt text="${fileEntry.title}"/> border="0" 
 			      src="<html:imagesPath/>thumbnails/NoImage.jpeg"/><br/>
-
-			    <% if (!ssSeenMap.checkIfSeen(fileEntry)) { %>
-								    
-				 <a id="ss_sunburstDiv${fileEntry._binderId}_${fileEntry._docId}" href="javascript: ;" 
-				 title="<ssf:nlt tag="sunburst.click"/>"
-				 onClick="ss_hideSunburst('${fileEntry._docId}', '${fileEntry._binderId}');return false;"
-				><span 
-				  style="display:${ss_sunburstVisibilityHide};"
-				  id="ss_sunburstShow${renderResponse.namespace}" 
-				  class="ss_fineprint">
-				  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" 
-				  		style="width:12px;height:12px;" <ssf:alt tag="alt.new"/> />&nbsp;
-				  </span>
-				  </a>
-					    
-				<% } %>
-
 			    <a 
 				    href="<ssf:url     
   					adapter="<%= useAdaptor %>" 

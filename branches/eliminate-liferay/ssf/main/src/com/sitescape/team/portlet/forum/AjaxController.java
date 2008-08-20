@@ -43,7 +43,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -446,8 +445,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return new ModelAndView("forum/fetch_url_return");			
 		} else if (op.equals(WebKeys.OPERATION_SAVE_UESR_STATUS)) {
 			return ajaxGetUserStatus(request, response);
-		} else if (op.equals(WebKeys.OPERATION_VIEW_MINIBLOG)) {
-			return ajaxViewMiniBlog(request, response);
 		}
 
 		return ajaxReturn(request, response);
@@ -2631,37 +2628,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String statusId = PortletRequestUtils.getStringParameter(request, "ss_statusId", "");
 		model.put("ss_statusId", statusId);
 		return new ModelAndView("forum/save_status_return", model);
-	}
-	
-	private ModelAndView ajaxViewMiniBlog(RenderRequest request, 
-			RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		int pageStart = 0;
-		Long userId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_USER_ID);
-		Principal p = null;
-		Boolean miniblogAccessAllowed = false;
-		try {
-			p = getProfileModule().getEntry(userId);
-			getBinderModule().getBinder(p.getWorkspaceId());
-			miniblogAccessAllowed = true;
-		} catch(AccessControlException e) {}
-		
-		model.put(WebKeys.MINIBLOG_USER_ID, userId);
-		model.put(WebKeys.MINIBLOG_USER, p);
-		model.put(WebKeys.MINIBLOG_ACCESS_DENIED, miniblogAccessAllowed);
-		
-		if (miniblogAccessAllowed) {
-			Long[] userIds = new Long[]{userId};
-			GregorianCalendar start = new GregorianCalendar();
-		    //get activities over last 2 weeks
-			start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
-			List statuses = getReportModule().getUsersStatuses(userIds, start.getTime(), new java.util.Date(), 
-					pageStart + Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
-			if (statuses != null && statuses.size() > pageStart) {
-				model.put(WebKeys.MINIBLOG_STATUSES, statuses.subList(pageStart, statuses.size()));
-			}
-		}
-		return new ModelAndView("forum/miniblog", model);
 	}
 	
 }

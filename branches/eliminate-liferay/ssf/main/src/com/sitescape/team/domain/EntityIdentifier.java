@@ -65,12 +65,6 @@ public class EntityIdentifier {
 				return true;
 			return false;
 		}
-		public boolean isPrincipal() {
-			if ((dbValue == 4) || (dbValue == 5) || (dbValue == 8) || (dbValue == 9))
-				return true;
-			return false;
-		}
-
 		public static EntityType valueOf(int type) {
 			switch (type) {
 			case 0: return EntityType.none;

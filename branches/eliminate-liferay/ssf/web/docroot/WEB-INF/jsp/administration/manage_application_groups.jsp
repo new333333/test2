@@ -30,7 +30,7 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<body class="ss_style_body tundra">
+<body class="ss_style_body">
 <div class="ss_pseudoPortal">
 
 <script type="text/javascript">

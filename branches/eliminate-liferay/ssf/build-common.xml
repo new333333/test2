@@ -48,8 +48,6 @@
 			memoryMaximumSize="${javac.memoryMaximumSize}"
 			nowarn="${javac.nowarn}"
 			srcdir="${source.dir}"
-			source="${javac.source}"
-			target="${javac.target}"
 		/>
 	</target>
 

@@ -31,7 +31,7 @@
 <% // Profile listing %>
 <%@ page import="com.sitescape.team.domain.Principal" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
+<jsp:useBean id="ssUserFolderProperties" type="com.sitescape.team.domain.UserProperties" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 
 <script type="text/javascript" src="<html:rootPath/>js/forum/ss_folder.js"></script>
@@ -44,8 +44,9 @@
 	}
 */
 	String ssFolderTableHeight = "";
-	if (ssUserFolderProperties != null && ssUserFolderProperties.containsKey("folderEntryHeight")) {
-		ssFolderTableHeight = (String) ssUserFolderProperties.get("folderEntryHeight");
+	Map ssFolderPropertiesMap = ssUserFolderProperties.getProperties();
+	if (ssFolderPropertiesMap != null && ssFolderPropertiesMap.containsKey("folderEntryHeight")) {
+		ssFolderTableHeight = (String) ssFolderPropertiesMap.get("folderEntryHeight");
 	}
 	if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") || 
 			ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";

@@ -30,7 +30,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <ssf:ifadapter>
-<body class="tundra">
+<body>
 </ssf:ifadapter>
 <c:set var="wsTreeName" value="${renderResponse.namespace}_wsTree"/>
 <script type="text/javascript">

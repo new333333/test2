@@ -556,12 +556,8 @@ public class SearchFilterToMapConverter {
 			Entry entry =null;
 			try {
 				Definition entryDef = bs.getDefinitionModule().getDefinition(entryType);
-				if (!entriesMap.containsKey(entryDef.getId())) {
-					entry = new Entry(entryDef, null); 
-					entriesMap.put(entryDef.getId(), entry);
-				} else {
-					entry = (Entry)entriesMap.get(entryDef.getId());
-				}
+				entry = new Entry(entryDef, null); 
+				entriesMap.put(entryDef.getId(), entry);
 			} catch (NoDefinitionByTheIdException nd) {continue;};
 			
 			Map fieldsMap = bs.getDefinitionModule().getEntryDefinitionElements(entryType);

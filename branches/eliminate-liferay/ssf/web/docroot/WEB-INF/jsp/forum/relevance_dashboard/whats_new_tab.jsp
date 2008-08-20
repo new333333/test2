@@ -87,7 +87,7 @@
 		  <ssf:nlt tag="relevance.trackedPeople"/></div>
 	</ssf:param>
 	  <c:set var="ss_show_tracked_item_delete_button" value="true" scope="request"/>
-	  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tracked_people.jsp" />
+	  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_buddies.jsp" />
 	</ssf:canvas>
 		
 		</div><!-- end of col3 -->

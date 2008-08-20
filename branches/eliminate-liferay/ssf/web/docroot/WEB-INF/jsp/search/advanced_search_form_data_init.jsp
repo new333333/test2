@@ -32,6 +32,15 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.sitescape.team.util.CalendarHelper" %>
 
+function ss_initSearchMainMask() {
+	// fill the search mask form
+	<c:if test="${!empty ss_filterMap.searchJoinerAnd && ss_filterMap.searchJoinerAnd}">
+		if (document.getElementById("searchJoinerAnd")) document.getElementById("searchJoinerAnd").checked="true";
+	</c:if>
+	<c:if test="${empty ss_filterMap.searchJoinerAnd || !ss_filterMap.searchJoinerAnd}">
+		if (document.getElementById("searchJoinerOr")) document.getElementById("searchJoinerOr").checked="true";
+	</c:if>
+}
 
 function ss_initSearchOptions() {
 	<c:if test="${! empty ss_filterMap.additionalFilters}">
@@ -110,3 +119,4 @@ function ss_initSearchOptions() {
 	  ss_searchMoreInitialized = true;
 }	
 
+ss_initSearchMainMask();

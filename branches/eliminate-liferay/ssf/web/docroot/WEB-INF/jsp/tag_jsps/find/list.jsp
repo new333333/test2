@@ -59,69 +59,68 @@
 	</c:otherwise>
 </c:choose>
 
-<img src="<html:imagesPath/>pics/1pix.gif" <ssf:alt/>
-		onload="dojo.addOnLoad(function(){window['findMultiple${prefix}'] = ssFind.configMultiple({
-			prefix: '${prefix}', 
-			clickRoutineObj: '${ssFindClickRoutineObj}', 
-			clickRoutine: '${ssFindClickRoutine}',
-			formName: '${ssFindFormName}',
-			elementName: '${ssFindFormElement}',
-			displayValue: '${ssDisplayValue}',
-			displayValueOnly: '${ssDisplayValueOnly}'
-				});
-	<c:forEach var="item" items="${ssFindUserList}" varStatus="status"> window['findMultiple${prefix}'].addValue('<c:out value="${item.id}"/>');</c:forEach>
-	});" />
-
 <input type="hidden" name="${ssFindFormElement}" id="${prefix}_ss_find_multiple_input"/>		
-
-<table class="ss_style ss_combobox_autocomplete_list" cellspacing="0" cellpadding="0">
-	<tbody>
-		<tr>
-			<td>
-				  <ssf:find formName="" 
-				    formElement="searchText" 
-				    type="${ssFindListType}"
-				    userList="${ssFindUserList}"
-				    width="70px" 
-				    clickRoutine="addValueByElement"
-				    clickRoutineObj="findMultiple${prefix}"
-				    findMultipleObj="findMultiple${prefix}"
-				    leaveResultsVisible="${ssFindLeaveResultsVisible}"
-				    singleItem="true"
-				    displayValue="${ssDisplayValue}"
-				    displayValueOnly="${ssDisplayValueOnly}"
-				    accessibilityText="${accessibilityText}"
-				    addCurrentUser="${ssFindAddCurrentUser}"
-				    showUserTitleOnly="${ssShowUserTitleOnly}"
-				    /> 
-			    <c:if test="${ssFindListType == 'user'}">
-			      <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findUser"/></span></div>
-			    </c:if>
-			    <c:if test="${ssFindListType == 'group'}">
-			      <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findGroup"/></span></div>
-			    </c:if>
-			    <c:if test="${ssFindListType == 'team'}">
-			      <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findTeam"/></span></div>
-			    </c:if>    
-			    <c:if test="${ssFindListType == 'application'}">
-			      <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findApplication"/></span></div>
-			    </c:if>
-			    <c:if test="${ssFindListType == 'applicationGroup'}">
-			      <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findGroup"/></span></div>
-			    </c:if>
-			</td>
-			<td>
-				<ul id="added_${prefix}">
-					<c:forEach var="item" items="${ssFindUserList}">
-						<li id="<c:out value="${item.id}"/>" ><c:out value="${item.title}"/>
-							<a href="javascript: ;" 
-								onclick="window['findMultiple${prefix}'].removeValueByElement(this, '<c:out value="${item.id}"/>', '<c:out value="${item.title}"/>'); return false;"
-								><img <ssf:alt tag="alt.delete"/> 
-									src="<html:imagesPath/>pics/sym_s_delete.gif"/></a>
-						</li>
-					</c:forEach>
-				</ul>
-			</td>
-		</tr>
-	</tbody>
+<table class="ss_style" cellspacing="0" cellpadding="0" style="padding-bottom:5px;">
+<tbody>
+<tr>
+<td valign="top">
+<img src="<html:imagesPath/>pics/1pix.gif" <ssf:alt/>
+	onload="window['findMultiple${prefix}'] = ssFind.configMultiple({
+						thisName: 'findMultiple${prefix}',
+						prefix: '${prefix}', 
+						clickRoutineObj: '${ssFindClickRoutineObj}', 
+						clickRoutine: '${ssFindClickRoutine}',
+						formName: '${ssFindFormName}',
+						elementName: '${ssFindFormElement}'
+			}); <c:forEach var="item" items="${ssFindUserList}" varStatus="status"> window['findMultiple${prefix}'].addValue('<c:out value="${item.id}"/>');</c:forEach>" />
+  <ssf:find formName="" 
+    formElement="searchText" 
+    type="${ssFindListType}"
+    userList="${ssFindUserList}"
+    width="70px" 
+    clickRoutine="addValueByElement"
+    clickRoutineObj="findMultiple${prefix}"
+    findMultipleObj="findMultiple${prefix}"
+    leaveResultsVisible="${ssFindLeaveResultsVisible}"
+    singleItem="true"
+    accessibilityText="${accessibilityText}"
+    addCurrentUser="${ssFindAddCurrentUser}"
+    showUserTitleOnly="${ssShowUserTitleOnly}"
+    /> 
+    <c:if test="${ssFindListType == 'user'}">
+      <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findUser"/></span></div>
+    </c:if>
+    <c:if test="${ssFindListType == 'group'}">
+      <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findGroup"/></span></div>
+    </c:if>
+    <c:if test="${ssFindListType == 'team'}">
+      <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findTeam"/></span></div>
+    </c:if>    
+    <c:if test="${ssFindListType == 'application'}">
+      <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findApplication"/></span></div>
+    </c:if>
+    <c:if test="${ssFindListType == 'applicationGroup'}">
+      <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findGroup"/></span></div>
+    </c:if>
+</td>
+<td valign="top" style="padding-left:10px;">
+<div style="float: left;">
+  <div style="border:solid black 1px;">
+    <ul id="added_${prefix}" class="ss_userlist">
+      <c:forEach var="item" items="${ssFindUserList}">
+        <li class="ss_nowrap" id="<c:out value="${item.id}"/>" ><c:out value="${item.title}"/>
+          <a href="javascript: ;" 
+			onclick="window['findMultiple${prefix}'].removeValueByElement(this, '<c:out value="${item.id}"/>', '<c:out value="${item.title}"/>'); return false;"
+            ><img border="0" style="padding-left: 10px;" 
+            <ssf:alt tag="alt.delete"/> src="<html:imagesPath/>pics/sym_s_delete.gif"/></a>
+        </li>
+      </c:forEach>
+    </ul>
+  </div>  
+</div>
+<div class="ss_clear"></div>
+</td>
+</tr>
+</tbody>
 </table>
+

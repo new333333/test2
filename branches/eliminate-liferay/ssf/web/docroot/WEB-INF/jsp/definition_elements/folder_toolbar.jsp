@@ -33,6 +33,10 @@
 
 <div class="ss_actions_bar1_pane ss_sidebarImage" align="right">
 <table cellspacing="0" cellpadding="0" border="0" width="90%"><tbody><tr>
+<td><span class="ss_fineprint ss_navbar_new" style="white-space:nowrap; display:inline;" align="left"><a>New Pagexxx</a></span>
+<span class="ss_fineprint ss_navbar_new" style="white-space:nowrap; display:inline;" align="left"><a>New Thread xxx</a></span>
+</td>
+<td>&nbsp;</td>
 <td class="ss_actions_bar1" style="white-space:nowrap;">
 
 <c:if test="${!empty ssFolderToolbar}">

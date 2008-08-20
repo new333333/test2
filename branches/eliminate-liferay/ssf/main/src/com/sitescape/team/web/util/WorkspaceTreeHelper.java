@@ -171,8 +171,6 @@ public class WorkspaceTreeHelper {
 			entryId = null;
 		}
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
-		UserProperties userProperties = (UserProperties)model.get(WebKeys.USER_PROPERTIES_OBJ);
-		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 
  		//Remember the last binder viewed
 		String namespace = response.getNamespace();
@@ -232,8 +230,18 @@ public class WorkspaceTreeHelper {
 			}
 
 			//Set up more standard beans
-			DashboardHelper.getDashboardMap(binder, userProperties.getProperties(), model);
+			Map userProperties = bs.getProfileModule().getUserProperties(user.getId()).getProperties();
+			model.put(WebKeys.USER_PROPERTIES, userProperties);
+			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
+			model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+			DashboardHelper.getDashboardMap(binder, userProperties, model);
 //			model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
+			String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
+			Document searchFilter = null;
+			if (searchFilterName != null && !searchFilterName.equals("")) {
+				Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+				searchFilter = (Document)searchFilters.get(searchFilterName);
+			}
 			//See if the user has selected a specific view to use
 			String userDefaultDef = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 			DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
@@ -243,7 +251,6 @@ public class WorkspaceTreeHelper {
 				model.put(WebKeys.SHOW_TEAM_MEMBERS, true);
 				getTeamMembers(bs, formData, request, response, (Workspace)binder, model);
 			} else {
-				Document searchFilter = BinderHelper.getSearchFilter(bs, userFolderProperties);
 				Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
 				String viewType = DefinitionUtils.getViewType(configDocument);
 				if (viewType == null) viewType = "";
@@ -471,7 +478,6 @@ public class WorkspaceTreeHelper {
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		Toolbar dashboardToolbar = new Toolbar();
-		Toolbar whatsNewToolbar = new Toolbar();
 		Map qualifiers;
 		AdaptedPortletURL adapterUrl;
 
@@ -811,38 +817,11 @@ public class WorkspaceTreeHelper {
 			model.put(WebKeys.TOOLBAR_THEME_IDS, NLT.get("ui.availableThemeIds"));
 			model.put(WebKeys.TOOLBAR_THEME_NAMES, NLT.get("ui.availableThemeNames"));
 		}
-
-		//Set up the whatsNewToolbar links
-		//What's new
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.URL_TYPE, "whatsNew");
-		adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
-		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
-		qualifiers = new HashMap();
-		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'whatsNew', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
-		whatsNewToolbar.addToolbarMenu("whatsnew", NLT.get("toolbar.menu.whatsNew"), 
-				adapterUrl.toString(), qualifiers);
 		
-		// What's unseen
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.URL_TYPE, "unseen");
-		adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
-		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
-		qualifiers = new HashMap();
-		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'unseen', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
-		whatsNewToolbar.addToolbarMenu("unseen", NLT.get("toolbar.menu.whatsUnseen"), 
-				adapterUrl.toString(), qualifiers);
-
-
 
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
-		model.put(WebKeys.WHATS_NEW_TOOLBAR,  whatsNewToolbar.getToolbar());
 	}
 	
 	private static String[] collectContributorIds(Workspace workspace) {

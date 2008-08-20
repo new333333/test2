@@ -41,7 +41,7 @@
       
 		<c:forEach var="entry" items="${ssEntries}">  
 		  <c:set var="count" value="${count + 1}"/>
-		  <li id="ss_find_id_<c:choose><%--
+		  <li id="ss_findUser_id_<c:choose><%--
 		          --%><c:when test="${ssFindType == 'personalTags' || ssFindType == 'communityTags' || ssFindType == 'tags' }"><%--
 		      		--%>${entry.ssTag}<%--
 		      	  --%></c:when><%--
@@ -50,7 +50,7 @@
   		          --%></c:otherwise></c:choose>"><a 
 		    onClick="<c:choose><%--
 		    			--%><c:when test="${ssFindType == 'personalTags' || ssFindType == 'communityTags' }"><%--
-		    				--%>parent.ss_putValueInto('ss_combobox_autocomplete_${ss_namespace}', '${entry.ssTag}');return false;<%--
+		    				--%>parent.ss_putValueInto('ss_findUser_searchText_${ss_namespace}', '${entry.ssTag}');return false;<%--
 		    			--%></c:when><%--
 						--%><c:otherwise><%--
 							--%>parent['${findObjectName}'].selectItemAccessible(this.parentNode, '${entry._entityType}');return false;<%--

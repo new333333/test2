@@ -127,7 +127,7 @@ public class NullReportModule implements ReportModule {
 			Date startDate, Date endDate, Integer returnCount) {
 		return null;
 	}
-	public List<Map<String,Object>> getUsersStatuses(Long[] userIds,
+	public List<Map<String,Object>> getUsersActivities(Long ownerId, Long[] userIds,
 			Date startDate, Date endDate, Integer returnCount) {
 		return null;
 	}

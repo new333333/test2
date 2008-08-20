@@ -34,7 +34,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <ssf:ifadapter>
-<body class="ss_style_body tundra">
+<body class="ss_style_body">
 </ssf:ifadapter>
 
 <span class="ss_bold">This portlet is no longer being used. </span><br/>

@@ -125,5 +125,5 @@ public interface ReportModule {
 	public Collection<ActivityInfo> culaEsCaliente(AuditType limitType, Date startDate, Date endDate, Binder binder);
 	public Collection<ActivityInfo> culaEsCaliente(AuditType limitType, Date startDate, Date endDate, Object[] entityTypes, Integer returnCount);
 	public Collection<ActivityInfo> culaEsCaliente(AuditType limitType, Date startDate, Date endDate, Object[] entityTypes, Integer returnCount, Binder binder);
-	public List<Map<String,Object>> getUsersStatuses(Long[] userIds, Date startDate, Date endDate, Integer returnCount);
+	public List<Map<String,Object>> getUsersActivities(Long ownerId, Long[] userIds, Date startDate, Date endDate, Integer returnCount);
 }

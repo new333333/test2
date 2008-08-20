@@ -33,7 +33,7 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="com.sitescape.team.util.CalendarHelper" %>
 
-<div class="ss_entryContent tundra">
+<div class="ss_entryContent">
 	<span class="ss_labelAbove" id='${property_name}_label'>${property_caption}<c:if test="${property_required}"><span class="ss_required">*</span></c:if></span>
 	<div id="${property_name}_error" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="date.validate.error"/></span></div>
 	
@@ -47,10 +47,12 @@
 	<table class="ss_style" cellpadding="0" border="0">
 		<tr>
 			<td>
-				<input type="text" dojoType="dijit.form.DateTextBox" 
-					id="date_${property_name}_${prefix}" 
+				<div dojoType="DropdownDatePickerActivateByInput" 
+					widgetId="date_${property_name}_${prefix}" 
+					id="date_${property_name}_${prefix}"
 					name="${property_name}_fullDate" 
 					lang="<ssf:convertLocaleToDojoStyle />" 
+					weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
 					<c:if test="${property_initialSetting != 'none'}">
 					  value="<fmt:formatDate value="${initDate}" 
 					    pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/>"
@@ -58,15 +60,16 @@
 					<c:if test="${property_initialSetting == 'none'}">
 					  value=""
 					</c:if>
-				/>
+				></div>
 			</td>
 			<td>
-				<input type="text" dojoType="dijit.form.TimeTextBox"
-					id="date_time_${property_name}_${prefix}" 
+				<div dojoType="DropdownTimePickerActivateByInput"
+					widgetId="date_time_${property_name}_${prefix}" 
+					id="date_time_${property_name}_${prefix}"
 					name="${property_name}_0_fullTime" 
 					lang="<ssf:convertLocaleToDojoStyle />" 
 					<c:if test="${property_initialSetting != 'none'}">
-					  value="T<fmt:formatDate value="${initDate}" 
+					  value="<fmt:formatDate value="${initDate}" 
 					    pattern="HH:mm:ss" timeZone="${ssUser.timeZone.ID}"/>"
 					</c:if>
 					<c:if test="${property_initialSetting == 'none'}">
@@ -79,12 +82,10 @@
 	</table>
 	
 	<script type="text/javascript">
-		dojo.addOnLoad(function() {
-				dojo.addClass(document.body, "tundra");
-			}
-		);	
-		dojo.require("dijit.form.DateTextBox");
-		dojo.require("dijit.form.TimeTextBox");
+		dojo.require("sitescape.widget.DropdownDatePickerActivateByInput");
+		dojo.require("sitescape.widget.DropdownTimePickerActivateByInput");
+		djConfig.searchIds.push("date_${property_name}_${prefix}");
+		djConfig.searchIds.push("date_time_${property_name}_${prefix}");
 	</script>
 	
 </div>

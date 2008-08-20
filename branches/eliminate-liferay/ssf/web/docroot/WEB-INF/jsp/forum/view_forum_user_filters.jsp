@@ -31,8 +31,22 @@
 <% // User filters %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
-
-<c:set var="currentFilter" value="${ssUserFolderProperties.userFilter}"/>
+<%@ page import="java.util.List" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="com.sitescape.team.domain.UserProperties" %>
+<%
+	UserProperties userFolderProperties = (UserProperties) request.getAttribute("ssUserFolderProperties");
+	String filterName = "";
+	if (userFolderProperties != null) {
+		Map searchFilters = (Map) userFolderProperties.getProperty("searchFilters");
+		if (searchFilters == null) searchFilters = new java.util.HashMap();
+		String userFilter = (String) userFolderProperties.getProperty("userFilter");
+		if (userFilter != null && !userFilter.equals("")) filterName = userFilter;
+		
+		renderRequest.setAttribute("ss_searchFilters", searchFilters);
+		renderRequest.setAttribute("currentFilter", filterName);
+	}
+%>
 <div align="left" class="ssPageNavi">
 
 <table width="95%">
@@ -54,14 +68,14 @@
 				name="operation" value="select_filter"/><ssf:param 
 				name="select_filter" value=""/></ssf:url>">
 				<span 
-					<c:if test="${empty currentFilter}"> class="ss_navbar_current"</c:if>
-					<c:if test="${!empty currentFilter}"> class="ss_normal"</c:if>
+					<c:if test="${currentFilter == ''}"> class="ss_navbar_current"</c:if>
+					<c:if test="${currentFilter != ''}"> class="ss_normal"</c:if>
 					>
 						<ssf:nlt tag="None"/></span>
 				</a>
 			</li>
 					
-			<c:forEach var="filter" items="${ssUserFolderProperties.searchFilterMap}">
+			<c:forEach var="filter" items="${ss_searchFilters}">
 			 <li><a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssFolder.id}"/><ssf:param 
 				name="operation" value="select_filter"/><ssf:param 
