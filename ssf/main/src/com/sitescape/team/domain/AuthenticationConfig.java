@@ -2,9 +2,9 @@ package com.sitescape.team.domain;
 
 public class AuthenticationConfig extends ZonedObject {
 
-	private boolean allowLocalLogin;
-	private boolean allowAnonymousAccess;
-	private boolean allowSelfRegistration;
+	private boolean allowLocalLogin = true;
+	private boolean allowAnonymousAccess = true;
+	private boolean allowSelfRegistration = false;
 	private Long lastUpdate;
 	
 	public AuthenticationConfig()
