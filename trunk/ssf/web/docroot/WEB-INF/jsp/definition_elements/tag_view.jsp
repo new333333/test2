@@ -47,10 +47,13 @@
 <%
 boolean isIEtag = BrowserSniffer.is_ie(request);
 %>
-<table class="ss_style" cellspacing="0" cellpadding="0">
-<tbody>
-<tr>
-<td valign="top" style="padding-right:2px;">
+<div id="ss_leftNav"  width="100%">
+<ul>
+<li>
+ <table class="ss_style" cellspacing="0" cellpadding="0"  width="100%">
+ <tbody>
+ <tr>
+ <td valign="top" style="padding-right:2px;" width="100%">
   <ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="-10" xAlignment="left" 
     <c:if test="<%= isIEtag %>">
        offsetY="-3" 
@@ -68,7 +71,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
 		onClick="ss_tagShow('${ss_tagViewNamespace}','${ss_tagDivNumber}'); return false;"
 	</ssf:ifnotaccessible>
 	<ssf:title tag="title.open.tag.menu" />
-><span class="ss_iconed_label ss_add_tag"><ssf:nlt tag="tags.tags"/></span></a>
+><span class="ss_iconed_label ss_add_tag"><ssf:nlt tag="sidebar.tags.workspace"/></span></a>
   <div id="ss_tags_anchor${ss_tagViewNamespace}_${ss_tagDivNumber}">
   </div>
 </td>
@@ -83,6 +86,12 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
 <jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
 </td></tr></tbody></table>
 
+</li>
+</ul>
+</div>
+
+
+
 <div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane" 
 	<ssf:ifaccessible>
 		style="visibility:hidden;display:none;white-space:nowrap;"  		
@@ -94,7 +103,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
 	</ssf:ifnotaccessible>
 >
 
-<ssf:popupPane width="220px" titleTag="tags.manageTags" closeScript="${ssCloseScript}">
+<ssf:popupPane width="190px" titleTag="tags.manageTags" closeScript="${ssCloseScript}">
 
 <div style="padding:0px 10px;">
 <form class="ss_style ss_form ss_tag_pane_color" 

@@ -100,7 +100,7 @@
 			</ssf:ifnotaccessible>
 		>
 		
-		<ssf:popupPane width="220px" titleTag="tags.manageTags" closeScript="${ssCloseScript}">
+		<ssf:popupPane width="190px" titleTag="tags.manageTags" closeScript="${ssCloseScript}">
 		
 		<div style="padding:0px 10px;">
 		<form class="ss_style ss_form ss_tag_pane_color" 
