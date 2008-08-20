@@ -404,17 +404,6 @@ table.ss_sortableList {
   padding-bottom: 0px;
   }
 
-ul.ss_userlist {
-  list-style-type: none;
-  padding: 4px 10px;
-  width: 150px;
-  margin: 4px;
-}
-ul.ss_userlist li {
-  padding: 0px;
-  text-align: left;
-  margin: 0px;
-}
 
 /* ------------------------------------------------------------------------ */
 /* table styles */

@@ -33,7 +33,7 @@
 <c:set var="ss_windowTitle" value="<%= NLT.get("window.title.modifyEntry") %>" scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <ssf:ifadapter>
-<body>
+<body class="tundra">
 </ssf:ifadapter>
 
 <table class="ss_style" cellpadding="10" width="100%"><tr><td>

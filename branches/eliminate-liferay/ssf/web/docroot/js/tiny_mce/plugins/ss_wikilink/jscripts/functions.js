@@ -63,26 +63,28 @@ function ss_cancelICElinkEdit() {
 }
 
 function ss_popup_folder() {
-    dojo.html.toggleDisplay("folder_popup");
-    dojo.html.hide("page_popup");
+    dojo.style("folder_popup", "display", "block");
+    dojo.style("page_popup", "display", "none");
 }
 function ss_popup_page() {
-    dojo.html.toggleDisplay("page_popup");
-    dojo.html.hide("folder_popup");
+    dojo.style("page_popup", "display", "block");
+    dojo.style("folder_popup", "display", "none");
 }
 
 
 function ss_loadLinkBinderId(binderId, type, obj) {
 	dojo.byId("binderId").value = binderId;
     ss_findEntriesBinderIdss_findLinkEntryForm_searchTitle = binderId;
-	dojo.byId("linkToFolderName").innerHTML = dojo.dom.textContent(obj);
-	dojo.html.toggleDisplay('folder_popup');
-	dojo.lfx.html.highlight("linkToFolderName", "#FFFF66", 1000).play();
+	dojo.byId("linkToFolderName").innerHTML = obj.innerText;
+	ss_popup_folder();
+	// May need to probe bgcolor...
+	dojo.animateProperty({node: "linkToFolderName", duration: 1000,
+	       properties: { backgroundColor: {start: #FFFFFF, end: "#FFFF66"}}}).play();
 }
 
 function ss_loadLinkEntryId(entryId, obj) {
-	dojo.byId("pageName").value = dojo.dom.textContent(obj);
-	dojo.html.toggleDisplay("page_popup");
+	dojo.byId("pageName").value = obj.innerText;
+	ss_popup_page();
 }
 
 function setAttrib(elm, attrib, value) {

@@ -34,7 +34,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <ssf:ifadapter>
-<body class="ss_style_body">
+<body class="ss_style_body tundra">
 </ssf:ifadapter>
 
 <c:if test="${!empty ssReloadUrl}">

@@ -32,15 +32,14 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="com.sitescape.team.domain.Entry" %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
-<jsp:useBean id="ssUserFolderProperties" type="com.sitescape.team.domain.UserProperties" scope="request" />
+<jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 
 
 <%
 	String ssFolderTableHeight = "";
-	Map ssFolderPropertiesMap = ssUserFolderProperties.getProperties();
-	if (ssFolderPropertiesMap != null && ssFolderPropertiesMap.containsKey("folderEntryHeight")) {
-		ssFolderTableHeight = (String) ssFolderPropertiesMap.get("folderEntryHeight");
+	if (ssUserFolderProperties != null && ssUserFolderProperties.containsKey("folderEntryHeight")) {
+		ssFolderTableHeight = (String) ssUserFolderProperties.get("folderEntryHeight");
 	}
 	if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") || 
 			ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
@@ -71,6 +70,7 @@
 	</ssf:ifnotaccessible>
 
 </ssf:toolbar>		    	
+<jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
 <div id="ss_whatsNewDiv${ss_namespace}">
 <c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
 <%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>

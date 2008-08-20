@@ -38,7 +38,6 @@
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %>
 <%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
 <%@ page import="com.sitescape.util.ParamUtil" %>
-<%@ page import="com.sitescape.team.domain.UserProperties" %>
 <%@ page import="java.lang.String" %>
 <%@ page import="java.lang.Boolean" %>
 <%@ page import="java.util.Map" %>
@@ -73,13 +72,10 @@ var ss_saveColumnPositionsUrl = "<ssf:url
 <%
 	//Get the user's column positions (if set)
 	String folderColumnPositions = null;
-	UserProperties userFolderProperties = (UserProperties) request.getAttribute("ssUserFolderProperties");
+	Map userFolderPropertiesMap = (Map) request.getAttribute("ssUserFolderProperties");
 	Map userProperties = (Map)  request.getAttribute("ssUserProperties");
-	if (userFolderProperties != null) {
-		Map userFolderPropertiesMap = userFolderProperties.getProperties();
-		if (userFolderPropertiesMap != null && userFolderPropertiesMap.containsKey("folderColumnPositions")) {
-			folderColumnPositions = (String) userFolderPropertiesMap.get("folderColumnPositions");
-		}
+	if (userFolderPropertiesMap != null && userFolderPropertiesMap.containsKey("folderColumnPositions")) {
+		folderColumnPositions = (String) userFolderPropertiesMap.get("folderColumnPositions");
 	} else if (userProperties != null && userProperties.containsKey("folderColumnPositions")) {
 		folderColumnPositions = (String) userProperties.get("folderColumnPositions");
 	}

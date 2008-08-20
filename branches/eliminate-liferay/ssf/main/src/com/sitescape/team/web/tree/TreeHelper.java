@@ -10,6 +10,10 @@ public class TreeHelper {
 
 	public static Collection<Long> getSelectedIds(String[] values, String prefix) {
 		HashSet<Long> ids = new HashSet();
+		
+		if (values == null) {
+			return ids;
+		}
 
 		//Get the binders for reporting
 		for (int i = 0; i < values.length; i++) {

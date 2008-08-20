@@ -158,24 +158,6 @@ public class DefinitionUtils {
        return map;
    }
 
-   public static String getViewURL(DefinableEntity entity, FileAttachment att)
-   {
-	   if (entity instanceof Binder) {
-			return WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_VIEW_FILE + "?" +
-				WebKeys.URL_BINDER_ID + "=" + entity.getId().toString() +
-				"&entityType=" + entity.getEntityType().name() +
-				"&" + WebKeys.URL_ENTRY_ID + "=" + entity.getId().toString() +
-				"&" + WebKeys.URL_FILE_ID + "=" + att.getId(); 
-		   
-	   } else {
-			return WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_VIEW_FILE + "?" +
-			WebKeys.URL_BINDER_ID + "=" + entity.getParentBinder().getId().toString() +
-				"&entityType=" + entity.getEntityType().name() +
-				"&" + WebKeys.URL_ENTRY_ID + "=" + entity.getId().toString() +
-				"&" + WebKeys.URL_FILE_ID + "=" + att.getId(); 
-	 		   
-	   }
-  }
 
 
 }

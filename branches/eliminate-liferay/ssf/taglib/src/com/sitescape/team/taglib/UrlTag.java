@@ -50,6 +50,7 @@ import org.apache.commons.logging.LogFactory;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
+import com.sitescape.team.util.Constants;
 
 
 /**
@@ -72,7 +73,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
     private String portletName = "ss_forum";
     private boolean actionUrl = true;
     private boolean stayInFrame = false;
-	private Map _params;
+	private Map<String, String[]> _params;
 	
 	public UrlTag() {
 		setup();
@@ -115,7 +116,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			String ctxPath = req.getContextPath();
 			if (!Validator.isNull(url)) {
 				//Yes, a url was explicitly specified. Just add the portal context and return
-				String fullUrl = ctxPath + "/" + this.url;
+				String fullUrl = ctxPath + Constants.SLASH + this.url;
 				pageContext.getOut().print(fullUrl);
 
 				return SKIP_BODY;				
@@ -137,39 +138,25 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			if (!Validator.isNull(operation)) {
 				params.put(WebKeys.URL_OPERATION, new String[] {operation});
 			} 
-
-			if (!Validator.isNull(webPath) && this.webPath.equals(WebKeys.ACTION_READFILE)) {
-				String webUrl = getWebUrl(req);
-				webUrl += "/" + entityType;
-				webUrl += "/" + binderId;
-				if (entryId != null) {
-					webUrl += "/" + entryId;
-				} else {
-					webUrl += "/-";
-				}
-				webUrl += "/" + ((String[])_params.get(WebKeys.URL_FILE_ID))[0];
-				webUrl += "/" + ((String[])_params.get(WebKeys.URL_FILE_TIME))[0];
-				webUrl += "/" + ((String[])_params.get(WebKeys.URL_FILE_NAME))[0];
-				pageContext.getOut().print(webUrl);
-			} else if (!Validator.isNull(webPath)) {
+			if (!Validator.isNull(webPath)) {
 				if (!Validator.isNull(action)) {
 					params.put("action", new String[] {this.action});
 				}
 				
-				String webUrl = getWebUrl(req) + "?";
+				String webUrl = getWebUrl(req) + Constants.QUESTION;
 				Iterator it = params.entrySet().iterator();
 				String separator = "";
 				while (it.hasNext()) {
 					Map.Entry me = (Map.Entry) it.next();
-					webUrl += separator + me.getKey() + "=" + ((String[])me.getValue())[0];
-					separator = "&amp;";
+					webUrl += separator + me.getKey() + Constants.EQUAL + ((String[])me.getValue())[0];
+					separator = Constants.ESCAPED_AMPERSAND;
 				}
 				if (_params != null ) {
 					Iterator _it = _params.entrySet().iterator();
 					while (_it.hasNext()) {
 						Map.Entry me = (Map.Entry) _it.next();
-						webUrl += separator + me.getKey() + "=" + ((String[])me.getValue())[0];
-						separator = "&amp;";
+						webUrl += separator + me.getKey() + Constants.EQUAL + ((String[])me.getValue())[0];
+						separator = Constants.ESCAPED_AMPERSAND;
 					}
 				}
 				pageContext.getOut().print(webUrl);

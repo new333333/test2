@@ -2186,7 +2186,7 @@ div.ss_sidebar_panel_featured {
 }
 
 div.ss_actions_bar1_pane {
-	background-color: #AFAFAF;
+	background-color: none;
 	border-bottom: 1px solid;
 	border-color: #FFF;
 	height: 22px;		/* boulder 22px */
@@ -2196,7 +2196,7 @@ div.ss_actions_bar1_pane {
 table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	background-color: ${ss_toolbar2_background_color};
 	width: 100%;
-	height: 24px;
+	height: 2px;
 	padding: 0px;
 	margin: 0px;
 	border-collapse: collapse;
@@ -2263,7 +2263,7 @@ ul.ss_actions_bar1.ss_actions_bar_submenu {
 .ss_actions_bar {
 	list-style-type:none;	
 	padding: 0px 0px 0px 0px;
-	height: 20px;
+	height: 22px;
 	margin: 0px;
 }
 
@@ -2636,6 +2636,10 @@ div.ss_typeToFindResults {
 	text-decoration: none;
 }
 
+.ss_typeToFindResults li a span {
+	white-space: nowrap;
+}
+
 .ss_typeToFindResults li a:hover {
 	font-family: ${ss_style_folder_view_font_family};
 	font-size: ${ss_style_font_smallprint};
@@ -2648,6 +2652,7 @@ table.ss_typeToFindNav {
 	width: 150px;
 	padding-top: 3px;
 	padding-bottom: 1px;
+	border: 0;
 }
 
 
@@ -3195,7 +3200,7 @@ div.ss_cal_dayGridWindowOuter {
 }
 
 div.ss_cal_dayGridWindowInner {
-  position: absolute;
+  position: relative;
   top: -255px;    /* Note: This is modified dynamically in the element */
 }
 
@@ -4900,6 +4905,50 @@ ul.placesForm, ul.placesForm li {
 }
 .ss_fileUploadProgressBarContainer .ss_progressTimeSpeed, .ss_fileUploadProgressBarContainer .ss_progress {
 	width: 160px;
+}
+
+.ss_combobox_autocomplete {
+	background-color: ${ss_form_element_color};
+	background-image: none;
+	color: ${ss_form_element_text_color};
+	padding: 0px;
+	font-size: ${ss_style_font_normalprint};
+	font-family: ${ss_style_folder_view_font_family}; 	
+
+	height: 14px;
+	width: 70px;
+	overflow: hidden;
+}
+
+.ss_combobox_autocomplete_list {
+	padding: 0 0 5px 0;
+	
+}
+
+.ss_combobox_autocomplete_list td {
+	vertical-align: top;
+	padding: 0;
+	margin: 0;
+}
+
+.ss_combobox_autocomplete_list ul {
+	list-style-type: none;
+	padding: 6px 10px;
+	width: 150px;
+	margin: 1px 4px 4px 4px;
+	border: solid black 1px;
+}
+
+.ss_combobox_autocomplete_list ul li {
+	padding: 0px;
+	margin: 0px;
+	text-align: left;
+	white-space: nowrap;
+}
+
+.ss_combobox_autocomplete_list ul li img {
+	border: 0;
+	padding-left: 10px;
 }
 
 

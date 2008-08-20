@@ -297,7 +297,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return report;
 	}
 	
-	public List<Map<String,Object>> getUsersActivities(final Long ownerId, final Long[] userIds,
+	public List<Map<String,Object>> getUsersStatuses(final Long[] userIds,
 			final Date startDate, final Date endDate, Integer returnCount) {
 		
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -311,18 +311,37 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 							.add(Projections.property("description"))
 							.add(Projections.property("startDate"))))
 					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-				    .add(Restrictions.in("transactionType", new Object[] {AuditType.login.name(), 
-				    													AuditType.userStatus.name()}))
-					.add(Restrictions.in("startBy", userIds))
-					.add(Restrictions.ge("startDate", startDate))
-					.add(Restrictions.lt("startDate", endDate));
+				    .add(Restrictions.in("transactionType", new Object[] {AuditType.userStatus.name()}))
+					.add(Restrictions.in("startBy", userIds));
+				if (startDate != null) crit.add(Restrictions.ge("startDate", startDate));
+				if (endDate != null) crit.add(Restrictions.lt("startDate", endDate));
 				crit.addOrder(Order.desc("startDate"));
 				return crit.list();
 				
 			}});
+		Map<Long, Principal> userMap = new HashMap();
 		for(Object o : data) {
 			Object[] cols = (Object[]) o;
-			Principal user = getProfileDao().loadPrincipal((Long)cols[0], zoneId, true);
+			Long userId = (Long)cols[0];
+			if (userMap.containsKey(userId) && userMap.get(userId) == null) continue;
+			Principal user = null;
+			if (userMap.containsKey(userId)) {
+				//If there is a user object in this table, it must be ok to see activities for this user
+				user = userMap.get(userId);
+			} else if (!userMap.containsKey(userId)) {
+				user = getProfileDao().loadPrincipal(userId, zoneId, true);
+				userMap.put(userId, null);
+				if (user != null) {
+					//See if the current user has access to this user's workspace
+					try {
+						getBinderModule().getBinder(user.getWorkspaceId());
+					} catch(Exception e) {
+						//No access (or whatever) to the user workspace, so skip this
+						continue;
+					}
+				}
+				userMap.put(userId, user);
+			}
 			if (user == null) continue;
 			Map<String, Object> row = new HashMap<String, Object>();
 			report.add(row);

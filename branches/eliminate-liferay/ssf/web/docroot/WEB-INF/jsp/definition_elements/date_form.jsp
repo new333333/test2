@@ -33,7 +33,12 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="com.sitescape.team.util.CalendarHelper" %>
 
-<div class="ss_entryContent">
+<style type="text/css">
+        @import "<html:rootPath />js/dojo/dijit/themes/tundra/tundra.css";
+        @import "<html:rootPath />js/dojo/dojo/resources/dojo.css"
+</style>
+
+<div class="ss_entryContent tundra">
 <span class="ss_labelAbove" id='${property_name}_label'>${property_caption}<c:if test="${property_required}"><span class="ss_required">*</span></c:if></span>
 <div id="${property_name}_error" style="visibility:hidden; display:none;">
   <span class="ss_formError"><ssf:nlt tag="date.validate.error"/></span>
@@ -45,12 +50,10 @@
 		<c:set var="property_initialSetting" value="entry"/>
 	</c:if>
 
-	<div dojoType="DropdownDatePickerActivateByInput" 
-		widgetId="date_${property_name}_${prefix}" 
-		id="date_${property_name}_${prefix}"
+	<input type="text" dojoType="dijit.form.DateTextBox" 
+		id="date_${property_name}_${prefix}" 
 		name="${property_name}_fullDate" 
 		lang="<ssf:convertLocaleToDojoStyle />" 
-		weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
 		<c:if test="${property_initialSetting != 'none'}">
 		  value="<fmt:formatDate value="${initDate}" pattern="yyyy-MM-dd" 
 			timeZone="${ssUser.timeZone.ID}"/>"
@@ -58,13 +61,16 @@
 		<c:if test="${property_initialSetting == 'none'}">
 		  value=""
 		</c:if>
-	></div>
+	/>
 
 		<input type="hidden" name="${property_name}_timezoneid" value="${ssUser.timeZone.ID}" />
 		<input type="hidden" name="${property_name}_skipTime" value="false" />
 		
 	<script type="text/javascript">
-		dojo.require("sitescape.widget.DropdownDatePickerActivateByInput");
-		djConfig.searchIds.push("date_${property_name}_${prefix}");
+		dojo.addOnLoad(function() {
+				dojo.addClass(document.body, "tundra");
+			}
+		);	
+		dojo.require("dijit.form.DateTextBox");
 	</script>
 </div>

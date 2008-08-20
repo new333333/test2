@@ -323,9 +323,10 @@ public class BinderHelper {
 		if (RequestContextHolder.getRequestContext() != null) {
         	user = RequestContextHolder.getRequestContext().getUser();
     		if (user != null) {
-    			Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
+    			UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
         		model.put(WebKeys.USER_PRINCIPAL, user);
-        		model.put(WebKeys.USER_PROPERTIES, userProperties);
+        		model.put(WebKeys.USER_PROPERTIES, userProperties.getProperties());
+        		model.put(WebKeys.USER_PROPERTIES_OBJ, userProperties);
     		}
         }
 		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(bs));
@@ -333,11 +334,50 @@ public class BinderHelper {
 			model.put(WebKeys.BINDER_ID, binderId.toString());
 			if (user != null) {
 				UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
-				model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+				model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties.getProperties());
+				model.put(WebKeys.USER_FOLDER_PROPERTIES_OBJ, userFolderProperties);
 			}
 		}
 	}
-	
+	public static Document getSearchFilter(AllModulesInjected bs, UserProperties userFolderProperties) {
+		convertV1Filters(bs, userFolderProperties);  //make sure converted
+		//Determine the Search Filter
+		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
+		Document searchFilter = null;
+		if (Validator.isNotNull(searchFilterName)) {
+			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+			if (searchFilters != null) {
+				String searchFilterStr = (String)searchFilters.get(searchFilterName);
+				if (Validator.isNotNull(searchFilterStr)) {
+					try {
+						searchFilter = DocumentHelper.parseText(searchFilterStr);
+					} catch (Exception ignore) {
+						//get rid of it
+						searchFilters.remove(searchFilterStr);
+						bs.getProfileModule().setUserProperty(userFolderProperties.getId().getPrincipalId(), userFolderProperties.getId().getBinderId(), ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
+					};
+				}
+			}
+		}		
+		return searchFilter;
+	}
+	public static Map convertV1Filters(AllModulesInjected bs, UserProperties userFolderProperties) {
+		//see if any v1 filters to convert. 
+		//where stored as dom objects which cause unnecessary hibernate updates cause .equals doesn't work
+		Map v2SearchFilters = (Map)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS_V1);
+		if (v2SearchFilters == null) return new HashMap();
+		if (v2SearchFilters.isEmpty()) return v2SearchFilters;
+		Map searchFilters = new HashMap();
+		for (Iterator iter=v2SearchFilters.entrySet().iterator(); iter.hasNext();) {
+			try {
+				Map.Entry me = (Map.Entry)iter.next();
+				searchFilters.put(me.getKey(), ((Document)me.getValue()).asXML());				
+			} catch (Exception ignore) {};
+		}
+		bs.getProfileModule().setUserProperty(userFolderProperties.getId().getPrincipalId(), userFolderProperties.getId().getBinderId(), ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
+		bs.getProfileModule().setUserProperty(userFolderProperties.getId().getPrincipalId(), userFolderProperties.getId().getBinderId(), ObjectKeys.USER_PROPERTY_SEARCH_FILTERS_V1, null);
+		return searchFilters;
+	}
 	protected static ModelAndView setupSummaryPortlets(AllModulesInjected bs, RenderRequest request, PortletPreferences prefs, Map model, String view) {
 		String gId = null;
 		if (prefs != null) gId = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);
@@ -2529,6 +2569,57 @@ public class BinderHelper {
 			int result = this.getCount() < p.getCount() ? 1 : 0;
 			return result;
 			}
-	}	
+	}
+	
+	public static void buildFolderActionsToolbar(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Toolbar folderActionsToolbar, String forumId) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+        String userDisplayStyle = user.getDisplayStyle();
+        if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
+        
+		AdaptedPortletURL adapterUrl;
+		Map qualifiers;
+		PortletURL url;
+
+        //Folder action menu
+		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+			//Only show these options if not in accessible mode
+			folderActionsToolbar.addToolbarMenu("4_display_styles", NLT.get("toolbar.folder_actions"));
+			
+			//iframe
+			qualifiers = new HashMap();
+			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) 
+				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
+			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
+					NLT.get("toolbar.menu.display_style_iframe"), url, qualifiers);
+			//newpage
+			qualifiers = new HashMap();
+			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE)) 
+				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE);
+			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
+					NLT.get("toolbar.menu.display_style_newpage"), url, qualifiers);
+			//popup
+			qualifiers = new HashMap();
+			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) 
+				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
+			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
+					NLT.get("toolbar.menu.display_style_popup"), url, qualifiers);
+		}
+	}
 
 }
