@@ -127,7 +127,7 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 		localProviders.put(zoneInfo.getZoneId(), localProvider);
 		
 		authenticators.put(zoneInfo.getZoneId(), pm);
-
+		
 		rebuildProvidersForZone(zoneInfo.getZoneId());
 	}
 	
@@ -384,6 +384,11 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 	
 	protected AuthenticationConfig getAuthenticationConfigForZone(Long zoneId)
 	{
-		return (AuthenticationConfig) getCoreDao().load(AuthenticationConfig.class, zoneId);
+		AuthenticationConfig config =(AuthenticationConfig) getCoreDao().load(AuthenticationConfig.class, zoneId);
+		if(config == null) {
+			config = new AuthenticationConfig();
+			config.setZoneId(zoneId);
+		}
+		return config;
 	}
 }
