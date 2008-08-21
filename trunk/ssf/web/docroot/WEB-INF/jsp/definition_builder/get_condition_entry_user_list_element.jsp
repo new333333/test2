@@ -39,8 +39,8 @@
 	<taconite-replace contextNodeID="conditionEntryElements" 
 	parseInBrowser="true"><div 
 	   id="conditionEntryElements" >
-	   <span class="ss_bold"><ssf:nlt tag="definition.selectEntryElement"/></span><br/>
-	   <select
+	   <span class="ss_bold"><ssf:nlt tag="definition.selectEntryElements"/></span><br/>
+	   <select multiple="multiple"
 	   name="conditionElementName" 
 	   >
 	     <option value="" selected="selected"><ssf:nlt 
