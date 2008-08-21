@@ -201,15 +201,18 @@ public class WorkflowUtils {
     			result.addPrincipalId(ObjectKeys.TEAM_MEMBER_ID);
 			} else if ("condition".equals(name)) {
 		    	if (entity.getEntryDef() != null) {
-		    		Element element = (Element)prop.selectSingleNode("./workflowEntryDataUserList[@definitionId='" +
+		    		List<Element> userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
 		    			entity.getEntryDef().getId() + "']");
-		    		if (element != null) {
-		    			String userListName = element.attributeValue("elementName"); //custom attribute name
-		   				CustomAttribute attr = entity.getCustomAttribute(userListName); 
-		   				if (attr != null) {
-		   					//comma separated value
-		   					result.addPrincipalIds(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
-		   				}
+		    		if (userLists != null && !userLists.isEmpty()) {
+		    			for (Element element:userLists) {
+		    				String userListName = element.attributeValue("elementName"); //custom attribute name
+		    				if (Validator.isNull(userListName)) continue;
+		    				CustomAttribute attr = entity.getCustomAttribute(userListName); 
+		    				if (attr != null) {
+		    					//comma separated value
+		    					result.addPrincipalIds(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
+		    				}
+		    			}
 		    		}
 		    	}
     		} else if ("entryCreator".equals(name) && GetterUtil.getBoolean(value, false)) {
