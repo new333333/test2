@@ -377,12 +377,6 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 	
 	public AuthenticationConfig getAuthenticationConfigForZone(Long zoneId)
 	{
-		AuthenticationConfig config =(AuthenticationConfig) getCoreDao().load(AuthenticationConfig.class, zoneId);
-		if(config == null) {
-			config = new AuthenticationConfig();
-			config.setZoneId(zoneId);
-			getCoreDao().save(config);
-		}
-		return config;
+		return (AuthenticationConfig) getCoreDao().load(AuthenticationConfig.class, zoneId);
 	}
 }
