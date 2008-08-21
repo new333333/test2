@@ -2605,7 +2605,7 @@
 	</item>
 	<item name="transitions" caption="__transitions" unique="./item[@name='transitions']">
 		<options>
-			<option name="transitionAuto" />
+			<option name="transitionImmediate" />
 			<option name="transitionManual" />
 			<option name="transitionOnModify" />
 			<option name="transitionOnReply" />
@@ -2626,7 +2626,7 @@
 			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
 	</item>
-	<item name="transitionAuto" caption="__transitionAuto" type="transition" >
+	<item name="transitionImmediate" caption="__transitionImmediate" type="transition" >
 		<properties>
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>

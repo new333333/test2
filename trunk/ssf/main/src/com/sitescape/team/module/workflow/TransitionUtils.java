@@ -610,7 +610,7 @@ public class TransitionUtils {
 								+ className + "'");
 					}
 				
-				} else if (type.equals("transitionAuto")) {
+				} else if (type.equals("transitionImmediate")) {
 					setVariables(condition, executionContext, entry, state);
 					if (debugEnabled) logger.debug("Take auto transition " + state.getState() + "." + toState);
 					return toState;					
