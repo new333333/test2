@@ -14,6 +14,7 @@ import com.sitescape.team.domain.WfNotify;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.util.GetterUtil;
+import com.sitescape.util.Validator;
 
 public class NotificationUtils {
 	   public static boolean hasEnterNotifications(Definition wfDef, Element stateEle ) {
@@ -84,18 +85,20 @@ public class NotificationUtils {
 	    				n.addPrincipalIds(LongIdUtil.getIdsAsLongSet(value));
 	    			} else if ("condition".equals(name)) {
 	    		    	if (entity.getEntryDef() != null) {
-	    		    		Element element = (Element)prop.selectSingleNode("./workflowEntryDataUserList[@definitionId='" +
+	    		    		List<Element> userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
 	    		    			entity.getEntryDef().getId() + "']");
-	    		    		if (element != null) {
-	    		    			String userListName = element.attributeValue("elementName"); //custom attribute name
-	    		   				CustomAttribute attr = entity.getCustomAttribute(userListName); 
-	    		   				if (attr != null) {
-	    		   					//comma separated
-	    		   					n.addPrincipalIds(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
-	    		   				}
+	    		    		if (userLists != null && !userLists.isEmpty()) {
+	    		    			for (Element element:userLists) {
+	    		    				String userListName = element.attributeValue("elementName"); //custom attribute name
+	    		    				if (Validator.isNull(userListName)) continue;
+	    		    				CustomAttribute attr = entity.getCustomAttribute(userListName); 
+	    		    				if (attr != null) {
+	    		    					//comma separated value
+	    		    					n.addPrincipalIds(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
+	    		    				}
+	    		    			}
 	    		    		}
 	    		    	}
-	    				
 	    			}
 	    		}
 	    		result.add(n);
