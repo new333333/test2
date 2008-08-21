@@ -71,6 +71,13 @@ function ss_popup_page() {
     dojo.style("folder_popup", "display", "none");
 }
 
+function ss_close_popup_page() {
+    dojo.style("page_popup", "display", "none");
+}
+
+function ss_close_popup_folder() {
+    dojo.style("folder_popup", "display", "none");
+}
 
 function ss_loadLinkBinderId(binderId, type, obj) {
 	dojo.byId("binderId").value = binderId;
@@ -79,7 +86,7 @@ function ss_loadLinkBinderId(binderId, type, obj) {
 	ss_popup_folder();
 	// May need to probe bgcolor...
 	dojo.animateProperty({node: "linkToFolderName", duration: 1000,
-	       properties: { backgroundColor: {start: #FFFFFF, end: "#FFFF66"}}}).play();
+	       properties: { backgroundColor: {start: "#FFFFFF", end: "#FFFF66"} }}).play();
 }
 
 function ss_loadLinkEntryId(entryId, obj) {
