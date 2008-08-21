@@ -845,13 +845,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					//  the definition id, the element name, the operation, and the operand value
 					if (inputData.exists("conditionDefinitionId") && 
 							inputData.exists("conditionElementName")) {
-						Element newPropertyEle = configProperty.createCopy();
-						newPropertiesEle.add(newPropertyEle);
 						String conditionDefinitionId = inputData.getSingleValue("conditionDefinitionId");
-						String conditionElementName = inputData.getSingleValue("conditionElementName");
-						Element workflowCondition = newPropertyEle.addElement("workflowEntryDataUserList");
-						workflowCondition.addAttribute("definitionId", conditionDefinitionId);
-						workflowCondition.addAttribute("elementName", conditionElementName);
+						if (Validator.isNotNull(conditionDefinitionId)) {
+							Element newPropertyEle = configProperty.createCopy();
+							newPropertiesEle.add(newPropertyEle);
+							String[] conditionElementNames = (String[]) inputData.getValues("conditionElementName");
+							for (int i=0; i<conditionElementNames.length; ++i) {
+								if (Validator.isNull(conditionElementNames[i])) continue;
+								Element workflowCondition = newPropertyEle.addElement("workflowEntryDataUserList");
+								workflowCondition.addAttribute("definitionId", conditionDefinitionId);
+								workflowCondition.addAttribute("elementName", conditionElementNames[i]);
+							}
+						}
 					}
 				} else {
 					if (type.equals("boolean") || type.equals("checkbox")) {
