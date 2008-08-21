@@ -96,11 +96,13 @@
 				calendarHref.style.marginBottom = "2px";
 				dojo.addClass(calendarHref, cssStyle);
 				
+				/*   WAITING TO BE PORTED (IF POSSIBLE) 
 				dojo.lfx.rounded(
 					{tl: {radius:2}, 
 					tr: {radius:2}, 
 					bl: {radius:2}, 
 					br: {radius:2}}, [calendarHref]); 
+				*/
 			}
 		},
 		stickyId : "${ssBinder.id}_${componentId}"
