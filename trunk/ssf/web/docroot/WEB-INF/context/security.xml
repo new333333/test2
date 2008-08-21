@@ -23,6 +23,7 @@
 		<property name="key" value="thisIsIgnored"/>
 		<property name="userAttribute" value="guest,ROLE_ANONYMOUS"/>
 		<property name="zoneModule"><ref bean="zoneModule"/></property>
+		<property name="authenticationModule"><ref bean="authenticationModule"/></property>
 	</bean>
 
 	<bean id="springAuthenticationBeans" class="com.sitescape.team.spring.security.SpringAuthenticationBeans">
