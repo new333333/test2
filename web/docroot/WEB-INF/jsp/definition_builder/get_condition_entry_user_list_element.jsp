@@ -40,7 +40,7 @@
 	parseInBrowser="true"><div 
 	   id="conditionEntryElements" >
 	   <span class="ss_bold"><ssf:nlt tag="definition.selectEntryElement"/></span><br/>
-	   <select
+	   <select multiple="multiple"
 	   name="conditionElementName" 
 	   >
 	     <option value="" selected="selected"><ssf:nlt 

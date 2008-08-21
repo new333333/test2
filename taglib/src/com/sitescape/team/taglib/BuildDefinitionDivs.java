@@ -1152,15 +1152,22 @@ public class BuildDefinitionDivs extends TagSupport {
 					} else if (type.equals("workflowEntryDataUserList")) {
 						Element workflowConditionProperty = (Element)rootElement.selectSingleNode("properties/property[@name='condition']");
 						if (workflowConditionProperty != null) {
-							Element workflowConditionEle = (Element) workflowConditionProperty.selectSingleNode("workflowEntryDataUserList");
-							if (workflowConditionEle != null) {
+							List<Element> workflowConditionElements = workflowConditionProperty.selectNodes("workflowEntryDataUserList");
+							if (workflowConditionElements != null && !workflowConditionElements.isEmpty()) {
+								Element workflowConditionEle = workflowConditionElements.get(0);  //all the same definition
 								//We have the current condition element; print out its values
 								String definitionId = workflowConditionEle.attributeValue("definitionId", "");
-								String elementName = workflowConditionEle.attributeValue("elementName", "");
+								StringBuffer elementName = new StringBuffer();
+								for (Element element:workflowConditionElements) {
+									if (definitionId.equals(element.attributeValue("definitionId"))) {
+										String name = element.attributeValue("elementName", "");
+										if (Validator.isNull(name)) continue;
+										elementName.append(", ").append(name);
+									}
+								}
 								//Get the entry definition itself
 								Definition def = DefinitionHelper.getDefinition(definitionId);
-								if (def != null) {
-									
+								if (def != null && elementName.length()>0) {									
 									sb.append("<span class=\"ss_bold\">");
 									sb.append(NLT.get("definition.workflowEntryDataUserList"));
 									sb.append("</span><br/><br/>");
@@ -1183,7 +1190,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("</span><br/>");
 									sb.append("</td>");
 									sb.append("<td valign=\"top\">");
-									sb.append(elementName);
+									sb.append(elementName.deleteCharAt(0).toString());
 									sb.append("</td>");
 									sb.append("</tr>");
 																		
