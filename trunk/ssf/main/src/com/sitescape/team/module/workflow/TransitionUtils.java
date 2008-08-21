@@ -570,7 +570,7 @@ public class TransitionUtils {
 						if (debugEnabled) logger.debug("Take conditional transition(" + type + ") " + state.getState() + "." + toState);
 						return toState;
 					}
-				} if (type.equals("transitionOnVariable")) {
+				} else if (type.equals("transitionOnVariable")) {
 					String name = DefinitionUtils.getPropertyValue(condition, "name");
 					if (!Validator.isNull(name)) {
 						String value = DefinitionUtils.getPropertyValue(condition, "value");
@@ -588,7 +588,7 @@ public class TransitionUtils {
 
 						}
 					}
-				} if (type.equals("transitionOnCondition")) {
+				} else if (type.equals("transitionOnCondition")) {
 					String className = DefinitionUtils.getPropertyValue(condition, "class");
 					try {
 						Class actionClass = ReflectHelper.classForName(className);
@@ -610,7 +610,12 @@ public class TransitionUtils {
 								+ className + "'");
 					}
 				
+				} else if (type.equals("transitionAuto")) {
+					setVariables(condition, executionContext, entry, state);
+					if (debugEnabled) logger.debug("Take auto transition " + state.getState() + "." + toState);
+					return toState;					
 				}
+
 			}
 					
 		}
