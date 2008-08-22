@@ -47,6 +47,7 @@ import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.ObjectControls;
 import com.sitescape.team.dao.util.SFQuery;
 import com.sitescape.team.domain.ApplicationGroup;
+import com.sitescape.team.domain.AuthenticationConfig;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Group;
@@ -237,6 +238,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getCoreDao().executeUpdate("update com.sitescape.team.domain.TemplateBinder set name=templateTitle where parentBinder is null and (name is null or name='')");
 			getCoreDao().executeUpdate("update com.sitescape.team.domain.FolderEntry set subscribed=false where subscribed is null");
 			getCoreDao().executeUpdate("update com.sitescape.team.domain.FolderEntry set subscribed=true where id in (select id.entityId from com.sitescape.team.domain.Subscription where id.entityType=6)");
+
 			//fixup user emails
 	 		SFQuery query=null;
 	 		List batch = new ArrayList();
@@ -351,8 +353,16 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				info.getSchedule().setMinutes("15");
 				info.setEnabled(true);
 				getAdminModule().setNotificationSchedule(info);
-				
 			}
+			
+			// Make sure there is an AuthenticationConfig
+			AuthenticationConfig config = (AuthenticationConfig) getCoreDao().load(AuthenticationConfig.class, zone.getId());
+			if(config == null) {
+				config = new AuthenticationConfig();
+				config.setZoneId(zone.getId());
+				getCoreDao().save(config);
+			}
+
 			zone.setUpgradeVersion(2);
  		}
   	}
@@ -431,7 +441,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getProfileDao().getReservedApplicationGroup(ObjectKeys.ALL_APPLICATIONS_GROUP_INTERNALID, zone.getId());
 			getProfileModule().indexEntry(g);
 		}
-
 	}
 
  	// Must be running inside a transaction set up by the caller
@@ -451,6 +460,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		top.setZoneId(top.getId());
     		top.setupRoot();
     		
+			AuthenticationConfig config = new AuthenticationConfig();
+			config.setZoneId(top.getId());
+			getCoreDao().save(config);
+
     		// some piece of code needs zone id in the context
     		RequestContextHolder.getRequestContext().setZoneId(top.getId());   		
 	
@@ -459,6 +472,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		//build user
     		User user = new User();
     		user.setName(zoneAdminName);
+    		user.setPassword(zoneAdminName);
     		user.setLastName(zoneAdminName);
     		user.setForeignName(zoneAdminName);
     		user.setZoneId(top.getId());
