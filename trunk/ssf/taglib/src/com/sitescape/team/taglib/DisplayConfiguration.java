@@ -74,6 +74,7 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
     private String configJspStyle;
     private boolean processThisItem = false;
     private DefinableEntity entry;
+    private Map entryMap;
 	private Map _params;
     
     private ProfileModule profileModule;
@@ -280,7 +281,9 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 									
 									
 								//Store the entry object
-								if (this.entry != null) {
+								if (this.entryMap != null) {
+									req.setAttribute(WebKeys.DEFINITION_ENTRY, this.entryMap);
+								} else {
 									req.setAttribute(WebKeys.DEFINITION_ENTRY, this.entry);
 								}
 								
@@ -345,6 +348,7 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 	    	this.configJspStyle = null;
 	    	this.processThisItem = false;
 	    	this.entry = null;
+	    	this.entryMap = null;
 			this._params = null;
 	    }
 	    
@@ -367,9 +371,9 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 	    this.processThisItem = flag;
 	}
 
-
-	public void setEntry(DefinableEntity entry) {
-	    this.entry = entry;
+	public void setEntry(Object entry) {
+	    if (entry instanceof Map) this.entryMap = (Map)entry;
+	    if (entry instanceof DefinableEntity) this.entry = (DefinableEntity)entry;
 	}
 
 	public void addParam(String name, String value) {
