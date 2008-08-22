@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9yfiir" pid="b9yfiir" name="Appendix" level="0" number="C"> <text>Editing the dialing.xml File</text> </target>
+
+ <target id="bf9c9gt" pid="b9yfiir" name="Table" level="1" number="Table C-1"> <text>Dialing.xml Attributes</text> </target>
+
+ <target id="b9yfj05" pid="b9yfiir" name="row" level="2"> <text>Attribute</text> </target>
+
+ <target id="b9yfj06" pid="b9yfiir" name="row" level="2"> <text>areaCode</text> </target>
+
+ <target id="b9yfk9g" pid="b9yfiir" name="row" level="2"> <text>tollPrefix</text> </target>
+
+ <target id="b9yfk9h" pid="b9yfiir" name="row" level="2"> <text>i18nPrefix</text> </target>
+
+ <target id="b9yfk9i" pid="b9yfiir" name="row" level="2"> <text>country</text> </target>
+
+ <target id="b9yfk9j" pid="b9yfiir" name="row" level="2"> <text>countrycode</text> </target>
+
+ <target id="b9yfk9k" pid="b9yfiir" name="row" level="2"> <text>dialingMode</text> </target>
+
+</targets>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9xwtad" pid="b9xwtad" name="Glossary" level="0"> <text>Glossary</text> </target>
+
+ <target id="b9xwtae" pid="b9xwtad" name="GlossEntry" level="1"> <text>access control </text> </target>
+
+ <target id="b9xxaes" pid="b9xwtad" name="GlossEntry" level="1"> <text>associated workflow process </text> </target>
+
+ <target id="b9xxaet" pid="b9xwtad" name="GlossEntry" level="1"> <text>business process </text> </target>
+
+ <target id="b9xxaeu" pid="b9xwtad" name="GlossEntry" level="1"> <text>comment </text> </target>
+
+ <target id="b9xxaev" pid="b9xwtad" name="GlossEntry" level="1"> <text>condition</text> </target>
+
+ <target id="b9xxaew" pid="b9xwtad" name="GlossEntry" level="1"> <text>custom command</text> </target>
+
+ <target id="b9xxaex" pid="b9xwtad" name="GlossEntry" level="1"> <text>dedicated application</text> </target>
+
+ <target id="b9xxaey" pid="b9xwtad" name="GlossEntry" level="1"> <text>element</text> </target>
+
+ <target id="b9xxaez" pid="b9xwtad" name="GlossEntry" level="1"> <text>form page</text> </target>
+
+ <target id="b9xxaf0" pid="b9xwtad" name="GlossEntry" level="1"> <text>flowchart</text> </target>
+
+ <target id="b9xxaf1" pid="b9xwtad" name="GlossEntry" level="1"> <text>global question</text> </target>
+
+ <target id="b9xxaf2" pid="b9xwtad" name="GlossEntry" level="1"> <text>initial state</text> </target>
+
+ <target id="b9xxaf3" pid="b9xwtad" name="GlossEntry" level="1"> <text>manual transition</text> </target>
+
+ <target id="b9xxaf4" pid="b9xwtad" name="GlossEntry" level="1"> <text>notification</text> </target>
+
+ <target id="b9xxaf5" pid="b9xwtad" name="GlossEntry" level="1"> <text>new command</text> </target>
+
+ <target id="b9xxaf6" pid="b9xwtad" name="GlossEntry" level="1"> <text>question</text> </target>
+
+ <target id="b9xxaf7" pid="b9xwtad" name="GlossEntry" level="1"> <text>state</text> </target>
+
+ <target id="b9xxaf8" pid="b9xwtad" name="GlossEntry" level="1"> <text>task</text> </target>
+
+ <target id="b9xxaf9" pid="b9xwtad" name="GlossEntry" level="1"> <text>template</text> </target>
+
+ <target id="b9xyj60" pid="b9xwtad" name="GlossEntry" level="1"> <text>transition</text> </target>
+
+ <target id="b9xyj61" pid="b9xwtad" name="GlossEntry" level="1"> <text>view page</text> </target>
+
+ <target id="b9xyj62" pid="b9xwtad" name="GlossEntry" level="1"> <text>workflow</text> </target>
+
+ <target id="b9xyj63" pid="b9xwtad" name="GlossEntry" level="1"> <text>workflow-management system</text> </target>
+
+ <target id="b9xyj64" pid="b9xwtad" name="GlossEntry" level="1"> <text>workflow participant</text> </target>
+
+ <target id="b9xyj65" pid="b9xwtad" name="GlossEntry" level="1"> <text>workflow process</text> </target>
+
+</targets>

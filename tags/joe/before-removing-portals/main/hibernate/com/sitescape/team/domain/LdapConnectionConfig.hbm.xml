@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class table="SS_LdapConnectionConfig" name="com.sitescape.team.domain.LdapConnectionConfig">
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <property name="zoneId" access="field"/>
+    <property name="url"/>
+    <property name="userIdAttribute"/>
+    <property name="mappings" type="com.sitescape.team.domain.AuthenticationMappingsUserType"/>
+    <property name="userSearches" type="com.sitescape.team.domain.AuthenticationSearchInfoUserType"/>
+    <property name="groupSearches" type="com.sitescape.team.domain.AuthenticationSearchInfoUserType"/>
+    <property name="principal"/>
+    <property name="credentials"/>
+    <property name="position"/>
+  </class>
+</hibernate-mapping>

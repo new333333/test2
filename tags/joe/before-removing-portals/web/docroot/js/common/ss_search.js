@@ -1,0 +1,957 @@
+/**
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
+ * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
+ * http://www.opensource.org/licenses/cpal_1.0. The CPAL is based on the Mozilla Public License Version 1.1
+ * but Sections 14 and 15 have been added to cover use of software over a computer network and provide for
+ * limited attribution for the Original Developer. In addition, Exhibit A has been modified to be
+ * consistent with Exhibit B.
+ * 
+ * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND,
+ * either express or implied. See the CPAL for the specific language governing rights and limitations
+ * under the CPAL.
+ * 
+ * The Original Code is ICEcore. The Original Developer is SiteScape, Inc. All portions of the code
+ * written by SiteScape, Inc. are Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * 
+ * 
+ * Attribution Information
+ * Attribution Copyright Notice: Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * Attribution Phrase (not exceeding 10 words): [Powered by ICEcore]
+ * Attribution URL: [www.icecore.com]
+ * Graphic Image as provided in the Covered Code [web/docroot/images/pics/powered_by_icecore.png].
+ * Display of Attribution Information is required in Larger Works which are defined in the CPAL as a
+ * work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
+ * 
+ * 
+ * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
+ * are trademarks of SiteScape, Inc.
+ */
+
+
+var ss_userOptionsCounter = 0;
+var ss_optionsArray = new Array();
+var ss_searchMoreInitialized = false;
+function ss_addOption(type) {
+	ss_optionsArray[ss_userOptionsCounter]=type;
+	switch (type){
+	   case "workflow" :
+	      ss_addWorkflow(ss_userOptionsCounter);
+	      break;
+	   case "entry" :
+	      ss_addEntry(ss_userOptionsCounter);
+	      break;
+	   case "tag" :
+	      ss_addTag(ss_userOptionsCounter);
+	      break;
+	   case "creation_date" :
+	      ss_addDate(ss_userOptionsCounter, "creation");
+	      break;
+	   case "modification_date" :
+	      ss_addDate(ss_userOptionsCounter, "modification");
+	      break;
+	   case "creator_by_id" :
+	      ss_addAuthor(ss_userOptionsCounter);
+	      break;
+	   case "last_activity" :
+	      ss_addLastActivity(ss_userOptionsCounter);
+	      break;
+	   case "folder" :
+	      ss_addFolder(ss_userOptionsCounter);
+	      break;
+	   default : alert("Unknown type: "+type);
+	}
+	ss_userOptionsCounter++;
+}
+function ss_callRemoveSearchOption(orderNo) { 
+	return function(evt) {ss_removeOption(orderNo);};
+}
+
+
+function ss_addInitializedWorkflow(wfIdValue, stepsValue) {
+	ss_optionsArray[ss_userOptionsCounter]='workflow';
+	var wfWidget = ss_addWorkflow(ss_userOptionsCounter, wfIdValue, stepsValue);
+	ss_userOptionsCounter++;
+}
+
+function ss_addInitializedEntry(entryId, fieldName, value, valueLabel) {
+	ss_optionsArray[ss_userOptionsCounter]='entry';
+	ss_addEntry(ss_userOptionsCounter, entryId, fieldName, value, valueLabel);
+	ss_userOptionsCounter++;
+}
+
+function ss_addInitializedCreationDate(startDate, endDate) {
+	ss_optionsArray[ss_userOptionsCounter]='creation_date';
+	ss_addDate(ss_userOptionsCounter, 'creation', startDate, endDate);
+	ss_userOptionsCounter++;
+}
+function ss_addInitializedLastActivity(daysNumber) {
+	ss_optionsArray[ss_userOptionsCounter]='last_activity';
+	ss_addLastActivity(ss_userOptionsCounter, daysNumber);
+	ss_userOptionsCounter++;
+}
+function ss_addInitializedModificationDate(startDate, endDate) {
+	ss_optionsArray[ss_userOptionsCounter]='modification_date';
+	ss_addDate(ss_userOptionsCounter, 'modification', startDate, endDate);
+	ss_userOptionsCounter++;
+}
+function ss_addInitializedTag(communityTag, personalTag) {
+	ss_optionsArray[ss_userOptionsCounter]='tag';
+	ss_addTag(ss_userOptionsCounter, communityTag, personalTag);
+	ss_userOptionsCounter++;
+}
+
+function ss_addInitializedAuthor(userId, userName) {
+	ss_optionsArray[ss_userOptionsCounter]='creator_by_id';
+	ss_addAuthor(ss_userOptionsCounter, userId, userName);
+	ss_userOptionsCounter++;
+}
+
+function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
+	var div = document.createElement('div');
+	div.id = "block"+ss_userOptionsCounter;
+	
+	var workflowsContainer = document.createElement('div');
+	workflowsContainer.setAttribute("style", "display:inline; float: left;");
+	div.appendChild(workflowsContainer);
+	
+	var remover = document.createElement('img');
+	dojo.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
+	remover.setAttribute("src", ss_imagesPath + "pics/delete.gif");
+	workflowsContainer.appendChild(remover);
+	workflowsContainer.appendChild(document.createTextNode(" " + ss_nlt_searchFormLabelWorkflow + ": "));
+
+	var wDiv = document.createElement('div');
+	wDiv.id = "placeholderWorkflow"+orderNo;
+	workflowsContainer.appendChild(wDiv);
+	var stepsContainer = document.createElement('ul');
+	stepsContainer.id = "workflowSteps"+orderNo;
+	stepsContainer.setAttribute("style", "display:inline; float: left; padding-left: 5px; ");
+	div.appendChild(stepsContainer);
+	
+	document.getElementById('ss_workflows_options').appendChild(div);
+
+	var textAreaWorkflowsObj = document.createElement('textArea');
+	textAreaWorkflowsObj.className = "ss_combobox_autocomplete";
+    textAreaWorkflowsObj.name = "searchWorkflow" + orderNo;
+    textAreaWorkflowsObj.id = "searchWorkflow" + orderNo;
+	
+	wDiv.appendChild(textAreaWorkflowsObj);
+	
+	var findWorkflows = ssFind.configSingle({
+				inputId: "searchWorkflow" + orderNo,
+				prefix: "searchWorkflow" + orderNo, 
+				searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_workflows_search",
+	      		listType: "workflows",
+				displayValue: true,
+				clickRoutine: function () {
+					var workflowId = findWorkflows.getSingleId();
+					var defaultStepsIds = workflowId == wfIdValue ? stepsValue : [];
+					var stepsS = "|" + defaultStepsIds.join("|") + "|";
+					stepsContainer.innerHTML = "";
+					dojo.xhrGet({
+						url: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_workflow_steps_search&workflowId=" + workflowId,
+						load: function(data) { 
+							for (var i in data) {
+								var liObj = document.createElement("li");
+								stepsContainer.appendChild(liObj);
+								var chckboxId = stepsContainer.id + workflowId+i;
+								var chkbox = document.createElement("input");
+								chkbox.type = "checkbox";
+								chkbox.value = i;
+								chkbox.id = chckboxId;
+								chkbox.name = "searchWorkflowStep" + orderNo;
+								liObj.appendChild(chkbox);
+								if (stepsS.indexOf("|" + i + "|") > -1) {
+									chkbox.checked = true;
+								}		
+								var label = document.createElement("label");
+								label.setAttribute("style", "padding-left: 5px;");
+								label.appendChild(document.createTextNode(data[i]));
+								liObj.appendChild(label);
+								label.htmlFor =  chckboxId;
+							}
+						},
+						handleAs: "json-comment-filtered",
+						preventCache: true
+					});
+				},
+				displayArrow: true
+		});
+	
+	if (wfIdValue!=null && wfIdValue!=""){
+		findWorkflows.setValue(wfIdValue, ss_searchWorkflows[wfIdValue]);
+		findWorkflows.selectItem({id: wfIdValue});
+	}	
+	
+	var brObj = document.createElement('br');
+	brObj.setAttribute("style", "clear: both; ");
+	div.appendChild(brObj);
+	
+	return findWorkflows;
+}
+
+
+
+
+function ss_getSelectedBinders() {
+	var value = "";
+	var obj = document.getElementById('search_currentFolder');
+	if (obj !== undefined && obj != null && obj.checked) {
+		obj = document.getElementById('search_dashboardFolders');
+		return 	" searchFolders_" + obj.value;
+	}
+	obj = document.getElementById('t_searchForm_wsTreesearchFolders_idChoices');				
+	if (obj !== undefined && obj != null) value = obj.value;
+	obj = document.getElementById('search_currentAndSubfolders');
+	if (obj !== undefined && obj != null && obj.checked) {
+		//don't allow duplicates
+		var id = " searchFolders_" + obj.name.substr(13);
+		var re = new RegExp(id + " ", "g");
+		value = value.replace(re, " ");
+		re = new RegExp(id + "$", "g");
+		value = value.replace(re, "");
+		value += id;
+	}
+	return value;
+ 
+}
+function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
+	var div = document.createElement('div');
+	div.id = "block"+ss_userOptionsCounter;
+	var remover = document.createElement('img');
+	dojo.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
+	remover.setAttribute("src", ss_imagesPath + "pics/delete.gif");
+	div.appendChild(remover);
+	div.appendChild(document.createTextNode(" " + ss_nlt_searchFormLabelEntry + ": "));
+	
+	var entryTypeDiv = document.createElement('div');
+	entryTypeDiv.id = "placeholderEntry"+orderNo;
+	div.appendChild(entryTypeDiv);
+	
+	var fieldsDiv = document.createElement('div');
+	fieldsDiv.id = "entryFields"+orderNo;
+	fieldsDiv.setAttribute("style", "display:inline;");
+	div.appendChild(fieldsDiv);
+	
+	var fieldValueDiv = document.createElement('div');
+	fieldValueDiv.id = "entryFieldsValue"+orderNo;
+	fieldValueDiv.setAttribute("style", "display:inline;");
+	div.appendChild(fieldValueDiv);
+	
+	var fieldValue2Div = document.createElement('div');
+	fieldValue2Div.id = "entryFieldsValue2"+orderNo;
+	fieldValue2Div.setAttribute("style", "display:inline;");
+	div.appendChild(fieldValue2Div);
+		
+	document.getElementById('ss_entries_options').appendChild(div);
+
+
+
+	var entryInputId = "ss_entry_def_id" + orderNo;
+	
+	var textAreaEntriesObj = document.createElement('textArea');
+	textAreaEntriesObj.className = "ss_combobox_autocomplete";
+    textAreaEntriesObj.name = entryInputId;
+    textAreaEntriesObj.id = entryInputId;
+	
+	entryTypeDiv.appendChild(textAreaEntriesObj);
+	
+	var findEntries = ssFind.configSingle({
+		inputId: entryInputId,
+		prefix: entryInputId, 
+		searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_entry_types_search",
+  		listType: "entry_fields",
+		displayValue: true,
+		displayArrow: true,
+		clickRoutine: function () {
+			ss_removeAllChildren(fieldsDiv);
+			ss_removeAllChildren(fieldValueDiv);
+			ss_removeAllChildren(fieldValue2Div);
+			
+			var entryTypeId = findEntries.getSingleId();
+			var fieldsInputId = "elementName" + orderNo;
+			
+			var textAreaFieldsObj = document.createElement('textArea');
+			textAreaFieldsObj.className = "ss_combobox_autocomplete";
+		    textAreaFieldsObj.name = fieldsInputId;
+		    textAreaFieldsObj.id = fieldsInputId;
+			
+			fieldsDiv.appendChild(textAreaFieldsObj);
+			
+			var findEntryFields = ssFind.configSingle({
+				inputId: fieldsInputId,
+				prefix: fieldsInputId, 
+				searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_entry_fields_search&ss_entry_def_id=" + entryTypeId,
+	      		listType: "entry_fields",
+				displayValue: true,
+				displayArrow: true,
+				clickRoutine: function () {
+					var fieldValueWidget = dijit.byId("elementValue" + orderNo + "_selected");
+					if (fieldValueWidget && fieldValueWidget.destroy) {
+						fieldValueWidget.destroy();
+					}
+					var fieldValue2Widget = dijit.byId("elementValue" + orderNo + "_selected" + "0");
+					if (fieldValue2Widget && fieldValue2Widget.destroy) {
+						fieldValue2Widget.destroy();
+					}
+
+					ss_removeAllChildren(fieldValueDiv);
+					ss_removeAllChildren(fieldValue2Div);
+			
+					var currentFieldId = findEntryFields.getSingleId();
+					var currentFieldName = findEntryFields.getSingleValue();
+					var fieldType = findEntryFields.getSingleType();
+					
+					if (fieldType == "date" || fieldType == "event") {
+						var dateValue = "";
+						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
+							dateValue = new Date(value);
+						}
+						addDateField(orderNo, fieldValueDiv, currentFieldId, fieldName, dateValue);
+					} else if (fieldType == "date_time") {
+						var dateValue = "";
+						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
+							dateValue = new Date(value);
+						}
+						addDateTimeField(orderNo, fieldValueDiv, fieldValue2Div, currentFieldId, fieldName, dateValue);
+					} else if (fieldType == "user_list") {
+						var idToSet = false;
+						var labelToSet = false;
+						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
+							idToSet = value;
+							labelToSet= valueLabel;
+						}
+						addUserListField(orderNo, fieldValueDiv, currentFieldId, fieldName, idToSet, labelToSet);					
+					} else if (fieldType == "group_list") {
+						var idToSet = false;
+						var labelToSet = false;
+						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
+							idToSet = value;
+							labelToSet= valueLabel;
+						}
+						addGroupListField(orderNo, fieldValueDiv, currentFieldId, fieldName, idToSet, labelToSet);					
+					} else if (fieldType == "team_list") {
+						var idToSet = false;
+						var labelToSet = false;
+						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
+							idToSet = value;
+							labelToSet= valueLabel;
+						}
+						addTeamListField(orderNo, fieldValueDiv, currentFieldId, fieldName, idToSet, labelToSet);					
+					} else if (fieldType == "checkbox" || fieldType == "radio" || fieldType == "selectbox") {
+						var idToSet = false;
+						var labelToSet = false;
+						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
+							idToSet = value;
+							labelToSet= valueLabel;
+						}
+						dojo.xhrGet({
+					    	url: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_entry_fields_search&ss_entry_def_id=" + entryTypeId + "&elementName=" + currentFieldId,
+							load: function (data) {
+								var selectObj = document.createElement("select");
+								selectObj.name = "elementValue" + orderNo + "_selected";
+								selectObj.id = "elementValue" + orderNo + "_selected";
+								for (var i in data) {
+									var optionObj = document.createElement("option");
+									optionObj.value = i;
+									optionObj.selected = (idToSet == i);
+									optionObj.innerHTML = data[i];
+									selectObj.appendChild(optionObj);
+								}
+								fieldValue2Div.appendChild(selectObj);
+							},
+							handleAs: "json-comment-filtered",
+							preventCache: true
+						});
+					} else if (fieldType == "entryAttributes") {
+						// TODO!
+						/*var idToSet = false;
+						var labelToSet = false;					
+						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
+							idToSet = value;
+							labelToSet= valueLabel;
+						}*/
+						
+						var textAreaAttributesFieldsObj = document.createElement('textArea');
+						textAreaAttributesFieldsObj.className = "ss_combobox_autocomplete";
+					    textAreaAttributesFieldsObj.name = "elementValue" + orderNo;
+					    textAreaAttributesFieldsObj.id = "elementValue" + orderNo;
+						
+						fieldValue2Div.appendChild(textAreaAttributesFieldsObj);
+						
+						var findAttributeFields = ssFind.configSingle({
+							inputId: "elementValue" + orderNo,
+							prefix: "elementValue" + orderNo, 
+							/* searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_entry_fields_search&ss_entry_def_id=" + entryTypeId, */
+							searchUrl: ss_AjaxBaseUrl + "&action=advanced_search&operation=get_entry_attributes_widget&elementName="+currentFieldId+"&binderId=71",
+				      		listType: "entry_fields",
+							displayValue: true,
+							displayArrow: true
+						});
+							
+					} else {// TODO: entryAttributes field!!
+						var idToSet = false;
+						var labelToSet = false;					
+						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
+							idToSet = value;
+							labelToSet= valueLabel;
+						}
+						var inpt = document.createElement('input');
+						inpt.type = "text";
+						inpt.id = "elementValue" + orderNo + "_selected";
+						inpt.name = "elementValue" + orderNo + "_selected";
+						if (labelToSet) {
+							inpt.value = labelToSet;
+						}
+						fieldValue2Div.appendChild(inpt);
+					}
+					
+				}
+			});
+			
+			if (entryId && fieldName && entryTypeId == entryId) {
+				findEntryFields.setValue(fieldName, ss_searchFields[entryId+"-"+fieldName], ss_searchFieldsTypes[entryId+"-"+fieldName]);
+				findEntryFields.selectItem({id: fieldName});
+			}
+		}		
+	});
+	
+	if (entryId) {
+		findEntries.setValue(entryId, ss_searchEntries[entryId]);
+		findEntries.selectItem({id: entryId});
+		// , fieldName, ss_searchFields[entryId+"-"+fieldName], 
+		// value, ss_searchFieldsTypes[entryId+"-"+fieldName], valueLabel);
+	}	
+	
+/*
+	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", 
+		getSubSearchString:ss_getSelectedBinders,
+		dataUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_entry_types_widget&idChoices=%{searchString}&randomNumber="+ss_random++, 
+		nestedUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_entry_fields_widget&randomNumber="+ss_random++, 
+		widgetContainer:sDiv, widgetContainer2:sDiv2, searchFieldIndex:orderNo, mode: "remote",
+		maxListLength : 10,	autoComplete: false, weekStartsOn: ss_weekStartsOn};
+	var entryWidget = dojox.widget.createWidget("EntrySelect", properties, document.getElementById("placeholderEntry"+orderNo+""));
+	if (entryId && entryId != "") {
+		entryWidget.setDefaultValue(entryId, ss_searchEntries[entryId], fieldName, ss_searchFields[entryId+"-"+fieldName], value, ss_searchFieldsTypes[entryId+"-"+fieldName], valueLabel);
+	}
+*/	
+}
+
+function addDateField(orderNo, container, fieldId, fieldName, value) {
+	var localContainer = document.createElement("input");
+	localContainer.type = "text";
+	container.appendChild(localContainer);
+	
+	return [new dijit.form.DateTextBox({value: value, 
+								id: "elementValue" + orderNo + "_selected", 
+								name: "elementValue" + orderNo + "_selected",
+								autoComplete: false}, 
+							localContainer)];
+}
+
+function addDateTimeField(orderNo, dateContainer, timeContainer, fieldId, fieldName, value) {
+	var widgets = [];
+	widgets.push(addDateField(orderNo, dateContainer, fieldId, fieldName, value));
+	
+	var localContainer = document.createElement("input");
+	localContainer.type = "text";
+	timeContainer.appendChild(localContainer);
+	
+	widgets.push(new dijit.form.TimeTextBox({value: value, 
+								id: "elementValue" + orderNo + "_selected" + "0",
+								name: "elementValue" + orderNo + "_selected" + "0",
+								autoComplete: false}, 
+							localContainer));
+	return widgets;
+}
+
+function addUserListField(orderNo, container, fieldId, fieldName, id, name) {
+	var textAreaUserListObj = document.createElement('textArea');
+	textAreaUserListObj.className = "ss_combobox_autocomplete";
+    textAreaUserListObj.name = "elementValue" + orderNo;
+    textAreaUserListObj.id = "elementValue" + orderNo;
+	
+	container.appendChild(textAreaUserListObj);
+	
+	var findUsers = ssFind.configSingle({
+				inputId: "elementValue" + orderNo,
+				prefix: "elementValue" + orderNo, 
+				searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_user_search",
+	      		listType: "user",
+				displayValue: true,
+				displayArrow: true,
+				addCurrentUserToResult: true
+		});
+	
+	if (id && name) {
+		findUsers.setValue(id, name);
+	}	
+}
+
+function addGroupListField(orderNo, container, fieldId, fieldName, id, name) {
+	var textAreaUserListObj = document.createElement('textArea');
+	textAreaUserListObj.className = "ss_combobox_autocomplete";
+    textAreaUserListObj.name = "elementValue" + orderNo;
+    textAreaUserListObj.id = "elementValue" + orderNo;
+	
+	container.appendChild(textAreaUserListObj);
+	
+	var findGroups = ssFind.configSingle({
+				inputId: "elementValue" + orderNo,
+				prefix: "elementValue" + orderNo, 
+				searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_user_search",
+	      		listType: "group",
+				displayValue: true,
+				displayArrow: true
+		});
+	
+	if (id && name) {
+		findGroups.setValue(id, name);
+	}	
+}
+
+function addTeamListField(orderNo, container, fieldId, fieldName, id, name) {
+	var textAreaUserListObj = document.createElement('textArea');
+	textAreaUserListObj.className = "ss_combobox_autocomplete";
+    textAreaUserListObj.name = "elementValue" + orderNo;
+    textAreaUserListObj.id = "elementValue" + orderNo;
+	
+	container.appendChild(textAreaUserListObj);
+	
+	var findTeams = ssFind.configSingle({
+				inputId: "elementValue" + orderNo,
+				prefix: "elementValue" + orderNo, 
+				searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_user_search",
+	      		listType: "teams",
+				displayValue: true,
+				displayArrow: true
+		});
+	
+	if (id && name) {
+		findTeams.setValue(id, name);
+	}	
+}
+
+function ss_addTag(orderNo, communityTagValue, personalTagValue) {
+	var div = document.createElement('div');
+	div.id = "block"+ss_userOptionsCounter;
+	var remover = document.createElement('img');
+	dojo.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
+	remover.setAttribute("src", ss_imagesPath + "pics/delete.gif");
+	div.appendChild(remover);
+
+	var pDiv = document.createElement('div');
+	pDiv.id = "placeholderPersonal"+orderNo;
+	pDiv.style.display = "inline";
+	
+	var cDiv = document.createElement('div');
+	cDiv.id = "placeholderCommunity"+orderNo;
+	cDiv.style.display = "inline";
+
+	div.appendChild(document.createTextNode(" " + ss_nlt_tagsCommunityTags + ": "));
+	div.appendChild(cDiv);
+	div.appendChild(document.createTextNode(" " + ss_nlt_tagsPersonalTags + ": "));
+	div.appendChild(pDiv);
+	document.getElementById('ss_tags_options').appendChild(div);
+
+	var textAreaCommunityTagsObj = document.createElement('textArea');
+	textAreaCommunityTagsObj.className = "ss_combobox_autocomplete";
+    textAreaCommunityTagsObj.name = "searchCommunityTags" + orderNo;
+    textAreaCommunityTagsObj.id = "searchCommunityTags" + orderNo;
+	
+	cDiv.appendChild(textAreaCommunityTagsObj);
+	
+	var findCommunityTags = ssFind.configSingle({
+				inputId: "searchCommunityTags" + orderNo,
+				prefix: "searchCommunityTags" + orderNo, 
+				searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_tag_search", 
+	      		listType: "communityTags",
+				displayValueOnly: true,
+				displayArrow: true
+		});
+	if (communityTagValue && communityTagValue != "") {
+		findCommunityTags.setValue(communityTagValue, communityTagValue);
+	}
+	
+	var textAreaPersonalTagsObj = document.createElement('textArea');
+	textAreaPersonalTagsObj.className = "ss_combobox_autocomplete";
+    textAreaPersonalTagsObj.name = "searchPersonalTags" + orderNo;
+    textAreaPersonalTagsObj.id = "searchPersonalTags" + orderNo;
+	
+	pDiv.appendChild(textAreaPersonalTagsObj);
+	
+	var findPersonalTags = ssFind.configSingle({
+				inputId: "searchPersonalTags" + orderNo,
+				prefix: "searchPersonalTags" + orderNo, 
+				searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_tag_search", 
+	      		listType: "personalTags",
+				displayValueOnly: true,
+				displayArrow: true
+		});
+	if (personalTagValue && personalTagValue != "") {
+		findPersonalTags.setValue(personalTagValue, personalTagValue);
+	}
+}
+
+function ss_addAuthor(orderNo, authorId, authorName) {
+	var div = document.createElement('div');
+	div.id = "block"+ss_userOptionsCounter;
+	var remover = document.createElement('img');
+	dojo.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
+	remover.setAttribute("src", ss_imagesPath + "pics/delete.gif");
+	div.appendChild(remover);
+
+	var aDiv = document.createElement('div');
+	aDiv.id = "placeholderAuthor"+orderNo;
+
+	div.appendChild(document.createTextNode(" " + ss_searchFormLabelAuthor + ": "));
+	div.appendChild(aDiv);
+	document.getElementById('ss_authors_options').appendChild(div);
+	
+	
+	var textAreaAuthorObj = document.createElement('textArea');
+	textAreaAuthorObj.className = "ss_combobox_autocomplete";
+    textAreaAuthorObj.name = "searchAuthors" + orderNo;
+    textAreaAuthorObj.id = "searchAuthors" + orderNo;
+	
+	aDiv.appendChild(textAreaAuthorObj);
+	
+	var findAuthors = ssFind.configSingle({
+				inputId: "searchAuthors" + orderNo,
+				prefix: "searchAuthors" + orderNo, 
+				searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_user_search",
+	      		listType: "user",
+				displayValue: true,
+				displayArrow: true,
+				addCurrentUserToResult: true
+		});
+	
+	if (authorId && authorName) {
+		findAuthors.setValue(authorId, authorName);
+	}	
+}
+
+function ss_addLastActivity(orderNo, initialDaysNumber) {
+	var div = document.createElement('div');
+	div.id = "block"+ss_userOptionsCounter;
+	div.appendChild(document.createTextNode(" " + ss_searchFormLabelLastActivity + ": "));
+	
+	var selectBox = document.createElement('select');
+	selectBox.name="searchDaysNumber"+orderNo;
+	selectBox.id="searchDaysNumber"+orderNo;	
+	var option = document.createElement('option');
+	option.value = 0;
+	option.appendChild(document.createTextNode(ss_days_0));
+	selectBox.appendChild(option);
+	option = document.createElement('option');
+	option.value = 1;
+	if (initialDaysNumber && initialDaysNumber==1) option.selected=true; 
+	option.appendChild(document.createTextNode(ss_days_1));
+	selectBox.appendChild(option);
+	option = document.createElement('option');
+	option.value = 3;
+	if (initialDaysNumber && initialDaysNumber==3) option.selected=true; 
+	option.appendChild(document.createTextNode(ss_days_3));
+	selectBox.appendChild(option);
+	option = document.createElement('option');
+	option.value = 7;
+	if (initialDaysNumber && initialDaysNumber==7) option.selected=true; 
+	option.appendChild(document.createTextNode(ss_days_7));
+	selectBox.appendChild(option);
+	option = document.createElement('option');
+	option.value = 30;
+	if (initialDaysNumber && initialDaysNumber==30) option.selected=true; 
+	option.appendChild(document.createTextNode(ss_days_30));
+	selectBox.appendChild(option);
+	option = document.createElement('option');
+	option.value = 90;
+	if (initialDaysNumber && initialDaysNumber==90) option.selected=true; 
+	option.appendChild(document.createTextNode(ss_days_90));
+	selectBox.appendChild(option);
+	
+	div.appendChild(selectBox);
+	document.getElementById('ss_lastActivities_options').appendChild(div);	
+}
+
+function ss_addDate(orderNo, type, startDate, endDate) {
+	var div = document.createElement('div');
+	div.id = "block"+ss_userOptionsCounter;
+	var remover = document.createElement('img');
+	dojo.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
+	remover.setAttribute("src", ss_imagesPath + "pics/delete.gif");
+	div.appendChild(remover);
+	div.appendChild(document.createTextNode(" " + ss_searchFormLabelDate + ": "));
+	
+	var placeholderStartDateObj = document.createElement('input');
+	placeholderStartDateObj.id = "placeholderStartDate"+orderNo;
+	placeholderStartDateObj.type = "text"
+	div.appendChild(placeholderStartDateObj);
+	
+	var placeholderEndDateObj = document.createElement('input');
+	placeholderEndDateObj.type = "text";
+	placeholderEndDateObj.id = "placeholderEndDate"+orderNo;
+	div.appendChild(placeholderEndDateObj);
+	
+	if (type == 'creation')	document.getElementById('ss_creationDates_options').appendChild(div);
+	else document.getElementById('ss_modificationDates_options').appendChild(div);
+	if (!startDate)
+		startDate = ''; 
+
+	if (!endDate)
+		endDate = '';
+	
+	var startDateWidget = new dijit.form.DateTextBox({value: ss_parseSimpleDate(startDate), 
+								weekStartsOn: ss_weekStartsOn,
+								id:'searchStartDate'+orderNo, 
+								name:'searchStartDate'+orderNo,
+								maxListLength : 10,	
+								autoComplete: false}, 
+							placeholderStartDateObj);
+							
+	var endDateWidget = new dijit.form.DateTextBox({value: ss_parseSimpleDate(endDate), 
+								id:'searchEndDate'+orderNo, 
+								name:'searchEndDate'+orderNo,
+								maxListLength : 10,	autoComplete: false}, 
+							placeholderEndDateObj);
+}
+
+/* check/uncheck checkboxes in tree on click in the place name */
+function t_advSearchForm_wsTree_showId(id, obj) {
+	return ss_checkTree(obj, "ss_tree_checkboxt_searchForm_wsTreesearchFolders" + id)
+}
+
+function ss_addFolderAfterPost(response, bindObjId) {
+	var bindObj = document.getElementById(bindObjId);
+	if (bindObj) {
+		bindObj.innerHTML = response;
+	}
+}
+
+function ss_removeOption(orderNo) {
+	ss_optionsArray[orderNo]="";
+	var parent = document.getElementById('block'+orderNo).parentNode;
+	parent.removeChild(document.getElementById('block'+orderNo));
+}
+
+function ss_search() {
+	ss_prepareAdditionalSearchOptions();
+	document.getElementById('ss_advSearchForm').submit();
+}
+
+function ss_removeAllChildren(domObj) {
+	if (domObj && domObj.hasChildNodes()) {
+	    while (domObj.childNodes.length >= 1 ) {
+	        domObj.removeChild( domObj.firstChild );       
+	    } 
+	}
+}
+
+
+
+function ss_searchToggleFolders(objId, selection) {
+	var obj = document.getElementById(objId);
+	if (obj && obj.style) {
+		if (selection == "dashboard") {
+			obj.style.visibility="hidden";
+			obj.style.display="none";
+		} else {
+			obj.style.visibility="visible";
+			obj.style.display="block";
+		}
+	}
+}
+
+function ss_searchSetCheckbox(obj, name) {
+	if (obj.checked) {
+		var formObj = ss_getContainingForm(obj)
+		formObj[name].checked = true;
+	}
+}
+
+function ss_showAdditionalOptions(objId, txtContainerId, namespace) {
+	var txtContainerObj = document.getElementById(txtContainerId);
+	if (txtContainerObj) {
+		if (txtContainerObj.innerHTML == ss_searchFormMoreOptionsHideLabel) {
+			txtContainerObj.innerHTML = ss_searchFormMoreOptionsShowLabel;
+		} else {
+			txtContainerObj.innerHTML = ss_searchFormMoreOptionsHideLabel;
+		}
+	}
+	
+	var ssSearchParseAdvancedFormInputObj = document.getElementById("ssSearchParseAdvancedForm" + namespace);
+	if (ssSearchParseAdvancedFormInputObj) {
+		ssSearchParseAdvancedFormInputObj.value = "true";
+	}
+	
+	ss_showHide(objId);
+	if (!ss_searchMoreInitialized) {
+		ss_initSearchOptions();
+	}
+}
+
+
+function ss_showHideDetails(ind){
+	ss_showHide("summary_"+ind);
+	ss_showHide("details_"+ind);
+}
+
+
+
+function ss_fillSearchMask(id, value) { 
+	if (document.getElementById(id)) document.getElementById(id).value = value;
+}
+
+function ss_goToSearchResultPage(ind) {
+	var url=ss_AdvancedSearchURL;
+	url = url + "&pageNumber=" + ind;
+	document.location.href = url;
+}
+
+function ss_goToSearchResultPageByInputValue(inputId) {
+	var inputObj = document.getElementById(inputId);
+	if (!inputObj) {
+		return;
+	}
+	var ind = inputObj.value;
+	var url=ss_AdvancedSearchURL;
+	url = url + "&pageNumber=" + ind;
+	document.location.href = url;
+}
+
+function ss_prepareAdditionalSearchOptions() {
+	var numbers = new Array();
+	var types = new Array();
+	for (var i=0; i<ss_userOptionsCounter; i++) {
+		if (ss_optionsArray[i] != "") {
+			numbers[numbers.length] = i;
+			types[types.length] = ss_optionsArray[i];
+		}
+	}
+	document.getElementById("searchNumbers").value = numbers.join(" ");
+	document.getElementById("searchTypes").value = types.join(" ");
+	return true;
+}
+
+function ss_saveSearchQuery(inputId, errMsgBoxId) {
+	var inputObj = document.getElementById(inputId);
+	if (!inputObj) {
+		return;
+	}
+	var queryName = inputObj.value;
+	if (!queryName || queryName.trim() == "" || queryName == window.ss_searchResultSavedSearchInputLegend) {
+		var errMsgBoxObj = document.getElementById(errMsgBoxId);		
+		errMsgBoxObj.innerHTML = ss_noNameMsg;
+		ss_showDiv(errMsgBoxId);
+		inputObj.focus();
+		return;
+	} else {
+		ss_hideDiv(errMsgBoxId);
+	}
+	if (!ss_nameAlreadyInUse(queryName) || (ss_overwrite(queryName))) {
+		var urlParams = {operation:"save_search_query", queryName:queryName, tabId:ss_currentTabId};
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
+		ss_get_url(url, ss_addSavedSearchToView);
+	}
+}
+function ss_callRemoveSavedQuery(queryName, errMsg, objToRemove) { 
+	return function(evt) {ss_removeSavedSearchQuery(queryName, errMsg, objToRemove);};
+}
+
+function ss_addSavedSearchToView(data) {
+	if (data.savedQueryName && !ss_nameAlreadyInUse(data.savedQueryName)) {
+		var savedQueriesList = document.getElementById("ss_savedQueriesList");	
+		
+		if (savedQueriesList && !hasListElements(savedQueriesList)) {
+			savedQueriesList.innerHTML = "";
+		}
+		
+		var newLi = document.createElement("li");
+	
+		var removerLink = document.createElement('a');
+		removerLink.href = "javascript: //;";
+		dojo.connect(removerLink, "onclick", ss_callRemoveSavedQuery(data.savedQueryName,'ss_saveQueryErrMsg', newLi));
+		var removerImg = document.createElement('img');
+		removerImg.setAttribute("src", ss_imagesPath + "pics/delete.gif");
+		removerLink.appendChild(removerImg);
+		
+		var queryLink = document.createElement("a");
+		queryLink.href = ss_AdvancedSearchURLNoOperation + "&operation=ss_savedQuery&ss_queryName=" + data.savedQueryName;
+		queryLink.innerHTML = data.savedQueryName;
+		
+		newLi.appendChild(removerLink);
+		newLi.appendChild(document.createTextNode(" "))
+		newLi.appendChild(queryLink);
+		
+		savedQueriesList.appendChild(newLi);
+		ss_addToSaved(data.savedQueryName);
+	}
+}
+
+function hasListElements(htmlObj) {
+	if (!htmlObj) {
+		return false;
+	}
+	for (var i = 0; i < htmlObj.childNodes.length; i++) {
+		if (htmlObj.childNodes[i].tagName == "LI") {
+			return true;
+		}
+	}
+	return false;
+}
+
+
+function ss_removeSavedSearchQuery(queryName, errMsgBoxId, objToRemove) {
+	if (!queryName) {
+		return;
+	}
+	var urlParams = {operation:"remove_search_query", queryName:queryName};
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
+	ss_get_url(url, ss_removeSavedSearchFromView, objToRemove);
+}
+
+function ss_removeSavedSearchFromView(data, objToRemove) {
+	if (data.removedQueryName) {
+		ss_removeFromSaved(data.removedQueryName);
+		objToRemove.parentNode.removeChild(objToRemove);
+	}
+}
+
+var ss_savedQueries = "|";
+
+function ss_addToSaved(queryName) {
+	if (!ss_nameAlreadyInUse(queryName)) {
+		ss_savedQueries = ss_savedQueries+queryName+"|";
+	}
+}
+function ss_overwrite(queryName) {
+	var answer = confirm(ss_overwriteQuestion);
+	if (answer)	return true;
+	else return false;
+}
+function ss_removeFromSaved(queryName){
+	var extendedName = "|"+queryName+"|";
+	ss_savedQueries = ss_savedQueries.replace(extendedName, "|");
+}
+function ss_nameAlreadyInUse(queryName) {
+	if (ss_savedQueries.indexOf("|"+queryName+"|")>-1) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function ss_parseSimpleDate(date) {
+	if (!date) {
+		return date;
+	}
+	
+	if (date.length != 10) {
+		return date;
+	}
+	var y = date.substr(0, 4) * 1;
+	var m = date.substr(5, 2) * 1 - 1;
+	var d = date.substr(8, 2) * 1;
+	return new Date(y, m, d);
+}
+
+

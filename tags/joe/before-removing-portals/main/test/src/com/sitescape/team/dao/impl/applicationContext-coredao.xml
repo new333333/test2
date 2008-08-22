@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" destroy-method="close">
+		<property name="driverClassName"><value>com.mysql.jdbc.Driver</value></property>
+		<property name="url"><value>jdbc:mysql://localhost:3306/sitescape?useUnicode=true&amp;characterEncoding=UTF-8</value></property>
+		<property name="username"><value>sitescape</value></property>
+		<property name="password"><value>sitescape</value></property>
+	</bean>
+
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler"/>
+
+	<!-- Hibernate session factory: Different from our production configuration 
+	     in an effort to be able to test the code in as much isolation as possible.
+	     For example, this configuration does not depend upon JNDI for datasource
+	     lookup, etc. -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource"><ref local="dataSource"/></property>
+		<property name="lobHandler"><ref local="lobHandler"/></property>
+		<!-- Sitescape mappings only -->
+		<property name="mappingResources">
+			<list>
+		<value>com/sitescape/team/security/accesstoken/impl/TokenInfo.hbm.xml</value>
+		<value>com/sitescape/team/security/function/Function.hbm.xml</value>
+	    <value>com/sitescape/team/security/function/WorkAreaFunctionMembership.hbm.xml</value>
+	    <value>com/sitescape/team/domain/Attachment.hbm.xml</value>
+	    <value>com/sitescape/team/domain/AuditTrail.hbm.xml</value>
+	    <value>com/sitescape/team/domain/AuthenticationConfig.hbm.xml</value>
+	    <value>com/sitescape/team/domain/Binder.hbm.xml</value>
+	    <value>com/sitescape/team/domain/ChangeLog.hbm.xml</value>
+	    <value>com/sitescape/team/domain/CustomAttribute.hbm.xml</value>
+	    <value>com/sitescape/team/domain/Dashboard.hbm.xml</value>
+	    <value>com/sitescape/team/domain/Definition.hbm.xml</value>
+	    <value>com/sitescape/team/domain/Event.hbm.xml</value>
+	    <value>com/sitescape/team/domain/FolderEntry.hbm.xml</value>
+	    <value>com/sitescape/team/domain/LdapConnectionConfig.hbm.xml</value>
+	    <value>com/sitescape/team/domain/LibraryEntry.hbm.xml</value>
+	    <value>com/sitescape/team/domain/LicenseStats.hbm.xml</value>
+	    <value>com/sitescape/team/domain/Membership.hbm.xml</value>
+	    <value>com/sitescape/team/domain/PostingDef.hbm.xml</value>
+	    <value>com/sitescape/team/domain/Principal.hbm.xml</value>
+	    <value>com/sitescape/team/domain/Ratings.hbm.xml</value>
+	    <value>com/sitescape/team/domain/SearchNodeInfo.hbm.xml</value>
+	    <value>com/sitescape/team/domain/SeenMap.hbm.xml</value>
+	    <value>com/sitescape/team/domain/SimpleName.hbm.xml</value>
+	    <value>com/sitescape/team/domain/Subscription.hbm.xml</value>
+	    <value>com/sitescape/team/domain/Tag.hbm.xml</value>
+	    <value>com/sitescape/team/domain/UserProperties.hbm.xml</value>
+	    <value>com/sitescape/team/domain/Visits.hbm.xml</value>
+	    <value>com/sitescape/team/domain/WorkflowResponse.hbm.xml</value>
+	    <value>com/sitescape/team/domain/WorkflowState.hbm.xml</value>
+	    <value>com/sitescape/team/domain/ZoneInfo.hbm.xml</value>
+
+			</list>
+		</property>
+  		<property name="hibernateProperties">
+ 		   <props>
+  		    <prop key="hibernate.show_sql">false</prop>
+			<prop key="hibernate.cache.use_second_level_cache">false</prop>
+		    </props>
+		</property>
+	</bean>
+	<bean id="sPropsUtil" class="com.sitescape.team.util.SPropsUtil">
+		<property name="config">
+			<bean class="com.sitescape.team.util.PropertiesClassPathConfigFiles">
+				<property name="configFiles">
+					<list>
+						<value>config/ssf.properties</value>
+					</list>		
+				</property>
+			</bean>
+		</property>
+	</bean>
+	<bean id="coreDaoImpl" class="com.sitescape.team.dao.impl.CoreDaoImpl">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+
+	<bean id="profileDaoImpl" class="com.sitescape.team.dao.impl.ProfileDaoImpl"  depends-on="sPropsUtil">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<property name="coreDao"><ref bean="coreDaoImpl"/></property>
+	</bean>
+	<!-- Local transaction manager. -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+
+</beans>

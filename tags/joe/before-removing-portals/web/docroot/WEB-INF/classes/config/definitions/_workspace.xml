@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_workspace" caption="__definition_default_workspace" type="8" nextId="9" definitionType="8" internalId="402883b90cc53079010cc539bf260005" databaseId="402883b90cc53079010cc539bf260005">
+  <item name="workspaceForm" caption="__workspace_form" type="form" id="1">
+    <properties/>
+    <item name="title" caption="__title" type="data" id="2">
+      <properties>
+        <property name="name" value="title"/>
+        <property name="caption" value="__title"/>
+        <property name="width" value="100"/>
+        <property name="inline" caption="__inline" type="boolean" value="false">
+          <help>ihelp.designers.mark_as_inline</help>
+        </property>
+        <property name="generated" caption="__isTitleGenerated" type="boolean" definitionType="1" value="false">
+          <help>ihelp.designers.mark_as_title</help>
+        </property>
+      </properties>
+    </item>
+    <item name="description" caption="__description" type="data" id="3">
+      <properties>
+        <property name="name" value="description"/>
+        <property name="caption" value="__description"/>
+        <property name="height" value=""/>
+        <property name="required" value=""/>
+      </properties>
+    </item>
+    <item name="workspaceBranding" caption="__branding" type="data" category="workspaceData" display="form" id="8">
+      <properties>
+        <property name="caption" value="__branding"/>
+        <property name="name" value="branding"/>
+      </properties>
+    </item>
+    <item name="workspaceIcon" caption="__icon" type="data" id="4">
+      <properties>
+        <property name="name" value="iconName"/>
+        <property name="caption" value="__icon"/>
+      </properties>
+    </item>
+  </item>
+  <item name="workspaceView" caption="__workspace_view" id="5">
+    <properties/>
+    <item name="descriptionView" caption="__description" id="6">
+      <properties>
+        <property name="caption" value="__description"/>
+      </properties>
+    </item>
+    <item name="dashboardCanvas" caption="__dashboard_canvas" id="7">
+      <properties>
+        <property name="caption" value="__dashboard_canvas"/>
+      </properties>
+    </item>
+  </item>
+  <properties>
+    <property name="name" value="_workspace"/>
+    <property name="caption" value="__definition_default_workspace"/>
+    <property name="icon" value="/icons/workspace.gif"/>
+  </properties>
+</definition>

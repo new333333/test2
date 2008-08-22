@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="bauw87q" pid="bauw87q" name="Chapter" level="0" number="2"> <text>Configuring Conferencing</text> </target>
+
+ <target id="baux1vj" pid="baux1vj" name="Sect1" level="1" number="2.1"> <text>Configuring Your Preferences</text> </target>
+
+ <target id="bbmkz3k" pid="baux1vj" name="Sect2" level="2" number="2.1.1"> <text>Setting Your Preferences:</text> </target>
+
+ <target id="baux5mt" pid="baux1vj" name="Procedure" level="3" number="1"> <text>Select the Options &#62; Preferences menu item.</text> </target>
+
+ <target id="baux5mu" pid="baux1vj" name="Step" level="4" number="1"> <text>Select the Options &#62; Preferences menu item.</text> </target>
+
+ <target id="baux5rg" pid="baux1vj" name="Step" level="4" number="2"> <text>Select the tab for the preferences you want to edit:</text> </target>
+
+ <target id="baux5rn" pid="baux1vj" name="Step" level="4" number="3"> <text>To save your settings and close the Preferences window, click OK.</text> </target>
+
+ <target id="bbml1pt" pid="baux1vj" name="Sect2" level="2" number="2.1.2"> <text>General Preferences</text> </target>
+
+ <target id="bf9d9ji" pid="baux1vj" name="Figure" level="3" number="Figure 2-1"> <text>General Preferences Tab</text> </target>
+
+ <target id="bbml1sr" pid="baux1vj" name="Sect2" level="2" number="2.1.3"> <text>Contact Display Preferences</text> </target>
+
+ <target id="bf9d9jj" pid="baux1vj" name="Figure" level="3" number="Figure 2-2"> <text>Contact Display Preferences Tab</text> </target>
+
+ <target id="bf9d9jk" pid="baux1vj" name="Procedure" level="3" number="1"> <text>Select the column you want to display for your contacts in the Available Columns list on the left (you can select more than one at a time).</text> </target>
+
+ <target id="bf9d9jl" pid="baux1vj" name="Step" level="4" number="1"> <text>Select the column you want to display for your contacts in the Available Columns list on the left (you can select more than one at a time).</text> </target>
+
+ <target id="bf9d9jm" pid="baux1vj" name="Step" level="4" number="2"> <text>Click the  &#62;&#62;  button to move the columns into the Displayed Columns list on the right.</text> </target>
+
+ <target id="bf9d9jn" pid="baux1vj" name="Procedure" level="3" number="1"> <text>Select a column in the Displayed Columns list on the right.</text> </target>
+
+ <target id="bf9d9jo" pid="baux1vj" name="Step" level="4" number="1"> <text>Select a column in the Displayed Columns list on the right.</text> </target>
+
+ <target id="bf9d9jp" pid="baux1vj" name="Step" level="4" number="2"> <text>Use the Move Up and Move Down arrows to change the columns display order (top position appearing first).</text> </target>
+
+ <target id="bf9d9jq" pid="baux1vj" name="Step" level="4" number="3"> <text>Repeat the previous steps to position all the columns in the correct display order.</text> </target>
+
+ <target id="bbml1y7" pid="baux1vj" name="Sect2" level="2" number="2.1.4"> <text>Font Preferences</text> </target>
+
+ <target id="bbml4ve" pid="baux1vj" name="Sect2" level="2" number="2.1.5"> <text>Data Share Preferences</text> </target>
+
+ <target id="bf9d9jr" pid="baux1vj" name="Figure" level="3" number="Figure 2-3"> <text>Data Share Preferences Tab</text> </target>
+
+ <target id="bbml4y8" pid="baux1vj" name="Sect2" level="2" number="2.1.6"> <text>PC Phone Preferences</text> </target>
+
+ <target id="bf9d9js" pid="baux1vj" name="Figure" level="3" number="Figure 2-4"> <text>PC Phone Preferences Tab</text> </target>
+
+ <target id="bbml50w" pid="baux1vj" name="Sect2" level="2" number="2.1.7"> <text>Language Preferences</text> </target>
+
+ <target id="bf9d9jt" pid="baux1vj" name="Figure" level="3" number="Figure 2-5"> <text>Language Preferences Tab</text> </target>
+
+ <target id="baux28d" pid="baux28d" name="Sect1" level="1" number="2.2"> <text>Understanding Conferencing Concepts</text> </target>
+
+ <target id="bauxrns" pid="baux28d" name="Sect2" level="2" number="2.2.1"> <text>Window Definitions</text> </target>
+
+ <target id="bauxso6" pid="baux28d" name="Sect2" level="2" number="2.2.2"> <text>Meeting PINs and Meeting IDs</text> </target>
+
+ <target id="bauxso7" pid="baux28d" name="Sect2" level="2" number="2.2.3"> <text>Main Window</text> </target>
+
+ <target id="bf9djsq" pid="baux28d" name="Figure" level="3" number="Figure 2-6"> <text>Meeting Main Window</text> </target>
+
+ <target id="bf9dbkk" pid="baux28d" name="Sect3" level="3"> <text>Meeting List Groups</text> </target>
+
+ <target id="bf9dbkl" pid="baux28d" name="Sect3" level="3"> <text>Meeting List Column Headings</text> </target>
+
+ <target id="bf9dbkm" pid="baux28d" name="Sect3" level="3"> <text>Meeting List Options</text> </target>
+
+ <target id="bbmmbav" pid="baux28d" name="FormalPara" level="4" number="w"> <text>Start</text> </target>
+
+ <target id="bbmmbpw" pid="baux28d" name="FormalPara" level="4" number="w"> <text>Join</text> </target>
+
+ <target id="bbmmd3z" pid="baux28d" name="FormalPara" level="4" number="w"> <text>New</text> </target>
+
+ <target id="bbmmd40" pid="baux28d" name="FormalPara" level="4" number="w"> <text>Edit</text> </target>
+
+ <target id="bbmmd41" pid="baux28d" name="FormalPara" level="4" number="w"> <text>View</text> </target>
+
+ <target id="bbmmd42" pid="baux28d" name="FormalPara" level="4" number="w"> <text>Find</text> </target>
+
+ <target id="bbmmd43" pid="baux28d" name="FormalPara" level="4" number="w"> <text>Copy</text> </target>
+
+ <target id="bbmmd44" pid="baux28d" name="FormalPara" level="4" number="w"> <text>Delete</text> </target>
+
+ <target id="bbmmd45" pid="baux28d" name="FormalPara" level="4" number="w"> <text>Refresh</text> </target>
+
+ <target id="bbmmd46" pid="baux28d" name="FormalPara" level="4" number="w"> <text>Join by Meeting ID or PIN</text> </target>
+
+ <target id="bauxso8" pid="baux28d" name="Sect2" level="2" number="2.2.4"> <text>Contacts and Buddies Definitions</text> </target>
+
+ <target id="bf9djsr" pid="baux28d" name="FormalPara" level="3" number="w"> <text>Contact:</text> </target>
+
+ <target id="bauxso9" pid="baux28d" name="Sect2" level="2" number="2.2.5"> <text>Communities</text> </target>
+
+ <target id="bauxsoa" pid="baux28d" name="Sect2" level="2" number="2.2.6"> <text>Presence</text> </target>
+
+ <target id="bavf4n3" pid="baux28d" name="BridgeHead" level="3"> <text>Computer Presence</text> </target>
+
+ <target id="bavf4n4" pid="baux28d" name="BridgeHead" level="3"> <text>Meeting Presence</text> </target>
+
+ <target id="bavf4n5" pid="baux28d" name="BridgeHead" level="3"> <text>Phone Presence</text> </target>
+
+ <target id="bavf4n6" pid="baux28d" name="BridgeHead" level="3"> <text>Enabling Presence</text> </target>
+
+ <target id="bauxsob" pid="baux28d" name="Sect2" level="2" number="2.2.7"> <text>Meeting Roles</text> </target>
+
+ <target id="bf9don2" pid="baux28d" name="Sect3" level="3"> <text>Participant</text> </target>
+
+ <target id="bf9don3" pid="baux28d" name="Sect3" level="3"> <text>Host</text> </target>
+
+ <target id="bf9don4" pid="baux28d" name="Sect3" level="3"> <text>Moderator</text> </target>
+
+ <target id="bf9don5" pid="baux28d" name="Sect3" level="3"> <text>Persistent Moderators</text> </target>
+
+ <target id="bf9don6" pid="baux28d" name="Sect3" level="3"> <text>Temporary Moderators</text> </target>
+
+ <target id="bf9don7" pid="baux28d" name="Sect3" level="3"> <text>Administrator</text> </target>
+
+ <target id="bf9don8" pid="baux28d" name="Sect3" level="3"> <text>Presenter</text> </target>
+
+ <target id="bf9don9" pid="baux28d" name="Sect3" level="3"> <text>Remote Control Privilege (Remote Controller)</text> </target>
+
+ <target id="bauxsoc" pid="baux28d" name="Sect2" level="2" number="2.2.8"> <text>Phone Keypad User Interface</text> </target>
+
+ <target id="bf9dwdm" pid="baux28d" name="Table" level="3" number="Table 2-1"> <text>Phone Keypad User Interface Features</text> </target>
+
+ <target id="bawdt26" pid="baux28d" name="row" level="4"> <text>Voice Feature</text> </target>
+
+ <target id="bawdt27" pid="baux28d" name="row" level="4"> <text>Volume Control</text> </target>
+
+ <target id="bawdt28" pid="baux28d" name="row" level="4"> <text>Lock</text> </target>
+
+ <target id="bawdt29" pid="baux28d" name="row" level="4"> <text>Roll Call  </text> </target>
+
+ <target id="bawdxm3" pid="baux28d" name="row" level="4"> <text>Mute/Un-mute</text> </target>
+
+ <target id="bawdxm4" pid="baux28d" name="row" level="4"> <text>Entry/Exit Tones   </text> </target>
+
+ <target id="bawdxm5" pid="baux28d" name="row" level="4"> <text>Dial Out / 1-1 Call</text> </target>
+
+ <target id="bawdxm6" pid="baux28d" name="row" level="4"> <text>Call Recording</text> </target>
+
+ <target id="bawdxm7" pid="baux28d" name="row" level="4"> <text>Extended Menu</text> </target>
+
+ <target id="bawdxm8" pid="baux28d" name="row" level="4"> <text>Hand Up/Down</text> </target>
+
+ <target id="bawdxm9" pid="baux28d" name="row" level="4"> <text>Lecture Mode</text> </target>
+
+ <target id="bawdxma" pid="baux28d" name="row" level="4"> <text>End Meeting</text> </target>
+
+ <target id="bawdxmb" pid="baux28d" name="row" level="4"> <text>Exit Menu Mode</text> </target>
+
+ <target id="bawdxmc" pid="baux28d" name="row" level="4"> <text>Help for Basic Menu</text> </target>
+
+ <target id="bawdxmd" pid="baux28d" name="row" level="4"> <text>Help for Extended Menu</text> </target>
+
+ <target id="baux410" pid="baux410" name="Sect1" level="1" number="2.3"> <text>Configuring Your Contacts and Buddies</text> </target>
+
+ <target id="bauxu4f" pid="baux410" name="Sect2" level="2" number="2.3.1"> <text>Adding and Removing Buddies</text> </target>
+
+ <target id="bf9dyml" pid="baux410" name="Sect3" level="3"> <text>To add a Registered User from your community to your Personal Buddy list:</text> </target>
+
+ <target id="bawe1st" pid="baux410" name="Procedure" level="4" number="1"> <text>Select the Contacts &#62; Manage Contacts and Buddies menu item. </text> </target>
+
+ <target id="bawe1su" pid="baux410" name="Step" level="5" number="1"> <text>Select the Contacts &#62; Manage Contacts and Buddies menu item. </text> </target>
+
+ <target id="bawe1t9" pid="baux410" name="Step" level="5" number="2"> <text>Select one or more contacts from any group under the Community Address Book in the Contact Window (use the Ctrl or Shift key to select multiple contacts).</text> </target>
+
+ <target id="bawe1tb" pid="baux410" name="Step" level="5" number="3"> <text>Right-click one of the selected contacts and select the Add to Personal Buddies menu item.</text> </target>
+
+ <target id="bf9dymm" pid="baux410" name="Sect3" level="3"> <text>Adding a Non-Community User to Your Personal Buddy List</text> </target>
+
+ <target id="bawe358" pid="baux410" name="Procedure" level="4" number="1"> <text>Select the Contacts &#62; Manage Contacts and Buddies menu item. </text> </target>
+
+ <target id="bawe359" pid="baux410" name="Step" level="5" number="1"> <text>Select the Contacts &#62; Manage Contacts and Buddies menu item. </text> </target>
+
+ <target id="bawe35i" pid="baux410" name="Step" level="5" number="2"> <text>Right-click the Personal Address Book and select the Add Buddy By Screen Name menu item.</text> </target>
+
+ <target id="bawe35k" pid="baux410" name="Step" level="5" number="3"> <text>Type the contacts screen name into the dialog, then click OK.</text> </target>
+
+ <target id="bf9dymn" pid="baux410" name="Sect3" level="3"> <text>To Remove a Contact From Your Personal Buddy List:</text> </target>
+
+ <target id="bawe3p5" pid="baux410" name="Procedure" level="4" number="1"> <text>Find the buddy you want to remove under your Personal Buddy List.</text> </target>
+
+ <target id="bawe3p6" pid="baux410" name="Step" level="5" number="1"> <text>Find the buddy you want to remove under your Personal Buddy List.</text> </target>
+
+ <target id="bawe3pe" pid="baux410" name="Step" level="5" number="2"> <text>Right-click the buddy and select the Remove From Personal Buddies menu item.</text> </target>
+
+ <target id="bauxuyf" pid="baux410" name="Sect2" level="2" number="2.3.2"> <text>Searching the Community Address Book</text> </target>
+
+ <target id="bf9e0wy" pid="baux410" name="Sect3" level="3"> <text>To Search the Community Address Book For a Name:</text> </target>
+
+ <target id="bawe4rj" pid="baux410" name="Procedure" level="4" number="1"> <text>Select the Contacts &#62; Manage Contacts and Buddies menu item.</text> </target>
+
+ <target id="bawe4rk" pid="baux410" name="Step" level="5" number="1"> <text>Select the Contacts &#62; Manage Contacts and Buddies menu item.</text> </target>
+
+ <target id="bawe4so" pid="baux410" name="Step" level="5" number="2"> <text>At the bottom of the Contact window, click Search</text> </target>
+
+ <target id="bawe4sq" pid="baux410" name="Step" level="5" number="3"> <text>In either the First Name Contains or Last Name Contains fields, type a few characters of the contact's first or last name depending on which field you use.</text> </target>
+
+ <target id="bawe4ss" pid="baux410" name="Step" level="5" number="4"> <text>Deselect the name field you are not using.</text> </target>
+
+ <target id="bawe4su" pid="baux410" name="Step" level="5" number="5"> <text>Click Search Now.</text> </target>
+
+ <target id="bf9e0wz" pid="baux410" name="Sect3" level="3"> <text>To Delete a Search Results Group:</text> </target>
+
+ <target id="bf9e0x0" pid="baux410" name="Sect3" level="3"> <text>To Edit a Search Results Group:</text> </target>
+
+ <target id="bawe7a2" pid="baux410" name="Procedure" level="4" number="1"> <text>Right-click a search results group and select the Edit Search Criteria menu item.</text> </target>
+
+ <target id="bawe7a3" pid="baux410" name="Step" level="5" number="1"> <text>Right-click a search results group and select the Edit Search Criteria menu item.</text> </target>
+
+ <target id="bawe7bj" pid="baux410" name="Step" level="5" number="2"> <text>Make your changes to the search criteria in the Find Contacts window, then click Search Now.</text> </target>
+
+ <target id="bf9e0x1" pid="baux410" name="Sect3" level="3"> <text>Additional Search Options</text> </target>
+
+ <target id="bf9e57t" pid="baux410" name="FormalPara" level="4" number="w"> <text>Email addresses contain:</text> </target>
+
+ <target id="bf9e57u" pid="baux410" name="FormalPara" level="4" number="w"> <text>Phone numbers contain:</text> </target>
+
+ <target id="bf9e57v" pid="baux410" name="FormalPara" level="4" number="w"> <text>More search options:</text> </target>
+
+ <target id="bf9e57w" pid="baux410" name="FormalPara" level="4" number="w"> <text>Search Selected Groups:</text> </target>
+
+ <target id="bf9e57x" pid="baux410" name="FormalPara" level="4" number="w"> <text>Number of results:</text> </target>
+
+ <target id="bauxuyg" pid="baux410" name="Sect2" level="2" number="2.3.3"> <text>Managing Contacts and Buddies</text> </target>
+
+ <target id="bf9e6g3" pid="baux410" name="Sect3" level="3"> <text>What Can You Manage?</text> </target>
+
+ <target id="bf9e6g4" pid="baux410" name="Sect3" level="3"> <text>To Add a Personal Buddy From the Community Address Book:</text> </target>
+
+ <target id="bawebz3" pid="baux410" name="Procedure" level="4" number="1"> <text>Select one or more registered users (designated by the computer icon ).</text> </target>
+
+ <target id="bawebz4" pid="baux410" name="Step" level="5" number="1"> <text>Select one or more registered users (designated by the computer icon ).</text> </target>
+
+ <target id="bawebzk" pid="baux410" name="Step" level="5" number="2"> <text>Select the Buddies &#62; Add to Personal Buddies menu item.</text> </target>
+
+ <target id="bf9e6g5" pid="baux410" name="Sect3" level="3"> <text>To Add a Personal Buddy by Name:</text> </target>
+
+ <target id="bawedqh" pid="baux410" name="Procedure" level="4" number="1"> <text>Select the Buddies &#62; Add Buddy by Screen Name menu item.</text> </target>
+
+ <target id="bawedqi" pid="baux410" name="Step" level="5" number="1"> <text>Select the Buddies &#62; Add Buddy by Screen Name menu item.</text> </target>
+
+ <target id="bawedqp" pid="baux410" name="Step" level="5" number="2"> <text>Type in the screen name and click OK. </text> </target>
+
+ <target id="bf9e6g6" pid="baux410" name="Sect3" level="3"> <text>To Add a Contact to the Community Address Book (Administrator Only): </text> </target>
+
+ <target id="baweea6" pid="baux410" name="Procedure" level="4" number="1"> <text>Select the Community Address Book, or a group under it. </text> </target>
+
+ <target id="baweea7" pid="baux410" name="Step" level="5" number="1"> <text>Select the Community Address Book, or a group under it. </text> </target>
+
+ <target id="baweec4" pid="baux410" name="Step" level="5" number="2"> <text>Click New and select the New Contact menu item.</text> </target>
+
+ <target id="baweec7" pid="baux410" name="Step" level="5" number="3"> <text>In the contact information window that appears, fill out the contact's information, then click OK.</text> </target>
+
+ <target id="bf9e6g7" pid="baux410" name="Sect3" level="3"> <text>To Add a Contact to Your Personal Address Book:</text> </target>
+
+ <target id="bawefwn" pid="baux410" name="Procedure" level="4" number="1"> <text>Select the Personal address book or any group beneath it (with the exception of the group marked Buddies).</text> </target>
+
+ <target id="bawefwo" pid="baux410" name="Step" level="5" number="1"> <text>Select the Personal address book or any group beneath it (with the exception of the group marked Buddies).</text> </target>
+
+ <target id="bawefx0" pid="baux410" name="Step" level="5" number="2"> <text>Click New and select the New Contact menu item.</text> </target>
+
+ <target id="bawefx2" pid="baux410" name="Step" level="5" number="3"> <text>In the contact information window that appears, fill out the contact's information, then click OK.</text> </target>
+
+ <target id="bf9e6g8" pid="baux410" name="Sect3" level="3"> <text>To Copy Contacts:</text> </target>
+
+ <target id="bawegzc" pid="baux410" name="Procedure" level="4" number="1"> <text>Select one or more contacts from any group.</text> </target>
+
+ <target id="bawegzd" pid="baux410" name="Step" level="5" number="1"> <text>Select one or more contacts from any group.</text> </target>
+
+ <target id="bawegzk" pid="baux410" name="Step" level="5" number="2"> <text>Select the Edit &#62; Copy menu item. </text> </target>
+
+ <target id="bawegzm" pid="baux410" name="Step" level="5" number="3"> <text>Select the group into which you want to copy the contacts. </text> </target>
+
+ <target id="bawegzn" pid="baux410" name="Step" level="5" number="4"> <text>Select the Edit &#62; Paste menu item.</text> </target>
+
+ <target id="bf9e6g9" pid="baux410" name="Sect3" level="3"> <text>To Delete Contacts:</text> </target>
+
+ <target id="baweh1e" pid="baux410" name="Procedure" level="4" number="1"> <text>Select one or more contacts.</text> </target>
+
+ <target id="baweh1f" pid="baux410" name="Step" level="5" number="1"> <text>Select one or more contacts.</text> </target>
+
+ <target id="baweh1m" pid="baux410" name="Step" level="5" number="2"> <text>Click Delete.</text> </target>
+
+ <target id="baweh1o" pid="baux410" name="Step" level="5" number="3"> <text>In the confirmation dialog that appears, click Yes to delete the contacts.</text> </target>
+
+ <target id="bauxuyh" pid="baux410" name="Sect2" level="2" number="2.3.4"> <text>Managing Address Book Groups</text> </target>
+
+ <target id="baweic1" pid="baux410" name="Procedure" level="3" number="1"> <text>Select the Personal Address Book.</text> </target>
+
+ <target id="baweic2" pid="baux410" name="Step" level="4" number="1"> <text>Select the Personal Address Book.</text> </target>
+
+ <target id="baweic7" pid="baux410" name="Step" level="4" number="2"> <text>Click New and select the New Group menu item.</text> </target>
+
+ <target id="baweicb" pid="baux410" name="Step" level="4" number="3"> <text>When the new screen appears, type the group name and click OK.</text> </target>
+
+ <target id="bawejb5" pid="baux410" name="Procedure" level="3" number="1"> <text>Select the Community Address Book.</text> </target>
+
+ <target id="bawejb6" pid="baux410" name="Step" level="4" number="1"> <text>Select the Community Address Book.</text> </target>
+
+ <target id="bawejb7" pid="baux410" name="Step" level="4" number="2"> <text>Click New and select the New Group menu item.</text> </target>
+
+ <target id="bawejb8" pid="baux410" name="Step" level="4" number="3"> <text>When the new screen appears, type the group name, then click OK.</text> </target>
+
+ <target id="bawejb9" pid="baux410" name="Procedure" level="3" number="1"> <text>Select the group you want to delete.</text> </target>
+
+ <target id="bawejba" pid="baux410" name="Step" level="4" number="1"> <text>Select the group you want to delete.</text> </target>
+
+ <target id="bawejbb" pid="baux410" name="Step" level="4" number="2"> <text>Click Delete.</text> </target>
+
+ <target id="bawejbc" pid="baux410" name="Step" level="4" number="3"> <text>In the confirmation dialog box that appears, click Yes to delete the group.</text> </target>
+
+ <target id="bauxuyi" pid="baux410" name="Sect2" level="2" number="2.3.5"> <text>Editing a Contact's Information</text> </target>
+
+ <target id="bf9eafc" pid="baux410" name="Sect3" level="3"> <text>To Edit Contact Information:</text> </target>
+
+ <target id="bawek0v" pid="baux410" name="Procedure" level="4" number="1"> <text>Select the Contacts &#62; Manage Contact and Buddies menu item.</text> </target>
+
+ <target id="bawek0w" pid="baux410" name="Step" level="5" number="1"> <text>Select the Contacts &#62; Manage Contact and Buddies menu item.</text> </target>
+
+ <target id="bawek1k" pid="baux410" name="Step" level="5" number="2"> <text>In the Manage Contacts window, select the contact you want to edit.</text> </target>
+
+ <target id="bawek1m" pid="baux410" name="Step" level="5" number="3"> <text>Click Edit.</text> </target>
+
+ <target id="bawek5v" pid="baux410" name="Step" level="5" number="4"> <text>Edit the contacts information. See "Informational Fields" on page 42. </text> </target>
+
+ <target id="bawekar" pid="baux410" name="Step" level="5" number="5"> <text>Click OK.</text> </target>
+
+ <target id="bf9eafd" pid="baux410" name="Sect3" level="3"> <text>Read-Only Fields</text> </target>
+
+ <target id="bf9ed01" pid="baux410" name="FormalPara" level="4" number="w"> <text>Address Book (Read only):</text> </target>
+
+ <target id="bf9ed02" pid="baux410" name="FormalPara" level="4" number="w"> <text>Group (Read only):</text> </target>
+
+ <target id="bf9eafe" pid="baux410" name="Sect3" level="3"> <text>Informational Fields</text> </target>
+
+ <target id="bf9egqy" pid="baux410" name="FormalPara" level="4" number="w"> <text>Title:</text> </target>
+
+ <target id="bf9egqz" pid="baux410" name="FormalPara" level="4" number="w"> <text>First Name:</text> </target>
+
+ <target id="bf9egr0" pid="baux410" name="FormalPara" level="4" number="w"> <text>Middle Name:</text> </target>
+
+ <target id="bf9egr1" pid="baux410" name="FormalPara" level="4" number="w"> <text>Last Name:</text> </target>
+
+ <target id="bf9egr2" pid="baux410" name="FormalPara" level="4" number="w"> <text>Suffix:</text> </target>
+
+ <target id="bf9egr3" pid="baux410" name="FormalPara" level="4" number="w"> <text>Company:</text> </target>
+
+ <target id="bf9egr4" pid="baux410" name="FormalPara" level="4" number="w"> <text>Job Title:</text> </target>
+
+ <target id="bf9egr5" pid="baux410" name="FormalPara" level="4" number="w"> <text>Address1:</text> </target>
+
+ <target id="bf9egr6" pid="baux410" name="FormalPara" level="4" number="w"> <text>Address2:</text> </target>
+
+ <target id="bf9egr7" pid="baux410" name="FormalPara" level="4" number="w"> <text>State:</text> </target>
+
+ <target id="bf9egr8" pid="baux410" name="FormalPara" level="4" number="w"> <text>Country:</text> </target>
+
+ <target id="bf9egr9" pid="baux410" name="FormalPara" level="4" number="w"> <text>Postal Code:</text> </target>
+
+ <target id="bf9egra" pid="baux410" name="FormalPara" level="4" number="w"> <text>Business Phone:</text> </target>
+
+ <target id="bf9egrb" pid="baux410" name="FormalPara" level="4" number="w"> <text>Home Phone:</text> </target>
+
+ <target id="bf9egrc" pid="baux410" name="FormalPara" level="4" number="w"> <text>Mobile Phone:</text> </target>
+
+ <target id="bf9egrd" pid="baux410" name="FormalPara" level="4" number="w"> <text>Other Phone:</text> </target>
+
+ <target id="bf9egre" pid="baux410" name="FormalPara" level="4" number="w"> <text>Extension:</text> </target>
+
+ <target id="bf9egrf" pid="baux410" name="FormalPara" level="4" number="w"> <text>Email:</text> </target>
+
+ <target id="bf9egrg" pid="baux410" name="FormalPara" level="4" number="w"> <text>Email2:</text> </target>
+
+ <target id="bf9egrh" pid="baux410" name="FormalPara" level="4" number="w"> <text>Email3:</text> </target>
+
+ <target id="bf9egri" pid="baux410" name="FormalPara" level="4" number="w"> <text>User1:</text> </target>
+
+ <target id="bf9egrj" pid="baux410" name="FormalPara" level="4" number="w"> <text>User2:</text> </target>
+
+ <target id="bf9eaff" pid="baux410" name="Sect3" level="3"> <text>Admin Only Fields</text> </target>
+
+ <target id="bf9egrk" pid="baux410" name="FormalPara" level="4" number="w"> <text>Screen Name:</text> </target>
+
+ <target id="bf9egrl" pid="baux410" name="FormalPara" level="4" number="w"> <text>Password:</text> </target>
+
+ <target id="bf9egrm" pid="baux410" name="FormalPara" level="4" number="w"> <text>Administrator:</text> </target>
+
+ <target id="bf9egrn" pid="baux410" name="FormalPara" level="4" number="w"> <text>Policy:</text> </target>
+
+</targets>

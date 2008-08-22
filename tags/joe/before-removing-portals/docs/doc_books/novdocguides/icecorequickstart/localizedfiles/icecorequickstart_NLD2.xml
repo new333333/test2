@@ -1,0 +1,528 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//Novell//DTD NovDoc XML V1.0//EN" "novdocx.dtd">
+
+<!--========================================================================
+ "   ICEcore Quick Start Guide "
+
+ Copyright © 2006 Novell, Inc. All rights reserved. No part of this publication
+ may be reproduced, photocopied, stored on a retrieval system, or transmitted
+ without the express written consent of the publisher.
+
+ Novell, Inc.
+ 404 Wyman Street, Suite 500
+ Waltham, MA 02451
+ U.S.A.
+ www.novell.com
+
+
+ ESTIMATED PAGE COUNT (based on 200 words per page): 9
+ ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 3
+
+
+ WORD COUNT
+
+       Count    Doctype    Title
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        1887    chapter       ICEcore Quick Start Guide 
+
+
+ GRAPHICS REFERENCED IN BOOK
+
+       Count       Filename
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           2       tagsicon.png
+           2       workspacetreeiconminus.png
+           2       toolbar_favorites.png
+           2       search.png
+           6       myworkspace_igloo.png
+           2       workspacetreeicon.png
+           2       presenceicons.png
+           2       toolbar_favorites_big_.png
+           2       backbutton.png
+           2       helpicon-orange.png
+           2       helpicon.png
+
+
+ CROSS-REFERENCES
+
+       Count       Type
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           0       xref
+           0       link
+           0       ulink-xrefext
+           0       ulink-xrefexttext
+           1       ulink
+
+
+ URLS REFERENCED IN ULINKS
+
+       URL
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       http://www.novell.com/company/legal/trademarks/tmlist.html
+
+========================================================================-->
+
+<chapter role="quickstart" conformance="none,doc,no,,56" id="quickstart" revision="05/01/07" lang="en" xml:base="icecorequickstart.xml">
+ <title>
+  <productname>ICEcore</productname> snelstartgids
+ </title>
+ <para>Teaming + Conferencing</para>
+ <para>1.0</para>
+ <para>juli 2007</para>
+ <sect1 id="b20g4u4">
+  <title>
+   <productname>ICEcore</productname> <superscript/>
+  </title>
+  <para>Voor de implementatie van Novell Teaming + Conferencing is <productname>ICEcore</productname>-technologie gebruikt. De term '<productname>ICEcore</productname>' op dit blad is van toepassing op alle versies van <productname>ICEcore</productname>, tenzij wordt aangegeven dat dit niet het geval is. Zie voor meer informatie over <productname>ICEcore</productname>-functies de gebruikersgids en de online help van <productname>ICEcore</productname>.
+  </para>
+  <sect2 id="b9ygnf7">
+   <title>De Welkom-portlet verkennen</title>
+   <para>Als u zich de eerste keer aanmeldt bij <productname>ICEcore</productname>, ziet u een <guimenu>Welkom</guimenu>-portlet. Hiermee hebt u toegang tot de handleidingen voor <productname>ICEcore</productname> en een webpagina met instructies om aan de slag te kunnen gaan.
+   </para>
+  </sect2>
+  <sect2 id="b9ygpwl">
+   <title>De weg vinden met de <productname>ICEcore</productname>-navigator
+   </title>
+   <para>De <guimenu>Navigator</guimenu> omvat een aantal hulpmiddelen waarmee u naar elke gewenste plaats binnen <productname>ICEcore</productname> kunt gaan. U ziet de volgende <guimenu>Navigator</guimenu>hulpmiddelen op meerdere <productname>ICEcore</productname>-pagina's:
+   </para>
+   <formalpara id="b9yh7oz">
+    <title>Mijn werkruimte -</title>
+    <para>Klik op het pictogram <guimenu>Mijn werkruimte</guimenu><inlinemediaobject><imageobject role="fo"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="PNG"/></imageobject><imageobject role="html"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="png"/></imageobject></inlinemediaobject> om uw persoonlijke werkruimte te openen. De werkruimte bevat uw <guimenu>Profiel</guimenu>, uw mappen, uw <guimenu>gastenboek</guimenu> en andere accessoires.
+    </para>
+   </formalpara>
+   <formalpara id="b9yh8ci">
+    <title>Favorieten -</title>
+    <para>Klik op het pictogram <guimenu>Favorieten</guimenu><inlinemediaobject><imageobject role="fo"><imagedata fileref="toolbar_favorites_big_.png" width="12.44pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="toolbar_favorites_big_.png" width="12.44pt" format="png"/></imageobject></inlinemediaobject> om het menu <guimenu>Favorieten</guimenu> te openen. Van daaruit hebt u toegang tot uw favoriete plaatsen en kunt u uw favorietenlijst bewerken. Om een favoriete plaats toe te voegen klikt u op het pictogram <guimenu>Favorieten</guimenu> en selecteert u vervolgens <guimenu>Deze plaats toevoegen</guimenu>.
+    </para>
+   </formalpara>
+   <formalpara id="b9yh8jx">
+    <title>Snel zoeken -</title>
+    <para>Geef een willekeurige zoekterm op het vak <guimenu>Snel zoeken</guimenu> en klik op <inlinemediaobject><imageobject role="fo"><imagedata fileref="search.png" width="14.40pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="search.png" width="14.40pt" format="png"/></imageobject></inlinemediaobject>. U ziet dan een map <guimenu>Snel zoeken</guimenu> met zoekresultaten. Voor meer zoekopties klikt u op <guimenu>Geavanceerd</guimenu>.
+    </para>
+   </formalpara>
+   <formalpara id="b9yh8t6">
+    <title>Mensen vinden, Plaatsen vinden, Labels vinden -</title>
+    <para>Via deze vakken kunt u naar de persoonlijke werkruimte van een gebruiker zoeken, werkruimtes en mappen zoeken of items met labels zoeken. (Zie Terminologie hieronder.)</para>
+   </formalpara>
+   <formalpara id="b9yh90l">
+    <title>Werkruimtestructuur -</title>
+    <para>Klik op het plusteken links van het werkruimtestructuurpictogram <inlinemediaobject><imageobject role="fo"><imagedata fileref="workspacetreeicon.png" width="15.71pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="workspacetreeicon.png" width="15.71pt" format="png"/></imageobject></inlinemediaobject> om de structuur uit te vouwen. De structuur is onderverdeeld in drie hoofddelen: <guimenu>Algemene werkruimtes</guimenu>, <guimenu>Persoonlijke</guimenu> <guimenu>werkruimtes</guimenu> en <guimenu>Teamwerkruimtes</guimenu>. U kunt deze categorie&euml;n uitvouwen en dieper in de structuur doordringen tot u de gewenste werkruimte vindt. Als u een gedeelte wilt invouwen, klikt u op het minteken links ervan: <inlinemediaobject><imageobject role="fo"><imagedata fileref="workspacetreeiconminus.png" width="15.71pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="workspacetreeiconminus.png" width="15.71pt" format="png"/></imageobject></inlinemediaobject>
+    </para>
+   </formalpara>
+   <formalpara id="b9yh9cf">
+    <title>Help -</title>
+    <para>Als u informatie wilt hebben over een bepaald gedeelte van de pagina, klikt u op het pictogram <guimenu>Help</guimenu><inlinemediaobject><imageobject role="fo"><imagedata fileref="helpicon.png" width="8.00pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="helpicon.png" width="8.00pt" format="png"/></imageobject></inlinemediaobject> om naar de <guimenu>Help</guimenu>-modus te gaan. Vervolgens klikt u op een van de nieuwe informatiepictogrammen <inlinemediaobject><imageobject role="fo"><imagedata fileref="helpicon-orange.png" width="8.00pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="helpicon-orange.png" width="8.00pt" format="png"/></imageobject></inlinemediaobject> die dan verschijnen. Om de <guimenu>Help</guimenu>-modus af te sluiten klikt u op een willekeurige plaats, behalve op een ander <guimenu>informatie</guimenu>pictogram of -deelvenster.
+    </para>
+   </formalpara>
+  </sect2>
+  <sect2 id="b9ygxtu">
+   <title>Uw buddylijst instellen</title>
+   <para>Uw <guimenu>Buddylijst</guimenu> helpt u de mensen organiseren waarmee u regelmatig contact opneemt. Voeg mensen onmiddellijk aan uw buddylijst toe om de communicatie met ze te vergemakkelijken.
+   </para>
+   <procedure id="b9ygyei">
+    <step id="b9ygyej" performance="required">
+     <para>Klik op <guimenu>Buddies toevoegen</guimenu>.
+     </para>
+    </step>
+    <step id="b9ygyf2" performance="required">
+     <para>Begin een naam te typen in het vak <guimenu>Gebruikers</guimenu> of <guimenu>Groepen</guimenu>. Er wordt een vervolgkeuzelijst met overeenkomende namen weergegeven. Selecteer een naam en klik op <guimenu>Toepassen</guimenu> om de naam aan uw lijst toe te voegen.
+     </para>
+    </step>
+    <step id="b9ygyf4" performance="required">
+     <para>U kunt zoveel namen toevoegen als u wilt door na elke geselecteerde naam op <guimenu>Toepassen</guimenu> te klikken.
+     </para>
+    </step>
+    <step id="b9ygyf6" performance="required">
+     <para>Als u een naam wilt verwijderen, klikt u eerst op het pictogram <guimenu> X </guimenu>na de naam en vervolgens op <guimenu>Toepassen</guimenu>.
+     </para>
+    </step>
+    <step id="b9ygyfe" performance="required">
+     <para>Als u klaar bent, klikt u op <guimenu>Sluiten</guimenu>. De nieuwe namen worden in de buddylijst weergegeven.
+     </para>
+    </step>
+   </procedure>
+   <sect3 id="b9yh0or">
+    <title>Tips bij het gebruik van uw buddylijst:</title>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>Een pictogram links van de naam van een buddy geeft de aanwezigheidsinformatie weer. Dit is de online status van die buddy:</para>
+      <para>
+       <inlinemediaobject><imageobject role="fo"><imagedata fileref="presenceicons.png" width="50.40pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="presenceicons.png" width="50.40pt" format="png"/></imageobject></inlinemediaobject> <guimenu>Online Weg Offline Onbekend</guimenu>
+      </para>
+     </listitem>
+     <listitem>
+      <para>Als u met een buddy wilt communiceren, klikt u op zijn of haar aanwezigheidspictogram en kiest u een optie uit het menu dat dan verschijnt.</para>
+     </listitem>
+     <listitem>
+      <para>Als u de aanwezigheidsinformatie wilt bijwerken klikt u op <guimenu>Vernieuwen</guimenu>.
+      </para>
+     </listitem>
+     <listitem>
+      <para>Klik op de naam van een buddy als u zijn of haar contactgegevens wilt zien, of naar de werkruimte van die buddy wilt gaan.</para>
+     </listitem>
+    </itemizedlist>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yh3r4">
+   <title>Informatie en een foto aan uw persoonlijke werkruimte toevoegen</title>
+   <procedure id="b9yh3y4">
+    <step id="b9yh3y5" performance="required">
+     <para>Klik in de Navigator op <inlinemediaobject><imageobject role="fo"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="png"/></imageobject></inlinemediaobject> <guimenu>Mijn werkruimte</guimenu> om naar uw persoonlijke werkruimte te gaan.
+     </para>
+    </step>
+    <step id="b9yh44k" performance="required">
+     <para>Klik in de menubalk van uw werkruimte op <guimenu>Profiel wijzigen</guimenu>.
+     </para>
+    </step>
+    <step id="b9yh44n" performance="required">
+     <para>In het venster <guimenu>Profiel wijzigen</guimenu> vult u eventueel ontbrekende gegevens in. Deze gegevens zijn zichtbaar voor anderen en worden ook door <productname>ICEcore</productname> en Zon gebruikt om via telefoon, e-mail of IM contact met u op te nemen.
+     </para>
+    </step>
+    <step id="b9yh44r" performance="required">
+     <para>Een foto toevoegen Klik op <guimenu>Bladeren…</guimenu> om naar een beeldbestand te zoeken in uw computer en klik vervolgens op <guimenu>OK</guimenu>. De afbeelding wordt weergegeven in het vak <guimenu>Foto</guimenu> van uw profiel.
+     </para>
+    </step>
+    <step id="b9yh44v" performance="required">
+     <para>Klik op <inlinemediaobject><imageobject role="fo"><imagedata fileref="backbutton.png" width="8.29pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="backbutton.png" width="8.29pt" format="png"/></imageobject></inlinemediaobject> om terug te keren naar de oorspronkelijke pagina.
+     </para>
+    </step>
+   </procedure>
+   <sect3 id="b9yh4la">
+    <title>Tips voor als u foto's aan uw profiel toevoegt:</title>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>U kunt zoveel afbeeldingen toevoegen als u wilt, maar ze moeten &eacute;&eacute;n voor &eacute;&eacute;n toegevoegd worden.</para>
+     </listitem>
+     <listitem>
+      <para>Miniaturen van al uw afbeeldingen worden onder uw contactgegevens weergegeven. Als u de muisaanwijzer over een miniatuur beweegt, wordt de afbeelding in het fotovak weergegeven. Als u de oorspronkelijke afbeelding in het <guimenu>foto</guimenu>vak wilt vervangen door een van uw andere afbeeldingen, klikt u op het miniatuur ervan.
+      </para>
+     </listitem>
+     <listitem>
+      <para>Als u een afbeelding van internet wilt toevoegen, moet u deze eerst op uw computer opslaan.</para>
+     </listitem>
+     <listitem>
+      <para>Om een afbeelding te verwijderen uit uw persoonlijke werkruimte klikt u op <guimenu>Profiel wijzigen</guimenu>. Schakel de selectievakjes in van de afbeeldingen die u wilt verwijderen. Klik vervolgens op <guimenu>OK</guimenu>.
+      </para>
+     </listitem>
+    </itemizedlist>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yh9yk">
+   <title>Uw eerste blogvermelding maken:</title>
+   <procedure id="b9yha2w">
+    <step id="b9yha2x" performance="required">
+     <para>Klik op<inlinemediaobject><imageobject role="fo"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="png"/></imageobject></inlinemediaobject> <guimenu>Mijn werkruimte</guimenu> om uw persoonlijke werkruimte weer te geven.
+     </para>
+     <para>Uw werkruimte heeft al een standaardblog met de naam “<guimenu>Blog</guimenu>”.
+     </para>
+    </step>
+    <step id="b9yha4m" performance="required">
+     <para>Vouw bovenin uw werkruimte de mappenstructuur met uw persoonlijke werkruimte uit.</para>
+    </step>
+    <step id="barbs6a" performance="required">
+     <para>Klik op <guimenu>Blog</guimenu>.
+     </para>
+    </step>
+    <step id="b9yhak2" performance="required">
+     <para>Selecteer in de menubalk boven de blogkalender het menu-item <guimenu>Nieuwe</guimenu> > <guimenu>Blogvermelding</guimenu>.
+     </para>
+    </step>
+    <step id="b9yhank" performance="required">
+     <para>In het formulier <guimenu>Blogvermelding</guimenu> dat u nu ziet, typt u de titel van uw blogvermelding in het vak <guimenu>Titel</guimenu>.
+     </para>
+    </step>
+    <step id="b9yhann" performance="required">
+     <para>In het vak <guimenu>Beschrijving</guimenu> typt u de inhoud van uw blogvermelding. Gebruik de opmaakhulpmiddelen in de editor om uw vermelding op te maken.
+     </para>
+    </step>
+    <step id="ban5k3d" performance="required">
+     <para>Onder <guimenu>Bijlagen</guimenu> kunt u een bestand selecteren in uw computer dat u aan deze blogvermelding wilt toevoegen. 
+     </para>
+    </step>
+    <step id="b9yhanq" performance="required">
+     <para>Klik op <guimenu>OK</guimenu> om de vermelding aan uw blog toe te voegen.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="barc23u">
+   <title>Commentaar geven op een blogvermelding van iemand anders:</title>
+   <procedure id="b9yhb5c">
+    <step id="b9yhb5d" performance="required">
+     <para>Navigeer naar de Blog waar u commentaar op wilt geven.</para>
+    </step>
+    <step id="barc49f" performance="required">
+     <para>Klik op <guimenu>Commentaar toevoegen</guimenu> onder de blogvermelding waar u commentaar op hebt.
+     </para>
+    </step>
+    <step id="b9yhb8l" performance="required">
+     <para> In het formulier dat dan verschijnt, geeft u in het vak <guimenu>Titel</guimenu> de titel op van uw blogcommentaar.
+     </para>
+    </step>
+    <step id="b9yhb8o" performance="required">
+     <para>Geef dan uw commentaar in het vak <guimenu>Beschrijving</guimenu>.
+     </para>
+    </step>
+    <step id="b9yhb8r" performance="required">
+     <para>Klik op <guimenu>OK</guimenu>. Uw commentaar verschijnt onder de blogvermelding.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="b9yhbh7">
+   <title>Werken met teams</title>
+   <para>
+    <productname>ICEcore</productname> is ontworpen voor teamwork. Maak een teamwerkruimte aan en voeg vervolgens mappen toe aan de werkruimte. Als uw team eenmaal is opgezet, is het eenvoudig om met uw teamleden te communiceren.
+   </para>
+   <sect3 id="b9yhc1x">
+    <title>Een teamwerkruimte aanmaken:</title>
+    <procedure id="b9yhc47">
+     <step id="b9yhc48" performance="required">
+      <para> Klik in de <guimenu>Navigator</guimenu> op de link <guimenu>Teamwerkruimtes</guimenu> in de werkruimtestructuur.
+      </para>
+     </step>
+     <step id="b9yhcrt" performance="required">
+      <para> Klik op het tabblad <guimenu>Teamwerkruimtes</guimenu> op <guimenu>Teamwerkruimte toevoegen</guimenu>.
+      </para>
+     </step>
+     <step id="b9yhcrw" performance="required">
+      <para> In het veld <guimenu>Titel werkruimte</guimenu> geeft u de naam op voor de nieuwe werkruimte.
+      </para>
+     </step>
+     <step id="b9yhd8a" performance="required">
+      <para>Onder <guimenu>Teamleden</guimenu> selecteert u de <guimenu>Gebruikers</guimenu> en <guimenu>Groepen</guimenu> die u als teamleden aan deze werkruimte wilt toevoegen. Typ een of twee tekens in een veld en selecteer de gewenste gebruiker of groep in de vervolgkeuzelijst die dan verschijnt.
+      </para>
+     </step>
+     <step id="ban5was" performance="required">
+      <para>Selecteer onder <guimenu>Werkruimtemappen</guimenu> de soorten mappen die u in deze werkruimte wilt gebruiken.
+      </para>
+     </step>
+     <step id="ban5xsb" performance="required">
+      <para>Om uw teamleden een e-mail te sturen, selecteert u de optie <guimenu>Meld deze nieuwe werkruimte aan het team</guimenu> en typt u het bericht dat u wilt verzenden.
+      </para>
+     </step>
+     <step id="b9yhcs0" performance="required">
+      <para>Klik op <guimenu>OK</guimenu>. De nieuwe werkruimte is nu als subwerkruimte toegevoegd.
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+   <sect3 id="b9yhd12">
+    <title>Leden aan een teamwerkruimte toevoegen:</title>
+    <procedure id="b9yhd13">
+     <step id="b9yhd14" performance="required">
+      <para>Navigeer naar de teamwerkruimte.</para>
+     </step>
+     <step id="barc7bf" performance="required">
+      <para>Klik op <guimenu>Teamleden toevoegen of wissen</guimenu>.
+      </para>
+     </step>
+     <step id="ban6gcy" performance="required">
+      <para>Klik in het venster <guimenu>Teamleden toevoegen of wissen</guimenu> in het veld <guimenu>Gebruiker</guimenu>s of <guimenu>Groep</guimenu>en, begin de gewenste gebruiker of groepsnaam te typen en selecteer de naam in de vervolgkeuzelijst die verschijnt.
+      </para>
+     </step>
+     <step id="barc9md" performance="required">
+      <para>Herhaal deze procedure voor elke gebruiker of groep die u wilt toevoegen.</para>
+     </step>
+     <step id="barc9ek" performance="required">
+      <para>Klik op <guimenu>OK</guimenu>.
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+   <sect3 id="b9yhd15">
+    <title>Teamleden bekijken:</title>
+    <procedure id="b9yhd16">
+     <step id="b9yhd17" performance="required">
+      <para>Selecteer de werkruimte of map waaronder het team hoort.</para>
+     </step>
+     <step id="b9yhdtq" performance="required">
+      <para>Klik op <guimenu>Team</guimenu> in de menubalk.
+      </para>
+     </step>
+     <step id="b9yhdts" performance="required">
+      <para> Selecteer <guimenu>Teamlidmaatschap tonen</guimenu>.
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yhe5q">
+   <title>Werken met Favorieten</title>
+   <para>Voor vaak bezochte plaatsen kunt u <guimenu>Favorieten</guimenu> gebruiken.
+   </para>
+   <sect3 id="b9yheeb">
+    <title>Een plaats aan Favorieten toevoegen:</title>
+    <procedure id="b9yhf14">
+     <step id="b9yhf15" performance="required">
+      <para>Navigeer naar de werkruimte of map die u wilt toevoegen.</para>
+     </step>
+     <step id="b9yhf4f" performance="required">
+      <para>Klik op <inlinemediaobject><imageobject role="fo"><imagedata fileref="toolbar_favorites.png" width="8.51pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="toolbar_favorites.png" width="8.51pt" format="png"/></imageobject></inlinemediaobject> om het deelvenster <guimenu>Favorieten</guimenu> te openen.
+      </para>
+     </step>
+     <step id="b9yhf4i" performance="required">
+      <para>Selecteer <guimenu>Deze plaats toevoegen</guimenu>. De werkruimte of map wordt onderaan de <guimenu>Favorieten</guimenu>lijst toegevoegd.
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yhfng">
+   <title>Labels gebruiken</title>
+   <para>Met labels kunt u snel informatie vinden, evalueren en ophalen. Gebruikers wijzen trefwoorden, labels genaamd, aan werkruimtes, mappen en ingevoerde items toe. Labels kunnen gemeenschapslabels (gedeeld) of persoonlijke labels (priv&eacute;) zijn. U kunt vervolgens deze labels in zoekbewerkingen gebruiken. De zoekmachine gebruikt de labels ook om de zoekresultaten op relevantie te sorteren.</para>
+   <para>Klik op het pictogram <guimenu>Labels</guimenu> <inlinemediaobject><imageobject role="fo"><imagedata fileref="tagsicon.png" width="24.87pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="tagsicon.png" width="24.87pt" format="png"/></imageobject></inlinemediaobject> om zowel <guimenu>Persoonlijke</guimenu> als <guimenu>Gemeenschaps</guimenu>labels aan een item toe te voegen.
+   </para>
+   <para>Zie de gebruikersgids van <productname>ICEcore</productname> voor meer informatie over labels.
+   </para>
+  </sect2>
+  <sect2 id="ban6z9s">
+   <title>Geavanceerd zoeken</title>
+   <para>Met Geavanceerd zoeken kunt u specifieke informatie vinden zonder door meerdere werkruimtes en mappen te hoeven navigeren.</para>
+   <sect3 id="ban748r">
+    <title>Een geavanceerde zoekbewerking uitvoeren:</title>
+    <procedure id="ban729o">
+     <step id="ban729p" performance="required">
+      <para>Klik in de sectie Zoeken op <guimenu>Geavanceerd</guimenu>. Het venster <guimenu>Geavanceerd zoeken</guimenu> verschijnt.
+      </para>
+     </step>
+     <step id="ban75mv" performance="required">
+      <para>Geef in het veld <guimenu>Tekst</guimenu> de tekst op voor het item waar u naar zoekt.
+      </para>
+     </step>
+     <step id="ban76s5" performance="required">
+      <para>Als u weet wie het item in <productname>ICEcore</productname> heeft aangemaakt (toegevoegd), typt u zijn of haar naam in het veld <guimenu>Auteurs</guimenu>.
+      </para>
+     </step>
+     <step id="ban78ko" performance="required">
+      <para>Als u weet of de informatie gelabeld is, geeft u het betreffende label op in het veld <guimenu>Labels</guimenu>.
+      </para>
+     </step>
+     <step id="ban790r" performance="required">
+      <para>Selecteer onder <guimenu>Plaatsen</guimenu> de gewenste optie:
+      </para>
+      <itemizedlist mark="bullet" spacing="normal">
+       <listitem>
+        <para>Gebruik de opties van de werkruimtestructuur om de specifieke zoekgebieden te selecteren:</para>
+        <orderedlist spacing="normal">
+         <listitem>
+          <para>Klik op de + pijl naast <emphasis>Werkruimte</emphasis>.
+          </para>
+         </listitem>
+         <listitem>
+          <para>Selecteer de gebieden die u wilt doorzoeken (u kunt naar wens dieper in elk gebied zoeken).</para>
+         </listitem>
+        </orderedlist>
+       </listitem>
+       <listitem>
+        <para>Gebruik de optie <guimenu>Doorzoek alle subplaatsen</guimenu> om alle mappen en werkruimtes te doorzoeken.
+        </para>
+       </listitem>
+      </itemizedlist>
+     </step>
+     <step id="ban7dim" performance="required">
+      <para>Gebruik de vervolgkeuzelijsten naast <guimenu>Resultaten weergeven</guimenu> om het aantal items en het aantal woorden (per item) te selecteren die u wilt ophalen in uw zoekbewerking. 
+      </para>
+     </step>
+     <step id="ban7eau" performance="required">
+      <para>Klik op <guimenu>Zoeken</guimenu>.
+      </para>
+      <para>De zoekresultaten worden onder het gebied <guimenu>Geavanceerd zoeken</guimenu> in een lijst weergegeven. <productname>ICEcore</productname> geeft aan de linkerkant informatie weer over de topplaatsen, -mensen en -labels met betrekking tot uw zoekbewerking.
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+   <sect3 id="ban7gsc">
+    <title>Meer opties gebruiken voor geavanceerd zoeken:</title>
+    <procedure id="ban7hhh">
+     <step id="ban7hhi" performance="required">
+      <para>Klik in de sectie Zoeken op <guimenu>Geavanceerd</guimenu>. Het tabblad <guimenu>Geavanceerd zoeken</guimenu> verschijnt.
+      </para>
+     </step>
+     <step id="ban7ho8" performance="required">
+      <para>Klik in de rechterbovenhoek van het gebied <guimenu>Geavanceerd zoeken</guimenu> op <guimenu>Meer opties</guimenu>.
+      </para>
+     </step>
+     <step id="ban7i1a" performance="required">
+      <para>De volgende opties zijn beschikbaar:</para>
+      <itemizedlist mark="bullet" spacing="normal">
+       <listitem>
+        <para>
+         <guimenu>Auteurs</guimenu>- Met deze optie kunt u een of meer auteursnamen opgeven.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Labels</guimenu>- Met deze optie kunt u een of meer labelnamen opgeven.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Workflow</guimenu>- Met deze optie kunt u een of meer namen van workflowtoestanden opgeven.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Vermeldingsattributen</guimenu>- Met deze optie kunt u een of meer vermeldingstypes opgeven.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Laatste activiteiten sedert dagen</guimenu>- Met deze optie kunt u de zoekbewerking beperken tot items met activiteit binnen een bepaald aantal dagen.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Aanmaakdatums</guimenu>- Met deze optie kunt u de zoekbewerking beperken tot items die zijn aangemaakt binnen een of meer datumbereiken.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Wijzigingsdatums</guimenu>- Met deze optie kunt u de zoekbewerking beperken tot items die zijn gewijzigd binnen een of meer datumbereiken.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Itemtype</guimenu>- Met deze optie kunt u de zoekbewerking beperken tot een of meer itemtypes.
+        </para>
+       </listitem>
+      </itemizedlist>
+      <note>
+       <para>Typ een paar tekens en in de meeste velden kunt dan een keuze maken in een vervolgkeuzelijst. Klik op Meer criteria om meer zoekcriteria voor een optie op te geven.</para>
+      </note>
+     </step>
+    </procedure>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yhg5l">
+   <title>Terminologie</title>
+   <formalpara id="b9yhgfo">
+    <title>buddylijst -</title>
+    <para>Een lijst mensen waar u regelmatig contact mee hebt.</para>
+   </formalpara>
+   <formalpara id="b9yhhqt">
+    <title>vermelding - </title>
+    <para>Een item in een map.</para>
+   </formalpara>
+   <formalpara id="b9yhhqu">
+    <title>map -</title>
+    <para>Een opbergplaats voor vermeldingen en andere mappen. Elke map heeft een type, zoals <guimenu>blog</guimenu>, <guimenu>wiki</guimenu> of <guimenu>kalender</guimenu>.
+    </para>
+   </formalpara>
+   <formalpara id="b9yhhqv">
+    <title>aanwezigheid -</title>
+    <para>De status van verbinding met een communicatiedienst en beschikbaarheid voor communicatie. Aanwezigheidsinformatie wordt aangegeven met statuspictogrammen.</para>
+   </formalpara>
+   <formalpara id="b9yiiuq">
+    <title>werkruimte -</title>
+    <para>Een opbergplaats voor mappen en andere werkruimtes.</para>
+   </formalpara>
+  </sect2>
+ </sect1>
+ <sect1 role="legalinfo" id="b20g58r">
+  <title>Juridische mededeling</title>
+  <para>Copyright &copy; 2007 Novell, Inc. Alle rechten voorbehouden. Geen enkel deel van deze publicatie mag worden verveelvoudigd, gefotokopieerd, in een gegevensbestand opgeslagen of verzonden zonder de uitdrukkelijke schriftelijke toestemming van de uitgever. Zie voor Novell-handelsmerken <ulink url="http://www.novell.com/company/legal/trademarks/tmlist.html">de lijst met Novell-handelsmerken en -servicemerken</ulink>. Alle andere gebruikte handelsmerken zijn eigendom van hun respectieve eigenaars. Een handelsmerksymbool (&reg;, TM, enz.) geeft een Novell-handelsmerk aan; een handelsmerk van een andere eigenaar wordt aangegeven met een sterretje (*).
+  </para>
+ </sect1>
+</chapter>

@@ -1,0 +1,5 @@
+"product","ICEcore","no description"
+"zon","Zon","no description"
+"thrdmrk","*","no description"
+"ycc_runlevel","System Services (Runlevel)","no description"
+"euro","&#x20AC;","no description"
