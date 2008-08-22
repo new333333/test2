@@ -43,7 +43,7 @@
 						
 						<c:if test="${ssBinder.entityType == 'workspace'}"> 
 							title="<ssf:nlt tag="relevance.shareThisWorkspace"/>" >
-							<span><ssf:nlt tag="relevance.shareThisWorkspace"/>xxxxxx xxxxxxxxx xxxxxxx xxxxxx</span>
+							<span><ssf:nlt tag="relevance.shareThisWorkspace"/></span>
 						</c:if>
 						<c:if test="${ssBinder.entityType == 'folder' && !empty ssEntry}"> 
 							title="<ssf:nlt tag="relevance.shareThisEntry"/>" >

@@ -275,6 +275,11 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 	</tbody>
 	</table>
 </ssf:ifnotaccessible>
+<ssf:ifaccessible>
+  <div>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
+  </div>
+</ssf:ifaccessible>
   </div>
 <script type="text/javascript">
 ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));

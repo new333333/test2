@@ -522,6 +522,7 @@ public class WebKeys {
 	public static final String BINDER_UNSEEN_COUNTS="ss_binderUnseenCounts";
 	public static final String BINDER_WEBDAV_URL="ssWebDavURL";
 	public static final String BLOG_ENTRIES="ssBlogEntries"; 
+	public static final String BLOG_ENTRY="ssBlogEntry"; 
 	public static final String BLOG_FOLDER_COMMUNITY_TAGS="ssBlogFolderCommunityTags"; 
 	public static final String BLOG_FOLDER_PERSONAL_TAGS="ssBlogFolderPersonalTags"; 
 	public static final String BLOG_MONTH_HITS="ssBlogMonthHits"; 
@@ -530,6 +531,7 @@ public class WebKeys {
 	public static final String BLOG_REPLY="ssBlogReply";
 	public static final String IN_IFRAME_ADD_ENTRY="ssInIFrameAddEntry";
 	public static final String BLOG_REPLY_COUNT="ssBlogReplyCount"; 
+    public static final String CALENDAR_IMPORT_TOOLBAR="ssCalendarImportToolbar";
 	public static final String CAN_VIEW_USER_PROFILES="ss_canViewUserProfiles";
 	public static final String CHANGE_LOGS="ss_changeLogs";
 	public static final String CHANGE_LOG_LIST="ss_changeLogList";
@@ -585,6 +587,7 @@ public class WebKeys {
     public static final String DEFINITION_ID="ssDefinitionId";
     public static final String DEFINITION_BINDER="ssDefinitionBinder";
     public static final String DEFINITION_ENTRY="ssDefinitionEntry";
+    public static final String DEFINITION_ENTRY_MAP="ssDefinitionEntryMap";
     public static final String DEFINITION_CHOICES="ssDefinitionChoices";
     public static final String DEFINITION_FAMILY="ssDefinitionFamily";
     public static final String DIRECTION="ss_direction";

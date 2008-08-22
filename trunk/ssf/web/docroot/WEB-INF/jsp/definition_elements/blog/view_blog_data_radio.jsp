@@ -28,11 +28,29 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //blog creator view %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="0">
+<%@ page import="com.sitescape.team.web.util.DefinitionHelper" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
+<%
+	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
+	String radio = "";
+	if (thisEntry instanceof FolderEntry) {
+		radio = (String) ((FolderEntry)thisEntry).getCustomAttribute(property_name).getValue();
+	} else if (thisEntry instanceof Map) {
+		radio = (String) ((Map)thisEntry).get(property_name);
+	}
+%>
+
+<%
+	String caption = "";
+	if (radio != null) {
+		caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item, radio);
+		caption = NLT.getDef(caption);
+	}
+%>
+<c:set var="caption" value="<%= caption %>"/>
+
+<% //Radio view %>
 <div class="ss_entryContent">
-<c:out value="${property_caption}" />
-<c:out value="${ssDefinitionEntry.creation.principal.title}"/>
+<span class="ss_labelRight"><c:out value="${property_caption}" /></span>
+<c:out value="${caption}" escapeXml="false"/>
 </div>
-</c:if>

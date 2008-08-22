@@ -1085,8 +1085,6 @@ div.ss_header_bar_timestamp {
 	color: ${ss_style_metadata_color};
 	margin-top: 3px;
 	margin-right: 5px;
-	float: right;
-	position: relative;
 }
 .ss_blog_footer {
 	background-color:${ss_blog_footer_color};

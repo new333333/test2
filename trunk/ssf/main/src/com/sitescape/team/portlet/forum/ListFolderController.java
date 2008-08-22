@@ -222,19 +222,19 @@ public class ListFolderController extends  SAbstractController {
 		}
 		if (binderId == null) {
 			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_PARENT_ID);
-			if (binderId != null) {
-				try {
-					Binder binder = getBinderModule().getBinder(binderId);
-					if (binder.getEntityType().name().equals(EntityIdentifier.EntityType.workspace.name())) {
-						return WorkspaceTreeHelper.setupWorkspaceBeans(this, binderId, request, response);					}
-				} catch(NoBinderByTheIdException e) {
-				}
-				
-			} else {
-				binderId = (Long) portletSession.getAttribute(WebKeys.LAST_BINDER_VIEWED + namespace, PortletSession.APPLICATION_SCOPE);
-			}
 		}
 
+		if (binderId != null) {
+			try {
+				Binder binder = getBinderModule().getBinder(binderId);
+				if (binder.getEntityType().name().equals(EntityIdentifier.EntityType.workspace.name())) {
+					return WorkspaceTreeHelper.setupWorkspaceBeans(this, binderId, request, response);					}
+			} catch(NoBinderByTheIdException e) {
+			}
+			
+		} else {
+			binderId = (Long) portletSession.getAttribute(WebKeys.LAST_BINDER_VIEWED + namespace, PortletSession.APPLICATION_SCOPE);
+		}
 		return ListFolderHelper.BuildFolderBeans(this, request, response, binderId);
 		
 	}

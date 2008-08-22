@@ -696,7 +696,7 @@ public class ListFolderHelper {
 		Long folderId = folder.getId();
 		User user = RequestContextHolder.getRequestContext().getUser();
 					
-		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
+		if (1 == 0 && viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			folderEntries = bs.getFolderModule().getFullEntries(folderId, options);
 			Collection<FolderEntry> full = (Collection)folderEntries.get(ObjectKeys.FULL_ENTRIES);
 			SeenMap seen = (SeenMap)model.get(WebKeys.SEEN_MAP);
@@ -745,7 +745,8 @@ public class ListFolderHelper {
 			if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 				buildWikiBeans(bs, response, folder, options, model, folderEntries);
 			}
-			if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
+			if (viewType.equals(Definition.VIEW_STYLE_BLOG) || 
+					viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
 				//Get the list of all entries to build the archive list
 				buildBlogBeans(bs, response, folder, options, model, folderEntries);
 			}
@@ -768,6 +769,11 @@ public class ListFolderHelper {
 			//This is a blog view, so get the extra blog beans
 			getBlogEntries(bs, folder, folderEntries, model, req, response);
 		}
+		
+		//Build the mashup beans
+		Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
+		Element configElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
+		DefinitionHelper.buildMashupBeans(bs, folder, configDocument, model);
 		
 		//Build the navigation beans
 		BinderHelper.buildNavigationLinkBeans(bs, folder, model);
@@ -1225,6 +1231,8 @@ public class ListFolderHelper {
 		Toolbar folderToolbar = new Toolbar();
 		Toolbar entryToolbar = new Toolbar();
 		Toolbar folderViewsToolbar = new Toolbar();
+		Toolbar folderActionsToolbar = new Toolbar();
+		Toolbar calendarImportToolbar = new Toolbar();
 		Toolbar dashboardToolbar = new Toolbar();
 		Toolbar footerToolbar = new Toolbar();
 		Toolbar whatsNewToolbar = new Toolbar();
@@ -1677,51 +1685,50 @@ public class ListFolderHelper {
 		}
 		
 		//Folder action menu
-		Toolbar folderActionsToolbar = new Toolbar();
 		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 			//Folder action menu
 			//Build the standard toolbar
 			BinderHelper.buildFolderActionsToolbar(bs, request, response, folderActionsToolbar, forumId);
+		}
+		
+		//Calendar import menu
+		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
+				(viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
+						viewType.equals(Definition.VIEW_STYLE_TASK)) &&
+				bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {
 			
-			if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
-					(viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
-							viewType.equals(Definition.VIEW_STYLE_TASK)) &&
-					bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {
-				
-				
-				String titleFromFile = NLT.get("calendar.import.window.title.fromFile");
-				String titleByURL = NLT.get("calendar.import.window.title.byURL");
-				String legendFromFile = NLT.get("calendar.import.window.legend.fromFile");
-				String legendByURL = NLT.get("calendar.import.window.legend.byURL");
-				String btnFromFile = NLT.get("calendar.import.window.upload.fromFile");
-				String btnByURL = NLT.get("calendar.import.window.upload.byURL");
-				String optionTitle = NLT.get("toolbar.menu.calendarImport");
-				String importFromFile = NLT.get("toolbar.menu.calendarImport.fromFile");
-				String importByURL = NLT.get("toolbar.menu.calendarImport.byURL");
-				if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
-					titleFromFile = NLT.get("task.import.window.title.fromFile");
-					titleByURL = NLT.get("task.import.window.title.byURL");
-					legendFromFile = NLT.get("task.import.window.legend.fromFile");
-					legendByURL = NLT.get("task.import.window.legend.byURL");
-					btnFromFile = NLT.get("task.import.window.upload.fromFile");
-					btnByURL = NLT.get("task.import.window.upload.byURL");
-					optionTitle = NLT.get("toolbar.menu.taskImport");
-					importFromFile = NLT.get("toolbar.menu.taskImport.fromFile");
-					importByURL = NLT.get("toolbar.menu.taskImport.byURL");				
-				}
-				
-				folderActionsToolbar.addToolbarMenu("5_calendar", optionTitle);	
-				
-				Map qualifiersByFile = new HashMap();
-				qualifiersByFile.put("onClick", "ss_calendar_import.importFormFromFile({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
-						titleFromFile + "', legend: '" + legendFromFile + "', btn: '" + btnFromFile + "'});return false;");
-				folderActionsToolbar.addToolbarMenuItem("5_calendar", "calendar", importFromFile, "#", qualifiersByFile);
-				
-				Map qualifiersByURL = new HashMap();
-				qualifiersByURL.put("onClick", "ss_calendar_import.importFormByURL({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
-						titleByURL + "', legend: '" + legendByURL + "', btn: '" + btnByURL + "'});return false;");
-				folderActionsToolbar.addToolbarMenuItem("5_calendar", "calendar", importByURL, "#", qualifiersByURL);
+			String titleFromFile = NLT.get("calendar.import.window.title.fromFile").replaceAll("'", "\\'");
+			String titleByURL = NLT.get("calendar.import.window.title.byURL").replaceAll("'", "\\'");
+			String legendFromFile = NLT.get("calendar.import.window.legend.fromFile").replaceAll("'", "\\'");
+			String legendByURL = NLT.get("calendar.import.window.legend.byURL").replaceAll("'", "\\'");
+			String btnFromFile = NLT.get("calendar.import.window.upload.fromFile").replaceAll("'", "\\'");
+			String btnByURL = NLT.get("calendar.import.window.upload.byURL").replaceAll("'", "\\'");
+			String optionTitle = NLT.get("toolbar.menu.calendarImport").replaceAll("'", "\\'");
+			String importFromFile = NLT.get("toolbar.menu.calendarImport.fromFile");
+			String importByURL = NLT.get("toolbar.menu.calendarImport.byURL");
+			if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
+				titleFromFile = NLT.get("task.import.window.title.fromFile").replaceAll("'", "\\'");
+				titleByURL = NLT.get("task.import.window.title.byURL").replaceAll("'", "\\'");
+				legendFromFile = NLT.get("task.import.window.legend.fromFile").replaceAll("'", "\\'");
+				legendByURL = NLT.get("task.import.window.legend.byURL").replaceAll("'", "\\'");
+				btnFromFile = NLT.get("task.import.window.upload.fromFile").replaceAll("'", "\\'");
+				btnByURL = NLT.get("task.import.window.upload.byURL").replaceAll("'", "\\'");
+				optionTitle = NLT.get("toolbar.menu.taskImport").replaceAll("'", "\\'");
+				importFromFile = NLT.get("toolbar.menu.taskImport.fromFile");
+				importByURL = NLT.get("toolbar.menu.taskImport.byURL");				
 			}
+			
+			calendarImportToolbar.addToolbarMenu("5_calendar", optionTitle);	
+			
+			Map qualifiersByFile = new HashMap();
+			qualifiersByFile.put("onClick", "ss_calendar_import.importFormFromFile({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
+					titleFromFile + "', legend: '" + legendFromFile + "', btn: '" + btnFromFile + "'});return false;");
+			calendarImportToolbar.addToolbarMenuItem("5_calendar", "calendar", importFromFile, "#", qualifiersByFile);
+			
+			Map qualifiersByURL = new HashMap();
+			qualifiersByURL.put("onClick", "ss_calendar_import.importFormByURL({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
+					titleByURL + "', legend: '" + legendByURL + "', btn: '" + btnByURL + "'});return false;");
+			calendarImportToolbar.addToolbarMenuItem("5_calendar", "calendar", importByURL, "#", qualifiersByURL);
 		}
 		
 		//Build the "Manage dashboard" toolbar
@@ -1855,6 +1862,7 @@ public class ListFolderHelper {
 		model.put(WebKeys.ENTRY_TOOLBAR,  entryToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_VIEWS_TOOLBAR,  folderViewsToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_ACTIONS_TOOLBAR,  folderActionsToolbar.getToolbar());
+		model.put(WebKeys.CALENDAR_IMPORT_TOOLBAR,  calendarImportToolbar.getToolbar());
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 		model.put(WebKeys.WHATS_NEW_TOOLBAR,  whatsNewToolbar.getToolbar());
 	}
@@ -1883,26 +1891,25 @@ public class ListFolderHelper {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map entries = new TreeMap();
 		model.put(WebKeys.BLOG_ENTRIES, entries);
-		List entrylist = (List)folderEntries.get(ObjectKeys.FULL_ENTRIES);
-		Map publicTags = (Map)folderEntries.get(ObjectKeys.COMMUNITY_ENTITY_TAGS);
-		Map privateTags = (Map)folderEntries.get(ObjectKeys.PERSONAL_ENTITY_TAGS);
-		Iterator entryIterator = entrylist.listIterator();
+		List entryList = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+		if (entryList == null) return;
+		Iterator entryIterator = entryList.listIterator();
 		while (entryIterator.hasNext()) {
-			FolderEntry entry  = (FolderEntry) entryIterator.next();
 			Map entryMap = new HashMap();
-			Map accessControlEntryMap = BinderHelper.getAccessControlEntityMapBean(model, entry);
-			entries.put(entry.getId().toString(), entryMap);
+			Map entry = (Map) entryIterator.next();
 			entryMap.put("entry", entry);
-			if (DefinitionHelper.getDefinition(entry.getEntryDef(), entryMap, "//item[@name='entryBlogView']") == false) {
+			Map accessControlEntryMap = BinderHelper.getAccessControlMapBean(model);
+			entries.put(entry.get(Constants.DOCID_FIELD), entryMap);
+			String entryDefinitionId = (String) entry.get(Constants.COMMAND_DEFINITION_FIELD);
+			Definition entryDefinition = DefinitionHelper.getDefinition(entryDefinitionId);
+			if (DefinitionHelper.getDefinition(entryDefinition, entryMap, "//item[@name='entryBlogView']") == false) {
 				//this will fill it the entryDef for the entry
-				DefinitionHelper.getDefaultEntryView(entry, entryMap, "//item[@name='entryBlogView']");				
+				DefinitionHelper.getDefaultEntryView(null, entryMap, "//item[@name='entryBlogView']");				
 			}
 			//See if this entry can have replies added
 			entryMap.put(WebKeys.REPLY_BLOG_URL, "");
-			Definition def = entry.getEntryDef();
-			if (bs.getFolderModule().testAccess(entry, FolderOperation.addReply)) {
 				accessControlEntryMap.put("addReply", new Boolean(true));
-				Document defDoc = def.getDefinition();
+				Document defDoc = entryDefinition.getDefinition();
 				List replyStyles = DefinitionUtils.getPropertyValueList(defDoc.getRootElement(), "replyStyle");
 				if (!replyStyles.isEmpty()) {
 					String replyStyleId = (String)replyStyles.get(0);
@@ -1911,44 +1918,26 @@ public class ListFolderHelper {
 						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_REPLY);
 						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
 						adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, replyStyleId);
-						adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
+						adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, (String)entry.get(Constants.DOCID_FIELD));
 						adapterUrl.setParameter(WebKeys.URL_BLOG_REPLY, "1");
 						adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
 						entryMap.put(WebKeys.REPLY_BLOG_URL, adapterUrl);
 					}
 				}
-			}
 			//See if the user can modify this entry
 			boolean reserveAccessCheck = false;
 			boolean isUserBinderAdministrator = false;
 			boolean isEntryReserved = false;
 			boolean isLockedByAndLoginUserSame = false;
 
-			if (bs.getFolderModule().testAccess(entry, FolderOperation.reserveEntry)) {
-				reserveAccessCheck = true;
-			}
-			if (bs.getFolderModule().testAccess(entry, FolderOperation.overrideReserveEntry)) {
-				isUserBinderAdministrator = true;
-			}
-			
-			HistoryStamp historyStamp = entry.getReservation();
-			if (historyStamp != null) isEntryReserved = true;
+			String reservedById = (String) entry.get(Constants.RESERVEDBYID_FIELD);
+			if (reservedById != null) isEntryReserved = true;
 
 			if (isEntryReserved) {
-				Principal lockedByUser = historyStamp.getPrincipal();
-				if (lockedByUser.getId().equals(user.getId())) {
+				if (reservedById.equals(user.getId().toString())) {
 					isLockedByAndLoginUserSame = true;
 				}
 			}
-			if (bs.getFolderModule().testAccess(entry, FolderOperation.modifyEntry)) {
-				if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
-				} else {
-					accessControlEntryMap.put("modifyEntry", new Boolean(true));
-				}
-			}
-
-			entryMap.put(WebKeys.COMMUNITY_TAGS, publicTags.get(entry.getId()));
-			entryMap.put(WebKeys.PERSONAL_TAGS, privateTags.get(entry.getId()));
 		}
 	}
 

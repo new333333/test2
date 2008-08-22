@@ -61,6 +61,9 @@
 	} else if (itemType.equals("folderAttributeList")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/binder_attributes_view.jsp" %><%
 
+	} else if (itemType.equals("mashupCanvas")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/mashup_canvas_form.jsp" %><%
+
 	} else if (itemType.equals("user_list") || itemType.equals("userListSelectbox")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_folder_data_user_list.jsp" %><%
 		

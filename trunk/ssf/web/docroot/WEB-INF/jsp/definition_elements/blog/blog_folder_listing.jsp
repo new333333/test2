@@ -40,14 +40,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			  <c:set var="ss_blog_workflowStateCaption" value="" scope="request"/>
 			  <c:set var="ss_blog_reply_url" value="${ssBlogEntries[entry._docId].replyBlogUrl}" scope="request"/>
 			  <c:if test="${!empty entry._workflowStateCaption}">
-			  <c:set var="ss_blog_workflowStateCaption" value="${entry._workflowStateCaption}" scope="request"/>
+			    <c:set var="ss_blog_workflowStateCaption" value="${entry._workflowStateCaption}" scope="request"/>
 			  </c:if>
 			  <ssf:displayConfiguration 
 			    configDefinition="${ssBlogEntries[entry._docId].ssConfigDefinition}" 
 			    configElement="${ssBlogEntries[entry._docId].ssConfigElement}" 
 			    configJspStyle="view"
 			    processThisItem="true" 
-			    entry="${ssBlogEntries[entry._docId].entry}" />
+			    entry="${entry}" />
 			</div>
 		  </c:forEach>
 

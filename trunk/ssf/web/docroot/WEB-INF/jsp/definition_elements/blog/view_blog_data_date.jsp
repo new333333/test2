@@ -28,4 +28,27 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% // View blog attachments %>
+<% //Blog creation date view %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%
+	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
+	if (thisEntry instanceof FolderEntry) {
+		%>
+		<c:set var="thisDate" value="<%= ((FolderEntry)thisEntry).getCustomAttribute(property_name).getValue() %>"/>
+		<%
+	} else if (thisEntry instanceof Map) {
+		%>
+		<c:set var="thisDate" value="<%= ((Map)thisEntry).get(property_name) %>"/>
+		<%
+	}
+%>
+xxxxxxxxxxxxxx ${thisDate} xxxxxxxxxxxxxxxxxx
+<div class="ss_entryContent">
+ <span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
+ <span>
+ <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				      value="${thisDate}" type="date" 
+					  pattern="dd MMM yyyy" />
+
+</span>
+</div>

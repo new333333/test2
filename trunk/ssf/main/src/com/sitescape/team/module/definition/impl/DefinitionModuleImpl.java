@@ -886,11 +886,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			definitionType = Definition.FOLDER_ENTRY;
 		}
 		Definition def = addDefaultDefinition(definitionType);
-		entry.setEntryDef(def);
-		entry.setDefinitionType(definitionType);
-		if (Validator.isNull(entry.getIconName())) {
-			String icon = DefinitionUtils.getPropertyValue(def.getDefinition().getRootElement(), "icon");
-			if (Validator.isNotNull(icon)) entry.setIconName(icon);
+		if (entry != null) {
+			entry.setEntryDef(def);
+			entry.setDefinitionType(definitionType);
+			if (Validator.isNull(entry.getIconName())) {
+				String icon = DefinitionUtils.getPropertyValue(def.getDefinition().getRootElement(), "icon");
+				if (Validator.isNotNull(icon)) entry.setIconName(icon);
+			}
 		}
 		return def;
 	}
@@ -1970,6 +1972,19 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								}
 					    	}
 					    }
+					} else if (itemName.equals("mashupCanvas")) {
+						if (inputData.exists(nameValue + "__idCounter")) {
+							int idCounter = Integer.valueOf(inputData.getSingleValue(nameValue + "__idCounter"));
+							String value = "";
+							for (int i = 0; i < idCounter; i++) {
+								String nextValue = inputData.getSingleValue(nameValue + "__" + String.valueOf(i));
+								if (nextValue != null && !nextValue.equals("")) {
+									if (!value.equals("")) value = value + ";";
+									value = value + nextValue;
+								}
+							}
+							entryData.put(nameValue, value);
+						}
 					} else {
 						if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getSingleValue(nameValue));
 					}
