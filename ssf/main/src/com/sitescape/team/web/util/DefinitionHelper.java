@@ -39,6 +39,7 @@ import java.util.TreeMap;
 import java.util.SortedMap;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -48,6 +49,7 @@ import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.comparator.StringComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
@@ -59,6 +61,7 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.ssfs.util.SsfsUtil;
+import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Validator;
@@ -675,4 +678,23 @@ public class DefinitionHelper {
 		}
 		return retVal;
 	}
+	
+	public static void buildMashupBeans(AllModulesInjected bs, DefinableEntity entity, 
+			Document definitionConfig, Map model) {
+		Map result = new HashMap();
+		
+    	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@type='data' and @name='mashupCanvas']/properties/property[@name='name']/@value");
+    	if (nodes == null) {
+    		return;
+    	}
+    	
+    	Iterator it = nodes.iterator();
+    	while (it.hasNext()) {
+    		Node node = (Node)it.next();
+    		String attrName = node.getStringValue();
+    		CustomAttribute attr = entity.getCustomAttribute(attrName);
+    		
+    	}
+	}
+	
 }

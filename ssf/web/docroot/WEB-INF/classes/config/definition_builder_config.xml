@@ -2391,6 +2391,19 @@
 		</jsps>
 		<notify velocity="table3.vm" />
 	</item>
+
+	<item name="mashupCanvas" caption="__mashup_canvas" category="generalLayout" 
+		type="data" canBeDeleted="true" multipleAllowed="true" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__mashup_canvas"/>
+			<property name="name" caption="__name" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/mashup_canvas_form.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/mashup_canvas.jsp" />
+		</jsps>
+	</item>
+	
 	<item name="html" caption="__html" category="generalLayout" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
