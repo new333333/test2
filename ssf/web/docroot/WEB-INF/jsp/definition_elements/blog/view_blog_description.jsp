@@ -28,12 +28,30 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //Description view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${!empty ssDefinitionEntry.description.text}">
-<div class="ss_entryDescriptionLead"></div>
-<ssf:editable entity="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}">
- <span><ssf:markup type="view" entity="${ssDefinitionEntry}"><c:out 
-   value="${ssDefinitionEntry.description.text}" escapeXml="false"/></ssf:markup></span>
-</ssf:editable>
-</c:if>
+<%
+	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
+	String description = "";
+	if (thisEntry instanceof FolderEntry) {
+		description = (String) ((FolderEntry)thisEntry).getDescription().getText();
+		%>
+		<c:set var="docId" value="<%= ((FolderEntry)thisEntry).getId() %>"/>
+		<c:set var="binderId" value="<%= ((FolderEntry)thisEntry).getParentBinder().getId() %>"/>
+		<%
+	} else if (thisEntry instanceof Map) {
+		description = (String) ((Map)thisEntry).get("_desc");
+		%>
+		<c:set var="docId" value="<%= ((Map)thisEntry).get("_docId") %>"/>
+		<c:set var="binderId" value="<%= ((Map)thisEntry).get("_binderId") %>"/>
+		<%
+	}
+%>
+<% //Description view %>
+<%  if (description != null && !description.equals("")) {
+%>
+  <div class="ss_entryDescriptionLead"></div>
+  <span><ssf:markup type="view" binderId="${binderId}" entryId="${docId}"><c:out 
+       value="<%= description %>" escapeXml="false"/></ssf:markup></span>
+<%  }
+%>
+

@@ -38,10 +38,15 @@
 <ssf:sidebarPanel title="sidebar.configure" id="ss_folderTags_sidebar" divClass="ss_place_tags" 
   initOpen="false" sticky="false">
 
-<c:if test="${!empty ssFolderViewsToolbar}">
+<c:if test="${!empty ssFolderViewsToolbar || !empty ssCalendarImportToolbar}">
   <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.folderConfiguration"/> 
 	<div class="ss_sub_sidebarMenu">
-	  <ssf:toolbar toolbar="${ssFolderViewsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
+	  <c:if test="${!empty ssFolderViewsToolbar}">
+	    <ssf:toolbar toolbar="${ssFolderViewsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
+	  </c:if>
+	  <c:if test="${!empty ssCalendarImportToolbar}">
+	    <ssf:toolbar toolbar="${ssCalendarImportToolbar}" style="ss_actions_bar4 ss_actions_bar" />
+	  </c:if>
 	</div>
   </div>	
 </c:if>

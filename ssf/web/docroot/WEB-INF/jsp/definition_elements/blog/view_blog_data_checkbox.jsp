@@ -28,4 +28,23 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% // View blog attachments %>
+<% //checkbox view %>
+<%
+	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
+	String checkbox = "";
+	if (thisEntry instanceof FolderEntry) {
+		checkbox = (String) ((FolderEntry)thisEntry).getCustomAttribute(property_name).getValue();
+	} else if (thisEntry instanceof Map) {
+		checkbox = (String) ((Map)thisEntry).get(property_name);
+	}
+%>
+<div class="ss_entryContent">
+<c:if test="${checkbox}" >
+<input type="checkbox" checked DISABLED>
+</c:if>
+<c:if test="${!checkbox}" >
+<input type="checkbox" DISABLED>
+</c:if>
+<span class="ss_labelRight"><c:out value="${property_caption}" /></span>
+
+</div>

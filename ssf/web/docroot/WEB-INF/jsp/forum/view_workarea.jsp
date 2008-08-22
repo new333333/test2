@@ -45,9 +45,9 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 		return ss_workarea_showId(id, action);
 	}
 	//Build a url to go to
-	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
-			name="action" value="ssActionPlaceHolder"/><portlet:param 
-			name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>"
+	var url = "<ssf:url windowState="maximized"><ssf:param 
+			name="action" value="ssActionPlaceHolder"/><ssf:param 
+			name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>"
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
 	self.location.href = url;
