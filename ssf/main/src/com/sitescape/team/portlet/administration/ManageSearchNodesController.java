@@ -53,7 +53,7 @@ public class ManageSearchNodesController extends  SAbstractController {
 					String[] choice = (String[])formData.get("accessMode" + node.getId());
 					if(choice != null && choice.length > 0) {
 						if(!node.getAccessMode().equals(choice[0]))
-							getAdminModule().setSearchNodeAccessMode(node.getId(), choice[0]);
+							getAdminModule().updateSearchNode(node.getId(), choice[0], null);
 					}
 				}
 			}

@@ -34,7 +34,8 @@ public class SearchNodeInfo implements Serializable {
 
 	private String indexName;
 	private String nodeId;
-	private String accessMode;
+	private String accessMode = "readwrite";
+	private boolean outOfSynch = false;
 	
 	public SearchNodeInfo() {}
 	
@@ -62,6 +63,14 @@ public class SearchNodeInfo implements Serializable {
 		this.nodeId = nodeId;
 	}
 	
+	public boolean isOutOfSynch() {
+		return outOfSynch;
+	}
+
+	public void setOutOfSynch(boolean outOfSynch) {
+		this.outOfSynch = outOfSynch;
+	}
+
 	public boolean equals(Object obj) {
         if(this == obj)
             return true;
