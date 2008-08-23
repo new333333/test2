@@ -9,5 +9,6 @@
       <key-property name="nodeId" length="128"/>
     </composite-id>
     <property name="accessMode" length="16"/>
+    <property name="outOfSynch"/>
 </class>
 </hibernate-mapping>

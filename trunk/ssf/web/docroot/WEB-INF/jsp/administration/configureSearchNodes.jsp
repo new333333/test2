@@ -55,6 +55,15 @@
 			<c:out value="${property.key}"/>: <c:out value="${property.value}"/><br/>
 		</c:forEach>
 	</c:if>
+	<table class="ss_style" border="0" cellspacing="3" cellpadding="3">
+	<tr><td valign="top">
+	<hr shade=noshade size=1/>
+	<c:if test="${node.outOfSynch}">
+		<blink><span style="color:red"><ssf:nlt tag="administration.search.node.synch.outofsynch" text="This node is out of sync."/></span></blink>
+	</c:if>
+	<c:if test="${!node.outOfSynch}">
+		<ssf:nlt tag="administration.search.node.synch.insynch" text="This node is in sync."/>
+	</c:if>
 	<table class="ss_style" border ="0" cellspacing="0" cellpadding="0" width="100%">
 	<tr><td valign="top">
 	<hr shade=noshade size=1/>
@@ -62,6 +71,8 @@
 		<input type="radio" name="accessMode${node.id}" value="readwrite" <c:if test="${node.accessMode == 'readwrite'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.accessmode.readwrite" text="Read and Write"/></span><br>
 		<input type="radio" name="accessMode${node.id}" value="writeonly" <c:if test="${node.accessMode == 'writeonly'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.accessmode.writeonly" text="Write Only"/></span><br>
 		<input type="radio" name="accessMode${node.id}" value="offline" <c:if test="${node.accessMode == 'offline'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.accessmode.offline" text="Offline"/></span><br>
+	</td></tr>
+	</table>
 	</td></tr>
 	</table>
 	</td></tr>

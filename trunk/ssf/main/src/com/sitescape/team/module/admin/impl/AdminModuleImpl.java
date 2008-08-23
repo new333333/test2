@@ -770,19 +770,47 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		return getLuceneSessionFactory().getNodes();
 	}
 	
-	public void setSearchNodeAccessMode(String nodeId, String accessMode) {
+	public void updateSearchNode(String nodeId, String accessMode, Boolean outOfSynch) {
 		SearchNodeInfo searchNodeInfo = getCoreDao().loadSearchNodeInfo(nodeId, SearchUtils.getIndexName());
 		if(searchNodeInfo != null) {
-			if(!accessMode.equals(searchNodeInfo.getAccessMode())) {
+			boolean changed = false;
+			if(accessMode != null && !accessMode.equals(searchNodeInfo.getAccessMode())) {
 				searchNodeInfo.setAccessMode(accessMode);
-				getCoreDao().update(searchNodeInfo);
+				changed = true;
 			}
+			if(outOfSynch != null && !outOfSynch.equals(searchNodeInfo.isOutOfSynch())) {
+				searchNodeInfo.setOutOfSynch(outOfSynch.booleanValue());
+				changed = true;
+			}
+			if(changed)
+				getCoreDao().update(searchNodeInfo);
 		}
 		else {
 			searchNodeInfo = new SearchNodeInfo(nodeId, SearchUtils.getIndexName());
-			searchNodeInfo.setAccessMode(accessMode);
+			if(accessMode != null)
+				searchNodeInfo.setAccessMode(accessMode);
+			if(outOfSynch != null)
+				searchNodeInfo.setOutOfSynch(outOfSynch.booleanValue());
 			getCoreDao().save(searchNodeInfo);
 		}
 	}
+	
+	public String getSearchNodeAccessMode(String nodeId) {
+		SearchNodeInfo searchNodeInfo = getCoreDao().loadSearchNodeInfo(nodeId, SearchUtils.getIndexName());
+		String accessMode = null;
+		if(searchNodeInfo != null)
+			accessMode = searchNodeInfo.getAccessMode();
+		if(accessMode == null)
+			accessMode = Node.ACCESS_MODE_READ_WRITE; // default access mode
+		return accessMode;
+	}
 
+	
+	public boolean getSearchNodeOutOfSynch(String nodeId) {
+		SearchNodeInfo searchNodeInfo = getCoreDao().loadSearchNodeInfo(nodeId, SearchUtils.getIndexName());
+		boolean outOfSynch = false;
+		if(searchNodeInfo != null)
+			outOfSynch = searchNodeInfo.isOutOfSynch();
+		return outOfSynch;
+	}
 }
