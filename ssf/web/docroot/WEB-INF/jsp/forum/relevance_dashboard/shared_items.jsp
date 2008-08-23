@@ -95,6 +95,9 @@
 	
 	  </ssf:nlt></li>
   </c:forEach>
+  <c:if test="${empty ss_sharedEntities && ss_pageNumber > '0'}">
+    <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
+  </c:if>
 
 	</div><!-- end of para -->
     </div><!-- end of today -->

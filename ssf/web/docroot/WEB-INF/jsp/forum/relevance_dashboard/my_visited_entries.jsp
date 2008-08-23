@@ -164,5 +164,8 @@
 
     </c:if>
   </c:forEach>
+  <c:if test="${empty ssEntriesViewed && ss_pageNumber > '0'}">
+    <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
+  </c:if>
 </div> <!-- end of viewed items -->
 </div> <!-- end of ss_para -->
