@@ -976,7 +976,7 @@ function ss_selectWikiTab(obj, tab, namespace) {
 			dirObj.style.display = 'block';
 			var pageSlider = "";
 			if (window["ss_pageSlider" + namespace]) eval("set pageSlider = ss_pageSlider" + namespace);
-			if (pageSlider != null) pageSlider.recalculate();
+			if (pageSlider != null && pageSlider != "") pageSlider.recalculate();
 		} else {
 			dirObj.style.display = 'none';
 			entObj.style.display = 'block';
