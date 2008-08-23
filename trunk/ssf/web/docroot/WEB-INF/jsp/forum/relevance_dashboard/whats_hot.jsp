@@ -97,5 +97,8 @@
 	
     </li><br/>
   </c:forEach>
+  <c:if test="${empty ss_whatsHot && ss_pageNumber > '0'}">
+    <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
+  </c:if>
 </div><!-- end of ss_hot_para -->
 </div><!-- end of ss_para -->
