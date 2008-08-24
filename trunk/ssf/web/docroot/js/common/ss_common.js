@@ -712,6 +712,10 @@ function ss_updateStatusNowAccessible(id) {
 	var obj = document.getElementById(id);
 	ss_updateStatusNow(obj);
 }
+function ss_updateStatusNowId(id) {
+	var obj = document.getElementById(id);
+	ss_updateStatusNow(obj);
+}
 function ss_updateStatusNow(obj) {
 	ss_statusObj = obj;
 	if (ss_statusTimer != null) {
@@ -747,7 +751,7 @@ function ss_setStatusBackground(obj, op) {
 			clearTimeout(ss_statusTimer)
 			ss_statusTimer = null;
 		}
-		if (ss_statusObj != null) ss_statusTimer = setTimeout('ss_updateStatusNow(ss_statusObj);', 10000);
+		//if (ss_statusObj != null) ss_statusTimer = setTimeout('ss_updateStatusNow(ss_statusObj);', 10000);
 	}
 	if (op == 'mouseOver') {
 		obj.style.backgroundColor = '#ffffff';
@@ -764,6 +768,13 @@ function ss_flashStatus() {
 }
 function ss_setStatusBackgroundCheck(obj) {
 	if (ss_statusOnMouseOver && ss_statusTimer == null) ss_setStatusBackground(obj, 'blur');
+}
+function ss_clearStatus(textareaId) {
+	var obj = document.getElementById(textareaId);
+	if (obj && typeof obj.value != "undefined") {
+		obj.value = "";
+		obj.focus();
+	}
 }
 
 function ss_trackThisBinder(id, namespace) {

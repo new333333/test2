@@ -47,14 +47,14 @@
 	   <strong><ssf:nlt tag="relevance.userStatus"/></strong>
 	</a>
 	<ssf:ifLoggedIn>
-			<script type="text/javascript">
-			  ss_statusCurrent = "";
-			  <c:if test="${!empty ssUser.status}">
-			    ss_statusCurrent = "<%= java.net.URLEncoder.encode(ssUser.getStatus()) %>";
-			  </c:if>
-			</script>
+		<script type="text/javascript">
+		ss_statusCurrent = "";
+		<c:if test="${!empty ssUser.status}">
+		  ss_statusCurrent = "<%= java.net.URLEncoder.encode(ssUser.getStatus()) %>";
+		</c:if>
+		</script>
 
-			<textarea cols="22" rows="2" id="ss_status_textarea${renderResponse.namespace}"
+		<textarea cols="22" rows="2" id="ss_status_textarea${renderResponse.namespace}"
 			wrap="virtual" class="ss_input_myStatus"
 			style="ss_input_myStatus" 
   			onFocus="ss_setStatusBackground(this, 'focus');"
@@ -63,6 +63,18 @@
   			onBlur="ss_updateStatusNow(this);ss_setStatusBackground(this, 'blur')"
   			onMouseover="ss_setStatusBackground(this, 'mouseOver');"
   			onMouseout="ss_setStatusBackgroundCheck(this);"
-  			><c:out value="${ssUser.status}" escapeXml="true"/></textarea>
+  		><c:out value="${ssUser.status}" escapeXml="true"/></textarea>
+  		<table cellspacing="0" cellpadding="0" width="100%">
+  		<tr>
+  		<td>
+  		  <input type="button" value="<ssf:nlt tag="button.ok"/>" class="ss_linkButton ss_fineprint"
+  		    onClick="ss_updateStatusNowId('ss_status_textarea${renderResponse.namespace}');return false;"/>
+  		</td>
+  		<td align="right">
+  		  <input type="button" value="<ssf:nlt tag="button.clear"/>" class="ss_linkButton ss_fineprint"
+  		    onClick="ss_clearStatus('ss_status_textarea${renderResponse.namespace}');return false;"/>
+  		</td>
+  		</tr>
+  		</table>
 	</ssf:ifLoggedIn> 
 </c:if>
