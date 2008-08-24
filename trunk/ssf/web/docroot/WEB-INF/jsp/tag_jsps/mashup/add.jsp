@@ -34,16 +34,18 @@
 //Routine called when "find wiki page" is clicked
 function ss_selectEntryId${renderResponse.namespace}(id) {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
-	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "entry,"+id;
+	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "entry,"+id+",${ssBinder.id}";
 	alert(formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value)
 }
 </script>
 <div>
 	Add entry xxx 
   		<ssf:find 
-    		type="places"
+    		type="entries"
     		width="140px" 
     		singleItem="true"
+			binderId="${ssBinder.id}"
+			searchSubFolders="false"
 		    clickRoutine="ss_selectEntryId${renderResponse.namespace}"
 		    accessibilityText="wiki.findPage"
 		    /> 

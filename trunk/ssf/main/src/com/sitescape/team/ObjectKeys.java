@@ -188,6 +188,8 @@ public interface ObjectKeys {
     
     public static final String FOLDER_ENTRY_TO_BE_SHOWN = "folder_entry_to_be_shown";
     
+    public static final String MASHUP_TYPE_ENTRY = "entry";
+    
     public static final String RELEVANCE_DASHBOARD_PROFILE = "profile";
     public static final String RELEVANCE_DASHBOARD_TRACKED_ITEMS = "trackedItems";
     public static final String RELEVANCE_DASHBOARD_WHATS_NEW = "whats_new";

@@ -45,6 +45,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.comparator.StringComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -65,6 +66,7 @@ import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 
 public class DefinitionHelper {
 	private static DefinitionHelper instance; // A singleton instance
@@ -681,7 +683,7 @@ public class DefinitionHelper {
 	
 	public static void buildMashupBeans(AllModulesInjected bs, DefinableEntity entity, 
 			Document definitionConfig, Map model) {
-		Map result = new HashMap();
+		Map mashupEntries = new HashMap();
 		
     	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@type='data' and @name='mashupCanvas']/properties/property[@name='name']/@value");
     	if (nodes == null) {
@@ -692,9 +694,23 @@ public class DefinitionHelper {
     	while (it.hasNext()) {
     		Node node = (Node)it.next();
     		String attrName = node.getStringValue();
-    		CustomAttribute attr = entity.getCustomAttribute(attrName);
-    		
+    		String mashupValue = (String) entity.getCustomAttribute(attrName).getValue();
+        	String[] mashupValues = mashupValue.split(";");
+        	for (int i = 0; i < mashupValues.length; i++) {
+        		String[] mashupItemValues = mashupValues[i].split(",");
+        		String type = mashupItemValues[0];
+        		String value1 = "";
+        		String value2 = "";
+        		if (mashupItemValues.length >= 2) value1 = mashupItemValues[1];
+        		if (mashupItemValues.length >= 3) value2 = mashupItemValues[2];
+        		if (ObjectKeys.MASHUP_TYPE_ENTRY.equals(type) && !value1.equals("") && !value2.equals("")) {
+        			try {
+        				FolderEntry entry = bs.getFolderModule().getEntry(Long.valueOf(value2), Long.valueOf(value1));
+        				mashupEntries.put(entry.getId().toString(), entry);
+        			} catch(Exception e) {}
+        		}
+        	}
     	}
+    	model.put(WebKeys.MASHUP_ENTRIES, mashupEntries);
 	}
-	
 }

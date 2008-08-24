@@ -746,7 +746,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		} else if (that._singleClickRoutine && typeof that._singleClickRoutine == "function") {
 			that._singleClickRoutine();
 		}
-		if (that._singleLeaveResultsVisible) {
+		if (that._singleLeaveResultsVisible && that._singleLeaveResultsVisible != 'false') {
 			setTimeout(function() {that.showResultList()}, 200);
 		}
 	}

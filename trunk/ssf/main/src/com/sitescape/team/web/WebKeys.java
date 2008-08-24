@@ -756,6 +756,7 @@ public class WebKeys {
     public static final String MARKUP_FORM="form"; 
     public static final String MARKUP_FILE="file"; 
     public static final String MARKUP_VIEW="view"; 
+    public static final String MASHUP_ENTRIES="ss_mashupEntries"; 
     public static final String MINIBLOG_ACCESS_DENIED="ss_miniblog_access_denied"; 
     public static final String MINIBLOG_STATUSES="ss_miniblog_statuses"; 
     public static final String MINIBLOG_PAGE="ss_miniblogPage"; 
