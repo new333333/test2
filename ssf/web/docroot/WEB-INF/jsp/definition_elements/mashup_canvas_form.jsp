@@ -49,15 +49,17 @@
       <%
     	  String[] mashupItemValues = mashupItem.split(",");
     	  String type = mashupItemValues[0];
-    	  String value = "";
-    	  if (mashupItemValues.length >= 2) value = mashupItemValues[1];
+    	  String value1 = "";
+    	  String value2 = "";
+    	  if (mashupItemValues.length >= 2) value1 = mashupItemValues[1];
+    	  if (mashupItemValues.length >= 3) value2 = mashupItemValues[2];
       %>
       <c:set var="mashupItemCounter" value="${mashupItemCounter + 1}"/>
       <c:set var="ss_mashupItemId" value="${mashupItemCounter}" scope="request"/>
   	  <c:if test="${ssConfigJspStyle == 'form'}">
-  	    <input type="hidden" name="${ss_mashupPropertyName}__${ss_mashupItemId}" value="<%= type %>,<%= value %>"/>
+  	    <input type="hidden" name="${ss_mashupPropertyName}__${ss_mashupItemId}" value="<%= type %>,<%= value1 %>,<%= value2 %>"/>
   	  </c:if>
-      <ssf:mashup id="${ss_mashupItemId}" type="<%= type %>" value="<%= value %>" view="${ssConfigJspStyle}"/>
+      <ssf:mashup id="${ss_mashupItemId}" type="<%= type %>" value1="<%= value1 %>" value2="<%= value2 %>" view="${ssConfigJspStyle}"/>
       <c:set var="mashupItemCounter" value="${ss_mashupItemId}"/>
     </c:forEach>
     

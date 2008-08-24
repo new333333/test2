@@ -80,7 +80,8 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		<div id="ss_folder">
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 			    configElement="${ssConfigElement}" 
-			    configJspStyle="${ssConfigJspStyle}" />
+			    configJspStyle="${ssConfigJspStyle}" 
+			    entry="${ssBinder}" />
 		</div>
 			
 		<c:if test="${ss_folderViewStyle != 'blog' && ss_folderViewStyle != 'wiki' && ss_folderViewStyle != 'guestbook' && ss_folderViewStyle != 'search'}">

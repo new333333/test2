@@ -30,19 +30,13 @@
 %>
 <% //table2_col1 top %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<table width="100%" border="1">
-<tr>
-<td valign="top" >
-<span>Entry: ${mashup_value}</span>
-</td>
-</tr>
-<tr>
-<td>
-    <c:set var="mashupEntry" value="${ss_mashupEntries[mashup_value]}"/>
+<c:set var="mashupEntry" value="${ss_mashupEntries[mashup_value1]}"/>
+<div>
+<span>${mashupEntry.title}</span>
+</div>
+<div>
     <ssf:markup type="view" entity="${mashupEntry}"><c:out 
       value="${mashupEntry.description.text}" 
       escapeXml="false"/></ssf:markup>
-</td>
-</tr>
-</table>
+</div>
 

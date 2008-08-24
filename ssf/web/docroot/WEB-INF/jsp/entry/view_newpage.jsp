@@ -83,7 +83,8 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	    <div class="ss_style_color">
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 					  configElement="${ssConfigElement}" 
-					  configJspStyle="${ssConfigJspStyle}" />
+					  configJspStyle="${ssConfigJspStyle}" 
+					  entry="${ssBinder}" />
 		</div>
 		<% // Footer toolbar %>
 		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />

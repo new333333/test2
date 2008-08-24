@@ -72,7 +72,8 @@ public class MashupTag extends BodyTagSupport {
 	
 	private String id = "";
 	private String type = "";
-	private String value = "";
+	private String value1 = "";
+	private String value2 = "";
 	private String view = "";
 
 	public int doStartTag() {
@@ -91,7 +92,8 @@ public class MashupTag extends BodyTagSupport {
 
 				httpReq.setAttribute("mashup_id", id);
 				httpReq.setAttribute("mashup_type", type);
-				httpReq.setAttribute("mashup_value", value);
+				httpReq.setAttribute("mashup_value1", value1);
+				httpReq.setAttribute("mashup_value2", value2);
 				httpReq.setAttribute("mashup_view", view);
 				
 				// Output the start of the mashup table element
@@ -108,7 +110,8 @@ public class MashupTag extends BodyTagSupport {
 		} finally {
 			type = "";
 			id = "";
-			value = "";
+			value1 = "";
+			value2 = "";
 			view = "";
 		}
 
@@ -123,8 +126,12 @@ public class MashupTag extends BodyTagSupport {
 	    this.type = type;
 	}
 	
-	public void setValue(String value) {
-	    this.value = value;
+	public void setValue1(String value) {
+	    this.value1 = value;
+	}
+	
+	public void setValue2(String value) {
+	    this.value2 = value;
 	}
 	
 	public void setView(String view) {
