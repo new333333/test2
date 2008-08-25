@@ -30,56 +30,55 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div id="ss_para_activity">
+<div id="ss_para">
 	<div id="ss_nextPage" align="right">
 		<c:if test="${ss_activitiesPage > '0'}">
-		<a href="javascript: ;" 
-		  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'miniblogs', '${ss_activitiesPage}', 'previous', 'ss_dashboardActivities', '${ss_relevanceDashboardNamespace}');return false;">
-		<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-		  title="<ssf:nlt tag="general.previousPage"/>"/>
-		</a>
+			<a href="javascript: ;" 
+		  		onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'miniblogs', '${ss_activitiesPage}', 'previous', 'ss_dashboardActivities', '${ss_relevanceDashboardNamespace}');return false;">
+				<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
+		  		title="<ssf:nlt tag="general.previousPage"/>"/>
+			</a>
 		</c:if>
 		<c:if test="${empty ss_activitiesPage || ss_activitiesPage <= '0'}">
-		<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
+			<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
 		</c:if>
 		<c:if test="${!empty ss_activities}">
-		<a href="javascript: ;" 
-		  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'miniblogs', '${ss_activitiesPage}', 'next', 'ss_dashboardActivities', '${ss_relevanceDashboardNamespace}');return false;">
-		<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-		  title="<ssf:nlt tag="general.nextPage"/>"/>
-		</a>
+			<a href="javascript: ;" 
+		  		onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'miniblogs', '${ss_activitiesPage}', 'next', 'ss_dashboardActivities', '${ss_relevanceDashboardNamespace}');return false;">
+				<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
+		  		title="<ssf:nlt tag="general.nextPage"/>"/>
+			</a>
 		</c:if>
 		<c:if test="${empty ss_activities}">
-		<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+			<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
 		</c:if>
 	</div>
 
 	<div id="ss_hints"><em><ssf:nlt tag="relevance.hint.miniblogs"/></em></div>
 	
-	<c:forEach var="activity" items="${ss_activities}">
+	<div id="ss_today">
+	<div id="ss_mydocs_para">
+	  <c:forEach var="activity" items="${ss_activities}">
 	  
-	    <li class="ss_activity">
-		  <table cellspacing="0" cellpadding="0">
-		    <tr>
-		      <td valign="top">
+	    <li>
+		  
 		    	<ssf:showUser user="${activity.user}" titleStyle="ss_link_1"/>
-		      </td>
-		      <td valign="top" style="padding-left:10px;">
+		      
 		        <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 					      value="${activity.date}" type="both" 
 						  timeStyle="short" dateStyle="short" />
-			  </td>
-			</tr>
-			<tr>
-			  <td colspan="2">
+				<br/>
 		    	<span class="ss_italic">${activity.description}</span>
-			  </td>
-			</tr>
-		  </table>
-	    </li>
+
+	    </li><br/>
 	    
-	</c:forEach>
+
+	  </c:forEach>
+   </div><!-- end of ss_mydocs_para -->
+   </div><!-- end of ss_today -->
+
   <c:if test="${empty ss_activities && ss_pageNumber > '0'}">
     <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
   </c:if>
 </div><!-- end of ss_para -->
+

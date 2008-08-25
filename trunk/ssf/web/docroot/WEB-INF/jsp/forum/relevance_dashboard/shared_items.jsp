@@ -32,35 +32,37 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <div id="ss_para">
+
+ <div id="ss_nextPage" align="right">
+	<c:if test="${ss_sharedEntitiesPage > '0'}">
+		<a href="javascript: ;" 
+  			onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'shared', '${ss_sharedEntitiesPage}', 'previous', 'ss_dashboardShared', '${ss_relevanceDashboardNamespace}');return false;">
+			<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
+  			title="<ssf:nlt tag="general.previousPage"/>"/>
+		</a>
+	</c:if>
+	<c:if test="${empty ss_sharedEntitiesPage || ss_sharedEntitiesPage <= '0'}">
+		<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
+	</c:if>
+	<c:if test="${!empty ss_sharedEntities}">
+		<a href="javascript: ;" 
+  			onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'shared', '${ss_sharedEntitiesPage}', 'next', 'ss_dashboardShared', '${ss_relevanceDashboardNamespace}');return false;">
+			<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
+  			title="<ssf:nlt tag="general.nextPage"/>"/>
+		</a>
+	</c:if>
+	<c:if test="${empty ss_sharedEntities}">
+		<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+	</c:if>
+ </div><!-- end of ss_nextPage -->
 <div id="ss_today">
-<div id="ss_nextPage" align="right">
-<c:if test="${ss_sharedEntitiesPage > '0'}">
-<a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'shared', '${ss_sharedEntitiesPage}', 'previous', 'ss_dashboardShared', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-  title="<ssf:nlt tag="general.previousPage"/>"/>
-</a>
-</c:if>
-<c:if test="${empty ss_sharedEntitiesPage || ss_sharedEntitiesPage <= '0'}">
-<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
-</c:if>
-<c:if test="${!empty ss_sharedEntities}">
-<a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'shared', '${ss_sharedEntitiesPage}', 'next', 'ss_dashboardShared', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-  title="<ssf:nlt tag="general.nextPage"/>"/>
-</a>
-</c:if>
-<c:if test="${empty ss_sharedEntities}">
-<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
-</c:if>
-</div>
 <div id="ss_hints"><em><ssf:nlt tag="relevance.hint.shared"/></em></div>
+
 <div class="ss_shared_para">
 
   <c:forEach var="sharedItem" items="${ss_sharedEntities}">
    
-	 <li> <ssf:nlt tag="relevance.sharedEntityLine">
+	 <li> <ssf:nlt tag="relevance.sharedEntityLine"/>
 	 
 	  <ssf:param name="value" useBody="true">
 	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
@@ -74,11 +76,13 @@
     	<c:if test="${sharedItem.entity.entityType == 'workspace' || sharedItem.entity.entityType == 'folder'}">
     	  <a href="javascript: ;"
 			onClick="return ss_gotoPermalink('${sharedItem.entity.id}', '${sharedItem.entity.id}', '${sharedItem.entity.entityType}', '${ss_namespace}', 'yes');"
-			><span>${sharedItem.entity.title}</span></a>
+			>
+			<span>${sharedItem.entity.title}</span>
+		  </a>
 		</c:if>
 		<c:if test="${sharedItem.entity.entityType == 'folderEntry'}">
 			<c:set var="isDashboard" value="yes"/>
-			<ssf:titleLink hrefClass="ss_link_2"
+			  <ssf:titleLink hrefClass="ss_link_2"
 				entryId="${sharedItem.entity.id}" binderId="${sharedItem.entity.parentBinder.id}" 
 				entityType="${sharedItem.entity.entityType}" 
 				namespace="${ss_namespace}" 
@@ -88,17 +92,17 @@
 					  action="view_folder_entry" entryId="${sharedItem.entity.id}" actionUrl="true" />
 				</ssf:param>
 				<c:out value="${sharedItem.entity.title}" escapeXml="false"/>
-			</ssf:titleLink>
+			  </ssf:titleLink>
 		</c:if>
 	   </span><br/>
 	  </ssf:param>
 	
-	  </ssf:nlt></li>
+	  </li>
   </c:forEach>
   <c:if test="${empty ss_sharedEntities && ss_pageNumber > '0'}">
     <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
   </c:if>
 
-	</div><!-- end of para -->
-    </div><!-- end of today -->
-    </div><!-- end of ss_para -->
+</div><!-- end of ss_shared_para -->
+</div><!-- end of ss_today -->
+</div><!-- end of ss_para -->
