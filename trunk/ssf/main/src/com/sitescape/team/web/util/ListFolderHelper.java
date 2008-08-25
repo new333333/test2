@@ -342,32 +342,26 @@ public class ListFolderHelper {
 	protected static void initSortOrder(AllModulesInjected bs, RenderRequest request, 
 			UserProperties userFolderProperties, Tabs.TabEntry tab, Map options, String viewType) {
 		//Start - Determine the Sort Order
-		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
-			//This is a blog view, set the default sort order
-			options.put(ObjectKeys.SEARCH_SORT_BY, Constants.DOCID_FIELD);
-			options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
-
-		} else {
-			//since one one tab/folder, no use in saving info in tabs
-			//Trying to get Sort Information from the User Folder Properties
-			String	searchSortBy = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY);
-			String	searchSortDescend = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_DESCEND);
-			
-			//Setting the Sort properties if it is available in the Tab or User Folder Properties Level. 
-			//If not, go with the Default Sort Properties 
-			if (Validator.isNotNull(searchSortBy)) {
-				options.put(ObjectKeys.SEARCH_SORT_BY, searchSortBy);
-				if (("true").equalsIgnoreCase(searchSortDescend)) {
-					options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
-				} else {
-					options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
-				}
+		//since one one tab/folder, no use in saving info in tabs
+		//Trying to get Sort Information from the User Folder Properties
+		String	searchSortBy = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY);
+		String	searchSortDescend = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_DESCEND);
+		
+		//Setting the Sort properties if it is available in the Tab or User Folder Properties Level. 
+		//If not, go with the Default Sort Properties 
+		if (Validator.isNotNull(searchSortBy)) {
+			options.put(ObjectKeys.SEARCH_SORT_BY, searchSortBy);
+			if (("true").equalsIgnoreCase(searchSortDescend)) {
+				options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
+			} else {
+				options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
 			}
-			if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) { 
-				options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORTNUMBER_FIELD);
-				options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
-			} else if (!options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
-				options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
+		}
+		if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) { 
+			options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORTNUMBER_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
+		} else if (!options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) {
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
 		}
 		//End - Determine the Sort Order
 		
@@ -1535,7 +1529,7 @@ public class ListFolderHelper {
 	
 		
 		//See if a "sort by" menu is needed
-		if (viewType.equals(Definition.VIEW_STYLE_WIKI)|| 
+		if (viewType.equals(Definition.VIEW_STYLE_WIKI)|| viewType.equals(Definition.VIEW_STYLE_BLOG)|| 
 				viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
 			//Add a way to set the sorting
 			UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);

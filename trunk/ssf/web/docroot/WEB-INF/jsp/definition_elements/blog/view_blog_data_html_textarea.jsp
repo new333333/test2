@@ -28,7 +28,6 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //Text view %>
 <%
 	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
 	String text = "";
@@ -38,7 +37,16 @@
 		text = (String) ((Map)thisEntry).get(property_name);
 	}
 %>
+<% //Textarea view %>
+<% //NOTE: textarea's are currently not stored in the search index, so this is element is never shown. %>
+<%  if (text != null) {  %>
 <div class="ss_entryContent">
-<span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
-<c:out value="<%= text %>" escapeXml="false"/>
+<c:if test="${!empty property_caption}">
+ <span class="ss_bold"><c:out value="${property_caption}" /></span>
+<br/>
+</c:if>
+ <div class="ss_entryDescription">
+<span><ssf:markup type="view"><c:out value="<%= text %>" escapeXml="false"/></ssf:markup></span>
+ </div>
 </div>
+<%  }  %>

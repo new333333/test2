@@ -34,7 +34,7 @@
 //Routine called when "find wiki page" is clicked
 function ss_selectEntryId${renderResponse.namespace}(id) {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
-	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "entry,"+id+",${ssBinder.id}";
+	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "entry,"+id;
 	alert(formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value)
 }
 </script>

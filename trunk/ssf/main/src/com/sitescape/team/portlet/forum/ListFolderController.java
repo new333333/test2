@@ -52,6 +52,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
+import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
@@ -230,6 +231,19 @@ public class ListFolderController extends  SAbstractController {
 				if (binder.getEntityType().name().equals(EntityIdentifier.EntityType.workspace.name())) {
 					return WorkspaceTreeHelper.setupWorkspaceBeans(this, binderId, request, response);					}
 			} catch(NoBinderByTheIdException e) {
+			} catch(AccessControlException e) {
+		 		Map<String,Object> model = new HashMap<String,Object>();
+				BinderHelper.setupStandardBeans(this, request, response, model, binderId);
+				if (WebHelper.isUserLoggedIn(request) && 
+						!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+					//Access is not allowed
+					return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
+				} else {
+					//Please log in
+					String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+					model.put(WebKeys.URL, refererUrl);
+					return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
+				}
 			}
 			
 		} else {
