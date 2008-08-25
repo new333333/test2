@@ -49,7 +49,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /* COMMON COLUMN SETTINGS */
 .ss_colright,.ss_colmid,.ss_colleft{
 	float:left;
-	width:100%; /* width of page */
+	width:100%;  /* width of page */
 	position:relative;
 	}
 .ss_col1,.ss_col2,.ss_col3 {
@@ -61,13 +61,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}	
 /* 3 COLUMN PAGE STYLE SETTINGS */
 .ss_tricolumn{	/* 3 Column page style */
-	background-color: #DBE9E8; /* right column background color */
+	background-color: #FFFFFF; /* right column background color */
 	} 
 .ss_tricolumn .ss_colmid{
-	right: 20%;
+	right: 21%;
 	/* width of the right column */
 	/* Need to change this to change background color */
-	background-color: #FFFFFF;
+	background-color: transparent; /* was #FFFFFF */
 	}
 .ss_tricolumn .ss_colleft {
 	right:20%;				/* placement from right of the middle column */
@@ -81,8 +81,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	left:43%;				/* width of (right column) plus (center column left and right padding) plus (left column left padding) */
 	}
 .ss_tricolumn .ss_col3 {
-	width:18%;				/* Width of right column content (column width minus padding on either side) */
+	width:20%;				/* Width of right column content (column width minus padding on either side) */
 	left:44%;				/* (100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
+	background-color: #DBE9E8;
+	padding: 5px 7px 0px 3px;
 	}
 
 div.ss_canvas {
@@ -153,7 +155,10 @@ div.ss_canvas {
 	color:#444444;
 	}
 #ss_shared{
-	margin: 1% 0 5% 0;
+	margin: 0% 0 5% 0;
+	<c:if test="<%= isIE %>">
+ 	margin: 3px 0 5% 0;
+ 	</c:if>	
 	color:#444444;
 	line-height:1.6em;
 	}
@@ -380,10 +385,11 @@ div.ss_canvas {
 	}
 	/*TAGS*/
 #ss_tags{
-	font-size: 14px;
+	font-size: ${ss_style_font_normalprint};
 	color: #CCCCCC !important;
 	line-height: 18px;
 	margin-left: 4px !important;
+	margin-bottom: 10px;
 	background: #FFF;
 	border: dotted 1px #5A9A98;
 	}

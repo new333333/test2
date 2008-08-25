@@ -51,6 +51,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	/* holder for left column */
 	height:100%;
 	vertical-align:top;
+	width: 48%;
 	}	
 .ss_doublecolumn .ss_dblcolleft{		
 /* right column width */
@@ -66,11 +67,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	margin-right:2%;
 	}	
 .ss_doublecolumn .ss_dblcol2{
-	width:100%;						
-/* right column content width (column width minus left and right padding) */
-	left:51%;						
-/* (right column column width) plus (left column left and right padding) plus (right column left padding) */
+<<<<<<< .mine
+	width:100%;						/* right column content width (column width minus left and right padding) */
+	left:48%;						/* (right column column width) plus (left column left and right padding) plus (right column left padding) */
 	overflow:hidden;
+	<c:if test="<%= isIE %>">
+  		width:98%;
+ 	</c:if>
 	}	
 	
 /* TOP PART OF DISCUSSION TOPIC PAGE */	
