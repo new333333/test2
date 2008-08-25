@@ -31,12 +31,17 @@
 <% //table2_col1 top %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="mashupEntry" value="${ss_mashupEntries[mashup_value1]}"/>
-<div>
-<span>${mashupEntry.title}</span>
+<div style="margin:10px; padding:10px; " width="100%">
+	<div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
+		<a href="<ssf:url action="view_folder_entry" 
+		  folderId="${mashupEntry.parentBinder.id}"
+		  entryId="${mashupEntry.id}">
+		  <ssf:param name="newTab" value="1"/>
+		  </ssf:url>"><span class="ss_largeprint ss_bold">${mashupEntry.title}</span></a>
+	</div>
+	<div style="border:1px solid #cecece;padding:6px;">
+	    <ssf:markup type="view" entity="${mashupEntry}"><c:out 
+	      value="${mashupEntry.description.text}" 
+	      escapeXml="false"/></ssf:markup>
+	</div>
 </div>
-<div>
-    <ssf:markup type="view" entity="${mashupEntry}"><c:out 
-      value="${mashupEntry.description.text}" 
-      escapeXml="false"/></ssf:markup>
-</div>
-
