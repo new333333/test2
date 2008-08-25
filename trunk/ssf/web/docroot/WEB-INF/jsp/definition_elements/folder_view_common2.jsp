@@ -59,12 +59,12 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   		  <c:set var="actionVar" value="view_folder_listing"/>
 		</c:if>
 
-		<span class="ss_link_1">
-  		  &gt;&gt;<a class="ss_link_1" href="<ssf:url action="${actionVar}" binderId="${ssDefinitionEntry.parentBinder.id}"/>"
+		<span class="ss_link_7">
+  		  &gt;&gt;<a class="ss_link_7" href="<ssf:url action="${actionVar}" binderId="${ssDefinitionEntry.parentBinder.id}"/>"
   		  >${ssDefinitionEntry.parentBinder.title}</a>&nbsp;&nbsp;
 		</span>
-		<span style="">
-  			<img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle">&nbsp;<a
+		<span class="ss_link_8">
+  			<img src="<html:rootPath/>images/pics/discussion/folder_orange.png">&nbsp;<a
   			href="<ssf:url action="view_folder_listing" binderId="${ssBinder.id}"/>">${ssBinder.title}</a>
 		</span>
 		<br/><br/>
@@ -73,10 +73,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	    <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 	    <div class="ss_folder_border">
 		  <% // Add the toolbar with the navigation widgets, commands and filter %>
-		  <ssf:toolbar style="ss_actions_bar2 ss_actions_bar">			
+		  <ssf:toolbar style="ss_actions_bar5 ss_actions_bar">			
 		    <% // Entry toolbar %>
-		    <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />			
-		    <ssf:toolbar toolbar="${ss_whatsNewToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />			
+		    <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar5 ss_actions_bar" item="true" />			
+		    <ssf:toolbar toolbar="${ss_whatsNewToolbar}" style="ss_actions_bar5 ss_actions_bar" item="true" />			
 		  </ssf:toolbar>
 		  <div class="ss_clear"></div>
 	    </div>
@@ -96,9 +96,9 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   		<c:set var="slidingTableTableStyle" value="ss_borderTable"/>
 	</c:if>
 	<ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="${slidingTableStyle}" 
- 	  height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}" tableStyle="${slidingTableTableStyle}">
+ 	  height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}" tableStyle="${slidingTableStyle}">
 
-	<c:set var="slidingTableRowStyle" value=""/>
+	<c:set var="slidingTableRowStyle" value="ss_table_oddRow"/>
 	<c:set var="slidingTableColStyle" value=""/>
 	<c:if test="${slidingTableStyle == 'fixed'}">
   		<c:set var="slidingTableRowStyle" value=""/>

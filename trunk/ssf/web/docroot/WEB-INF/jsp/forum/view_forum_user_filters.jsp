@@ -35,17 +35,16 @@
 <c:set var="currentFilter" value="${ssUserFolderProperties.userFilter}"/>
 <div align="left" class="ssPageNavi">
 
-<table width="95%">
- <tbody>
-  <tr><td align="right" width="10%">
-     <div class="ss_style ss_bold ss_fineprint">
+<table width="98%">
+  <tr><td align="left" width="1%">
+     <div class="ss_link_7">
      	<ssf:nlt tag="filter.filter" text="Filter"/>:<ssHelpSpot 
   		helpId="workspaces_folders/menus_toolbars/folder_toolbar" offsetX="-45" offsetY="-5" 
   		title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>"></ssHelpSpot>&nbsp;</span>
   	 </div>
 	</td>
-	<td>
-	 <div id="ss_navbar_inline" class="ss_style ss_fineprint ss_normal">
+	<td align="left" width=89%">
+	 <div id="ss_navbar_inline">
 			
 		<ul>
 			<li>
@@ -80,7 +79,7 @@
 
 	</td>
 	<td align="right" width="10%">
-		<div class="ss_fineprint ss_navbar_new">
+		<div class="ss_normal ss_navbar_new">
 			<c:if test="${ssConfigJspStyle != 'template'}">
 			  <a href="<ssf:url ><ssf:param 
 			  name="action" value="build_filter"/><ssf:param 

@@ -75,9 +75,9 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="view_folder_listing" actionUrl="
 
 <div class="ss_folder_border">
 <% // Add the toolbar with the navigation widgets, commands and filter %>
-<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
+<ssf:toolbar style="ss_actions_bar5 ss_actions_bar">
 <% // Entry toolbar %>
-<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
+<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar5 ss_actions_bar" item="true" />
 </ssf:toolbar>
 <div class="ss_clear"></div>
 </div>

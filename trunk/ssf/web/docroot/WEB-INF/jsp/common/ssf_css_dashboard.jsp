@@ -103,7 +103,7 @@ div.ss_canvas {
 	text-align:left;
 	}	
 		
-/*  THE FOLLOWING DEFINES ALL THE IMAGES FOR THE BLUE BARS */
+/*  THE FOLLOWING DEFINES ALL THE IMAGES FOR THE Title BARS */
 	
 .ss_tasks_img {
 	background-image: url("<html:rootPath/>images/pics/check16x22.png");
@@ -337,7 +337,6 @@ div.ss_canvas {
 #ss_mydocs_para {
 	line-height:1.2em;
 	padding:5px 0 0 15px;
-	
 	}
 #ss_mydocs_para li{
 	list-style-type: square;
@@ -413,8 +412,7 @@ div.ss_canvas {
 #ss_personaltracker{
 	margin: 1% 0 5% 0;
 	color:#555;
-	border:1px solid #A7A9AC;
-
+	border:1px solid #A7A9AC
 	}
 	/* EMAIL */
 #ss_email{
@@ -512,7 +510,13 @@ div.ss_canvas {
 	font-style: italic;
 	}	
 	
-	
+	/* HIDE TOGGLE*/
+
+.ss_toggle{
+	font-size: ss_smallprint;
+	display: block;
+	padding-right: 5px;
+	}
 /* =================THESE NEED TO BE CONSOLIDATED======== */
 
 
@@ -582,7 +586,7 @@ div.ss_canvas {
 .ss_link_1, .ss_link_1 span { 
 	font-size:12px;
 	font-style: italic;
-	text-weight: 200;
+	font-weight: 200;
 	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
 	letter-spacing:-1px;
 	color:#5A9A98!important;
@@ -608,9 +612,25 @@ div.ss_canvas {
 .ss_link_5, .ss_link_5 span	{
 	text-decoration: underline!important;
 	color:#888!important;
-	font-size:11 px!important;
+	font-size:11px!important;
 	line-height:14px;
-	}			
+	}
+/*======THIS IS FOR THE DISCUSSION PAGE STYLE========*/
+.ss_link_7, .ss_link_7 span {
+	font-style: italic;
+	text-weight: 200;
+	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
+	letter-spacing:-1px;
+	color:#5A9A98!important;
+	font-size:18px;
+	}
+.ss_link_8, .ss_link_8 span{
+	font-style: ${ss_style_folder_view_font_family}
+	font-family: Arial;
+	color:#5A9A98!important;
+	font-size:12px;
+	}
+				
 /* ============ End link styles =========================== */		
 
 

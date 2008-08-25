@@ -456,13 +456,15 @@ div.ss_editorHints {
   }
 .ss_entryDescription {
   padding-left: 24px;
-  padding-right: 14px;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  background-color: inherit;
+  padding-right: 25px;
+  padding-top: 15px;
+  padding-bottom: 10px;
+  background-color: #E9F1F1 !important;
+  font-family: "Lucida Sans"; 
   border: 1px transparent solid;
   font-size: 12px;
-  color: ${ss_style_muted_foreground_color};
+  font-style: italic;
+  color: #777;
 }
 .ss_entryDescription p {
   margin-top: 2px;
@@ -603,38 +605,30 @@ table.ss_guestbook {
 }
 
 .ss_tinyControl {
-  font-size: 9px !important;
-  font-family: sans-serif;
-  padding: 3px 15px 3px 15px !important;
-  margin: 1px 2px 1px 2px !important;
-  line-height: 100% !important;
-}
-
-
-
-input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visited, a.ss_dashboard_config_control {
-  font-family: ${ss_style_folder_view_font_family};
-  font-size: ${ss_style_font_fineprint};
-  background-color: ${ss_linkbutton_background_color};
-  border: 1px solid ${ss_linkbutton_outline_color};
-  padding: 0px 6px 0px 6px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-a.ss_dashboard_config_control {
-}
-
-
+  	font-size: 9px !important;
+ 	font-family: sans-serif;
+  	padding: 3px 15px 3px 15px !important;
+  	margin: 1px 2px 1px 2px !important;
+  	line-height: 100% !important;
+	}
+input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visited,{
+ 	font-family: ${ss_style_folder_view_font_family};
+ 	font-size: ${ss_style_font_fineprint};
+ 	background-color: ${ss_linkbutton_background_color};
+  	border: 1px solid ${ss_linkbutton_outline_color};
+  	padding: 0px 6px 0px 6px;
+  	cursor: pointer;
+  	white-space: nowrap;
+	}
 a.ss_linkButton:focus, a.ss_linkButton:hover {
-  color: ${ss_linkbutton_link_hover_color};
-  font-family: ${ss_style_folder_view_font_family};
-  font-size: ${ss_style_font_fineprint};
-  background-color: ${ss_linkbutton_background_color};
-  border: 1px solid ${ss_linkbutton_outline_color};
-  padding: 0px 6px 0px 6px;
-  cursor: pointer;
-  white-space: nowrap;
+  	color: ${ss_linkbutton_link_hover_color};
+  	font-family: ${ss_style_folder_view_font_family};
+  	font-size: ${ss_style_font_fineprint};
+  	background-color: ${ss_linkbutton_background_color};
+  	border: 1px solid ${ss_linkbutton_outline_color};
+  	padding: 0px 6px 0px 6px;
+  	cursor: pointer;
+  	white-space: nowrap;
 }
 
 /* styles for labels: required for forms; optional for views */
@@ -1147,7 +1141,7 @@ a.ss_displaytag {
 }
 
 
-/* Sliding tables */
+/*Sliding Tables */
 div.ss_sliding_table_column0 {
   display: block; 
   border-left: ${ss_sliding_table_border_color} 1px solid;
@@ -1256,16 +1250,6 @@ table.ss_mouseOverInfo {
   position:relative;
   top:0px;
 }
-
-/* Parent Folder 
-#ss_folder_table_parent{
-	width:100%;
-	}
-	*/
-/* Folder */
-.ss_folder_border, .ss_folder_border table , .ss_folder_border form {
-  background-color: ${ss_folder_border_color} !important;
-  }
 
 
 /* Entry */
@@ -2021,7 +2005,7 @@ div.ss_sidebar_panel_featured {
 .ss_title_bar_icons {
 	float:right;
 	margin:0px;
-	padding:1px 0px 0px 10px;
+padding:1px 0px 0px 10px;
 	cursor:auto;
 }
 .ss_title_bar_icons li {
@@ -2031,38 +2015,35 @@ div.ss_sidebar_panel_featured {
 }
 
 /* title menu: */
-
 .ss_title_menu_dd {
 	background-color: #CCCCCC;
 	font-weight: normal;
 	font-size: 11px;
 	font-family: Arial;
     text-align:left;
-	position:absolute;
+    position:absolute;
 	display:none;
 	z-index:500;
 	border: 1px solid #999999;
-}
-
+	}
 .ss_title_menu_dd li {
   list-style-type:none;
-}
-
+	}
+.ss_title_menu_dd ul {
+  margin:5px 0pt 10px 20px;
+  padding:0pt;   
+	}
 .ss_title_menu_dd ul {
   margin:5px 0pt 10px 20px;
   padding:0pt;  
-}
-
+	}
 .ss_title_menu_dd a:hover {
   text-decoration:underline;
-}
-
+	}
 .ss_title_menu_dd a {
   color: #333333;
   text-decoration:none;
-}
-	
-
+	}
 div.ss_search_results_pane, div.ss_search_results_pane table {
   background-color:${ss_entry_description_background_color};
 }
@@ -4211,30 +4192,25 @@ div.ssPageNavi {
 	padding-top: 2px;
 	padding-bottom: 5px;
 	background-color: ${ss_style_background_color_side_panel_featured};
-}
-
+	}
 div.ssPageNavi table td {
-    white-space: nowrap;
-}
-
+/*removed no wrap - robbin filter for discussions*/
+	}
 .ssPageNavi, .ssPageNavi table, .ssPageNavi td, .ssPageNavi div {
 	background-color: transparent;
-}
-
+	}
 .ssPageNavi .ssVisibleEntryNumbers {
 	font-family: Arial;
 	font-size: 10px;
 	color: #666666;
-}
-
+	}
 .ssPageNavi .ss_go_to_page {
 	font-size: 10px;
 	color: #333333;
-}
-
+	}
 .ssPageNavi input.form-text {
 	border: 1px solid #333333;
-}
+	}
 
 .ssPageNavi a.ss_linkButton:link, .ssPageNavi a.ss_linkButton:visited, .ssPageNavi a.ss_linkButton:hover {
 	border: 1px solid ${ss_linkbutton_outline_color};

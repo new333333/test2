@@ -90,7 +90,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color: #FFFFFF !important;
 }
 .ss_searchtext a:hover{
-	color: #FF9000 !important;
+	color: #F47400!important;
 }
 .ss_search_title {
 	font-family: Arial, Helvetica, sans-serif !important;
@@ -116,7 +116,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_workspace a
 	{color: #FFFFFF !important;}
 .ss_workspace a:hover{
-	color: #FF9000 !important;
+	color: #F47400!important;
 }
 .ss_masthead_top {
 	background-image: url("<html:rootPath/>images/pics/masthead/masthead_bg.png");  /* kablink: masthead_ka.png */
@@ -182,13 +182,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	{color: #375E5C !important;		/* boulder: #375E5C; kablink: #374C5D */
 	}
 .ss_masthead_portals a:hover{
-	color: #FF9000 !important;
+	color: #F47400 !important;
 }	
 .ss_masthead_favorites a
 	{color: #5A9A98 !important;		/* boulder: #5A9A98; kablink: #449EFF */
 	}
 ss_masthead_favorites a:hover{
-	color: #FF9000 !important;
+	color: #F47400 !important;
 }
 	/* NEW CODE FOR SEARCH/FIND LINE */
 #ss_mastNav {
