@@ -70,6 +70,9 @@
 	} else if (itemType.equals("graphic")) {
 		%><% //@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_graphic.jsp" %><%
 		
+	} else if (itemType.equals("places")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/blog/view_blog_data_places.jsp" %><%
+
 	} else if (itemType.equals("user_list")) {
 		%><% //@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_user_list.jsp" %><%
 		
