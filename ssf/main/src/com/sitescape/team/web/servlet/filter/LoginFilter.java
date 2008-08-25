@@ -80,15 +80,16 @@ public class LoginFilter  implements Filter {
 				String redirectUrl = url;
 				if (url != null) { 
 					redirectUrl = redirectUrl.replace(WebKeys.USERID_PLACEHOLDER, WebHelper.getRequiredUserId(req).toString());
+					if (!redirectUrl.equals(url)) {
+						res.sendRedirect(req.getRequestURI() + "?" + redirectUrl);
+						return;
+					}
 				}
 
 				// User is logged in as regular user. Proceed as normal.
-				if(! redirectUrl.equals(url)) {
-					res.sendRedirect(req.getRequestURI() + "?" + redirectUrl);
-				} else {
-					req.setAttribute("referer", req.getQueryString());
-					chain.doFilter(request, response);
-				}
+				req.setAttribute("referer", req.getQueryString());
+				chain.doFilter(request, response);
+				
 			}
 		}
 	}
