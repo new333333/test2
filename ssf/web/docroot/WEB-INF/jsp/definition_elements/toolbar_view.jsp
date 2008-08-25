@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%-- Toolbar viewer --%><%--
+<%-- Toolbar viewer --%><%-- 
 --%><%@ page import="com.sitescape.util.BrowserSniffer" %><%--
 --%><%@ page import="com.sitescape.team.util.NLT" %><%--
 --%><%
@@ -68,7 +68,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 --%><c:forEach var="toolbarMenu" items="${ss_toolbar}"><%--
     --%><c:if test="${empty toolbarMenu.value.url && empty toolbarMenu.value.urlParams}"><%--
         --%><c:if test="${!empty toolbarMenu.value.qualifiers.highlight}"><%--
-			--%><li class="ss_menu_item_highlighted" <%--
+			--%><li class="ss_navbar_new" <%--
         --%></c:if><%--
         --%><c:if test="${empty toolbarMenu.value.qualifiers.highlight}"><%--
 			--%><li <%--
@@ -302,7 +302,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
             --%><c:when test="${!empty toolbarMenu.value.url}"><%--
                 --%><c:if test="${empty toolbarMenu.value.qualifiers.folder || (!empty toolbarMenu.value.qualifiers.folder && isWebdavSupported)}"><%--
 	                --%><c:if test="${!empty toolbarMenu.value.qualifiers.highlight}"><%--
-						--%><li class="ss_menu_item_highlighted"><%--
+						--%><li class="ss_navbar_inline"><%--
 	                --%></c:if><%--
 	                --%><c:if test="${empty toolbarMenu.value.qualifiers.highlight}"><%--
 						--%><li><%--

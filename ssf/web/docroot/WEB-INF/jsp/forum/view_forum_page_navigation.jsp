@@ -117,7 +117,7 @@
 						>
 						<img src="<html:rootPath/>images/pics/page/back.gif" width="15" height="10" border="0" id="back" <ssf:alt tag="title.goto.first.page"/> align="absmiddle" /></a>&nbsp;&nbsp;
 					</td>
-					<td bgcolor="#E9F1F1" class="ss_paginationFont">
+					<td bgcolor="#CCDFDE" class="ss_paginationFont">
 					<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 						name="operation" value="save_folder_page_info"/><ssf:param 
 						name="binderId" value="${ssFolder.id}"/><ssf:param 
@@ -131,7 +131,7 @@
 						><ssf:nlt tag="general.Previous"/>&nbsp;&nbsp;
 					</a>&nbsp;&nbsp;
 					</td>
-					<td class="ss_paginationFont ss_pageActive" bgcolor="#E9F1F1" valign="top" align="center">
+					<td class="ss_paginationFont ss_pageActive" bgcolor="#CCDFDE" valign="top" align="center">
 					<ssf:ifnotaccessible>
 					<c:if test="${ssPageLast > 2}">
 					<div class="slider" id="ss_page_slider${renderResponse.namespace}" style="width:150px;">
@@ -146,7 +146,7 @@
 					  <ssf:param name="value" value="${ssPageLast}"/>
 					</ssf:nlt>&nbsp;&nbsp;
 					</td>
-					<td bgcolor="#E9F1F1" class="ss_paginationFont">
+					<td bgcolor="#CCDFDE" class="ss_paginationFont">
 						<c:choose>
 				  			<c:when test="${ssPageNext.ssPageNoLink == 'true'}">
 							<span class="ss_pageNext"><ssf:nlt tag="general.Next"/>&nbsp;&nbsp;</span>&nbsp;&nbsp;

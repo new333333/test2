@@ -52,70 +52,71 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	height:100%;
 	vertical-align:top;
 	}	
-.ss_doublecolumn .ss_dblcolleft{		/* right column width */
+.ss_doublecolumn .ss_dblcolleft{		
+/* right column width */
 	right:49%;		
 	}
 .ss_doublecolumn .ss_dblcol1{
-	width:49%;						/* left column content width (column width minus left and right padding) */
-	background-color:#fff;			/* left column background color */
+	width:49%;						
+/* left column content width (column width minus left and right padding) */
+	background-color:#fff;			
+/* left column background color */
 	position:relative;
 	float:left;
 	margin-right:2%;
 	}	
 .ss_doublecolumn .ss_dblcol2{
-	width:100%;						/* right column content width (column width minus left and right padding) */
-	left:51%;						/* (right column column width) plus (left column left and right padding) plus (right column left padding) */
+	width:100%;						
+/* right column content width (column width minus left and right padding) */
+	left:51%;						
+/* (right column column width) plus (left column left and right padding) plus (right column left padding) */
 	overflow:hidden;
 	}	
 	
 /* TOP PART OF DISCUSSION TOPIC PAGE */	
 	
-	#ss_diss_inset{
-		width:95%;
+#ss_diss_inset{
+	width:95%;
 	}
-	#ss_diss_top
-	{
-		width: 90%;
-		color: #777;
-			}	
-	#ss_topic_box { 
-		margin: 1% 0 1% 0;
-		border: 1px #CCCCCC solid; 
-		padding: 0% 5% 3% 3%;
-		font-size: 12px;
-		font-style: italic;
-		font-family: 'Lucida Sans', 'Lucida Grande', sans-serif;
-		line-height: 18px;
-		text-align:left;
-		vertical-align:top;
-		background-color:#f2f2f2;
-		}
-	#ss_topic_box_h1{
-		margin: 1% 0 1% 0;
-		font-size: 20px;
-		font-style: italic;
-		text-weight: 200;
-		font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
-		letter-spacing:-2px;
-		color:#5A9A98!important;
+#ss_diss_top{
+	width: 90%;
+	color: #777;
+	}	
+#ss_topic_box { 
+	margin: 1% 0 1% 0;
+	border: 1px #CCCCCC solid; 
+	padding: 0% 5% 3% 3%;
+	font-size: 12px;
+	font-style: italic;
+	font-family: 'Lucida Sans', 'Lucida Grande', sans-serif;
+	line-height: 18px;
+	text-align:left;
+	vertical-align:top;
+	background-color:#f2f2f2;
 	}
-	
-	#ss_topic_folder
-	{
-		margin-left:1%;
-		padding-top:0px;
-		padding-bottom:4px;
-		font-size: 16px;
-		font-style: italic;
-		font-weight:bold;
-		color: #00ADef;
-		text-align:left;
+#ss_topic_box_h1{
+	margin: 1% 0 1% 0;
+	font-size: 20px;
+	font-style: italic;
+	font-weight: 200;
+	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
+	letter-spacing:-2px;
+	color:#5A9A98!important;
 	}
-	
-	.ss_topic_folder_thread{	
-		color: #526394;
-		font-size:14px;
-		font-style:normal;
+#ss_topic_folder{
+	margin-left:1%;
+	padding-top:0px;
+	padding-bottom:4px;
+	font-size: 16px;
+	font-style: italic;
+	font-weight:bold;
+	color: #00ADef;
+	text-align:left;
+	}
+.ss_topic_folder_thread{	
+	color: #526394;
+	font-size:14px;
+	font-style:normal;
 	}
 
 /**********************************/	
@@ -127,7 +128,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	width:75%;
 	text-align:left;
 	}
-
 #ss_topic{
 	margin: 2% 25% 2% 5px;
 	color:#555;
@@ -145,13 +145,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 .ss_title_th1{
 	color:#5A9A98!important;
-	font-size:.89em;
-	letter-spacing:-2;
+	font-size: 1.0em;
+	letter-spacing:-3;
 	font-weight:300;
 	}	
 .ss_title_th1 a{
 	color:#5A9A98!important;
-}	
+	}	
 .ss_title_th1 a:hover{
 	color: #777!important;	
 	}	
@@ -185,28 +185,25 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-repeat: no-repeat;
 	background-position: 1% 1%;
 	color: #00ADef;
-}
+	}
 .ss_disc_sub_th1{
 	background-image: url("<html:rootPath/>images/pics/discussion/blue_topic.png");
 	background-repeat: no-repeat;
 	background-position: 4% 1%!important;
 	color: #00ADef;
-}
+	}
 .ss_disc_folder_th1{
 	background-image: url("<html:rootPath/>images/icons/folder_blue.gif");
 	background-repeat: no-repeat;
 	background-position: 1% 1%;
 	color: #00ADef!important;
-}
-
-.ss_disc_th2
-{
+	}
+.ss_disc_th2{
 	background-image: url("<html:rootPath/>images/novell/icons/workspace.gif");
 	background-repeat: no-repeat;
 	background-position: 1% 1%;
 	color: #EF9418;
-}
-
+	}
 #ss_topic_desc{
 	font-size:11px;
 	line-height:13px;
@@ -239,13 +236,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 /*  DISCUSSION TOPIC TABLE STYLES */
 
-.ss_table_data
-{
+.ss_table_data{
 	font-size:10px;
 	border-color:#526394;
 	border-width:1px;
 	border-style:solid;
-}
+	}
 .ss_topic_status {
 	font-size:10px;
 	font-weight:bold;
@@ -260,7 +256,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-width:1px;
 	border-style:solid;
 	}	
-	/* DISCUSSION THREAD LINKS */
+/******** DISCUSSION THREAD LINKS ********/
+
 .ss_link_6, .ss_link_6 span {
 	text-decoration: underline!important;
 	color:#333333!important;
@@ -276,23 +273,21 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding: 0px 0 5px 3px;
 	border: 0px;
 	vertical-align: text-bottom;
-}
-
+	}
 a.ss_new_thread img, a.ss_new_thread:link img , a.ss_new_thread:focus img, a.ss_new_thread:visited img { 
 	background: transparent; 
-}
-
+	}	
 a.ss_new_thread:hover img {
     background-position:  left -12px; 
-<ssf:ifaccessible>
-  outline: dotted 1px gray;
-</ssf:ifaccessible>  
-}
+	<ssf:ifaccessible>
+  		outline: dotted 1px gray;
+	</ssf:ifaccessible>  
+	}
 a.ss_new_thread:hover {
-<ssf:ifaccessible>
-  outline: dotted 1px gray;
-</ssf:ifaccessible>  
-}
+	<ssf:ifaccessible>
+  		outline: dotted 1px gray;
+	</ssf:ifaccessible>  
+	}
 .ss_nowrapFixed {
 	white-space:normal!important;
 	}
@@ -307,55 +302,56 @@ a.ss_new_thread:hover {
 /**** INLINE NAVBAR STYLE ************/
 
 #ss_navbar_inline {
-	margin:0px;
+	font-size: 12px;
 	padding:1px 0px 0px 0px;
+	line-height: 16px;
 	<c:if test="<%= isIE %>">
  		padding-top:3px;
  		padding-bottom:3px;
  	</c:if>
 	}
 #ss_navbar_inline ul{
-	margin:0px !important;
+	margin:2px !important;
 	}	
 #ss_navbar_inline ul li{
 	display: inline!important;
 	white-space: nowrap;
-	margin-right: 10px!important;
+	margin-right: 0px!important;
 	}
 #ss_navbar_inline ul a{
 	color:#666666;
 	}	
 #ss_navbar_inline ul a:hover{
-	color:#0C9;
+	color:#0000FF;
 	font-weight:bold;
 	}
 #ss_navbar_inline ul a:active{
 	font-weight:bold;
-	color:#C00000;
 	}	
 .ss_navbar_current {
 	font-weight: bold !important;
-	border:solid 1px #999999 !important; /* text-decoration: underline; */
-	padding:2px 5px 2px 5px;
+	color:#F47400;
+	border: dotted 1px #999999 !important; /* text-decoration: underline; */
+	padding:3px 5px 3px 5px;
 	}	
 .ss_navbar_new {
+	font-family: Arial;
+	font-size: 11px;
 	text-align: center;
 	font-weight: bold !important;
-	border:solid 1px #FFFFFF !important; /* text-decoration: underline; */
+	border:dotted 1px #000 !important; 
 	padding:2px 5px 2px 5px;
-	background-color: #828282 !important;
-	
+	background-color: #CCDFDE !important;
 	}
 .ss_navbar_new a {
-	color: #FFFFFF !important;
+	color: #333 !important;
 	}	
 .ss_navbar_new a:hover {
-	color: #333333 !important;
+	color: #FFFFFF !important;
 	}		
 
 /******* PAGINATION STYLES *************/
 .ss_pagination {
-	
 	font-size: ${ss_style_font_fineprint} !important;
 	background-color: #CCDFDE !important;
 	height:38px !important;
@@ -369,32 +365,27 @@ a.ss_new_thread:hover {
  	</c:if>
 	}
 .ss_pagination_goTable {
-	height:40px !important;
-/*	background-color: #CCDFDE !important;
-	white-space: nowrap !important; */
-}
-	
+	height:38px !important;
+	background-color: #CCDFDE !important;
+	white-space: nowrap !important;
+	}
 .ss_paginationGo {
 	font-size: ${ss_style_font_fineprint} !important;
-	padding-left: 0px;
 	padding-right: 10px;
 	white-space: nowrap;
-	padding-top: 0px;
 	<c:if test="<%= isIE %>">
  		vertical-align:middle !important;
  		padding-top:0px;
  	</c:if>
-
-}
+	}
 .ss_page_IE {
-		<c:if test="<%= isIE %>">
+	<c:if test="<%= isIE %>">
  		vertical-align:middle !important;
  		padding-top:10px;
  	</c:if>
  	}
  .ss_page_IE2 {
- 	font-size: ${ss_style_font_fineprint} !important;
- 	
+ 	font-size: ${ss_style_font_fineprint} !important;	
  	padding-left: 5px;
 	padding-right: 5px;
 	padding-top: 2px;
@@ -405,7 +396,8 @@ a.ss_new_thread:hover {
  	</c:if>
  	overflow:hidden;
  	}	
-.ss_pTB_no {				/* This greys out the Go Box if only one page */
+.ss_pTB_no {				
+/* This greys out the Go Box if only one page */
 	line-height: 10px;
 	font-size: ${ss_style_font_finestprint} !important;
 	width: 22px;
@@ -429,8 +421,8 @@ a.ss_new_thread:hover {
 /***********This is the style sub-group for Page N of M ***********/
 .ss_paginationDiv {
 	background-color: #E9F1F1 !important;
-	height:40px !important;
-}
+	height:38px !important;
+	}
 .ss_pagination_table {
 	height:38px !important;
 /*	white-space: nowrap !important; */
@@ -449,17 +441,17 @@ a.ss_new_thread:hover {
 	padding-left: 2px;
 	padding-right: 5px;
 	padding-top: 2px;
+	background-color: #e9f1f1;
 	<c:if test="<%= isIE %>">
   		margin-top: 5px;
   		padding-top: 4px;
  	</c:if>
  	overflow:hidden;
-}
-
+	}
 .ss_paginationFont a{
 	border:solid 1px #DDDDDD !important;
 	margin-right:2px;
-}
+	}
 .ss_pageActive{
 	color:#408080!important;
 	font-weight:normal;
@@ -468,7 +460,7 @@ a.ss_new_thread:hover {
 	<c:if test="<%= isIE %>">
   		padding:3px 4px 0px 6px;
  	</c:if>
-}
+	}
 .ss_pageNext {
 	color:#333333;
 	padding:3px 6px 3px 6px;
@@ -477,7 +469,7 @@ a.ss_new_thread:hover {
 	background:transparent !important;	
 	border:solid 1px #DDDDDD !important;
 	margin-right:5px;
-}
+	}
 .ss_paginationFont a:link,
 .ss_paginationFont a:visited {
 	color:#333333;
@@ -485,11 +477,11 @@ a.ss_new_thread:hover {
 	text-decoration:none;
 	background-color:#E9F1F1 !important;
 	background:transparent !important;	
-}
+	}
 .ss_paginationFont a:hover{
 	border:solid 1px #666666 !important;
 	background-color: #CCDFDE !important;
-}
+	}
 .ss_paginationTextBox {
 	line-height: 10px;
 	font-size: ${ss_style_font_finestprint} !important;
@@ -509,8 +501,7 @@ a.ss_new_thread:hover {
 	padding-top: 1px;
 	margin-top: 2px;
 	margin-left: 5px;
-}
-
+	}
 /***** FORMS ATTRIBUTES STYLES ******/
 
 .ss_box_delete {
@@ -523,4 +514,32 @@ a.ss_new_thread:hover {
 	margin-right: 3px;
 	}	
 
-/*************************************/
+/*******FIXED TABLE STYLES*****************/
+
+/* Parent Folder 
+#ss_folder_table_parent{
+	width:110%;
+	}	
+ss_fixed_table{
+	}
+
+  /*******Discussion Toolbar Panel*****************/	
+	
+/* Folder */
+.ss_folder_border, .ss_folder_border table , .ss_folder_border form {
+  background-color: #fff!important;
+  } 
+
+/*******Discussion Filter Panel*****************/
+
+div.ssPageNavi {
+	margin: 0px;
+	border-top: solid 1px #FFF;
+	border-bottom: solid 1px #FFF;
+	padding-left: 15px;
+	padding-top: 15px;
+	padding-bottom:15px;
+	background-color: #E9F1F1;
+	}
+	  
+	  

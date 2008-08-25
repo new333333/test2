@@ -55,9 +55,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-right-color: #CCCCCC;
 	border-bottom-color: #CCCCCC;
 	border-left-color: #CCCCCC;
-	padding-right: 25px;
-	padding-bottom: 25px;
-	padding-left: 25px;
+	padding-right: 0 25px 25px 25px;
 	}
 .ss_table_heading {
 	font-size: 10px;
