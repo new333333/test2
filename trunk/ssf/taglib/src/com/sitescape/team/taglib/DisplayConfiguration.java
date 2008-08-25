@@ -283,7 +283,7 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 								//Store the entry object
 								if (this.entryMap != null) {
 									req.setAttribute(WebKeys.DEFINITION_ENTRY, this.entryMap);
-								} else {
+								} else if (this.entry != null) {
 									req.setAttribute(WebKeys.DEFINITION_ENTRY, this.entry);
 								}
 								
