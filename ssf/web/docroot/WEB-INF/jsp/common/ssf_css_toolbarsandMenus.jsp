@@ -52,12 +52,12 @@ div.ss_actions_bar1_pane {
 	background-color: none;
 	border-bottom: 1px solid;
 	border-color: #FFF;
-	height: 22px;		/* boulder 22px */
+	height: 22px;		 boulder 22px */
 	white-space: nowrap;
 	}		
 table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	/* background-color: ${ss_toolbar2_background_color}; */
-	background-color: #FFFFFF;
+	background-color: #666666;
 	width: 100%;
 	height: 2px;
 	padding: 0px;
@@ -82,8 +82,9 @@ table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	font-family: ${ss_style_title_font_family};
 	}	
 table.ss_actions_bar3_pane, table.ss_actions_bar3_pane td {
-/* background-color: #AFC8E3; */
-	background-color: #FFFFFF;
+
+	/* background-color: #AFC8E3; */
+		background-color: #666666;
 	width: 100%;
 	height: 20px;
 	padding: 4px 0px 0px 0px;
@@ -117,8 +118,11 @@ table.ss_actions_bar4_pane {
 	padding-bottom:5px 0 5px 25px;
 	}
 ul.ss_actions_bar1  {
-	height: 22px;	
-	}
+
+	/* height: 22px; */
+	
+}
+
 ul.ss_actions_bar1 .ss_actions_bar_submenu {
 	height: auto;
 	}
@@ -421,8 +425,8 @@ div.ss_folder_tags {
  </c:if> 
 	}
 .ss_tag_pane_color {
- /* background-color: ${ss_tag_pane_background_color} !important; */
-  	background-color: #FFFFFF;
+ background-color: ${ss_tag_pane_background_color} !important; 
+  	  /*background-color: #FFFFFF;*/
   	color: ${ss_style_text_color} !important;
 	}
 table.ss_tag_pane_color th {
