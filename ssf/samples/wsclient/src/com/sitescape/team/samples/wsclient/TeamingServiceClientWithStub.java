@@ -58,25 +58,25 @@ public class TeamingServiceClientWithStub {
 	
 	public static void main(String[] args) throws Exception {
 		FolderEntry entry;
-		checkUsers();
+		//checkUsers();
 		//checkBinder();
 		//checkEntry();
-		//getFolderEntryWSSecurity(85, 47, true);
-		//getFolderEntry(85, 80, true);
+		//getFolderEntryWSSecurity(47, true);
+		//getFolderEntry(6, false);
 		
 		// Test add
-		//entry = getFolderEntry(85, 80, false);
+		//entry = getFolderEntry(80, false);
 		//addFolderEntryByCopying(entry);
 		
 		// Test modify
-		//entry = getFolderEntry(85, 80, false);
+		//entry = getFolderEntry(80, false);
 		//modifyFolderEntry(entry);
 		
 		// Test delete
-		//deleteFolderEntry(85, 47);
+		//deleteFolderEntry(47);
 		
 		// Upload files
-		//uploadFolderEntryFiles(85, 85);
+		//uploadFolderEntryFiles(85);
 		
 		//getFolderEntries(33);
 		
@@ -310,7 +310,7 @@ public class TeamingServiceClientWithStub {
 		
 	}
 	
-	public static FolderEntry getFolderEntryWSSecurity(long binderId, long entryId, boolean includeAttachments) throws Exception {
+	public static FolderEntry getFolderEntryWSSecurity(long entryId, boolean includeAttachments) throws Exception {
 		// Use WS-Security
 		
 		EngineConfiguration config = WebServiceClientUtil.getMinimumEngineConfigurationWSSecurity();
@@ -328,7 +328,7 @@ public class TeamingServiceClientWithStub {
 		return entry;
 	}
 
-	public static FolderEntry getFolderEntry(long binderId, long entryId, boolean includeAttachments) throws Exception {
+	public static FolderEntry getFolderEntry(long entryId, boolean includeAttachments) throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
@@ -381,7 +381,7 @@ public class TeamingServiceClientWithStub {
 		System.out.println("ID of the newly added entry: " + entryId);
 	}
 
-	public static void uploadFolderEntryFiles(long binderId, long entryId) throws Exception {
+	public static void uploadFolderEntryFiles(long entryId) throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
@@ -482,7 +482,7 @@ public class TeamingServiceClientWithStub {
 		return binder;
 	}
 
-	public static void deleteFolderEntry(long binderId, long entryId) throws Exception {
+	public static void deleteFolderEntry(long entryId) throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
