@@ -28,17 +28,49 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //Text view %>
+<% //Selectbox view %>
+<%@ page import="com.sitescape.team.web.util.DefinitionHelper" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="com.sitescape.team.search.SearchFieldResult" %>
 <%
 	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
-	String text = "";
 	if (thisEntry instanceof FolderEntry) {
-		text = (String) ((FolderEntry)thisEntry).getCustomAttribute(property_name).getValue();
-	} else if (thisEntry instanceof Map) {
-		text = (String) ((Map)thisEntry).get(property_name);
-	}
 %>
 <div class="ss_entryContent">
 <span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
-<c:out value="<%= text %>" escapeXml="false"/>
+<ul class="ss_nobullet">
+<c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}" >
+<%
+	String caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
+											(String) pageContext.getAttribute("selection"));
+	caption = NLT.getDef(caption);
+%>
+<c:set var="caption" value="<%= caption %>"/>
+<li><c:out value="${caption}" escapeXml="false"/></span></li>
+</c:forEach>
+</ul>
 </div>
+<%
+	} else if (thisEntry instanceof Map) {
+		SearchFieldResult valueSet = (SearchFieldResult) ((Map)thisEntry).get(property_name);
+%>
+<c:set var="selections" value="<%= valueSet %>"/>
+<div class="ss_entryContent">
+<span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
+<ul class="ss_nobullet">
+<%  if (valueSet != null) {  %>
+<c:forEach var="selection" items="<%= valueSet.getValueSet() %>" >
+<%
+	String caption = DefinitionHelper.findCaptionForValue(ssConfigDefinition, item,
+											(String) pageContext.getAttribute("selection"));
+	caption = NLT.getDef(caption);
+%>
+<c:set var="caption" value="<%= caption %>"/>
+<li><c:out value="${caption}" escapeXml="false"/></span></li>
+</c:forEach>
+<%  }  %>
+</ul>
+</div>
+<%
+	}
+%>

@@ -210,7 +210,30 @@ function ss_fetch_url(url, callbackRoutine, callbackData, toggleCall) {
 			preventCache: true
 	};   
 	dojo.xhrGet(bindArgs);
-
+}                
+function ss_post_to_url(url, formName, callbackRoutine, callbackData, toggleCall) {
+	ss_fetch_url_debug("Request to fetch url: " + url)
+	eval(toggleCall);
+	var bindArgs = {
+	    	url: url,
+	    	form: formName,
+			error: function(err) {
+				eval(toggleCall);
+				alert(data.message);
+			},
+			load: function(data) {
+				eval(toggleCall);
+			    try {
+					ss_fetch_url_debug("received " + data);
+					if (callbackRoutine) callbackRoutine(data, callbackData);
+				} catch (e) {alert(e);}
+				//Signal that the layout changed
+				if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
+				
+			},
+			preventCache: true
+	};   
+	dojo.xhrPost(bindArgs);
 }                
 
 function ss_fetch_url_debug(str) {

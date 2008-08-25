@@ -37,12 +37,19 @@
 		<c:set var="thisDate" value="<%= ((FolderEntry)thisEntry).getCustomAttribute(property_name).getValue() %>"/>
 		<%
 	} else if (thisEntry instanceof Map) {
+		String dateValue = (String) ((Map)thisEntry).get(property_name);
+		java.util.Date date = null;
+		if (dateValue == null) dateValue = "";
+		if (dateValue.length() >= 8) {
+			dateValue = dateValue.substring(0, 4) + "-" + dateValue.substring(4, 6) + "-" + dateValue.substring(6, 8);
+			java.text.DateFormat format = new java.text.SimpleDateFormat("yyy-MM-dd");
+			date = format.parse(dateValue);
+		}
 		%>
-		<c:set var="thisDate" value="<%= ((Map)thisEntry).get(property_name) %>"/>
+		<c:set var="thisDate" value="<%= date %>"/>
 		<%
 	}
 %>
-xxxxxxxxxxxxxx ${thisDate} xxxxxxxxxxxxxxxxxx
 <div class="ss_entryContent">
  <span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
  <span>

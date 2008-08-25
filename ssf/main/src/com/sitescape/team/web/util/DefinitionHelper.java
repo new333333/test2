@@ -703,9 +703,9 @@ public class DefinitionHelper {
         		String value2 = "";
         		if (mashupItemValues.length >= 2) value1 = mashupItemValues[1];
         		if (mashupItemValues.length >= 3) value2 = mashupItemValues[2];
-        		if (ObjectKeys.MASHUP_TYPE_ENTRY.equals(type) && !value1.equals("") && !value2.equals("")) {
+        		if (ObjectKeys.MASHUP_TYPE_ENTRY.equals(type) && !value1.equals("")) {
         			try {
-        				FolderEntry entry = bs.getFolderModule().getEntry(Long.valueOf(value2), Long.valueOf(value1));
+        				FolderEntry entry = bs.getFolderModule().getEntry(null, Long.valueOf(value1));
         				mashupEntries.put(entry.getId().toString(), entry);
         			} catch(Exception e) {}
         		}
