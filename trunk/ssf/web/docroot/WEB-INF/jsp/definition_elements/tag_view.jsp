@@ -47,49 +47,42 @@
 <%
 boolean isIEtag = BrowserSniffer.is_ie(request);
 %>
-<div id="ss_leftNav"  width="100%">
-<ul>
-<li>
- <table class="ss_style" cellspacing="0" cellpadding="0"  width="100%">
- <tbody>
- <tr>
- <td valign="top" style="padding-right:2px;" width="100%">
-  <ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="-10" xAlignment="left" 
-    <c:if test="<%= isIEtag %>">
-       offsetY="-3" 
-    </c:if>
-    <c:if test="<%= !isIEtag %>">
-       offsetY="-17" 
-    </c:if>
-     xAlignment="left" title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
-  </ssHelpSpot>
-<a href="javascript:;" 
-	<ssf:ifaccessible>
-  		onClick="ss_showAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;"
-	</ssf:ifaccessible>
-	<ssf:ifnotaccessible>
-		onClick="ss_tagShow('${ss_tagViewNamespace}','${ss_tagDivNumber}'); return false;"
-	</ssf:ifnotaccessible>
-	<ssf:title tag="title.open.tag.menu" />
-><span class="ss_iconed_label ss_add_tag"><ssf:nlt tag="sidebar.tags.workspace"/></span></a>
-  <div id="ss_tags_anchor${ss_tagViewNamespace}_${ss_tagDivNumber}">
-  </div>
-</td>
-<td width="100%">
-<ssf:ifaccessible>
-	<c:set var="ssCloseScript" value="ss_hideAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;" scope="request"/>
-</ssf:ifaccessible>
-<ssf:ifnotaccessible>
-	<c:set var="ssCloseScript" value="ss_tagHide('${ss_tagViewNamespace}', '${ss_tagDivNumber}');return false;" scope="request"/>
-</ssf:ifnotaccessible>
 
-<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
-</td></tr></tbody></table>
-
-</li>
-</ul>
-</div>
-
+<table class="ss_style" cellspacing="0" cellpadding="0">
+		<tbody>
+		<tr>
+		<td valign="top" style="padding-right:2px;">
+		  <ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="-10" xAlignment="left" 
+		    <c:if test="<%= isIEtag %>">
+		       offsetY="-3" 
+		    </c:if>
+		    <c:if test="<%= !isIEtag %>">
+		       offsetY="-17" 
+		    </c:if>
+		     xAlignment="left" title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
+		  </ssHelpSpot>
+		<a href="javascript:;" 
+			<ssf:ifaccessible>
+		  		onClick="ss_showAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;"
+			</ssf:ifaccessible>
+			<ssf:ifnotaccessible>
+				onClick="ss_tagShow('${ss_tagViewNamespace}','${ss_tagDivNumber}'); return false;"
+			</ssf:ifnotaccessible>
+			<ssf:title tag="title.open.tag.menu" />
+		><div class="ss_iconed_label ss_add_tag"><ssf:nlt tag="tags.tags"/></div></a>
+		  <div id="ss_tags_anchor${ss_tagViewNamespace}_${ss_tagDivNumber}">
+		  </div>
+		</td>
+		<td width="100%">
+		<ssf:ifaccessible>
+			<c:set var="ssCloseScript" value="ss_hideAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;" scope="request"/>
+		</ssf:ifaccessible>
+		<ssf:ifnotaccessible>
+			<c:set var="ssCloseScript" value="ss_tagHide('${ss_tagViewNamespace}', '${ss_tagDivNumber}');return false;" scope="request"/>
+		</ssf:ifnotaccessible>
+		
+		<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
+		</td></tr></tbody></table>
 
 
 <div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane" 
@@ -103,7 +96,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
 	</ssf:ifnotaccessible>
 >
 
-<ssf:popupPane width="190px" titleTag="tags.manageTags" closeScript="${ssCloseScript}">
+<ssf:popupPane width="170px" titleTag="tags.manageTags" closeScript="${ssCloseScript}">
 
 <div style="padding:0px 10px;">
 <form class="ss_style ss_form ss_tag_pane_color" 
