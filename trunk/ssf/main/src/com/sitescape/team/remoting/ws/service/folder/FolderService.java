@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.remoting.ws.service.folder;
 
+import com.sitescape.team.remoting.ws.model.FileVersions;
 import com.sitescape.team.remoting.ws.model.FolderEntry;
 import com.sitescape.team.remoting.ws.model.FolderEntryCollection;
 import com.sitescape.team.remoting.ws.model.Subscription;
@@ -44,6 +45,16 @@ public interface FolderService {
 	public void folder_modifyWorkflowState(String accessToken, long entryId, long stateId, String toState);
 	public void folder_setWorkflowResponse(String accessToken, long entryId, long stateId, String question, String response); 
 	public void folder_removeFile(String accessToken, long entryId, String fileName);
+	/**
+	 * Returns information about the versions of the file. 
+	 * Throws exception if the entry or the file does not exist.
+	 * 
+	 * @param accessToken
+	 * @param entryId
+	 * @param fileName
+	 * @return
+	 */
+	public FileVersions folder_getFileVersions(String accessToken, long entryId, String fileName);
 	public void folder_uploadFile(String accessToken, long entryId, 
 			String fileUploadDataItemName, String fileName);
 	public void folder_uploadFileStaged(String accessToken, long entryId, 

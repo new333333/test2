@@ -41,12 +41,14 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.NoFileByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
+import com.sitescape.team.remoting.ws.model.FileVersions;
 import com.sitescape.team.remoting.ws.model.PrincipalBrief;
 import com.sitescape.team.remoting.ws.model.PrincipalCollection;
 import com.sitescape.team.remoting.ws.util.ModelInputData;
@@ -223,6 +225,15 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 			throw new RemotingException(e);
 		}			
 
+	}
+	
+	public FileVersions profile_getFileVersions(String accessToken, long principalId, String fileName) {
+		Principal entry = getProfileModule().getEntry(principalId);
+		FileAttachment att = entry.getFileAttachment(fileName);
+		if(att != null)
+			return toFileVersions(att);
+		else
+			throw new NoFileByTheNameException(fileName);
 	}
 
 }

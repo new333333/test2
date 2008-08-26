@@ -83,6 +83,25 @@ public class TeamingServiceClientWithStub {
 		//getPrincipal(1);
 		
 		//getPrincipals(2, 5);
+		
+		try {
+			getEntryFileVersions(9, "debug.doc");
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			getEntryFileVersions(9, "non-existing.file");
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			getEntryFileVersions(99999, "non-existing.entry");
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	public static void checkTags(long binderId) throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
@@ -582,6 +601,27 @@ public class TeamingServiceClientWithStub {
 		return user;
 	}
 
+	public static FileVersions getEntryFileVersions(long entryId, String fileName) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		
+		FileVersions fileVersions = stub.folder_getFileVersions(null, entryId, fileName);
+		
+		if(fileVersions != null) {
+			System.out.println("File name: " + fileVersions.getFileName());
+			FileVersion[] versions = fileVersions.getVersions();
+			for(int i = 0; i < versions.length; i++)
+				System.out.println("Version " + versions[i].getVersionNumber() + ": " + versions[i].getId());
+		}
+		else {
+			System.out.println("No such file");
+		}
+		
+		return fileVersions;
+	}
+	
 	private static Long getGlobalWorkspace(TeamingServiceSoapBindingStub stub) throws Exception {
 		
 		String xml = stub.search_getWorkspaceTreeAsXML(null, -1, 2, "");

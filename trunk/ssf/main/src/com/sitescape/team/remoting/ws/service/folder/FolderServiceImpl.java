@@ -46,6 +46,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.NoFileByTheNameException;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -53,6 +54,7 @@ import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
+import com.sitescape.team.remoting.ws.model.FileVersions;
 import com.sitescape.team.remoting.ws.model.FolderEntryBrief;
 import com.sitescape.team.remoting.ws.model.FolderEntryCollection;
 import com.sitescape.team.remoting.ws.util.DomInputData;
@@ -413,6 +415,15 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	}
 	public void folder_setRating(String accessToken, long entryId, long value) {
 		getFolderModule().setUserRating(null, entryId, value);
+	}
+	
+	public FileVersions folder_getFileVersions(String accessToken, long entryId, String fileName) {
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		FileAttachment att = entry.getFileAttachment(fileName);
+		if(att != null)
+			return toFileVersions(att);
+		else
+			throw new NoFileByTheNameException(fileName);
 	}
 
 }

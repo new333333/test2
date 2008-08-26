@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Set;
 
 import org.dom4j.Branch;
 import org.dom4j.Document;
@@ -56,17 +57,21 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
+import com.sitescape.team.domain.VersionAttachment;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowResponse;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.ws.ElementBuilder;
 import com.sitescape.team.module.definition.ws.ElementBuilderUtil;
+import com.sitescape.team.remoting.ws.model.FileVersions;
 import com.sitescape.team.remoting.ws.model.FolderEntryBrief;
 import com.sitescape.team.remoting.ws.model.PrincipalBrief;
 import com.sitescape.team.remoting.ws.model.Timestamp;
 import com.sitescape.team.remoting.ws.model.Workflow;
+import com.sitescape.team.remoting.ws.model.FileVersions.FileVersion;
 import com.sitescape.team.util.AbstractAllModulesInjected;
+import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
@@ -473,4 +478,20 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		
 		return principalBrief;
 	}
+	
+	protected FileVersions toFileVersions(FileAttachment fa) {
+		Set<VersionAttachment> vatts = fa.getFileVersions();
+		FileVersion[] versions = new FileVersion[vatts.size()];
+		int i = 0;
+		for(VersionAttachment vatt : vatts) {
+			versions[i++] = new FileVersion(vatt.getId(),
+					vatt.getVersionNumber(),
+					new Timestamp(vatt.getCreation().getPrincipal().getName(), vatt.getCreation().getDate()),
+					new Timestamp(vatt.getModification().getPrincipal().getName(), vatt.getModification().getDate()),
+					vatt.getFileItem().getLength(),
+					WebUrlUtil.getFileUrl(WebKeys.ACTION_READ_FILE, vatt));
+		}
+		return new FileVersions(fa.getFileItem().getName(), versions);
+	}
+
 }
