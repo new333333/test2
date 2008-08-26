@@ -136,22 +136,9 @@
 				</then>
 			</elseif>
 		</if>
-		<if>
-			<equals arg1="${portal.type}" arg2="liferay" />
-			<then>
-				<copy overwrite="true" file="resources/slide-war/WEB-INF/liferay-portal.web.xml" tofile="${app.server.deploy.dir}/${ssfs.app.dir}/WEB-INF/web.xml"/>
-				<copy overwrite="true" file="resources/slide-war/WEB-INF/liferay-portal.jboss-web.xml" tofile="${app.server.deploy.dir}/${ssfs.app.dir}/WEB-INF/jboss-web.xml"/>
-				<copy overwrite="true" file="resources/slide-war/WEB-INF/liferay-portal.context.xml" tofile="${app.server.deploy.dir}/${ssfs.app.dir}/WEB-INF/context.xml"/>
-			</then>
-			<elseif>
-				<equals arg1="${portal.type}" arg2="jbossportal" />
-				<then>
-					<copy overwrite="true" file="resources/slide-war/WEB-INF/jboss-portal.web.xml" tofile="${app.server.deploy.dir}/ssfs.war/WEB-INF/web.xml"/>
-					<copy overwrite="true" file="resources/slide-war/WEB-INF/jboss-portal.jboss-web.xml" tofile="${app.server.deploy.dir}/ssfs.war/WEB-INF/jboss-web.xml"/>
-					<delete file="${app.server.deploy.dir}/ssfs.war/WEB-INF/context.xml"/>
-				</then>
-			</elseif>
-		</if>
+		<copy overwrite="true" file="resources/slide-war/WEB-INF/liferay-portal.web.xml" tofile="${app.server.deploy.dir}/${ssfs.app.dir}/WEB-INF/web.xml"/>
+		<copy overwrite="true" file="resources/slide-war/WEB-INF/liferay-portal.jboss-web.xml" tofile="${app.server.deploy.dir}/${ssfs.app.dir}/WEB-INF/jboss-web.xml"/>
+		<copy overwrite="true" file="resources/slide-war/WEB-INF/liferay-portal.context.xml" tofile="${app.server.deploy.dir}/${ssfs.app.dir}/WEB-INF/context.xml"/>
     </target>
 
 	<target name="make-web.xml">
@@ -203,55 +190,19 @@
 			propertyFile="replace.properties">
 			<replacefilter 
 				token="@@SECURITY_ROLE_REF@@"
-				value="&lt;!-- If running under Liferay Portal, uncomment the following --&gt;${line.separator}&lt;!--${line.separator}@@SECURITY_ROLE_REF_LIFERAY@@${line.separator}--&gt;${line.separator}@@SECURITY_ROLE_REF_JBOSS@@"/>
-			<replacefilter 
-				token="@@SECURITY_ROLE_REF_LIFERAY@@"
-				property="liferayportal.*.web.security.role.ref"/>
-			<replacefilter 
-				token="@@SECURITY_ROLE_REF_JBOSS@@"
-				value="&lt;!-- If running under JBoss Portal, uncomment the following --&gt;${line.separator}&lt;!--${line.separator}@@SECURITY_ROLE_REF_JBOSS@@${line.separator}--&gt;${line.separator}"/>
-			<replacefilter 
-				token="@@SECURITY_ROLE_REF_JBOSS@@"
-				property="jbossportal.jbosstomcat.web.security.role.ref"/>
+				property="standalone.*.web.security.role.ref"/>
 	
 			<replacefilter 
 				token="@@AUTH_CONSTRAINT@@"
-				value="&lt;!-- If running under Liferay Portal, uncomment the following --&gt;${line.separator}&lt;!--${line.separator}@@AUTH_CONSTRAINT_LIFERAY@@${line.separator}--&gt;${line.separator}@@AUTH_CONSTRAINT_JBOSS@@"/>
-			<replacefilter 
-				token="@@AUTH_CONSTRAINT_LIFERAY@@"
-				property="liferayportal.*.web.auth.constraint"/>
-			<replacefilter 
-				token="@@AUTH_CONSTRAINT_JBOSS@@"
-				value="&lt;!-- If running under JBoss Portal, uncomment the following --&gt;${line.separator}&lt;!--${line.separator}@@AUTH_CONSTRAINT_JBOSS@@${line.separator}--&gt;${line.separator}"/>
-			<replacefilter 
-				token="@@AUTH_CONSTRAINT_JBOSS@@"
-				property="jbossportal.jbosstomcat.web.auth.constraint"/>
+				property="standalone.*.web.auth.constraint"/>
 	
 			<replacefilter 
 				token="@@REALM_NAME@@"
-				value="&lt;!-- If running under Liferay Portal, uncomment the following --&gt;${line.separator}&lt;!--${line.separator}@@REALM_NAME_LIFERAY@@${line.separator}--&gt;${line.separator}@@REALM_NAME_JBOSS@@"/>
-			<replacefilter 
-				token="@@REALM_NAME_LIFERAY@@"
-				property="liferayportal.*.web.realm-name"/>
-			<replacefilter 
-				token="@@REALM_NAME_JBOSS@@"
-				value="&lt;!-- If running under JBoss Portal, uncomment the following --&gt;${line.separator}&lt;!--${line.separator}@@REALM_NAME_JBOSS@@${line.separator}--&gt;${line.separator}"/>
-			<replacefilter 
-				token="@@REALM_NAME_JBOSS@@"
-				property="jbossportal.jbosstomcat.web.realm-name"/>
+				property="standalone.*.web.realm-name"/>
 	
 			<replacefilter 
 				token="@@SECURITY_ROLE@@"
-				value="&lt;!-- If running under Liferay Portal, uncomment the following --&gt;${line.separator}&lt;!--${line.separator}@@SECURITY_ROLE_LIFERAY@@${line.separator}--&gt;${line.separator}@@SECURITY_ROLE_JBOSS@@"/>
-			<replacefilter 
-				token="@@SECURITY_ROLE_LIFERAY@@"
-				property="liferayportal.*.web.security.role"/>
-			<replacefilter 
-				token="@@SECURITY_ROLE_JBOSS@@"
-				value="&lt;!-- If running under JBoss Portal, uncomment the following --&gt;${line.separator}&lt;!--${line.separator}@@SECURITY_ROLE_JBOSS@@${line.separator}--&gt;${line.separator}"/>
-			<replacefilter 
-				token="@@SECURITY_ROLE_JBOSS@@"
-				property="jbossportal.jbosstomcat.web.security.role"/>
+				property="standalone.*.web.security.role"/>
 		</replace>
 
 	</target>
@@ -321,10 +272,7 @@
 			propertyFile="replace.properties">
 			<replacefilter 
 				token="@@REALM@@"
-				value="&lt;!-- If running under Liferay Portal, uncomment the following --&gt;${line.separator}&lt;!--${line.separator}@@REALM@@${line.separator}--&gt;"/>
-			<replacefilter 
-				token="@@REALM@@"
-				property="liferayportal.*.context.realm"/>
+				property="standalone.*.context.realm"/>
 		</replace>
 	</target>
 

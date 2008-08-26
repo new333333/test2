@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 
 <project name="standalone" basedir="." >
-	<!-- This setting will override the value in the properties file -->
-	<property name="portal.type" value="standalone"/>
-	
 	<import file="../build-common.xml" />
 	
 	<import file="../deploy-support.xml" />
@@ -40,36 +37,7 @@
 					<pathelement location="${app.server.dir}/common/lib/servlet-api.jar" />
 				</path>
 			</then>
-			<elseif>
-				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
-				<then>
-					<path id="deploy.standalone.classpath">
-						<pathelement location="${app.server.deploy.dir}/liferay-portal.ear/portal-ejb.jar" />
-						<pathelement location="${env.ANT_HOME}/lib/ant.jar" />
-						<fileset dir="${app.server.deploy.dir}/liferay-portal.ear/lib" />
-						<fileset dir="${app.server.server.dir}/lib"/>
-						<!--<pathelement location="${app.server.deploy.dir}/../lib/javax.servlet.jar" />-->
-						<pathelement location="${app.server.server.dir}/lib/ext/portal-ascore.jar" />
-						<pathelement location="${app.server.server.dir}/lib/ext/portlet.jar" />
-					</path>
-				</then>
-			</elseif>
 		</if>	
-	</target>
-	
-	<target name="full-deploy">
-		<if>
-			<equals arg1="${app.server.type}" arg2="tomcat" />
-			<then>
-				<antcall target="deploy-standalone-tomcat" />
-			</then>
-			<elseif>
-				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
-				<then>
-					<antcall target="deploy-standalone-jboss-tomcat" />
-				</then>
-			</elseif>
-		</if>
 	</target>
 	
 	<!-- Deploy additional components that are not part of ssf web app -->
