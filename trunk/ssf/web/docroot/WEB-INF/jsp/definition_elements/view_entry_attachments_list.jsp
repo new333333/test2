@@ -229,7 +229,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		</td>
 		<td class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${selection.modification.date}" type="both" 
-					 timeStyle="medium" dateStyle="medium" /></td>
+					 timeStyle="short" dateStyle="medium" /></td>
 		<td class="ss_att_meta">${selection.fileItem.lengthKB}KB</td>
 		<td class="ss_att_meta ss_att_space">${selection.modification.principal.title}</td>
 		<td class="ss_att_meta" width="15%"></td>
@@ -295,7 +295,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				<td class="ss_att_meta"></td>    
 				<td class="ss_att_meta ss_att_space"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${fileVersion.modification.date}" type="both" 
-					 timeStyle="medium" dateStyle="medium" /></td>
+					 timeStyle="short" dateStyle="medium" /></td>
 				<td class="ss_att_meta">${fileVersion.fileItem.lengthKB}KB</td>
 				<td width="25%" class="ss_att_meta ss_att_space">${fileVersion.modification.principal.title}</td>
 				<td class="ss_att_meta" width="15%"></td>	

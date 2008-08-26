@@ -372,9 +372,15 @@
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>entity</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>com.sitescape.team.domain.DefinableEntity</type>
+		</attribute>
+		<attribute>
+			<name>entityMap</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.Map</type>
 		</attribute>
 		<attribute>
 			<name>aclMap</name>

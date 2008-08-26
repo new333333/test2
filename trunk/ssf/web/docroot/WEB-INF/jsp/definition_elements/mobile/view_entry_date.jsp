@@ -34,5 +34,5 @@
 <c:out value="${property_caption}" />
 <span class="ss_mobile_small"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${ssDefinitionEntry.creation.date}" type="both" 
-	 timeStyle="medium" dateStyle="medium" /></span>
+	 timeStyle="short" dateStyle="medium" /></span>
 </div>

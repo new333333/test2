@@ -67,7 +67,7 @@
 									--%></c:when><%--
 									--%><c:otherwise><%--
 										--%><fmt:formatDate 
-												timeZone="GMT"
+												timeZone="${ssUser.timeZone.ID}"
 												value="${event.dtEnd.time}" type="date" 
 												dateStyle="short"/><%--
 									--%></c:otherwise><%--

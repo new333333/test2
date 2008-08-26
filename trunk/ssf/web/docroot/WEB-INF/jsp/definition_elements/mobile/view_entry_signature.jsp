@@ -67,7 +67,7 @@
 	<span class="ss_mobile_light ss_mobile_small"><fmt:formatDate 
 		timeZone="${ssUser.timeZone.ID}"
 	    value="${ssDefinitionEntry.modification.date}" type="both" 
-		timeStyle="medium" dateStyle="medium" /></span>
+		timeStyle="short" dateStyle="medium" /></span>
 	</div>
   </td>
  </tr>

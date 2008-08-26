@@ -35,7 +35,7 @@
  <span>
  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				      value="${ssDefinitionEntry.customAttributes[property_name].value}" type="date" 
-					  pattern="dd MMM yyyy" />
+					  dateStyle="short"  />
 
 </span>
 </div>
@@ -50,7 +50,7 @@
   <td valign="top">
 	<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				      value="${ssDefinitionEntry.customAttributes[property_name].value}" type="date" 
-					  pattern="dd MMM yyyy" />
+					  dateStyle="medium"  />
   </td>
 </tr>
 </c:if>

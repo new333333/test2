@@ -52,7 +52,7 @@
     --%> id="ss_editableSectionDiv${renderResponse.namespace}_${ss_editableSectionIdNumber}"><%--
 	--%><c:if test="${!empty part['sectionTitle']}"><%--
 		--%><div class="ss_editableTab"><span class="${part['sectionTitleClass']}">${part['sectionTitle']}</span></div><%--
-		--%><c:if test="${aclMap[entity.id]['modifyEntry']}"><%--
+		--%><c:if test="${aclMap[entityId]['modifyEntry']}"><%--
 			--%><div align="right" class="ss_editableTab"><a href="javascript:;"<%--
 	    	--%> onMouseOver="ss_editableHighlight('over', this, 'ss_editableSectionDiv${renderResponse.namespace}_${ss_editableSectionIdNumber}');return false;"<%--
 	    	--%> onMouseOut="ss_editableHighlight('out', this, 'ss_editableSectionDiv${renderResponse.namespace}_${ss_editableSectionIdNumber}');return false;"<%--

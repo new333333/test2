@@ -101,7 +101,7 @@
 						</c:when>	
 						<c:otherwise>
 							<span class="ss_prioValue"><fmt:formatDate 
-									timeZone="GMT"
+									timeZone="${ssUser.timeZone.ID}"
 									value="${entry['start_end#EndDate']}" type="date" 
 									dateStyle="medium"/></span>
 						</c:otherwise>
