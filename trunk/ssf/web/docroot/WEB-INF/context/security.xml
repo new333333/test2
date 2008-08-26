@@ -12,9 +12,9 @@
         <s:intercept-url pattern="/ws/**" filters="none" />
         <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED,ROLE_ANONYMOUS" />
 
-        <s:form-login/>
+        <s:form-login login-page="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login" default-target-url="/a/" />
         <s:anonymous granted-authority="ROLE_ANONYMOUS" username="guest"  />
-        <s:logout />
+        <s:logout logout-success-url="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login" />
 
     </s:http>
 
