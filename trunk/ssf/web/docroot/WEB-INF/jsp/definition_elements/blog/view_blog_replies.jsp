@@ -30,16 +30,26 @@
 %>
 <% // View blog reply count %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%
+	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
+	boolean thisEntryIsEntry = false;
+	if (thisEntry instanceof FolderEntry) {
+		thisEntryIsEntry = true;
+	} else if (thisEntry instanceof Map) {
+		thisEntryIsEntry = false;
+	}
+%>
+<c:set var="thisEntryIsEntry" value="<%= thisEntryIsEntry %>"/>
 
 <% // Only show the replies if this is the top entry %>
-<c:if test="${ssDefinitionEntryMap._entryType == 'entry'}" >
+<c:if test="${!thisEntryIsEntry && ssDefinitionEntry._entryType == 'entry'}" >
 
 <div class="ss_blog_footer">
 <table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
 <c:if test="${!empty ss_blog_reply_url}">
 <td valign="top" style="white-space: nowrap;">
 <a href="${ss_blog_reply_url}" 
-  onClick="ss_addBlogReply(this, '${renderResponse.namespace}', '${ssBinder.id}', '${ssDefinitionEntryMap._docId}');return false;"
+  onClick="ss_addBlogReply(this, '${renderResponse.namespace}', '${ssBinder.id}', '${ssDefinitionEntry._docId}');return false;"
   <ssf:title tag="title.add.comment" />
   >
 <div class="ss_iconed_label ss_add_comment"><ssf:nlt tag="blog.addComment"/></div>
@@ -47,13 +57,13 @@
 </c:if>
 </td>
 <td valign="top" style="white-space: nowrap;">
-<a href="javascript: ;" onClick="ss_showBlogReplies('${renderResponse.namespace}', '${ssBinder.id}','${ssDefinitionEntryMap._docId}');return false;"
+<a href="javascript: ;" onClick="ss_showBlogReplies('${renderResponse.namespace}', '${ssBinder.id}','${ssDefinitionEntry._docId}');return false;"
 <ssf:title tag="title.view.comments">
-	<ssf:param name="value" value="${ssDefinitionEntryMap._totalReplyCount}" />
+	<ssf:param name="value" value="${ssDefinitionEntry._totalReplyCount}" />
 </ssf:title>
 >
 <div class="ss_iconed_label ss_view_something">
-<ssf:nlt tag="blog.viewComments"/> [<span id="${renderResponse.namespace}ss_blog_reply_count_${ssDefinitionEntryMap._docId}">${ssDefinitionEntryMap._totalReplyCount}</span>]
+<ssf:nlt tag="blog.viewComments"/> [<span id="${renderResponse.namespace}ss_blog_reply_count_${ssDefinitionEntry._docId}">${ssDefinitionEntry._totalReplyCount}</span>]
 </div>
 </a>
 </td>
@@ -62,7 +72,7 @@
 		portletName="ss_forum" 
 	    action="send_entry_email"
 	    binderId="${ssBinder.id}"
-	    entryId="${ssDefinitionEntryMap._docId}"/>" 
+	    entryId="${ssDefinitionEntry._docId}"/>" 
   onClick="ss_openUrlInWindow(this, '_blank');return false;"
   <ssf:title tag="title.send.entry.to.friends" />
 ><div class="ss_iconed_label ss_send_friend"><ssHelpSpot helpId="workspaces_folders/misc_tools/more_blog_tools" 
@@ -70,7 +80,7 @@ offsetX="-25" offsetY="-15"
 title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><ssf:nlt tag="entry.sendtofriend"/></div></a>
 </td>
 <td valign="top" style="white-space: nowrap;">
-<a onclick=" ss_createPopupDiv(this, '${renderResponse.namespace}ss_subscription_entry${ssDefinitionEntryMap._docId}');return false;" 
+<a onclick=" ss_createPopupDiv(this, '${renderResponse.namespace}ss_subscription_entry${ssDefinitionEntry._docId}');return false;" 
 	href="<ssf:url
 			adapter="true" 
 			portletName="ss_forum" 
@@ -78,7 +88,7 @@ title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><ssf:nlt tag="entry
 			actionUrl="false">
 				<ssf:param name="operation" value="subscribe" />
 				<ssf:param name="binderId" value="${ssBinder.id}" />
-				<ssf:param name="entryId" value="${ssDefinitionEntryMap._docId}" />
+				<ssf:param name="entryId" value="${ssDefinitionEntry._docId}" />
 				<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
 				<ssf:param name="namespace" value="${renderResponse.namespace}" />
 		</ssf:url>" <ssf:title tag="title.subscribe.to.entry"/>>
@@ -89,15 +99,15 @@ title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><ssf:nlt tag="entry
 </div>
 
 
-<div id="${renderResponse.namespace}ss_blog_replies_${ssDefinitionEntryMap._docId}" 
+<div id="${renderResponse.namespace}ss_blog_replies_${ssDefinitionEntry._docId}" 
   style="display:none; visibility:hidden;"></div>
-<div id="${renderResponse.namespace}ss_blog_add_reply_${ssDefinitionEntryMap._docId}" 
+<div id="${renderResponse.namespace}ss_blog_add_reply_${ssDefinitionEntry._docId}" 
   style="display:none; visibility:hidden;">
 <iframe <ssf:title tag="title.add.reply" />
-  id="${renderResponse.namespace}ss_blog_add_reply_iframe_${ssDefinitionEntryMap._docId}"
-  name="${renderResponse.namespace}ss_blog_add_reply_iframe_${ssDefinitionEntryMap._docId}"
+  id="${renderResponse.namespace}ss_blog_add_reply_iframe_${ssDefinitionEntry._docId}"
+  name="${renderResponse.namespace}ss_blog_add_reply_iframe_${ssDefinitionEntry._docId}"
   src="<html:rootPath/>js/forum/null.html" 
-  onLoad="if (parent.ss_showBlogReplyIframe) parent.ss_showBlogReplyIframe(this, '${renderResponse.namespace}', '${ssBinder.id}','${ssDefinitionEntryMap._docId}');" 
+  onLoad="if (parent.ss_showBlogReplyIframe) parent.ss_showBlogReplyIframe(this, '${renderResponse.namespace}', '${ssBinder.id}','${ssDefinitionEntry._docId}');" 
   width="100%" frameBorder="0">xxx</iframe>
 </div>
 </c:if>
