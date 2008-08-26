@@ -128,6 +128,8 @@ public class DispatchServer extends GenericServlet {
 				logger.warn(e.getLocalizedMessage(), e);
 				if(e instanceof IOException)
 					throw (IOException) e;
+				else if(e instanceof ServletException)
+					throw (ServletException) e;
 				else
 					throw new ServletException(e.getLocalizedMessage());
 			}
@@ -192,6 +194,9 @@ public class DispatchServer extends GenericServlet {
 			} catch (WriteFilesException e) {
 				logger.error(e.getLocalizedMessage(), e);
 				throw new ServletException(e.getLocalizedMessage());
+			} catch(RuntimeException e) {
+				logger.error(e.getLocalizedMessage(), e);
+				throw e;
 			}
 			finally {
 				if (closeSession) 
@@ -240,6 +245,9 @@ public class DispatchServer extends GenericServlet {
 			} catch (WriteFilesException e) {
 				logger.error(e.getLocalizedMessage(), e);
 				throw new ServletException(e.getLocalizedMessage());
+			} catch(RuntimeException e) {
+				logger.error(e.getLocalizedMessage(), e);
+				throw e;
 			}
 			finally {
 				if (closeSession) 
@@ -292,6 +300,9 @@ public class DispatchServer extends GenericServlet {
 			} catch (WriteFilesException e) {
 				logger.error(e.getLocalizedMessage(), e);
 				throw new ServletException(e.getLocalizedMessage());
+			} catch(RuntimeException e) {
+				logger.error(e.getLocalizedMessage(), e);
+				throw e;
 			}
 			finally {
 				if (closeSession) 
