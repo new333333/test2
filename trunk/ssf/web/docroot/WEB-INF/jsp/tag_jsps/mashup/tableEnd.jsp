@@ -28,7 +28,8 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //table2_col1 bottom %>
+<% //table2_col2 top %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ include file="/WEB-INF/jsp/tag_jsps/mashup/add.jsp" %>
 </td>
+</tr>
+</table>

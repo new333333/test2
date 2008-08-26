@@ -1980,6 +1980,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								String nextValue = inputData.getSingleValue(nameValue + "__" + String.valueOf(i));
 								if (nextValue != null && !nextValue.equals("")) {
 									if (!value.equals("")) value = value + ";";
+									String type = nextValue.split(",")[0];
+									if (type.equals(ObjectKeys.MASHUP_TYPE_TABLE)) {
+										nextValue = ObjectKeys.MASHUP_TYPE_TABLE_START + ";" + 
+											ObjectKeys.MASHUP_TYPE_TABLE_COL + ";" +
+											ObjectKeys.MASHUP_TYPE_TABLE_COL + ";" +
+											ObjectKeys.MASHUP_TYPE_TABLE_END;
+									}
 									value = value + nextValue;
 								}
 							}

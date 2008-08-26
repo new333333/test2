@@ -28,8 +28,8 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //table2_col1 top %>
+<% //table2_col1 bottom %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<table width="100%" border="1">
+<table border="1">
 <tr>
-<td valign="top" width="60%">
+<c:set var="ss_mashupColStarted" value="false" scope="request"/>
