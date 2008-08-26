@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page contentType="text/xml; charset=UTF-8" %>
+<%@ page contentType="text/json-comment-filtered; charset=UTF-8" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 /*
 {

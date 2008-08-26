@@ -128,7 +128,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 						!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 					view = viewAccessible;
 				} else {
-					response.setContentType("text/xml");
+					response.setContentType("text/json-comment-filtered");
 				}
 				return new ModelAndView(view, model);	
 			}
@@ -259,7 +259,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			view = viewAccessible;
 		} else {
-			response.setContentType("text/xml");
+			response.setContentType("text/json-comment-filtered");
 		}
 		return new ModelAndView(view, model);
 	}
@@ -331,7 +331,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		model.put(WebKeys.PAGE_SIZE, maxEntries);
 		model.put(WebKeys.PAGE_NUMBER, pageNumber);	
 		
-		response.setContentType("text/json");
+		response.setContentType("text/json-comment-filtered");
 		
 		return new ModelAndView("forum/json/find_search_result", model);
 		
@@ -395,7 +395,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		model.put(WebKeys.PAGE_SIZE, maxEntries);
 		model.put(WebKeys.PAGE_NUMBER, pageNumber);
 		
-		response.setContentType("text/json");
+		response.setContentType("text/json-comment-filtered");
 		
 		return new ModelAndView("forum/json/find_search_result", model);
 	}	
@@ -427,7 +427,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		}
 		
 		Map model = new HashMap();
-		response.setContentType("text/json");
+		response.setContentType("text/json-comment-filtered");
 		
 		Map<String, Map> fieldsData = new HashMap();
 		if (WebHelper.isUserLoggedIn(request)) {
