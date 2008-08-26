@@ -28,6 +28,11 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //table2_col2 top %>
+<% //table2_col1 top %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<td valign="top" width="40%">
+<c:if test="${ss_mashupColStarted == 'true'}">
+</td>
+</c:if>
+<td>
+<%@ include file="/WEB-INF/jsp/tag_jsps/mashup/add.jsp" %>
+<c:set var="ss_mashupColStarted" value="true" scope="request"/>
