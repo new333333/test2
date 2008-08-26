@@ -45,7 +45,7 @@
 --%><portletadapter:defineObjects1/><%--
 --%><ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter><%--
 --%><ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter><%--
---%><c:if test="${aclMap[entity.id]['modifyEntry']}"><%--
+--%><c:if test="${aclMap[entityId]['modifyEntry']}"><%--
 
 
 	--%><div align="right" class="ss_editableTab"><a href="javascript:;"<%--

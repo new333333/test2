@@ -65,6 +65,7 @@ import javax.portlet.PortletURL;
 public class EditableTag extends BodyTagSupport {
 	private String _bodyContent;
 	private DefinableEntity entity = null;
+	private Map entityMap = null;
 	private String element = "";
 	private Map aclMap = null;
     
@@ -83,68 +84,86 @@ public class EditableTag extends BodyTagSupport {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 			
-			if (this.aclMap == null) this.aclMap = new HashMap();
-			
-			AdaptedPortletURL editUrl = new AdaptedPortletURL(httpReq, "ss_forum", true);
-			if (entity.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
-				editUrl.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
-				editUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
-			} else if (entity.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
-				editUrl.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
-				editUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
-			} else if (entity.getEntityType().equals(EntityIdentifier.EntityType.folderEntry)) {
-				editUrl.setParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
-				editUrl.setParameter(WebKeys.URL_ENTRY_ID, entity.getId().toString());
-				editUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
-			} else if (entity.getEntityType().equals(EntityIdentifier.EntityType.profiles)) {
-				editUrl.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
-				editUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
-			}
-			editUrl.setParameter(WebKeys.URL_ELEMENT_TO_EDIT, this.element);
-			editUrl.setParameter(WebKeys.URL_SECTION_TO_EDIT, WebKeys.URL_SECTION_PLACEHOLDER);
-			
-			// Top
-			String jsp = "/WEB-INF/jsp/tag_jsps/editable/top.jsp";
-			
-			RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
-
-			ServletRequest req = null;
-			req = new DynamicServletRequest(httpReq);
-			req.setAttribute("entity", this.entity);			
-			req.setAttribute("element", this.element);
-			req.setAttribute("aclMap", this.aclMap);
-			req.setAttribute("editUrl", editUrl);
-			
-			StringServletResponse res = new StringServletResponse(httpRes);
-
-			rd.include(req, res);
-
-			pageContext.getOut().print(res.getString());
-
-			// Body
-			
-			//Break the body into its sections
-			List<Map> bodyParts = WebHelper.markupSplitBySection(_bodyContent);
-			if (bodyParts.size() > 1) {
-				jsp = "/WEB-INF/jsp/tag_jsps/editable/sections.jsp";
+			if (entity != null || entityMap != null) {
+				if (this.aclMap == null) this.aclMap = new HashMap();
+				
+				String id = "";
+				String entityType = null;
+				String parentBinderId = "";
+				if (entity != null) {
+					id = entity.getId().toString();
+					entityType = entity.getEntityType().toString();
+					if (EntityIdentifier.EntityType.folderEntry.toString().equals(entityType))
+							parentBinderId = entity.getParentBinder().getId().toString();
+				} else if (entityMap != null) {
+					id = (String) entityMap.get("_docId");
+					entityType = (String) entityMap.get("_entityType");
+					if (EntityIdentifier.EntityType.folderEntry.toString().equals(entityType))
+							parentBinderId = (String) entityMap.get("_binderId");
+				}
+				
+				AdaptedPortletURL editUrl = new AdaptedPortletURL(httpReq, "ss_forum", true);
+				if (EntityIdentifier.EntityType.workspace.toString().equals(entityType)) {
+					editUrl.setParameter(WebKeys.URL_BINDER_ID, id);
+					editUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+				} else if (EntityIdentifier.EntityType.folder.toString().equals(entityType)) {
+					editUrl.setParameter(WebKeys.URL_BINDER_ID, id);
+					editUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+				} else if (EntityIdentifier.EntityType.folderEntry.toString().equals(entityType)) {
+					editUrl.setParameter(WebKeys.URL_BINDER_ID, parentBinderId);
+					editUrl.setParameter(WebKeys.URL_ENTRY_ID, id);
+					editUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
+				} else if (EntityIdentifier.EntityType.profiles.toString().equals(entityType)) {
+					editUrl.setParameter(WebKeys.URL_BINDER_ID, id);
+					editUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+				}
+				editUrl.setParameter(WebKeys.URL_ELEMENT_TO_EDIT, this.element);
+				editUrl.setParameter(WebKeys.URL_SECTION_TO_EDIT, WebKeys.URL_SECTION_PLACEHOLDER);
+				
+				// Top
+				String jsp = "/WEB-INF/jsp/tag_jsps/editable/top.jsp";
+				
+				RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
+	
+				ServletRequest req = null;
+				req = new DynamicServletRequest(httpReq);
+				req.setAttribute("entity", this.entity);			
+				req.setAttribute("entityMap", this.entityMap);			
+				req.setAttribute("entityId", Long.valueOf(id));			
+				req.setAttribute("element", this.element);
+				req.setAttribute("aclMap", this.aclMap);
+				req.setAttribute("editUrl", editUrl);
+				
+				StringServletResponse res = new StringServletResponse(httpRes);
+	
+				rd.include(req, res);
+	
+				pageContext.getOut().print(res.getString());
+	
+				// Body
+				
+				//Break the body into its sections
+				List<Map> bodyParts = WebHelper.markupSplitBySection(_bodyContent);
+				if (bodyParts.size() > 1) {
+					jsp = "/WEB-INF/jsp/tag_jsps/editable/sections.jsp";
+					rd = httpReq.getRequestDispatcher(jsp);
+					req.setAttribute("parts", bodyParts);			
+					res = new StringServletResponse(httpRes);
+					rd.include(req, res);
+					pageContext.getOut().print(res.getString());
+				} else {
+					//There is just one section
+					pageContext.getOut().print(_bodyContent);
+				}
+	
+				// Bottom
+	
+				jsp = "/WEB-INF/jsp/tag_jsps/editable/bottom.jsp";
 				rd = httpReq.getRequestDispatcher(jsp);
-				req.setAttribute("parts", bodyParts);			
 				res = new StringServletResponse(httpRes);
 				rd.include(req, res);
 				pageContext.getOut().print(res.getString());
-			} else {
-				//There is just one section
-				pageContext.getOut().print(_bodyContent);
 			}
-
-			// Bottom
-
-			jsp = "/WEB-INF/jsp/tag_jsps/editable/bottom.jsp";
-			rd = httpReq.getRequestDispatcher(jsp);
-			res = new StringServletResponse(httpRes);
-			rd.include(req, res);
-			pageContext.getOut().print(res.getString());
-
 			return EVAL_PAGE;
 		}
 	    catch(Exception e) {
@@ -152,12 +171,17 @@ public class EditableTag extends BodyTagSupport {
 	    }
 		finally {
 			this.entity = null;
+			this.entityMap = null;
 			this.element = "";
 			this.aclMap = null;
 		}
 	}
 	public void setEntity(DefinableEntity entity) {
 	    this.entity = entity;
+	}
+
+	public void setEntityMap(Map entityMap) {
+	    this.entityMap = entityMap;
 	}
 
 	public void setElement(String element) {
