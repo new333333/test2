@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.remoting.ws.service.binder;
 
+import com.sitescape.team.remoting.ws.model.FileVersions;
 import com.sitescape.team.remoting.ws.model.Tag;
 import com.sitescape.team.remoting.ws.model.Binder;
 import com.sitescape.team.remoting.ws.model.FolderCollection;
@@ -51,6 +52,16 @@ public interface BinderService {
 	public void binder_modifyBinder(String accessToken, Binder binder);
 	public void binder_uploadFile(String accessToken, long binderId, String fileUploadDataItemName, String fileName);
 	public void binder_removeFile(String accessToken, long binderId, String fileName);
+	/**
+	 * Returns information about the versions of the file. 
+	 * Throws exception if the binder or the file does not exist.
+	 * 
+	 * @param accessToken
+	 * @param binderId
+	 * @param fileName
+	 * @return
+	 */
+	public FileVersions binder_getFileVersions(String accessToken, long binderId, String fileName);
 
 	public void binder_deleteTag(String accessToken, long binderId, String tagId); 
 	public Tag[] binder_getTags(String accessToken, long binderId);

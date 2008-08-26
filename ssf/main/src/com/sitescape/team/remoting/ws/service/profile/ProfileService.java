@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.remoting.ws.service.profile;
 
+import com.sitescape.team.remoting.ws.model.FileVersions;
 import com.sitescape.team.remoting.ws.model.Group;
 import com.sitescape.team.remoting.ws.model.PrincipalCollection;
 import com.sitescape.team.remoting.ws.model.User;
@@ -57,6 +58,17 @@ public interface ProfileService {
 	public void profile_modifyGroup(String accessToken, Group group);
 	
 	public void profile_removeFile(String accessToken, long principalId, String fileName);
+	
+	/**
+	 * Returns information about the versions of the file. 
+	 * Throws exception if the principal or the file does not exist.
+	 * 
+	 * @param accessToken
+	 * @param principalId
+	 * @param fileName
+	 * @return
+	 */
+	public FileVersions profile_getFileVersions(String accessToken, long principalId, String fileName);
 	
 	public void profile_uploadFile(String accessToken, long principalId, String fileUploadDataItemName, String fileName);
 	

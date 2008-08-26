@@ -52,6 +52,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.NoBinderByTheNameException;
+import com.sitescape.team.domain.NoFileByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
@@ -63,6 +64,7 @@ import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
+import com.sitescape.team.remoting.ws.model.FileVersions;
 import com.sitescape.team.remoting.ws.model.FolderBrief;
 import com.sitescape.team.remoting.ws.model.FolderCollection;
 import com.sitescape.team.remoting.ws.model.FunctionMembership;
@@ -395,6 +397,15 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			results[i++] = toTagModel(tag);
 		}
 		return results;
+	}
+	
+	public FileVersions binder_getFileVersions(String accessToken, long binderId, String fileName) {
+		Binder binder = getBinderModule().getBinder(binderId);
+		FileAttachment att = binder.getFileAttachment(fileName);
+		if(att != null)
+			return toFileVersions(att);
+		else
+			throw new NoFileByTheNameException(fileName);
 	}
 
 }

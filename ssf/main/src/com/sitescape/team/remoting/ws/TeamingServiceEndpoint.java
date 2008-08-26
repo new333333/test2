@@ -36,6 +36,7 @@ import javax.xml.rpc.server.ServiceLifecycle;
 import com.sitescape.team.remoting.ws.model.Binder;
 import com.sitescape.team.remoting.ws.model.DefinitionCollection;
 import com.sitescape.team.remoting.ws.model.DefinitionBrief;
+import com.sitescape.team.remoting.ws.model.FileVersions;
 import com.sitescape.team.remoting.ws.model.FolderCollection;
 import com.sitescape.team.remoting.ws.model.FolderEntry;
 import com.sitescape.team.remoting.ws.model.FolderEntryCollection;
@@ -147,7 +148,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void binder_removeFile(String accessToken, long binderId, String fileName) {
 		getBinderService().binder_removeFile(accessToken, binderId, fileName);
 	}
-
+	public FileVersions binder_getFileVersions(String accessToken, long binderId, String fileName) {
+		return getBinderService().binder_getFileVersions(accessToken, binderId, fileName);
+	}
+	
 	public void binder_uploadFile(String accessToken, long binderId, String fileUploadDataItemName, String fileName) {
 		getBinderService().binder_uploadFile(accessToken, binderId, fileUploadDataItemName, fileName);
 	}
@@ -263,6 +267,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void folder_removeFile(String accessToken, long entryId, String fileName) {
 		getFolderService().folder_removeFile(accessToken, entryId, fileName);
 	}
+	public FileVersions folder_getFileVersions(String accessToken, long entryId, String fileName) {
+		return getFolderService().folder_getFileVersions(accessToken, entryId, fileName);
+	}
 	public void folder_uploadFile(String accessToken,long entryId, String fileUploadDataItemName, String fileName) {
 		getFolderService().folder_uploadFile(accessToken, entryId, fileUploadDataItemName, fileName);
 	}
@@ -349,6 +356,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	}
 	public void profile_removeFile(String accessToken, long principalId, String fileName) {
 		getProfileService().profile_removeFile(accessToken, principalId, fileName);
+	}
+	public FileVersions profile_getFileVersions(String accessToken, long principalId, String fileName) {
+		return getProfileService().profile_getFileVersions(accessToken, principalId, fileName);
 	}
 	public void profile_uploadFile(String accessToken, long principalId, String fileUploadDataItemName, String fileName) {
 		getProfileService().profile_uploadFile(accessToken, principalId, fileUploadDataItemName, fileName);
