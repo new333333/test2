@@ -587,7 +587,6 @@ public class WebKeys {
     public static final String DEFINITION_ID="ssDefinitionId";
     public static final String DEFINITION_BINDER="ssDefinitionBinder";
     public static final String DEFINITION_ENTRY="ssDefinitionEntry";
-    public static final String DEFINITION_ENTRY_MAP="ssDefinitionEntryMap";
     public static final String DEFINITION_CHOICES="ssDefinitionChoices";
     public static final String DEFINITION_FAMILY="ssDefinitionFamily";
     public static final String DIRECTION="ss_direction";
