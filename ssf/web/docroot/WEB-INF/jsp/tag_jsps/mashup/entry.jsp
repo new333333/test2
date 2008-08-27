@@ -33,11 +33,16 @@
 <c:set var="mashupEntry" value="${ss_mashupEntries[mashup_value1]}"/>
 <div style="margin:10px; padding:10px; " width="100%">
 	<div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
+	  <c:if test="${!empty mashupEntry}">
 		<a href="<ssf:url action="view_folder_entry" 
 		  folderId="${mashupEntry.parentBinder.id}"
 		  entryId="${mashupEntry.id}">
 		  <ssf:param name="newTab" value="1"/>
 		  </ssf:url>"><span class="ss_largeprint ss_bold">${mashupEntry.title}</span></a>
+	  </c:if>
+	  <c:if test="${empty mashupEntry}">
+	    <span>${mashup_type} ${mashup_value1}</span>
+	  </c:if>
 	</div>
 	<div style="border:1px solid #cecece;padding:6px;">
 	    <ssf:markup type="view" entity="${mashupEntry}"><c:out 
