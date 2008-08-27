@@ -690,7 +690,7 @@ public class ListFolderHelper {
 		Long folderId = folder.getId();
 		User user = RequestContextHolder.getRequestContext().getUser();
 					
-		if (1 == 0 && viewType.equals(Definition.VIEW_STYLE_BLOG)) {
+		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			folderEntries = bs.getFolderModule().getFullEntries(folderId, options);
 			Collection<FolderEntry> full = (Collection)folderEntries.get(ObjectKeys.FULL_ENTRIES);
 			SeenMap seen = (SeenMap)model.get(WebKeys.SEEN_MAP);
@@ -1885,25 +1885,27 @@ public class ListFolderHelper {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map entries = new TreeMap();
 		model.put(WebKeys.BLOG_ENTRIES, entries);
-		List entryList = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
-		if (entryList == null) return;
-		Iterator entryIterator = entryList.listIterator();
+
+		List entrylist = (List)folderEntries.get(ObjectKeys.FULL_ENTRIES);
+		Map publicTags = (Map)folderEntries.get(ObjectKeys.COMMUNITY_ENTITY_TAGS);
+		Map privateTags = (Map)folderEntries.get(ObjectKeys.PERSONAL_ENTITY_TAGS);
+		Iterator entryIterator = entrylist.listIterator();
 		while (entryIterator.hasNext()) {
+			FolderEntry entry  = (FolderEntry) entryIterator.next();
 			Map entryMap = new HashMap();
-			Map entry = (Map) entryIterator.next();
+			Map accessControlEntryMap = BinderHelper.getAccessControlEntityMapBean(model, entry);
+			entries.put(entry.getId().toString(), entryMap);
 			entryMap.put("entry", entry);
-			Map accessControlEntryMap = BinderHelper.getAccessControlMapBean(model);
-			entries.put(entry.get(Constants.DOCID_FIELD), entryMap);
-			String entryDefinitionId = (String) entry.get(Constants.COMMAND_DEFINITION_FIELD);
-			Definition entryDefinition = DefinitionHelper.getDefinition(entryDefinitionId);
-			if (DefinitionHelper.getDefinition(entryDefinition, entryMap, "//item[@name='entryBlogView']") == false) {
+			if (DefinitionHelper.getDefinition(entry.getEntryDef(), entryMap, "//item[@name='entryBlogView']") == false) {
 				//this will fill it the entryDef for the entry
-				DefinitionHelper.getDefaultEntryView(null, entryMap, "//item[@name='entryBlogView']");				
+				DefinitionHelper.getDefaultEntryView(entry, entryMap, "//item[@name='entryBlogView']");				
 			}
 			//See if this entry can have replies added
 			entryMap.put(WebKeys.REPLY_BLOG_URL, "");
+			Definition def = entry.getEntryDef();
+			if (bs.getFolderModule().testAccess(entry, FolderOperation.addReply)) {
 				accessControlEntryMap.put("addReply", new Boolean(true));
-				Document defDoc = entryDefinition.getDefinition();
+				Document defDoc = def.getDefinition();
 				List replyStyles = DefinitionUtils.getPropertyValueList(defDoc.getRootElement(), "replyStyle");
 				if (!replyStyles.isEmpty()) {
 					String replyStyleId = (String)replyStyles.get(0);
@@ -1912,26 +1914,44 @@ public class ListFolderHelper {
 						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_REPLY);
 						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
 						adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, replyStyleId);
-						adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, (String)entry.get(Constants.DOCID_FIELD));
+						adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
 						adapterUrl.setParameter(WebKeys.URL_BLOG_REPLY, "1");
 						adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
 						entryMap.put(WebKeys.REPLY_BLOG_URL, adapterUrl);
 					}
 				}
+			}
 			//See if the user can modify this entry
 			boolean reserveAccessCheck = false;
 			boolean isUserBinderAdministrator = false;
 			boolean isEntryReserved = false;
 			boolean isLockedByAndLoginUserSame = false;
 
-			String reservedById = (String) entry.get(Constants.RESERVEDBYID_FIELD);
-			if (reservedById != null) isEntryReserved = true;
+			if (bs.getFolderModule().testAccess(entry, FolderOperation.reserveEntry)) {
+				reserveAccessCheck = true;
+			}
+			if (bs.getFolderModule().testAccess(entry, FolderOperation.overrideReserveEntry)) {
+				isUserBinderAdministrator = true;
+			}
+			
+			HistoryStamp historyStamp = entry.getReservation();
+			if (historyStamp != null) isEntryReserved = true;
 
 			if (isEntryReserved) {
-				if (reservedById.equals(user.getId().toString())) {
+				Principal lockedByUser = historyStamp.getPrincipal();
+				if (lockedByUser.getId().equals(user.getId())) {
 					isLockedByAndLoginUserSame = true;
 				}
 			}
+			if (bs.getFolderModule().testAccess(entry, FolderOperation.modifyEntry)) {
+				if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
+				} else {
+					accessControlEntryMap.put("modifyEntry", new Boolean(true));
+				}
+			}
+
+			entryMap.put(WebKeys.COMMUNITY_TAGS, publicTags.get(entry.getId()));
+			entryMap.put(WebKeys.PERSONAL_TAGS, privateTags.get(entry.getId()));
 		}
 	}
 

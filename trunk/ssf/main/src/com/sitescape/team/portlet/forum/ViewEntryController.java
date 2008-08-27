@@ -274,6 +274,23 @@ public class ViewEntryController extends  SAbstractController {
 			buildEntryToolbar(request, response, model, fe, viewType, userProperties);
 			setRepliesAccessControl(model, fe);
 
+			if (!displayType.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+				//Folder action menu
+				//Build the standard toolbar
+				Toolbar folderActionsToolbar = new Toolbar();
+				BinderHelper.buildFolderActionsToolbar(this, request, response, folderActionsToolbar, folderId.toString());
+				model.put(WebKeys.FOLDER_ACTIONS_TOOLBAR,  folderActionsToolbar.getToolbar());
+			}
+			
+			if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+				Map qualifiers = new HashMap();
+				qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
+						NLT.get("ui.availableThemeIds") + "', '" +
+						NLT.get("ui.availableThemeNames") + "'); return false;");
+				model.put(WebKeys.TOOLBAR_THEME_IDS, NLT.get("ui.availableThemeIds"));
+				model.put(WebKeys.TOOLBAR_THEME_NAMES, NLT.get("ui.availableThemeNames"));
+			}
+			
 			//Build the navigation beans
 			BinderHelper.buildNavigationLinkBeans(this, fe.getParentBinder(), model);
 			Binder workspaceBinder = null;
