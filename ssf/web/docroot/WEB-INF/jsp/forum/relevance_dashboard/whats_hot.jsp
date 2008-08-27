@@ -92,7 +92,7 @@
 	    <br/>
 	    <span class="ss_summary"><ssf:textFormat 
 	      formatAction="limitedDescription" 
-	      textMaxWords="10">${entry.description}</ssf:textFormat></span>
+	      textMaxWords="10"><ssf:markup type="view">${entry.description}</ssf:markup></ssf:textFormat></span>
 	  </c:if>
 	
     </li><br/>

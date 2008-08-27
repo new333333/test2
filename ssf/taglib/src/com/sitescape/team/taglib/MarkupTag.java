@@ -50,6 +50,7 @@ public class MarkupTag extends BodyTagSupport {
 	private String type = WebKeys.MARKUP_VIEW;
 	private String binderId = "";
 	private String entryId = "";
+	private boolean leaveSectionsUnchanged = false;
     
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -85,6 +86,10 @@ public class MarkupTag extends BodyTagSupport {
 						httpReq, httpRes, entity, _bodyContent, type, 
 						Long.valueOf(binderId), null);
 			}
+			if (!this.leaveSectionsUnchanged) {
+				//Translate the "sections" markup
+				translatedString = WebHelper.markupSectionsReplacement(translatedString);
+			}
 			pageContext.getOut().print(translatedString);
 
 			return EVAL_PAGE;
@@ -97,6 +102,7 @@ public class MarkupTag extends BodyTagSupport {
 			this.entity = null;
 			this.binderId = "";
 			this.entryId = "";
+			this.leaveSectionsUnchanged = false;
 		}
 	}
 
