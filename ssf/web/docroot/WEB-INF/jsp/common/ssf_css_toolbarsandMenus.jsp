@@ -33,6 +33,7 @@
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
+
 /* CSS Document - container for toolbars and menu styles */
 
 /* ACTIONS */
@@ -51,7 +52,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 div.ss_actions_bar1_pane {
 	border-bottom: 1px solid;
 	border-color: #FFF;
-	height: 22px;		/* boulder 22px */
+	/* height: 22px; */
 	white-space: nowrap;
 	}		
 table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
@@ -116,10 +117,11 @@ table.ss_actions_bar4_pane {
 	padding:5px 0 5px 25px;
 	}
 ul.ss_actions_bar1  {
-	height: 22px;	
+	/* height: 22px;	*/
 	}
 ul.ss_actions_bar1 .ss_actions_bar_submenu {
 	height: auto;
+	padding: 0px !important;
 	}
 .ss_action_bar ul, .ss_actions_bar_submenu {
 	list-style-type: none;
@@ -172,6 +174,7 @@ ul.ss_actions_bar li {
 	}
 .ss_actions_bar li a:hover{
 	color: #333333 !important;
+	background-image: none !important;
 	}
 .ss_actions_bar li a.ss_actions_bar_inline, .ss_actions_bar li a.ss_actions_bar_inline:visited  {
 	color:${ss_style_text_color} !important;
@@ -195,9 +198,11 @@ ul.ss_actions_bar li {
 	}
 ul.ss_actions_bar1 li {
 	margin-top: 3px;
+	padding: 0px;
 	}
 ul.ss_actions_bar1 li a:hover {
 	text-decoration:none;
+	background-image: none !important;
 	}
 .ss_actions_bar2 li a:hover {
 	/* background-image: url(<html:imagesPath/>pics/background_actionbar4.gif); */
@@ -210,7 +215,7 @@ ul.ss_actions_bar1 li a:hover {
 	}
 div.ss_actions_bar_submenu {
 /* background-color: ${ss_style_background_color_side_panel}; */
-	background-color: #FFFFFF;
+	background-color: transparent;
 	margin:0px;
 	padding:0px;
 	text-align:left;
@@ -222,8 +227,10 @@ div.ss_actions_bar_submenu {
 div.ss_actions_bar_submenu ul.ss_actions_bar1 {
   /* background-color: ${ss_toolbar1_dropdown_menu_color}; */
   	background-color: #FFFFFF;
-  	background-image: none;
+  	background-image: none !important;
   	opacity: 0.95;
+  	border:0.1em solid #CCCCCC;
+  	padding: 0px !important;
  <c:if test="<%= isIE %>">
   	filter: alpha(opacity=95);
  </c:if>
@@ -264,8 +271,8 @@ div.ss_actions_bar_submenu ul.ss_actions_bar4 {
 	top:-8px;
 	left:-10px;
  </c:if>	
-	border:1px solid ${ss_toolbar1_background_color};
-	border-top:none;
+	/* border:1px solid ${ss_toolbar1_background_color};
+	border-top:none; */
 	padding: 1px 1px;
 	}
 .ss_actions_bar_submenu li  {
@@ -376,9 +383,13 @@ div.ss_utils_bar_submenu {
 	white-space: nowrap;
 	}
 ul.ss_utils_bar_submenu {
-	margin: 0px 5px 0px 5px;
+	margin: 0px 5px 0px 0px;
 /* background-color: #ECECEC; */
 	background-color: #FFFFFF;
+	font-family: ${ss_style_title_font_family};
+	font-size: ${ss_style_font_fineprint};
+	list-style: none;
+	padding: 3px;
 	} 
 ul.ss_utils_bar_submenu li  {
 	float:none;

@@ -35,7 +35,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 %>
 
 
-
 .ss_form_header {
 	font-size:28px !important;
 	letter-spacing:-1px;
