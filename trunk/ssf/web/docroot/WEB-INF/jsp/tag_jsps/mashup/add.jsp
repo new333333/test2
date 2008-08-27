@@ -32,12 +32,12 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <script type="text/javascript">
 //Routine called when "find wiki page" is clicked
-function ss_selectEntryId${renderResponse.namespace}(id) {
+function ss_selectEntryId${ss_mashupItemId}_${renderResponse.namespace}(id) {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
 	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "entry,"+id;
-	alert(formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value)
+	alert('${ss_mashupPropertyName}__${ss_mashupItemId} = ' + formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value)
 }
-function ss_mashup_addTable${renderResponse.namespace}() {
+function ss_mashup_addTable${ss_mashupItemId}_${renderResponse.namespace}() {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
 	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "table";
 }
@@ -48,14 +48,13 @@ function ss_mashup_addTable${renderResponse.namespace}() {
     		type="entries"
     		width="140px" 
     		singleItem="true"
-			binderId="${ssBinder.id}"
-			searchSubFolders="false"
-		    clickRoutine="ss_selectEntryId${renderResponse.namespace}"
+		    clickRoutine="ss_selectEntryId${ss_mashupItemId}_${renderResponse.namespace}"
 		    accessibilityText="wiki.findPage"
 		    /> 
 	<br/>
-	Add table <input type="button" value="ok" onClick="ss_mashup_addTable${renderResponse.namespace}();return false;"/>
+	Add table <input type="button" value="ok" onClick="ss_mashup_addTable${ss_mashupItemId}_${renderResponse.namespace}();return false;"/>
 	
 	<input type="hidden" name="${ss_mashupPropertyName}__${ss_mashupItemId}"/>
 </div>
-      <c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
+<c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
+
