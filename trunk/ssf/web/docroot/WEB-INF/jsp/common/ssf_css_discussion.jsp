@@ -51,7 +51,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	/* holder for left column */
 	height:100%;
 	vertical-align:top;
-	width: 48%;
 	}	
 .ss_doublecolumn .ss_dblcolleft{		
 /* right column width */
@@ -67,13 +66,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	margin-right:2%;
 	}	
 .ss_doublecolumn .ss_dblcol2{
-<<<<<<< .mine
-	width:100%;						/* right column content width (column width minus left and right padding) */
-	left:48%;						/* (right column column width) plus (left column left and right padding) plus (right column left padding) */
+	width:100%;						
+/* right column content width (column width minus left and right padding) */
+	left:51%;						
+/* (right column column width) plus (left column left and right padding) plus (right column left padding) */
 	overflow:hidden;
-	<c:if test="<%= isIE %>">
-  		width:98%;
- 	</c:if>
 	}	
 	
 /* TOP PART OF DISCUSSION TOPIC PAGE */	
@@ -210,7 +207,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 #ss_topic_desc{
 	font-size:11px;
 	line-height:13px;
-	padding-left:px;
+	padding-left: 1px;
 	padding-right:2px;
 	padding-bottom:1px;
 	color:#777;
@@ -387,7 +384,7 @@ a.ss_new_thread:hover {
  		padding-top:10px;
  	</c:if>
  	}
- .ss_page_IE2 {
+.ss_page_IE2 {
  	font-size: ${ss_style_font_fineprint} !important;	
  	padding-left: 5px;
 	padding-right: 5px;
@@ -512,20 +509,44 @@ a.ss_new_thread:hover {
 	}
 .ss_attribute {
 	background-color: #DBEDFF!important;
-	border: 0.3px solid #999999!important;
+	border: 0.4px solid #999999!important;
 	margin-bottom: 5px;
 	margin-right: 3px;
 	}	
 
 /*******FIXED TABLE STYLES*****************/
 
-/* Parent Folder 
+/* Parent Folder */
 #ss_folder_table_parent{
-	width:110%;
+	width:100%;
 	}	
-ss_fixed_table{
+#ss_fixed_table{
+	border-bottom: solid 0.4px #CCC;
+	font-family: Arial, Helvetica, sans serif;
+	font-size: 11px;
+	color: #333;
+	}
+.ss_fixed_TD{
+	border-bottom: solid 2px #72AEB6;
+	}
+.ss_fixed_TH{
+	border: solid .04px #CCC;
+	padding:4px 2px 5px 5px;
+	}
+.ss_fixed_centered_col ss_fixed_TH ss_fixed_TD{
+	text-align: center;
+	}
+.ss_fixed_odd_TR a:hover{
+	background: #E9F1F1;
+	}
+.ss_fixed_even_TR a:hover{
+	background: #FFF;
+	}
+.ss_tableheader_style{
+	font-family:  
 	}
 
+	
   /*******Discussion Toolbar Panel*****************/	
 	
 /* Folder */
