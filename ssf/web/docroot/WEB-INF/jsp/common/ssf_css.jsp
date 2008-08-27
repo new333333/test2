@@ -1138,37 +1138,36 @@ a.ss_header_bar_title_link:hover, a.ss_header_bar_title_link:visited:hover {
 
 a.ss_displaytag {
 	color: ${ss_style_metadata_color};
-}
+	}
+/**********SLIDING TABLES STYLES **********************/
 
-
-/*Sliding Tables */
 div.ss_sliding_table_column0 {
-  display: block; 
-  border-left: ${ss_sliding_table_border_color} 1px solid;
-  border-right: ${ss_sliding_table_border_color} 1px solid;
-  border-bottom: ${ss_sliding_table_border_color} 1px solid;
-  border-top:${ss_sliding_table_border_color} 1px solid;
-  margin: 0px;
-}
+  	display: block; 
+  	border-left: ${ss_sliding_table_border_color} 1px solid;
+  	border-right: ${ss_sliding_table_border_color} 1px solid;
+  	border-bottom: ${ss_sliding_table_border_color} 1px solid;
+  	border-top:${ss_sliding_table_border_color} 1px solid;
+  	margin: 0px;
+	}
 .ss_sliding_table_column0 * {
-  color: ${ss_sliding_table_text_color};
-  white-space:nowrap;
-  text-decoration:none!important;
-}
+  	color: ${ss_sliding_table_text_color};
+  	white-space:nowrap;
+  	text-decoration:none!important;
+	}
 div.ss_sliding_table_column1 {
-  position: absolute; 
-  visibility: hidden;
-  overflow:hidden;
-  display: block; 
-  border-left: #cccccc solid 1px;
-  font-size: ${ss_style_font_normalprint} !important;
-  margin: 0px;
-}
+  	position: absolute; 
+  	visibility: hidden;
+  	overflow:hidden;
+  	display: block; 
+ 	border-left: #cccccc solid 1px;
+  	font-size: ${ss_style_font_normalprint} !important;
+  	margin: 0px;
+	}
 .ss_sliding_table_column1 * {
-  color: ${ss_sliding_table_text_color};
-  white-space:nowrap;
-  text-decoration: none;
-}
+  	color: ${ss_sliding_table_text_color};
+  	white-space:nowrap;
+  	text-decoration: none;
+	}
 div.ss_sliding_table_column {
   position: absolute; 
   visibility: hidden;
@@ -1250,6 +1249,37 @@ table.ss_mouseOverInfo {
   position:relative;
   top:0px;
 }
+/*******FIXED TABLE STYLES*****************/
+
+/* Parent Folder */
+#ss_folder_table_parent{
+	width:100%;
+	}	
+#ss_fixed_table{
+	border-bottom: solid 0.4px #CCC;
+	font-family: Arial, Helvetica, sans serif;
+	font-size: 11px;
+	color: #333;
+	}
+.ss_fixed_TD{
+	border-bottom: solid 2px #72AEB6;
+	}
+.ss_fixed_TH{
+	border: solid .04px #CCC;
+	padding:4px 2px 5px 5px;
+	}
+.ss_fixed_centered_col ss_fixed_TH ss_fixed_TD{
+	text-align: center;
+	}
+.ss_fixed_odd_TR a:hover{
+	background: #E9F1F1;
+	}
+.ss_fixed_even_TR a:hover{
+	background: #FFF;
+	}
+.ss_tableheader_style{
+	font-family:  
+	}
 
 
 /* Entry */

@@ -55,7 +55,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-right-color: #CCCCCC;
 	border-bottom-color: #CCCCCC;
 	border-left-color: #CCCCCC;
-	padding-right: 0 25px 25px 25px;
+	padding: 0 25px 25px 25px;
 	}
 .ss_table_heading {
 	font-size: 10px;
@@ -93,7 +93,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding: 6px 3px 6px 3px;
 	margin: 2px;
 	}
-.ss_table_data_TD: hover {
+.ss_table_data_TD: a hover {
 	background-color: #F2F2F2;
 	}
 .ss_table_data_mid{
