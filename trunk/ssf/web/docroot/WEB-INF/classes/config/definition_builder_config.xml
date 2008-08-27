@@ -979,6 +979,7 @@
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="profileName" initial="true" />
+			<option name="profilePassword" initial="true" />
 			<option name="profileEntryPicture" initial="true" />
 			<option name="profileFirstName" initial="true" />
 			<option name="profileMiddleName" initial="true" />
@@ -1015,6 +1016,20 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderName" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderName" />
+	</item>
+	
+	<item name="profilePassword" caption="__profile_password" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__profile_password"/>
+			<property name="name" caption="__data_name" type="text" value="password" 
+			  readonly="true" unique="//item[@type='data']">
+			</property>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_password_form.jsp" />
+		</jsps>
 	</item>
 	
 	<item name="profileFirstName" caption="__firstName" type="data" 

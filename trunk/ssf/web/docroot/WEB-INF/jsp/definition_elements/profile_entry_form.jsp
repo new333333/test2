@@ -51,7 +51,25 @@
 <%-- Show the screen name --%>
 <div class="ss_entryContent">
 <div class="ss_labelAbove"><ssf:nlt tag="__profile_name"/></div>
+<c:if test="${empty ssDefinitionEntry.name}">
+  <input type="text" size="40" name="name" class="ss_text" />
+</c:if>
+<c:if test="${!empty ssDefinitionEntry.name}">
 <c:out value="${ssDefinitionEntry.name}"/>
+</c:if>
+</div>
+
+<div class="ss_entryContent">
+<c:if test="${!empty ssDefinitionEntry.name}">
+<div class="ss_labelAbove"><ssf:nlt tag="__profile_password"/></div>
+  <input type="password" size="40" name="password_original" class="ss_text" />
+</div>
+</c:if>
+<div class="ss_labelAbove"><ssf:nlt tag="__profile_password"/></div>
+  <input type="password" size="40" name="password" class="ss_text" />
+</div>
+<div class="ss_labelAbove"><ssf:nlt tag="__profile_password_again"/></div>
+  <input type="password" size="40" name="password2" class="ss_text" />
 </div>
 
 <%-- Show the first, middle and last names --%>

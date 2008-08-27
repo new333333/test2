@@ -73,6 +73,11 @@ public class AddEntryController extends SAbstractController {
 				fileMap = new HashMap();
 			}
 			MapInputData inputData = new MapInputData(formData);
+        	String password = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD);
+        	String password2 = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD2);
+        	if (password == null || !password.equals(password2)) {
+        		return;
+        	}
 			entryId= getProfileModule().addUser(entryType, inputData, fileMap, null);
 			setupViewEntry(response, binderId, entryId);
 			//flag reload of folder listing
