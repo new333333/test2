@@ -75,6 +75,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_tricolumn .ss_col1 {
 	width:38%;				/* width of center column content (column width minus padding on either side) */
 	left:42%;				/* 100% plus left padding of center column */
+	<c:if test="<%= isIE %>">
+ 		width:37%;
+ 	</c:if>	
 	}
 .ss_tricolumn .ss_col2 {
 	width:38%;				/* Width of left column content (column width minus padding on either side) */
@@ -224,8 +227,11 @@ div.ss_canvas {
 	}			
 	/*TRACKED ITEMS*/	
 #ss_trackedItems{
-	margin: 1% 0 2% 0;
+	margin: 0% 0 2% 0;
 	color:#555;
+	<c:if test="<%= isIE %>">
+ 		margin: 0.5% 0 2% 0;
+ 	</c:if>	
 	}
 #ss_trackedPeople{
 	color:#555;
