@@ -54,14 +54,16 @@
 		if (thisEntry instanceof FolderEntry) {
 %>
 		  <ssf:editable entity="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}">
-		    <span><ssf:markup type="view" binderId="${binderId}" entryId="${docId}"><c:out 
+		    <span><ssf:markup type="view" binderId="${binderId}" entryId="${docId}" 
+		       leaveSectionsUnchanged="true" ><c:out 
 		       value="<%= description %>" escapeXml="false"/></ssf:markup></span>
 		  </ssf:editable>
 <%
 		} else if (thisEntry instanceof Map) {
 %>
 		  <ssf:editable entityMap="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}">
-		    <span><ssf:markup type="view" binderId="${binderId}" entryId="${docId}"><c:out 
+		    <span><ssf:markup type="view" binderId="${binderId}" entryId="${docId}"
+		       leaveSectionsUnchanged="true" ><c:out 
 		       value="<%= description %>" escapeXml="false"/></ssf:markup></span>
 		  </ssf:editable>
 <%

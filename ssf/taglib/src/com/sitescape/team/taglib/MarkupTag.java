@@ -122,6 +122,10 @@ public class MarkupTag extends BodyTagSupport {
 	    this.entryId = entryId;
 	}
 
+	public void setLeaveSectionsUnchanged(boolean leaveSectionsUnchanged) {
+	    this.leaveSectionsUnchanged = leaveSectionsUnchanged;
+	}
+
 }
 
 
