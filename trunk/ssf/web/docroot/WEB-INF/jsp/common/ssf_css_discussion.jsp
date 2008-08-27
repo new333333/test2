@@ -316,7 +316,7 @@ a.ss_new_thread:hover {
 #ss_navbar_inline ul li{
 	display: inline!important;
 	white-space: nowrap;
-	margin-right: 3px!important;
+	margin-right: 12px!important;
 	}
 #ss_navbar_inline ul a{
 	color:#666666;

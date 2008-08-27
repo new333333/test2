@@ -64,17 +64,18 @@
   			onMouseover="ss_setStatusBackground(this, 'mouseOver');"
   			onMouseout="ss_setStatusBackgroundCheck(this);"
   		><c:out value="${ssUser.status}" escapeXml="true"/></textarea>
-  		<table cellspacing="0" cellpadding="0" width="100%">
+  		<div style="margin-left:7px;">
+  		<table cellspacing="0" cellpadding="0" width="164px">
   		<tr>
   		<td>
-  		  <input type="button" value="<ssf:nlt tag="button.ok"/>" class="ss_linkButton ss_fineprint"
+  		  <input type="button" value="<ssf:nlt tag="button.ok"/>" class="ss_tinyButton ss_finestprint"
   		    onClick="ss_updateStatusNowId('ss_status_textarea${renderResponse.namespace}');return false;"/>
   		</td>
   		<td align="right">
-  		  <input type="button" value="<ssf:nlt tag="button.clear"/>" class="ss_linkButton ss_fineprint"
+  		  <input type="button" value="<ssf:nlt tag="button.clear"/>" class="ss_tinyButton ss_finestprint"
   		    onClick="ss_clearStatus('ss_status_textarea${renderResponse.namespace}');return false;"/>
   		</td>
   		</tr>
-  		</table>
+  		</table></div>
 	</ssf:ifLoggedIn> 
 </c:if>

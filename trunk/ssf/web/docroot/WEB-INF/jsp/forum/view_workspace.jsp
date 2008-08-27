@@ -183,10 +183,10 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 <td valign="left">
 <a href="javascript: ;" 
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
-><span style="padding:0px 0 0 24px; display:${ss_sidebarVisibilityShow};"
+><span style="padding:0px 0 0 22px; display:${ss_sidebarVisibilityShow};"
   id="ss_sidebarHide${renderResponse.namespace}" 
   class="ss_fineprint ss_sidebarSlidesm"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
-  style="padding:0px 0 0 24px; display:${ss_sidebarVisibilityHide};"
+  style="padding:0px 0 0 22px; display:${ss_sidebarVisibilityHide};"
   id="ss_sidebarShow${renderResponse.namespace}" 
   class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
 </td>
