@@ -30,6 +30,7 @@ package com.sitescape.team.portlet.profile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
@@ -45,6 +46,7 @@ import org.springframework.web.portlet.ModelAndView;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
@@ -432,71 +434,20 @@ public class ListProfilesController extends   SAbstractController {
         if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
-		//	The "Add" menu (Turned off because adding users must be done in the portal)
-/*		List defaultEntryDefinitions = binder.getEntryDefinitions();
+		List defaultEntryDefinitions = binder.getEntryDefinitions();
 		if (!defaultEntryDefinitions.isEmpty()) {
-			try {
-				getProfileModule().checkAddEntryAllowed(binder);
-				int count = 1;
-				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
-				Map qualifiers = new HashMap();
-				String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
-				qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
-				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
-					Definition def = (Definition) defaultEntryDefinitions.get(i);
-					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY);
-					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
-					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-					String title = NLT.getDef(def.getTitle());
-					if (toolbar.checkToolbarMenuItem("1_add", "entries", title)) {
-						title = title + " (" + String.valueOf(count++) + ")";
-					}
-					toolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
-				}
-			} catch (AccessControlException ac) {};
+			// Only one option
+			Definition def = (Definition) defaultEntryDefinitions.get(0);
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+			String title = NLT.get("toolbar.new") + ": " + NLT.getDef(def.getTitle());
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			qualifiers.put("highlight", new Boolean(true));
+			toolbar.addToolbarMenu("1_add", title, adapterUrl.toString(), qualifiers);
 		}
-*/
-		
-
-
-//		//	The "Display styles" menu
-//		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
-//			toolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_actions"));
-//			//vertical
-//			Map qualifiers = new HashMap();
-//			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) 
-//				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
-//			url = response.createActionURL();
-//			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-//			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-//			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-//			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
-//			toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_vertical"), 
-//					url, qualifiers);
-//			//iframe
-//			qualifiers = new HashMap();
-//			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) 
-//				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
-//			url = response.createActionURL();
-//			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-//			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-//			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-//			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
-//			toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_iframe"), 
-//					url, qualifiers);
-//			//popup
-//			qualifiers = new HashMap();
-//			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) 
-//				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
-//			url = response.createActionURL();
-//			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-//			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-//			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-//			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
-//			toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_popup"), 
-//					url, qualifiers);
-//		}
 		return toolbar;
 	}
 
