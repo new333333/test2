@@ -31,17 +31,7 @@
 <% //table2_col1 top %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${ss_mashupColStarted == 'true'}">
-  <c:if test="${ssConfigJspStyle == 'form'}">
-    <c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
-    <%@ include file="/WEB-INF/jsp/tag_jsps/mashup/add.jsp" %>
-    <c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
-  </c:if>
 </td>
 </c:if>
-<td>
+<td valign="top">
 <c:set var="ss_mashupColStarted" value="true" scope="request"/>
-  <c:if test="${ssConfigJspStyle == 'form'}">
-    <c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
-    <%@ include file="/WEB-INF/jsp/tag_jsps/mashup/add.jsp" %>
-    <c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
-  </c:if>
