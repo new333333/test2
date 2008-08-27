@@ -631,6 +631,25 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   	cursor: pointer;
   	white-space: nowrap;
 }
+input.ss_tinyButton, a.ss_tinyButton:link, a.ss_tinyButton:visited,{
+ 	font-family: ${ss_style_folder_view_font_family};
+ 	font-size: ${ss_style_font_finestprint};
+ 	background-color: ${ss_linkbutton_background_color};
+  	border: 1px solid ${ss_linkbutton_outline_color};
+  	padding: 0px 3px 0px 3px;
+  	cursor: pointer;
+  	white-space: nowrap;
+	}
+a.ss_tinyButton:focus, a.ss_tinyButton:hover {
+  	color: ${ss_linkbutton_link_hover_color};
+  	font-family: ${ss_style_folder_view_font_family};
+  	font-size: ${ss_style_font_finestprint};
+  	background-color: ${ss_linkbutton_background_color};
+  	border: 1px solid ${ss_linkbutton_outline_color};
+  	padding: 0px 3px 0px 3px;
+  	cursor: pointer;
+  	white-space: nowrap;
+}
 
 /* styles for labels: required for forms; optional for views */
 .ss_labelAbove {

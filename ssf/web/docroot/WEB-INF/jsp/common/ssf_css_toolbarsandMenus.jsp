@@ -432,7 +432,7 @@ div.ss_folder_tags {
 	}
 .ss_tag_pane_color {
  /* background-color: ${ss_tag_pane_background_color} !important; */
-  	background-color: #FFFFFF;
+  	background-color: transparent;
   	color: ${ss_style_text_color} !important;
 	}
 table.ss_tag_pane_color th {

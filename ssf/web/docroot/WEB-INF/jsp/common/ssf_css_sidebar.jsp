@@ -86,7 +86,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	height: 42px;
 	margin: 8px 0px 8px 8px;
 	<c:if test="<%= isIE %>">
-  		margin: 6px 0px 0px 0px;
+  		margin: 6px 0px 4px 0px;
  	</c:if>
 	padding: 8px 0px 8px 10px;	
 	}
@@ -129,6 +129,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color: transparent;
 	background-repeat: no-repeat;
 	padding-left: 27px;
+	cursor: pointer;
 	}	
 .ss_menuClosed {
 	background-image: url("<html:rootPath/>images/pics/sidebar/backgrounddropdowns.png");
@@ -136,6 +137,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color: transparent;
 	background-repeat: no-repeat;
 	padding-left: 27px;
+	cursor: pointer;
 	}
 .ss_mouseOver {
 	background-color: #CCFFFF;
@@ -255,14 +257,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_lg.png"); 
 	background-position:top left;
 	background-repeat: no-repeat;
-	height:22px;		/* boulder 22px */
+	height:22px;	
 	color:#FFF;
 	}
 .ss_sidebarSlidesm {
 	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_sm.png"); 
 	background-position:top left;
 	background-repeat: no-repeat;
-	height:22px;		/* boulder 22px */
+	height:22px;		
 	color:#FFF;
 	}
 .ss_hideShow {
