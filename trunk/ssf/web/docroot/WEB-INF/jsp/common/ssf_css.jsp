@@ -43,6 +43,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 //    icwg - ICEcore Wintry Gray
 //    cust - Custom
 %>
+
 <c:set var="ss_color_theme" value="icib" scope="request"/>
 <c:if test="${!empty ssCssTheme}">
   <c:set var="ss_color_theme" value="${ssCssTheme}" scope="request"/>
@@ -4413,6 +4414,7 @@ ul.placesForm, ul.placesForm li {
 .ss_combobox_autocomplete {
 	background-color: ${ss_form_element_color};
 	background-image: none;
+	border: 0.1em solid #777777;
 	color: ${ss_form_element_text_color};
 	padding: 0px;
 	font-size: ${ss_style_font_normalprint};

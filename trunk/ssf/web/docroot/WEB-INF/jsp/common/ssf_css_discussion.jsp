@@ -316,7 +316,7 @@ a.ss_new_thread:hover {
 #ss_navbar_inline ul li{
 	display: inline!important;
 	white-space: nowrap;
-	margin-right: 0px!important;
+	margin-right: 3px!important;
 	}
 #ss_navbar_inline ul a{
 	color:#666666;
@@ -342,6 +342,7 @@ a.ss_new_thread:hover {
 	border:dotted 1px #000 !important; 
 	padding:2px 5px 2px 5px;
 	background-color: #CCDFDE !important;
+	white-space: nowrap;
 	}
 .ss_navbar_new a {
 	color: #333 !important;

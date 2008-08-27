@@ -33,6 +33,7 @@
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
+
 	/*WRAPPER*/
 #ss_top_nav_wrapper{
 	width: 100%;

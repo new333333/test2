@@ -383,6 +383,7 @@ div.ss_canvas {
 	color:#555;
 	border:1px solid #5A9A98;
 	}
+	
 	/*TAGS*/
 #ss_tags{
 	font-size: ${ss_style_font_normalprint};

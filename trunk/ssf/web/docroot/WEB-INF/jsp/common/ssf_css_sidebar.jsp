@@ -74,6 +74,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	margin: 8px 8px 3px 8px;
 	padding: 4px 4px 4px 4px;
 		}	*/ 
+		
 .ss_status_textarea{
 	font-size: 10px;
 	background-color:#E9F1F1!important;
@@ -95,7 +96,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 	
 /*This is the border for all of the boxes*/
-.ss_myStatus, .ss_input_myStatus, .ss_sidebarMenu, .ss_sub_sidebarMenu{
+.ss_myStatus, .ss_input_myStatus, .ss_sidebarMenu, .ss_sub_sidebarMenu, .ss_mouseOver{
 	border-color: #5A9A98;
 	border-style: solid;
 	border-width: .01em;
@@ -232,6 +233,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 #ss_leftNav li a:active {
     color: #fff;
     background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_bgd.png") 5px -50px;
+    background-repeat: no-repeat !important;
 	background-color: #5A9A98;
     padding: 7px 0 7px 30px;
 	margin-bottom: 3px;
