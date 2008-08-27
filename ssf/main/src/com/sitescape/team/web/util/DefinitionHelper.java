@@ -694,22 +694,25 @@ public class DefinitionHelper {
     	while (it.hasNext()) {
     		Node node = (Node)it.next();
     		String attrName = node.getStringValue();
-    		String mashupValue = (String) entity.getCustomAttribute(attrName).getValue();
-        	String[] mashupValues = mashupValue.split(";");
-        	for (int i = 0; i < mashupValues.length; i++) {
-        		String[] mashupItemValues = mashupValues[i].split(",");
-        		String type = mashupItemValues[0];
-        		String value1 = "";
-        		String value2 = "";
-        		if (mashupItemValues.length >= 2) value1 = mashupItemValues[1];
-        		if (mashupItemValues.length >= 3) value2 = mashupItemValues[2];
-        		if (ObjectKeys.MASHUP_TYPE_ENTRY.equals(type) && !value1.equals("")) {
-        			try {
-        				FolderEntry entry = bs.getFolderModule().getEntry(null, Long.valueOf(value1));
-        				mashupEntries.put(entry.getId().toString(), entry);
-        			} catch(Exception e) {}
-        		}
-        	}
+    		CustomAttribute attr = entity.getCustomAttribute(attrName);
+    		if (attr != null) {
+	    		String mashupValue = (String) attr.getValue();
+	        	String[] mashupValues = mashupValue.split(";");
+	        	for (int i = 0; i < mashupValues.length; i++) {
+	        		String[] mashupItemValues = mashupValues[i].split(",");
+	        		String type = mashupItemValues[0];
+	        		String value1 = "";
+	        		String value2 = "";
+	        		if (mashupItemValues.length >= 2) value1 = mashupItemValues[1];
+	        		if (mashupItemValues.length >= 3) value2 = mashupItemValues[2];
+	        		if (ObjectKeys.MASHUP_TYPE_ENTRY.equals(type) && !value1.equals("")) {
+	        			try {
+	        				FolderEntry entry = bs.getFolderModule().getEntry(null, Long.valueOf(value1));
+	        				mashupEntries.put(entry.getId().toString(), entry);
+	        			} catch(Exception e) {}
+	        		}
+	        	}
+    		}
     	}
     	model.put(WebKeys.MASHUP_ENTRIES, mashupEntries);
 	}

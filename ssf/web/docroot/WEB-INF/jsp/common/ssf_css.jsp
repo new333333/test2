@@ -1435,7 +1435,7 @@ table.ss_attachments_list td.ss_att_space {
 .ss_dashboard_component_title {
 }
 .ss_dashboard_dragHandle {
-  cursor:move;
+/*  cursor:move; */
 }
 .ss_dashboard_dragHandle_clone {
   background-color: ${ss_style_component_toolbar_background_color} !important;

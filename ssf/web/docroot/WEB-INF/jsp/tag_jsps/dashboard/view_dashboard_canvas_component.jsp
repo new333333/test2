@@ -77,7 +77,6 @@
 	  <input type="hidden" name="_operation" value=""/>
 	  <input type="hidden" name="_returnView" value="${ss_dashboard_returnView}"/>
 			<ul class="ss_title_bar_icons">
-			  <ssf:ifaccessible>
 				<li><a href="javascript:;"
 				  onClick="ss_submitDashboardChange(this, '_moveUp');return false;"
 				><img border="0" src="<html:imagesPath/>icons/accessory_move_up.gif" 
@@ -86,7 +85,6 @@
 				  onClick="ss_submitDashboardChange(this, '_moveDown');return false;"
 				><img border="0" src="<html:imagesPath/>icons/accessory_move_down.gif" 
 				  alt="<ssf:nlt tag="button.moveDown"/>" /></a></li>
-			  </ssf:ifaccessible>
 			  
 			  <c:if test="${ss_dashboard_componentScope == 'local' || ss_dashboard_componentScope == 'global' || ssDashboard.sharedModificationAllowed}">
 				<li><a href="javascript:;" 
