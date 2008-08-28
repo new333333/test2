@@ -41,6 +41,8 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.web.portlet.ModelAndView;
 
+import com.sitescape.team.ObjectExistsException;
+import com.sitescape.team.PasswordMismatchException;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.module.shared.MapInputData;
@@ -76,7 +78,7 @@ public class AddEntryController extends SAbstractController {
         	String password = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD);
         	String password2 = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD2);
         	if (password == null || !password.equals(password2)) {
-        		return;
+        		throw new PasswordMismatchException("errorcode.password.mismatch");
         	}
 			entryId= getProfileModule().addUser(entryType, inputData, fileMap, null);
 			setupViewEntry(response, binderId, entryId);

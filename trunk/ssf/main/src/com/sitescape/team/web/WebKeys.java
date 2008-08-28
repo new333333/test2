@@ -714,6 +714,7 @@ public class WebKeys {
     public static final String INLINE_NO_IMAGE="ssInlineNoImage";
     public static final String IS_ACCESSIBLE="ss_isAccessible";
     public static final String IS_REFRESH="ssRefresh";
+    public static final String IS_BINDER_ADMIN="ss_isBinderAdmin";
     public static final String IS_SITE_ADMIN="ss_isSiteAdmin";
     public static final String LAST_BINDER_VIEWED="ssLastBinderViewed";
     public static final String LAST_BINDER_ENTITY_TYPE="ssLastBinderEntityType";
