@@ -764,6 +764,15 @@ public class ListFolderHelper {
 			getBlogEntries(bs, folder, folderEntries, model, req, response);
 		}
 		
+		String type = PortletRequestUtils.getStringParameter(req, WebKeys.URL_TYPE, "");
+		model.put(WebKeys.TYPE, type);
+		String page = PortletRequestUtils.getStringParameter(req, WebKeys.URL_PAGE, "0");
+		model.put(WebKeys.PAGE_NUMBER, page);
+		if (type.equals(WebKeys.URL_WHATS_NEW)) 
+			BinderHelper.setupWhatsNewBinderBeans(bs, folder, model, page);
+		if (type.equals(WebKeys.URL_UNSEEN)) 
+			BinderHelper.setupUnseenBinderBeans(bs, folder, model, page);
+
 		//Build the mashup beans
 		Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
 		Element configElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
