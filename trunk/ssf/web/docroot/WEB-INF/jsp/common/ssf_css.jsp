@@ -1291,10 +1291,10 @@ table.ss_mouseOverInfo {
 .ss_fixed_centered_col ss_fixed_TH ss_fixed_TD{
 	text-align: center;
 	}
-.ss_fixed_odd_TR a:hover{
+.ss_fixed_odd_TR {
 	background: #E9F1F1;
 	}
-.ss_fixed_even_TR a:hover{
+.ss_fixed_even_TR {
 	background: #FFF;
 	}
 .ss_tableheader_style{

@@ -51,6 +51,7 @@
 	String slidingTableRowId = (String) request.getAttribute("ss_slidingTableRowId");
 	List slidingTableRowColumns = (List) request.getAttribute("ss_slidingTableRowColumns");
 	Boolean slidingTableHeaderRow = (Boolean) request.getAttribute("ss_slidingTableHeaderRow");
+	String slidingTableRowStyle = (String) request.getAttribute("ss_slidingTableRowStyle");
 	String slidingTableRowOddStyle = (String) request.getAttribute("ss_slidingTableRowOddStyle");
 	String slidingTableRowEvenStyle = (String) request.getAttribute("ss_slidingTableRowEvenStyle");
 
@@ -86,12 +87,11 @@
 			if (colStyle == null) colStyle = "";
 			if (slidingTableHeaderRow != null && slidingTableHeaderRow.booleanValue()) {
 %>
-  <th scope="col" class="ss_bold <%= colStyle %>" align="left" <%= widthAttr %> style="padding: 4px 2px 5px 5px; border:.4px solid #CCCCCC; border-collapse: collapse;"><%= text %></th>
+  <th scope="col" class="ss_bold <%= colStyle %>" align="left" <%= widthAttr %> ><%= text %></th>
 <%
 			} else {
 %>
-  <td valign="top" <%= widthAttr %> class="ss_normal <%= colStyle %>"
-    style="padding: 4px 2px 5px 5px; border:.4px solid #CCCCCC; border-collapse: collapse;"><%= text %></td>
+  <td valign="top" <%= widthAttr %> class="ss_normal <%= colStyle %>"><%= text %></td>
 <%
 			}
 		}

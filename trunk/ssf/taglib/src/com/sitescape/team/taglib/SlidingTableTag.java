@@ -62,7 +62,6 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 	private String _folderId;
 	private String _height;
 	private String _tableStyle;
-	private String _style;
 	private String _type;
 	private String _jsp;
 	private String displayStyle;
@@ -87,7 +86,6 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 		if (_parentId == null || _parentId.equals("")) _parentId = _id;
 		if (_height == null || _height.equals("0")) _height = this.defaultTableHeight;
 		if (_tableStyle == null) _tableStyle = "";
-		if (_style == null) _style = "";
 
 		// Output the table
 		try {
@@ -100,7 +98,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				req.setAttribute("ss_slidingTableId", _id);
 				req.setAttribute("ss_slidingTableParentId", _parentId);
 				req.setAttribute("ss_slidingTableRows", _rows);
-				req.setAttribute("ss_slidingTableStyle", _style);
+				req.setAttribute("ss_slidingTableStyle", _tableStyle);
 				rd.include(req, res);
 				pageContext.getOut().print(res.getString());
 				
@@ -118,7 +116,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				StringServletResponse res = new StringServletResponse(httpRes);
 				req.setAttribute("ss_slidingTableId", _id);
 				req.setAttribute("ss_slidingTableParentId", _parentId);
-				req.setAttribute("ss_slidingTableStyle", _style);
+				req.setAttribute("ss_slidingTableStyle", _tableStyle);
 				rd.include(req, res);
 				pageContext.getOut().print(res.getString());
 				
@@ -132,6 +130,8 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 					req = new DynamicServletRequest(httpReq);
 					res = new StringServletResponse(httpRes);
 					req.setAttribute("ss_slidingTableRowId", row.get("id"));
+					req.setAttribute("ss_slidingTableStyle", _tableStyle);
+					req.setAttribute("ss_slidingTableRowStyle", row.get("style"));
 					req.setAttribute("ss_slidingTableRowOddStyle", row.get("oddStyle"));
 					req.setAttribute("ss_slidingTableRowEvenStyle", row.get("evenStyle"));
 					req.setAttribute("ss_slidingTableHeaderRow", row.get("headerRow"));
@@ -158,7 +158,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				req.setAttribute("ss_slidingTableParentId", _parentId);
 				req.setAttribute("ss_slidingTableRows", _rows);
 				req.setAttribute("ss_slidingTableFolderId", _folderId);
-				req.setAttribute("ss_slidingTableStyle", _style);
+				req.setAttribute("ss_slidingTableStyle", _tableStyle);
 				rd.include(req, res);
 				pageContext.getOut().print(res.getString());
 				
@@ -174,7 +174,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				req.setAttribute("ss_slidingTableRows", _rows);
 				req.setAttribute("ss_slidingTableFolderId", _folderId);
 				req.setAttribute("ss_slidingTableScrollHeight", _height);
-				req.setAttribute("ss_slidingTableStyle", _style);
+				req.setAttribute("ss_slidingTableStyle", _tableStyle);
 				rd.include(req, res);
 				pageContext.getOut().print(res.getString());
 			}
@@ -192,13 +192,12 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 			_parentId = ""; 
 			_height = "";
 			_tableStyle = "";
-			_style = "";
 			_type = "";
 			_jsp = "";
 		}
 	}
 
-	public void addRow(String id, List columns, Boolean headerRow, String oddStyle, String evenStyle) {
+	public void addRow(String id, List columns, Boolean headerRow, String style, String oddStyle, String evenStyle) {
 		if (_rows == null) {
 			_rows = new ArrayList();
 		}
@@ -207,6 +206,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 		Map row = new HashMap();
 		row.put("id", id);
 		row.put("headerRow", headerRow);
+		row.put("style", style);
 		row.put("oddStyle", oddStyle);
 		row.put("evenStyle", evenStyle);
 		row.put("columns", columns);
@@ -228,9 +228,6 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 	}
 	public void setTableStyle(String tableStyle) {
 		_tableStyle = tableStyle;
-	}
-	public void setStyle(String style) {
-		_style = style;
 	}
 	public void setType(String type) {
 		_type = type;

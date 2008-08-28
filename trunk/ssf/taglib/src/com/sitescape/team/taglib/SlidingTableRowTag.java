@@ -69,7 +69,7 @@ public class SlidingTableRowTag extends BodyTagSupport implements SlidingTableCo
 			//Add the built up row to the table
 			if (_headerRow == null) _headerRow = new Boolean(false);
 			if (_id == null) _id = "";
-			slidingTableRowAncestor.addRow(_id, _columns, _headerRow, _oddStyle, _evenStyle);
+			slidingTableRowAncestor.addRow(_id, _columns, _headerRow, _style, _oddStyle, _evenStyle);
 
 			return EVAL_PAGE;
 		}

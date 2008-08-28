@@ -93,16 +93,20 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 
 	<c:set var="slidingTableTableStyle" value=""/>
 	<c:if test="${slidingTableStyle == 'fixed'}">
-  		<c:set var="slidingTableTableStyle" value="ss_borderTable"/>
+  		<c:set var="slidingTableTableStyle" value="ss_fixed_table"/>
 	</c:if>
 	<ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="${slidingTableStyle}" 
- 	  height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}" tableStyle="${slidingTableStyle}">
+ 	  height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}" tableStyle="${slidingTableTableStyle}">
 
 	<c:set var="slidingTableRowStyle" value="ss_table_oddRow"/>
+	<c:set var="slidingTableRowOddStyle" value="ss_table_oddRow"/>
+	<c:set var="slidingTableRowEvenStyle" value="ss_table_evenRow"/>
 	<c:set var="slidingTableColStyle" value=""/>
 	<c:if test="${slidingTableStyle == 'fixed'}">
   		<c:set var="slidingTableRowStyle" value=""/>
-  		<c:set var="slidingTableColStyle" value=""/>
+  		<c:set var="slidingTableRowOddStyle" value="ss_fixed_odd_TR"/>
+  		<c:set var="slidingTableRowEvenStyle" value="ss_fixed_even_TR"/>
+  		<c:set var="slidingTableColStyle" value="ss_fixed_TD"/>
 	</c:if>
 
 	<ssf:slidingTableRow style="${slidingTableRowStyle}" headerRow="true">
@@ -405,11 +409,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	String seenStyleTitle = seenStyle;
 	String seenStyleTitle2 = "class=\"ss_noUnderlinePlus\"";
 %>
-<c:set var="slidingTableRowStyle" value=""/>
-<c:set var="slidingTableColStyle" value=""/>
 <c:if test="${slidingTableStyle == 'fixed'}">
-  <c:set var="slidingTableRowStyle" value=""/>
-  <c:set var="slidingTableColStyle" value=""/>
 <%
 	seenStyleTitle = "class=\"ss_underline\"";
 	seenStyleTitle2 = "class=\"ss_underlinePlus\"";
@@ -434,7 +434,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 
 <c:set var="hasFile2" value="<%= hasFile %>"/>
 <c:set var="oneFile2" value="<%= oneFile %>"/>
-<ssf:slidingTableRow style="${slidingTableRowStyle}" id="${folderLineId}" >
+<ssf:slidingTableRow style="${slidingTableRowStyle}" 
+  oddStyle="${slidingTableRowOddStyle}" evenStyle="${slidingTableRowEvenStyle}" id="${folderLineId}" >
  <c:if test="${!empty ssFolderColumns['number']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <a href="<ssf:url     

@@ -517,39 +517,6 @@ a.ss_new_thread:hover {
 	margin-right: 3px;
 	}	
 
-/*******FIXED TABLE STYLES*****************/
-
-/* Parent Folder */
-#ss_folder_table_parent{
-	width:100%;
-	}	
-#ss_fixed_table{
-	border-bottom: solid 0.4px #CCC;
-	font-family: Arial, Helvetica, sans serif;
-	font-size: 11px;
-	color: #333;
-	}
-.ss_fixed_TD{
-	border-bottom: solid 2px #72AEB6;
-	}
-.ss_fixed_TH{
-	border: solid .04px #CCC;
-	padding:4px 2px 5px 5px;
-	}
-.ss_fixed_centered_col ss_fixed_TH ss_fixed_TD{
-	text-align: center;
-	}
-.ss_fixed_odd_TR a:hover{
-	background: #E9F1F1;
-	}
-.ss_fixed_even_TR a:hover{
-	background: #FFF;
-	}
-.ss_tableheader_style{
-	font-family:  
-	}
-
-	
   /*******Discussion Toolbar Panel*****************/	
 	
 /* Folder */
