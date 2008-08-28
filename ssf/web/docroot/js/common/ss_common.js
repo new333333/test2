@@ -1039,6 +1039,7 @@ function ss_showHoverOver(parentObj, divName, event, offsetX, offsetY) {
 	divObj = document.getElementById(divName)
 	if (divObj == null) return;
 	divObj.style.zIndex = '500';
+	divObj.style.overflow = 'hidden';
 	var x = dojo.coords(parentObj, true).x
 	var y = dojo.coords(parentObj, true).y
 	if (typeof event != 'undefined') {
