@@ -42,7 +42,7 @@ Json-lib 1.1 for jdk15
 JSTL 1.0.5
 JSTL Implementation (from Apache) 1.0.6
 JTA 1.0.1b
-JTDS 0.9.1
+JTDS 1.2.2
 JUnit 3.8.1
 Liferay portal-impl.jar 4.3.0
 Liferay portal-kernel.jar 4.3.0
