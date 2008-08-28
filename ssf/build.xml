@@ -77,6 +77,7 @@
 		
 		<ant dir="ssr" target="clean" />
 		<ant dir="simple-url" target="clean" />		
+		<ant dir="mobile" target="clean" />		
 	</target>
 
 	<target name="compile">
@@ -97,6 +98,8 @@
 		<ant dir="taglib" target="compile" />
 		
 		<ant dir="simple-url" target="compile" />
+
+		<ant dir="mobile" target="compile" />
 
 		<ant dir="tools" target="compile" />
 		
@@ -129,6 +132,8 @@
 		<ant dir="ssr" target="war" />
 		
 		<ant dir="simple-url" target="war" />
+		
+		<ant dir="mobile" target="war" />
 	</target>
 
 	<target name="deploy">
@@ -155,6 +160,8 @@
 		<ant dir="ssr" target="deploy" />
 		
 		<ant dir="simple-url" target="deploy" />
+		
+		<ant dir="mobile" target="deploy" />
 	</target>
 
 	<target name="java2html">
@@ -174,6 +181,7 @@
 		<ant dir="taglib" target="java2html" />
 		<ant dir="tools" target="java2html" />
 		<ant dir="simple-url" target="java2html" />
+		<ant dir="mobile" target="java2html" />
 	</target>
 
 	<target name="javadoc">
@@ -193,6 +201,7 @@
 		<ant dir="taglib" target="javadoc" />
 		<ant dir="tools" target="javadoc" />
 		<ant dir="simple-url" target="javadoc" />
+		<ant dir="mobile" target="javadoc" />
 	</target>
 
 

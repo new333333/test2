@@ -50,6 +50,7 @@
 		<ant dir="${project.dir}/ssr" target="deploy" inheritAll="false" />
 		<!-- simnple-url component is deployed into its own web app -->
 		<ant dir="${project.dir}/simple-url" target="deploy" inheritAll="false" />
+		<ant dir="${project.dir}/mobile" target="deploy" inheritAll="false" />
 	</target>
 
 	<target name="deploy-standalone-tomcat" depends="clean, init-standalone, clean-app-server">

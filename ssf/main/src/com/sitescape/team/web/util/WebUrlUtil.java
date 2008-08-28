@@ -683,4 +683,9 @@ public class WebUrlUtil {
 		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
 	}
 
+	public static String getMobileURL(boolean isSecure, String hostname, int port) {
+		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_mobile", false, isSecure, hostname, port);
+		return adapterUrl.toString();
+	}
+
 }
