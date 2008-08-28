@@ -42,8 +42,11 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.PasswordMismatchException;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.web.WebKeys;
@@ -90,7 +93,19 @@ public class ModifyEntryController extends SAbstractController {
 				}
 				
 			}
-			getProfileModule().modifyEntry(entryId, new MapInputData(formData), fileMap, deleteAtts, null, null);
+			MapInputData inputData = new MapInputData(formData);
+        	String password = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD);
+        	String password2 = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD2);
+        	if (password == null || !password.equals(password2)) {
+        		throw new PasswordMismatchException("errorcode.password.mismatch");
+        	}
+            ProfileBinder binder = getProfileModule().getProfileBinder();
+            if (!getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
+            	String passwordOriginal = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD_ORIGINAL);
+            	//Check that the user knows the current password
+            	throw new PasswordMismatchException("errorcode.password.invalid");
+            }
+			getProfileModule().modifyEntry(entryId, inputData, fileMap, deleteAtts, null, null);
 
 			//See if there was a request to reorder the graphic files
 			String graphicFileIds = PortletRequestUtils.getStringParameter(request, "_graphic_id_order", "");
@@ -136,6 +151,10 @@ public class ModifyEntryController extends SAbstractController {
 			model.put(WebKeys.FOLDER, entry.getParentBinder());
 			model.put(WebKeys.BINDER, entry.getParentBinder());
 			model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_FORM);
+			ProfileBinder binder = getProfileModule().getProfileBinder();
+			if (getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
+				model.put(WebKeys.IS_BINDER_ADMIN, true);
+			}
 			Definition entryDef = entry.getEntryDef();
 			if (entryDef == null) {
 				DefinitionHelper.getDefaultEntryView(entry, model, "//item[@name='entryForm' or @name='profileEntryForm']");

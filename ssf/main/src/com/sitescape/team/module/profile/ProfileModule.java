@@ -65,7 +65,8 @@ public interface ProfileModule {
 	public enum ProfileOperation {
 		addEntry,
 		deleteEntry,
-		modifyEntry
+		modifyEntry,
+		manageEntries
 	}
 	/**
 	 * Add profile entries. 
