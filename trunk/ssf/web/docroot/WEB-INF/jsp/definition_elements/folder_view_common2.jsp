@@ -95,9 +95,6 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	<c:if test="${slidingTableStyle == 'fixed'}">
   		<c:set var="slidingTableTableStyle" value="ss_fixed_table"/>
 	</c:if>
-	<ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="${slidingTableStyle}" 
- 	  height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}" tableStyle="${slidingTableTableStyle}">
-
 	<c:set var="slidingTableRowStyle" value="ss_table_oddRow"/>
 	<c:set var="slidingTableRowOddStyle" value="ss_table_oddRow"/>
 	<c:set var="slidingTableRowEvenStyle" value="ss_table_evenRow"/>
@@ -108,6 +105,15 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   		<c:set var="slidingTableRowEvenStyle" value="ss_fixed_even_TR"/>
   		<c:set var="slidingTableColStyle" value="ss_fixed_TD"/>
 	</c:if>
+	<ssf:ifaccessible>
+  		<c:set var="slidingTableRowStyle" value=""/>
+  		<c:set var="slidingTableRowOddStyle" value="ss_fixed_odd_TR"/>
+  		<c:set var="slidingTableRowEvenStyle" value="ss_fixed_even_TR"/>
+  		<c:set var="slidingTableColStyle" value="ss_fixed_TD"/>
+	</ssf:ifaccessible>
+
+	<ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="${slidingTableStyle}" 
+ 	  height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}" tableStyle="${slidingTableTableStyle}">
 
 	<ssf:slidingTableRow style="${slidingTableRowStyle}" headerRow="true">
   	<c:if test="${!empty ssFolderColumns['number']}">

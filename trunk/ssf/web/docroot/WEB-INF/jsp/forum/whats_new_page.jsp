@@ -33,9 +33,13 @@
 
 <div id="ss_para">
 <div align="right">
+<c:set var="actionVar" value="view_ws_listing"/>
+<c:if test="${ssBinder.entityType == 'folder'}">
+  <c:set var="actionVar" value="view_folder_listing"/>
+</c:if>
 <c:if test="${ss_pageNumber > '0'}">
 <a href="<ssf:url 
-		action="view_ws_listing" binderId="${ssBinder.id}"><ssf:param
+		action="${actionVar}" binderId="${ssBinder.id}"><ssf:param
 		name="type" value="${ss_type}"/><ssf:param
 		name="page" value="${ss_pageNumber - 1}"/><ssf:param
 		name="namespace" value="${ss_namespace}"/></ssf:url>" 
@@ -50,7 +54,7 @@
 </c:if>
 <c:if test="${!empty ss_whatsNewBinder}">
 <a href="<ssf:url 
-		action="view_ws_listing" binderId="${ssBinder.id}"><ssf:param
+		action="${actionVar}" binderId="${ssBinder.id}"><ssf:param
 		name="type" value="${ss_type}"/><ssf:param
 		name="page" value="${ss_pageNumber + 1}"/><ssf:param
 		name="namespace" value="${ss_namespace}"/></ssf:url>" 

@@ -64,10 +64,31 @@
 <div class="ss_clear"></div>
 </div>
 <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
-<ssf:slidingTable id="ss_folder_table" type="<%= slidingTableStyle %>" 
+	<c:set var="slidingTableTableStyle" value=""/>
+	<c:if test="${slidingTableStyle == 'fixed'}">
+  		<c:set var="slidingTableTableStyle" value="ss_fixed_table"/>
+	</c:if>
+	<c:set var="slidingTableRowStyle" value="ss_table_oddRow"/>
+	<c:set var="slidingTableRowOddStyle" value="ss_table_oddRow"/>
+	<c:set var="slidingTableRowEvenStyle" value="ss_table_evenRow"/>
+	<c:set var="slidingTableColStyle" value=""/>
+	<c:if test="${slidingTableStyle == 'fixed'}">
+  		<c:set var="slidingTableRowStyle" value=""/>
+  		<c:set var="slidingTableRowOddStyle" value="ss_fixed_odd_TR"/>
+  		<c:set var="slidingTableRowEvenStyle" value="ss_fixed_even_TR"/>
+  		<c:set var="slidingTableColStyle" value="ss_fixed_TD"/>
+	</c:if>
+	<ssf:ifaccessible>
+  		<c:set var="slidingTableRowStyle" value=""/>
+  		<c:set var="slidingTableRowOddStyle" value="ss_fixed_odd_TR"/>
+  		<c:set var="slidingTableRowEvenStyle" value="ss_fixed_even_TR"/>
+  		<c:set var="slidingTableColStyle" value="ss_fixed_TD"/>
+	</ssf:ifaccessible>
+
+<ssf:slidingTable id="ss_folder_table" type="<%= slidingTableStyle %>" tableStyle="${slidingTableTableStyle}"
  height="<%= ssFolderTableHeight %>" folderId="${ssBinder.id}">
 
-<ssf:slidingTableRow headerRow="true">
+<ssf:slidingTableRow headerRow="true" style="${slidingTableRowStyle}" >
   <ssf:slidingTableColumn width="30%"><ssf:nlt tag="profile.element.title"/></ssf:slidingTableColumn>
   <ssf:slidingTableColumn width="50%"><ssf:nlt tag="profile.element.emailAddress"/></ssf:slidingTableColumn>
   <ssf:slidingTableColumn width="20%"><ssf:nlt tag="profile.element.name"/></ssf:slidingTableColumn>
@@ -84,20 +105,21 @@
 	}
 %>
 
-<ssf:slidingTableRow id="<%= folderLineId %>">
+<ssf:slidingTableRow id="<%= folderLineId %>" style="${slidingTableRowStyle}" 
+  oddStyle="${slidingTableRowOddStyle}" evenStyle="${slidingTableRowEvenStyle}">
 
-  <ssf:slidingTableColumn>
+  <ssf:slidingTableColumn style="${slidingTableColStyle}">
   <ssf:showUser user="<%=(User)entry.get("_principal")%>" />
   </ssf:slidingTableColumn>
   
-  <ssf:slidingTableColumn>
+  <ssf:slidingTableColumn style="${slidingTableColStyle}">
     <c:if test="${!empty entry._email}">
 	  <a href="mailto:${entry._email}">
       <span><c:out value="${entry._email}"/></span></a>
     </c:if>
   </ssf:slidingTableColumn>
 
-  <ssf:slidingTableColumn>
+  <ssf:slidingTableColumn style="${slidingTableColStyle}">
     <span><c:out value="${entry._loginName}"/></span>
   </ssf:slidingTableColumn>
   
