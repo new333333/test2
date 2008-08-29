@@ -67,6 +67,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	margin: 8px 8px 3px 8px;
 	padding: 4px 4px 4px 4px;
 	background-color: #EFEFEF;
+	<c:if test="<%= isIE %>">
+  		width: 174px;
+ 	</c:if>
 	}
 /* .ss_statusMouseOver {		***DOESN'T WORK YET.  ADD IN SIDEBAR_STATUS.JSP WHEN DOES***
 	background-color: #CCFFFF;
@@ -90,7 +93,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
  	</c:if>
 	padding: 8px 0px 8px 10px;	
 	}
-/*This is the border for all of the boxes*/
 .ss_setStatusBackground{
 	background-color: #5A9A98;
 	}
