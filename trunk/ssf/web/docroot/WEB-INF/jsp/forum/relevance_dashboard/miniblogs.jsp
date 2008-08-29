@@ -64,7 +64,7 @@
 		  
 		    	<ssf:showUser user="${activity.user}" titleStyle="ss_link_1"/>
 		      
-		        <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+		        &nbsp;&nbsp;&nbsp;<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 					      value="${activity.date}" type="both" 
 						  timeStyle="short" dateStyle="short" />
 				<br/>

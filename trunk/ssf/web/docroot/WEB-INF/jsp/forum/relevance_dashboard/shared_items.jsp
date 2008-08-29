@@ -62,7 +62,7 @@
 
   <c:forEach var="sharedItem" items="${ss_sharedEntities}">
    
-	 <li> <ssf:nlt tag="relevance.sharedEntityLine"/>
+	 <li> <ssf:nlt tag="relevance.sharedEntityLine">
 	 
 	  <ssf:param name="value" useBody="true">
 	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
@@ -96,7 +96,7 @@
 		</c:if>
 	   </span><br/>
 	  </ssf:param>
-	
+	  </ssf:nlt>
 	  </li>
   </c:forEach>
   <c:if test="${empty ss_sharedEntities && ss_pageNumber > '0'}">
