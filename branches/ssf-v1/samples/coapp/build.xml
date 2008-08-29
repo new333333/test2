@@ -12,6 +12,17 @@
 	<property name="war.name" value="coapp" />
 	<property name="war.file" value="${war.name}.war" />
 	
+	<!-- This overrides the imported definition -->
+	<path id="project.classpath">
+		<pathelement path="${classes.dir};${project.dir}/liferay/classes;${project.dir}/portal-module/classes" />
+		<pathelement location="${project.dir}/lib/servlet.jar" />
+		<pathelement location="${project.dir}/lib/portlet.jar" />
+		<pathelement location="${project.dir}/lib/portal-impl.jar" />
+		<pathelement location="${project.dir}/lib/portal-kernel.jar" />
+		<pathelement location="${project.dir}/lib/portal-service.jar" />
+		<pathelement location="${project.dir}/lib/util-java.jar" />
+	</path>
+	
 	<target name="coapp-jar">
 		<jar 
 			jarfile="${coapp.jar.file}"
