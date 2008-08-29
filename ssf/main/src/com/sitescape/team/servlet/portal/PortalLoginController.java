@@ -114,7 +114,7 @@ public class PortalLoginController extends SAbstractController {
 			//If there was a url passed in (e.g., from a permalink), use it
 			if (!url.equals("")) { 
 				redirectUrl = url;
-				redirectUrl = redirectUrl.replace(WebKeys.USERID_PLACEHOLDER, user.getId().toString()); 
+				redirectUrl = redirectUrl.replace(WebKeys.URL_ENTRY_ID_PLACE_HOLDER, user.getId().toString()); 
 			}
 			else {
 				if(request.getQueryString() != null)

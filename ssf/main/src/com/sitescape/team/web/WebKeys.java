@@ -1170,5 +1170,4 @@ public class WebKeys {
     public static final String SERVLET_PORTAL_LOGIN="portalLogin";
     public static final String SERVLET_PORTAL_LOGOUT="portalLogout";
     
-    public static final String USERID_PLACEHOLDER = "__ss_userid_placeholder_";
 }
