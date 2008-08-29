@@ -73,9 +73,7 @@ function ss_setMobileIframeSize() {
 <c:if test="${!empty ss_mobileBinderList}">
 <div align="right">
   <a class="ss_linkButton" 
-    href="<portlet:renderURL 
-      portletMode="edit" 
-      windowState="maximized" />"
+    href="<ssf:url/>"
     ><ssf:nlt tag="button.configure"/></a>
 </div>
 </c:if>
@@ -95,9 +93,7 @@ function ss_setMobileIframeSize() {
 <c:if test="${empty ss_mobileBinderList}">
 <div align="right">
   <a class="ss_linkButton" 
-    href="<portlet:renderURL 
-      portletMode="edit" 
-      windowState="maximized" />"
+    href="<ssf:url />"
     ><ssf:nlt tag="button.configure"/></a>
 </div>
 </c:if>
