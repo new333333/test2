@@ -31,7 +31,6 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/servlet.include.jsp" %>
 <body class="tundra">
-<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
 function ss_saveResults() {
 	if (parent.ss_size_group_iframe) parent.ss_size_group_iframe();

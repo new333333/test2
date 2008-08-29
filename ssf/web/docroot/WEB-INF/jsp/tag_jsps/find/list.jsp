@@ -33,11 +33,6 @@
 
 <c:set var="prefix" value="${ssFindFormName}_${ssFindFormElement}_${ssFindInstanceCount}" />
 
-<c:if test="${empty ss_find_js_loaded}" >
-	<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/find.js"></script>
-	<c:set var="ss_find_js_loaded" value="1" scope="request"/>
-</c:if>
-
 <c:choose>
 	<c:when test="${ssFindListType == 'user'}">
 		<c:set var="accessibilityText" value="navigation.findUser" />

@@ -51,8 +51,6 @@
 	}
 	if (nodeOpen.equals("")) {nodeOpen = " ";}
 %>
-<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/find.js"></script>
-
 <script type="text/javascript">
 
 var rn = Math.round(Math.random()*999999)

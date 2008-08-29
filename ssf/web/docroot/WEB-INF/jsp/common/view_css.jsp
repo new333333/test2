@@ -30,25 +30,12 @@
  
 %><%--
 
---%><c:if test="${!empty ss_portletInitialization}"><%--
-	--%><script type="text/javascript">
-var url = '${ss_portletInitializationUrl}';
-if (url != '') self.location.href = url;
-</script><%--
---%></c:if><%--
-
---%><c:if test="${empty ss_portletInitialization}"><%--
-	--%>
-	<c:if test="${empty ssf_support_files_loaded}"><%--
-		--%><c:set var="ssf_support_files_loaded" value="1" scope="request"/><%--
-		--%>
+--%>
+<c:if test="${empty ssf_support_files_loaded}"><%--
+--%><c:set var="ssf_support_files_loaded" value="1" scope="request"/><%--
+--%>
 <script type="text/javascript">
 var ss_isAdapter="true";
-<c:if test="${empty ss_notAdapter}">
-<ssf:ifnotadapter>
-ss_isAdapter="false";
-</ssf:ifnotadapter>
-<c:if test="${empty ss_portletType || ss_portletType != 'ss_portletTypeAdmin'}">
 var ss_tagSearchResultUrl = "<ssf:url windowState="maximized" 
     action="advanced_search" actionUrl="true"><ssf:param 
 	name="searchTags" value="ss_tagPlaceHolder"/><ssf:param 
@@ -110,39 +97,54 @@ var ss_baseBinderUrlNoWS = ss_baseBinderUrlNoWS${renderResponse.namespace};
 
 var ss_baseRootPathUrl = '<html:rootPath/>';
 
-</c:if>
-
-</c:if>
 </script>
-		<%
-			boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
-			%><%--
+<%
+	boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
+	%><%--
 
-		--%>
-
-<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo/dojo.js.uncompressed.js" djConfig="isDebug: false, locale: '<ssf:convertLocaleToDojoStyle />', parseOnLoad: true"></script>
+--%>
+<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo/dojo.js" 
+  djConfig="isDebug: false, locale: '<ssf:convertLocaleToDojoStyle />', parseOnLoad: true"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js"</script>
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"</script>
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"</script>
+<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
-var ss_scripts_loaded = "no";
-var scripts = document.getElementsByTagName("script");
-for (var i = 0; i < scripts.length; i++) {
-	if (scripts[i].src) {
-		if (scripts[i].src.indexOf("/ss_common.js") >= 0) {
-			ss_scripts_loaded = "yes";
-			break;
-		}
-	}
-}
 var undefined;
-var ss_urlBase;
-var ss_rootPath;
-var ss_imagesPath;
-var ss_1pix;
-var ss_forumCssUrl;
-var ss_sliderCssUrl;
-var ss_forumColorsCssUrl;
-var ss_not_logged_in;
-var ss_rtc_not_configured;
-var ss_userDisplayStyle;
+var ss_urlBase = self.location.protocol + "//" + self.location.host;
+var ss_rootPath = "<html:rootPath/>";
+var ss_imagesPath = "<html:imagesPath/>";
+	
+var ss_sliderCssUrl = ss_urlBase + ss_rootPath + "css/slider_swing.css";
+var ss_1pix = ss_imagesPath + "pics/1pix.gif";
+var ss_forumColorsCssUrl = "<ssf:url webPath="viewCss">
+	    <ssf:param name="theme" value="${ssUser.theme}"/>
+	    </ssf:url>";
+
+var ss_AjaxBaseUrl = "<ssf:url adapter="true" portletName="ss_forum" actionUrl="true" />";
+
+//Not logged in message
+var ss_not_logged_in = "<ssf:nlt tag="general.notLoggedIn"/>";
+	
+// RTC client not installed
+var ss_rtc_not_configured = "<ssf:nlt tag="rtc.client.not.configured"/>";
+	
+//Clipboard text
+var ss_clipboardTitleText = "<ssf:nlt tag="clipboard.title"/>";
+var ss_addContributesToClipboardText = "<ssf:nlt tag="button.add_contributes_to_clipboard"/>";
+var ss_addTeamMembersToClipboardText = "<ssf:nlt tag="button.sdd_team_members_to_clipboard"/>";
+var ss_clearClipboardText = "<ssf:nlt tag="button.clear_clipboard"/>";
+var ss_noUsersOnClipboardText = "<ssf:nlt tag="clipboard.noUsers"/>";
+var ss_closeButtonText = "<ssf:nlt tag="button.close"/>";
+var ss_selectAllBtnText = "<ssf:nlt tag="button.selectAll"/>";
+var ss_clearAllBtnText = "<ssf:nlt tag="button.clearAll"/>";
+var ss_userDisplayStyle = "${ssUser.displayStyle}";
+<c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == ''}">
+	ss_userDisplayStyle = "iframe";	
+</c:if>
+									
+var ss_findButtonClose = "<ssf:nlt tag="button.close"/>";
+var ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
 
 var ss_findButtonClose;
 var ss_AjaxBaseUrl;
@@ -161,103 +163,13 @@ function ss_loadJsFile(rootPath, jsFile) {
 		document.getElementsByTagName("head")[0].appendChild(script);
 	}
 }
-function ss_loadDojoFiles() {
-	if (ss_scripts_loaded && ss_scripts_loaded == "no") {
-		//Put dojo.require statements here
-	}
-}
-if (ss_scripts_loaded && ss_scripts_loaded == "no") {
-	ss_urlBase = self.location.protocol + "//" + self.location.host;
-	ss_rootPath = "<html:rootPath/>";
-	ss_imagesPath = "<html:imagesPath/>";
-	
-	ss_forumCssUrl = ss_urlBase + ss_rootPath + "css/forum.css";
-	ss_sliderCssUrl = ss_urlBase + ss_rootPath + "css/slider_swing.css";
-	ss_1pix = ss_imagesPath + "pics/1pix.gif";
-	ss_forumColorsCssUrl = "<ssf:url webPath="viewCss">
-	    <ssf:param name="theme" value="${ssUser.theme}"/>
-	    </ssf:url>";
-
-	ss_AjaxBaseUrl = "<ssf:url adapter="true" portletName="ss_forum" actionUrl="true" />";
-
-	//Not logged in message
-	ss_not_logged_in = "<ssf:nlt tag="general.notLoggedIn"/>";
-	
-	// RTC client not installed
-	ss_rtc_not_configured = "<ssf:nlt tag="rtc.client.not.configured"/>";
-	
-	//Clipboard text
-	ss_clipboardTitleText = "<ssf:nlt tag="clipboard.title"/>";
-	ss_addContributesToClipboardText = "<ssf:nlt tag="button.add_contributes_to_clipboard"/>";
-	ss_addTeamMembersToClipboardText = "<ssf:nlt tag="button.sdd_team_members_to_clipboard"/>";
-	ss_clearClipboardText = "<ssf:nlt tag="button.clear_clipboard"/>";
-	ss_noUsersOnClipboardText = "<ssf:nlt tag="clipboard.noUsers"/>";
-	ss_closeButtonText = "<ssf:nlt tag="button.close"/>";
-	ss_selectAllBtnText = "<ssf:nlt tag="button.selectAll"/>";
-	ss_clearAllBtnText = "<ssf:nlt tag="button.clearAll"/>";
-	ss_userDisplayStyle = "${ssUser.displayStyle}";
-	<c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == ''}">
-	ss_userDisplayStyle = "iframe";	
-	</c:if>
-									
-	ss_findButtonClose = "<ssf:nlt tag="button.close"/>";
-	ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
-	
-}
-if (ss_scripts_loaded && ss_scripts_loaded == "no") {
-	ss_loadJsFile(ss_rootPath, "js/common/ss_common.js");
-}
-</script>
-<script type="text/javascript">
-if (ss_scripts_loaded && ss_scripts_loaded == "no") {
-	ss_loadJsFile(ss_rootPath, "js/common/taconite-client.js");
-	ss_loadJsFile(ss_rootPath, "js/common/taconite-parser.js");
-//dojo_xxx  	ss_loadJsFile(ss_rootPath, "js/common/ss_dashboard_drag_and_drop.js");
-}
-</script>
-<script type="text/javascript">
-
-function ss_createStyleSheet(url, title, enabled) {
-	if (ss_scripts_loaded && ss_scripts_loaded == "no") {
-		if (enabled == null || enabled == "") enabled = false;
-		var styles = "@import url('" + " " + url + " " + "');";
-		var newSS = document.createElement('link');
-		newSS.rel = 'stylesheet';
-		if (title != null && title != "") {
-			newSS.setAttribute("title", title);
-			newSS.disabled = true;
-			if (enabled == true) {
-				newSS.disabled = false;
-			}
-		}
-		newSS.href = 'data:text/css,' + escape(styles);
-		//newSS.href = url;
-		document.getElementsByTagName("head")[0].appendChild(newSS);
-	}
-}
-
 </script>
 
-<c:if test="${!empty ss_servlet && ss_servlet == 'true'}">
 <link href="<html:rootPath/>css/forum.css" rel="stylesheet" type="text/css" />
 <link href="<ssf:url  webPath="viewCss"> <ssf:param name="theme" value=""/>
 	    </ssf:url>" rel="stylesheet" type="text/css" />
-</c:if>
 
 <script type="text/javascript">
-<c:if test="${empty ss_servlet || ss_servlet != 'true'}">
-	if (ss_scripts_loaded && ss_scripts_loaded == "no") {
-		if (document.createStyleSheet) {
-			document.createStyleSheet(ss_forumCssUrl);
-			document.createStyleSheet(ss_sliderCssUrl);
-			document.createStyleSheet(ss_forumColorsCssUrl);
-		} else {
-			ss_createStyleSheet(ss_forumCssUrl);
-			ss_createStyleSheet(ss_sliderCssUrl);
-			ss_createStyleSheet(ss_forumColorsCssUrl);
-		}
-	}
-</c:if>
 
 <c:set var="ss_loadCssStylesInline" value="true" scope="request"/>
 <c:set var="ss_skipCssStyles" value="true" scope="request"/>
@@ -268,10 +180,6 @@ function ss_defineColorValues() {
 	ss_dashboard_table_border_color = '${ss_dashboard_table_border_color}';
 }
 
-if (ss_scripts_loaded && ss_scripts_loaded == "no") {
-	ss_createOnLoadObj('ss_loadDojoFiles', ss_loadDojoFiles);
-	ss_createOnLoadObj('ss_defineColorValues', ss_defineColorValues);
-}
 </script>
 
 <%--
@@ -283,5 +191,6 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 * Jsp files added to the custom_jsps directory will not be overwritten during upgrades
 --%><jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_css_init.jsp" /><%--
 
-	--%></c:if><%--
 --%></c:if>
+
+
