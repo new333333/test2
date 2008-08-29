@@ -33,81 +33,59 @@
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
-<ssf:sidebarPanel id="ss_folder_sidebar" divClass="ss_blog_sidebar"
-                  title="__definition_default_folder_blog" initOpen="false" sticky="true">
-	  <ssHelpSpot helpId="workspaces_folders/misc_tools/blog_controls" offsetX="0" 
-         <c:if test="<%= isIE %>">
-           offsetY="25"
-         </c:if>
-	    title="<ssf:nlt tag="helpSpot.blogControls"/>"></ssHelpSpot>
+<div style="border:1px #cecece solid; background-color: #cecece;">
+  <ssHelpSpot helpId="workspaces_folders/misc_tools/blog_controls" offsetX="0" 
+     <c:if test="<%= isIE %>">
+       offsetY="25"
+     </c:if>
+    title="<ssf:nlt tag="helpSpot.blogControls"/>"></ssHelpSpot>
 
-		<div class="ss_blog_sidebar_hole">
-			<ssf:ifnotaccessible>
-				<div id="ss_blog_sidebar_date_popup${renderResponse.namespace}"></div>
-		 		<form name="ss_blog_sidebar_date_form${renderResponse.namespace}" style="display:inline;">
-					<ssf:datepicker id="ss_blog_sidebar_date" 
-		            	calendarDivId="ss_blog_sidebar_date_popup${renderResponse.namespace}"
-		            	formName="ss_blog_sidebar_date_form${renderResponse.namespace}"
-		            	immediateMode="true" initDate="${ssFolderEndDate}"
-						callbackRoutine="ss_blog_sidebar_date_callback${renderResponse.namespace}" />
-		      	</form>
-			</ssf:ifnotaccessible>
-        </div>
-         
-		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.archives"/></div>
-        <div class="ss_blog_sidebar_box">		
-		<table>
-		<c:forEach var="monthYear" items="${ssBlogMonthHits}">
-		  <tr>
-		  <td><a href="${ssBlogMonthUrls[monthYear.key]}" 
-		  class="<c:if test="${!empty selectedYearMonth && selectedYearMonth == ssBlogMonthTitles[monthYear.key]}">ss_bold</c:if>"
-		  <ssf:title tag="title.entries.archived.on">
-		  	<ssf:param name="value" value="${ssBlogMonthTitles[monthYear.key]}" />
-		  	<ssf:param name="value" value="${ssBinder.title}" />
-		  </ssf:title> >
-		  <c:out value="${ssBlogMonthTitles[monthYear.key]}"/></a></td>
-		  <td align="right">(<c:out value="${monthYear.value}"/>)</td>
-		  </tr>
-		</c:forEach>
-		</table>
-		</div>
-        <c:if test="${!empty ssFolderEntryCommunityTags}"> 	
-		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
-        <div class="ss_blog_sidebar_box">				
-		   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
-			   	<a href="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
-					name="binderId" value="${ssBinder.id}"/><ssf:param 
-					name="cTag" value="${tag.ssTag}"/></ssf:url>" 
-					class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>"
-					  <ssf:title tag="title.search.entries.in.folder.for.community.tag">
-					  	<ssf:param name="value" value="${tag.ssTag}" />
-					  </ssf:title>
-					>${tag.ssTag}</a>&nbsp;&nbsp;
-		   </c:forEach>
-		</div>
-		</c:if>
-        <c:if test="${!empty ssFolderEntryPersonalTags}"> 
-		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
-        <div class="ss_blog_sidebar_box">		
-		   <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
-		
+	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.archives"/></div>
+    <div class="ss_blog_sidebar_box">		
+	<table>
+	<c:forEach var="monthYear" items="${ssBlogMonthHits}">
+	  <tr>
+	  <td><a href="${ssBlogMonthUrls[monthYear.key]}" 
+	  class="<c:if test="${!empty selectedYearMonth && selectedYearMonth == ssBlogMonthTitles[monthYear.key]}">ss_bold</c:if>"
+	  <ssf:title tag="title.entries.archived.on">
+	  	<ssf:param name="value" value="${ssBlogMonthTitles[monthYear.key]}" />
+	  	<ssf:param name="value" value="${ssBinder.title}" />
+	  </ssf:title> >
+	  <c:out value="${ssBlogMonthTitles[monthYear.key]}"/></a></td>
+	  <td align="right">(<c:out value="${monthYear.value}"/>)</td>
+	  </tr>
+	</c:forEach>
+	</table>
+	</div>
+    <c:if test="${!empty ssFolderEntryCommunityTags}"> 	
+	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
+    <div class="ss_blog_sidebar_box">				
+	   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
 		   	<a href="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssBinder.id}"/><ssf:param 
-				name="pTag" value="${tag.ssTag}"/></ssf:url>" 
-				class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>"
-				  <ssf:title tag="title.search.entries.in.folder.for.personal.tag">
+				name="cTag" value="${tag.ssTag}"/></ssf:url>" 
+				class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>"
+				  <ssf:title tag="title.search.entries.in.folder.for.community.tag">
 				  	<ssf:param name="value" value="${tag.ssTag}" />
 				  </ssf:title>
 				>${tag.ssTag}</a>&nbsp;&nbsp;
-		   </c:forEach>
-		</div>
-		</c:if>
-</ssf:sidebarPanel>
-
-<% // Folder Tools %>
-	<% // folder views, folder actions, themes, (no configure columns) and entries per page %>
-<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure2.jsp" />
-
-<% // Folder Tagss %>
-<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_folder_tags.jsp" />
-	  
+	   </c:forEach>
+	</div>
+	</c:if>
+    <c:if test="${!empty ssFolderEntryPersonalTags}"> 
+	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
+    <div class="ss_blog_sidebar_box">		
+	   <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
+	
+	   	<a href="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
+			name="binderId" value="${ssBinder.id}"/><ssf:param 
+			name="pTag" value="${tag.ssTag}"/></ssf:url>" 
+			class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>"
+			  <ssf:title tag="title.search.entries.in.folder.for.personal.tag">
+			  	<ssf:param name="value" value="${tag.ssTag}" />
+			  </ssf:title>
+			>${tag.ssTag}</a>&nbsp;&nbsp;
+	   </c:forEach>
+	</div>
+	</c:if>
+</div>

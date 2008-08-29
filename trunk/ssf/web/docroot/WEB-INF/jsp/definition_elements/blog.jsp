@@ -130,6 +130,18 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 <%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>
 </c:if>
 </div>
+<table cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td valign="top">
 <div class="ss_folder">
 <%@ include file="/WEB-INF/jsp/definition_elements/blog/blog_folder_listing.jsp" %>
 </div>
+</td>
+<td valign="top" width="200">
+<div id="ss_sideNav_wrap">
+<jsp:include page="/WEB-INF/jsp/sidebars/blog.jsp" />
+</div>
+</td>
+</tr>
+</table>
+
