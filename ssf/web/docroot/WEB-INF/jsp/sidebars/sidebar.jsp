@@ -46,11 +46,21 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<% // Share %>
   	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_share.jsp" />
 	
+<%--
+* The following line is used to call customer supplied customizations.
+* Jsp files added to the custom_jsps directory will not be overwritten during upgrades
+--%><jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_sidebar_top.jsp" />
+
 	<% // Recent Places %>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
 
 	<% // Workspace Tree %>    
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tree.jsp" />
+
+<%--
+* The following line is used to call customer supplied customizations.
+* Jsp files added to the custom_jsps directory will not be overwritten during upgrades
+--%><jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_sidebar_middle.jsp" />
 
 	<% // Folder Tools %>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
@@ -89,6 +99,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<% // Personal Preferences %>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_personal.jsp" />
 	
+<%--
+* The following line is used to call customer supplied customizations.
+* Jsp files added to the custom_jsps directory will not be overwritten during upgrades
+--%><jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_sidebar_bottom.jsp" />
+
 	</div> <% // end of new sidebar format %>
 </div> <% // end of ss_sidebarDiv %>
 	
