@@ -57,7 +57,7 @@ div.ss_actions_bar1_pane {
 	}		
 table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	/* background-color: ${ss_toolbar2_background_color}; */
-	background-color: #FFFFFF;
+	background-color: #666666;
 	width: 100%;
 	height: 2px;
 	padding: 0px;
@@ -66,8 +66,9 @@ table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	border-spacing: 0px;
 	}
 .ss_actions_bar2, table.ss_actions_bar2_pane {
-	/* background-image: url(<html:imagesPath/>pics/background_toolbar2.gif); */
-	background-repeat: repeat-x;
+	/* background-image: url(<html:imagesPath/>pics/background_toolbar2.gif); 
+	background-repeat: repeat-x; */
+	background-color: #666666;
 	}	
 .ss_actions_bar2 {
 	font-weight: normal;
