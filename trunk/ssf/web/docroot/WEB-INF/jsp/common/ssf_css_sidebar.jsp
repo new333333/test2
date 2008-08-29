@@ -48,7 +48,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-color: #CCCCCC;
 	border-style: solid;
 	border-width: 0;
-	width: 198px;
+	width: 100%;
 	height:auto;
 	margin-right: 6px;
 	overflow:hidden;
@@ -62,19 +62,17 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /*********  STATUS BOX **********/	
 .ss_myStatus{
 	background: transparent;
-	width: 176px;
 	height: auto;
 	margin: 8px 8px 3px 8px;
+	<c:if test="<%= isIE %>">
+		margin-right: 2px !important;
+ 	</c:if>	 	
 	padding: 4px 4px 4px 4px;
 	background-color: #EFEFEF;
-	<c:if test="<%= isIE %>">
-  		width: 174px;
- 	</c:if>
 	}
 /* .ss_statusMouseOver {		***DOESN'T WORK YET.  ADD IN SIDEBAR_STATUS.JSP WHEN DOES***
 	background-color: #CCFFFF;
-	width: 176px;
-	margin: 8px 8px 3px 8px;
+	margin: 8px 6px 3px 8px;
 	padding: 4px 4px 4px 4px;
 		}	*/ 
 		
@@ -117,17 +115,15 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 /*This is the box style for the drop down menu open*/
 .ss_sidebarMenu{
-	/* text-indent: 5px; */
 	margin: 3px 8px 3px 8px;
-	width: 176px;
-	<c:if test="<%= isIE %>">
-		width: 174px;
- 	</c:if>	
- 	padding: 8px 4px 8px 4px;
+	padding: 8px 4px 8px 4px;			
 	}	
 .ss_menuOpen {
 	background-image:  url("<html:rootPath/>images/pics/sidebar/backgrounddropdowns.png");
 	background-position: 1px -57px;
+	<c:if test="<%= isIE %>">
+		background-position: 1px -48px;
+ 	</c:if>	
 	background-color: transparent;
 	background-repeat: no-repeat;
 	padding-left: 27px;
@@ -136,6 +132,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_menuClosed {
 	background-image: url("<html:rootPath/>images/pics/sidebar/backgrounddropdowns.png");
 	background-position: 1px -31px;
+	<c:if test="<%= isIE %>">
+		background-position: 1px -21px;
+ 	</c:if>		
 	background-color: transparent;
 	background-repeat: no-repeat;
 	padding-left: 27px;
@@ -144,10 +143,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_mouseOver {
 	background-color: #CCFFFF;
 	margin: 3px 8px 3px 8px;
-	width: 176px;
-	<c:if test="<%= isIE %>">
-		width: 174px;
- 	</c:if>	
  	padding: 8px 4px 8px 4px;
 		}		
 /*.ss_sidebarMenu .ss_menuClosed a:hover {
@@ -164,8 +159,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 	} */
 .ss_sidebarTitle{
-	text-indent: 8px;
-	margin:3px 0px 1px 0px;
+	margin:3px 0px 1px 8px;
 	}
 	
 /*This is the box style for the blue menu boxes*/		
@@ -199,8 +193,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /* This is for the box style links */
 
 #ss_leftNav {
-      width: 184px;
       margin-left: 8px;
+      margin-right: 8px;
+	<c:if test="<%= isIE %>">
+		margin-right: 2px !important;
+ 	</c:if>	      
       margin-bottom: 2px;
       }
 #ss_leftNav ul {
