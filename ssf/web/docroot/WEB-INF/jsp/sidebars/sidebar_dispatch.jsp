@@ -39,7 +39,7 @@
 <jsp:include page="/WEB-INF/jsp/sidebars/default.jsp" />
 </c:if>
 <c:if test="${ss_folderViewStyle == 'blog'}">
-<jsp:include page="/WEB-INF/jsp/sidebars/blog.jsp" />
+<jsp:include page="/WEB-INF/jsp/sidebars/default.jsp" />
 </c:if>
 <c:if test="${ss_folderViewStyle == 'wiki'}">
 <jsp:include page="/WEB-INF/jsp/sidebars/wiki.jsp" />
