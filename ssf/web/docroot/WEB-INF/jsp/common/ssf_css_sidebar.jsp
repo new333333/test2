@@ -200,12 +200,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
       width: 184px;
       margin-left: 8px;
       margin-bottom: 2px;
-        }
+      }
 #ss_leftNav ul {
     text-decoration: none;
     margin: 0px;
     padding: 0px;
-         }
+      }
         
 #ss_leftNav li a {
     color: #666666;
