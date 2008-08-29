@@ -37,12 +37,6 @@
 <c:set var="prefix" value="${renderResponse.namespace}_${ssFindInstanceCode}_${ssFindInstanceCount}" />
 <c:set var="label" value="<%= label %>" />
 
-<c:if test="${empty ss_find_js_loaded}" >
-	<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/find.js"></script>
-	<c:set var="ss_find_js_loaded" value="1" scope="request"/>
-</c:if>
-   
-
 <ssf:ifaccessible>
 	<label for="ss_combobox_autocomplete_${prefix}"><ssf:nlt tag="${accessibilityText}" /></label>
 </ssf:ifaccessible>
