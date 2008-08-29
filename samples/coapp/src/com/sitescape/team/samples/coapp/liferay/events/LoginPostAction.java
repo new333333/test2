@@ -40,10 +40,10 @@ import javax.servlet.http.HttpSession;
 import com.liferay.portal.struts.ActionException;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.WebKeys;
+import com.liferay.util.servlet.DynamicServletRequest;
+import com.liferay.util.servlet.NullServletResponse;
 import com.sitescape.team.liferay.events.AbstractAction;
 import com.sitescape.team.portalmodule.web.session.SessionManager;
-import com.sitescape.team.web.util.NullServletResponse;
-import com.sitescape.util.servlet.DynamicServletRequest;
 
 public class LoginPostAction extends AbstractAction {
 
@@ -62,7 +62,7 @@ public class LoginPostAction extends AbstractAction {
 			if(user == null)
 				throw new ActionException("User not found");
 
-			doSSOWithCoApp(req, company.getWebId(), user.getScreenName());
+			doSSOWithCoApp(req, res, company.getWebId(), user.getScreenName());
 			
 			SessionManager.createSession(req, ses.getId(), company.getWebId(), user.getScreenName());
 		} catch(ActionException e) {
@@ -72,7 +72,7 @@ public class LoginPostAction extends AbstractAction {
 		}
 	}
 
-	protected void doSSOWithCoApp(HttpServletRequest request, String zoneName, String userName) 
+	protected void doSSOWithCoApp(HttpServletRequest request, HttpServletResponse response, String zoneName, String userName) 
 	throws ActionException, ServletException, IOException {
 		// Retrieve the servlet context of the portal
 		ServletContext ctx = (ServletContext) request.getAttribute(WebKeys.CTX);
@@ -91,7 +91,7 @@ public class LoginPostAction extends AbstractAction {
 		req.setParameter("teaming.coapp.operation", "sso");
 		req.setParameter("teaming.coapp.sso.username", userName);
 		
-		NullServletResponse res = new NullServletResponse();
+		NullServletResponse res = new NullServletResponse(response);
 
 		// Finally, make a cross-context invocation.
 		dispatcher.include(req, res);
