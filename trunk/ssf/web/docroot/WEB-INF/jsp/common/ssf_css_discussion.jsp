@@ -189,9 +189,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color: #00ADef;
 	}
 .ss_disc_sub_th1{
-	background-image: url("<html:rootPath/>images/pics/discussion/blue_topic.png");
+	background-image: url("<html:rootPath/>images/novell/icons/workspace_spreadsheet.gif");
 	background-repeat: no-repeat;
-	background-position: 4% 1%!important;
+	background-position: 2% 1%!important;
 	color: #00ADef;
 	}
 .ss_disc_folder_th1{
@@ -221,11 +221,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
 #ss_topic_thread{
 	font-size:12px;
 	line-height:15px;
-	padding-left:15px;
+	padding-left:18px;
 	padding-right:2px;
 	font-weight: 800;
 	color:#777;
 	margin-right:5px;
+	margin-left: 10px;
 	margin-bottom:2px;
 	}	
 #ss_topic_thread a{
