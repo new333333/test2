@@ -36,7 +36,7 @@
 			<div id="ss_leftNav">
 			  <ul>
 				<li>
-				   <a href="javascript: ;" 
+				   <a href="javascript: ;"   
 	  				onClick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;"
 				 	<c:if test="${ssBinder.entityType == 'workspace'}">
 	  			 		<c:if test="${ssBinder.definitionType != 12}">
