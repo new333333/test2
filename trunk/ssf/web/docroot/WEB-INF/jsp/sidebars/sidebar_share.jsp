@@ -36,9 +36,13 @@
 			  <ul>
 				<li>
 					<a href="<ssf:url adapter="true" portletName="ss_forum" 
-						action="__ajax_relevance" actionUrl="false"><ssf:param 
-						name="operation" value="share_this_binder" /><ssf:param 
-						name="binderId" value="${ssBinder.id}" /></ssf:url>" 
+						action="__ajax_relevance" actionUrl="false">
+						<ssf:param name="operation" value="share_this_binder" />
+						<ssf:param name="binderId" value="${ssBinder.id}" />
+						<c:if test="${ssBinder.entityType == 'folder' && !empty ssEntry}">
+						  <ssf:param name="entryId" value="${ssEntry.id}" />
+						</c:if>
+						</ssf:url>" 
 	  					onClick="ss_openUrlInWindow(this, '_blank', '450px', '600px');return false;"
 						
 						<c:if test="${ssBinder.entityType == 'workspace'}"> 
