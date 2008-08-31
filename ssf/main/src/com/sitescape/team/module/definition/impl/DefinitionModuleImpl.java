@@ -1976,7 +1976,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (inputData.exists(nameValue + "__idCounter")) {
 							int idCounter = Integer.valueOf(inputData.getSingleValue(nameValue + "__idCounter"));
 							String value = "";
-							for (int i = 0; i < idCounter; i++) {
+							for (int i = 0; i <= idCounter; i++) {
 								String nextValue = inputData.getSingleValue(nameValue + "__" + String.valueOf(i));
 								if (nextValue != null && !nextValue.equals("")) {
 									if (!value.equals("")) value = value + ";";

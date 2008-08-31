@@ -107,7 +107,7 @@ public class ModifyEntryController extends SAbstractController {
     		getFolderModule().deleteEntryWorkflow(folderId, entryId, workflowType);
 			setupViewEntry(response, folderId, entryId);
 			
-		} else if (formData.containsKey("okBtn")) {
+		} else if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
 			if (Validator.isNull(op)) {
 
 				//See if the add entry form was submitted
@@ -136,7 +136,11 @@ public class ModifyEntryController extends SAbstractController {
 				//See if the user wants to subscribe to this entry
 				BinderHelper.subscribeToThisEntry(this, request, folderId, entryId);
 				
-				setupReloadOpener(response, folderId, entryId);
+				if (formData.containsKey("okBtn")) {
+					setupReloadOpener(response, folderId, entryId);
+				} else {
+					response.setRenderParameters(formData);
+				}
 				
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				Long destinationId = TreeHelper.getSelectedId(formData);
@@ -291,6 +295,11 @@ public class ModifyEntryController extends SAbstractController {
 			model.put(WebKeys.BINDER, entry.getParentFolder());
 			model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_FORM);
 			DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@type='form']");
+
+			//Build the mashup beans
+			Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
+			DefinitionHelper.buildMashupBeans(this, entry.getParentBinder(), configDocument, model);
+
 			if (elementToEdit.equals("")) {
 				path = WebKeys.VIEW_MODIFY_ENTRY;
 			} else {

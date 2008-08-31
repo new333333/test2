@@ -46,6 +46,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
+import org.dom4j.Document;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
@@ -273,6 +274,10 @@ public class ViewEntryController extends  SAbstractController {
 			viewPath = BinderHelper.getViewListingJsp(this, viewType);
 			buildEntryToolbar(request, response, model, fe, viewType, userProperties);
 			setRepliesAccessControl(model, fe);
+
+			//Build the mashup beans
+			Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
+			DefinitionHelper.buildMashupBeans(this, fe.getParentBinder(), configDocument, model);
 
 			if (!displayType.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 				//Folder action menu

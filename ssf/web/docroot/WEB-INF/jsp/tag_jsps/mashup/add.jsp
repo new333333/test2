@@ -31,30 +31,54 @@
 <% //Add entry %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <script type="text/javascript">
-//Routine called when "find wiki page" is clicked
+//Routine called when "Add entry" is clicked
 function ss_selectEntryId${ss_mashupItemId}_${renderResponse.namespace}(id) {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
 	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "entry,"+id;
-	alert('${ss_mashupPropertyName}__${ss_mashupItemId} = ' + formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value)
 }
 function ss_mashup_addTable${ss_mashupItemId}_${renderResponse.namespace}() {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
 	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "table";
 }
+function ss_mashupShowAddDiv${ss_mashupItemId}_${renderResponse.namespace}(obj) {
+	var divObj = document.getElementById('ss_mashupAddDiv_${ss_mashupItemId}_${renderResponse.namespace}');
+	divObj.style.top = parseInt(ss_getObjectTop(obj) + 20) + "px";
+	divObj.style.left = parseInt(ss_getObjectLeft(obj) + 10) + "px";
+	divObj.style.display = 'block';
+}
+function ss_mashupHideAddDiv${ss_mashupItemId}_${renderResponse.namespace}() {
+	var divObj = document.getElementById('ss_mashupAddDiv_${ss_mashupItemId}_${renderResponse.namespace}');
+	divObj.style.display = 'none';
+}
 </script>
 <div>
-	Add entry xxx 
-  		<ssf:find 
+	<div>
+	<a class="ss_linkButton ss_fineprint" href="javascript: ;"
+	  onClick="ss_mashupShowAddDiv${ss_mashupItemId}_${renderResponse.namespace}(this);return false"
+	><ssf:nlt tag="button.add"/>...</a>
+	
+	<div id="ss_mashupAddDiv_${ss_mashupItemId}_${renderResponse.namespace}"
+	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:500;" 
+	>
+  		<table><tr><td valign="top"><ssf:nlt tag="mashup.addEntry"/></td>
+  		  <td><ssf:find 
     		type="entries"
     		width="140px" 
     		singleItem="true"
 		    clickRoutine="ss_selectEntryId${ss_mashupItemId}_${renderResponse.namespace}"
 		    accessibilityText="wiki.findPage"
-		    /> 
-	<br/>
-	Add table <input type="button" value="ok" onClick="ss_mashup_addTable${ss_mashupItemId}_${renderResponse.namespace}();return false;"/>
-	
-	<input type="hidden" name="${ss_mashupPropertyName}__${ss_mashupItemId}"/>
+		    /> <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" />
+		  </td></tr></table>
+		
+  		<table><tr><td valign="top"><ssf:nlt tag="mashup.addTable"/></td>
+		  <td><input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn"
+			onClick="ss_mashup_addTable${ss_mashupItemId}_${renderResponse.namespace}();return true;" />
+			<input type="hidden" name="${ss_mashupPropertyName}__${ss_mashupItemId}"/>
+		  </td></tr></table>
+
+	  <input type="button" value="<ssf:nlt tag="button.cancel"/>" class="ss_link" 
+	    onClick="ss_mashupHideAddDiv${ss_mashupItemId}_${renderResponse.namespace}();return false"/>
+	</div>
+	</div>
 </div>
-<c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
 

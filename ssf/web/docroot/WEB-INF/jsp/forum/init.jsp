@@ -32,6 +32,7 @@
 --%><%@ page import="org.dom4j.DocumentHelper" %><%--
 --%><%@ page import="org.dom4j.Element" %><%--
 --%><%@ page import="java.util.Map" %><%--
+--%><%@ page import="java.util.HashMap" %><%--
 --%><%@ page import="java.util.Iterator" %><%--
 --%><%@ page import="com.sitescape.team.ObjectKeys" %><%--
 --%><%@ page import="com.sitescape.team.web.WebKeys" %><%--

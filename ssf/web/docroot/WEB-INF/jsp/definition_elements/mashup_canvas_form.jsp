@@ -30,25 +30,23 @@
 %>
 <% //div %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:set var="mashupItemCounter" value="0"/>
+<c:set var="ss_mashupItemId" value="0" scope="request"/>
 <c:set var="ss_mashupPropertyName" value="${property_name}" scope="request"/>
 <c:if test="${ssConfigJspStyle == 'form'}">
   <div style="padding: 20px 0px 20px 0px;">
     <div><span class="ss_bold">${property_caption}</span></div>
 </c:if>
 <div <c:if test="${ssConfigJspStyle == 'form'}"> style="border: 1px silver solid; padding: 30px;" </c:if> >
-  <c:if test="${empty ssDefinitionEntry.customAttributes[property_name].value}">
-	  <c:if test="${ssConfigJspStyle == 'form'}">
-	    <c:set var="ss_mashupItemId" value="${mashupItemCounter}" scope="request"/>
-	    <%@ include file="/WEB-INF/jsp/tag_jsps/mashup/add.jsp" %>
-	    <c:set var="mashupItemCounter" value="${ss_mashupItemId}"/>
-	  </c:if>
+  <c:if test="${ssConfigJspStyle == 'form'}">
+    <%@ include file="/WEB-INF/jsp/tag_jsps/mashup/add.jsp" %>
+    <c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
   </c:if>
   <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
     <c:set var="mashupValue" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
     <jsp:useBean id="mashupValue" type="java.lang.String" />
     <%
     	String[] mashupValues = mashupValue.split(";");
+    	Map inputElements = new HashMap();
     %>
     <c:forEach var="mashupItem" items="<%= mashupValues %>">
       <jsp:useBean id="mashupItem" type="java.lang.String" />
@@ -60,30 +58,34 @@
     	  if (mashupItemValues.length >= 2) value1 = mashupItemValues[1];
     	  if (mashupItemValues.length >= 3) value2 = mashupItemValues[2];
       %>
-	  <% if (!type.equals("tableStart")) { %>
-		  <c:if test="${ssConfigJspStyle == 'form'}">
-		    <c:set var="ss_mashupItemId" value="${mashupItemCounter}" scope="request"/>
-		    <%@ include file="/WEB-INF/jsp/tag_jsps/mashup/add.jsp" %>
-		    <c:set var="mashupItemCounter" value="${ss_mashupItemId}"/>
-		  </c:if>
-	  <% } %>
-      <c:set var="mashupItemCounter" value="${mashupItemCounter + 1}"/>
-      <c:set var="ss_mashupItemId" value="${mashupItemCounter}" scope="request"/>
-  	  <c:if test="${ssConfigJspStyle == 'form'}">
-  	    <input type="hidden" name="${ss_mashupPropertyName}__${ss_mashupItemId}" value="<%= type %>,<%= value1 %>,<%= value2 %>"/>
+ 	  <c:if test="${ssConfigJspStyle == 'form'}">
+  	    <%
+  	    	inputElements.put(request.getAttribute("ss_mashupItemId"), type + "," + value1 + "," + value2);
+  	    %>
   	  </c:if>
       <ssf:mashup id="${ss_mashupItemId}" type="<%= type %>" value1="<%= value1 %>" value2="<%= value2 %>" view="${ssConfigJspStyle}"/>
-      <c:set var="mashupItemCounter" value="${ss_mashupItemId}"/>
-    </c:forEach>
+      <c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
+	  <% if (!type.equals("tableStart")) { %>
+		  <c:if test="${ssConfigJspStyle == 'form'}">
+      		<c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
+		    <%@ include file="/WEB-INF/jsp/tag_jsps/mashup/add.jsp" %>
+      		<c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
+		  </c:if>
+	  <% } %>
+     </c:forEach>
+     <%
+     	Iterator itInputElements = inputElements.entrySet().iterator();
+     	while (itInputElements.hasNext()) {
+     		Map.Entry me = (Map.Entry) itInputElements.next();
+     		%><input type="hidden" 
+     		  name="${ss_mashupPropertyName}__<%= me.getKey().toString() %>" 
+     		  value="<%= me.getValue().toString() %>"/>
+     		<%
+     	}
+     %>
     
-    <c:if test="${ssConfigJspStyle == 'form'}">
-      <c:set var="mashupItemCounter" value="${mashupItemCounter + 1}"/>
-      <c:set var="ss_mashupItemId" value="${mashupItemCounter}" scope="request"/>
-      <%@ include file="/WEB-INF/jsp/tag_jsps/mashup/add.jsp" %>
-    <c:set var="mashupItemCounter" value="${ss_mashupItemId}"/>
-    </c:if>
   </c:if>
-  <input type="hidden" name="${ss_mashupPropertyName}__idCounter" value="${mashupItemCounter}"/>
+  <input type="hidden" name="${ss_mashupPropertyName}__idCounter" value="${ss_mashupItemId}"/>
 </div>
 <c:if test="${ssConfigJspStyle == 'form'}">
   </div>
