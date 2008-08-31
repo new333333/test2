@@ -137,6 +137,23 @@ if (typeof ss_common_loaded == "undefined" ) {
 }
 var ss_common_loaded = 1;
 
+//Function to load javascript files after the "head" has been output
+//This routine prevents the file from being loaded twice
+function ss_loadJsFile(rootPath, jsFile) {
+	var spath = rootPath + jsFile;
+	var scripts = document.getElementsByTagName("script");
+	for (var i = 0; i < scripts.length; i++) {
+		if (scripts[i].src && scripts[i].src == spath) return;
+	}
+	try {
+		document.writeln("<scr"+"ipt type='text/javascript' src='"+spath+"'><"+"/scr"+"ipt>");
+	} catch (e) {
+		var script = document.createElement("script");
+		script.src = spath;
+		document.getElementsByTagName("head")[0].appendChild(script);
+	}
+}
+
 //Routine called by the body's onLoad event
 function ss_onLoadInit() {
     //Call any routines that want to be called at onLoad time

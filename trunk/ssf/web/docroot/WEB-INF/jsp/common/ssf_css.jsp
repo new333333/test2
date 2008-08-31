@@ -612,7 +612,7 @@ table.ss_guestbook {
   	margin: 1px 2px 1px 2px !important;
   	line-height: 100% !important;
 	}
-input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visited,{
+input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
  	font-size: ${ss_style_font_fineprint};
  	background-color: ${ss_linkbutton_background_color};
@@ -631,7 +631,7 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   	cursor: pointer;
   	white-space: nowrap;
 }
-input.ss_tinyButton, a.ss_tinyButton:link, a.ss_tinyButton:visited,{
+input.ss_tinyButton, a.ss_tinyButton:link, a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
  	font-size: ${ss_style_font_finestprint};
  	background-color: ${ss_linkbutton_background_color};

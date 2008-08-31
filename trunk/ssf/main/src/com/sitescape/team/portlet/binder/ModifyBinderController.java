@@ -202,6 +202,10 @@ public class ModifyBinderController extends AbstractBinderController {
 			} else {
 				DefinitionHelper.getDefinition(binderDef, model, "//item[@type='form']");
 			}
+			//Build the mashup beans
+			Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
+			DefinitionHelper.buildMashupBeans(this, binder, configDocument, model);
+
 			model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 			path = WebKeys.VIEW_MODIFY_BINDER;
 		} 

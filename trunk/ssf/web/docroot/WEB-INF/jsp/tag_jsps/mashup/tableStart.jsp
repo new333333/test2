@@ -30,6 +30,7 @@
 %>
 <% //table2_col1 bottom %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<table border="1">
+<c:set var="ss_mashupColStarted" value="false" scope="request"/>
+<table border="1" width="100%">
 <tr>
 <c:set var="ss_mashupColStarted" value="false" scope="request"/>
