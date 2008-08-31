@@ -36,6 +36,10 @@ function ss_selectEntryId${ss_mashupItemId}_${renderResponse.namespace}(id) {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
 	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "entry,"+id;
 }
+function ss_selectFolderId${ss_mashupItemId}_${renderResponse.namespace}(id) {
+	var formObj = self.document.forms['${ss_form_form_formName}'];
+	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "folder,"+id;
+}
 function ss_mashup_addTable${ss_mashupItemId}_${renderResponse.namespace}() {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
 	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "table";
@@ -67,6 +71,17 @@ function ss_mashupHideAddDiv${ss_mashupItemId}_${renderResponse.namespace}() {
     		singleItem="true"
 		    clickRoutine="ss_selectEntryId${ss_mashupItemId}_${renderResponse.namespace}"
 		    accessibilityText="wiki.findPage"
+		    /> <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" />
+		  </td></tr></table>
+		
+  		<table><tr><td valign="top"><ssf:nlt tag="mashup.addFolder"/></td>
+  		  <td><ssf:find 
+    		type="places"
+    		width="140px" 
+    		singleItem="true"
+    		foldersOnly="true"
+		    clickRoutine="ss_selectFolderId${ss_mashupItemId}_${renderResponse.namespace}"
+		    accessibilityText="wiki.findFolder"
 		    /> <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" />
 		  </td></tr></table>
 		

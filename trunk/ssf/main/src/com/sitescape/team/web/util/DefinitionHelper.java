@@ -64,6 +64,7 @@ import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
@@ -684,7 +685,8 @@ public class DefinitionHelper {
 	public static void buildMashupBeans(AllModulesInjected bs, DefinableEntity entity, 
 			Document definitionConfig, Map model) {
 		Map mashupEntries = new HashMap();
-		
+		Map mashupBinders = new HashMap();
+		Map mashupBinderEntries = new HashMap();
     	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@type='data' and @name='mashupCanvas']/properties/property[@name='name']/@value");
     	if (nodes == null) {
     		return;
@@ -710,10 +712,24 @@ public class DefinitionHelper {
 	        				FolderEntry entry = bs.getFolderModule().getEntry(null, Long.valueOf(value1));
 	        				mashupEntries.put(entry.getId().toString(), entry);
 	        			} catch(Exception e) {}
+	        		} else if (ObjectKeys.MASHUP_TYPE_FOLDER.equals(type) && !value1.equals("")) {
+	        			try {
+	        				Binder binder = bs.getBinderModule().getBinder(Long.valueOf(value1));
+	        				mashupBinders.put(binder.getId().toString(), binder);
+	        				Map options = new HashMap();
+	        				Integer searchMaxHits = Integer.valueOf(SPropsUtil.getString("folder.records.listed"));
+	        				options.put(ObjectKeys.SEARCH_MAX_HITS, searchMaxHits);
+	        				options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
+	        				options.put(ObjectKeys.SEARCH_SORT_BY, Constants.LASTACTIVITY_FIELD);
+	        				Map folderEntries = bs.getFolderModule().getEntries(binder.getId(), options);
+	        				mashupBinderEntries.put(binder.getId().toString(), folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
+	        			} catch(Exception e) {}
 	        		}
 	        	}
     		}
     	}
+    	model.put(WebKeys.MASHUP_BINDERS, mashupBinders);
+    	model.put(WebKeys.MASHUP_BINDER_ENTRIES, mashupBinderEntries);
     	model.put(WebKeys.MASHUP_ENTRIES, mashupEntries);
 	}
 }
