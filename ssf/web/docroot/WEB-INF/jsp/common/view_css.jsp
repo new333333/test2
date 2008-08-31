@@ -149,20 +149,6 @@ var ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
 var ss_findButtonClose;
 var ss_AjaxBaseUrl;
 var ss_validationErrorMessage;
-function ss_loadJsFile(rootPath, jsFile) {
-	var spath = rootPath + jsFile;
-	var scripts = document.getElementsByTagName("script");
-	for (var i = 0; i < scripts.length; i++) {
-		if (scripts[i].src && scripts[i].src == spath) return;
-	}
-	try {
-		document.writeln("<scr"+"ipt type='text/javascript' src='"+spath+"'><"+"/scr"+"ipt>");
-	} catch (e) {
-		var script = document.createElement("script");
-		script.src = spath;
-		document.getElementsByTagName("head")[0].appendChild(script);
-	}
-}
 </script>
 
 <link href="<html:rootPath/>css/forum.css" rel="stylesheet" type="text/css" />
