@@ -28,57 +28,53 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //Mashup entry view %>
+<% //Mashup folder view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${ssConfigJspStyle == 'form'}">
+<c:set var="mashupBinder" value="${ss_mashupBinders[mashup_value1]}"/>
+<div style="margin:10px; padding:10px; " width="100%">
+  <c:if test="${!empty mashupBinder}">
+	<div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
+		<a href="<ssf:url action="view_folder_listing" 
+		  folderId="${mashupBinder.id}">
+		  <ssf:param name="newTab" value="1"/>
+		  </ssf:url>"><span class="ss_largeprint ss_bold">${mashupBinder.title}</span></a>
+	</div>
+	<c:if test="${ssConfigJspStyle != 'form'}">
+	<div style="border:1px solid #cecece;padding:6px;">
+	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashup_value1]}" >
+	    <div style="padding-left:6px;">
+	      <a href="<ssf:url     
+		    action="view_folder_entry" 
+		    binderId="${entry._binderId}"
+		    entryId="${entry._docId}"
+		    ><ssf:param name="entryViewStyle" value="full"/>
+		    </ssf:url>">
+	        <span>${entry.title}</span>
+	      </a>
+	    </div>
+	  </c:forEach>
+	</div>
+	</c:if>
+  </c:if>
+
+  <c:if test="${empty mashupBinder}">
 	<script type="text/javascript">
 	//Routine called when "Delete entry" is clicked
-	function ss_mashup_deleteEntry${ss_mashupItemId}_${renderResponse.namespace}() {
+	function ss_mashup_deleteFolder${ss_mashupItemId}_${renderResponse.namespace}() {
 		var formObj = self.document.forms['${ss_form_form_formName}'];
 		formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "";
 	}
 	</script>
-</c:if>
-<c:set var="mashupEntry" value="${ss_mashupEntries[mashup_value1]}"/>
-<div style="margin:10px; padding:10px; " width="100%">
-  <c:if test="${!empty mashupEntry}">
 	<div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
-		<a href="<ssf:url action="view_folder_entry" 
-		  folderId="${mashupEntry.parentBinder.id}"
-		  entryId="${mashupEntry.id}">
-		  <ssf:param name="entryViewStyle" value="full"/>
-		  <ssf:param name="newTab" value="1"/>
-		  </ssf:url>"><span class="ss_largeprint ss_bold">${mashupEntry.title}</span></a>
-	</div>
-	<c:if test="${ssConfigJspStyle != 'form'}">
-	<div style="border:1px solid #cecece;padding:6px;">
-	    <ssf:markup type="view" entity="${mashupEntry}"><c:out 
-	      value="${mashupEntry.description.text}" 
-	      escapeXml="false"/></ssf:markup>
-	</div>
-	</c:if>
-	<c:if test="${ssConfigJspStyle == 'form'}">
-	  <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
-	    class="ss_linkButton ss_fineprint"
-	    onClick="ss_mashup_deleteEntry${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
-    </c:if>
-  </c:if>
-
-  <c:if test="${empty mashupEntry}">
-	<div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
-	  <a href="<ssf:url action="view_folder_entry" 
-		  folderId="${mashupEntry.parentBinder.id}"
-		  entryId="${mashupEntry.id}">
-		  <ssf:param name="entryViewStyle" value="full"/>
+	  <a href="<ssf:url action="view_folder_listing" 
+		  folderId="${mashupBinder.id}">
 		  <ssf:param name="newTab" value="1"/>
 		  </ssf:url>"
-	  ><span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.entry"/></span></a>
-	  <c:if test="${ssConfigJspStyle == 'form'}">
-	    <br/>
-	    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
-	      class="ss_linkButton ss_fineprint"
-	      onClick="ss_mashup_deleteEntry${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
-      </c:if>
+	  ><span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.folder"/></span></a>
+	  <br/>
+	  <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
+	    class="ss_linkButton ss_fineprint"
+	    onClick="ss_mashup_deleteFolder${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
 	</div>
   </c:if>
 </div>
