@@ -1981,11 +1981,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								if (nextValue != null && !nextValue.equals("")) {
 									if (!value.equals("")) value = value + ";";
 									String type = nextValue.split(",")[0];
-									if (type.equals(ObjectKeys.MASHUP_TYPE_TABLE)) {
+									if (type != null && type.equals(ObjectKeys.MASHUP_TYPE_TABLE)) {
 										nextValue = ObjectKeys.MASHUP_TYPE_TABLE_START + ";" + 
 											ObjectKeys.MASHUP_TYPE_TABLE_COL + ";" +
 											ObjectKeys.MASHUP_TYPE_TABLE_COL + ";" +
 											ObjectKeys.MASHUP_TYPE_TABLE_END;
+									} else if (type != null && type.equals(ObjectKeys.MASHUP_TYPE_TABLE_END_DELETE)) {
+										//This is a request to delete a table
+										// Delete all the way back to the "tableStart"
+										// Only delete empty tables
+										int j = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_TABLE_START + ",");
+										value = value.substring(0, j);
+										nextValue = "";
 									}
 									value = value + nextValue;
 								}

@@ -53,47 +53,112 @@ function ss_mashupShowAddDiv${ss_mashupItemId}_${renderResponse.namespace}(obj) 
 function ss_mashupHideAddDiv${ss_mashupItemId}_${renderResponse.namespace}() {
 	var divObj = document.getElementById('ss_mashupAddDiv_${ss_mashupItemId}_${renderResponse.namespace}');
 	divObj.style.display = 'none';
+	ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}();
 }
+
+var ss_mashupShowAddTypeDivObj${ss_mashupItemId}_${renderResponse.namespace} = null;
+function ss_mashupShowAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}(obj, type) {
+	ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}();
+	var divObj = document.getElementById('ss_mashupAdd'+type+'Div_${ss_mashupItemId}_${renderResponse.namespace}');
+	ss_mashupShowAddTypeDivObj${ss_mashupItemId}_${renderResponse.namespace} = divObj;
+	divObj.style.top = parseInt(ss_getObjectTop(obj) + 20) + "px";
+	divObj.style.left = parseInt(ss_getObjectLeft(obj) + ss_getObjectWidth(obj) + 2) + "px";
+	divObj.style.display = 'block';
+}
+
+function ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}() {
+	if (ss_mashupShowAddTypeDivObj${ss_mashupItemId}_${renderResponse.namespace} != null) {
+		ss_mashupShowAddTypeDivObj${ss_mashupItemId}_${renderResponse.namespace}.style.display = 'none';
+		ss_mashupShowAddTypeDivObj${ss_mashupItemId}_${renderResponse.namespace} = null;
+	}
+}
+
 </script>
 <div>
-	<div>
+  <div>
 	<a class="ss_linkButton ss_fineprint" href="javascript: ;"
 	  onClick="ss_mashupShowAddDiv${ss_mashupItemId}_${renderResponse.namespace}(this);return false"
 	><ssf:nlt tag="button.add"/>...</a>
 	
 	<div id="ss_mashupAddDiv_${ss_mashupItemId}_${renderResponse.namespace}"
-	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:500;" 
+	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:400;" 
 	>
-  		<table><tr><td valign="top"><ssf:nlt tag="mashup.addEntry"/></td>
-  		  <td><ssf:find 
+		<a href="javascript: ;" 
+		  onClick="ss_mashupShowAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}(this, 'Entry');return false;"
+		><ssf:nlt tag="mashup.addEntry"/></a>
+		<br/>
+		
+		<a href="javascript: ;" 
+		  onClick="ss_mashupShowAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}(this, 'Folder');return false;"
+		><ssf:nlt tag="mashup.addFolder"/></a>
+		<br/>
+		
+		<a href="javascript: ;" 
+		  onClick="ss_mashupShowAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}(this, 'Table');return false;"
+		><ssf:nlt tag="mashup.addTable"/></a>
+		
+		<br/>
+		<input type="button" value="<ssf:nlt tag="button.cancel"/>" class="ss_linkButton ss_fineprint" 
+		    onClick="ss_mashupHideAddDiv${ss_mashupItemId}_${renderResponse.namespace}();return false"/>
+    </div>
+  </div>
+	
+	
+	
+  <div id="ss_mashupAddEntryDiv_${ss_mashupItemId}_${renderResponse.namespace}"
+	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:401;" 
+  >
+  		<div><ssf:nlt tag="mashup.addEntry"/></div>
+  		<div>
+  		  <ssf:find 
     		type="entries"
     		width="140px" 
     		singleItem="true"
 		    clickRoutine="ss_selectEntryId${ss_mashupItemId}_${renderResponse.namespace}"
 		    accessibilityText="wiki.findPage"
-		    /> <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" />
-		  </td></tr></table>
-		
-  		<table><tr><td valign="top"><ssf:nlt tag="mashup.addFolder"/></td>
-  		  <td><ssf:find 
+		    />
+		  <br/>
+		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
+		    class="ss_linkButton ss_fineprint" />
+		  <input type="button" value="<ssf:nlt tag="button.cancel"/>" class="ss_linkButton ss_fineprint" 
+		    onClick="ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}();return false"/>
+		</div>
+  </div>
+	
+  <div id="ss_mashupAddFolderDiv_${ss_mashupItemId}_${renderResponse.namespace}"
+	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:401;" 
+  >
+  		<div><ssf:nlt tag="mashup.addFolder"/></div>
+  		<div>
+  		  <ssf:find 
     		type="places"
     		width="140px" 
     		singleItem="true"
     		foldersOnly="true"
 		    clickRoutine="ss_selectFolderId${ss_mashupItemId}_${renderResponse.namespace}"
 		    accessibilityText="wiki.findFolder"
-		    /> <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" />
-		  </td></tr></table>
+		    />
+          <br/>
+		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
+		    class="ss_linkButton ss_fineprint" />
+		  <input type="button" value="<ssf:nlt tag="button.cancel"/>" class="ss_linkButton ss_fineprint" 
+		    onClick="ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}();return false"/>
+		</div>
+  </div>
 		
-  		<table><tr><td valign="top"><ssf:nlt tag="mashup.addTable"/></td>
-		  <td><input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn"
+  <div id="ss_mashupAddTableDiv_${ss_mashupItemId}_${renderResponse.namespace}"
+	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:401;" 
+  >
+  		<div><ssf:nlt tag="mashup.addTable"/></div>
+  		<div>
+		  <input type="hidden" name="${ss_mashupPropertyName}__${ss_mashupItemId}"/>
+		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
+		    class="ss_linkButton ss_fineprint"
 			onClick="ss_mashup_addTable${ss_mashupItemId}_${renderResponse.namespace}();return true;" />
-			<input type="hidden" name="${ss_mashupPropertyName}__${ss_mashupItemId}"/>
-		  </td></tr></table>
+		  <input type="button" value="<ssf:nlt tag="button.cancel"/>" class="ss_linkButton ss_fineprint" 
+		    onClick="ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}();return false"/>
+		</div>
+  </div>
 
-	  <input type="button" value="<ssf:nlt tag="button.cancel"/>" class="ss_link" 
-	    onClick="ss_mashupHideAddDiv${ss_mashupItemId}_${renderResponse.namespace}();return false"/>
-	</div>
-	</div>
 </div>
 
