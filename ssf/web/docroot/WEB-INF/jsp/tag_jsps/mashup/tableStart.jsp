@@ -28,8 +28,16 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //table2_col1 bottom %>
+<% //table start %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%
+	Long ss_mashupTableNumber = (Long) request.getAttribute("ss_mashupTableNumber");
+	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
+	ss_mashupTableItemCount.put(ss_mashupTableNumber, "table");  
+	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
+	ss_mashupTableNumber = ss_mashupTableNumber + 1;
+	request.setAttribute("ss_mashupTableNumber", ss_mashupTableNumber);
+%>
 <c:set var="ss_mashupColStarted" value="false" scope="request"/>
 <table border="1" width="100%">
 <tr>

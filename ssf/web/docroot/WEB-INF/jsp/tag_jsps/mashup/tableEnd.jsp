@@ -30,6 +30,38 @@
 %>
 <% //table2_col2 top %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%
+	Long ss_mashupTableNumber = (Long) request.getAttribute("ss_mashupTableNumber");
+	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
+	if (!ss_mashupTableItemCount.containsKey(ss_mashupTableNumber)) 
+		ss_mashupTableItemCount.put(ss_mashupTableNumber, "");
+%>
+<c:if test="${ssConfigJspStyle == 'form'}">
+	<script type="text/javascript">
+	//Routine called when "Delete table" is clicked
+	function ss_mashup_deleteTable${ss_mashupItemId}_${renderResponse.namespace}() {
+		if ('${ss_mashupTableItemCount[ss_mashupTableNumber]}' != '') {
+			alert('<ssf:nlt tag="mashup.tableNotEmpty"/>');
+			return false;
+		}
+		var formObj = self.document.forms['${ss_form_form_formName}'];
+		formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "tableEnd_delete";
+		return true;
+	}
+	</script>
+</c:if>
+
 </td>
 </tr>
 </table>
+<c:if test="${ssConfigJspStyle == 'form'}">
+  <div style="padding-bottom:10px;">
+  <input type="submit" name="applyBtn" value="<ssf:nlt tag="mashup.deleteTable"/>" 
+    class="ss_linkButton ss_fineprint"
+    onClick="return ss_mashup_deleteTable${ss_mashupItemId}_${renderResponse.namespace}();"/>
+  </div>
+</c:if>
+<%
+	ss_mashupTableNumber = ss_mashupTableNumber - 1;
+	request.setAttribute("ss_mashupTableNumber", ss_mashupTableNumber);
+%>

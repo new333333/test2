@@ -30,6 +30,13 @@
 %>
 <% //Mashup folder view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%  
+	Long ss_mashupTableNumber = (Long) request.getAttribute("ss_mashupTableNumber");
+	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
+	ss_mashupTableItemCount.put(ss_mashupTableNumber, "folder");  
+	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
+%>
+
 <c:set var="mashupBinder" value="${ss_mashupBinders[mashup_value1]}"/>
 <div style="margin:10px; padding:10px; " width="100%">
   <c:if test="${!empty mashupBinder}">
