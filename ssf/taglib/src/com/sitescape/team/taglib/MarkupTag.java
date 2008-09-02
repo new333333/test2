@@ -28,6 +28,8 @@
  */
 package com.sitescape.team.taglib;
 
+import java.util.Map;
+
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +39,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.team.web.util.MarkupUtil;
 
 
 /**
@@ -48,10 +50,12 @@ public class MarkupTag extends BodyTagSupport {
 	private String _bodyContent;
 	private DefinableEntity entity = null;
 	private String type = WebKeys.MARKUP_VIEW;
-	private String binderId = "";
-	private String entryId = "";
+    private Map searchResult=null;
 	private boolean leaveSectionsUnchanged = false;
     
+	public void MarkupTag() {
+		setup();
+	}
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
 	}
@@ -60,6 +64,17 @@ public class MarkupTag extends BodyTagSupport {
 		_bodyContent = getBodyContent().getString();
 
 		return SKIP_BODY;
+	}
+	/** 
+	 * Initalize params at end of call and creation
+	 * 
+	 *
+	 */
+	protected void setup() {
+		//need to reinitialize - class must be cached
+		searchResult=null;
+		entity = null;
+		type = WebKeys.MARKUP_VIEW;
 	}
 
 	public int doEndTag() throws JspException {
@@ -73,22 +88,16 @@ public class MarkupTag extends BodyTagSupport {
 			// Transform the body
 			String translatedString = _bodyContent;
 			
-			//Transform the markup 
-			if (binderId.equals("")) {
-				translatedString = WebHelper.markupStringReplacement(renderRequest, renderResponse, 
+			if (searchResult != null) {
+				translatedString = MarkupUtil.markupStringReplacement(renderRequest, renderResponse, 
+					httpReq, httpRes, searchResult, _bodyContent, type);
+			} else if (entity != null) {
+				translatedString = MarkupUtil.markupStringReplacement(renderRequest, renderResponse, 
 						httpReq, httpRes, entity, _bodyContent, type);
-			} else if (!binderId.equals("") && !entryId.equals("")) {
-				translatedString = WebHelper.markupStringReplacement(renderRequest, renderResponse, 
-						httpReq, httpRes, entity, _bodyContent, type, 
-						Long.valueOf(binderId), Long.valueOf(entryId));
-			} else {
-				translatedString = WebHelper.markupStringReplacement(renderRequest, renderResponse, 
-						httpReq, httpRes, entity, _bodyContent, type, 
-						Long.valueOf(binderId), null);
 			}
 			if (!this.leaveSectionsUnchanged) {
 				//Translate the "sections" markup
-				translatedString = WebHelper.markupSectionsReplacement(translatedString);
+				translatedString = MarkupUtil.markupSectionsReplacement(translatedString);
 			}
 			pageContext.getOut().print(translatedString);
 
@@ -98,10 +107,7 @@ public class MarkupTag extends BodyTagSupport {
 	        throw new JspException(e); 
 	    }
 		finally {
-			this.type = WebKeys.MARKUP_VIEW;
-			this.entity = null;
-			this.binderId = "";
-			this.entryId = "";
+			setup();
 			this.leaveSectionsUnchanged = false;
 		}
 	}
@@ -113,14 +119,10 @@ public class MarkupTag extends BodyTagSupport {
 	public void setEntity(DefinableEntity entity) {
 	    this.entity = entity;
 	}
-
-	public void setBinderId(String binderId) {
-	    this.binderId = binderId;
+	public void setSearch(Map searchResult) {
+	    this.searchResult = searchResult;
 	}
 
-	public void setEntryId(String entryId) {
-	    this.entryId = entryId;
-	}
 
 	public void setLeaveSectionsUnchanged(boolean leaveSectionsUnchanged) {
 	    this.leaveSectionsUnchanged = leaveSectionsUnchanged;

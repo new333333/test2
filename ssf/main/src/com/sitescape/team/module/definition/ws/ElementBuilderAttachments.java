@@ -48,7 +48,7 @@ public class ElementBuilderAttachments extends AbstractElementBuilder {
 			attachments = new ArrayList<Attachment>();
 		for (FileAttachment att:entity.getFileAttachments()) {
 			if (att != null && att.getFileItem() != null) {
-				String webUrl = WebUrlUtil.getFileUrl(WebKeys.ACTION_READ_FILE, att); 
+				String webUrl = WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, att); 
 				if(element != null) {
 					Element value = element.addElement("file");
 					value.setText(att.getFileItem().getName());

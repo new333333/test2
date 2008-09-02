@@ -42,7 +42,7 @@
 %>
 <c:if test="${!empty binder && !empty binder.brandingSource.branding}">
   <div id="ss_branding">
-    <ssf:markup type="view" entity="${binder.brandingSource}"><c:out 
+    <ssf:markup entity="${binder.brandingSource}"><c:out 
       value="${binder.brandingSource.branding}" escapeXml="false"/></ssf:markup>
   </div>
 </c:if>

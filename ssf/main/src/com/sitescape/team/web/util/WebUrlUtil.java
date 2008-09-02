@@ -28,7 +28,8 @@
  */
 package com.sitescape.team.web.util;
 import java.util.Map;
-
+import java.util.List;
+import java.util.Date;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
@@ -263,93 +264,95 @@ public class WebUrlUtil {
 		catch(Exception e) {}
 		return entryUrl;
 	}
-	
-	public static String getEntryPermalinkURL(FolderEntry entry) {
-		return getEntryPermalinkURL(entry.getParentFolder().getId().toString(), 
-				entry.getId().toString(), entry.getEntityType().toString());
+	public static String getFileUrl(PortletRequest req, String path, FileAttachment fAtt) {
+		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, fAtt);
 	}
-	
-	public static String getEntryPermalinkURL(String parentBinderId, String entryId, String entityType) {
-		String entryUrl="";
-		try {
-			AdaptedPortletURL url = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", false);
-			url.setParameter("action", WebKeys.ACTION_VIEW_PERMALINK);
-			url.setParameter(WebKeys.URL_BINDER_ID, parentBinderId);
-			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-			url.setParameter(WebKeys.URL_ENTITY_TYPE, entityType);
-			entryUrl = url.toString();
-		}
-		catch(Exception e) {}
-		return entryUrl;
+	public static String getFileUrl(HttpServletRequest req, String path, FileAttachment fAtt) {
+		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, fAtt);
 	}
-	public static String getFileUrl(String path, FileAttachment fAtt) {
+	public static String getFileUrl(String webPath, String action, FileAttachment fAtt) {
 		DefinableEntity entity = fAtt.getOwner().getEntity();
-		Long binderId = entity.getParentBinder().getId();
-		if (entity.getEntityIdentifier().getEntityType().isBinder()) {
-			binderId = entity.getId();
-		}
 
 		if (fAtt instanceof VersionAttachment) {
 			VersionAttachment version = (VersionAttachment)fAtt;
-			return getFileUrl(path, binderId.toString(), entity.getId().toString(), entity.getEntityType().name(), version.getParentAttachment().getId(), 
+			return getFileUrl(webPath, action, entity.getId().toString(), entity.getEntityType().name(),  
 					String.valueOf(version.getModification().getDate().getTime()), String.valueOf(version.getVersionNumber()), 
-					version.getFileItem().getName());
+					version.getFileItem().getName(), false);
 		}
-		return getFileUrl(path, binderId.toString(), entity.getId().toString(), entity.getEntityType().name(), fAtt.getId(), 
+		return getFileUrl(webPath, action, entity.getId().toString(), entity.getEntityType().name(),  
 				String.valueOf(fAtt.getModification().getDate().getTime()), null, 
-				fAtt.getFileItem().getName());
+				fAtt.getFileItem().getName(), false);
 	}
-	public static String getFileUrl(String path, Map searchResults) {
+	public static String getFileUrl(String webPath, String action, DefinableEntity entity, String fileName, boolean isEncoded) {
+		FileAttachment fAtt = entity.getFileAttachment(fileName);
+		if (fAtt != null) {
+			return WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, entity.getId().toString(), 
+				entity.getEntityType().name(), String.valueOf(fAtt.getModification().getDate().getTime()), null, fileName, isEncoded);
+		} else {
+			return WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, entity.getId().toString(), 
+					entity.getEntityType().name(), String.valueOf(new Date().getTime()) , null, fileName, isEncoded);
+			
+		}
+	}
+	public static String getFileUrl(PortletRequest req, String path, Map searchResults) {
+		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, 	searchResults);
+	}
+	public static String getFileUrl(HttpServletRequest req, String path, Map searchResults) {
+		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, searchResults);
+	}
+	public static String getFileUrl(String webPath, String action, Map searchResults) {
+		return getFileUrl(webPath, action, searchResults, null, false);
+	}
+	public static String getFileUrl(String webPath, String action, Map searchResults, String file, boolean isEncoded) {
 		EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.valueOf((String)searchResults.get(com.sitescape.util.search.Constants.ENTITY_FIELD));
 		String entityId = (String)searchResults.get(com.sitescape.util.search.Constants.DOCID_FIELD);
-		String binderId = entityId;
-		if (!entityType.isBinder()) {
-			binderId = (String)searchResults.get(com.sitescape.util.search.Constants.BINDER_ID_FIELD);
-		}
-		String docType = (String)searchResults.get(com.sitescape.util.search.Constants.DOC_TYPE_FIELD);
-		if (com.sitescape.util.search.Constants.DOC_TYPE_ATTACHMENT.equals(docType)) {
-			//search results are an attachment
-			String fileId = (String)searchResults.get(com.sitescape.util.search.Constants.FILE_ID_FIELD);
-			String fileTime = (String)searchResults.get(com.sitescape.util.search.Constants.FILE_TIME_FIELD);
-			String fileName = (String)searchResults.get(com.sitescape.util.search.Constants.FILENAME_FIELD);
-			//only index the latest attachment, so no version info needed
-			return getFileUrl(path, binderId, entityId, entityType.name(), fileId, fileTime, null, fileName);
-		} else {
-			String fileId,fileTime,fileName;
-			Object fileIdResult = searchResults.get(com.sitescape.util.search.Constants.FILE_ID_FIELD);
-			Object fileTimeResult = searchResults.get(com.sitescape.util.search.Constants.FILE_TIME_FIELD);
-			Object fileNameResult = searchResults.get(com.sitescape.util.search.Constants.FILENAME_FIELD);
-			//since their may be more than one attachment, we get what is hopefull a consistent picture of the first one.
-			if (fileIdResult instanceof SearchFieldResult) {
-				fileId = ((SearchFieldResult)fileIdResult).getValueArray().get(0).toString();
+		String fileTime=null,fileName=null;
+		Object fileTimeResult = searchResults.get(com.sitescape.util.search.Constants.FILE_TIME_FIELD);
+		Object fileNameResult = searchResults.get(com.sitescape.util.search.Constants.FILENAME_FIELD);
+		//since their may be more than one attachment, we get what is hopefull a consistent picture of the first one.
+		if (Validator.isNull(file)) {
+			if (fileNameResult instanceof SearchFieldResult) {
+				fileName = ((SearchFieldResult)fileNameResult).getValueArray().get(0).toString();
 			} else {
-				fileId = fileIdResult.toString();
+				fileName = fileNameResult.toString();
 			}
 			if (fileTimeResult instanceof SearchFieldResult) {
 				fileTime = ((SearchFieldResult)fileTimeResult).getValueArray().get(0).toString();
 			} else {
 				fileTime = fileTimeResult.toString();
 			}
-			if (fileNameResult instanceof SearchFieldResult) {
-				fileName = ((SearchFieldResult)fileNameResult).getValueArray().get(0).toString();
-			} else {
-				fileName = fileNameResult.toString();
-			}
-			return getFileUrl(path, binderId, entityId, entityType.name(), fileId, fileTime, null, fileName);
 			
+		} else {
+			//looking for a specific file
+			fileName = file;
+			if (fileNameResult instanceof SearchFieldResult) {
+				List values = ((SearchFieldResult)fileNameResult).getValueArray();
+				for (int i=0; i<values.size(); ++i) {
+					if (fileName.equals(values.get(i))) {
+						try {
+							fileTime = ((SearchFieldResult)fileTimeResult).getValueArray().get(i).toString();
+						} catch (Exception ignoreMisMatch) {};
+					}
+				}
+			}
+			if (fileTime == null) {
+				fileTime = fileTimeResult.toString();
+			} 
 		}
-
+		return getFileUrl(webPath, action, entityId, entityType.name(), fileTime, null, fileName, isEncoded);
+			
 	}
-	private static String getFileUrl(String path, String binderId, String entityId, String entityType, String attId, String attDate, String version, String name) {
+	public static String getFileUrl(String webPath, String action, String entityId, String entityType, String attDate, String version, 
+			String fileName, boolean isEncoded) {
 		if (Validator.isNull(version)) version = "last";
-		StringBuffer webUrl = new StringBuffer(WebUrlUtil.getServletRootURL() + path);
+		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
+		StringBuffer webUrl = new StringBuffer(webPath + action);
 		webUrl.append(Constants.SLASH + entityType);
-		webUrl.append(Constants.SLASH + binderId);
 		webUrl.append(Constants.SLASH + entityId);
-		webUrl.append(Constants.SLASH + attId);
-		webUrl.append(Constants.SLASH + attDate);
+		webUrl.append(Constants.SLASH + attDate); //for browser caching
 		webUrl.append(Constants.SLASH + version);					
-		webUrl.append(Constants.SLASH + name);
+		if (!isEncoded) webUrl.append(Constants.SLASH + Http.encodeURL(fileName));
+		else webUrl.append(Constants.SLASH + fileName);
 		return webUrl.toString();
 	}
 

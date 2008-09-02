@@ -75,8 +75,9 @@ import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.team.web.util.MarkupUtil;
 import com.sitescape.team.web.util.WebUrlUtil;
+import com.sitescape.team.web.util.PermaLinkUtil;
 import com.sitescape.util.PropertyNotFoundException;
 
 public class RssModuleImpl extends CommonDependencyInjection implements
@@ -352,8 +353,9 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 		boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
 		if (!rssEnabled) {
-			return WebHelper.markupStringReplacement(null, null, request,
-					response, null, this.getRssDisabledString(), WebKeys.MARKUP_VIEW);
+			return this.getRssDisabledString();
+///			return WebHelper.markupStringReplacement(null, null, request,
+//					response, null, this.getRssDisabledString(), WebKeys.MARKUP_VIEW);
 		}
 		
 		String indexPath = getRssPathName(binder);
@@ -397,8 +399,8 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			}
 			indexSearcher.close();
 			rss += addRssFooter();
-			rss = WebHelper.markupStringReplacement(null, null, request,
-					response, null, rss, WebKeys.MARKUP_VIEW);
+//			rss = WebHelper.markupStringReplacement(null, null, request,
+//					response, null, rss, WebKeys.MARKUP_VIEW);
 
 			return rss;
 
@@ -480,12 +482,12 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		String title = "<![CDATA[ " + entry.getTitle() + "]]>";
 		ret += "<title>" + title + "</title>\n";
 		ret += "<link>"
-				+ WebUrlUtil.getEntryPermalinkURL((FolderEntry) entry).replaceAll(
+				+ PermaLinkUtil.getPermalinkURL(entry).replaceAll(
 						"&", "&amp;") + "</link>\n";
 
 		String description = entry.getDescription() == null ? "" : entry
 				.getDescription().getText();
-		description = WebHelper.markupStringReplacement(null, null, null, null,
+		description = MarkupUtil.markupStringReplacement(null, null, null, null,
 				entry, description, WebKeys.MARKUP_VIEW);
 		description = "<![CDATA[ " + description + "]]>";
 		ret += "<description>" + description + "</description>\n";

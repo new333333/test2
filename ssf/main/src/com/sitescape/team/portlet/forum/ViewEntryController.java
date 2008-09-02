@@ -57,7 +57,6 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HistoryStamp;
-import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.NoFolderEntryByTheIdException;
 import com.sitescape.team.domain.Principal;
@@ -80,6 +79,7 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.team.web.util.PermaLinkUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
@@ -640,15 +640,11 @@ public class ViewEntryController extends  SAbstractController {
 		//The "Footer" menu
 		Toolbar footerToolbar = new Toolbar();
 		qualifiers = new HashMap();
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
-		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
+		String permaLink = PermaLinkUtil.getPermalinkURL(request, entry);
 		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
-		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.entryPermalink"), adapterUrl.toString(), qualifiers);
+		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.entryPermalink"), permaLink, qualifiers);
 
-		model.put(WebKeys.PERMALINK, adapterUrl.toString());
+		model.put(WebKeys.PERMALINK, permaLink);
 
 		if (entry.isTop() && !user.getEmailAddresses().isEmpty() && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {

@@ -39,7 +39,6 @@ import java.util.TreeSet;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -50,20 +49,16 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
-import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
-import com.sitescape.team.module.binder.BinderModule;
-import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.WorkspaceAddWorkspaceHelper;
-import com.sitescape.team.web.tree.WorkspaceConfigHelper;
 import com.sitescape.team.web.util.BinderHelper;
+import com.sitescape.team.web.util.PermaLinkUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 /**
  * @author Janet McCann
@@ -112,11 +107,8 @@ public class AddFolderController extends SAbstractController {
 				//Announce this new workspace?
 				if (formData.containsKey("announce")) {
 					String messageBody = "<a href=\"";
-					AdaptedPortletURL adapterUrl = new AdaptedPortletURL((PortletRequest) null, "ss_forum", true);
-					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, newId.toString());
-					adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, newBinder.getEntityType().toString());
-					messageBody += adapterUrl.toString();
+					String permaLink = PermaLinkUtil.getPermalinkURL(newBinder);
+					messageBody += permaLink;
 					messageBody += "\">" + newBinder.getTitle() + "</a><br/><br/>";
 					String announcementText = PortletRequestUtils.getStringParameter(request, "announcementText", "");
 					messageBody += announcementText;

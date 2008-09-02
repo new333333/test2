@@ -85,8 +85,7 @@ import com.sitescape.team.security.acl.AclControlled;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
-import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.team.web.util.MarkupUtil;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
 /**
@@ -301,9 +300,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 			if (inputData.exists(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) {
 				Description description = new Description();
 				description.setText(inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_DESCRIPTION));
-				WebHelper.scanDescriptionForUploadFiles(description, ObjectKeys.FIELD_ENTITY_DESCRIPTION, fileData);
-				WebHelper.scanDescriptionForAttachmentFileUrls(description);
-				WebHelper.scanDescriptionForICLinks(description);
+				MarkupUtil.scanDescriptionForUploadFiles(description, ObjectKeys.FIELD_ENTITY_DESCRIPTION, fileData);
+				MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
+				MarkupUtil.scanDescriptionForICLinks(description);
 				description.setFormat(Description.FORMAT_HTML);
 				entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 			}

@@ -29,14 +29,9 @@
 package com.sitescape.team.taglib;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -44,18 +39,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.tree.WsDomTreeBuilder;
-import com.sitescape.team.web.util.WebHelper;
-import com.sitescape.team.web.util.WebUrlUtil;
+import com.sitescape.team.web.util.MarkupUtil;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
-
-import javax.portlet.PortletURL;
 
 
 /**
@@ -143,7 +133,7 @@ public class EditableTag extends BodyTagSupport {
 				// Body
 				
 				//Break the body into its sections
-				List<Map> bodyParts = WebHelper.markupSplitBySection(_bodyContent);
+				List<Map> bodyParts = MarkupUtil.markupSplitBySection(_bodyContent);
 				if (bodyParts.size() > 1) {
 					jsp = "/WEB-INF/jsp/tag_jsps/editable/sections.jsp";
 					rd = httpReq.getRequestDispatcher(jsp);

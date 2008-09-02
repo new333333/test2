@@ -489,7 +489,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 					new Timestamp(vatt.getCreation().getPrincipal().getName(), vatt.getCreation().getDate()),
 					new Timestamp(vatt.getModification().getPrincipal().getName(), vatt.getModification().getDate()),
 					vatt.getFileItem().getLength(),
-					WebUrlUtil.getFileUrl(WebKeys.ACTION_READ_FILE, vatt));
+					WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, vatt));
 		}
 		return new FileVersions(fa.getFileItem().getName(), versions);
 	}

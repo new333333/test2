@@ -33,12 +33,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.activation.FileTypeMap;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
-import com.sitescape.team.web.util.WebHelper;
+
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.EntityIdentifier;
@@ -47,7 +46,6 @@ import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.web.servlet.SAbstractController;
 import com.sitescape.util.Validator;
-import com.sitescape.team.util.NLT;
 public abstract class AbstractReadFileController extends SAbstractController {
 	
 	private FileTypeMap mimeTypes;
@@ -58,7 +56,7 @@ public abstract class AbstractReadFileController extends SAbstractController {
 	public void setFileTypeMap(FileTypeMap mimeTypes) {
 		this.mimeTypes = mimeTypes;
 	}
-	protected DefinableEntity getEntity(String strEntityType, Long binderId, Long entityId) {
+	protected DefinableEntity getEntity(String strEntityType, Long entityId) {
 		EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.none;
 		DefinableEntity entity = null;
 		try {
@@ -68,18 +66,17 @@ public abstract class AbstractReadFileController extends SAbstractController {
 			//the entry is the binder, the entryId should be used
 			entity = getBinderModule().getBinder(entityId);
 		} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) {
-			entity = getFolderModule().getEntry(binderId, entityId);
+			entity = getFolderModule().getEntry(null, entityId);
 		} else if (entityType.isPrincipal()) {
 			entity = getProfileModule().getEntry(entityId);
 		} else {
 			//	Try to figure out what type of entity this is
 			try {
-				entity = getFolderModule().getEntry(binderId, entityId);
+				entity = getFolderModule().getEntry(null, entityId);
 			} catch (Exception e) {}
 			if (entity == null) {
 				try {
 					entity = getProfileModule().getEntry(entityId);
-					if (!entity.getParentBinder().equals(binderId)) entity = null;
 				} catch (Exception e) {};
 			}
 			if (entity == null) {
@@ -92,10 +89,10 @@ public abstract class AbstractReadFileController extends SAbstractController {
 		if (entity instanceof Binder) return (Binder)entity;
 		return entity.getParentBinder();
 	}
-	protected FileAttachment getAttachment(DefinableEntity entity, String fileId, String fileVersion) {
+	protected FileAttachment getAttachment(DefinableEntity entity, String fileName, String fileVersion) {
 		FileAttachment fa = null;
-		if (Validator.isNotNull(fileId)) {
-			fa = (FileAttachment)entity.getAttachment(fileId);
+		if (Validator.isNotNull(fileName)) {
+			fa = (FileAttachment)entity.getFileAttachment(fileName);
 			if (!fileVersion.equals("last")) {
 				//request for a specific version
 				fa = fa.findFileVersionByNumber(Integer.valueOf(fileVersion));

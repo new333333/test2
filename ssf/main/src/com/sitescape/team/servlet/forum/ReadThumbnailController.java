@@ -41,41 +41,36 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.FileHelper;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.FileUtil;
 public class ReadThumbnailController extends AbstractReadFileController {
 	
 	
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-		// Assuming that the full request URL was http://localhost:8080/ssf/s/readThumbnail/xxx/123/456/789/jversion/unk.doc,
-		// the following call returns "/readThumbnail/xxx/123/456/789/version/junk.doc" portion of the URL.
+		// Assuming that the full request URL was http://localhost:8080/ssf/s/readThumbnail/entityType/entryId/fileId/fileTime/fileVersion/filename.ext
+		// the following call returns "/readFile/entityType/entryId/fileTime/fileVersion/filename.ext" portion of the URL.
 		String pathInfo = request.getPathInfo();
 		
 		String[] args = pathInfo.split(Constants.SLASH);
-		//We expect the url to be formatted as /readThumbnail/entityType/binderId/entryId/fileId/fileTime/fileVersion/filename.ext
+		//We expect the url to be formatted as /readThumbnail/entityType/entryId/fileTime/fileVersion/filename.ext
 		//To support sitescape forum, where folder structures were allowed on an entry, the url may contain more pathinfo.
-		//For a binder, the entityId = binderId 
 		//fileVersion=last, read latest
-		//fileTime is present for browser caching
+		//fileTime is present for browser cachinge
 		//filename is present for browser handling of relative files
-		if (args.length < 9) return null;
+		if (args.length < 7) return null;
 		
 		try {
-			String strEntityType = args[2];
-			Long binderId = Long.valueOf(args[3]);
-			Long entityId = Long.valueOf(args[4]);
-			DefinableEntity entity = getEntity(strEntityType, binderId, entityId);
+			DefinableEntity entity = getEntity(args[2], Long.valueOf(args[3]));
 			//Set up the beans needed by the jsps
 			FileAttachment fa = null;
-			if (args.length > 9 && entity instanceof FolderEntry) {
-				fa = getAttachment((FolderEntry)entity, Arrays.asList(args).subList(8, args.length).toArray());
+			if (args.length > 7 && entity instanceof FolderEntry) {
+				fa = getAttachment((FolderEntry)entity, Arrays.asList(args).subList(6, args.length).toArray());
 				//entity may have changed
 				if (fa != null) {
 					entity = fa.getOwner().getEntity();
 				}
 			} else {
-				fa = getAttachment(entity, args[5], args[7]);
+				fa = getAttachment(entity, args[6], args[5]);
 			}
 
 			if (fa != null) {

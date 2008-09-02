@@ -1737,16 +1737,13 @@ public class ListFolderHelper {
 		BinderHelper.buildDashboardToolbar(request, response, bs, folder, dashboardToolbar, model);
 
 		//The "Footer" menu
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityType().toString());
+		String permaLink = PermaLinkUtil.getPermalinkURL(request, folder);
 		qualifiers = new HashMap();
 		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.folderPermalink"), 
-				adapterUrl.toString(), qualifiers);
+				permaLink, qualifiers);
 		
-		model.put(WebKeys.PERMALINK, adapterUrl.toString());
+		model.put(WebKeys.PERMALINK, permaLink);
 
 		String[] contributorIds = collectContributorIds((List)model.get(WebKeys.FOLDER_ENTRIES));
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");

@@ -82,7 +82,7 @@
 			
 						<p id="summary_${status.count}">
 							<c:if test="${!empty entry._desc}">
-								<ssf:markup type="view" binderId="${entryBinderId}" entryId="${entryDocId}">
+								<ssf:markup search="${entry}">
 									<ssf:textFormat formatAction="limitedDescription" textMaxWords="100">
 										${entry._desc}
 									</ssf:textFormat>

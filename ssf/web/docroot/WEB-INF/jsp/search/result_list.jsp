@@ -120,7 +120,7 @@
 									<div class="ss_clear">&nbsp;</div>
 								</div>
 								<p id="summary_${status.count}">
-								<ssf:markup binderId="${entry._binderId}" entryId="${entry._docId}">
+								<ssf:markup search="${entry}">
 									<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
 										${entry._desc}
 									</ssf:textFormat>
@@ -294,7 +294,7 @@
 								</div>
 								<p id="summary_${status.count}">
 								
-									<ssf:markup binderId="${entry._binderId}" entryId="${entry._docId}">
+									<ssf:markup search="${entry}">
 										<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
 											${entry._desc}
 										</ssf:textFormat>
@@ -371,7 +371,7 @@
 									<div class="ss_clear">&nbsp;</div>
 								</div>
 								<p id="summary_${status.count}">
-									<ssf:markup binderId="${entry._binderId}" entryId="${entry._docId}">
+									<ssf:markup search="${entry}">
 										<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
 											${entry._desc}
 										</ssf:textFormat>
@@ -448,7 +448,7 @@
 									<div class="ss_clear">&nbsp;</div>
 								</div>
 								<p id="summary_${status.count}">
-									<ssf:markup binderId="${entryBinderId}" entryId="${entryDocId}">
+									<ssf:markup search="${entry}">
 										<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
 											${entry._desc}
 										</ssf:textFormat>

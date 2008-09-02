@@ -60,7 +60,7 @@
 	</div>
 	<c:if test="${ssConfigJspStyle != 'form'}">
 	<div style="border:1px solid #cecece;padding:6px;">
-	    <ssf:markup type="view" entity="${mashupEntry}"><c:out 
+	    <ssf:markup entity="${mashupEntry}"><c:out 
 	      value="${mashupEntry.description.text}" 
 	      escapeXml="false"/></ssf:markup>
 	</div>

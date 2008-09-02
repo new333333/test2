@@ -119,7 +119,7 @@
 <div style="padding-bottom:10px;">
 
     <div class="ss_smallprint ss_indent_medium">  
-      <ssf:markup binderId="${fileEntry._binderId}" entryId="${fileEntry._docId}">
+      <ssf:markup search="${fileEntry}" >
  		<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
 					${fileEntry._desc}
 		</ssf:textFormat>

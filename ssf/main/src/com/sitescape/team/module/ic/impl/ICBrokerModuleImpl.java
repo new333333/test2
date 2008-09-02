@@ -56,6 +56,7 @@ import com.sitescape.team.module.ic.RecordType;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.web.util.PermaLinkUtil;
 import com.sitescape.team.web.WebKeys;
 
 public class ICBrokerModuleImpl extends CommonDependencyInjection implements
@@ -545,10 +546,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 
 		if (entry == null && binder != null) {
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId()
-					.toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, binder
-					.getEntityType().toString());
+			return PermaLinkUtil.getPermalinkURL(binder);
 		} else if (entry != null && binder != null) {
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId()
 					.toString());

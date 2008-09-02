@@ -69,7 +69,7 @@ import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Validator;
-
+import com.sitescape.team.web.util.PermaLinkUtil;
 public class EnterExitEvent extends AbstractActionHandler {
 	private static final long serialVersionUID = 1L;
 	  
@@ -385,16 +385,11 @@ public class EnterExitEvent extends AbstractActionHandler {
 					logger.error("Skipping email notifications for " + u.getTitle() + " Bad email address");
 				}
 			} 
-
-			AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, entry.getParentBinder().getId().toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
+			String permaLink = PermaLinkUtil.getPermalinkURL(entry);
 
 			details.put(MailModule.TO, addrs);
 			StringBuffer tMsg = new StringBuffer();
-			tMsg.append(adapterUrl.toString());
+			tMsg.append(permaLink);
 			tMsg.append("\n\n");
 			tMsg.append(notify.getBody());
 			if (notify.isAppendBody() && entry.getDescription() != null) {
@@ -405,7 +400,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 			details.put(MailModule.TEXT_MSG, tMsg.toString());
 			StringBuffer hMsg = new StringBuffer();
 			hMsg.append("<a href=\"");
-			hMsg.append(adapterUrl.toString());
+			hMsg.append(permaLink);
 			hMsg.append("\">");
 			hMsg.append(entry.getTitle());
 			hMsg.append("</a>");
