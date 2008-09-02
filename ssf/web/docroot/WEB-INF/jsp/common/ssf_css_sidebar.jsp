@@ -213,7 +213,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-color: #5A9A98;
 	border-width: .01em;
 	background-color: #FFFFFF;
-    background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_bgd.png") 5px 2px;
+    background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_a.png") 5px 2px;
     background-repeat: no-repeat !important;
     padding: 7px 0 7px 30px;
 	margin-bottom: 3px;
@@ -223,7 +223,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 #ss_leftNav li a:hover {
     color: #5A9A98;
-    background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_bgd.png") 5px -24px;
+    background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_hover.png") 5px 2px;
     background-repeat: no-repeat !important;
 	background-color: #CCFFFF;
 	border-color:#85D1D1;
@@ -258,6 +258,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-repeat: no-repeat;
 	height:22px;	
 	color:#FFF;
+	cursor: pointer;
 	}
 .ss_sidebarSlidesm {
 	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_sm.png"); 
@@ -265,6 +266,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-repeat: no-repeat;
 	height:22px;		
 	color:#FFF;
+	cursor: pointer;	
 	}
 .ss_hideShow {
 	font-size: ${ss_style_font_smallprint};
