@@ -281,7 +281,8 @@ a.ss_new_thread img, a.ss_new_thread:link img , a.ss_new_thread:focus img, a.ss_
 	background: transparent; 
 	}	
 a.ss_new_thread:hover img {
-    background-position:  left -12px; 
+    /* background-position:  left -12px; */
+    padding: 0px !important;
 	<ssf:ifaccessible>
   		outline: dotted 1px gray;
 	</ssf:ifaccessible>  
@@ -289,7 +290,8 @@ a.ss_new_thread:hover img {
 a.ss_new_thread:hover {
 	<ssf:ifaccessible>
   		outline: dotted 1px gray;
-	</ssf:ifaccessible>  
+	</ssf:ifaccessible> 
+	padding:0px;
 	}
 .ss_nowrapFixed {
 	white-space:normal!important;
