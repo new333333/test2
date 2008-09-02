@@ -299,6 +299,10 @@ public class BinderHelper {
 	}
 	public static void setupStandardBeans(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Map<String,Object> model, Long binderId) {
+		setupStandardBeans(bs, request, response, model, binderId, "ss_forum");
+	}
+	public static void setupStandardBeans(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Map<String,Object> model, Long binderId, String portletName) {
 		//Set up the standard beans
 		//These have been documented, so don't delete any
 		if (request != null) {
@@ -311,7 +315,7 @@ public class BinderHelper {
 			} else {
 				model.put(WebKeys.NAMESPACE, response.getNamespace());
 			}
-			AdaptedPortletURL loginUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			AdaptedPortletURL loginUrl = new AdaptedPortletURL(request, portletName, true);
 			loginUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOGIN); 
 			model.put(WebKeys.LOGIN_URL, loginUrl.toString());
 			String logoutUrl = WebUrlUtil.getSSFContextRootURL(request) + WebKeys.SERVLET_LOGOUT;

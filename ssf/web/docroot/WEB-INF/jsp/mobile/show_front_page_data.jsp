@@ -28,8 +28,20 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="com.sitescape.team.ObjectKeys" %>
 
 <div class="ss_mobile">
+<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
+<c:if test="${ssUser.internalId == guestInternalId}">
+  <div>
+  <a href="<ssf:url action="__ajax_mobile" actionUrl="false" 
+					operation="mobile_login" />"
+  >
+  <span><ssf:nlt tag="login"/></span>
+  </a>
+  </div>
+</c:if>
+
 <c:if test="${!empty ss_mobileBinderList}">
 <div>
   <scan class="ss_bold"><ssf:nlt tag="portlet.title.bookmarks"/></span>

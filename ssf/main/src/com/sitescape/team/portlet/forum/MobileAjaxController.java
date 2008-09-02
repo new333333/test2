@@ -140,8 +140,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileLogin(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
-		BinderHelper.setupStandardBeans(bs, request, response, model);
-		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
 		model.put(WebKeys.URL, adapterUrl);
 		return new ModelAndView("mobile/show_login_form", model);
