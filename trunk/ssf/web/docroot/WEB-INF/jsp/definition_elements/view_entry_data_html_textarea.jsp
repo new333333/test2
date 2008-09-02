@@ -36,7 +36,7 @@
 <br/>
 </c:if>
  <div class="ss_entryDescription">
-<span><ssf:markup type="view" entity="${ssDefinitionEntry}"><c:out 
+<span><ssf:markup entity="${ssDefinitionEntry}"><c:out 
   value="${ssDefinitionEntry.customAttributes[property_name].value.text}" 
   escapeXml="false"/></ssf:markup></span>
  </div>

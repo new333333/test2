@@ -104,7 +104,7 @@ public class ViewPermalinkController  extends SAbstractController {
  			}
  			FileAttachment attachment = (FileAttachment)entity.getAttachment(fileId);
  			if (attachment != null) {
- 				response.sendRedirect(WebUrlUtil.getFileUrl(WebKeys.ACTION_READ_FILE, attachment));
+ 				response.sendRedirect(WebUrlUtil.getFileUrl(request, WebKeys.ACTION_READ_FILE, attachment));
  				return;
  			}
  			

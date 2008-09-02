@@ -32,43 +32,25 @@
 <%
 	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
 	String description = "";
-	if (thisEntry instanceof FolderEntry) {
-		description = (String) ((FolderEntry)thisEntry).getDescription().getText();
+	if (thisEntry instanceof DefinableEntity) {
+
+		description = (String) ((DefinableEntity)thisEntry).getDescription().getText();
+		 if (description != null && !description.equals("")) {
 		%>
-		<c:set var="docId" value="<%= ((FolderEntry)thisEntry).getId() %>"/>
-		<c:set var="binderId" value="<%= ((FolderEntry)thisEntry).getParentBinder().getId() %>"/>
-		<%
-	} else if (thisEntry instanceof Map) {
+<% //Description view %>
+  <div class="ss_entryDescriptionLead"></div>
+  <span><ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true"><c:out 
+       value="<%= description %>" escapeXml="false"/></ssf:markup></span>
+<%  	}
+ 	} else if (thisEntry instanceof Map) {
 		description = (String) ((Map)thisEntry).get("_desc");
-		%>
-		<c:set var="docId" value="<%= ((Map)thisEntry).get("_docId") %>"/>
-		<c:set var="binderId" value="<%= ((Map)thisEntry).get("_binderId") %>"/>
-		<%
+	 if (description != null && !description.equals("")) {	
+	 %>	
+<% //Description view %>
+  <div class="ss_entryDescriptionLead"></div>
+  <span><ssf:markup search="${ssDefinitionEntry}" leaveSectionsUnchanged="true"><c:out 
+       value="<%= description %>" escapeXml="false"/></ssf:markup></span>
+
+<%  	}
 	}
 %>
-<% //Description view %>
-<%  if (description != null && !description.equals("")) {
-%>
-  <div class="ss_entryDescriptionLead"></div>
-<%
-		if (thisEntry instanceof FolderEntry) {
-%>
-		  <ssf:editable entity="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}">
-		    <span><ssf:markup type="view" binderId="${binderId}" entryId="${docId}" 
-		       leaveSectionsUnchanged="true" ><c:out 
-		       value="<%= description %>" escapeXml="false"/></ssf:markup></span>
-		  </ssf:editable>
-<%
-		} else if (thisEntry instanceof Map) {
-%>
-		  <ssf:editable entityMap="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}">
-		    <span><ssf:markup type="view" binderId="${binderId}" entryId="${docId}"
-		       leaveSectionsUnchanged="true" ><c:out 
-		       value="<%= description %>" escapeXml="false"/></ssf:markup></span>
-		  </ssf:editable>
-<%
-		}
-%>
-<%  }
-%>
-

@@ -28,6 +28,13 @@
  */
 package com.sitescape.team.web.util;
 
+import static com.sitescape.util.search.Constants.BINDERS_PARENT_ID_FIELD;
+import static com.sitescape.util.search.Constants.DOCID_FIELD;
+import static com.sitescape.util.search.Constants.ENTITY_FIELD;
+import static com.sitescape.util.search.Constants.ENTRY_ANCESTRY;
+import static com.sitescape.util.search.Constants.MODIFICATION_DATE_FIELD;
+import static com.sitescape.util.search.Constants.TITLE_FIELD;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -47,12 +54,13 @@ import javax.portlet.RenderResponse;
 
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
-import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
+import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.Principal;
@@ -66,7 +74,6 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
-import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
@@ -79,10 +86,8 @@ import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
-import com.sitescape.team.domain.Definition;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Criteria;
-import static com.sitescape.util.search.Constants.*;
 
 public class WorkspaceTreeHelper {
 	public static ModelAndView setupWorkspaceBeans(AllModulesInjected bs, Long binderId, RenderRequest request, 
@@ -751,16 +756,13 @@ public class WorkspaceTreeHelper {
 		String[] contributorIds = collectContributorIds(workspace);
 		
 		// permalink
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, workspace.getEntityType().toString());
+		String permaLink = PermaLinkUtil.getPermalinkURL(request, workspace);
 		qualifiers = new HashMap();
 		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.workspacePermalink"), 
-				adapterUrl.toString(), qualifiers);
+				permaLink, qualifiers);
 		
-		model.put(WebKeys.PERMALINK, adapterUrl.toString());
+		model.put(WebKeys.PERMALINK, permaLink);
 
 		// clipboard
 		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {

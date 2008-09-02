@@ -28,9 +28,11 @@
  */
 package com.sitescape.team.web.util;
 
+import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
@@ -39,9 +41,6 @@ import com.sitescape.team.web.WebKeys;
 
 public class PermaLinkUtil {
 
-	public static String getURL(Binder binder) {
-		return getURL(binder.getEntityIdentifier().getEntityId(), binder.getEntityType().toString());
-	}
 	
 	public static String getURL(Long binderId, String entityType) {
 		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
@@ -71,7 +70,28 @@ public class PermaLinkUtil {
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.workspace.toString());
 		return adapterUrl.toString();
 	}
-	
+	public static String getPermalinkURL(PortletRequest request, DefinableEntity entity) {
+		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+		getPermalinkURL(url, entity);
+		return url.toString();
+	}
+	public static String getPermalinkURL(DefinableEntity entity) {
+		AdaptedPortletURL url = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+		getPermalinkURL(url, entity);
+		return url.toString();
+	}
+	protected static void getPermalinkURL(AdaptedPortletURL url, DefinableEntity entity) {
+		url.setParameter("action", WebKeys.ACTION_VIEW_PERMALINK);
+		url.setParameter(WebKeys.URL_ENTITY_TYPE, entity.getEntityType().name());
+		if (entity.getEntityType().isBinder()) {
+			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
+		} else {
+			url.setParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
+			url.setParameter(WebKeys.URL_ENTRY_ID, entity.getId().toString());
+		}
+		
+	}
+
 	private static ProfileModule getProfileModule() {
 		return (ProfileModule) SpringContextUtil.getBean("profileModule");
 	}

@@ -76,12 +76,6 @@
 					<%
 						if (!entriesSeen.containsKey(entry.get("_docId"))) {
 					%>
-					<c:set var="entryBinderId" value="${entry._binderId}"/>
-					<c:set var="entryDocId" value="${entry._docId}"/>	
-					<c:if test="${entry._entityType == 'folder' || entry._entityType == 'workspace'}">
-					  <c:set var="entryBinderId" value="${entry._docId}"/>
-					  <c:set var="entryDocId" value=""/>
-					</c:if>
 					
 					<div class="ss_thumbnail">
 						<img <ssf:alt tag="alt.entry"/> src="<html:imagesPath/>pics/entry_icon.gif"/>
@@ -115,7 +109,7 @@
 			
 						<p id="summary_${status.count}">
 							<c:if test="${!empty entry._desc}">
-								<ssf:markup type="view" binderId="${entryBinderId}" entryId="${entryDocId}">
+								<ssf:markup search="${entry}">
 									<ssf:textFormat formatAction="limitedDescription" textMaxWords="100">
 										${entry._desc}
 									</ssf:textFormat>

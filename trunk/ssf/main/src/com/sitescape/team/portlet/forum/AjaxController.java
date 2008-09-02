@@ -143,6 +143,7 @@ import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.web.util.WebStatusTicket;
 import com.sitescape.team.web.util.WebUrlUtil;
+import com.sitescape.util.Http;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
 import com.sitescape.util.search.Criteria;
@@ -555,32 +556,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		getFolderModule().indexEntry(entry, false);
 	}
 	
-	private String getModelLink(ActionResponse response, Binder binder,
-			Entry entry) {
-		AdaptedPortletURL adapterUrl = AdaptedPortletURL
-				.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 
-		if (entry == null && binder != null) {
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId()
-					.toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, binder
-					.getEntityType().toString());
-		} else if (entry != null && binder != null) {
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId()
-					.toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId()
-					.toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry
-					.getEntityType().toString());
-		} else {
-			// no model no link
-			return "";
-		}
-
-		return adapterUrl.toString();
-	}
-	
 	private void ajaxSetUiTheme(ActionRequest request,
 			ActionResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -1105,8 +1081,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 		if (fileHandle != null) {
 			// Create a URL containing the handle
 			String url = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_VIEW_FILE + "?" +
-			"&" + WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_UPLOAD_FILE + 
-			"&" + WebKeys.URL_FILE_ID + "=" + fileHandle; 
+			WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_UPLOAD_FILE + 
+			"&" + WebKeys.URL_FILE_ID + "=" + Http.encodeURL(fileHandle); 
 
 			response.setRenderParameter(WebKeys.IMAGE_FILE_URL, url);
 		}

@@ -33,7 +33,7 @@ import org.apache.velocity.VelocityContext;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.team.web.util.MarkupUtil;
 
 /**
 *
@@ -48,7 +48,7 @@ public class NotifyBuilderDescription extends AbstractNotifyBuilder {
     	Object obj = attr.getValue();
     	String value;
     	if (obj instanceof Description)
-    		value = WebHelper.markupStringReplacement(null, null, null, null, visitor.getEntity(), ((Description)obj).getText(), WebKeys.MARKUP_VIEW);	
+    		value = MarkupUtil.markupStringReplacement(null, null, null, null, visitor.getEntity(), ((Description)obj).getText(), WebKeys.MARKUP_VIEW);	
     	else
     		value = obj.toString();	
     			
@@ -60,7 +60,7 @@ public class NotifyBuilderDescription extends AbstractNotifyBuilder {
     	Description obj = visitor.getEntity().getDescription();
     	String value="";
     	if (obj != null)
-    		value = WebHelper.markupStringReplacement(null, null, null, null, visitor.getEntity(), obj.getText(), WebKeys.MARKUP_VIEW);
+    		value = MarkupUtil.markupStringReplacement(null, null, null, null, visitor.getEntity(), obj.getText(), WebKeys.MARKUP_VIEW);
 	    	
     	ctx.put("ssDescription_markup", value);
     	super.build(visitor, template, ctx);

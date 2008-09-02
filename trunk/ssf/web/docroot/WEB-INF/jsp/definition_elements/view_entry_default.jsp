@@ -44,7 +44,7 @@
 
 <div class="formBreak">
 <div class="ss_entryContent">
-<ssf:markup type="view" entity="${ssDefinitionEntry}"><c:out 
+<ssf:markup entity="${ssDefinitionEntry}"><c:out 
   value="${ssDefinitionEntry.description.text}" escapeXml="false"/></ssf:markup>
 </div>
 </div>

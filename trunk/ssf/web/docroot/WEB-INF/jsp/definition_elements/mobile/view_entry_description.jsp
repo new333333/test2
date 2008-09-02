@@ -31,6 +31,6 @@
 <% //Description view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!empty ssDefinitionEntry.description.text}">
-<div><span class="ss_mobile_description"><ssf:markup type="view" entity="${ssDefinitionEntry}"><c:out 
+<div><span class="ss_mobile_description"><ssf:markup entity="${ssDefinitionEntry}"><c:out 
    value="${ssDefinitionEntry.description.text}" escapeXml="false"/></ssf:markup></span></div>
 </c:if>

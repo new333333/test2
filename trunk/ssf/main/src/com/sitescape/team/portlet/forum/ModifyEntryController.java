@@ -49,13 +49,11 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Definition;
-import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.shared.MapInputData;
-import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -64,6 +62,7 @@ import com.sitescape.team.web.tree.TreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.team.web.util.MarkupUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.Validator;
@@ -183,7 +182,7 @@ public class ModifyEntryController extends SAbstractController {
 						elementText = ca.getValue().toString();
 					}
 					//Next, split that text into its sections
-					List<Map> bodyParts = WebHelper.markupSplitBySection(elementText);
+					List<Map> bodyParts = MarkupUtil.markupSplitBySection(elementText);
 					String newElementText = "";
 					//Now, find the section being edited and replace the original section text with the new text
 					for (Map part : bodyParts) {
@@ -315,7 +314,7 @@ public class ModifyEntryController extends SAbstractController {
 							CustomAttribute ca = entry.getCustomAttribute(elementToEdit);
 							elementText = ca.getValue().toString();
 						}
-						List<Map> bodyParts = WebHelper.markupSplitBySection(elementText);
+						List<Map> bodyParts = MarkupUtil.markupSplitBySection(elementText);
 						String sectionText = "";
 						for (Map part : bodyParts) {
 							if (sectionToEdit.equals(part.get("sectionNumber"))) {

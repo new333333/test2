@@ -844,15 +844,11 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<name>binderId</name>
+			<name>search</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>entryId</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
+			<type>java.util.Map</type>
+		</attribute>		
 		<attribute>
 			<name>leaveSectionsUnchanged</name>
 			<required>false</required>

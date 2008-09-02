@@ -92,7 +92,7 @@
 		 		  </c:choose>
     				<br/>
     			</div><!-- end of ss_topic_title -->
-    			<div id="ss_topic_desc"><ssf:markup type="view" binderId="${binder._docId}">
+    			<div id="ss_topic_desc"><ssf:markup search="${binder}">
 					<ssf:textFormat formatAction="limitedDescription" 
 		  				textMaxWords="50">${binder._desc}</ssf:textFormat></ssf:markup>
 		  		</div>
@@ -131,7 +131,7 @@
 							  </c:otherwise>
 		 				    </c:choose>
         				    <br/>
-        				    <div><ssf:markup type="view" binderId="${subBinder._docId}">
+        				    <div><ssf:markup search="${subBinder}">
 							  <ssf:textFormat formatAction="limitedDescription" 
 		  						textMaxWords="50">${subBinder._desc}</ssf:textFormat></ssf:markup>
 		  					</div>
@@ -211,7 +211,7 @@
     
     			<br/>
     		</div><!-- end of ss_topic_title -->
-    		  <div id="ss_topic_desc"><ssf:markup type="view" binderId="${binder._docId}">
+    		  <div id="ss_topic_desc"><ssf:markup search="${binder}">
 				<ssf:textFormat formatAction="limitedDescription" 
 		  			textMaxWords="50">${binder._desc}</ssf:textFormat></ssf:markup>
 		  	  </div>

@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.module.definition.impl;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,14 +41,12 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
-import java.io.File;
-import java.io.InputStream;
+
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.xml.sax.SAXException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -69,19 +68,18 @@ import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.NoBinderByTheIdException;
+import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.NoPrincipalByTheNameException;
 import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workflow.WorkflowModule;
@@ -89,14 +87,13 @@ import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.survey.Survey;
-import com.sitescape.team.web.tree.TreeHelper;
-import com.sitescape.team.util.DirPath;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.team.web.tree.TreeHelper;
+import com.sitescape.team.web.util.MarkupUtil;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
@@ -1738,9 +1735,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (inputData.exists(nameValue)) {
 							description.setText(inputData.getSingleValue(nameValue));
 							//Deal with any markup language transformations before storing the description
-							WebHelper.scanDescriptionForUploadFiles(description, nameValue, fileData);
-							WebHelper.scanDescriptionForAttachmentFileUrls(description);
-							WebHelper.scanDescriptionForICLinks(description);
+							MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
+							MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
+							MarkupUtil.scanDescriptionForICLinks(description);
 							entryData.put(nameValue, description);
 						}
 					} else if (itemName.equals("folderBranding") || itemName.equals("workspaceBranding")) {
@@ -1748,9 +1745,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (inputData.exists(nameValue)) {
 							description.setText(inputData.getSingleValue(nameValue));
 							//Deal with any markup language transformations before storing the description
-							WebHelper.scanDescriptionForUploadFiles(description, nameValue, fileData);
-							WebHelper.scanDescriptionForAttachmentFileUrls(description);
-							WebHelper.scanDescriptionForICLinks(description);
+							MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
+							MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
+							MarkupUtil.scanDescriptionForICLinks(description);
 							entryData.put(nameValue, description.getText());
 						}
 					} else if (itemName.equals("folderAttributeList")) {

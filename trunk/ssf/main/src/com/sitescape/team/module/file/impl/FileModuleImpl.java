@@ -1264,22 +1264,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         		} 
            		//add file name so not null
             	if (Validator.isNull(entry.getTitle())) entry.setTitle(fAtt.getFileItem().getName());
-            	//if file was referenced from a field, resolve markup now as part of this transaction
-            	if (fui.isMarkup()) {
-            		String fieldName = fui.getMarkupFieldName();
-            		if (Validator.isNotNull(fieldName) && !fieldName.equals(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) {
-            			CustomAttribute attr = entry.getCustomAttribute(fieldName);
-            			if (attr != null) {
-            				Object val = attr.getValue();
-            				if (val instanceof Description) {
-            					WebHelper.scanDescriptionForAttachmentUrls((Description)val, entry);
-            				}
-            			}
-            		} else {
-    					WebHelper.scanDescriptionForAttachmentUrls(entry.getDescription(), entry);           			
-            		}
-            		
-            	}
         		ChangeLog changes;
             	if (isNew)
             		changes = new ChangeLog(entry, ChangeLog.FILEADD);

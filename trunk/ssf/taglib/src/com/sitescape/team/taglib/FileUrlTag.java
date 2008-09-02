@@ -71,11 +71,11 @@ public class FileUrlTag extends BodyTagSupport {
 			HttpServletRequest req =
 				(HttpServletRequest)pageContext.getRequest();
 			String webUrl = null;
-			if (attachment != null) webUrl = WebUrlUtil.getFileUrl(webPath, attachment);
-			else if (searchResult != null) webUrl = WebUrlUtil.getFileUrl(webPath, searchResult);
+			if (attachment != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, attachment);
+			else if (searchResult != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, searchResult);
 			else {
 				attachment = (FileAttachment)entity.getAttachment(fileId); 
-				if (attachment != null) webUrl = WebUrlUtil.getFileUrl(webPath, attachment);
+				if (attachment != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, attachment);
 			}
 			if (Validator.isNotNull(webUrl)) pageContext.getOut().print(webUrl);
 			return SKIP_BODY;

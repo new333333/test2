@@ -74,7 +74,7 @@
 				<c:if test="${!empty fileEntry._desc}">
 				<div class="ss_blockquote_watermark"></div>
 				<div class="ss_blockquote_watermark_content">
-					<span><ssf:markup type="view" binderId="${fileEntry._binderId}" entryId="${fileEntry._docId}">
+					<span><ssf:markup search="${fileEntry}">
 						<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
 								${fileEntry._desc}
 						</ssf:textFormat>
