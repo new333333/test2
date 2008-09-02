@@ -96,101 +96,18 @@ function ss_confirmSetWikiHomepage() {
 </c:if>
 </div>
 
-<div id="ss_wrap" align="center">
- <div id="ss_tabsC">
-  <ul>
-	<!-- CSS Tabs -->
-  <c:if test="${empty ssWikiCurrentTab}"><c:set var="ssWikiCurrentTab" value="entries" scope="request"/></c:if>
-	<li <c:if test="${ssWikiCurrentTab == 'directory'}">class="ss_tabsCCurrent"</c:if>
-	><a id="ss_wikiDirectoryTab${renderResponse.namespace}"
-	  href="javascript: ;"
-		onClick="ss_selectWikiTab(this, 'directory', '${renderResponse.namespace}');return false;"
-		><span><ssf:nlt tag="wiki.tab.directory"/></span></a></li>
-	
-	<li <c:if test="${ssWikiCurrentTab == 'entries'}">class="ss_tabsCCurrent"</c:if>
-	><a id="ss_wikiEntriesTab_${renderResponse.namespace}" 
-	  href="javascript: ;"
-		onClick="ss_selectWikiTab(this, 'entries', '${renderResponse.namespace}');return false;"
-		><span><ssf:nlt tag="wiki.tab.entries"/></span></a></li>
-
-  </ul>
- </div>
-</div>
-<div class="ss_clear"></div>
-<script type="text/javascript">
-var ss_wikiTabCurrent_${renderResponse.namespace} = document.getElementById('ss_wikiEntriesTab_${renderResponse.namespace}');
-</script>
-
-<div id="ss_wiki_directory_div${renderResponse.namespace}" style="display:none;">
   <%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
   <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
   <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
-  <div class="ss_folder" >
-       <table cellspacing="0" cellpadding="0">
-		  <c:forEach var="entry1" items="${ssFolderEntries}" >
-			<jsp:useBean id="entry1" type="java.util.HashMap" />
-			<%
-				String folderLineId = "folderLine_" + (String) entry1.get("_docId");
-				String seenStyle = "";
-				String seenStyleFine = "ss_finePrint";
-				if (!ssSeenMap.checkIfSeen(entry1)) {
-					seenStyle = "ss_unseen";
-					seenStyleFine = "ss_unseen ss_fineprint";
-				}
-			%>
-		    <tr><td><div style="padding:0px 4px 4px 8px;">
-		    <a 
-		    href="<ssf:url     
-		    adapter="true" 
-		    portletName="ss_forum" 
-		    folderId="${ssFolder.id}" 
-		    action="view_folder_entry" 
-		    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true"><ssf:param
-		    name="entryViewStyle" value="popup"/><ssf:param
-		    name="namespace" value="${renderResponse.namespace}"/><ssf:ifaccessible><ssf:param name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
-
-		    <ssf:title tag="title.open.folderEntry">
-			    <ssf:param name="value" useBody="true"><c:choose><c:when test="${!empty entry1.title}">${entry1.title}</c:when><c:otherwise>--<ssf:nlt tag="entry.noTitle"/>--</c:otherwise></c:choose></ssf:param>
-		    </ssf:title>
-
-		    <ssf:ifnotaccessible>
-		    	onClick="ss_selectWikiTab(document.getElementById('ss_wikiEntriesTab_${renderResponse.namespace}'), 'entries', '${renderResponse.namespace}');ss_loadWikiEntry(this, '${entry1._docId}');return false;" 		    	
-		    </ssf:ifnotaccessible>
-		    
-		    <ssf:ifaccessible>
-			    onClick="ss_loadWikiEntryInParent(this, '${entry1._docId}');return false;" 
-		    </ssf:ifaccessible>
-		    
-		    >
-		    
-   			<% if (!ssSeenMap.checkIfSeen(entry1)) { %>
-								    
-			  <a id="ss_sunburstDiv${entry1._binderId}_${entry1._docId}" href="javascript: ;" 
-			  title="<ssf:nlt tag="sunburst.click"/>"
-			  onClick="ss_hideSunburst('${entry1._docId}', '${entry1._binderId}');return false;"
-			><span 
-			  style="display:${ss_sunburstVisibilityHide};"
-			  id="ss_sunburstShow${renderResponse.namespace}" 
-			  class="ss_fineprint">
-			 	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" <ssf:alt tag="alt.new"/> />&nbsp;
-			  </span>
-			  </a>
-							    
-			<% } %>
-		    
-		    <c:if test="${empty entry1.title}"
-		    ><span id="folderLine_${entry1._docId}" class="ss_smallprint <%= seenStyleFine %>"
-		      >--<ssf:nlt tag="entry.noTitle"/>--</span
-		    ></c:if><span id="folderLine_${entry1._docId}" class="ss_smallprint <%= seenStyle %>"
-		      ><c:out value="${entry1.title}"/></span></a>
-		    </td></tr>
-		  </c:forEach>
-		</table>
-  </div>
+<table cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td valign="top">
+<%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_listing.jsp" %>
+</td>
+<td valign="top" width="200">
+<div id="ss_sideNav_wrap">
+<jsp:include page="/WEB-INF/jsp/sidebars/wiki.jsp" />
 </div>
-
-<div id="ss_wiki_entries_div${renderResponse.namespace}" style="display:block;">
-  <div class="ss_folder" id="ss_wiki_folder_div">
-    <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_listing.jsp" %>
-  </div>
-</div>
+</td>
+</tr>
+</table>

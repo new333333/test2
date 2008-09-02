@@ -115,7 +115,6 @@ var ss_urlBase = self.location.protocol + "//" + self.location.host;
 var ss_rootPath = "<html:rootPath/>";
 var ss_imagesPath = "<html:imagesPath/>";
 	
-var ss_sliderCssUrl = ss_urlBase + ss_rootPath + "css/slider_swing.css";
 var ss_1pix = ss_imagesPath + "pics/1pix.gif";
 var ss_forumColorsCssUrl = "<ssf:url webPath="viewCss">
 	    <ssf:param name="theme" value="${ssUser.theme}"/>
@@ -152,7 +151,8 @@ var ss_validationErrorMessage;
 </script>
 
 <link href="<html:rootPath/>css/forum.css" rel="stylesheet" type="text/css" />
-<link href="<ssf:url  webPath="viewCss"> <ssf:param name="theme" value=""/>
+<link href="<html:rootPath/>css/slider_swing.css" rel="stylesheet" type="text/css" />
+<link href="<ssf:url webPath="viewCss"> <ssf:param name="theme" value="${ssUser.theme}"/>
 	    </ssf:url>" rel="stylesheet" type="text/css" />
 
 <script type="text/javascript">

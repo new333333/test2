@@ -42,7 +42,7 @@
 <jsp:include page="/WEB-INF/jsp/sidebars/default.jsp" />
 </c:if>
 <c:if test="${ss_folderViewStyle == 'wiki'}">
-<jsp:include page="/WEB-INF/jsp/sidebars/wiki.jsp" />
+<jsp:include page="/WEB-INF/jsp/sidebars/default.jsp" />
 </c:if>
 <c:if test="${ss_folderViewStyle == 'photo'}">
 <jsp:include page="/WEB-INF/jsp/sidebars/default.jsp" />
