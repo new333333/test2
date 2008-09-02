@@ -453,7 +453,7 @@ public class ListFolderHelper {
 		if (Validator.isNull(yearMonth)) yearMonth = (String) tabOptions.get(Tabs.YEAR_MONTH);
 		if (Validator.isNotNull(yearMonth)) {
 			options.put(ObjectKeys.SEARCH_YEAR_MONTH, yearMonth);
-			model.put(WebKeys.URL_YEAR_MONTH, yearMonth);
+			model.put(WebKeys.YEAR_MONTH, yearMonth);
 			String strYear = yearMonth.substring(0, 4);
 			String strMonth = yearMonth.substring(4, 6);
 			int intMonth = Integer.parseInt(strMonth);

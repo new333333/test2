@@ -38,15 +38,18 @@ boolean isIE = BrowserSniffer.is_ie(request);
      <c:if test="<%= isIE %>">
        offsetY="25"
      </c:if>
-    title="<ssf:nlt tag="helpSpot.blogControls"/>"></ssHelpSpot>
+    title="<ssf:nlt tag="helpSpot.blogControls"/>">
+  </ssHelpSpot>
 
-	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.archives"/></div>
-    <div class="ss_blog_sidebar_box">		
+  <div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.archives"/></div>
+  <div class="ss_blog_sidebar_box">		
 	<table>
 	<c:forEach var="monthYear" items="${ssBlogMonthHits}">
 	  <tr>
-	  <td><a href="${ssBlogMonthUrls[monthYear.key]}" 
-	  class="<c:if test="${!empty selectedYearMonth && selectedYearMonth == ssBlogMonthTitles[monthYear.key]}">ss_bold</c:if>"
+	  <td><a href="${ssBlogMonthUrls[monthYear.key]}"
+	  <c:if test="${monthYear.key == ss_yearMonth}">
+        class="ss_bold" style="background-color:#e5e5e5;" 
+      </c:if>
 	  <ssf:title tag="title.entries.archived.on">
 	  	<ssf:param name="value" value="${ssBlogMonthTitles[monthYear.key]}" />
 	  	<ssf:param name="value" value="${ssBinder.title}" />
@@ -56,8 +59,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	  </tr>
 	</c:forEach>
 	</table>
-	</div>
-    <c:if test="${!empty ssFolderEntryCommunityTags}"> 	
+  </div>
+  <c:if test="${!empty ssFolderEntryCommunityTags}"> 	
 	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
     <div class="ss_blog_sidebar_box">				
 	   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
@@ -71,8 +74,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				>${tag.ssTag}</a>&nbsp;&nbsp;
 	   </c:forEach>
 	</div>
-	</c:if>
-    <c:if test="${!empty ssFolderEntryPersonalTags}"> 
+  </c:if>
+  <c:if test="${!empty ssFolderEntryPersonalTags}"> 
 	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
     <div class="ss_blog_sidebar_box">		
 	   <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
@@ -87,5 +90,5 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			>${tag.ssTag}</a>&nbsp;&nbsp;
 	   </c:forEach>
 	</div>
-	</c:if>
+  </c:if>
 </div>

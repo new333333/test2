@@ -45,9 +45,10 @@
 <jsp:include page="/WEB-INF/jsp/sidebars/wiki.jsp" />
 </c:if>
 <c:if test="${ss_folderViewStyle == 'photo'}">
-<jsp:include page="/WEB-INF/jsp/sidebars/photo.jsp" />
+<jsp:include page="/WEB-INF/jsp/sidebars/default.jsp" />
 </c:if>
-<c:if test="${ssDefinitionEntry.entityType == 'folder' && (empty ss_folderViewStyle || ss_folderViewStyle == 'folder')}">
+<c:if test="${ssDefinitionEntry.entityType == 'folder' && 
+  (empty ss_folderViewStyle || ss_folderViewStyle == 'folder')}">
 <jsp:include page="/WEB-INF/jsp/sidebars/default.jsp" />
 </c:if>
 <c:if test="${ss_folderViewStyle == 'guestbook'}">
