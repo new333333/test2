@@ -81,13 +81,13 @@ table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	font-weight: normal;
 	font-size: ${ss_style_font_smallprint};
 	font-family: ${ss_style_title_font_family};
-	}	
+	}
+	/*ENTRY*/	
 table.ss_actions_bar3_pane, table.ss_actions_bar3_pane td {
-/* background-color: #AFC8E3; */
-	background-color: #666666;
+ 	background-color: #AFC8E3; 
 	width: 100%;
 	height: 20px;
-	padding: 4px 0px 0px 0px;
+	padding: 4px 2px 0px 0px;
 	margin: 0px;
 	border-collapse: collapse;
 	border-spacing: 0px;
@@ -109,8 +109,6 @@ table.ss_actions_bar4_pane {
 	}
 .ss_actions_bar5 {
 	background-color:#72AEB6;
-	border-bottom: 1px solid #CCC;
-	border-top: 12px solid #FFFFFF;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 12px;
 	font-weight: bold;
@@ -272,8 +270,8 @@ div.ss_actions_bar_submenu ul.ss_actions_bar4 {
 	top:-8px;
 	left:-10px;
  </c:if>	
-	/* border:1px solid ${ss_toolbar1_background_color};
-	border-top:none; */
+	border:1px solid ${ss_toolbar1_background_color};
+	border-top:none;
 	padding: 1px 1px;
 	}
 .ss_actions_bar_submenu li  {

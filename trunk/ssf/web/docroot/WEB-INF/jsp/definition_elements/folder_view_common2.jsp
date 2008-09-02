@@ -417,8 +417,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 %>
 <c:if test="${slidingTableStyle == 'fixed'}">
 <%
-	seenStyleTitle = "class=\"ss_underline\"";
-	seenStyleTitle2 = "class=\"ss_underlinePlus\"";
+	seenStyleTitle = "class=\"normal\"";
+	seenStyleTitle2 = "class=\"normal\"";
 %>
 </c:if>
 <%
