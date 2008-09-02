@@ -45,11 +45,7 @@
   </td>
   <td valign="top">
     <ssf:editable entity="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}">
-<<<<<<< .mine
-    <span><ssf:markup entity="${ssDefinitionEntry}"><c:out 
-=======
     <span><ssf:markup type="view" entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" ><c:out 
->>>>>>> .r9121
       value="${ssDefinitionEntry.description.text}" 
       escapeXml="false"/></ssf:markup></span>
     </ssf:editable>
