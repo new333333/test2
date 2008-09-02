@@ -32,12 +32,17 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="ss_mashupItemId" value="0" scope="request"/>
 <%  
+	Long ss_mashupTableDepth = Long.valueOf(0);
 	Long ss_mashupTableNumber = Long.valueOf(0);
 	Map ss_mashupTableItemCount = new HashMap(); 
+	Map ss_mashupTableItemCount2 = new HashMap(); 
+	ss_mashupTableItemCount.put(ss_mashupTableDepth, "");
+	ss_mashupTableItemCount2.put(ss_mashupTableDepth, ss_mashupTableNumber);
+	request.setAttribute("ss_mashupTableDepth", ss_mashupTableDepth);
 	request.setAttribute("ss_mashupTableNumber", ss_mashupTableNumber);
 	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
+	request.setAttribute("ss_mashupTableItemCount2", ss_mashupTableItemCount2);
 %>
-
 <c:set var="ss_mashupPropertyName" value="${property_name}" scope="request"/>
 <c:if test="${ssConfigJspStyle == 'form'}">
   <div style="padding: 20px 0px 20px 0px;">

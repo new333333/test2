@@ -31,11 +31,18 @@
 <% //table start %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%
+	Long ss_mashupTableDepth = (Long) request.getAttribute("ss_mashupTableDepth");
 	Long ss_mashupTableNumber = (Long) request.getAttribute("ss_mashupTableNumber");
 	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
+	Map ss_mashupTableItemCount2 = (Map) request.getAttribute("ss_mashupTableItemCount2");
 	ss_mashupTableItemCount.put(ss_mashupTableNumber, "table");  
-	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
+	ss_mashupTableDepth = ss_mashupTableDepth + 1;
 	ss_mashupTableNumber = ss_mashupTableNumber + 1;
+	ss_mashupTableItemCount.put(ss_mashupTableNumber, "");  
+	ss_mashupTableItemCount2.put(ss_mashupTableDepth, ss_mashupTableNumber);  
+	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
+	request.setAttribute("ss_mashupTableItemCount2", ss_mashupTableItemCount2);
+	request.setAttribute("ss_mashupTableDepth", ss_mashupTableDepth);
 	request.setAttribute("ss_mashupTableNumber", ss_mashupTableNumber);
 %>
 <c:set var="ss_mashupColStarted" value="false" scope="request"/>
