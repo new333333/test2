@@ -84,7 +84,7 @@ table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	}	
 table.ss_actions_bar3_pane, table.ss_actions_bar3_pane td {
 /* background-color: #AFC8E3; */
-	background-color: #FFFFFF;
+	background-color: #666666;
 	width: 100%;
 	height: 20px;
 	padding: 4px 0px 0px 0px;
