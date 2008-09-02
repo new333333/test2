@@ -105,7 +105,7 @@
 	    <br/>
 	    <span class="ss_summary"><ssf:textFormat 
 	      formatAction="limitedDescription" 
-	      textMaxWords="10"><ssf:markup type="view">${entry._desc}</ssf:markup></ssf:textFormat></span>
+	      textMaxWords="10"><ssf:markup search="${entry}">${entry._desc}</ssf:markup></ssf:textFormat></span>
 	  </c:if>
 	
     </li><br/>
