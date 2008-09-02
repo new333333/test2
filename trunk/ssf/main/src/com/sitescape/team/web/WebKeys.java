@@ -1032,6 +1032,7 @@ public class WebKeys {
     public static final String WORKSPACES="ssWorkspaces";
     public static final String WORKSPACE_CREATOR="ssWorkspaceCreator";
     public static final String WORKSPACE_BEANS_SETUP="ssWorkspaceBeansSetup";
+	public static final String YEAR_MONTH="ss_yearMonth";
     public static final String ZONE_NAME = "com.sitescape.zonename";
     public static final String ZONE_ID = "com.sitescape.zoneId";
     public static final String TOKEN_INFO_ID = "ssTokenInfoId";

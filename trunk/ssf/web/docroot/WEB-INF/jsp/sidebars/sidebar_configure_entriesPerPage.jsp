@@ -40,8 +40,8 @@
 					name="binderId" value="${ssFolder.id}"/>
 					<c:if test="${!empty cTag}"><ssf:param 
 					name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
-					name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
-					name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+					name="pTag" value="${pTag}"/></c:if><c:if test="${!empty ss_yearMonth}"><ssf:param 
+					name="yearMonth" value="${ss_yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 					name="endDate" value="${endDate}"/></c:if><ssf:param 
 					name="operation" value="change_entries_on_page"/></ssf:url>">
 			    

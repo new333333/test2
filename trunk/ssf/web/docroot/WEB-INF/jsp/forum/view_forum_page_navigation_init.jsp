@@ -53,8 +53,8 @@ var ss_pageNavigationSliderUrl${renderResponse.namespace} = '<ssf:url action="${
 	name="binderId" value="${ssFolder.id}"/><ssf:param 
 	name="ssPageStartIndex" value="ss_pageIndexPlaceHolder"/><c:if test="${!empty cTag}"><ssf:param 
 	name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
-	name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
-	name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+	name="pTag" value="${pTag}"/></c:if><c:if test="${!empty ss_yearMonth}"><ssf:param 
+	name="yearMonth" value="${ss_yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 	name="endDate" value="${endDate}"/></c:if></ssf:url>';
 	
 //Check the Page Number Before Submission

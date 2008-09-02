@@ -82,6 +82,17 @@ function ss_setPhotoIframeSize${renderResponse.namespace}() {
 <%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>
 </c:if>
 </div>
+<table cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td valign="top">
 <div class="ss_folder" id="ss_photo_folder_div">
 <%@ include file="/WEB-INF/jsp/definition_elements/photo/photo_folder_listing.jsp" %>
 </div>
+</td>
+<td valign="top" width="200">
+<div id="ss_sideNav_wrap">
+<jsp:include page="/WEB-INF/jsp/sidebars/photo.jsp" />
+</div>
+</td>
+</tr>
+</table>

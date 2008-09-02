@@ -145,8 +145,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				name="binderId" value="${ssFolder.id}"/><ssf:param 
 				name="ssPageStartIndex" value="${ssPagePrevious.ssPageInternalValue}"/><c:if test="${!empty cTag}"><ssf:param 
 				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
-				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
-				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty ss_yearMonth}"><ssf:param 
+				name="yearMonth" value="${ss_yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 				name="endDate" value="${endDate}"/></c:if></ssf:url>" 
 				<ssf:title tag="title.goto.prev.page" /> >&lt;&lt;
 			</a>
@@ -163,8 +163,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				name="binderId" value="${ssFolder.id}"/><ssf:param 
 				name="ssPageStartIndex" value="${ssPageNext.ssPageInternalValue}"/><c:if test="${!empty cTag}"><ssf:param 
 				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
-				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
-				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty ss_yearMonth}"><ssf:param 
+				name="yearMonth" value="${ss_yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 				name="endDate" value="${endDate}"/></c:if></ssf:url>" 
 				<ssf:title tag="title.goto.next.page" />>&gt;&gt;
 			</a>
