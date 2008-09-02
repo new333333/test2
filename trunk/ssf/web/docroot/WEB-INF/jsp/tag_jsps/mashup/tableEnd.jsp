@@ -31,16 +31,20 @@
 <% //table2_col2 top %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%
+	Long ss_mashupTableDepth = (Long) request.getAttribute("ss_mashupTableDepth");
 	Long ss_mashupTableNumber = (Long) request.getAttribute("ss_mashupTableNumber");
 	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
-	if (!ss_mashupTableItemCount.containsKey(ss_mashupTableNumber)) 
-		ss_mashupTableItemCount.put(ss_mashupTableNumber, "");
+	Map ss_mashupTableItemCount2 = (Map) request.getAttribute("ss_mashupTableItemCount2");
+	Long mashupTableNumber = (Long) ss_mashupTableItemCount2.get(ss_mashupTableDepth);
+	String mashupTableValue = "";
+	mashupTableValue = (String) ss_mashupTableItemCount.get(mashupTableNumber);
+	if (mashupTableValue == null) mashupTableValue = "";
 %>
 <c:if test="${ssConfigJspStyle == 'form'}">
 	<script type="text/javascript">
 	//Routine called when "Delete table" is clicked
 	function ss_mashup_deleteTable${ss_mashupItemId}_${renderResponse.namespace}() {
-		if ('${ss_mashupTableItemCount[ss_mashupTableNumber]}' != '') {
+		if ('<%= mashupTableValue %>' != '') {
 			alert('<ssf:nlt tag="mashup.tableNotEmpty"/>');
 			return false;
 		}
@@ -62,6 +66,6 @@
   </div>
 </c:if>
 <%
-	ss_mashupTableNumber = ss_mashupTableNumber - 1;
-	request.setAttribute("ss_mashupTableNumber", ss_mashupTableNumber);
+	ss_mashupTableDepth = ss_mashupTableDepth - 1;
+	request.setAttribute("ss_mashupTableDepth", ss_mashupTableDepth);
 %>
