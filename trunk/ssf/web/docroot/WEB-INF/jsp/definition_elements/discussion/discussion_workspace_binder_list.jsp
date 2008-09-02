@@ -97,14 +97,6 @@
 		  				textMaxWords="50">${binder._desc}</ssf:textFormat></ssf:markup>
 		  		</div>
     			<c:forEach var="subBinder" items="${ss_bindersSubBinders[binder._docId]}">
-    				<c:if test="${binderCounter2 >= (binderCounter/2) && column2Seen == '0'}">
-    				  <c:set var="column2Seen" value="1"/>
-    				  </div><!-- end of topic -->
-    				  </td><!-- end of Column 1 -->
-					  <!-- Start Right Column -->
-      				  <td valign="top">
-      				  <div id="ss_topic">
-  					</c:if>
       				<c:if test="${subBinder._entityType == 'workspace' || subBinder._entityType == 'profiles'}">
       					<div id="ss_topic_thread" class="ss_disc_sub_th1">
         				  <div style="padding-left:10px;">
