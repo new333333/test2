@@ -78,7 +78,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /* TOP PART OF DISCUSSION TOPIC PAGE */	
 	
 #ss_diss_inset{
-	width:95%;
+	width:98%;
+	align: left;
 	}
 #ss_diss_top{
 	width: 90%;
@@ -335,7 +336,7 @@ a.ss_new_thread:hover {
 	font-weight: bold !important;
 	color:#F47400;
 	border: dotted 1px #999999 !important; /* text-decoration: underline; */
-	padding:3px 5px 3px 5px;
+	padding:1px 5px 1px 5px;
 	}	
 .ss_navbar_new {
 	font-family: Arial;

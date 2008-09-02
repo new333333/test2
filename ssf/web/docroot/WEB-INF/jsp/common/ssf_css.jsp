@@ -1109,53 +1109,41 @@ div.ss_header_bar_timestamp {
 	
 div.ss_header_bar_timestamp a, div.ss_header_bar_timestamp a:visited {
 	color: ${ss_style_metadata_color};
-}
-
+	}
 div.ss_header_bar_timestamp a:hover, div.ss_header_bar_timestamp a:visited:hover {
 	color: ${ss_style_metadata_color};
 	text-decoration: underline;
-}
-
-
+	}
 div.ss_header_bar_burst {
     display: inline;
 	padding-left: 3px;
-}
-
+	}
 div.ss_replies div.ss_header_bar_burst {
     display: inline;
 	padding-left: 30px;
-}
-
+	}
 div.ss_header_bar_title_text {
     display: inline;
-}
-
+	}
 span.ss_header_bar_title_text {
     font-family: ${ss_style_title_font_family};
     font-weight: bold;
 	color: ${ss_style_header_bar_title_color};
 	font-size: 15px;
 	margin-left: 5px;
-}
-
+	}
 a.ss_header_bar_title_link {
 	color: ${ss_style_header_bar_title_link_color};
 	text-decoration: none;
-}
-
+	}
 a.ss_header_bar_title_link:visited {
 	color: ${ss_style_header_bar_title_link_color};
 	text-decoration: none;
-}
-
+	}
 a.ss_header_bar_title_link:hover, a.ss_header_bar_title_link:visited:hover {
 	color: ${ss_style_header_bar_title_link_color};
 	text-decoration: underline;
-}
-
-
-
+	}
 a.ss_displaytag {
 	color: ${ss_style_metadata_color};
 	}
@@ -1272,21 +1260,29 @@ table.ss_mouseOverInfo {
 /*******FIXED TABLE STYLES*****************/
 
 /* Parent Folder */
+#ss_folder{
+	width:100%;
+	}
 #ss_folder_table_parent{
 	width:100%;
 	}	
 #ss_fixed_table{
 	border-bottom: solid 0.4px #CCC;
 	font-family: Arial, Helvetica, sans serif;
-	font-size: 11px;
+	font-size: 10px;
 	color: #333;
 	}
 .ss_fixed_TD{
-	border-bottom: solid 2px #72AEB6;
+	border-bottom: solid .04em #72AEB6;
+	font-size: 10px: !important;
+	padding: 10px 0px 10px 0px;
 	}
 .ss_fixed_TH{
 	border: solid .04px #CCC;
 	padding:4px 2px 5px 5px;
+	}
+.ss_fixed_TH a:hover {
+	background: #FFD467;
 	}
 .ss_fixed_centered_col ss_fixed_TH ss_fixed_TD{
 	text-align: center;
@@ -1294,11 +1290,24 @@ table.ss_mouseOverInfo {
 .ss_fixed_odd_TR {
 	background: #E9F1F1;
 	}
+.ss_fixed_odd_TR a:hover {
+	background: #9EC8CD;
+	}
 .ss_fixed_even_TR {
 	background: #FFF;
 	}
+.ss_fixed_even_TR a:hover{
+	background: #9EC8CD;
+	}
+.ss_fixed_TD_frame {
+	border: 0px 1px 1px 1px;
+	border-color:  #72AEB6;
+	border-style: solid;
+	}	
 .ss_tableheader_style{
-	font-family:  
+	font-size: 9px!important;
+	background: #9EC8CD;
+	text-decoration: none;
 	}
 
 

@@ -61,7 +61,7 @@
 	}
 	if (slidingTableHeaderRow != null && slidingTableHeaderRow.booleanValue()) {
 %>
-<tr class="ss_headerRow" <%= slidingTableRowIdText %>>
+<tr class="ss_tableheader_style" <%= slidingTableRowIdText %>>
 <%
 	} else {
 %>
@@ -87,7 +87,7 @@
 			if (colStyle == null) colStyle = "";
 			if (slidingTableHeaderRow != null && slidingTableHeaderRow.booleanValue()) {
 %>
-  <th scope="col" class="ss_bold <%= colStyle %>" align="left" <%= widthAttr %> ><%= text %></th>
+  <th scope="col"  <%= colStyle %>" align="left" <%= widthAttr %> ><%= text %></th>
 <%
 			} else {
 %>
