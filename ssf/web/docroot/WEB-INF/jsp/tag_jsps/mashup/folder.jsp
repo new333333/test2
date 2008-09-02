@@ -37,7 +37,15 @@
 	ss_mashupTableItemCount.put(ss_mashupTableNumber, "folder");  
 	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
 %>
-
+<c:if test="${ssConfigJspStyle == 'form'}">
+	<script type="text/javascript">
+	//Routine called when "Delete entry" is clicked
+	function ss_mashup_deleteFolder${ss_mashupItemId}_${renderResponse.namespace}() {
+		var formObj = self.document.forms['${ss_form_form_formName}'];
+		formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "";
+	}
+	</script>
+</c:if>
 <c:set var="mashupBinder" value="${ss_mashupBinders[mashup_value1]}"/>
 <div style="margin:10px; padding:10px; " width="100%">
   <c:if test="${!empty mashupBinder}">
@@ -63,26 +71,29 @@
 	  </c:forEach>
 	</div>
 	</c:if>
+	<c:if test="${ssConfigJspStyle == 'form'}">
+	  <div>
+	    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
+	      class="ss_linkButton ss_fineprint"
+	      onClick="ss_mashup_deleteFolder${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
+	  </div>
+    </c:if>
   </c:if>
 
   <c:if test="${empty mashupBinder}">
-	<script type="text/javascript">
-	//Routine called when "Delete entry" is clicked
-	function ss_mashup_deleteFolder${ss_mashupItemId}_${renderResponse.namespace}() {
-		var formObj = self.document.forms['${ss_form_form_formName}'];
-		formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "";
-	}
-	</script>
 	<div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
 	  <a href="<ssf:url action="view_folder_listing" 
 		  folderId="${mashupBinder.id}">
 		  <ssf:param name="newTab" value="1"/>
 		  </ssf:url>"
 	  ><span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.folder"/></span></a>
-	  <br/>
-	  <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
-	    class="ss_linkButton ss_fineprint"
-	    onClick="ss_mashup_deleteFolder${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
 	</div>
+	<c:if test="${ssConfigJspStyle == 'form'}">
+	  <div>
+	    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
+	      class="ss_linkButton ss_fineprint"
+	      onClick="ss_mashup_deleteFolder${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
+	  </div>
+    </c:if>
   </c:if>
 </div>
