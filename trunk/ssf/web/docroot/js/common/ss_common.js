@@ -3849,6 +3849,7 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType,
 	var iframeRow = document.createElement("tr");
 	iframeRow.setAttribute("id", "ss_entry_rowId"+id+random);
 	var iframeCol = document.createElement("td");
+	iframeCol.className = "ss_fixed_TD_frame";
 	iframeCol.setAttribute("colSpan", count);
 	iframeRow.appendChild(iframeCol);
 	//Draw Iframe for discussion thread
@@ -3856,7 +3857,7 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType,
 	iframeCol.innerHTML = '<div id="ss_entry_iframeDiv'+id+random+'" style="width:'+(ss_getObjectWidth(tableDivObj)-50)+'px;">' +
 		'<iframe id="ss_entry_iframe'+id+random+'" name="ss_entry_iframe'+id+random+'"' +
     	' src="'+url+'"' +
-    	' style="height:300px;width:'+(ss_getObjectWidth(tableDivObj)-50)+'px; margin:10px 10px 10px 16px; padding:0px;" frameBorder="1"' +
+    	' style="height:300px;width:'+(ss_getObjectWidth(tableDivObj)-50)+'px; margin:10px 10px 10px 20px; padding:0px;" frameBorder="0"' +
     	' onLoad="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+random+'\', \'ss_entry_iframe'+id+random+'\', \''+hoverOverId+'\')"' +
     	'>xxx</iframe>' +
     	'</div>';

@@ -78,7 +78,7 @@
 	 </div>
 
 	</td>
-	<td align="right" width="10%">
+	<td align="right" width="8%">
 		<div class="ss_normal ss_navbar_new">
 			<c:if test="${ssConfigJspStyle != 'template'}">
 			  <a href="<ssf:url ><ssf:param 
