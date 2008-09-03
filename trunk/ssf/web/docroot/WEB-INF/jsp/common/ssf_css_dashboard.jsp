@@ -42,7 +42,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	clear:both;
 	float:left;	*/
 	vertical-align:top;
-    width:100%;	/* width of whole page */
+    /* width:100%;	 width of whole page */
 	overflow:hidden; /* This chops off any overhanging divs */
 	}
 

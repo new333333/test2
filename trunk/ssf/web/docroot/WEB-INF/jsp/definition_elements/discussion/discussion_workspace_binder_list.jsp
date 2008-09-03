@@ -31,10 +31,13 @@
 <% // Discussion Workspace binder listing %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
-<div id="ss_dashboard_content">
+<div id="ss_dashboard_content" class="ss_doublecolumn">
+<div align="center">
  <div id="ss_folder_inset">
-  <table width="100%">
-	<tbody><tr><td valign="top" width="50%">
+  <div id="ss_column_L" class="ss_dblcolleft">
+      <div class="ss_dblcol1">
+      
+      <!-- Start Left Column -->
 
 		<div id="ss_topic">
 			<c:set var="binderCounter" value="0"/> <% // set binder counter to zero (first pass) %>
@@ -54,9 +57,10 @@
   			  <c:if test="${binderCounter2 >= (binderCounter/2) && column2Seen == '0'}">
     			<c:set var="column2Seen" value="1"/>
     			</div><!-- end of topic -->
-    			</td><!-- end of Column 1 -->
-				<!-- Start Right Column -->
-      			<td valign="top">
+        </div><!-- end of ss_col 1 -->
+        <!-- Start Right Column -->
+      	<div id="ss_column_R">
+      	<div class="ss_dblcol2">
       			<div id="ss_topic">
   			  </c:if>
 
@@ -215,9 +219,10 @@
 
 </c:forEach>
 </div><!-- end of ss_topic (see top) -->
-</td>
-</tr>
-</tbody>
-</table>
-</div><!-- end of folder inset -->
-</div><!-- end of dashboard content -->
+      </div><!-- end of col2 (right column) -->
+      </div><!-- end of ss_col_R (right column placeholder) -->
+    </div><!-- end of col left -->
+</div><!-- end of inset -->
+</div><!-- end of center -->
+</div><!-- end of content -->
+<div class="ss_clear_float"></div>

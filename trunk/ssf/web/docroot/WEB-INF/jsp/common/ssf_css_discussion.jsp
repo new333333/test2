@@ -74,19 +74,24 @@ boolean isIE = BrowserSniffer.is_ie(request);
   		width:98%;
  	</c:if>
 	}	
+.ss_overflow {
+	overflow:hidden;
+	vertical-align: top;
+	width: 50% !important;
+	}	
 	
 /* TOP PART OF DISCUSSION TOPIC PAGE */	
 	
 #ss_diss_inset{
-	width:98%;
+	width:95%;
 	align: left;
 	}
 #ss_diss_top{
-	width: 90%;
+	/* width: 90%; */
 	color: #777;
 	}	
 #ss_topic_box { 
-	margin: 1% 0 1% 0;
+	margin: 1% 0 2% 0;
 	border: 1px #CCCCCC solid; 
 	padding: 0% 5% 3% 3%;
 	font-size: 12px;
@@ -128,11 +133,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 #ss_folder_inset{
 	margin:0% 5% 0% 5%;
-	width:75%;
+	width:85%;
 	text-align:left;
 	}
 #ss_topic{
-	margin: 2% 25% 2% 5px;
+	margin: 2% 5% 2% 5px;
 	color:#555;
 	font-family: Arial, Helvetica, sans-serif;
 	}

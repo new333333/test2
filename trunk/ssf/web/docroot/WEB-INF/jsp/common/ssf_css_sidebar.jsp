@@ -48,7 +48,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-color: #CCCCCC;
 	border-style: solid;
 	border-width: 0;
-	width: 100%;
+	width: 198px;
 	height:auto;
 	margin-right: 6px;
 	overflow:hidden;
@@ -116,7 +116,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /*This is the box style for the drop down menu open*/
 .ss_sidebarMenu{
 	margin: 3px 8px 3px 8px;
-	padding: 8px 4px 8px 4px;			
+	padding: 8px 4px 8px 4px;	
+	<c:if test="<%= isIE %>">
+		padding: 8px 2px 8px 4px
+ 	</c:if>				
 	}	
 .ss_menuOpen {
 	background-image:  url("<html:rootPath/>images/pics/sidebar/backgrounddropdowns.png");
@@ -144,6 +147,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color: #CCFFFF;
 	margin: 3px 8px 3px 8px;
  	padding: 8px 4px 8px 4px;
+ 	<c:if test="<%= isIE %>">
+		padding: 8px 2px 8px 4px
+ 	</c:if>		
 		}		
 /*.ss_sidebarMenu .ss_menuClosed a:hover {
     color: #5A9A98;
@@ -155,7 +161,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}	
 .ss_sidebarMenu a:hover {
     Color: #5A9A98;
-	background-color: #CCFFFF;
+	background-color: #CCFFFF;	
 
 	} */
 .ss_sidebarTitle{
