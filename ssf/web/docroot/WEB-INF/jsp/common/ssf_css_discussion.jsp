@@ -359,19 +359,20 @@ a.ss_new_thread:hover {
 .ss_pagination {
 	font-size: ${ss_style_font_fineprint} !important;
 	background-color: #CCDFDE !important;
-	height:38px !important;
+/*	height:38px !important;		*/
 	margin-bottom: 0px;
 	}
 /***********This is the style sub-group for the "Go boxes" ***********/
 #ss_goBox {
-	height:38px !important;
+/*	height:38px !important;		*/
 	<c:if test="<%= isIE %>">
- 	height:38px !important;
+/*	height:38px !important;		*/
  	</c:if>
 	}
 .ss_pagination_goTable {
-	height:38px !important;
+/*	height:38px !important;		*/
 	background-color: #CCDFDE !important;
+	padding:4px 0px;
 	white-space: nowrap !important;
 	}
 .ss_paginationGo {
@@ -386,7 +387,7 @@ a.ss_new_thread:hover {
 .ss_page_IE {
 	<c:if test="<%= isIE %>">
  		vertical-align:middle !important;
- 		padding-top:10px;
+ 		padding-top:5px;
  	</c:if>
  	}
 .ss_page_IE2 {
@@ -395,9 +396,9 @@ a.ss_new_thread:hover {
 	padding-right: 5px;
 	padding-top: 2px;
 	<c:if test="<%= isIE %>">
-  		padding-top: 2px;
+  		padding-top: 9px;
   		vertical-align:middle !important;
-  		padding-bottom: 10px;
+  		padding-bottom: 8px;
  	</c:if>
  	overflow:hidden;
  	}	
@@ -426,10 +427,14 @@ a.ss_new_thread:hover {
 /***********This is the style sub-group for Page N of M ***********/
 .ss_paginationDiv {
 	background-color: #E9F1F1 !important;
-	height:38px !important;
+	padding:4px 0px;
+	<c:if test="<%= isIE %>">
+  		padding:4px 0px 6px 0px;
+ 	</c:if>	
+/*	height:38px !important;		*/
 	}
 .ss_pagination_table {
-	height:38px !important;
+/*	height:38px !important;		*/
 /*	white-space: nowrap !important; */
 	}
 .ss_pagination_arrows {
@@ -450,8 +455,9 @@ a.ss_new_thread:hover {
 	<c:if test="<%= isIE %>">
   		margin-top: 5px;
   		padding-top: 4px;
+  		padding-bottom: 4px;
  	</c:if>
- 	overflow:hidden;
+ 	/* overflow:hidden; */
 	}
 .ss_paginationFont a{
 	border:solid 1px #DDDDDD !important;
@@ -461,9 +467,9 @@ a.ss_new_thread:hover {
 	color:#408080!important;
 	font-weight:normal;
 	vertical-align:middle;
-	padding:3px 4px 0px 6px;
+	padding:1px 4px 0px 6px;
 	<c:if test="<%= isIE %>">
-  		padding:3px 4px 0px 6px;
+  		padding:1px 4px 0px 6px;
  	</c:if>
 	}
 .ss_pageNext {
