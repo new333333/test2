@@ -1275,7 +1275,10 @@ table.ss_mouseOverInfo {
 .ss_fixed_TD{
 	border-bottom: solid .04em #72AEB6;
 	font-size: 10px: !important;
-	padding: 10px 0px 10px 0px;
+	padding: 12px 2px 12px 2px;
+	}
+.ss_fixed_TD_left{
+	padding-left: 4px;
 	}
 .ss_fixed_TH{
 	border: solid .04px #CCC;
@@ -4247,10 +4250,13 @@ a.ss_taskPriority_p5_u:hover img, a.ss_taskPriority_p4_u:hover img, a.ss_taskPri
 
 div.ssPageNavi {
 	margin: 0px;
+	border-top: solid 1px #FFF;
+	border-bottom: solid 1px #FFF;
 	padding-left: 15px;
-	padding-top: 2px;
-	padding-bottom: 5px;
-	background-color: ${ss_style_background_color_side_panel_featured};
+	padding-top: 15px;
+	padding-bottom:15px;
+	background-color: #E9F1F1;
+	text-wrap: normal;
 	}
 div.ssPageNavi table td {
 /*removed no wrap - robbin filter for discussions*/

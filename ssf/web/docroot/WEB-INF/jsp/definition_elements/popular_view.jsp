@@ -32,7 +32,7 @@
 <c:if test="${empty ss_ratingSupportLoaded}">
 <div id="ss_rating_info_div${renderResponse.namespace}" 
   style="position:absolute; display:none; visibility:hidden;
-  border:1px solid black; padding:4px; background-color:#ffffff;">
+  border:1px dotted #666; padding:4px; background-color: #CCDFDE; font-family: Arial; font-size: 12px;">
 <span><ssf:nlt tag="popularity.rating.register"/></span>:
 <span id="ss_rating_info${renderResponse.namespace}"></span>
 </div>
