@@ -73,10 +73,10 @@
 	      %>
 	 	  <c:if test="${ssConfigJspStyle == 'form'}">
 	  	    <%
-	  	    	inputElements.put(request.getAttribute("ss_mashupItemId"), type + "," + value1 + "," + value2);
+	  	    	inputElements.put(request.getAttribute("ss_mashupItemId"), mashupItem);
 	  	    %>
 	  	  </c:if>
-	      <ssf:mashup id="${ss_mashupItemId}" type="<%= type %>" value1="<%= value1 %>" value2="<%= value2 %>" view="${ssConfigJspStyle}"/>
+	      <ssf:mashup id="${ss_mashupItemId}" value="${mashupItem}" view="${ssConfigJspStyle}"/>
 	      <c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
 		  <% if (!type.equals("tableStart")) { %>
 			  <c:if test="${ssConfigJspStyle == 'form'}">

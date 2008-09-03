@@ -72,8 +72,7 @@ public class MashupTag extends BodyTagSupport {
 	
 	private String id = "";
 	private String type = "";
-	private String value1 = "";
-	private String value2 = "";
+	private String value = "";
 	private String view = "";
 
 	public int doStartTag() {
@@ -88,21 +87,26 @@ public class MashupTag extends BodyTagSupport {
 		try {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
-			if (type != null && !type.equals("")) {
-
-				httpReq.setAttribute("mashup_id", id);
-				httpReq.setAttribute("mashup_type", type);
-				httpReq.setAttribute("mashup_value1", value1);
-				httpReq.setAttribute("mashup_value2", value2);
-				httpReq.setAttribute("mashup_view", view);
-				
-				// Output the start of the mashup table element
-				String jsp = "/WEB-INF/jsp/tag_jsps/mashup/"+type+".jsp";
-				RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
-				ServletRequest req = pageContext.getRequest();
-				StringServletResponse res = new StringServletResponse(httpRes);
-				rd.include(req, res);
-				pageContext.getOut().print(res.getString().trim());
+			if (value != null && !value.equals("")) {
+				String[] mashupItemValues = value.split(",");
+				if (mashupItemValues.length > 0) {
+					String type = mashupItemValues[0];
+					if (type != null && !type.equals("")) {
+		
+						httpReq.setAttribute("mashup_id", id);
+						httpReq.setAttribute("mashup_type", type);
+						httpReq.setAttribute("mashup_values", mashupItemValues);
+						httpReq.setAttribute("mashup_view", view);
+						
+						// Output the start of the mashup table element
+						String jsp = "/WEB-INF/jsp/tag_jsps/mashup/"+type+".jsp";
+						RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
+						ServletRequest req = pageContext.getRequest();
+						StringServletResponse res = new StringServletResponse(httpRes);
+						rd.include(req, res);
+						pageContext.getOut().print(res.getString().trim());
+					}
+				}
 			}
 
 		} catch (Exception e) {
@@ -110,8 +114,7 @@ public class MashupTag extends BodyTagSupport {
 		} finally {
 			type = "";
 			id = "";
-			value1 = "";
-			value2 = "";
+			value = "";
 			view = "";
 		}
 
@@ -122,16 +125,8 @@ public class MashupTag extends BodyTagSupport {
 	    this.id = id;
 	}
 
-	public void setType(String type) {
-	    this.type = type;
-	}
-	
-	public void setValue1(String value) {
-	    this.value1 = value;
-	}
-	
-	public void setValue2(String value) {
-	    this.value2 = value;
+	public void setValue(String value) {
+	    this.value = value;
 	}
 	
 	public void setView(String view) {
