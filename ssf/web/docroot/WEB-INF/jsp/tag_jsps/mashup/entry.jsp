@@ -47,7 +47,7 @@
 	}
 	</script>
 </c:if>
-<c:set var="mashupEntry" value="${ss_mashupEntries[mashup_value1]}"/>
+<c:set var="mashupEntry" value="${ss_mashupEntries[mashup_values[1]]}"/>
 <div style="margin:10px; padding:10px; " width="100%">
   <c:if test="${!empty mashupEntry}">
 	<div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">

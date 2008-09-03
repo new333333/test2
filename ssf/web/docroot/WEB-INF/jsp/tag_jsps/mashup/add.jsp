@@ -49,6 +49,7 @@ function ss_mashupShowAddDiv${ss_mashupItemId}_${renderResponse.namespace}(obj) 
 	divObj.style.top = parseInt(ss_getObjectTop(obj) + 20) + "px";
 	divObj.style.left = parseInt(ss_getObjectLeft(obj) + 10) + "px";
 	divObj.style.display = 'block';
+	ss_mashupClearAttrs${ss_mashupItemId}();
 }
 function ss_mashupHideAddDiv${ss_mashupItemId}_${renderResponse.namespace}() {
 	var divObj = document.getElementById('ss_mashupAddDiv_${ss_mashupItemId}_${renderResponse.namespace}');
@@ -62,8 +63,9 @@ function ss_mashupShowAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}(o
 	var divObj = document.getElementById('ss_mashupAdd'+type+'Div_${ss_mashupItemId}_${renderResponse.namespace}');
 	ss_mashupShowAddTypeDivObj${ss_mashupItemId}_${renderResponse.namespace} = divObj;
 	divObj.style.top = parseInt(ss_getObjectTop(obj) + 20) + "px";
-	divObj.style.left = parseInt(ss_getObjectLeft(obj) + ss_getObjectWidth(obj) + 2) + "px";
+	divObj.style.left = parseInt(ss_getObjectLeft(obj) + ss_getObjectWidth(obj) + 12) + "px";
 	divObj.style.display = 'block';
+	ss_mashupClearAttrs${ss_mashupItemId}();
 }
 
 function ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}() {
@@ -71,6 +73,20 @@ function ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}()
 		ss_mashupShowAddTypeDivObj${ss_mashupItemId}_${renderResponse.namespace}.style.display = 'none';
 		ss_mashupShowAddTypeDivObj${ss_mashupItemId}_${renderResponse.namespace} = null;
 	}
+}
+
+var ss_mashupAttr_noTitle${ss_mashupItemId} = "";
+function ss_mashupClearAttrs${ss_mashupItemId}() {
+	ss_mashupAttr_noTitle${ss_mashupItemId} = "";
+}
+function ss_mashupBuildAttrs${ss_mashupItemId}() {
+	var attr = "";
+	if (ss_mashupAttr_noTitle${ss_mashupItemId} != "") attr += ",noTitle=1"
+	return attr;
+}
+function ss_mashupSubmit${ss_mashupItemId}() {
+	var formObj = self.document.forms['${ss_form_form_formName}'];
+	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value += ss_mashupBuildAttrs${ss_mashupItemId}();
 }
 
 </script>
@@ -81,7 +97,8 @@ function ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}()
 	><ssf:nlt tag="button.add"/>...</a>
 	
 	<div id="ss_mashupAddDiv_${ss_mashupItemId}_${renderResponse.namespace}"
-	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:400;" 
+	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:400;
+	  		padding:10px;" 
 	>
 		<a href="javascript: ;" 
 		  onClick="ss_mashupShowAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}(this, 'Entry');return false;"
@@ -97,16 +114,18 @@ function ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}()
 		  onClick="ss_mashupShowAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}(this, 'Table');return false;"
 		><ssf:nlt tag="mashup.addTable"/></a>
 		
-		<br/>
-		<input type="button" value="<ssf:nlt tag="button.cancel"/>" class="ss_linkButton ss_fineprint" 
+		<div style="padding-top:10px;">
+		  <input type="button" value="<ssf:nlt tag="button.cancel"/>" class="ss_linkButton ss_fineprint" 
 		    onClick="ss_mashupHideAddDiv${ss_mashupItemId}_${renderResponse.namespace}();return false"/>
+		</div>
     </div>
   </div>
 	
 	
 	
   <div id="ss_mashupAddEntryDiv_${ss_mashupItemId}_${renderResponse.namespace}"
-	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:401;" 
+	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:401;
+	  	padding:10px;" 
   >
   		<div><ssf:nlt tag="mashup.addEntry"/></div>
   		<div>
@@ -119,6 +138,7 @@ function ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}()
 		    />
 		  <br/>
 		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
+		    onClick="ss_mashupSubmit${ss_mashupItemId}();return true;"
 		    class="ss_linkButton ss_fineprint" />
 		  <input type="button" value="<ssf:nlt tag="button.cancel"/>" class="ss_linkButton ss_fineprint" 
 		    onClick="ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}();return false"/>
@@ -126,7 +146,8 @@ function ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}()
   </div>
 	
   <div id="ss_mashupAddFolderDiv_${ss_mashupItemId}_${renderResponse.namespace}"
-	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:401;" 
+	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:401;
+	  	padding:10px;" 
   >
   		<div><ssf:nlt tag="mashup.addFolder"/></div>
   		<div>
@@ -139,7 +160,12 @@ function ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}()
 		    accessibilityText="wiki.findFolder"
 		    />
           <br/>
+          <input type="checkbox" name="${ss_mashupPropertyName}__noTitle"
+            onChange="ss_mashupAttr_noTitle${ss_mashupItemId} = this.value;"/> 
+          <span><ssf:nlt tag="mashup.noTitle"/></span>
+          <br/>
 		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
+		    onClick="ss_mashupSubmit${ss_mashupItemId}();return true;"
 		    class="ss_linkButton ss_fineprint" />
 		  <input type="button" value="<ssf:nlt tag="button.cancel"/>" class="ss_linkButton ss_fineprint" 
 		    onClick="ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}();return false"/>
@@ -147,14 +173,15 @@ function ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}()
   </div>
 		
   <div id="ss_mashupAddTableDiv_${ss_mashupItemId}_${renderResponse.namespace}"
-	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:401;" 
+	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:401;
+	  	padding:10px;" 
   >
   		<div><ssf:nlt tag="mashup.addTable"/></div>
   		<div>
 		  <input type="hidden" name="${ss_mashupPropertyName}__${ss_mashupItemId}"/>
 		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
 		    class="ss_linkButton ss_fineprint"
-			onClick="ss_mashup_addTable${ss_mashupItemId}_${renderResponse.namespace}();return true;" />
+			onClick="ss_mashup_addTable${ss_mashupItemId}_${renderResponse.namespace}();ss_mashupSubmit${ss_mashupItemId}();return true;" />
 		  <input type="button" value="<ssf:nlt tag="button.cancel"/>" class="ss_linkButton ss_fineprint" 
 		    onClick="ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}();return false"/>
 		</div>
