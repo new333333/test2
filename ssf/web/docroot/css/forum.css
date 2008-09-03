@@ -30,6 +30,7 @@ div.xportlet-box {
 .ss_unseen {
   font-weight: bold !important;
   text-decoration: none!important;
+  padding: 0px !important;
   }
   
 .ss_italic {
@@ -38,6 +39,7 @@ div.xportlet-box {
   
 .ss_underline {
   text-decoration:underline;
+  padding:0px;
   }
   
 .ss_underlinePlus {
