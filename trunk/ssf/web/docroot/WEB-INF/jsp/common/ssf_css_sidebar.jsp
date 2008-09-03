@@ -99,7 +99,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_myStatus, .ss_input_myStatus, .ss_sidebarMenu, .ss_sub_sidebarMenu, .ss_mouseOver{
 	border-color: #5A9A98;
 	border-style: solid;
-	border-width: .01em;
+	border-width: 0.1em;
 	}
 /*This is the title of each link box*/
 .ss_sidebarTitle{
@@ -171,7 +171,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /*This is the box style for the blue menu boxes*/		
 .ss_sub_sidebarMenu {
 	background-color: #DBE9E8;
-	width: 150px;
+	width: 140px;
 	height: auto;
 	line-height: 170%;
 	padding: 6px 2px 8px 3px;
@@ -221,7 +221,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     display: block;
 	border-style: solid;
 	border-color: #5A9A98;
-	border-width: .01em;
+	border-width: 0.1em;
 	background-color: #FFFFFF;
     background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_a.png") 5px 2px;
     background-repeat: no-repeat !important;
@@ -237,7 +237,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     background-repeat: no-repeat !important;
 	background-color: #CCFFFF;
 	border-color:#85D1D1;
-	border-width: .01em;
+	border-width: 0.1em;
     padding: 7px 0 7px 30px;
 	margin-bottom:3px;
      }
