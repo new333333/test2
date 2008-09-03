@@ -6233,7 +6233,7 @@ function ss_hideSunburst(s_id, s_binderId) {
 		//Hide it
    		dojo.fadeOut({node: divObj, end: 0, delay: 400, onEnd: function() {
 		    	divObj.style.visibility = "hidden";
-		    	divObj.style.display = "none";
+		    	divObj.style.display = "ss_noUnderlinePlus";
 
    		}}).play();
 
