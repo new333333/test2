@@ -37,6 +37,10 @@
 	ss_mashupTableItemCount.put(ss_mashupTableNumber, "folder");  
 	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
 %>
+<c:set var="noTitle" value=""/>
+<c:forEach var="mashup_value" items="${mashup_values}">
+  <c:if test="${mashup_value == 'noTitle=1'}"><c:set var="noTitle" value="1"/></c:if>
+</c:forEach>
 <c:if test="${ssConfigJspStyle == 'form'}">
 	<script type="text/javascript">
 	//Routine called when "Delete entry" is clicked
@@ -46,18 +50,20 @@
 	}
 	</script>
 </c:if>
-<c:set var="mashupBinder" value="${ss_mashupBinders[mashup_value1]}"/>
+<c:set var="mashupBinder" value="${ss_mashupBinders[mashup_values[1]]}"/>
 <div style="margin:10px; padding:10px; " width="100%">
   <c:if test="${!empty mashupBinder}">
+	<c:if test="${ssConfigJspStyle == 'form' || empty noTitle}">
 	<div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
 		<a href="<ssf:url action="view_folder_listing" 
 		  folderId="${mashupBinder.id}">
 		  <ssf:param name="newTab" value="1"/>
 		  </ssf:url>"><span class="ss_largeprint ss_bold">${mashupBinder.title}</span></a>
 	</div>
+	</c:if>
 	<c:if test="${ssConfigJspStyle != 'form'}">
 	<div style="border:1px solid #cecece;padding:6px;">
-	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashup_value1]}" >
+	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashup_values[1]]}" >
 	    <div style="padding-left:6px;">
 	      <a href="<ssf:url     
 		    action="view_folder_entry" 
