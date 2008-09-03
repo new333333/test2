@@ -185,9 +185,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_sub_sidebarMenu a:hover {
 	background-color: #ADD8E6;
 	}
-.ss_sub_sidebarMenu a{
-	text-decoration: underline;	
-	color:#003399;			
+.ss_sideLink {
+	text-decoration: none;	
+	color:#003399;	
+	background-image: url("<html:rootPath/>images/pics/sidebar/menu_click.gif");
+	background-position: 1px 3px;
+	background-repeat: no-repeat !important;
+	padding-left: 10px;		
 	}
 
 /* This is for the box style links */

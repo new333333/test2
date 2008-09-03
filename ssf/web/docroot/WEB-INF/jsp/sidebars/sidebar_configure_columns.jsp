@@ -32,7 +32,8 @@
 
   <div class="ss_sidebarTitle"><ssf:nlt tag="misc.configureColumns"/>
  	<div class="ss_sub_sidebarMenu">
-	 	<a href="<ssf:url
+	 	<a  class="ss_sideLink"
+	 		href="<ssf:url
 			adapter="true" 
 			portletName="ss_forum" 
 			action="__ajax_request" 

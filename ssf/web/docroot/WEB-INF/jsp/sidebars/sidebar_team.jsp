@@ -38,14 +38,14 @@
 			  <c:if test="${!empty ss_toolbar_team_view_url}">
 				<tr>
 	              <td>
-	                <a href="${ss_toolbar_team_view_url}"><ssf:nlt tag="team.viewTeamMembership"/></a>
+	                <a class="ss_sideLink" href="${ss_toolbar_team_view_url}"><ssf:nlt tag="team.viewTeamMembership"/></a>
 	              </td>
 	            </tr>
 	          </c:if>
 			  <c:if test="${!empty ss_toolbar_team_add_url}">
 	            <tr>
 	              <td>
-	              	<a href="${ss_toolbar_team_add_url}"
+	              	<a class="ss_sideLink" href="${ss_toolbar_team_add_url}"
 	                  onClick="ss_openUrlInWindow(this, '_blank', 500, 600);return false;"
 	                 ><ssf:nlt tag="team.manageTeam"/></a>
 	              </td>
@@ -54,7 +54,7 @@
 			  <c:if test="${!empty ss_toolbar_team_sendmail_url}">
 				<tr>
 	              <td>
-	              	<a href="${ss_toolbar_team_sendmail_url}"
+	              	<a class="ss_sideLink" href="${ss_toolbar_team_sendmail_url}"
 	                  onClick="ss_openUrlInWindow(this, '_blank', 600, 800);return false;"
 	                ><ssf:nlt tag="team.sendMail"/></a>
 	              </td>
@@ -63,7 +63,7 @@
 			  <c:if test="${!empty ss_toolbar_team_meet_url}">
 	            <tr>
 	              <td>
-	              	<a href="${ss_toolbar_team_meet_url}"
+	              	<a class="ss_sideLink" href="${ss_toolbar_team_meet_url}"
 	                  onClick="ss_openUrlInWindow(this, '_blank', 500, 600);return false;"
 	                  ><ssf:nlt tag="team.startTeamMeeting"/></a>
 	              </td>
