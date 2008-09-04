@@ -193,10 +193,13 @@
 			<property name="family" caption="__family" type="selectbox" 
 				  default="" value="">
 				<option name="" caption="__family_unspecified" />
+				<option name="blog" caption="__family_blog" />
 				<option name="calendar" caption="__family_calendar" />
+				<option name="discussion" caption="__family_discussion" />
 				<option name="task" caption="__family_task" />
 				<option name="milestone" caption="__family_milestone" />
 				<option name="photo" caption="__family_photo" />
+				<option name="wiki" caption="__family_wiki" />
 				<option name="file" caption="__family_file" />
 				<help>ihelp.other.definition_family</help>
 			</property>
@@ -544,7 +547,11 @@
 			<property name="family" caption="__family" type="selectbox" 
 				  default="" value="">
 				<option name="" caption="__family_unspecified" />
+				<option name="blog" caption="__family_blog" />
 				<option name="calendar" caption="__family_calendar" />
+				<option name="discussion" caption="__family_discussion" />
+				<option name="photo" caption="__family_photo" />
+				<option name="wiki" caption="__family_wiki" />
 				<option name="task" caption="__family_task" />
 				<option name="milestone" caption="__family_milestone" />
 				<option name="file" caption="__family_file" />
@@ -1393,6 +1400,7 @@
 				<option name="" caption="__family_unspecified" />
 				<option name="workspace" caption="__family_workspace" />
 				<option name="team" caption="__family_team" />
+				<option name="blog" caption="__family_blog" />
 				<option name="discussion" caption="__family_discussion" />
 				<option name="project" caption="__family_project" />
 				<help>ihelp.other.definition_family</help>

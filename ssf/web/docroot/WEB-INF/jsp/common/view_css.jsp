@@ -35,6 +35,10 @@
 --%><c:set var="ssf_support_files_loaded" value="1" scope="request"/><%--
 --%>
 <script type="text/javascript">
+var undefined;
+var ss_urlBase = self.location.protocol + "//" + self.location.host;
+var ss_rootPath = "<html:rootPath/>";
+var ss_imagesPath = "<html:imagesPath/>";
 var ss_isAdapter="true";
 var ss_tagSearchResultUrl = "<ssf:url windowState="maximized" 
     action="advanced_search" actionUrl="true"><ssf:param 
@@ -97,28 +101,14 @@ var ss_baseBinderUrlNoWS = ss_baseBinderUrlNoWS${renderResponse.namespace};
 
 var ss_baseRootPathUrl = '<html:rootPath/>';
 
-</script>
-<%
-	boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
-	%><%--
+var ss_userDisplayStyle = "${ssUser.displayStyle}";
+<c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == ''}">
+	ss_userDisplayStyle = "iframe";	
+</c:if>
 
---%>
-<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo/dojo.js" 
-  djConfig="isDebug: false, locale: '<ssf:convertLocaleToDojoStyle />', parseOnLoad: true"></script>
-<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js"</script>
-<script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"</script>
-<script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"</script>
-<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/find.js"></script>
-<script type="text/javascript">
-var undefined;
-var ss_urlBase = self.location.protocol + "//" + self.location.host;
-var ss_rootPath = "<html:rootPath/>";
-var ss_imagesPath = "<html:imagesPath/>";
-	
 var ss_1pix = ss_imagesPath + "pics/1pix.gif";
-var ss_forumColorsCssUrl = "<ssf:url webPath="viewCss">
-	    <ssf:param name="theme" value="${ssUser.theme}"/>
-	    </ssf:url>";
+var ss_forumColorsCssUrl = "<ssf:url webPath="viewCss"><ssf:param 
+		name="theme" value="${ssUser.theme}"/></ssf:url>";
 
 var ss_AjaxBaseUrl = "<ssf:url adapter="true" portletName="ss_forum" actionUrl="true" />";
 
@@ -137,17 +127,24 @@ var ss_noUsersOnClipboardText = "<ssf:nlt tag="clipboard.noUsers"/>";
 var ss_closeButtonText = "<ssf:nlt tag="button.close"/>";
 var ss_selectAllBtnText = "<ssf:nlt tag="button.selectAll"/>";
 var ss_clearAllBtnText = "<ssf:nlt tag="button.clearAll"/>";
-var ss_userDisplayStyle = "${ssUser.displayStyle}";
-<c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == ''}">
-	ss_userDisplayStyle = "iframe";	
-</c:if>
 									
 var ss_findButtonClose = "<ssf:nlt tag="button.close"/>";
 var ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
 
-var ss_findButtonClose;
-var ss_AjaxBaseUrl;
-var ss_validationErrorMessage;
+</script>
+<%
+	boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
+	%><%--
+
+--%>
+<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo/dojo.js" 
+  djConfig="isDebug: false, locale: '<ssf:convertLocaleToDojoStyle />', parseOnLoad: true"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js"</script>
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"</script>
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"</script>
+<script type="text/javascript">
+	
+
 </script>
 
 <link href="<html:rootPath/>css/forum.css" rel="stylesheet" type="text/css" />
