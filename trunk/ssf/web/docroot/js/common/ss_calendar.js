@@ -2622,7 +2622,7 @@ if (!window.ss_calendar_settings) {
 		
 		save : function () {
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"saveCalendarConfiguration"});
-			dojo.debug("save calendar configuration");
+			//dojo.debug("save calendar configuration");
 			dojo.xhrGet({
 		    	url: url,
 		    	handleAs: "json",		    	
