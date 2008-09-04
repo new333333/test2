@@ -330,6 +330,9 @@ public class WebUrlUtil {
 				}
 			} else {
 				fileId = fileIdResult.toString();
+				if (!fileName.equals(searchResults.get(com.sitescape.util.search.Constants.FILENAME_FIELD+fileId))) {
+					fileId = null;
+				}
 			}
 		}
 		if (fileId == null) return "";

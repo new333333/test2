@@ -40,11 +40,9 @@ import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.EntityIdentifier;
-import com.sitescape.team.domain.NoBinderByTheIdException;
+import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.shared.AccessUtils;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
@@ -94,9 +92,11 @@ public class ViewPermalinkController  extends SAbstractController {
 		} 
 	}
 	protected String processRequest(ActionRequest request) {
+		//binderId is not longer required on all entries
 		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String fileId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
+		String fileName= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_NAME, "");
 		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
 		EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.none;
 		DefinableEntity entity = null;
@@ -104,12 +104,13 @@ public class ViewPermalinkController  extends SAbstractController {
 			entityType = EntityIdentifier.EntityType.valueOf(PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, ""));
 		} catch(Exception ignore) {};
 		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+ 		if (Validator.isNotNull(fileId)) return getFileUrlById(request, entityType, binderId, entryId, fileId);
+ 		if (Validator.isNotNull(fileName)) return getFileUrlByName(request, entityType, binderId, entryId, fileName);
 
 		if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) { //folderEntry
 			//entries move so the binderId may not be valid
 			if (Validator.isNotNull(entryId)) {
 				entity = getFolderModule().getEntry(null, Long.valueOf(entryId));
-		 		if (Validator.isNotNull(fileId)) return getFileUrl(request, entity, fileId);
 				url.setParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
 				url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 			} else {
@@ -128,7 +129,6 @@ public class ViewPermalinkController  extends SAbstractController {
 			}
 		} else	if (entityType.isBinder() || entityType.equals(EntityIdentifier.EntityType.none)) {
 			entity = getBinderModule().getBinder(Long.valueOf(binderId));
-	 		if (Validator.isNotNull(fileId)) return getFileUrl(request, entity, fileId);
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 			entityType = entity.getEntityType();
 			if (entityType.equals(EntityIdentifier.EntityType.workspace)) {
@@ -140,10 +140,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			}
 			
 		} else if (entityType.isPrincipal()) {
-	 		if (Validator.isNotNull(fileId)) {
-	 			entity = getProfileModule().getEntry(Long.valueOf(entryId));
-	 			return getFileUrl(request, entity, fileId);
-	 		}
+			//permalinks are meant for the use workspace
 	 		if (entryId.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) {  
 	 			entity = getBinderModule().getBinder(Long.valueOf(binderId));
 	 			url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
@@ -163,17 +160,26 @@ public class ViewPermalinkController  extends SAbstractController {
     	}
     	return sUrl;
 	}
-	protected String getFileUrl(ActionRequest request, DefinableEntity entity, String fileId) {
+	protected String getFileUrlById(ActionRequest request, EntityIdentifier.EntityType entityType, String binderId, String entryId, String fileId) {
+		DefinableEntity entity;
+		if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) { //folderEntry
+			//entries move so the binderId may not be valid
+			entity = getFolderModule().getEntry(null, Long.valueOf(entryId));
+		} else if (entityType.isPrincipal()) {
+ 			entity = getProfileModule().getEntry(Long.valueOf(entryId));
+		} else	{
+			entity = getBinderModule().getBinder(Long.valueOf(binderId));
+ 		} 
 		FileAttachment attachment = (FileAttachment)entity.getAttachment(fileId);
 		if (attachment != null) {
 			return WebUrlUtil.getFileUrl(request, WebKeys.ACTION_READ_FILE, attachment);
 		} else {
 			//use old v1 style
-			Long binderId,entityId=null;
+			Long entityId=null;
 			if (entity.getEntityType().isBinder()) {
-				binderId = entity.getId();
+				binderId = entity.getId().toString();
 			} else {
-				binderId = entity.getParentBinder().getId();
+				binderId = entity.getParentBinder().getId().toString() ;
 				entityId = entity.getId();
 			}
 			StringBuffer sUrl = new StringBuffer(WebUrlUtil.getServletRootURL(request)).append(WebKeys.SERVLET_VIEW_FILE).append("?");
@@ -185,6 +191,19 @@ public class ViewPermalinkController  extends SAbstractController {
 		}
 	
 	}
+	protected String getFileUrlByName(ActionRequest request, EntityIdentifier.EntityType entityType, String binderId, String entryId, String fileName) {
+		DefinableEntity entity;
+		if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) { //folderEntry
+			//entries move so the binderId may not be valid
+			entity = getFolderModule().getEntry(null, Long.valueOf(entryId));
+		} else if (entityType.isPrincipal()) {
+ 			entity = getProfileModule().getEntry(Long.valueOf(entryId));
+		} else	{
+			entity = getBinderModule().getBinder(Long.valueOf(binderId));
+ 		} 
+		return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(request), WebKeys.ACTION_READ_FILE, entity, fileName);
+	}
+
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map<String,Object> model = new HashMap<String,Object>();

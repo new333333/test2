@@ -106,7 +106,7 @@ public class NotifyVisitor {
 			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entity.getId().toString());
 		}
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entity.getEntityType().name());
-		adapterUrl.setParameter(WebKeys.URL_FILE_ID, attachment.getId());
+		adapterUrl.setParameter(WebKeys.URL_FILE_NAME, attachment.getFileItem().getName());
 		return adapterUrl.toString();
 	}
 
