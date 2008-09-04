@@ -319,6 +319,11 @@ div.ss_entryDescription.ss_entryContent table {
   color: ${ss_form_element_text_color};
   }
 
+div.ss_style select.ss_compactSelectBox, .ss_compactSelectBox {
+  border: 1px solid #cccccc;
+  font-size: 11px;
+}
+
 div.ss_style input[type="text"],
 div.ss_style input[type="password"],
 div.ss_style textarea,
@@ -3553,13 +3558,16 @@ div.ss_searchContainer #ss_content {
 	margin:0px;
 	border-bottom:1px solid #afc8e3;
 }
+div.ss_searchFormFooter {
+    background-color: #e8eff7;
+}
 #ss_surveyForm_main form {
 	background-color: transparent;
 }
 #ss_searchForm table, #ss_surveyForm_main {
 	background-color: #e8eff7;
 }
-#ss_searchForm input { width: 150px;}
+#ss_searchForm input { width: 200px;}
 #ss_searchForm th {text-align:left;padding: 0px 0px 0px 12px;}
 #ss_searchForm td {text-align:left;padding: 0px 12px 0px 12px;}
 #ss_searchForm h4 {margin:0px 0px 6px 0px;padding:0px;}
@@ -3588,6 +3596,12 @@ a.ss_searchButton img {
 
 a.ss_searchButton img, a.ss_searchButton:link img , a.ss_searchButton:focus img, a.ss_searchButton:visited img { 
 	background: transparent url(<html:rootPath/>images/pics/searchheadbkg.png) no-repeat top left; 
+}
+
+a.ss_searchButton {
+    font-size: 14px;
+    padding: 2px;
+    border: 1px solid #afc8e3;
 }
 
 a.ss_searchButton:hover img {
@@ -3727,7 +3741,10 @@ h3.ss_entryTitle a:hover,h3.ss_entryTitle a:link, h3.ss_entryTitle a:active {
 h3.ss_entryTitle a:visited {
 	color:  purple;
 }
-div.ss_more {text-align:right;}
+div.ss_more {
+    text-align:left;
+    font-size: 10px;
+}
 div.ss_entryDetails {padding:0px 0px 6px 24px;}
 div.ss_entryDetails p {
 	margin:0px 3px 1px 0px;
@@ -3767,7 +3784,7 @@ a.ss_pageNumberCurrent {
 	font-size: 14px;
 }
 div.ss_options_container {border-bottom:1px solid #afc8e3; margin:0px 0px 0px 0px;padding:0px 12px 12px 12px;}
-div.ss_options {padding: 6px 0px 12px 0px;}
+div.ss_options {padding: 6px 0px 6px 0px;}
 div.ss_options_container h4 {margin:6px 0px 6px 0px;}
 a.ss_button {
 	background-color: #dbe6f2;

@@ -45,6 +45,7 @@
 		
 	dojo.addOnLoad(function() {
 			dojo.addClass(document.body, "tundra");
+			ss_loadSearchOptions("${ssNamespace}")
 		}
 	);
 </script>
@@ -55,15 +56,15 @@
 				<c:if test="${!filterDefinition}">
 					<h4><ssf:nlt tag="searchForm.advanced.Title"/> <ssf:inlineHelp tag="ihelp.other.advanced_search" /></h4>
 				</c:if>
-				<a href="javascript:;" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters', 'ss_search_more_options_txt_${ssNamespace}', '${ssNamespace}');" class="ss_advanced"><span id="ss_search_more_options_txt_${ssNamespace}"><ssf:nlt tag="searchForm.advanced.moreOptions"/></span></a>
 				<div class="ss_clear"></div>
 				<table>
 					<tr>
 						<th><ssf:nlt tag="searchForm.searchText"/>:</th>
 						<td><input type="text" name="searchText" id="searchText_adv" value="${ss_filterMap.searchText}" <c:if test="${empty disableSearchButton || disableSearchButton == 0}">onkeypress="return ss_submitViaEnter(event)"</c:if>/></td>
-						<td rowspan="2">
-							<ssf:nlt tag="searchForm.advanced.options.label"/>
-							<select name="data_resultsCount" id="data_resultsCount">
+						<td rowspan="3">
+						    <b><ssf:nlt tag="searchForm.advanced.presentationOptions"/></b><br/>
+							<ssf:nlt tag="searchForm.advanced.options.limitResults"/>:
+							<select class="ss_compactSelectBox" name="data_resultsCount" id="data_resultsCount">
 								<option value="1" <c:if test="${resultsCount == 1}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems.single"/></option>
 								<option value="5" <c:if test="${resultsCount == 5}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="5"/></ssf:nlt></option>
 								<option value="10" <c:if test="${resultsCount == 10}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="10"/></ssf:nlt></option>
@@ -71,7 +72,9 @@
 								<option value="50" <c:if test="${resultsCount == 50}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="50"/></ssf:nlt></option>
 								<option value="100" <c:if test="${resultsCount == 100}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="100"/></ssf:nlt></option>
 							</select>
-							<select name="data_summaryWordCount" id="data_summaryWordCount">
+							<br/>
+							<ssf:nlt tag="searchForm.advanced.options.limitWords"/>: 
+							<select class="ss_compactSelectBox" name="data_summaryWordCount" id="data_summaryWordCount">
 								<option value="15" <c:if test="${summaryWordCount == 15}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="15"/></ssf:nlt></option>
 								<option value="20" <c:if test="${summaryWordCount == 20}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="20"/></ssf:nlt></option>
 								<option value="30" <c:if test="${summaryWordCount == 30}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="30"/></ssf:nlt></option>
@@ -174,7 +177,7 @@
 					
 					<c:if test="${!filterDefinition}">
 						<tr>
-							<td colspan="3" style="text-align: right; ">
+							<td colspan="3" style="text-align: center; ">
 								<c:if test="${empty disableSearchButton || disableSearchButton == 0}">
 								<a class="ss_searchButton" href="javascript: ss_search();" ><img <ssf:alt tag="alt.search"/> 
 					  				src="<html:imagesPath/>pics/1pix.gif" /> <ssf:nlt tag="searchForm.button.label"/></a> 
@@ -193,34 +196,34 @@
 		</div>
 		</c:if>
 
-		<div id="ss_searchForm_additionalFilters" style="display: none; visibility: hidden;">
+		<div id="ss_searchForm_additionalFilters">
 			<input type="hidden" id="ssSearchParseAdvancedForm${ssNamespace}" name="ssSearchParseAdvancedForm" value="false" />
 			<div id="ss_authors_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Author"/></h4>
 				<div id="ss_authors_options" class="ss_options"></div>
 				<div class="ss_more">
-					<a href="javascript: ;" onClick="ss_addOption('creator_by_id');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
+					<a href="javascript: ;" onClick="ss_addOption('creator_by_id');" class="ss_button">+ Add another author</a>
 				</div>
 			</div>
 			<div id="ss_tags_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Tag"/></h4>
 				<div id="ss_tags_options" class="ss_options"></div>
 				<div class="ss_more">
-					<a href="javascript: ;" onClick="ss_addOption('tag');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
+					<a href="javascript: ;" onClick="ss_addOption('tag');" class="ss_button">+ Add another tag</a>
 				</div>
 			</div>	
 			<div id="ss_workflows_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Workflow"/></h4>
 				<div id="ss_workflows_options" class="ss_options"></div>
 				<div class="ss_more">
-					<a href="javascript: ;" onClick="ss_addOption('workflow');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
+					<a href="javascript: ;" onClick="ss_addOption('workflow');" class="ss_button">+ Add another workflow filter</a>
 				</div>
 			</div>
 			<div id="ss_entries_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Entry"/></h4>
 				<div id="ss_entries_options" class="ss_options"></div>
 				<div class="ss_more">
-					<a href="javascript: ;" onClick="ss_addOption('entry');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>				
+					<a href="javascript: ;" onClick="ss_addOption('entry');" class="ss_button">+ Add another entry attribute filter</a>				
 				</div>
 			</div>
 			<div id="ss_lastActivities_container" class="ss_options_container">
@@ -231,14 +234,14 @@
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.CreationDate"/></h4>
 				<div id="ss_creationDates_options" class="ss_options"></div>
 				<div class="ss_more">
-					<a href="javascript: ;" onClick="ss_addOption('creation_date');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
+					<a href="javascript: ;" onClick="ss_addOption('creation_date');" class="ss_button">+ Add another date filter</a>
 				</div>
 			</div>
 			<div id="ss_modificationDates_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.ModificationDate"/></h4>
 				<div id="ss_modificationDates_options" class="ss_options"></div>
 				<div class="ss_more">
-					<a href="javascript: ;" onClick="ss_addOption('modification_date');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
+					<a href="javascript: ;" onClick="ss_addOption('modification_date');" class="ss_button">+ Add another date filter</a>
 				</div>
 			</div>
 			<c:if test="${!filterDefinition}">
@@ -279,7 +282,7 @@
 				</div>
 			</c:if>			
 			<c:if test="${empty disableSearchButton || disableSearchButton == 0}">
-			<div style="text-align: right; padding: 10px;">
+			<div class="ss_searchFormFooter" style="text-align: center; padding: 10px;">
 					<a class="ss_searchButton" href="javascript: ss_search();" ><img <ssf:alt tag="alt.search"/> 
 					  src="<html:imagesPath/>pics/1pix.gif" /> <ssf:nlt tag="searchForm.button.label"/></a> 	
 			</div>
