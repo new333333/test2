@@ -106,15 +106,6 @@ public class IndexSynchronizationManager {
     }
     
     /**
-     * Application calls this method to delete all document matching the query.
-     * 
-     * @param query
-     */
-    public static void deleteDocuments(Query query) {
-        getRequests().add(new Request(query, Request.TYPE_DELETE));
-    } 
-    
-    /**
      * Application calls this method to change the auto flush mode associated
      * with the current session. If set to <code>true</code>, the index
      * update is made stable (i.e., flushed out to persistent storage) at the
@@ -230,14 +221,15 @@ public class IndexSynchronizationManager {
             	       
             		if(obj instanceof String) {
             	        luceneSession.deleteDocument((String) obj);
+            	        deleteCount++;
             	    }
             	    else if(obj instanceof Term) {
                 	    luceneSession.deleteDocuments((Term) obj);
+            	        deleteCount++;
             	    }
             	    else {
-            	        luceneSession.deleteDocuments((Query) obj);
+            	    	logger.warn("Unknown object type for delete request: " + obj.getClass().getName());
             	    }
-        	        deleteCount++;
             	    break;
             	}
             }

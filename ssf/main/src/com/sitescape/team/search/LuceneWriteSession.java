@@ -90,14 +90,6 @@ public interface LuceneWriteSession extends LuceneSession {
 	public void deleteDocuments(Term term) throws LuceneException;
 
 	/**
-	 * Apply the query and delete all matching documents.
-	 * 
-	 * @param query
-	 * @throws LuceneException
-	 */
-	public void deleteDocuments(Query query) throws LuceneException;
-
-	/**
 	 * Force the <code>LuceneSession</code> to flush.
 	 * <p>
 	 * Flushing is the process of synchronizing the underlying persistent store

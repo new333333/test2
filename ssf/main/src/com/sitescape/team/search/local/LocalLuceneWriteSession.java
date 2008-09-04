@@ -242,47 +242,6 @@ public class LocalLuceneWriteSession extends LocalLuceneSession implements Lucen
 
 	}
 
-	public void deleteDocuments(Query query) {
-		SimpleProfiler.startProfiler("LocalLuceneSession.deleteDocuments(Query)");
-		IndexSearcher indexSearcher;
-
-		long startTime = System.currentTimeMillis();
-		// block until updateDocs is completed
-		synchronized (getRWLockObject ()) {
-			indexSearcher = null;
-
-			try {
-				indexSearcher = LuceneHelper.getSearcher(indexPath);
-			} catch (IOException e) {
-				throw new LuceneException(
-						"Could not open searcher on the index ["
-								+ this.indexPath + "]", e);
-			}
-
-			try {
-				deleteDocs(indexSearcher.search(query));
-			} catch (IOException e) {
-				throw new LuceneException("Error searching index [" + indexPath
-						+ "]", e);
-			} finally {
-				/*
-				try {
-					indexSearcher.close();
-				} catch (IOException e) {
-				}
-				*/
-			}
-		}
-
-		long endTime = System.currentTimeMillis();
-		if(debugEnabled)
-			logger.debug("LocalLucene: deleteDocuments(query) took: " + (endTime - startTime) + " milliseconds");
-
-		SimpleProfiler.stopProfiler("LocalLuceneSession.deleteDocuments");
-
-	}
-
-
 	public void updateDocuments(Query query, String fieldname, String fieldvalue) {
 		SimpleProfiler.startProfiler("LocalLuceneSession.updateDocuments(Query,String,String");
 		
