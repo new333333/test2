@@ -277,20 +277,20 @@ public class WebUrlUtil {
 			VersionAttachment version = (VersionAttachment)fAtt;
 			return getFileUrl(webPath, action, entity.getId().toString(), entity.getEntityType().name(),  
 					String.valueOf(version.getModification().getDate().getTime()), String.valueOf(version.getVersionNumber()), 
-					version.getFileItem().getName(), false);
+					version.getFileItem().getName());
 		}
 		return getFileUrl(webPath, action, entity.getId().toString(), entity.getEntityType().name(),  
 				String.valueOf(fAtt.getModification().getDate().getTime()), null, 
-				fAtt.getFileItem().getName(), false);
+				fAtt.getFileItem().getName());
 	}
-	public static String getFileUrl(String webPath, String action, DefinableEntity entity, String fileName, boolean isEncoded) {
+	public static String getFileUrl(String webPath, String action, DefinableEntity entity, String fileName) {
 		FileAttachment fAtt = entity.getFileAttachment(fileName);
 		if (fAtt != null) {
 			return WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, entity.getId().toString(), 
-				entity.getEntityType().name(), String.valueOf(fAtt.getModification().getDate().getTime()), null, fileName, isEncoded);
+				entity.getEntityType().name(), String.valueOf(fAtt.getModification().getDate().getTime()), null, fileName);
 		} else {
 			return WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, entity.getId().toString(), 
-					entity.getEntityType().name(), String.valueOf(new Date().getTime()) , null, fileName, isEncoded);
+					entity.getEntityType().name(), String.valueOf(new Date().getTime()) , null, fileName);
 			
 		}
 	}
@@ -301,49 +301,53 @@ public class WebUrlUtil {
 		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, searchResults);
 	}
 	public static String getFileUrl(String webPath, String action, Map searchResults) {
-		return getFileUrl(webPath, action, searchResults, null, false);
+		return getFileUrl(webPath, action, searchResults, null);
 	}
-	public static String getFileUrl(String webPath, String action, Map searchResults, String file, boolean isEncoded) {
+	public static String getFileUrl(String webPath, String action, Map searchResults, String file) {
 		EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.valueOf((String)searchResults.get(com.sitescape.util.search.Constants.ENTITY_FIELD));
 		String entityId = (String)searchResults.get(com.sitescape.util.search.Constants.DOCID_FIELD);
-		String fileTime=null,fileName=null;
-		Object fileTimeResult = searchResults.get(com.sitescape.util.search.Constants.FILE_TIME_FIELD);
-		Object fileNameResult = searchResults.get(com.sitescape.util.search.Constants.FILENAME_FIELD);
-		//since their may be more than one attachment, we get what is hopefull a consistent picture of the first one.
+		String fileTime=null,fileName=null,fileId=null;
+		Object fileIdResult = searchResults.get(com.sitescape.util.search.Constants.FILE_ID_FIELD);
+		if (fileIdResult == null) return "";
+		//since their may be more than one attachment, we get need a consistent picture of the first one.
 		if (Validator.isNull(file)) {
-			if (fileNameResult instanceof SearchFieldResult) {
-				fileName = ((SearchFieldResult)fileNameResult).getValueArray().get(0).toString();
+			if (fileIdResult instanceof SearchFieldResult) {
+				fileId = ((SearchFieldResult)fileIdResult).getValueArray().get(0);
 			} else {
-				fileName = fileNameResult.toString();
-			}
-			if (fileTimeResult instanceof SearchFieldResult) {
-				fileTime = ((SearchFieldResult)fileTimeResult).getValueArray().get(0).toString();
-			} else {
-				fileTime = fileTimeResult.toString();
+				fileId = fileIdResult.toString();
 			}
 			
 		} else {
 			//looking for a specific file
 			fileName = file;
-			if (fileNameResult instanceof SearchFieldResult) {
-				List values = ((SearchFieldResult)fileNameResult).getValueArray();
+			if (fileIdResult instanceof SearchFieldResult) {
+				List<String> values = ((SearchFieldResult)fileIdResult).getValueArray();
 				for (int i=0; i<values.size(); ++i) {
-					if (fileName.equals(values.get(i))) {
-						try {
-							fileTime = ((SearchFieldResult)fileTimeResult).getValueArray().get(i).toString();
-						} catch (Exception ignoreMisMatch) {};
+					fileId = values.get(i);
+					if (fileName.equals(searchResults.get(com.sitescape.util.search.Constants.FILENAME_FIELD+fileId))) {
+						break;
 					}
 				}
+			} else {
+				fileId = fileIdResult.toString();
 			}
-			if (fileTime == null) {
-				fileTime = fileTimeResult.toString();
-			} 
 		}
-		return getFileUrl(webPath, action, entityId, entityType.name(), fileTime, null, fileName, isEncoded);
+		if (fileId == null) return "";
+		//attachments only index 1 and don't have the extend fields to group file attributes
+		if (com.sitescape.util.search.Constants.DOC_TYPE_ATTACHMENT.equals(searchResults.get(com.sitescape.util.search.Constants.DOC_TYPE_FIELD))) {
+			fileName = (String)searchResults.get(com.sitescape.util.search.Constants.FILENAME_FIELD);
+			fileTime = (String)searchResults.get(com.sitescape.util.search.Constants.FILE_TIME_FIELD);
+		} else {
+			fileName = (String)searchResults.get(com.sitescape.util.search.Constants.FILENAME_FIELD+fileId);
+			fileTime = (String)searchResults.get(com.sitescape.util.search.Constants.FILE_TIME_FIELD+fileId);				
+		}
+
+		if (fileTime == null) fileTime = "1";  //doesn't matter
+		return getFileUrl(webPath, action, entityId, entityType.name(), fileTime, null, fileName);
 			
 	}
 	public static String getFileUrl(String webPath, String action, String entityId, String entityType, String attDate, String version, 
-			String fileName, boolean isEncoded) {
+			String fileName) {
 		if (Validator.isNull(version)) version = "last";
 		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
 		StringBuffer webUrl = new StringBuffer(webPath + action);
@@ -351,8 +355,7 @@ public class WebUrlUtil {
 		webUrl.append(Constants.SLASH + entityId);
 		webUrl.append(Constants.SLASH + attDate); //for browser caching
 		webUrl.append(Constants.SLASH + version);					
-		if (!isEncoded) webUrl.append(Constants.SLASH + Http.encodeURL(fileName));
-		else webUrl.append(Constants.SLASH + fileName);
+		webUrl.append(Constants.SLASH + fileName);  //not urlencoded cause not queryparameter
 		return webUrl.toString();
 	}
 

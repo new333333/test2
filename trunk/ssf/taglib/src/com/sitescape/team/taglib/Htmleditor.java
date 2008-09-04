@@ -53,8 +53,6 @@ import com.sitescape.util.servlet.StringServletResponse;
  *;
  */
 
-// This is a stub so far; it is just a 
-// gutted version of datepicker.
 
 public class Htmleditor extends BodyTagSupport {
 	private String id;
@@ -62,7 +60,6 @@ public class Htmleditor extends BodyTagSupport {
 	private String initText;
 	private String height = "";
 	private String color = "";
-	private String contextPath;
 	private String _bodyContent;
         
 	public int doStartTag() {
@@ -105,12 +102,10 @@ public class Htmleditor extends BodyTagSupport {
 			req.setAttribute("element_height", this.height);
 			req.setAttribute("element_color", this.color);
 			req.setAttribute("language", languageCode);
+			req.setAttribute("body", _bodyContent); //pass body so it can be escaped
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
 			pageContext.getOut().print(res.getString());
-
-			// Body
-			if (this._bodyContent != null) pageContext.getOut().print(_bodyContent);
 
 			// Bottom
 			rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/htmlarea/htmlarea_bottom.jsp");

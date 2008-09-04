@@ -39,8 +39,7 @@
 
    <div id="ss_topic_box">
     <div id="ss_topic_box_h1">${ssDefinitionEntry.title}</div>
-	<span><ssf:markup entity="${ssDefinitionEntry}"><c:out 
-       value="${ssDefinitionEntry.description.text}" escapeXml="false"/></ssf:markup></span>
+	<span><ssf:markup entity="${ssDefinitionEntry}">${ssDefinitionEntry.description.text}</ssf:markup></span>
    </div><!-- end of box -->
 
   </div><!-- end of top -->

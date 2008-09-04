@@ -124,4 +124,8 @@ var ss_wikiLinkUrl = "<ssf:url
   <c:if test="${!empty element_name}">
     name="${element_name}" 
   </c:if>
-><c:out value="${init_text}"/>
+
+>
+  <% //need to escape cause html is going into textarea %>
+ <c:out value="${init_text}" escapeXml="true"/>
+<c:out value="${body}" escapeXml="true"/>

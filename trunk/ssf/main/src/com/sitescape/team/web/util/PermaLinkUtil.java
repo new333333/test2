@@ -57,7 +57,7 @@ public class PermaLinkUtil {
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, profileBinderId.toString());
 		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId);
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.workspace.toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.toString());
 		return adapterUrl.toString();
 	}
 	

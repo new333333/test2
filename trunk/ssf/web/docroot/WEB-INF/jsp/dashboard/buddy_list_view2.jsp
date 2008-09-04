@@ -73,7 +73,7 @@
 					    action="view_permalink"
 					    binderId="${u1.parentBinder.id}"
 					    entryId="${u1.id}">
-					    <ssf:param name="entityType" value="workspace" />
+					    <ssf:param name="entityType" value="user" />
 						</ssf:url>"
 					  	onClick="ss_openUrlInWorkarea(this.href, '${u1.workspaceId}', 'view_ws_listing');return false;"
 					  ><c:out value="${u1.title}"/></a>

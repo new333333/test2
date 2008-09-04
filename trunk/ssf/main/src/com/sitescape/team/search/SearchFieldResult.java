@@ -47,7 +47,7 @@ public class SearchFieldResult {
 		return values;
 	}
  	
- 	public ArrayList getValueArray() {
+ 	public ArrayList<String> getValueArray() {
  		return new ArrayList<String>(values);
  	}
  	

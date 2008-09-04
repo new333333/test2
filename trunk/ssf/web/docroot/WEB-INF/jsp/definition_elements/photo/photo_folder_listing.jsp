@@ -51,13 +51,6 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 	}
 %>
 			  <c:if test="${not empty fileEntry._fileID}">
-<%
-	String _fileId = fileEntry.get("_fileID").toString();
-	if (_fileId.contains(",")) _fileId = _fileId.substring(0, _fileId.indexOf(","));
-	String _fileTime = "";
-	if (fileEntry.containsKey("_fileTime")) _fileTime = fileEntry.get("_fileTime").toString();
-	if (_fileTime.contains(",")) _fileTime = _fileTime.substring(0, _fileTime.indexOf(","));
-%>			
 			    <div>
 			    <a onMouseOver="ss_showHoverOver(this, 'ss_photoTitle_${fileEntry._docId}')" 
 			      onMouseOut="ss_hideHoverOver('ss_photoTitle_${fileEntry._docId}')"

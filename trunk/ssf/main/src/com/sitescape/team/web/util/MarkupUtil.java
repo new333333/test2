@@ -20,22 +20,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
-import com.sitescape.team.domain.EntityIdentifier;
-import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.repository.RepositoryUtil;
-import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Html;
-import com.sitescape.util.Validator;
-import com.sitescape.util.search.Constants;
-import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.Http;
+import com.sitescape.util.Validator;
+
 
 public class MarkupUtil {
 	protected static Log logger = LogFactory.getLog(MarkupUtil.class);
@@ -114,48 +110,6 @@ public class MarkupUtil {
         	}
     	}
 	}
-	//called after file is actually saved, to fixup markup
-/**	public static void scanDescriptionForFileRename(DefinableEntity entity) {
-		String entityType = entity.getEntityType().name();
-		String binderId = "";
-		String entryId = "";
-		if (entity.getEntityType().isBinder()) { 
-			binderId = entity.getId().toString();
-			entryId = entity.getId().toString();
-		} else {
-			binderId = entity.getParentBinder().getId().toString();
-			entryId = entity.getId().toString();
-		}
-		Pattern p1 = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
-    	Matcher m1 = p1.matcher(description.getText());
-    	int loopDetector = 0;
-    	boolean changes = false;
-    	while (m1.find()) {
-    		if (loopDetector > 2000) {
-	        	logger.error("Error processing markup: " + description.getText());
-    			return;
-    		}
-    		loopDetector++;
-    		String url = m1.group(2);
-			if (entity != null) {
-	    		//Look for the attachment
-	    		FileAttachment fa = entity.getFileAttachment(url.trim());
-	    		if (fa != null) {
-    		    	//Now, replace the url with special markup version
-    	        		String newText = new String("{{attachmentFileId: fileId=" + fa.getId() 
-    	        				+ specialAmp + "binderId=" + binderId + specialAmp + "entryId=" + entryId 
-    	        				+ specialAmp + "entityType=" + entityType + "}}");
-    	        		description.setText(m1.replaceFirst(newText.replace("$", "\\$")));
-    	        		m1 = p1.matcher(description.getText());
-    	        		changes = true;
-	    		}
-			}
-    	}
-    	//don't want to break "==" compare if not necesary, faster for long text
-    	if (changes) description.setText(description.getText().replaceAll(specialAmp, "&"));
-
-	}
-	**/
 
 	//converts back to markup.  Would happen after modify
 	public static void scanDescriptionForAttachmentFileUrls(Description description) {
@@ -249,34 +203,16 @@ public class MarkupUtil {
 			final Map searchResults, String inputString, String type) {
 		UrlBuilder builder = new UrlBuilder() {
 			public String getFileUrlByName(String fileName) {				
-				return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, searchResults, fileName, true);
+				return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, searchResults, fileName);
 			}
 			public String getFileUrlById(String fileId) {
-				Object fileNameResult = searchResults.get(com.sitescape.util.search.Constants.FILENAME_FIELD);
-				Object fileIdResult = searchResults.get(com.sitescape.util.search.Constants.FILE_ID_FIELD);
-				//looking for a specific file
-				String fileName=null;
-				if (fileIdResult instanceof SearchFieldResult) {
-					List values = ((SearchFieldResult)fileIdResult).getValueArray();
-					for (int i=0; i<values.size(); ++i) {
-						if (fileId.equals(values.get(i))) {
-							try {
-								fileName = ((SearchFieldResult)fileNameResult).getValueArray().get(i).toString();
-								break;
-							} catch (Exception ignoreMisMatch) {};
-						}
-					}
-				} else {
-					if (fileId.equals(fileIdResult.toString())) {
-						fileName = fileNameResult.toString();
-					}
-				}
-				if (Validator.isNull(fileName)) return "";
-				return getFileUrlByName(fileName);
+				Object fileName = searchResults.get(com.sitescape.util.search.Constants.FILENAME_FIELD+fileId);
+				if (fileName == null) return "";
+				return getFileUrlByName(fileName.toString());
 
 			}
 			public String getRelativeTitleUrl(String normalizedTitle) {
-				return getTitleUrl((String)searchResults.get(Constants.BINDER_ID_FIELD), normalizedTitle);
+				return getTitleUrl((String)searchResults.get(com.sitescape.util.search.Constants.BINDER_ID_FIELD), normalizedTitle);
 			}
 			public String getTitleUrl(String binderId, String normalizedTitle) {
     			String action = WebKeys.ACTION_VIEW_FOLDER_ENTRY;
@@ -293,7 +229,7 @@ public class MarkupUtil {
 			}
 		};
 		return markupStringReplacement(req, res, httpReq, httpRes, builder,
-				(String)searchResults.get(Constants.DOCID_FIELD), (String)searchResults.get(Constants.ENTITY_FIELD), inputString, type);
+				(String)searchResults.get(com.sitescape.util.search.Constants.DOCID_FIELD), (String)searchResults.get(com.sitescape.util.search.Constants.ENTITY_FIELD), inputString, type);
 	}
 	
 	public static String markupStringReplacement(final RenderRequest req, final RenderResponse res, 
@@ -301,7 +237,7 @@ public class MarkupUtil {
 			final DefinableEntity entity, String inputString, String type) {
 		UrlBuilder builder = new UrlBuilder() {
 			public String getFileUrlByName(String fileName) {
-				return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, entity, fileName, true);
+				return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, entity, fileName);
 			}
 			public String getFileUrlById(String fileId) {
 				try {
@@ -334,10 +270,9 @@ public class MarkupUtil {
 			String entityId, String entityType, String inputString, String type) {
 		if (Validator.isNull(inputString)) return inputString;  //don't waste time
 		String outputString = new String(inputString);
-		//this happens on form view, the data is escaped on input from the jsp??
-		outputString = outputString.replaceAll("%20", " ");
-		outputString = outputString.replaceAll("%7B", "{");
-		outputString = outputString.replaceAll("%7D", "}");
+//why?		outputString = outputString.replaceAll("%20", " ");
+//		outputString = outputString.replaceAll("%7B", "{");
+//		outputString = outputString.replaceAll("%7D", "}");
 		int loopDetector;
 		try {
 	    	//Replace the markup urls with real urls {{attachmentUrl: tempFileHandle}}
@@ -506,8 +441,7 @@ public class MarkupUtil {
 	public static String markupSectionsReplacement(String body) {
 		List<Map> bodyParts = new ArrayList();
     	int loopDetector = 0;
-    	Pattern p0 = Pattern.compile("(==[=]*)([^=]*)(==[=]*)");
-    	Matcher m0 = p0.matcher(body);
+    	Matcher m0 = sectionPattern.matcher(body);
     	if (m0.find()) {
 			Map part = new HashMap();
 			part.put("prefix", body.substring(0, m0.start(0)));
@@ -516,15 +450,13 @@ public class MarkupUtil {
     	}
     	
     	int sectionNumber = 0;
-    	Pattern p1 = Pattern.compile("(==[=]*)([^=]*)(==[=]*)");
-    	Matcher m1 = p1.matcher(body);
+    	Matcher m1 = sectionPattern.matcher(body);
     	while (m1.find()) {
-    		if (loopDetector > 2000) {
+    		if (loopDetector++ > 2000) {
 	        	logger.error("Error processing markup [6]: " + body);
     			return body;
     		}
-    		loopDetector++;
-			Map part = new HashMap();
+ 			Map part = new HashMap();
     		//Get the section title
     		String title = m1.group(2).trim();
     		if (title == null) title = "";
@@ -539,8 +471,7 @@ public class MarkupUtil {
 			part.put("sectionTitleClass", "ss_sectionHeader" + String.valueOf(sectionDepth));
 			
 			body = body.substring(m1.end(), body.length());
-	    	Pattern p2 = Pattern.compile("(==[=]*)([^=]*)(==[=]*)");
-	    	Matcher m2 = p2.matcher(body);
+	    	Matcher m2 = sectionPattern.matcher(body);
 	    	if (m2.find()) {
 				part.put("sectionBody", body.substring(0, m2.start(0)));
 				body = body.substring(m2.start(0), body.length());
@@ -549,7 +480,7 @@ public class MarkupUtil {
 	    	}
 	    	part.put("sectionText", m1.group(1) + m1.group(2) + m1.group(3) + part.get("sectionBody"));
 			bodyParts.add(part);
-			m1 = p1.matcher(body);
+			m1 = sectionPattern.matcher(body);
     		
 			sectionNumber++;
 		}
