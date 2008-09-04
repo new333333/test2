@@ -30,53 +30,71 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="binderCounter" value="0"/> <% // set binder counter to zero (first pass) %>
+
+<c:set var="binderCounter" value="${fn:length(ss_whatsNewBinder) }"/>
+
+<c:set var="binderCounter2" value="0"/>  <% // set binder counter to zero (second pass) %>
+<c:set var="column2Seen" value="0"/>
 
 <div id="ss_para">
-<div align="right">
-<c:set var="actionVar" value="view_ws_listing"/>
-<c:if test="${ssBinder.entityType == 'folder'}">
-  <c:set var="actionVar" value="view_folder_listing"/>
-</c:if>
-<c:if test="${ss_pageNumber > '0'}">
-<a href="<ssf:url 
-		action="${actionVar}" binderId="${ssBinder.id}"><ssf:param
-		name="type" value="${ss_type}"/><ssf:param
-		name="page" value="${ss_pageNumber - 1}"/><ssf:param
-		name="namespace" value="${ss_namespace}"/></ssf:url>" 
-	onClick="ss_showWhatsNewPage(this, '${ssBinder.id}', '${ss_type}', '${ss_pageNumber}', 'previous', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
->
-<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-  title="<ssf:nlt tag="general.previousPage"/>"/>
-</a>
-</c:if>
-<c:if test="${empty ss_pageNumber || ss_pageNumber <= '0'}">
-<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
-</c:if>
-<c:if test="${!empty ss_whatsNewBinder}">
-<a href="<ssf:url 
+  <div align="right">
+	<c:set var="actionVar" value="view_ws_listing"/>
+	<c:if test="${ssBinder.entityType == 'folder'}">
+  	  <c:set var="actionVar" value="view_folder_listing"/>
+	</c:if>
+	<c:if test="${ss_pageNumber > '0'}">
+		<a href="<ssf:url 
+		  action="${actionVar}" binderId="${ssBinder.id}"><ssf:param
+		  name="type" value="${ss_type}"/><ssf:param
+		  name="page" value="${ss_pageNumber - 1}"/><ssf:param
+		  name="namespace" value="${ss_namespace}"/></ssf:url>" 
+	  	  onClick="ss_showWhatsNewPage(this, '${ssBinder.id}', '${ss_type}', '${ss_pageNumber}', 'previous', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
+		>
+		  <img src="<html:imagesPath/>pics/sym_arrow_left_.gif" title="<ssf:nlt tag="general.previousPage"/>"/>
+		</a>
+	</c:if>
+	<c:if test="${empty ss_pageNumber || ss_pageNumber <= '0'}">
+	  <img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
+	</c:if>
+	<c:if test="${!empty ss_whatsNewBinder}">
+	  <a href="<ssf:url 
 		action="${actionVar}" binderId="${ssBinder.id}"><ssf:param
 		name="type" value="${ss_type}"/><ssf:param
 		name="page" value="${ss_pageNumber + 1}"/><ssf:param
 		name="namespace" value="${ss_namespace}"/></ssf:url>" 
-	onClick="ss_showWhatsNewPage(this, '${ssBinder.id}', '${ss_type}', '${ss_pageNumber}', 'next', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
->
-<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-  title="<ssf:nlt tag="general.nextPage"/>"/>
-</a>
-</c:if>
-<c:if test="${empty ss_whatsNewBinder}">
-<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
-</c:if>
-<a style="margin-left:15px;"
-  onClick="ss_hideDivNone('ss_whatsNewDiv${ss_namespace}'); return false;"><img 
-  <ssf:alt tag="alt.hide"/> border="0" src="<html:imagesPath/>icons/close_off.gif"/></a>
-</div>
-<div>
-  <c:forEach var="entryWn" items="${ss_whatsNewBinder}">
-    <jsp:useBean id="entryWn" type="java.util.Map" />
-    <li>
-		<c:set var="isDashboard" value="yes"/>
-		<ssf:titleLink hrefClass="ss_link_2"
+		onClick="ss_showWhatsNewPage(this, '${ssBinder.id}', '${ss_type}', '${ss_pageNumber}', 'next', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
+	  >
+		<img src="<html:imagesPath/>pics/sym_arrow_right_.gif" title="<ssf:nlt tag="general.nextPage"/>"/>
+	  </a>
+	</c:if>
+	<c:if test="${empty ss_whatsNewBinder}">
+		<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+	</c:if>
+	<a style="margin-left:15px;"
+   	  onClick="ss_hideDivNone('ss_whatsNewDiv${ss_namespace}'); return false;"><img 
+  	  <ssf:alt tag="alt.hide"/> border="0" src="<html:imagesPath/>icons/close_off.gif"/>
+  	</a>
+  </div>
+ <div id="ss_dashboard_content" class="ss_doublecolumn">
+  <div align="center">
+   <div id="ss_folder_inset">
+  	<div id="ss_column_L" class="ss_dblcolleft">
+        <div class="ss_dblcol1">
+	    <!-- Start Left Column --> 
+	    <c:forEach var="entryWn" items="${ss_whatsNewBinder}">
+    	  <c:if test="${binderCounter2 >= (binderCounter/2) && column2Seen == '0'}">
+    		<c:set var="column2Seen" value="1"/>
+    		</div><!-- end of ss_para -->
+        </div><!-- end of ss_col 1 -->
+        <!-- Start Right Column -->
+      	<div id="ss_column_R">
+      	<div class="ss_dblcol2">
+  			  </c:if>
+    	<jsp:useBean id="entryWn" type="java.util.Map" />
+    	<li>
+		  <c:set var="isDashboard" value="yes"/>
+		  <ssf:titleLink hrefClass="ss_link_2"
 			entryId="${entryWn._docId}" binderId="${entryWn._binderId}" 
 			entityType="${entryWn._entityType}" 
 			namespace="${ss_namespace}" 
@@ -86,48 +104,63 @@
 				  action="view_folder_entry" entryId="${entryWn._docId}" actionUrl="true" />
 			</ssf:param>
 			<c:out value="${entryWn.title}" escapeXml="false"/>
-		</ssf:titleLink>
+		  </ssf:titleLink>
 	 
-	  <br/>
-	  <span>
-		<ssf:showUser user="<%=(com.sitescape.team.domain.User)entryWn.get("_principal")%>" 
-		  titleStyle="ss_link_1" /> 
-	  </span>
+	  	 <br/>
+	  	 <span>
+			<ssf:showUser user="<%=(com.sitescape.team.domain.User)entryWn.get("_principal")%>" 
+		  	titleStyle="ss_link_1" /> 
+	  	 </span>
 	  
-	  <span class="ss_link_4">
-	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-          value="${entryWn._modificationDate}" type="both" 
-	      timeStyle="short" dateStyle="medium" />
-	  </span>
+	  	 <span class="ss_link_4">
+	    	<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+          	value="${entryWn._modificationDate}" type="both" 
+	      	timeStyle="short" dateStyle="medium" />
+	  	 </span>
 	   
-	  <span class="ss_link_2">
-		<c:set var="path" value=""/>
-		<c:if test="${!empty ss_whatsNewBinderFolders[entryWn._binderId]}">
-			<c:set var="path" value="${ss_whatsNewBinderFolders[entryWn._binderId]}"/>
-			<c:set var="title" value="${ss_whatsNewBinderFolders[entryWn._binderId].title} (${ss_whatsNewBinderFolders[entryWn._binderId].parentBinder.title})"/>
-		</c:if>
-		<c:set var="isDashboard" value="yes"/>
-		<c:if test="${!empty path}">
-    		<br/><a href="javascript: ;"
-				onClick="return ss_gotoPermalink('${entryWn._binderId}', '${entryWn._binderId}', 'folder', '${ss_namespace}', 'yes');"
-				title="${path}"
-				><span>${title}</span></a>
-		</c:if>
-	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
-	  <c:if test="${!empty entryWn._desc}">
-	    <br/>
-	    <span class="ss_summary"><ssf:textFormat 
-	      formatAction="limitedDescription" 
-	      textMaxWords="10">${entryWn._desc}</ssf:textFormat></span>
-	  </c:if>
+	  	 <span class="ss_link_2">
+			<c:set var="path" value=""/>
+			<c:if test="${!empty ss_whatsNewBinderFolders[entryWn._binderId]}">
+			  <c:set var="path" value="${ss_whatsNewBinderFolders[entryWn._binderId]}"/>
+			  <c:set var="title" value="${ss_whatsNewBinderFolders[entryWn._binderId].title} (${ss_whatsNewBinderFolders[entryWn._binderId].parentBinder.title})"/>
+			</c:if>
+			<c:set var="isDashboard" value="yes"/>
+			<c:if test="${!empty path}">
+    			<br/>
+    			<a href="javascript: ;"
+				  onClick="return ss_gotoPermalink('${entryWn._binderId}', '${entryWn._binderId}', 'folder', '${ss_namespace}', 'yes');"
+				  title="${path}"
+				 >
+		  		 <span>${title}</span></a>
+			</c:if>
+	  	 </span>
+	  	 &nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
+	  	 <c:if test="${!empty entryWn._desc}">
+	    	<br/>
+	    	<span class="ss_summary"><ssf:textFormat 
+	      	  formatAction="limitedDescription" 
+	          textMaxWords="10">${entryWn._desc}</ssf:textFormat>
+	        </span>
+	  	 </c:if>
 	
-    </li><br/>
-  </c:forEach>
+    	</li>
+
+  		<c:set var="binderCounter2" value="${binderCounter2 + 1}"/>
+    	<br/>
+   </c:forEach>
+  </div><!-- end of ss_topic (see top) -->
+      </div><!-- end of col2 (right column) -->
+      </div><!-- end of ss_col_R (right column placeholder) -->
+    </div><!-- end of col left -->
+</div><!-- end of inset -->
+</div><!-- end of center -->
+</div><!-- end of content -->
+<div class="ss_clear_float"></div>
   <c:if test="${empty ss_whatsNewBinder && ss_pageNumber > '0'}">
     <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
   </c:if>
   <c:if test="${empty ss_whatsNewBinder && (empty ss_pageNumber || ss_pageNumber <= '0')}">
     <span class="ss_italic"><ssf:nlt tag="whatsnew.noEntriesFound"/></span>
   </c:if>
-</div>
-</div>
+</div><!-- end of ss_para -->
+
