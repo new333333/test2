@@ -27,6 +27,7 @@
  * are trademarks of SiteScape, Inc.
  */
 
+dojo.require("dojo.event.stamp");
 
 function ssEventEditor(prefix, frequency, interval, weekDays, monthDays) {
 	
@@ -375,13 +376,13 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 			that._setStartDate(that._eventStartObj.getDate());
 		}
 		if (that._eventStartTimeObj) {
-			that._setStartTime(dojo.date.fromRfc3339(that._eventStartTimeObj.getTime()));
+			that._setStartTime(dojo.date.stamp.fromISOString(that._eventStartTimeObj.getTime()));
 		}
 		if (that._eventEndObj) {
 			that._setEndDate(that._eventEndObj.getDate());
 		}
 		if (that._eventEndTimeObj) {
-			that._setEndTime(dojo.date.fromRfc3339(that._eventEndTimeObj.getTime()));
+			that._setEndTime(dojo.date.stamp.fromISOString(that._eventEndTimeObj.getTime()));
 		}
 		
 		that._displayUsers(true);
@@ -593,7 +594,7 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 	}
 	
 	this.changeStartTime = function(dateTime) {
-		that._setStartTime(dojo.date.fromRfc3339(dateTime));
+		that._setStartTime(dojo.date.stamp.fromISOString(dateTime));
 		that._timeLine.getBand(0).scrollToCenter(that._startDate);
 		that.loadData();
 		that._repaintEventOnTimeLine();		
@@ -605,7 +606,7 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 	}	
 	
 	this.changeEndTime = function(dateTime) {
-		that._setEndTime(dojo.date.fromRfc3339(dateTime));
+		that._setEndTime(dojo.date.stamp.fromISOString(dateTime));
 		that._repaintEventOnTimeLine();
 	}
 		
@@ -619,11 +620,11 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 		that._eventStartDate.setDate(date.getDate());
 		
 				
-		that._minStart = dojo.date.add(that._startDate, dojo.date.dateParts.WEEK, -1);
+		that._minStart = dojo.date.add(that._startDate, "week", -1);
 		that._minStart.setHours(0);
 		that._minStart.setMinutes(0);
 		
-		that._maxEnd = dojo.date.add(that._startDate, dojo.date.dateParts.WEEK, 3);
+		that._maxEnd = dojo.date.add(that._startDate, "week", 3);
 		that._maxEnd.setHours(0);
 		that._maxEnd.setMinutes(0);
 	}
@@ -673,8 +674,8 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 														binderId: that._binderId != null ? that._binderId : -1,
 														entryId: that._entryId != null ? that._entryId : -1,
 														ssUsersId: usersIds,
-														ssStartDate: dojo.date.toRfc3339(that._minStart, "dateOnly"),
-														ssEndDate: dojo.date.toRfc3339(that._maxEnd, "dateOnly"),
+														ssStartDate: dojo.date.stamp.toISOString(that._minStart, {selector: "date"}),
+														ssEndDate: dojo.date.stamp.toISOString(that._maxEnd, {selector: "date"}),
 														ssUserListName: that._userListDataName != null ? that._userListDataName : ""
 														});
 		that._timeLine.loadJSON(jsonUrl, function(json, url) {

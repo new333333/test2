@@ -134,6 +134,7 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	textAreaWorkflowsObj.className = "ss_combobox_autocomplete";
     textAreaWorkflowsObj.name = "searchWorkflow" + orderNo;
     textAreaWorkflowsObj.id = "searchWorkflow" + orderNo;
+    textAreaWorkflowsObj.style.width = "200px";
 	
 	wDiv.appendChild(textAreaWorkflowsObj);
 	
@@ -143,6 +144,7 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 				searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_workflows_search",
 	      		listType: "workflows",
 				displayValue: true,
+				searchOnInitialClick: true,
 				clickRoutine: function () {
 					var workflowId = findWorkflows.getSingleId();
 					var defaultStepsIds = workflowId == wfIdValue ? stepsValue : [];
@@ -226,6 +228,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	
 	var entryTypeDiv = document.createElement('div');
 	entryTypeDiv.id = "placeholderEntry"+orderNo;
+	entryTypeDiv.style.display = "inline";
 	div.appendChild(entryTypeDiv);
 	
 	var fieldsDiv = document.createElement('div');
@@ -253,6 +256,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	textAreaEntriesObj.className = "ss_combobox_autocomplete";
     textAreaEntriesObj.name = entryInputId;
     textAreaEntriesObj.id = entryInputId;
+    textAreaEntriesObj.style.width = "200px";
 	
 	entryTypeDiv.appendChild(textAreaEntriesObj);
 	
@@ -263,6 +267,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
   		listType: "entry_fields",
 		displayValue: true,
 		displayArrow: true,
+		searchOnInitialClick: true,
 		clickRoutine: function () {
 			ss_removeAllChildren(fieldsDiv);
 			ss_removeAllChildren(fieldValueDiv);
@@ -275,6 +280,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 			textAreaFieldsObj.className = "ss_combobox_autocomplete";
 		    textAreaFieldsObj.name = fieldsInputId;
 		    textAreaFieldsObj.id = fieldsInputId;
+		    textAreaFieldsObj.style.width = "200px";
 			
 			fieldsDiv.appendChild(textAreaFieldsObj);
 			
@@ -285,6 +291,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	      		listType: "entry_fields",
 				displayValue: true,
 				displayArrow: true,
+				searchOnInitialClick: true,
 				clickRoutine: function () {
 					var fieldValueWidget = dijit.byId("elementValue" + orderNo + "_selected");
 					if (fieldValueWidget && fieldValueWidget.destroy) {
@@ -376,6 +383,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 						textAreaAttributesFieldsObj.className = "ss_combobox_autocomplete";
 					    textAreaAttributesFieldsObj.name = "elementValue" + orderNo;
 					    textAreaAttributesFieldsObj.id = "elementValue" + orderNo;
+					    textAreaAttributesFieldsObj.style.width = "150px";
 						
 						fieldValue2Div.appendChild(textAreaAttributesFieldsObj);
 						
@@ -470,6 +478,7 @@ function addUserListField(orderNo, container, fieldId, fieldName, id, name) {
 	textAreaUserListObj.className = "ss_combobox_autocomplete";
     textAreaUserListObj.name = "elementValue" + orderNo;
     textAreaUserListObj.id = "elementValue" + orderNo;
+    textAreaUserListObj.style.width = "150px";
 	
 	container.appendChild(textAreaUserListObj);
 	
@@ -603,6 +612,7 @@ function ss_addAuthor(orderNo, authorId, authorName) {
 
 	var aDiv = document.createElement('div');
 	aDiv.id = "placeholderAuthor"+orderNo;
+	aDiv.style.display = "inline";
 
 	div.appendChild(document.createTextNode(" " + ss_searchFormLabelAuthor + ": "));
 	div.appendChild(aDiv);
@@ -613,6 +623,7 @@ function ss_addAuthor(orderNo, authorId, authorName) {
 	textAreaAuthorObj.className = "ss_combobox_autocomplete";
     textAreaAuthorObj.name = "searchAuthors" + orderNo;
     textAreaAuthorObj.id = "searchAuthors" + orderNo;
+    textAreaAuthorObj.style.width = "150px";
 	
 	aDiv.appendChild(textAreaAuthorObj);
 	
@@ -769,21 +780,14 @@ function ss_searchSetCheckbox(obj, name) {
 }
 
 function ss_showAdditionalOptions(objId, txtContainerId, namespace) {
-	var txtContainerObj = document.getElementById(txtContainerId);
-	if (txtContainerObj) {
-		if (txtContainerObj.innerHTML == ss_searchFormMoreOptionsHideLabel) {
-			txtContainerObj.innerHTML = ss_searchFormMoreOptionsShowLabel;
-		} else {
-			txtContainerObj.innerHTML = ss_searchFormMoreOptionsHideLabel;
-		}
-	}
-	
+	console.log("ss_showAdditionalOptions");
+}
+
+function ss_loadSearchOptions(namespace) {
 	var ssSearchParseAdvancedFormInputObj = document.getElementById("ssSearchParseAdvancedForm" + namespace);
 	if (ssSearchParseAdvancedFormInputObj) {
 		ssSearchParseAdvancedFormInputObj.value = "true";
 	}
-	
-	ss_showHide(objId);
 	if (!ss_searchMoreInitialized) {
 		ss_initSearchOptions();
 	}

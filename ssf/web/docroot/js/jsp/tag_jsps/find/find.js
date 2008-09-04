@@ -115,10 +115,13 @@ ssFind.configSingle = function(params) {
 	var displayArrow = ("displayArrow" in params) ? (params.displayArrow != "false" ? true : false) : false;
 	var displayValue = ("displayValue" in params) ? (params.displayValue != "false" ? true : false) : false;
 	var displayValueOnly = ("displayValueOnly" in params) ? (params.displayValueOnly != "false" ? true : false) : false;
+	var searchOnInitialClick = ("searchOnInitialClick" in params) ? (params.searchOnInitialClick != "false" ? true : false) : false;
+
 	var addCurrentUserToResult = ("addCurrentUserToResult" in params) ? (params.addCurrentUserToResult != "false" ? true : false) : false;
 		
 	findObj.single(inputId, prefix, clickRoutineObj, clickRoutine, viewUrl, viewAccesibleUrl, searchUrl,
-					leaveResultsVisible, listType, renderNamespace, binderId, subFolders, foldersOnly, showUserTitleOnly, displayArrow, displayValue, displayValueOnly, addCurrentUserToResult);
+					leaveResultsVisible, listType, renderNamespace, binderId, subFolders, foldersOnly, 
+					showUserTitleOnly, displayArrow, displayValue, displayValueOnly, addCurrentUserToResult, searchOnInitialClick);
 	
 	return findObj;
 }
@@ -184,6 +187,13 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 			dojo.connect(that._inputObj, "onkeyup", function() {
 				that.search();
 			});
+
+			if (that._searchOnInitialClick) {
+				dojo.connect(that._inputObj, "onclick", function() {
+					that.search();
+				});
+			}
+			
 			dojo.connect(that._inputObj, "onblur", function() {
 				that.blurTextArea();
 			});
@@ -249,7 +259,12 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		}	
 	}
 
-	this.single = function(inputId, singlePrefix, singleClickRoutineObj, singleClickRoutine, singleViewUrl, singleViewAccesibleUrl, singleSearchUrl, singleLeaveResultsVisible, singleListType, singleRenderNamespace, singleBinderId, singleSubFolders, singleFoldersOnly, showUserTitleOnly, displayArrow, displayValue, displayValueOnly, addCurrentUserToResult) {
+	this.single = function(inputId, singlePrefix, singleClickRoutineObj, singleClickRoutine, 
+						   singleViewUrl, singleViewAccesibleUrl, singleSearchUrl, 
+						   singleLeaveResultsVisible, singleListType, singleRenderNamespace,
+						   singleBinderId, singleSubFolders, singleFoldersOnly,
+						   showUserTitleOnly, displayArrow, displayValue, displayValueOnly,
+						   addCurrentUserToResult, searchOnInitialClick) {
 		that.inputId = inputId;
 		if (that.inputId) {
 			that._inputObj = document.getElementById(that.inputId);
@@ -271,6 +286,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		that._displayValue = displayValue;
 		that._displayValueOnly = displayValueOnly;
 		that._addCurrentUserToResult = addCurrentUserToResult;
+		that._searchOnInitialClick = searchOnInitialClick;
 		that.init();
 	}
 	
