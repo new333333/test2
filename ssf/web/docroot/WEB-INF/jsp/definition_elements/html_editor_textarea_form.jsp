@@ -93,7 +93,7 @@
   <div>
   <ssf:htmleditor name="${property_name}" id="ss_htmleditor_${property_name}" 
     height="<%= height %>"><ssf:markup type="form" leaveSectionsUnchanged="true"
-    entity="${ssDefinitionEntry}"><c:out value="${textValue}"/></ssf:markup></ssf:htmleditor>
+    entity="${ssDefinitionEntry}">${textValue}</ssf:markup></ssf:htmleditor>
   </div>
 </div>
 <c:set var="ss_html_editor_textarea_form_helpicon" value="" scope="request" />

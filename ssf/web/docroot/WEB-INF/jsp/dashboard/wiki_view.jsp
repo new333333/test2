@@ -84,8 +84,7 @@
 
 <c:if test="${!empty wikiEntry.description}">
 <div class="ss_entryContent ss_entryDescription">
- <span><ssf:markup entity="${wikiEntry}"><c:out 
-   value="${wikiEntry.description.text}" escapeXml="false"/></ssf:markup></span>
+ <span><ssf:markup entity="${wikiEntry}">${wikiEntry.description.text}</ssf:markup></span>
 </div>
 </c:if> 
 

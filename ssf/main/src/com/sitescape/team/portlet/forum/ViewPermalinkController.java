@@ -44,6 +44,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.shared.AccessUtils;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
@@ -63,109 +64,130 @@ import com.sitescape.util.Validator;
  *
  */
 public class ViewPermalinkController  extends SAbstractController {
-	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
+	public void handleActionRequestAfterValidation(final ActionRequest request, ActionResponse response) throws Exception {
+		User user = null;
+		String sUrl;
+		try {
+			if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
+				Long zoneId = WebHelper.getZoneIdByVirtualHost(request);
+				user = AccessUtils.getZoneGuestUser(zoneId);
+				if (user == null) {
+				//	User must log in to see this
+					response.setRenderParameters(request.getParameterMap());
+					return;
+				}
+				sUrl = (String)RunasTemplate.runas(new RunasCallback() {
+					public Object doAs() {
+						return processRequest(request);
+					}
+				}, user);
+			} else {
+				user = RequestContextHolder.getRequestContext().getUser();
+				sUrl = processRequest(request);
+			}
+			response.sendRedirect(sUrl);
+		} catch  (AccessControlException ac) {
+			//User must log in to see this
+			response.setRenderParameters(request.getParameterMap());
+			response.setRenderParameter("accessException", "true");
+			return;
+		} 
+	}
+	protected String processRequest(ActionRequest request) {
 		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String fileId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
-		String newTab= PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
 		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
 		EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.none;
 		DefinableEntity entity = null;
 		try {
 			entityType = EntityIdentifier.EntityType.valueOf(PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, ""));
 		} catch(Exception ignore) {};
-		
-		User user = null;
-		Long zoneId = WebHelper.getZoneIdByVirtualHost(request);
-		if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
-			user = AccessUtils.getZoneGuestUser(zoneId);
-			if (user == null || Validator.isNull(binderId) || 
-					!getBinderModule().checkAccess(new Long(binderId), user)) {
-				//User must log in to see this
-	 			response.setRenderParameters(request.getParameterMap());
-	 			return;
-			}
-		} else {
-	        user = RequestContextHolder.getRequestContext().getUser();
-			if (Validator.isNull(binderId) || 
-					!getBinderModule().checkAccess(new Long(binderId), user)) {
-				//User must log in to see this
-	 			response.setRenderParameters(request.getParameterMap());
-	 			return;
-			}
-		}
- 		if (Validator.isNotNull(fileId)) {
- 			if (entityType.isBinder()) {
- 				entity = getBinderModule().getBinder(Long.valueOf(binderId));
- 			} if (entityType.isPrincipal()) {
- 				entity = getProfileModule().getEntry(Long.valueOf(entryId));
- 			} else {
- 				entity = getFolderModule().getEntry(Long.valueOf(binderId), Long.valueOf(entryId));
- 			}
- 			FileAttachment attachment = (FileAttachment)entity.getAttachment(fileId);
- 			if (attachment != null) {
- 				response.sendRedirect(WebUrlUtil.getFileUrl(request, WebKeys.ACTION_READ_FILE, attachment));
- 				return;
- 			}
- 			
- 		}
- 		//It is ok to see this request, get the url to use for this request
 		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
-		if (Validator.isNotNull(binderId)) url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-		if (Validator.isNotNull(entryId)) url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-		if (Validator.isNotNull(entryTitle)) url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
-		url.setParameter(WebKeys.URL_ENTITY_TYPE, entityType.name());
-		if (Validator.isNotNull(newTab)) url.setParameter(WebKeys.URL_NEW_TAB, newTab);
-		
-		if (entityType.equals("") && !binderId.equals("")) {
-			try {
-				Binder binder = getBinderModule().getBinder(new Long(binderId));
-				entityType = binder.getEntityType();
-			} catch(Exception e) {}
-		}
-		if (entityType.equals(EntityIdentifier.EntityType.workspace) || 
-				entityType.equals(EntityIdentifier.EntityType.user)) {
-			url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
-		} else if (entityType.equals(EntityIdentifier.EntityType.folder)) {
-			url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");
-		} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) {
+
+		if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) { //folderEntry
+			//entries move so the binderId may not be valid
+			if (Validator.isNotNull(entryId)) {
+				entity = getFolderModule().getEntry(null, Long.valueOf(entryId));
+		 		if (Validator.isNotNull(fileId)) return getFileUrl(request, entity, fileId);
+				url.setParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
+				url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+			} else {
+				entity = getBinderModule().getBinder(Long.valueOf(binderId));				
+				url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
+				url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
+			}
+			User user = RequestContextHolder.getRequestContext().getUser();
 			String displayStyle = user.getDisplayStyle();
 			if (ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE.equals(displayStyle) || 
 					(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) &&
 					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()))) {
 				url.setParameter(WebKeys.URL_ACTION, "view_folder_entry");
 			} else {
-				try {
-					getBinderModule().getBinder(new Long(binderId));
-					url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");
-				} catch (AccessControlException ac) {
-					url.setParameter(WebKeys.URL_ACTION, "view_folder_entry");					
-				}
+				url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");
 			}
-		}
+		} else	if (entityType.isBinder() || entityType.equals(EntityIdentifier.EntityType.none)) {
+			entity = getBinderModule().getBinder(Long.valueOf(binderId));
+	 		if (Validator.isNotNull(fileId)) return getFileUrl(request, entity, fileId);
+			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+			entityType = entity.getEntityType();
+			if (entityType.equals(EntityIdentifier.EntityType.workspace)) {
+				url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
+			} else if (entityType.equals(EntityIdentifier.EntityType.profiles)) {
+				url.setParameter(WebKeys.URL_ACTION, "view_profile_listing");
+			} else {
+				url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");				
+			}
+			
+		} else if (entityType.isPrincipal()) {
+	 		if (Validator.isNotNull(fileId)) {
+	 			entity = getProfileModule().getEntry(Long.valueOf(entryId));
+	 			return getFileUrl(request, entity, fileId);
+	 		}
+
+			Long workspaceId  = getProfileModule().getEntryWorkspaceId(Long.valueOf(entryId));
+			entity = getBinderModule().getBinder(workspaceId);
+			url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
+			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
+		} 
+		
 		String sUrl = url.toString();
-		if (!fileId.equals("") && !binderId.equals("") && !entityType.equals("")) {
-			sUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_VIEW_FILE + "?" +
-				WebKeys.URL_BINDER_ID + "=" + binderId +
-				"&" + WebKeys.URL_ENTITY_TYPE + "=" + entityType;
-			if (!entryId.equals("")) sUrl += "&" + WebKeys.URL_ENTRY_ID + "=" + entryId;
-			sUrl += "&" + WebKeys.URL_FILE_ID + "=" + fileId;
-		}
- 		
     	if(logger.isDebugEnabled()) {
     		logger.debug("Permalink followed: " + sUrl);
     	}
-    	response.sendRedirect(sUrl);
-
+    	return sUrl;
+	}
+	protected String getFileUrl(ActionRequest request, DefinableEntity entity, String fileId) {
+		FileAttachment attachment = (FileAttachment)entity.getAttachment(fileId);
+		if (attachment != null) {
+			return WebUrlUtil.getFileUrl(request, WebKeys.ACTION_READ_FILE, attachment);
+		} else {
+			//use old v1 style
+			Long binderId,entityId=null;
+			if (entity.getEntityType().isBinder()) {
+				binderId = entity.getId();
+			} else {
+				binderId = entity.getParentBinder().getId();
+				entityId = entity.getId();
+			}
+			StringBuffer sUrl = new StringBuffer(WebUrlUtil.getServletRootURL(request)).append(WebKeys.SERVLET_VIEW_FILE).append("?");
+			sUrl.append(WebKeys.URL_BINDER_ID).append("=").append(binderId);
+			sUrl.append("&").append(WebKeys.URL_ENTITY_TYPE).append("=").append(entity.getEntityType().name());
+			if (entityId!=null) sUrl.append("&").append(WebKeys.URL_ENTRY_ID).append("=").append(entityId);
+			sUrl.append("&").append(WebKeys.URL_FILE_ID).append("=").append(fileId);
+			return sUrl.toString();
+		}
+	
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		final String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
-		final String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		Map<String,Object> model = new HashMap<String,Object>();
+		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
+		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String entityType= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, "");
 		String fileId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
-		String newTab= PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
 		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
+		//The user is allowed to see this, go redirect to the url	
 
 		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
@@ -174,64 +196,34 @@ public class ViewPermalinkController  extends SAbstractController {
 		if (!entryTitle.equals("")) url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
 		if (!entityType.equals("")) url.setParameter(WebKeys.URL_ENTITY_TYPE, entityType);
 		if (!fileId.equals("")) url.setParameter(WebKeys.URL_FILE_ID, fileId);
-		if (!newTab.equals("")) url.setParameter(WebKeys.URL_NEW_TAB, newTab);
-		
-    	Map<String,Object> model = new HashMap<String,Object>();
+	
 		model.put(WebKeys.URL, url.toString());
+		if (!"true".equals(PortletRequestUtils.getStringParameter(request, "accessException"))) {
+			//this would be from a v1.0.3 permalink that didn't have actionUrl=1
+			//send to action
+			return new ModelAndView(WebKeys.VIEW_LOGIN_RETURN, model);
+		}
 		
 		User user = null;
 		Long zoneId = WebHelper.getZoneIdByVirtualHost(request);
 		if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
-			if (!zoneId.equals("")) user = AccessUtils.getZoneGuestUser(new Long(zoneId));
-			if (user == null || binderId.equals("") || 
-					!getBinderModule().checkAccess(new Long(binderId), user)) {
-				//User must log in to see this
-				BinderHelper.setupStandardBeans(this, request, response, model);
-	 	    	return new ModelAndView("forum/login_please", model);
-			} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
-				String zoneName = WebHelper.getZoneNameByVirtualHost(request);
-				try {
-					RunasTemplate.runasGuest(new RunasCallback() {
-						public Object doAs() {
-							getFolderModule().getEntry(new Long(binderId), new Long(entryId));
-							return null;
-						}
-					}, zoneName);
-				} catch(AccessControlException ac) {
-					BinderHelper.setupStandardBeans(this, request, response, model);
-					return new ModelAndView("forum/login_please", model);
-				}
-			}
+			//User must log in to see this
+			BinderHelper.setupStandardBeans(this, request, response, model);
+			return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
 		} else {
 	        user = RequestContextHolder.getRequestContext().getUser();
 	 		
-			//See if the user has access to the item being requested
-			if (!binderId.equals("")) {
-				try {
-					//See if this user can access the binder
-					Binder binder = getBinderModule().getBinder(new Long(binderId));
-					model.put(WebKeys.BINDER, binder);
-					if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
-						//See if the user can access the entry, too
-						getFolderModule().getEntry(new Long(binderId), new Long(entryId));
-					}
-				} catch(AccessControlException ac) {
-					//Set up the standard beans
-					BinderHelper.setupStandardBeans(this, request, response, model, new Long(binderId));
-					if (WebHelper.isUserLoggedIn(request) && 
-							!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-						//Access is not allowed
-						return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
-					} else {
-						//Please log in
-						return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
-					}
-				}
+			//Set up the standard beans
+			BinderHelper.setupStandardBeans(this, request, response, model, new Long(binderId));
+			if (WebHelper.isUserLoggedIn(request) && 
+						!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+					//Access is not allowed
+				return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
+			} else {
+				//Please log in
+				return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
 			}
 		}
 		
-		//The user is allowed to see this, go redirect to the url	
-    	return new ModelAndView("forum/login_return", model);
 	}
-
 }

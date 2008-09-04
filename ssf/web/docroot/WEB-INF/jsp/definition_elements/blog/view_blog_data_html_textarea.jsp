@@ -28,25 +28,40 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+
+<% //Textarea view %>
+<% //NOTE: textarea's are currently not stored in the search index, so this is element is never shown. %>
 <%
 	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
 	String text = "";
-	if (thisEntry instanceof FolderEntry) {
+	if (thisEntry instanceof DefinableEntity) {
+
 		text = (String) ((FolderEntry)thisEntry).getCustomAttribute(property_name).getValue();
-	} else if (thisEntry instanceof Map) {
-		text = (String) ((Map)thisEntry).get(property_name);
-	}
-%>
-<% //Textarea view %>
-<% //NOTE: textarea's are currently not stored in the search index, so this is element is never shown. %>
-<%  if (text != null) {  %>
+		 if (text != null && !text.equals("")) {
+		%>
+<% //Description view %>
 <div class="ss_entryContent">
 <c:if test="${!empty property_caption}">
  <span class="ss_bold"><c:out value="${property_caption}" /></span>
 <br/>
 </c:if>
- <div class="ss_entryDescription">
-<span><ssf:markup type="view"><c:out value="<%= text %>" escapeXml="false"/></ssf:markup></span>
- </div>
-</div>
-<%  }  %>
+ <div class="ss_entryDescription"></div>
+  <span><ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true"><%= text %></ssf:markup></span>
+<%  	}
+ 	} else if (thisEntry instanceof Map) {
+		text = (String) ((Map)thisEntry).get(property_name);
+	 if (text != null && !text.equals("")) {	
+	 %>	
+<% //Description view %>
+<div class="ss_entryContent">
+<c:if test="${!empty property_caption}">
+ <span class="ss_bold"><c:out value="${property_caption}" /></span>
+<br/>
+</c:if>
+ <div class="ss_entryDescription"></div>
+  <span><ssf:markup search="${ssDefinitionEntry}" leaveSectionsUnchanged="true"><%= text %></ssf:markup></span>
+
+<%  	}
+	}
+%>
+
