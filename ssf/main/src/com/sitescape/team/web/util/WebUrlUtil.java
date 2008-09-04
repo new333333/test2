@@ -323,8 +323,8 @@ public class WebUrlUtil {
 			if (fileIdResult instanceof SearchFieldResult) {
 				List<String> values = ((SearchFieldResult)fileIdResult).getValueArray();
 				for (int i=0; i<values.size(); ++i) {
-					fileId = values.get(i);
-					if (fileName.equals(searchResults.get(com.sitescape.util.search.Constants.FILENAME_FIELD+fileId))) {
+					if (fileName.equals(searchResults.get(com.sitescape.util.search.Constants.FILENAME_FIELD+values.get(i)))) {
+						fileId = values.get(i);
 						break;
 					}
 				}

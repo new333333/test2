@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.net.URI;
 
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.team.domain.DefinableEntity;
@@ -104,7 +106,12 @@ public class MarkupUtil {
 	    	//Now, replace the url with special markup version
 	    	Matcher m3 = urlSrcPattern.matcher(img);
         	if (m3.find()) {
-        		img = m3.replaceFirst("src=\"{{attachmentUrl: " + WebHelper.getFileName(fileHandle).replace("$", "\\$") + "}}\"");
+        		String fileName = WebHelper.getFileName(fileHandle);
+        		try {
+        			URI uri = new URI(null, null, fileName, null); //encode as editor does 
+        			fileName = uri.getRawPath();
+        		} catch (Exception ex) {};
+        		img = m3.replaceFirst("src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
         		description.setText(m.replaceFirst(img.replace("$", "\\$"))); //remove special chars from replacement string
         		m = uploadImagePattern.matcher(description.getText());
         	}
@@ -159,6 +166,7 @@ public class MarkupUtil {
 		    	Matcher m1 = urlSrcPattern.matcher(img);
 	        	if (m1.find()) {
 	        		String fileName = args[6];
+	 
 	        		img = m1.replaceFirst("src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
 	        		description.setText(m.replaceFirst(img.replace("$", "\\$")));  //remove regex special char
 	        		m = readFileImagePattern.matcher(description.getText());
@@ -285,8 +293,15 @@ public class MarkupUtil {
 				}
 				if (matcher.groupCount() >= 2) {
 					String fileName = matcher.group(2);
+					//remove escaping that timyMce adds
+					fileName = StringEscapeUtils.unescapeHtml(fileName);
+	           		try {
+						//remove escaping for urls
+	        			URI uri = new URI(fileName);
+	        			fileName = uri.getPath();
+	        		} catch (Exception ex) {};
+
 					String webUrl = builder.getFileUrlByName(fileName);
-					//the filename is already escaped as html, so need to remove the encoding that building the URL did
 					outputString = matcher.replaceFirst(webUrl.replace("$", "\\$"));
 					matcher = attachmentUrlPattern.matcher(outputString);
 				}

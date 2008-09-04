@@ -1083,7 +1083,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 			String url = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_VIEW_FILE + "?" +
 			WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_UPLOAD_FILE + 
 			"&" + WebKeys.URL_FILE_ID + "=" + Http.encodeURL(fileHandle); 
-
 			response.setRenderParameter(WebKeys.IMAGE_FILE_URL, url);
 		}
 	
