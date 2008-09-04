@@ -45,6 +45,8 @@
 	</bean>
 	
 	<bean id="licenseManager" class="com.sitescape.team.license.impl.NullLicenseManager"/>
+	
+	<bean id="searchNodeInfoManager" class="com.sitescape.team.search.nodeinfo.impl.NullNodeInfoManager"/>
 
 	<!-- ============================== Document Converter ============================ -->
 

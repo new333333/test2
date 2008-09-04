@@ -177,15 +177,18 @@
 	<!-- JTA transaction manager. If using local transaction, comment out this element -->	
 	<!--<bean id="transactionManager" class="com.sitescape.team.spring.transaction.jta.JtaTransactionManager" />-->
 
-	<bean id="baseTransactionProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
-			abstract="true">
-		<property name="transactionManager"><ref bean="transactionManager"/></property>
+	<bean id="baseTransactionProxy" parent="baseTransactionWithoutInterceptorsProxy" abstract="true">
 		<property name="preInterceptors">
 			<list>
 				<ref bean="performanceMonitorInterceptor"/>
 				<ref bean="indexSynchronizationManagerInterceptor"/>
 			</list>
 		</property>
+	</bean>
+
+	<bean id="baseTransactionWithoutInterceptorsProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+			abstract="true">
+		<property name="transactionManager"><ref bean="transactionManager"/></property>
 		<!-- Warning: When used with jta, specified isolation levels are ignored and ISOLATION_DEFAULT is used instead. -->
 		<property name="transactionAttributes">
 			<props>
@@ -472,6 +475,7 @@
 		<property name="resourceDriverManager"><ref bean="resourceDriverManager"/></property>
 		<property name="licenseManager"><ref bean="licenseManager"/></property>
 		<property name="accessTokenManager"><ref bean="accessTokenManager"/></property>
+		<property name="searchNodeInfoManager"><ref bean="searchNodeInfoManager"/></property>
 	</bean>
 	
 	<bean id="processorDependencyTemplate" parent="dependOnCommonServicesTemplate" abstract="true">
