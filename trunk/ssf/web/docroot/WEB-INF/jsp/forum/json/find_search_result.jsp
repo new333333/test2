@@ -58,13 +58,13 @@
   		          --%></c:otherwise></c:choose>',
   		        'name': '<c:choose><%--
 		          --%><c:when test="${!empty entry.ssTag}"><%--
-		      		--%><c:out value="${entry.ssTag}"/><%--
+		      		--%><ssf:escapeJavaScript value="${entry.ssTag}"/><%--
 		      	  --%></c:when><%--
 		          --%><c:when test="${!empty entry._extendedTitle}"><%--
-		      		--%><c:out value="${entry._extendedTitle}"/><%--
+		      		--%><ssf:escapeJavaScript value="${entry._extendedTitle}"/><%--
 		      	  --%></c:when><%--		      	  
   		          --%><c:otherwise><%--
-  		          	--%><c:out value="${entry.title}"/><%--
+  		          	--%><ssf:escapeJavaScript value="${entry.title}"/><%--
   		          	--%><c:if test="${ssShowUserTitleOnly != 'true' && !empty entry._loginName}"> (${entry._loginName})</c:if><%--
   		          --%></c:otherwise></c:choose>',
   		          'type': '${entry._entityType}'
@@ -76,10 +76,9 @@
 	      'count': ${count},
 	      'pageSize': ${ss_pageSize},
 	      'totalHits': ${ss_searchTotalHits},
-	      
+
 	      'prevLabel': '<ssf:nlt tag="general.Previous"/>',
 	      'nextLabel': '<ssf:nlt tag="general.Next"/>'
-	      
 		</c:if>
 	</c:otherwise>
 </c:choose>
