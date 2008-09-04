@@ -46,9 +46,11 @@ import com.sitescape.team.PasswordMismatchException;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
+import com.sitescape.team.util.EncryptUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.DefinitionHelper;
@@ -103,7 +105,19 @@ public class ModifyEntryController extends SAbstractController {
             if (!getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
             	String passwordOriginal = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD_ORIGINAL);
             	//Check that the user knows the current password
-            	throw new PasswordMismatchException("errorcode.password.invalid");
+            	Principal p = getProfileModule().getEntry(entryId);
+            	if (p instanceof User) {
+            		if (!EncryptUtil.encryptPassword(passwordOriginal).equals(((User)p).getPassword())) {
+                    	throw new PasswordMismatchException("errorcode.password.invalid");            			
+            		}
+            	}
+            }
+            if (inputData.exists(WebKeys.USER_PROFILE_PASSWORD) && 
+            		inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD).equals("")) {
+            	//Don't allow blank password (either on purpose or by accident)
+            	Map writeableFormData = new HashMap(formData);
+            	writeableFormData.remove(WebKeys.USER_PROFILE_PASSWORD);
+            	inputData = new MapInputData(writeableFormData);
             }
 			getProfileModule().modifyEntry(entryId, inputData, fileMap, deleteAtts, null, null);
 
