@@ -55,9 +55,6 @@ public interface SsfIndexInterface extends java.rmi.Remote {
 	public void deleteDocuments(String indexname, Term term)
 			throws RemoteException;
 
-	public void deleteDocuments(String indexname, Query query)
-			throws RemoteException;
-
 	public void commit(String indexname) throws RemoteException;
 
 	public void stop(String indexname) throws RemoteException;
