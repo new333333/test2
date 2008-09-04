@@ -179,12 +179,9 @@ public interface AdminModule {
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;
     public void setWorkAreaOwner(WorkArea workArea, Long userId, boolean propagate) throws AccessControlException;
 	public void updateDefaultDefinitions(Long topId);
-    
+	
 	public List<Node> getSearchNodes();
 	
 	public void updateSearchNode(String nodeId, String accessMode, Boolean outOfSynch);
-	
-	public String getSearchNodeAccessMode(String nodeId);
-	
-	public boolean getSearchNodeOutOfSynch(String nodeId);
+
  }
