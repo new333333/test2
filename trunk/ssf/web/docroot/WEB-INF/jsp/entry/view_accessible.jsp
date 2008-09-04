@@ -46,7 +46,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 
 	<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 	<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
-	    <div class="ss_style_color">
+	    <div id="ss_folder_type_${ssDefinitionFamily}" class="ss_style_color">
 			<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 					  configElement="${ssConfigElement}" 
