@@ -35,6 +35,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+<META http-equiv="Content-Script-Type" content="text/javascript">
+<META http-equiv="Content-Style-Type" content="text/css">
 
 <c:set var="ss_servlet" value="true" scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/view_css.jsp" %>
