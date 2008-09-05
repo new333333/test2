@@ -15,9 +15,9 @@
         <s:intercept-url pattern="/ws/**" filters="none" />
         <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED,ROLE_ANONYMOUS" />
 
-        <s:form-login login-processing-url="/portalLogin" login-page="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login" default-target-url="/a/" />
+        <s:form-login login-processing-url="/s/portalLogin" login-page="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login" default-target-url="/a/" />
         <s:anonymous granted-authority="ROLE_ANONYMOUS" username="guest"  />
-        <s:logout logout-url="/portalLogout" logout-success-url="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login" />
+        <s:logout logout-url="/s/portalLogout" logout-success-url="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login" />
 
     </s:http>
 
