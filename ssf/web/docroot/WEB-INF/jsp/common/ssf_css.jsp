@@ -1272,13 +1272,13 @@ table.ss_mouseOverInfo {
 	width:100%;
 	}	
 #ss_fixed_table{
-	border-bottom: solid 0.4px #CCC;
+	border-bottom: solid .1em #CCC;
 	font-family: Arial, Helvetica, sans serif;
 	font-size: 10px;
 	color: #333;
 	}
 .ss_fixed_TD{
-	border-bottom: solid .04em #72AEB6;
+	border-bottom: solid .1em #72AEB6;
 	font-size: 10px: !important;
 	padding: 12px 2px 12px 2px;
 	}
@@ -1286,35 +1286,38 @@ table.ss_mouseOverInfo {
 	padding-left: 4px;
 	}
 .ss_fixed_TH{
-	border: solid .04px #CCC;
+	border: solid .1em #CCC;
 	padding:4px 2px 5px 5px;
 	}
 .ss_fixed_TH a:hover {
-	background: #FFD467;
+	background-color: #FFD467;
 	}
 .ss_fixed_centered_col ss_fixed_TH ss_fixed_TD{
 	text-align: center;
 	}
 .ss_fixed_odd_TR {
-	background: #E9F1F1;
+	background-color: #E9F1F1;
 	}
 .ss_fixed_odd_TR a:hover {
-	background: #9EC8CD;
+	background-color: #9EC8CD;
 	}
 .ss_fixed_even_TR {
-	background: #FFF;
+	background-color: #FFF;
 	}
 .ss_fixed_even_TR a:hover{
-	background: #9EC8CD;
+	background-color: #9EC8CD;
 	}
 .ss_fixed_TD_frame {
-	border: 0px 1px 1px 1px;
+	border-top-width: 0px
+	border-left-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
 	border-color:  #72AEB6;
 	border-style: solid;
 	}	
 .ss_tableheader_style{
 	font-size: 9px!important;
-	background: #9EC8CD;
+	background-color: #9EC8CD;
 	text-decoration: none;
 	}
 
