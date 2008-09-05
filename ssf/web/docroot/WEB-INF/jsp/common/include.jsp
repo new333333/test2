@@ -38,7 +38,7 @@
 	    --%><c:set var="ssf_support_files_loaded_flag" value="1"/><%--
 --%><c:if test="${empty ssf_snippet}"><%--
     --%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<html <c:if test="${!empty ssUser && !empty ssUser.locale}"> lang="${ssUser.locale}"</c:if>>
 <head>
 <jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_head.jsp" />
 <META http-equiv="Content-Script-Type" content="text/javascript">
