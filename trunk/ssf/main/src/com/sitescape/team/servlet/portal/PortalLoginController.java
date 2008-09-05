@@ -75,10 +75,10 @@ public class PortalLoginController extends SAbstractController {
 				return new ModelAndView(view, model);
 			}
 			
-			String username = RequestUtils.getStringParameter(request, "username", "");
-			String password = RequestUtils.getStringParameter(request, "password", "");			
+			String username = RequestUtils.getStringParameter(request, "j_username", "");
+			String password = RequestUtils.getStringParameter(request, "j_password", "");			
 			String remember = RequestUtils.getStringParameter(request, "remember");
-			String url = RequestUtils.getStringParameter(request, "url", "");			
+			String url = RequestUtils.getStringParameter(request, "spring-security-redirect", "");			
 			boolean forceNew = RequestUtils.getBooleanParameter(request, "_forcenew", false);
 			model.put(WebKeys.URL, url);
 
@@ -135,7 +135,7 @@ public class PortalLoginController extends SAbstractController {
 			getPortalLogin().logoutPortal(request, response);
 
 			view = WebKeys.VIEW_LOGOUT_RETURN;
-			String url = RequestUtils.getStringParameter(request, "url", "");
+			String url = RequestUtils.getStringParameter(request, "spring-security-redirect", "");
 			if (url.equals("")) {
 				if (userId != null) {
 					url = PermaLinkUtil.getWorkspaceURL(request, userId.toString());
