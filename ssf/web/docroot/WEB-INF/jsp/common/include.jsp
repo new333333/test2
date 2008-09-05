@@ -41,6 +41,8 @@
 <html>
 <head>
 <jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_head.jsp" />
+<META http-equiv="Content-Script-Type" content="text/javascript">
+<META http-equiv="Content-Style-Type" content="text/css">
 <c:if test="${!empty ss_windowTitle}"><title>${ss_windowTitle}</title></c:if>
 </c:if><%--
 	--%></c:if><%--
