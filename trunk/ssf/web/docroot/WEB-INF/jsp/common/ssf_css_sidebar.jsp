@@ -189,7 +189,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	text-decoration: none;
 	}
 .ss_sub_sidebarMenu a:hover {
-	background-color: #ADD8E6;
+	background-color: #CCCCCC;
 	}
 .ss_sideLink {
 	text-decoration: none;	
