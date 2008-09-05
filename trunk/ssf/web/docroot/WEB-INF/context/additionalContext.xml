@@ -10,7 +10,17 @@
 
 	<!-- ============================== Modules ============================= -->
 
-	<bean id="ldapModule"  class="com.sitescape.team.module.ldap.impl.NullLdapModuleImpl"/>
+	<bean id="ldapModule"  parent="baseTransactionProxy">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.ldap.impl.LdapModuleImpl">
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+				<property name="authenticationModule"><ref bean="authenticationModule"/></property>
+				<property name="profileModule"><ref bean="profileModule"/></property>
+				<property name="definitionModule"><ref bean="definitionModule"/></property>
+				<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+			</bean>
+		</property>
+	</bean>		
 	
 	<bean id="folderModuleTarget" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.folder.impl.BaseFolderModule">
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
