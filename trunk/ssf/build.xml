@@ -35,6 +35,18 @@
 	     "build-and-full-deploy", which will re-build correct artifacts before 
 	     deploying them. -->
 	<target name="full-deploy-internal" depends="init">
+		<if>
+			<equals arg1="${portal.type}" arg2="liferay" />
+			<then>				
+				<ant dir="liferay" target="full-deploy" inheritAll="false" />
+			</then>
+			<elseif>
+				<equals arg1="${portal.type}" arg2="jbossportal" />
+				<then>				
+					<ant dir="jboss-portal" target="full-deploy" inheritAll="false" />
+				</then>
+			</elseif>
+		</if>
 	</target>
 	
 	<target name="build">
@@ -63,6 +75,8 @@
 		<ant dir="main" target="clean" />
 		<ant dir="slide-webdavclient" target="clean" />
 		<ant dir="portal-module" target="clean" />
+		<ant dir="liferay" target="clean" />
+		<ant dir="jboss-portal" target="clean" />
 		<ant dir="taglib" target="clean" />
 
 		<ant dir="tools" target="clean" />
@@ -95,6 +109,8 @@
 		<ant dir="slide-webdavclient" target="compile" />
 
 		<ant dir="portal-module" target="compile" />
+		<ant dir="liferay" target="compile" />
+		<ant dir="jboss-portal" target="compile" />
 		<ant dir="taglib" target="compile" />
 		
 		<ant dir="simple-url" target="compile" />
@@ -119,6 +135,8 @@
 		<ant dir="main" target="jar" />
 		<ant dir="slide-webdavclient" target="jar" />
 		<ant dir="portal-module" target="jar" />
+		<ant dir="liferay" target="jar" />
+		<ant dir="jboss-portal" target="jar" />
 		<ant dir="taglib" target="jar" />
 
 		<ant dir="tools" target="jar" />
@@ -148,6 +166,8 @@
 		<ant dir="main" target="deploy" />
 		<ant dir="slide-webdavclient" target="deploy" />
 		<ant dir="portal-module" target="deploy" />
+		<ant dir="liferay" target="deploy" />
+		<ant dir="jboss-portal" target="deploy" />
 		<ant dir="taglib" target="deploy" />
 
 		<!-- Do NOT deploy tools archive -->
@@ -178,6 +198,8 @@
 		<ant dir="main" target="java2html" />
 		<ant dir="slide-webdavclient" target="java2html" />
 		<ant dir="portal-module" target="java2html" />
+		<ant dir="liferay" target="java2html" />
+		<ant dir="jboss-portal" target="java2html" />
 		<ant dir="taglib" target="java2html" />
 		<ant dir="tools" target="java2html" />
 		<ant dir="simple-url" target="java2html" />
@@ -198,6 +220,8 @@
 		<ant dir="main" target="javadoc" />
 		<ant dir="slide-webdavclient" target="javadoc" />
 		<ant dir="portal-module" target="javadoc" />
+		<ant dir="liferay" target="javadoc" />
+		<ant dir="jboss-portal" target="javadoc" />
 		<ant dir="taglib" target="javadoc" />
 		<ant dir="tools" target="javadoc" />
 		<ant dir="simple-url" target="javadoc" />
