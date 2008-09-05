@@ -7,28 +7,8 @@
 	<!-- ============================== Portal Login Support ============================ -->
 	<bean id="portalLoginBean" class="com.sitescape.team.portal.StandaloneLogin"/>
 	
-	<bean id="zoneGrabbingFilter" class="com.sitescape.team.spring.security.ZoneGrabbingFilter">
-		<s:custom-filter position="FIRST"/>
-	</bean>
+	<bean id="nullProviderManager" class="com.sitescape.team.module.authentication.impl.NullProviderManager"/>
 	
-    <s:http session-fixation-protection="newSession">
-        <s:intercept-url pattern="/ws/**" filters="none" />
-        <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED,ROLE_ANONYMOUS" />
-
-        <s:form-login login-processing-url="/portalLogin" login-page="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login" default-target-url="/a/" />
-        <s:anonymous granted-authority="ROLE_ANONYMOUS" username="guest"  />
-        <s:logout logout-url="/portalLogout" logout-success-url="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login" />
-
-    </s:http>
-
-	<bean id="_anonymousProcessingFilter"
-	      class="com.sitescape.team.spring.security.ZoneAwareAnonymousProcessingFilter">
-		<property name="key" value="thisIsIgnored"/>
-		<property name="userAttribute" value="guest,ROLE_ANONYMOUS"/>
-		<property name="zoneModule"><ref bean="zoneModule"/></property>
-		<property name="authenticationModule"><ref bean="authenticationModule"/></property>
-	</bean>
-
 	<bean id="springAuthenticationBeans" class="com.sitescape.team.spring.security.SpringAuthenticationBeans">
 		<property name="zoneModule"><ref bean="zoneModule"/></property>
 	</bean>
@@ -38,7 +18,7 @@
 			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.authentication.impl.AuthenticationModuleImpl">
 				<property name="zoneModule"><ref bean="zoneModule"/></property>
 				<!-- The _authenticationManager bean is defined by Spring Security (via the <http> entry in security.xml) -->
-				<property name="providerManager"><ref bean="_authenticationManager"/></property>
+				<property name="providerManager"><ref bean="nullProviderManager"/></property>
 			</bean>
 		</property>
 	</bean>
