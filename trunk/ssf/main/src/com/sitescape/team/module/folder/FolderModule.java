@@ -35,6 +35,8 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import com.sitescape.team.UncheckedIOException;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
@@ -347,6 +349,7 @@ public interface FolderModule {
 	 * @param includeReplies
 	 */
 	public void indexEntry(FolderEntry entry, boolean includeReplies);
+	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags);
 	/**
 	 * Return the parent Folder of the entry.  Useful if an entry has moved.
 	 * @param entryId

@@ -385,6 +385,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_WORKFLOW_STATES = "get_workflow_states";
 	public static final String OPERATION_GO_TO_ENTRY = "go_to_entry";
 	public static final String OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS = "hide_all_dashboard_components";
+	public static final String OPERATION_PIN_ENTRY = "pin_entry";
 	public static final String OPERATION_SET_BINDER_OWNER_ID = "set_binder_owner_id";
 	public static final String OPERATION_SET_DASHBOARD_TITLE = "set_dashboard_title";
 	public static final String OPERATION_SET_DISPLAY_STYLE = "set_display_style";
@@ -787,6 +788,7 @@ public class WebKeys {
     public static final String PEOPLE_RESULTCOUNT="ssPeopleResultCount";
     public static final String PERMALINK="ssPermalink";
     public static final String PERSONAL_TAGS="ssPersonalTags";
+    public static final String PINNED_ENTRIES="ssPinnedEntries";
 	public static final String PORTAL_URL = "ss_portalUrl";
 	public static final String PORTLET_TYPE = "ss_portletType";
 	public static final String PORTLET_TYPE_ADMIN = "ss_portletTypeAdmin";

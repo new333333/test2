@@ -497,7 +497,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 
     //***********************************************************************************************************    
  
-    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
+    public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry, tags);
     	
 		if (entry instanceof User) {
