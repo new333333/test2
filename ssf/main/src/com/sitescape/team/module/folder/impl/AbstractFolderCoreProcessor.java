@@ -749,7 +749,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	return ids;
      }     
 
-    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
+    public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry, tags);
     	FolderEntry fEntry = (FolderEntry)entry;        
         // Add Doc number

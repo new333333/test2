@@ -1188,7 +1188,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
          }
  	}
 
-    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
+    public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
         boolean fieldsOnly = false;
     	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry, fieldsOnly);

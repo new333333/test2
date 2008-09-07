@@ -39,6 +39,7 @@
 </c:if>
 <%
 boolean useAdaptor = true;
+List folderEntriesSeen = new ArrayList();
 if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle()) &&
 		!ObjectKeys.GUEST_USER_INTERNALID.equals(ssUser.getInternalId())) {
 	useAdaptor = false;
@@ -114,8 +115,14 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 
 	<ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="${slidingTableStyle}" 
  	  height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}" tableStyle="${slidingTableTableStyle}">
-
 	<ssf:slidingTableRow style="${slidingTableRowStyle}" headerRow="true">
+
+	<c:if test="${slidingTableStyle == 'fixed'}">
+      <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="2%">
+        <img src="<html:imagesPath/>pics/discussion/ss_pin_orange.png" title="<ssf:nlt tag="discussion.pinned"/>">
+      </ssf:slidingTableColumn>
+	</c:if>
+
   	<c:if test="${!empty ssFolderColumns['number']}">
     <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="6%">
 
@@ -401,47 +408,64 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 
 <c:forEach var="entry1" items="${ssFolderEntries}" >
 <c:set var="folderLineId" value="folderLine_${entry1._docId}"/>;
-
 <jsp:useBean id="entry1" type="java.util.HashMap" />
-<%
-	String seenStyle = "";
-	String seenStyleAuthor = "";
-	String seenStyleFine = "class=\"ss_fineprint\"";
-	if (0 == 1 && !ssSeenMap.checkIfSeen(entry1)) {
-		seenStyle = "class=\"ss_unseen\"";
-		seenStyleAuthor="ss_unseen";
-		seenStyleFine = "class=\"ss_unseen ss_fineprint\"";
-	}
-	String seenStyleTitle = seenStyle;
-	String seenStyleTitle2 = "class=\"ss_noUnderlinePlus\"";
+<%  
+	if (!folderEntriesSeen.contains(entry1.get("_docId"))) {
+		folderEntriesSeen.add(entry1.get("_docId"));
+		String seenStyle = "";
+		String seenStyleAuthor = "";
+		String seenStyleFine = "class=\"ss_fineprint\"";
+		if (0 == 1 && !ssSeenMap.checkIfSeen(entry1)) {
+			seenStyle = "class=\"ss_unseen\"";
+			seenStyleAuthor="ss_unseen";
+			seenStyleFine = "class=\"ss_unseen ss_fineprint\"";
+		}
+		String seenStyleTitle = seenStyle;
+		String seenStyleTitle2 = "class=\"ss_noUnderlinePlus\"";
 %>
 <c:if test="${slidingTableStyle == 'fixed'}">
 <%
-	seenStyleTitle = "class=\"normal\"";
-	seenStyleTitle2 = "class=\"normal\"";
+		seenStyleTitle = "class=\"normal\"";
+		seenStyleTitle2 = "class=\"normal\"";
 %>
 </c:if>
 <%
-	boolean hasFile = false;
-	boolean oneFile = false;
-	if (entry1.containsKey("_fileID")) {
-		String srFileID = entry1.get("_fileID").toString();
-		hasFile = true;
-		if (!srFileID.contains(",")) oneFile = true;
-	}
+		boolean hasFile = false;
+		boolean oneFile = false;
+		if (entry1.containsKey("_fileID")) {
+			String srFileID = entry1.get("_fileID").toString();
+			hasFile = true;
+			if (!srFileID.contains(",")) oneFile = true;
+		}
 %>
 <c:set var="seenStyleburst" value=""/>
 
 <%
-	if (!ssSeenMap.checkIfSeen(entry1)) {
-		%><c:set var="seenStyleburst" value="1"/><%
-	}
+		if (!ssSeenMap.checkIfSeen(entry1)) {
+			%><c:set var="seenStyleburst" value="1"/><%
+		}
 %>
 
 <c:set var="hasFile2" value="<%= hasFile %>"/>
 <c:set var="oneFile2" value="<%= oneFile %>"/>
 <ssf:slidingTableRow style="${slidingTableRowStyle}" 
   oddStyle="${slidingTableRowOddStyle}" evenStyle="${slidingTableRowEvenStyle}" id="${folderLineId}" >
+
+ <c:if test="${slidingTableStyle == 'fixed'}">
+  <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="2%">
+    <a href="javascript: ;" onClick="ss_pinEntry(this,'${entry1._binderId}','${entry1._docId}');return false;"><img 
+      <c:if test="${!empty ssPinnedEntries[entry1._docId]}">
+        src="<html:imagesPath/>pics/discussion/ss_pin_orange.png"
+        title="<ssf:nlt tag="discussion.unpin"/>"
+      </c:if>
+      <c:if test="${empty entry1._pinned}">
+        src="<html:imagesPath/>pics/discussion/ss_pin_grey.png"
+        title="<ssf:nlt tag="discussion.pin"/>"
+      </c:if>
+      ></a>
+  </ssf:slidingTableColumn>
+ </c:if>
+
  <c:if test="${!empty ssFolderColumns['number']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <a href="<ssf:url     
@@ -733,6 +757,9 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
  </c:if>
   
 </ssf:slidingTableRow>
+<%
+	}
+%>
 </c:forEach>
 </ssf:slidingTable>
 </div>

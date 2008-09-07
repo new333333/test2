@@ -218,6 +218,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				ajaxSetSidebarVisibility(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SET_SUNBURST_VISIBILITY)) {
 				ajaxSetSunburstVisibility(request, response);
+			} else if (op.equals(WebKeys.OPERATION_PIN_ENTRY)) {
+				ajaxPinEntry(request, response);
 			}
 		}
 	}
@@ -2159,6 +2161,31 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");
 		
 		getProfileModule().setSeen(user.getId(),getFolderModule().getEntry(binderId, entryId));
+	}
+	
+	private void ajaxPinEntry(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Long entryId = PortletRequestUtils.getLongParameter(request, "entryId");
+		Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");
+		
+		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
+		Map properties = userFolderProperties.getProperties();
+		
+		String pinnedEntries = "";
+		if (properties.containsKey(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES)) {
+			pinnedEntries = (String)properties.get(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES);
+		}
+		int len = String.valueOf(entryId).length() + 1;
+		int i = pinnedEntries.indexOf(String.valueOf(entryId) + ",");
+		if (i >= 0) {
+			pinnedEntries = pinnedEntries.substring(0, i) + pinnedEntries.substring(i+len);
+		} else {
+			pinnedEntries = String.valueOf(entryId) + "," + pinnedEntries;
+		}
+		
+		getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_PINNED_ENTRIES, pinnedEntries);
 	}
 	
 	private ModelAndView ajaxGetSearchQueryName(RenderRequest request, RenderResponse response) throws PortletRequestBindingException {

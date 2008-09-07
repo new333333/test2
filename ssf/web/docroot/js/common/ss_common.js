@@ -3868,6 +3868,17 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType,
 	return false;
 }
 
+function ss_pinEntry(obj, binderId, entryId) {
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"pin_entry", binderId:binderId, entryId:entryId});
+	var imgObj = obj.getElementsByTagName("img").item(0);
+	if (imgObj.src.indexOf("ss_pin_orange.png") > 0) {
+		imgObj.src = ss_imagesPath + "pics/discussion/ss_pin_grey.png";
+	} else {
+		imgObj.src = ss_imagesPath + "pics/discussion/ss_pin_orange.png"
+	}
+	ss_fetch_url(url);
+}
+
 var ss_entryInPlaceIframeOffset = 50;
 function ss_setIframeHeight(divId, iframeId, hoverOverId) {
 	var targetDiv = document.getElementById(divId);

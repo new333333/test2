@@ -28,6 +28,12 @@
  */
 package com.sitescape.team.module.shared;
 
+import static com.sitescape.util.search.Constants.BINDER_ID_FIELD;
+import static com.sitescape.util.search.Constants.COMMAND_DEFINITION_FIELD;
+import static com.sitescape.util.search.Constants.DEFINITION_TYPE_FIELD;
+import static com.sitescape.util.search.Constants.ENTITY_FIELD;
+import static com.sitescape.util.search.Constants.FAMILY_FIELD;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,15 +63,18 @@ import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserPrincipal;
 import com.sitescape.team.lucene.Hits;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
 
 public class SearchUtils {
@@ -111,6 +120,42 @@ public class SearchUtils {
 		            
 		    }
 		} finally {
+		}
+		return childEntries;
+	}
+	public static List getSearchEntries(List<org.apache.lucene.document.Document> entries) {
+		//Iterate through each entry and build the entries array as if the entry came from a search
+		ArrayList<Map> childEntries = new ArrayList(entries.size());
+		for (org.apache.lucene.document.Document doc : entries) {
+			HashMap ent = new HashMap();
+			childEntries.add(ent);
+			Field fld;
+			//enumerate thru all the returned fields, and add to the map object
+			Enumeration flds = doc.fields(); 
+			while (flds.hasMoreElements()) {
+				fld = (Field)flds.nextElement();
+				//TODO This hack needs to go.
+				if (SearchUtils.isDateField(fld.name())) {
+					try {
+						ent.put(fld.name(),DateTools.stringToDate(fld.stringValue()));
+	            		} catch (ParseException e) {ent.put(fld.name(),new Date());
+	            	}	
+	            } else if (!ent.containsKey(fld.name())) {
+	            	ent.put(fld.name(), fld.stringValue());
+	            } else {
+	            	Object obj = ent.get(fld.name());
+	            	SearchFieldResult val;
+	            	if (obj instanceof String) {
+	            		val = new SearchFieldResult();
+	            		//replace
+	            		ent.put(fld.name(), val);
+	            		val.addValue((String)obj);
+	            	} else {
+	            		val = (SearchFieldResult)obj;
+	            	}
+	            	val.addValue(fld.stringValue());
+	            } 
+			}
 		}
 		return childEntries;
 	}

@@ -30,6 +30,7 @@ package com.sitescape.team.web.util;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,6 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
@@ -52,6 +54,7 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.lucene.document.Field;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -88,6 +91,7 @@ import com.sitescape.team.module.rss.util.UrlUtil;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.SearchFieldResult;
+import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
@@ -689,6 +693,7 @@ public class ListFolderHelper {
 		Map folderEntries = null;
 		Long folderId = folder.getId();
 		User user = RequestContextHolder.getRequestContext().getUser();
+		List pinnedFolderEntries = new ArrayList();
 					
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			folderEntries = bs.getFolderModule().getFullEntries(folderId, options);
@@ -732,8 +737,7 @@ public class ListFolderHelper {
 					&& ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle) &&
 					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 				folderEntries = findCalendarEvents(bs, req, response, (Binder) folder, model);
-			}
-			else {
+			} else {
 				folderEntries = bs.getFolderModule().getEntries(folderId, options);
 			}
 			if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
@@ -748,12 +752,50 @@ public class ListFolderHelper {
 				//Get the list of all entries to build the archive list
 				loadFolderStatisticsForPlacesAttributes(bs, response, folder, options, model, folderEntries);
 			}			
+			if (viewType.equals(Definition.VIEW_STYLE_DISCUSSION)) {
+				Integer offset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
+				if (offset == null || offset == 0) {
+					//See if there are any pinned entries (show on first page only)
+					UserProperties userFolderProperties = 
+						bs.getProfileModule().getUserProperties(user.getId(), folder.getId());
+					Map properties = userFolderProperties.getProperties();
+					Map pinnedEntriesMap = new HashMap();
+					model.put(WebKeys.PINNED_ENTRIES, pinnedEntriesMap);
+					String pinnedEntries = "";
+					if (properties.containsKey(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES)) {
+						pinnedEntries = (String)properties.get(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES);
+					}
+					if (!pinnedEntries.equals("")) {
+						if (pinnedEntries.lastIndexOf(",") == pinnedEntries.length()-1) 
+							pinnedEntries = pinnedEntries.substring(0,pinnedEntries.length()-1);
+						String[] peArray = pinnedEntries.split(",");
+						List peSet = new ArrayList();
+						for (int i = 0; i < peArray.length; i++) {
+							String pe = peArray[i];
+							if (!pe.equals("")) {
+								peSet.add(Long.valueOf(pe));
+							}
+						}
+						SortedSet<FolderEntry> pinnedFolderEntriesSet = bs.getFolderModule().getEntries(peSet);
+						List pinnedFolderEntriesList = new ArrayList();
+						for (FolderEntry entry : pinnedFolderEntriesSet) {
+							org.apache.lucene.document.Document indexDoc = 
+								bs.getFolderModule().buildIndexDocumentFromEntry(entry.getParentBinder(), entry, null);
+							pinnedFolderEntriesList.add(indexDoc);
+							pinnedEntriesMap.put(entry.getId().toString(), entry);
+						}
+						pinnedFolderEntries = SearchUtils.getSearchEntries(pinnedFolderEntriesList);
+					}
+				}
+			}
 			// viewType == task is pure ajax solution (view AjaxController)
 		}
 
 		model.putAll(getSearchAndPagingModels(folderEntries, options));
 		if (folderEntries != null) {
-			model.put(WebKeys.FOLDER_ENTRIES, (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
+			List folderEntriesList = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+			if (!pinnedFolderEntries.isEmpty()) folderEntriesList.addAll(0, pinnedFolderEntries);
+			model.put(WebKeys.FOLDER_ENTRIES, folderEntriesList);
 		}
 		
 		if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
