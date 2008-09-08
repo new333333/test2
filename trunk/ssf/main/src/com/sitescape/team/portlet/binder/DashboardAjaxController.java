@@ -175,15 +175,16 @@ public class DashboardAjaxController extends SAbstractControllerRetry {
 				
 			}
 		}
-		String view = "dashboard/search_view2";
+		String view;
 		String displayType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DISPLAY_TYPE, "search");
 		if (displayType.equals(WebKeys.DISPLAY_STYLE_SEARCH)) view = "dashboard/search_view2";
-		if (displayType.equals(WebKeys.DISPLAY_STYLE_GALLERY)) view = "dashboard/gallery_view2";
-		if (displayType.equals(WebKeys.DISPLAY_STYLE_BLOG)) view = "dashboard/blog_view2";
-		if (displayType.equals(WebKeys.DISPLAY_STYLE_GUESTBOOK)) view = "dashboard/guestbook_view2";
-		if (displayType.equals(WebKeys.DISPLAY_STYLE_TASK)) view = "dashboard/task_view2";
-		if (displayType.equals("comments")) view = "dashboard/comments_view2";
-		return new ModelAndView(view, model);
+		else if (displayType.equals(WebKeys.DISPLAY_STYLE_GALLERY)) view = "dashboard/gallery_view2";
+		else if (displayType.equals(WebKeys.DISPLAY_STYLE_BLOG)) view = "dashboard/blog_view2";
+		else if (displayType.equals(WebKeys.DISPLAY_STYLE_GUESTBOOK)) view = "dashboard/guestbook_view2";
+		else if (displayType.equals(WebKeys.DISPLAY_STYLE_TASK)) view = "dashboard/task_view2";
+		else if (displayType.equals("comments")) view = "dashboard/comments_view2";
+		else view = "dashboard/search_view2";
+			return new ModelAndView(view, model);
 	}
 	
 	private ModelAndView ajaxGetDashboardTeamMore(RenderRequest request, 

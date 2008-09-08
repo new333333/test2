@@ -80,7 +80,6 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 		     value="<c:out value="${ssEntryTitle}"/>"
 		   </c:if>
 		 </c:if>
-		 />
 		 <c:if test="${!empty ssDefinitionEntry.title}">
 		   value="<c:out value="${ssDefinitionEntry.title}"/>" />
 		 </c:if>

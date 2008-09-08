@@ -1,4 +1,3 @@
-<%
 /**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
@@ -27,33 +26,62 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-%>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<ssf:ifaccessible>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ page contentType="text/html; charset=UTF-8" %>
+package com.sitescape.team.taglib;
 
-<body class="ss_style_body tundra" onLoad="window.focus();">
-</ssf:ifaccessible>
+import java.util.Map;
 
-<div class="ss_indent_medium">
-<c:forEach var="binder" items="${ss_myTeams}">
-<a href="<ssf:permalink search="${binder}"/>" 
-<ssf:ifnotaccessible>
-  onClick="return ss_gotoPermalink('${binder._docId}', '${binder._docId}', '${binder._entityType}', '${ss_namespace}', 'yes')"
-</ssf:ifnotaccessible>
-<ssf:ifaccessible>
-  onClick="return parent.ss_gotoPermalink('${binder._docId}', '${binder._docId}', '${binder._entityType}', '${ss_namespace}', 'yes')"
-</ssf:ifaccessible>
->${binder.title}</a><br/>
-</c:forEach>
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 
-<c:if test="${empty ss_myTeams}">
-<span class="ss_italic"><ssf:nlt tag="team.noTeams"/></span>
-</c:if>
-</div>
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.web.util.PermaLinkUtil;
+import com.sitescape.util.Validator;
+/**
+ * @author Peter Hurley
+ *
+ */
+public class PermalinkTag extends BodyTagSupport {
+    private Map searchResult=null;
+	private DefinableEntity entity=null;
+	public PermalinkTag() {
+		setup();
+	}
+	/** 
+	 * Initalize params at end of call and creation
+	 * 
+	 *
+	 */
+	protected void setup() {
+		//need to reinitialize - class must be cached
+		searchResult=null;
+		entity = null;
+	}
+	
+	public int doEndTag() throws JspException {
+		try {
+			HttpServletRequest req =
+				(HttpServletRequest)pageContext.getRequest();
+			String webUrl = null;
+			if (searchResult != null) webUrl = PermaLinkUtil.getPermalinkURL(req, searchResult);
+			else webUrl = PermaLinkUtil.getPermalinkURL(req, entity);
+			if (Validator.isNotNull(webUrl)) pageContext.getOut().print(webUrl);
+			return SKIP_BODY;
+		} catch (Exception e) {
+			throw new JspTagException(e.getLocalizedMessage());
+		} finally {
+			setup();
+		}
+	}
 
-<ssf:ifaccessible>
-</body>
-</html>
-</ssf:ifaccessible>
+	public void setSearch(Map searchResult) {
+	    this.searchResult = searchResult;
+	}
+	public void setEntity(DefinableEntity entity) {
+		this.entity = entity;
+	}
+
+}
+
+

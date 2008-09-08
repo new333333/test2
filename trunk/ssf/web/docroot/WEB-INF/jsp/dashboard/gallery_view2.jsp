@@ -74,10 +74,7 @@
 				entityType="user" namespace="${ss_namespace}" 
 				useBinderFunction="permalink" isDashboard="yes" dashboardType="${ssDashboard.scope}">											
 						<ssf:param name="url" useBody="true">
-								<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" 
-									binderId="${fileEntry._binderId}" entryId="${fileEntry._docId}">
-									<ssf:param name="entityType" value="user}" />
-								</ssf:url>
+								<ssf:permalink search="${fileEntry}"/>
 						</ssf:param>
 					<c:out value="${fileEntry.title}" escapeXml="false"/>
 			</ssf:titleLink>
@@ -90,10 +87,7 @@
 					useBinderFunction="permalink" isDashboard="yes" dashboardType="${ssDashboard.scope}">
 											
 						<ssf:param name="url" useBody="true">
-								<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" 
-										binderId="${fileEntry._docId}">
-										<ssf:param name="entityType" value="${fileEntry._entityType}"/>
-								</ssf:url>	  										
+								<ssf:permalink search="${fileEntry}"/>
 						</ssf:param>
 					<c:out value="${fileEntry.title}" escapeXml="false"/>
 			</ssf:titleLink>

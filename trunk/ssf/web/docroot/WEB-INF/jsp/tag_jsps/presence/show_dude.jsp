@@ -97,12 +97,7 @@
   <c:if test="${ss_presence_show_title}">
 	<ssf:ifadapter>
 	  <c:if test="${!empty ss_presence_user.workspaceId}">
-	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-	    action="view_permalink"
-	    binderId="${ss_presence_user.workspaceId}">
-	    <ssf:param name="entityType" value="workspace" />
-	    <ssf:param name="newTab" value="1" />
-		</ssf:url>"
+	  <a href="<ssf:permalink entity="${ss_presence_user}"/>"
 	  onClick="ss_openUrlInParentWorkarea(this.href, '${ss_presence_user.workspaceId}', 'view_ws_listing');return false;"
 	  ><span id="${ss_presence_user.id}" 
 	    class="${ss_presence_title_style} ss_muster_users">${ss_presence_user.title}</span></a>

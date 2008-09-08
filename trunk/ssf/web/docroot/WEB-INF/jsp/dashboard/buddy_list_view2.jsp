@@ -69,12 +69,7 @@
 					  ><ssf:presenceInfo user="<%=u1%>" componentId="${ss_namespace}_${componentId}"/> </span></td>
 					  <td style="padding-left:10px;">
 					  <ssf:ifadapter>
-					  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-					    action="view_permalink"
-					    binderId="${u1.parentBinder.id}"
-					    entryId="${u1.id}">
-					    <ssf:param name="entityType" value="user" />
-						</ssf:url>"
+					  <a href="<ssf:permalink entity="${u1}"/>"
 					  	onClick="ss_openUrlInWorkarea(this.href, '${u1.workspaceId}', 'view_ws_listing');return false;"
 					  ><c:out value="${u1.title}"/></a>
 					  </ssf:ifadapter>

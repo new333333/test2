@@ -36,12 +36,7 @@
 <c:forEach var="binder" items="${ss_trackedCalendars}">
 	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
 	    <a class="ss_link_5"
-	      href="<ssf:url adapter="true" portletName="ss_forum" 
-	    	action="view_permalink"
-	    	binderId="${binder.id}">
-	    	<ssf:param name="entityType" value="folder" />
-	    	<ssf:param name="newTab" value="1" />
-			</ssf:url>"
+	      href="<ssf:permalink entity="${binder}"/>"
 		  onClick="return ss_gotoPermalink('${binder.id}', '${binder.id}', 'folder', '${ss_namespace}', 'yes');"
 	    ><span>${binder.title} (${binder.parentBinder.title})</span> </a>
 	    &nbsp;<img src="<html:rootPath/>images/icons/folder_green_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
