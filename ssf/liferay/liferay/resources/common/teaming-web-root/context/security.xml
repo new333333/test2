@@ -5,7 +5,7 @@
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.1.xsd">
 
 	<!-- ============================== Portal Login Support ============================ -->
-	<bean id="portalLoginBean" class="com.sitescape.team.portal.StandaloneLogin"/>
+	<bean id="portalLoginBean" class="com.sitescape.team.portal.liferay.LiferayLogin"/>
 	
 	<bean id="nullProviderManager" class="com.sitescape.team.module.authentication.impl.NullProviderManager"/>
 	

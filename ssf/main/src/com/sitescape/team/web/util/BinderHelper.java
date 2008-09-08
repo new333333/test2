@@ -318,7 +318,7 @@ public class BinderHelper {
 			AdaptedPortletURL loginUrl = new AdaptedPortletURL(request, portletName, true);
 			loginUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOGIN); 
 			model.put(WebKeys.LOGIN_URL, loginUrl.toString());
-			String logoutUrl = WebUrlUtil.getSSFContextRootURL(request) + WebKeys.SERVLET_LOGOUT;
+			String logoutUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_LOGOUT;
 			model.put(WebKeys.LOGOUT_URL, logoutUrl);
 			String loginPostUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_LOGIN;
 			model.put(WebKeys.LOGIN_POST_URL, loginPostUrl);
