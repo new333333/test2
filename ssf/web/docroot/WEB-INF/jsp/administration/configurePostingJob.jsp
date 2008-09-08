@@ -114,12 +114,7 @@ function ${renderResponse.namespace}_modifyAlias() {
 <input type="button" value="Edit" onClick="${renderResponse.namespace}_showAliasDiv('${status.index}'); return false"/>
 </td><td>
 <c:if test="${!empty alias.binder}">
-<a href="<ssf:url adapter="true" portletName="ss_forum" 
-		    action="view_permalink"
-		    binderId="${alias.binder.id}">
-		    <ssf:param name="entityType" value="${alias.binder.entityType}" />
-    	    <ssf:param name="newTab" value="1"/>
-			</ssf:url>">
+<a href="<ssf:permalink entity="${alias.binder}" />">
 ${alias.binder.title}&nbsp;&nbsp<span  class="ss_smallprint ss_light">(${alias.binder.parentBinder.title})</span>
 </a>
 </c:if>

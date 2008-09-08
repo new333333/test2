@@ -158,7 +158,7 @@
 								<c:if test="${!empty entryBinderTitle}">
 									<p><ssf:nlt tag="searchResult.label.binder" />: <a 
 									<c:if test="${isDashboard == 'yes'}">
-										href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._binderId}">
+										href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" >
 											<ssf:param name="entityType" value="folder"/><ssf:param name="newTab" value="1"/></ssf:url>"
 										onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
 									</c:if>
@@ -227,7 +227,7 @@
 								<c:if test="${!empty entryBinderTitle}">
 									<p><ssf:nlt tag="searchResult.label.binder" />: <a 
 									<c:if test="${isDashboard == 'yes'}">
-										href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._binderId}">
+										href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" >
 											<ssf:param name="entityType" value="folder"/><ssf:param name="newTab" value="1"/></ssf:url>"
 										onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
 									</c:if>
@@ -270,11 +270,7 @@
 											<ssf:param name="url" useBody="true">
 											
 												<c:if test="${isDashboard == 'yes'}">
-													<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" 
-														binderId="${entry._binderId}" entryId="${entry._docId}">
-														<ssf:param name="entityType" value="${entry._entityType}" />
-														<ssf:param name="newTab" value="1"/>
-													</ssf:url>
+													<ssf:permalink search="${entry}"/>
 												</c:if>
 												<c:if test="${empty isDashboard || isDashboard == 'no'}">
 													<ssf:url adapter="false" portletName="ss_forum" binderId="${entry._binderId}" 
@@ -337,8 +333,7 @@
 								</p>
 								<p><ssf:nlt tag="searchResult.label.user" />:
 										<c:if test="${isDashboard == 'yes'}">
-											<a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._docId}">
-												<ssf:param name="entityType" value="${entry._entityType}" /><ssf:param name="newTab" value="1"/></ssf:url>"
+											<a href="<ssf:permalink search="${entry}"/>"
 											onClick="return ss_gotoPermalink('${entry._binderId}','${entry._docId}', '${entry._entityType}', '${ss_namespace}', 'yes');"
 										</c:if>
 										<c:if test="${empty isDashboard || isDashboard == 'no'}">
@@ -415,13 +410,7 @@
 											<ssf:param name="url" useBody="true">
 											
 												<c:if test="${isDashboard == 'yes'}">
-													<ssf:url adapter="true" portletName="ss_forum" 
-													    action="view_permalink" 
-														binderId="${entryBinderId}" 
-														entryId="${entryDocId}">
-														<ssf:param name="entityType" value="${entry._entityType}"/>
-														<ssf:param name="newTab" value="1"/>
-													</ssf:url>
+													<ssf:permalink search="${entry}"/> 
 												</c:if>
 											
 												<c:if test="${empty isDashboard || isDashboard == 'no'}">
@@ -499,9 +488,8 @@
 								   </p>
 									<p>${binderLabel}: <a 
 									<c:if test="${isDashboard == 'yes'}">
-										href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}">
-											<ssf:param name="entityType" value="${entry._entityType}"/><ssf:param name="newTab" value="1"/></ssf:url>"
-										onClick="return ss_gotoPermalink('${entry._binderId}','${entry._docId}', '${entry._entityType}', '${ss_namespace}', 'yes');"
+										href="<ssf:permalink search="${entry}"/>"
+										onClick="return ss_gotoPermalink('${entry._docId}','${entry._docId}', '${entry._entityType}', '${ss_namespace}', 'yes');"
 									</c:if>
 									<c:if test="${empty isDashboard || isDashboard == 'no'}">
 								     href="<ssf:url adapter="false" binderId="${entry._docId}" action="${actionVar}" actionUrl="false" >

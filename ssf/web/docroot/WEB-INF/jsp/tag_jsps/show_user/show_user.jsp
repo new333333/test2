@@ -60,12 +60,7 @@
 				<c:if test="${!empty ss_showUserUser.workspaceId}">
 				  	<c:if test="${!ss_showUserIsGroup}">
 					  <a 
-				  		href="<ssf:url adapter="true" portletName="ss_forum" 
-						    action="view_permalink"
-						    binderId="${ss_showUserUser.workspaceId}">
-						    <ssf:param name="entityType" value="workspace" />
-						    <ssf:param name="newTab" value="1" />
-							</ssf:url>"
+				  		href="<ssf:permalink entity="${ss_showUserUser}"/>"
 				  		onclick="ss_openUrlInParentWorkarea(this.href, '${ss_showUserUser.workspaceId}', 'view_ws_listing');return false;"
 					  >
 			  		</c:if>

@@ -46,13 +46,7 @@
   <table cellspacing="0" cellpadding="0" width="100%">
   <tr>
   <td valign="top"><span class="ss_blog_summary_title_text">
-    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-		    action="view_permalink"
-		    binderId="${fileEntry._binderId}"
-		    entryId="${fileEntry._docId}">
-		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
-    	    <ssf:param name="newTab" value="1"/>
-			</ssf:url>"
+    <a href="<ssf:permalink search="${fileEntry}"/>"
 			onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '', 'yes');">
 
      <c:if test="${empty fileEntry.title}">
@@ -82,7 +76,6 @@
 						    action="view_permalink"
 						    binderId="${fileEntry._binderId}">
 						    <ssf:param name="entityType" value="folder" />
-				    	    <ssf:param name="newTab" value="1"/>
 							</ssf:url>" 
 							onClick="return ss_gotoPermalink('${fileEntry._binderId}', '${fileEntry._binderId}', 'folder', '', 'yes');">					
 						  ${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}
@@ -96,7 +89,6 @@
 				    action="view_permalink"
 				    binderId="${fileEntry._binderId}">
 				    <ssf:param name="entityType" value="folder" />
-		    	    <ssf:param name="newTab" value="1"/>
 					</ssf:url>" 
 					onClick="return ss_gotoPermalink('${fileEntry._binderId}', '${fileEntry._binderId}', 'folder', '', 'yes');">					
 				  ${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}

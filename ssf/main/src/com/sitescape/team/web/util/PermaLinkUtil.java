@@ -28,47 +28,42 @@
  */
 package com.sitescape.team.web.util;
 
+import java.util.Map;
+
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
-import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.util.search.Constants;
 
 public class PermaLinkUtil {
 
 	
-	public static String getURL(Long binderId, String entityType) {
-		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entityType);
-
-		return adapterUrl.toString();
-	}
 	
 	public static String getWorkspaceURL(HttpServletRequest request, String userId) {
-		Long profileBinderId = getProfileModule().getProfileBinder().getId();
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, profileBinderId.toString());
 		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId);
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name());
 		return adapterUrl.toString();
 	}
 	
 	public static String getWapLandingPageURL(HttpServletRequest request, String userId) {
-		Long profileBinderId = getProfileModule().getProfileBinder().getId();
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, profileBinderId.toString());
 		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId);
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.workspace.toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name());
 		return adapterUrl.toString();
+	}
+	public static String getPermalinkURL(HttpServletRequest request, DefinableEntity entity) {
+		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+		getPermalinkURL(url, entity);
+		return url.toString();
 	}
 	public static String getPermalinkURL(PortletRequest request, DefinableEntity entity) {
 		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
@@ -86,10 +81,37 @@ public class PermaLinkUtil {
 		if (entity.getEntityType().isBinder()) {
 			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
 		} else {
-			url.setParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
 			url.setParameter(WebKeys.URL_ENTRY_ID, entity.getId().toString());
 		}
 		
+	}
+	public static String getPermalinkURL(HttpServletRequest request, Map searchResults) {
+		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+		getPermalinkURL(url, searchResults);
+		return url.toString();
+	}
+	public static String getPermalinkURL(PortletRequest request, Map searchResults) {
+		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+		getPermalinkURL(url, searchResults);
+		return url.toString();
+	}
+	public static String getPermalinkURL(Map searchResults) {
+		AdaptedPortletURL url = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+		getPermalinkURL(url, searchResults);
+		return url.toString();
+	}
+	protected static void getPermalinkURL(AdaptedPortletURL url, Map searchResults) {
+		String id = (String)searchResults.get(Constants.DOCID_FIELD);
+		String type = (String)searchResults.get(Constants.ENTITY_FIELD);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+		EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.valueOf(type);
+		url.setParameter(WebKeys.URL_ENTITY_TYPE, entityType.name());
+		if (entityType.isBinder()) {
+			url.setParameter(WebKeys.URL_BINDER_ID, id);
+		} else {
+			url.setParameter(WebKeys.URL_ENTRY_ID, id);
+		} 
+
 	}
 
 	private static ProfileModule getProfileModule() {

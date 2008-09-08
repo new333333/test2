@@ -366,7 +366,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			title = (String) search.get(Constants.TITLE_FIELD);
 			creation = new Timestamp((String) search.get(Constants.MODIFICATION_NAME_FIELD), (Date) search.get(Constants.MODIFICATION_DATE_FIELD));
 			modification = new Timestamp((String) search.get(Constants.CREATOR_NAME_FIELD), (Date) search.get(Constants.CREATION_DATE_FIELD));
-			permaLink = PermaLinkUtil.getURL(id, (String) search.get(Constants.ENTITY_FIELD));
+			permaLink = PermaLinkUtil.getPermalinkURL(search);
 			// Construct webdav url regardless of whether this folder is a library binder or not. 
 			webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
 			rssUrl = UrlUtil.getFeedURL(null, id.toString()); // folder only

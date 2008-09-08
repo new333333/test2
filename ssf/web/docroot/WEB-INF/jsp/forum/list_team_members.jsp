@@ -65,11 +65,7 @@
 								folderId="${member.parentBinder.id}" entryId="${member.id}" />						
 						 </td>
 						<td>
-						  <a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" 
-									    binderId="${member.parentBinder.id}" ><ssf:param 
-									    name="entityType" value="user"/><ssf:param name="entryId" 
-										value="${member.id}"/><ssf:param 
-										name="newTab" value="1"/></ssf:url>"
+						  <a href="<ssf:permalink entity="${member}"/>"
 							onClick="return ss_gotoPermalink('${member.parentBinder.id}','${member.id}', 'user', '${ss_namespace}', 'yes');"
 							>${member.title}</a>
 						</td>
