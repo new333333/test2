@@ -5,15 +5,15 @@
  * but Sections 14 and 15 have been added to cover use of software over a computer network and provide for
  * limited attribution for the Original Developer. In addition, Exhibit A has been modified to be
  * consistent with Exhibit B.
- * 
+ *
  * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND,
  * either express or implied. See the CPAL for the specific language governing rights and limitations
  * under the CPAL.
- * 
+ *
  * The Original Code is ICEcore. The Original Developer is SiteScape, Inc. All portions of the code
  * written by SiteScape, Inc. are Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
- * 
- * 
+ *
+ *
  * Attribution Information
  * Attribution Copyright Notice: Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by ICEcore]
@@ -21,8 +21,8 @@
  * Graphic Image as provided in the Covered Code [web/docroot/images/pics/powered_by_icecore.png].
  * Display of Attribution Information is required in Larger Works which are defined in the CPAL as a
  * work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
- * 
- * 
+ *
+ *
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
@@ -107,7 +107,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	private Element configRoot;
 	private DefinitionConfigurationBuilder definitionBuilderConfig;
 	private static final String[] defaultDefAttrs = new String[]{"internalId", "type"};
-	
+
 	protected BinderModule binderModule;
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
@@ -116,7 +116,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return binderModule;
 	}
    	protected WorkflowModule workflowModule;
-	
+
 	public void setWorkflowModule(WorkflowModule workflowModule) {
 		this.workflowModule = workflowModule;
 	}
@@ -126,7 +126,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     public void afterPropertiesSet() {
 		this.definitionConfig = definitionBuilderConfig.getAsMergedDom4jDocument();
 		this.configRoot = this.definitionConfig.getRootElement();
-		
+
 
     }
     /*
@@ -143,7 +143,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    		} catch (NotSupportedException ac) {
    			return false;
    		}
-   		
+
    	}
    	protected void checkAccess(Binder binder, Integer type, DefinitionOperation operation) throws AccessControlException {
    		Binder top = RequestContextHolder.getRequestContext().getZone();
@@ -153,7 +153,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    				getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
    			} else {
   				if (getAccessControlManager().testOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS)) return;
-  				getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION); 				
+  				getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
    			}
    		} else if (type.equals(Definition.WORKFLOW)) {
    			if (binder ==  null) {
@@ -161,7 +161,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    				getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
    			} else {
   				if (getAccessControlManager().testOperation(binder, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS)) return;
-   				getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);   				
+   				getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
    			}
    		} else {
    			accessControlManager.checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
@@ -172,14 +172,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    		if (def.getBinderId() == null) checkAccess(null, def.getType(), operation);
    		else checkAccess(getCoreDao().loadBinder(def.getBinderId(), def.getZoneId()), def.getType(), operation);
    	}
-   
+
 	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace) throws AccessControlException, Exception {
 /*The current xsd is really for the configuration file.  The export defintions don't follow all the rules,
   xsd:sequence in particular.  Until we either fix this or build a new xsd, this validating code is disabled.
 		SAXReader xIn = new SAXReader(true);
         // The following code turns on XML schema-based validation
         // features specific to Apache Xerces2 parser. Therefore it
-        // will not work when a different parser is used. 
+        // will not work when a different parser is used.
 		xIn.setFeature("http://apache.org/xml/features/validation/schema", true); // Enables XML Schema validation
 		xIn.setFeature("http://apache.org/xml/features/validation/schema-full-checking",true); // Enables full (if slow) schema checking
 		xIn.setProperty(
@@ -187,12 +187,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
                 DirPath.getDTDDirPath() + File.separator + "definition_builder_config.xsd");
 */
 		SAXReader xIn = new SAXReader(false);
-		Document doc = xIn.read(indoc);  
+		Document doc = xIn.read(indoc);
 		String type = doc.getRootElement().attributeValue("type");
 	   	checkAccess(binder, Integer.valueOf(type), DefinitionOperation.manageDefinition);
     	Definition def = doAddDefinition(doc, binder, name, title, replace);
     	return def;
-		
+
 	}
 	public Definition copyDefinition(String id, Binder binder, String name, String title) throws AccessControlException {
 		Definition srcDef = getDefinition(id);
@@ -216,7 +216,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Document doc = getInitialDefinition(name, title, type, inputData);
 		setDefinition(newDefinition, doc);
 		return newDefinition;
-		
+
 	}
 
     protected Definition doAddDefinition(Document doc, Binder binder, String name, String title, boolean replace) {
@@ -229,7 +229,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			name=title;
 		}
 		Integer type = Integer.valueOf(root.attributeValue("type"));
-		
+
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		String id = root.attributeValue("databaseId", "");
 		String internalId = root.attributeValue("internalId", null);
@@ -246,9 +246,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				def.setVisibility(Definition.VISIBILITY_PUBLIC);
 				setDefinition(def, doc);
 				return def;
-				
+
 			} catch (NoDefinitionByTheIdException nd) {}
-			
+
 		}
 		// import - try reusing existing guid;
 		// see if already exists in this zone
@@ -263,21 +263,21 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						//	update it
 						def.setName(name);
 						def.setTitle(title);
-						def.setInternalId(internalId);	
+						def.setInternalId(internalId);
 						setDefinition(def, doc);
 						return def;
 				}
-				id = null;				
+				id = null;
 			} catch (NoDefinitionByTheIdException nd) {
 			}
 		}
-		
+
 		try {
 			def = getCoreDao().loadDefinitionByName(binder, name, zoneId);
 			//found a definition using the name for this binder and zone
 			if (!replace || !type.equals(def.getType())) throw new DefinitionInvalidException("definition.error.alreadyExistsByName");
 			def.setTitle(title);
-			def.setInternalId(internalId);	
+			def.setInternalId(internalId);
 			setDefinition(def,doc);
 			return def;
 
@@ -291,7 +291,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		def.setName(name);
 		def.setTitle(title);
 		def.setType(type);
-		def.setInternalId(internalId);	
+		def.setInternalId(internalId);
 		if (binder != null) def.setBinderId(binder.getId());
 		if (Validator.isNull(id))
 			getCoreDao().save(def);
@@ -300,11 +300,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			getCoreDao().replicate(def);
 		}
 		setDefinition(def,doc);
-				
+
 		return def;
 	}
     protected void setDefinition(Definition def, Document doc) {
-    	 
+
    		//Make sure the definition name and caption remain consistent
     	doc.getRootElement().addAttribute("internalId", def.getInternalId());
     	doc.getRootElement().addAttribute("databaseId", def.getId());
@@ -314,10 +314,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    		doc.getRootElement().addAttribute("caption", def.getTitle());
    		newPropertiesEle = (Element)doc.getRootElement().selectSingleNode("./properties/property[@name='caption']");
    		if (newPropertiesEle != null) newPropertiesEle.addAttribute("value", def.getTitle());
-   		
-    	//Write out the new definition file   	
+
+    	//Write out the new definition file
     	def.setDefinition(doc);
-    	
+
     	//If this is a workflow definition, build the corresponding JBPM workflow definition
     	if (def.getType() == Definition.WORKFLOW) {
     		//Use the definition id as the workflow process name
@@ -346,7 +346,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				} catch (NumberFormatException nb) {
 				} catch (NoPrincipalByTheNameException np) {
 				}
-				
+
     		} else {
     			strId = exp.attributeValue("definitionId");
     	   		if (Validator.isNotNull(strId)) {
@@ -364,10 +364,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				Principal p = principalMap.get(appId);
 				if (p == null || !(p instanceof Application))
 					remoteApp.addAttribute("value", "");
-				else 
+				else
 					remoteApp.addAttribute("value", p.getId().toString());
 			}
-		}	
+		}
 		if (def.getType() == Definition.FOLDER_ENTRY) {
 			List<Element> props = doc.getRootElement().selectNodes("//properties/property[@name='replyStyle']");
 			for (Element prop:props) {
@@ -376,7 +376,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				if (namedDef == null)
 					prop.addAttribute("value", "");
 				else
-					prop.addAttribute("value", namedDef.getId());					
+					prop.addAttribute("value", namedDef.getId());
 			}
 		}
 		if (def.getType() == Definition.WORKFLOW) {
@@ -387,8 +387,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				if (namedDef == null)
 					condition.addAttribute("definitionId", "");
 				else
-					condition.addAttribute("definitionId", namedDef.getId());					
-			}  
+					condition.addAttribute("definitionId", namedDef.getId());
+			}
 			List<Element> props = doc.getRootElement().selectNodes("//item[@name='subProcess']/properties/property[@name='definitionId']");
 			for (Element prop:props) {
 				String entryId = prop.attributeValue("value", "");
@@ -396,8 +396,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				if (namedDef == null)
 					prop.addAttribute("value", "");
 				else
-					prop.addAttribute("value", namedDef.getId());					
-			}	
+					prop.addAttribute("value", namedDef.getId());
+			}
 			props = doc.getRootElement().selectNodes("//property[@name='userGroupAccess']");
 			for (Element prop:props) {
 				String entryIds = prop.attributeValue("value", "");
@@ -411,21 +411,21 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					buf.append(" ");
 				}
 				prop.addAttribute("value", buf.toString());
-			}		
+			}
     	}
 		//Write out the new definition file
     	export.detach();
 		def.setDefinition(doc);
-    	
+
     }
- 
+
     public Document getDefinitionAsXml(Definition def) {
     	//convert enty definitionId references to names
     	Document srcDoc = def.getDefinition();
     	Document outDoc;
     	if (srcDoc != null) outDoc = (Document)srcDoc.clone();
     	else outDoc = DocumentHelper.createDocument();
-    	
+
     	Set<Long> principalIds = new HashSet();
     	Set<String>definitionIds = new HashSet();
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -438,7 +438,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					principalIds.add(id);
 				} catch (NumberFormatException nb) {}
 			}
-		}	
+		}
 		if (def.getType() == Definition.FOLDER_ENTRY) {
 			List<Element> replyStyles = outDoc.getRootElement().selectNodes("//property[@name='replyStyle']");
 			for (Element styleElement:replyStyles) {
@@ -446,29 +446,29 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				if (Validator.isNotNull(styleId)) {
 					definitionIds.add(styleId);
 				}
-			}	
+			}
 		}
-		
+
 		if (def.getType() == Definition.WORKFLOW) {
 			List<Element> conditions = outDoc.getRootElement().selectNodes("//workflowEntryDataUserList | //workflowCondition ");
 			for (Element condition:conditions) {
 				String entryId = condition.attributeValue("definitionId", "");
 				if (Validator.isNotNull(entryId)) {
 					definitionIds.add(entryId);
-				}	
-			}  
+				}
+			}
 			List<Element> props = outDoc.getRootElement().selectNodes("//item[@name='subProcess']/properties/property[@name='definitionId']");
 			for (Element prop:props) {
 				String entryId = prop.attributeValue("value", "");
 				if (Validator.isNotNull(entryId)) {
 					definitionIds.add(entryId);
 				}
-			}	
+			}
 			props = outDoc.getRootElement().selectNodes("//property[@name='userGroupAccess']");
 			for (Element prop:props) {
 				String entryId = prop.attributeValue("value", "");
 				principalIds.addAll(LongIdUtil.getIdsAsLongSet(entryId));
-			}		
+			}
     	}
 		//build export properties
 		Element exports = outDoc.getRootElement().addElement("export-mappings");
@@ -487,7 +487,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	return outDoc;
     }
     public Definition getDefinition(String id) {
-		// Controllers need access to definitions.  Allow world read        
+		// Controllers need access to definitions.  Allow world read
  		return coreDao.loadDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
 	}
     //lookup definition by name going up tree including public
@@ -495,20 +495,20 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		List<Definition> defs;
 		if (binder == null) {
   	    	Map params = new HashMap();
-   	    	params.put("name", name);    
+   	    	params.put("name", name);
    	    	params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());  //need zone without binder
   	    	defs = coreDao.loadObjects("from com.sitescape.team.domain.Definition where binderId is null and zoneId=:zoneId and name=:name", params);
-  	    	 			
+
 		} else if (includeAncestors.equals(Boolean.TRUE)) {
    	    	Map params = new HashMap();
-   	    	params.put("binderId", getAncestorIds(binder));    
-   	    	params.put("name", name);    
+   	    	params.put("binderId", getAncestorIds(binder));
+   	    	params.put("name", name);
   	    	params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());  //need zone without binder
   	    	defs = coreDao.loadObjects("from com.sitescape.team.domain.Definition where (binderId in (:binderId) or binderId is null) and zoneId=:zoneId and name=:name", params);
   	 	} else {
   	    	FilterControls filter = new FilterControls();
-  	 		filter.add("binderId", binder.getId());     	 		
- 	 		filter.add("name", name);     	 		
+  	 		filter.add("binderId", binder.getId());
+ 	 		filter.add("name", name);
   	 		defs =  coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
  	 	}
    	 	//find the first one
@@ -525,15 +525,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		//if the definition was the top level, should have already found it with defs ==1
 		throw new NoDefinitionByTheIdException(name); //shouldn't get here
 	}
-	
+
 	protected DefinitionConfigurationBuilder getDefinitionBuilderConfig() {
         return definitionBuilderConfig;
     }
     public void setDefinitionBuilderConfig(DefinitionConfigurationBuilder definitionBuilderConfig) {
         this.definitionBuilderConfig = definitionBuilderConfig;
     }
-    
-	
+
+
 	public void modifyVisibility(String id, Integer visibility, Long binderId) {
 		if (visibility == null) return;
 		Definition def = getDefinition(id);
@@ -559,7 +559,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	   	} else {
 	   		if (binderId.equals(def.getBinderId())) {
 		   		//just changing visibility
-	   			def.setVisibility(visibility);		   		 	   			
+	   			def.setVisibility(visibility);
 	   		} else {
 	   			//moving
 	   			Binder binder = getCoreDao().loadBinder(binderId, def.getZoneId());
@@ -572,19 +572,19 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    		   		} catch (NoDefinitionByTheIdException nd) {
    		   			def.setVisibility(visibility);
    					def.setBinderId(binderId);
-	   			}	   			
+	   			}
 	   		}
 	   	}
-	   	
+
 	}
 
-	
+
 	public void modifyDefinitionProperties(String id, InputDataAccessor inputData) {
 		Definition def = getDefinition(id);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
 		//Store the properties in the definition document
 		Document defDoc = def.getDefinition();
-		if (def != null && defDoc != null) {	
+		if (def != null && defDoc != null) {
 			//name and caption are special cased
 			if (inputData.exists("propertyId_name")) {
 				String  definitionName = inputData.getSingleValue("propertyId_name");
@@ -594,7 +594,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				String definitionCaption = inputData.getSingleValue("propertyId_caption");
 				if (Validator.isNotNull(definitionCaption)) def.setTitle(definitionCaption);
 			}
-			
+
 			String type = String.valueOf(def.getType());
 			Element definition = (Element) this.configRoot.selectSingleNode("item[@definitionType='"+type+"']");
 			if (definition != null) {
@@ -602,7 +602,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				processProperties(def.getId(), definition, defDoc.getRootElement(), inputData);
 			}
 			setDefinition(def, defDoc);
-			
+
 			//When any change is made, validate the the definition is at the same level as the configuration file
 			validateDefinitionAttributes(def);
 			validateDefinitionTree(def);
@@ -610,7 +610,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 	}
 
-	
+
 	//Rouitine to make sure a definition has all of the proper attributes as defined in the config file
 	//  This is useful to propagate new attributes added to the config definition xml file
 	private void validateDefinitionAttributes(Definition def) {
@@ -620,7 +620,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	private boolean updateDefinitionAttributes(Document defDoc) {
 		boolean defChanged = false;
 		Element defRoot = defDoc.getRootElement();
-		
+
 		//Look at all of the items to see if any of their attributes are missing
 		Iterator itDefItems = defRoot.elementIterator("item");
 		while (itDefItems.hasNext()) {
@@ -648,12 +648,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 		return defChanged;
 	}
-	
+
 	public void setDefinitionLayout(String id, InputDataAccessor inputData) {
 		Definition def = getDefinition(id);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
 		Document defDoc = def.getDefinition();
-		
+
 		if (inputData.exists("xmlData") && def != null) {
 			Document appletDef;
 			try {
@@ -662,11 +662,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				return;
 			}
 			if (appletDef == null) return;
-			
+
 	    	//Iterate through the current definition looking for states
 			List states = defDoc.getRootElement().selectNodes("//item[@name='state']");
 	    	if (states == null) return;
-	    	
+
 	    	Iterator itStates = states.iterator();
 	        while (itStates.hasNext()) {
 	            Element state = (Element) itStates.next();
@@ -689,7 +689,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			setDefinition(def, defDoc);
 		}
 	}
-	
+
 	public void deleteDefinition(String id) {
 		Definition def = getDefinition(id);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
@@ -697,7 +697,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		if (def.getType() == Definition.WORKFLOW) {
 			//jbpm defs are named with the string id of the ss definitions
 			getWorkflowModule().deleteProcessDefinition(def.getId());
-		} 
+		}
 	}
 	/**
 	 * Load the default definition for a definition type.  If it doesn't exist, create it
@@ -712,16 +712,16 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		String definitionName=null;
 		switch (type) {
 			case Definition.FOLDER_VIEW: {
-				List result = getCoreDao().loadObjects(Definition.class, 
+				List result = getCoreDao().loadObjects(Definition.class,
 							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_DEF, type}), zoneId);
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_folder";
 				definitionName="_discussionFolder";
 				internalId = ObjectKeys.DEFAULT_FOLDER_DEF;
-				break; 
+				break;
 			}
 			case Definition.FOLDER_ENTRY: {
-				List result = getCoreDao().loadObjects(Definition.class, 
+				List result = getCoreDao().loadObjects(Definition.class,
 						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_ENTRY_DEF, type}), zoneId);
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_folder_entry";
@@ -730,83 +730,83 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				break;
 			}
 			case Definition.WORKSPACE_VIEW: {
-				List result = getCoreDao().loadObjects(Definition.class, 
+				List result = getCoreDao().loadObjects(Definition.class,
 						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_WORKSPACE_DEF, type}), zoneId);
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_workspace";
 				internalId = ObjectKeys.DEFAULT_WORKSPACE_DEF;
 				definitionName="_workspace";
-				break;				
+				break;
 			}
-			
+
 			case Definition.USER_WORKSPACE_VIEW: {
-				List result = getCoreDao().loadObjects(Definition.class, 
+				List result = getCoreDao().loadObjects(Definition.class,
 						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_USER_WORKSPACE_DEF, type}), zoneId);
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_user_workspace";
 				internalId = ObjectKeys.DEFAULT_USER_WORKSPACE_DEF;
 				definitionName="_userWorkspace";
-				break;				
+				break;
 			}
-			
+
 			case Definition.PROFILE_VIEW: {
-				List result = getCoreDao().loadObjects(Definition.class, 
+				List result = getCoreDao().loadObjects(Definition.class,
 						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_PROFILES_DEF, type}), zoneId);
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				internalId = ObjectKeys.DEFAULT_PROFILES_DEF;
 				definitionTitle = "__definition_default_profiles";
 				definitionName="_profiles";
-				break;				
+				break;
 			}
 			case Definition.PROFILE_ENTRY_VIEW: {
-				List result = getCoreDao().loadObjects(Definition.class, 
+				List result = getCoreDao().loadObjects(Definition.class,
 						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_USER_DEF, type}), zoneId);
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				internalId = ObjectKeys.DEFAULT_USER_DEF;
 				definitionTitle = "__definition_default_user";
 				definitionName="_user";
-				break;				
+				break;
 			}
 			case Definition.PROFILE_GROUP_VIEW: {
-				List result = getCoreDao().loadObjects(Definition.class, 
+				List result = getCoreDao().loadObjects(Definition.class,
 						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_GROUP_DEF, type}), zoneId);
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				internalId = ObjectKeys.DEFAULT_GROUP_DEF;
 				definitionTitle = "__definition_default_group";
 				definitionName="_group";
-				break;				
+				break;
 			}
 			case Definition.PROFILE_APPLICATION_VIEW: {
-				List result = getCoreDao().loadObjects(Definition.class, 
+				List result = getCoreDao().loadObjects(Definition.class,
 						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_APPLICATION_DEF, type}), zoneId);
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				internalId = ObjectKeys.DEFAULT_APPLICATION_DEF;
 				definitionTitle = "__definition_default_application";
 				definitionName="_application";
-				break;				
+				break;
 			}
 			case Definition.PROFILE_APPLICATION_GROUP_VIEW: {
-				List result = getCoreDao().loadObjects(Definition.class, 
+				List result = getCoreDao().loadObjects(Definition.class,
 						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_APPLICATION_GROUP_DEF, type}), zoneId);
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				internalId = ObjectKeys.DEFAULT_APPLICATION_GROUP_DEF;
 				definitionTitle = "__definition_default_application_group";
 				definitionName="_applicationGroup";
-				break;				
+				break;
 			}
 		}
 		Document doc = getInitialDefinition(definitionName, definitionTitle, type, new MapInputData(new HashMap()));
 		doc.getRootElement().addAttribute("internalId", internalId);
 		return doAddDefinition(doc, null, definitionName, definitionTitle, true);
 	}
-	
+
 /*
 	private Definition loadDef(String key, String internalId, String zoneName) {
 		try {
 	        Resource resource =  new ClassPathResource("config"  + File.separator +  key);
 			InputStream fIn = resource.getInputStream();
 	        SAXReader xIn = new SAXReader();
-			Document doc = xIn.read(fIn);   
+			Document doc = xIn.read(fIn);
 			fIn.close();
 			String id = addDefinition(doc);
 			Definition def = getCoreDao().loadDefinition(id, zoneName);
@@ -819,11 +819,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
 	}
 */
-	
+
 	protected Document getInitialDefinition(String name, String title, int type, InputDataAccessor inputData) {
 		Element definition = (Element) this.configRoot.selectSingleNode("item[@definitionType='"+type+"']");
 		if (definition == null) {return null;}
-		
+
 		//We found the definition. Now build the default definition
 		Document newTree = DocumentHelper.createDocument();
 		Element ntRoot = newTree.addElement("definition");
@@ -833,20 +833,20 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		int id = 1;
 		id = populateNewDefinitionTree(definition, ntRoot, this.configRoot, id, true);
 		ntRoot.addAttribute("nextId", Integer.toString(id));
-		
+
 		//Add the properties
 		processProperties("0", definition, ntRoot, inputData);
 
 		//Copy any additional attributes from the configuration file
 		updateDefinitionAttributes(newTree);
-		
+
 		return newTree;
 	}
 	public Definition setDefaultBinderDefinition(Binder binder) {
 		//no access - fixing up stuff
 		//Create an empty binder definition
 		int definitionType;
-		if (binder.getEntityType().equals(EntityType.workspace)) {			
+		if (binder.getEntityType().equals(EntityType.workspace)) {
 			if ((binder.getDefinitionType() != null) &&
 					(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
 				definitionType = Definition.USER_WORKSPACE_VIEW;
@@ -902,19 +902,19 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	 *        itemId - the id of the item being added to
 	 *        itemNameToAdd - the name of the item to be added
 	 *        formData - a Map of the values to e set in the newly added item
-	 *                   The Map should contain each property value indexed by the 
+	 *                   The Map should contain each property value indexed by the
 	 *                     property name prefixed by "propertyId_".
-	 * 
+	 *
 	 * @return the next element in the iteration.
 	 * @exception NoSuchElementException iteration has no more elements.
 	 */
-	public Element addItem(String defId, String itemId, String itemNameToAdd, InputDataAccessor inputData) 
+	public Element addItem(String defId, String itemId, String itemNameToAdd, InputDataAccessor inputData)
 			throws DefinitionInvalidException {
 		Definition def = getDefinition(defId);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
-		
+
 		Document definitionTree = def.getDefinition();
-			
+
 		Element newItem = addItemToDefinitionDocument(def.getId(), definitionTree, itemId, itemNameToAdd, inputData);
 		if (newItem != null) {
 			//Save the updated document
@@ -923,12 +923,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 		return newItem;
 	}
-	
-	protected Element addItemToDefinitionDocument(String defId, Document definitionTree, String itemId, 
+
+	protected Element addItemToDefinitionDocument(String defId, Document definitionTree, String itemId,
 			String itemNameToAdd, InputDataAccessor inputData) throws DefinitionInvalidException {
-	
+
 		Element newItem = null;
-		
+
 		if (definitionTree != null) {
 			Element root = definitionTree.getRootElement();
 			//Find the element to add to
@@ -936,11 +936,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			if (item != null) {
 				//Find the requested new item in the configuration document
 				Element itemEleToAdd = (Element) this.configRoot.selectSingleNode("item[@name='"+itemNameToAdd+"']");
-				
+
 				Map uniqueNames = getUniqueNameMap(this.configRoot, root, itemNameToAdd);
 				if (inputData.exists("propertyId_name")) {
 					String name = inputData.getSingleValue("propertyId_name");
-					if (Validator.isNull(name) && itemEleToAdd.attributeValue("type", "").equals("data")) 
+					if (Validator.isNull(name) && itemEleToAdd.attributeValue("type", "").equals("data"))
 						throw new DefinitionInvalidException("definition.error.nullname");
 					if (uniqueNames.containsKey(name)) {
 						//This name is not unique
@@ -949,25 +949,25 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				}
 
 				if (itemEleToAdd != null) {
-					//Add the item 
+					//Add the item
 					newItem = item.addElement("item");
 					//Copy the attributes from the config item to the new item
 					Iterator attrs = itemEleToAdd.attributeIterator();
 					while (attrs.hasNext()) {
 						Attribute attr = (Attribute) attrs.next();
-						
+
 						// (rsordillo) Do not add non-required Attributes to new item
 						if (attr.getName().equals("canBeDeleted")
 						|| attr.getName().equals("multipleAllowed"))
 							continue;
 						newItem.addAttribute(attr.getName(), attr.getValue());
 					}
-					
+
 					//Get the next id number from the root
 					int nextId = Integer.valueOf(root.attributeValue("nextId")).intValue();
 					newItem.addAttribute("id", (String) Integer.toString(nextId));
 					root.addAttribute("nextId", (String) Integer.toString(++nextId));
-					
+
 					//Process the properties (if any)
 					processProperties(defId, itemEleToAdd, newItem, inputData);
 					processJsps(newItem, inputData);
@@ -983,14 +983,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 		return newItem;
 	}
-	
+
 	private void processProperties(String defId, Element configEle, Element newItem, InputDataAccessor inputData) {
 		//Check to see if there are new attributes from the config file that should be copied into the definition
 		Iterator itAttributes = configEle.attributeIterator();
 		while (itAttributes.hasNext()) {
 			Attribute attr = (Attribute) itAttributes.next();
 			//If the attribute does not exist in the new item, copy it from the config file
-			if (newItem.attributeValue(attr.getName()) == null) 
+			if (newItem.attributeValue(attr.getName()) == null)
 			{
 				// (rsordillo) Do not add non-required Attributes to new item
 				if (attr.getName().equals("canBeDeleted")
@@ -999,7 +999,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				newItem.addAttribute(attr.getName(), attr.getValue());
 			}
 		}
-		
+
 		//Copy the properties from the definition
 		Element configProperties = configEle.element("properties");
 		if (configProperties != null) {
@@ -1010,7 +1010,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 			//Add a fresh "properties" element
 			Element newPropertiesEle = newItem.addElement("properties");
-		
+
 			//Set the values of each property from the form data
 			Iterator itConfigProperties = configProperties.elementIterator("property");
 			while (itConfigProperties.hasNext()) {
@@ -1020,7 +1020,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				String characterMask = configProperty.attributeValue("characterMask", "");
 				if (inputData.exists("propertyId_"+attrName)) {
 					String[] values = (String[]) inputData.getValues("propertyId_"+attrName);
-					for (int i = 0; i < values.length; i++) { 
+					for (int i = 0; i < values.length; i++) {
 						String value = values[i];
 						if (!characterMask.equals("")) {
 							//See if the user entered a valid name
@@ -1029,7 +1029,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								throw new DefinitionInvalidException("definition.error.invalidCharacter", new Object[] {"\""+value+"\""});
 							}
 						}
-						
+
 						Element newPropertyEle = newPropertiesEle.addElement("property");
 						//just copy name and value
 						newPropertyEle.addAttribute("name", attrName);
@@ -1043,9 +1043,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								throw new DefinitionInvalidException("definition.error.notAnInteger", new Object[] {defId, configProperty.attributeValue("caption")});
 							}
 							newPropertyEle.addAttribute("value", value);
-						} else if (type.equals("selectbox") || type.equals("itemSelect") || 
-								type.equals("radio") || type.equals("replyStyle") || 
-								type.equals("iconList") || type.equals("repositoryList") || 
+						} else if (type.equals("selectbox") || type.equals("itemSelect") ||
+								type.equals("radio") || type.equals("replyStyle") ||
+								type.equals("iconList") || type.equals("repositoryList") ||
 								type.equals("folderSelect")) {
 							newPropertyEle.addAttribute("value", value);
 						} else if (type.equals("boolean") || type.equals("checkbox")) {
@@ -1066,12 +1066,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							}
 							newPropertyEle.addAttribute("value", value);
 						}
-							
+
 					}
 				} else if (type.equals("workflowCondition")) {
-					//Workflow conditions typically have 4 bits of data to capture: 
+					//Workflow conditions typically have 4 bits of data to capture:
 					//  the definition id, the element name, the operation, and the operand value
-					if (inputData.exists("conditionDefinitionId") && 
+					if (inputData.exists("conditionDefinitionId") &&
 							inputData.exists("conditionElementName") &&
 							inputData.exists("conditionElementOperation")) {
 						Element newPropertyEle = configProperty.createCopy();
@@ -1083,7 +1083,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						workflowCondition.addAttribute("definitionId", conditionDefinitionId);
 						workflowCondition.addAttribute("elementName", conditionElementName);
 						workflowCondition.addAttribute("operation", conditionElementOperation);
-						if (inputData.exists("operationDuration") && 
+						if (inputData.exists("operationDuration") &&
 								inputData.exists("operationDurationType")) {
 							String operationDuration = inputData.getSingleValue("operationDuration");
 							String operationDurationType = inputData.getSingleValue("operationDurationType");
@@ -1092,16 +1092,16 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						}
 						if (inputData.exists("conditionElementValue")) {
 							String[] conditionValues = (String[])inputData.getValues("conditionElementValue");
-							for (int j = 0; j < conditionValues.length; j++) { 
+							for (int j = 0; j < conditionValues.length; j++) {
 								String conditionValue = conditionValues[j];
 								workflowCondition.addElement("value").setText(conditionValue);
 							}
 						}
 					}
 				} else if (type.equals("workflowEntryDataUserList")) {
-					//Workflow conditions typically have 4 bits of data to capture: 
+					//Workflow conditions typically have 4 bits of data to capture:
 					//  the definition id, the element name, the operation, and the operand value
-					if (inputData.exists("conditionDefinitionId") && 
+					if (inputData.exists("conditionDefinitionId") &&
 							inputData.exists("conditionElementName")) {
 						String conditionDefinitionId = inputData.getSingleValue("conditionDefinitionId");
 						if (Validator.isNotNull(conditionDefinitionId)) {
@@ -1125,7 +1125,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					}
 				}
 			}
-		}		
+		}
 	}
 	private void processJsps(Element item, InputDataAccessor inputData) {
 		Element jsps = (Element)item.selectSingleNode("./jsps");
@@ -1140,15 +1140,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		if (inherit) {
 			jsp.addAttribute("inherit", inherit.toString());
 		} else {
-			jsp.addAttribute("value", value);			
+			jsp.addAttribute("value", value);
 		}
 	}
-	
+
 	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException {
 		Definition def = getDefinition(defId);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
 		Document definitionTree = def.getDefinition();
-		
+
 		if (definitionTree != null) {
 			Element root = definitionTree.getRootElement();
 			//Find the element to modify
@@ -1164,7 +1164,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					String name = inputData.getSingleValue("propertyId_name");
 					if (Validator.isNull(name)) throw new DefinitionInvalidException("definition.error.nullname");
 					//See if the item name is being changed
-					if (!name.equals(itemNamePropertyValue) && 
+					if (!name.equals(itemNamePropertyValue) &&
 							uniqueNames.containsKey(name)) {
 						//This name is not z
 						throw new DefinitionInvalidException("definition.error.nameNotUnique", new Object[] {defId, name});
@@ -1198,7 +1198,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							for (Element prop:properties) {
 								prop.addAttribute("value", name);
 							}
-							
+
 						} else if (itemType.equals("parallelThread") && "workflowProcess".equals(item.getParent().attributeValue("name"))) {
 							if (checkThreadInUse(def, itemNamePropertyValue)) throw new DefinitionInvalidException("definition.error.cannotModifyThread", new Object[] {def.getId()});
 							//change start/stop
@@ -1206,7 +1206,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							for (Element prop:properties) {
 								prop.addAttribute("value", name);
 							}
-							
+
 						}
 					}
 				}
@@ -1251,7 +1251,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				}
 			}
 		}
-		
+
 	}
 	private boolean checkStateInUse(Definition def, String state) {
 		//This is a workflow state. Make sure no entries are using that state
@@ -1261,7 +1261,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		List inUse = getCoreDao().loadObjects(WorkflowState.class, fc, def.getZoneId());
 		if (!inUse.isEmpty()) return true;
 		return false;
-		
+
 	}
 	private boolean checkThreadInUse(Definition def, String threadName) {
 		//This is a workflow state. Make sure no entries are using that state
@@ -1285,18 +1285,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			if (item != null) {
 				//Find the selected item type in the configuration document
 				String itemType = item.attributeValue("name", "");
-				if (itemType.equals("state") && "workflowProcess".equals(item.getParent().attributeValue("name"))) { 
+				if (itemType.equals("state") && "workflowProcess".equals(item.getParent().attributeValue("name"))) {
 					//This is a workflow state. Make sure no entries are using that state
 					String state = DefinitionUtils.getPropertyValue(item, "name");
 					if (checkStateInUse(def, state)) throw new DefinitionInvalidException("definition.error.cannotModifyState", new Object[] {def.getId()});
 				}
-				if (itemType.equals("parallelThread") && "workflowProcess".equals(item.getParent().attributeValue("name"))) { 
+				if (itemType.equals("parallelThread") && "workflowProcess".equals(item.getParent().attributeValue("name"))) {
 					//This is a workflow state. Make sure no entries are using that state
 					String threadName = DefinitionUtils.getPropertyValue(item, "name");
 					if (checkThreadInUse(def, threadName)) throw new DefinitionInvalidException("definition.error.cannotModifyThread", new Object[] {def.getId()});
 				}
 
-				
+
 				Element itemTypeEle = (Element) this.configRoot.selectSingleNode("item[@name='"+itemType+"']");
 				//Check that this element is allowed to be deleted
 				if (itemTypeEle == null || !itemTypeEle.attributeValue("canBeDeleted", "true").equalsIgnoreCase("false")) {
@@ -1406,7 +1406,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			newItem.addAttribute("id", (String) Integer.toString(nextId++));
 			List<Element> subItems = newItem.selectNodes(".//item");
 			for (Element sub:subItems) {
-				sub.addAttribute("id", (String) Integer.toString(nextId++));				
+				sub.addAttribute("id", (String) Integer.toString(nextId++));
 			}
 			root.addAttribute("nextId", (String) Integer.toString(nextId));
 
@@ -1419,12 +1419,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			throw new DefinitionInvalidException("definition.error.illegalMoveInto", new Object[] {defId});
 		}
 	}
-		
+
 	//Routine to check that the source item is allowed to be added to the target item type
 	private boolean checkTargetOptions(Document definitionTree, Element target, Element source, boolean copyOperation) {
 		String targetItemType = target.attributeValue("name");
 		String sourceItemType = source.attributeValue("name");
-		
+
 		//check against base config document
 		Element targetItem = (Element) this.configRoot.selectSingleNode("item[@name='"+targetItemType+"']");
 		Element sourceItem = (Element) this.configRoot.selectSingleNode("item[@name='"+sourceItemType+"']");
@@ -1460,12 +1460,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		//None found, this isn't allowed
 		if (!found) return false;
 		if (copyOperation) {
-			if ("false".equals(sourceItem.attributeValue("multipleAllowed")) && 
+			if ("false".equals(sourceItem.attributeValue("multipleAllowed")) &&
 				target.getDocument().getRootElement().selectSingleNode("//item[@name='"+sourceItemType+"']") != null) return false;
 
-			if ("false".equals(sourceItem.attributeValue("multipleAllowedInParent")) && 
+			if ("false".equals(sourceItem.attributeValue("multipleAllowedInParent")) &&
 					target.selectSingleNode("item[@name='"+sourceItemType+"']") != null) return false;
-	
+
 			//now check unique constraints
 			String uniquePath = sourceItem.attributeValue("unique");
 			if (Validator.isNull(uniquePath)) return true;
@@ -1483,11 +1483,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		if (options == null) return id;
 		List lOptions = options.selectNodes("option");
 		if (lOptions == null) return id;
-		
+
 		Iterator iOptions = lOptions.iterator();
 		while (iOptions.hasNext()) {
 			Element nextOption = (Element)iOptions.next();
-			if (nextOption.attributeValue("initial", "").equals("true") || 
+			if (nextOption.attributeValue("initial", "").equals("true") ||
 					(includeDefault && nextOption.attributeValue("default", "").equals("true"))) {
 				//This option is required. Copy it to the target
 				Element item = target.addElement("item");
@@ -1497,21 +1497,21 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				if (itemElement == null) {continue;}
 				//Copy all of the attributes that should be in the definition
 				String caption = itemElement.attributeValue("caption", nextOption.attributeValue("name"));
-				
+
 				item.addAttribute("caption", caption);
-				
+
 				String itemType = itemElement.attributeValue("type", "");
 				if (!itemType.equals("")) item.addAttribute("type", itemType);
 				item.addAttribute("id", Integer.toString(id));
-				
+
 				// Get the properties to be copied
 				// (rsordillo) will add each 'property' Element 1 at a time. We want to remove some property
 				// Attributes that are not needed for runtime.
 				setDefinitionProperties(item, itemElement);
-				
+
 				//Bump up the unique id
 				id++;
-				
+
 				//Now see if this item has some required options of its own
 				id = populateNewDefinitionTree(itemElement, item, configRoot, id, includeDefault);
 			}
@@ -1519,7 +1519,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Iterator iOptionSelects = options.selectNodes("option_select").iterator();
 		while (iOptionSelects.hasNext()) {
 			Element nextOptionSelect = (Element)iOptionSelects.next();
-			if (nextOptionSelect.attributeValue("initial", "").equals("true") || 
+			if (nextOptionSelect.attributeValue("initial", "").equals("true") ||
 					(includeDefault && nextOptionSelect.attributeValue("default", "").equals("true"))) {
 				//This option_select is required. Process it and copy its items to the target
 				String optionPath = nextOptionSelect.attributeValue("path", "");
@@ -1533,15 +1533,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					String caption = itemElement.attributeValue("caption", nextOptionSelect.attributeValue("name"));
 					item.addAttribute("caption", caption);
 					item.addAttribute("id", Integer.toString(id));
-					
+
 					// Get the properties to be copied
 					// (rsordillo) will add each 'property' Element 1 at a time. We want to remove some property
 					// Attributes that are not needed for runtime.
 					setDefinitionProperties(item, itemElement);
-					
+
 
 					id++;
-					
+
 					//Now see if this item has some required options of its own
 					id = populateNewDefinitionTree(itemElement, item, configRoot, id, includeDefault);
 				}
@@ -1549,7 +1549,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 		return id;
 	}
-	
+
 	//Rouitine to make sure a definition has all of the proper options as defined in the config file
 	//  This is useful to propagate new items added to the config definition xml file
 	private void validateDefinitionTree(Definition def) {
@@ -1562,14 +1562,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		int startingId = Integer.valueOf(defRoot.attributeValue("nextId", "1")).intValue();
 		int nextId = startingId;
 
-		
+
 		//Get the definition root element to check it
 		Element configRootDefinitionEle = (Element) this.configRoot.selectSingleNode("//definition[@definitionType='"+
 				defRoot.attributeValue("definitionType")+"']");
 		if (configRootDefinitionEle != null) {
 			//See if there are any items missing from the top definition item
 			nextId = updateDefinitionTreeElement("definition", defRoot, defRoot, this.configRoot, nextId);
-			
+
 			//Look at all of the items to see if any of their options are missing
 			Iterator itDefItems = defRoot.elementIterator("item");
 			while (itDefItems.hasNext()) {
@@ -1588,7 +1588,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					source.attributeValue("definitionType")+"']");
 		} else {
 			configItemElement = (Element) configRoot.selectSingleNode("item[@name='"+
-					source.attributeValue("name")+"']");			
+					source.attributeValue("name")+"']");
 		}
 		//See if the source has any required options that are missing
 		Element options = configItemElement.element("options");
@@ -1615,15 +1615,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					String itemType = itemElement.attributeValue("type", "");
 					if (!itemType.equals("")) item.addAttribute("type", itemType);
 					item.addAttribute("id", Integer.toString(id));
-					
+
 					// Get the properties to be copied
 					// (rsordillo) will add each 'property' Element 1 at a time. We want to remove some property
 					// Attributes that are not needed for runtime.
 					setDefinitionProperties(item, itemElement);
-					
+
 					//Bump up the unique id
 					id++;
-					
+
 					//Now see if this item has some required options of its own
 					id = updateDefinitionTreeElement("item", itemElement, item, configRoot, id);
 				}
@@ -1648,15 +1648,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						String caption = itemElement.attributeValue("caption", nextOptionSelect.attributeValue("name"));
 						item.addAttribute("caption", caption);
 						item.addAttribute("id", Integer.toString(id));
-						
+
 						// Get the properties to be copied
 						// (rsordillo) will add each 'property' Element 1 at a time. We want to remove some property
 						// Attributes that are not needed for runtime.
 						setDefinitionProperties(item, itemElement);
-						
+
 
 						id++;
-						
+
 						//Now see if this item has some required options of its own
 						id = updateDefinitionTreeElement("item", itemElement, item, configRoot, id);
 					}
@@ -1665,7 +1665,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 		return id;
 	}
-	
+
 	private Map getUniqueNameMap(final Element configRoot, Element definitionTree, String itemType) {
 		Map uniqueNames = new HashMap();
 
@@ -1689,25 +1689,25 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return uniqueNames;
 	}
 
-	
+
     public Document getDefinitionConfig() {
     	return this.definitionConfig;
     }
 
     public Map getEntryData(Document definitionTree, InputDataAccessor inputData, Map fileItems) {
 		//access check not needed = have tree already
-		
+
     	// entryData will contain the Map of entry data as gleaned from the input data
 		Map entryDataAll = new HashMap();
 		Map entryData = new HashMap();
 		List fileData = new ArrayList();
 		entryDataAll.put(ObjectKeys.DEFINITION_ENTRY_DATA, entryData);
 		entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA, fileData);
-		
+
 		if (definitionTree != null) {
 			//root is the root of the entry's definition
 			Element root = definitionTree.getRootElement();
-			
+
 			//Get a list of all of the form items in the definition (i.e., from the "form" section of the definition)
 			Element entryFormItem = (Element)root.selectSingleNode("item[@type='form']");
 			if (entryFormItem != null) {
@@ -1726,9 +1726,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				for (Element nextItem: itItems) {
 					String itemName = (String) nextItem.attributeValue("name", "");
 					//Get the form element name (property name)
-					String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");									
+					String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
 					if (Validator.isNull(nameValue)) {nameValue = nextItem.attributeValue("name");}
-								
+
 					//We have the element name, see if it has a value in the input data
 					if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
 						Description description = new Description();
@@ -1757,7 +1757,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							List<String> valuesList = new ArrayList();
 							for (int i = 0; i < values.length; i++) {
 								if (!values[i].equals("")) {
-									if (!inputData.exists(nameValue + "__delete__" + values[i]) || 
+									if (!inputData.exists(nameValue + "__delete__" + values[i]) ||
 											!inputData.getSingleValue(nameValue + "__delete__" + values[i]).equals("on")) {
 										if (!values[i].contains("__")) valuesList.add(values[i]);
 									}
@@ -1773,8 +1773,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									List<String> valuesList2 = new ArrayList();
 									for (int i = 0; i < values2.length; i++) {
 										if (!values2[i].equals("")) {
-											if (!inputData.exists(nameValue + "__delete__" + setName + "__" + values2[i]) || 
-													!inputData.getSingleValue(nameValue + "__delete__" + setName + "__" + values2[i]).equals("on")) { 
+											if (!inputData.exists(nameValue + "__delete__" + setName + "__" + values2[i]) ||
+													!inputData.getSingleValue(nameValue + "__delete__" + setName + "__" + values2[i]).equals("on")) {
 												if (!values2[i].contains("__")) valuesList2.add(values2[i]);
 											}
 										}
@@ -1782,7 +1782,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									String[] valuesTrimmed2 = new String[valuesList2.size()];
 									for (int i = 0; i < valuesList2.size(); i++) valuesTrimmed2[i] = valuesList2.get(i);
 									entryData.put(nameValue+ENTRY_ATTRIBUTES_SET+setName, valuesTrimmed2);
-									if (inputData.exists(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName) && 
+									if (inputData.exists(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName) &&
 											inputData.getSingleValue(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName).equals("on")) {
 										entryData.put(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName, true);
 									} else {
@@ -1843,7 +1843,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						//Use the helper routine to parse the date into a date object
 						Survey survey = inputData.getSurveyValue(nameValue);
 						if (survey != null) {entryData.put(nameValue, survey);}
-					} else if (itemName.equals("user_list") || itemName.equals("group_list") || 
+					} else if (itemName.equals("user_list") || itemName.equals("group_list") ||
 								itemName.equals("team_list") || itemName.equals("userListSelectbox")) {
 						if (inputData.exists(nameValue)) {
 							Set<Long> ids = LongIdUtil.getIdsAsLongSet(inputData.getValues(nameValue));
@@ -1859,11 +1859,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							for (int i = 0; i < idChoicesToRemove.length; i++) {
 								try {
 									//	validate as long
-									longIdsToRemove.add(Long.parseLong(idChoicesToRemove[i])); 
+									longIdsToRemove.add(Long.parseLong(idChoicesToRemove[i]));
 								} catch (NumberFormatException ne) {}
 							}
 						}
-						
+
 						if (inputData.exists(WebKeys.URL_ID_CHOICES)) {
 							java.util.Collection<Long> longIds = TreeHelper.getSelectedIds(inputData, nameValue);
 							CommaSeparatedValue v = new CommaSeparatedValue();
@@ -1887,7 +1887,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					    	if ("true".equals(multiple)) {
 					    		entryData.put(nameValue, inputData.getValues(nameValue));
 					    	} else {
-					    		entryData.put(nameValue, inputData.getSingleValue(nameValue));					    		
+					    		entryData.put(nameValue, inputData.getSingleValue(nameValue));
 					    	}
 						}
 					} else if (itemName.equals("checkbox")) {
@@ -1905,7 +1905,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								else entryData.put(nameValue, TimeZoneHelper.getTimeZone(sVal));
 							}
 						}
-					} else if (itemName.equals("file") || itemName.equals("graphic") || 
+					} else if (itemName.equals("file") || itemName.equals("graphic") ||
 							itemName.equals("profileEntryPicture")) {
 					    if (fileItems != null && fileItems.containsKey(nameValue)) {
 					    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
@@ -1914,7 +1914,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					    	String repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
 					    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
 					    	FileUploadItem fui;
-					    	if (titleGenerated && nameValue.equals(titleSource) && 
+					    	if (titleGenerated && nameValue.equals(titleSource) &&
 					    			(itemName.equals("file") || itemName.equals("graphic")))
 					    		fui = new FileUploadItem(FileUploadItem.TYPE_TITLE, nameValue, myFile, repositoryName);
 					    	else fui = new FileUploadItem(FileUploadItem.TYPE_FILE, nameValue, myFile, repositoryName);
@@ -1923,7 +1923,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			    			fui.setMaxHeight(GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "maxHeight"), 0));
 					    	// TODO The following piece of code may need a better conditional
 					    	// statement than this, since we probably do not want to generate
-					    	// thumbnails for all graphic-type file uploads. Or do we? 
+					    	// thumbnails for all graphic-type file uploads. Or do we?
 					    	if (itemName.equals("graphic")) {
 					    		fui.setGenerateThumbnail(true);
 					    		fui.setIsSquareThumbnail(true);
@@ -1931,7 +1931,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					    		fui.setGenerateThumbnail(true);
 					    	} else if (fileName.endsWith(".jpg")) {
 					    		fui.setGenerateThumbnail(true);
-					    		fui.setIsSquareThumbnail(true);						    		
+					    		fui.setIsSquareThumbnail(true);
 					    	}
 					    	if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE)) {
 					    		fui.setSynchToRepository(Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.PI_SYNCH_TO_SOURCE)));
@@ -1944,14 +1944,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					    	int intFileCount = 1;
 					    	while (blnCheckForFileUntilTrue) {
 								String fileEleName = nameValue + Integer.toString(intFileCount);
-								if (fileItems.containsKey(fileEleName)) {												
+								if (fileItems.containsKey(fileEleName)) {
 							    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
 							    	String fileName = myFile.getOriginalFilename();
 							    	if (fileName != null && !fileName.equals("")) {
 								    	// Different repository can be specified for each file uploaded.
-								    	// If not specified, use the statically selected one.  
+								    	// If not specified, use the statically selected one.
 								    	String repositoryName = null;
-								    	if (inputData.exists(nameValue + "_repos" + Integer.toString(intFileCount))) 
+								    	if (inputData.exists(nameValue + "_repos" + Integer.toString(intFileCount)))
 								    		repositoryName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(intFileCount));
 								    	if (repositoryName == null) {
 									    	repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
@@ -1979,7 +1979,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									if (!value.equals("")) value = value + ";";
 									String type = nextValue.split(",")[0];
 									if (type != null && type.equals(ObjectKeys.MASHUP_TYPE_TABLE)) {
-										nextValue = ObjectKeys.MASHUP_TYPE_TABLE_START + ";" + 
+										nextValue = ObjectKeys.MASHUP_TYPE_TABLE_START + ";" +
 											ObjectKeys.MASHUP_TYPE_TABLE_COL + ";" +
 											ObjectKeys.MASHUP_TYPE_TABLE_COL + ";" +
 											ObjectKeys.MASHUP_TYPE_TABLE_END;
@@ -2002,34 +2002,35 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				}
 			}
 		}
-   	
+
     	return entryDataAll;
     }
     public List<Definition> getAllDefinitions() {
-		// Controllers need access to definitions.  Allow world read    
+		// Controllers need access to definitions.  Allow world read
     	return coreDao.loadDefinitions(RequestContextHolder.getRequestContext().getZoneId());
     }
-    
+
     public List<Definition> getAllDefinitions(Integer type) {
-		// Controllers need access to definitions.  Allow world read 
+		// Controllers need access to definitions.  Allow world read
     	FilterControls filter = new FilterControls();
     	filter.add("type", type);
     	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
      }
-     
+
     public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors) {
-		// Controllers need access to definitions.  Allow world read    
+		// Controllers need access to definitions.  Allow world read
        	if (binderId == null) {
         	FilterControls filter = new FilterControls()
         		.add(Restrictions.isNull("binderId"));
-        	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());  		
+        	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
     	}
     	try {
     		Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
    	 		if (includeAncestors.equals(Boolean.TRUE)) {
    	 			Map params = new HashMap();
-   	 			params.put("binderId", getAncestorIds(binder));    
-   	 			return coreDao.loadObjects("from com.sitescape.team.domain.Definition where binderId is null or binderId in (:binderId)", params);
+   	 			params.put("binderId", getAncestorIds(binder));
+   	 			params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());
+   	 			return coreDao.loadObjects("from com.sitescape.team.domain.Definition where (binderId is null and zoneId=:zoneId) or binderId in (:binderId)", params);
    	 		} else {
    	 			FilterControls filter = new FilterControls()
    	 			.add(Restrictions.eq("binderId", binder.getId()));
@@ -2037,35 +2038,37 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    	 		}
     	} catch (NoBinderByTheIdException nb) {
   	 		if (includeAncestors.equals(Boolean.TRUE)) {
-   	 	       	return getDefinitions(null, Boolean.TRUE);  		
+   	 	       	return getDefinitions(null, Boolean.TRUE);
   	 		} else {
     	 		return new ArrayList();
    	 		}
-   		
+
     	}
     }
-    
+
     public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors, Integer type) {
-		// Controllers need access to definitions.  Allow world read  
+		// Controllers need access to definitions.  Allow world read
     	if (binderId == null) {
         	FilterControls filter = new FilterControls()
          		.add(Restrictions.eq("type", type))
         		.add(Restrictions.isNull("binderId"));
-        	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());  		
+        	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
     	}
     	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
    	 	if (includeAncestors.equals(Boolean.TRUE)) {
   	       	Map params = new HashMap();
   	    	params.put("type", type);
-   	 		params.put("binderId", getAncestorIds(binder));    
-   	    	return coreDao.loadObjects("from com.sitescape.team.domain.Definition where (binderId is null or binderId in (:binderId)) and type=:type", params);
+   	 		params.put("binderId", getAncestorIds(binder));
+   	 		params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());
+
+   	    	return coreDao.loadObjects("from com.sitescape.team.domain.Definition where ((binderId is null and zoneId=:zoneId) or binderId in (:binderId)) and type=:type", params);
   	 	} else {
   	      	FilterControls filter = new FilterControls()
   	      		.add(Restrictions.eq("type", type))
   	      		.add(Restrictions.eq("binderId", binder.getId()));
- 	    	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());	 		
+ 	    	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
   	 	}
- 
+
     }
     private List<Long> getAncestorIds(Binder binder) {
     	ArrayList<Long> bs = new ArrayList();
@@ -2086,12 +2089,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		} catch (NoDefinitionByTheIdException nd) {
 			return dataElements;
 		}
-		
+
 		Document definitionTree = def.getDefinition();
 		if (definitionTree != null) {
 			//root is the root of the entry's definition
 			Element root = definitionTree.getRootElement();
-			
+
 			//Get a list of all of the form items in the definition (i.e., from the "form" section of the definition)
 			Element entryFormItem = (Element)root.selectSingleNode("item[@type='form']");
 			if (entryFormItem != null) {
@@ -2099,18 +2102,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				for (Element nextItem: itItems) {
 					//Get a map to store the results in
 					Map itemData = new HashMap();
-					
+
 					String itemName = (String) nextItem.attributeValue("name", "");
 					itemData.put("type", itemName);
-					
-					String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");	
+
+					String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
 					if (Validator.isNull(nameValue)) nameValue = itemName;
 					itemData.put("name", nameValue);
-						
-					String captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption");							
-					if (Validator.isNull(captionValue)) captionValue = nameValue;							
+
+					String captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption");
+					if (Validator.isNull(captionValue)) captionValue = nameValue;
 					itemData.put("caption", NLT.getDef(captionValue).replaceAll("&", "&amp;"));
-								
+
 					//We have the element name, see if it has option values
 					if (itemName.equals("selectbox")) {
 						Map valueMap = new LinkedHashMap();
@@ -2128,7 +2131,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						itemData.put("length", new Integer(valueMap.size()).toString());
 						if (valueMap.size() > 10) itemData.put("length", "10");
 						itemData.put("values", valueMap);
-						
+
 					} else if (itemName.equals("radio")) {
 						Map valueMap = new TreeMap();
 						Iterator itSelectionItems = nextItem.selectNodes("item[@name='radioSelection']").iterator();
@@ -2146,13 +2149,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (valueMap.size() > 10) itemData.put("length", "10");
 						itemData.put("values", valueMap);
 					}
-						
+
 					//Add this element to the results
 					dataElements.put(nameValue, itemData);
 				}
 			}
 		}
-   	
+
     	return dataElements;
     }
 
@@ -2166,44 +2169,44 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		} catch (NoDefinitionByTheIdException nd) {
 			return dataStates;
 		}
-		
+
 		Document definitionTree = def.getDefinition();
 		if (definitionTree != null) {
 			//root is the root of the entry's definition
 			Element root = definitionTree.getRootElement();
-			
-			//Get a list of all of the state items in the definition 
+
+			//Get a list of all of the state items in the definition
 			Iterator itItems = root.selectNodes("item[@name='workflowProcess']/item[@name='state']").listIterator();
 			while (itItems.hasNext()) {
 				//Get a map to store the results in
 				Map itemData = new HashMap();
-				
+
 				Element nextItem = (Element) itItems.next();
 				String itemName = (String) nextItem.attributeValue("name", "");
 				itemData.put("type", itemName);
-					
-				String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");	
+
+				String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
 				if (Validator.isNull(nameValue)) nameValue = itemName;
-						
-				String captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption");							
-				if (Validator.isNull(captionValue)) captionValue = nameValue;							
+
+				String captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption");
+				if (Validator.isNull(captionValue)) captionValue = nameValue;
 				itemData.put("caption", NLT.getDef(captionValue).replaceAll("&", "&amp;"));
-								
+
 				//Add this state to the results
 				dataStates.put(nameValue, itemData);
 			}
 		}
-   	
+
     	return dataStates;
     }
 
     /**
      * Manipulate base configuration properties/property Elements before adding to entry configuration.
      * This will reduce the size of the entry configuration by not adding un-required Element data.
-     * 
+     *
      * @param parent		What Element we will add the properties Element too
      * @param configItem	Base configuration Item Element that we are copying properties Element from
-     * 
+     *
      */
     private void setDefinitionProperties(Element parent, final Element configItem)    {
     	Element properties = parent.addElement("properties");
@@ -2214,7 +2217,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			property.addAttribute("name", configProperty.attributeValue("name"));
 			property.addAttribute("value", configProperty.attributeValue("value", ""));
 		}
-		
+
 		return;
     }
 
@@ -2242,10 +2245,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
                         	 // config definition to see if it has it.
                         	 // This two level mechanism allows entry definition (more specific
                         	 // one) to override the settings in the default config definition
-                        	 // (more general one). This overriding works in its 
+                        	 // (more general one). This overriding works in its
                         	 // entirity only, that is, partial overriding is not supported.
      						//Find the item in the base configuration definition to see if it is a data item
-                    		String itemName = (String) nextItem.attributeValue("name");						
+                    		String itemName = (String) nextItem.attributeValue("name");
      						Element configItem = this.definitionBuilderConfig.getItem(this.definitionConfig, itemName);
      						if (configItem != null) flagElem = (Element) configItem.selectSingleNode(flagElementPath);
                     	}
