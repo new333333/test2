@@ -421,6 +421,17 @@ public class ListProfilesController extends   SAbstractController {
 			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
 			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.accessControl"), adapterUrl.toString(), qualifiers);
 		}
+
+		//Site administration
+		if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
+			adminMenuCreated=true;
+			PortletURL url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_SITE_ADMINISTRATION);
+			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+			toolbar.addToolbarMenuItem("1_administration", "", 
+					NLT.get("toolbar.menu.siteAdministration"), url);
+		}
+
 		//	The "Manage dashboard" menu
 		BinderHelper.buildDashboardToolbar(request, response, this, binder, dashboardToolbar, model);
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());

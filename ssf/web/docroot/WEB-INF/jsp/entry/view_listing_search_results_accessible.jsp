@@ -29,6 +29,9 @@
  */
 %>
 <% // The main forum view - for viewing folder listings and for viewing entries %>
+<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value="<%= NLT.get("window.title.searchResults") %>" scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <ssf:ifadapter>

@@ -146,7 +146,7 @@ function ss_returnToBinder${renderResponse.namespace}(binderId, entityType) {
 		} else if (entityType == 'folder') {
 			action = "view_folder_listing"
 		} else if (entityType == 'profiles') {
-			action = "view_profiles_listing"
+			action = "view_profile_listing"
 		}
 		if (action != '') {
 			var url = "<ssf:url action="ssActionPlaceHolder"><ssf:param 
