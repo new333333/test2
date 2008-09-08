@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 
-<project name="liferay" basedir="." >
+<project name="liferay-open-liferay" basedir="." >
 	<!-- This setting will override the value in the properties file -->
 	<property name="portal.type" value="liferay"/>
+	<property name="project.dir" value="${basedir}/../.."/>
 	
-	<import file="../build-common.xml" />
+	<import file="../../build-common.xml" />
 	
-	<import file="../deploy-support.xml" />
+	<import file="../../deploy-support.xml" />
 	
 	<property name="jar.file" value="ssf-liferay.jar" />
 
