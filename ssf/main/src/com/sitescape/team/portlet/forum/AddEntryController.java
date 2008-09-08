@@ -357,6 +357,7 @@ public class AddEntryController extends SAbstractController {
 		    	FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
 		    	Folder folder = entry.getParentFolder();
 		    	model.put(WebKeys.FOLDER, folder); 
+		    	model.put(WebKeys.ENTRY, entry); 
 					
 		    	//Get the legal reply types from the parent entry definition
 				Document entryView = null;
