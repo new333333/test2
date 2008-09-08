@@ -436,6 +436,17 @@ public class ListProfilesController extends   SAbstractController {
 		BinderHelper.buildDashboardToolbar(request, response, this, binder, dashboardToolbar, model);
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
 
+		//Color themes
+		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
+					NLT.get("ui.availableThemeIds") + "', '" +
+					NLT.get("ui.availableThemeNames") + "'); return false;");
+			//footerToolbar.addToolbarMenu("themeChanger", NLT.get("toolbar.menu.changeUiTheme"), "javascript: ;", qualifiers);
+			model.put(WebKeys.TOOLBAR_THEME_IDS, NLT.get("ui.availableThemeIds"));
+			model.put(WebKeys.TOOLBAR_THEME_NAMES, NLT.get("ui.availableThemeNames"));
+		}
+		
 		return toolbar;
 	}
 	
