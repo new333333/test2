@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<project name="liferay-open" basedir="." >
+	<!-- This setting will override the value in the properties file -->
+	<property name="portal.type" value="liferay"/>
+	
+	<import file="../build-common.xml" />
+	
+	<import file="../deploy-support.xml" />
+	
+	<property name="jar.file" value="ssf-liferay.jar" />
+
+	<target name="clean">
+		<ant dir="liferay" target="clean" inheritall="false"/>
+	</target>
+	
+	<target name="compile">
+		<ant dir="liferay" target="compile" inheritall="false"/>
+	</target>
+	
+	<target name="jar">
+		<ant dir="liferay" target="jar" inheritall="false"/>
+	</target>
+	
+	<target name="java2html">
+		<ant dir="liferay" target="java2html" inheritall="false"/>
+	</target>
+	
+	<target name="javadoc">
+		<ant dir="liferay" target="javadoc" inheritall="false"/>
+	</target>
+	
+	<target name="deploy">
+		<ant dir="liferay" target="deploy" inheritall="false"/>
+	</target>
+
+	<target name="full-deploy">
+		<ant dir="liferay" target="full-deploy" inheritall="false"/>
+	</target>
+
+</project>
