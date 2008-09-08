@@ -125,6 +125,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				}
 				if (!mods.isEmpty()) getProfileModule().modifyUserFromPortal(user, mods, null);
 			}
+			if (user.getWorkspaceId() == null) getProfileModule().addUserWorkspace(user, null);
 			if(authenticatorName != null)
 				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
 		} 
