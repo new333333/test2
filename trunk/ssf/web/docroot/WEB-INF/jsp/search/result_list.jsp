@@ -120,11 +120,9 @@
 									<div class="ss_clear">&nbsp;</div>
 								</div>
 								<p id="summary_${status.count}">
-								<ssf:markup search="${entry}">
-									<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
-										${entry._desc}
+								<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+									<ssf:markup search="${entry}">${entry._desc}</ssf:markup>
 									</ssf:textFormat>
-								</ssf:markup>
 								</p>
 							</div>
 							<div class="ss_clear">&nbsp;</div>
@@ -292,14 +290,10 @@
 									</h3>
 									<div class="ss_clear">&nbsp;</div>
 								</div>
-								<p id="summary_${status.count}">
-								
-									<ssf:markup search="${entry}">
-										<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
-											${entry._desc}
-										</ssf:textFormat>
-									</ssf:markup>
-	
+								<p id="summary_${status.count}">	
+									<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+											<ssf:markup search="${entry}">${entry._desc}</ssf:markup>
+										</ssf:textFormat>	
 								</p>
 							</div>
 							<div class="ss_clear">&nbsp;</div>
@@ -371,11 +365,9 @@
 									<div class="ss_clear">&nbsp;</div>
 								</div>
 								<p id="summary_${status.count}">
-									<ssf:markup search="${entry}">
 										<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
-											${entry._desc}
+											<ssf:markup search="${entry}">${entry._desc}</ssf:markup>
 										</ssf:textFormat>
-									</ssf:markup>
 								</p>
 							</div>
 							<div class="ss_clear">&nbsp;</div>
@@ -448,11 +440,9 @@
 									<div class="ss_clear">&nbsp;</div>
 								</div>
 								<p id="summary_${status.count}">
-									<ssf:markup search="${entry}">
-										<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
-											${entry._desc}
-										</ssf:textFormat>
-									</ssf:markup>							
+									<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+											<ssf:markup search="${entry}">${entry._desc}</ssf:markup>	
+									</ssf:textFormat>															
 								</p>
 							</div>
 							<div class="ss_clear">&nbsp;</div>

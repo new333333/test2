@@ -74,11 +74,11 @@
 				<c:if test="${!empty fileEntry._desc}">
 				<div class="ss_blockquote_watermark"></div>
 				<div class="ss_blockquote_watermark_content">
-					<span><ssf:markup search="${fileEntry}">
+					<span>
 						<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
-								${fileEntry._desc}
+								<ssf:markup search="${fileEntry}">${fileEntry._desc}</ssf:markup>
 						</ssf:textFormat>
-					  </ssf:markup></span>
+					  </span>
 				</div>
 				</c:if>
 			</td>					 	

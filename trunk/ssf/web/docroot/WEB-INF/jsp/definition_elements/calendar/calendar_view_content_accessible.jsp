@@ -109,11 +109,9 @@
 			
 						<p id="summary_${status.count}">
 							<c:if test="${!empty entry._desc}">
-								<ssf:markup search="${entry}">
-									<ssf:textFormat formatAction="limitedDescription" textMaxWords="100">
-										${entry._desc}
-									</ssf:textFormat>
-								</ssf:markup>
+								<ssf:textFormat formatAction="limitedDescription" textMaxWords="100">
+									<ssf:markup search="${entry}">${entry._desc}</ssf:markup>
+								</ssf:textFormat>							
 							</c:if>
 						</p>
 					</div>

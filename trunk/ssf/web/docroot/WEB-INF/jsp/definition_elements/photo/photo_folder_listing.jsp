@@ -143,9 +143,10 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
       ></c:if><span id="folderLine_${fileEntry._docId}"
       ><c:out value="${fileEntry.title}"/></span><c:if test="${!empty fileEntry._desc}"
       ><hr width="80%" align="left"/></c:if>
-    <span ><ssf:markup search="${fileEntry}"><%--
-    		--%><ssf:textFormat formatAction="limitedDescription" textMaxWords="100">${fileEntry._desc}</ssf:textFormat><%--
-    		--%></ssf:markup></span>
+    <span >
+    		<ssf:textFormat formatAction="limitedDescription" textMaxWords="100">
+    		<ssf:markup search="${fileEntry}">${fileEntry._desc}</ssf:markup>
+    		</ssf:textFormat></span>
   </div>
 </c:forEach>
 
