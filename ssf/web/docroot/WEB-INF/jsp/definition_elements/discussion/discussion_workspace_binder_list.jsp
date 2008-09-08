@@ -96,9 +96,10 @@
 		 		  </c:choose>
     				<br/>
     			</div><!-- end of ss_topic_title -->
-    			<div id="ss_topic_desc"><ssf:markup search="${binder}">
-					<ssf:textFormat formatAction="limitedDescription" 
-		  				textMaxWords="50">${binder._desc}</ssf:textFormat></ssf:markup>
+    			<div id="ss_topic_desc">
+					<ssf:textFormat formatAction="limitedDescription" textMaxWords="50">
+		  				<ssf:markup search="${binder}">${binder._desc}</ssf:markup>
+		  			</ssf:textFormat>
 		  		</div>
     			<c:forEach var="subBinder" items="${ss_bindersSubBinders[binder._docId]}">
       				<c:if test="${subBinder._entityType == 'workspace' || subBinder._entityType == 'profiles'}">
@@ -127,9 +128,9 @@
 							  </c:otherwise>
 		 				    </c:choose>
         				    <br/>
-        				    <div><ssf:markup search="${subBinder}">
-							  <ssf:textFormat formatAction="limitedDescription" 
-		  						textMaxWords="50">${subBinder._desc}</ssf:textFormat></ssf:markup>
+        				    <div><ssf:textFormat formatAction="limitedDescription" textMaxWords="50">
+		  							<ssf:markup search="${subBinder}">${subBinder._desc}</ssf:markup>
+		  						</ssf:textFormat>
 		  					</div>
         				  </div><!-- end of left padding -->
         				</div><!-- end of title -->
@@ -207,9 +208,10 @@
     
     			<br/>
     		</div><!-- end of ss_topic_title -->
-    		  <div id="ss_topic_desc"><ssf:markup search="${binder}">
-				<ssf:textFormat formatAction="limitedDescription" 
-		  			textMaxWords="50">${binder._desc}</ssf:textFormat></ssf:markup>
+    		  <div id="ss_topic_desc"><ssf:textFormat formatAction="limitedDescription" 
+		  			textMaxWords="50">
+		  				<ssf:markup search="${binder}">${binder._desc}</ssf:markup>
+		  			</ssf:textFormat>
 		  	  </div>
   		</c:if>
   

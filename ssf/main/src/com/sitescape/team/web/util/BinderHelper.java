@@ -2411,7 +2411,6 @@ public class BinderHelper {
 		}		
 		
 		List shownOnPage = allResultsList.subList(userOffsetStart, userOffsetEnd);
-		checkFileIds(shownOnPage);
 		
 		int pageNo = 1;
 		if (options != null && options.get(WebKeys.URL_PAGE_NUMBER) != null) {
@@ -2458,22 +2457,6 @@ public class BinderHelper {
 		
 	}
 	
-	public static void checkFileIds(List entries) {
-		Iterator it = entries.iterator();
-		while (it.hasNext()) {
-			Map entry = (Map)it.next();
-			if (entry.containsKey(ObjectKeys.FIELD_FILE_ID)) {
-				try{ 
-					Set files = ((SearchFieldResult)entry.get(ObjectKeys.FIELD_FILE_ID)).getValueSet();
-					if (!files.isEmpty()) {
-						entry.put(ObjectKeys.FIELD_FILE_ID, files.iterator().next());
-					}
-				} catch (Exception e) {
-					// do nothing, if not set - it is only one or no _fileID
-				}
-			}
-		}
-	}
 	
 	// This method reads thru the results from a search, finds the principals, 
 	// and places them into an array that is ordered by the number of times

@@ -119,11 +119,9 @@
 <div style="padding-bottom:10px;">
 
     <div class="ss_smallprint ss_indent_medium">  
-      <ssf:markup search="${fileEntry}" >
  		<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
-					${fileEntry._desc}
-		</ssf:textFormat>
-      </ssf:markup>
+ 	     <ssf:markup search="${fileEntry}" >${fileEntry._desc}</ssf:markup>
+ 		</ssf:textFormat>
     </div>
 <%
 	}
