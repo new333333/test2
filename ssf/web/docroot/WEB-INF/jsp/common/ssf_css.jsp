@@ -1308,12 +1308,8 @@ table.ss_mouseOverInfo {
 	background-color: #9EC8CD;
 	}
 .ss_fixed_TD_frame {
-	border-top-width: 0px
-	border-left-width: 1px;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	border-color:  #72AEB6;
-	border-style: solid;
+	border: 2px solid #72AEB6;
+	border-top: 1px solid #72AEB6;
 	}	
 .ss_tableheader_style{
 	font-size: 9px!important;
