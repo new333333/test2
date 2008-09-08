@@ -31,6 +31,15 @@
 <% // The main forum view - for viewing folder listings and for viewing entries %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:if test="${ss_snippet}"><%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %></c:if>
+<%
+	if (renderRequest.getAttribute(WebKeys.ACTION) == null ||
+		"view_folder_listing".equals(renderRequest.getAttribute(WebKeys.ACTION)) ||
+		"view_profile_listing".equals(renderRequest.getAttribute(WebKeys.ACTION))) {
+%><c:set var="ss_windowTitle" value="${ssBinder.title}" scope="request"/><%
+	} else {
+%><c:set var="ss_windowTitle" value="${ssEntry.title}" scope="request"/><%
+	}
+%>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <c:set var="showFolderPage" value="true"/>

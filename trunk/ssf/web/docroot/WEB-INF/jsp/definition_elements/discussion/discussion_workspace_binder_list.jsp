@@ -111,7 +111,7 @@
             					  href="<ssf:url action="view_ws_listing" binderId="${subBinder._docId}"/>"
           						</c:if>
           						<c:if test="${subBinder._entityType == 'profiles'}">
-            					  href="<ssf:url action="view_profiles_listing" binderId="${subBinder._docId}"/>"
+            					  href="<ssf:url action="view_profile_listing" binderId="${subBinder._docId}"/>"
           						</c:if>
         					>${subBinder.title}
         					</a>
@@ -139,7 +139,7 @@
         				<div style="padding-left:10px;">
         				  <span style="padding-right:10px;">profiles</span>
          
-        				  <a href="<ssf:url action="view_profiles_listing" binderId="${subBinder._docId}"/>">
+        				  <a href="<ssf:url action="view_profile_listing" binderId="${subBinder._docId}"/>">
           					<span>${subBinder.title}</span>
         				  </a>
         				  <c:set var="ss_binderNumbers3" value="${ss_binderUnseenCounts[subBinder._docId].count}"/>
