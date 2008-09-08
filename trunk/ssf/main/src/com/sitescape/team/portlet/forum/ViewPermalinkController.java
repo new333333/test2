@@ -142,7 +142,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		} else if (entityType.isPrincipal()) {
 			//permalinks are meant for the use workspace
 	 		if (entryId.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) {  
-	 			entity = getBinderModule().getBinder(Long.valueOf(binderId));
+	 			entity = getProfileModule().getProfileBinder();
 	 			url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
 	 			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
 	 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
@@ -239,7 +239,7 @@ public class ViewPermalinkController  extends SAbstractController {
 	        user = RequestContextHolder.getRequestContext().getUser();
 	 		
 			//Set up the standard beans
-			BinderHelper.setupStandardBeans(this, request, response, model, new Long(binderId));
+			BinderHelper.setupStandardBeans(this, request, response, model);
 			if (WebHelper.isUserLoggedIn(request) && 
 						!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 					//Access is not allowed
