@@ -41,12 +41,8 @@
 <br>
 <script type="text/javascript">
 function t_${renderResponse.namespace}_tree_showId(forum, obj) {
-	if (self.document.${renderResponse.namespace}fm["id_%"+forum] && self.document.${renderResponse.namespace}fm["id_%"+forum].checked) {
-		self.document.${renderResponse.namespace}fm["id_%"+forum].checked=false
-	} else {
-		self.document.${renderResponse.namespace}fm["id_%"+forum].checked=true
-	}
-	return false
+	return ss_checkTree(obj, "ss_tree_checkboxt_${renderResponse.namespace}_treeid" + forum)
+
 }
 function ss_selectAll(formName, prefix, newState) {
     var totalElements = self.document[formName].elements.length;
@@ -75,7 +71,7 @@ function ss_selectAllIfNoneSelected(prefix) {
 }
 </script>
 <ssf:tree treeName="<%= "t_" + renderResponse.getNamespace()+ "_tree" %>" treeDocument="${ssDomTree}"  
-  rootOpen="true" multiSelect="<%= new java.util.ArrayList() %>" multiSelectPrefix="id_" />
+  rootOpen="true" multiSelect="<%= new java.util.ArrayList() %>" multiSelectPrefix="id" />
 
 <br>
 <a class="ss_linkButton ss_smallprint" 
