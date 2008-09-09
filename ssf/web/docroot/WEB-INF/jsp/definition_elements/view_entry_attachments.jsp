@@ -50,9 +50,9 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 
 <table width="90%" border="0" valign="top" cellpadding="1" cellspacing="0">
 <tr>
-	<td valign="top">
+	<td valign="bottom">
 		<span id="ss_browse_div_position${ssDefinitionEntry.id}${ss_attachments_namespace}" 
-		class="ss_style ss_labelLeft"><c:out value="${property_caption}"/>&nbsp;&nbsp;</span>
+		class="ss_style ss_bold ss_smallprint"><c:out value="${property_caption}"/>:&nbsp;&nbsp;</span>
 	</td>
 
 	<td valign="top" width="100%" align="left">
@@ -72,10 +72,12 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	
 		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 			<% if (isAppletSupported) { %>
-				<a id="ss_dropbox_div_position${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+				<a class="ss_fineprint" id="ss_dropbox_div_position${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 				href="javascript: ;" 
 				onClick="ss_showAddAttachmentDropbox('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
-				title="<ssf:nlt tag="entry.AttachFilesByApplet"/>"><img class="ss_icon_link" src="<html:imagesPath/>icons/upload_applet.gif"/></a>
+				title="<ssf:nlt tag="entry.AttachFilesByApplet"/>">
+				  <ssf:nlt tag="entry.AttachFilesByApplet"/>
+				</a>&nbsp;&nbsp;
 			<% } %>
 		</c:if>
 	
@@ -84,35 +86,35 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	<% if (com.sitescape.team.web.util.BinderHelper.isWebdavSupported(request)) { %>
 	<c:if test="${ss_folderViewStyle == 'blog' && !empty ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}">
 		<c:set var="ss_entryIDForWebDAV" value="${ssDefinitionEntry.id}" />
-		<a class="" title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>" src="<html:imagesPath/>icons/upload_webdav.gif"/>
+		<a class="ss_fineprint" title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
 		  style="behavior: url(#default#AnchorClick);" 
 		  folder="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
 		  href="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
-		  target="_blank"><img class="ss_icon_link"</a>		
+		  target="_blank"><ssf:nlt tag="entry.AttachFilesByWebDav"/></a>		
 	</c:if>
 	<c:if test="${ss_folderViewStyle != 'blog' && !empty ssWebDavURL}">
-		<a class=""  title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
+		<a class="ss_fineprint"  title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
 		  style="behavior: url(#default#AnchorClick);" 
 		  folder="${ssWebDavURL}" href="${ssWebDavURL}" 
 		  target="_blank"
-		  ><img class="ss_icon_link" src="<html:imagesPath/>icons/upload_webdav.gif"/></a>		
+		  ><ssf:nlt tag="entry.AttachFilesByWebDav"/></a>&nbsp;&nbsp;		
 	</c:if>
 	<% } %>
 	
 	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 
-		<a class="" title="<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>" href="javascript: ;" 
+		<a class="ss_fineprint" title="<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>" href="javascript: ;" 
 		  onClick="ss_showAddAttachmentBrowse('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
-		  ><img class="ss_icon_link"  src="<html:imagesPath/>icons/upload_browser.gif"/></a>
+		  ><ssf:nlt tag="entry.AttachFilesByWebBrowse"/></a>&nbsp;&nbsp;
 	
 	</c:if>
 	
 	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 	  <% /* TODO: Add test if IC Broker is enabled (ICBrokerModule.isEnabled()) and	if user has zone name defined */ %>
-	  <a class="" title="<ssf:nlt tag="attachMeeting.attachResults"/>" 
+	  <a class="ss_fineprint" title="<ssf:nlt tag="attachMeeting.attachResults"/>" 
 	    href="javascript: ;" 
 	    onClick="ss_showAttachMeetingRecords('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
-	    ><img class="ss_icon_link"  src="<html:imagesPath/>icons/upload_meeting.gif"/></a>
+	    ><ssf:nlt tag="attachMeeting.attachResults"/></a>&nbsp;&nbsp;
 	
 	  <div id="ss_div_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 	    name="ss_div_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 

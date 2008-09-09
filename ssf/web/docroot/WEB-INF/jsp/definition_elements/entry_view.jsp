@@ -31,26 +31,45 @@
 <% //View an entry %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
-
 <div class="ss_style ss_portlet_style ss_portlet">
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
-<table cellspacing="0" cellpadding="0" width="100%" class="ss_actions_bar3_pane">
+<table cellspacing="0" cellpadding="0" width="100%" class="ss_actions_bar13_pane">
 <tr><td valign="top">
   <ssHelpSpot helpId="workspaces_folders/entries/entry_toolbar" offsetX="0" 
     title="<ssf:nlt tag="helpSpot.entryToolbar"/>"></ssHelpSpot>
-<ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar4 ss_actions_bar" />
+<ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar13 ss_actions_bar" />
 </td>
-<td valign="top" nowrap><ssf:ifadapter><a href="javascript: window.print();"><img border="0" 
-    class="ss_print_button"
-    alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
-    src="<html:imagesPath/>pics/1pix.gif" /></a>&nbsp;&nbsp;</ssf:ifadapter><a
-    href="javascript: ss_helpSystem.run();"><img border="0"
-    <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>icons/help.png" /></a></td>
+<td valign="top" nowrap style="padding-top:5px">
+  <ssf:ifadapter>
+    <a href="javascript: ;" onClick="ss_pinEntry(this,'${entry1._binderId}','${entry1._docId}');return false;"><img 
+      <c:if test="${!empty ssPinnedEntries[entry1._docId]}">
+        src="<html:imagesPath/>pics/discussion/ss_pin_orange.png" width="17" height="18"
+        title="<ssf:nlt tag="discussion.unpin"/>"
+      </c:if>
+      <c:if test="${empty entry1._pinned}">
+        src="<html:imagesPath/>pics/discussion/ss_pin_grey.png" width="17" height="18"
+        title="<ssf:nlt tag="discussion.pin"/>"
+      </c:if>
+      ><span class="ss_actions_bar13_temp">Pin this file xxx</span></a>
+  	<a class="ss_actions_bar13_temp" href="">Close thread xxx</a>
+  	<a href="javascript: window.print();"><img border="0" 
+      class="ss_print_button"
+      alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
+      src="<html:imagesPath/>pics/1pix.gif" /></a>&nbsp;&nbsp;
+  </ssf:ifadapter>
+    <a
+      href="javascript: ss_helpSystem.run();"><img border="0"
+      <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>icons/help.png" />
+    </a>&nbsp;&nbsp;
+</td>
 </tr>
 </table>
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr>
-<td valign="top"><jsp:include page="/WEB-INF/jsp/definition_elements/popular_view.jsp" /></td>
+<td valign="top">
+<c:set var="ss_defFam" value="entry" scope="request"/>
+
+<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view.jsp" /></td>
 </tr>
 </table>
 

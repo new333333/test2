@@ -119,7 +119,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 
 	<c:if test="${slidingTableStyle == 'fixed'}">
       <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="2%">
-        <img src="<html:imagesPath/>pics/discussion/ss_pin_orange.png" title="<ssf:nlt tag="discussion.pinned"/>">
+        <img src="<html:imagesPath/>pics/discussion/ss_pin_orange.png" width="17" height="18" title="<ssf:nlt tag="discussion.pinned"/>">
       </ssf:slidingTableColumn>
 	</c:if>
 
@@ -453,13 +453,14 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 
  <c:if test="${slidingTableStyle == 'fixed'}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="2%">
-    <a href="javascript: ;" onClick="ss_pinEntry(this,'${entry1._binderId}','${entry1._docId}');return false;"><img 
+     <a href="javascript: ;" onClick="ss_pinEntry(this,'${entry1._binderId}','${entry1._docId}');return false;">
+      <img 
       <c:if test="${!empty ssPinnedEntries[entry1._docId]}">
-        src="<html:imagesPath/>pics/discussion/ss_pin_orange.png"
+        src="<html:imagesPath/>pics/discussion/ss_pin_orange.png" width="17" height="18"
         title="<ssf:nlt tag="discussion.unpin"/>"
       </c:if>
       <c:if test="${empty entry1._pinned}">
-        src="<html:imagesPath/>pics/discussion/ss_pin_grey.png"
+        src="<html:imagesPath/>pics/discussion/ss_pin_grey.png" width="17" height="18"
         title="<ssf:nlt tag="discussion.pin"/>"
       </c:if>
       ></a>
