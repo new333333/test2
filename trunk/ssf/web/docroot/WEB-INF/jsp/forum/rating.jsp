@@ -34,7 +34,6 @@
 <c:if test="${!empty ssDefinitionEntry.averageRating.average}">
 	<c:set var="i_rating" value="${ssDefinitionEntry.averageRating.average}"/>
 </c:if>
-
 <div id="${ss_ratingDivId}" style="margin:0px; padding:0px;">
 <table style="border-spacing:0px; border-width:thin;"><tbody><tr>
 
@@ -65,26 +64,26 @@
 	</c:if>
 
 <c:if test="${!empty ssDefinitionEntry.averageRating}">
-<td class="ss_nowrap">
-<c:if test="${ssDefinitionEntry.averageRating.count == 1}">
-  <span class="ss_muted_label_small"> (<ssf:nlt tag="popularity.rating.average">
-    <ssf:param name="value" value="${ssDefinitionEntry.averageRating.average}"/>
-    <ssf:param name="value" value="${ssDefinitionEntry.averageRating.count}"/>
-    </ssf:nlt>)
-  </span>
-</c:if>
-<c:if test="${ssDefinitionEntry.averageRating.count != 1}">
-  <span class="ss_muted_label_small"> (<ssf:nlt tag="popularity.rating.averages">
-    <ssf:param name="value" value="${ssDefinitionEntry.averageRating.average}"/>
-    <ssf:param name="value" value="${ssDefinitionEntry.averageRating.count}"/>
-    </ssf:nlt>)
-  </span>
-</c:if>
-</td>
+  <td class="ss_nowrap">
+	<c:if test="${ssDefinitionEntry.averageRating.count == 1}">
+  	  <span class="ss_muted_label_small"> (<ssf:nlt tag="popularity.rating.average">
+    	<ssf:param name="value" value="${ssDefinitionEntry.averageRating.average}"/>
+    	<ssf:param name="value" value="${ssDefinitionEntry.averageRating.count}"/>
+    	</ssf:nlt>)
+  	  </span>
+	</c:if>
+	<c:if test="${ssDefinitionEntry.averageRating.count != 1}">
+  	  <span class="ss_muted_label_small"> (<ssf:nlt tag="popularity.rating.averages">
+    	<ssf:param name="value" value="${ssDefinitionEntry.averageRating.average}"/>
+    	<ssf:param name="value" value="${ssDefinitionEntry.averageRating.count}"/>
+    	</ssf:nlt>)
+  	  </span>
+	</c:if>
+  </td>
 </c:if>
 <c:if test="${empty ssDefinitionEntry.averageRating}">
-<td><span class="ss_muted_label_small"> (<ssf:nlt 
-  tag="popularity.rating.none" />)</span></td>
+  <td><span class="ss_muted_label_small"> (<ssf:nlt 
+  	tag="popularity.rating.none" />)</span></td>
 </c:if>
 </tr></tbody></table>
 </div>

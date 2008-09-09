@@ -40,34 +40,50 @@
 </c:if>
 <c:set var="ss_ratingDivId" value="ss_rating_div_${renderResponse.namespace}${ssDefinitionEntry.id}" 
   scope="request"/>
-<table cellspacing="0" cellpadding="0">
-<tr>
-<td valign="middle" nowrap>
-<ssHelpSpot helpId="workspaces_folders/entries/rating" offsetX="0" 
-  title="<ssf:nlt tag="helpSpot.rating"/>"></ssHelpSpot>
-<%@ include file="/WEB-INF/jsp/forum/rating.jsp" %>
-</td>
-<td>&nbsp;&nbsp;&nbsp;</td>
+<c:choose>
+  <c:when test="${ss_defFam == 'entry'}">
+	<div align="right">
+	<table cellspacing="0" cellpadding="0">
+		<tr>
+		<td valign="middle" nowrap colspan="2">  
+		  <ssHelpSpot helpId="workspaces_folders/entries/rating" offsetX="0" 
+  			title="<ssf:nlt tag="helpSpot.rating"/>"></ssHelpSpot>
+			<%@ include file="/WEB-INF/jsp/forum/rating.jsp" %>
+		</td>
+		</tr><tr>
+  </c:when>
+  <c:otherwise>
+  	<div>
+  	<table cellspacing="0" cellpadding="0">
+	<tr>
+		<td valign="middle" nowrap>  
+		 <ssHelpSpot helpId="workspaces_folders/entries/rating" offsetX="0" 
+  			title="<ssf:nlt tag="helpSpot.rating"/>"></ssHelpSpot>
+			<%@ include file="/WEB-INF/jsp/forum/rating.jsp" %>
+		</td>
+		<td>&nbsp;&nbsp;&nbsp;</td>
+  </c:otherwise>
+</c:choose> 
+ <td valign="middle" nowrap align="right"> 
 <c:if test="${ssDefinitionEntry.top}">
-<td valign="middle" nowrap>
-<c:if test="${!empty ssDefinitionEntry.popularity}">
-<span class="ss_muted_label_small">
-  <c:if test="${ssDefinitionEntry.popularity == 1}">
-    <ssf:nlt tag="popularity.visit1"/>
+
+   <c:if test="${!empty ssDefinitionEntry.popularity}">
+    <span class="ss_muted_label_small">
+      <c:if test="${ssDefinitionEntry.popularity == 1}">
+        <ssf:nlt tag="popularity.visit1"/>
+      </c:if>
+      <c:if test="${ssDefinitionEntry.popularity > 1}">
+        <ssf:nlt tag="popularity.visits"><ssf:param 
+          name="value" value="${ssDefinitionEntry.popularity}"/></ssf:nlt>
+      </c:if>
+    </span>
   </c:if>
-  <c:if test="${ssDefinitionEntry.popularity > 1}">
-    <ssf:nlt tag="popularity.visits"><ssf:param 
-      name="value" value="${ssDefinitionEntry.popularity}"/></ssf:nlt>
+  <c:if test="${empty ssDefinitionEntry.popularity}">
+    <span class="ss_muted_label_small"><ssf:nlt tag="popularity.visits.none" /></span>
   </c:if>
-</span>
+
 </c:if>
-<c:if test="${empty ssDefinitionEntry.popularity}">
-<span class="ss_muted_label_small"><ssf:nlt tag="popularity.visits.none" /></span>
-</c:if>
-</td>
-</c:if>
-<td>&nbsp;&nbsp;&nbsp;</td>
-<td valign="middle" nowrap>
+&nbsp;&nbsp;
 <c:if test="${!empty ssDefinitionEntry.totalReplyCount}">
 <span class="ss_muted_label_small">
   <c:if test="${ssDefinitionEntry.totalReplyCount == 1}">
@@ -85,3 +101,4 @@
 </td>
 </tr>
 </table>
+</div><!--end of alignment-->

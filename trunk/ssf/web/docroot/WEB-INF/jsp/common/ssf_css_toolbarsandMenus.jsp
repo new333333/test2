@@ -44,84 +44,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	height: 22px;
 	margin: 0px;
 	}
-.ss_actions_bar1 {
-	font-weight: normal;
-	font-size: ${ss_style_font_smallprint};
-	font-family: ${ss_style_title_font_family};
-	}
-div.ss_actions_bar1_pane {
-	border-bottom: 1px solid;
-	border-color: #FFF;
-	/* height: 22px; */
-	white-space: nowrap;
-	}		
-table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
-	/* background-color: ${ss_toolbar2_background_color}; */
-	background-color: #666666;
-	width: 100%;
-	height: 2px;
-	padding: 0px;
-	margin: 0px;
-	border-collapse: collapse;
-	border-spacing: 0px;
-	}
-.ss_actions_bar2, table.ss_actions_bar2_pane {
-	/* background-image: url(<html:imagesPath/>pics/background_toolbar2.gif); 
-	background-repeat: repeat-x; */
-	background-color: #666666;
-	}	
-.ss_actions_bar2 {
-	font-weight: normal;
-	font-size: ${ss_style_font_smallprint};
-	font-family: ${ss_style_title_font_family};
-	}
-.ss_actions_bar3 {
-	/* background-color: #AFC8E3; */
-		background-color: #FFFFFF;
-	font-weight: normal;
-	font-size: ${ss_style_font_smallprint};
-	font-family: ${ss_style_title_font_family};
-	}
-	/*ENTRY*/	
-table.ss_actions_bar3_pane, table.ss_actions_bar3_pane td {
- 	background-color: #AFC8E3; 
-	width: 100%;
-	height: 20px;
-	padding: 4px 2px 0px 0px;
-	margin: 0px;
-	border-collapse: collapse;
-	border-spacing: 0px;
-	}
-table.ss_actions_bar4_pane {
-    background-image: url(<html:imagesPath/>pics/background_actionbar4.gif);
-	background-repeat: repeat-x;
-	width: 100%;
-	height: 20px;
-	padding: 4px 0px 0px 0px;
-	margin: 0px;
-	border-collapse: collapse;
-	border-spacing: 0px;
-	}
-.ss_actions_bar4 {
-	font-weight: normal;
-	font-size: ${ss_style_font_smallprint};
-	font-family: ${ss_style_title_font_family};
-	}
-.ss_actions_bar5 {
-	background-color:#72AEB6;
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: 12px;
-	font-weight: bold;
-	margin:15px 0 0 0;
-	padding:5px 0 5px 25px;
-	}
-ul.ss_actions_bar1  {
-	/* height: 22px;	*/
-	}
-ul.ss_actions_bar1 .ss_actions_bar_submenu {
-	height: auto;
-	padding: 0px !important;
-	}
 .ss_action_bar ul, .ss_actions_bar_submenu {
 	list-style-type: none;
 	}
@@ -130,6 +52,7 @@ ul.ss_actions_bar li {
 	display: inline;
 	margin: 0px;
 	white-space: nowrap;
+	padding-top: 1px;
 	}
 .ss_actions_bar li.ss_toolBarItem {
 	border: 0px;
@@ -148,11 +71,7 @@ ul.ss_actions_bar li {
 	margin-top: 0px;
 	}
 .ss_actions_bar li.ss_actions_bar_separator {
-	border-right: 0px;
-	border-top: 0px;
-	height: 18px;
 	margin: 0px 5px 0px 5px;
-	width: 0px;
 	padding: 0px;
 	}
 .ss_actions_bar form {
@@ -179,6 +98,84 @@ ul.ss_actions_bar li {
 	color:${ss_style_text_color} !important;
 	display: inline;
 	padding:0px 7px;
+	}	
+.ss_actions_bar1 {
+	font-weight: normal;
+	font-size: ${ss_style_font_smallprint};
+	font-family: ${ss_style_title_font_family};
+	}
+div.ss_actions_bar1_pane {
+	border-bottom: 1px solid;
+	border-color: #FFF;
+	/* height: 22px; */
+	white-space: nowrap;
+	}		
+table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
+	/* background-color: ${ss_toolbar2_background_color}; */
+	background-color: #666666;
+	width: 100%;
+	/* height: 2px; */
+	padding: 0px;
+	margin: 0px;
+	border-collapse: collapse;
+	border-spacing: 0px;
+	}
+.ss_actions_bar2, table.ss_actions_bar2_pane {
+	/* background-image: url(<html:imagesPath/>pics/background_toolbar2.gif); 
+	background-repeat: repeat-x; */
+	background-color: #666666;
+	}	
+.ss_actions_bar2 {
+	font-weight: normal;
+	font-size: ${ss_style_font_smallprint};
+	font-family: ${ss_style_title_font_family};
+	}
+.ss_actions_bar3 {
+	/* background-color: #AFC8E3; */
+		background-color: #FFFFFF;
+	font-weight: normal;
+	font-size: ${ss_style_font_smallprint};
+	font-family: ${ss_style_title_font_family};
+	}
+	/*ENTRY*/	
+table.ss_actions_bar3_pane, table.ss_actions_bar3_pane td {
+ 	background-color: #AFC8E3; 
+	width: 100%;
+	/* height: 20px; */
+	padding: 4px 2px 0px 0px;
+	margin: 0px;
+	border-collapse: collapse;
+	border-spacing: 0px;
+	} 
+table.ss_actions_bar4_pane {
+    background-image: url(<html:imagesPath/>pics/background_actionbar4.gif);
+	background-repeat: repeat-x;
+	width: 100%;
+	/* height: 20px; */
+	padding: 4px 0px 0px 0px;
+	margin: 0px;
+	border-collapse: collapse;
+	border-spacing: 0px;
+	}
+.ss_actions_bar4 {
+	font-weight: normal;
+	font-size: ${ss_style_font_smallprint};
+	font-family: ${ss_style_title_font_family};
+	}
+.ss_actions_bar5 {
+	background-color:#72AEB6;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	margin:15px 0 0 0;
+	padding:5px 0 5px 25px;
+	}
+ul.ss_actions_bar1  {
+	/* height: 22px;	*/
+	}
+ul.ss_actions_bar1 .ss_actions_bar_submenu {
+	height: auto;
+	padding: 0px !important;
 	}
 .ss_actions_bar_background {
 	margin:0px;
@@ -196,7 +193,7 @@ ul.ss_actions_bar li {
 	color:#0000FF
 	}
 ul.ss_actions_bar1 li {
-	margin-top: 3px;
+	margin-top: 1px;
 	padding: 0px;
 	}
 ul.ss_actions_bar1 li a:hover {
@@ -443,7 +440,7 @@ table.ss_tag_pane_color th {
 <c:if test="<%= !isIE %>">
   	left: 35%; 
 </c:if>
-  	height:20px; 
+  	/* height:20px; */
   	width:50px; 
  /* background-color:${ss_tag_pane_background_color}; */
   	background-color: #FFFFFF;
@@ -489,7 +486,7 @@ div.ss_popup_top {
   	position: relative;
   	background-image: url(<html:imagesPath/>pics/background_base_title_bar.jpg);
   	background-repeat: repeat-x;
-  	height: 14px;
+  	/* height: 14px; */
   padding: 0px;
 	}
 div.ss_popup_title {
@@ -505,7 +502,7 @@ div.ss_popup_close {
   	background-image: url(<html:imagesPath/>pics/popup_close_box.gif);
  	background-repeat: no-repeat;
   	width: 12px;
-  	height: 13px;
+  	/* height: 13px; */
   	top: 1px;
   	left: -1px;
 	}
@@ -515,3 +512,29 @@ div.ss_popup_body {
   	background-color: #FFFFFF;
   	padding: 10px;
 	}
+/* ENTRY VIEW TOOLBAR STYLES */
+/* FAMILY TYPES = (10)unspecified (11)blog (12)calendar (13)discussion (14)photo (15)wiki (16)task (17)file */
+
+table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
+ 	background-color: #808080; 
+	width: 100%;
+	padding: 0px 2px 0px 0px;
+	margin: 0px;
+	}
+.ss_actions_bar13 {
+	font-weight: normal;
+	font-size: ${ss_style_font_smallprint};
+	font-family: ${ss_style_title_font_family};
+	padding: 5px 2px;
+	}
+.ss_actions_bar13 li{
+	border-right: 1px solid white;
+	}		
+.ss_actions_bar13_temp {
+	font-weight: normal;
+	font-size: ${ss_style_font_finestprint};
+	font-family: ${ss_style_title_font_family};
+	padding: 4px 2px;
+	color: white !important;
+	text-decoration: underline !important;
+	}	
