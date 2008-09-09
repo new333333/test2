@@ -31,9 +31,6 @@
 <% // Find a single element %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="com.sitescape.util.ParamUtil" %>
-<script type="text/javascript">
-	ss_loadJsFile(ss_rootPath, "js/jsp/tag_jsps/find/find.js");
-</script> 
 <%
 	String label = ParamUtil.get(request, "label", "");
 %>

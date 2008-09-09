@@ -143,8 +143,6 @@ var ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
 <script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
 <script type="text/javascript">
-	
-
 </script>
 
 <link href="<html:rootPath/>css/forum.css" rel="stylesheet" type="text/css" >

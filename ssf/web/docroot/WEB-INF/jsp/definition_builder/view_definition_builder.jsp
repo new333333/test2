@@ -52,6 +52,9 @@
 	if (nodeOpen.equals("")) {nodeOpen = " ";}
 %>
 <script type="text/javascript">
+	ss_loadJsFile(ss_rootPath, "js/jsp/tag_jsps/find/find.js");
+</script> 
+<script type="text/javascript">
 
 var rn = Math.round(Math.random()*999999)
 var selectedId = null;

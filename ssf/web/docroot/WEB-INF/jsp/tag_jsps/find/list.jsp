@@ -30,9 +30,6 @@
 %>
 <% // User/Group list widget %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<script type="text/javascript">
-	ss_loadJsFile(ss_rootPath, "js/jsp/tag_jsps/find/find.js");
-</script> 
 
 <c:set var="prefix" value="${ssFindFormName}_${ssFindFormElement}_${ssFindInstanceCount}" />
 
