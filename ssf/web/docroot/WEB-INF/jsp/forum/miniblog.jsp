@@ -32,6 +32,7 @@
 <ssf:ifadapter>
 <body class="ss_style_body">
 </ssf:ifadapter>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
 function ss_showMiniblog${renderResponse.namespace}(id, obj) {
 	ss_viewMiniBlog(id, '0', false);

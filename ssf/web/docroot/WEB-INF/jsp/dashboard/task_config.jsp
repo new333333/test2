@@ -37,6 +37,7 @@
 <jsp:useBean id="ssDashboard" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssComponentId" type="java.lang.String" scope="request" />
 
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
 	function ${treeName}_showId(forum, obj) {
 		return ss_checkTree(obj, "ss_tree_checkbox${treeName}ss_folder_id" + forum);	

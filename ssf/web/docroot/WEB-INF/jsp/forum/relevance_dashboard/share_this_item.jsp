@@ -32,6 +32,7 @@
 <ssf:ifadapter>
 <body>
 </ssf:ifadapter>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <div class="ss_style ss_portal">
 <h2><ssf:nlt tag="relevance.shareThisWithWhom"/></h2>
 

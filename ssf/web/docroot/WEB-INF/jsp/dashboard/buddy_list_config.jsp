@@ -30,6 +30,7 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 
 <div style="margin:6px; width:100%;">
 	<h3><ssf:nlt tag="presence.configure" text="Configure buddy list"/></h3>

@@ -33,6 +33,7 @@
 <ssf:ifadapter>
 <body class="tundra">
 </ssf:ifadapter>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
 	var width = ss_getWindowWidth()/2;
 	if (width < 700) width=700;

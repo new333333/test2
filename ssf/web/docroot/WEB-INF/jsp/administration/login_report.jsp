@@ -32,6 +32,7 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
 
