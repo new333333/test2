@@ -43,6 +43,7 @@ public class User extends Principal implements Serializable {
 	private String timeZone;
 	private String skypeId;
 	private String twitterId;
+	private Long miniBlogId;
 	
 	public String getFirstName() {
 		return firstName;
@@ -109,6 +110,12 @@ public class User extends Principal implements Serializable {
 	}
 	public void setTwitterId(String twitterId) {
 		this.twitterId = twitterId;
+	}
+	public Long getMiniBlogId() {
+		return miniBlogId;
+	}
+	public void setMiniBlogId(Long miniBlogId) {
+		this.miniBlogId = miniBlogId;
 	}
 	
 }

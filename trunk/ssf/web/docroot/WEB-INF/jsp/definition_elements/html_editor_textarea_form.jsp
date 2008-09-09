@@ -66,15 +66,18 @@
 	
 %>
 <c:set var="textValue" value=""/>
+<c:set var="textFormat" value="1"/>
 <c:if test="${!empty ssDefinitionEntry}">
   <c:if test="${property_name == 'description'}" >
     <c:set var="textValue" value="${ssDefinitionEntry.description.text}"/>
+    <c:set var="textFormat" value="${ssDefinitionEntry.description.format}"/>
   </c:if>
   <c:if test="${property_name == 'branding'}" >
     <c:set var="textValue" value="${ssDefinitionEntry.branding}"/>
   </c:if>
   <c:if test="${property_name != 'description' && property_name != 'branding'}" >
     <c:set var="textValue" value="${ssDefinitionEntry.customAttributes[property_name].value.text}"/>
+    <c:set var="textFormat" value="${ssDefinitionEntry.customAttributes[property_name].value.format}"/>
   </c:if>
   <c:if test="${!empty ss_sectionText}"><c:set var="textValue" value="${ss_sectionText}"/></c:if>
 </c:if>
@@ -91,9 +94,16 @@
   	</div>
 
   <div>
+  <c:if test="${textFormat != '2'}">
   <ssf:htmleditor name="${property_name}" id="ss_htmleditor_${property_name}" 
     height="<%= height %>"><ssf:markup type="form" leaveSectionsUnchanged="true"
     entity="${ssDefinitionEntry}">${textValue}</ssf:markup></ssf:htmleditor>
+  </c:if>
+  <c:if test="${textFormat == '2'}">
+  <textarea name="${property_name}" id="ss_htmleditor_${property_name}" 
+    height="<%= height %>"><ssf:markup type="form" leaveSectionsUnchanged="true"
+    entity="${ssDefinitionEntry}">${textValue}</ssf:markup></textarea>
+  </c:if>
   </div>
 </div>
 <c:set var="ss_html_editor_textarea_form_helpicon" value="" scope="request" />

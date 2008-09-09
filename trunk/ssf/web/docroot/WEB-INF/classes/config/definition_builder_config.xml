@@ -201,6 +201,7 @@
 				<option name="photo" caption="__family_photo" />
 				<option name="wiki" caption="__family_wiki" />
 				<option name="file" caption="__family_file" />
+				<option name="miniblog" caption="__family_miniblog" />
 				<help>ihelp.other.definition_family</help>
 			</property>
 			<property name="replyStyle" caption="__reply_style" type="replyStyle" />
@@ -366,6 +367,7 @@
 				  default="entryView" value="entryView">
 				<option name="entryView" caption="__entry_view" />
 				<option name="guestbook" caption="__entry_guestbook" />
+				<option name="miniblog" caption="__entry_miniblog" />
 				<help>ihelp.designers.view_type</help>
 			</property>
 		</properties>
@@ -452,6 +454,7 @@
 				  default="blog" value="blog">
 				<option name="blog" caption="__blog_view" />
 				<option name="guestbook" caption="__entry_guestbook" />
+				<option name="miniblog" caption="__entry_miniblog" />
 				<help>ihelp.designers.view_type</help>
 			</property>
 		</properties>
@@ -555,6 +558,7 @@
 				<option name="task" caption="__family_task" />
 				<option name="milestone" caption="__family_milestone" />
 				<option name="file" caption="__family_file" />
+				<option name="miniblog" caption="__family_miniblog" />
 				<help>ihelp.other.definition_family</help>
 			</property>
 			<property name="icon" caption="__icons.folder" type="iconList" 
@@ -656,6 +660,7 @@
 				<option name="task" caption="__folder_task" />
 				<option name="survey" caption="__folder_survey" />
 				<option name="milestone" caption="__folder_milestone" />
+				<option name="miniblog" caption="__folder_miniblog" />
 				<help>ihelp.designers.view_type</help>
 			</property>
 		</properties>

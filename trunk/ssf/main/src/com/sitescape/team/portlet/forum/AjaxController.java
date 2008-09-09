@@ -91,6 +91,7 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ReservedByAnotherUserException;
@@ -2141,6 +2142,23 @@ public class AjaxController  extends SAbstractControllerRetry {
 			getProfileModule().setStatus(status);
 			getProfileModule().setStatusDate(new Date());
 			getReportModule().addStatusInfo(user);
+			//Add this to the user's mini blog folder
+			Long miniBlogId = user.getMiniBlogId();
+			Folder miniBlog = null;
+			if (miniBlogId == null) {
+				//The miniblog folder doesn't exist, so create it
+				//miniBlog = getProfileModule().addUserMiniBlog(user);
+			} else {
+				try {
+					miniBlog = (Folder) getBinderModule().getBinder(miniBlogId);
+				} catch(NoBinderByTheIdException e) {
+					//The miniblog folder doesn't exist anymore, so try create it again
+					//miniBlog = getProfileModule().addUserMiniBlog(user);
+				}
+			}
+			if (miniBlog != null) {
+				//Found the mini blog folder, go add this new entry
+			}
 		}
 	}
 	
