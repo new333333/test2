@@ -59,7 +59,7 @@ Liferay portal-kernel.jar 4.3.0
 Liferay portal-service.jar 4.3.0
 Liferay util-java.jar 4.3.0
 Log4j 1.2.15 (from spring distribution)
-Lucene 1.9.1+indexupdater
+Lucene 2.1.1+indexupdater
 MINA (Apache) mina-core.jar 1.1.6
 MINA (Apache) mina-filter-ssl.jar 1.1.6
 MINA (Apache) mina-integration-jmx.jar 1.1.3
