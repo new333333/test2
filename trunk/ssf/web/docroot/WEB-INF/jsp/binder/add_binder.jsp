@@ -50,6 +50,7 @@
 <c:set var="ss_stdConfigId_mile" value="<%= ObjectKeys.DEFAULT_FOLDER_MILESTONE_CONFIG %>"/>
 <c:set var="ss_stdConfigId_survey" value="<%= ObjectKeys.DEFAULT_FOLDER_SURVEY_CONFIG %>"/>
 
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
 var ss_addBinderOperation = "${ssOperation}";
 var ss_teamWorkspaceInternalId = '<%= ObjectKeys.DEFAULT_TEAM_WORKSPACE_CONFIG %>';

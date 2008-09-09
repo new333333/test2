@@ -57,6 +57,7 @@ function ss_saveFolderId(id, type, clickObj) {
 
 </head>
 <body class="tundra">
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <form method="post" name="ss_findFolderForm"
 	action="">
  <ssf:find formName="ss_findFolderForm" 

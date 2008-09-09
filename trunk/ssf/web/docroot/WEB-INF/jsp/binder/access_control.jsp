@@ -31,6 +31,7 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript" src="<html:rootPath />js/binder/ss_access.js"></script>
 <script type="text/javascript">
 function ss_treeShowIdAccessControl${renderResponse.namespace}(id, obj, action, namespace) {

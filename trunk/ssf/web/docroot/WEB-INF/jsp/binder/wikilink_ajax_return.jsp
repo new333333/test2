@@ -48,6 +48,7 @@
 	<base target="_self" />
 </head>
 <body onload="tinyMCEPopup.executeOnLoad('init();');" style="display: none">
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <form>
 <ssf:inlineHelp tag="ihelp.other.linksToEntries.explainTool"/> <ssf:nlt tag="wiki.link.tofolder"/>: <b><span id="linkToFolderName">(<ssf:nlt tag="wiki.link.currentfolder"/>)</span></b>
 <input type="hidden" name="binderId" id="binderId" size="5" value="${binderId}"/>
