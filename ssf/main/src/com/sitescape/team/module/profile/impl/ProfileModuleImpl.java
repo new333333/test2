@@ -69,11 +69,13 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.GroupPrincipal;
 import com.sitescape.team.domain.IndividualPrincipal;
 import com.sitescape.team.domain.NoApplicationByTheNameException;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.NoGroupByTheNameException;
 import com.sitescape.team.domain.NoUserByTheNameException;
@@ -101,8 +103,10 @@ import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.survey.Survey;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.EventHelper;
+import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
 
@@ -714,6 +718,71 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    		}
   		
         return ws;
+   }
+
+
+    //NO transaction
+    public Folder addUserMiniBlog(User entry) throws AccessControlException {
+        if (entry.getMiniBlogId() != null) {
+        	try {
+        		return (Folder)getCoreDao().loadBinder(entry.getMiniBlogId(), entry.getZoneId()); 
+			} catch(AccessControlException e) {
+				return null;
+        	} catch (Exception ex) {
+        		//Clear the old id
+        		entry.setMiniBlogId(null);
+        	}
+        }
+
+		Folder miniBlog = null;
+		String mbTitle = NLT.getDef("__template_folder_miniblog");
+        RequestContext oldCtx = RequestContextHolder.getRequestContext();
+        //want the user to be the creator
+        RequestContextUtil.setThreadContext(entry).resolve();
+ 		try {	
+  			if (!entry.isReserved() || (!ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(entry.getInternalId()) &&
+ 					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
+  				List<TemplateBinder> templates = getCoreDao().loadTemplates(entry.getZoneId(), Definition.FOLDER_VIEW);
+
+  				if (!templates.isEmpty()) {
+  					//	Find the right template
+  					TemplateBinder template = null;
+  					for (TemplateBinder tb : templates) {
+  						if (ObjectKeys.DEFAULT_FOLDER_BLOG_CONFIG.equals(tb.getInternalId())) {
+  							template = tb;
+  						}
+  					}
+  					if (template != null) {
+	  					Long cfgType = template.getId();
+	  					Long mbId = getTemplateModule().addBinder(cfgType, entry.getWorkspaceId(), 
+	  								mbTitle, null);
+	  					miniBlog = (Folder)getCoreDao().loadBinder(mbId, entry.getZoneId());
+  					}
+  				}
+  			}
+  			if (miniBlog == null) {
+  				//just load a workspace without all the stuff underneath
+  				//processor handles transaction
+  				Definition userDef = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW);
+  				ProfileCoreProcessor processor=loadProcessor((ProfileBinder)entry.getParentBinder());
+  				Map updates = new HashMap();
+  				updates.put(ObjectKeys.FIELD_BINDER_NAME, entry.getName());
+  				updates.put(ObjectKeys.FIELD_ENTITY_TITLE, mbTitle);
+        		updates.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
+        		miniBlog = (Folder)processor.addBinder(entry.getParentBinder(), userDef, Workspace.class, new MapInputData(updates), null, null);				
+  			}
+  			if (miniBlog != null) {
+  				entry.setMiniBlogId(miniBlog.getId());
+  			}
+   		} catch (WriteFilesException wf) {
+   			logger.error("Error create user MiniBlog: ", wf);
+   			
+   		} finally {
+   			//	leave new context for indexing
+   			RequestContextHolder.setRequestContext(oldCtx);				
+   		}
+  		
+        return miniBlog;
    }
 
 

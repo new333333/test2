@@ -99,6 +99,7 @@
 	      <property name="twitterId" length="64"/>
 	      <property name="status" length="256"/>
 	      <property name="statusDate"/>
+	      <property name="miniBlogId"/>
 	      <property name="password" access="field" length="64"/>
 		  <property name="timeZone" access="field" length="80"/>
 		  <property name="locale" access="field" length="32"/>

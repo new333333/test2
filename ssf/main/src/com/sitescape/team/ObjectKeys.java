@@ -356,6 +356,7 @@ public interface ObjectKeys {
     public static final String FIELD_USER_EMAIL_TEXT="txtEmailAddress";
     public static final String FIELD_USER_EMAIL_MOBILE="mobileEmailAddress";
     public static final String FIELD_USER_LOCALE="locale";
+    public static final String FIELD_USER_MINIBLOGID="miniBlogId";
     public static final String FIELD_USER_SKYPEID="skypeId";
     public static final String FIELD_USER_TWITTERID="twitterId";
     public static final String FIELD_USER_STATUS="status";
@@ -447,6 +448,7 @@ public interface ObjectKeys {
     public static final String XTAG_USER_ZONNAME="zonName";
     public static final String XTAG_USER_ORGANIZATION="organization";
     public static final String XTAG_USER_PHONE="phone";
+    public static final String XTAG_USER_MINIBLOGID="miniBlogId";
     public static final String XTAG_USER_SKYPEID="skypeId";
     public static final String XTAG_USER_TWITTERID="twitterId";
     public static final String XTAG_USER_STATUS="status";

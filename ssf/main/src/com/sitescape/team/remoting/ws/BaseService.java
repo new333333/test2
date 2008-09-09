@@ -165,6 +165,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 			entryElem.addAttribute("statusDate", sdFormat.format(((User)entry).getStatusDate()));
 			entryElem.addAttribute("skypeId", ((User)entry).getSkypeId());
 			entryElem.addAttribute("twitterId", ((User)entry).getTwitterId());
+			entryElem.addAttribute("miniBlogId", Long.toString(((User)entry).getMiniBlogId()));
 		}
 		
 		return entryElem;
@@ -196,12 +197,13 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		if (user.containsKey(Constants.STATUS_DATE_FIELD)) entryElem.addAttribute("statusDate", (String) user.get(Constants.STATUS_DATE_FIELD));
 		if (user.containsKey(Constants.SKYPEID_FIELD)) entryElem.addAttribute("skypeId", (String) user.get(Constants.SKYPEID_FIELD));
 		if (user.containsKey(Constants.TWITTERID_FIELD)) entryElem.addAttribute("twitterId", (String) user.get(Constants.TWITTERID_FIELD));
+		if (user.containsKey(Constants.MINIBLOGID_FIELD)) entryElem.addAttribute("miniBlogId", (String) user.get(Constants.MINIBLOGID_FIELD));
 
 
 		return entryElem;
 	}
 
-	String getPrincipalName(Map user) {
+	String getPrincipalName(Map user) { 
 		if (Constants.ENTRY_TYPE_USER.equals(user.get(Constants.ENTRY_TYPE_FIELD))) {
 			return (String)user.get(Constants.LOGINNAME_FIELD);			
 		} else if (Constants.ENTRY_TYPE_GROUP.equals(user.get(Constants.ENTRY_TYPE_FIELD))) {
@@ -293,6 +295,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		}
 		userModel.setSkypeId(user.getSkypeId());
 		userModel.setTwitterId(user.getTwitterId());
+		userModel.setMiniBlogId(user.getMiniBlogId());
 	}
 	
 	protected void fillGroupModel(com.sitescape.team.remoting.ws.model.Group groupModel, Group group) {

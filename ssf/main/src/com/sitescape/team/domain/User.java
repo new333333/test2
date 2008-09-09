@@ -69,6 +69,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected String twitterId="";
     protected String status="";
     protected Date statusDate;
+    protected Long miniBlogId;
     private SortedSet groupNames; // sorted set of group names; this field is computed
 	public User() {
     }
@@ -272,6 +273,19 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	 */
 	public void setTwitterId(String twitterId) {
 		this.twitterId = twitterId;
+	}
+
+	/**
+     * @hibernate.property
+     */
+	public Long getMiniBlogId() {
+		return miniBlogId;
+	}
+	/**
+	 * @param miniBlogId The miniBlogId to set.
+	 */
+	public void setMiniBlogId(Long miniBlogId) {
+		this.miniBlogId = miniBlogId;
 	}
 
 	/**

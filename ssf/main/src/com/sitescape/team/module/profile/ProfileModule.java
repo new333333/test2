@@ -46,6 +46,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.GroupPrincipal;
 import com.sitescape.team.domain.IndividualPrincipal;
@@ -116,6 +117,15 @@ public interface ProfileModule {
 	  * @throws AccessControlException
 	  */
 	 public Workspace addUserWorkspace(User user, Map options)
+	 	throws AccessControlException;
+	 
+	 /**
+	  * Add a user MiniBlog folder from the MiniBlog folder template
+	  * @param user
+	  * @return
+	  * @throws AccessControlException
+	  */
+	 public Folder addUserMiniBlog(User entry) 
 	 	throws AccessControlException;
 	/**
 	 * Create an user from information from the portal.
