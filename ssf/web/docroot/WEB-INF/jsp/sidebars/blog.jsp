@@ -33,7 +33,7 @@
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
-<div style="border:1px #cecece solid; background-color: #cecece;">
+<div class="ss_blog_sidebar">
   <ssHelpSpot helpId="workspaces_folders/misc_tools/blog_controls" offsetX="0" 
      <c:if test="<%= isIE %>">
        offsetY="25"
@@ -60,21 +60,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	</c:forEach>
 	</table>
   </div>
-  <c:if test="${!empty ssFolderEntryCommunityTags}"> 	
-	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
-    <div class="ss_blog_sidebar_box">				
-	   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
-		   	<a href="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
-				name="binderId" value="${ssBinder.id}"/><ssf:param 
-				name="cTag" value="${tag.ssTag}"/></ssf:url>" 
-				class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>"
-				  <ssf:title tag="title.search.entries.in.folder.for.community.tag">
-				  	<ssf:param name="value" value="${tag.ssTag}" />
-				  </ssf:title>
-				>${tag.ssTag}</a>&nbsp;&nbsp;
-	   </c:forEach>
-	</div>
-  </c:if>
   <c:if test="${!empty ssFolderEntryPersonalTags}"> 
 	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
     <div class="ss_blog_sidebar_box">		
@@ -91,4 +76,19 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	   </c:forEach>
 	</div>
   </c:if>
+  <c:if test="${!empty ssFolderEntryCommunityTags}"> 	
+	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
+    <div class="ss_blog_sidebar_box">				
+	   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
+		   	<a href="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
+				name="binderId" value="${ssBinder.id}"/><ssf:param 
+				name="cTag" value="${tag.ssTag}"/></ssf:url>" 
+				class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>"
+				  <ssf:title tag="title.search.entries.in.folder.for.community.tag">
+				  	<ssf:param name="value" value="${tag.ssTag}" />
+				  </ssf:title>
+				>${tag.ssTag}</a>&nbsp;&nbsp;
+	   </c:forEach>
+	</div>
+  </c:if>  
 </div>
