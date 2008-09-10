@@ -484,8 +484,9 @@ public class ViewEntryController extends  SAbstractController {
 					toolbar.addToolbarMenu("5_copy", NLT.get("toolbar.copy"), url);
 				}
 			}
-			Iterator itWorkflows = entry.getParentBinder().getWorkflowDefinitions().iterator();
-			if (itWorkflows.hasNext()) {
+			List<Definition> configWorkflows = entry.getParentBinder().getWorkflowDefinitions();
+			Set<WorkflowState>runningWorkflows = entry.getWorkflowStates();
+			if (!configWorkflows.isEmpty() || !runningWorkflows.isEmpty()) {
 				//The "Workflow" menu
 				Map qualifiers = new HashMap();
 				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.entryWorkflowMenu");
@@ -493,9 +494,7 @@ public class ViewEntryController extends  SAbstractController {
 				
 				//See if there are workflows running
 				Map runningWorkflowDefs = new HashMap();
-				Iterator itWorkflowStates = entry.getWorkflowStates().iterator();
-				while (itWorkflowStates.hasNext()) {
-					WorkflowState state = (WorkflowState) itWorkflowStates.next();
+				for (WorkflowState state:runningWorkflows) {
 					Definition workflowDef = state.getDefinition();
 					if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
 						String wfTitle = NLT.getDef(workflowDef.getTitle());
@@ -514,8 +513,7 @@ public class ViewEntryController extends  SAbstractController {
 					}
 				}
 				
-				while (itWorkflows.hasNext()) {
-					Definition workflowDef = (Definition) itWorkflows.next();
+				for (Definition workflowDef:configWorkflows) {
 					if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
 						String wfTitle = NLT.getDef(workflowDef.getTitle());
 						String wfTitle1 = wfTitle.replaceAll("'", "\\\\'");
