@@ -384,6 +384,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    }  	
 
    //RW transaction
+   public void setMiniBlogId(Long miniBlogId) {
+	    User user = RequestContextHolder.getRequestContext().getUser();
+	    user.setMiniBlogId(miniBlogId);
+   }  	
+   //RW transaction
    public void setStatus(String status) {
 	    User user = RequestContextHolder.getRequestContext().getUser();
 	    user.setStatus(status);
@@ -736,50 +741,24 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 
 		Folder miniBlog = null;
 		String mbTitle = NLT.getDef("__template_folder_miniblog");
-        RequestContext oldCtx = RequestContextHolder.getRequestContext();
-        //want the user to be the creator
-        RequestContextUtil.setThreadContext(entry).resolve();
  		try {	
   			if (!entry.isReserved() || (!ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(entry.getInternalId()) &&
  					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
-  				List<TemplateBinder> templates = getCoreDao().loadTemplates(entry.getZoneId(), Definition.FOLDER_VIEW);
-
-  				if (!templates.isEmpty()) {
-  					//	Find the right template
-  					TemplateBinder template = null;
-  					for (TemplateBinder tb : templates) {
-  						if (ObjectKeys.DEFAULT_FOLDER_BLOG_CONFIG.equals(tb.getInternalId())) {
-  							template = tb;
-  						}
-  					}
-  					if (template != null) {
-	  					Long cfgType = template.getId();
-	  					Long mbId = getTemplateModule().addBinder(cfgType, entry.getWorkspaceId(), 
-	  								mbTitle, null);
-	  					miniBlog = (Folder)getCoreDao().loadBinder(mbId, entry.getZoneId());
+				List<Definition> defs = getDefinitionModule().getDefinitions(null, Boolean.FALSE, Definition.FOLDER_VIEW);
+				for (Definition def:defs) {
+					if (ObjectKeys.DEFAULT_FOLDER_MINIBLOG_DEF.equals(def.getId())) {
+						Map data = new HashMap(); // Input data
+						data.put(ObjectKeys.FIELD_ENTITY_TITLE, mbTitle);
+						Long miniBlogId = getBinderModule().addBinder(entry.getWorkspaceId(), def.getId(), 
+								new MapInputData(data), null, null);
+	  					if (miniBlogId != null) 
+	  						miniBlog = (Folder)getCoreDao().loadBinder(miniBlogId, entry.getZoneId());
+	  					break;
   					}
   				}
   			}
-  			if (miniBlog == null) {
-  				//just load a workspace without all the stuff underneath
-  				//processor handles transaction
-  				Definition userDef = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW);
-  				ProfileCoreProcessor processor=loadProcessor((ProfileBinder)entry.getParentBinder());
-  				Map updates = new HashMap();
-  				updates.put(ObjectKeys.FIELD_BINDER_NAME, entry.getName());
-  				updates.put(ObjectKeys.FIELD_ENTITY_TITLE, mbTitle);
-        		updates.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
-        		miniBlog = (Folder)processor.addBinder(entry.getParentBinder(), userDef, Workspace.class, new MapInputData(updates), null, null);				
-  			}
-  			if (miniBlog != null) {
-  				entry.setMiniBlogId(miniBlog.getId());
-  			}
    		} catch (WriteFilesException wf) {
    			logger.error("Error create user MiniBlog: ", wf);
-   			
-   		} finally {
-   			//	leave new context for indexing
-   			RequestContextHolder.setRequestContext(oldCtx);				
    		}
   		
         return miniBlog;
