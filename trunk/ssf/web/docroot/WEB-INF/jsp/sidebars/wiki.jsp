@@ -36,7 +36,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <% //View the listing part of a wiki folder %>
 <%@ page import="java.util.Date" %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
-<div style="margin-left:10px; border:1px #cecece solid; background-color: #cecece;">
+<div class="ss_blog_sidebar">
    
 	  <ssHelpSpot helpId="workspaces_folders/misc_tools/wiki_controls" offsetX="0" 
 	    title="<ssf:nlt tag="helpSpot.wikiControls"/>"></ssHelpSpot>

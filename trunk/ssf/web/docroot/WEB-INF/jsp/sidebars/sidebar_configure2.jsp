@@ -29,7 +29,7 @@
  */
 %>
 <% // Former Folder Tools for Blogs, Photo Albums, and Wikis %>
-	<% // folder views, folder actions, themes, (no configure columns) and entries per page %>
+	<% // folder views and folder actions, (no configure columns, themes, or entries per page) %>
 
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${ssDefinitionEntry.entityType == 'folder'}">
