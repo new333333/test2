@@ -63,7 +63,7 @@
 </div>
 <script type="text/javascript">
 	var formObj = self.document.getElementById('loginForm');
-	formObj.username.focus();
+	formObj.j_username.focus();
 </script>
 </div>
 
