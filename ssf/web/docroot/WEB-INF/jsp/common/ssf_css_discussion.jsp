@@ -65,14 +65,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	position:relative;
 	float:left;
 	margin-right:2%;
+	overflow: hidden;
 	}	
 .ss_doublecolumn .ss_dblcol2{
 	width:100%;						/* right column content width (column width minus left and right padding) */
 	left:48%;						/* (right column column width) plus (left column left and right padding) plus (right column left padding) */
 	overflow:hidden;
-	<c:if test="<%= isIE %>">
-  		width:98%;
- 	</c:if>
+
 	}	
 .ss_overflow {
 	overflow:hidden;
