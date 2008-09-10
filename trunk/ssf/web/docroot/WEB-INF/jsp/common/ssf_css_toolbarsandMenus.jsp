@@ -41,7 +41,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_actions_bar {
 	list-style-type:none;	
 	padding: 0px 0px 0px 0px;
-	height: 22px;
+	height: 22px;	
 	margin: 0px;
 	}
 .ss_action_bar ul, .ss_actions_bar_submenu {
@@ -105,14 +105,14 @@ ul.ss_actions_bar li {
 	font-family: ${ss_style_title_font_family};
 	}
 div.ss_actions_bar1_pane {
-	border-bottom: 1px solid;
+	/* 	border-bottom: 1px solid;
 	border-color: #FFF;
-	/* height: 22px; */
+	height: 22px; */
 	white-space: nowrap;
 	}		
 table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
-	/* background-color: ${ss_toolbar2_background_color}; */
-	background-color: #666666;
+	/* background-color: ${ss_toolbar2_background_color}; 
+	background-color: #666666;			*/
 	width: 100%;
 	/* height: 2px; */
 	padding: 0px;
