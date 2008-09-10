@@ -36,6 +36,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.WSPasswordCallback;
+import org.apache.ws.security.WSSecurityException;
 
 import com.sitescape.team.asmodule.zonecontext.ZoneContextHolder;
 import com.sitescape.team.context.request.RequestContext;
@@ -45,7 +46,6 @@ import com.sitescape.team.domain.LoginInfo;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.zone.ZoneModule;
-import com.sitescape.team.security.authentication.AuthenticationException;
 import com.sitescape.team.util.EncryptUtil;
 import com.sitescape.team.util.SpringContextUtil;
 
@@ -87,14 +87,16 @@ public class PWCallback implements CallbackHandler {
         					pc.setPassword(clearPassword);
         				}
         				else {
-        					// Encrypted passwords do not match. 
-        					// For some reason, if we don't throw an exception, the wss4j 
-        					// seems to proceed as if the password verification succeeded
-        					// regardless of the password value we set on pc. 
-        					// So for now we throw an exception to prevent the framework
-        					// from proceeding normally.
-        					// TODO requires further investigation.
-        					throw new AuthenticationException("Invalid password");
+        					// Invalid password - Encrypted passwords do not match.
+        					// For some reason, if we return normally from this method,
+        					// the wss4j seems to proceed as if the password verification
+        					// was successful, regardless of the password value we set on 
+        					// pc. I've found that the library behaves properly when we
+        					// throw WSSecurityException instead. Couldn't find relevant
+        					// information in the documentation. However, looking at their
+        					// source code, throwing this exception seems like a right thing
+        					// to do.
+         					throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
         				}
         			}
         			else { // Assume wsse:PasswordDigest
@@ -119,10 +121,9 @@ public class PWCallback implements CallbackHandler {
             		// With wsse:PasswordDigest, all we need to do here is not to
             		// set the password on pc. It does the right thing. 
             		// However, with wsse:PasswordText, the framework doesn't behave
-            		// the same. To account for both cases we will simply throw
-            		// an exception for now. 
-            		// TODO requires further investigation.
-            		throw new AuthenticationException("Invalid username");
+            		// the same. To account for both cases we will simply throw this
+            		// exception for now. 
+             		throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
             	}
             } else {
                 throw new UnsupportedCallbackException(callbacks[i], "Unrecognized Callback");

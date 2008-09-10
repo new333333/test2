@@ -97,6 +97,7 @@ public abstract class WSClientBase {
 	protected String username; // required
 	protected String password; // required
 	protected boolean authWSS; // optional - default to wss (the other available value is basic)
+	protected boolean passwordText; // optional - default to true meaning wsse:PasswordText (this value is applicable only when authWSS is true)
 	
 	protected WSClientBase() {
 		// Read intrinsic properties specified with -D switches from the command line.
@@ -112,11 +113,19 @@ public abstract class WSClientBase {
 		if(password == null)
 			throw new IllegalArgumentException("password must be specified with -D switch");
 		
-		String authMethod = System.getProperty("authmethod", "wss");
-		if(authMethod.equalsIgnoreCase("wss"))
+		String authMethod = System.getProperty("authmethod", "wss_text");
+		if(authMethod.equalsIgnoreCase("wss_text")) {
 			authWSS = true;
-		else if(authMethod.equalsIgnoreCase("basic"))
+			passwordText = true;
+		}
+		else if(authMethod.equalsIgnoreCase("wss_digest")) {
+			authWSS = true;
+			passwordText = false;
+		}
+		else if(authMethod.equalsIgnoreCase("basic")) {
 			authWSS = false;
+			passwordText = true; // although this value doesn't really matter...
+		}
 		else
 			throw new IllegalArgumentException("Illegal authmethod value: " + authMethod);			
 	}
@@ -192,7 +201,7 @@ public abstract class WSClientBase {
 	
 	protected void setUserCredential(Call call) {
 		if(authWSS) {
-			WebServiceClientUtil.setUserCredentialWSSecurity(call, username, password, true);
+			WebServiceClientUtil.setUserCredentialWSSecurity(call, username, password, passwordText);
 		}
 		else {
 			WebServiceClientUtil.setUserCredentialBasicAuth(call, username, password);
