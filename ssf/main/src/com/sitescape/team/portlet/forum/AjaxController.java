@@ -38,6 +38,7 @@ import static com.sitescape.util.search.Restrictions.in;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -2147,17 +2148,34 @@ public class AjaxController  extends SAbstractControllerRetry {
 			Folder miniBlog = null;
 			if (miniBlogId == null) {
 				//The miniblog folder doesn't exist, so create it
-				//miniBlog = getProfileModule().addUserMiniBlog(user);
+				miniBlog = getProfileModule().addUserMiniBlog(user);
+				if (miniBlog != null) getProfileModule().setMiniBlogId(miniBlog.getId());
+				
 			} else {
 				try {
 					miniBlog = (Folder) getBinderModule().getBinder(miniBlogId);
 				} catch(NoBinderByTheIdException e) {
 					//The miniblog folder doesn't exist anymore, so try create it again
-					//miniBlog = getProfileModule().addUserMiniBlog(user);
+					miniBlog = getProfileModule().addUserMiniBlog(user);
+					if (miniBlog != null) getProfileModule().setMiniBlogId(miniBlog.getId());
 				}
 			}
 			if (miniBlog != null) {
 				//Found the mini blog folder, go add this new entry
+		        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, 
+		        		DateFormat.MEDIUM, user.getLocale());
+		        dateFormat.setTimeZone(user.getTimeZone());
+				String mbTitle = dateFormat.format(new Date());
+				Map data = new HashMap(); // Input data
+				data.put(ObjectKeys.FIELD_ENTITY_TITLE, mbTitle);
+				data.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, status);
+						
+				List<Definition> defs = getDefinitionModule().getDefinitions(null, Boolean.FALSE, Definition.FOLDER_ENTRY);
+				for (Definition def:defs) {
+					if (ObjectKeys.DEFAULT_ENTRY_MINIBLOG_DEF.equals(def.getId())) {
+	  					getFolderModule().addEntry(miniBlog.getId(), def.getId(), new MapInputData(data), null, null);
+  					}
+  				}
 			}
 		}
 	}

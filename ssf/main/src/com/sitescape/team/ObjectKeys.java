@@ -51,6 +51,7 @@ public interface ObjectKeys {
 	public static final String DEFAULT_DISCUSSIONS_WORKSPACE_DEF="402880e619c6250f0119c62794b9000c";
 	public static final String DEFAULT_FOLDER_DEF="402883b90cc53079010cc539bf260001";
 	public static final String DEFAULT_FOLDER_ENTRY_DEF="402883b90cc53079010cc539bf260002";
+	public static final String DEFAULT_FOLDER_MINIBLOG_DEF="402883b51c470e76011c4859ba200010";
 	public static final String DEFAULT_WORKSPACE_DEF="402883b90cc53079010cc539bf260005";
 	public static final String DEFAULT_USER_WORKSPACE_DEF="402883b90cc53079010cc539bf26000b";
 	public static final String DEFAULT_PROFILES_DEF="402883b90cc53079010cc539bf260006";
@@ -65,6 +66,7 @@ public interface ObjectKeys {
 	public static final String DEFAULT_ENTRY_SURVEY_DEF="402883c1129b1f8101129b28bbe50004";
 	public static final String DEFAULT_ENTRY_SURVEY_VOTE_DEF="40288182131025d101131029d4920002";
 	public static final String DEFAULT_ENTRY_MILESTONE_DEF="4028818213118b17011311b1f6210017";
+	public static final String DEFAULT_ENTRY_MINIBLOG_DEF="402883b51c48633a011c4866de050002";
 
 	//reserved internalIds for templates.
 	//presence is used to distinquish system templates from customer templates
