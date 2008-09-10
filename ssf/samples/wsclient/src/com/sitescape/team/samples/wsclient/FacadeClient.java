@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Calendar;
 import java.text.DateFormat;
 
+import org.apache.axis.AxisFault;
+
 /**
  * This WS client program uses Apache Axis to invoke the Teaming web services. 
  * 
@@ -181,8 +183,16 @@ public class FacadeClient extends WSClientBase
 				return;
 			}
 		}
-		catch(Exception e) {
+		catch(AxisFault e) {
+			System.out.println("FaultActor: " + e.getFaultActor());
+			System.out.println("FaultNode: " + e.getFaultNode());
+			System.out.println("FaultReason: " + e.getFaultReason());
+			System.out.println("FaultRole: " + e.getFaultRole());
+			System.out.println("FaultString: " + e.getFaultString());
 			e.printStackTrace();
+		}
+		catch(Exception e) {
+			e.printStackTrace();			
 		}
 	}
 		
