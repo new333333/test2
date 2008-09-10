@@ -2162,8 +2162,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			}
 			if (miniBlog != null) {
 				//Found the mini blog folder, go add this new entry
-		        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, 
-		        		DateFormat.MEDIUM, user.getLocale());
+		        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, 
+		        		DateFormat.SHORT, user.getLocale());
 		        dateFormat.setTimeZone(user.getTimeZone());
 				String mbTitle = dateFormat.format(new Date());
 				Map data = new HashMap(); // Input data
