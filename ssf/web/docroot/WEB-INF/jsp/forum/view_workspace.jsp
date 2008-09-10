@@ -182,7 +182,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 <tbody>
 <tr>
 <ssf:ifnotaccessible>
-<td valign="left">
+<td valign="left" width="200px">
 <a href="javascript: ;" 
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
 ><span style="padding:0px 0 0 22px; display:${ss_sidebarVisibilityShow};"
@@ -195,7 +195,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 </ssf:ifnotaccessible>
 
 <td valign="left">
-	<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">			
+	<ssf:toolbar style="ss_actions_bar2 ss_actions_bar ss_sidebarImage">			
 	<% // Workspace toolbar %>
 	<ssf:toolbar toolbar="${ss_whatsNewToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />			
 	<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
