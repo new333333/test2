@@ -80,6 +80,18 @@ public class SearchUtils {
 		return crit;
 	}
 	
+	public static Criteria entriesForTrackedMiniBlogs(Long[] userIds)
+	{
+		Criteria crit = new Criteria();
+		crit.add(eq(FAMILY_FIELD, FAMILY_FIELD_MINIBLOG))
+			.add(eq(DOC_TYPE_FIELD, DOC_TYPE_ENTRY));
+		for (int i = 0; i < userIds.length; i++) {
+			crit.add(eq(CREATORID_FIELD, String.valueOf(userIds[i])));
+		}
+		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
+		return crit;
+	}
+	
 	public static Criteria entriesForTrackedPeople(AllModulesInjected bs, Binder userWorkspace)
 	{
 		Criteria crit = new Criteria();

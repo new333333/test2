@@ -120,6 +120,7 @@ public class Constants {
 	public static final String FAMILY_FIELD_CALENDAR = "calendar";
 	public static final String FAMILY_FIELD_FILE = "file";
 	public static final String FAMILY_FIELD_MILESTONE = "milestone";
+	public static final String FAMILY_FIELD_MINIBLOG = "miniblog"; 
 	public static final String FAMILY_FIELD_PHOTO = "photo";
 	public static final String TEAM_MEMBERS_FIELD = "_teamMembers";
 	public static final String DOCNUMBER_FIELD = "_docNum";

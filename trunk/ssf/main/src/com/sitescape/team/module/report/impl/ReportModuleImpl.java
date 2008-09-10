@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -83,12 +84,14 @@ import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.report.ReportModule.ActivityInfo;
+import com.sitescape.team.search.SearchUtils;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.AccessControlManager;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.util.search.Constants;
 
 public class ReportModuleImpl extends HibernateDaoSupport implements ReportModule {
 	protected Set enabledTypes=new HashSet();
@@ -299,57 +302,70 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	
 	public List<Map<String,Object>> getUsersStatuses(final Long[] userIds,
 			final Date startDate, final Date endDate, Integer returnCount) {
-		
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
-		List data = (List)getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Criteria crit = session.createCriteria(AuditTrail.class)
-					.setProjection(Projections.distinct(Projections.projectionList() 
-							.add(Projections.property("startBy"))
-							.add(Projections.property("transactionType"))
-							.add(Projections.property("description"))
-							.add(Projections.property("startDate"))))
-					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-				    .add(Restrictions.in("transactionType", new Object[] {AuditType.userStatus.name()}))
-					.add(Restrictions.in("startBy", userIds));
-				if (startDate != null) crit.add(Restrictions.ge("startDate", startDate));
-				if (endDate != null) crit.add(Restrictions.lt("startDate", endDate));
-				crit.addOrder(Order.desc("startDate"));
-				return crit.list();
-				
-			}});
-		Map<Long, Principal> userMap = new HashMap();
-		for(Object o : data) {
-			Object[] cols = (Object[]) o;
-			Long userId = (Long)cols[0];
-			if (userMap.containsKey(userId) && userMap.get(userId) == null) continue;
-			Principal user = null;
-			if (userMap.containsKey(userId)) {
-				//If there is a user object in this table, it must be ok to see activities for this user
-				user = userMap.get(userId);
-			} else if (!userMap.containsKey(userId)) {
-				user = getProfileDao().loadPrincipal(userId, zoneId, true);
-				userMap.put(userId, null);
-				if (user != null) {
-					//See if the current user has access to this user's workspace
-					try {
-						getBinderModule().getBinder(user.getWorkspaceId());
-					} catch(Exception e) {
-						//No access (or whatever) to the user workspace, so skip this
-						continue;
+
+		//Get the documents bean for the documents th the user just authored or modified
+		Map options = new HashMap();
+		String page = "0";
+		
+		String entriesPerPage = String.valueOf(returnCount);
+		options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(entriesPerPage));
+		
+		Integer searchUserOffset = 0;
+		Integer searchLuceneOffset = 0;
+		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
+		options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
+		
+		Integer maxHits = new Integer(entriesPerPage);
+		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
+		
+		Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits;
+		if (searchUserOffset > 0) {
+			intInternalNumberOfRecordsToBeFetched+=searchUserOffset;
+		}
+		options.put(ObjectKeys.SEARCH_MAX_HITS, intInternalNumberOfRecordsToBeFetched);
+
+		options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf("0"));
+		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
+		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+		
+		if (userIds.length > 0) {
+			com.sitescape.util.search.Criteria crit = SearchUtils.entriesForTrackedMiniBlogs(userIds);
+			Map results = getBinderModule().executeSearchQuery(crit, offset, maxResults);
+
+	    	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+
+			Map<Long, Principal> userMap = new HashMap();
+			for(Map item : items) {
+				Long userId = Long.valueOf((String)item.get(Constants.CREATORID_FIELD));
+				if (userMap.containsKey(userId) && userMap.get(userId) == null) continue;
+				Principal user = null;
+				if (userMap.containsKey(userId)) {
+					//If there is a user object in this table, it must be ok to see activities for this user
+					user = userMap.get(userId);
+				} else if (!userMap.containsKey(userId)) {
+					user = getProfileDao().loadPrincipal(userId, zoneId, true);
+					userMap.put(userId, null);
+					if (user != null) {
+						//See if the current user has access to this user's workspace
+						try {
+							getBinderModule().getBinder(user.getWorkspaceId());
+						} catch(Exception e) {
+							//No access (or whatever) to the user workspace, so skip this
+							continue;
+						}
 					}
+					userMap.put(userId, user);
 				}
-				userMap.put(userId, user);
+				if (user == null) continue;
+				Map<String, Object> row = new HashMap<String, Object>();
+				report.add(row);
+				row.put(ReportModule.USER, user);
+				row.put(ReportModule.DESCRIPTION, item.get(Constants.DESC_FIELD));
+				row.put(ReportModule.DATE, item.get(Constants.MODIFICATION_DATE_FIELD));
+				if (report.size() >= returnCount) break;
 			}
-			if (user == null) continue;
-			Map<String, Object> row = new HashMap<String, Object>();
-			report.add(row);
-			row.put(ReportModule.USER, user);
-			row.put(ReportModule.TYPE, cols[1]);
-			row.put(ReportModule.DESCRIPTION, cols[2]);
-			row.put(ReportModule.DATE, cols[3]);
-			if (report.size() >= returnCount) break;
 		}
 		return report;
 	}
