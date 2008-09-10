@@ -260,7 +260,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 .ss_sidebarImage {
 	background-image: url("<html:rootPath/>images/pics/navbar/bg_toolbar.gif");  
-	background-repeat: repeat-x;
+	background-repeat: repeat-x;	
 }
 .ss_sidebarSlide {
 	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_lg.png"); 
@@ -274,7 +274,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_sm.png"); 
 	background-position:top left;
 	background-repeat: no-repeat;
-	height:22px;		
+	height:22px;	
+	<c:if test="<%= isIE %>">
+		height:23px;
+ 	</c:if>			
 	color:#FFF;
 	cursor: pointer;	
 	}
