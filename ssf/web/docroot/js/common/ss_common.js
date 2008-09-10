@@ -3863,7 +3863,10 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType,
     	'</div>';
 	tbodyObj.replaceChild(iframeRow, trObj)
 	ss_loadEntryInPlaceLastRowObj = iframeRow;
-	
+	var divId = "ss_entry_iframeDiv"+id+random;
+	var divObj = document.getElementById(divId);
+	ss_setOpacity(divObj, 0);
+	dojo.fadeIn({node:divObj, delay:600}).play();
 	ss_highlightLine(id, namespace);
 	return false;
 }

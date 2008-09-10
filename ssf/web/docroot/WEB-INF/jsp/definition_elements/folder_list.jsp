@@ -33,36 +33,56 @@
 
 <script type="text/javascript" src="<html:rootPath/>js/forum/ss_folder.js"></script>
 
+<c:set var="listShown" value="0"/>
 <c:if test="${ss_folderViewStyle == 'event'}">
-<jsp:include page="/WEB-INF/jsp/definition_elements/calendar/calendar_view.jsp" />
+  <jsp:include page="/WEB-INF/jsp/definition_elements/calendar/calendar_view.jsp" />
+  <c:set var="listShown" value="1"/>
 </c:if>
 <c:if test="${ss_folderViewStyle == 'file'}">
-<jsp:include page="/WEB-INF/jsp/definition_elements/file_folder_view.jsp" />
+  <jsp:include page="/WEB-INF/jsp/definition_elements/file_folder_view.jsp" />
+  <c:set var="listShown" value="1"/>
 </c:if>
 <c:if test="${ss_folderViewStyle == 'blog'}">
-<jsp:include page="/WEB-INF/jsp/definition_elements/blog.jsp" />
+  <jsp:include page="/WEB-INF/jsp/definition_elements/blog.jsp" />
+  <c:set var="listShown" value="1"/>
+</c:if>
+<c:if test="${ss_folderViewStyle == 'miniblog'}">
+  <jsp:include page="/WEB-INF/jsp/definition_elements/miniblog/miniblog.jsp" />
+  <c:set var="listShown" value="1"/>
 </c:if>
 <c:if test="${ss_folderViewStyle == 'wiki'}">
-<jsp:include page="/WEB-INF/jsp/definition_elements/wiki/wiki.jsp" />
+  <jsp:include page="/WEB-INF/jsp/definition_elements/wiki/wiki.jsp" />
+  <c:set var="listShown" value="1"/>
 </c:if>
 <c:if test="${ss_folderViewStyle == 'photo'}">
-<jsp:include page="/WEB-INF/jsp/definition_elements/photo/photo.jsp" />
+  <jsp:include page="/WEB-INF/jsp/definition_elements/photo/photo.jsp" />
+  <c:set var="listShown" value="1"/>
 </c:if>
 <c:if test="${empty ss_folderViewStyle || ss_folderViewStyle == 'folder'}">
-<jsp:include page="/WEB-INF/jsp/definition_elements/folder_view.jsp" />
+  <jsp:include page="/WEB-INF/jsp/definition_elements/folder_view.jsp" />
+  <c:set var="listShown" value="1"/>
 </c:if>
 <c:if test="${ss_folderViewStyle == 'guestbook'}">
-<jsp:include page="/WEB-INF/jsp/definition_elements/guestbook/guestbook.jsp" />
+  <jsp:include page="/WEB-INF/jsp/definition_elements/guestbook/guestbook.jsp" />
+  <c:set var="listShown" value="1"/>
 </c:if>
 <c:if test="${ss_folderViewStyle == 'task'}">
-<jsp:include page="/WEB-INF/jsp/definition_elements/task/task.jsp" />
+  <jsp:include page="/WEB-INF/jsp/definition_elements/task/task.jsp" />
+  <c:set var="listShown" value="1"/>
 </c:if>
 <c:if test="${ss_folderViewStyle == 'survey'}">
-<jsp:include page="/WEB-INF/jsp/definition_elements/survey/survey.jsp" />
+  <jsp:include page="/WEB-INF/jsp/definition_elements/survey/survey.jsp" />
+  <c:set var="listShown" value="1"/>
 </c:if>
 <c:if test="${ss_folderViewStyle == 'table'}">
-<jsp:include page="/WEB-INF/jsp/definition_elements/folder_view.jsp" />
+  <jsp:include page="/WEB-INF/jsp/definition_elements/folder_view.jsp" />
+  <c:set var="listShown" value="1"/>
 </c:if>
 <c:if test="${ss_folderViewStyle == 'milestone'}">
-<jsp:include page="/WEB-INF/jsp/definition_elements/milestone/milestone_folder_view.jsp" />
+  <jsp:include page="/WEB-INF/jsp/definition_elements/milestone/milestone_folder_view.jsp" />
+  <c:set var="listShown" value="1"/>
+</c:if>
+
+<c:if test="${listShown == '0'}">
+  <jsp:include page="/WEB-INF/jsp/definition_elements/folder_view.jsp" />
 </c:if>
