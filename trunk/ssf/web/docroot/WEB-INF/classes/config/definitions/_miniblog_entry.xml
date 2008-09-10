@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_miniblog_entry" caption="__family_miniblog" type="1" nextId="24" definitionType="1" databaseId="402883b51c48633a011c4866de050002"> 
+  <item name="entryForm" caption="__entry_form_definition" type="form" id="1" display="form"> 
+    <properties/>  
+    <item name="entryFormForm" caption="__form" id="2"> 
+      <properties> 
+        <property name="name" value="form1"/>  
+        <property name="type" value="form"/> 
+      </properties>  
+      <item name="title" caption="__title" type="data" display="form" id="23">
+        <properties>
+          <property name="caption" value="__title"/>
+          <property name="name" value="title"/>
+          <property name="width" value="60"/>
+          <property name="generated" value="false"/>
+          <property name="itemSource" value="ss_none"/>
+        </properties>
+      </item>
+      <item name="description" caption="__description" type="data" id="5"> 
+        <properties> 
+          <property name="caption" value="__description"/>  
+          <property name="name" value="description"/>  
+          <property name="height" value=""/>  
+          <property name="required" value=""/> 
+        </properties> 
+      </item>  
+      <item name="attachFiles" caption="__attach_files" type="data" id="6" category="commonEntryData" display="form"> 
+        <properties> 
+          <property name="caption" value="__attach_files"/>  
+          <property name="name" value="ss_attachFile"/>  
+          <property name="width" value="60"/>  
+          <property name="number" value=""/>  
+          <property name="storage" value="simpleFileRepository"/>  
+          <property name="hide" value="true"/> 
+        </properties> 
+      </item>  
+      <item name="entryFormButtons" caption="__form_buttons" id="7"> 
+        <properties> 
+          <property name="alignment" value=""/> 
+        </properties>  
+        <item name="okButton" caption="__ok_button" id="8"> 
+          <properties> 
+            <property name="caption" value="__ok"/>  
+            <property name="onClick" value=""/> 
+          </properties> 
+        </item>  
+        <item name="cancelButton" caption="__cancel_button" id="9"> 
+          <properties> 
+            <property name="caption" value="__cancel"/>  
+            <property name="onClick" value=""/> 
+          </properties> 
+        </item> 
+      </item> 
+    </item> 
+  </item>  
+  <item name="entryView" caption="__entry_view_definition" id="10" display="view"> 
+    <item name="titleView" caption="__title" id="11"> 
+      <properties> 
+        <property name="caption" value="__title"/> 
+      </properties> 
+    </item>  
+    <item name="entrySignatureView" caption="__entry_signature" id="12"> 
+      <properties> 
+        <property name="caption" value=""/>  
+        <property name="showPicture" value=""/>  
+        <property name="displayType" value=""/> 
+      </properties> 
+    </item>  
+    <item name="descriptionView" caption="__description" id="13"> 
+      <properties> 
+        <property name="caption" value="__description"/> 
+      </properties> 
+    </item>  
+    <item name="entryReplies" caption="__entry_replies" id="16"> 
+      <properties> 
+        <property name="caption" value="__entry_replies"/> 
+      </properties> 
+    </item>  
+    <properties> 
+      <property name="type" value="miniblog"/> 
+    </properties> 
+  </item>  
+  <item name="entryBlogView" caption="__entry_blog_view_definition" id="17" display="view"> 
+    <item name="titleBlogView" caption="__title" id="18"> 
+      <properties> 
+        <property name="caption" value="__title"/> 
+      </properties> 
+    </item>  
+    <item name="descriptionBlogView" caption="__description" id="19"> 
+      <properties> 
+        <property name="caption" value="__description"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogReplies" caption="__entry_replies" id="22"> 
+      <properties> 
+        <property name="caption" value="__entry_replies"/> 
+      </properties> 
+    </item>  
+    <properties> 
+      <property name="type" value="miniblog"/> 
+    </properties> 
+  </item>  
+  <properties> 
+    <property name="caption" value="__family_miniblog"/>  
+    <property name="name" value="_miniblog_entry"/>  
+    <property name="family" value="miniblog"/> 
+  </properties>  
+  <export-mappings/>
+</definition>
