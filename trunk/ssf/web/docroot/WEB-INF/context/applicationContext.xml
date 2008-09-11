@@ -673,6 +673,8 @@
 		</property>
 	</bean>	
 
+	<bean id="workflowProcessUtils" class="com.sitescape.team.module.workflow.WorkflowProcessUtils" parent="dependOnAllModulesTemplate"/>
+
 	<bean id="dashboardModule" parent="baseTransactionProxy">
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.dashboard.impl.DashboardModuleImpl">
