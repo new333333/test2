@@ -29,15 +29,14 @@
 package com.sitescape.team.search;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Query;
 
 import com.sitescape.team.SingletonViolationException;
+import com.sitescape.util.search.Constants;
 
 /**
  * Index synchronization interface for searchable objects.
@@ -84,7 +83,7 @@ public class IndexSynchronizationManager {
      */
     public static void addDocument(Document doc) throws LuceneException {
         BasicIndexUtils.validateDocument(doc);
-        getRequests().add(new Request(doc, Request.TYPE_ADD));
+        getRequests().getList().add(doc);
     }
     
     /**
@@ -93,7 +92,7 @@ public class IndexSynchronizationManager {
      * @param uid
      */
     public static void deleteDocument(String uid) {
-        getRequests().add(new Request(uid, Request.TYPE_DELETE));
+    	deleteDocuments(new Term(Constants.UID_FIELD, uid));
     }
     
     /**
@@ -102,7 +101,7 @@ public class IndexSynchronizationManager {
      * @param term
      */
     public static void deleteDocuments(Term term) {
-        getRequests().add(new Request(term, Request.TYPE_DELETE));
+        getRequests().getList().add(term);
     }
     
     /**
@@ -146,7 +145,7 @@ public class IndexSynchronizationManager {
     }
     
     public static void applyChanges(int threshold) {
-    	List req = getRequests();
+    	ArrayList req = getRequests().getList();
     	if (req.size() >= threshold) applyChanges();
     }
 
@@ -176,97 +175,76 @@ public class IndexSynchronizationManager {
     	clear(); 
     }
     
-    private static List getRequests() {
-        List list = (List) requests.get();
-        if(list == null) {
-            list = new ArrayList();
-            requests.set(list);
-        }
-        return list;
+    private static Requests getRequests() {
+    	Requests req = (Requests) requests.get();
+    	if(req == null) {
+    		req = new Requests();
+    		requests.set(req);
+    	}
+    	return req;
     }
     
     private static boolean hasWorkToDo() {
-        List list = (List) requests.get();
-        if(list != null && list.size() > 0)
-            return true;
-        else
-            return false;
-    }
+    	Requests req = (Requests) requests.get();
+    	if(req != null) {
+    		if(req.getList().size() > 0)
+    			return true;
+    		else
+    			return false;
+    	}
+    	else {
+    		return false;
+    	}
+     }
     
-    private static void doCommit(LuceneWriteSession luceneSession) {
-        
-        Request request;
-        Object obj;
-        
-        int addCount = 0;
-        int deleteCount = 0;
-
-        List<Request> list = (List) requests.get();
-        List adds = new ArrayList();
-        for (int i=0; i<list.size(); ++i) {
-            request = list.get(i);
-            obj = request.getObject();
-            switch(request.getType()) {
-            	case Request.TYPE_ADD: {
-            		adds.add(obj);
-            		addCount++;
-            	    break;
-            	} 
-            	case Request.TYPE_DELETE: {
-            		if (!adds.isEmpty()) {
-            			//flush out the current adds
-            			luceneSession.addDocuments(adds);
-            			adds = new ArrayList();
-            		}
-            	       
-            		if(obj instanceof String) {
-            	        luceneSession.deleteDocument((String) obj);
-            	        deleteCount++;
-            	    }
-            	    else if(obj instanceof Term) {
-                	    luceneSession.deleteDocuments((Term) obj);
-            	        deleteCount++;
-            	    }
-            	    else {
-            	    	logger.warn("Unknown object type for delete request: " + obj.getClass().getName());
-            	    }
-            	    break;
-            	}
-            }
-        }
-        //flush out remaining
-        if (!adds.isEmpty()) luceneSession.addDocuments(adds);
-   	        
-        if(((Boolean) autoFlushTL.get()).booleanValue())
-            luceneSession.flush();
-        
+    private static void doCommit(LuceneWriteSession luceneSession) {   	        
+        ArrayList objs = getRequests().getList();
+        if(objs.size() > 0) {
+        	luceneSession.addDeleteDocuments(objs);
+            if(((Boolean) autoFlushTL.get()).booleanValue())
+                luceneSession.flush();
+        }        
 		if(logger.isDebugEnabled())
-			logger.debug("Update to index: add [" + addCount + "], delete [" + deleteCount + "] docs");
+			logger.debug("Update to index: add [" + getRequests().getAddsCount() + "], delete [" + getRequests().getDeletesCount() + "] docs");
     }
     
     private static void clear() {
-        List list = (List) requests.get();
-        if(list != null)
-            list.clear();
+    	Requests req = (Requests) requests.get();
+    	if(req != null)
+    		req.clear();
         autoFlushTL.set(Boolean.FALSE);
     }
     
-    private static class Request {
-        private static final int TYPE_ADD		= 1;
-        private static final int TYPE_DELETE	= 2;
-        
-        private int type;
-        private Object obj;
-        
-        private Request(Object obj, int type) {
-            this.obj = obj;
-            this.type = type;
-        }
-        private Object getObject() {
-            return obj;
-        }
-        private int getType() {
-            return type;
-        }
+    private static class Requests {
+    	private ArrayList list = new ArrayList();
+    	private int addsCount;
+    	private int deletesCount;
+    	
+    	ArrayList getList() {
+    		return list;
+    	}
+    	
+    	void incrAddsCount() {
+    		addsCount++;
+    	}
+    	
+    	void incrDeletesCount() {
+    		deletesCount++;
+    	}
+    	
+    	int getAddsCount() {
+    		return addsCount;
+    	}
+    	
+    	int getDeletesCount() {
+    		return deletesCount;
+    	}
+    	
+    	void clear() {
+    		list.clear();
+    		addsCount = 0;
+    		deletesCount = 0;
+    	}
     }
+
 }

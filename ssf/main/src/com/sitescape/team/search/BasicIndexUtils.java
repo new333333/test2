@@ -100,18 +100,18 @@ public class BasicIndexUtils {
      * @param doc
      * @throws LuceneException if validation fails
      */
-    public static void validateDocument(Document doc) throws LuceneException {
+    public static void validateDocument(Document doc) throws IllegalArgumentException {
 	    Field uidField = doc.getField(UID_FIELD);
 	    if(uidField == null)
-	        throw new LuceneException("Document must contain a field with name " + UID_FIELD);	  
+	        throw new IllegalArgumentException("Document must contain a field with name " + UID_FIELD);	  
        
 	    Field docTypeField = doc.getField(DOC_TYPE_FIELD);
 	    if(docTypeField == null)
-	        throw new LuceneException("Document must contain a field with name " + DOC_TYPE_FIELD);	  
+	        throw new IllegalArgumentException("Document must contain a field with name " + DOC_TYPE_FIELD);	  
 	    
 	    Field classField = doc.getField(THIS_CLASS_FIELD);
 	    if(classField == null)
-	        throw new LuceneException("Document must contain a field with name " + THIS_CLASS_FIELD);	  
+	        throw new IllegalArgumentException("Document must contain a field with name " + THIS_CLASS_FIELD);	  
     }
     
     public static String getUid(Document doc) {

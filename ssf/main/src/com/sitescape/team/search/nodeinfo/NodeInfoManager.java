@@ -30,7 +30,7 @@ package com.sitescape.team.search.nodeinfo;
 
 public interface NodeInfoManager {
     
-	public void updateSearchNode(String nodeId, String accessMode, Boolean outOfSynch);
+	public void setSearchNodeInfo(String nodeId, String accessMode, Boolean outOfSynch);
 	
 	public String getSearchNodeAccessMode(String nodeId);
 	

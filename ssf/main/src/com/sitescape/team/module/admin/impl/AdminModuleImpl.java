@@ -771,7 +771,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	}
 	
 	public void updateSearchNode(String nodeId, String accessMode, Boolean outOfSynch) {
-		getSearchNodeInfoManager().updateSearchNode(nodeId, accessMode, outOfSynch);
+		getSearchNodeInfoManager().setSearchNodeInfo(nodeId, accessMode, outOfSynch);
 	}
 	
 }

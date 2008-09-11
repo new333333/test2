@@ -41,7 +41,7 @@ public class NullNodeInfoManager implements NodeInfoManager {
 		return false;
 	}
 
-	public void updateSearchNode(String nodeId, String accessMode, Boolean outOfSynch) {
+	public void setSearchNodeInfo(String nodeId, String accessMode, Boolean outOfSynch) {
 	}
 
 }

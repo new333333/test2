@@ -1617,6 +1617,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      */
 	protected void indexBinderWithAttachments(Binder binder,
 			Collection<FileAttachment> fileAttachments, List fileUploadItems, boolean newEntry, Collection tags) {
+		if(SPropsUtil.getBoolean("index.escalate.add.to.update", true))
+			newEntry = false;
+		
 		if(!newEntry) {
 			// This is modification. We must first delete existing document(s) from the index.
 			indexDeleteBinder(binder);	        
