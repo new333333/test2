@@ -1,0 +1,300 @@
+<?xml version="1.0"?>
+<project name="sql-open" basedir="." default="">
+	<property name="project.dir" value="../.." />
+
+	<import file="${project.dir}/build-common.xml"/>
+	
+	<property name="main.project.dir" value="${project.dir}/main" />
+	<property name="main.classes.dir" value="${main.project.dir}/${classes.dir}" />
+	<property name="main.hibernate.dir" value="${main.project.dir}/hibernate" />
+	<property name="create.dir" value="${basedir}/create" />
+	<property name="internal.dir" value="${create.dir}/internal" />
+	<property name="zip.file.name" value="${product.package.name}-${product.version}-sql.zip" />
+	
+	<taskdef name="dbunit"
+	    classname="org.dbunit.ant.DbUnitTask">
+		<classpath>
+			<fileset dir="${project.dir}/lib" includes="*.jar" />
+		</classpath>
+	</taskdef>
+
+	<!--<target name="init-build">
+		<property file="${basedir}/build.${user.name}.properties" />
+		<property file="${basedir}/build.properties" />
+	</target>-->
+	
+	<target name="clean">
+		<delete dir="${create.dir}"/>
+		<delete dir="${internal.dir}"/>
+	</target>
+	
+	<target name="init-database-type">
+		<property file="${project.dir}/tools/sql/database.${user.name}.properties" />
+		<property file="${project.dir}/tools/sql/database.properties" />
+	</target>
+	
+  	<target name="generate-create-tables-script" depends="init-database-type"
+  		description="Generate sql script used for creating tables in sitescape database.">
+		<path id="initpath">
+  			<pathelement location="${main.classes.dir}"/>
+			<fileset dir="${project.dir}/util" includes="*.jar"/>
+			<fileset dir="${project.dir}/lib" includes="*.jar" />
+		</path>
+        <taskdef classname="org.hibernate.tool.hbm2ddl.SchemaExportTask"
+	             classpathref="initpath" name="schemaexport">
+ 		</taskdef> 
+
+		<mkdir dir="${create.dir}"/>
+		<mkdir dir="${internal.dir}"/>
+  		
+	    <schemaexport delimiter=";" output="${create.dir}/source-tables-core-${database.type}-temp.sql"
+	    	properties="${basedir}/hibernate-${database.type}.properties" 
+	          	quiet="false" text="true">
+	    	<fileset dir="${main.hibernate.dir}" >
+	    		<include name="com/sitescape/team/**/*hbm.xml"/>
+	        </fileset>
+	     </schemaexport>
+	    <schemaexport delimiter=";" output="${create.dir}/source-tables-jbpm-${database.type}-temp.sql"
+	    	properties="${basedir}/hibernate-${database.type}.properties" 
+	          	quiet="false" text="true">
+			<fileset dir="${project.dir}/lib" includes="jbpm.jar" >
+	    		<include name="org/jbpm/**/*hbm.xml"/>
+	        </fileset>
+<!--			<fileset dir="${project.dir}/lib" includes="jbpm-identity.jar" >
+	    		<include name="org/jbpm/**/*hbm.xml"/>
+		    </fileset>
+-->
+	     </schemaexport>
+		<copy file="./quartz/quartz_tables_${database.type}.sql" 
+			tofile="${create.dir}/source-tables-quartz-${database.type}-temp.sql"
+			overwrite="true" />
+
+  		<!-- Make sure to compile the Java code we're about to run. -->
+  		<ant dir=".." target="compile" inheritAll="false" />
+  		
+  		<java
+  			classname="com.sitescape.team.tools.sql.GenerateCreateTablesUnconstrained"
+  			classpathref="project.classpath"
+  			fork="true"
+  			dir="${basedir}"
+  			failonerror="true">
+  			<arg value="${create.dir}/source-tables-core-${database.type}-temp.sql" />
+  		</java>
+		<delete file="${create.dir}/source-tables-core-${database.type}-temp.sql" />
+ 		<java
+  			classname="com.sitescape.team.tools.sql.GenerateCreateTablesUnconstrained"
+  			classpathref="project.classpath"
+  			fork="true"
+  			dir="${basedir}"
+  			failonerror="true">
+  			<arg value="${create.dir}/source-tables-jbpm-${database.type}-temp.sql" />
+  		</java>
+		<delete file="${create.dir}/source-tables-jbpm-${database.type}-temp.sql" />
+ 		<java
+  			classname="com.sitescape.team.tools.sql.GenerateCreateTablesUnconstrained"
+  			classpathref="project.classpath"
+  			fork="true"
+  			dir="${basedir}"
+  			failonerror="true">
+  			<arg value="${create.dir}/source-tables-quartz-${database.type}-temp.sql" />
+  		</java>
+		<delete file="${create.dir}/source-tables-quartz-${database.type}-temp.sql" />
+	  	<concat destfile="${internal.dir}/create-unconstrained-tables-${database.type}.sql">
+	  	    <fileset dir="${internal.dir}"
+	  	         includes="create-unconstrained-tables-*-${database.type}.sql" />
+	  	</concat>
+	  	<concat destfile="${internal.dir}/add-constraints-${database.type}.sql">
+	  	    <fileset dir="${internal.dir}"
+	  	         includes="add-constraints-*-${database.type}.sql" />
+	  	</concat>
+	  	<concat destfile="${internal.dir}/drop-constraints-${database.type}.sql">
+	  	    <fileset dir="${internal.dir}"
+	  	         includes="drop-constraints-*-${database.type}.sql" />
+	  	</concat>
+	  	<concat destfile="${internal.dir}/drop-tables-${database.type}.sql">
+	  	    <fileset dir="${internal.dir}"
+	  	         includes="drop-tables-*-${database.type}.sql" />
+	  	</concat>
+		<concat destfile="${create.dir}/create-tables-core-${database.type}-temp.sql">
+			<fileset file="${internal.dir}/create-unconstrained-tables-core-${database.type}.sql" />
+			<fileset file="${internal.dir}/add-constraints-core-${database.type}.sql" />
+		</concat>
+		<concat destfile="${create.dir}/create-tables-jbpm-${database.type}-temp.sql">
+			<fileset file="${internal.dir}/create-unconstrained-tables-jbpm-${database.type}.sql" />
+			<fileset file="${internal.dir}/add-constraints-jbpm-${database.type}.sql" />
+		</concat>
+		<concat destfile="${create.dir}/create-tables-quartz-${database.type}-temp.sql">
+			<fileset file="${internal.dir}/create-unconstrained-tables-quartz-${database.type}.sql" />
+			<fileset file="${internal.dir}/add-constraints-quartz-${database.type}.sql" />
+		</concat>
+	  	<concat destfile="${create.dir}/create-database-${database.type}-temp.sql">
+	  	    <fileset dir="${create.dir}"
+	  	         includes="create-tables-*-${database.type}-temp.sql" />
+	  	</concat>
+	
+		<property file="${project.dir}/tools/sql/ddl-${database.type}.properties"/>
+		
+  		
+ 		<concat destfile="${create.dir}/recreate-tables-core-${database.type}-temp.sql">
+			<fileset file="${internal.dir}/drop-constraints-core-${database.type}.sql" />
+			<fileset file="${internal.dir}/drop-tables-core-${database.type}.sql" />
+			<fileset file="${internal.dir}/create-unconstrained-tables-core-${database.type}.sql" />
+			<fileset file="${internal.dir}/add-constraints-core-${database.type}.sql" />
+		</concat>
+		<concat destfile="${create.dir}/recreate-tables-jbpm-${database.type}-temp.sql">
+			<fileset file="${internal.dir}/drop-constraints-jbpm-${database.type}.sql" />
+			<fileset file="${internal.dir}/drop-tables-jbpm-${database.type}.sql" />
+			<fileset file="${internal.dir}/create-unconstrained-tables-jbpm-${database.type}.sql" />
+			<fileset file="${internal.dir}/add-constraints-jbpm-${database.type}.sql" />
+		</concat>
+		<concat destfile="${create.dir}/recreate-tables-quartz-${database.type}-temp.sql">
+			<fileset file="${internal.dir}/drop-constraints-quartz-${database.type}.sql" />
+			<fileset file="${internal.dir}/drop-tables-quartz-${database.type}.sql" />
+			<fileset file="${internal.dir}/create-unconstrained-tables-quartz-${database.type}.sql" />
+			<fileset file="${internal.dir}/add-constraints-quartz-${database.type}.sql" />
+		</concat>
+ 		<concat destfile="${create.dir}/recreate-tables-${database.type}.sql">
+	  	    <fileset dir="${create.dir}"
+	  	         includes="recreate-tables-*-${database.type}-temp.sql" />
+	  	</concat>
+
+  		
+		<echo file="${create.dir}/recreate-tables-core-${database.type}.sql" message="${ddl.use.database}${line.separator}"/>
+		<concat destfile="${create.dir}/recreate-tables-core-${database.type}.sql" append="true">
+			<fileset file="${create.dir}/recreate-tables-core-${database.type}-temp.sql" />
+		</concat>
+		<delete file="${create.dir}/recreate-tables-core-${database.type}-temp.sql"/>
+	
+		<echo file="${create.dir}/recreate-tables-jbpm-${database.type}.sql" message="${ddl.use.database}${line.separator}"/>
+		<concat destfile="${create.dir}/recreate-tables-jbpm-${database.type}.sql" append="true" >
+			<fileset file="${create.dir}/recreate-tables-jbpm-${database.type}-temp.sql" />
+		</concat>
+		<delete file="${create.dir}/recreate-tables-jbpm-${database.type}-temp.sql"/>
+	
+		<echo file="${create.dir}/recreate-tables-quartz-${database.type}.sql" message="${ddl.use.database}${line.separator}"/>
+		<concat destfile="${create.dir}/recreate-tables-quartz-${database.type}.sql" append="true">
+			<fileset file="${create.dir}/recreate-tables-quartz-${database.type}-temp.sql" />
+		</concat>
+		<delete file="${create.dir}/recreate-tables-quartz-${database.type}-temp.sql"/>
+
+		<echo file="${create.dir}/create-tables-core-${database.type}.sql" message="${ddl.use.database}${line.separator}"/>
+		<concat destfile="${create.dir}/create-tables-core-${database.type}.sql" append="true">
+			<fileset file="${create.dir}/create-tables-core-${database.type}-temp.sql" />
+		</concat>
+		<delete file="${create.dir}/create-tables-core-${database.type}-temp.sql"/>
+	
+		<echo file="${create.dir}/create-tables-jbpm-${database.type}.sql" message="${ddl.use.database}${line.separator}"/>
+		<concat destfile="${create.dir}/create-tables-jbpm-${database.type}.sql" append="true">
+			<fileset file="${create.dir}/create-tables-jbpm-${database.type}-temp.sql" />
+		</concat>
+		<delete file="${create.dir}/create-tables-jbpm-${database.type}-temp.sql"/>
+	
+		<echo file="${create.dir}/create-tables-quartz-${database.type}.sql" message="${ddl.use.database}${line.separator}"/>
+		<concat destfile="${create.dir}/create-tables-quartz-${database.type}.sql" append="true">
+			<fileset file="${create.dir}/create-tables-quartz-${database.type}-temp.sql" />
+		</concat>
+		<delete file="${create.dir}/create-tables-quartz-${database.type}-temp.sql"/>
+	
+		<echo file="${create.dir}/create-database-${database.type}.sql" message="${ddl.create.database}${line.separator}"/>
+		<echo file="${create.dir}/create-database-${database.type}.sql" message="${ddl.use.database}${line.separator}" append="true"/>
+		<concat destfile="${create.dir}/create-database-${database.type}.sql" append="true">
+			<fileset file="${create.dir}/create-database-${database.type}-temp.sql" />
+		</concat>
+		<delete file="${create.dir}/create-database-${database.type}-temp.sql"/>
+    </target>
+
+	<!-- Generate SQL scripts used for creating SS tables and constraints
+		 for each supported database. These scripts are generated from the 
+		 Hibernate mapping files. -->
+	<target name="generate-all-create-scripts" depends="clean">
+		<antcall target="generate-create-tables-script-sqlserver" inheritAll="false"/>
+		<antcall target="generate-create-tables-script-mysql" inheritAll="false"/>
+		<antcall target="generate-create-tables-script-oracle" inheritAll="false"/>
+		<antcall target="generate-create-tables-script-postgresql" inheritAll="false"/>
+	</target>
+	
+	
+	<target name="generate-create-tables-script-mysql">
+		<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
+		<echo file="${basedir}/database.${user.name}.properties">database.type=mysql</echo>
+		<antcall target="generate-create-tables-script"/>
+		<delete file="${basedir}/database.${user.name}.properties" failonerror="false"/>
+		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
+	</target>
+	
+	<target name="generate-create-tables-script-oracle">
+		<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
+		<echo file="${basedir}/database.${user.name}.properties">database.type=oracle</echo>
+		<antcall target="generate-create-tables-script"/>
+		<delete file="${basedir}/database.${user.name}.properties" failonerror="false"/>
+		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
+	</target>
+	
+	<target name="generate-create-tables-script-postgresql">
+		<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
+		<echo file="${basedir}/database.${user.name}.properties">database.type=postgresql</echo>
+		<antcall target="generate-create-tables-script"/>
+		<delete file="${basedir}/database.${user.name}.properties" failonerror="false"/>
+		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
+	</target>
+			
+	<target name="generate-create-tables-script-sqlserver">
+		<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
+		<echo file="${basedir}/database.${user.name}.properties">database.type=sqlserver</echo>
+		<antcall target="generate-create-tables-script"/>
+		<delete file="${basedir}/database.${user.name}.properties" failonerror="false"/>
+		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
+	</target>
+	
+	<target name="execute-create-tables-script" depends="init-database-type"
+		description="Execute sql script that creates tables in sitescape database.">
+		<antcall target="execute-script">
+			<param name="sql.script" value="${basedir}/create/recreate-tables-${database.type}.sql"/>
+		</antcall>
+	</target>
+
+<!--
+	<target name="execute-create-unconstrained-script" depends="init-database-type"
+		description="Execute sql script that creates unconstrained tables in sitescape database.">
+		<antcall target="execute-script">
+			<param name="sql.script" value="${basedir}/create/create-unconstrained-tables-${database.type}.sql"/>
+		</antcall>
+	</target>
+-->	
+	<target name="execute-add-constraints-script" depends="init-database-type"
+		description="Execute sql script that adds constraints to tables in sitescape database.">
+		<antcall target="execute-script">
+			<param name="sql.script" value="${basedir}/create/add-constraints-${database.type}.sql"/>
+		</antcall>
+	</target>
+	
+	<target name="execute-drop-constraints-script" depends="init-database-type"
+		description="Execute sql script that drops constraints to tables in sitescape database.">
+		<antcall target="execute-script">
+			<param name="sql.script" value="${basedir}/create/drop-constraints-${database.type}.sql"/>
+		</antcall>
+	</target>
+	<!-- Only called by other targets (like subroutines) -->
+	<target name="execute-script" description="Execute a sql script.">
+		<property file="${project.dir}/tools/sql/jdbc-${database.type}.${user.name}.properties"/>
+		<property file="${project.dir}/tools/sql/jdbc-${database.type}.properties"/>
+		<sql driver="${jdbc.driver}"
+			url="${jdbc.url}"
+			userid="${jdbc.username}"
+			password="${jdbc.password}"
+			onerror="continue"
+			src="${sql.script}">
+			<classpath refid="project.classpath"/>
+		</sql>
+	</target>
+	
+	<target name="zip" >
+		<delete file="${c.project.dir}/${dist.dir}/${zip.file.name}" failonerror="false" />
+		<mkdir dir="${c.project.dir}/${dist.dir}" />
+		<zip destfile="${c.project.dir}/${dist.dir}/${zip.file.name}"
+			basedir="."
+			includes="create/*"
+		/>
+
+	</target>
+</project>
