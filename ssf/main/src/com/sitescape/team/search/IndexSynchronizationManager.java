@@ -246,4 +246,5 @@ public class IndexSynchronizationManager {
     		deletesCount = 0;
     	}
     }
+    
 }
