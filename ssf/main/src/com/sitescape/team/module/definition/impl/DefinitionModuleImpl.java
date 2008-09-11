@@ -389,7 +389,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				else
 					condition.addAttribute("definitionId", namedDef.getId());
 			}
-			List<Element> props = doc.getRootElement().selectNodes("//item[@name='subProcess']/properties/property[@name='definitionId']");
+			List<Element> props = doc.getRootElement().selectNodes("//item[@name='startProcess']/properties/property[@name='definitionId']");
 			for (Element prop:props) {
 				String entryId = prop.attributeValue("value", "");
 				Definition namedDef = definitionMap.get(entryId);
@@ -398,7 +398,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				else
 					prop.addAttribute("value", namedDef.getId());
 			}
-			props = doc.getRootElement().selectNodes("//property[@name='userGroupAccess']");
+			props = doc.getRootElement().selectNodes("//property[@name='userGroupAccess'] | //property[@name='userGroupNotification']");
 			for (Element prop:props) {
 				String entryIds = prop.attributeValue("value", "");
 				if (Validator.isNull(entryIds)) continue;
@@ -457,14 +457,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					definitionIds.add(entryId);
 				}
 			}
-			List<Element> props = outDoc.getRootElement().selectNodes("//item[@name='subProcess']/properties/property[@name='definitionId']");
+			List<Element> props = outDoc.getRootElement().selectNodes("//item[@name='startProcess']/properties/property[@name='definitionId']");
 			for (Element prop:props) {
 				String entryId = prop.attributeValue("value", "");
 				if (Validator.isNotNull(entryId)) {
 					definitionIds.add(entryId);
 				}
 			}
-			props = outDoc.getRootElement().selectNodes("//property[@name='userGroupAccess']");
+			props = outDoc.getRootElement().selectNodes("//property[@name='userGroupAccess'] | //property[@name='userGroupNotification']");
 			for (Element prop:props) {
 				String entryId = prop.attributeValue("value", "");
 				principalIds.addAll(LongIdUtil.getIdsAsLongSet(entryId));

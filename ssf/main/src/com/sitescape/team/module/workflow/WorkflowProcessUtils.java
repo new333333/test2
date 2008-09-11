@@ -1,25 +1,43 @@
 /**
- * The contents of this file are governed by the terms of your license
- * with SiteScape, Inc., which includes disclaimers of warranties and
- * limitations on liability. You may not use this file except in accordance
- * with the terms of that license. See the license for the specific language
- * governing your rights and limitations under the license.
- *
- * Copyright (c) 2007 SiteScape, Inc.
- *
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
+ * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
+ * http://www.opensource.org/licenses/cpal_1.0. The CPAL is based on the Mozilla Public License Version 1.1
+ * but Sections 14 and 15 have been added to cover use of software over a computer network and provide for
+ * limited attribution for the Original Developer. In addition, Exhibit A has been modified to be
+ * consistent with Exhibit B.
+ * 
+ * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND,
+ * either express or implied. See the CPAL for the specific language governing rights and limitations
+ * under the CPAL.
+ * 
+ * The Original Code is ICEcore. The Original Developer is SiteScape, Inc. All portions of the code
+ * written by SiteScape, Inc. are Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * 
+ * 
+ * Attribution Information
+ * Attribution Copyright Notice: Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * Attribution Phrase (not exceeding 10 words): [Powered by ICEcore]
+ * Attribution URL: [www.icecore.com]
+ * Graphic Image as provided in the Covered Code [web/docroot/images/pics/powered_by_icecore.png].
+ * Display of Attribution Information is required in Larger Works which are defined in the CPAL as a
+ * work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
+ * 
+ * 
+ * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
+ * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.module.workflow;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,39 +52,95 @@ import org.jbpm.graph.exe.Token;
 import org.jbpm.scheduler.exe.Timer;
 
 import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.WfAcl;
 import com.sitescape.team.domain.WorkflowResponse;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
-import com.sitescape.team.jobs.WorkflowProcess;
 import com.sitescape.team.module.definition.DefinitionUtils;
-import com.sitescape.team.module.license.LicenseChecker;
-import com.sitescape.team.module.report.ReportModule;
-import com.sitescape.team.module.workflow.jbpm.CalloutHelper;
 import com.sitescape.team.module.workflow.impl.WorkflowFactory;
+import com.sitescape.team.module.workflow.jbpm.CalloutHelper;
 import com.sitescape.team.module.workflow.support.WorkflowCondition;
+import com.sitescape.team.runas.RunasCallback;
+import com.sitescape.team.runas.RunasTemplate;
+import com.sitescape.team.util.AbstractAllModulesInjected;
 import com.sitescape.team.util.InvokeUtil;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.ObjectPropertyNotFoundException;
 import com.sitescape.team.util.ReflectHelper;
-import com.sitescape.team.util.SZoneConfig;
-import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 
-public class TransitionUtils {
-	protected static Log logger = LogFactory.getLog(TransitionUtils.class);
+public class WorkflowProcessUtils extends AbstractAllModulesInjected {
+	protected static Log logger = LogFactory.getLog(WorkflowProcessUtils.class);
 	protected static boolean debugEnabled=logger.isDebugEnabled();
 	protected static BusinessCalendar businessCalendar = new BusinessCalendar();
-	
-	protected static ReportModule getReportModule() {
-		return (ReportModule)SpringContextUtil.getBean("reportModule");
-	};
-	public static void endWorkflow(WorkflowSupport wEntry, WorkflowState state, boolean deleteIt) {
+	private static WorkflowProcessUtils instance; // A singleton instance
+	public WorkflowProcessUtils() {
+		if(instance != null)
+			throw new SingletonViolationException(WorkflowProcessUtils.class);
+		
+		instance = this;
+	}
+    public static WorkflowProcessUtils getInstance() {
+    	return instance;
+    }
+    public static WfNotify getNotification(Element notifyElement, WorkflowSupport wfEntry) {
+    	List<Element> props;
+    	String name, value;
+    	props = notifyElement.selectNodes("./properties/property");
+    	if ((props == null) || props.isEmpty()) return null;
+    	WfNotify n = new WfNotify();
+    	Set<Long>ids = new HashSet();
+    	DefinableEntity entity = (DefinableEntity)wfEntry;
+    	for (Element prop:props) {
+    		name = prop.attributeValue("name","");
+    		value = prop.attributeValue("value","");
+    		if ("entryCreator".equals(name) &&  GetterUtil.getBoolean(value, false)) {
+    			ids.add(wfEntry.getOwnerId());
+ 	    	} else if ("team".equals(name) &&  GetterUtil.getBoolean(value, false)) {
+				ids.addAll(entity.getParentBinder().getTeamMemberIds());
+	    	} else if ("subjText".equals(name)) {
+	    		n.subject = value;
+	    	} else if ("appendTitle".equals(name)) {
+	    		n.appendTitle = GetterUtil.getBoolean(value, false);
+	    	} else if ("bodyText".equals(name)) {
+	    		n.body = value;
+	    	} else if ("appendBody".equals(name)) {
+	    		n.appendBody = GetterUtil.getBoolean(value, false);
+	    	} else if ("userGroupNotification".equals(name)) {
+	    		ids.addAll(LongIdUtil.getIdsAsLongSet(value));
+	    	} else if ("condition".equals(name)) {
+	    		if (entity.getEntryDef() != null) {
+	    			List<Element> userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
+	    					entity.getEntryDef().getId() + "']");
+	    			if (userLists != null && !userLists.isEmpty()) {
+	    				for (Element element:userLists) {
+	    					String userListName = element.attributeValue("elementName"); //custom attribute name
+	    					if (Validator.isNull(userListName)) continue;
+	    					CustomAttribute attr = entity.getCustomAttribute(userListName); 
+	    					if (attr != null) {
+	    						//comma separated value
+	    						ids.addAll(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
+	    					}
+	    				}
+	    			}
+	    		}
+	    	}
+    	}
+    	n.users = getUsers(ids);
+    	return n;    	
+    }
+
+ 	public static void endWorkflow(WorkflowSupport wEntry, WorkflowState state, boolean deleteIt) {
 		JbpmContext context=WorkflowFactory.getContext();
 		try {
 			Token current = context.loadToken(state.getTokenId().longValue());
@@ -83,18 +157,18 @@ public class TransitionUtils {
 					Token child = (Token)iter.next();
 					WorkflowState w = wEntry.getWorkflowState(new Long(child.getId()));
 					if (w != null) {
-						getReportModule().addWorkflowStateHistory(w, endit, true);
+						getInstance().getReportModule().addWorkflowStateHistory(w, endit, true);
 						wEntry.removeWorkflowState(w);
 					}
 				}
 			}
 			//log end
-			getReportModule().addWorkflowStateHistory(state, endit, true);
+			getInstance().getReportModule().addWorkflowStateHistory(state, endit, true);
 			wEntry.setWorkflowChange(endit);
 			if (!current.isRoot()) {
 				wEntry.removeWorkflowState(state);
 				//check all other threads
-				TransitionUtils.processConditions(wEntry, current);
+				WorkflowProcessUtils.processConditions(wEntry, current);
 			} else if (deleteIt) {
 				wEntry.removeWorkflowState(state);
 				context.getGraphSession().deleteProcessInstance(current.getProcessInstance());
@@ -189,48 +263,6 @@ public class TransitionUtils {
 		if (conditions == null) conditions = new ArrayList();
 		return conditions;
     }    
-    /**
-     * Return the set of states that this state can transition to
-     * @param wfDef
-     * @param stateName
-     * @return transition to states
-     */
-    public static Set<String> getAllTransitions(Definition wfDef, String stateName) {
-		Set transitionData = new HashSet();
-		Document wfDoc = wfDef.getDefinition();
-		//Find the current state in the definition
-		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", stateName);
-		if (stateEle != null) {
-			//Build a list of all transitions for this state
-			List<Element> transitions = stateEle.selectNodes("./item[@name='transitions']/item[@type='transition']");
-			if (transitions != null) {
-				for (Element transitionEle: transitions) {
-					String toStateValue = DefinitionUtils.getPropertyValue(transitionEle, "toState");
-					if (Validator.isNotNull(toStateValue)) {
-							transitionData.add(toStateValue);
-					}
-				}
-			}
-		}
-		return transitionData;
-    } 
-	public static void setTransition(Definition wfDef, String stateName, String toStateName, String newState) {
-		Document wfDoc = wfDef.getDefinition();
-		if (newState == null) newState = "";
-		//Find the current state in the definition
-		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", stateName);
-		if (stateEle != null) {
-			//Build a list of all transitions for this state
-			List<Element> transitions = stateEle.selectNodes("./item[@name='transitions']/item[@type='transition']/properties/property[@name='toState' and @value='"+toStateName+"']");
-			if (transitions != null) {
-				for (Element transitionEle: transitions) {
-					transitionEle.addAttribute("value", newState);
-				}
-			}
-		}
-		wfDef.setDefinition(wfDoc);
-	}
-    
     public static Set<String> getQuestionNames(Definition wfDef, String stateName) {
     	Set<String> qNames = new HashSet();
     	Document wfDoc = wfDef.getDefinition();
@@ -365,7 +397,7 @@ public class TransitionUtils {
 					//	make sure state hasn't been removed as the result of another thread
 					if (t.hasEnded() || (ws.getOwner() == null)) continue;
 					ExecutionContext ctx = new ExecutionContext(t);
-					String toState =TransitionUtils.processConditions(ctx, entry, ws, isModify, isReply); 
+					String toState =WorkflowProcessUtils.processConditions(ctx, entry, ws, isModify, isReply); 
 					if (Validator.isNotNull(toState)) {
 						ctx.leaveNode(ws.getState() + "." + toState);
 						context.save(t);
@@ -707,6 +739,130 @@ public class TransitionUtils {
 			c.add(o.toString());
 		}
 		return c;
+	}
+	public static WfAcl getStateAcl(Definition wfDef, DefinableEntity entity, String stateName, WfAcl.AccessType type) {
+		Document wfDoc = wfDef.getDefinition();
+		WfAcl acl = null;
+		//Find the current state in the definition
+		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", stateName);
+		if (stateEle != null) {
+			String nodeString=null;
+			if (WfAcl.AccessType.read.equals(type)) {
+				nodeString = "item[@name='readAccess']";
+			} else if (WfAcl.AccessType.write.equals(type)) {  
+				nodeString = "item[@name='modifyAccess']";
+			} else if (WfAcl.AccessType.delete.equals(type)) {
+				nodeString = "item[@name='deleteAccess']";
+			} else if (WfAcl.AccessType.transitionOut.equals(type)) {
+				nodeString = "item[@name='transitionOutAccess']";
+			} else if (WfAcl.AccessType.transitionIn.equals(type)) {
+				nodeString = "item[@name='transitionInAccess']";
+			} 
+			if (nodeString != null) {
+				acl = getAcl((Element)stateEle.selectSingleNode("./item[@name='accessControls']/" + nodeString), entity, type);
+			}
+			if (acl == null) {
+				//check global settings
+				acl = getAcl((Element)wfDoc.getRootElement().selectSingleNode("./item[@name='workflowProcess']/item[@name='accessControls']/" + nodeString), entity, type);
+			}
+			if (acl != null) return acl;
+		} 
+		acl = new WfAcl(type);
+		acl.setUseDefault(true);
+		return acl;
+	}
+
+	private static WfAcl getAcl(Element aclElement, DefinableEntity entity, WfAcl.AccessType type) {
+		if (aclElement == null) return null;
+		List<Element>props = aclElement.selectNodes("./properties/property");
+		String name, value;
+		if ((props == null) || props.isEmpty()) return null;
+		WfAcl result = new WfAcl(type);
+		for (Element prop:props) {
+			name = prop.attributeValue("name","");
+			value = prop.attributeValue("value","");
+			if ("folderDefault".equals(name)) {
+				result.setUseDefault(GetterUtil.getBoolean(value, false));
+			} else if ("userGroupAccess".equals(name)) {
+				result.addPrincipalIds(LongIdUtil.getIdsAsLongSet(value));
+			} else if ("team".equals(name) &&  GetterUtil.getBoolean(value, false)) {
+				result.addPrincipalId(ObjectKeys.TEAM_MEMBER_ID);
+			} else if ("condition".equals(name)) {
+				if (entity.getEntryDef() != null) {
+					List<Element> userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
+							entity.getEntryDef().getId() + "']");
+					if (userLists != null && !userLists.isEmpty()) {
+						for (Element element:userLists) {
+							String userListName = element.attributeValue("elementName"); //custom attribute name
+							if (Validator.isNull(userListName)) continue;
+							CustomAttribute attr = entity.getCustomAttribute(userListName); 
+							if (attr != null) {
+								//comma separated value
+								result.addPrincipalIds(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
+							}
+						}
+					}
+				}
+			} else if ("entryCreator".equals(name) && GetterUtil.getBoolean(value, false)) {
+				//	add special owner to allow list
+				result.addPrincipalId(ObjectKeys.OWNER_USER_ID);
+			}
+		}
+		//see if nothing was actually set
+		if (result.getPrincipalIds().isEmpty() && !result.isUseDefault()) return null;
+		return result;
+	}
+	//make sure have rights to read principals
+	protected static Set<User> getUsers(final Set<Long>ids) {
+		return (Set<User>)RunasTemplate.runasAdmin(new RunasCallback() {
+			public Object doAs() {
+				 return getInstance().getProfileModule().getUsersFromPrincipals(ids);				
+			}
+		}, RequestContextHolder.getRequestContext().getZoneName());
+
+	}
+	public static Long getRunAsUser(Element item, WorkflowSupport wfEntry, WorkflowState currentWs) {
+		Long runAsId=null;
+		String ctxType = DefinitionUtils.getPropertyValue(item, "runAs");
+		if ("entryowner".equals(ctxType)) {
+			runAsId = wfEntry.getOwnerId();
+		} else if ("binderowner".equals(ctxType)) {
+			runAsId = currentWs.getOwner().getEntity().getParentBinder().getOwnerId();						
+		}
+		if (runAsId != null) {
+			Set ids = new HashSet();
+			ids.add(runAsId);
+			Set<User> users = getUsers(ids);
+			if (users.isEmpty()) runAsId = null;
+			else runAsId = users.iterator().next().getId();
+		}
+		//User may not exist anymore- don't want workflow to fail
+		if (runAsId == null) runAsId=RequestContextHolder.getRequestContext().getUserId();
+		return runAsId;
+
+	}
+	protected static class WfNotify {
+		private String subject="";
+		private String body="";
+		private boolean appendTitle=false;
+		private boolean appendBody=false;
+		private Set<User> users;
+		
+		public String getSubject() {
+			return subject;
+		}
+		public String getBody() {
+			return body;
+		}
+		public boolean isAppendTitle() {
+			return appendTitle;
+		}
+		public boolean isAppendBody() {
+			return appendBody;
+		}
+		public Set<User>getUsers() {
+			return users;
+		}
 	}
 
 }

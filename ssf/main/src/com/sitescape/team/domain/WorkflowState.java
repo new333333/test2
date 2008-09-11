@@ -29,14 +29,13 @@
 package com.sitescape.team.domain;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.shared.XmlUtils;
+import com.sitescape.team.module.workflow.WorkflowProcessUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
@@ -179,7 +178,7 @@ public class WorkflowState extends ZonedObject {
     	if (wfAcls == null) wfAcls = new HashMap();
     	else acl = (WfAcl)wfAcls.get(type);
     	if (acl != null) return acl;
-    	acl = WorkflowUtils.getStateAcl(definition, getOwner().getEntity(), state, type);
+    	acl = WorkflowProcessUtils.getStateAcl(definition, getOwner().getEntity(), state, type);
     	wfAcls.put(type, acl);
     	return acl;
     }

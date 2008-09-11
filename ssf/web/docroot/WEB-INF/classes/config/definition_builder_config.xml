@@ -2747,6 +2747,10 @@
 			<property name="mins" caption="__transition_on_mins" type="text"
 				characterMask="^[0-9]*$" />
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
+			<property name="runAs" caption="__workflow_action_runas" type="selectbox">
+				<option name="entryowner" caption="__workflow_action_runas_entryowner"/>
+				<option name="binderowner" caption="__workflow_action_runas_binderowner"/>
+			</property>
 		</properties>
 		<options>
 			<option name="variable" caption="__workflow_variable_set_on_transition" />
@@ -2872,6 +2876,7 @@
 			<option name="variable" caption="__workflow_variable_set" />
 			<option name="startParallelThread" />
 			<option name="stopParallelThread" />
+			<option name="startProcess" />
 			<option name="notifications" />
 			<option name="moveEntry" />
 			<option name="copyEntry" />
@@ -2887,18 +2892,13 @@
 			<option name="variable" caption="__workflow_variable_set" />
 			<option name="startParallelThread" />
 			<option name="stopParallelThread" />
+			<option name="startProcess" />
 			<option name="notifications" />
 			<option name="moveEntry" />
 			<option name="copyEntry" />
 			<option name="workflowAction"/>
 			<option name="workflowRemoteApp"/>
 		</options>
-	</item>
-	<!-- not implemented yet -->
-	<item name="subProcess" caption="__subProcess" >
-		<properties>
-			<property name="definitionId" caption="__subProcess_name" type="subProcess"/>
-		</properties>
 	</item>
 	<item name="notifications" caption="__notifications"
 		  multipleAllowedInParent="false">
@@ -2929,6 +2929,12 @@
 		<properties>
 			<property name="name" caption="__parallelStateName" type="itemSelect" path="//item[@name='parallelThread']" />
 		</properties>
+	</item>
+	<item name="startProcess" caption="__startProcess" >
+		<properties>
+			<property name="definitionId" caption="__process" type="subProcess" />
+		</properties>
+		<help>ihelp.workflow.process</help>
 	</item>
 	
 	<item name="waitForParallelThread" caption="__waitForParallelThread" type="transition" >

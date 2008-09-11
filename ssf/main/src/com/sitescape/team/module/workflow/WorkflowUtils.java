@@ -27,29 +27,24 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.module.workflow;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.domain.CommaSeparatedValue;
 import com.sitescape.team.domain.Definition;
-import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.WfAcl;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.LongIdUtil;
-import com.sitescape.team.web.WebKeys;
-import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 
 
 /**
- * @author hurley
+ * Helper to parse workflow definitions
  *
  */
 public class WorkflowUtils {
@@ -82,7 +77,49 @@ public class WorkflowUtils {
 		return transitionData;
     }
 
-    public static Map<String, Map> getQuestions(Definition wfDef, String stateName) {
+    /**
+     * Return the set of states that this state can transition to
+     * @param wfDef
+     * @param stateName
+     * @return transition to states
+     */
+    public static Set<String> getAllTransitions(Definition wfDef, String stateName) {
+		Set transitionData = new HashSet();
+		Document wfDoc = wfDef.getDefinition();
+		//Find the current state in the definition
+		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", stateName);
+		if (stateEle != null) {
+			//Build a list of all transitions for this state
+			List<Element> transitions = stateEle.selectNodes("./item[@name='transitions']/item[@type='transition']");
+			if (transitions != null) {
+				for (Element transitionEle: transitions) {
+					String toStateValue = DefinitionUtils.getPropertyValue(transitionEle, "toState");
+					if (Validator.isNotNull(toStateValue)) {
+							transitionData.add(toStateValue);
+					}
+				}
+			}
+		}
+		return transitionData;
+    } 
+	public static void setTransition(Definition wfDef, String stateName, String toStateName, String newState) {
+		Document wfDoc = wfDef.getDefinition();
+		if (newState == null) newState = "";
+		//Find the current state in the definition
+		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", stateName);
+		if (stateEle != null) {
+			//Build a list of all transitions for this state
+			List<Element> transitions = stateEle.selectNodes("./item[@name='transitions']/item[@type='transition']/properties/property[@name='toState' and @value='"+toStateName+"']");
+			if (transitions != null) {
+				for (Element transitionEle: transitions) {
+					transitionEle.addAttribute("value", newState);
+				}
+			}
+		}
+		wfDef.setDefinition(wfDoc);
+	}
+    
+   public static Map<String, Map> getQuestions(Definition wfDef, String stateName) {
 		Map questionsData = new LinkedHashMap();
 		Document wfDoc = wfDef.getDefinition();
 		//Find the current state in the definition
@@ -137,7 +174,7 @@ public class WorkflowUtils {
     	//Find the actual caption of the thread
     	if (wfDef != null) {
     		Document wfDefDoc = wfDef.getDefinition();
-        	Element threadProperty = (Element) wfDefDoc.getRootElement().selectSingleNode("//item[@name='parallelThread']/properties/property[@name='name' and @value='"+thread+"']");
+        	Element threadProperty = (Element) wfDefDoc.getRootElement().selectSingleNode("//item[@name='parallelThread' or @name='parallelProcess']/properties/property[@name='name' and @value='"+thread+"']");
         	if (threadProperty != null) {
         		Element threadPropertyCaption = (Element) threadProperty.getParent().selectSingleNode("./property[@name='caption']");
         		if (threadPropertyCaption != null) threadCaption = threadPropertyCaption.attributeValue("value", "");
@@ -152,78 +189,5 @@ public class WorkflowUtils {
     }
 
 
-    public static WfAcl getStateAcl(Definition wfDef, DefinableEntity entity, String stateName, WfAcl.AccessType type) {
-    	Document wfDoc = wfDef.getDefinition();
-    	WfAcl acl = null;
-		//Find the current state in the definition
-		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", stateName);
-		if (stateEle != null) {
-			String nodeString=null;
-			if (WfAcl.AccessType.read.equals(type)) {
-				nodeString = "item[@name='readAccess']";
-			} else if (WfAcl.AccessType.write.equals(type)) {  
-				nodeString = "item[@name='modifyAccess']";
-			} else if (WfAcl.AccessType.delete.equals(type)) {
-				nodeString = "item[@name='deleteAccess']";
-			} else if (WfAcl.AccessType.transitionOut.equals(type)) {
-				nodeString = "item[@name='transitionOutAccess']";
-			} else if (WfAcl.AccessType.transitionIn.equals(type)) {
-				nodeString = "item[@name='transitionInAccess']";
-			} 
-			if (nodeString != null) {
-				acl = getAcl((Element)stateEle.selectSingleNode("./item[@name='accessControls']/" + nodeString), entity, type);
-			}
-			if (acl == null) {
-				//check global settings
-				acl = getAcl((Element)wfDoc.getRootElement().selectSingleNode("./item[@name='workflowProcess']/item[@name='accessControls']/" + nodeString), entity, type);
-			}
-			if (acl != null) return acl;
-		} 
-		acl = new WfAcl(type);
-		acl.setUseDefault(true);
-		return acl;
-    }
-
-    private static WfAcl getAcl(Element aclElement, DefinableEntity entity, WfAcl.AccessType type) {
-     	if (aclElement == null) return null;
-		List<Element>props = aclElement.selectNodes("./properties/property");
-    	String name, value;
-		if ((props == null) || props.isEmpty()) return null;
-	   	WfAcl result = new WfAcl(type);
-		for (Element prop:props) {
-			name = prop.attributeValue("name","");
-			value = prop.attributeValue("value","");
-			if ("folderDefault".equals(name)) {
-				result.setUseDefault(GetterUtil.getBoolean(value, false));
-			} else if ("userGroupAccess".equals(name)) {
-				result.addPrincipalIds(LongIdUtil.getIdsAsLongSet(value));
-			} else if ("team".equals(name) &&  GetterUtil.getBoolean(value, false)) {
-    			result.addPrincipalId(ObjectKeys.TEAM_MEMBER_ID);
-			} else if ("condition".equals(name)) {
-		    	if (entity.getEntryDef() != null) {
-		    		List<Element> userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
-		    			entity.getEntryDef().getId() + "']");
-		    		if (userLists != null && !userLists.isEmpty()) {
-		    			for (Element element:userLists) {
-		    				String userListName = element.attributeValue("elementName"); //custom attribute name
-		    				if (Validator.isNull(userListName)) continue;
-		    				CustomAttribute attr = entity.getCustomAttribute(userListName); 
-		    				if (attr != null) {
-		    					//comma separated value
-		    					result.addPrincipalIds(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
-		    				}
-		    			}
-		    		}
-		    	}
-    		} else if ("entryCreator".equals(name) && GetterUtil.getBoolean(value, false)) {
-    			//	add special owner to allow list
-    			result.addPrincipalId(ObjectKeys.OWNER_USER_ID);
-    		}
-		}
-		//see if nothing was actually set
-		if (result.getPrincipalIds().isEmpty() && !result.isUseDefault()) return null;
-    	return result;
-    }
- 
  
 }

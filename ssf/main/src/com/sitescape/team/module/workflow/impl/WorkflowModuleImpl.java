@@ -1,16 +1,34 @@
 /**
- * The contents of this file are governed by the terms of your license
- * with SiteScape, Inc., which includes disclaimers of warranties and
- * limitations on liability. You may not use this file except in accordance
- * with the terms of that license. See the license for the specific language
- * governing your rights and limitations under the license.
- *
- * Copyright (c) 2007 SiteScape, Inc.
- *
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
+ * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
+ * http://www.opensource.org/licenses/cpal_1.0. The CPAL is based on the Mozilla Public License Version 1.1
+ * but Sections 14 and 15 have been added to cover use of software over a computer network and provide for
+ * limited attribution for the Original Developer. In addition, Exhibit A has been modified to be
+ * consistent with Exhibit B.
+ * 
+ * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND,
+ * either express or implied. See the CPAL for the specific language governing rights and limitations
+ * under the CPAL.
+ * 
+ * The Original Code is ICEcore. The Original Developer is SiteScape, Inc. All portions of the code
+ * written by SiteScape, Inc. are Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * 
+ * 
+ * Attribution Information
+ * Attribution Copyright Notice: Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * Attribution Phrase (not exceeding 10 words): [Powered by ICEcore]
+ * Attribution URL: [www.icecore.com]
+ * Graphic Image as provided in the Covered Code [web/docroot/images/pics/powered_by_icecore.png].
+ * Display of Attribution Information is required in Larger Works which are defined in the CPAL as a
+ * work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
+ * 
+ * 
+ * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
+ * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.module.workflow.impl;
 
-import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,7 +36,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Calendar;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -48,7 +65,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.sitescape.team.jobs.ZoneSchedule;
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -64,12 +80,15 @@ import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.jobs.WorkflowTimeout;
+import com.sitescape.team.jobs.ZoneSchedule;
 import com.sitescape.team.module.binder.processor.EntryProcessor;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.workflow.NotificationUtils;
-import com.sitescape.team.module.workflow.TransitionUtils;
+import com.sitescape.team.module.workflow.WorkflowProcessUtils;
+import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.module.workflow.WorkflowModule;
+import com.sitescape.team.runas.RunasCallback;
+import com.sitescape.team.runas.RunasTemplate;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.util.Validator;
@@ -224,7 +243,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			if (wf != null) {
 				String endState = DefinitionUtils.getPropertyValue(wf, "endState");
 				if (Validator.isNotNull(endState)) {
-					if (!TransitionUtils.getAllTransitions(def, endState).isEmpty()) {
+					if (!WorkflowUtils.getAllTransitions(def, endState).isEmpty()) {
 						throw new DefinitionInvalidException("errorcode.transitions.notallowed.endstate");
 					}
 				}
@@ -365,7 +384,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		        for (Transition in:incoming) {
 		        	Node from = in.getFrom();
 		        	if (from != null) {
-			        	TransitionUtils.setTransition(def, from.getName(), delNode.getName(), "");
+		        		WorkflowUtils.setTransition(def, from.getName(), delNode.getName(), "");
 		        		from.removeLeavingTransition(in);
 		        	}
 		        	context.getSession().delete(in);
@@ -396,7 +415,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    		else oldTransitions = new HashMap(oldTransitions);
 			
 	    		//Get the list of manual transitions from the workflow definition
-	    		Set allTransitions = TransitionUtils.getAllTransitions(def, fromNode.getName());
+	    		Set allTransitions = WorkflowUtils.getAllTransitions(def, fromNode.getName());
 	    		for (Iterator iter=allTransitions.iterator(); iter.hasNext();) {
 	    			String toNodeName = (String)iter.next();
 	    			String tName = stateName + "." + toNodeName;					
@@ -412,7 +431,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    					fromNode.addLeavingTransition(t);
 	    				} else {
 	    					//update definition
-	    					TransitionUtils.setTransition(def, fromNode.getName(), toNodeName, "");
+	    					WorkflowUtils.setTransition(def, fromNode.getName(), toNodeName, "");
 	    				}
 	    				
 	    			}
@@ -544,7 +563,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		String startState=null;
 		if (options != null) startState = (String)options.get(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE);
 		String initialState = startState;
-		if (Validator.isNull(initialState)) initialState = TransitionUtils.getInitialState(workflowDef);
+		if (Validator.isNull(initialState)) initialState = WorkflowProcessUtils.getInitialState(workflowDef);
 		if (!Validator.isNull(initialState)) {
 			//Now start the workflow at the desired initial state
 			JbpmContext context=WorkflowFactory.getContext();
@@ -596,7 +615,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 
 	public void deleteEntryWorkflow(WorkflowSupport wEntry, WorkflowState state) {
 	    try {
-	    	TransitionUtils.endWorkflow(wEntry, state, true);
+	    	WorkflowProcessUtils.endWorkflow(wEntry, state, true);
 	    } catch (Exception ex) {
 	        throw convertJbpmException(ex);
 	    } 
@@ -608,7 +627,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			if (def.equals(state.getDefinition()) && Validator.isNull(state.getThreadName())) {
 				//have the root
 				try {
-			    	TransitionUtils.endWorkflow(wEntry, state, true);
+			    	WorkflowProcessUtils.endWorkflow(wEntry, state, true);
 			    } catch (Exception ex) {
 			        logger.error("Error deleting workflow", ex);
 			    } 
@@ -621,7 +640,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			if (state.getOwner() == null) continue; //already removed
 			if (def.equals(state.getDefinition())) {
 				try {
-			    	TransitionUtils.endWorkflow(wEntry, state, true);
+			    	WorkflowProcessUtils.endWorkflow(wEntry, state, true);
 			    } catch (Exception ex) {
 			    	wEntry.removeWorkflowState(state);
 			        logger.error("Error deleting workflow", ex);
@@ -660,7 +679,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	 * Signal a transition.  The caller is responsible for updating the index.
 	 */
 	public void modifyWorkflowState(WorkflowSupport entry, WorkflowState state, String toState) {
-		TransitionUtils.processManualTransition(entry, state, toState);
+		WorkflowProcessUtils.processManualTransition(entry, state, toState);
 	}
 	/**
 	 * Set some workflow variables and continue processing.
@@ -726,9 +745,10 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	        			if (timer == null) return null;
 	        			Token token = timer.getToken();
 	        			Entry entry = null;
+	        			WorkflowState ws = null;
 	        			if (token != null) {
 	        				//	token id is id of workflowState
-	        				WorkflowState ws = (WorkflowState)getCoreDao().load(WorkflowState.class, new Long(token.getId()));
+	        				ws = (WorkflowState)getCoreDao().load(WorkflowState.class, new Long(token.getId()));
 	        				entry = (Entry)ws.getOwner().getEntity();
 	        				if (entry.isDeleted() || entry.getParentBinder().isDeleted()) {
 	        					schedulerSession.deleteTimer(timer);
@@ -750,8 +770,27 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 								processor.indexEntry(entry);
 							}
 						} else {
-							// execute
-							timer.execute();
+							Long runAsId=RequestContextHolder.getRequestContext().getUserId();
+							//determine who we should run as
+							if (entry != null && ws != null) {
+								Document wfDoc = ws.getDefinition().getDefinition();
+								//Find the current state in the definition
+								Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", ws.getState());
+								if (stateEle != null) {
+									List<Element> transitions = stateEle.selectNodes("./item[@name='transitions']/item[@name='transitionOnElapsedTime']");
+									if (transitions != null && !transitions.isEmpty()) {
+										Element transitionEle = transitions.get(0);
+										runAsId = WorkflowProcessUtils.getRunAsUser(transitionEle, (WorkflowSupport)entry, ws);
+									}
+								}
+							}
+							final Timer runTimer = timer;
+							RunasTemplate.runas(new RunasCallback() {
+								public Object doAs() {
+									runTimer.execute();
+									return null;
+								}
+							}, zoneId, runAsId);
 							//re-index for state changes
 							if (entry != null) {
 								entry.incrLogVersion();
@@ -806,7 +845,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	 * @param entry
 	 */
 	public boolean modifyWorkflowStateOnUpdate(WorkflowSupport entry) {
-		return TransitionUtils.processConditions(entry, true, false);
+		return WorkflowProcessUtils.processConditions(entry, true, false);
 	}
 	/**
 	 * See if any conditions have been met for a transition to a new state.
@@ -815,7 +854,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	 * @param entry
 	 */
 	public boolean modifyWorkflowStateOnResponse(WorkflowSupport entry) {
-		return TransitionUtils.processConditions(entry, false, false);
+		return WorkflowProcessUtils.processConditions(entry, false, false);
 	}
 	/**
 	 * See if reply will trigger a transition to a new state.
@@ -823,12 +862,12 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	 * @param entry
 	 */
 	public boolean modifyWorkflowStateOnReply(WorkflowSupport entry) {
-		return TransitionUtils.processConditions(entry, false, true);	
+		return WorkflowProcessUtils.processConditions(entry, false, true);	
 	}	
 
 	//see if anything to do after some external event
     public void  modifyWorkflowStateOnChange(WorkflowSupport wfEntry) {
-		boolean changed = TransitionUtils.processConditions(wfEntry, false, false);
+		boolean changed = WorkflowProcessUtils.processConditions(wfEntry, false, false);
 		if (changed) {
 			Entry entry = (Entry)wfEntry;
 			EntryProcessor processor = loadEntryProcessor(entry.getParentBinder());
