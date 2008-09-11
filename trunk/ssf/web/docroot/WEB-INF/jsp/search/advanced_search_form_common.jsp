@@ -50,10 +50,11 @@
 	);
 </script>
 
-<c:if test="${empty ssFolderEntries}">
+<c:choose>
+<c:when test="${empty ssTotalRecords}">
 	<div id="ss_searchForm_container" class="tundra">
-</c:if>	
-<c:if test="${!empty ssFolderEntries}">
+</c:when>	
+<c:otherwise>
     <div id="ss_searchForm_changeBox">
 		<%@ include file="/WEB-INF/jsp/search/filterSummary.jsp" %>
         <p style="text-align: center;">
@@ -61,7 +62,8 @@
         </p>
     </div>
 	<div id="ss_searchForm_container" class="tundra" style="display:none;">
-</c:if>	
+</c:otherwise>
+</c:choose>	
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">
 				<c:if test="${!filterDefinition}">
@@ -322,6 +324,7 @@
 			</div>
 			</c:if>
 		</div>
+		
 		<c:if test="${! empty ss_filterMap.additionalFilters}">
 		<div id="ss_searchForm_filterSummary" style="visibility:visible; display: block;">
 			<!-- Summary of user filters -->
