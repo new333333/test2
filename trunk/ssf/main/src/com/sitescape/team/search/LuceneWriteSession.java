@@ -28,39 +28,19 @@
  */
 package com.sitescape.team.search;
 
-import java.util.Collection;
+import java.util.ArrayList;
 
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 
 public interface LuceneWriteSession extends LuceneSession {
-	/**
-	 * Add a document.
-	 * 
-	 * @param doc
-	 * @throws LuceneException
-	 */
-	public void addDocument(Document doc) throws LuceneException;
-
 	/**
 	 * Add a collection of documents.
 	 * 
 	 * @param doc
 	 * @throws LuceneException
 	 */
-	public void addDocuments(Collection docs) throws LuceneException;
-
-	/**
-	 * Update the field in the document identified by the uid. 
-	 * 
-	 * @param uid
-	 * @param fieldname
-	 * @param fieldvalue
-	 * @throws LuceneException
-	 */
-	//public void updateDocument(String uid, String fieldname, String fieldvalue)
-	//		throws LuceneException;
+	public void addDocuments(ArrayList docs) throws LuceneException;
 
 	/**
 	 * Update all documents matching the query.
@@ -74,14 +54,6 @@ public interface LuceneWriteSession extends LuceneSession {
 			throws LuceneException;
 	
 	/**
-	 * Delete the document identified by the uid. 
-	 * 
-	 * @param uid
-	 * @throws LuceneException
-	 */
-	public void deleteDocument(String uid) throws LuceneException;
-
-	/**
 	 * Delete all documents matching the term.
 	 * 
 	 * @param term
@@ -89,6 +61,19 @@ public interface LuceneWriteSession extends LuceneSession {
 	 */
 	public void deleteDocuments(Term term) throws LuceneException;
 
+	/**
+	 * Add and/or delete a collection of documents.
+	 * The collection contains two types of objects - <code>org.apache.lucene.document.Document</code> 
+	 * to add a document, and <code>org.apache.lucene.index.Term</code> to delete 
+	 * the documents containing the term. 
+	 * Essentially, this is an optimized form of {@link #addDocuments(ArrayList)} and
+	 * {@link #deleteDocuments(Term)} combined in a single method.
+	 * 
+	 * @param docsToAddOrDelete
+	 * @throws LuceneException
+	 */
+	public void addDeleteDocuments(ArrayList docsToAddOrDelete) throws LuceneException;
+	
 	/**
 	 * Force the <code>LuceneSession</code> to flush.
 	 * <p>

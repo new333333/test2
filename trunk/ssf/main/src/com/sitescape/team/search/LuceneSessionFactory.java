@@ -64,6 +64,13 @@ public interface LuceneSessionFactory {
      */
     public LuceneWriteSession openWriteSession(String[] nodeIds) throws LuceneException;
     
+    /**
+     * Return a list of nodes associated with the factory if the factory supports
+     * high availability (HA) based on a cluster of nodes.  
+     * Otherwise return <code>null</code>.
+     * 
+     * @return
+     */
     public List<Node> getNodes();
     
     /**

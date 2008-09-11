@@ -46,15 +46,14 @@ import org.apache.lucene.search.Sort;
  */
 
 public interface SsfIndexInterface extends java.rmi.Remote {
-	public void addDocument(String indexname, Document document)
-			throws RemoteException;
-
-	public void deleteDocument(String indexname, String uid)
-			throws RemoteException;
+	public void addDocuments(String indexname, ArrayList documents)
+	throws RemoteException;
 
 	public void deleteDocuments(String indexname, Term term)
 			throws RemoteException;
 
+	public void addDeleteDocuments(String indexname, ArrayList docsToAddOrDelete) throws RemoteException;
+	
 	public void commit(String indexname) throws RemoteException;
 
 	public void stop(String indexname) throws RemoteException;
