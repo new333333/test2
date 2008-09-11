@@ -3534,11 +3534,14 @@ div.ss_searchContainer #ss_content {
 }
 
 #ss_searchForm_container, #ss_surveyForm_container {margin:0px; padding:0px; width:100%;}
-#ss_searchForm, #ss_surveyForm {
+#ss_searchForm, #ss_surveyForm, #ss_searchForm_changeBox {
 	background: #e8eff7 url(<html:imagesPath/>pics/left_border.gif) repeat-y top left;
-	padding:6px;
+	padding: 6px 6px 2px 6px;
 	margin:0px;
 	border-bottom:1px solid #afc8e3;
+}
+#DMGTEST {
+    background-color: #e8eff7;
 }
 div.ss_searchFormFooter {
     background-color: #e8eff7;
@@ -3774,8 +3777,11 @@ a.ss_button {
 	padding: 0px 6px 0px 12px;
 }
 #ss_filterSummary_content {float:left;}
-#ss_filterSummary_content p {margin:6px;}
-#ss_filterSummary_content h4 {margin:6px 0px 0px 6px;}
+#ss_filterSummary_content p, #ss_searchForm_changeBox p {
+  margin-top: 1px;
+  margin-bottom: 2px;
+}
+#ss_filterSummary_content h4 {margin:0px 0px 0px 33px;}
 #ss_filterSummary_switch {float:right; padding: 6px 12px 6px 0px;}
 #ss_searchForm_filterSummary {border-bottom:1px solid #afc8e3;}
 
