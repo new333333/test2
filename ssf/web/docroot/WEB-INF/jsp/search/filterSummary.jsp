@@ -57,6 +57,9 @@
 	</script>
 <div id="ss_filterSummary_content">
 	<h4><ssf:nlt tag="searchForm.summary.Title"/></h4>
+   <c:if test="${! empty ss_filterMap.searchText}">
+	<p>Text: ${ss_filterMap.searchText}</p>
+	</c:if>
 	<c:if test="${! empty ss_filterMap.additionalFilters}">
 		<c:if test="${!empty ss_filterMap.additionalFilters.workflow}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.workflow}">
@@ -197,9 +200,6 @@
 			</p>
 		</c:if>
 	</c:if>
-</div>
-<div id="ss_filterSummary_switch">
-	<a href="javascript:;" class="ss_button" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters', 'ss_search_more_options_txt_${ssNamespace}', '${ssNamespace}');"><ssf:nlt tag="searchForm.advanced.showMyForm"/></a>
 </div>
 <div class="ss_clear">
 </div>
