@@ -471,7 +471,7 @@ div.ss_canvas {
 	background-color: #CCD2E3;
 	}
 .ss_green{
-	background-color: #transparent;
+	background-color: transparent;
 	}
 .ss_orange{	
 	background-color: #F93;

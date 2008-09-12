@@ -39,7 +39,7 @@
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <div class="ss_clear_float"></div>
 </ssf:ifadapter>
-<div style="padding:30px;">
+<div align="center"> <style="padding:30px">
   <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="login.please"/></legend>
@@ -48,7 +48,7 @@
         <td valign="middle" align="right">
           <span><ssf:nlt tag="login.name"/></span>
         </td>
-        <td valign="top" style="padding-left:4px;">
+        <th valign="top" style="padding-left:4px;">
           <input type="text" class="ss_text_login" size="40" name="j_username"/>
         </td>
 		<td>&nbsp;</td>

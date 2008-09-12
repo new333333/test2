@@ -82,7 +82,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 .ss_input_myStatus{
 	background-color: #F3E9C5;
-	border-color: #5A9A98;
+	border-color: #9EC8CD;
 	width: 160px;
 	height: 42px;
 	margin: 8px 0px 8px 8px;
@@ -92,14 +92,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding: 8px 0px 8px 10px;	
 	}
 .ss_setStatusBackground{
-	background-color: #5A9A98;
+	background-color: #9EC8CD;
 	}
 	
 /*This is the border for all of the boxes*/
 .ss_myStatus, .ss_input_myStatus, .ss_sidebarMenu, .ss_sub_sidebarMenu, .ss_mouseOver{
-	border-color: #5A9A98;
+	border-color: #9EC8CD;
 	border-style: solid;
-	border-width: 0.1em;
+	border-width: 1px;
 	}
 /*This is the title of each link box*/
 .ss_sidebarTitle{
@@ -154,13 +154,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /*.ss_sidebarMenu .ss_menuClosed a:hover {
     color: #5A9A98;
 	background-color: #CCFFFF;
-	border-color:#85D1D1;
-	border-width: .2px;
+	border-color:#9EC8CD;
+	border-width: 1px;
     padding: 8px 0 0 35px;
 	margin-bottom:3px;
 	}	
 .ss_sidebarMenu a:hover {
-    Color: #5A9A98;
+    color: #9EC8CD;
 	background-color: #CCFFFF;	
 
 	} */
@@ -220,7 +220,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     color: #666666;
     display: block;
 	border-style: solid;
-	border-color: #5A9A98;
+	border-color: #9EC8CD;
 	border-width: 0.1em;
 	background-color: #FFFFFF;
     background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_a.png") 5px 2px;
@@ -232,12 +232,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color:#990099;
 	}
 #ss_leftNav li a:hover {
-    color: #5A9A98;
+    color: #9EC8CD;
     background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_hover.png") 5px 2px;
     background-repeat: no-repeat !important;
 	background-color: #CCFFFF;
-	border-color:#85D1D1;
-	border-width: 0.1em;
+	border-color:#9EC8CD;
+	border-width: 1px;
     padding: 7px 0 7px 30px;
 	margin-bottom:3px;
      }
@@ -245,7 +245,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     color: #fff;
     background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_bgd.png") 5px -50px;
     background-repeat: no-repeat !important;
-	background-color: #5A9A98;
+	background-color: #9EC8CD;
     padding: 7px 0 7px 30px;
 	margin-bottom: 3px;
     }
