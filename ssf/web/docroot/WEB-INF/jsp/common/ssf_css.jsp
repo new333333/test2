@@ -329,30 +329,19 @@ div.ss_style input[type="password"],
 div.ss_style textarea,
 div.ss_style select,
 div.ss_global_toolbar_quick input {
-  background-color: #FFFFFF;
-  background-image: none;
-  color: ${ss_form_element_text_color};
-  font-size: ${ss_style_font_size};
-  font-family: ${ss_style_folder_view_font_family};  
-}
-div.ss_global_toolbar_quick input{
-	background-color: #FFFFFF;
-  background-image: none;
-  color: ${ss_form_element_text_color};
-  font-size: ${ss_style_font_fineprint};
-  font-family: ${ss_style_folder_view_font_family};  
-  border: solid .4px #999;
-  padding: 2px;
-}
+  	background-color: #FFFFFF;
+  	color: ${ss_form_element_text_color};
+  	font-size: ${ss_style_font_size};
+  	font-family: ${ss_style_folder_view_font_family};  
+	}
 div.ss_style textarea {
-  padding: 0px 0px 0px 2px;
-}
+  	padding: 0px 0px 0px 2px;
+	}
 div.ss_style input[type="text"],
 div.ss_style input[type="password"],
 div.ss_style select, {
-  padding: 0px;
-}
-  
+  	padding: 0px;
+	} 
 .ss_form textarea {
   background-color: ${ss_form_element_color};
   background-image: none;
@@ -363,9 +352,7 @@ div.ss_style select, {
   border-style: solid;
   border-width: 1px;
   border-color: ${ss_style_text_field_border_color};
-}
-
-
+	}
 .ss_form input.ss_text { 
   background-color: ${ss_form_element_color};
   background-image: none;
@@ -385,44 +372,6 @@ div.ss_style select, {
   font-size: ${ss_style_font_smallprint};
   font-family: ${ss_style_folder_view_font_family};  
   }
- .ss_text_login {
-  background-color:#E0E0E0 !important;	/* ${ss_form_element_color} */
-  color: ${ss_form_element_text_color};
-  padding: 3px !important;
-  height: 14px;
-  font-size: ${ss_style_font_normalprint};
-  font-family: ${ss_style_folder_view_font_family};  
-  } 
-
-
-
-
-fieldset.ss_fieldset {
-  margin-top: 6px;
-  margin-bottom: 4px;
-  border: 1px solid ${ss_style_border_color_light};
-}
-  
-fieldset.ss_fieldset_square {
-  border: 1px solid ${ss_style_border_color_light};
-  padding: 5px;
-  margin-top: 12px;
-}
-
-legend.ss_legend {
-  font-family: ${ss_style_font_family};
-  font-weight: bold;
-  font-size: ${ss_style_font_size}; 
-  color: ${ss_style_text_color};
-}
-
-legend.ss_legend_bold {
-  font-family: ${ss_style_font_family};
-  font-weight: bold;
-  font-size: ${ss_style_font_size}; 
-  color: ${ss_style_text_color};
-}
-
 .ss_formInstructions { 
   border-color: #cccccc; 
   border-style: solid; 
@@ -3437,7 +3386,10 @@ div.ss_searchFormFooter {
 #ss_searchForm table, #ss_surveyForm_main {
 	background-color: #e8eff7;
 }
-#ss_searchForm input { width: 200px;}
+#ss_searchForm input { 
+	width: 150px;
+	border: 1px solid #333;
+	}
 #ss_searchForm th {text-align:left;padding: 0px 0px 0px 12px;}
 #ss_searchForm td {text-align:left;padding: 0px 12px 0px 12px;}
 #ss_searchForm h4 {margin:0px 0px 6px 0px;padding:0px;}
@@ -4333,8 +4285,7 @@ ul.placesForm, ul.placesForm li {
 }
 .ss_fileUploadProgressBarContainer .ss_progressTimeSpeed, .ss_fileUploadProgressBarContainer .ss_progress {
 	width: 160px;
-}
-
+	}
 .ss_combobox_autocomplete {
 	background-color: ${ss_form_element_color};
 	background-image: none;
@@ -4343,38 +4294,37 @@ ul.placesForm, ul.placesForm li {
 	padding: 0px;
 	font-size: ${ss_style_font_normalprint};
 	font-family: ${ss_style_folder_view_font_family}; 	
-
 	height: 14px;
 	width: 70px;
 	overflow: hidden;
-}
+	}
+/*****GLOBAL SEARCH******/
 
+.ss_combobox_autocomplete_advanced{
+	overflow:hidden;
+	width:140px;
+	}
 .ss_combobox_autocomplete_list {
-	padding: 0 0 5px 0;
-	
-}
-
+	padding: 0 0 5px 0;	
+	}
 .ss_combobox_autocomplete_list td {
 	vertical-align: top;
 	padding: 0;
 	margin: 0;
-}
-
+	}
 .ss_combobox_autocomplete_list ul {
 	list-style-type: none;
 	padding: 6px 10px;
 	width: 150px;
 	margin: 1px 4px 4px 4px;
 	border: solid black 1px;
-}
-
+	}
 .ss_combobox_autocomplete_list ul li {
 	padding: 0px;
 	margin: 0px;
 	text-align: left;
 	white-space: nowrap;
-}
-
+	}
 .ss_combobox_autocomplete_list ul li img {
 	border: 0;
 	padding-left: 10px;

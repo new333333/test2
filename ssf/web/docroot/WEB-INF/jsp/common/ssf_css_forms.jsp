@@ -136,4 +136,50 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color: ${ss_style_background_color};
 	color: ${ss_style_text_color}; 
 }
+/********* LOGIN TEXT BOX ************/
+
+.ss_text_login{
+	font-family: ${ss_style_font_family};
+	font-size: 10px;
+	text-align: left;
+	border: dotted 1px #5A9A98;
+	padding: 3px;
+	margin: 6px;
+	}
+fieldset.ss_fieldset {
+  	margin-top: 40px;
+  	margin-bottom: 40px;
+ 	padding-bottom:12px;
+  	padding-top: 12px;
+  	display: block;
+  	border: 1px dotted #5A9A98;
+  	background-image: url(<html:imagesPath/>pics/login_bk.png);
+  	background-repeat: no-repeat;
+  	width: 500px;
+  	height: 150px;
+  -moz-border-radius: 2%;
+	} 
+fieldset.ss_fieldset_square {
+  	border: 1px solid #5A9A98;
+  	padding: 5px;
+  	margin-top: 12px;
+	}
+fieldset a{
+	border: dotted 1px #000;
+	}
+fieldset a:hover{
+	border: dotted 1px #000;
+	}
+legend.ss_legend {
+  	font-size:24px !important;
+	letter-spacing:-1px;
+	font-family:Georgia, "Times New Roman", Times, serif !important;
+	font-weight:normal !important;
+	color:#333;
+	background-color: none;
+	padding-left: 5px;
+	padding-right: 5px;
+	opacity: .5;
+	}
+
 
