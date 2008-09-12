@@ -111,8 +111,10 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 }
 </script>
 
-
+<% // Need to put a div with its own formating around this %>
+<div id="ss_blog_folder_desc">
 <%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
+</div>
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 <div class="ss_folder_border">
 <% // Add the toolbar with the navigation widgets, commands and filter %>
@@ -130,18 +132,27 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 <%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>
 </c:if>
 </div>
-<table cellspacing="0" cellpadding="0" width="100%">
-<tr>
-<td valign="top">
-<div class="ss_folder">
+<% // Begins blog page %>
+<div id="ss_dashboard_content" class="ss_blog_doublecolumn">
+<div align="center">
+  <div id="ss_blog_column_L" class="ss_dblcolleft">
+      <div class="ss_dblcol1">
+      
+      <!-- Start Left Column -->
+      <div class="ss_folder">
 <%@ include file="/WEB-INF/jsp/definition_elements/blog/blog_folder_listing.jsp" %>
 </div>
-</td>
-<td valign="top" width="200">
-<div id="ss_sideNav_wrap">
-<jsp:include page="/WEB-INF/jsp/sidebars/blog.jsp" />
+      </div><!-- end of ss_col 1 -->
+        <!-- Start Right Column -->
+      	<div id="ss_blog_column_R">
+      	<div class="ss_dblcol2">
+      	<div id="ss_sideNav_wrap">
+<jsp:include page="/WEB-INF/jsp/sidebars/blog_tools.jsp" />
 </div>
-</td>
-</tr>
-</table>
+      	      </div><!-- end of col2 (right column) -->
+      </div><!-- end of ss_col_R (right column placeholder) -->
+    </div><!-- end of col left -->
+</div><!-- end of center -->
+</div><!-- end of content -->
+<div class="ss_clear_float"></div>
 
