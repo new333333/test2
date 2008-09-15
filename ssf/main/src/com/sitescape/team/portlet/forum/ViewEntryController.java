@@ -232,7 +232,7 @@ public class ViewEntryController extends  SAbstractController {
 						//Please log in
 						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 						model.put(WebKeys.URL, refererUrl);
-						return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE_SNIPPET, model);
+						return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
 					}
 				}
 			}
@@ -327,7 +327,7 @@ public class ViewEntryController extends  SAbstractController {
 				//Please log in
 				String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 				model.put(WebKeys.URL, refererUrl);
-				return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE_SNIPPET, model);
+				return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
 			}
 		}
 		
