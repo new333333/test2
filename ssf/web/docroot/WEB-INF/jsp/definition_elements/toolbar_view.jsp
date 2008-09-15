@@ -74,54 +74,9 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 			--%><li <%--
         --%></c:if><%--
         --%>id="parent_<%= menuTagDivId %>${renderResponse.namespace}"><%--
-        
-        --%><%-- BEGIN Helpspots for folder menus --%><%--
-        
-        --%><c:choose><%--
-            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageFolderMenu'}"><%--
-                --%><ssHelpSpot helpId="workspaces_folders/menus_toolbars/manage_folder" offsetY="-5" offsetX="-5"<%--
-                --%> title="<ssf:nlt tag="helpSpot.manageFolderMenu"/>"><%--
-                --%></ssHelpSpot><%--
-            --%></c:when><%--
-        
-            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageWorkspaceMenu'}"><%--
-                --%><ssHelpSpot helpId="workspaces_folders/menus_toolbars/manage_workspace" offsetY="-5" offsetX="-20" <%--
-                --%> title="<ssf:nlt tag="helpSpot.manageWorkspaceMenu"/>"></ssHelpSpot><%--
-            --%></c:when><%--
 
-            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.whatsNew'}"><%--
-                --%><ssHelpSpot helpId="workspaces_folders/menus_toolbars/whats_new" offsetY="-5" offsetX="-20" <%--
-                --%> title="<ssf:nlt tag="helpSpot.whatsNew"/>"></ssHelpSpot><%--
-            --%></c:when><%--
+--%><%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view_helpspots.jsp" %><%--
 
-            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.whatsUnread'}"><%--
-                --%><ssHelpSpot helpId="workspaces_folders/menus_toolbars/whats_unread" offsetY="-5" offsetX="-20" <%--
-                --%> title="<ssf:nlt tag="helpSpot.whatsUnread"/>"></ssHelpSpot><%--
-            --%></c:when><%--
-
-            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.modifyProfileButton'}"><%--
-                --%><ssHelpSpot helpId="people/modify_profile" offsetY="-3" offsetX="-8" <%--
-                --%> title="<ssf:nlt tag="helpSpot.modifyProfileButton"/>"></ssHelpSpot><%--
-            --%></c:when><%--
-
-            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageSubscriptionsMenu'}"><%--
-                --%><ssHelpSpot helpId="/workspaces_folders/menus_toolbars/subscriptions" offsetY="-5" offsetX="-10" <%--
-                --%> title="<ssf:nlt tag="helpSpot.subscriptionsMenu"/>"></ssHelpSpot><%--
-            --%></c:when><%--
-
-            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageDashboard'}"><%--
-                --%><ssHelpSpot helpId="workspaces_folders/misc_tools/manage_accessories"<%--
-                --%><c:if test="<%= !isIE %>"><%--
-                    --%> offsetX="-36"<%--
-                --%></c:if><%--
-                --%><c:if test="<%= isIE %>"><%--
-                    --%> offsetX="-15"<%--
-                --%></c:if><%--
-                --%> offsetY="-2" xAlignment="left" title="<ssf:nlt tag="helpSpot.manageDashboard"/>"></ssHelpSpot><%--
-            --%></c:when><%--
-
-        --%></c:choose><%--
- 
         --%><c:choose><%--
 
             --%><c:when test="${empty toolbarMenu.value.qualifiers.disabled}"><%--
@@ -265,59 +220,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
             --%><c:set var="spin" value="ss_startSpinner();"/><%--
         --%></c:if><%--
 
-        --%><%-- BEGIN Helpspots for folder menus --%><%--
-        
-        --%><c:choose><%--
-        
-            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageFolderMenu'}"><%--
-                --%><ssHelpSpot helpId="workspaces_folders/menus_toolbars/manage_folder" offsetY="-5" offsetX="-5" <%--
-                --%> title="<ssf:nlt tag="helpSpot.manageFolderMenu"/>"><%--
-                --%></ssHelpSpot><%--
-            --%></c:when><%--
-            
-            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageWorkspaceMenu'}"><%--
-                --%><ssHelpSpot helpId="workspaces_folders/menus_toolbars/manage_workspace" offsetY="-5" offsetX="-20" <%--
-                --%> title="<ssf:nlt tag="helpSpot.manageWorkspaceMenu"/>"><%--
-                --%></ssHelpSpot><%--
-            --%></c:when><%--
-            
-            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.whatsNew'}"><%--
-                --%><ssHelpSpot helpId="workspaces_folders/menus_toolbars/whats_new" offsetY="0" offsetX="0" <%--
-                --%> title="<ssf:nlt tag="helpSpot.whatsNew"/>"></ssHelpSpot><%--
-            --%></c:when><%--
-
-            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.whatsUnread'}"><%--
-                --%><ssHelpSpot helpId="workspaces_folders/menus_toolbars/whats_unread" offsetY="0" offsetX="0" <%--
-                --%> title="<ssf:nlt tag="helpSpot.whatsUnread"/>"></ssHelpSpot><%--
-            --%></c:when><%--
-
-            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.modifyProfileButton'}"><%--
-                --%><ssHelpSpot helpId="people/modify_profile" <%--
-                --%><c:if test="<%= !isIE %>"><%--
-                    --%> offsetY="0" offsetX="-160" <%--
-                --%></c:if><%--
-                --%><c:if test="<%= isIE %>"><%--
-                    --%> offsetY="-4" offsetX="79" <%--
-                --%></c:if><%--
-                --%> title="<ssf:nlt tag="helpSpot.modifyProfileButton"/>"><%--
-                --%></ssHelpSpot><%--
-            --%></c:when><%--
-            
-            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageDashboard'}"><%--
-                --%><ssHelpSpot helpId="workspaces_folders/misc_tools/manage_accessories"<%--
-                --%><c:if test="<%= !isIE %>"><%--
-                    --%> offsetX="-36" <%--
-                --%></c:if><%--
-                --%><c:if test="<%= isIE %>"><%--
-                    --%> offsetX="-15"  <%--
-                --%></c:if><%--
-                --%> offsetY="-2" xAlignment="left" title="<ssf:nlt tag="helpSpot.manageDashboard"/>"><%--
-                --%></ssHelpSpot><%--
-            --%></c:when><%--
-
-        --%></c:choose><%--
- 
-        --%><c:choose><%--
+       --%><c:choose><%--
         
             --%><c:when test="${!empty toolbarMenu.value.url}"><%--
                 --%><c:if test="${empty toolbarMenu.value.qualifiers.folder || (!empty toolbarMenu.value.qualifiers.folder && isWebdavSupported)}"><%--
@@ -327,6 +230,9 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
 	                --%><c:if test="${empty toolbarMenu.value.qualifiers.highlight}"><%--
 						--%><li><%--
 	                --%></c:if><%--
+
+--%><%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view_helpspots.jsp" %><%--
+
                     --%><a href="${toolbarMenu.value.url}"<%--
                     --%><c:if test="${!empty toolbarMenu.value.qualifiers.folder}"><%--
                         --%><%
