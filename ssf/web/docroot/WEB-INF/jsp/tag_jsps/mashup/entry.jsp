@@ -48,16 +48,18 @@
 	</script>
 </c:if>
 <c:set var="mashupEntry" value="${ss_mashupEntries[mashup_values[1]]}"/>
-<div style="margin:10px; padding:10px; " width="100%">
+<div style="padding:10px;" width="100%">
   <c:if test="${!empty mashupEntry}">
-	<div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
+	<c:if test="${ssConfigJspStyle == 'form' || empty noTitle}">
+	  <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
 		<a href="<ssf:url action="view_folder_entry" 
 		  folderId="${mashupEntry.parentBinder.id}"
 		  entryId="${mashupEntry.id}">
 		  <ssf:param name="entryViewStyle" value="full"/>
 		  <ssf:param name="newTab" value="1"/>
 		  </ssf:url>"><span class="ss_largeprint ss_bold">${mashupEntry.title}</span></a>
-	</div>
+	  </div>
+	</c:if>
 	<c:if test="${ssConfigJspStyle != 'form'}">
 	<div style="border:1px solid #cecece;padding:6px;">
 	    <ssf:markup entity="${mashupEntry}">${mashupEntry.description.text}</ssf:markup>

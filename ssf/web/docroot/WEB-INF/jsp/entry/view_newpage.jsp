@@ -80,6 +80,11 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
 	<td valign="top" class="ss_view_info">
+		<div id="ss_whatsNewDiv${ss_namespace}">
+		<c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
+		<%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>
+		</c:if>
+		</div>
 	    <div id="ss_folder_type_${ssDefinitionFamily}" class="ss_style_color">
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 					  configElement="${ssConfigElement}" 

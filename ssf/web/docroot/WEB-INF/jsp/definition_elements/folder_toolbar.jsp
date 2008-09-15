@@ -33,9 +33,14 @@
 
 <div class="ss_actions_bar1_pane ss_sidebarImage" align="right">
 
-
-<c:if test="${!empty ssFolderToolbar}">
-<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar"/>
-</c:if>
+<ssf:toolbar style="ss_actions_bar1 ss_actions_bar">
+ <% // Folder toolbar %>
+ <c:if test="${!empty ss_whatsNewToolbar}">
+   <ssf:toolbar toolbar="${ss_whatsNewToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />			
+ </c:if>
+ <c:if test="${!empty ssFolderToolbar}">
+  <ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />
+ </c:if>
+</ssf:toolbar>
 
 </div>

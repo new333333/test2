@@ -37,10 +37,6 @@
 	ss_mashupTableItemCount.put(ss_mashupTableNumber, "folder");  
 	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
 %>
-<c:set var="noTitle" value=""/>
-<c:forEach var="mashup_value" items="${mashup_values}">
-  <c:if test="${mashup_value == 'noTitle=1'}"><c:set var="noTitle" value="1"/></c:if>
-</c:forEach>
 <c:if test="${ssConfigJspStyle == 'form'}">
 	<script type="text/javascript">
 	//Routine called when "Delete entry" is clicked
@@ -51,31 +47,61 @@
 	</script>
 </c:if>
 <c:set var="mashupBinder" value="${ss_mashupBinders[mashup_values[1]]}"/>
-<div style="margin:10px; padding:10px; " width="100%">
+<div style="padding:10px;" width="100%">
   <c:if test="${!empty mashupBinder}">
-	<c:if test="${ssConfigJspStyle == 'form' || empty noTitle}">
-	<div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
+	<c:if test="${ssConfigJspStyle == 'form' || empty mashup_attributes['noTitle']}">
+	  <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
 		<a href="<ssf:url action="view_folder_listing" 
 		  folderId="${mashupBinder.id}">
 		  <ssf:param name="newTab" value="1"/>
 		  </ssf:url>"><span class="ss_largeprint ss_bold">${mashupBinder.title}</span></a>
-	</div>
+	  </div>
 	</c:if>
-	<c:if test="${ssConfigJspStyle != 'form'}">
+	<c:if test="${ssConfigJspStyle != 'form' && !empty mashup_attributes['showFolderDescription']}">
+	  <div style="border:1px solid #cecece;padding:6px;">
+		<ssf:markup entity="${mashupEntry}">${mashupBinder.description.text}</ssf:markup>
+	  </div>
+	</c:if>
+	<c:if test="${ssConfigJspStyle != 'form' && empty mashup_attributes['showEntriesOpened']}">
 	<div style="border:1px solid #cecece;padding:6px;">
-	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashup_values[1]]}" >
-	    <div style="padding-left:6px;">
-	      <a href="<ssf:url     
-		    action="view_folder_entry" 
-		    binderId="${entry._binderId}"
-		    entryId="${entry._docId}"
-		    ><ssf:param name="entryViewStyle" value="full"/>
-		    </ssf:url>">
-	        <span>${entry.title}</span>
-	      </a>
-	    </div>
+	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashup_values[1]]}" varStatus="status">
+	    <c:if test="${empty mashup_attributes['entriesToShow'] || status.count <= mashup_attributes['entriesToShow']}">
+	      <div style="padding-left:6px;">
+	        <a href="<ssf:url     
+		      action="view_folder_entry" 
+		      binderId="${entry._binderId}"
+		      entryId="${entry._docId}"
+		      ><ssf:param name="entryViewStyle" value="full"/>
+		      </ssf:url>">
+	          <span>${entry.title}</span>
+	        </a>
+	      </div>
+		</c:if>
 	  </c:forEach>
 	</div>
+	</c:if>
+	<c:if test="${ssConfigJspStyle != 'form' && !empty mashup_attributes['showEntriesOpened']}">
+	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashup_values[1]]}" varStatus="status">
+	    <c:if test="${empty mashup_attributes['entriesToShow'] || status.count <= mashup_attributes['entriesToShow']}">
+	      <div style="padding:10px 0px;">
+			<div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
+			  <a href="<ssf:url action="view_folder_entry" 
+				  folderId="${entry._binderId}"
+				  entryId="${entry._docId}">
+				  <ssf:param name="entryViewStyle" value="full"/>
+				  <ssf:param name="newTab" value="1"/>
+				  </ssf:url>">
+		  	    <span class="ss_largeprint ss_bold">${entry.title}</span>
+		  	  </a>
+			</div>
+			<c:if test="${!empty entry._desc}">
+			  <div style="border:1px solid #cecece;padding:6px;">
+			    <ssf:markup>${entry._desc}</ssf:markup>
+			  </div>
+			</c:if>
+		  </div>
+		</c:if>
+	  </c:forEach>
 	</c:if>
 	<c:if test="${ssConfigJspStyle == 'form'}">
 	  <div>
