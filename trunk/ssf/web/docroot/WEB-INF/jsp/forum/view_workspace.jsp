@@ -197,7 +197,6 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 <td valign="left">
 	<ssf:toolbar style="ss_actions_bar1 ss_actions_bar">			
 	<% // Workspace toolbar %>
-	<ssf:toolbar toolbar="${ss_whatsNewToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />			
 	<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 	</ssf:toolbar>
 </td></tr></tbody>
