@@ -177,6 +177,25 @@ public class HKey {
         
         return sortKey.toString();
     }
+    public static String getSortKeyFromEntryNumber(String rootKey, String dottyString) {
+        StringBuffer sortKey = new StringBuffer(100);
+        sortKey.append(rootKey);
+        String [] levels = StringUtil.split(dottyString, ".");
+    	for (int cnt=0; cnt<levels.length; ++cnt) {
+    		StringBuffer key = new StringBuffer(5);
+    		long start = Long.valueOf(levels[cnt]);
+            // Base 36 conversion 
+            while (start > 0) {
+            	key.insert(0,HKey.B10_TO_36.charAt((int)(start%36)));
+                start = start/36;
+            }
+            for (int i=key.length(); i<5; ++i) {
+            	key.insert(0,"0");            
+            }
+            sortKey.append(key.toString());
+    	}
+    	return sortKey.toString();
+    }
 
   
 }
