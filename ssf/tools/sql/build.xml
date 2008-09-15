@@ -9,7 +9,6 @@
 	<property name="main.hibernate.dir" value="${main.project.dir}/hibernate" />
 	<property name="create.dir" value="${basedir}/create" />
 	<property name="internal.dir" value="${create.dir}/internal" />
-	<property name="zip.file.name" value="${product.package.name}-${product.version}-sql.zip" />
 	
 	<taskdef name="dbunit"
 	    classname="org.dbunit.ant.DbUnitTask">
@@ -288,13 +287,5 @@
 		</sql>
 	</target>
 	
-	<target name="zip" >
-		<delete file="${c.project.dir}/${dist.dir}/${zip.file.name}" failonerror="false" />
-		<mkdir dir="${c.project.dir}/${dist.dir}" />
-		<zip destfile="${c.project.dir}/${dist.dir}/${zip.file.name}"
-			basedir="."
-			includes="create/*"
-		/>
 
-	</target>
 </project>
