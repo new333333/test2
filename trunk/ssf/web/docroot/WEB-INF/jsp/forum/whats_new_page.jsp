@@ -82,6 +82,12 @@
   	<div id="ss_column_L" class="ss_dblcolleft">
         <div class="ss_dblcol1">
 	    <!-- Start Left Column --> 
+		<c:if test="${empty ss_whatsNewBinder && ss_pageNumber > '0'}">
+		  <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
+		</c:if>
+		<c:if test="${empty ss_whatsNewBinder && (empty ss_pageNumber || ss_pageNumber <= '0')}">
+		  <span class="ss_italic"><ssf:nlt tag="whatsnew.noEntriesFound"/></span>
+		</c:if>
 	    <c:forEach var="entryWn" items="${ss_whatsNewBinder}">
     	  <c:if test="${binderCounter2 >= (binderCounter/2) && column2Seen == '0'}">
     		<c:set var="column2Seen" value="1"/>
@@ -156,11 +162,5 @@
 </div><!-- end of center -->
 </div><!-- end of content -->
 <div class="ss_clear_float"></div>
-  <c:if test="${empty ss_whatsNewBinder && ss_pageNumber > '0'}">
-    <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
-  </c:if>
-  <c:if test="${empty ss_whatsNewBinder && (empty ss_pageNumber || ss_pageNumber <= '0')}">
-    <span class="ss_italic"><ssf:nlt tag="whatsnew.noEntriesFound"/></span>
-  </c:if>
 </div><!-- end of ss_para -->
 

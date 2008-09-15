@@ -702,11 +702,19 @@ public class DefinitionHelper {
 	        	String[] mashupValues = mashupValue.split(";");
 	        	for (int i = 0; i < mashupValues.length; i++) {
 	        		String[] mashupItemValues = mashupValues[i].split(",");
+					Map mashupItemAttributes = new HashMap();
+					if (mashupItemValues.length > 0) {
+						//Build a map of attributes
+						for (int j = 0; j < mashupItemValues.length; j++) {
+							String[] valueSet = mashupItemValues[j].split("=");
+							if (valueSet.length == 2) {
+								mashupItemAttributes.put(valueSet[0], valueSet[1]);
+							}
+						}
+					}
 	        		String type = mashupItemValues[0];
 	        		String value1 = "";
-	        		String value2 = "";
 	        		if (mashupItemValues.length >= 2) value1 = mashupItemValues[1];
-	        		if (mashupItemValues.length >= 3) value2 = mashupItemValues[2];
 	        		if (ObjectKeys.MASHUP_TYPE_ENTRY.equals(type) && !value1.equals("")) {
 	        			try {
 	        				FolderEntry entry = bs.getFolderModule().getEntry(null, Long.valueOf(value1));
@@ -719,6 +727,12 @@ public class DefinitionHelper {
 	        				Map options = new HashMap();
 	        				Integer searchMaxHits = Integer.valueOf(SPropsUtil.getString("folder.records.listed"));
 	        				options.put(ObjectKeys.SEARCH_MAX_HITS, searchMaxHits);
+	        				try {
+	        					if (mashupItemAttributes.containsKey("entriesToShow")) {
+	        						Integer entriesToShow = Integer.valueOf((String)mashupItemAttributes.get("entriesToShow"));
+	        						options.put(ObjectKeys.SEARCH_MAX_HITS, entriesToShow);
+	        					}
+	        				} catch(Exception e) {}
 	        				options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
 	        				options.put(ObjectKeys.SEARCH_SORT_BY, Constants.LASTACTIVITY_FIELD);
 	        				Map folderEntries = bs.getFolderModule().getEntries(binder.getId(), options);

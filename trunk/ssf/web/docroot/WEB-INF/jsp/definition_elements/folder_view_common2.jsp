@@ -77,7 +77,6 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 		  <ssf:toolbar style="ss_actions_bar5 ss_actions_bar">			
 		    <% // Entry toolbar %>
 		    <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar5 ss_actions_bar" item="true" />			
-		    <ssf:toolbar toolbar="${ss_whatsNewToolbar}" style="ss_actions_bar5 ss_actions_bar" item="true" />			
 		  </ssf:toolbar>
 		  <div class="ss_clear"></div>
 	    </div>
@@ -85,11 +84,6 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	</div><!-- end of 2nd breadcrumb area -->
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" />
 
-<div id="ss_whatsNewDiv${ss_namespace}">
-<c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
-<%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>
-</c:if>
-</div>
 <div id="ss_folder_table_parent" class="ss_folder">
 
 	<c:set var="slidingTableTableStyle" value=""/>

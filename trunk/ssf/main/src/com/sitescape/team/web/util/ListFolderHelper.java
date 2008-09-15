@@ -1415,18 +1415,6 @@ public class ListFolderHelper {
 					adapterUrl.toString(), qualifiers);		
 		}
 	
-		if (bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {				
-			adminMenuCreated=true;
-			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_IMPORT_FORUM_ENTRIES);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-			qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			folderToolbar.addToolbarMenuItem("1_administration", "", 
-					NLT.get("toolbar.menu.import_forum_entries"), adapterUrl.toString(), qualifiers);		
-		}
-		
 		if(LicenseChecker.isAuthorizedByLicense("com.sitescape.team.module.folder.MirroredFolder")) {
 			//Synchronize mirrored folder
 			if(folder.isMirrored() &&

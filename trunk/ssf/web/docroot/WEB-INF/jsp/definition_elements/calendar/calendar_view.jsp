@@ -61,8 +61,6 @@
 	<c:if test="${!empty ssEntryToolbar}">
 		<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
 	</c:if>
- 	<ssf:toolbar toolbar="${ss_whatsNewToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />			
-	
 	<ssf:ifnotaccessible>
 		<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" skipSeparator="true">
 			<%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_select_events.jsp" %>
@@ -71,11 +69,6 @@
 
 </ssf:toolbar>		    	
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
-<div id="ss_whatsNewDiv${ss_namespace}">
-<c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
-<%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>
-</c:if>
-</div>
 
 <ssf:ifaccessible>
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_content_accessible.jsp" %>
