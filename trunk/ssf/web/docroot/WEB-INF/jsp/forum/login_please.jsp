@@ -78,6 +78,7 @@
     </table>
     <br/>
     <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
+    <input type="reset" class="ss_submit" style="margin-left:20px;" value="<ssf:nlt tag="button.reset"/>"/>
 <c:if test="${!empty ssUrl}">
     <input type="hidden" name="spring-security-redirect" value="${ssUrl}"/>
 </c:if>
