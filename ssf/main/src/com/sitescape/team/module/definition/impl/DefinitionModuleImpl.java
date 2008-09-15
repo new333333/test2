@@ -1731,8 +1731,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
 					//We have the element name, see if it has a value in the input data
 					if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
-						Description description = new Description();
 						if (inputData.exists(nameValue)) {
+							Description description = new Description();
 							description.setText(inputData.getSingleValue(nameValue));
 							//Deal with any markup language transformations before storing the description
 							MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
@@ -1741,8 +1741,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							entryData.put(nameValue, description);
 						}
 					} else if (itemName.equals("folderBranding") || itemName.equals("workspaceBranding")) {
-						Description description = new Description();
 						if (inputData.exists(nameValue)) {
+							Description description = new Description();
 							description.setText(inputData.getSingleValue(nameValue));
 							//Deal with any markup language transformations before storing the description
 							MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
@@ -1821,9 +1821,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							}
 						}
 					} else if (itemName.equals("date") || itemName.equals("date_time")) {
-						//Use the helper routine to parse the date into a date object
-						Date date = inputData.getDateValue(nameValue);
-						if (date != null) {entryData.put(nameValue, date);}
+						if (inputData.exists(nameValue)) {
+							//Use the helper routine to parse the date into a date object
+							Date date = inputData.getDateValue(nameValue);
+							if (date != null) {entryData.put(nameValue, date);}
+						}
 					} else if (itemName.equals("event")) {
 					    //Ditto for event helper routine
 					    Boolean hasDur = Boolean.FALSE;
@@ -1840,9 +1842,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					        entryData.put(nameValue, event);
 					    }
 					} else if (itemName.equals("survey")) {
-						//Use the helper routine to parse the date into a date object
-						Survey survey = inputData.getSurveyValue(nameValue);
-						if (survey != null) {entryData.put(nameValue, survey);}
+						if (inputData.exists(nameValue)) {
+							//Use the helper routine to parse the date into a date object
+							Survey survey = inputData.getSurveyValue(nameValue);
+							if (survey != null) entryData.put(nameValue, survey);
+						}
 					} else if (itemName.equals("user_list") || itemName.equals("group_list") ||
 								itemName.equals("team_list") || itemName.equals("userListSelectbox")) {
 						if (inputData.exists(nameValue)) {
@@ -1891,7 +1895,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					    	}
 						}
 					} else if (itemName.equals("checkbox")) {
-						entryData.put(nameValue, Boolean.valueOf(GetterUtil.getBoolean(inputData.getSingleValue(nameValue), false)));
+						if (inputData.exists(nameValue)) {
+							entryData.put(nameValue, Boolean.valueOf(GetterUtil.getBoolean(inputData.getSingleValue(nameValue), false)));
+						}
 					} else if (itemName.equals("profileTimeZone")) {
 						if (inputData.exists(nameValue)) {
 							Object val = inputData.getSingleObject(nameValue);

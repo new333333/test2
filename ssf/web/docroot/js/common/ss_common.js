@@ -6166,7 +6166,12 @@ function ss_saveTreeId(obj, treeName, placeId, idChoicesInputId) {
 	}
 }
 
-
+//checkboxes on designer forms need to be present even if they are unchecked.  Use hidden field. 
+function ss_saveCheckBoxValue(box, hiddenFieldId) {
+	var hiddenField = document.getElementById(hiddenFieldId);
+	if (box.checked) hiddenField.value="true";
+	else hiddenField.value="false";
+}
 function ss_showAttachmentVersions(prefix, start, end) {
 	if (!document.getElementById) {
 		return;
