@@ -72,6 +72,7 @@ import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoFolderByTheIdException;
@@ -613,6 +614,14 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         AccessUtils.readCheck(entry);
         return entry;
     }
+    public FolderEntry getEntry(Long folderId, String entryNumber) {
+    	Folder folder = getFolder(folderId);
+    	String sortKey = HKey.getSortKeyFromEntryNumber(folder.getEntryRootKey(), entryNumber);
+    	FolderEntry entry = getFolderDao().loadFolderEntry(sortKey, folder.getZoneId());
+        AccessUtils.readCheck(entry);
+        return entry;
+    }
+
     public Map getEntryTree(Long folderId, Long entryId) {
     	//does read check
         FolderEntry entry = getEntry(folderId, entryId);   	
