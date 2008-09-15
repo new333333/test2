@@ -39,7 +39,7 @@
 	}
 %>
 <div class="ss_entryContent">
-<% if (checkbox.equals("true")) { %>
+<% if (checkbox != null && checkbox.equals("true")) { %>
 <input type="checkbox" checked DISABLED>
 <% } else { %>
 <input type="checkbox" DISABLED>
