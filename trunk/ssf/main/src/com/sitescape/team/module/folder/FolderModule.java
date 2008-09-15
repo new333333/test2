@@ -233,6 +233,15 @@ public interface FolderModule {
     public FolderEntry getEntry(Long parentFolderId, Long entryId) 
     	throws AccessControlException;
     /**
+     * Get the <code>FolderEntry</code> with the specified entryNumber and parent
+     * @param parentFolderId
+     * @param entryNumber
+     * @return
+     * @throws AccessControlException
+     */
+    public FolderEntry getEntry(Long parentFolderId, String entryNumber) 
+		throws AccessControlException;
+    /**
      * Get the  <code>FolderEntries</code> 
      * @param ids
      * @return
