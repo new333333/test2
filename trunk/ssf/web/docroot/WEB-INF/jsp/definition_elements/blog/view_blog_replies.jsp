@@ -45,7 +45,9 @@
 <c:if test="${!thisEntryIsEntry && ssDefinitionEntry._entryType == 'entry'}" >
 
 <div class="ss_blog_footer">
-<table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
+<ssHelpSpot helpId="workspaces_folders/misc_tools/more_blog_tools" 
+offsetX="0" offsetY="0" 
+title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
 <c:if test="${!empty ss_blog_reply_url}">
 <td valign="top" style="white-space: nowrap;">
 <a href="${ss_blog_reply_url}" 
@@ -75,9 +77,7 @@
 	    entryId="${ssDefinitionEntry._docId}"/>" 
   onClick="ss_openUrlInWindow(this, '_blank');return false;"
   <ssf:title tag="title.send.entry.to.friends" />
-><div class="ss_iconed_label ss_send_friend"><ssHelpSpot helpId="workspaces_folders/misc_tools/more_blog_tools" 
-offsetX="-25" offsetY="-15" 
-title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><ssf:nlt tag="entry.sendtofriend"/></div></a>
+><div class="ss_iconed_label ss_send_friend"><ssf:nlt tag="entry.sendtofriend"/></div></a>
 </td>
 <td valign="top" style="white-space: nowrap;">
 <a onclick=" ss_createPopupDiv(this, '${renderResponse.namespace}ss_subscription_entry${ssDefinitionEntry._docId}');return false;" 

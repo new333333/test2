@@ -2667,7 +2667,7 @@ var ss_helpSystem = {
 	        var offsetY = nodes[i].getAttribute("offsetY");
 	        if (!offsetY) offsetY = 0;
 	        offsetY = parseInt(offsetY);
-	        var top = parseInt(dojo.coords(nodes[i], true).y + offsetY);
+	        var top = parseInt(dojo.coords(nodes[i].parentNode, true).y + offsetY);
 	        if (nodes[i].getAttribute("valign")) {
 	        	if (nodes[i].getAttribute("valign") == "middle") {
 	        		top += parseInt(ss_getObjectHeight(nodes[i]) / 2);
@@ -2678,7 +2678,7 @@ var ss_helpSystem = {
 	        var offsetX = nodes[i].getAttribute("offsetX");
 	        if (!offsetX) offsetX = 0;
 	        offsetX = parseInt(offsetX);
-	        var left = parseInt(dojo.coords(nodes[i], true).x + offsetX);
+	        var left = parseInt(dojo.coords(nodes[i].parentNode, true).x + offsetX);
 	        if (nodes[i].getAttribute("align")) {
 	        	if (nodes[i].getAttribute("align") == "center") {
 	        		left += parseInt(dojo.marginBox(nodes[i]).w / 2);

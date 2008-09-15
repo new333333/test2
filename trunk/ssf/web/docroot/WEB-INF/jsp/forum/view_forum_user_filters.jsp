@@ -38,9 +38,7 @@
 <table width="98%">
   <tr><td align="left" width="1%">
      <div class="ss_link_7">
-     	<ssf:nlt tag="filter.filter" text="Filter"/>:<ssHelpSpot 
-  		helpId="workspaces_folders/menus_toolbars/folder_toolbar" offsetX="-45" offsetY="-5" 
-  		title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>"></ssHelpSpot>&nbsp;</span>
+     	<ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;</span>
   	 </div>
 	</td>
 	<td align="left" width=89%">

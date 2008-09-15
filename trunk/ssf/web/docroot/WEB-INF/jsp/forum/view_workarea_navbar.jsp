@@ -173,7 +173,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_binder_branding.jsp" />
         </td>
         <td height="24" colspan="2" class="ss_mastheadtoplinks ss_masthead_portals" >
-        	<ssHelpSpot helpId="navigation_bar/my_portal_button" offsetY="-10" offsetX="-5" 
+        	<ssHelpSpot helpId="navigation_bar/my_portal_button" offsetY="10" offsetX="0" 
 			      title="<ssf:nlt tag="helpSpot.myPortalButton" text="My Portal"/>">
 			  </ssHelpSpot>
 	          <a href="${ss_portalUrl}" 
@@ -238,25 +238,25 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
         <td width="20%" height="19" class="ss_mastheadtoplinks ss_masthead_favorites">
         	<!-- Begin Favorites -->  
         	<div id="ss_navbar_favorites${renderResponse.namespace}" style="display:inline;"></div>
+		      <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="0" offsetY="10"  
+		          title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
+			  </ssHelpSpot>
         	<a title="<ssf:nlt tag="navigation.favorites"/>"
 	  			href="javascript: ;" 
 	  			onClick="ssMyTeams${renderResponse.namespace}.hide();ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
               ><ssf:nlt tag="navigation.favorites"/> <img border="0" 
               src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> </a>
-		      <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="-15" offsetY="1"  
-		          title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
-			  </ssHelpSpot>
 		      &nbsp;|
 		      
 		    <!-- Begin Teams -->   
-        	<div id="ss_navbar_myteams${renderResponse.namespace}"style="display:inline;"></div>
+        	<div id="ss_navbar_myteams${renderResponse.namespace}" style="display:inline;">
+		      <ssHelpSpot helpId="navigation_bar/my_teams" offsetX="0" offsetY="0"  
+		          title="<ssf:nlt tag="helpSpot.myTeamsButton"/>">
+		      </ssHelpSpot></div> 
         	<a title="<ssf:nlt tag="navigation.myTeams"/>"
 			  href="javascript:;" onClick="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();ssMyTeams${renderResponse.namespace}.show();"
 				    ><ssf:nlt tag="navigation.myTeams"/><img border="0" 
               src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> 
-		      <ssHelpSpot helpId="navigation_bar/my_teams" offsetX="5" offsetY="1"  
-		          title="<ssf:nlt tag="helpSpot.myTeamsButton"/>">
-		      </ssHelpSpot>  
 		      </a>  
 			    <div id="ss_navbarMyTeamsButton${renderResponse.namespace}" style="display:none;">
 			    </div>
@@ -342,13 +342,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 							  	action="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 							  	name="newTab" value="1"/></ssf:url>">
 							  			
-						  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="5" 
-					                 <c:if test="<%= BrowserSniffer.is_ie(request) %>">
-					                   offsetX="120" 
-					                 </c:if>
-					                 <c:if test="<%= !BrowserSniffer.is_ie(request) %>">
-					                   offsetX="110" 
-					                 </c:if>
+						  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="0" 
+					                offsetX="0" 
 								    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 								
 							<input name="searchText" class="ss_combobox_autocomplete ss_combobox_autocomplete_advanced" type="text" /> 
@@ -379,13 +374,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 				  <ssf:ifaccessible>
 							
 					<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}" >
-						  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="-12" 
-				                 <c:if test="<%= BrowserSniffer.is_ie(request) %>">
-				                   offsetX="159" 
-				                 </c:if>
-				                 <c:if test="<%= !BrowserSniffer.is_ie(request) %>">
-				                   offsetX="147" 
-				                 </c:if>
+						  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="15" 
+				                offsetX="0" 
 						    	title="<ssf:nlt tag="helpSpot.searchButton"/>">
 						  </ssHelpSpot>
 				     	
@@ -559,7 +549,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
              </div>
        </td>
        <td width="25%" class="ss_workspace">
-            	<ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="-10" offsetX="-5" 
+            	<ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="15" offsetX="0" 
 			      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
 			  	</ssHelpSpot>
               	<a title="<ssf:nlt tag="navigation.myWorkspace"/>"
