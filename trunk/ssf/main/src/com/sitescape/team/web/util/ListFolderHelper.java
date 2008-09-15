@@ -1860,6 +1860,7 @@ public class ListFolderHelper {
 		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
 		qualifiers = new HashMap();
 		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'whatsNew', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
+		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.whatsNew");
 		whatsNewToolbar.addToolbarMenu("whatsnew", NLT.get("toolbar.menu.whatsNew"), 
 				adapterUrl.toString(), qualifiers);
 		
@@ -1872,6 +1873,7 @@ public class ListFolderHelper {
 		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
 		qualifiers = new HashMap();
 		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'unseen', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
+		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.whatsUnread");
 		whatsNewToolbar.addToolbarMenu("unseen", NLT.get("toolbar.menu.whatsUnseen"), 
 				adapterUrl.toString(), qualifiers);
 
