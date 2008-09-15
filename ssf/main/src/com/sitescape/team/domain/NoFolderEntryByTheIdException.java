@@ -58,4 +58,16 @@ public class NoFolderEntryByTheIdException extends NoObjectByTheIdException {
     public NoFolderEntryByTheIdException(Long entryId, Throwable cause) {
         super(NoDocshareEntryByTheIdException_ErrorCode, entryId, cause);
     }
+    public NoFolderEntryByTheIdException(String entryKey) {
+        super(NoDocshareEntryByTheIdException_ErrorCode, entryKey);
+    }
+    public NoFolderEntryByTheIdException(String entryKey, String message) {
+        super(NoDocshareEntryByTheIdException_ErrorCode, entryKey, message);
+    }
+    public NoFolderEntryByTheIdException(String entryKey, String message, Throwable cause) {
+        super(NoDocshareEntryByTheIdException_ErrorCode,entryKey, message, cause);
+    }
+    public NoFolderEntryByTheIdException(String entryKey, Throwable cause) {
+        super(NoDocshareEntryByTheIdException_ErrorCode, entryKey, cause);
+    }
 }
