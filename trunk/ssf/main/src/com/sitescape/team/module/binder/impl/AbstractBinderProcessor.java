@@ -1436,7 +1436,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  		doFieldUpdate(binders, Constants.BINDER_OWNER_ACL_FIELD, value);    		
      }
      private void executeUpdateQuery(Criteria crit, String field, String value) {
- 		//don't need to add access check to update of acls
+ 		//flush anything that is waiting
+    	 IndexSynchronizationManager.applyChanges();
+		//don't need to add access check to update of acls
  		//access to entries is not required to update the team acl
  		QueryBuilder qb = new QueryBuilder(false);
  		// add this query and list of ids to the lists we'll pass to updateDocs.

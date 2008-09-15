@@ -142,7 +142,18 @@ public class ViewPermalinkController  extends SAbstractController {
 		} else if (entityType.isPrincipal()) {
 			//permalinks are meant for the use workspace
 	 		if (entryId.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) {  
-	 			entity = getProfileModule().getProfileBinder();
+	 			try {
+	 				entity = getProfileModule().getProfileBinder();
+	 			} catch  (AccessControlException ac) {
+					Long zoneId = WebHelper.getZoneIdByVirtualHost(request);
+					User user = AccessUtils.getZoneSuperUser(zoneId);
+
+	 				entity = (DefinableEntity)RunasTemplate.runas(new RunasCallback () {
+	 					public Object doAs() {
+	 						return getProfileModule().getProfileBinder();
+	 					}
+	 				}, user);
+	 			}
 	 			url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
 	 			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
 	 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);

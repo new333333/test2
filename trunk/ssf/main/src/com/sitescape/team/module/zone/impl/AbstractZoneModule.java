@@ -57,6 +57,7 @@ import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.Subscription;
+import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.admin.AdminModule;
@@ -64,6 +65,7 @@ import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
+import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.template.TemplateModule;
 import com.sitescape.team.module.zone.ZoneModule;
@@ -407,8 +409,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getProfileModule().indexEntry(u);
 		}
 		//make sure guest exists
+		User guest=null;
 		try {
-			User guest = getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zone.getId());
+			guest = getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zone.getId());
 			// Make sure guest has password.
 			if(guest.getPassword() == null) {
 				guest.setPassword(guest.getName());
@@ -416,10 +419,14 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
 		} catch (NoUserByTheNameException nu) {
 			//need to add it
-			User u = addGuest(superU.getParentBinder(), new HistoryStamp(superU));
+			guest = addGuest(superU.getParentBinder(), new HistoryStamp(superU));
 			//	updates cache
 			getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zone.getId());
-			getProfileModule().indexEntry(u);
+			getProfileModule().indexEntry(guest);
+		}
+		if (guest.getWorkspaceId() == null) {
+			Workspace guestWs = getProfileModule().addUserWorkspace(guest, null);
+			getAdminModule().setWorkAreaOwner(guestWs, superU.getId(), true);
 		}
 		//make sure allUsers exists
 		try {
@@ -589,9 +596,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 
 	        		Workspace zone = addZoneTx(name, adminName, virtualHost);
 	        			        		
+	    			User guest = getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zone.getId());
+	    			Workspace guestWs = getProfileModule().addUserWorkspace(guest, null);
+	        		//now change owner to admin
+	        		getAdminModule().setWorkAreaOwner(guestWs, zone.getOwnerId() ,true);
 	        		//do now, with request context set - won't have one if here on zone startup
 	        		IndexSynchronizationManager.applyChanges();
-					for (ZoneSchedule zoneM:startupModules) {
+	        		for (ZoneSchedule zoneM:startupModules) {
 						zoneM.startScheduledJobs(zone);
 					}
 	    		
@@ -667,6 +678,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	private User addGuest(Binder parent, HistoryStamp stamp) {
 		String guestName= SZoneConfig.getString(parent.getRoot().getName(), "property[@name='guestUser']", "guest");
 		return addReservedUser(parent, stamp, guestName, guestName, NLT.get("administration.initial.guestTitle"), ObjectKeys.GUEST_USER_INTERNALID);
+		
 	}
 	private Workspace addTeamRoot(Workspace top, HistoryStamp stamp) {
 		Workspace team = new Workspace();

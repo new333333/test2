@@ -105,7 +105,7 @@ public class AccessControlController extends AbstractBinderController {
 		BinderHelper.buildNavigationLinkBeans(this, binder, model);
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		model.put(WebKeys.ENTRY, binder);
-		User superUser = AccessUtils.getZoneSuperUser();
+		User superUser = AccessUtils.getZoneSuperUser(binder.getZoneId());
 		model.put(WebKeys.ACCESS_SUPER_USER, superUser);
 
 		return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);
