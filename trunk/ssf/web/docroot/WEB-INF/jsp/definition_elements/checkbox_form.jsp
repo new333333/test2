@@ -30,15 +30,18 @@
 %>
 <% //Checkbox form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-
+<c:if test="${!ssDefinitionEntry.customAttributes[property_name].value}" >
 <c:set var="cb_checked" value=""/>
+  <input type="hidden" name="${property_name}" id="hidden_${property_name}" value="false"/> 
+</c:if>
 <c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
   <c:set var="cb_checked" value="checked"/>
+  <input type="hidden" name="${property_name}" id="hidden_${property_name}" value="true"/> 
 </c:if>
 <c:set var="required" value=""/>
 <div class="ss_entryContent">
-<input type="checkbox" name="${property_name}" 
-  id="checkbox_${property_name}" <c:out value="${cb_checked}"/> 
+<input type="checkbox" name="${property_name}XXX" 
+  id="checkbox_${property_name}XXX" <c:out value="${cb_checked}"/> onClick="ss_saveCheckBoxValue(this, 'hidden_${property_name}');"/> 
 /> <span class="ss_labelRight"><label for="checkbox_${property_name}">${property_caption}</label></span><c:if 
   test="${property_required}" ><span class="ss_required">*</span></c:if>
 </div>
