@@ -181,6 +181,15 @@ if (!ss_onLoadRoutineLoaded) {
 	ss_savedOnLoadRoutine = window.onload;
 	window.onload = ss_onLoadInit;
 }
+
+function ss_isInteger(val) {
+	var digits="1234567890";
+	for (var i=0; i < val.length; i++) {
+		if (digits.indexOf(val.charAt(i))==-1) { return false; }
+	}
+	return true;
+}
+
 //Routines to support Ajax
 //suggest moving towards ss_get_url so errors can be handled consistantly
 //Updated to dojo, result is text/plain

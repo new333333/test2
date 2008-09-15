@@ -76,13 +76,25 @@ function ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}()
 	}
 }
 
+//Mashup attributes
 var ss_mashupAttr_noTitle${ss_mashupItemId} = "";
+var ss_mashupAttr_showFolderDescription${ss_mashupItemId} = "";
+var ss_mashupAttr_showEntriesOpened${ss_mashupItemId} = "";
+var ss_mashupAttr_numberOfLines${ss_mashupItemId} = "";
+
 function ss_mashupClearAttrs${ss_mashupItemId}() {
 	ss_mashupAttr_noTitle${ss_mashupItemId} = "";
+	ss_mashupAttr_showFolderDescription${ss_mashupItemId} = "";
+	ss_mashupAttr_showEntriesOpened${ss_mashupItemId} = "";
+	ss_mashupAttr_numberOfLines${ss_mashupItemId} = "";
 }
 function ss_mashupBuildAttrs${ss_mashupItemId}() {
 	var attr = "";
 	if (ss_mashupAttr_noTitle${ss_mashupItemId} != "") attr += ",noTitle=1"
+	if (ss_mashupAttr_showFolderDescription${ss_mashupItemId} != "") attr += ",showFolderDescription=1"
+	if (ss_mashupAttr_showEntriesOpened${ss_mashupItemId} != "") attr += ",showEntriesOpened=1"
+	if (ss_mashupAttr_numberOfLines${ss_mashupItemId} != "") 
+		attr += ",entriesToShow=" + ss_mashupAttr_numberOfLines${ss_mashupItemId}
 	return attr;
 }
 function ss_mashupSubmit${ss_mashupItemId}() {
@@ -128,7 +140,7 @@ function ss_mashupSubmit${ss_mashupItemId}() {
 	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:401;
 	  	padding:10px;" 
   >
-  		<div><ssf:nlt tag="mashup.addEntry"/></div>
+  		<div><ssf:nlt tag="mashup.selectEntry"/></div>
   		<div>
   		  <ssf:find 
     		type="entries"
@@ -137,6 +149,10 @@ function ss_mashupSubmit${ss_mashupItemId}() {
 		    clickRoutine="ss_selectEntryId${ss_mashupItemId}_${renderResponse.namespace}"
 		    accessibilityText="wiki.findPage"
 		    />
+          <br/>
+          <input type="checkbox" name="${ss_mashupPropertyName}__noTitle"
+            onChange="ss_mashupAttr_noTitle${ss_mashupItemId} = this.value;"/> 
+          <span><ssf:nlt tag="mashup.noTitle"/></span>
 		  <br/>
 		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
 		    onClick="ss_mashupSubmit${ss_mashupItemId}();return true;"
@@ -150,7 +166,7 @@ function ss_mashupSubmit${ss_mashupItemId}() {
 	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:401;
 	  	padding:10px;" 
   >
-  		<div><ssf:nlt tag="mashup.addFolder"/></div>
+  		<div><ssf:nlt tag="mashup.selectFolder"/></div>
   		<div>
   		  <ssf:find 
     		type="places"
@@ -164,6 +180,18 @@ function ss_mashupSubmit${ss_mashupItemId}() {
           <input type="checkbox" name="${ss_mashupPropertyName}__noTitle"
             onChange="ss_mashupAttr_noTitle${ss_mashupItemId} = this.value;"/> 
           <span><ssf:nlt tag="mashup.noTitle"/></span>
+          <br/>
+          <input type="checkbox" name="${ss_mashupPropertyName}__showFolderDescription"
+            onChange="ss_mashupAttr_showFolderDescription${ss_mashupItemId} = this.value;"/> 
+          <span><ssf:nlt tag="mashup.showFolderDescription"/></span>
+          <br/>
+          <input type="checkbox" name="${ss_mashupPropertyName}__showEntriesOpened"
+            onChange="ss_mashupAttr_showEntriesOpened${ss_mashupItemId} = this.value;"/> 
+          <span><ssf:nlt tag="mashup.showEntriesOpened"/></span>
+          <br/>
+          <input type="text" name="${ss_mashupPropertyName}__numberOfLines"
+            onChange="if (ss_isInteger(this.value)) {ss_mashupAttr_numberOfLines${ss_mashupItemId} = this.value;}"/> 
+          <span><ssf:nlt tag="mashup.numberOfLines"/></span>
           <br/>
 		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
 		    onClick="ss_mashupSubmit${ss_mashupItemId}();return true;"
