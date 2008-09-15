@@ -89,6 +89,16 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
                 --%> title="<ssf:nlt tag="helpSpot.manageWorkspaceMenu"/>"></ssHelpSpot><%--
             --%></c:when><%--
 
+            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.whatsNew'}"><%--
+                --%><ssHelpSpot helpId="workspaces_folders/menus_toolbars/whats_new" offsetY="-5" offsetX="-20" <%--
+                --%> title="<ssf:nlt tag="helpSpot.whatsNew"/>"></ssHelpSpot><%--
+            --%></c:when><%--
+
+            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.whatsUnread'}"><%--
+                --%><ssHelpSpot helpId="workspaces_folders/menus_toolbars/whats_unread" offsetY="-5" offsetX="-20" <%--
+                --%> title="<ssf:nlt tag="helpSpot.whatsUnread"/>"></ssHelpSpot><%--
+            --%></c:when><%--
+
             --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.modifyProfileButton'}"><%--
                 --%><ssHelpSpot helpId="people/modify_profile" offsetY="-3" offsetX="-8" <%--
                 --%> title="<ssf:nlt tag="helpSpot.modifyProfileButton"/>"></ssHelpSpot><%--
@@ -271,6 +281,16 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
                 --%></ssHelpSpot><%--
             --%></c:when><%--
             
+            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.whatsNew'}"><%--
+                --%><ssHelpSpot helpId="workspaces_folders/menus_toolbars/whats_new" offsetY="0" offsetX="0" <%--
+                --%> title="<ssf:nlt tag="helpSpot.whatsNew"/>"></ssHelpSpot><%--
+            --%></c:when><%--
+
+            --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.whatsUnread'}"><%--
+                --%><ssHelpSpot helpId="workspaces_folders/menus_toolbars/whats_unread" offsetY="0" offsetX="0" <%--
+                --%> title="<ssf:nlt tag="helpSpot.whatsUnread"/>"></ssHelpSpot><%--
+            --%></c:when><%--
+
             --%><c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.modifyProfileButton'}"><%--
                 --%><ssHelpSpot helpId="people/modify_profile" <%--
                 --%><c:if test="<%= !isIE %>"><%--
