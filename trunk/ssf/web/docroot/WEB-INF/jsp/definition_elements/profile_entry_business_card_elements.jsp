@@ -81,8 +81,10 @@
     <c:otherwise>style='display:block'</c:otherwise>
   </c:choose>
 >
-  <a href="javascript:;" onClick="ss_showHideBusinessCard('show','${scopeBusinessCard}');
-  toggle_visibility('hide');"><img border="0" src="<html:imagesPath/>icons/profile_bizcard_full.gif"/></a>
+  <a href="javascript:;" 
+    onClick="ss_showHideBusinessCard('show','${scopeBusinessCard}');toggle_visibility('hide');"
+    title="<ssf:nlt tag="profile.page.toggleStyle"/>"
+  ><img border="0" src="<html:imagesPath/>icons/profile_bizcard_full.gif"/></a>
 </div>
 
 <div id='hide'
@@ -91,8 +93,10 @@
     <c:otherwise>style='display:block'</c:otherwise>
   </c:choose>
 >
-  <a href="javascript:;" onClick="ss_showHideBusinessCard('hide','${scopeBusinessCard}');
-  toggle_visibility('show');"><img border="0" src="<html:imagesPath/>icons/profile_bizcard_small.gif"/></a>
+  <a href="javascript:;" 
+    onClick="ss_showHideBusinessCard('hide','${scopeBusinessCard}');toggle_visibility('show');"
+    title="<ssf:nlt tag="profile.page.toggleStyle"/>"
+  ><img border="0" src="<html:imagesPath/>icons/profile_bizcard_small.gif"/></a>
 </div>
 
 </div>

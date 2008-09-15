@@ -122,17 +122,6 @@
 
   </ul>
 </div>
-<ssf:ifnotaccessible>
-  <div align="right" valign="top">
-    <a href="javascript: ;" 
-      onClick="ss_showHideRelevanceCanvas('${renderResponse.namespace}');return false;">
-      <span id="ss_relevanceShowButton${renderResponse.namespace}" style="display:none;"
-        class="ss_toggle">[<ssf:nlt tag="button.show"/>]</span>
-      <span id="ss_relevanceHideButton${renderResponse.namespace}" style="display:block;"
-        class="ss_toggle">[<ssf:nlt tag="button.hide"/>]</span>
-    </a>
-  </div>
-</ssf:ifnotaccessible>
 <div class="ss_clear_float"></div>
 <script type="text/javascript">
 var ss_relevanceTabCurrent_${renderResponse.namespace} = self.document.getElementById('ss_relevanceInitialTab${renderResponse.namespace}');
