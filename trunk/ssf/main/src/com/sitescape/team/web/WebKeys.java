@@ -1112,7 +1112,6 @@ public class WebKeys {
     public static final String VIEW_GUESTBOOK_EDIT="guestbook_summary/edit";
     public static final String VIEW_IMPORT_TEMPLATE="administration/importTemplate";
     public static final String VIEW_LOGIN_PLEASE="forum/login_please";
-    public static final String VIEW_LOGIN_PLEASE_SNIPPET="forum/login_please_snippet";
     public static final String VIEW_LOGIN_RETURN="forum/login_return";
     public static final String VIEW_LOGIN_RETRY="forum/login_retry";
     public static final String VIEW_LOGOUT_RETURN="forum/logout_return";
