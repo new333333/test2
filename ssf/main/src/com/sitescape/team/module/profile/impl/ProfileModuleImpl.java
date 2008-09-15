@@ -714,7 +714,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         		updates.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
   				ws = (Workspace)processor.addBinder(entry.getParentBinder(), userDef, Workspace.class, new MapInputData(updates), null, options);				
   			}
-   		} catch (WriteFilesException wf) {
+  		} catch (WriteFilesException wf) {
    			logger.error("Error create user workspace: ", wf);
    			
    		} finally {
