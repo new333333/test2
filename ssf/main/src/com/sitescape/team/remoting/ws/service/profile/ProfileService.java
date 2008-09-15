@@ -43,8 +43,9 @@ public interface ProfileService {
 	public Group profile_getGroup(String accessToken, long groupId, boolean includeAttachments);
 	public Group profile_getGroupByName(String accessToken, String groupName, boolean includeAttachments);
 	
-	public void profile_addUserToGroup(String accessToken, long userId, String username, long groupId);
-	
+	public void profile_addGroupMember(String accessToken, String groupName, String username);
+	public void profile_removeGroupMember(String accessToken, String groupName, String username);
+	public PrincipalCollection profile_getGroupMembers(String accessToken, String groupName);
 	public void profile_deletePrincipal(String accessToken, long principalId, boolean deleteWorkspace);
 	
 	public long profile_addUserWorkspace(String accessToken, long userId);

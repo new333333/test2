@@ -120,6 +120,9 @@ public interface Facade {
 	public String getAllPrincipalsAsXML(int firstRecord, int maxRecords);
 	public String getPrincipalAsXML(long binderId, long principalId);
 	public long addUserWorkspace(long userId);
+	public void addGroupMember(String groupName, String memberName);
+	public void removeGroupMember(String groupName, String memberName);
+	public String getGroupMembersAsXML(String groupName);
 
 	//
 	// Workspace operations

@@ -999,19 +999,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		}
 		catch(NoUserByTheNameException thisIsOk) {}
 	}
-	//RW transaction
-	public void addUserToGroup(Long userId, String username, Long groupId) {
-		Group group = (Group)getProfileDao().loadGroup(groupId, RequestContextHolder.getRequestContext().getZoneId());		
-		checkAccess(group, ProfileOperation.modifyEntry);   
-		Principal user;
-		if (Validator.isNotNull(username)) {	
-			//could be user or group
-			user = getProfileDao().findPrincipalByName(username, RequestContextHolder.getRequestContext().getZoneId());
-		} else {
-			user = getProfileDao().loadUserPrincipal(userId, RequestContextHolder.getRequestContext().getZoneId(), true);
-		}
-		group.addMember(user);
-	}
 	
 	//NO transaction
 	public Long addUser(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 

@@ -34,5 +34,5 @@ public interface ProfileServiceInternal {
 	
 	public String profile_getPrincipalAsXML(String accessToken, long binderId, long principalId);
 	
-
+	public String profile_getGroupMembersAsXML(String accessToken, String groupName);
 }
