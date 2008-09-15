@@ -30,8 +30,10 @@ package com.sitescape.team.taglib;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -92,10 +94,18 @@ public class MashupTag extends BodyTagSupport {
 				if (mashupItemValues.length > 0) {
 					String type = mashupItemValues[0];
 					if (type != null && !type.equals("")) {
-		
+						//Build a map of attributes
+						Map mashupItemAttributes = new HashMap();
+						for (int i = 1; i < mashupItemValues.length; i++) {
+							String[] valueSet = mashupItemValues[i].split("=");
+							if (valueSet.length == 2) {
+								mashupItemAttributes.put(valueSet[0], valueSet[1]);
+							}
+						}
 						httpReq.setAttribute("mashup_id", id);
 						httpReq.setAttribute("mashup_type", type);
 						httpReq.setAttribute("mashup_values", mashupItemValues);
+						httpReq.setAttribute("mashup_attributes", mashupItemAttributes);
 						httpReq.setAttribute("mashup_view", view);
 						
 						// Output the start of the mashup table element
