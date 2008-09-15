@@ -89,6 +89,27 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	       return loadEntry(parentFolderId, entryId, zoneId);
     }
       
+	public FolderEntry loadFolderEntry(final String sortKey, final Long zoneId) throws DataAccessException,NoFolderEntryByTheIdException {
+        FolderEntry entry = (FolderEntry)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                         Criteria crit = session.createCriteria(FolderEntry.class)
+                         	.add(Expression.eq("HKey.sortKey", sortKey))  
+                         	.setFetchMode("entryDef", FetchMode.SELECT)	
+                         	.setFetchMode(ObjectKeys.FIELD_ENTITY_PARENTBINDER, FetchMode.SELECT)	
+                         	.setFetchMode("topFolder", FetchMode.SELECT);	
+                         List objs = crit.list();
+                         if (objs.isEmpty()) throw new NoFolderEntryByTheIdException(sortKey);
+                         return (FolderEntry)objs.get(0);
+                     }
+               }
+               
+    		);
+        //check zone  just in case
+        if (!zoneId.equals(entry.getZoneId())) throw new NoFolderEntryByTheIdException(sortKey);
+        return entry;
+
+	}
 	public FolderEntry loadFolderEntry(Long entryId, Long zoneId) throws DataAccessException,NoFolderEntryByTheIdException {
        return loadEntry(null, entryId, zoneId);
     }

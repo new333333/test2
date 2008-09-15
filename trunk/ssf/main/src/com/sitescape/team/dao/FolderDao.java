@@ -56,6 +56,15 @@ public interface FolderDao {
 	 * @throws DataAccessException
 	 * @throws NoFolderEntryByTheIdException
 	 */
+	public FolderEntry loadFolderEntry(String sortKey, Long zoneId) throws DataAccessException,NoFolderEntryByTheIdException;
+	/**
+	 * Load folder entry
+	 * @param entryId
+	 * @param zoneId
+	 * @return
+	 * @throws DataAccessException
+	 * @throws NoFolderEntryByTheIdException
+	 */
 	public FolderEntry loadFolderEntry(Long entryId, Long zoneId) throws DataAccessException,NoFolderEntryByTheIdException;
 	/**
 	 * Same as {@link #loadFolderEntry(Long,Long) loadFolderEntry} except validate entry belongs to the specified folder.
