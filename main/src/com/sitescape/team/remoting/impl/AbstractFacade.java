@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.io.StringBufferInputStream;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,6 +63,9 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HKey;
+import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.NoPrincipalByTheIdException;
+import com.sitescape.team.domain.NoGroupByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
@@ -77,6 +80,7 @@ import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
+import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.remoting.Facade;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -521,6 +525,88 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		return getProfileModule().addUserWorkspace(user).getId();
 	}
 	
+	public void addGroupMember(String groupName, String memberName) {
+		ArrayList<String> names = new ArrayList();
+		names.add(groupName);
+		names.add(memberName);
+		Collection<Principal> ps = getProfileModule().getPrincipalsByName(names);
+		Principal member=null;
+		for (Principal p:ps) {
+			if (p.getName().equals(memberName)) {
+				member = p;
+				break;
+			}
+		}
+		if (member == null) return; //must not exist
+		Group group=null;
+		for (Principal p:ps) {
+			if (p.getName().equals(groupName)) {
+				group = (Group)p;
+				break;
+			}
+		}
+		if (group == null) return;
+		Map updates = new HashMap();
+		List members = new ArrayList(group.getMembers());
+		members.add(member);
+		updates.put(ObjectKeys.FIELD_GROUP_MEMBERS, members);
+		try {
+			getProfileModule().modifyEntry(group.getParentBinder().getId(), group.getId(), new MapInputData(updates));	
+		}	catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+	}
+	public void removeGroupMember(String groupName, String memberName) {
+		ArrayList<String> names = new ArrayList();
+		names.add(groupName);
+		names.add(memberName);
+		Collection<Principal> ps = getProfileModule().getPrincipalsByName(names);
+		Principal member=null;
+		for (Principal p:ps) {
+			if (p.getName().equals(memberName)) {
+				member = p;
+				break;
+			}
+		}
+		if (member == null) return; //must not exist
+		Group group=null;
+		for (Principal p:ps) {
+			if (p.getName().equals(groupName)) {
+				group = (Group)p;
+				break;
+			}
+		}
+		if (group == null) return;
+		Map updates = new HashMap();
+		List members = new ArrayList(group.getMembers());
+		members.remove(member);
+		updates.put(ObjectKeys.FIELD_GROUP_MEMBERS, members);
+		try {
+			getProfileModule().modifyEntry(group.getParentBinder().getId(), group.getId(), new MapInputData(updates));	
+		}	catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+		
+	}
+	public String getGroupMembersAsXML(String groupName)
+	{
+		ArrayList<String> names = new ArrayList();
+		names.add(groupName);
+		Collection<Principal> ps = getProfileModule().getPrincipalsByName(names);
+		if (ps.isEmpty()) throw new NoGroupByTheNameException(groupName);
+		Principal p = ps.iterator().next();
+		if (!(p instanceof Group)) throw new NoGroupByTheNameException(groupName);
+		Group group = (Group)p;
+		Document doc = DocumentHelper.createDocument();
+		Element team = doc.addElement("group");
+		List members = group.getMembers();
+		for (int i=0; i<members.size(); ++i) {
+			addPrincipalToDocument(team, (Principal)members.get(i));
+		}
+		
+		return doc.getRootElement().asXML();
+	}
+
 	public String getWorkspaceTreeAsXML(long binderId, int levels, String page) {
 		com.sitescape.team.domain.Binder binder = null;
 		

@@ -161,6 +161,12 @@ public class WSClient
 			} else if(args[0].equals("setTeamMembers")) {
 				String names[] = args[2].split(",");
 				justDoIt("setTeamMembers", new Object[] {Long.parseLong(args[1]), names});
+			} else if(args[0].equals("printGroupMembers")) {
+				fetchAndPrintXML("getGroupMembersAsXML", new Object[] {args[1]});
+			} else if(args[0].equals("addGroupMember")) {
+				justDoIt("addGroupMember", new Object[] {args[1], args[2]});
+			} else if(args[0].equals("removeGroupMember")) {
+				justDoIt("removeGroupMember", new Object[] {args[1], args[2]});
 			} else if(args[0].equals("setDefinitions")) {
 				String ids[] = args[2].split(",");
 				List idsList = new ArrayList();
@@ -318,6 +324,9 @@ public class WSClient
 		System.out.println("migrateFileStaged <folder id> <entry id> <fileDataFieldName> <filename> <stagedFileRelativePath> <modifier> <modDate>");
 		System.out.println("-- The following is to be used only in conjunction with extendedws sample --");
 		System.out.println("getBinderTitle <binder id>");
+		System.out.println("printGroupMembers <groupName>");
+		System.out.println("addGroupMember <groupName> <memberName>");
+		System.out.println("removeGroupMember <groupName> <memberName>");
 
 	}
 }
