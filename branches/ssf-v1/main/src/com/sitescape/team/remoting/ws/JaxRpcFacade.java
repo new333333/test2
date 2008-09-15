@@ -134,6 +134,15 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	public long addUserWorkspace(long userId) {
 		return this.facade.addUserWorkspace(userId);
 	}
+	public void addGroupMember(String groupName, String memberName) {
+		this.facade.addGroupMember(groupName, memberName);
+	}
+	public void removeGroupMember(String groupName, String memberName) {
+		this.facade.removeGroupMember(groupName, memberName);
+	}
+	public String getGroupMembersAsXML(String groupName) {
+		return this.facade.getGroupMembersAsXML(groupName);
+	}
 
 	public String getWorkspaceTreeAsXML(long binderId, int levels, String page) {
 		return this.facade.getWorkspaceTreeAsXML(binderId, levels, page);
