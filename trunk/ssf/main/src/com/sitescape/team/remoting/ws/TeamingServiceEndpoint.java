@@ -345,9 +345,16 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void migration_uploadFolderFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath, String modifier, Calendar modificationDate) {
 		getMigrationService().migration_uploadFolderFileStaged(accessToken, binderId, entryId, fileUploadDataItemName, fileName, stagedFileRelativePath, modifier, modificationDate);
 	}
-	public void profile_addUserToGroup(String accessToken, long userId, String username, long groupId) {
-		getProfileService().profile_addUserToGroup(accessToken, userId, username, groupId);
+	public void profile_addGroupMember(String accessToken, String groupName, String userName) {
+		getProfileService().profile_addGroupMember(accessToken, groupName, userName);
 	}
+	public void profile_removeGroupMember(String accessToken, String groupName, String userName) {
+		getProfileService().profile_removeGroupMember(accessToken, groupName, userName);
+	}
+	public PrincipalCollection profile_getGroupMembers(String accessToken, String groupName) {
+		return getProfileService().profile_getGroupMembers(accessToken, groupName);
+	}
+
 	public long profile_addUserWorkspace(String accessToken, long userId) {
 		return getProfileService().profile_addUserWorkspace(accessToken, userId);
 	}

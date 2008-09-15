@@ -100,14 +100,6 @@ public interface ProfileModule {
 	  */
 	 public Long addUser(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
 		throws AccessControlException, WriteFilesException;
-	 /**
-	  * Add a user as a member of a group.  If username is <code>not null</code> then find the user by name,
-	  * otherwise find the user by id
-	  * @param userId Id of user or null if username supplied
-	  * @param username Login name of user
-	  * @param groupId Id of group to add user to
-	  */
-	 public void addUserToGroup(Long userId, String username, Long groupId);
 	 
 	 /**
 	  * Add a user workspace from the user workspace template

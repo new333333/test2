@@ -39,13 +39,14 @@ import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.NoFileByTheNameException;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.UserPrincipal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.EmptyInputData;
+import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
 import com.sitescape.team.remoting.ws.model.FileVersions;
@@ -92,9 +93,59 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		
 		return xml;
 	}
+	public String profile_getGroupMembersAsXML(String accessToken, String groupName) {
+		Group group = getProfileModule().getGroup(groupName);
+		Document doc = DocumentHelper.createDocument();
+		Element team = doc.addElement("group");
+		List members = group.getMembers();
+		for (int i=0; i<members.size(); ++i) {
+			addPrincipalToDocument(team, (Principal)members.get(i));
+		}
+			
+		return doc.getRootElement().asXML();
+
+	}
+	
+	public void profile_addGroupMember(String accessToken, String groupName, String username) {
+		Group group = getProfileModule().getGroup(groupName);
+		UserPrincipal member = (UserPrincipal)getProfileModule().getEntry(username);
+		Map updates = new HashMap();
+		List members = new ArrayList(group.getMembers());
+		members.add(member);
+		updates.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, members);
+		try {
+			getProfileModule().modifyEntry(group.getId(), new MapInputData(updates));	
+		}	catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+
+	}
+	public void profile_removeGroupMember(String accessToken, String groupName, String username) {
+		Group group = getProfileModule().getGroup(groupName);
+		UserPrincipal member = (UserPrincipal)getProfileModule().getEntry(username);
+		Map updates = new HashMap();
+		List members = new ArrayList(group.getMembers());
+		members.remove(member);
+		updates.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, members);
+		try {
+			getProfileModule().modifyEntry(group.getId(), new MapInputData(updates));	
+		}	catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
 		
-	public void profile_addUserToGroup(String accessToken, long userId, String username, long groupId) {
-		getProfileModule().addUserToGroup(Long.valueOf(userId), username, Long.valueOf(groupId));
+	}
+	public PrincipalCollection profile_getGroupMembers(String accessToken, String groupName) {
+		Group group = getProfileModule().getGroup(groupName);
+		List members = group.getMembers();
+		PrincipalBrief[] principals = new PrincipalBrief[members.size()];
+		for(int i=0; i<members.size(); ++i) {
+			principals[i] = toPrincipalBrief((Principal)members.get(i));
+		}
+		PrincipalCollection result = new PrincipalCollection();
+		result.setEntries(principals);
+		result.setFirst(0);
+		result.setTotal(members.size());
+		return result;
 	}
 		
 	public void profile_deletePrincipal(String accessToken, long principalId, boolean deleteWorkspace) {

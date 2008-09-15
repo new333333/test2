@@ -59,6 +59,7 @@ public class TeamingServiceClientWithStub {
 	public static void main(String[] args) throws Exception {
 		FolderEntry entry;
 		//checkUsers();
+		checkGroups();
 		//checkBinder();
 		//checkEntry();
 		//getFolderEntryWSSecurity(47, true);
@@ -656,5 +657,57 @@ public class TeamingServiceClientWithStub {
 			return stub.binder_getBinder(null, stub.template_addBinder(null, gblId, tb.getId(), title), false);
 
 		}
+	}
+	private static void checkGroups() throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		Group group = new Group();
+		group.setName("testgroup");
+		stub.profile_addGroup(null, group);
+		group = stub.profile_getGroupByName(null, "testgroup", false);
+		User testUser = getTestUser();
+		stub.profile_addGroupMember(null, "testgroup", testUser.getName());
+		PrincipalCollection members = stub.profile_getGroupMembers(null, "testgroup");
+		PrincipalBrief[] entries = members.getEntries();
+		
+		System.out.println("First = " + members.getFirst());
+		System.out.println("Count = " + entries.length);
+		System.out.println("Total = " + members.getTotal());
+		for(int i = 0; i < entries.length; i++) {
+			System.out.println("(" + i + ") id=" + entries[i].getId() + ", name=" + entries[i].getName() + ", type=" + entries[i].getType() + ", title=" + entries[i].getTitle() + ", email=" + entries[i].getEmailAddress()); 
+		}
+		stub.profile_removeGroupMember(null, "testgroup", testUser.getName());
+		members = stub.profile_getGroupMembers(null, "testgroup");
+		entries = members.getEntries();
+		System.out.println("First = " + members.getFirst());
+		System.out.println("Count = " + entries.length);
+		System.out.println("Total = " + members.getTotal());
+		for(int i = 0; i < entries.length; i++) {
+			System.out.println("(" + i + ") id=" + entries[i].getId() + ", name=" + entries[i].getName() + ", type=" + entries[i].getType() + ", title=" + entries[i].getTitle() + ", email=" + entries[i].getEmailAddress()); 
+		}
+		stub.profile_deletePrincipal(null, testUser.getId(), true);
+		stub.profile_deletePrincipal(null, group.getId(), true);
+	}
+	private static User getTestUser() throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		User testUser =null;
+		try {
+			testUser = stub.profile_getUserByName(null, "Jodi", false);
+		} catch (Exception ex) {
+			testUser = new User();
+			testUser.setName("Jodi");
+			testUser.setFirstName("Jodi");
+			testUser.setMiddleName("Anne");
+			testUser.setLastName("Tester");
+			testUser.setEmailAddress("boulder@foo.bar");
+			long testUserId = stub.profile_addUser(null, testUser);
+			testUser = stub.profile_getUser(null, testUserId, false);
+		}
+		return testUser;
 	}
 }

@@ -246,10 +246,24 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	}
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.remoting.ws.service.profile#addUserToGroup}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.profile#addGroupMember}.
 	 */
-	public void addUserToGroup(long userId, String username, long groupId) {
-		this.profileService.profile_addUserToGroup(null, userId, username, groupId);
+	public void addGroupMember(String groupName, String memberName) {
+		this.profileService.profile_addGroupMember(null, groupName, memberName);
+	}
+	/**
+	 * @deprecated As of ICEcore version 1.1,
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.profile#removeGroupMember}.
+	 */
+	public void removeGroupMember(String groupName, String memberName) {
+		this.profileService.profile_removeGroupMember(null, groupName, memberName);
+	}
+	/**
+	 * @deprecated As of ICEcore version 1.1,
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.profile#getGroupMembersAsXML}.
+	 */
+	public String getGroupMembersAsXML(String groupName) {
+		return ((ProfileServiceInternal)this.profileService).profile_getGroupMembersAsXML(null, groupName);
 	}
 	
 	
