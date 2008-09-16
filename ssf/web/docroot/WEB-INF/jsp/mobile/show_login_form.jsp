@@ -33,8 +33,8 @@
 <div class="ss_style ss_portlet">
 <div style="padding:30px;">
   <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
-  <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="login.please"/></legend>
+  <fieldset class="ss_fieldset_login">
+    <legend class="ss_legend_login"><ssf:nlt tag="login.please"/></legend>
     <table>
       <tr>
         <td valign="top">

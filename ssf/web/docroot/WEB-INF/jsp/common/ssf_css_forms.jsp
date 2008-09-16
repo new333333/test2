@@ -147,6 +147,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	margin: 6px;
 	}
 fieldset.ss_fieldset {
+    margin-top: 6px;
+    margin-bottom: 4px;
+    border: 1px solid ${ss_style_border_color_light};
+	} 
+fieldset.ss_fieldset_login {
   	margin-top: 40px;
   	margin-bottom: 40px;
  	padding-bottom:12px;
@@ -170,7 +175,22 @@ fieldset a{
 fieldset a:hover{
 	border: dotted 1px #000;
 	}
+
 legend.ss_legend {
+  font-family: ${ss_style_font_family};
+  font-weight: bold;
+  font-size: ${ss_style_font_size}; 
+  color: ${ss_style_text_color};
+}
+
+legend.ss_legend_bold {
+  font-family: ${ss_style_font_family};
+  font-weight: bold;
+  font-size: ${ss_style_font_size}; 
+  color: ${ss_style_text_color};
+}
+
+legend.ss_legend_login {
   	font-size:24px !important;
 	letter-spacing:-1px;
 	font-family:Georgia, "Times New Roman", Times, serif !important;
