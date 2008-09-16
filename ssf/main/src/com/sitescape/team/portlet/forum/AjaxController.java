@@ -2154,6 +2154,11 @@ public class AjaxController  extends SAbstractControllerRetry {
 			} else {
 				try {
 					miniBlog = (Folder) getBinderModule().getBinder(miniBlogId);
+					if (miniBlog.isDeleted()) {
+						//The miniblog folder doesn't exist anymore, so try create it again
+						miniBlog = getProfileModule().addUserMiniBlog(user);
+						if (miniBlog != null) getProfileModule().setMiniBlogId(miniBlog.getId());
+					}
 				} catch(NoBinderByTheIdException e) {
 					//The miniblog folder doesn't exist anymore, so try create it again
 					miniBlog = getProfileModule().addUserMiniBlog(user);
@@ -2172,7 +2177,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 						
 				List<Definition> defs = getDefinitionModule().getDefinitions(null, Boolean.FALSE, Definition.FOLDER_ENTRY);
 				for (Definition def:defs) {
-					if (ObjectKeys.DEFAULT_ENTRY_MINIBLOG_DEF.equals(def.getId())) {
+					if (ObjectKeys.DEFAULT_ENTRY_MINIBLOG_DEF.equals(def.getInternalId())) {
 	  					getFolderModule().addEntry(miniBlog.getId(), def.getId(), new MapInputData(data), null, null);
   					}
   				}

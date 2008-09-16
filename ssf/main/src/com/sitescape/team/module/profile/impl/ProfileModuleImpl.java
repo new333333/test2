@@ -730,7 +730,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     public Folder addUserMiniBlog(User entry) throws AccessControlException {
         if (entry.getMiniBlogId() != null) {
         	try {
-        		return (Folder)getCoreDao().loadBinder(entry.getMiniBlogId(), entry.getZoneId()); 
+        		Folder miniblog = (Folder)getCoreDao().loadBinder(entry.getMiniBlogId(), entry.getZoneId()); 
+        		if (!miniblog.isDeleted()) return miniblog;
 			} catch(AccessControlException e) {
 				return null;
         	} catch (Exception ex) {
@@ -746,7 +747,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
  					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
 				List<Definition> defs = getDefinitionModule().getDefinitions(null, Boolean.FALSE, Definition.FOLDER_VIEW);
 				for (Definition def:defs) {
-					if (ObjectKeys.DEFAULT_FOLDER_MINIBLOG_DEF.equals(def.getId())) {
+					if (ObjectKeys.DEFAULT_FOLDER_MINIBLOG_DEF.equals(def.getInternalId())) {
 						Map data = new HashMap(); // Input data
 						data.put(ObjectKeys.FIELD_ENTITY_TITLE, mbTitle);
 						Long miniBlogId = getBinderModule().addBinder(entry.getWorkspaceId(), def.getId(), 
