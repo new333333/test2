@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_miniBlogFolder" caption="__definition_default_folder_miniblog" type="5" nextId="12" definitionType="5" databaseId="402883b51c470e76011c4859ba200010">
+<definition name="_miniBlogFolder" caption="__definition_default_folder_miniblog" type="5" nextId="12" definitionType="5" 
+	databaseId="402883b51c470e76011c4859ba200010" internalId="402883b51c470e76011c4859ba200010">
   <item name="folderForm" caption="__folder_form" type="form" id="1" display="form">
     <properties/>
     <item name="title" caption="__title" type="data" display="form" id="10">

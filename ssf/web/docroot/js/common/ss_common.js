@@ -900,11 +900,6 @@ function ss_showRelevanceTab(s, namespace) {
 	canvasObj.innerHTML = s;
 	canvasObj.style.display = 'block'
 	canvasObj.style.visibility = 'visible'
-	//Make sure the hide button is visible
-	var showBtn = self.document.getElementById('ss_relevanceShowButton'+namespace)
-	var hideBtn = self.document.getElementById('ss_relevanceHideButton'+namespace)
-	showBtn.style.display = 'none';
-	hideBtn.style.display = 'block';
 	ss_executeJavascript(canvasObj); // calendar view is generated in js
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
