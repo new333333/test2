@@ -41,7 +41,7 @@
 </ssf:ifadapter>
 <div align="center"> <style="padding:30px">
   <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
-  <fieldset class="ss_fieldset">
+  <fieldset class="ss_fieldset_login">
     <legend class="ss_legend"><ssf:nlt tag="login.please"/></legend>
     <table>
       <tr>

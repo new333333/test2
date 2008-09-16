@@ -30,11 +30,11 @@
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
-<div class="ss_style ss_portlet">
+<div class="ss_mobile">
 <div style="padding:30px;">
   <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
-  <fieldset class="ss_fieldset_login">
-    <legend class="ss_legend_login"><ssf:nlt tag="login.please"/></legend>
+    <span class="ss_mobile_large ss_bold"><ssf:nlt tag="login.please"/></span>
+    <br/>
     <table>
       <tr>
         <td valign="top">
@@ -58,7 +58,6 @@
     <br/>
     <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
     <input type="hidden" name="spring-security-redirect" value="${ssUrl}"/>
-  </fieldset>
   </form>
 </div>
 <script type="text/javascript">
