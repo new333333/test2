@@ -44,53 +44,29 @@
 		<tbody>
 		<tr>
 			<td valign="middle" align="right" width="25%">
-			<% // this should be view entry %>
 			<div id="ss_goBox">
 			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
 				<tbody><tr>
 				<td class="ss_page_IE2" valign="middle">
-			
-				
-			<c:if test="${ssPageCount > '1.0'}">
-			    <span><label for="ssGoToEntry${renderResponse.namespace}"><ssf:nlt tag="entry.goTo"/></label></span>
-			
+			      <span>
+			        <label for="ssGoToEntry${renderResponse.namespace}"><ssf:nlt tag="entry.goTo"/></label>
+			      </span>
 			    </td>
 			    <td valign="middle"  class="ss_paginationGo ss_page_IE">
 			      <form name="ss_goToEntryForm_${renderResponse.namespace}" 
 			        id="ss_goToEntryForm_${renderResponse.namespace}" method="post" 
-				    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-					name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
-					name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
-					name="pTag" value="${pTag}"/></c:if><c:if test="${!empty ss_yearMonth}"><ssf:param 
-					name="yearMonth" value="${ss_yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
-					name="endDate" value="${endDate}"/></c:if><ssf:param 
-					name="operation" value="go_to_entry"/></ssf:url>" 
-					onSubmit="return(ss_submitPage_${renderResponse.namespace}(this))">
-				
-			    <input name="ssGoToEntry" id="ssGoToEntry${renderResponse.namespace}" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
+				    action="<ssf:url action="view_folder_entry" 
+				    actionUrl="true"><ssf:param 
+					name="binderId" value="${ssFolder.id}"/><ssf:param 
+					name="entryViewStyle" value="full"/><ssf:param 
+					name="operation" value="go_to_entry"/></ssf:url>" >
+			    <input name="ssGoToEntry" id="ssGoToEntry${renderResponse.namespace}" size="7" 
+			      type="text" class="ss_paginationTextBox" />&nbsp;
 				<a href="javascript: ;" 
 				<ssf:title tag="entry.goTo" />
 				onClick="ss_clickGoToEntry_${renderResponse.namespace}('ss_goToEntryForm_${renderResponse.namespace}');return false;">
-				<img src="<html:rootPath/>images/pics/page/go.png" width="17" height="12" border="0" align="absmiddle" /></a>
-				
-			</c:if>
-			<c:if test="${ssPageCount <= '1.0'}">
-				<ssf:ifnotaccessible>
-			    	<ssf:nlt tag="entry.goTo"/>
-			    </ssf:ifnotaccessible>
-			    
-			    <ssf:ifaccessible>
-			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
-			    </ssf:ifaccessible>
-			    </td>
-			    <td align="right" valign="middle" class="ss_paginationGo ss_page_IE">
-			    <input name="ssGoToPage" id="ssGoToPage${renderResponse.namespace}" size="7" type="text" class="ss_pTB_no" />&nbsp;
-				<a href="" 
-				<ssf:title tag="entry.goTo" />
-				>
-				<img src="<html:rootPath/>images/pics/page/go.png" width="17" height="12" border="0" align="absmiddle" /></a>
-				
-			</c:if>
+				<img src="<html:rootPath/>images/pics/page/go.png" 
+				  width="17" height="12" border="0" align="absmiddle" /></a>
 			</form>
 			</td></tr></tbody></table>
 			</div>

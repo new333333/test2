@@ -140,6 +140,21 @@ public class ViewEntryController extends  SAbstractController {
 					response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 				}
 			} 
+		} else if (op.equals(WebKeys.OPERATION_GO_TO_ENTRY)) {
+			String entryNumber = PortletRequestUtils.getStringParameter(request, "ssGoToEntry", "");
+			if (!entryNumber.equals("")) {
+				try {
+					FolderEntry entry = getFolderModule().getEntry(folderId, entryNumber);
+					response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
+					response.setRenderParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
+				} catch(Exception e) {
+					response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
+					response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				}
+			} else {
+				response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
+				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			}
 		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
