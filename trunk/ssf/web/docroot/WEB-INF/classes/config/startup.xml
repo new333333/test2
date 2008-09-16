@@ -23,6 +23,8 @@
 	<definitionFile>config/definitions/_libraryFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_guestbookFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_milestoneFolder.xml</definitionFile>
+	<definitionFile>config/definitions/_miniblog_entry.xml</definitionFile>
+	<definitionFile>config/definitions/_miniBlogFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_taskFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_surveyFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_photoFolder.xml</definitionFile>
