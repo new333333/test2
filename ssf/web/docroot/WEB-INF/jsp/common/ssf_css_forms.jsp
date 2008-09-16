@@ -162,15 +162,12 @@ fieldset.ss_fieldset_login {
   	background-repeat: no-repeat;
   	width: 500px;
   	height: 150px;
-  -moz-border-radius: 2%;
+    -moz-border-radius: 2%;
 	} 
 fieldset.ss_fieldset_square {
   	border: 1px solid #5A9A98;
   	padding: 5px;
   	margin-top: 12px;
-	}
-fieldset a{
-	border: dotted 1px #000;
 	}
 fieldset a:hover{
 	border: dotted 1px #000;
