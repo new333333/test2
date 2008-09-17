@@ -1228,6 +1228,18 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 					shares.remove(i);
 			  }
 		  }
+		  //See if this one is the same as the previous one; filter out duplicates
+		  if (i >= 2) {
+			  SharedEntity seM1 = shares.get(i-1);
+			  SharedEntity seM2 = shares.get(i-2);
+			  if (seM1.getReferer().equals(seM2.getReferer()) && 
+					  seM1.getSharedDate().getTime() == seM2.getSharedDate().getTime() &&
+					  seM1.getEntity().equals(seM2.getEntity())) {
+				  //These are the same, so remove one of them
+				  shares.remove(i-1);
+				  --i;
+			  }
+		  }
 	  }
 	  return shares;
     }
