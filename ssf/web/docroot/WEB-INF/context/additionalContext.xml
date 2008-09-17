@@ -37,6 +37,18 @@
 		</property>
 	</bean>
 	
+	<bean id="adminModuleTarget" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.admin.impl.BaseAdminModule">
+		<property name="mailModule"><ref bean="mailModule"/></property>
+		<property name="definitionModule"><ref bean="definitionModule"/></property>
+		<property name="folderModule"><ref bean="folderModule"/></property>
+		<property name="workspaceModule"><ref bean="workspaceModule"/></property>
+		<property name="binderModule"><ref bean="binderModule"/></property>
+		<property name="dashboardModule"><ref bean="dashboardModule"/></property>
+		<property name="fileModule"><ref bean="fileModule"/></property>
+		<property name="icalModule"><ref bean="icalModule"/></property>
+		<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+	</bean>
+	
 	<!-- ============================== Services ============================= -->
 
 	<bean id="archiveStore" class="com.sitescape.team.repository.archive.impl.NullArchiveStore">
@@ -44,8 +56,6 @@
 	
 	<bean id="licenseManager" class="com.sitescape.team.license.impl.NullLicenseManager"/>
 	
-	<bean id="searchNodeInfoManager" class="com.sitescape.team.search.nodeinfo.impl.NullNodeInfoManager"/>
-
 	<!-- ============================== Document Converter ============================ -->
 
 	<!-- View file as HTML manager implementation -->

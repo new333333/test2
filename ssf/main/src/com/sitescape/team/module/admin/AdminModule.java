@@ -182,6 +182,7 @@ public interface AdminModule {
 	
 	public List<Node> getSearchNodes();
 	
-	public void updateSearchNode(String nodeId, String accessMode, Boolean outOfSynch);
+	public void updateSearchNodeInfo(String nodeId, String accessMode, Boolean inSynch);
 
+	public void synchronizeSearchNode(String nodeId);
  }
