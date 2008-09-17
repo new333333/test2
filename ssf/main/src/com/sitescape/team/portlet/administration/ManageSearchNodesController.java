@@ -50,15 +50,18 @@ public class ManageSearchNodesController extends  SAbstractController {
 			List<Node> nodes = getAdminModule().getSearchNodes();
 			if(nodes != null) {
 				for(Node node : nodes) {
-					String[] accessMode = (String[])formData.get("accessMode" + node.getId());
-					if(accessMode != null && accessMode.length > 0) {
-						if(!node.getAccessMode().equals(accessMode[0]))
-							getAdminModule().updateSearchNodeInfo(node.getId(), accessMode[0], null);
-					}
+					// If both synchronize and change-access-mode requests came in, it is
+					// important to execute synchronize first based on the current access
+					// mode, and then change the access mode.
 					String[] synchronize = (String[])formData.get("synchronize" + node.getId());
 					if(synchronize != null && synchronize.length > 0) {
 						if(synchronize[0].equals("on") || synchronize[0].equals("true"))
 							getAdminModule().synchronizeSearchNode(node.getId());
+					}
+					String[] accessMode = (String[])formData.get("accessMode" + node.getId());
+					if(accessMode != null && accessMode.length > 0) {
+						if(!node.getAccessMode().equals(accessMode[0]))
+							getAdminModule().updateSearchNodeInfo(node.getId(), accessMode[0], null);
 					}
 				}
 			}
