@@ -49,20 +49,9 @@ import com.sitescape.team.spring.security.SsfContextMapper;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.util.Validator;
 
-public class AuthenticationModuleImpl extends CommonDependencyInjection
-		implements AuthenticationModule, AuthenticationProvider,
-		InitializingBean {
+public class AuthenticationModuleImpl extends BaseAuthenticationModule
+		implements AuthenticationProvider, InitializingBean {
 	protected Log logger = LogFactory.getLog(getClass());
-
-	private ZoneModule zoneModule;
-
-	public ZoneModule getZoneModule() {
-		return zoneModule;
-	}
-
-	public void setZoneModule(ZoneModule zoneModule) {
-		this.zoneModule = zoneModule;
-	}
 
 	private ProviderManager providerManager;
 
@@ -83,21 +72,6 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 		authenticators = new HashMap<Long, ProviderManager>();
 		localProviders = new HashMap<Long, SsfAuthenticationProvider>();
 		lastUpdates = new HashMap<Long, Long>();
-	}
-
-	public boolean testAccess(AuthenticationOperation operation) {
-		try {
-			checkAccess(operation);
-			return true;
-		} catch (AccessControlException ac) {
-			return false;
-		}
-	}
-
-	protected void checkAccess(AuthenticationOperation operation) {
-		getAccessControlManager().checkOperation(
-				RequestContextHolder.getRequestContext().getZone(),
-				WorkAreaOperation.SITE_ADMINISTRATION);
 	}
 
 	public void afterPropertiesSet() throws Exception {
@@ -320,68 +294,5 @@ public class AuthenticationModuleImpl extends CommonDependencyInjection
 			return (localProviders.get(zone).supports(authentication));
 		}
 		return false;
-	}
-
-	public List<LdapConnectionConfig> getLdapConnectionConfigs() {
-		return getLdapConnectionConfigs(RequestContextHolder
-				.getRequestContext().getZoneId());
-	}
-
-	public List<LdapConnectionConfig> getLdapConnectionConfigs(Long zoneId) {
-		FilterControls filter = new FilterControls();
-		OrderBy order = new OrderBy();
-		order.addColumn("position");
-		filter.setOrderBy(order);
-
-		return (List<LdapConnectionConfig>) getCoreDao().loadObjects(
-				LdapConnectionConfig.class, filter, zoneId);
-	}
-
-	public void setLdapConnectionConfigs(List<LdapConnectionConfig> configs) {
-		checkAccess(AuthenticationOperation.manageAuthentication);
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-
-		int nextPosition = 10;
-		for (LdapConnectionConfig config : configs) {
-			config.setZoneId(zoneId);
-			config.setPosition(nextPosition);
-			if (config.getId() != null) {
-				getCoreDao().update(config);
-			} else {
-				getCoreDao().save(config);
-			}
-			nextPosition += 10;
-		}
-
-		HashMap<String, LdapConnectionConfig> notFound = new HashMap<String, LdapConnectionConfig>();
-		for (LdapConnectionConfig config : getLdapConnectionConfigs(zoneId)) {
-			notFound.put(config.getId(), config);
-		}
-
-		for (LdapConnectionConfig config : configs) {
-			notFound.remove(config.getId());
-		}
-
-		for (LdapConnectionConfig config : notFound.values()) {
-			getCoreDao().delete(config);
-		}
-		AuthenticationConfig authConfig = getAuthenticationConfigForZone(zoneId);
-		authConfig.markAsUpdated();
-		getCoreDao().update(authConfig);
-	}
-	
-	public AuthenticationConfig getAuthenticationConfig()
-	{
-		return getAuthenticationConfigForZone(RequestContextHolder.getRequestContext().getZoneId());
-	}
-	
-	public AuthenticationConfig getAuthenticationConfigForZone(Long zoneId)
-	{
-		AuthenticationConfig config =(AuthenticationConfig) getCoreDao().load(AuthenticationConfig.class, zoneId);
-		if(config == null) {
-			config = new AuthenticationConfig();
-			config.setZoneId(zoneId);
-		}
-		return config;
 	}
 }
