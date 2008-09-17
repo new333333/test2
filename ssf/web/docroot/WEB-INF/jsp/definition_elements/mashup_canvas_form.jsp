@@ -66,10 +66,6 @@
 	      <%
 	    	  String[] mashupItemValues = mashupItem.split(",");
 	    	  String type = mashupItemValues[0];
-	    	  String value1 = "";
-	    	  String value2 = "";
-	    	  if (mashupItemValues.length >= 2) value1 = mashupItemValues[1];
-	    	  if (mashupItemValues.length >= 3) value2 = mashupItemValues[2];
 	      %>
 	 	  <c:if test="${ssConfigJspStyle == 'form'}">
 	  	    <%
@@ -78,7 +74,7 @@
 	  	  </c:if>
 	      <ssf:mashup id="${ss_mashupItemId}" value="${mashupItem}" view="${ssConfigJspStyle}"/>
 	      <c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
-		  <% if (!type.equals("tableStart")) { %>
+		  <% if (!type.equals("") && !type.equals("tableStart")) { %>
 			  <c:if test="${ssConfigJspStyle == 'form'}">
 	      		<c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
 			    <%@ include file="/WEB-INF/jsp/tag_jsps/mashup/add.jsp" %>

@@ -47,10 +47,10 @@
 	}
 	</script>
 </c:if>
-<c:set var="mashupEntry" value="${ss_mashupEntries[mashup_values[1]]}"/>
+<c:set var="mashupEntry" value="${ss_mashupEntries[mashup_attributes['entryId']]}"/>
 <div style="padding:10px;" width="100%">
   <c:if test="${!empty mashupEntry}">
-	<c:if test="${ssConfigJspStyle == 'form' || empty noTitle}">
+	<c:if test="${ssConfigJspStyle == 'form' || empty mashup_attributes['noTitle']}">
 	  <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
 		<a href="<ssf:url action="view_folder_entry" 
 		  folderId="${mashupEntry.parentBinder.id}"

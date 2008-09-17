@@ -2688,7 +2688,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			p = getProfileModule().getEntry(userId);
 			getBinderModule().getBinder(p.getWorkspaceId());
 			miniblogAccessAllowed = true;
-		} catch(AccessControlException e) {}
+		} catch(Exception e) {}
 		
 		model.put(WebKeys.MINIBLOG_USER_ID, userId);
 		model.put(WebKeys.MINIBLOG_USER, p);

@@ -35,11 +35,11 @@
 //Routine called when "Add entry" is clicked
 function ss_selectEntryId${ss_mashupItemId}_${renderResponse.namespace}(id) {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
-	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "entry,"+id;
+	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "entry,entryId="+id;
 }
 function ss_selectFolderId${ss_mashupItemId}_${renderResponse.namespace}(id) {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
-	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "folder,"+id;
+	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "folder,folderId="+id;
 }
 function ss_mashup_addTable${ss_mashupItemId}_${renderResponse.namespace}() {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
