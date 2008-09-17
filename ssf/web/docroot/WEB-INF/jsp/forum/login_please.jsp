@@ -43,7 +43,7 @@
   <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
   <fieldset class="ss_fieldset_login">
     <legend class="ss_legend"><ssf:nlt tag="login.please"/></legend>
-    <table>
+    <table><tbody>
       <tr>
         <td valign="middle" align="right">
           <span><ssf:nlt tag="login.name"/></span>
@@ -65,7 +65,7 @@
         <td valign="middle" align="right">
           <span><ssf:nlt tag="login.remember"/></span>
         </td>
-        <td valign="top" style="padding-left:4px;">
+        <td valign="top" align="left" style="padding-left:6px;">
           <input type="checkbox" name="remember"/>
         </td>
       </tr>
@@ -75,10 +75,15 @@
           <td colspan="2"><ssf:nlt tag="errorcode.login.failed"/></td>
         </tr>
       </c:if>
-    </table>
-    <br/>
-    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
-    <input type="reset" class="ss_submit" style="margin-left:20px;" value="<ssf:nlt tag="button.reset"/>"/>
+   		<tr>
+   			<td colspan="2" align="center">
+    		  <br/>
+    		  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
+    		  <input type="reset" class="ss_submit" style="margin-left:20px;" value="<ssf:nlt tag="button.reset"/>"/>
+			  <br/>
+			</td>
+		</tr>		  
+	 </tbody></table>
 <c:if test="${!empty ssUrl}">
     <input type="hidden" name="spring-security-redirect" value="${ssUrl}"/>
 </c:if>
