@@ -713,30 +713,36 @@ public class DefinitionHelper {
 						}
 					}
 	        		String type = mashupItemValues[0];
-	        		String value1 = "";
-	        		if (mashupItemValues.length >= 2) value1 = mashupItemValues[1];
-	        		if (ObjectKeys.MASHUP_TYPE_ENTRY.equals(type) && !value1.equals("")) {
+	        		if (ObjectKeys.MASHUP_TYPE_ENTRY.equals(type) && 
+	        				mashupItemAttributes.containsKey("entryId") &&
+	        				!mashupItemAttributes.get("entryId").equals("")) {
 	        			try {
-	        				FolderEntry entry = bs.getFolderModule().getEntry(null, Long.valueOf(value1));
+	        				FolderEntry entry = bs.getFolderModule().getEntry(null, 
+	        						Long.valueOf((String)mashupItemAttributes.get("entryId")));
 	        				mashupEntries.put(entry.getId().toString(), entry);
 	        			} catch(Exception e) {}
-	        		} else if (ObjectKeys.MASHUP_TYPE_FOLDER.equals(type) && !value1.equals("")) {
+	        		} else if (ObjectKeys.MASHUP_TYPE_FOLDER.equals(type) && 
+	        				mashupItemAttributes.containsKey("folderId") && 
+	        				!mashupItemAttributes.get("folderId").equals("")) {
 	        			try {
-	        				Binder binder = bs.getBinderModule().getBinder(Long.valueOf(value1));
+	        				Binder binder = bs.getBinderModule().getBinder(
+	        						Long.valueOf((String)mashupItemAttributes.get("folderId")));
 	        				mashupBinders.put(binder.getId().toString(), binder);
 	        				Map options = new HashMap();
 	        				Integer searchMaxHits = Integer.valueOf(SPropsUtil.getString("folder.records.listed"));
 	        				options.put(ObjectKeys.SEARCH_MAX_HITS, searchMaxHits);
 	        				try {
 	        					if (mashupItemAttributes.containsKey("entriesToShow")) {
-	        						Integer entriesToShow = Integer.valueOf((String)mashupItemAttributes.get("entriesToShow"));
+	        						Integer entriesToShow = Integer.valueOf(
+	        								(String)mashupItemAttributes.get("entriesToShow"));
 	        						options.put(ObjectKeys.SEARCH_MAX_HITS, entriesToShow);
 	        					}
 	        				} catch(Exception e) {}
 	        				options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
 	        				options.put(ObjectKeys.SEARCH_SORT_BY, Constants.LASTACTIVITY_FIELD);
 	        				Map folderEntries = bs.getFolderModule().getEntries(binder.getId(), options);
-	        				mashupBinderEntries.put(binder.getId().toString(), folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
+	        				mashupBinderEntries.put(binder.getId().toString(), 
+	        						folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
 	        			} catch(Exception e) {}
 	        		}
 	        	}
