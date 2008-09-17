@@ -34,12 +34,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Date;
 import javax.mail.internet.InternetAddress;
 
 import org.dom4j.Document;
@@ -56,16 +54,13 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.OrderBy;
-import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
-import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.PostingDef;
-import com.sitescape.team.domain.SearchNodeInfo;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
@@ -77,18 +72,14 @@ import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.dashboard.DashboardModule;
 import com.sitescape.team.module.definition.DefinitionModule;
-import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.mail.EmailFormatter;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.shared.AccessUtils;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.workspace.WorkspaceModule;
-import com.sitescape.team.search.Node;
-import com.sitescape.team.search.SearchUtils;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.FunctionExistsException;
@@ -104,7 +95,7 @@ import com.sitescape.util.Validator;
  * @author Janet McCann
  *
  */
-public class AdminModuleImpl extends CommonDependencyInjection implements AdminModule {
+public abstract class AbstractAdminModule extends CommonDependencyInjection implements AdminModule {
 	protected MailModule mailModule;
 	/**
 	 * Setup by spring
@@ -765,13 +756,4 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	   return result;
 
    }
-   
-	public List<Node> getSearchNodes() {
-		return getLuceneSessionFactory().getNodes();
-	}
-	
-	public void updateSearchNode(String nodeId, String accessMode, Boolean outOfSynch) {
-		getSearchNodeInfoManager().setSearchNodeInfo(nodeId, accessMode, outOfSynch);
-	}
-	
 }

@@ -54,11 +54,8 @@ public interface LuceneSessionFactory {
      * Open a <code>LuceneWriteSession</code> on the index corresponding to the
      * caller's context zone. 
      * 
-     * @param nodeIds optional list of node IDs; If non-null, it indicates that
-     * each and every update made through this session must be applied to all 
-     * of the nodes in the application-supplied list. If null, node selection
-     * is handled by the service. Session factory implementation that does not
-     * support this feature may simply ignore this argument.
+     * @param nodeIds optional list of node IDs. Session factory implementation that 
+     * does not support HA based on cluster of nodes should ignore this argument.
      * @return
      * @throws LuceneException
      */

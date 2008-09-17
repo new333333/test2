@@ -150,9 +150,6 @@ public class IndexSynchronizationManager {
     }
 
     public static void applyChanges() {
-        // Question - Should we send one document at a time to the indexer
-        //            or batch them in a single request??
-        
         try {
             if(hasWorkToDo()) {                
 		        LuceneWriteSession luceneSession = getInstance().getLuceneSessionFactory().openWriteSession((String[]) nodeIdsTL.get());

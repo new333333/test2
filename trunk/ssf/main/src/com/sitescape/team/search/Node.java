@@ -42,7 +42,7 @@ public interface Node {
 	
 	public String getAccessMode();
 	
-	public boolean isOutOfSynch();
+	public boolean isInSynch();
 	
 	public Map<String,String> getDisplayProperties();
 }

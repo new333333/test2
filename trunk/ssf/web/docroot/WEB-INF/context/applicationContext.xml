@@ -475,7 +475,6 @@
 		<property name="resourceDriverManager"><ref bean="resourceDriverManager"/></property>
 		<property name="licenseManager"><ref bean="licenseManager"/></property>
 		<property name="accessTokenManager"><ref bean="accessTokenManager"/></property>
-		<property name="searchNodeInfoManager"><ref bean="searchNodeInfoManager"/></property>
 	</bean>
 	
 	<bean id="processorDependencyTemplate" parent="dependOnCommonServicesTemplate" abstract="true">
@@ -497,19 +496,7 @@
 	</bean>
 
 	<bean id="adminModule" parent="baseTransactionProxy">
-		<property name="target">
-			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.admin.impl.AdminModuleImpl">
-				<property name="mailModule"><ref local="mailModule"/></property>
-				<property name="definitionModule"><ref local="definitionModule"/></property>
-				<property name="folderModule"><ref local="folderModule"/></property>
-				<property name="workspaceModule"><ref local="workspaceModule"/></property>
-				<property name="binderModule"><ref local="binderModule"/></property>
-				<property name="dashboardModule"><ref local="dashboardModule"/></property>
-				<property name="fileModule"><ref local="fileModule"/></property>
-				<property name="icalModule"><ref local="icalModule"/></property>
-				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
-			</bean>
-		</property>
+		<property name="target"><ref bean="adminModuleTarget"/></property>
 		<!-- setWorkAreaFunctionMemberships, setWorkAreaFunctionMembershipInherited, setWorkAreaOwner provide transaction semantics at a finer
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
