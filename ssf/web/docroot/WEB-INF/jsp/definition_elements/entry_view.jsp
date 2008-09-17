@@ -41,17 +41,6 @@
 </td>
 <td valign="top" nowrap style="padding-top:5px">
   <ssf:ifadapter>
-    <a href="javascript: ;" onClick="ss_pinEntry(this,'${entry1._binderId}','${entry1._docId}');return false;"><img 
-      <c:if test="${!empty ssPinnedEntries[entry1._docId]}">
-        src="<html:imagesPath/>pics/discussion/ss_pin_orange.png" width="17" height="18"
-        title="<ssf:nlt tag="discussion.unpin"/>"
-      </c:if>
-      <c:if test="${empty entry1._pinned}">
-        src="<html:imagesPath/>pics/discussion/ss_pin_grey.png" width="17" height="18"
-        title="<ssf:nlt tag="discussion.pin"/>"
-      </c:if>
-      ><span class="ss_actions_bar13_temp">Pin this file xxx</span></a>
-  	<a class="ss_actions_bar13_temp" href="">Close thread xxx</a>
   	<a href="javascript: window.print();"><img border="0" 
       class="ss_print_button"
       alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
