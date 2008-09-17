@@ -221,7 +221,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     display: block;
 	border-style: solid;
 	border-color: #9EC8CD;
-	border-width: 0.1em;
+	border-width: 1px;
 	background-color: #FFFFFF;
     background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_a.png") 5px 2px;
     background-repeat: no-repeat !important;
@@ -229,21 +229,21 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	margin-bottom: 3px;
     }		
 #ss_leftNav a:visited {
-	color:#990099;
+	color:#333333;	/* #990099 (magenta) */
 	}
 #ss_leftNav li a:hover {
-    color: #9EC8CD;
+    color: #333333;
     background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_hover.png") 5px 2px;
     background-repeat: no-repeat !important;
 	background-color: #CCFFFF;
 	border-color:#9EC8CD;
 	border-width: 1px;
     padding: 7px 0 7px 30px;
-	margin-bottom:3px;
+	margin-bottom:3px;	
      }
 #ss_leftNav li a:active {
     color: #fff;
-    background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_bgd.png") 5px -50px;
+    background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_a.png") 5px 2px;
     background-repeat: no-repeat !important;
 	background-color: #9EC8CD;
     padding: 7px 0 7px 30px;
