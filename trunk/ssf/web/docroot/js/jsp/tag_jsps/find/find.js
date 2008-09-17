@@ -26,8 +26,6 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-dojo.require("dojox.fx");
-dojo.require("dojox.uuid.generateRandomUuid");
 
 
 if (typeof ssFind === "undefined" || !ssFind) {

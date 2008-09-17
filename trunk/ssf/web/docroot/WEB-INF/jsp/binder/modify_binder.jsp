@@ -29,6 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
 <c:set var="ssBinderMarker" value="true" scope="request"/>
 <c:if test="${!empty ssException}">
