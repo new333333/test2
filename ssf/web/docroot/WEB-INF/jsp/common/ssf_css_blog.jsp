@@ -43,7 +43,19 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /* Blogs */
 
 /* 2 COLUMN PAGE STYLE FOR BLOGS */	
-
+#ss_blogNav_wrap{
+	background: #FFF !important;
+	width: 198px !important;
+	margin-right: 6px;
+	}
+#ss_blogContent_wrap {
+/*	position:relative;  Needed at one time, but breaks view in IE6 
+	clear:both;
+	float:left;	*/
+	vertical-align:top;
+    /* width:100%;	 width of whole page */
+	overflow:scroll; /* This chops off any overhanging divs */
+	}
 .ss_blog_doublecolumn{
 	text-align:left;
 	width: 100%;
@@ -53,11 +65,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	vertical-align:top;
 	}
 #ss_blog_column_R{
-	/* holder for left column */
+	/* holder for right column */
 	vertical-align:top;
-	text-align: left;
-	width:25%;
 	float: left;
+	margin-left: 75%;
 	}	
 
 .ss_blog_doublecolumn .ss_dblcol1{
@@ -66,11 +77,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color:#fff;			
 	float:left;
 	margin:0 1%;
-	overflow: hidden;
+
 	}	
 .ss_blog_doublecolumn .ss_dblcol2{
 	width:100%;						/* right column content width  */
-	overflow:hidden;
+	vertical-align:top;
 
 	}	
 /* STYLE FOR BLOG FOLDER TITLE/DESC */
@@ -135,7 +146,7 @@ table.ss_blog_title table {
   background-color:${ss_style_header_bar_background};
 }
 div.ss_blog_title  {
-  overflow: hidden;
+
   padding-top: 12px;
   padding-bottom: 3px;
   padding-left: 2px;

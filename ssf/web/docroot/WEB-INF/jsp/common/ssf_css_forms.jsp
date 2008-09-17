@@ -161,7 +161,7 @@ fieldset.ss_fieldset_login {
   	background-image: url(<html:imagesPath/>pics/login_bk.png);
   	background-repeat: no-repeat;
   	width: 480px;
-  	height: 155px;
+  	height: 150px;
     -moz-border-radius: 2%;
 	} 
 fieldset.ss_fieldset_square {

@@ -130,26 +130,25 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
 <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <% // Begins blog page %>
-<div id="ss_dashboard_content" class="ss_blog_doublecolumn">
+<div id="ss_blogContent_wrap" class="ss_blog_doublecolumn">
 <div align="center">
-  <div id="ss_blog_column_L" class="ss_dblcolleft">
-      <div class="ss_dblcol1">
-      
-      <!-- Start Left Column -->
+<table>
+	<tbody>
+	 <tr>
+	   <td>
+       <!-- Start Left Column -->
       <div class="ss_folder">
 <%@ include file="/WEB-INF/jsp/definition_elements/blog/blog_folder_listing.jsp" %>
 </div>
-      </div><!-- end of ss_col 1 -->
+       </td><!-- end of left col -->
         <!-- Start Right Column -->
-      	<div id="ss_blog_column_R">
-      	<div class="ss_dblcol2">
-      	<div id="ss_sideNav_wrap">
+      	<td width="198" valign="top">
+      	<div id="ss_blogNav_wrap">
 <jsp:include page="/WEB-INF/jsp/sidebars/blog_tools.jsp" />
 </div>
-      	      </div><!-- end of col2 (right column) -->
-      </div><!-- end of ss_col_R (right column placeholder) -->
-    </div><!-- end of col left -->
-</div><!-- end of center -->
-</div><!-- end of content -->
+      	</td><!-- end of Right Column -->
+    </tr>
+</tbody>
+</table>
 <div class="ss_clear_float"></div>
 

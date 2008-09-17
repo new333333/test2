@@ -222,7 +222,7 @@ div.ss_actions_bar_submenu {
 	}
 div.ss_actions_bar_submenu ul.ss_actions_bar1 {
   /* background-color: ${ss_toolbar1_dropdown_menu_color}; */
-  	background-color: #FFFFFF;
+  	background-color: #DBE9E8;
   	background-image: none !important;
   	opacity: 0.95;
   	border:0.1em solid #CCCCCC;
@@ -260,15 +260,13 @@ div.ss_actions_bar_submenu ul.ss_actions_bar4 {
 	}
 .ss_actions_bar_submenu {
  <c:if test="<%= isIE %>">
-	top:-12px;
-	left:-26px;
+	margin-top:-12px;
+	margin-left:-26px;
  </c:if>
- <c:if test="<%= !isIE %>">
-	top:-8px;
-	left:-10px;
- </c:if>	
-	border:1px solid ${ss_toolbar1_background_color};
-	border-top:none;
+	margin-top:0px;
+	margin-left:5px;	
+/*	border:1px solid ${ss_toolbar1_background_color};
+	border-top:none;	*/
 	padding: 1px 1px;
 	}
 .ss_actions_bar_submenu li  {
@@ -313,6 +311,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar4 {
 .ss_actions_bar_submenu li:hover, .ss_actions_bar_submenu a:hover {
 	text-decoration:underline;
 	color:${ss_style_text_color};
+	background-color: #cccccc;
 	}
 .ss_actions_bar_submenu a, .ss_actions_bar_submenu a:visited {
 	color:${ss_style_text_color};
