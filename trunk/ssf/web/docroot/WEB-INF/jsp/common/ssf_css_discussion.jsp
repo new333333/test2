@@ -500,7 +500,7 @@ a.ss_new_thread:hover {
 .ss_paginationTextBox {
 	line-height: 10px;
 	font-size: ${ss_style_font_finestprint} !important;
-	width: 22px;
+	width: 32px;
 	border-top-width: 0.8px !important;
 	border-right-width: 0.4px;
 	border-bottom-width: 0.4px;
