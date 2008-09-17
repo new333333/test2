@@ -144,7 +144,8 @@ public class ListFolderController extends  SAbstractController {
 			response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_PAGE_INFO)) {
 			//Saves the folder page informaton when the user clicks on the page link			
-			String pageStartIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_START_INDEX, "");
+			String pageStartIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_START_INDEX, "0");
+			if (pageStartIndex.equals("")) pageStartIndex = "0";
 			Tabs.TabEntry tab = Tabs.getTabs(request).getTab(binderId);
 			if (tab != null) {
 				Map tabData = tab.getData();

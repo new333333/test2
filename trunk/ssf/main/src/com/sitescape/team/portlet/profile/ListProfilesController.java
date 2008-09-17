@@ -86,7 +86,8 @@ public class ListProfilesController extends   SAbstractController {
 				response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_PAGE_INFO)) {
 			//Saves the folder page informaton when the user clicks on the page link			
-			String pageStartIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_START_INDEX, "");
+			String pageStartIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_START_INDEX, "0");
+			if (pageStartIndex.equals("")) pageStartIndex = "0";
 			Tabs.TabEntry tab = Tabs.getTabs(request).getTab(binderId);
 			Map tabData = tab.getData();
 			tabData.put(Tabs.PAGE, new Integer(pageStartIndex));			
@@ -266,44 +267,7 @@ public class ListProfilesController extends   SAbstractController {
 	}		
 
 	protected Map getSearchAndPagingModels(Map userEntries, Map options) {
-		Map model = new HashMap();
-		
-		String sortBy = (String) options.get(ObjectKeys.SEARCH_SORT_BY);
-		Boolean sortDescend = (Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND);
-		
-		model.put(WebKeys.FOLDER_SORT_BY, sortBy);		
-		model.put(WebKeys.FOLDER_SORT_DESCEND, sortDescend.toString());
-		
-		int totalRecordsFound = (Integer) userEntries.get(ObjectKeys.TOTAL_SEARCH_COUNT);
-//		int totalRecordsReturned = (Integer) folderEntries.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
-		//Start Point of the Record
-		int searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
-		int searchPageIncrement = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
-		int goBackSoManyPages = 2;
-		int goFrontSoManyPages = 3;
-		
-		HashMap pagingInfo = getPagingLinks(totalRecordsFound, searchOffset, searchPageIncrement, 
-				goBackSoManyPages, goFrontSoManyPages);
-		
-		HashMap prevPage = (HashMap) pagingInfo.get(WebKeys.PAGE_PREVIOUS);
-		ArrayList pageNumbers = (ArrayList) pagingInfo.get(WebKeys.PAGE_NUMBERS);
-		HashMap nextPage = (HashMap) pagingInfo.get(WebKeys.PAGE_NEXT);
-		String pageStartIndex = (String) pagingInfo.get(WebKeys.PAGE_START_INDEX);
-		String pageEndIndex = (String) pagingInfo.get(WebKeys.PAGE_END_INDEX);
-
-		model.put(WebKeys.PAGE_PREVIOUS, prevPage);
-		model.put(WebKeys.PAGE_NUMBERS, pageNumbers);
-		model.put(WebKeys.PAGE_NEXT, nextPage);
-		model.put(WebKeys.PAGE_START_INDEX, pageStartIndex);
-		model.put(WebKeys.PAGE_END_INDEX, pageEndIndex);
-		model.put(WebKeys.PAGE_TOTAL_RECORDS, ""+totalRecordsFound);
-		
-		double dblNoOfPages = Math.ceil((double)totalRecordsFound/searchPageIncrement);
-		
-		model.put(WebKeys.PAGE_COUNT, ""+dblNoOfPages);
-		model.put(WebKeys.SEARCH_TOTAL_HITS, userEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-		
-		return model;
+		return BinderHelper.getSearchAndPagingModels(userEntries, options);
 	}
 	
 	//This method returns a HashMap with Keys referring to the Previous Page Keys,

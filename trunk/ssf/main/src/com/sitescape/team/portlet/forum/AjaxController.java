@@ -461,7 +461,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 
 	private void ajaxSaveFolderPage(ActionRequest request, ActionResponse response) throws Exception {
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-		String pageStartIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_START_INDEX, "");
+		String pageStartIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_START_INDEX, "0");
+		if (pageStartIndex.equals("")) pageStartIndex = "0";
 		Tabs.TabEntry tab = Tabs.getTabs(request).getTab(binderId);
 		if (tab != null) {
 			Map tabData = tab.getData();

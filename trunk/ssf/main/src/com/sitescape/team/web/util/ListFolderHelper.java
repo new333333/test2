@@ -240,7 +240,7 @@ public class ListFolderHelper {
 			model.put(WebKeys.BINDER, binder);
 			model.put(WebKeys.FOLDER, binder);
 			model.put(WebKeys.DEFINITION_ENTRY, binder);
-			model.put(WebKeys.ENTRY, binder);
+			//model.put(WebKeys.ENTRY, binder);
 	
 			//Build a reload url
 			PortletURL reloadUrl = response.createRenderURL();
@@ -834,52 +834,7 @@ public class ListFolderHelper {
 	}
 	
 	protected static Map getSearchAndPagingModels(Map folderEntries, Map options) {
-		Map model = new HashMap();
-		
-		if (folderEntries == null) {
-			// there is no paging to set
-			return model;
-		}
-		
-		String sortBy = (String) options.get(ObjectKeys.SEARCH_SORT_BY);
-		Boolean sortDescend = (Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND);
-		
-		model.put(WebKeys.FOLDER_SORT_BY, sortBy);		
-		model.put(WebKeys.FOLDER_SORT_DESCEND, sortDescend.toString());
-		
-		int totalRecordsFound = (Integer) folderEntries.get(ObjectKeys.TOTAL_SEARCH_COUNT);
-//		int totalRecordsReturned = (Integer) folderEntries.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
-		//Start Point of the Record
-		int searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
-		int searchPageIncrement = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
-		int goBackSoManyPages = 2;
-		int goFrontSoManyPages = 3;
-		
-		HashMap pagingInfo = getPagingLinks(totalRecordsFound, searchOffset, searchPageIncrement, 
-				goBackSoManyPages, goFrontSoManyPages);
-		
-		HashMap prevPage = (HashMap) pagingInfo.get(WebKeys.PAGE_PREVIOUS);
-		ArrayList pageNumbers = (ArrayList) pagingInfo.get(WebKeys.PAGE_NUMBERS);
-		HashMap nextPage = (HashMap) pagingInfo.get(WebKeys.PAGE_NEXT);
-		String pageStartIndex = (String) pagingInfo.get(WebKeys.PAGE_START_INDEX);
-		String pageEndIndex = (String) pagingInfo.get(WebKeys.PAGE_END_INDEX);
-
-		model.put(WebKeys.PAGE_CURRENT, pagingInfo.get(WebKeys.PAGE_CURRENT));
-		model.put(WebKeys.PAGE_PREVIOUS, prevPage);
-		model.put(WebKeys.PAGE_NUMBERS, pageNumbers);
-		model.put(WebKeys.PAGE_NEXT, nextPage);
-		model.put(WebKeys.PAGE_START_INDEX, pageStartIndex);
-		model.put(WebKeys.PAGE_END_INDEX, pageEndIndex);
-		model.put(WebKeys.PAGE_TOTAL_RECORDS, ""+totalRecordsFound);
-		
-		double dblNoOfPages = Math.ceil((double)totalRecordsFound/searchPageIncrement);
-		
-		model.put(WebKeys.PAGE_COUNT, ""+dblNoOfPages);
-		model.put(WebKeys.PAGE_LAST, String.valueOf(Math.round(dblNoOfPages)));
-		model.put(WebKeys.PAGE_LAST_STARTING_INDEX, String.valueOf((Math.round(dblNoOfPages) -1) * searchPageIncrement));
-		model.put(WebKeys.SEARCH_TOTAL_HITS, folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-		
-		return model;
+		return BinderHelper.getSearchAndPagingModels(folderEntries, options);
 	}	
 	
 	protected static String getTeamMembers(AllModulesInjected bs, Map formData, RenderRequest req, 
@@ -1149,74 +1104,6 @@ public class ListFolderHelper {
 		
 	}
 	
-	//This method returns a HashMap with Keys referring to the Previous Page Keys,
-	//Paging Number related Page Keys and the Next Page Keys.
-	public static HashMap getPagingLinks(int intTotalRecordsFound, int intSearchOffset, 
-			int intSearchPageIncrement, int intGoBackSoManyPages, int intGoFrontSoManyPages) {
-		
-		HashMap<String, Object> hmRet = new HashMap<String, Object>();
-		ArrayList<HashMap> pagingInfo = new ArrayList<HashMap>(); 
-		int currentDisplayValue = ( intSearchOffset + intSearchPageIncrement) / intSearchPageIncrement;
-		hmRet.put(WebKeys.PAGE_CURRENT, String.valueOf(currentDisplayValue));
-
-		//Adding Prev Page Link
-		int prevInternalValue = intSearchOffset - intSearchPageIncrement;
-		HashMap<String, Object> hmRetPrev = new HashMap<String, Object>();
-		hmRetPrev.put(WebKeys.PAGE_DISPLAY_VALUE, "<<");
-		hmRetPrev.put(WebKeys.PAGE_INTERNAL_VALUE, "" + prevInternalValue);
-		if (intSearchOffset == 0) {
-			hmRetPrev.put(WebKeys.PAGE_NO_LINK, "" + new Boolean(true));
-		}
-		hmRet.put(WebKeys.PAGE_PREVIOUS, hmRetPrev);
-
-		//Adding Links before Current Display
-		if (intSearchOffset != 0) {
-			//Code for generating the Numeric Paging Information previous to offset			
-			int startPrevDisplayFrom = currentDisplayValue - intGoBackSoManyPages;
-			
-			int wentBackSoManyPages = intGoBackSoManyPages + 1;
-			for (int i = startPrevDisplayFrom; i < currentDisplayValue; i++) {
-				wentBackSoManyPages--;
-				if (i < 1) continue;
-				prevInternalValue = (intSearchOffset - (intSearchPageIncrement * wentBackSoManyPages));
-				HashMap<String, Object> hmPrev = new HashMap<String, Object>();
-				hmPrev.put(WebKeys.PAGE_DISPLAY_VALUE, "" + i);
-				hmPrev.put(WebKeys.PAGE_INTERNAL_VALUE, "" + prevInternalValue);
-				pagingInfo.add(hmPrev);
-			}
-		}
-		
-		//Adding Links after Current Display
-		for (int i = 0; i < intGoFrontSoManyPages; i++) {
-			int nextInternalValue = intSearchOffset + (intSearchPageIncrement * i);
-			int nextDisplayValue = (nextInternalValue + intSearchPageIncrement) / intSearchPageIncrement;  
-			if ( !(nextInternalValue >= intTotalRecordsFound) ) {
-				HashMap<String, Object> hmNext = new HashMap<String, Object>();
-				hmNext.put(WebKeys.PAGE_DISPLAY_VALUE, "" + nextDisplayValue);
-				hmNext.put(WebKeys.PAGE_INTERNAL_VALUE, "" + nextInternalValue);
-				if (nextDisplayValue == currentDisplayValue) hmNext.put(WebKeys.PAGE_IS_CURRENT, new Boolean(true));
-				pagingInfo.add(hmNext);
-			}
-			else break;
-		}
-		hmRet.put(WebKeys.PAGE_NUMBERS, pagingInfo);
-		
-		//Adding Next Page Link
-		int nextInternalValue = intSearchOffset + intSearchPageIncrement;
-		HashMap<String, Object> hmRetNext = new HashMap<String, Object>();
-		hmRetNext.put(WebKeys.PAGE_DISPLAY_VALUE, ">>");
-		hmRetNext.put(WebKeys.PAGE_INTERNAL_VALUE, "" + nextInternalValue);
-		
-		if ( (nextInternalValue >= intTotalRecordsFound) ) {
-			hmRetNext.put(WebKeys.PAGE_NO_LINK, "" + new Boolean(true));
-		}
-		hmRet.put(WebKeys.PAGE_NEXT, hmRetNext);
-		hmRet.put(WebKeys.PAGE_START_INDEX, "" + (intSearchOffset + 1));
-		
-		hmRet.put(WebKeys.PAGE_END_INDEX, "" + intTotalRecordsFound);
-		
-		return hmRet;
-	}
 	protected static void addEntryToolbar(AllModulesInjected bs, RenderRequest request, RenderResponse response, Binder folder, Toolbar entryToolbar, Map model) {
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
 		if (defaultEntryDefinitions != null && defaultEntryDefinitions.size() > 1) {
