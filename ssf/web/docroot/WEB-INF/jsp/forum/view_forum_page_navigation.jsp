@@ -60,7 +60,7 @@
 					name="binderId" value="${ssFolder.id}"/><ssf:param 
 					name="entryViewStyle" value="full"/><ssf:param 
 					name="operation" value="go_to_entry"/></ssf:url>" >
-			    <input name="ssGoToEntry" id="ssGoToEntry${renderResponse.namespace}" size="7" 
+			    <input name="ssGoToEntry" id="ssGoToEntry${renderResponse.namespace}" size="10" 
 			      type="text" class="ss_paginationTextBox" />&nbsp;
 				<a href="javascript: ;" 
 				<ssf:title tag="entry.goTo" />
@@ -165,7 +165,6 @@
 				<tbody><tr>
 				<td class="ss_page_IE2" valign="middle">
 			
-			<c:if test="${ssPageCount > '1.0'}">
 				<ssf:ifnotaccessible>
 			    	<ssf:nlt tag="folder.GoToPage"/>
 			    </ssf:ifnotaccessible>
@@ -192,25 +191,6 @@
 				<ssf:title tag="title.goto.page" />
 				onClick="ss_clickGoToPage_${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}'); return false;">
 				<img src="<html:rootPath/>images/pics/page/go.png" width="17" height="12" border="0" align="absmiddle" /></a>
-				
-			</c:if>
-			<c:if test="${ssPageCount <= '1.0'}">
-				<ssf:ifnotaccessible>
-			    	<ssf:nlt tag="folder.GoToPage"/>
-			    </ssf:ifnotaccessible>
-			    
-			    <ssf:ifaccessible>
-			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
-			    </ssf:ifaccessible>
-			    </td>
-			    <td valign="middle" class="ss_paginationGo ss_page_IE">
-			    <input name="ssGoToPage" id="ssGoToPage${renderResponse.namespace}" size="7" type="text" class="ss_pTB_no" />&nbsp;
-				<a href="" 
-				<ssf:title tag="title.goto.page" />
-				>
-				<img src="<html:rootPath/>images/pics/page/go.png" width="17" height="12" border="0" align="absmiddle" /></a>
-				
-			</c:if>
 			</form>
 			</td></tr></tbody></table></div>
 
