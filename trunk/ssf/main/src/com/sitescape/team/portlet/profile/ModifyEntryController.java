@@ -106,7 +106,7 @@ public class ModifyEntryController extends SAbstractController {
             	String passwordOriginal = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD_ORIGINAL);
             	//Check that the user knows the current password
             	Principal p = getProfileModule().getEntry(entryId);
-            	if (p instanceof User) {
+            	if (p instanceof User && !password.equals("") && !passwordOriginal.equals("")) {
             		if (!EncryptUtil.encryptPassword(passwordOriginal).equals(((User)p).getPassword())) {
                     	throw new PasswordMismatchException("errorcode.password.invalid");            			
             		}
