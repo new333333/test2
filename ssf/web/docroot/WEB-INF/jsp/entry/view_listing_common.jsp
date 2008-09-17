@@ -151,10 +151,7 @@ function ss_loadEntryUrl(url,id) {
 
 <c:if test="<%= !reloadCaller %>">
   <c:if test="<%= isViewEntry %>">
-<script type="text/javascript">
-	<% //needs its own script section to endure loaded before accessed below %>
-	ss_loadJsFile(ss_rootPath, "js/jsp/tag_jsps/find.js");
-</script>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <div id="ss_entryTop_${renderResponse.namespace}"></div>
 <jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 <script type="text/javascript">

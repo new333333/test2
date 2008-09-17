@@ -6447,3 +6447,5 @@ dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
 dojo.require("dojo.io.iframe");
 dojo.require("dojox.data.dom");
+dojo.require("dojox.fx");
+dojo.require("dojox.uuid.generateRandomUuid");

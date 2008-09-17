@@ -35,6 +35,7 @@
 <ssf:ifadapter>
 <body class="tundra">
 </ssf:ifadapter>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 
 <table class="ss_style" cellpadding="10" width="100%"><tr><td>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
