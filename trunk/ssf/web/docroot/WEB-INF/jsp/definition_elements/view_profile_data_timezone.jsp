@@ -33,7 +33,7 @@
 <c:if test="${empty ss_element_display_style}">
 <div class="ss_entryContent">
 <span class="ss_labelLeft"><c:out value="${property_caption}"/>:</span>
-${ssDefinitionEntry.timeZone.ID}
+<%= ((com.sitescape.team.domain.User)request.getAttribute("ssDefinitionEntry")).getTimeZone().getDisplayName(((com.sitescape.team.domain.User)request.getAttribute("ssUser")).getLocale()) %>
 </div>
 </c:if>
 <c:if test="${!empty ss_element_display_style && 
@@ -44,7 +44,7 @@ ${ssDefinitionEntry.timeZone.ID}
   </td>
   <td valign="top">
 	<span class="ss_bold">
-	  <c:out value="${ssDefinitionEntry.timeZone.ID}"/>
+<%= ((com.sitescape.team.domain.User)request.getAttribute("ssDefinitionEntry")).getTimeZone().getDisplayName(((com.sitescape.team.domain.User)request.getAttribute("ssUser")).getLocale()) %>
 	</span>
   </td>
 </tr>

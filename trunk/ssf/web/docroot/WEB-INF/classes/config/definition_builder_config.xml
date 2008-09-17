@@ -1000,6 +1000,8 @@
 			<option name="profileMobileEmailAddress" initial="true" />
 			<option name="profileTxtEmailAddress" initial="true" />
 			<option name="profileZonName" initial="true" />
+			<option name="profileTimeZone" initial="true" />
+			<option name="profileLocale" initial="true" />
 			<option name="profileSkypeId" initial="false" />
 			<option name="profileTwitterId" initial="false" />
 			<option name="entryFormButtons" initial="true" />
@@ -1178,6 +1180,32 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+	</item>
+	<item name="profileTimeZone" caption="__timeZone" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData"  display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__timeZone"/>
+			<property name="name" caption="__data_name" type="text" value="timeZone" 
+			  readonly="true" unique="//item[@type='data']"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_timezone_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+	</item>
+	<item name="profileLocale" caption="__locale" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData"  display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__locale"/>
+			<property name="name" caption="__data_name" type="text" value="locale" 
+			  readonly="true" unique="//item[@type='data']"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_locale_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />

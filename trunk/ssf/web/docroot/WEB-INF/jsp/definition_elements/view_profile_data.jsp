@@ -43,9 +43,11 @@
 		if (itemType.equals("name")) {
 			%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_name.jsp" %><%
 			
-		} else if (itemType.equals("timeZone")) {
+		} else if (itemType.equals("profileTimeZone")) {
 			%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_timezone.jsp" %><%
 	
+		} else if (itemType.equals("profileLocale")) {
+			%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_locale.jsp" %><%
 		} else if (itemType.equals("text")) {
 			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_text.jsp" %><%
 			

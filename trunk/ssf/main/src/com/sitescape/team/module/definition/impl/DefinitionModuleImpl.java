@@ -41,6 +41,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
+import java.util.Locale;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -1909,6 +1910,24 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								String sVal = inputData.getSingleValue(nameValue);
 								if (Validator.isNull(sVal)) entryData.put(nameValue, null);
 								else entryData.put(nameValue, TimeZoneHelper.getTimeZone(sVal));
+							}
+						}
+					} else if (itemName.equals("profileLocale")) {
+						if (inputData.exists(nameValue)) {
+							Object val = inputData.getSingleObject(nameValue);
+							if (val == null) {
+								entryData.put(nameValue, null);
+							} else if (val instanceof Locale) {
+								entryData.put(nameValue, (Locale)val);
+							} else {
+								String sVal = inputData.getSingleValue(nameValue);
+								if (Validator.isNull(sVal)) entryData.put(nameValue, null);
+								else {
+									String[] vals = sVal.split("_");
+									if (vals.length == 1) entryData.put(nameValue, new Locale(vals[0]));
+									else if (vals.length == 2) entryData.put(nameValue, new Locale(vals[0], vals[1]));
+									else if (vals.length >= 3) entryData.put(nameValue, new Locale(vals[0], vals[1], vals[2]));
+								}
 							}
 						}
 					} else if (itemName.equals("file") || itemName.equals("graphic") ||

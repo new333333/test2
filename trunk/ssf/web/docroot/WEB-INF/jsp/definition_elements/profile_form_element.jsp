@@ -51,7 +51,7 @@
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");
 	String itemType = (String) item.attributeValue("name", "");
-	if (itemType.equals("name")) {
+	if (itemType.equals("profileName")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_name.jsp" %><%
 	
 	} else {
@@ -63,7 +63,7 @@
 		    String mName = "get" + prop;
 		    Class[] types = new Class[] {};
 		    Method method = entry.getClass().getMethod(mName, types);
-		    value = (String) method.invoke(entry, new Object[0]);
+		    value = method.invoke(entry, new Object[0]).toString();
 		    if (value == null) value = "";
 		}
 %>

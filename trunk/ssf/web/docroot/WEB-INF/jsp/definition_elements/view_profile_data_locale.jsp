@@ -1,3 +1,4 @@
+<%
 /**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
@@ -26,45 +27,27 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.definition.index;
+%>
+<% //timezone view %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-import java.util.Set;
-import java.util.Map;
+<c:if test="${empty ss_element_display_style}">
+<div class="ss_entryContent">
+<span class="ss_labelLeft"><c:out value="${property_caption}"/>:</span>
+<%= ((com.sitescape.team.domain.User)request.getAttribute("ssDefinitionEntry")).getLocale().getDisplayName(((com.sitescape.team.domain.User)request.getAttribute("ssUser")).getLocale()) %>
+</div>
+</c:if>
+<c:if test="${!empty ss_element_display_style && 
+    ss_element_display_style == 'tableAlignLeft'}">
+<tr>
+  <td class="ss_table_spacer_right" valign="top" align="right">
+    <c:out value="${property_caption}" />
+  </td>
+  <td valign="top">
+	<span class="ss_bold">
+<%= ((com.sitescape.team.domain.User)request.getAttribute("ssDefinitionEntry")).getLocale().getDisplayName(((com.sitescape.team.domain.User)request.getAttribute("ssUser")).getLocale()) %>
+	</span>
+  </td>
+</tr>
+</c:if>
 
-import org.apache.lucene.document.Field;
-
-import com.sitescape.util.search.Constants;
-
-/**
- * Implement here cause not all fields are included on every form
- * @author Jong Kim
- */
-public class FieldBuilderProfileElement extends AbstractFieldBuilder {
-   protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-	   	Object val = getFirstElement(dataElemValue);
-	   	if (val instanceof String) {
-	   		String sVal = (String)val;
-	   		sVal = sVal.trim();
-       
-	   		if (sVal.length() == 0) {
-	   			return new Field[0];
-	   		}
-	   		//email and zonName are indexed by default so they can be used in folderListing
-	   		if ("firstName".equals(dataElemName))  {
-	   			Field nameField = new Field(Constants.FIRSTNAME_FIELD, sVal, Field.Store.YES, Field.Index.TOKENIZED);
-	   			return new Field[] {nameField};
-	   		} else if ("middleName".equals(dataElemName)) {
-	   			Field nameField = new Field(Constants.MIDDLENAME_FIELD, sVal, Field.Store.YES, Field.Index.TOKENIZED);
-	   			return new Field[] {nameField};    		
-	   		} else if ("lastName".equals(dataElemName)) {
-	   			Field nameField = new Field(Constants.LASTNAME_FIELD, sVal, Field.Store.YES, Field.Index.TOKENIZED);
-	   			return new Field[] {nameField};    		
-	   		} else if ("organization".equals(dataElemName)) {
-	   			Field nameField = new Field(Constants.ORGANIZATION_FIELD, sVal, Field.Store.YES, Field.Index.TOKENIZED);
-	   			return new Field[] {nameField};    			
-	   		}
-	   	} 
-    	return new Field[0];
-    }
-
-}

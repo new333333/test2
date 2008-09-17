@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.Locale;
 
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
@@ -354,7 +355,19 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     			entryData.put(ObjectKeys.FIELD_USER_MIDDLENAME, inputData.getSingleValue(ObjectKeys.FIELD_USER_MIDDLENAME));
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_LOCALE) && !entryData.containsKey(ObjectKeys.FIELD_USER_LOCALE)) {
-    			entryData.put(ObjectKeys.FIELD_USER_LOCALE, inputData.getSingleObject(ObjectKeys.FIELD_USER_LOCALE));
+    			Object lc = inputData.getSingleObject(ObjectKeys.FIELD_USER_LOCALE);
+    			if (lc instanceof Locale)
+    	   			entryData.put(ObjectKeys.FIELD_USER_LOCALE, lc);
+    			else {
+					String sVal = inputData.getSingleValue(ObjectKeys.FIELD_USER_LOCALE);
+					if (Validator.isNull(sVal)) entryData.put(ObjectKeys.FIELD_USER_LOCALE, null);
+					else {
+						String[] vals = sVal.split("_");
+						if (vals.length == 1) entryData.put(ObjectKeys.FIELD_USER_LOCALE, new Locale(vals[0]));
+						else if (vals.length == 2) entryData.put(ObjectKeys.FIELD_USER_LOCALE, new Locale(vals[0], vals[1]));
+						else if (vals.length >= 3) entryData.put(ObjectKeys.FIELD_USER_LOCALE, new Locale(vals[0], vals[1], vals[2]));
+					}
+   			}
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_EMAIL) && !entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL)) {
     			entryData.put(ObjectKeys.FIELD_USER_EMAIL, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL));
@@ -369,8 +382,11 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     			Object tz = inputData.getSingleObject(ObjectKeys.FIELD_USER_TIMEZONE);
     			if (tz instanceof TimeZone)
     				entryData.put(ObjectKeys.FIELD_USER_TIMEZONE, TimeZoneHelper.fixTimeZone((TimeZone)tz));
-    			else
-    				entryData.put(ObjectKeys.FIELD_USER_TIMEZONE, TimeZoneHelper.fixTimeZone(TimeZone.getTimeZone((String)tz)));
+    			else {
+					String sVal = inputData.getSingleValue(ObjectKeys.FIELD_USER_TIMEZONE);
+					if (Validator.isNull(sVal)) entryData.put(ObjectKeys.FIELD_USER_TIMEZONE, null);
+					else entryData.put(ObjectKeys.FIELD_USER_TIMEZONE, TimeZoneHelper.fixTimeZone(TimeZone.getTimeZone(sVal)));
+    			}
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_PASSWORD) && !entryData.containsKey(ObjectKeys.FIELD_USER_PASSWORD)) {
     			entryData.put(ObjectKeys.FIELD_USER_PASSWORD, inputData.getSingleValue(ObjectKeys.FIELD_USER_PASSWORD));

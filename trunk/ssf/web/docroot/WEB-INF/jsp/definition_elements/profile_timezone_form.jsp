@@ -1,3 +1,4 @@
+<%
 /**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
@@ -26,45 +27,31 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.definition.index;
+%>
+<% //Name form element %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<div class="ss_entryContent">
+<c:if test="${!empty property_caption}">
+<span class="ss_labelAbove"><c:out value="${property_caption}"/></span>
+</c:if>
 
-import java.util.Set;
-import java.util.Map;
-
-import org.apache.lucene.document.Field;
-
-import com.sitescape.util.search.Constants;
-
-/**
- * Implement here cause not all fields are included on every form
- * @author Jong Kim
- */
-public class FieldBuilderProfileElement extends AbstractFieldBuilder {
-   protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-	   	Object val = getFirstElement(dataElemValue);
-	   	if (val instanceof String) {
-	   		String sVal = (String)val;
-	   		sVal = sVal.trim();
-       
-	   		if (sVal.length() == 0) {
-	   			return new Field[0];
-	   		}
-	   		//email and zonName are indexed by default so they can be used in folderListing
-	   		if ("firstName".equals(dataElemName))  {
-	   			Field nameField = new Field(Constants.FIRSTNAME_FIELD, sVal, Field.Store.YES, Field.Index.TOKENIZED);
-	   			return new Field[] {nameField};
-	   		} else if ("middleName".equals(dataElemName)) {
-	   			Field nameField = new Field(Constants.MIDDLENAME_FIELD, sVal, Field.Store.YES, Field.Index.TOKENIZED);
-	   			return new Field[] {nameField};    		
-	   		} else if ("lastName".equals(dataElemName)) {
-	   			Field nameField = new Field(Constants.LASTNAME_FIELD, sVal, Field.Store.YES, Field.Index.TOKENIZED);
-	   			return new Field[] {nameField};    		
-	   		} else if ("organization".equals(dataElemName)) {
-	   			Field nameField = new Field(Constants.ORGANIZATION_FIELD, sVal, Field.Store.YES, Field.Index.TOKENIZED);
-	   			return new Field[] {nameField};    			
-	   		}
-	   	} 
-    	return new Field[0];
-    }
-
-}
+<select name="${property_name}">
+<%
+	String[] ids = java.util.TimeZone.getAvailableIDs();
+	com.sitescape.team.domain.User user = (com.sitescape.team.domain.User)request.getAttribute("ssDefinitionEntry");
+	com.sitescape.team.domain.User currentUser = (com.sitescape.team.domain.User)request.getAttribute("ssUser");
+	java.util.TreeMap<String,String> map = new java.util.TreeMap(new com.sitescape.team.comparator.StringComparator(currentUser.getLocale())); //sort
+	for (int i=0; i<ids.length; ++i) {
+		map.put(java.util.TimeZone.getTimeZone(ids[i]).getDisplayName(currentUser.getLocale()) + " (" + ids[i] + ")", ids[i]);
+	}
+	for (java.util.Map.Entry<String, String> me: map.entrySet()) {
+		String checked = "";
+		if (me.getValue().equals(user.getTimeZone().getID()))
+			checked="selected=\"selected\"";
+%>
+<option value="<%= me.getValue() %>" <%= checked %>><%= me.getKey() %></option>
+<%
+};
+%>
+</select>
+</div>
