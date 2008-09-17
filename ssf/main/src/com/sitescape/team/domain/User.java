@@ -91,9 +91,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     public void setLocale(Locale locale) {
     	this.locale = locale;
     }
-    public void setLocale(String localeName) {
-    	locale = new Locale(localeName);
-    }
 
 	public String getTitle() {
 		// title is set by hibernate access=field
