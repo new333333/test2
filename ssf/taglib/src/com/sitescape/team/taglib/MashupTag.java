@@ -110,6 +110,11 @@ public class MashupTag extends BodyTagSupport {
 						
 						// Output the start of the mashup table element
 						String jsp = "/WEB-INF/jsp/tag_jsps/mashup/"+type+".jsp";
+						if (type.equals("customJsp") && !view.equals("form")) {
+							if (mashupItemAttributes.containsKey("customJsp") && 
+									!mashupItemAttributes.get("customJsp").equals("")) 
+								jsp = "/WEB-INF/jsp/custom_jsps/" + mashupItemAttributes.get("customJsp");
+						}
 						RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 						ServletRequest req = pageContext.getRequest();
 						StringServletResponse res = new StringServletResponse(httpRes);

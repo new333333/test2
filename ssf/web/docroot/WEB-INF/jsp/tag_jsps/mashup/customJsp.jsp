@@ -51,7 +51,4 @@
 	 </div>
    </div>
 </c:if>
-<c:if test="${ssConfigJspStyle != 'form'}">
-xxxxxxxxxxxxxxxxxxxxxxx custom jsp ${mashup_attributes['customJsp']} xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-</c:if>
 
