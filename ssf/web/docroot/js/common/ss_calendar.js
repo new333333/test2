@@ -1019,6 +1019,9 @@ function ss_calendarEngine(
 	    },
 	    
 	    highlightDaySelectorMenuIcon: function() {
+			// Return if selector isn't being used
+			if (dojo.byId(viewSelectorHrefIds["days1"]) == null) return;
+
 	    	// all to inactive							
 	    	for (var i in viewSelectorHrefIds) {
 	    		dojo.byId(viewSelectorHrefIds[i]).className = viewSelectorHrefClasses[i];
@@ -2483,15 +2486,17 @@ if (!window["ss_calendar_import"]) {
 			var box = dojo.byId("ss_calendar_import_form");
 			ss_toggleAjaxLoadingIndicator(box, true);			
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"uploadICalendarFile"});
-			dojo.debug("uploadFile");
-			dojo.xhrGet({
+			//console.log("uploadFile");
+			dojo.io.iframe.send({
 		    	url: url,
-		    	handleAs: "json",
+		    	method: "post",
+		    	handleAs: "text/html",
 				error: function(err) {
-					alert(ss_not_logged_in);
+					alert(err);
 					ss_calendar_import.cancel();
 				},
-				load: function(data) {
+				load: function(textData) {
+				    var data = dojo.fromJson(textData);
 					if (data && data.notLoggedIn) {
 						alert(ss_not_logged_in);
 					} else if (data && data.parseExceptionMsg) {
@@ -2622,7 +2627,7 @@ if (!window.ss_calendar_settings) {
 		
 		save : function () {
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"saveCalendarConfiguration"});
-			//dojo.debug("save calendar configuration");
+			//console.log("save calendar configuration");
 			dojo.xhrGet({
 		    	url: url,
 		    	handleAs: "json",		    	
