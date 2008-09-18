@@ -785,6 +785,7 @@ public class ListFolderHelper {
 							pinnedEntriesMap.put(entry.getId().toString(), entry);
 						}
 						pinnedFolderEntries = SearchUtils.getSearchEntries(pinnedFolderEntriesList);
+						bs.getFolderModule().getEntryPrincipals(pinnedFolderEntries);
 					}
 				}
 			}
