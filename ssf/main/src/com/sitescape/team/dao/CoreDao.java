@@ -45,6 +45,7 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityDashboard;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.SearchNodeInfo;
@@ -139,6 +140,7 @@ public interface CoreDao {
 	public TemplateBinder loadTemplate(Long templateId, Long zoneId);
 	public TemplateBinder loadTemplateByName(String name, Long zoneId);
 	public UserDashboard loadUserDashboard(EntityIdentifier ownerId, Long binderId);
+	public List<LdapConnectionConfig> loadLdapConnectionConfigs(Long zoneId);
 	public Object merge(Object obj); 
     public void move(Binder binder);
     public SFQuery queryObjects(ObjectControls objs, FilterControls filter, Long zoneId);

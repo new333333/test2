@@ -16,10 +16,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -50,23 +50,20 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.ObjectControls;
-import com.sitescape.team.dao.util.OrderBy;
-import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.Membership;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.jobs.LdapSynchronization;
-import com.sitescape.team.module.admin.AdminModule.AdminOperation;
-import com.sitescape.team.module.authentication.AuthenticationModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.ldap.LdapSchedule;
 import com.sitescape.team.module.ldap.LdapModule;
+import com.sitescape.team.module.ldap.LdapSchedule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.profile.processor.ProfileCoreProcessor;
 import com.sitescape.team.module.shared.MapInputData;
@@ -77,7 +74,7 @@ import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
-import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.team.util.SessionUtil;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 /**
@@ -131,14 +128,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		this.transactionTemplate = transactionTemplate;
 	}
 
-	protected AuthenticationModule authenticationModule;
-	public AuthenticationModule getAuthenticationModule() {
-		return authenticationModule;
-	}
-	public void setAuthenticationModule(AuthenticationModule authenticationModule) {
-		this.authenticationModule = authenticationModule;
-	}
-
 	public ProfileModule getProfileModule() {
 		return profileModule;
 	}
@@ -183,8 +172,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 */
 	public LdapSchedule getLdapSchedule() {		
 		checkAccess(LdapOperation.manageLdap);
-		Workspace zone = RequestContextHolder.getRequestContext().getZone();
-		LdapSchedule cfg = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
+		LdapSchedule cfg = new LdapSchedule(getSyncObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId()));
 		return cfg;
 	}
 	/**
@@ -256,7 +244,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		LdapSchedule schedule = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
 		User user = getProfileDao().loadUser(userId, schedule.getScheduleInfo().getZoneId());
 		Map mods = new HashMap();
-		for(LdapConnectionConfig config : getAuthenticationModule().getLdapConnectionConfigs(zone.getZoneId())) {
+		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getZoneId())) {
 			LdapContext ctx = getUserContext(zone.getId(), config);
 			String dn=null;
 			Map userAttributes = config.getMappings();
@@ -301,12 +289,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	public void syncAll() throws NamingException {
 		Workspace zone = RequestContextHolder.getRequestContext().getZone();
 		LdapSchedule info = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
-   		String dn,ctxName;
-   		Object[] gRow;
-   		Iterator iter;
-   		UserCoordinator userCoordinator = new UserCoordinator(zone,info.isUserSync(),info.isUserRegister(),
+    		UserCoordinator userCoordinator = new UserCoordinator(zone,info.isUserSync(),info.isUserRegister(),
    															  info.isUserDelete(), info.isUserWorkspaceDelete());
-		for(LdapConnectionConfig config : getAuthenticationModule().getLdapConnectionConfigs(zone.getId())) {
+		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
 	   		LdapContext ctx=null;
 	  		try {
 				ctx = getUserContext(zone.getId(), config);
@@ -321,7 +306,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Map dnUsers = userCoordinator.wrapUp();
 
    		GroupCoordinator groupCoordinator = new GroupCoordinator(zone, dnUsers, info.isGroupSync(), info.isGroupRegister(), info.isGroupDelete());
-   		for(LdapConnectionConfig config : getAuthenticationModule().getLdapConnectionConfigs(zone.getId())) {
+   		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
 	   		LdapContext ctx=null;
 	  		try {
 				ctx = getGroupContext(zone.getId(), config);
@@ -524,7 +509,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	protected void syncUsers(Binder zone, LdapContext ctx, LdapConnectionConfig config, UserCoordinator userCoordinator) 
 		throws NamingException {
 		String ssName;
-		Object[] row,row2;
 		String [] sample = new String[0];
 	 
 		Map userAttributes = config.getMappings();
@@ -763,8 +747,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	protected void syncGroups(Binder zone, LdapContext ctx, LdapConnectionConfig config, GroupCoordinator groupCoordinator,
 							  boolean syncMembership) 
 		throws NamingException {
-		String ssName;
-		Object[] row;
 		//ssname=> forum info
 		String [] sample = new String[0];
 		//ldap dn => forum info

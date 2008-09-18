@@ -85,13 +85,7 @@ public class BaseAuthenticationModule extends CommonDependencyInjection
 	}
 
 	public List<LdapConnectionConfig> getLdapConnectionConfigs(Long zoneId) {
-		FilterControls filter = new FilterControls();
-		OrderBy order = new OrderBy();
-		order.addColumn("position");
-		filter.setOrderBy(order);
-
-		return (List<LdapConnectionConfig>) getCoreDao().loadObjects(
-				LdapConnectionConfig.class, filter, zoneId);
+		return getCoreDao().loadLdapConnectionConfigs(zoneId);
 	}
 
 	public void setLdapConnectionConfigs(List<LdapConnectionConfig> configs) {

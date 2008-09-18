@@ -81,6 +81,7 @@ import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.LibraryEntry;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoBinderByTheNameException;
@@ -1593,4 +1594,16 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	       	   	}
 	    	 );		
 	}
+	public List<LdapConnectionConfig> loadLdapConnectionConfigs(final Long zoneId) {
+	   return (List<LdapConnectionConfig>)getHibernateTemplate().execute(
+	    	   	new HibernateCallback() {
+	    	   		public Object doInHibernate(Session session) throws HibernateException {
+	                       return session.createCriteria(LdapConnectionConfig.class)
+	                       .add(Expression.eq("zoneId", zoneId))
+	                       .list();
+ 	       	   		}
+	       	   	}
+	    	 );		
+	}
+
  }
