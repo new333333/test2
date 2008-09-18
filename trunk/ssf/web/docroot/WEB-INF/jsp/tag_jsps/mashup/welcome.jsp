@@ -28,12 +28,28 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //custom jsp %>
+<% //Mashup welcome view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${ssConfigJspStyle != 'form'}">
+<div>
+<div>
+<p>
+  <a href="javascript:;" 
+       onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'print_manuals', '', 200, 230, 'center', 'middle');">
+     <span class="ss_getting_started"><ssf:nlt tag="help.viewBooks.title"/></span>
+   </a>
+</p>
+<img src="<html:brandedImagesPath/>pics/getting_started.gif">
+<jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
+
+</div>
+</div>
+</c:if>
+
 <c:if test="${ssConfigJspStyle == 'form'}">
 	<script type="text/javascript">
-	//Routine called when "Delete customJsp" is clicked
-	function ss_mashup_deleteCustomJsp${ss_mashupItemId}_${renderResponse.namespace}() {
+	//Routine called when "Delete welcome" is clicked
+	function ss_mashup_deleteWelcome${ss_mashupItemId}_${renderResponse.namespace}() {
 		var formObj = self.document.forms['${ss_form_form_formName}'];
 		formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "";
 	}
@@ -41,17 +57,12 @@
 
    <div style="padding:10px;" width="100%">
 	 <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
-	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.customJsp"/></span>
-	    <br/>
-	    <span>${mashup_attributes['customJsp']}</span>
+	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.welcome"/></span>
 	    <br/>
 	    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
 	      class="ss_linkButton ss_fineprint"
-	      onClick="ss_mashup_deleteCustomJsp${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
+	      onClick="ss_mashup_deleteWelcome${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
 	 </div>
    </div>
-</c:if>
-<c:if test="${ssConfigJspStyle != 'form'}">
-xxxxxxxxxxxxxxxxxxxxxxx custom jsp ${mashup_attributes['customJsp']} xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 </c:if>
 
