@@ -444,7 +444,7 @@ div.ss_canvas {
 	margin: 0px 0px 2px 0px;
 	font-size: 16px;
 	font-weight: 500;
-	letter-spacing: -1 !important;
+	letter-spacing: -1px !important;
 	color: #555;
 	font-family: 'Lucida Sans','Lucida Grande',sans-serif;
 	}
@@ -526,7 +526,7 @@ div.ss_canvas {
 	/* HIDE TOGGLE*/
 
 .ss_toggle{
-	font-size: ss_smallprint;
+	font-size: ${ss_smallprint};
 	display: block;
 	padding-right: 5px;
 	}
@@ -631,15 +631,18 @@ div.ss_canvas {
 /*======THIS IS FOR THE DISCUSSION PAGE STYLE========*/
 .ss_link_7, .ss_link_7 span {
 	font-style: italic;
-	text-weight: 200;
+	font-weight: 400;
 	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
 	letter-spacing:-1px;
 	color:#5A9A98!important;
 	font-size:18px;
 	}
+.ss_link_7, .ss_link_7 span .ss_link_7 a:hover {
+	text-decoration: none;
+	color:#999!important;
+	}		
 .ss_link_8, .ss_link_8 span{
-	font-style: ${ss_style_folder_view_font_family}
-	font-family: Arial;
+	font-family: ${ss_style_folder_view_font_family};
 	color:#5A9A98!important;
 	font-size:12px;
 	}

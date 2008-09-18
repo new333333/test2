@@ -118,34 +118,28 @@ body.ss_style_body {
   
 /* LINKS */
 .ss_style a {
-  color: ${ss_style_link_color};
-  text-decoration: none;
-<ssf:ifnotaccessible>
-  outline: none;
-</ssf:ifnotaccessible>  
-}
+  	color: ${ss_style_link_color};
+  	text-decoration: none;
+	<ssf:ifnotaccessible>
+  		outline: none;
+	</ssf:ifnotaccessible>  
+	}
 .ss_style a:visited {
-  color: ${ss_style_link_visited_color};
-}
+  	color: ${ss_style_link_visited_color};
+	}
 .ss_style a:hover {
-  color: ${ss_style_link_hover_color};
-  text-decoration: none;
-<ssf:ifaccessible>
-  outline: dotted 1px gray;
-</ssf:ifaccessible>  
-}
+  	color: ${ss_style_link_hover_color};
+  	text-decoration: none;
+	<ssf:ifaccessible>
+  		outline: dotted 1px gray;
+	</ssf:ifaccessible>  
+	}
 .ss_title_link {
-  text-decoration:underline;
-}
-
-div.ss_entryContent a {
-  text-decoration:underline;
-}
-
+  	text-decoration:underline;
+	}
 a img.ss_icon_link {
-  border: 0px solid black;
-}
-
+  	border: 0px solid black;
+	}
 a.ss_download_link {
 	border: 0px solid #666666;
 	font-size: ${ss_style_font_finestprint};
@@ -277,43 +271,35 @@ ul.ss_icon_list li {
 .ss_replies_background {
   background-color: ${ss_replies_background_color} !important;
   }
-      
+     
 div.ss_replies div.ss_entryContent {
 	margin-left: 30px;
 	margin-top: 2px;
-}
+	}
 
 div.ss_replies div.ss_entryDescription {
 	background-color: ${ss_replies_background_color};
-}
-
+	}
 div.ss_entryDescription.ss_entryContent table {
 	border-collapse: separate;
-}
-
+	}
 .ss_style_color,.ss_style_color table, .ss_style form {
-  color: ${ss_style_text_color};
-  background-color: ${ss_style_background_color};
- 
-  }
-
+  	color: ${ss_style_text_color};
+  	background-color: ${ss_style_background_color};
+  	}
 .ss_content_rule {
 	border-bottom: 1px solid #CCC;
 	padding-bottom: 3px;
-}
-
-.ss_style_color {
-	
-}
+	}
+.ss_style_color {	
+	}
 .ss_form_color {
-  color: ${ss_form_text_color};
-  background-color: ${ss_form_background_color};
-  }
-    
+  	color: ${ss_form_text_color};
+  	background-color: ${ss_form_background_color};
+  	}  
 .ss_form.ss_gray {
   color: #333333;
-  }
-
+  	}
 .ss_form select, .ss_form option {
   background-color: ${ss_form_element_color};
   color: ${ss_form_element_text_color};
@@ -340,7 +326,6 @@ div.ss_style textarea {
 div.ss_style input[type="text"],
 div.ss_style input[type="password"],
 div.ss_style select, {
-  	padding: 0px;
 	} 
 .ss_form textarea {
   background-color: ${ss_form_element_color};
@@ -387,58 +372,63 @@ div.ss_editorHints {
 
 /* entry styles: common to entry views and entry forms */
 .ss_entryTitle {
-  font-weight: bold;
+  font-weight: normal;
   font-size: ${ss_style_font_largerprint};
   font-family: ${ss_style_title_font_family};
-  margin-bottom: 4px;
+  margin-bottom: 10px;
   margin-top: 4px;
+  margin-left: 15px; 
   }
 /* container for entry content: description, signature, attachments, data gathered from entry form */
+
 .ss_entryContent {
-  margin: 0px;
-  padding: 2px;
-  padding-left: 2px;
-  background-color:inherit;
-  }
+  	margin: 0px;
+  	padding: 2px;
+  	padding-left: 2px;
+  	background-color:inherit;
+  	font-style: normal !important;
+  	}
+div.ss_entryContent a {
+  	color:#5A9A98!important;
+	}
+div.ss_entryContent a:hover {
+  	text-decoration:underline;
+	}
 .ss_entryContent table {
   background-color:inherit;
-  }
+  	}
 .ss_entrySignature {
-  font-size: 10px;
-  padding-left: 5px;
-  color: ${ss_style_metadata_color};
-  
-  }
+  	font-size: 10px;
+  	padding-left: 5px;
+  	color: ${ss_style_metadata_color};
+  	}
 .ss_entryDescription {
-  padding-left: 24px;
-  padding-right: 25px;
-  padding-top: 15px;
-  padding-bottom: 10px;
-  background-color: #E9F1F1 !important;
-  font-family: "Lucida Sans"; 
-  border: 1px transparent solid;
-  font-size: 12px;
-  font-style: italic;
-  color: #777;
-}
+  	padding-left: 15px;
+  	padding-right: 25px;
+  	padding-top: 10px;
+  	margin-top: 10px;
+  	padding-bottom: 10px;
+  	background-color: #E9F1F1 !important;
+  	font-family: "Lucida Sans"; 
+  	font-size: 12px;
+  	font-style: italic;
+  	color: #333;
+	}
 .ss_entryDescription p {
-  margin-top: 2px;
-  margin-bottom: 10px;
-}
-
-
+  	margin-top: 2px;
+  	margin-bottom: 10px;
+	}
 div.ss_entryDescription ul li {
     margin: 2px 0px 0px 25px;
     list-style-type: square;
     list-style-position: outside;
     list-style-image: none;
-}
-
+	}
 div.ss_entryDescription ol li {
     margin: 2px 0px 0px 25px;
     list-style-position: outside;
     list-style-type: decimal;
-}
+	}
 
 
 div.ss_editableTab {
@@ -447,7 +437,7 @@ div.ss_editableTab {
   /* background-color: ${ss_style_background_color_opaque}; */
   margin-left: 0px;
   margin-top: -4px;
-  padding-bottom: 3px;
+  padding-bottom: 35px;
   padding-right: 5px;
   padding-left: 5px;
 }
@@ -525,40 +515,6 @@ table.ss_guestbook {
 	margin-bottom: 3px;
 	padding: 5px 0px 0px 5px;
 }
-
-/* Text styled as buttons */
-
-.ss_inlineButton {
-  cursor: pointer;
-  display: block;
- <c:if test="<%= isIE %>">
-  height: 20px;
- </c:if>
- <c:if test="<%= !isIE %>">
-  height: 18px;
- </c:if>
-  line-height: 18px;
-  text-align: center;
-  padding: 0px 3px 0px 3px;
-  font-size: 9px !important;
-  font-family: Arial, sans-serif;
-  white-space: nowrap;
-  text-decoration: none !important;
-  border: 1px solid #AFC8E3;
-  background-image: url(<html:imagesPath/>pics/background_inline_button_blue.gif);
-  background-repeat: repeat-x;
-}
-.ss_inlineButton:hover {
-  border: 1px solid #666666;
-}
-.ss_inlineButton span {
-  padding: 0px 5px 0px 5px;
-  text-align: center;
-}
-.ss_inlineButton img {
-  margin: 0px 0px -5px 0px;
-}
-
 .ss_tinyControl {
   	font-size: 9px !important;
  	font-family: sans-serif;
@@ -570,17 +526,15 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
  	font-family: ${ss_style_folder_view_font_family};
  	font-size: ${ss_style_font_fineprint};
  	background-color: ${ss_linkbutton_background_color};
-  	border: 1px solid ${ss_linkbutton_outline_color};
+  	border: 1px dotted ${ss_linkbutton_outline_color};
   	padding: 0px 6px 0px 6px;
   	cursor: pointer;
   	white-space: nowrap;
 	}
 a.ss_linkButton:focus, a.ss_linkButton:hover {
   	color: ${ss_linkbutton_link_hover_color};
-  	font-family: ${ss_style_folder_view_font_family};
-  	font-size: ${ss_style_font_fineprint};
   	background-color: ${ss_linkbutton_background_color};
-  	border: 1px solid ${ss_linkbutton_outline_color};
+  	border: 1px dotted ${ss_linkbutton_outline_color};
   	padding: 0px 6px 0px 6px;
   	cursor: pointer;
   	white-space: nowrap;
@@ -1096,7 +1050,7 @@ table.ss_mouseOverInfo {
 	}
 .ss_fixed_TD{
 	border-bottom: solid .1em #72AEB6;
-	font-size: 10px: !important;
+	font-size: 10px !important;
 	padding: 12px 2px 12px 2px;
 	}
 .ss_fixed_TD_left{
@@ -1242,34 +1196,29 @@ table.ss_attachments_list {
 	padding-left: 30px;
 	width: 98%;
 	empty-cells: show;
-}
-
+	}
 table.ss_attachments_list td.ss_att_title {
 	font-size: 10px;
 	font-weight: bold;
 	padding-left: 0px;
-}
-
+	}
 table.ss_attachments_list hr.ss_att_divider {
 	border-top: 1px solid ${ss_generic_border_color};
 	border-bottom: none;
 	height: 0px;
-}
-
+	}
 table.ss_attachments_list td.ss_att_meta, .ss_att_meta {
 	font-size: 10px;
 	white-space: nowrap;
 	padding-left: 5px;
 	color: ${ss_style_metadata_color};
-}
+	}
 table.ss_attachments_list td.ss_att_space {
     padding-left: 10px;
-}
-
+	}
 .ss_subhead2 {
 	color: ${ss_style_text_color};
-}
-
+	}
 .ss_footer_toolbar {
   width: 100%; 
   background-color: ${ss_style_background_color};
@@ -1835,7 +1784,6 @@ div.ss_sidebar_panel {
 	width: 200px;
 	overflow: hidden;
 	}
-
 div.ss_sidebar_panel_featured {
 	width: 200px;
 	overflow: hidden;
@@ -1845,7 +1793,7 @@ div.ss_sidebar_panel_featured {
 .ss_base_title_bar {
 	background-color: ${ss_toolbar1_background_color};
 	color: #333;
-	font-size: ${ss_normalprint};
+	font-size: ${ss_style_font_normalprint};
 	font-weight: bold;
 	font-family: ${ss_style_title_font_family};
 	padding-bottom: 3px;
@@ -4098,7 +4046,6 @@ div.ssPageNavi {
 	padding-top: 15px;
 	padding-bottom:15px;
 	background-color: #E9F1F1;
-	text-wrap: normal;
 	}
 div.ssPageNavi table td {
 /*removed no wrap - robbin filter for discussions*/

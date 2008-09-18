@@ -68,28 +68,20 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		margin-right: 2px !important;
  	</c:if>	 	
 	padding: 4px 4px 4px 4px;
-	background-color: #EFEFEF;
+	background-color: #9EC8CD;
 	}
-/* .ss_statusMouseOver {		***DOESN'T WORK YET.  ADD IN SIDEBAR_STATUS.JSP WHEN DOES***
-	background-color: #CCFFFF;
-	margin: 8px 6px 3px 8px;
-	padding: 4px 4px 4px 4px;
-		}	*/ 
-		
 .ss_status_textarea{
 	font-size: 10px;
-	background-color:#E9F1F1!important;
 	}
 .ss_input_myStatus{
-	background-color: #F3E9C5;
 	border-color: #9EC8CD;
 	width: 160px;
 	height: 42px;
-	margin: 8px 0px 8px 8px;
+	margin: 8px 0px 8px 3px;
 	<c:if test="<%= isIE %>">
   		margin: 6px 0px 4px 0px;
  	</c:if>
-	padding: 8px 0px 8px 10px;	
+	padding: 8px 0px 3px 10px;	
 	}
 .ss_setStatusBackground{
 	background-color: #9EC8CD;

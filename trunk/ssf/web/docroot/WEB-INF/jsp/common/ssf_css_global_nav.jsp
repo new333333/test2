@@ -88,11 +88,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	height:30px;
 	}
 .ss_workspace {
-	font-family: Arial, snas serif;
+	font-family: Arial, sans serif;
 	background-position: left center;
 	font-size: 1em !important;
 	font-weight: 200;
-	font-style: bold;
+	font-weight: bold;
 	color: #FFFFFF !important;
 	white-space:nowrap;
 	}

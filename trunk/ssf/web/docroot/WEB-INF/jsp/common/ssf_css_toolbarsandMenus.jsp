@@ -86,12 +86,12 @@ ul.ss_actions_bar li {
 	border-right:none;
 	}
 .ss_actions_bar li a, .ss_actions_bar li a:visited {
-	color: #ffffff !important;
+	color: #fff !important;
 	display:block;
 	padding:4px 7px;
 	}
 .ss_actions_bar li a:hover{
-	color: #333333 !important;
+	color: #333 !important;
 	background-image: none !important;
 	}
 .ss_actions_bar li a.ss_actions_bar_inline, .ss_actions_bar li a.ss_actions_bar_inline:visited  {
@@ -100,7 +100,6 @@ ul.ss_actions_bar li {
 	padding:0px 7px;
 	}	
 .ss_actions_bar1 {
-	font-weight: normal;
 	font-size: ${ss_style_font_smallprint};
 	font-family: ${ss_style_title_font_family};
 	}
@@ -225,14 +224,14 @@ div.ss_actions_bar_submenu ul.ss_actions_bar1 {
   	background-color: #DBE9E8;
   	background-image: none !important;
   	opacity: 0.95;
-  	border:0.1em solid #CCCCCC;
+  	border:	0.1em solid #CCCCCC;
   	padding: 0px !important;
  <c:if test="<%= isIE %>">
   	filter: alpha(opacity=95);
  </c:if>
 	}
 div.ss_actions_bar_submenu ul.ss_actions_bar2 {
- /* background-color: #DDE5EF; */
+ /* background-color: #9EC8CD; */
   	background-color: #FFFFFF;
   	opacity: 0.95;
  <c:if test="<%= isIE %>">
@@ -515,7 +514,7 @@ div.ss_popup_body {
 /* FAMILY TYPES = (10)unspecified (11)blog (12)calendar (13)discussion (14)photo (15)wiki (16)task (17)file */
 
 table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
- 	background-color: #808080; 
+ 	background-color: #72AEB6; 
 	width: 100%;
 	padding: 0px 2px 0px 0px;
 	margin: 0px;
