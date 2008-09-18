@@ -34,13 +34,13 @@
 {
 	<c:choose>
 		<c:when test="${ss_ajaxStatus.ss_ajaxNotLoggedIn}">
-			notLoggedIn : ${ss_ajaxStatus.ss_ajaxNotLoggedIn} 
+			'notLoggedIn' : ${ss_ajaxStatus.ss_ajaxNotLoggedIn} 
 		</c:when>
 		<c:when test="${!empty exception}">
-			parseExceptionMsg : "<ssf:nlt tag="calendar.import.status.${exception}" />"
+			'parseExceptionMsg' : "<ssf:nlt tag="calendar.import.status.${exception}" />"
 		</c:when>
 		<c:otherwise>
-			entriesAmountMsg: "<c:choose><%--
+			'entriesAmountMsg': '<c:choose><%--
 				--%><c:when test="${entriesAddedAmount == 0 && entriesModifiedAmount == 0}"><%--
 					--%><ssf:nlt tag="calendar.import.added.status.message.zero" />\n<%--
 				--%></c:when><%--
@@ -62,11 +62,11 @@
 						--%></ssf:nlt><%--
 					--%></c:if><%--	
 				--%></c:otherwise><%--
-			--%></c:choose>",					
-			entryAddedIds: [<c:forEach var="id" items="${entryAddedIds}" varStatus="status">
+			--%></c:choose>',					
+			'entryAddedIds': [<c:forEach var="id" items="${entryAddedIds}" varStatus="status">
 					"${id}"<c:if test="${!status.last}">,</c:if>
 				</c:forEach>],
-			entryModifiedIds: [<c:forEach var="id" items="${entryModifiedIds}" varStatus="status">
+			'entryModifiedIds': [<c:forEach var="id" items="${entryModifiedIds}" varStatus="status">
 					"${id}"<c:if test="${!status.last}">,</c:if>
 				</c:forEach>]				
 		</c:otherwise>

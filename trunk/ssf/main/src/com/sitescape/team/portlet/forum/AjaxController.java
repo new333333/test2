@@ -1198,6 +1198,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put("entryModifiedIds", entryModifiedIds);
 		model.put("exception", exception);
 		
+		response.setContentType("text/html");
 		return new ModelAndView("forum/json/icalendar_upload", model);
 	}
 	
@@ -1216,6 +1217,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put("entryModifiedIds", entryModifiedIds);
 		model.put("exception", exception);
 		
+		response.setContentType("text/json");
 		return new ModelAndView("forum/json/icalendar_import", model);
 	}
 	
