@@ -14,7 +14,8 @@
  	<property name="nextComponentId"/>
     <property name="showComponents"/>
     <property name="version"/>
-    <property name="properties" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
+<!-- use length to force medium blog in mysql -->
+    <property name="properties" length="2000000" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
     <component name="creation" node="creation" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>
       <many-to-one class="com.sitescape.team.domain.UserPrincipal" embed-xml="false" node="Principal" name="principal">
