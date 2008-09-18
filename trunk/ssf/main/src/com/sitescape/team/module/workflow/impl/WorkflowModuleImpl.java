@@ -741,11 +741,12 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
     			getTransactionTemplate().execute(new TransactionCallback() {
     				public Object doInTransaction(TransactionStatus status) {
 	        			SchedulerSession schedulerSession = context.getSchedulerSession();
-	        			Timer timer = (Timer)context.getSession().load(Timer.class, timerId);
+	        			final Timer timer = (Timer)context.getSession().load(Timer.class, timerId);
 	        			if (timer == null) return null;
 	        			Token token = timer.getToken();
 	        			Entry entry = null;
 	        			WorkflowState ws = null;
+	        			Long runAsId=null;
 	        			if (token != null) {
 	        				//	token id is id of workflowState
 	        				ws = (WorkflowState)getCoreDao().load(WorkflowState.class, new Long(token.getId()));
@@ -756,48 +757,38 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	        				}
 	        				//	only process timers in current zone
 	        				if (!ws.getDefinition().getZoneId().equals(zoneId)) return null;
-	        			}
-  
-	        			if (timer.getName().equals("onDataValue")) {
-							//this is a sitescape addition to timer processing
-							// execute
-							timer.execute();
-							//re-index for state changes
-							if (entry != null) {
-								EntryProcessor processor = loadEntryProcessor(entry.getParentBinder());
-								entry.incrLogVersion();
-								processor.processChangeLog(entry, ChangeLog.WORKFLOWTIMEOUT);
-								processor.indexEntry(entry);
-							}
-						} else {
-							Long runAsId=RequestContextHolder.getRequestContext().getUserId();
-							//determine who we should run as
-							if (entry != null && ws != null) {
-								Document wfDoc = ws.getDefinition().getDefinition();
-								//Find the current state in the definition
-								Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", ws.getState());
-								if (stateEle != null) {
-									List<Element> transitions = stateEle.selectNodes("./item[@name='transitions']/item[@name='transitionOnElapsedTime']");
-									if (transitions != null && !transitions.isEmpty()) {
-										Element transitionEle = transitions.get(0);
-										runAsId = WorkflowProcessUtils.getRunAsUser(transitionEle, (WorkflowSupport)entry, ws);
-									}
-								}
-							}
-							final Timer runTimer = timer;
-							RunasTemplate.runas(new RunasCallback() {
-								public Object doAs() {
-									runTimer.execute();
-									return null;
-								}
-							}, zoneId, runAsId);
-							//re-index for state changes
-							if (entry != null) {
-								entry.incrLogVersion();
-								EntryProcessor processor = loadEntryProcessor(entry.getParentBinder()); 
-								processor.processChangeLog(entry, ChangeLog.WORKFLOWTIMEOUT);
-								processor.indexEntry(entry);
-							}
+	        				Document wfDoc = ws.getDefinition().getDefinition();
+	        				if (wfDoc == null || wfDoc.getRootElement() == null) {
+	        					schedulerSession.deleteTimer(timer);
+	        					return null;
+	        				}
+	        				Element process = (Element)wfDoc.getRootElement().selectSingleNode("./item[@name='workflowProcess']");
+	        				runAsId = WorkflowProcessUtils.getRunAsUser(process, (WorkflowSupport)entry, ws);
+	        				
+	        			} else {
+	        				runAsId=RequestContextHolder.getRequestContext().getUserId();
+	        			};
+	        			try {
+	        				final Entry wfEntry = entry;
+	        				RunasTemplate.runas(new RunasCallback() {
+	        					public Object doAs() {
+	        						timer.execute();
+	        						//re-index for state changes
+	        						if (wfEntry != null) {
+	        							EntryProcessor processor = loadEntryProcessor(wfEntry.getParentBinder());
+	        							wfEntry.incrLogVersion();
+	        							processor.processChangeLog(wfEntry, ChangeLog.WORKFLOWTIMEOUT);
+	        							processor.indexEntry(wfEntry);
+	        						}
+	        						return null;
+	        					}
+	        				}, zoneId, runAsId);
+	           			} catch (Exception ex) {
+	           				logger.error("Error processing workflow timeout " +
+	           						(entry!=null?entry.getParentBinder().getPathName() + "/" + entry.getTitle():""), ex);
+	           			}
+	        			if (!timer.getName().equals("onDataValue")) {
+	        				//jbpm defined timer - we don't support repeats currently (copied from jbpm scheduler thread)
 							// if there was an exception, just save the timer
 							if (timer.getException()== null) {
 								// 	if repeat is specified
@@ -831,7 +822,6 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 						if (token != null) context.save(token);
 						return null;
     	        	}});
-    			
     		} finally {
 				context.close();
 			}

@@ -822,23 +822,24 @@ public class WorkflowProcessUtils extends AbstractAllModulesInjected {
 
 	}
 	public static Long getRunAsUser(Element item, WorkflowSupport wfEntry, WorkflowState currentWs) {
-		Long runAsId=null;
 		String ctxType = DefinitionUtils.getPropertyValue(item, "runAs");
+		//currentuser exists, so process first
+		if ("currentuser".equals(ctxType)) {
+			return RequestContextHolder.getRequestContext().getUserId();
+		}
+		Long runAsId=null;
+		Set ids = new HashSet();
 		if ("entryowner".equals(ctxType)) {
 			runAsId = wfEntry.getOwnerId();
-		} else if ("binderowner".equals(ctxType)) {
-			runAsId = currentWs.getOwner().getEntity().getParentBinder().getOwnerId();						
-		}
-		if (runAsId != null) {
-			Set ids = new HashSet();
 			ids.add(runAsId);
-			Set<User> users = getUsers(ids);
-			if (users.isEmpty()) runAsId = null;
-			else runAsId = users.iterator().next().getId();
-		}
-		//User may not exist anymore- don't want workflow to fail
-		if (runAsId == null) runAsId=RequestContextHolder.getRequestContext().getUserId();
-		return runAsId;
+			if (!getUsers(ids).isEmpty()) return runAsId;
+		} 
+		//default to binderowner
+		runAsId = currentWs.getOwner().getEntity().getParentBinder().getOwnerId();			
+		ids.clear();
+		ids.add(runAsId);
+		if (!getUsers(ids).isEmpty()) return runAsId;
+		return null;
 
 	}
 	protected static class WfNotify {
