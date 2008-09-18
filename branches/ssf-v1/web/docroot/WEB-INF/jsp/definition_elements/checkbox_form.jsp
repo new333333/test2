@@ -44,10 +44,15 @@
 		required = "";
 	}
 %>
+<c:if test="${!ssDefinitionEntry.customAttributes[property_name].value}" >
 <c:set var="cb_checked" value=""/>
-<c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
-<c:set var="cb_checked" value="checked"/>
+  <input type="hidden" name="<%= elementName %>" id="hidden_<%= elementName %>" value="false"/> 
 </c:if>
+<c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
+  <c:set var="cb_checked" value="checked"/>
+  <input type="hidden" name="<%= elementName %>" id="hidden_<%= elementName %>" value="true"/> 
+</c:if>
+
 <div class="ss_entryContent">
-<input type="checkbox" name="<%= elementName %>" <c:out value="${cb_checked}"/>>&nbsp;<span class="ss_labelRight"><%= caption %><%= required %></span></input>
+<input type="checkbox" name="<%= elementName + "XXX" %>" <c:out value="${cb_checked}"/> onClick="ss_saveCheckBoxValue(this, 'hidden_${property_name}');">&nbsp;<span class="ss_labelRight"><%= caption %><%= required %></span></input>
 </div>

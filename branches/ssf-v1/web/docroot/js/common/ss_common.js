@@ -6107,4 +6107,10 @@ function ss_saveTreeId(obj) {
 			if (obj.checked) idChoices.value += " " + obj.name;
 		}
 	}
+
+}
+function ss_saveCheckBoxValue(box, hiddenFieldId) {
+	var hiddenField = document.getElementById(hiddenFieldId);
+	if (box.checked) hiddenField.value="on";
+	else hiddenField.value="off";
 }
