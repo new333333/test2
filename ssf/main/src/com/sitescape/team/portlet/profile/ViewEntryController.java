@@ -40,9 +40,13 @@ import javax.portlet.WindowState;
 
 import org.springframework.web.portlet.ModelAndView;
 
+import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
+import com.sitescape.team.portlet.forum.ViewController;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -64,10 +68,20 @@ public class ViewEntryController extends SAbstractController {
 		if (request.getWindowState().equals(WindowState.NORMAL)) 
 			return BinderHelper.CommonPortletDispatch(this, request, response);
 		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String displayStyle = user.getDisplayStyle();
 		Map model = new HashMap();	
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+		String entryViewType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_TYPE, "entryView");
+		String entryViewStyle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_STYLE, "");
+		String entryViewStyle2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_STYLE2, "");
+		String displayType = BinderHelper.getDisplayType(request);
+		if (entryViewStyle.equals("")) {
+			if (ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE.equals(displayStyle) &&
+					!ViewController.WIKI_PORTLET.equals(displayType)) entryViewStyle = "full";
+		}
 		Map formData = request.getParameterMap();
 		String viewType = BinderHelper.getViewType(this, binderId);
 		String viewPath = BinderHelper.getViewListingJsp(this, viewType);
@@ -90,6 +104,12 @@ public class ViewEntryController extends SAbstractController {
 		model.put(WebKeys.BINDER, entry.getParentBinder());
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
+
+		//Let the jsp know what style to show the entry in 
+		//  (popup has no navbar header, inline has no navbar and no script tags, full has a navbar header)
+		model.put(WebKeys.ENTRY_VIEW_STYLE, entryViewStyle);
+		model.put(WebKeys.ENTRY_VIEW_STYLE2, entryViewStyle2);
+		
 		//Get the definition used to view this entry
 		Definition entryDef = entry.getEntryDef();
 		if (entryDef == null) {
