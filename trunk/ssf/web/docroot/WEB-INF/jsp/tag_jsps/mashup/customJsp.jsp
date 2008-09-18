@@ -28,61 +28,31 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //Mashup entry view %>
+<% //custom jsp %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%  
-	Long ss_mashupTableNumber = (Long) request.getAttribute("ss_mashupTableNumber");
-	Long ss_mashupTableDepth = (Long) request.getAttribute("ss_mashupTableDepth");
-	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
-	ss_mashupTableItemCount.put(ss_mashupTableNumber, "entry");  
-	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
-%>
-
 <c:if test="${ssConfigJspStyle == 'form'}">
 	<script type="text/javascript">
-	//Routine called when "Delete entry" is clicked
-	function ss_mashup_deleteEntry${ss_mashupItemId}_${renderResponse.namespace}() {
+	//Routine called when "Delete customJsp" is clicked
+	function ss_mashup_deleteCustomJsp${ss_mashupItemId}_${renderResponse.namespace}() {
 		var formObj = self.document.forms['${ss_form_form_formName}'];
 		formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "";
 	}
 	</script>
 </c:if>
-<c:set var="mashupEntry" value="${ss_mashupEntries[mashup_attributes['entryId']]}"/>
-<c:if test="${!empty mashupEntry}">
-  <div style="padding:10px;" width="100%">
-	<c:if test="${ssConfigJspStyle == 'form' || empty mashup_attributes['noTitle']}">
-	  <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
-		<a href="<ssf:url action="view_folder_entry" 
-		  folderId="${mashupEntry.parentBinder.id}"
-		  entryId="${mashupEntry.id}">
-		  <ssf:param name="entryViewStyle" value="full"/>
-		  <ssf:param name="newTab" value="1"/>
-		  </ssf:url>"><span class="ss_largeprint ss_bold">${mashupEntry.title}</span></a>
-	  </div>
-	</c:if>
-	<c:if test="${ssConfigJspStyle != 'form'}">
-	  <div style="border:1px solid #cecece;padding:6px;">
-	    <ssf:markup entity="${mashupEntry}">${mashupEntry.description.text}</ssf:markup>
-	  </div>
-	</c:if>
-	<c:if test="${ssConfigJspStyle == 'form'}">
-	  <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
-	    class="ss_linkButton ss_fineprint"
-	    onClick="ss_mashup_deleteEntry${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
-    </c:if>
-  </div>
-</c:if>
-
-<c:if test="${empty mashupEntry}">
-  <c:if test="${ssConfigJspStyle == 'form'}">
+<c:if test="${ssConfigJspStyle == 'form'}">
    <div style="padding:10px;" width="100%">
-	<div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
-	  <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.entry"/></span>
+	 <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
+	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.customJsp"/></span>
+	    <br/>
+	    <span>${mashup_attributes['customJsp']}</span>
 	    <br/>
 	    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
 	      class="ss_linkButton ss_fineprint"
-	      onClick="ss_mashup_deleteEntry${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
-	</div>
+	      onClick="ss_mashup_deleteCustomJsp${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
+	 </div>
    </div>
-  </c:if>
 </c:if>
+<c:if test="${ssConfigJspStyle != 'form'}">
+xxxxxxxxxxxxxxxxxxxxxxx custom jsp ${mashup_attributes['customJsp']} xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+</c:if>
+
