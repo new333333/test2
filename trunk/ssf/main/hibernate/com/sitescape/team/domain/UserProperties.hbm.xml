@@ -9,6 +9,7 @@
       <key-property name="binderId"/>
     </composite-id>
     <property name="zoneId" access="field"/>
-    <property name="properties" not-null="true" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
+<!-- use length to force medium blog in mysql -->
+    <property name="properties" not-null="true" length="2000000" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
   </class>
 </hibernate-mapping>

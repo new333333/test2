@@ -15,7 +15,8 @@
     <property name="type"/>
     <property name="internalId" length="32"/>
     <property name="visibility"/>
-    <property name="encoding"  type="org.springframework.orm.hibernate3.support.BlobByteArrayType"/>
+<!-- use length to force long blog in mysql -->
+    <property name="encoding"  length="20000000" type="org.springframework.orm.hibernate3.support.BlobByteArrayType"/>
 	<property name="binderId"/>
  <properties name="nameKey" unique="true" update="false" insert="false">
 <property name="zoneId" update="false" insert="false"/>

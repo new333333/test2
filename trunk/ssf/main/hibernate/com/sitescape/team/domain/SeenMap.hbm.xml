@@ -7,8 +7,8 @@
       <generator class="assigned"/>
     </id>
     <property name="zoneId" access="field"/>
-
-    <property name="seenMap" not-null="true" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
+<!-- use length to force medium blog in mysql -->
+    <property name="seenMap" not-null="true" length="2000000" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
     <property name="lastPrune"/>
   </class>
 </hibernate-mapping>
