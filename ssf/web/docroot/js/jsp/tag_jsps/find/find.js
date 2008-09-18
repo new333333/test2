@@ -563,23 +563,23 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		} else {
 			if (that._singleListType == "tags" || that._singleListType == "communityTags" || that._singleListType == "personalTags") {
 				var url = ss_replaceSubStrAll(that._singleViewUrl, 'ss_tagPlaceHolder', id);
-				self.location.href = url;
+				setTimeout("self.location.href = '"+url+"';",100);
 			} else if (that._singleListType == "workflows") {
 				// no link to show
 			} else if (that._singleListType == "entries") {
 				var url = ss_replaceSubStr(that._singleViewUrl, 'ss_entryIdPlaceholder', id);
-				self.location.href = url;				
+				setTimeout("self.location.href = '"+url+"';",100);
 			} else if (that._singleListType == "places") {
 			    var url = that._singleViewUrl; 
 				url = ss_replaceSubStr(url, 'ss_binderIdPlaceholder', id);
 				url = ss_replaceSubStr(url, 'ss_entityTypePlaceholder', entityType);
 				if (ss_gotoPermalink(id, id, entityType, that._singleRenderNamespace, 'yes')) {
-					self.location.href = url;
+				setTimeout("self.location.href = '"+url+"';",100);
 				}
 				return false;
 			} else { // users
 				var url = ss_replaceSubStr(that._singleViewUrl, 'ss_entryIdPlaceholder', id);
-				self.location.href = url;
+				setTimeout("self.location.href = '"+url+"';",100);
 			}
 		}
 	}
@@ -593,7 +593,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 			var id = ss_replaceSubStr(obj.id, 'ss_find_id_', "");
 			var url = that._singleViewAccesibleUrl; 
 			url = ss_replaceSubStr(url, 'ss_entryIdPlaceholder', id);
-			self.location.href = url;
+			setTimeout("self.location.href = '"+url+"';",100);
 		}
 	}
 	
