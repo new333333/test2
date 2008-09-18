@@ -180,42 +180,36 @@ public class EnterExitEvent extends AbstractActionHandler {
 	protected void startCustomProcess(final Element action, final ExecutionContext executionContext, final WorkflowSupport wfEntry, final WorkflowState currentWs) {
 		final String actionName = DefinitionUtils.getPropertyValue(action, "class");
 		if (Validator.isNull(actionName)) return;
-		Long runAsId = WorkflowProcessUtils.getRunAsUser(action, wfEntry, currentWs);
-		RunasTemplate.runas(new RunasCallback() {
-			public Object doAs() {
+		try {
+			Class actionClass = ReflectHelper.classForName(actionName);
+			Object job = (Object)actionClass.newInstance();
+			if (job instanceof WorkflowScheduledAction) {
+				WorkflowProcess schedJob = (WorkflowProcess)SZoneConfig.getObject(RequestContextHolder.getRequestContext().getZoneName(), 
+					"workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_JOB + "']", com.sitescape.team.jobs.DefaultWorkflowProcess.class);
+				String secsString = (String)SZoneConfig.getString(RequestContextHolder.getRequestContext().getZoneName(), "workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_SECONDS + "']");
+				int seconds = 300;
 				try {
-					Class actionClass = ReflectHelper.classForName(actionName);
-					Object job = (Object)actionClass.newInstance();
-					if (job instanceof WorkflowScheduledAction) {
-						WorkflowProcess schedJob = (WorkflowProcess)SZoneConfig.getObject(RequestContextHolder.getRequestContext().getZoneName(), 
-							"workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_JOB + "']", com.sitescape.team.jobs.DefaultWorkflowProcess.class);
-						String secsString = (String)SZoneConfig.getString(RequestContextHolder.getRequestContext().getZoneName(), "workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_SECONDS + "']");
-						int seconds = 300;
-						try {
-							seconds = Integer.parseInt(secsString);
-						} catch (Exception ex) {};
-						schedJob.schedule(wfEntry, currentWs, actionName, buildParams(wfEntry, currentWs), seconds);
+					seconds = Integer.parseInt(secsString);
+				} catch (Exception ex) {};
+				schedJob.schedule(wfEntry, currentWs, actionName, buildParams(wfEntry, currentWs), seconds);
 					
-					} else {
-						((WorkflowAction)job).setHelper(new CalloutHelper(executionContext));
-						((WorkflowAction)job).execute(wfEntry, currentWs);
-					}
-					return null;
-				} catch (ClassNotFoundException e) {
-					throw new ConfigurationException(
-							"Invalid Workflow Action class name '" + actionName + "'",
-							e);
-				} catch (InstantiationException e) {
-				throw new ConfigurationException(
-						"Cannot instantiate Workflow Action of type '"
-						+ actionName + "'");
-				} catch (IllegalAccessException e) {
-					throw new ConfigurationException(
-							"Cannot instantiate Workflow Action of type '"
-							+ actionName + "'");
-				} 		
+			} else {
+				((WorkflowAction)job).setHelper(new CalloutHelper(executionContext));
+				((WorkflowAction)job).execute(wfEntry, currentWs);
 			}
-		}, currentWs.getZoneId(), runAsId);
+		} catch (ClassNotFoundException e) {
+			throw new ConfigurationException(
+					"Invalid Workflow Action class name '" + actionName + "'",
+					e);
+		} catch (InstantiationException e) {
+		throw new ConfigurationException(
+				"Cannot instantiate Workflow Action of type '"
+				+ actionName + "'");
+		} catch (IllegalAccessException e) {
+			throw new ConfigurationException(
+					"Cannot instantiate Workflow Action of type '"
+					+ actionName + "'");
+		} 		
 
 	}
 		
@@ -224,6 +218,8 @@ public class EnterExitEvent extends AbstractActionHandler {
 		final String application = DefinitionUtils.getPropertyValue(action, "remoteApp");
 		if (Validator.isNull(application)) return;
 		Long runAsId = WorkflowProcessUtils.getRunAsUser(action, wfEntry, currentWs);
+		if (runAsId == null) throw new ConfigurationException("Remote application cannot be run, user doesn't exist");
+
 		RunasTemplate.runas(new RunasCallback() {
 			public Object doAs() {
 				try {

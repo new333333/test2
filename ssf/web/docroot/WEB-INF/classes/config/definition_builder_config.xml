@@ -2620,6 +2620,10 @@
 			<property name="initialState" caption="__initialState" type="itemSelect" path="//item[@name='state']" />
 			<property name="endState" caption="__endState" type="itemSelect" 
 				path="//item[@name='state']" multipleAllowed="true"/>
+			<property name="runAs" caption="__workflow_default_runas" type="selectbox" default="binderowner">
+				<option name="entryowner" caption="__workflow_action_runas_entryowner"/>
+				<option name="binderowner" caption="__workflow_action_runas_binderowner"/>
+			</property>
 		</properties>
 
 		<options>
@@ -2650,11 +2654,6 @@
 	<item name="workflowAction" caption="__workflow_action">
 		<properties>
 			<property name="class" caption="__workflow_action_class" type="text" />
-			<property name="runAs" caption="__workflow_action_runas" type="selectbox">
-				<option name="currentuser" caption="__workflow_action_runas_currentuser"/>
-				<option name="entryowner" caption="__workflow_action_runas_entryowner"/>
-				<option name="binderowner" caption="__workflow_action_runas_binderowner"/>
-			</property>
 		</properties>
 	</item>
 
@@ -2665,7 +2664,7 @@
 				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" >
 				<help>ihelp.workflow.remoteApp.variable</help>
 			</property>	
-			<property name="runAs" caption="__workflow_action_runas" type="selectbox">
+			<property name="runAs" caption="__workflow_action_runas" type="selectbox" default="currentuser">
 				<option name="currentuser" caption="__workflow_action_runas_currentuser"/>
 				<option name="entryowner" caption="__workflow_action_runas_entryowner"/>
 				<option name="binderowner" caption="__workflow_action_runas_binderowner"/>
@@ -2775,10 +2774,6 @@
 			<property name="mins" caption="__transition_on_mins" type="text"
 				characterMask="^[0-9]*$" />
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
-			<property name="runAs" caption="__workflow_action_runas" type="selectbox">
-				<option name="entryowner" caption="__workflow_action_runas_entryowner"/>
-				<option name="binderowner" caption="__workflow_action_runas_binderowner"/>
-			</property>
 		</properties>
 		<options>
 			<option name="variable" caption="__workflow_variable_set_on_transition" />
