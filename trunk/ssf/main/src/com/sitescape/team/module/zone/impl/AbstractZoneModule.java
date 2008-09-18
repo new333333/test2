@@ -52,6 +52,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.NoGroupByTheNameException;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.Principal;
@@ -66,6 +67,8 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.ldap.LdapSchedule;
+import com.sitescape.team.module.ldap.LdapModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.template.TemplateModule;
 import com.sitescape.team.module.zone.ZoneModule;
@@ -79,6 +82,7 @@ import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SessionUtil;
 import com.sitescape.util.Validator;
 import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.jobs.ZoneSchedule;
 import com.sitescape.team.jobs.ScheduleInfo;
 public abstract class AbstractZoneModule extends CommonDependencyInjection implements ZoneModule,InitializingBean {
@@ -132,6 +136,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	}
 	protected BinderModule getBinderModule() {
 		return binderModule;
+	}
+	private LdapModule ldapModule;
+	public void setLdapModule(LdapModule ldapModule) {
+		this.ldapModule = ldapModule;
+	}
+	protected LdapModule getLdapModule() {
+		return ldapModule;
 	}
 	protected List<ZoneSchedule> startupModules;
 	public void setScheduleModules(List modules) {
@@ -204,7 +215,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  			//	get super user from config file - must exist or throws and error
  			User superU = getProfileDao().findUserByName(superName, zone.getName());
  			RequestContextUtil.setThreadContext(superU).resolve();
- 			//TODO: setZoneId as non=null, only do on based on version
+ 			//TODO: setZoneId as non=null, only do based on version
 			getCoreDao().executeUpdate("update com.sitescape.team.domain.AuditTrail set zoneId=" + zone.getId() + 
 				" where zoneId is null");
 			getCoreDao().executeUpdate("update com.sitescape.team.domain.Tag set zoneId=" + zone.getId() + 
@@ -364,9 +375,39 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				config.setZoneId(zone.getId());
 				getCoreDao().save(config);
 			}
+			//If not configured yet,  check old config
+			if (getCoreDao().loadObjects(LdapConnectionConfig.class, null, zone.getId()).isEmpty()) {				
+				LdapSchedule schedule = getLdapModule().getLdapSchedule();
+				LdapSchedule.LegacyLdapConfig oldConfig = new LdapSchedule.LegacyLdapConfig(schedule.getScheduleInfo().getDetails());
+				//make sure was configured already
+				if (schedule.isEnabled() || Validator.isNotNull(oldConfig.getUserUrl())) {
+					//upgrade
+					String url = oldConfig.getUserUrl();
+					String userDn = "";
+					int pos = url.lastIndexOf('/');
+					if (pos > 8) {
+						userDn = url.substring(pos+1, url.length());
+						url = url.substring(0, url.lastIndexOf('/'));
+					}
+					String groupDn = oldConfig.getGroupsBasedn();
+					if (Validator.isNull(groupDn)) groupDn = userDn;
+					List<LdapConnectionConfig.SearchInfo> userSearch = new ArrayList();
+					userSearch.add(new LdapConnectionConfig.SearchInfo(userDn, SZoneConfig.getString("ldapConfiguration/userFilter"), true));						
 
+					List<LdapConnectionConfig.SearchInfo> groupSearch = new ArrayList();
+					groupSearch.add(new LdapConnectionConfig.SearchInfo(groupDn, SZoneConfig.getString("ldapConfiguration/groupFilter"), true));
+					String userId = oldConfig.getUserIdMapping();
+					if (Validator.isNull(userId)) userId="uid";
+					LdapConnectionConfig connection = new LdapConnectionConfig(url, userId, 
+							oldConfig.getUserMappings(), userSearch, groupSearch, oldConfig.getUserPrincipal(), oldConfig.getUserCredential());
+					connection.setPosition(0);
+					connection.setZoneId(zone.getId());
+					getCoreDao().save(connection);
+				}
+			}
 			zone.setUpgradeVersion(2);
  		}
+
   	}
  	// Must be running inside a transaction set up by the caller 
  	protected void validateZoneTx(Workspace zone) {

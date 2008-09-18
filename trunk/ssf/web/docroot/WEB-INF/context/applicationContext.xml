@@ -1122,7 +1122,6 @@ text/calendar											  ics
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.ldap.impl.LdapModuleImpl">
 				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
-				<property name="authenticationModule"><ref bean="authenticationModule"/></property>
 				<property name="profileModule"><ref bean="profileModule"/></property>
 				<property name="definitionModule"><ref bean="definitionModule"/></property>
 				<property name="sessionFactory"><ref bean="sessionFactory"/></property>

@@ -31,19 +31,10 @@ import org.springframework.security.providers.ldap.authenticator.BindAuthenticat
 import org.springframework.security.userdetails.UsernameNotFoundException;
 
 import com.sitescape.team.asmodule.zonecontext.ZoneContextHolder;
-import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.dao.util.FilterControls;
-import com.sitescape.team.dao.util.OrderBy;
 import com.sitescape.team.domain.AuthenticationConfig;
 import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.ZoneInfo;
-import com.sitescape.team.module.authentication.AuthenticationModule;
-import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.zone.ZoneModule;
-import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
-import com.sitescape.team.security.function.WorkAreaOperation;
-import com.sitescape.team.spring.security.SpringAuthenticationBeans;
 import com.sitescape.team.spring.security.SsfAuthenticationProvider;
 import com.sitescape.team.spring.security.SsfContextMapper;
 import com.sitescape.team.util.SZoneConfig;
