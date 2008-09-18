@@ -84,8 +84,15 @@
 			  	</c:choose>	
          	  </c:if>
          	  <c:if test="${empty ss_showUserUser.workspaceId}">
-          	      <span id="${ss_showUserUser.id}" 
+          	      <a href="<ssf:url     
+				    binderId="${ss_showUserUser.parentBinder.id}" 
+				    action="view_profile_entry" 
+				    entryId="${ss_showUserUser.id}"><ssf:param 
+	  				name="newTab" value="1"/><ssf:param name="entryViewStyle" value="full"/></ssf:url>" 
+				  >
+				      <span id="${ss_showUserUser.id}" 
             	       class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
+            	  </a>
               </c:if>		  	
 			</ssf:ifadapter>
 			<ssf:ifnotadapter>
@@ -118,8 +125,15 @@
 			    </c:if>
 			  </c:if>
 			  <c:if test="${empty ss_showUserUser.workspaceId}">
-				  <span id="${ss_showUserUser.id}"  
-				    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
+          	      <a href="<ssf:url     
+				    binderId="${ss_showUserUser.parentBinder.id}" 
+				    action="view_profile_entry" 
+				    entryId="${ss_showUserUser.id}"><ssf:param 
+	  				name="newTab" value="1"/><ssf:param name="entryViewStyle" value="full"/></ssf:url>" 
+				  >
+				    <span id="${ss_showUserUser.id}"  
+				      class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
+				  </a>
 			  </c:if>
 			</ssf:ifnotadapter>
 		</c:if>
