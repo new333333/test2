@@ -34,7 +34,7 @@ import com.sitescape.team.search.Node;
 
 public class BaseAdminModule extends AbstractAdminModule {
 
-	public List<Node> getSearchNodes() {
+	public List<Node> obtainSearchNodes() {
 		return null; // No support for nodes
 	}
 	

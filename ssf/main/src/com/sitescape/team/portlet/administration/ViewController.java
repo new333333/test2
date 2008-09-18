@@ -213,7 +213,7 @@ public class ViewController extends  SAbstractController {
 			element.addAttribute("id", String.valueOf(nextId++));
 			elements.put(element.attributeValue("title"), element);		
 			
-			if (getAdminModule().getSearchNodes() != null) {
+			if (getAdminModule().obtainSearchNodes() != null) {
 				element.addAttribute("displayOnly", "true");
 				// index
 				Element indexElem = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);

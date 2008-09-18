@@ -47,7 +47,7 @@ public class ManageSearchNodesController extends  SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
-			List<Node> nodes = getAdminModule().getSearchNodes();
+			List<Node> nodes = getAdminModule().obtainSearchNodes();
 			if(nodes != null) {
 				for(Node node : nodes) {
 					// If both synchronize and change-access-mode requests came in, it is
@@ -75,7 +75,7 @@ public class ManageSearchNodesController extends  SAbstractController {
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		
-		List<Node> nodes = getAdminModule().getSearchNodes();
+		List<Node> nodes = getAdminModule().obtainSearchNodes();
 		
 		if(nodes != null) {
 			model.put(WebKeys.SEARCH_NODES, nodes);

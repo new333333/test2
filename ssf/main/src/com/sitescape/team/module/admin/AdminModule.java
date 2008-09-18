@@ -180,7 +180,7 @@ public interface AdminModule {
     public void setWorkAreaOwner(WorkArea workArea, Long userId, boolean propagate) throws AccessControlException;
 	public void updateDefaultDefinitions(Long topId);
 	
-	public List<Node> getSearchNodes();
+	public List<Node> obtainSearchNodes();
 	
 	public void updateSearchNodeInfo(String nodeId, String accessMode, Boolean inSynch);
 
