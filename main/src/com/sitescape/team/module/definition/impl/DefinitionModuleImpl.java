@@ -1488,10 +1488,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					    	}
 						}
 					} else if (itemName.equals("checkbox")) {
-						if (inputData.exists(nameValue) && inputData.getSingleValue(nameValue).equals("on")) {
-							entryData.put(nameValue, Boolean.TRUE);
-						} else {
-							entryData.put(nameValue, Boolean.FALSE);
+						if (inputData.exists(nameValue)) {
+							if (inputData.getSingleValue(nameValue).equals("on")) {
+								entryData.put(nameValue, Boolean.TRUE);
+							} else {
+								entryData.put(nameValue, Boolean.FALSE);
+							}
 						}
 					} else if (itemName.equals("profileTimeZone")) {
 						if (inputData.exists(nameValue)) {
