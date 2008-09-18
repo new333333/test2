@@ -75,7 +75,7 @@
           <td colspan="2"><ssf:nlt tag="errorcode.login.failed"/></td>
         </tr>
       </c:if>
-   		<tr>
+ 		<tr>
    			<td colspan="2" align="center">
     		  <br/>
     		  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
@@ -86,6 +86,7 @@
 	 </tbody></table>
 <c:if test="${!empty ssUrl}">
     <input type="hidden" name="spring-security-redirect" value="${ssUrl}"/>
+    </div>
 </c:if>
   </fieldset>
   </form>

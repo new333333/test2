@@ -122,7 +122,7 @@ div.ss_blog_sidebar_box {
 }
 a.ss_displaytag {
 	color: ${ss_style_metadata_color};
-	font-size: ${ss_smallprint} !important;
+	font-size: ${ss_style_font_smallprint} !important;
 	}
 .ss_blog_sidebar table {
 	background-color: transparent;

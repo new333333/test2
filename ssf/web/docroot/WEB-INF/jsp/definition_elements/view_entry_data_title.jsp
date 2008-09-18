@@ -75,7 +75,7 @@ ${nextEntry.docNumber}.
 </div>
 </c:if>
 <c:set var="ss_title_breadcrumbs_seen" value="1" scope="request"/>
-<span class="ss_entryTitle">
+<span class="ss_entryTitle   ss_link_7 ss_link_7 span ">
 	<c:if test="${!empty ssDefinitionEntry.docNumber}">
 	  <c:out value="${ssDefinitionEntry.docNumber}"/>.
 	</c:if>

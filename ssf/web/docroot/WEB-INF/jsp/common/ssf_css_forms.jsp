@@ -146,16 +146,21 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding: 3px;
 	margin: 6px;
 	}
-fieldset.ss_fieldset {
+.ss_text_login a:hover{
+	background: #666;
+	}
+fieldset{
+  	margin-top: 40px;
+  	margin-bottom: 40px;
     margin-top: 6px;
     margin-bottom: 4px;
     border: 1px solid ${ss_style_border_color_light};
 	} 
-fieldset.ss_fieldset_login {
-  	margin-top: 40px;
-  	margin-bottom: 40px;
+.ss_fieldset_login {
+  	margin-top: 80px;
+  	margin-bottom: 100px;
  	padding-bottom:12px;
-  	padding-top: 12px;
+  	padding-top: 18px;
   	display: block;
   	border: 1px dotted #5A9A98;
   	background-image: url(<html:imagesPath/>pics/login_bk.png);
@@ -169,34 +174,58 @@ fieldset.ss_fieldset_square {
   	padding: 5px;
   	margin-top: 12px;
 	}
+fieldset a{
+	border: dotted 1px #000;
+	}
 fieldset a:hover{
 	border: dotted 1px #000;
 	}
-
-legend.ss_legend {
-  font-family: ${ss_style_font_family};
-  font-weight: bold;
-  font-size: ${ss_style_font_size}; 
-  color: ${ss_style_text_color};
-}
-
-legend.ss_legend_bold {
-  font-family: ${ss_style_font_family};
-  font-weight: bold;
-  font-size: ${ss_style_font_size}; 
-  color: ${ss_style_text_color};
-}
-
-legend.ss_legend_login {
+.ss_legend {
+  	font-size:12px !important;
+  	}
+ /*to be used for the login screen */
+.ss_legend_login {
   	font-size:24px !important;
 	letter-spacing:-1px;
 	font-family:Georgia, "Times New Roman", Times, serif !important;
 	font-weight:normal !important;
-	color:#333;
-	background-color: none;
-	padding-left: 5px;
-	padding-right: 5px;
-	opacity: .5;
+	color:#666;
 	}
+	
+/* Text styled as buttons */
 
-
+.ss_inlineButton {
+  cursor: pointer;
+ <c:if test="<%= isIE %>">
+  height: 20px;
+ </c:if>
+ <c:if test="<%= !isIE %>">
+  /*height: 18px;*/
+ </c:if>
+  text-align: center;
+  padding: 0px 6px 0px 6px;
+  font-size: 10px !important;
+  font-family: Arial, sans-serif;
+  white-space: nowrap;
+  text-decoration: none !important;
+  border: 1px solid #5A9A98;
+  background-image: url(<html:imagesPath/>pics/background_inline_button_blue.gif);
+  background-repeat: repeat-x;
+}
+.ss_inlineButton ss_reset {
+	position:relative;
+	display:block;
+	white-space:nowrap;
+	margin:2px 0 0 0;
+	}
+.ss_inlineButton:hover {
+  border: 1px dotted #333;
+  color: #999;
+}
+.ss_inlineButton span {
+  padding: 0px 6px 0px 6px;
+  text-align: center;
+}
+.ss_inlineButton img {
+  margin: 0px 0px 0px 0px;
+}

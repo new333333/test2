@@ -83,7 +83,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 #ss_diss_inset{
 	width:95%;
-	align: left;
 	}
 #ss_diss_top{
 	/* width: 90%; */
@@ -153,8 +152,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_title_th1{
 	color:#5A9A98!important;
 	font-size: 1.0em;
-	letter-spacing:-3;
-	font-weight:300;
+	font-weight: 300;
 	}	
 .ss_title_th1 a{
 	color:#5A9A98!important;
@@ -163,11 +161,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color: #777!important;	
 	}	
 .ss_title_count{
-	color:#777!important;
-	font-size:9px;
+	color: #777!important;
+	font-size: 9px;
 	font-style: normal;
 	font-family: Arial, Helvetica, sans-serif;
-	letter-spacing: -2;
 	}
 .ss_title_count a{
 	color:red!important;
@@ -547,5 +544,4 @@ div.ssPageNavi {
 	padding-bottom:15px;
 	background-color: #E9F1F1;
 	}
-	  
 	  
