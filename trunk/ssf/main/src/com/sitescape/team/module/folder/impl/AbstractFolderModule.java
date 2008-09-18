@@ -103,6 +103,7 @@ import com.sitescape.team.module.shared.AccessUtils;
 import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
+import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.search.LuceneReadSession;
 import com.sitescape.team.search.QueryBuilder;
@@ -442,6 +443,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         Folder folder = loadFolder(folderId);
         //search query does access checks
         return loadProcessor(folder).getBinderEntries(folder, entryTypes, searchOptions);
+
+    }
+    
+    public void getEntryPrincipals(List entries) {
+	    SearchUtils.extendPrincipalsInfo(entries, getProfileDao(), Constants.CREATORID_FIELD);
     }
     
     

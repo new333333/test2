@@ -30,6 +30,7 @@ package com.sitescape.team.module.folder;
 
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -247,6 +248,12 @@ public interface FolderModule {
      * @return
      */
     public SortedSet<FolderEntry>getEntries(Collection<Long>ids);
+    /**
+     * Extend the  <code>FolderEntries</code> to include principal objects
+     * @param ids
+     * @return
+     */
+    public void getEntryPrincipals(List entries);
     /**
      * 
      * @param parentFolderId
