@@ -714,27 +714,27 @@ public class DefinitionHelper {
 					}
 	        		String type = mashupItemValues[0];
 	        		if (ObjectKeys.MASHUP_TYPE_ENTRY.equals(type) && 
-	        				mashupItemAttributes.containsKey("entryId") &&
-	        				!mashupItemAttributes.get("entryId").equals("")) {
+	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ENTRY_ID) &&
+	        				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID).equals("")) {
 	        			try {
 	        				FolderEntry entry = bs.getFolderModule().getEntry(null, 
-	        						Long.valueOf((String)mashupItemAttributes.get("entryId")));
+	        						Long.valueOf((String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID)));
 	        				mashupEntries.put(entry.getId().toString(), entry);
 	        			} catch(Exception e) {}
 	        		} else if (ObjectKeys.MASHUP_TYPE_FOLDER.equals(type) && 
-	        				mashupItemAttributes.containsKey("folderId") && 
-	        				!mashupItemAttributes.get("folderId").equals("")) {
+	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_FOLDER_ID) && 
+	        				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_FOLDER_ID).equals("")) {
 	        			try {
 	        				Binder binder = bs.getBinderModule().getBinder(
-	        						Long.valueOf((String)mashupItemAttributes.get("folderId")));
+	        						Long.valueOf((String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_FOLDER_ID)));
 	        				mashupBinders.put(binder.getId().toString(), binder);
 	        				Map options = new HashMap();
 	        				Integer searchMaxHits = Integer.valueOf(SPropsUtil.getString("folder.records.listed"));
 	        				options.put(ObjectKeys.SEARCH_MAX_HITS, searchMaxHits);
 	        				try {
-	        					if (mashupItemAttributes.containsKey("entriesToShow")) {
+	        					if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ENTRIES_TO_SHOW)) {
 	        						Integer entriesToShow = Integer.valueOf(
-	        								(String)mashupItemAttributes.get("entriesToShow"));
+	        								(String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRIES_TO_SHOW));
 	        						options.put(ObjectKeys.SEARCH_MAX_HITS, entriesToShow);
 	        					}
 	        				} catch(Exception e) {}

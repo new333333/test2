@@ -85,26 +85,33 @@ function ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}()
 }
 
 //Mashup attributes
-var ss_mashupAttr_noTitle${ss_mashupItemId} = "";
+var ss_mashupAttr_showTitle${ss_mashupItemId} = "";
+var ss_mashupAttr_showBorder${ss_mashupItemId} = "";
 var ss_mashupAttr_showFolderDescription${ss_mashupItemId} = "";
 var ss_mashupAttr_showEntriesOpened${ss_mashupItemId} = "";
 var ss_mashupAttr_numberOfLines${ss_mashupItemId} = "";
+var ss_mashupAttr_numberOfCols${ss_mashupItemId} = "";
 var ss_mashupAttr_customJsp${ss_mashupItemId} = "";
 
 function ss_mashupClearAttrs${ss_mashupItemId}() {
-	ss_mashupAttr_noTitle${ss_mashupItemId} = "";
+	ss_mashupAttr_showTitle${ss_mashupItemId} = "";
+	ss_mashupAttr_showBorder${ss_mashupItemId} = "";
 	ss_mashupAttr_showFolderDescription${ss_mashupItemId} = "";
 	ss_mashupAttr_showEntriesOpened${ss_mashupItemId} = "";
 	ss_mashupAttr_numberOfLines${ss_mashupItemId} = "";
+	ss_mashupAttr_numberOfCols${ss_mashupItemId} = "";
 	ss_mashupAttr_customJsp${ss_mashupItemId} = "";
 }
 function ss_mashupBuildAttrs${ss_mashupItemId}() {
 	var attr = "";
-	if (ss_mashupAttr_noTitle${ss_mashupItemId} != "") attr += ",noTitle=1"
+	if (ss_mashupAttr_showTitle${ss_mashupItemId} != "") attr += ",showTitle=1"
+	if (ss_mashupAttr_showBorder${ss_mashupItemId} != "") attr += ",showBorder=1"
 	if (ss_mashupAttr_showFolderDescription${ss_mashupItemId} != "") attr += ",showFolderDescription=1"
 	if (ss_mashupAttr_showEntriesOpened${ss_mashupItemId} != "") attr += ",showEntriesOpened=1"
 	if (ss_mashupAttr_numberOfLines${ss_mashupItemId} != "") 
 		attr += ",entriesToShow=" + ss_mashupAttr_numberOfLines${ss_mashupItemId}
+	if (ss_mashupAttr_numberOfCols${ss_mashupItemId} != "") 
+		attr += ",cols=" + ss_mashupAttr_numberOfCols${ss_mashupItemId}
 	if (ss_mashupAttr_customJsp${ss_mashupItemId} != "") 
 		attr += ",customJsp=" + ss_mashupAttr_customJsp${ss_mashupItemId}
 	//alert(attr)
@@ -174,9 +181,9 @@ function ss_mashupSubmit${ss_mashupItemId}() {
 		    accessibilityText="wiki.findPage"
 		    />
           <br/>
-          <input type="checkbox" name="${ss_mashupPropertyName}__noTitle"
-            onChange="ss_mashupAttr_noTitle${ss_mashupItemId} = this.value;"/> 
-          <span><ssf:nlt tag="mashup.noTitle"/></span>
+          <input type="checkbox" name="${ss_mashupPropertyName}__showTitle"
+            onChange="ss_mashupAttr_showTitle${ss_mashupItemId} = this.value;"/> 
+          <span><ssf:nlt tag="mashup.showTitle"/></span>
 		  <br/>
 		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
 		    onClick="ss_mashupSubmit${ss_mashupItemId}();return true;"
@@ -201,9 +208,9 @@ function ss_mashupSubmit${ss_mashupItemId}() {
 		    accessibilityText="wiki.findFolder"
 		    />
           <br/>
-          <input type="checkbox" name="${ss_mashupPropertyName}__noTitle"
-            onChange="ss_mashupAttr_noTitle${ss_mashupItemId} = this.value;"/> 
-          <span><ssf:nlt tag="mashup.noTitle"/></span>
+          <input type="checkbox" name="${ss_mashupPropertyName}__showTitle"
+            onChange="ss_mashupAttr_showTitle${ss_mashupItemId} = this.value;"/> 
+          <span><ssf:nlt tag="mashup.showTitle"/></span>
           <br/>
           <input type="checkbox" name="${ss_mashupPropertyName}__showFolderDescription"
             onChange="ss_mashupAttr_showFolderDescription${ss_mashupItemId} = this.value;"/> 
@@ -231,6 +238,14 @@ function ss_mashupSubmit${ss_mashupItemId}() {
   >
   		<div><ssf:nlt tag="mashup.addTable"/></div>
   		<div>
+          <input type="checkbox" name="${ss_mashupPropertyName}__showBorder"
+            onChange="ss_mashupAttr_showBorder${ss_mashupItemId} = this.value;"/> 
+          <span><ssf:nlt tag="mashup.showBorder"/></span>
+          <br/>
+          <input type="text" name="${ss_mashupPropertyName}__numberOfCols"
+            onChange="if (ss_isInteger(this.value)) {ss_mashupAttr_numberOfCols${ss_mashupItemId} = this.value;}"/> 
+          <span><ssf:nlt tag="mashup.numberOfCols"/></span>
+          <br/>
 		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
 		    class="ss_linkButton ss_fineprint"
 			onClick="ss_mashup_addTable${ss_mashupItemId}_${renderResponse.namespace}();ss_mashupSubmit${ss_mashupItemId}();return true;" />
