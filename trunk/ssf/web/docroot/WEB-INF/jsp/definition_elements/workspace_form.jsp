@@ -49,6 +49,7 @@
 		methodName = "post";
 	}
 %>
+<c:set var="ss_form_form_formName" value="<%= formName %>" scope="request"/>
 <div class="ss_style ss_portlet" width="100%">
 <form class="ss_form" method="<%= methodName %>" 
   enctype="<%= enctype %>" name="<%= formName %>" 

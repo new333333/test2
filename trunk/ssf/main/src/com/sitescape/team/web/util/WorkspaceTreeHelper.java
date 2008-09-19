@@ -262,6 +262,10 @@ public class WorkspaceTreeHelper {
 			model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 			model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 			
+			//Build the mashup beans
+			Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
+			DefinitionHelper.buildMashupBeans(bs, binder, configDocument, model);
+			
 			String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
 			model.put(WebKeys.TYPE, type);
 			String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE, "0");
