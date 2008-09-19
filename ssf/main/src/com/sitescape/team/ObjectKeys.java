@@ -190,6 +190,10 @@ public interface ObjectKeys {
     
     public static final String FOLDER_ENTRY_TO_BE_SHOWN = "folder_entry_to_be_shown";
     
+    public static final String MASHUP_ATTR_COLS = "cols";
+    public static final String MASHUP_ATTR_ENTRY_ID = "entryId";
+    public static final String MASHUP_ATTR_ENTRIES_TO_SHOW = "entriesToShow";
+    public static final String MASHUP_ATTR_FOLDER_ID = "folderId";
     public static final String MASHUP_TYPE_ENTRY = "entry";
     public static final String MASHUP_TYPE_FOLDER = "folder";
     public static final String MASHUP_TYPE_TABLE = "table";

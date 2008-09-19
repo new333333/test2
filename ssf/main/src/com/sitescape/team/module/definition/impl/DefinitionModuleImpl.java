@@ -2003,14 +2003,30 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								if (nextValue != null && !nextValue.equals("")) {
 									if (!value.equals("")) value = value + ";";
 									String type = nextValue.split(",")[0];
+					        		String[] mashupItemValues = nextValue.split(",");
+					        		String attrs = "";
+									Map mashupItemAttributes = new HashMap();
+									if (mashupItemValues.length > 0) {
+										//Build a map of attributes
+										for (int j = 0; j < mashupItemValues.length; j++) {
+											String[] valueSet = mashupItemValues[j].split("=");
+											if (valueSet.length == 2) {
+												mashupItemAttributes.put(valueSet[0], valueSet[1]);
+												attrs += ","+valueSet[0]+"="+valueSet[1];
+											}
+										}
+									}
 									if (type == null || type.equals("")) {
 										//Delete empty or badly formed items
 										nextValue = "";
 									} else if (type.equals(ObjectKeys.MASHUP_TYPE_TABLE)) {
-										nextValue = ObjectKeys.MASHUP_TYPE_TABLE_START + ";" +
-											ObjectKeys.MASHUP_TYPE_TABLE_COL + ";" +
-											ObjectKeys.MASHUP_TYPE_TABLE_COL + ";" +
-											ObjectKeys.MASHUP_TYPE_TABLE_END;
+										int colCount = 2;
+										if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_COLS)) 
+											colCount = Integer.valueOf((String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_COLS));
+										nextValue = ObjectKeys.MASHUP_TYPE_TABLE_START + attrs + ";";
+										for (int j = 0; j < colCount; j++) 
+											nextValue += ObjectKeys.MASHUP_TYPE_TABLE_COL + ";";
+										nextValue += ObjectKeys.MASHUP_TYPE_TABLE_END;
 									} else if (type.equals(ObjectKeys.MASHUP_TYPE_TABLE_END_DELETE)) {
 										//This is a request to delete a table
 										// Delete all the way back to the "tableStart"
