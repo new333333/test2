@@ -85,6 +85,19 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 		 </c:if>
 		 >
 		</div>
+<script type="text/javascript">
+function ss_focusOnTitle() {
+	var formObj = self.document.getElementById('${ss_form_form_formName}')
+	if (formObj != null) {
+		if (typeof formObj.title != 'undefined' && 
+				typeof formObj.title.type != 'undefined' && 
+				formObj.title.type == 'text') {
+			formObj.title.focus();
+		}
+	}
+}
+ss_createOnLoadObj("ss_focusOnTitle", ss_focusOnTitle);
+</script>
   </c:otherwise>
 </c:choose>
 
