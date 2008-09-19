@@ -139,7 +139,7 @@ public class TextFormat extends BodyTagSupport {
 					if (i >= (intMaxAllowedWords - 1) && (muArrList.size() == 0) ) {
 						//If the actual text length is greater than the specified textMaxWords allowed then we
 						//will append the "..." to the summary displayed. If not we will not append the "...".
-						if (i < words.length - 1) summary = summary + ".....";
+						if (i < words.length - 1) summary = summary + "...";
 						break;
 					}
 				}
