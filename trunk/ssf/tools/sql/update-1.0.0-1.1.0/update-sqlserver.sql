@@ -70,6 +70,6 @@ alter table SS_Events add freeBusy varchar(32) null;
 alter table SS_Definitions add binderId numeric(19,0);
 alter table SS_Definitions add visibility int null;
 create unique index definition_name on SS_Definitions (zoneId, name, binderId);
-create table SS_SearchNodeInfo (indexName nvarchar(160) not null, nodeId nvarchar(128) not null, accessMode varchar(16) null, outOfSynch tinyint null, primary key (indexName, nodeId));
+create table SS_SearchNodeInfo (indexName nvarchar(160) not null, nodeId nvarchar(128) not null, zoneId numeric(19,0) null, accessMode varchar(16) null, inSynch tinyint null, primary key (indexName, nodeId));
 create table SS_AuthenticationConfig (zoneId numeric(19,0) not null, allowLocalLogin tinyint null, allowAnonymousAccess tinyint null, allowSelfRegistration tinyint null, lastUpdate numeric(19,0) null, primary key (zoneId));
 create table SS_LdapConnectionConfig (id char(32) not null, zoneId numeric(19,0) null, url nvarchar(255) null, userIdAttribute nvarchar(255) null, mappings ntext null, userSearches ntext null, groupSearches ntext null, principal nvarchar(255) null, credentials nvarchar(255) null, position int null, primary key (id)

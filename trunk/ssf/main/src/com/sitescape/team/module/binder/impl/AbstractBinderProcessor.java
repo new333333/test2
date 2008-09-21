@@ -1619,7 +1619,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      */
 	protected void indexBinderWithAttachments(Binder binder,
 			Collection<FileAttachment> fileAttachments, List fileUploadItems, boolean newEntry, Collection tags) {
-		if(SPropsUtil.getBoolean("index.escalate.add.to.update", true))
+		if(SPropsUtil.getBoolean("indexing.escalate.add.to.update", true))
 			newEntry = false;
 		
 		if(!newEntry) {
