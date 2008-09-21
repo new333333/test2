@@ -34,6 +34,7 @@
 	    <value>com/sitescape/team/domain/Definition.hbm.xml</value>
 	    <value>com/sitescape/team/domain/Event.hbm.xml</value>
 	    <value>com/sitescape/team/domain/FolderEntry.hbm.xml</value>
+	    <value>com/sitescape/team/domain/IndexingJournal.hbm.xml</value>
 	    <value>com/sitescape/team/domain/LdapConnectionConfig.hbm.xml</value>
 	    <value>com/sitescape/team/domain/LibraryEntry.hbm.xml</value>
 	    <value>com/sitescape/team/domain/LicenseStats.hbm.xml</value>

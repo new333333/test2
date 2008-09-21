@@ -117,6 +117,7 @@ public interface CoreDao {
 	public List loadObjectsCacheable(Class className, FilterControls filter, Long zoneId);
     public List loadObjects(Collection ids, Class className, Long zoneId);
 	public List loadObjects(String query, Map namedValues);
+	public List loadObjects(String query, Map namedValues, Integer maxResults);
 	/**
 	 * Performance optimization.
 	 * Load a list of objects and eagerly fetch listed collections

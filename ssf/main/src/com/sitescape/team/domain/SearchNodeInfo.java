@@ -30,7 +30,7 @@ package com.sitescape.team.domain;
 
 import java.io.Serializable;
 
-public class SearchNodeInfo implements Serializable {
+public class SearchNodeInfo extends ZonedObject implements Serializable {
 
 	private String indexName;
 	private String nodeId;

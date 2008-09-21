@@ -420,10 +420,16 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	 * @return
 	 */
 	public List loadObjects(final String query, final Map values) {
+		return loadObjects(query, values, null);
+	}
+	
+	public List loadObjects(final String query, final Map values, final Integer maxResults) {
 		return (List)getHibernateTemplate().execute(
 		        new HibernateCallback() {
 		            public Object doInHibernate(Session session) throws HibernateException {
 	                  	Query q = session.createQuery(query);
+	                  	if(maxResults != null)
+	                  		q.setMaxResults(maxResults.intValue());
 	                  	if (values != null) {
 	                  		for (Iterator iter=values.entrySet().iterator(); iter.hasNext();) {
 	                  			Map.Entry me = (Map.Entry)iter.next();
@@ -444,7 +450,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	            		return q.list();
 		            }
 		        }
-		     );
+		     );		
 	}
 	/**
 	 * Return a list ob objects
