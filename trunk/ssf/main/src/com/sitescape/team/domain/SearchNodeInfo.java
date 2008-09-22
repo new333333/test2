@@ -30,37 +30,31 @@ package com.sitescape.team.domain;
 
 import java.io.Serializable;
 
-public class SearchNodeInfo extends ZonedObject implements Serializable {
+public class SearchNodeInfo extends ZonedObject {
 
-	private String indexName;
-	private String nodeId;
+	private Identifier id;
 	private String accessMode = "readwrite";
 	private boolean inSynch = true;
 	
 	public SearchNodeInfo() {}
 	
-	public SearchNodeInfo(String nodeId, String indexName) {
-		this.nodeId = nodeId;
-		this.indexName = indexName;
+	public SearchNodeInfo(Identifier id) {
+		this.id = id;
 	}
 	
+	public Identifier getId() {
+		return id;
+	}
+
+	public void setId(Identifier id) {
+		this.id = id;
+	}
+
 	public String getAccessMode() {
 		return accessMode;
 	}
 	public void setAccessMode(String accessMode) {
 		this.accessMode = accessMode;
-	}
-	public String getIndexName() {
-		return indexName;
-	}
-	public void setIndexName(String indexName) {
-		this.indexName = indexName;
-	}
-	public String getNodeId() {
-		return nodeId;
-	}
-	public void setNodeId(String nodeId) {
-		this.nodeId = nodeId;
 	}
 	
 	public boolean isInSynch() {
@@ -71,24 +65,46 @@ public class SearchNodeInfo extends ZonedObject implements Serializable {
 		this.inSynch = inSynch;
 	}
 
-	public boolean equals(Object obj) {
-        if(this == obj)
-            return true;
+	public static class Identifier implements Serializable {
+		private String nodeId;
+		private String indexName;
+		
+		public Identifier() {}
+		public Identifier(String nodeId, String indexName) {
+			this.nodeId = nodeId;
+			this.indexName = indexName;
+		}
+		public String getIndexName() {
+			return indexName;
+		}
+		public void setIndexName(String indexName) {
+			this.indexName = indexName;
+		}
+		public String getNodeId() {
+			return nodeId;
+		}
+		public void setNodeId(String nodeId) {
+			this.nodeId = nodeId;
+		}
 
-        if ((obj == null) || !(obj instanceof SearchNodeInfo))
-            return false;
-            
-        SearchNodeInfo sn = (SearchNodeInfo) obj;
-        if(nodeId.equals(sn.nodeId) && indexName.equals(sn.indexName))
-        	return true;
-        else
-        	return false;
-	}
-	public int hashCode() {
-       	int hash = 7;
-    	hash = 31*hash + nodeId.hashCode();
-    	hash = 31*hash + indexName.hashCode();
-    	return hash;
-	}
+		public boolean equals(Object obj) {
+	        if(this == obj)
+	            return true;
 
+	        if ((obj == null) || !(obj instanceof SearchNodeInfo))
+	            return false;
+	            
+	        Identifier idf = (Identifier) obj;
+	        if(nodeId.equals(idf.nodeId) && indexName.equals(idf.indexName))
+	        	return true;
+	        else
+	        	return false;
+		}
+		public int hashCode() {
+	       	int hash = 7;
+	    	hash = 31*hash + nodeId.hashCode();
+	    	hash = 31*hash + indexName.hashCode();
+	    	return hash;
+		}
+	}
 }

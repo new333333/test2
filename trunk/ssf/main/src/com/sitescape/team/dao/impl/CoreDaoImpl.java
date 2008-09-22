@@ -1585,7 +1585,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 
 	public SearchNodeInfo loadSearchNodeInfo(String nodeId, String indexName) {
-		return (SearchNodeInfo) getHibernateTemplate().get(SearchNodeInfo.class, new SearchNodeInfo(nodeId, indexName));
+		return (SearchNodeInfo) getHibernateTemplate().get(SearchNodeInfo.class, new SearchNodeInfo.Identifier(nodeId, indexName));
 	}
 
 	public void purgeSearchNodeInfo(final String indexName) {
