@@ -4,7 +4,7 @@
 <hibernate-mapping auto-import="false">
   <class dynamic-update="true" table="SS_SearchNodeInfo" lazy="false" name="com.sitescape.team.domain.SearchNodeInfo">
     <cache usage="read-write"/>
-    <composite-id >
+    <composite-id name="id">
       <key-property name="nodeId" length="128"/>
       <key-property name="indexName" length="160"/>
     </composite-id>
