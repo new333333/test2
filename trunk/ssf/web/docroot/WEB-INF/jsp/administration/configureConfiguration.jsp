@@ -117,6 +117,14 @@ document.${renderResponse.namespace}fm.onsubmit=function() { return ss_selectAll
 <c:if test="${!empty ssBinderConfig}">
 
 <c:if test="${empty ssOperation || ssOperation == ''}">
+<%@ page import="com.sitescape.team.module.definition.DefinitionUtils" %>
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<%
+//Get the folder type of this definition (folder, file, or event)
+String folderViewStyle = DefinitionUtils.getViewType(ssConfigDefinition);
+if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "folder";
+%>
+<c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 <span>
 <c:if test="${ssBinderConfig.entityType == 'workspace'}">
 <ssf:nlt tag="administration.configure_cfg.workspaceTemplate.title"/>

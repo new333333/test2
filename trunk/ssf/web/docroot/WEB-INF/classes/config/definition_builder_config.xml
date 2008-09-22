@@ -706,7 +706,6 @@
 	<item name="folderList" caption="__folder_listing" category="folderViewData"  display="view">
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/folder_list.jsp" />
-			<jsp name="template" value="/WEB-INF/jsp/definition_elements/template_list.jsp" />
 		</jsps>
 	</item>
 		

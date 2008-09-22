@@ -135,6 +135,7 @@ public class ListFolderHelper {
 		"calendar.abbreviation.november",
 		"calendar.abbreviation.december"
 	};
+	public static final String[] folderColumns= new String[] {"number", "title", "comments", "size", "download", "html", "state", "author", "date", "rating"};
 
 	static public ModelAndView BuildFolderBeans(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Long binderId) throws Exception {
@@ -878,7 +879,7 @@ public class ListFolderHelper {
 			if (def.equals(currentDef)) qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 			//Build a url to switch to this view
 			PortletURL url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_DEFINITION);
 			url.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
 			url.setParameter(WebKeys.URL_VALUE, def.getId());

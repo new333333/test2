@@ -41,7 +41,7 @@
 			<ssf:nlt tag="task.navi.chooseView"/>:
 			<a class="ss_calDaySelectButton" href="<ssf:url 
   				folderId="${ssBinder.id}" 
-  				action="view_folder_listing">
+  				action="${action}">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
 	  				<ssf:param name="ssTaskFilterType" value="CLOSED"/>
   				</ssf:url>">
@@ -50,7 +50,7 @@
 		
 			<a class="ss_cal3DaysSelectButton" href="<ssf:url 
   				folderId="${ssBinder.id}" 
-  				action="view_folder_listing">
+  				action="${action}">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
 	  				<ssf:param name="ssTaskFilterType" value="DAY"/>
   				</ssf:url>">
@@ -59,7 +59,7 @@
 
 			<a class="ss_cal5DaysSelectButton" href="<ssf:url 
   				folderId="${ssBinder.id}" 
-  				action="view_folder_listing">
+  				action="${action}">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
 	  				<ssf:param name="ssTaskFilterType" value="WEEK"/>
   				</ssf:url>">
@@ -68,7 +68,7 @@
 
 			<a class="ss_cal7DaysSelectButton" href="<ssf:url 
   				folderId="${ssBinder.id}" 
-  				action="view_folder_listing">
+  				action="${action}">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
 	  				<ssf:param name="ssTaskFilterType" value="MONTH"/>
   				</ssf:url>">
@@ -77,7 +77,7 @@
 
 			<a class="ss_calMonthSelectButton" href="<ssf:url 
   				folderId="${ssBinder.id}" 
-  				action="view_folder_listing">
+  				action="${action}">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
 	  				<ssf:param name="ssTaskFilterType" value="ACTIVE"/>
   				</ssf:url>">
@@ -86,7 +86,7 @@
 			
 			<a class="ss_calMonthSelectButton" href="<ssf:url 
   				folderId="${ssBinder.id}" 
-  				action="view_folder_listing">
+  				action="${action}">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
 	  				<ssf:param name="ssTaskFilterType" value="ALL"/>
   				</ssf:url>">

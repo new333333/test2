@@ -45,9 +45,10 @@
 	 <div id="ss_navbar_inline">
 			
 		<ul>
+			<c:if test="${ssConfigJspStyle != 'template'}">
 			<li>
 				<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-				name="binderId" value="${ssFolder.id}"/><ssf:param 
+				name="binderId" value="${ssBinder.id}"/><ssf:param 
 				name="operation" value="select_filter"/><ssf:param 
 				name="select_filter" value=""/></ssf:url>">
 				<span 
@@ -60,7 +61,7 @@
 					
 			<c:forEach var="filter" items="${ssUserFolderProperties.searchFilterMap}">
 			 <li><a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-				name="binderId" value="${ssFolder.id}"/><ssf:param 
+				name="binderId" value="${ssBinder.id}"/><ssf:param 
 				name="operation" value="select_filter"/><ssf:param 
 				name="select_filter" value="${filter.key}"/></ssf:url>">
 					<span 
@@ -71,6 +72,12 @@
 				</a>
 			 </li>
 			</c:forEach>
+			</c:if>
+			<c:if test="${ssConfigJspStyle == 'template'}">
+			</c:if>
+			<li>
+			<ssf:nlt tag="None"/></span>
+			</li>
 		</ul>
 				
 	 </div>

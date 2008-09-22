@@ -453,8 +453,12 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	return false;
     }
     protected List<Definition> getDefs(int type) {
-       	if (isDefinitionInheritanceSupported() && isDefinitionsInherited())
-    		return new ArrayList(getParentBinder().getDefs(type));
+       	if (isDefinitionInheritanceSupported() && isDefinitionsInherited()) {
+       		if (!isRoot()) return new ArrayList(getParentBinder().getDefs(type));
+        	if (this.definitions == null) this.definitions = new ArrayList();
+        	this.definitions.clear();
+        	definitions.add(entryDef);
+       	}
       	Definition def;
     	List result = new ArrayList(); 
      	if (definitions == null) definitions = new ArrayList();
