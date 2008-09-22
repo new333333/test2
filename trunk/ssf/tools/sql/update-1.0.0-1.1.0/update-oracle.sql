@@ -67,7 +67,6 @@ alter table SS_Forums add branding clob;
 alter table SS_Events add uid varchar2(255 char) null;
 alter table SS_Events add freeBusy varchar2(32 char) null;
 alter table SS_Definitions add binderId number(19,0);
-alter table SS_Definitions add visibility number(10,0);
 create unique index definition_name on SS_Definitions (zoneId, name, binderId);
 create table SS_SearchNodeInfo (indexName varchar2(160 char) not null, nodeId varchar2(128 char) not null, zoneId number(19,0), accessMode varchar2(16 char), inSynch number(1,0), primary key (indexName, nodeId));
 create table SS_AuthenticationConfig (zoneId number(19,0) not null, allowLocalLogin number(1,0), allowAnonymousAccess number(1,0), allowSelfRegistration number(1,0), lastUpdate number(19,0), primary key (zoneId));

@@ -3,6 +3,7 @@ package com.sitescape.team.spring.security;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.Authentication;
+import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.anonymous.AnonymousAuthenticationToken;
 import org.springframework.security.providers.anonymous.AnonymousProcessingFilter;
 
@@ -41,8 +42,12 @@ public class ZoneAwareAnonymousProcessingFilter extends
 	
 	@Override
 	protected boolean applyAnonymousForThisRequest(HttpServletRequest request) {
-    	Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
-    	AuthenticationConfig config = getAuthenticationModule().getAuthenticationConfigForZone(zoneId);
-    	return config.isAllowAnonymousAccess();
+		if(SecurityContextHolder.getContext().getAuthentication() == null) {
+	    	Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
+	    	AuthenticationConfig config = getAuthenticationModule().getAuthenticationConfigForZone(zoneId);
+	    	return config.isAllowAnonymousAccess();
+		} else {
+			return false;
+		}
 	}
 }
