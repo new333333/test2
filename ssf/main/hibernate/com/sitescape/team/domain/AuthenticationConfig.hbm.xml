@@ -4,7 +4,9 @@
 <hibernate-mapping auto-import="false">
   <class dynamic-update="true" table="SS_AuthenticationConfig" name="com.sitescape.team.domain.AuthenticationConfig">
     <cache usage="read-write"/>
-    <id unsaved-value="null" name="zoneId"/>
+    <id unsaved-value="null" name="zoneId">
+      <generator class="assigned"/>
+	</id>
     <property name="allowLocalLogin"/>
     <property name="allowAnonymousAccess"/>
     <property name="allowSelfRegistration"/>
