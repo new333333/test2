@@ -67,7 +67,6 @@ alter table SS_Forums add branding mediumtext;
 alter table SS_Events add uid varchar(255) null;
 alter table SS_Events add freeBusy varchar(32) null;
 alter table SS_Definitions add binderId bigint;
-alter table SS_Definitions add visibility integer;
 alter table SS_Definitions add unique definition_name(zoneId, name, binderId);
 create table SS_SearchNodeInfo (indexName varchar(160) not null, nodeId varchar(128) not null, zoneId bigint, accessMode varchar(16), inSynch bit, primary key (indexName, nodeId)) ENGINE=InnoDB;
 create table SS_AuthenticationConfig (zoneId bigint not null, allowLocalLogin bit, allowAnonymousAccess bit, allowSelfRegistration bit, lastUpdate bigint, primary key (zoneId)) ENGINE=InnoDB;
