@@ -567,7 +567,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     		
         		} else if (workArea.isFunctionMembershipInherited() && !inherit) {
         			//copy parent values as beginning values
-        			getWorkAreaFunctionMembershipManager().copyWorkAreaFunctionMemberships(RequestContextHolder.getRequestContext().getZoneId(),getWorkAreaFunctionInheritance(workArea), workArea);
+        			if (workArea.getParentWorkArea() != null) getWorkAreaFunctionMembershipManager().copyWorkAreaFunctionMemberships(RequestContextHolder.getRequestContext().getZoneId(),getWorkAreaFunctionInheritance(workArea), workArea);
         		}
         	   	//see if there is a real change
             	if (workArea.isFunctionMembershipInherited()  != inherit) {

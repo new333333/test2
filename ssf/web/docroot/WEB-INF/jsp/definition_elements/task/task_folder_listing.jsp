@@ -33,17 +33,16 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <script type="text/javascript">
-	var myTasks_${renderResponse.namespace} = new ss_tasks ('ss_tasks_list_${renderResponse.namespace}', '${ssFolder.id}', '${renderResponse.namespace}');
+	var myTasks_${renderResponse.namespace} = new ss_tasks ('ss_tasks_list_${renderResponse.namespace}', '${ssBinder.id}', '${renderResponse.namespace}');
 	ss_tasks.overdueLabel = "<ssf:nlt tag="milestone.overdue"/>";
 </script>
 <table class="ss_tasks_list" id="ss_tasks_list_${renderResponse.namespace}">
 	<thead>
 		<tr>
 			<th>
-<c:if test="${ssConfigJspStyle != 'template'}">
 			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
-			    	name="binderId" value="${ssFolder.id}"/><ssf:param 
+			    	name="binderId" value="${ssBinder.id}"/><ssf:param 
 			    	name="ssFolderSortBy" value="_sortTitle"/><c:choose><c:when 
 			    	test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}"><ssf:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
@@ -63,7 +62,7 @@
 				  </c:otherwise>
 				</c:choose>	
 				 >
-</c:if>	
+
 			      <div class="ss_title_menu"><ssf:nlt tag="task.title"/> </div>
 			    	<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
 						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
@@ -71,15 +70,12 @@
 					<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
 						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
-<c:if test="${ssConfigJspStyle != 'template'}">
 			    </a>
-</c:if>
 			</th>
 			<th>
-<c:if test="${ssConfigJspStyle != 'template'}">
 			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
-			    	name="binderId" value="${ssFolder.id}"/><ssf:param 
+			    	name="binderId" value="${ssBinder.id}"/><ssf:param 
 			    	name="ssFolderSortBy" value="priority"/><c:choose><c:when 
 			    	test="${ ssFolderSortBy == 'priority' && ssFolderSortDescend == 'false'}"><ssf:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
@@ -99,7 +95,7 @@
 				  </c:otherwise>
 				</c:choose>	
 				 >
-</c:if>
+
 			      <div class="ss_title_menu"><ssf:nlt tag="task.priority"/> </div>
 			    	<c:if test="${ ssFolderSortBy == 'priority' && ssFolderSortDescend == 'true'}">
 						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
@@ -107,15 +103,12 @@
 					<c:if test="${ ssFolderSortBy == 'priority' && ssFolderSortDescend == 'false'}">
 						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
-<c:if test="${ssConfigJspStyle != 'template'}">
 			    </a>
-</c:if>
 			</th>
 			<th>
-<c:if test="${ssConfigJspStyle != 'template'}">
 			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
-			    	name="binderId" value="${ssFolder.id}"/><ssf:param 
+			    	name="binderId" value="${ssBinder.id}"/><ssf:param 
 			    	name="ssFolderSortBy" value="start_end#EndDate"/><c:choose><c:when 
 			    	test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}"><ssf:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
@@ -135,7 +128,6 @@
 				  </c:otherwise>
 				</c:choose>	
 				 >
-</c:if>
 			      <div class="ss_title_menu"><ssf:nlt tag="task.dueDate"/> </div>
 			    	<c:if test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'true'}">
 						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
@@ -143,15 +135,12 @@
 					<c:if test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">
 						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
-<c:if test="${ssConfigJspStyle != 'template'}">
 			    </a>
-</c:if>
 			</th>
 			<th>
-<c:if test="${ssConfigJspStyle != 'template'}">
 				<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 					name="operation" value="save_folder_sort_info"/><ssf:param 
-					name="binderId" value="${ssFolder.id}"/><ssf:param 
+					name="binderId" value="${ssBinder.id}"/><ssf:param 
 					name="ssFolderSortBy" value="status"/><c:choose><c:when 
 					test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'false'}"><ssf:param 
 					name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
@@ -171,7 +160,7 @@
 				  </c:otherwise>
 				</c:choose>	
 				 >
-</c:if>
+
 			      <div class="ss_title_menu"><ssf:nlt tag="task.status"/> </div>
 			    	<c:if test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'true'}">
 						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
@@ -179,15 +168,13 @@
 					<c:if test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'false'}">
 						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
-<c:if test="${ssConfigJspStyle != 'template'}">
 			    </a>
-</c:if>
+
 			</th>
 			<th>
-<c:if test="${ssConfigJspStyle != 'template'}">
 			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
-			    	name="binderId" value="${ssFolder.id}"/><ssf:param 
+			    	name="binderId" value="${ssBinder.id}"/><ssf:param 
 			    	name="ssFolderSortBy" value="assignment"/><c:choose><c:when 
 			    	test="${ ssFolderSortBy == 'assignment' && ssFolderSortDescend == 'false'}"><ssf:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
@@ -207,7 +194,6 @@
 				  </c:otherwise>
 				</c:choose>	
 				 >
-</c:if>
 			      <div class="ss_title_menu"><ssf:nlt tag="task.assigned"/> </div>
 			    	<c:if test="${ ssFolderSortBy == 'assignment' && ssFolderSortDescend == 'true'}">
 						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
@@ -215,15 +201,13 @@
 					<c:if test="${ ssFolderSortBy == 'assignment' && ssFolderSortDescend == 'false'}">
 						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
-<c:if test="${ssConfigJspStyle != 'template'}">
 			    </a>
-</c:if>			
+			
 			</th>
 			<th>
-<c:if test="${ssConfigJspStyle != 'template'}">
 				<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 					name="operation" value="save_folder_sort_info"/><ssf:param 
-					name="binderId" value="${ssFolder.id}"/><ssf:param 
+					name="binderId" value="${ssBinder.id}"/><ssf:param 
 					name="ssFolderSortBy" value="completed"/><c:choose><c:when 
 					test="${ ssFolderSortBy == 'completed' && ssFolderSortDescend == 'false'}"><ssf:param 
 					name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
@@ -243,7 +227,7 @@
 				  </c:otherwise>
 				</c:choose>	
 				 >
-</c:if>
+
 			      <div class="ss_title_menu"><ssf:nlt tag="task.done"/> </div>
 			    	<c:if test="${ ssFolderSortBy == 'completed' && ssFolderSortDescend == 'true'}">
 						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
@@ -251,9 +235,7 @@
 					<c:if test="${ ssFolderSortBy == 'completed' && ssFolderSortDescend == 'false'}">
 						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
-<c:if test="${ssConfigJspStyle != 'template'}">
 			    </a>
-</c:if>
 			</th>
 		</tr>
 	</thead>

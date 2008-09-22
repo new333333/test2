@@ -722,7 +722,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			columns = (Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_RESULTS_FOLDER_COLUMNS);
 		} else {
 			userProperties = getProfileModule().getUserProperties(null, binderId);
-			columns = (Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS);
+			if (!(binder instanceof TemplateBinder)) columns = (Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS);
 			if (columns == null || columns.isEmpty()) 
 				columns = (Map) binder.getProperty(ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS);
 			Map entryDefs = DefinitionHelper.getEntryDefsAsMap(binder);

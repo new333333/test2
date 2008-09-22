@@ -192,7 +192,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			} else if (WebKeys.OPERATION_SAVE_FOLDER_COLUMNS.equals(operation)) {
 				Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 				Map columns = new LinkedHashMap();
-				String[] columnNames = new String[] {"number", "title", "comments", "size", "download", "html", "state", "author", "date"};
+				String[] columnNames = ListFolderHelper.folderColumns;
 				for (int i = 0; i < columnNames.length; i++) {
 					columns.put(columnNames[i], PortletRequestUtils.getStringParameter(request, columnNames[i], ""));
 				}
@@ -210,7 +210,12 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				getProfileModule().setUserProperty(null, configId, WebKeys.FOLDER_COLUMN_POSITIONS, "");
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
 				response.setRenderParameter(WebKeys.URL_OPERATION, "");
-			} 
+			} else {
+				//probably something we don't support in templates
+				Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+				if (configId != null) response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+				response.setRenderParameter(WebKeys.URL_OPERATION, "");
+			}
 		//process cancels first
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			if (!WebKeys.OPERATION_ADD.equals(operation)) { //on add - binderId may be 
@@ -243,8 +248,13 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
 			response.setRenderParameter(WebKeys.URL_OPERATION, "");
 		
-		} else
-			response.setRenderParameters(formData);
+		} else if (WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO.equals(operation)) {
+			//userproperty => doesn't make sense on templates
+			Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+			response.setRenderParameter(WebKeys.URL_OPERATION, "");
+			
+		} else response.setRenderParameters(formData);
 	}
 	protected Long loadTemplates(String fileName, InputStream fIn, boolean replace, List errors)
 	{
@@ -270,51 +280,11 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		
 			model.put(WebKeys.BINDER_CONFIG, config);
 			model.put(WebKeys.BINDER, config);
-			if (Validator.isNull(operation)) {
-				//Build a reload url
-				PortletURL reloadUrl = response.createRenderURL();
-				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, configId.toString());
-				reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
-				reloadUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
-				model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
-				model.put(WebKeys.DEFINITION_ENTRY, config);
-				User user = RequestContextHolder.getRequestContext().getUser();
-				Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
-				model.put(WebKeys.USER_PROPERTIES, userProperties);
-				UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), config.getId());
-				model.put(WebKeys.USER_FOLDER_PROPERTIES_OBJ, userFolderProperties);
-				//See if the user has selected a specific view to use
-				String userDefaultDef = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
-				DefinitionHelper.getDefinitions(config, model, userDefaultDef);
-				DashboardHelper.getDashboardMap(config, userProperties, model);
-				buildToolbar(request, response, config, model);
-				if (!config.isRoot() || !config.getBinders().isEmpty()) 
-					BinderHelper.buildNavigationLinkBeans(this, config, model, new BinderHelper.ConfigHelper(WebKeys.ACTION_CONFIGURATION));
-				if (config.getEntityType().equals(EntityType.workspace)) {
-					model.put(WebKeys.WORKSPACE_DOM_TREE, BinderHelper.buildTemplateTreeRoot(this, config, new BinderHelper.ConfigHelper(WebKeys.ACTION_CONFIGURATION)));
-
-					if (config.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
-						//use current user as prototype
-						Document profileDef = user.getEntryDef().getDefinition();
-						model.put(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);
-						model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
-								profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
-						model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
-						model.put(WebKeys.PROFILE_CONFIG_ENTRY, user);
-					} 
-				} else {
-					ListFolderHelper.getShowTemplate(this, request, response, config, model);
-				}
-				model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_TEMPLATE);
-				Tabs tabs = Tabs.getTabs(null);
-				tabs.findTab(config, true);
-				model.put(WebKeys.TABS, tabs);
-					
-			} else  if (WebKeys.OPERATION_ADD_FOLDER.equals(operation)) {
+			model.put(WebKeys.FOLDER, config); //some jsps still look for folder
+			if (WebKeys.OPERATION_ADD_FOLDER.equals(operation)) {
 				List<TemplateBinder> configs = getTemplateModule().getTemplates(Definition.FOLDER_VIEW);
 				model.put(WebKeys.BINDER_CONFIGS, configs);
-				model.put(WebKeys.OPERATION, operation);				
-				
+				model.put(WebKeys.OPERATION, operation);								
 			} else  if (WebKeys.OPERATION_ADD_WORKSPACE.equals(operation)) {
 				List<TemplateBinder> configs = getTemplateModule().getTemplates(Definition.WORKSPACE_VIEW);
 				model.put(WebKeys.OPERATION, operation);				
@@ -341,13 +311,50 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				}
 				path = WebKeys.VIEW_MODIFY_TEMPLATE;	
 				model.put(WebKeys.OPERATION, operation);
-			} else {
+			} else if (WebKeys.OPERATION_MODIFY_TEMPLATE.equals(operation)) {
 				model.put(WebKeys.OPERATION, operation);
-				if (operation.equals(WebKeys.OPERATION_MODIFY_TEMPLATE)) {
-					path = WebKeys.VIEW_MODIFY_TEMPLATE;
+				path = WebKeys.VIEW_MODIFY_TEMPLATE;
+			} else {
+				//Build a reload url
+				PortletURL reloadUrl = response.createRenderURL();
+				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, configId.toString());
+				reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+				reloadUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
+				model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
+				model.put(WebKeys.DEFINITION_ENTRY, config);
+				BinderHelper.setupStandardBeans(this, request, response, model, configId);
+				User user = RequestContextHolder.getRequestContext().getUser();
+				Map userProperties = (Map)model.get(WebKeys.USER_PROPERTIES);
+				UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
+				//See if the user has selected a specific view to use
+				String userDefaultDef = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
+				DefinitionHelper.getDefinitions(config, model, userDefaultDef);
+				DashboardHelper.getDashboardMap(config, userProperties, model);
+				buildToolbar(request, response, config, model);
+				if (!config.isRoot() || !config.getBinders().isEmpty()) 
+					BinderHelper.buildNavigationLinkBeans(this, config, model, new BinderHelper.ConfigHelper(WebKeys.ACTION_CONFIGURATION));
+				if (config.getEntityType().equals(EntityType.workspace)) {
+					model.put(WebKeys.WORKSPACE_DOM_TREE, BinderHelper.buildTemplateTreeRoot(this, config, new BinderHelper.ConfigHelper(WebKeys.ACTION_CONFIGURATION)));
+
+					if (config.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
+						//use current user as prototype
+						Document profileDef = user.getEntryDef().getDefinition();
+						model.put(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);
+						model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
+								profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
+						model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
+						model.put(WebKeys.PROFILE_CONFIG_ENTRY, user);
+					} 
+				} else {
+					ListFolderHelper.getShowTemplate(this, request, response, config, model);
 				}
-			}
-			
+				model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_TEMPLATE);
+				Tabs tabs = Tabs.getTabs(null);
+				tabs.findTab(config, true);
+				model.put(WebKeys.TABS, tabs);
+				model.put(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
+				model.put(WebKeys.OPERATION, ""); //make sure not set to anyting we don't support
+			} 
 		} else if (WebKeys.OPERATION_ADD.equals(operation)) {
 				model.put(WebKeys.OPERATION, operation);
 				String definitionType = PortletRequestUtils.getStringParameter(request, "definitionType", String.valueOf(Definition.FOLDER_VIEW));

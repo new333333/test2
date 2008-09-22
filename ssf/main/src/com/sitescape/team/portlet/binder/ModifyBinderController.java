@@ -74,7 +74,7 @@ public class ModifyBinderController extends AbstractBinderController {
 			// causes the binder to be deleted.
 			Binder binder = getBinderModule().getBinder(binderId);
 			// First, setup the view as if the binder is to be deleted.
-			setupViewOnDelete(response, binder, binderType);
+			setupViewBinder(response, binder.getParentBinder());
 			if(getFolderModule().synchronize(binderId, null)) {
 				// The binder was not deleted (typical situation). 
 				// Setup the right view which will override the previous setup.
@@ -135,7 +135,7 @@ public class ModifyBinderController extends AbstractBinderController {
 				Binder binder = getBinderModule().getBinder(binderId);			
 				Binder parentBinder = binder.getParentBinder();			
 				//get view data, before binder is deleted
-				setupViewOnDelete(response, binder, binderType);	
+				setupViewBinder(response, binder);	
 				getBinderModule().deleteBinder(binderId, Boolean.parseBoolean(deleteSource), null);
 				setupReloadOpener(response, parentBinder.getId());
 			} else {

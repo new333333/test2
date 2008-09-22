@@ -46,7 +46,7 @@ if (isIECheck) strBrowserType = "ie";
 
 <script type="text/javascript">
 var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
-		binderId="${ssFolder.id}"><ssf:param 
+		binderId="${ssBinder.id}"><ssf:param 
 		name="operation" value="save_folder_columns"/></ssf:url>";
 </script>
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation_init.jsp" />
