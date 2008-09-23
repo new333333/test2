@@ -13,7 +13,6 @@
 	<classpathentry kind="src" path="ssfs/src"/>
 	<classpathentry kind="src" path="main/test/src"/>
 	<classpathentry kind="src" path="portal-module/src"/>
-	<classpathentry kind="src" path="liferay/src"/>
 	<classpathentry kind="src" path="taglib/src"/>
 	<classpathentry kind="src" path="indexer-lucene/src"/>
 	<classpathentry kind="src" path="util/src"/>
