@@ -47,6 +47,7 @@
 		
 			var bindArgs = {
 		    	url: url,
+				handleAs: "json-comment-filtered",			
 				error: function(err) {
 					// alert(ss_not_logged_in);
 				},
@@ -60,8 +61,6 @@
 			    		redrawTask(tasks[entryId]);
 					}
 				},
-							
-				mimetype: "text/json",
 				preventCache: true,
 				method: "post"
 			};
@@ -75,6 +74,7 @@
 				
 			var bindArgs = {
 		    	url: url,
+				handleAs: "json-comment-filtered",
 				error: function(err) {
 					// alert(ss_not_logged_in);
 				},
@@ -88,8 +88,6 @@
 			    		redrawTask(tasks[entryId]);
 					}
 				},
-							
-				mimetype: "text/json",
 				preventCache: true,
 				method: "post"
 			};
@@ -107,6 +105,7 @@
 				
 			var bindArgs = {
 		    	url: url,
+				handleAs: "json-comment-filtered",
 				error: function(err) {
 					// alert(ss_not_logged_in);
 				},
@@ -120,8 +119,6 @@
 				    	redrawTask(tasks[entryId]);
 					}
 				},
-							
-				mimetype: "text/json",
 				preventCache: true,
 				method: "post"
 			};
