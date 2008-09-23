@@ -46,6 +46,12 @@
 					<ant dir="jboss-portal" target="full-deploy" inheritAll="false" />
 				</then>
 			</elseif>
+			<elseif>
+				<equals arg1="${portal.type}" arg2="standalone" />
+				<then>				
+					<ant dir="standalone" target="full-deploy" inheritAll="false" />
+				</then>
+			</elseif>
 		</if>
 	</target>
 	
