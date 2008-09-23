@@ -51,7 +51,7 @@ public class IndexSynchronizationManager {
 	
 	private static final ThreadLocal autoFlushTL = new ThreadLocal();
 	
-	private static final ThreadLocal nodeIdsTL = new ThreadLocal();
+	private static final ThreadLocal nodeNamesTL = new ThreadLocal();
 
     private LuceneSessionFactory luceneSessionFactory;
     
@@ -126,12 +126,12 @@ public class IndexSynchronizationManager {
         autoFlushTL.set(Boolean.valueOf(autoFlush));
     }
     
-    public static void setNodeIds(String[] nodeIds) {
-    	nodeIdsTL.set(nodeIds);
+    public static void setNodeNames(String[] nodeNames) {
+    	nodeNamesTL.set(nodeNames);
     }
     
-    public static void clearNodeIds() {
-    	nodeIdsTL.set(null);
+    public static void clearNodeNames() {
+    	nodeNamesTL.set(null);
     }
     
     public static void begin() {
@@ -152,7 +152,7 @@ public class IndexSynchronizationManager {
     public static void applyChanges() {
         try {
             if(hasWorkToDo()) {                
-		        LuceneWriteSession luceneSession = getInstance().getLuceneSessionFactory().openWriteSession((String[]) nodeIdsTL.get());
+		        LuceneWriteSession luceneSession = getInstance().getLuceneSessionFactory().openWriteSession((String[]) nodeNamesTL.get());
 		        
 		        try {
 		            doCommit(luceneSession);

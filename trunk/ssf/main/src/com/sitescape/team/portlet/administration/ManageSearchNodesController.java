@@ -39,7 +39,7 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.portlet.ModelAndView;
 
-import com.sitescape.team.search.Node;
+import com.sitescape.team.domain.IndexNode;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 
@@ -47,21 +47,21 @@ public class ManageSearchNodesController extends  SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
-			List<Node> nodes = getAdminModule().obtainSearchNodes();
+			List<IndexNode> nodes = getAdminModule().retrieveIndexNodes();
 			if(nodes != null) {
-				for(Node node : nodes) {
+				for(IndexNode node : nodes) {
 					// If both synchronize and change-access-mode requests came in, it is
 					// important to execute synchronize first based on the current access
 					// mode, and then change the access mode.
-					String[] synchronize = (String[])formData.get("synchronize" + node.getId());
+					String[] synchronize = (String[])formData.get("synchronize" + node.getNodeName());
 					if(synchronize != null && synchronize.length > 0) {
 						if(synchronize[0].equals("on") || synchronize[0].equals("true"))
-							getAdminModule().synchronizeSearchNode(node.getId());
+							getAdminModule().synchronizeIndexOnNode(node);
 					}
-					String[] accessMode = (String[])formData.get("accessMode" + node.getId());
+					String[] accessMode = (String[])formData.get("accessMode" + node.getNodeName());
 					if(accessMode != null && accessMode.length > 0) {
 						if(!node.getAccessMode().equals(accessMode[0]))
-							getAdminModule().updateSearchNodeInfo(node.getId(), accessMode[0], null);
+							getAdminModule().updateIndexNode(node.getId(), accessMode[0], null);
 					}
 				}
 			}
@@ -75,7 +75,7 @@ public class ManageSearchNodesController extends  SAbstractController {
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		
-		List<Node> nodes = getAdminModule().obtainSearchNodes();
+		List<IndexNode> nodes = getAdminModule().retrieveIndexNodes();
 		
 		if(nodes != null) {
 			model.put(WebKeys.SEARCH_NODES, nodes);
