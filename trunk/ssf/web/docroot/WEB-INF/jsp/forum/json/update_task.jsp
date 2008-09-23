@@ -31,7 +31,7 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page import="java.util.Date" %>
-
+/*
 <c:choose>
 	<c:when test="${ss_ajaxStatus.ss_ajaxNotLoggedIn}">
 		{notLoggedIn : ${ss_ajaxStatus.ss_ajaxNotLoggedIn}}
@@ -117,6 +117,4 @@
 			
 	</c:otherwise>
 </c:choose>
-
-
-
+*/

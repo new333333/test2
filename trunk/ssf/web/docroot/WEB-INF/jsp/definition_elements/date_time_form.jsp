@@ -33,6 +33,11 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="com.sitescape.team.util.CalendarHelper" %>
 
+<style type="text/css">
+        @import "<html:rootPath />js/dojo/dijit/themes/tundra/tundra.css";
+        @import "<html:rootPath />js/dojo/dojo/resources/dojo.css"
+</style>
+
 <div class="ss_entryContent tundra">
 	<span class="ss_labelAbove" id='${property_name}_label'>${property_caption}<c:if test="${property_required}"><span class="ss_required">*</span></c:if></span>
 	<div id="${property_name}_error" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="date.validate.error"/></span></div>

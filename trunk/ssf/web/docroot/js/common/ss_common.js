@@ -6268,9 +6268,14 @@ function ss_requestLogin(obj, binderId, userWorkspaceId, userName) {
 	return false;
 }
 
-function ss_setClass(divId, className) {
-	var divObj = document.getElementById(divId);
-	if (divObj != null) divObj.className = className;
+function ss_setClass(selector, className) {
+	if (selector && selector.nodeType) {
+		var obj = selector;
+	} else {
+		var obj = document.getElementById(selector);
+	}
+    if (!obj) return;
+	if (obj != null) obj.className = className;
 }
 
 function ss_getTimeZoneDate(date, timeZoneOffset) {

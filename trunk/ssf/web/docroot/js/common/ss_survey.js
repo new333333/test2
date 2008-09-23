@@ -26,10 +26,8 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-dojo.require("dojo.json");
 
 if (!window.ssSurvey) {
-
 	function ssSurvey(hiddenInputValueId, surveyContainerId, prefix) {
 		
 		var inputId = hiddenInputValueId;
@@ -56,7 +54,7 @@ if (!window.ssSurvey) {
 		
 		this.initialize = function(currentSurveyAsJSONString) {
 			if (currentSurveyAsJSONString) {
-				currentSurvey = dojo.json.evalJson(currentSurveyAsJSONString);
+				currentSurvey = dojo.fromJson(currentSurveyAsJSONString);
 				dojo.byId(surveyContainerId).innerHTML = that.locale.modifySurveyWarning;
 				ss_initSurveySettings(currentSurvey);
 				ss_initSurveyQuestions(currentSurvey.questions);
@@ -281,7 +279,7 @@ if (!window.ssSurvey) {
 			var allowObj = dojo.byId(prefix + "_allowChange");		
 			var inputObj = document.getElementById(inputId);
 			if (inputObj) {
-				inputObj.value = dojo.json.serialize(
+				inputObj.value = dojo.toJson(
 						{
 							'questions' : ss_toSend, 
 							'viewBeforeDueTime' : viewBeforeDueTime,
@@ -439,6 +437,7 @@ ssSurvey.vote = function(formId, binderId, entryId, requiredQuestions, prefix) {
 
 	dojo.xhrGet({
     	url: url,
+		handleAs: "json-comment-filtered",
 		error: function(err) {
 			alert(ss_not_logged_in);
 		},
@@ -451,9 +450,8 @@ ssSurvey.vote = function(formId, binderId, entryId, requiredQuestions, prefix) {
 				document.location.href = ss_reloadUrl;
 			}
 		},
-		mimetype: "text/json",
 		preventCache: true,
-		formNode: document.getElementById(formId)
+		form: document.getElementById(formId)
 	});
 }
 
@@ -463,6 +461,7 @@ ssSurvey.removeVote = function(formId, binderId, entryId) {
 
 	dojo.xhrGet({
     	url: url,
+		handleAs: "json-comment-filtered",		
 		error: function(err) {
 			alert(ss_not_logged_in);
 		},
@@ -475,7 +474,6 @@ ssSurvey.removeVote = function(formId, binderId, entryId) {
 				document.location.href = ss_reloadUrl;
 			}
 		},
-		mimetype: "text/json",
 		preventCache: true,
 		formNode: document.getElementById(formId)
 	});
