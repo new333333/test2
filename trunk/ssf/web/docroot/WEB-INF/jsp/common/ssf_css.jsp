@@ -2511,6 +2511,7 @@ div.ss_cal_dayGridWindowOuter {
 div.ss_cal_dayGridWindowInner {
   position: relative;
   top: -255px;    /* Note: This is modified dynamically in the element */
+  width: 100%;
 }
 
 
