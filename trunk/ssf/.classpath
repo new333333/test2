@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
+	<classpathentry kind="src" path="liferay/liferay/src"/>
+	<classpathentry kind="src" path="liferay/teaming/src"/>
 	<classpathentry kind="src" path="simple-url/src"/>
 	<classpathentry kind="src" path="samples/wsclient/src"/>
 	<classpathentry kind="src" path="ws-client/src"/>
