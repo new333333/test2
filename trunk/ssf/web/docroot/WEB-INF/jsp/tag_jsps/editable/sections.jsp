@@ -51,9 +51,9 @@
 	<div class="ss_entryContent ss_entryDescription" <%--
     --%> id="ss_editableSectionDiv${renderResponse.namespace}_${ss_editableSectionIdNumber}"><%--
 	--%><c:if test="${!empty part['sectionTitle']}"><%--
-		--%><div class="ss_editableTab"><span class="${part['sectionTitleClass']}">${part['sectionTitle']}</span></div><%--
+		--%><div class="ss_editableSectionTitle"><span class="${part['sectionTitleClass']}">${part['sectionTitle']}</span></div><%--
 		--%><c:if test="${aclMap[entityId]['modifyEntry']}"><%--
-			--%><div align="right" class="ss_editableTab"><a href="javascript:;"<%--
+			--%><div align="right" class="ss_editableSectionEditBtn"><a href="javascript:;"<%--
 	    	--%> onMouseOver="ss_editableHighlight('over', this, 'ss_editableSectionDiv${renderResponse.namespace}_${ss_editableSectionIdNumber}');return false;"<%--
 	    	--%> onMouseOut="ss_editableHighlight('out', this, 'ss_editableSectionDiv${renderResponse.namespace}_${ss_editableSectionIdNumber}');return false;"<%--
 	    	--%> onClick="ss_editablePopUp('${editUrl}', 'ss_editableSectionDiv${renderResponse.namespace}_${ss_editableSectionIdNumber}', '${part['sectionNumber']}');return false;"<%--

@@ -41,14 +41,14 @@ body {
 table tr td { border: 1px solid #BBBBBB; }
 
 ul li {
-    margin: 2px 0px 0px 25px;
+    margin: 2px 0px 0px 15px;
     list-style-type: square;
     list-style-position: outside;
     list-style-image: none;
 }
 
 ol li {
-    margin: 2px 0px 0px 25px;
+    margin: 2px 0px 0px 15px;
     list-style-position: outside;
     list-style-type: decimal;
 }
