@@ -7,7 +7,7 @@
 	<property name="jar.file" value="ssf-tools.jar" />
 
 	<target name="clean" depends="build-common.clean">
-		<ant dir="sql" target="clean"/>
+		<ant dir="sql" target="clean" inheritall="false"/>
 	</target>
 
 	<target name="deploy" depends="jar">
