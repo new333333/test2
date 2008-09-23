@@ -46,7 +46,7 @@
 <c:if test="${!empty ssSearchNodes}">
   <c:forEach var="node" items="${ssSearchNodes}">
 	<fieldset class="ss_fieldset">
-	  <legend class="ss_legend">${node.title} (${node.id})</legend>	
+	  <legend class="ss_legend">${node.title} (${node.nodeName})</legend>	
 	<table class="ss_style" border="0" cellspacing="3" cellpadding="3">
 	<tr><td valign="top">
 	<c:set var="properties" value="${node.displayProperties}"/>
@@ -60,7 +60,7 @@
 	<hr shade=noshade size=1/>
 	<c:if test="${!node.inSynch}">
 		<blink><span style="color:red"><ssf:nlt tag="administration.search.node.synch.false" /></span></blink>
-		<br/><input type="checkbox" name="synchronize${node.id}" <c:if test="${node.accessMode == 'offline'}">disabled</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.synch.synchronize" text="Synchronize it now"/></span>
+		<br/><input type="checkbox" name="synchronize${node.nodeName}" <c:if test="${node.accessMode == 'offline'}">disabled</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.synch.synchronize" text="Synchronize it now"/></span>
 	</c:if>
 	<c:if test="${node.inSynch}">
 		<ssf:nlt tag="administration.search.node.synch.true" />
@@ -70,9 +70,9 @@
 	<tr><td valign="top">
 	<hr shade=noshade size=1/>
 	<span class="ss_labelLeft"><ssf:nlt tag="administration.search.node.accessmode"/></span><br>
-		<input type="radio" name="accessMode${node.id}" value="readwrite" <c:if test="${node.accessMode == 'readwrite'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.accessmode.readwrite" /></span><br>
-		<input type="radio" name="accessMode${node.id}" value="writeonly" <c:if test="${node.accessMode == 'writeonly'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.accessmode.writeonly" /></span><br>
-		<input type="radio" name="accessMode${node.id}" value="offline" <c:if test="${node.accessMode == 'offline'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.accessmode.offline" /></span><br>
+		<input type="radio" name="accessMode${node.nodeName}" value="readwrite" <c:if test="${node.accessMode == 'readwrite'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.accessmode.readwrite" /></span><br>
+		<input type="radio" name="accessMode${node.nodeName}" value="writeonly" <c:if test="${node.accessMode == 'writeonly'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.accessmode.writeonly" /></span><br>
+		<input type="radio" name="accessMode${node.nodeName}" value="offline" <c:if test="${node.accessMode == 'offline'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.accessmode.offline" /></span><br>
 	</td></tr>
 	</table>
 	</td></tr>

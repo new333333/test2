@@ -28,7 +28,6 @@
  */
 package com.sitescape.team.search;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,21 +53,12 @@ public interface LuceneSessionFactory {
      * Open a <code>LuceneWriteSession</code> on the index corresponding to the
      * caller's context zone. 
      * 
-     * @param nodeIds optional list of node IDs. Session factory implementation that 
+     * @param nodeNames optional list of node names. Session factory implementation that 
      * does not support HA based on cluster of nodes should ignore this argument.
      * @return
      * @throws LuceneException
      */
-    public LuceneWriteSession openWriteSession(String[] nodeIds) throws LuceneException;
-    
-    /**
-     * Return a list of nodes associated with the factory if the factory supports
-     * high availability (HA) based on a cluster of nodes.  
-     * Otherwise return <code>null</code>.
-     * 
-     * @return
-     */
-    public List<Node> getNodes();
+    public LuceneWriteSession openWriteSession(String[] nodeNames) throws LuceneException;
     
     /**
      * Return display properties if the operation is supported. Otherwise, returns

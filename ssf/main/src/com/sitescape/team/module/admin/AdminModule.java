@@ -34,15 +34,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.sitescape.team.domain.LdapConnectionConfig;
-import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.IndexNode;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.jobs.ScheduleInfo;
-import com.sitescape.team.search.Node;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkArea;
@@ -180,9 +178,26 @@ public interface AdminModule {
     public void setWorkAreaOwner(WorkArea workArea, Long userId, boolean propagate) throws AccessControlException;
 	public void updateDefaultDefinitions(Long topId);
 	
-	public List<Node> obtainSearchNodes();
+	/**
+	 * Get a list of <code>IndexNode</code>. Each IndexNode represents the state
+	 * of the corresponding Lucene node in the context of current zone.
+	 * @return
+	 */
+	public List<IndexNode> retrieveIndexNodes();
 	
-	public void updateSearchNodeInfo(String nodeId, String accessMode, Boolean inSynch);
+	/**
+	 * Update the index node with the state information.
+	 * 
+	 * @param indexNodeId
+	 * @param accessMode
+	 * @param inSynch
+	 */
+	public void updateIndexNode(String indexNodeId, String accessMode, Boolean inSynch);
 
-	public void synchronizeSearchNode(String nodeId);
+	/**
+	 * Synchronize the Lucene node.
+	 * 
+	 * @param luceneNodeName
+	 */
+	public void synchronizeIndexOnNode(IndexNode indexNode);
  }

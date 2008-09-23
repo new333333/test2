@@ -168,7 +168,7 @@ public class WebKeys {
 	public static final String URL_REPORT_OPTION_TYPE_SHORT = "shortReport";
 	public static final String URL_REPORT_OPTION_TYPE_LONG = "longReport";
 	public static final String URL_REPORT_TYPE = "ss_reportType";
-	public static final String URL_SEARCH_NODE_ID = "searchNodeId";
+	public static final String URL_SEARCH_NODE_NAME = "searchNodeName";
 	public static final String URL_SECTION_PLACEHOLDER = "ss_sectionPlaceholder";
 	public static final String URL_SECTION_TO_EDIT = "_section";
 	public static final String URL_START_DATE = "ss_startDate";

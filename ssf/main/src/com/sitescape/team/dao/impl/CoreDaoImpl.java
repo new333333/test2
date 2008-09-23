@@ -89,7 +89,7 @@ import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.NoWorkspaceByTheNameException;
 import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.PostingDef;
-import com.sitescape.team.domain.SearchNodeInfo;
+import com.sitescape.team.domain.IndexNode;
 import com.sitescape.team.domain.SimpleName;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
@@ -1584,10 +1584,18 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 
 	}
 
-	public SearchNodeInfo loadSearchNodeInfo(String nodeId, String indexName) {
-		return (SearchNodeInfo) getHibernateTemplate().get(SearchNodeInfo.class, new SearchNodeInfo.Identifier(nodeId, indexName));
+	public IndexNode findSearchNodeInfo(final String nodeName, final String indexName) {
+		return (IndexNode)getHibernateTemplate().execute(
+		        new HibernateCallback() {
+		            public Object doInHibernate(Session session) throws HibernateException {
+	               		return session.createCriteria(IndexNode.class)
+	               						.add(Expression.eq("name", new IndexNode.Name(nodeName, indexName)))
+	               						.uniqueResult();
+		            }
+		        }
+		     );
 	}
-
+	
 	public void purgeSearchNodeInfo(final String indexName) {
 	   	getHibernateTemplate().execute(
 	    	   	new HibernateCallback() {

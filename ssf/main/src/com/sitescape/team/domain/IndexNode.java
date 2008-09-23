@@ -29,25 +29,43 @@
 package com.sitescape.team.domain;
 
 import java.io.Serializable;
+import java.util.Map;
 
-public class SearchNodeInfo extends ZonedObject {
+public class IndexNode extends ZonedObject {
 
-	private Identifier id;
+	public static final String ACCESS_MODE_READ_WRITE	= "readwrite";
+	public static final String ACCESS_MODE_WRITE_ONLY	= "writeonly";
+	public static final String ACCESS_MODE_OFFLINE	    = "offline";
+	
+	private String id;
+	private Name name;
 	private String accessMode = "readwrite";
 	private boolean inSynch = true;
 	
-	public SearchNodeInfo() {}
+	// The following two fields are here for convenience only, and not persistent.
+	private String title;
+	private Map<String,String> displayProperties;
 	
-	public SearchNodeInfo(Identifier id) {
-		this.id = id;
+	public IndexNode() {}
+	
+	public IndexNode(String nodeName, String indexName) {
+		this.name = new Name(nodeName, indexName);
 	}
 	
-	public Identifier getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Identifier id) {
+	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getNodeName() {
+		return (name != null)? name.getNodeName() : null;
+	}
+
+	public String getIndexName() {
+		return (name != null)? name.getIndexName() : null;
 	}
 
 	public String getAccessMode() {
@@ -65,13 +83,29 @@ public class SearchNodeInfo extends ZonedObject {
 		this.inSynch = inSynch;
 	}
 
-	public static class Identifier implements Serializable {
-		private String nodeId;
+	public Map<String, String> getDisplayProperties() {
+		return displayProperties;
+	}
+
+	public void setDisplayProperties(Map<String, String> displayProperties) {
+		this.displayProperties = displayProperties;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	
+	public static class Name implements Serializable {
+		private String nodeName;
 		private String indexName;
 		
-		public Identifier() {}
-		public Identifier(String nodeId, String indexName) {
-			this.nodeId = nodeId;
+		public Name() {}
+		public Name(String nodeName, String indexName) {
+			this.nodeName = nodeName;
 			this.indexName = indexName;
 		}
 		public String getIndexName() {
@@ -80,31 +114,32 @@ public class SearchNodeInfo extends ZonedObject {
 		public void setIndexName(String indexName) {
 			this.indexName = indexName;
 		}
-		public String getNodeId() {
-			return nodeId;
+		public String getNodeName() {
+			return nodeName;
 		}
-		public void setNodeId(String nodeId) {
-			this.nodeId = nodeId;
+		public void setNodeName(String nodeName) {
+			this.nodeName = nodeName;
 		}
 
 		public boolean equals(Object obj) {
 	        if(this == obj)
 	            return true;
 
-	        if ((obj == null) || !(obj instanceof SearchNodeInfo))
+	        if ((obj == null) || !(obj instanceof IndexNode))
 	            return false;
 	            
-	        Identifier idf = (Identifier) obj;
-	        if(nodeId.equals(idf.nodeId) && indexName.equals(idf.indexName))
+	        Name idf = (Name) obj;
+	        if(nodeName.equals(idf.nodeName) && indexName.equals(idf.indexName))
 	        	return true;
 	        else
 	        	return false;
 		}
 		public int hashCode() {
 	       	int hash = 7;
-	    	hash = 31*hash + nodeId.hashCode();
+	    	hash = 31*hash + nodeName.hashCode();
 	    	hash = 31*hash + indexName.hashCode();
 	    	return hash;
 		}
 	}
+
 }

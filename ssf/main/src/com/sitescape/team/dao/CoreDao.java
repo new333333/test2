@@ -48,7 +48,7 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.PostingDef;
-import com.sitescape.team.domain.SearchNodeInfo;
+import com.sitescape.team.domain.IndexNode;
 import com.sitescape.team.domain.SimpleName;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
@@ -183,13 +183,13 @@ public interface CoreDao {
     public List<SimpleName> loadSimpleNames(Long binderId, Long zoneId);
     
     /**
-     * Returns <code>SearchNodeInfo</code> matching the criteria, or <code>null</code> if no match is found.
+     * Returns <code>IndexNode</code> matching the criteria, or <code>null</code> if no match is found.
      * 
-     * @param nodeId
+     * @param nodeName
      * @param indexName
      * @return
      */
-    public SearchNodeInfo loadSearchNodeInfo(String nodeId, String indexName);
+    public IndexNode findSearchNodeInfo(String nodeName, String indexName);
     
     /**
      * Purge search node info of the specified index.

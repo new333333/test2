@@ -9,7 +9,7 @@
       </generator>
     </id>
     <property name="zoneId" access="field"/>
-    <property name="nodeId" length="128" index="indexingJournal_nodeIndex"/>
+    <property name="nodeName" length="128" index="indexingJournal_nodeIndex"/>
     <property name="indexName" length="160" index="indexingJournal_nodeIndex"/>
     <property name="operationName" length="32"/>
     <property name="operationArgs" length="20000000" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>

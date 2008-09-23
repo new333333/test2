@@ -42,7 +42,7 @@
 	    <value>com/sitescape/team/domain/PostingDef.hbm.xml</value>
 	    <value>com/sitescape/team/domain/Principal.hbm.xml</value>
 	    <value>com/sitescape/team/domain/Ratings.hbm.xml</value>
-	    <value>com/sitescape/team/domain/SearchNodeInfo.hbm.xml</value>
+	    <value>com/sitescape/team/domain/IndexNode.hbm.xml</value>
 	    <value>com/sitescape/team/domain/SeenMap.hbm.xml</value>
 	    <value>com/sitescape/team/domain/SimpleName.hbm.xml</value>
 	    <value>com/sitescape/team/domain/Subscription.hbm.xml</value>

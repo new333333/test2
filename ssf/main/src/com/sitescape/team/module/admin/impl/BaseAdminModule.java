@@ -30,19 +30,19 @@ package com.sitescape.team.module.admin.impl;
 
 import java.util.List;
 
-import com.sitescape.team.search.Node;
+import com.sitescape.team.domain.IndexNode;
 
 public class BaseAdminModule extends AbstractAdminModule {
 
-	public List<Node> obtainSearchNodes() {
+	public List<IndexNode> retrieveIndexNodes() {
 		return null; // No support for nodes
 	}
 	
-	public void updateSearchNodeInfo(String nodeId, String accessMode, Boolean inSynch) {
+	public void updateIndexNode(String indexNodeId, String accessMode, Boolean inSynch) {
 		// Noop
 	}
 	
-	public void synchronizeSearchNode(String nodeId) {
+	public void synchronizeIndexOnNode(IndexNode indexNode) {
 		// Noop
 	}
 

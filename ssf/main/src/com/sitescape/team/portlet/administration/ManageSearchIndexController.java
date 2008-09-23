@@ -27,12 +27,9 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.portlet.administration;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.Collection;
 
 import javax.portlet.ActionRequest;
@@ -46,9 +43,8 @@ import org.dom4j.Element;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.IndexNode;
 import com.sitescape.team.domain.ProfileBinder;
-import com.sitescape.team.search.Node;
-import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
@@ -62,6 +58,7 @@ import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebStatusTicket;
 import com.sitescape.util.Validator;
+
 public class ManageSearchIndexController extends  SAbstractController {
 	private final String usersAndGroups = "zzzzzzzzzzzzzzzzzzz";
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
@@ -71,11 +68,11 @@ public class ManageSearchIndexController extends  SAbstractController {
 			//Get the binders to be indexed
 			Collection<Long> ids = TreeHelper.getSelectedIds(formData);
 			
-			String[] nodeIds = null;
+			String[] nodeNames = null;
 			String searchNodesPresent = PortletRequestUtils.getStringParameter(request, "searchNodesPresent", "");
 			if(searchNodesPresent.equals("1")) { // H/A environment
-				nodeIds = (String[])formData.get(WebKeys.URL_SEARCH_NODE_ID);
-				if(nodeIds == null || nodeIds.length == 0) {
+				nodeNames = (String[])formData.get(WebKeys.URL_SEARCH_NODE_NAME);
+				if(nodeNames == null || nodeNames.length == 0) {
 					// The user selected no node, probably by mistake.
 					// In this case, there's no work to perform.
 					response.setRenderParameters(formData);
@@ -90,7 +87,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 				profiler = new SimpleProfiler("manageSearchIndex");
 				SimpleProfiler.setProfiler(profiler);
 			}
-			Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket, nodeIds);
+			Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket, nodeNames);
 			//if people selected and not yet index; index content only, not the whole ws tree
 			String idChoices = TreeHelper.getSelectedIdsAsString(formData);
 			if (idChoices.contains(usersAndGroups)) {
@@ -142,7 +139,7 @@ public class ManageSearchIndexController extends  SAbstractController {
  		model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
 		model.put(WebKeys.WORKSPACE_DOM_TREE, pTree);		
 		
-		List<Node> nodes = getAdminModule().obtainSearchNodes();
+		List<IndexNode> nodes = getAdminModule().retrieveIndexNodes();
 		
 		if(nodes != null) {
 			model.put(WebKeys.SEARCH_NODES, nodes);

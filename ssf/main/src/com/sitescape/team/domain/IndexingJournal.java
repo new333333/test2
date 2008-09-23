@@ -30,7 +30,7 @@ package com.sitescape.team.domain;
 
 public class IndexingJournal extends ZonedObject {
 	private Long id;
-	private String nodeId;
+	private String nodeName;
 	private String indexName;
 	private String operationName;
 	private Object[] operationArgs;
@@ -38,8 +38,8 @@ public class IndexingJournal extends ZonedObject {
 	protected IndexingJournal() {
 	}
 	
-	public IndexingJournal(String nodeId, String indexName, String operationName, Object[] operationArgs) {
-		this.nodeId = nodeId;
+	public IndexingJournal(String nodeName, String indexName, String operationName, Object[] operationArgs) {
+		this.nodeName = nodeName;
 		this.indexName = indexName;
 		this.operationName = operationName;
 		this.operationArgs = operationArgs;
@@ -61,12 +61,12 @@ public class IndexingJournal extends ZonedObject {
 		this.indexName = indexName;
 	}
 
-	public String getNodeId() {
-		return nodeId;
+	public String getNodeName() {
+		return nodeName;
 	}
 
-	public void setNodeId(String nodeId) {
-		this.nodeId = nodeId;
+	public void setNodeName(String nodeName) {
+		this.nodeName = nodeName;
 	}
 
 	public Object[] getOperationArgs() {
