@@ -48,7 +48,7 @@
 <c:set var="ss_editableSectionIdNumber" value="0"/>
 <c:forEach var="part" items="${parts}"><%--
 	--%>${part['prefix']}
-	<div class="ss_entryContent ss_entryDescription" <%--
+	<div <%--
     --%> id="ss_editableSectionDiv${renderResponse.namespace}_${ss_editableSectionIdNumber}"><%--
 	--%><c:if test="${!empty part['sectionTitle']}"><%--
 		--%><div class="ss_editableSectionTitle"><span class="${part['sectionTitleClass']}">${part['sectionTitle']}</span></div><%--
