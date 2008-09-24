@@ -102,7 +102,7 @@ public class Description {
         this.format = format;
     }
     public int getFormat() {
-    	if (format == null) return FORMAT_NONE;
+    	if (format == null) return FORMAT_HTML;
         return this.format.intValue();
     }
     public void setFormat(int format) {
