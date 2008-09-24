@@ -189,11 +189,13 @@ public interface CoreDao {
      * @param indexName
      * @return
      */
-    public IndexNode findSearchNodeInfo(String nodeName, String indexName);
+    public IndexNode findIndexNode(String nodeName, String indexName);
     
     /**
-     * Purge search node info of the specified index.
+     * Purge all index nodes matching the specified index name. 
+     * Used when deleting a zone.
+     * 
      * @param indexName
      */
-    public void purgeSearchNodeInfo(String indexName);
+    public void purgeIndexNodeByIndexName(String indexName);
 }
