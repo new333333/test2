@@ -205,6 +205,7 @@ public class WebKeys {
 	public static final String URL_ID_CHOICES_REMOVE = "idChoicesRemove";
 	public static final String URL_URL = "spring-security-redirect";
 	public static final String URL_USER_ID = "userId";
+    public static final String URL_USER_ID_PLACE_HOLDER="ss_user_id_place_holder";
 	public static final String URL_ICAL_URL = "iCalURL";
 	public static final String URL_ICAL_SCHEDULE = "iCalSchedule";
 	public static final String URL_WINDOW_STATE = "windowState";

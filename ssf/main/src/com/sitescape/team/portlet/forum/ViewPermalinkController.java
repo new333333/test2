@@ -141,7 +141,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			
 		} else if (entityType.isPrincipal()) {
 			//permalinks are meant for the use workspace
-	 		if (entryId.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) {  
+	 		if (entryId.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER) || entryId.equals(WebKeys.URL_USER_ID_PLACE_HOLDER)) {  
 	 			try {
 	 				entity = getProfileModule().getProfileBinder();
 	 			} catch  (AccessControlException ac) {
@@ -156,7 +156,7 @@ public class ViewPermalinkController  extends SAbstractController {
 	 			}
 	 			url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
 	 			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
-	 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+	 			url.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_ENTRY_ID_PLACE_HOLDER);
 	 		} else {
 	 			Long workspaceId  = getProfileModule().getEntryWorkspaceId(Long.valueOf(entryId));
 	 			entity = getBinderModule().getBinder(workspaceId);

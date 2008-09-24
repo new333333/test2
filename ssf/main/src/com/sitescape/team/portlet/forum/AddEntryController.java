@@ -111,7 +111,7 @@ public class AddEntryController extends SAbstractController {
 				MapInputData inputData = new MapInputData(formData);
 				
 				entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap, null);
-				setupReloadOpener(response, folderId, entryId);
+				setupReloadOpener(response, folderId, null);
 				if (!addEntryFromIFrame.equals("")) {
 					response.setRenderParameter(WebKeys.NAMESPACE, namespace);
 					response.setRenderParameter(WebKeys.IN_IFRAME_ADD_ENTRY, "1");
@@ -302,7 +302,7 @@ public class AddEntryController extends SAbstractController {
 		//return to view entry
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
-		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+		if (entryId != null) response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 	}
 	private void setupCloseWindow(ActionResponse response) {
 		//return to view entry

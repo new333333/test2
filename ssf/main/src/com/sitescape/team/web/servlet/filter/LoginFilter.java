@@ -79,7 +79,7 @@ public class LoginFilter  implements Filter {
 				String url = req.getQueryString();
 				String redirectUrl = url;
 				if (url != null) { 
-					redirectUrl = redirectUrl.replace(WebKeys.URL_ENTRY_ID_PLACE_HOLDER, WebHelper.getRequiredUserId(req).toString());
+					redirectUrl = redirectUrl.replace(WebKeys.URL_USER_ID_PLACE_HOLDER, WebHelper.getRequiredUserId(req).toString());
 					if (!redirectUrl.equals(url)) {
 						res.sendRedirect(req.getRequestURI() + "?" + redirectUrl);
 						return;
@@ -100,7 +100,7 @@ public class LoginFilter  implements Filter {
 	protected String getWorkspaceURL(final HttpServletRequest req) {
 		final String userId;
 		if(WebHelper.isGuestLoggedIn(req))
-			userId = WebKeys.URL_ENTRY_ID_PLACE_HOLDER;
+			userId = WebKeys.URL_USER_ID_PLACE_HOLDER;
 		else
 			userId = WebHelper.getRequiredUserId(req).toString();
 		
@@ -114,7 +114,7 @@ public class LoginFilter  implements Filter {
 	protected String getWapLandingPageURL(final HttpServletRequest req) {
 		final String userId;
 		if(WebHelper.isGuestLoggedIn(req))
-			userId = WebKeys.URL_ENTRY_ID_PLACE_HOLDER;
+			userId = WebKeys.URL_USER_ID_PLACE_HOLDER;
 		else
 			userId = WebHelper.getRequiredUserId(req).toString();
 		
