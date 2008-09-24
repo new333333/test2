@@ -36,6 +36,7 @@
 %>
 <c:if test="${empty ss_profile_entry_form || not ss_profile_entry_form}">
 <div class="ss_entryContent">
+<c:if test="${empty ssReadOnlyFields['password'] || ss_isBinderAdmin}">
 	<div class="ss_labelAbove"><%= caption %></div>
 	<c:if test="${!empty ssDefinitionEntry.password && !ss_isBinderAdmin}">
 		<div class="ss_labelAbove"><ssf:nlt tag="__profile_password_original"/></div>
@@ -49,4 +50,5 @@
 	  <input type="password" size="40" name="password2" class="ss_text" />
 	</div>
 </div>
+</c:if>
 </c:if>

@@ -76,7 +76,10 @@
 </c:if>
 
 <div class="ss_entryContent">
-<div class="ss_labelLeft"><%= caption %><%= required %></div><select 
+<div class="ss_labelLeft"><%= caption %><%= required %></div>
+
+<c:if test="${empty ssReadOnlyFields[property_name]}">
+<select 
   name="<%= elementName %>" <%= multiple %> <%= size %>
   <c:if test="${formType == 'task'}">
   	onchange="ss_tasks.adjustFormAttributes(this.name);"
@@ -85,4 +88,10 @@
   configElement="<%= item %>" 
   configJspStyle="${ssConfigJspStyle}" />
 </select>
+</c:if>
+<c:if test="${!empty ssReadOnlyFields[property_name]}">
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  configElement="<%= item %>" 
+  configJspStyle="${ssConfigJspStyle}" />
+</c:if>
 </div>

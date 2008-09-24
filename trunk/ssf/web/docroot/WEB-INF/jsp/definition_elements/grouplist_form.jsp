@@ -49,6 +49,13 @@
 </c:if>
 <div class="ss_entryContent">
 <div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
+<c:if test="${empty ssReadOnlyFields[property_name]}">
 <ssf:find formName="${formName}" formElement="${property_name}" type="group" 
   userList="<%= groupListSet %>"/>
+  </c:if>
+<c:if test="${!empty ssReadOnlyFields[property_name]}">
+<c:forEach var="groupItem" items="<%= groupListSet %>">
+	${groupItem.title}<br/>
+</c:forEach>
+</c:if>
 </div>

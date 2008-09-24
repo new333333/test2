@@ -30,6 +30,7 @@
 %>
 <% // radio selection %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${empty ssReadOnlyFields[radioGroupName]}">
 <c:set var="checked" value=""/>
 <c:if test="${ssDefinitionEntry.customAttributes[radioGroupName].value == property_name}">
   <c:set var="checked" value="checked"/>
@@ -52,4 +53,13 @@
 <c:if test="${ss_radioButtonsLayout != 'horizontal'}">
 <br/>
 </c:if>
-
+</c:if>
+<c:if test="${!empty ssReadOnlyFields[radioGroupName]}">
+<c:if test="${ssDefinitionEntry.customAttributes[radioGroupName].value == property_name}">
+<c:out value="${property_caption}"/>
+</c:if>
+ <ssf:displayConfiguration 
+  configDefinition="${ssConfigDefinition}" 
+  configElement="${item}" 
+  configJspStyle="${ssConfigJspStyle}" />
+</c:if>

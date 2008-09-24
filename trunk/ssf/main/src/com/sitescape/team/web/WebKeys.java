@@ -824,6 +824,7 @@ public class WebKeys {
     public static final String ALL_WORKFLOW_DEFINITIONS="ssAllWorkflowDefinitions";
     public static final String PUBLIC_WORKFLOW_DEFINITIONS="ssPublicWorkflowDefinitions";
     public static final String RATING_DIV_ID="ss_ratingDivId";
+    public static final String READ_ONLY="ssReadOnlyFields";
     public static final String RECORDS_DIV_ID="ss_recordsDivId";
     public static final String REFERER_URL="ss_refererUrl";
     public static final String RELEVANCE_SHARED_ENTITIES="ss_sharedEntities";

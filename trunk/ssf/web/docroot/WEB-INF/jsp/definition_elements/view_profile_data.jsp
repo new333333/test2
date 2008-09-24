@@ -40,7 +40,7 @@
 	if (item != null) {
 		String itemType = (String) item.attributeValue("formItem", "");
 	
-		if (itemType.equals("name")) {
+		if (itemType.equals("profileName")) {
 			%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_name.jsp" %><%
 			
 		} else if (itemType.equals("profileTimeZone")) {
@@ -51,6 +51,8 @@
 		} else if (itemType.equals("text")) {
 			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_text.jsp" %><%
 			
+		} else if (itemType.equals("description")) {
+			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_description.jsp" %><%
 		} else if (itemType.equals("htmlEditorTextarea")) {
 			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_html_textarea.jsp" %><%
 			
@@ -66,15 +68,20 @@
 		} else if (itemType.equals("date")) {
 			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_date.jsp" %><%
 			
+		} else if (itemType.equals("date_time")) {
+			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_date_time.jsp" %><%
+	
 		} else if (itemType.equals("file")) {
 			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_file.jsp" %><%
 			
 		} else if (itemType.equals("graphic") || itemType.equals("profileEntryPicture")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_graphic.jsp" %><%
-			
-		} else if (itemType.equals("user_list")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_user_list.jsp" %><%
-			
+			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_graphic.jsp" %><%			
+		} else if (itemType.equals("user_list") || itemType.equals("userListSelectbox")) {
+			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_user_list.jsp" %><%			
+		} else if (itemType.equals("group_list")) {
+			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_group_list.jsp" %><%
+		} else if (itemType.equals("team_list")) {
+			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_team_list.jsp" %><%
 		} else if (itemType.equals("event")) {
 			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_event.jsp" %><%
 		} else  {

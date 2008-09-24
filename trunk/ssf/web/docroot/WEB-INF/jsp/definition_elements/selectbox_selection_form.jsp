@@ -34,12 +34,14 @@
 	//Get the form item being displayed
 	Element item = (Element) request.getAttribute("item");
 %>
+<c:if test="${empty ssReadOnlyFields[selectboxName]}">
 <c:set var="checked" value=""/>
 <c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[selectboxName].valueSet}" >
   <c:if test="${selection == property_name}">
     <c:set var="checked" value="selected=\"selected\""/>
   </c:if>
 </c:forEach>
+
 <option value="<c:out value="${property_name}"/>" ${checked}
 <% // property_name == 'p3' is only for backward compatibility with v1.0 %>
   	<c:if test="${(property_default || property_name == 'p3') && empty ssDefinitionEntry.customAttributes[selectboxName].valueSet}">
@@ -50,3 +52,16 @@
   configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
   configJspStyle="${ssConfigJspStyle}" /></option>
+</c:if>
+<c:if test="${!empty ssReadOnlyFields[selectboxName]}">
+<c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[selectboxName].valueSet}" >
+  <c:if test="${selection == property_name}">
+ 		 <c:out value="${property_caption}"/>
+ </c:if>
+</c:forEach>
+ <ssf:displayConfiguration 
+  configDefinition="${ssConfigDefinition}" 
+  configElement="<%= item %>" 
+  configJspStyle="${ssConfigJspStyle}" />
+
+</c:if>

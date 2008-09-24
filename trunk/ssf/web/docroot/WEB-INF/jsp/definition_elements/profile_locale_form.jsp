@@ -34,25 +34,40 @@
 <c:if test="${!empty property_caption}">
 <span class="ss_labelAbove"><c:out value="${property_caption}"/></span>
 </c:if>
-
+<c:if test="${empty ssReadOnlyFields[property_name]}">
 <select name="${property_name}">
 <%
 	java.util.Locale[] ids = java.util.Locale.getAvailableLocales();
 	com.sitescape.team.domain.User user = (com.sitescape.team.domain.User)request.getAttribute("ssDefinitionEntry");
 	com.sitescape.team.domain.User currentUser = (com.sitescape.team.domain.User)request.getAttribute("ssUser");
 	java.util.TreeMap<String,java.util.Locale> map = new java.util.TreeMap(new com.sitescape.team.comparator.StringComparator(currentUser.getLocale())); //sort
+	java.util.Locale currentLocale = currentUser.getLocale();
 	for (int i=0; i<ids.length; ++i) {
-		map.put(ids[i].getDisplayName(currentUser.getLocale()), ids[i]);
+		map.put(ids[i].getDisplayName(currentLocale), ids[i]);
 	}
-	
+	if (user != null) 
 	for (java.util.Map.Entry<String, java.util.Locale> me: map.entrySet()) {
 		String checked = "";
-		if (me.getValue().equals(user.getLocale()))
+		if (me.getValue().equals(currentLocale))
 			checked="selected=\"selected\"";
+		
 %>
 <option value="<%= me.getValue().toString() %>" <%= checked %>><%= me.getKey() %></option>
 <%
 };
 %>
 </select>
+</c:if>
+<c:if test="${!empty ssReadOnlyFields[property_name]}">
+<%
+	com.sitescape.team.domain.User user = (com.sitescape.team.domain.User)request.getAttribute("ssDefinitionEntry");
+	com.sitescape.team.domain.User currentUser = (com.sitescape.team.domain.User)request.getAttribute("ssUser");
+	if (user != null) {	
+%>
+<%= user.getLocale().getDisplayName(currentUser.getLocale()) %>
+<%
+};
+%>
+</c:if>
+
 </div>

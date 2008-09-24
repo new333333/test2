@@ -63,7 +63,7 @@
 		    String mName = "get" + prop;
 		    Class[] types = new Class[] {};
 		    Method method = entry.getClass().getMethod(mName, types);
-		    value = method.invoke(entry, new Object[0]).toString();
+		    value = (String)method.invoke(entry, new Object[0]);
 		    if (value == null) value = "";
 		}
 %>
@@ -71,8 +71,11 @@
 <c:if test="${!empty property_caption}">
 <span class="ss_labelAbove"><c:out value="${property_caption}"/></span>
 </c:if>
-<input type="text" class="ss_text" name="<%= property_name %>" 
- value="<%= value %>">
+<c:if test="${empty ssReadOnlyFields[property_name]}">
+<input type="text" class="ss_text" name="<%= property_name %>" value="<%= value %>">
+</c:if>
+<c:if test="${!empty ssReadOnlyFields[property_name]}"><%= value %></c:if>
+
 </div>
 <%
 	}

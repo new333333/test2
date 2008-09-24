@@ -1036,8 +1036,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__profile_password"/>
 			<property name="name" caption="__data_name" type="text" value="password" 
-			  readonly="true" unique="//item[@type='data']">
-			</property>
+			  readonly="true" unique="//item[@type='data']"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 		</properties>
 		<jsps>
@@ -1727,7 +1726,7 @@
 		</jsps>
 	</item>
 
-	<item name="userListSelectbox" caption="__userListSelectbox" type="data" category="commonEntryData" display="form">
+	<item name="userListSelectbox" caption="__userListSelectbox" type="data" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text"
@@ -1754,7 +1753,7 @@
 		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPrincipalList" />
 	</item>
 	
-	<item name="eventScheduler" caption="__eventScheduler" type="data" category="commonEntryData" display="form">
+	<item name="eventScheduler" caption="__eventScheduler" type="data" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="sourceEventElement" caption="__event_items_from_the_entry_form_for_scheduler" definitionType="1" type="selectbox">

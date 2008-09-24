@@ -60,6 +60,7 @@
 </div>
 
 <div class="ss_entryContent">
+<c:if test="${empty ssReadOnlyFields['password'] || ss_isBinderAdmin}">
 <c:if test="${!empty ssDefinitionEntry.name && !ss_isBinderAdmin}">
 <div class="ss_labelAbove"><ssf:nlt tag="__profile_password_original"/></div>
   <input type="password" size="40" name="password_original" class="ss_text" />
@@ -71,6 +72,7 @@
 <div class="ss_labelAbove"><ssf:nlt tag="__profile_password_again"/></div>
   <input type="password" size="40" name="password2" class="ss_text" />
 </div>
+</c:if>
 
 <%-- Show the first, middle and last names --%>
 <div class="ss_entryContent">
@@ -79,19 +81,28 @@
   <td style="padding-right:6px;">
 	<div >
 	<span class="ss_labelAbove"><ssf:nlt tag="__firstName"/></span>
+<c:if test="${empty ssReadOnlyFields['firstName']}">
 	<input type="text" class="ss_text" name="firstName" value="${ssDefinitionEntry.firstName}">
+</c:if>
+<c:if test="${!empty ssReadOnlyFields['firstName']}">${ssDefinitionEntry.firstName}</c:if>
 	</div>
   </td>
   <td style="padding-right:6px;">
 	<div >
 	<span class="ss_labelAbove"><ssf:nlt tag="__middleName"/></span>
+<c:if test="${empty ssReadOnlyFields['middleName']}">
 	<input type="text" class="ss_text" name="middleName" value="${ssDefinitionEntry.middleName}">
+</c:if>
+<c:if test="${!empty ssReadOnlyFields['middleName']}">${ssDefinitionEntry.middleName}</c:if>
 	</div>
   </td>
   <td>
 	<div >
 	<span class="ss_labelAbove"><ssf:nlt tag="__lastName"/></span>
+<c:if test="${empty ssReadOnlyFields['lastName']}">
 	<input type="text" class="ss_text" name="lastName" value="${ssDefinitionEntry.lastName}">
+</c:if>
+<c:if test="${!empty ssReadOnlyFields['lastName']}">${ssDefinitionEntry.lastName}</c:if>
 	</div>
   </td>
 </tr>
@@ -99,21 +110,28 @@
   <td style="padding-right:6px;">
 	<div >
 	<span class="ss_labelAbove"><ssf:nlt tag="__emailAddress"/></span>
+<c:if test="${empty ssReadOnlyFields['emailAddress']}">
 	<input type="text" class="ss_text" name="emailAddress" value="${ssDefinitionEntry.emailAddress}">
+</c:if>
+<c:if test="${!empty ssReadOnlyFields['emailAddress']}">${ssDefinitionEntry.emailAddress}</c:if>
 	</div>
   </td>
   <td style="padding-right:6px;">
 	<div >
 	<span class="ss_labelAbove"><ssf:nlt tag="__mobileEmailAddress"/></span>
-	<input type="text" class="ss_text" name="mobileEmailAddress" 
-	  value="${ssDefinitionEntry.mobileEmailAddress}">
+<c:if test="${empty ssReadOnlyFields['mobileEmailAddress']}">
+	<input type="text" class="ss_text" name="mobileEmailAddress"  value="${ssDefinitionEntry.mobileEmailAddress}">
+</c:if>
+<c:if test="${!empty ssReadOnlyFields['mobileEmailAddress']}">${ssDefinitionEntry.mobileEmailAddress}</c:if>
 	</div>
   </td>
   <td>
 	<div >
 	<span class="ss_labelAbove"><ssf:nlt tag="__txtEmailAddress"/></span>
-	<input type="text" class="ss_text" name="txtEmailAddress" 
-	  value="${ssDefinitionEntry.txtEmailAddress}">
+<c:if test="${empty ssReadOnlyFields['txtEmailAddress']}">
+	<input type="text" class="ss_text" name="txtEmailAddress"  value="${ssDefinitionEntry.txtEmailAddress}">
+</c:if>
+<c:if test="${!empty ssReadOnlyFields['txtEmailAddress']}">${ssDefinitionEntry.txtEmailAddress}</c:if>
 	</div>
   </td>
 </tr>
@@ -121,7 +139,10 @@
   <td style="padding-right:6px;">
 	<div >
 	<span class="ss_labelAbove"><ssf:nlt tag="__zonName"/></span>
+<c:if test="${empty ssReadOnlyFields['zonName']}">
 	<input type="text" class="ss_text" name="zonName" value="${ssDefinitionEntry.zonName}">
+</c:if>
+<c:if test="${!empty ssReadOnlyFields['zonName']}">${ssDefinitionEntry.zonName}</c:if>
 	</div>
   </td>
   <td>
