@@ -50,6 +50,7 @@
 	    <mapping resource="com/sitescape/team/domain/EmailAddress.hbm.xml"/> 
 	    <mapping resource="com/sitescape/team/domain/Event.hbm.xml"/> 
 	    <mapping resource="com/sitescape/team/domain/FolderEntry.hbm.xml"/>
+	    <mapping resource="com/sitescape/team/domain/IndexNode.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/LdapConnectionConfig.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/LibraryEntry.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/LicenseStats.hbm.xml"/>
@@ -58,7 +59,6 @@
 	    <mapping resource="com/sitescape/team/domain/PostingDef.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/Principal.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/Ratings.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/SearchNodeInfo.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/SeenMap.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/SharedEntity.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/SimpleName.hbm.xml"/>
