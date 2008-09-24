@@ -34,12 +34,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.web.util.WebHelper;
 
 public class ResolveRequestContextInterceptor extends HandlerInterceptorAdapter {
 
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, 
 			Object handler) throws Exception {
-		RequestContextHolder.getRequestContext().resolve();
+		if(!WebHelper.isUnauthenticatedRequest(request))
+			RequestContextHolder.getRequestContext().resolve();
 		
 		return true;
 	}
