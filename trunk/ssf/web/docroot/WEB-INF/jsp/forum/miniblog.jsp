@@ -49,18 +49,18 @@ function ss_showMiniblogPage${renderResponse.namespace}(id, currentPage, directi
 </script>
 
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
-<div class="ss_style ss_portlet ss_content_window_content">
+<div class="ss_style ss_portlet ss_miniblog_wrap">
   <div>
     <div style="float:right;">
-	      <span class="ss_labelAbove"><ssf:nlt tag="navigation.findPerson"/></span>
+	      <span class="ss_labelAbove ss_labelminiBlog"><ssf:nlt tag="navigation.findPerson"/></span>
 	      <ssf:find type="user"
 		    clickRoutine="ss_showMiniblog${renderResponse.namespace}"
 		    leaveResultsVisible="false"
 		    width="100px" singleItem="true"/> 
 	</div>
-    <div><h2><ssf:nlt tag="miniblog"/></h2></div>
+    <div class="ss_form_header"><ssf:nlt tag="miniblog"/></div>
     <div class="ss_clear_float"></div>
-    <h3><ssf:showUser user="${ss_miniblog_user}"/></h3>
+    <div class="ss_miniblog_subhead"><ssf:showUser user="${ss_miniblog_user}"/></div>
     
   </div>
   <div id="ss_nextPage" align="right">
@@ -93,20 +93,21 @@ function ss_showMiniblogPage${renderResponse.namespace}(id, currentPage, directi
 					photos="${ss_miniblog_user.customAttributes['picture'].value}" 
 					folderId="${ss_miniblog_user.parentBinder.id}" entryId="${ss_miniblog_user.id}" />
   </td>
-  <td valign="top" style="padding-left:20px;">
+  <td valign="top" style="padding-left:10px;">
 	  <ul>
 	  <c:forEach var="status" items="${ss_miniblog_statuses}">
-	    <li style="padding-bottom:10px;">
-		  <span><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+	    <li class="ss_list-style-image_miniblog">
+		  <span class="ss_miniblog_subhead"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 					      value="${status.date}" type="both" 
 						  timeStyle="short" dateStyle="short" /></span><br/>
-		  <span class="ss_italic">${status.description}</span>
+		  <span class="">${status.description}</span>
 	    </li>
 	  </c:forEach>
 	  </ul>
   </td>
   </tr>
   </table>
+</div>
 </div>
 </div>
 <ssf:ifadapter>

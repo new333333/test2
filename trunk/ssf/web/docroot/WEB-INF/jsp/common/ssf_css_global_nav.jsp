@@ -100,7 +100,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color: #FFFFFF !important;
 	}
 .ss_workspace a:hover{
-	color: #F47400!important;
+	color: #555!important;
 	}
 .ss_masthead_top {
 	background-image: url("<html:rootPath/>images/pics/masthead/masthead_bg.png");  /* kablink: masthead_ka.png */

@@ -43,8 +43,8 @@
 	    timeStyle="short" dateStyle="short" /></span>
 	</c:if>
 	<a href="javascript: ;" onClick="ss_viewMiniBlog('${ssUser.id}', '0', true);return false;"
-	  title="<ssf:nlt tag="miniblog.title"/>" style="text-decoration:underline;">
-	   <strong><ssf:nlt tag="relevance.userStatus"/></strong>
+	  title="<ssf:nlt tag="miniblog.title"/>"
+	   <span class="ss_status_header"><ssf:nlt tag="relevance.userStatus"/></span>
 	</a>
 	<ssf:ifLoggedIn>
 		<script type="text/javascript">
@@ -55,8 +55,7 @@
 		</script>
 
 		<textarea cols="22" rows="2" id="ss_status_textarea${renderResponse.namespace}"
-			wrap="virtual" class="ss_input_myStatus"
-			style="ss_input_myStatus" 
+			wrap="virtual" class="ss_input_myStatus" 
   			onFocus="ss_setStatusBackground(this, 'focus');"
   			onKeyPress="ss_updateStatusSoon(this, event, <%= ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH %>);"
   			onChange="ss_updateStatusNow(this);"

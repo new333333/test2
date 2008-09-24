@@ -304,12 +304,10 @@ div.ss_entryDescription.ss_entryContent table {
   background-color: ${ss_form_element_color};
   color: ${ss_form_element_text_color};
   }
-
 div.ss_style select.ss_compactSelectBox, .ss_compactSelectBox {
   border: 1px solid #cccccc;
   font-size: 11px;
-}
-
+	}
 div.ss_style input[type="text"],
 div.ss_style input[type="password"],
 div.ss_style textarea,
@@ -325,7 +323,7 @@ div.ss_style textarea {
 	}
 div.ss_style input[type="text"],
 div.ss_style input[type="password"],
-div.ss_style select, {
+div.ss_style select,
 	} 
 .ss_form textarea {
   background-color: ${ss_form_element_color};
@@ -413,10 +411,6 @@ div.ss_entryContent a:hover {
   	font-size: 12px;
   	font-style: italic;
   	color: #333;
-	}
-.ss_entryDescription p {
-  	margin-top: 2px;
-  	margin-bottom: 10px;
 	}
 div.ss_entryDescription ul li {
     margin: 2px 0px 0px 25px;
@@ -536,22 +530,27 @@ table.ss_guestbook {
   	line-height: 100% !important;
 	}
 input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visited {
- 	font-family: ${ss_style_folder_view_font_family};
- 	font-size: ${ss_style_font_fineprint};
- 	background-color: ${ss_linkbutton_background_color};
-  	border: 1px dotted ${ss_linkbutton_outline_color};
+ 	cursor: pointer;
+ <c:if test="<%= isIE %>">
+  height: 20px;
+ </c:if>
+ <c:if test="<%= !isIE %>">
+  /*height: 18px;*/
+ </c:if>
+  text-align: center;
+  padding: 0px 6px 0px 6px;
+  font-size: 10px !important;
+  font-family: Arial, sans-serif;
+  white-space: nowrap;
+  text-decoration: none !important;
+  border: 1px solid #5A9A98;
+  background-image: url(<html:imagesPath/>pics/background_inline_button_blue.gif);
+  background-repeat: repeat-x;
+	}	
+button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {	
+  	border: 1px dotted #333;
   	padding: 0px 6px 0px 6px;
-  	cursor: pointer;
-  	white-space: nowrap;
 	}
-a.ss_linkButton:focus, a.ss_linkButton:hover {
-  	color: ${ss_linkbutton_link_hover_color};
-  	background-color: ${ss_linkbutton_background_color};
-  	border: 1px dotted ${ss_linkbutton_outline_color};
-  	padding: 0px 6px 0px 6px;
-  	cursor: pointer;
-  	white-space: nowrap;
-}
 input.ss_tinyButton, a.ss_tinyButton:link, a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
  	font-size: ${ss_style_font_finestprint};
@@ -1063,7 +1062,7 @@ table.ss_mouseOverInfo {
 	}
 .ss_fixed_TD{
 	border-bottom: solid .1em #72AEB6;
-	font-size: 10px !important;
+	font-size: 12px !important;
 	padding: 12px 2px 12px 2px;
 	}
 .ss_fixed_TD_left{
@@ -4252,13 +4251,17 @@ ul.placesForm, ul.placesForm li {
 	background-image: none;
 	border: 0.1em solid #777777;
 	color: ${ss_form_element_text_color};
-	padding: 0px;
+	padding: 1px;
 	font-size: ${ss_style_font_normalprint};
 	font-family: ${ss_style_folder_view_font_family}; 	
 	height: 14px;
 	width: 70px;
 	overflow: hidden;
 	}
+.ss_combobox_autocomplete a:hover {
+	background-color: #555;
+	}
+	
 /*****GLOBAL SEARCH******/
 
 .ss_combobox_autocomplete_advanced{
@@ -4290,6 +4293,7 @@ ul.placesForm, ul.placesForm li {
 	border: 0;
 	padding-left: 10px;
 }
+	
 
 
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_dashboard.jsp" />

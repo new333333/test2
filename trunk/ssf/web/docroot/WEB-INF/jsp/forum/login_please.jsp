@@ -39,10 +39,10 @@
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <div class="ss_clear_float"></div>
 </ssf:ifadapter>
-<div align="center"> <style="padding:30px">
+<div align="center">
   <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
   <fieldset class="ss_fieldset_login">
-    <legend class="ss_legend"><ssf:nlt tag="login.please"/></legend>
+    <div class="ss_legend_login"><ssf:nlt tag="login.please"/></div>
     <table><tbody>
       <tr>
         <td valign="middle" align="right">
@@ -72,7 +72,7 @@
       <c:if test="${!empty ss_loginError}">
         <tr>
 		  <td>&nbsp;</td>
-          <td colspan="2"><ssf:nlt tag="errorcode.login.failed"/></td>
+          <td style="color: red;" colspan="2"><ssf:nlt tag="errorcode.login.failed"/></td>
         </tr>
       </c:if>
  		<tr>
