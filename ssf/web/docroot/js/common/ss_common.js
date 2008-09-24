@@ -803,16 +803,16 @@ function ss_setStatusBackground(obj, op) {
 		//if (ss_statusObj != null) ss_statusTimer = setTimeout('ss_updateStatusNow(ss_statusObj);', 10000);
 	}
 	if (op == 'mouseOver') {
-		obj.style.backgroundColor = '#ffffff';
+		obj.style.backgroundColor = '#CCFFFF';
 		ss_statusOnMouseOver = true;
 	}
 	if (op == 'blur') {
-		obj.style.backgroundColor = '#cccccc';
+		obj.style.backgroundColor = '#FFFFFF';
 		ss_statusOnMouseOver = false;
 	}
 }
 function ss_flashStatus() {
-	ss_statusObj.style.backgroundColor = "#00ADEF";
+	ss_statusObj.style.backgroundColor = "#F47400";
 	setTimeout("ss_setStatusBackground(ss_statusObj, 'blur');", 300);
 }
 function ss_setStatusBackgroundCheck(obj) {
@@ -5062,7 +5062,7 @@ function ss_Clipboard () {
 	 * afterPostRoutine - optional
 	 */
 	this.addUsersToClipboard = function (userIds, afterPostRoutine) {
-		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"add_to_clipboard", muster_class:"ss_muster_users"}, "clipboard");
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"add_to_clipboard", muster_class:"ss_muster_usersss_miniblog_subhead"}, "clipboard");
 		for (var i = 0; i < userIds.length; i++) {
 			url += "&muster_ids=" + userIds[i];
 		}
