@@ -36,9 +36,10 @@
 <tr>
 <td valign="top">
 	  <a href="<ssf:url action="view_ws_listing" binderId="${ssBinder.owner.workspaceId}" />" 
-	  title="${ssBinder.owner.title}"><ssf:buddyPhoto style="ss_thumbnail_standalone ss_thumbnail_standalone_medium" 
-					photos="${ssUser.customAttributes['picture'].value}" 
-					folderId="${ssUser.parentBinder.id}" entryId="${ssUser.id}" /></a>
+	  title="${ssBinder.owner.title}"><ssf:buddyPhoto 
+	                style="ss_thumbnail_standalone ss_thumbnail_standalone_medium" 
+					photos="${ssBinder.owner.customAttributes['picture'].value}" 
+					folderId="${ssBinder.owner.parentBinder.id}" entryId="${ssBinder.owner.id}" /></a>
 </td>
 <td valign="top">
 <ul>
