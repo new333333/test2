@@ -75,11 +75,11 @@ public class DigestBasedSoftAuthenticationFilter implements Filter {
 			RequestContextUtil.setThreadContext(user);
 		}
 		catch(UserDoesNotExistException e) {
-			logger.info(e.getLocalizedMessage());
+			logger.warn(e.getLocalizedMessage());
 			request.setAttribute(WebKeys.UNAUTHENTICATED_REQUEST, Boolean.TRUE);
 		}
 		catch(DigestDoesNotMatchException e) {
-			logger.info(e.getLocalizedMessage());
+			logger.warn(e.getLocalizedMessage());
 			request.setAttribute(WebKeys.UNAUTHENTICATED_REQUEST, Boolean.TRUE);
 		}
 		
