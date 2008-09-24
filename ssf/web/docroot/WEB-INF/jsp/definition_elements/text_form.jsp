@@ -55,6 +55,11 @@
 %>
 <div class="ss_entryContent">
 <div class="ss_labelAbove"><c:out value="${property_caption}"/><%= required %></div>
+<c:if test="${empty ssReadOnlyFields[property_name]}">
 <input type="text" class="ss_text" name="<%= elementName %>" <%= width %> 
  value="<c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/>"/>
+ </c:if>
+ <c:if test="${!empty ssReadOnlyFields[property_name]}">
+ <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
+ </c:if>
 </div>

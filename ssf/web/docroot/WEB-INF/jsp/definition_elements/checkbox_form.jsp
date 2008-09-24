@@ -30,6 +30,8 @@
 %>
 <% //Checkbox form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<div class="ss_entryContent">
+<c:if test="${empty ssReadOnlyFields[property_name]}">
 <c:if test="${!ssDefinitionEntry.customAttributes[property_name].value}" >
 <c:set var="cb_checked" value=""/>
   <input type="hidden" name="${property_name}" id="hidden_${property_name}" value="false"/> 
@@ -39,9 +41,18 @@
   <input type="hidden" name="${property_name}" id="hidden_${property_name}" value="true"/> 
 </c:if>
 <c:set var="required" value=""/>
-<div class="ss_entryContent">
 <input type="checkbox" name="${property_name}XXX" 
   id="checkbox_${property_name}XXX" <c:out value="${cb_checked}"/> onClick="ss_saveCheckBoxValue(this, 'hidden_${property_name}');"/> 
- <span class="ss_labelRight"><label for="checkbox_${property_name}">${property_caption}</label></span><c:if 
+ <span class="ss_labelRight"><label for="checkbox_${property_name}XXX">${property_caption}</label></span><c:if 
   test="${property_required}" ><span class="ss_required">*</span></c:if>
+</c:if>
+<c:if test="${!empty ssReadOnlyFields[property_name] }">
+	<c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
+	<input type="checkbox" checked DISABLED>
+	</c:if>
+	<c:if test="${!ssDefinitionEntry.customAttributes[property_name].value}" >
+	<input type="checkbox" DISABLED>
+	</c:if>
+	 <span class="ss_labelRight">${property_caption}</span>
+</c:if>
 </div>

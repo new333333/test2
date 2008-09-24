@@ -48,6 +48,13 @@
 </c:if>
 <div class="ss_entryContent">
 <div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
+<c:if test="${empty ssReadOnlyFields[property_name]}">
 <ssf:find formName="${formName}" formElement="${property_name}" type="user" 
   userList="<%= userListSet %>"/>
+</c:if>
+<c:if test="${!empty ssReadOnlyFields[property_name]}">
+<c:forEach var="userItem" items="<%= userListSet %>">
+	${userItem.title}<br/>
+</c:forEach>
+</c:if>
 </div>

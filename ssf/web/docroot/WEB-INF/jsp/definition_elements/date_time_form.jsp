@@ -32,6 +32,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="com.sitescape.team.util.CalendarHelper" %>
+<c:if test="${empty ssReadOnlyFields[property_name]}">
 
 <style type="text/css">
         @import "<html:rootPath />js/dojo/dijit/themes/tundra/tundra.css";
@@ -93,3 +94,14 @@
 	</script>
 	
 </div>
+</c:if>
+<c:if test="${!empty ssReadOnlyFields[property_name]}">
+<div class="ss_entryContent">
+<span class="ss_labelAbove">${property_caption}</span>
+<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
+<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				      value="${ssDefinitionEntry.customAttributes[property_name].value}" 
+				      type="both" dateStyle="medium" timeStyle="short" />
+</c:if>
+</div>
+</c:if>

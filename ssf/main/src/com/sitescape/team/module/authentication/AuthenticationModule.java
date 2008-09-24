@@ -30,13 +30,11 @@
 package com.sitescape.team.module.authentication;
 
 import java.util.List;
-
-import javax.naming.NamingException;
+import java.util.Set;
 
 import com.sitescape.team.domain.AuthenticationConfig;
 import com.sitescape.team.domain.LdapConnectionConfig;
-import com.sitescape.team.domain.NoUserByTheNameException;
-import com.sitescape.team.domain.ZoneInfo;
+import com.sitescape.team.domain.Principal;
 
 /**
  * @author Janet McCann
@@ -54,4 +52,5 @@ public interface AuthenticationModule {
 	public List<LdapConnectionConfig> getLdapConnectionConfigs(Long zoneId);
 	public List<LdapConnectionConfig> getLdapConnectionConfigs();
 	public void setLdapConnectionConfigs(List<LdapConnectionConfig> configs);
+	public Set<String>getMappedAttributes(Principal principal);
 }

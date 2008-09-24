@@ -82,6 +82,7 @@
   <c:if test="${!empty ss_sectionText}"><c:set var="textValue" value="${ss_sectionText}"/></c:if>
 </c:if>
 <div class="ss_entryContent">
+<c:if test="${empty ssReadOnlyFields[property_name]}">
 
   <span class="ss_labelLeft"><%= caption %><%= required %>   </span>
   	<div class="ss_editorHints" style="padding-left:10px;">
@@ -105,6 +106,12 @@
     entity="${ssDefinitionEntry}">${textValue}</ssf:markup></textarea>
   </c:if>
   </div>
+ </c:if>
+ <c:if test="${!empty ssReadOnlyFields[property_name]}">
+ <span class="ss_labelLeft"><%= caption %></span>
+ <ssf:markup leaveSectionsUnchanged="true"
+    entity="${ssDefinitionEntry}">${textValue}</ssf:markup>
+  </c:if>
 </div>
 <c:set var="ss_html_editor_textarea_form_helpicon" value="" scope="request" />
 <c:set var="ss_html_editor_textarea_form_helpicon_prefix" value="" scope="request" />

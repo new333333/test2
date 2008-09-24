@@ -33,6 +33,8 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="com.sitescape.team.util.CalendarHelper" %>
 
+<c:if test="${empty ssReadOnlyFields[property_name]}">
+
 <style type="text/css">
         @import "<html:rootPath />js/dojo/dijit/themes/tundra/tundra.css";
         @import "<html:rootPath />js/dojo/dojo/resources/dojo.css"
@@ -74,3 +76,14 @@
 		dojo.require("dijit.form.DateTextBox");
 	</script>
 </div>
+</c:if>
+<c:if test="${!empty ssReadOnlyFields[property_name]}">
+
+<div class="ss_entryContent">
+<span class="ss_labelAbove">${property_caption}</span>
+<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
+<fmt:formatDate value="${ssDefinitionEntry.customAttributes[property_name].value}" pattern="yyyy-MM-dd" 
+			timeZone="${ssUser.timeZone.ID}"/>
+</c:if>
+</div>
+</c:if>

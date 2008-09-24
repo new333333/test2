@@ -62,16 +62,17 @@
 
 <div class="ss_entryContent">
 <div class="ss_labelLeft"><%= caption %><%= required %></div>
+<c:if test="${empty ssReadOnlyFields[property_name]}">
 <select 
   name="<%= elementName %>" <%= multiple %> <%= size %>>
   
-<c:if test="${!empty ssFolder.customAttributes[property_source].valueSet}">
+<c:if test="${!empty ssBinder.customAttributes[property_source].valueSet}">
 <%
 	String propertySource = (String) request.getAttribute("property_source");
 %>
-  <c:set var="folder" value="${ssFolder}"/>
-  <jsp:useBean id="folder" type="com.sitescape.team.domain.DefinableEntity" />
-	<c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(folder.getCustomAttribute(propertySource)) %>" >
+  <c:set var="binder" value="${ssBinder}"/>
+  <jsp:useBean id="binder" type="com.sitescape.team.domain.DefinableEntity" />
+	<c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(binder.getCustomAttribute(propertySource)) %>" >
 	  <c:set var="selected" value=""/>
 	  <c:forEach var="selection2" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}" >
   		<c:if test="${selection2 == selection.id}">
@@ -82,4 +83,19 @@
 	</c:forEach>
 </c:if>
 </select>
+</c:if>
+<c:if test="${!empty ssReadOnlyFields[property_name]}">
+<c:if test="${!empty ssBinder.customAttributes[property_source].valueSet}">
+
+  <jsp:useBean id="ssBinder" type="com.sitescape.team.domain.DefinableEntity" />
+	<c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(ssBinder.getCustomAttribute((String) request.getAttribute("property_source"))) %>" >
+	  <c:set var="selected" value=""/>
+	  <c:forEach var="selection2" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}" >
+  		<c:if test="${selection2 == selection.id}">
+	      ${selection.title}<br/>
+	    </c:if>
+	  </c:forEach>
+	</c:forEach>
+</c:if>
+</c:if>
 </div>

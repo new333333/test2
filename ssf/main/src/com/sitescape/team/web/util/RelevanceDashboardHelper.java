@@ -99,7 +99,7 @@ public class RelevanceDashboardHelper {
 		Element viewElement = (Element) model.get(WebKeys.CONFIG_ELEMENT);
 		Element relevanceElement = (Element) viewElement.selectSingleNode("//item[@name='relevanceDashboard']");
 		//See if there is anything to display inside the relevance dashboard definition
-		if (!relevanceElement.selectNodes("item").isEmpty()) {
+		if (relevanceElement!=null && !relevanceElement.selectNodes("item").isEmpty()) {
 			model.put(WebKeys.CONFIG_ELEMENT_RELEVANCE_DASHBOARD, relevanceElement);
 		}
 

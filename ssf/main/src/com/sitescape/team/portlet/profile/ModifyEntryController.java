@@ -56,7 +56,7 @@ import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.GetterUtil;
-
+import com.sitescape.util.Validator;
 /**
  * @author Peter Hurley
  *
@@ -175,7 +175,13 @@ public class ModifyEntryController extends SAbstractController {
 			} else {
 				DefinitionHelper.getDefinition(entryDef, model, "//item[@type='form']");
 			}
-		
+			if (Validator.isNotNull(entry.getForeignName())) {
+				Map readOnly = new HashMap();
+				for (String name:getAuthenticationModule().getMappedAttributes(entry)) {
+					readOnly.put(name, Boolean.TRUE);
+				}
+				model.put(WebKeys.READ_ONLY, readOnly);
+			}
 			return new ModelAndView(WebKeys.VIEW_MODIFY_ENTRY, model);
 		}
 	}
