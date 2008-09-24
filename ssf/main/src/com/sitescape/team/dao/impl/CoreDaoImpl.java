@@ -1584,7 +1584,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 
 	}
 
-	public IndexNode findSearchNodeInfo(final String nodeName, final String indexName) {
+	public IndexNode findIndexNode(final String nodeName, final String indexName) {
 		return (IndexNode)getHibernateTemplate().execute(
 		        new HibernateCallback() {
 		            public Object doInHibernate(Session session) throws HibernateException {
@@ -1596,11 +1596,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		     );
 	}
 	
-	public void purgeSearchNodeInfo(final String indexName) {
+	public void purgeIndexNodeByIndexName(final String indexName) {
 	   	getHibernateTemplate().execute(
 	    	   	new HibernateCallback() {
 	    	   		public Object doInHibernate(Session session) throws HibernateException {
-		     	   		session.createQuery("Delete com.sitescape.team.domain.SearchNode where indexName=:indexName")
+		     	   		session.createQuery("Delete com.sitescape.team.domain.IndexNode where indexName=:indexName")
 		   				.setString("indexName", indexName)
 	     	   			.executeUpdate();
 	       	   		return null;
