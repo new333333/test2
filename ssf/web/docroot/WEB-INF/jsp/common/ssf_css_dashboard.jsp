@@ -526,7 +526,7 @@ div.ss_canvas {
 	/* HIDE TOGGLE*/
 
 .ss_toggle{
-	font-size: ${ss_smallprint};
+	font-size: ${ss_style_font_smallprint};
 	display: block;
 	padding-right: 5px;
 	}

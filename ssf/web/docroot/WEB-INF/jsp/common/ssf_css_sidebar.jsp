@@ -73,6 +73,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_status_textarea{
 	font-size: 10px;
 	}
+.ss_status_header{
+	font-size: 12px;
+	font-weight: bold;
+	}
 .ss_input_myStatus{
 	border-color: #9EC8CD;
 	width: 160px;

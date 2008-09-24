@@ -40,8 +40,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	letter-spacing:-1px;
 	font-family:Georgia, "Times New Roman", Times, serif !important;
 	font-weight:normal !important;
-	color:#666;
-	letter-spacing: -1px;
+	color:#5A9A98;
 	}
 .ss_table_wrap {
 	display: table;
@@ -54,7 +53,20 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-right-color: #CCCCCC;
 	border-bottom-color: #CCCCCC;
 	border-left-color: #CCCCCC;
-	padding: 0 25px 25px 25px;
+	padding: 0 25px 25px 25px!important;
+	}
+.ss_miniblog_wrap {
+	border-top-width: 24px;
+	border-right-width: thin;
+	border-bottom-width: thin;
+	border-left-width: thin;
+	border-style: solid;
+	border-top-color: #5A9A98;
+	border-right-color: #CCCCCC;
+	border-bottom-color: #CCCCCC;
+	border-left-color: #CCCCCC;
+	padding: 0 25px 25px 25px!important;
+	margin: 25px 25px 25px 25px;
 	}
 .ss_table_heading {
 	font-size: 10px;
@@ -166,7 +178,7 @@ fieldset{
   	background-image: url(<html:imagesPath/>pics/login_bk.png);
   	background-repeat: no-repeat;
   	width: 480px;
-  	height: 150px;
+  	height: 200px;
     -moz-border-radius: 2%;
 	} 
 fieldset.ss_fieldset_square {
@@ -183,7 +195,7 @@ fieldset a:hover{
 .ss_legend {
   	font-size:12px !important;
   	}
- /*to be used for the login screen */
+ /**********LOGIN SCREEN*******/
 .ss_legend_login {
   	font-size:24px !important;
 	letter-spacing:-1px;
@@ -191,7 +203,44 @@ fieldset a:hover{
 	font-weight:normal !important;
 	color:#666;
 	}
-	
+ /*FORM LABELS (these need to be consolidated */	
+.ss_labelAbove {
+  	padding-top: 2px;
+  	padding-bottom: 2px;
+  	display: block;
+  	font-weight: bold;
+	}
+ /**********MINIBLOG******/	
+.ss_labelminiBlog {
+  	padding-top: 10px;
+  	color: #333;
+	}	
+.ss_list-style-image_miniblog {
+	list-style-image: url(/ssf/i/icwg/pics/blog/chatballoon.png)!important;
+	padding-top: 10px;
+  	color: #555;
+	}
+.ss_miniblog_subhead {
+	 font-weight: bold;
+	 color: #333;
+	 }
+.ss_miniblog_subhead a:hover{
+	 color: #555;
+	 }	
+/******END******/	
+.ss_labelLeft {
+  	font-weight: bold;
+  	font-size: ${ss_style_font_normalprint};
+  	display: inline;
+  	padding-right: 2px;
+	}
+.ss_labelRight {
+  	font-weight: bold;
+  	display: inline;
+  	padding-left: 2px;
+  	font-size: ${ss_style_font_normalprint};
+	}
+
 /* Text styled as buttons */
 
 .ss_inlineButton {
