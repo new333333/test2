@@ -84,8 +84,7 @@ public class ModifyEntryController extends SAbstractController {
 			if (!entry.isTop()) entry = entry.getTopEntry();
 			else entry = null;
 			getFolderModule().deleteEntry(folderId, entryId);
-			if (entry != null) 	setupViewEntry(response, folderId, entry.getId());
-			else setupViewFolder(response, folderId);		
+			setupViewFolder(response, folderId);		
 		
 		} else if (op.equals(WebKeys.OPERATION_LOCK)) {
 			getFolderModule().reserveEntry(folderId, entryId);
@@ -158,7 +157,7 @@ public class ModifyEntryController extends SAbstractController {
 					portletSession.setAttribute(ObjectKeys.SESSION_SAVE_LOCATION_ID, destinationId);
 					getFolderModule().copyEntry(folderId, entryId, destinationId, null);
 				} 
-				setupViewEntry(response, folderId, entryId);
+				setupViewFolder(response, folderId);
 				
 			}
 			
@@ -238,7 +237,7 @@ public class ModifyEntryController extends SAbstractController {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
-		
+		response.setRenderParameter(WebKeys.URL_ENTRY_ID, "");
 	}
 		
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
