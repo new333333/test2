@@ -39,7 +39,7 @@
 		%>
 <% //Description view %>
   <div class="ss_entryDescriptionLead"></div>
-  <span><ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true"><c:out 
+  <span><ssf:markup entity="${ssDefinitionEntry}"><c:out 
        value="<%= description %>" escapeXml="false"/></ssf:markup></span>
 <%  	}
  	} else if (thisEntry instanceof Map) {
@@ -48,7 +48,7 @@
 	 %>	
 <% //Description view %>
   <div class="ss_entryDescriptionLead"></div>
-  <span><ssf:markup search="${ssDefinitionEntry}" leaveSectionsUnchanged="true"><c:out 
+  <span><ssf:markup search="${ssDefinitionEntry}"><c:out 
        value="<%= description %>" escapeXml="false"/></ssf:markup></span>
 
 <%  	}

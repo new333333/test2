@@ -446,7 +446,7 @@ div.ss_editableSectionEditBtn {
   float: right; 
   margin-left: 0px;
   margin-top: 0px;
-  padding-bottom: 16px;
+  padding-bottom: 4px;
   padding-right: 5px;
   padding-left: 5px;
 }
