@@ -117,11 +117,14 @@ public class DefaultWorkflowProcess extends SSStatefulJob implements WorkflowPro
 				context.getScheduler().rescheduleJob(context.getJobDetail().getName(), context.getJobDetail().getGroup(), trigger);
        		}
        	} catch (ClassNotFoundException e) {
-       		throw new ConfigurationException("Invalid Workflowprocess class name '" + actionClass + "'");
+   			removeJob(context);			
+      		throw new ConfigurationException("Invalid Workflowprocess class name '" + actionClass + "'");
        	} catch (InstantiationException e) {
-       		throw new ConfigurationException("Cannot instantiate Workflowprocess of type '" 	+ actionClass + "'");
+   			removeJob(context);			
+      		throw new ConfigurationException("Cannot instantiate Workflowprocess of type '" 	+ actionClass + "'");
        	} catch (IllegalAccessException e) {
-       		throw new ConfigurationException("Cannot instantiate Workflowprocess of type '"	+ actionClass + "'");
+   			removeJob(context);			
+      		throw new ConfigurationException("Cannot instantiate Workflowprocess of type '"	+ actionClass + "'");
 		} catch (SchedulerException se) {			
 			throw new ConfigurationException(se.getLocalizedMessage());			
 		} catch (NoObjectByTheIdException no) {
@@ -172,8 +175,11 @@ public class DefaultWorkflowProcess extends SSStatefulJob implements WorkflowPro
 
 			GregorianCalendar start = new GregorianCalendar();
 			start.add(Calendar.MINUTE, 1);
+			GregorianCalendar end = new GregorianCalendar(); //try for 1 week
+			end.add(Calendar.DATE, 7);
+
 			int milliSeconds = seconds*1000;
-			SimpleTrigger trigger = new SimpleTrigger(clazz, groupName, clazz, groupName, start.getTime(), null, 
+			SimpleTrigger trigger = new SimpleTrigger(clazz, groupName, clazz, groupName, start.getTime(), end.getTime(), 
 					SimpleTrigger.REPEAT_INDEFINITELY, milliSeconds);
 			trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT);
 			trigger.setDescription(WORKFLOW_PROCESS_DESCRIPTION);

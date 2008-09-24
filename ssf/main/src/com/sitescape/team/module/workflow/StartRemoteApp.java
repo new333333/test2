@@ -36,6 +36,8 @@ import com.sitescape.team.remoteapplication.RemoteApplicationManager;
 import com.sitescape.team.security.accesstoken.AccessToken;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.util.Validator;
+import com.sitescape.team.NoObjectByTheIdException;
+
 public class StartRemoteApp extends AbstractWorkflowCallout implements WorkflowScheduledAction {
 	protected RemoteApplicationManager getRemoteApplicationManager() {
 		return (RemoteApplicationManager) SpringContextUtil.getBean("remoteApplicationManager");
@@ -62,6 +64,8 @@ public class StartRemoteApp extends AbstractWorkflowCallout implements WorkflowS
 			if (Validator.isNotNull(resultVariable)) setVariable(resultVariable, result);
 			return true;
 		
+		} catch (NoObjectByTheIdException ex) {
+			throw ex; //this will remove the job
 		} catch (Exception ex) {
 			status.setErrorMessage(ex.getLocalizedMessage());
 			status.setRetrySeconds(status.getRetrySeconds());
