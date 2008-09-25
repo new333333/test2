@@ -58,7 +58,7 @@
     <div id="ss_searchForm_changeBox">
 		<%@ include file="/WEB-INF/jsp/search/filterSummary.jsp" %>
         <p style="text-align: center;">
-          <a class="ss_tinyButton" href="javascript: ss_showObjBlock('ss_searchForm_container'); ss_hideObj('ss_searchForm_changeBox');">Revise your Advanced Search query</a>
+          <a class="ss_tinyButton" href="javascript: ss_showObjBlock('ss_searchForm_container'); ss_hideObj('ss_searchForm_changeBox');"><ssf:nlt tag="search.button.reviseAdvQuery"/></a>
         </p>
     </div>
 	<div id="ss_searchForm_container" class="tundra" style="display:none;">
