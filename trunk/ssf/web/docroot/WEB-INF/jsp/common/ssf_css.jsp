@@ -553,7 +553,7 @@ button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type=
 	}
 input.ss_tinyButton, a.ss_tinyButton:link, a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
- 	font-size: ${ss_style_font_finestprint};
+ 	font-size: ${ss_style_font_fineprint};
  	background-color: ${ss_linkbutton_background_color};
   	border: 1px solid ${ss_linkbutton_outline_color};
   	padding: 0px 3px 0px 3px;
@@ -563,7 +563,7 @@ input.ss_tinyButton, a.ss_tinyButton:link, a.ss_tinyButton:visited {
 a.ss_tinyButton:focus, a.ss_tinyButton:hover {
   	color: ${ss_linkbutton_link_hover_color};
   	font-family: ${ss_style_folder_view_font_family};
-  	font-size: ${ss_style_font_finestprint};
+  	font-size: ${ss_style_font_fineprint};
   	background-color: ${ss_linkbutton_background_color};
   	border: 1px solid ${ss_linkbutton_outline_color};
   	padding: 0px 3px 0px 3px;
