@@ -61,7 +61,7 @@ public class DefaultFolderDelete extends SSStatefulJob implements FolderDelete {
     }
 
 	public void remove(Long zoneId) {
-		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
+		Scheduler scheduler = getScheduler();		
 		try {
 			scheduler.unscheduleJob(zoneId.toString(), FOLDER_DELETE_GROUP);
 		} catch (SchedulerException se) {			
@@ -70,7 +70,7 @@ public class DefaultFolderDelete extends SSStatefulJob implements FolderDelete {
 		
 	}
     public void schedule(Long zoneId, int hours) {
-		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
+		Scheduler scheduler = getScheduler();		
 		try {
 			JobDetail jobDetail=scheduler.getJobDetail(zoneId.toString(), FOLDER_DELETE_GROUP);
 			if (jobDetail == null) {

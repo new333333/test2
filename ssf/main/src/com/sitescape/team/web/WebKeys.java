@@ -752,6 +752,7 @@ public class WebKeys {
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
     public static final String NAMESPACE="ss_namespace";
     public static final String NAMESPACE_RELEVANCE_DASHBOARD="ss_relevanceDashboardNamespace";
+    public static final String MAIL_CONFIG="ssMailConfig";
     public static final String MAIL_POSTING_USE_ALIASES="mail_posting_use_aliases"; 
     public static final String MAIL_POSTING_DUMMY_PASSWORD="_____"; 
     public static final String MANAGE_GROUPS_PAGE_TITLE_TAG="ssPageTitleTag";
@@ -884,6 +885,7 @@ public class WebKeys {
     public static final String SHOW_SEARCH_RESULTS="ss_showSearchResults";
     public static final String SIMPLE_URL_NAME_EXISTS_ERROR="ss_simpleUrlNameExistsError";
     public static final String SIMPLE_URL_NAME_NOT_ALLOWED_ERROR="ss_simpleUrlNameNotAllowedError";
+    public static final String SMPT_ENABLED="ssSMTPEnabled";
     public static final String SNIPPET="ss_snippet";
     public static final String TOOLBAR_CLIPBOARD_IDS="ss_toolbar_clipboard_ids";
     public static final String TOOLBAR_CLIPBOARD_SHOW="ss_toolbar_clipboard_show";

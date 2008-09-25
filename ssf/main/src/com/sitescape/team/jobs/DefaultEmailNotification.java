@@ -34,6 +34,7 @@ import java.util.TimeZone;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.SpringContextUtil;
@@ -43,7 +44,11 @@ import com.sitescape.team.util.SpringContextUtil;
 public class DefaultEmailNotification extends SSStatefulJob implements EmailNotification {
 	 
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
-    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
+		if (!coreDao.loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled()) {
+			logger.debug("Sending mail is not enabled for zone " + RequestContextHolder.getRequestContext().getZoneName());
+			return;
+		}
+		MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
 		try {
 			Long binderId = null;
 			try {

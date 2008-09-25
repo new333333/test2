@@ -11,34 +11,27 @@
 
 package com.sitescape.team.module.authentication.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
-import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
-import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
-import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
-import org.springframework.security.providers.ldap.LdapAuthenticationProvider;
-import org.springframework.security.providers.ldap.authenticator.BindAuthenticator;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.AuthenticationConfig;
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.EntityIdentifier;
-import com.sitescape.team.util.SPropsUtil;
-import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.team.domain.ZoneConfig;
 import com.sitescape.team.module.authentication.AuthenticationModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
-import com.sitescape.team.spring.security.SsfContextMapper;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.util.Validator;
 
 public class BaseAuthenticationModule extends CommonDependencyInjection
@@ -83,7 +76,6 @@ public class BaseAuthenticationModule extends CommonDependencyInjection
 	public void setLdapConnectionConfigs(List<LdapConnectionConfig> configs) {
 		checkAccess(AuthenticationOperation.manageAuthentication);
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-
 		int nextPosition = 10;
 		for (LdapConnectionConfig config : configs) {
 			config.setZoneId(zoneId);
@@ -108,9 +100,8 @@ public class BaseAuthenticationModule extends CommonDependencyInjection
 		for (LdapConnectionConfig config : notFound.values()) {
 			getCoreDao().delete(config);
 		}
-		AuthenticationConfig authConfig = getAuthenticationConfigForZone(zoneId);
-		authConfig.markAsUpdated();
-		getCoreDao().update(authConfig);
+		ZoneConfig zoneConfig = getZoneModule().getZoneConfig(zoneId);
+		zoneConfig.getAuthenticationConfig().markAsUpdated();
 	}
 	
 	public AuthenticationConfig getAuthenticationConfig()
@@ -120,13 +111,19 @@ public class BaseAuthenticationModule extends CommonDependencyInjection
 	
 	public AuthenticationConfig getAuthenticationConfigForZone(Long zoneId)
 	{
-		AuthenticationConfig config =(AuthenticationConfig) getCoreDao().load(AuthenticationConfig.class, zoneId);
-		if(config == null) {
-			config = new AuthenticationConfig();
-			config.setZoneId(zoneId);
-		}
-		return config;
+		ZoneConfig config =(ZoneConfig) getCoreDao().load(ZoneConfig.class, zoneId);
+		return config.getAuthenticationConfig();
 	}
+	public void setAuthenticationConfig(AuthenticationConfig authConfig) {
+		setAuthenticationConfigForZone(RequestContextHolder.getRequestContext().getZoneId(), authConfig);
+	}
+	public void setAuthenticationConfigForZone(Long zoneId, AuthenticationConfig authConfig) {
+		ZoneConfig zoneConfig = getZoneModule().getZoneConfig(zoneId);
+		zoneConfig.getAuthenticationConfig().setAllowAnonymousAccess(authConfig.isAllowAnonymousAccess());
+		zoneConfig.getAuthenticationConfig().setAllowLocalLogin(authConfig.isAllowLocalLogin());
+		zoneConfig.getAuthenticationConfig().setAllowSelfRegistration(authConfig.isAllowSelfRegistration());
+	}
+
 	public Set<String>getMappedAttributes(Principal principal) {
 		Set<String>attributes = new HashSet();
 		if (Validator.isNull(principal.getForeignName())) return attributes;

@@ -75,11 +75,11 @@ public class ConfigureLdapController extends  SAbstractController {
 				schedule.setUserSync(PortletRequestUtils.getBooleanParameter(request, "userSync", false));
 				schedule.setMembershipSync(PortletRequestUtils.getBooleanParameter(request, "membershipSync", false));
 
-				AuthenticationConfig authConfig = getAuthenticationModule().getAuthenticationConfig();
+				AuthenticationConfig authConfig = new AuthenticationConfig();
 				authConfig.setAllowAnonymousAccess(PortletRequestUtils.getBooleanParameter(request, "allowAnonymous", false));
 				authConfig.setAllowLocalLogin(PortletRequestUtils.getBooleanParameter(request, "allowLocalLogin", false));
 				authConfig.setAllowSelfRegistration(PortletRequestUtils.getBooleanParameter(request, "allowSelfRegistration", false));
-				
+				getAuthenticationModule().setAuthenticationConfig(authConfig);
 				LinkedList<LdapConnectionConfig> configList = new LinkedList<LdapConnectionConfig>();
 				try {
 					Document doc = DocumentHelper.parseText(PortletRequestUtils.getStringParameter(request, "ldapConfigDoc", "<doc/>"));

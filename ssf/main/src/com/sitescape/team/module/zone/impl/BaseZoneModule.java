@@ -1,10 +1,10 @@
 package com.sitescape.team.module.zone.impl;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.ZoneConfig;
 import com.sitescape.team.domain.ZoneInfo;
 import com.sitescape.team.module.zone.ZoneException;
 import com.sitescape.team.security.AccessControlException;
@@ -69,6 +69,7 @@ public class BaseZoneModule extends AbstractZoneModule {
 		info.setVirtualHost(getVirtualHost(info.getZoneName()));
 		return info;
 	}
+
 
 	public void checkAccess() throws AccessControlException {
 		throw new AccessControlException();

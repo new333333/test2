@@ -1,6 +1,6 @@
 package com.sitescape.team.domain;
-
-public class AuthenticationConfig extends ZonedObject {
+//Used to encapsalate authentication information.  A component of zoneConfig
+public class AuthenticationConfig  {
 
 	private boolean allowLocalLogin = true;
 	private boolean allowAnonymousAccess = true;
@@ -10,10 +10,6 @@ public class AuthenticationConfig extends ZonedObject {
 	public AuthenticationConfig()
 	{
 		lastUpdate = new Long(System.currentTimeMillis());
-	}
-	public void setZoneId(Long zoneId)
-	{
-		this.zoneId = zoneId;
 	}
 	
 	public boolean isAllowAnonymousAccess() {

@@ -195,7 +195,7 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
     	schedule(mailSender, null, null, message, comment, fileDir, now);
     }
     public void schedule(JavaMailSender mailSender, String account, String password, MimeMessage message, String comment, File fileDir, boolean now) {
- 		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
+		Scheduler scheduler = getScheduler();		
 		//each job is new = don't use verify schedule, cause this a unique
 		GregorianCalendar start = new GregorianCalendar();
 		if (now) start.add(Calendar.MINUTE, 1);

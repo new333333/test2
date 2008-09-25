@@ -30,8 +30,10 @@ package com.sitescape.team.module.zone;
 
 import java.util.List;
 
+import com.sitescape.team.domain.ZoneConfig;
 import com.sitescape.team.domain.ZoneInfo;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.NoObjectByTheIdException;
 
 public interface ZoneModule {
 	/**
@@ -75,6 +77,13 @@ public interface ZoneModule {
 	 */
 	public void deleteZone(String zoneName) throws ZoneException;
 	
+	/**
+	 * Returns zone configuration
+	 * 
+	 * @param zoneId
+	 * @return
+	 */
+	public ZoneConfig getZoneConfig(Long zoneId) throws NoObjectByTheIdException;
 	/**
 	 * Returns the name of the zone corresponding to the specified virtual host.
 	 * It returns the default zone name if <code>virtualHost</code> is 

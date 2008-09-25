@@ -58,7 +58,7 @@ public class DefaultLicenseMonitor extends SSStatefulJob implements
 	}
 
 	public void remove(Long zoneId) {
-		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
+		Scheduler scheduler = getScheduler();		
 		try {
 			scheduler.unscheduleJob(zoneId.toString(), LICENSE_MONITOR_GROUP);
 		} catch (SchedulerException se) {			
@@ -68,7 +68,7 @@ public class DefaultLicenseMonitor extends SSStatefulJob implements
 	}
 	public void schedule(Long zoneId, int hour)
 	{
-		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
+		Scheduler scheduler = getScheduler();		
 		try {
 			JobDetail jobDetail=scheduler.getJobDetail(zoneId.toString(), LICENSE_MONITOR_GROUP);
 			if (jobDetail == null) {

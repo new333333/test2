@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_ZoneConfig" name="com.sitescape.team.domain.ZoneConfig">
+    <cache usage="read-write"/>
+    <id unsaved-value="null" name="zoneId">
+      <generator class="assigned"/>
+	</id>
+	<property name="upgradeVersion"/>
+    <component name="mailConfig" class="com.sitescape.team.domain.MailConfig">
+		<property name="postingEnabled"/>
+		<property name="simpleUrlPostingEnabled"/>
+   		<property name="sendMailEnabled"/>
+    </component>
+     <component name="authenticationConfig" class="com.sitescape.team.domain.AuthenticationConfig">
+ 		 <property name="allowLocalLogin" />
+ 		 <property name="allowAnonymousAccess"/>
+	     <property name="allowSelfRegistration"/>
+    	 <property name="lastUpdate"/>
+    </component>
+   </class>
+</hibernate-mapping>

@@ -28,17 +28,19 @@
  */
 package com.sitescape.team.module.zone.impl;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.lang.reflect.Field;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -47,7 +49,6 @@ import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.ObjectControls;
 import com.sitescape.team.dao.util.SFQuery;
 import com.sitescape.team.domain.ApplicationGroup;
-import com.sitescape.team.domain.AuthenticationConfig;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Group;
@@ -58,19 +59,21 @@ import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.Subscription;
-import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.ZoneConfig;
+import com.sitescape.team.jobs.ScheduleInfo;
+import com.sitescape.team.jobs.ZoneSchedule;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.file.WriteFilesException;
-import com.sitescape.team.module.ldap.LdapSchedule;
 import com.sitescape.team.module.ldap.LdapModule;
+import com.sitescape.team.module.ldap.LdapSchedule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.template.TemplateModule;
+import com.sitescape.team.module.zone.ZoneException;
 import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.security.function.Function;
@@ -78,13 +81,11 @@ import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SessionUtil;
 import com.sitescape.util.Validator;
-import com.sitescape.team.util.ReflectHelper;
-import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.jobs.ZoneSchedule;
-import com.sitescape.team.jobs.ScheduleInfo;
 public abstract class AbstractZoneModule extends CommonDependencyInjection implements ZoneModule,InitializingBean {
 	protected DefinitionModule definitionModule;
 	/**
@@ -207,9 +208,24 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		Workspace top = getCoreDao().findTopWorkspace(zoneName);
 		return top.getId();
 	}
-	
+	public ZoneConfig getZoneConfig(Long zoneId) throws ZoneException {
+		return getCoreDao().loadZoneConfig(zoneId);
+	}
+ 	// Must be running inside a transaction set up by the caller 
+	private ZoneConfig addZoneConfigTx(Workspace zone) {
+		// Make sure there is a ZoneConfig; new for v2
+		ZoneConfig zoneConfig = new ZoneConfig(zone.getId());
+		if (SPropsUtil.getBoolean("smtp.service.enable")) zoneConfig.getMailConfig().setSimpleUrlPostingEnabled(true);		
+		//keep current if was deleted
+		ScheduleInfo notify = getAdminModule().getNotificationSchedule();
+		zoneConfig.getMailConfig().setSendMailEnabled(notify.isEnabled());
+		ScheduleInfo posting = getAdminModule().getPostingSchedule();
+		zoneConfig.getMailConfig().setPostingEnabled(posting.isEnabled());
+		getCoreDao().save(zoneConfig);
+		return zoneConfig;
+	}
  	protected void upgradeZoneTx(Workspace zone) {
- 		Integer version = zone.getUpgradeVersion();
+ 		Integer version = zone.getUpgradeVersion(); //in future release, start using version from zoneConfig
  		if ((version == null) || version.intValue() <= 1) {
  			String superName = SZoneConfig.getAdminUserName(zone.getName());
  			//	get super user from config file - must exist or throws and error
@@ -358,23 +374,16 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	 			if (query != null) query.close();
 	 			query=null;
 	 		}
-			ScheduleInfo info = getAdminModule().getNotificationSchedule();
 			//create schedule first time through
-			if (!info.isEnabled()) {
-				info.getSchedule().setDaily(true);
-				info.getSchedule().setHours("0");
-				info.getSchedule().setMinutes("15");
-				info.setEnabled(true);
-				getAdminModule().setNotificationSchedule(info);
-			}
+	 		ZoneConfig zoneConfig = addZoneConfigTx(zone);
+			ScheduleInfo notify = getAdminModule().getNotificationSchedule();
+	 		notify.getSchedule().setDaily(true);
+	 		notify.getSchedule().setHours("0");
+	 		notify.getSchedule().setMinutes("15");
+	 		notify.setEnabled(true);
+			zoneConfig.getMailConfig().setSendMailEnabled(true);
+			getAdminModule().setMailConfigAndSchedules(zoneConfig.getMailConfig(), notify, null);
 			
-			// Make sure there is an AuthenticationConfig
-			AuthenticationConfig config = (AuthenticationConfig) getCoreDao().load(AuthenticationConfig.class, zone.getId());
-			if(config == null) {
-				config = new AuthenticationConfig();
-				config.setZoneId(zone.getId());
-				getCoreDao().save(config);
-			}
 			//If not configured yet,  check old config
 			if (getCoreDao().loadObjects(LdapConnectionConfig.class, null, zone.getId()).isEmpty()) {				
 				LdapSchedule schedule = getLdapModule().getLdapSchedule();
@@ -421,6 +430,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getCoreDao().merge(superU);	
 			getProfileModule().indexEntry(superU);
 		}
+ 		try {
+ 			getZoneConfig(zone.getId());
+ 		} catch (NoObjectByTheIdException zx) {
+			// Make sure there is a ZoneConfig; new for v2
+ 			addZoneConfigTx(zone);
+ 		}
 		//make sure only one
 		getCoreDao().executeUpdate(
 				"update com.sitescape.team.domain.User set internalId=null where " +
@@ -508,10 +523,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		top.setZoneId(top.getId());
     		top.setupRoot();
     		
-			AuthenticationConfig config = new AuthenticationConfig();
-			config.setZoneId(top.getId());
-			getCoreDao().save(config);
-
+ 
     		// some piece of code needs zone id in the context
     		RequestContextHolder.getRequestContext().setZoneId(top.getId());   		
 	
@@ -529,6 +541,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		getCoreDao().save(user);
     		//indexing and other modules needs the user
     		RequestContextHolder.getRequestContext().setUser(user).resolve();
+    		//set zone info after context is set
+			ZoneConfig zoneConfig = addZoneConfigTx(top);
     		HistoryStamp stamp = new HistoryStamp(user);
     		//add reserved group for use in import templates
     		Group group = addAllUserGroup(profiles, stamp);
@@ -621,8 +635,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
    			info.getSchedule().setHours("0");
    			info.getSchedule().setMinutes("15");
    			info.setEnabled(true);
-   			getAdminModule().setNotificationSchedule(info);
- 
+			zoneConfig.getMailConfig().setSendMailEnabled(true);
+			getAdminModule().setMailConfigAndSchedules(zoneConfig.getMailConfig(), info, null); 
     		return top;
  	}
  	
@@ -631,7 +645,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		RequestContextUtil.setThreadContext(name, adminName);
 		try {
-  	        return (Long) getTransactionTemplate().execute(new TransactionCallback() {
+  	        Workspace zone =  (Workspace) getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
 	    			IndexSynchronizationManager.begin();
 
@@ -643,13 +657,16 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	        		getAdminModule().setWorkAreaOwner(guestWs, zone.getOwnerId() ,true);
 	        		//do now, with request context set - won't have one if here on zone startup
 	        		IndexSynchronizationManager.applyChanges();
-	        		for (ZoneSchedule zoneM:startupModules) {
-						zoneM.startScheduledJobs(zone);
-					}
 	    		
-	        		return zone.getId();
+	        		return zone;
 	        	}
 	        });
+  	        //do outside of transaction, so commited.
+  	        //otherwise jobs may start and fail cause data not saved.
+        	for (ZoneSchedule zoneM:startupModules) {
+				zoneM.startScheduledJobs(zone);
+			}
+        	return zone.getId();
 		} finally  {
 			//leave new context for indexing
 			RequestContextHolder.setRequestContext(oldCtx);

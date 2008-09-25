@@ -60,7 +60,7 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
 	}
 
 	public void remove(Long zoneId) {
-		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
+		Scheduler scheduler = getScheduler();		
 		try {
 			scheduler.unscheduleJob(zoneId.toString(), WORKFLOW_TIMER_GROUP);
 		} catch (SchedulerException se) {			
@@ -69,7 +69,7 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
 		
 	}
     public void schedule(Long zoneId, int seconds) {
-		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
+		Scheduler scheduler = getScheduler();		
 		try {
 			JobDetail jobDetail=scheduler.getJobDetail(zoneId.toString(), WORKFLOW_TIMER_GROUP);
 			if (jobDetail == null) {

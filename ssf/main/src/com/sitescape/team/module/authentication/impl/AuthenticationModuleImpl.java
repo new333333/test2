@@ -31,9 +31,10 @@ import org.springframework.security.providers.ldap.authenticator.BindAuthenticat
 import org.springframework.security.userdetails.UsernameNotFoundException;
 import com.sitescape.team.domain.LoginInfo;
 import com.sitescape.team.asmodule.zonecontext.ZoneContextHolder;
+import com.sitescape.team.domain.ZoneConfig;
 import com.sitescape.team.domain.AuthenticationConfig;
 import com.sitescape.team.domain.LdapConnectionConfig;
-import com.sitescape.team.domain.ZoneInfo;
+import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
 import com.sitescape.team.spring.security.SsfAuthenticationProvider;
 import com.sitescape.team.spring.security.SsfContextMapper;
@@ -69,23 +70,22 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		getProviderManager().getProviders().add(this);
 	}
 
-	protected void addZone(ZoneInfo zoneInfo) throws Exception
+	protected void addZone(ZoneConfig zoneConfig) throws Exception
 	{
-		if(authenticators.containsKey(zoneInfo.getId())) {
-			logger.error("Duplicate zone added to AuthenticationModule: " + zoneInfo.getId() + " " + zoneInfo.getZoneName());
+		String zoneName = getZoneModule().getZoneInfo(zoneConfig.getZoneId()).getZoneName();
+		if(authenticators.containsKey(zoneConfig.getZoneId())) {
+			logger.error("Duplicate zone added to AuthenticationModule: " + zoneConfig.getZoneId() + " " + zoneName);
 			throw new Exception("Duplicate zone added to AuthenticationModule");
 		}
-		logger.debug("Setting authentication info for zone "
-				+ zoneInfo.getZoneName() + ", host "
-				+ zoneInfo.getVirtualHost());
+		logger.debug("Setting authentication info for zone " + zoneName);
 		ProviderManager pm = new ProviderManager();
 		
-		SsfAuthenticationProvider localProvider = new SsfAuthenticationProvider(zoneInfo.getZoneName());
-		localProviders.put(zoneInfo.getZoneId(), localProvider);
+		SsfAuthenticationProvider localProvider = new SsfAuthenticationProvider(zoneName);
+		localProviders.put(zoneConfig.getZoneId(), localProvider);
 		
-		authenticators.put(zoneInfo.getZoneId(), pm);
+		authenticators.put(zoneConfig.getZoneId(), pm);
 		
-		rebuildProvidersForZone(zoneInfo.getZoneId());
+		rebuildProvidersForZone(zoneConfig);
 	}
 	
 	protected void removeZone(Long zoneId)
@@ -99,40 +99,35 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 
 	protected void ensureZoneIsConfigured(Long zoneId) throws Exception
 	{
-		ZoneInfo zoneInfo = getZoneModule().getZoneInfo(zoneId);
-		if(zoneInfo == null) {
-			removeZone(zoneId);
-		} else {
+		try {
+			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
 			if(! authenticators.containsKey(zoneId)) {
-				addZone(zoneInfo);
+				addZone(zoneConfig);
 			}
-			AuthenticationConfig authConfig = getAuthenticationConfigForZone(zoneId);
+			AuthenticationConfig authConfig = zoneConfig.getAuthenticationConfig();
 			if(authConfig.getLastUpdate().compareTo(lastUpdates.get(zoneId)) > 0) {
 				try {
-					rebuildProvidersForZone(zoneId);
+					rebuildProvidersForZone(zoneConfig);
 				} catch(Exception e) {
 					logger.error("Unable to rebuild providers for zone " + zoneId);
 				}
 			}
-		}
+		}catch (NoObjectByTheIdException no) {
+			removeZone(zoneId);
+		} 
 	}
 	
-	protected void rebuildProvidersForZone(Long zoneId) throws Exception {
-		AuthenticationConfig authConfig = getAuthenticationConfigForZone(zoneId);
-		
-		ProviderManager pm = authenticators.get(zoneId);
-		List<AuthenticationProvider> providers = createProvidersForZone(zoneId);
-		if(authConfig.isAllowLocalLogin()) {
-			providers.add(localProviders.get(zoneId));
+	protected void rebuildProvidersForZone(ZoneConfig zoneConfig) throws Exception {
+		ProviderManager pm = authenticators.get(zoneConfig.getZoneId());
+		List<AuthenticationProvider> providers = createProvidersForZone(zoneConfig.getZoneId());
+		if(zoneConfig.getAuthenticationConfig().isAllowLocalLogin()) {
+			providers.add(localProviders.get(zoneConfig.getZoneId()));
 		}
 
 		pm.setProviders(providers);
-		lastUpdates.put(zoneId, authConfig.getLastUpdate());
+		lastUpdates.put(zoneConfig.getZoneId(), zoneConfig.getAuthenticationConfig().getLastUpdate());
 	}
 
-	protected String getKeyForZone(ZoneInfo zoneInfo) {
-		return SZoneConfig.getGuestUserName(zoneInfo.getZoneName());
-	}
 
 	protected List<AuthenticationProvider> createProvidersForZone(Long zoneId)
 			throws Exception {

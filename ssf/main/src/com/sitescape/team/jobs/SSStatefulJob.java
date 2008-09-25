@@ -70,6 +70,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 	protected Log logger = LogFactory.getLog(getClass());
 	protected JobDataMap jobDataMap;
 	protected ProfileDao profileDao;
+	protected CoreDao coreDao;
 	protected User user;
 	protected Long zoneId;
 	public static int DESCRIPTION_MAX = 120; 
@@ -82,6 +83,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 	public void execute(final JobExecutionContext context) throws JobExecutionException {
 		setupSession();
     	profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
+    	coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
     	jobDataMap = context.getJobDetail().getJobDataMap();
 		context.setResult("Success");
 		try {  
@@ -100,7 +102,6 @@ public abstract class SSStatefulJob implements StatefulJob {
            		}
            	} catch (Exception ex) {
            		//see if zone is deleted and remove job gracefully
-           		CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
            		try {
            			Workspace zone = (Workspace)coreDao.loadBinder(zoneId, zoneId);
            			if (zone.isDeleted()) {
@@ -149,6 +150,9 @@ public abstract class SSStatefulJob implements StatefulJob {
 	protected void setupSession() {
 		SessionUtil.sessionStartup();		
 	}
+	protected Scheduler getScheduler() {		
+		return (Scheduler)SpringContextUtil.getBean("scheduler");		
+	}
 	/**
 	 * Job failed due to missing domain objects.  Return exception that will remove the
 	 * job triggers and the job if durablility=false;
@@ -182,7 +186,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 	 */
 	public ScheduleInfo getScheduleInfo(JobDescription job) {
 		try {
-			Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");		
+			Scheduler scheduler = getScheduler();		
 			JobDetail jobDetail=scheduler.getJobDetail(job.getName(), job.getGroup());
 			if (jobDetail == null) {
 				return job.getDefaultScheduleInfo();
@@ -207,7 +211,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 	 */
 	public void setScheduleInfo(JobDescription job, ScheduleInfo info) {
 		try {
-			Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
+			Scheduler scheduler = getScheduler();		
 		 	JobDetail jobDetail=scheduler.getJobDetail(job.getName(), job.getGroup());
 		 	//never been scheduled -start now
 		 	if (jobDetail == null) {
@@ -258,6 +262,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 		}
 		
 	}
+
 	/**
 	 * Enable or disable a job
 	 * @param job
