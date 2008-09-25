@@ -123,9 +123,14 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	var wDiv = document.createElement('div');
 	wDiv.id = "placeholderWorkflow"+orderNo;
 	workflowsContainer.appendChild(wDiv);
+    var stepsLabel = document.createElement('div');
+    stepsLabel.appendChild(document.createTextNode(ss_nlt_searchFormLabelWorkflowState + ":"));
+	stepsLabel.setAttribute("style", "visibility: hidden; display:inline; float: left;");
+	stepsLabel.id = "workflowSteps"+orderNo+"Label";
+    div.appendChild(stepsLabel);
 	var stepsContainer = document.createElement('ul');
 	stepsContainer.id = "workflowSteps"+orderNo;
-	stepsContainer.setAttribute("style", "display:inline; float: left; padding-left: 5px; ");
+	stepsContainer.setAttribute("style", "display:inline; float: left; padding-left: 5px; margin-top: 0px;");
 	div.appendChild(stepsContainer);
 	
 	document.getElementById('ss_workflows_options').appendChild(div);
@@ -150,6 +155,7 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 					var defaultStepsIds = workflowId == wfIdValue ? stepsValue : [];
 					var stepsS = "|" + defaultStepsIds.join("|") + "|";
 					stepsContainer.innerHTML = "";
+					stepsLabel.style.visibility = "visible";
 					dojo.xhrGet({
 						url: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_workflow_steps_search&workflowId=" + workflowId,
 						load: function(data) { 
@@ -220,6 +226,7 @@ function ss_getSelectedBinders() {
 function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
+	div.style.marginBottom = "3px";
 	var remover = document.createElement('img');
 	dojo.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
 	remover.setAttribute("src", ss_imagesPath + "pics/delete.gif");
@@ -228,17 +235,30 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	
 	var entryTypeDiv = document.createElement('div');
 	entryTypeDiv.id = "placeholderEntry"+orderNo;
-	entryTypeDiv.style.display = "inline";
+	entryTypeDiv.style.display = "block";
 	div.appendChild(entryTypeDiv);
+
+    var fieldsLabelDiv = document.createElement('div');
+	fieldsLabelDiv.id = "entryFields"+orderNo+"Label";
+	fieldsLabelDiv.setAttribute("style", "visibility: hidden; float: left; display:inline;");
+	fieldsLabelDiv.appendChild(document.createTextNode(ss_nlt_searchFormLabelFieldName + ": "));
+	div.appendChild(fieldsLabelDiv);
+    
 	
 	var fieldsDiv = document.createElement('div');
 	fieldsDiv.id = "entryFields"+orderNo;
 	fieldsDiv.setAttribute("style", "display:inline;");
 	div.appendChild(fieldsDiv);
 	
+    var valueLabelDiv = document.createElement('div');
+	valueLabelDiv.setAttribute("style", "visibility: hidden; float: left; display:inline;");
+	valueLabelDiv.appendChild(document.createTextNode(ss_nlt_searchFormLabelFieldValue + ": "));
+	div.appendChild(valueLabelDiv);
+
+
 	var fieldValueDiv = document.createElement('div');
 	fieldValueDiv.id = "entryFieldsValue"+orderNo;
-	fieldValueDiv.setAttribute("style", "display:inline;");
+	fieldValueDiv.setAttribute("style", "display:block;");
 	div.appendChild(fieldValueDiv);
 	
 	var fieldValue2Div = document.createElement('div');
@@ -272,6 +292,8 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 			ss_removeAllChildren(fieldsDiv);
 			ss_removeAllChildren(fieldValueDiv);
 			ss_removeAllChildren(fieldValue2Div);
+
+            fieldsLabelDiv.style.visibility = "visible";
 			
 			var entryTypeId = findEntries.getSingleId();
 			var fieldsInputId = "elementName" + orderNo;
@@ -283,6 +305,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 		    textAreaFieldsObj.style.width = "200px";
 			
 			fieldsDiv.appendChild(textAreaFieldsObj);
+
 			
 			var findEntryFields = ssFind.configSingle({
 				inputId: fieldsInputId,
@@ -293,6 +316,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 				displayArrow: true,
 				searchOnInitialClick: true,
 				clickRoutine: function () {
+				    valueLabelDiv.style.visibility = "visible";
 					var fieldValueWidget = dijit.byId("elementValue" + orderNo + "_selected");
 					if (fieldValueWidget && fieldValueWidget.destroy) {
 						fieldValueWidget.destroy();

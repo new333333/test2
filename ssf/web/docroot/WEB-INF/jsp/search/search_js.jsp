@@ -39,7 +39,10 @@ dojo.require("dijit.form.TimeTextBox");
 <script type="text/javascript">
 
 var ss_nlt_searchFormLabelWorkflow = "<ssf:nlt tag="searchForm.label.workflow"/>";
+var ss_nlt_searchFormLabelWorkflowState = "<ssf:nlt tag="searchForm.label.workflowState"/>";
 var ss_nlt_searchFormLabelEntry = "<ssf:nlt tag="searchForm.label.entry"/>";
+var ss_nlt_searchFormLabelFieldName = "<ssf:nlt tag="searchForm.label.fieldName"/>";
+var ss_nlt_searchFormLabelFieldValue = "<ssf:nlt tag="searchForm.label.fieldValue"/>";
 var ss_nlt_tagsCommunityTags = "<ssf:nlt tag="tags.communityTags"/>";
 var ss_nlt_tagsPersonalTags = "<ssf:nlt tag="tags.personalTags"/>";
 var ss_searchFormLabelAuthor = "<ssf:nlt tag="searchForm.label.author"/>";
