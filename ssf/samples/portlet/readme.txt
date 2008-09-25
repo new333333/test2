@@ -1,3 +1,14 @@
+This sample shows how to write a simple portlet based on Springframework's 
+portlet framework and deploy it as part of Teaming portlet application.
+Deploying a portlet as part of Teaming has unique advantage over packaging
+it as a separate and independent portlet application that happens to be hosted
+by the same portal in that the portlet would have full access to the internals 
+of Teaming software. Consequently, it is important to understand this as one 
+of the mechanisms for extending Teaming's out-of-the-box functionality.
+If your goal is to write a standalone portlet that has nothing to do with
+Teaming, then it is strongly advised to use the standard extension/deployment 
+mechanism that the portal product provides instead.
+
 IF YOU HAVE ACCESS TO FULL SOURCE TREE (preferred mode of development)
 ======================================================================
 When developed in this mode, the modifications are made to the source tree and
