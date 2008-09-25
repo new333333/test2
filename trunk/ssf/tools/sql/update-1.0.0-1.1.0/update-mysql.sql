@@ -68,7 +68,7 @@ alter table SS_Events add uid varchar(255) null;
 alter table SS_Events add freeBusy varchar(32) null;
 alter table SS_Definitions add binderId bigint;
 alter table SS_Definitions add unique definition_name(zoneId, name, binderId);
-create table SS_SearchNodeInfo (id char(32) not null, nodeName varchar(128), indexName varchar(160), zoneId bigint, accessMode varchar(16), inSynch bit, primary key (id), unique (nodeName, indexName)) ENGINE=InnoDB;
+create table SS_IndexNode (id char(32) not null, nodeName varchar(128), indexName varchar(160), zoneId bigint, accessMode varchar(16), inSynch bit, primary key (id), unique (nodeName, indexName)) ENGINE=InnoDB;
 create table SS_AuthenticationConfig (zoneId bigint not null, allowLocalLogin bit, allowAnonymousAccess bit, allowSelfRegistration bit, lastUpdate bigint, primary key (zoneId)) ENGINE=InnoDB;
 create table SS_LdapConnectionConfig (id char(32) not null, zoneId bigint, url varchar(255), userIdAttribute varchar(255), mappings text, userSearches text, groupSearches text, principal varchar(255), credentials varchar(255), position integer, primary key (id)) ENGINE=InnoDB;
 create table SS_IndexingJournal (id bigint not null auto_increment, zoneId bigint, nodeName varchar(128), indexName varchar(160), operationName varchar(32), operationArgs longblob, primary key (id)) ENGINE=InnoDB;

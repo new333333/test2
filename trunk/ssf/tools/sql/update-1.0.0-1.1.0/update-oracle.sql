@@ -68,7 +68,7 @@ alter table SS_Events add uid varchar2(255 char) null;
 alter table SS_Events add freeBusy varchar2(32 char) null;
 alter table SS_Definitions add binderId number(19,0);
 create unique index definition_name on SS_Definitions (zoneId, name, binderId);
-create table SS_SearchNodeInfo (id char(32) not null, nodeName varchar2(128 char), indexName varchar2(160 char), zoneId number(19,0), accessMode varchar2(16 char), inSynch number(1,0), primary key (id), unique (nodeName, indexName));
+create table SS_IndexNode (id char(32) not null, nodeName varchar2(128 char), indexName varchar2(160 char), zoneId number(19,0), accessMode varchar2(16 char), inSynch number(1,0), primary key (id), unique (nodeName, indexName));
 create table SS_AuthenticationConfig (zoneId number(19,0) not null, allowLocalLogin number(1,0), allowAnonymousAccess number(1,0), allowSelfRegistration number(1,0), lastUpdate number(19,0), primary key (zoneId));
 create table SS_LdapConnectionConfig (id char(32) not null, zoneId number(19,0), url varchar2(255 char), userIdAttribute varchar2(255 char), mappings clob, userSearches clob, groupSearches clob, principal varchar2(255 char), credentials varchar2(255 char), position number(10,0), primary key (id));
 create table SS_IndexingJournal (id number(19,0) not null, zoneId number(19,0), nodeName varchar2(128 char), indexName varchar2(160 char), operationName varchar2(32 char), operationArgs blob, primary key (id));
