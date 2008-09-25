@@ -240,7 +240,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 
     var fieldsLabelDiv = document.createElement('div');
 	fieldsLabelDiv.id = "entryFields"+orderNo+"Label";
-	fieldsLabelDiv.setAttribute("style", "visibility: hidden; float: left; display:inline;");
+	fieldsLabelDiv.setAttribute("style", "float: left; display:none;");
 	fieldsLabelDiv.appendChild(document.createTextNode(ss_nlt_searchFormLabelFieldName + ": "));
 	div.appendChild(fieldsLabelDiv);
     
@@ -251,7 +251,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	div.appendChild(fieldsDiv);
 	
     var valueLabelDiv = document.createElement('div');
-	valueLabelDiv.setAttribute("style", "visibility: hidden; float: left; display:inline;");
+	valueLabelDiv.setAttribute("style", "float: left; display:none;");
 	valueLabelDiv.appendChild(document.createTextNode(ss_nlt_searchFormLabelFieldValue + ": "));
 	div.appendChild(valueLabelDiv);
 
@@ -293,7 +293,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 			ss_removeAllChildren(fieldValueDiv);
 			ss_removeAllChildren(fieldValue2Div);
 
-            fieldsLabelDiv.style.visibility = "visible";
+            fieldsLabelDiv.style.display = "inline";
 			
 			var entryTypeId = findEntries.getSingleId();
 			var fieldsInputId = "elementName" + orderNo;
@@ -316,7 +316,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 				displayArrow: true,
 				searchOnInitialClick: true,
 				clickRoutine: function () {
-				    valueLabelDiv.style.visibility = "visible";
+				    valueLabelDiv.style.display = "inline";
 					var fieldValueWidget = dijit.byId("elementValue" + orderNo + "_selected");
 					if (fieldValueWidget && fieldValueWidget.destroy) {
 						fieldValueWidget.destroy();
