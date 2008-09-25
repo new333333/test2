@@ -27,7 +27,7 @@
  * are trademarks of SiteScape, Inc.
  */
 
-dojo.require("dojo.event.stamp");
+dojo.require("dojo.date.stamp");
 
 function ssEventEditor(prefix, frequency, interval, weekDays, monthDays) {
 	
@@ -282,11 +282,12 @@ ssEventScheduler.create = function(params) {
 	var eventStartTimeObj = ("eventStartTimeObj" in params) ? params.eventStartTimeObj : null;	
 	var eventEndObj = ("eventEndObj" in params) ? params.eventEndObj : null;
 	var eventEndTimeObj = ("eventEndTimeObj" in params) ? params.eventEndTimeObj : null;
+	var eventAllDayObj = ("eventAllDayObj" in params) ? params.eventAllDayObj : null;	
 	var userListDataName = ("userListDataName" in params) ? params.userListDataName : null;
 	var binderId = ("binderId" in params) ? params.binderId : null;
 	var entryId = ("entryId" in params) ? params.entryId : null;
 	
-	return new ssEventScheduler.Scheduler(container, userListObj, eventStartObj, eventStartTimeObj, eventEndObj, eventEndTimeObj, userListDataName, binderId, entryId);
+	return new ssEventScheduler.Scheduler(container, userListObj, eventStartObj, eventStartTimeObj, eventEndObj, eventEndTimeObj, eventAllDayObj, userListDataName, binderId, entryId);
 }
 
 ssEventScheduler.locale = {
@@ -296,7 +297,7 @@ ssEventScheduler.locale = {
 	outOfOffice: "Out Of Office"
 }
 
-ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eventStartTimeObj, eventEndObj, eventEndTimeObj, userListDataName, binderId, entryId) {
+ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eventStartTimeObj, eventEndObj, eventEndTimeObj, eventAllDayObj, userListDataName, binderId, entryId) {
 	var that = this;
 	
 	this._container = container;
@@ -305,6 +306,7 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 	this._eventStartTimeObj = eventStartTimeObj;
 	this._eventEndObj = eventEndObj;
 	this._eventEndTimeObj = eventEndTimeObj;	
+	this._eventAllDayObj = eventAllDayObj;
 	this._userListDataName = userListDataName;
 	this._binderId = binderId;
 	this._entryId = entryId;
@@ -338,26 +340,31 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 	}
 	
 	if (this._eventStartObj != null) {
-		dojo.connect(this._eventStartObj, "onValueChanged", function(evt) {
+		dojo.connect(this._eventStartObj, "onChange", function(evt) {
 			that.changeStartDate(evt);
 		});
 	}
-	if (this._eventStartTimeObj != null) {
-		dojo.connect(this._eventStartTimeObj, "onValueChanged", function(evt) {
-			that.changeStartTime(evt);
-		});	
-	}
 	if (this._eventEndObj != null) {
-		dojo.connect(this._eventEndObj, "onValueChanged", function(evt) {
+		dojo.connect(this._eventEndObj, "onChange", function(evt) {
 			that.changeEndDate(evt);
 		});
 	}
+	
+	if (this._eventStartTimeObj != null) {
+		dojo.connect(this._eventStartTimeObj, "onChange", function(evt) {
+			that.changeStartTime(evt);
+		});	
+	}
 	if (this._eventEndTimeObj != null) {
-		dojo.connect(this._eventEndTimeObj, "onValueChanged", function(evt) {
+		dojo.connect(this._eventEndTimeObj, "onChange", function(evt) {
 			that.changeEndTime(evt);
 		});	
+	}
+	if (this._eventAllDayObj != null) {
+		dojo.connect(this._eventAllDayObj, "onclick", function() {
+			that.changeAllTime(that._eventAllDayObj.checked);
+		});	
 	}	
-	
 	
 	this.display = function() {
 		if (that._isDisplayed) {
@@ -373,18 +380,22 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 			that._usersList = that._userListObj.getList();
 		}
 		if (that._eventStartObj) {
-			that._setStartDate(that._eventStartObj.getDate());
-		}
-		if (that._eventStartTimeObj) {
-			that._setStartTime(dojo.date.stamp.fromISOString(that._eventStartTimeObj.getTime()));
+			that._setStartDate(that._eventStartObj.getValue());
 		}
 		if (that._eventEndObj) {
-			that._setEndDate(that._eventEndObj.getDate());
-		}
-		if (that._eventEndTimeObj) {
-			that._setEndTime(dojo.date.stamp.fromISOString(that._eventEndTimeObj.getTime()));
+			that._setEndDate(that._eventEndObj.getValue());
 		}
 		
+		if (!that._eventAllDayObj || (that._eventAllDayObj && !that._eventAllDayObj.checked)) {
+			if (that._eventStartTimeObj) {
+				that._setStartTime(that._eventStartTimeObj.getValue());
+			}			
+			if (that._eventEndTimeObj) {
+				that._setEndTime(that._eventEndTimeObj.getValue());
+			}
+		} else {
+			that._setAllDayTime(true);
+		}
 		that._displayUsers(true);
 		that._displayTimeLine(true);
 		that._displayLegend();
@@ -469,6 +480,7 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 		}
 
 		var li = document.createElement("LI");
+		li.setAttribute("class", "allAttendees");
 		li.appendChild(document.createTextNode(ssEventScheduler.locale.allAttendees));
 		that._ulObj.appendChild(li);
 			
@@ -552,11 +564,25 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 			
 			that._timeLine.getBand(0).addOnScrollListener(function(band) {
 				if (band.getMinDate() < that._minStart) {
-					that._setStartDate(band.getMinDate());
+					that._minStart = dojo.date.add(band.getMinDate(), "week", -1);
+					that._minStart.setUTCHours(0);
+					that._minStart.setUTCMinutes(0);
+
+					that._maxEnd = dojo.date.add(band.getMinDate(), "week", 3);
+					that._maxEnd.setUTCHours(0);
+					that._maxEnd.setUTCMinutes(0);
+															
 					that.loadData();
 				}
 				if (that._maxEnd < band.getMaxDate()) {
-					that._setStartDate(band.getMaxDate());
+					that._minStart = dojo.date.add(band.getMaxDate(), "week", -1);
+					that._minStart.setUTCHours(0);
+					that._minStart.setUTCMinutes(0);
+										
+					that._maxEnd = dojo.date.add(band.getMaxDate(), "week", 3);
+					that._maxEnd.setUTCHours(0);
+					that._maxEnd.setUTCMinutes(0);
+					
 					that.loadData();
 				}
 			}); 
@@ -594,7 +620,7 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 	}
 	
 	this.changeStartTime = function(dateTime) {
-		that._setStartTime(dojo.date.stamp.fromISOString(dateTime));
+		that._setStartTime(dateTime);
 		that._timeLine.getBand(0).scrollToCenter(that._startDate);
 		that.loadData();
 		that._repaintEventOnTimeLine();		
@@ -606,46 +632,69 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 	}	
 	
 	this.changeEndTime = function(dateTime) {
-		that._setEndTime(dojo.date.stamp.fromISOString(dateTime));
+		that._setEndTime(dateTime);
+		that._repaintEventOnTimeLine();
+	}
+	
+	this._setAllDayTime = function(checked) {
+		if (checked) {
+			var allDayTime = new Date();
+			allDayTime.setHours(0);
+			allDayTime.setMinutes(0);
+			that._setStartTime(allDayTime);
+			that._setEndTime(allDayTime);
+			
+			that._eventEndDate = dojo.date.add(that._eventEndDate, "day", 1);
+		} else {
+			that._setStartDate(that._eventStartObj.getValue());
+			that._setEndDate(that._eventEndObj.getValue());
+					
+			that._setStartTime(that._eventStartTimeObj.getValue());
+			that._setEndTime(that._eventEndTimeObj.getValue());
+		}
+	}
+	
+	this.changeAllTime = function(checked) {
+		that._setAllDayTime(checked);
 		that._repaintEventOnTimeLine();
 	}
 		
 	this._setStartDate = function(date) {
-		that._startDate.setFullYear(date.getFullYear());
-		that._startDate.setMonth(date.getMonth());
-		that._startDate.setDate(date.getDate());
+		that._startDate.setUTCFullYear(date.getFullYear());
+		that._startDate.setUTCMonth(date.getMonth());
+		that._startDate.setUTCDate(date.getDate());
 		
-		that._eventStartDate.setFullYear(date.getFullYear());
-		that._eventStartDate.setMonth(date.getMonth());
-		that._eventStartDate.setDate(date.getDate());
+		that._eventStartDate.setUTCFullYear(date.getFullYear());
+		that._eventStartDate.setUTCMonth(date.getMonth());
+		that._eventStartDate.setUTCDate(date.getDate());
 		
 				
 		that._minStart = dojo.date.add(that._startDate, "week", -1);
-		that._minStart.setHours(0);
-		that._minStart.setMinutes(0);
+		that._minStart.setUTCHours(0);
+		that._minStart.setUTCMinutes(0);
 		
 		that._maxEnd = dojo.date.add(that._startDate, "week", 3);
-		that._maxEnd.setHours(0);
-		that._maxEnd.setMinutes(0);
+		that._maxEnd.setUTCHours(0);
+		that._maxEnd.setUTCMinutes(0);
 	}
 
 	this._setStartTime = function(time) {
-		that._startDate.setHours(time.getHours() - time.getTimezoneOffset()/60 + 5);// band center
-		that._startDate.setMinutes(time.getMinutes());
+		that._startDate.setUTCHours(time.getHours() + 5);// band center
+		that._startDate.setUTCMinutes(time.getMinutes());
 		
-		that._eventStartDate.setHours(time.getHours() - time.getTimezoneOffset()/60);
-		that._eventStartDate.setMinutes(time.getMinutes());	
+		that._eventStartDate.setUTCHours(time.getHours());
+		that._eventStartDate.setUTCMinutes(time.getMinutes());	
 	}
 	
 	this._setEndDate = function(date) {	
-		that._eventEndDate.setFullYear(date.getFullYear());
-		that._eventEndDate.setMonth(date.getMonth());
-		that._eventEndDate.setDate(date.getDate());
+		that._eventEndDate.setUTCFullYear(date.getFullYear());
+		that._eventEndDate.setUTCMonth(date.getMonth());
+		that._eventEndDate.setUTCDate(date.getDate());
 	}
 
 	this._setEndTime = function(time) {
-		that._eventEndDate.setHours(time.getHours() - time.getTimezoneOffset()/60);
-		that._eventEndDate.setMinutes(time.getMinutes());		
+		that._eventEndDate.setUTCHours(time.getHours());
+		that._eventEndDate.setUTCMinutes(time.getMinutes());		
 	}	
 	
 	this._repaintEventOnTimeLine = function() {
@@ -679,7 +728,8 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 														ssUserListName: that._userListDataName != null ? that._userListDataName : ""
 														});
 		that._timeLine.loadJSON(jsonUrl, function(json, url) {
-			that._eventSource.loadJSON(json, url);
+			that._eventSource.clear();		
+			that._eventSource.loadJSON(json, url);	
 		});
 	}
 

@@ -42,12 +42,21 @@
 		--%><c:forEach var="freeBusyInfo" items="${ssCalendarFreeBusyInfo}" varStatus="status"><%--
 			--%><c:forEach var="userEvents" items="${freeBusyInfo.value}" varStatus="statusUserEvents"><%--
 				--%><c:forEach var="event" items="${userEvents.value}" varStatus="statusEvents"><%--			
-				  	--%><c:set var="timeZone" value="${ssUser.timeZone.ID}"/><%--
-				  	--%><c:if test="${event.allDay || !event.timeZoneSensitive}"><%--
-				  		--%><c:set var="timeZone" value="GMT"/><%--
-				  	--%></c:if><%--
-					--%>{'start': '<fmt:formatDate value="${event.start}" timeZone="${timeZone}" pattern="yyyyMMdd'T'HHmm"/>',<%--
-			        --%>'end': '<fmt:formatDate value="${event.end}" timeZone="${timeZone}" pattern="yyyyMMdd'T'HHmm"/>',<%--
+					--%>{<%--
+					--%><c:choose><%--
+						--%><c:when test="${event.allDay}"><%--
+							--%>'start': '<fmt:formatDate value="${event.start}" pattern="yyyyMMdd"/>',<%--
+					        --%>'end': '<fmt:formatDate value="${event.end}" pattern="yyyyMMdd"/>',<%--
+						--%></c:when><%--
+						--%><c:otherwise><%--
+						  	--%><c:set var="timeZone" value="${ssUser.timeZone.ID}"/><%--
+						  	--%><c:if test="${!event.timeZoneSensitive}"><%--
+						  		--%><c:set var="timeZone" value="GMT"/><%--
+						  	--%></c:if><%--						
+							--%>'start': '<fmt:formatDate value="${event.start}" timeZone="${timeZone}" pattern="yyyyMMdd'T'HHmm"/>',<%--
+					        --%>'end': '<fmt:formatDate value="${event.end}" timeZone="${timeZone}" pattern="yyyyMMdd'T'HHmm"/>',<%--						
+						--%></c:otherwise><%--
+			        --%></c:choose><%--
 			        --%>'title': '',<%--
 					--%>'top': '${status.index * 2 + 0.5}',<%--
 					--%>'color': <%--

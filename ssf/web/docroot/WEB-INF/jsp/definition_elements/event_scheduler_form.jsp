@@ -43,6 +43,7 @@ dojo.addOnLoad(function() {
 							eventStartTimeObj: dijit.byId('event_start_time_${propertyValues_sourceEventElement[0]}'),
 							eventEndObj: dijit.byId('event_end_${propertyValues_sourceEventElement[0]}'),
 							eventEndTimeObj: dijit.byId('event_end_time_${propertyValues_sourceEventElement[0]}'),
+							eventAllDayObj: document.getElementById('${propertyValues_sourceEventElement[0]}_allDayEvent'),
 							userListDataName: "${propertyValues_sourceUserListElement[0]}",
 							binderId: "${ssFolder.id}",
 							entryId: "${ssEntry.id}"

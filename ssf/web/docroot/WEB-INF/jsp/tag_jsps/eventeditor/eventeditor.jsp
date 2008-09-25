@@ -133,8 +133,8 @@
 					<input type="checkbox" name="${allDayEventId}"
 					<c:if test="${initEvent.allDayEvent}">
 						checked="checked"
-					</c:if> id="${prefix}_${dateId}_allDayEvent" 
-					onclick="${prefix}ssEventEditor.toggleAllDay(this, ['${dateId}_skipTime_${prefix}', '${dateId2}_skipTime_${prefix}']); " /><label for="${prefix}_${dateId}_allDayEvent"><ssf:nlt tag="event.allDay" /></label>
+					</c:if> id="${prefix}_allDayEvent" 
+					onclick="${prefix}ssEventEditor.toggleAllDay(this, ['${dateId}_skipTime_${prefix}', '${dateId2}_skipTime_${prefix}']); " /><label for="${prefix}_allDayEvent"><ssf:nlt tag="event.allDay" /></label>
 				</td>
 			</c:if>
 		</tr>
