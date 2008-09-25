@@ -19,7 +19,6 @@
 	<target name="clean-app-server">
 		<delete>
 			<fileset dir="${app.server.shared.lib.dir}" includes="ssf-*.jar" />
-			<fileset dir="${app.server.lib.dir}" includes="ssf-*.jar" />
 		</delete>		
 		
 		<delete dir="${app.server.ssf.dir}"/>
@@ -34,7 +33,6 @@
 					<pathelement location="${env.ANT_HOME}/lib/ant.jar" />
 					<!--<fileset dir="../lib" includes="*.jar" />-->
 					<fileset dir="${app.server.dir}/common/endorsed" includes="*.jar" />
-					<fileset dir="${app.server.lib.dir}" includes="*.jar" />
 					<fileset dir="${app.server.dir}/common/lib/ext" includes="*.jar" />
 					<pathelement location="${app.server.dir}/common/lib/jsp-api.jar" />
 					<pathelement location="${app.server.dir}/common/lib/servlet-api.jar" />
