@@ -48,6 +48,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 	    <div id="ss_folder_type_${ssDefinitionFamily}" class="ss_style_color">
 			<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
+	  		<jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
 			<div id="ss_whatsNewDiv${ss_namespace}">
 			<c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
 			<%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>

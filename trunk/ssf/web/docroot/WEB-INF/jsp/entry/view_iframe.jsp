@@ -72,6 +72,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 </td></tr>
 </table>
 </div>
+<div width="100%">
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
@@ -79,23 +80,29 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
 	<td valign="top" class="ss_view_info">
-		<div id="ss_whatsNewDiv${ss_namespace}">
-		<c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
-		<%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>
-		</c:if>
-		</div>
-	    <div id="ss_folder_type_${ssDefinitionFamily}" class="ss_style_color" >
+	  <jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
+	  <div align="center">
+	    <div id="ss_folder_wrap">
+		  <div id="ss_whatsNewDiv${ss_namespace}">
+		  <c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
+		  <%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>
+		  </c:if>
+		  </div>
+	      <div id="ss_folder_type_${ssDefinitionFamily}" class="ss_style_color" >
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 					  configElement="${ssConfigElement}" 
 					  configJspStyle="${ssConfigJspStyle}" 
 					  entry="${ssBinder}" />
+		  </div>
+		  <% // Footer toolbar %>
+		  <jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
 		</div>
-		<% // Footer toolbar %>
-		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+	  </div>
 	</td>
 	</tr>
 	</tbody>
 	</table>
+</div>
 </div>
 <script type="text/javascript">
 ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));

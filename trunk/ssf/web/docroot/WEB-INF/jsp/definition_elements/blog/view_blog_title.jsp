@@ -64,7 +64,7 @@
 <%
 		//Get a dispalyable number for the replies
 		if (((FolderEntry)thisEntry).getParentEntry() == null) entryType = "entry";
-		if ("entry".equals(entryType) && ((FolderEntry)thisEntry).getDocNumber() != null) {
+		if ("reply".equals(entryType) && ((FolderEntry)thisEntry).getDocNumber() != null) {
 			docNumber = (String) ((FolderEntry)thisEntry).getDocNumber();
 			int i = docNumber.indexOf(".");
 			if (i > 0) {
@@ -88,7 +88,7 @@
 <%
 		//Get a dispalyable number for the replies
 		entryType = (String) ((Map)thisEntry).get("_entryType");
-		if ("entry".equals(entryType) && ((Map)thisEntry).get("_docNum") != null) {
+		if ("reply".equals(entryType) && ((Map)thisEntry).get("_docNum") != null) {
 			docNumber = (String) ((Map)thisEntry).get("_docNum");
 			int i = docNumber.indexOf(".");
 			if (i > 0) {
@@ -119,20 +119,18 @@
 	}
 %>
 <div class="ss_header_bar_title_text">
-<span class="ss_header_bar_title_text">
+  <span class="ss_header_bar_title_text">
 	<%= docNumber %>
 	<ssf:titleLink action="view_folder_entry" entryId="${docId}" 
 	binderId="${binderId}" entityType="${entityType}"
 	namespace="${ss_namespace}_${docId}">
-
 		<ssf:param name="url" useBody="true">
 			<ssf:url adapter="true" portletName="ss_forum" folderId="${binderId}" 
 			action="view_folder_entry" entryId="${docId}" actionUrl="true" />
 		</ssf:param>
 		<c:out value="${title}"/>
 	</ssf:titleLink>
-
-</span>
+  </span>
 </div>
 <div class="ss_header_bar_timestamp">
 <a href="<ssf:url action="view_ws_listing"><ssf:param name="binderId" 

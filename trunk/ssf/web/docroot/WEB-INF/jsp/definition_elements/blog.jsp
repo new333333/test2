@@ -111,44 +111,38 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 }
 </script>
 
-<% // Need to put a div with its own formating around this %>
-<div id="ss_blog_folder_desc">
-<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
-</div>
-<jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 <div class="ss_folder_border">
-<% // Add the toolbar with the navigation widgets, commands and filter %>
-<ssf:toolbar style="ss_actions_bar5 ss_actions_bar">
-<ssHelpSpot 
-  		helpId="workspaces_folders/menus_toolbars/folder_toolbar" offsetX="0" offsetY="0" 
-  		title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>"></ssHelpSpot>
- <% // Entry toolbar %>
- <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar5 ss_actions_bar" item="true" />
-</ssf:toolbar>
+<% // Add the toolbar with the navigation widgets, commands  %>
 <div class="ss_clear"></div>
 </div>
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
-<jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <% // Begins blog page %>
-<div id="ss_blogContent_wrap" class="ss_blog_doublecolumn">
+<div id="ss_blogContent_wrap" >
 <div align="center">
 <table>
 	<tbody>
 	 <tr>
-	   <td>
+	   <td width="50%">
+	   </td>
+	   <td id="ss_blogLeftCol">
        <!-- Start Left Column -->
       <div class="ss_folder">
 <%@ include file="/WEB-INF/jsp/definition_elements/blog/blog_folder_listing.jsp" %>
 </div>
        </td><!-- end of left col -->
         <!-- Start Right Column -->
-      	<td width="198" valign="top">
+      	<td id="ss_blogRightCol" valign="top">
       	<div id="ss_blogNav_wrap">
 <jsp:include page="/WEB-INF/jsp/sidebars/blog_tools.jsp" />
 </div>
       	</td><!-- end of Right Column -->
+	   <td width="50%">
+	   </td>
     </tr>
 </tbody>
 </table>
 <div class="ss_clear_float"></div>
+<c:if test="${!empty ssPageCount && ssPageCount > 1.0}">
+<jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
+</c:if>
 
