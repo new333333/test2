@@ -81,7 +81,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 /* TOP PART OF DISCUSSION TOPIC PAGE */	
 	
-#ss_diss_inset{
+#ss_diss_inset {
 	width:95%;
 	}
 #ss_diss_top{
@@ -129,6 +129,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 /* DISCUSSION TOPIC FOLDER */	
 
+#ss_folder_wrap{
+	width:95%;
+	text-align:left;
+	}
 #ss_folder_inset{
 	margin:0% 5% 0% 5%;
 	width:85%;

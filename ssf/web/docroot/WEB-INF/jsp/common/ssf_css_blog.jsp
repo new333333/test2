@@ -49,47 +49,16 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	margin-right: 6px;
 	}
 #ss_blogContent_wrap {
-/*	position:relative;  Needed at one time, but breaks view in IE6 
-	clear:both;
-	float:left;	*/
-	vertical-align:top;
-    /* width:100%;	 width of whole page */
-	overflow:scroll; /* This chops off any overhanging divs */
-	}
-.ss_blog_doublecolumn{
-	text-align:left;
-	width: 100%;
-	}
-#ss_blog_column_L{
-	/* holder for left column */
 	vertical-align:top;
 	}
-#ss_blog_column_R{
-	/* holder for right column */
-	vertical-align:top;
-	float: left;
-	margin-left: 75%;
-	}	
-
-.ss_blog_doublecolumn .ss_dblcol1{
-	width:73%;	
-/* left column background color */						
-	background-color:#fff;			
-	float:left;
-	margin:0 1%;
-
-	}	
-.ss_blog_doublecolumn .ss_dblcol2{
-	width:100%;						/* right column content width  */
-	vertical-align:top;
-
-	}	
-/* STYLE FOR BLOG FOLDER TITLE/DESC */
-	
-#ss_blog_folder_desc {	/* THIS DOES NOT WORK YET, MAY NEED TO PASS INTO DESC_VIEW */
-	background-color: #FFF !important;
-}		
-	
+#ss_blogLeftCol {
+	width: 900px;
+    }
+#ss_blogRightCol {
+	width: 198px;
+	padding-left: 20px;
+    }
+    
 .ss_blog {
  
 }

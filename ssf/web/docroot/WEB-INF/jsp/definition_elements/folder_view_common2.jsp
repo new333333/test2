@@ -51,25 +51,7 @@ if (ssUserFolderProperties != null && ssUserFolderProperties.containsKey("folder
 if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") || 
 		ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
 %>
-<div align="center">
-<div id="ss_diss_inset" >
-
-   <div align="left">
-	<c:set var="actionVar" value="view_ws_listing"/>
-		<c:if test="${ssDefinitionEntry.parentBinder.entityType == 'folder'}">
-  		  <c:set var="actionVar" value="view_folder_listing"/>
-		</c:if>
-
-		<span class="ss_link_7">
-  		  &gt;&gt;<a class="ss_link_7" href="<ssf:url action="${actionVar}" binderId="${ssDefinitionEntry.parentBinder.id}"/>"
-  		  >${ssDefinitionEntry.parentBinder.title}</a>&nbsp;&nbsp;
-		</span>
-		<span class="ss_link_8">
-  			<img src="<html:rootPath/>images/pics/discussion/folder_orange.png">&nbsp;<a
-  			href="<ssf:url action="view_folder_listing" binderId="${ssBinder.id}"/>">${ssBinder.title}</a>
-		</span>
-		<br/><br/>
-		<%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
+  <div align="left">
 		<% // filter toolbar %>
 	    <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 	    <div class="ss_folder_border">
@@ -761,9 +743,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 </c:forEach>
 </ssf:slidingTable>
 </div>
-</div>
 
-</div><!-- end of centered inset area -->
 
 <c:forEach var="entry2" items="${ssFolderEntries}" >
   <div id="ss_folderEntryTitle_${entry2._docId}" class="ss_hover_over" 

@@ -30,13 +30,23 @@
 %>
 <% //Title view for folders %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_entryContent">
-<span class="ss_entryTitle">
-<a style="text-decoration: none;" href="<ssf:url 
-    folderId="${ssDefinitionEntry.id}" 
-    action="view_folder_listing" />">
-<c:if test="${empty ssDefinitionEntry.title}" >
---<ssf:nlt tag="entry.noTitle" />--
+<c:set var="actionVar" value="view_ws_listing"/>
+<c:if test="${ssDefinitionEntry.parentBinder.entityType == 'folder'}">
+  <c:set var="actionVar" value="view_folder_listing"/>
 </c:if>
-<c:out value="${ssDefinitionEntry.title}"/></a></span>
+<div class="ss_entryContent" style="text-align:left; padding-bottom:16px;">
+  <c:if test="${!empty ssDefinitionEntry.parentBinder.title}">
+	<span class="ss_link_7">
+  	  <a class="ss_link_7" 
+  	    href="<ssf:url action="${actionVar}" 
+		binderId="${ssDefinitionEntry.parentBinder.id}"/>"
+	  >${ssDefinitionEntry.parentBinder.title}</a>&nbsp;&gt;&gt;&nbsp;&nbsp;
+	</span>
+  </c:if>
+  <span class="ss_link_8">
+	  <img src="<html:rootPath/>images/pics/discussion/folder_orange.png">&nbsp;<a
+	    href="<ssf:url action="view_folder_listing" binderId="${ssDefinitionEntry.id}"/>"
+	  ><c:if test="${empty ssDefinitionEntry.title}" >--<ssf:nlt tag="entry.noTitle" />--</c:if
+	  >${ssDefinitionEntry.title}</a>
+  </span>
 </div>
