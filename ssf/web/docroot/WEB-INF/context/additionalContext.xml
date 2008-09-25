@@ -2,12 +2,6 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../dtd/spring-beans.dtd">
 
 <beans>
-	<!-- ========================= Data Access (DAO) Components ====================== -->
-	<bean id="folderDao" class="com.sitescape.team.dao.impl.FolderDaoImpl">
-		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
-		<property name="coreDao"><ref bean="coreDao"/></property>
-	</bean>
-
 	<!-- ============================== Modules ============================= -->
 
 	<bean id="folderModuleTarget" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.folder.impl.BaseFolderModule">

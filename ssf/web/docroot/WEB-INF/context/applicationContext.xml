@@ -463,7 +463,7 @@
 	     
 	<bean id="dependOnCommonServicesTemplate" abstract="true">
 		<property name="coreDao"><ref local="coreDao"/></property>
-		<property name="folderDao"><ref bean="folderDao"/></property>
+		<property name="folderDao"><ref local="folderDao"/></property>
 		<property name="profileDao"><ref local="profileDao"/></property>
 		<property name="functionManager"><ref bean="functionManager"/></property>	
 		<property name="accessControlManager"><ref local="accessControlManager"/></property>
@@ -808,6 +808,11 @@ text/calendar											  ics
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	<bean id="profileDao" class="com.sitescape.team.dao.impl.ProfileDaoImpl" depends-on="zoneConfig,sPropsUtil">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<property name="coreDao"><ref local="coreDao"/></property>
+	</bean>
+
+	<bean id="folderDao" class="com.sitescape.team.dao.impl.FolderDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>
