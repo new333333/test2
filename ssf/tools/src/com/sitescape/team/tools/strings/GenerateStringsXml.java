@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.tools.strings;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
@@ -57,8 +58,8 @@ public class GenerateStringsXml {
 	}
 	private static void doMain(String pathname) throws Exception {
 		
-		String inFile = pathname + "\\xslt\\strings.xml.tmpl";
-		String outFile = pathname + "\\xslt\\strings.xml";
+		String inFile = pathname + File.separator + "xslt" + File.separator + "strings.xml.tmpl";
+		String outFile = pathname + File.separator + "xslt" + File.separator + "strings.xml";
 		
 		Document document = null;
         SAXReader reader = new SAXReader();
@@ -109,7 +110,7 @@ public class GenerateStringsXml {
 		
 		ReloadableResourceBundleMessageSource rrbms = new ReloadableResourceBundleMessageSource();
 		
-		rrbms.setBasename(pathname + "\\messages\\messages");
+		rrbms.setBasename(pathname + File.separator + "messages" + File.separator + "messages");
 		rrbms.setDefaultEncoding("UTF-8");
 		
 		FileSystemResourceLoader fsrl = new FileSystemResourceLoader();
