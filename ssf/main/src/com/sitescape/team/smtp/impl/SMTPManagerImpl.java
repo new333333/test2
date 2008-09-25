@@ -2,52 +2,40 @@ package com.sitescape.team.smtp.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Message;
 import javax.mail.Session;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-
 import org.subethamail.smtp.MessageContext;
 import org.subethamail.smtp.MessageHandler;
 import org.subethamail.smtp.MessageHandlerFactory;
-import org.subethamail.smtp.MessageListener;
 import org.subethamail.smtp.RejectException;
 import org.subethamail.smtp.TooMuchDataException;
 import org.subethamail.smtp.server.ConnectionContext;
 import org.subethamail.smtp.server.SMTPServer;
 
-
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
-import com.sitescape.team.domain.PostingDef;
-import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.SimpleName;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule;
-import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.mail.EmailPoster;
 import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.smtp.SMTPManager;
 import com.sitescape.team.util.SessionUtil;
-import com.sitescape.team.util.SimpleNameUtil;
 
 public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPManager, SMTPManagerImplMBean, InitializingBean, DisposableBean {
 
@@ -221,6 +209,11 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		private User determineSender(String from, String hostname)
 		{
 			Long zone = getZoneModule().getZoneIdByVirtualHost(hostname);
+			if (!getZoneModule().getZoneConfig(zone).getMailConfig().isSimpleUrlPostingEnabled()) {
+				logger.debug("Sending mail is not enabled for " + hostname);
+				return null;
+			}
+
 			//Run as background processing agent, same as other posting jobs.  The processer will do the rest of this.
 			User user = getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, zone);
 			if (user != null) RequestContextUtil.setThreadContext(user).resolve();
