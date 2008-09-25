@@ -339,7 +339,13 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 		   			  	.setEntity("folder", folder)
 		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
 		   				.executeUpdate();
-		   			//remove foreign keys or mysql complains
+ 		   			//brute force delete of jbpm data structures
+   		   			//load top level tokens
+ 		   		   	Set tokenIds = new HashSet(session.createQuery("select w.tokenId from com.sitescape.team.domain.WorkflowState w where w.owner.owningBinderId=:id")
+ 		   		   			.setLong("id", folder.getId().longValue())
+ 		   		   			.list());
+ 		   		   	workflowDelete(tokenIds, session);
+ 		   			//remove foreign keys or mysql complains
         	  		session.createQuery("Update com.sitescape.team.domain.FolderEntry set parentEntry=null,topEntry=null where parentBinder=:parent")
         	  			.setEntity("parent", folder)
    	   					.executeUpdate();
@@ -418,7 +424,13 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     		   				.setParameterList("pList", ids)
     		   				.setLong("binderId", folder.getId())
     		   				.executeUpdate();
-     		   			//remove foreign key or mysql complains
+    		   			//load top level tokens
+    		   			Set tokenIds = new HashSet(session.createQuery("select w.tokenId from com.sitescape.team.domain.WorkflowState w where w.owner.ownerId in (:pList) and w.owner.ownerType=:type")
+     	    	   			.setParameterList("pList", ids)
+    	    	   			.setString("type", EntityType.folderEntry.name())
+        	   				.list());
+    		   			workflowDelete(tokenIds, session);
+    		   			//remove foreign key or mysql complains
     		   			session.createQuery("Update com.sitescape.team.domain.FolderEntry set parentEntry = null, topEntry=null where id in (:pList)")
     	   				.setParameterList("pList", ids)
     	   				.executeUpdate();
@@ -570,5 +582,72 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	    	 );    	
    	
     }
- 
+    //All of this code is dependent on the JBPM data structures.
+    private void workflowDelete(Set tokenIds, Session session) {
+		//now get process instances 
+		if (tokenIds.isEmpty()) return;
+    	Set pIs = new HashSet(session.createQuery("select p.id from org.jbpm.graph.exe.ProcessInstance p where p.rootToken.id in (:pList)")
+ 				.setParameterList("pList", tokenIds)
+			.list());
+		
+		//start down the tree with ProcessInstances
+		tokenIds.clear();
+		List subTokens;
+		List subPIs = new ArrayList(pIs);
+		while (true) {
+  			//start down tree from here
+			subTokens = session.createQuery("select t.id from org.jbpm.graph.exe.Token t where t.processInstance.id in (:pList)")
+   				.setParameterList("pList", subPIs)
+  				.list();
+  			if (subTokens.isEmpty()) break;
+  			tokenIds.addAll(subTokens);
+
+   			subPIs = session.createQuery("select p.id from org.jbpm.graph.exe.ProcessInstance p where p.superProcessToken.id in (:pList)")
+						.setParameterList("pList", subTokens)
+						.list();
+   			if (subPIs.isEmpty()) break;
+   			pIs.addAll(subPIs);
+				
+		}
+			
+		//delete logs
+		session.createQuery("Delete org.jbpm.logging.log.ProcessLog where token.id in (:pList)")
+  			.setParameterList("pList", tokenIds)
+ 			.executeUpdate();
+		//delete comments
+		session.createQuery("Delete org.jbpm.graph.exe.Comment where token.id in (:pList)")
+   			.setParameterList("pList", tokenIds)
+   			.executeUpdate();
+		//delete variables
+		session.createQuery("Delete org.jbpm.context.exe.VariableInstance where token.id in (:pList)")
+			.setParameterList("pList", tokenIds)
+			.executeUpdate();
+		session.createQuery("Delete org.jbpm.context.exe.TokenVariableMap where token.id in (:pList)")
+  			.setParameterList("pList", tokenIds)
+   			.executeUpdate();
+		
+		session.createQuery("Delete org.jbpm.graph.exe.RuntimeAction where processInstance.id in (:pList)")
+			.setParameterList("pList", pIs)
+   			.executeUpdate();
+		session.createQuery("Delete org.jbpm.module.exe.ModuleInstance where processInstance.id in (:pList)")
+			.setParameterList("pList", pIs)
+			.executeUpdate();
+
+		session.createQuery("Delete org.jbpm.scheduler.exe.Timer where processInstance.id in (:pList)")
+			.setParameterList("pList", pIs)
+			.executeUpdate();
+
+		//break token =>process connection
+		session.createQuery("Update org.jbpm.graph.exe.Token set processInstance=null,parent=null where id in (:pList)")
+			.setParameterList("pList", tokenIds)
+			.executeUpdate();
+		session.createQuery("Delete org.jbpm.graph.exe.ProcessInstance where id in (:pList)")
+			.setParameterList("pList", pIs)
+			.executeUpdate();
+		session.createQuery("Delete org.jbpm.graph.exe.Token where id in (:pList)")
+			.setParameterList("pList", tokenIds)
+			.executeUpdate();
+    	
+    }
+
 }
