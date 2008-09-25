@@ -51,7 +51,7 @@ public class GeneratePortletProperties {
 		}
 	}
 	private static void doMain(String pathname) throws Exception {
-		String outPath = pathname + "\\classes\\content";
+		String outPath = pathname + File.separator + "classes" + File.separator + "content";
 		
         String []propNames = {"relevance_dashboard", "administration", "blog", "exception", "forum", 
         		"gallery", "guestbook", "mobile", "presence", "search", "task", 
@@ -76,7 +76,7 @@ public class GeneratePortletProperties {
 	private static void generatePropFiles(String pathname, String outPath, String []propNames, String []localeCodes, String []localeCodes2)  throws Exception {
 		ReloadableResourceBundleMessageSource rrbms = new ReloadableResourceBundleMessageSource();
 		
-		rrbms.setBasename(pathname + "\\messages\\messages");
+		rrbms.setBasename(pathname + File.separator + "messages" + File.separator + "messages");
 		rrbms.setDefaultEncoding("UTF-8");
 		
 		FileSystemResourceLoader fsrl = new FileSystemResourceLoader();
@@ -90,9 +90,9 @@ public class GeneratePortletProperties {
 				String outFile;
 				
 				if (localeCodes[j].equals("en"))
-					outFile = outPath + "\\" + propNames[i] + ".properties";
+					outFile = outPath + File.separator + propNames[i] + ".properties";
 				else
-					outFile = outPath + "\\" + propNames[i] + "_" 
+					outFile = outPath + File.separator + propNames[i] + "_" 
 						+ localeCodes2[j] + ".native";
 				
 				file = new File(outFile);

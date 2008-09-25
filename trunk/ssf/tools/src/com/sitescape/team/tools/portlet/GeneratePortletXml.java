@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.tools.portlet;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
@@ -54,8 +55,8 @@ public class GeneratePortletXml {
 	}
 	private static void doMain(String pathname) throws Exception {
 		
-		String inFile = pathname + "\\portlet.xml.tmpl";
-		String outFile = pathname + "\\portlet.xml";
+		String inFile = pathname + File.separator +"portlet.xml.tmpl";
+		String outFile = pathname + File.separator + "portlet.xml";
 		
 		Document document = null;
         SAXReader reader = new SAXReader();
