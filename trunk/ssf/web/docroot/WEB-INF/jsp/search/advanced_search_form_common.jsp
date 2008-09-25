@@ -205,7 +205,7 @@
 	 			    <div id="ss_authors_container" class="ss_options_container">			
 	  				  <div id="ss_authors_options" class="ss_options"></div>
 					  <div class="ss_more">
-					    <a href="javascript: ;" onClick="ss_addOption('creator_by_id');" class="ss_button">+ Add another author</a>
+					    <a href="javascript: ;" onClick="ss_addOption('creator_by_id');" class="ss_button"><ssf:nlt tag="searchForm.filterButton.addAuthor"/></a>
 				      </div>
 					</div>
 				  </td>
@@ -216,7 +216,7 @@
 					<div id="ss_tags_container" class="ss_options_container">	
 						<div id="ss_tags_options" class="ss_options"></div>
 						<div class="ss_more">
-							<a href="javascript: ;" onClick="ss_addOption('tag');" class="ss_button">+ Add another tag</a>
+							<a href="javascript: ;" onClick="ss_addOption('tag');" class="ss_button"><ssf:nlt tag="searchForm.filterButton.addTag"/></a>
 						</div>
 					</div>	
 			      </td>
@@ -227,7 +227,7 @@
 					<div id="ss_workflows_container" class="ss_options_container">	
 						<div id="ss_workflows_options" class="ss_options"></div>
 						<div class="ss_more">
-							<a href="javascript: ;" onClick="ss_addOption('workflow');" class="ss_button">+ Add another workflow filter</a>
+							<a href="javascript: ;" onClick="ss_addOption('workflow');" class="ss_button"><ssf:nlt tag="searchForm.filterButton.addWorkflow"/></a>
 						</div>
 					</div>			      
 			      </td>
@@ -237,8 +237,8 @@
 				  <td>
 					<div id="ss_entries_container" class="ss_options_container">
 						<div id="ss_entries_options" class="ss_options"></div>
-						<div class="ss_more">
-							<a href="javascript: ;" onClick="ss_addOption('entry');" class="ss_button">+ Add another entry attribute filter</a>				
+						<div class="ss_more" style="clear: left;">
+							<a href="javascript: ;" onClick="ss_addOption('entry');" class="ss_button"><ssf:nlt tag="searchForm.filterButton.addField"/></a>				
 						</div>
 					</div>				  
 				  </td>
@@ -257,7 +257,7 @@
 					<div id="ss_creationDates_container" class="ss_options_container">				
 						<div id="ss_creationDates_options" class="ss_options"></div>
 						<div class="ss_more">
-							<a href="javascript: ;" onClick="ss_addOption('creation_date');" class="ss_button">+ Add another date filter</a>
+							<a href="javascript: ;" onClick="ss_addOption('creation_date');" class="ss_button"><ssf:nlt tag="searchForm.filterButton.addDate"/></a>
 						</div>
 					</div>
 				  </td>
@@ -268,7 +268,7 @@
 					<div id="ss_modificationDates_container" class="ss_options_container">
 						<div id="ss_modificationDates_options" class="ss_options"></div>
 						<div class="ss_more">
-							<a href="javascript: ;" onClick="ss_addOption('modification_date');" class="ss_button">+ Add another date filter</a>
+							<a href="javascript: ;" onClick="ss_addOption('modification_date');" class="ss_button"><ssf:nlt tag="searchForm.filterButton.addDate"/></a>
 						</div>
 					</div>
 				  </td>
