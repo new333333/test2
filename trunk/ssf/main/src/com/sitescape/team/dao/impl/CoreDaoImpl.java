@@ -100,6 +100,7 @@ import com.sitescape.team.domain.VersionAttachment;
 import com.sitescape.team.domain.WorkflowControlledEntry;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.ZoneConfig;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
@@ -782,7 +783,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     			binder.getId() + " and type=" + LibraryEntry.TITLE.toString(), null);
     	
     }
-    public List findCompanies() {
+    public List<Workspace> findCompanies() {
 		return (List)getHibernateTemplate().execute(
 		    new HibernateCallback() {
 		        public Object doInHibernate(Session session) throws HibernateException {
@@ -1619,5 +1620,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	       	   	}
 	    	 );		
 	}
-
+	public ZoneConfig loadZoneConfig(Long zoneId) {
+		ZoneConfig zoneConfig = (ZoneConfig)load(ZoneConfig.class, zoneId);
+		if (zoneConfig != null) return zoneConfig;
+		throw new NoObjectByTheIdException("errorcode.no.zone.by.the.id", zoneId);
+	}
  }

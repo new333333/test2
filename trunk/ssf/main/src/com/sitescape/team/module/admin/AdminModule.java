@@ -39,6 +39,7 @@ import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
+import com.sitescape.team.domain.MailConfig;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.security.AccessControlException;
@@ -115,6 +116,7 @@ public interface AdminModule {
      * @return ChangeLogs ordered by entity and operationDate
      */
     public List<ChangeLog> getChanges(EntityIdentifier entityIdentifier, String operation);
+    public MailConfig getMailConfig();
     public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, String operation);
     /**
      * Get system functions
@@ -166,14 +168,8 @@ public interface AdminModule {
      */
     public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body) throws Exception;
     	 
-    /**
-     * Set the schedule by which digest notifications are sent.  Use this to both enable and disable notifications
-     * @param binderId
-     * @param config
-     */
-    public void setNotificationSchedule(ScheduleInfo config) throws AccessControlException;  
-    public void setPostingSchedule(ScheduleInfo config) throws ParseException, AccessControlException;;
-	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships) throws AccessControlException;
+    public void setMailConfigAndSchedules(MailConfig mailConfig, ScheduleInfo notifications, ScheduleInfo postings) throws AccessControlException;  
+ 	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships) throws AccessControlException;
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;
     public void setWorkAreaOwner(WorkArea workArea, Long userId, boolean propagate) throws AccessControlException;
 	public void updateDefaultDefinitions(Long topId);

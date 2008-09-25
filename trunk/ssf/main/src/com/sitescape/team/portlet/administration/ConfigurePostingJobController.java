@@ -37,8 +37,8 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.portlet.ModelAndView;
 
+import com.sitescape.team.domain.MailConfig;
 import com.sitescape.team.jobs.ScheduleInfo;
-import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -51,10 +51,13 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
-			ScheduleInfo config = getAdminModule().getPostingSchedule();
-			config.setSchedule(ScheduleHelper.getSchedule(request, "post"));
-			config.setEnabled(PortletRequestUtils.getBooleanParameter(request, "postenabled", false));
-			getAdminModule().setPostingSchedule(config);
+			MailConfig mailConfig = new MailConfig();
+			
+			ScheduleInfo posting = getAdminModule().getPostingSchedule();
+			posting.setSchedule(ScheduleHelper.getSchedule(request, "post"));
+			posting.setEnabled(PortletRequestUtils.getBooleanParameter(request, "postenabled", false));
+			mailConfig.setPostingEnabled(posting.isEnabled());
+			mailConfig.setSimpleUrlPostingEnabled(PortletRequestUtils.getBooleanParameter(request, "simplepostenabled", false));
 
 			int pos =0;
 			Map updates = new HashMap();
@@ -78,11 +81,11 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 				++pos;
 				updates.clear();
 			}
-			config = getAdminModule().getNotificationSchedule();
-			config.setSchedule(ScheduleHelper.getSchedule(request, "notify"));
-			config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "notifyenabled", false));
-			getAdminModule().setNotificationSchedule(config);			
-
+			ScheduleInfo notify = getAdminModule().getNotificationSchedule();
+			notify.setSchedule(ScheduleHelper.getSchedule(request, "notify"));
+			notify.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "notifyenabled", false));
+			mailConfig.setSendMailEnabled(notify.isEnabled());
+			getAdminModule().setMailConfigAndSchedules(mailConfig, notify, posting);
 			response.setRenderParameters(formData);
 	} else
 		response.setRenderParameters(formData);
@@ -92,12 +95,16 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		HashMap model = new HashMap();
+		MailConfig mConfig = getAdminModule().getMailConfig();
+		model.put(WebKeys.MAIL_CONFIG, mConfig);
+		if (SPropsUtil.getBoolean("smtp.service.enable")) model.put(WebKeys.SMPT_ENABLED, Boolean.TRUE);
 		ScheduleInfo config = getAdminModule().getPostingSchedule();
 		model.put(WebKeys.SCHEDULE_INFO + "post", config);	
 		model.put(WebKeys.POSTINGS, getAdminModule().getPostings());
 		model.put(WebKeys.MAIL_POSTING_USE_ALIASES, SPropsUtil.getString("mail.posting.useAliases", "false"));
 		config = getAdminModule().getNotificationSchedule();
 		model.put(WebKeys.SCHEDULE_INFO + "notify", config);
+		
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_POSTING_JOB, model);
 	}
 

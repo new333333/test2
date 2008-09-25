@@ -77,7 +77,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         Workspace workspace=null;        
          
         if (workspaceId == null) {
-        	workspace = getCoreDao().findTopWorkspace(RequestContextHolder.getRequestContext().getZoneName());
+        	workspace = RequestContextHolder.getRequestContext().getZone();
         } else {
         	workspace = (Workspace)getCoreDao().loadBinder(workspaceId, RequestContextHolder.getRequestContext().getZoneId());  
         }
@@ -88,7 +88,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
        return workspace;
     }
     public Workspace getTopWorkspace() {
-		Workspace top = getCoreDao().findTopWorkspace(RequestContextHolder.getRequestContext().getZoneName());
+		Workspace top = RequestContextHolder.getRequestContext().getZone();
 		// Check if the user has "read" access to the workspace.
 		getAccessControlManager().checkOperation(top, WorkAreaOperation.READ_ENTRIES);
 		return top;

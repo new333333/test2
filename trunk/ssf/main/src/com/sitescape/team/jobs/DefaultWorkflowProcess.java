@@ -133,7 +133,7 @@ public class DefaultWorkflowProcess extends SSStatefulJob implements WorkflowPro
     }
 	public void remove(WorkflowSupport entry, WorkflowState wfState) {
 		String groupName = getGroupName(entry, wfState);
-		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
+		Scheduler scheduler = getScheduler();		
 		try {
 			String[] jobNames = scheduler.getJobNames(groupName);
 			for (int i=0; i<jobNames.length; ++i) {
@@ -147,7 +147,7 @@ public class DefaultWorkflowProcess extends SSStatefulJob implements WorkflowPro
 		return WORKFLOW_PROCESS_GROUP + ":" + ((FolderEntry)entry).getId().toString() + ":" + wfState.getId().toString();
 	}
     public void schedule(WorkflowSupport entry, WorkflowState wfState, String clazz, Map args, int seconds) {
-		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	
+		Scheduler scheduler = getScheduler();		
 		String groupName = getGroupName(entry, wfState);
 		try {
 			//since scheduling is not handled by the current transaction,

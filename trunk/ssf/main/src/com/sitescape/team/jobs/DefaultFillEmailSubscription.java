@@ -43,6 +43,7 @@ import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 
 import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.SpringContextUtil;
 
@@ -61,6 +62,10 @@ public class DefaultFillEmailSubscription extends SSStatefulJob implements FillE
 		if (!zoneId.toString().equals(context.getTrigger().getJobName())) {
 				removeJob(context);
 		} else {			
+			if (!coreDao.loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled()) {
+				logger.debug("Sending mail is not enabled for zone " + RequestContextHolder.getRequestContext().getZoneName());
+				return;
+			}
 			MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
 			Date begin = (Date)jobDataMap.get("lastNotification");
 			Date end = mail.fillSubscriptions(begin);
@@ -69,7 +74,7 @@ public class DefaultFillEmailSubscription extends SSStatefulJob implements FillE
     }
 
 	public void remove(Long zoneId) {
-		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
+		Scheduler scheduler = getScheduler();		
 		try {
 			scheduler.unscheduleJob(zoneId.toString(), SUBSCRIPTION_GROUP);
 		} catch (SchedulerException se) {			
@@ -79,7 +84,7 @@ public class DefaultFillEmailSubscription extends SSStatefulJob implements FillE
 	}
 	
     public void schedule(Long zoneId, Date changeDate, int minutes) {
-		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
+		Scheduler scheduler = getScheduler();		
 		
 	 	String className = this.getClass().getName();
 	  	try {		

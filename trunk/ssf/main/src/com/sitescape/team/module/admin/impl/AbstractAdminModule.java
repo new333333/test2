@@ -61,6 +61,8 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.PostingDef;
+import com.sitescape.team.domain.MailConfig;
+import com.sitescape.team.domain.ZoneConfig;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
@@ -231,7 +233,27 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    				throw new NotSupportedException(operation.toString(), "checkAccess");
 		}
    	}
-
+  	public MailConfig getMailConfig() {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		return new MailConfig(zoneConfig.getMailConfig()); 		
+  	}
+  	//try to keep these in sync using one call
+  	public void setMailConfigAndSchedules(MailConfig mailConfig, ScheduleInfo notification, ScheduleInfo posting) {
+  	   	checkAccess(AdminOperation.manageMail);
+  		//even if schedules are running, these settings should stop the processing in the job
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		zoneConfig.getMailConfig().setPostingEnabled(mailConfig.isPostingEnabled());
+ 		zoneConfig.getMailConfig().setSimpleUrlPostingEnabled(mailConfig.isSimpleUrlPostingEnabled());
+ 		zoneConfig.getMailConfig().setSendMailEnabled(mailConfig.isSendMailEnabled());
+ 		if (notification != null) {
+ 			notification.setEnabled(mailConfig.isSendMailEnabled());
+ 			getNotificationObject().setScheduleInfo(notification);
+ 		}
+ 		if (posting != null) {
+ 			posting.setEnabled(mailConfig.isPostingEnabled());
+ 			getPostingObject().setScheduleInfo(posting);
+ 		}
+  	}
     public List<PostingDef> getPostings() {
     	return coreDao.loadPostings(RequestContextHolder.getRequestContext().getZoneId());
     }
@@ -258,13 +280,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     }
     public ScheduleInfo getPostingSchedule() {
       	//let anyone get it;
-       	return getPostingObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
+    	ScheduleInfo info = getPostingObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
+    	return info;
     }
-    public void setPostingSchedule(ScheduleInfo config) throws ParseException {
-       	checkAccess(AdminOperation.manageMail);
-    	getPostingObject().setScheduleInfo(config);
-    }	     
-    private EmailPosting getPostingObject() {
+     private EmailPosting getPostingObject() {
     	String emailPostingClass = getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.POSTING_JOB);
         try {
             Class processorClass = ReflectHelper.classForName(emailPostingClass);
@@ -291,15 +310,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
      * @param value
      */
 	public ScheduleInfo getNotificationSchedule() {
-  		return getNotificationObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
+		ScheduleInfo info = getNotificationObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
+    	return info;
 	}
 	    
-    //inside write transaction    
-    public void setNotificationSchedule(ScheduleInfo config) {
-    	checkAccess(AdminOperation.manageMail);
-        //data is stored with job
-        getNotificationObject().setScheduleInfo(config);
-    }    
     private EmailNotification getNotificationObject() {
     	String emailNotifyClass = getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.NOTIFICATION_JOB);
         try {
@@ -600,6 +614,9 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	return sendMail(null, ids, emailAddresses, subject, body, false); 
     }
     public Map<String, Object> sendMail(Entry entry, Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body, boolean sendAttachments) throws Exception {
+		if (!getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled()) {
+			throw new ConfigurationException(NLT.getDef("errorcode.sendmail.disabled"));
+		}
     	User user = RequestContextHolder.getRequestContext().getUser();
 		Set emailSet = new HashSet();
 		List distribution = new ArrayList();

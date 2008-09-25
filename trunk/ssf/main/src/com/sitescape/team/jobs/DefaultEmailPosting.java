@@ -29,17 +29,20 @@
 package com.sitescape.team.jobs;
 
 import java.util.TimeZone;
-import java.util.Map;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.SpringContextUtil;
 
 public class DefaultEmailPosting extends SSStatefulJob implements EmailPosting {
 	public void doExecute(final JobExecutionContext context) throws JobExecutionException {
+		if (!coreDao.loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isPostingEnabled()) {
+			logger.debug("Posting is not enabled for zone " + RequestContextHolder.getRequestContext().getZoneName());
+			return;
+		}
     	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
 		mail.receivePostings();
     }

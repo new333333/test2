@@ -48,6 +48,8 @@ public interface AuthenticationModule {
 
 	public AuthenticationConfig getAuthenticationConfig();
 	public AuthenticationConfig getAuthenticationConfigForZone(Long zoneId);
+	public void setAuthenticationConfig(AuthenticationConfig authConfig);
+	public void setAuthenticationConfigForZone(Long zoneId, AuthenticationConfig authConfig);
 
 	public List<LdapConnectionConfig> getLdapConnectionConfigs(Long zoneId);
 	public List<LdapConnectionConfig> getLdapConnectionConfigs();

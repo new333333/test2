@@ -63,26 +63,34 @@ function ${renderResponse.namespace}_modifyAlias() {
 <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
 		  onClick="self.window.close();return false;"/>
 </div>
+<input type="checkbox" class="ss_style" id="notifyenabled" name="notifyenabled" <c:if test="${ssScheduleInfonotify.enabled}">checked</c:if> />
+<span class="ss_labelRight"><ssf:nlt tag="notify.schedule.enable"/> </span><ssf:inlineHelp tag="ihelp.email.enableCheckBox"/>
+<br/>
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="notify.header" /></legend>	
 <table class="ss_style" border="0" cellspacing="3" cellpadding="3">
 <tr>
 <td valign="top">
-<input type="checkbox" class="ss_style" id="notifyenabled" name="notifyenabled" <c:if test="${ssScheduleInfonotify.enabled}">checked</c:if> />
-<span class="ss_labelRight"><ssf:nlt tag="notify.schedule.enable"/> </span><ssf:inlineHelp tag="ihelp.email.enableCheckBox"/>
-<br/>
+
 <c:set var="schedule" value="${ssScheduleInfonotify.schedule}"/>
 <c:set var="schedPrefix" value="notify"/>
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
 </td></tr></table>
 </fieldset>
+<c:if test="${ssSMTPEnabled}">
+<input type="checkbox" class="ss_style" id="simplepostenabled" name="simplepostenabled" <c:if test="${ssMailConfig.simpleUrlPostingEnabled}">checked</c:if>/>
+<span class="ss_labelRight"><ssf:nlt tag="incoming.enable.simple"/></span>
+<br/>
+</c:if>
+<br/>
+<input type="checkbox" class="ss_style" id="postenabled" name="postenabled" <c:if test="${ssScheduleInfopost.enabled}">checked</c:if>/>
+<span class="ss_labelRight"><ssf:nlt tag="incoming.enable.all"/> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_enable_posting" /></span>
+<br/>
+
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="incoming.header" /></legend>	
 <table class="ss_style" border="0" cellspacing="3" cellpadding="3">
 <tr><td valign="top"> 
-<input type="checkbox" class="ss_style" id="postenabled" name="postenabled" <c:if test="${ssScheduleInfopost.enabled}">checked</c:if>/>
-<span class="ss_labelRight"><ssf:nlt tag="incoming.enable.all"/> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_enable_posting" /></span>
-<br/>
 <c:set var="schedule" value="${ssScheduleInfopost.schedule}"/>
 <c:set var="schedPrefix" value="post"/>
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>

@@ -109,7 +109,7 @@ public class DefaultUserTitleChange extends SSStatefulJob implements UserTitleCh
 	}
 
     public void schedule(User user, List<Long> binderIds, List<Long> entryIds) {
-		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	
+		Scheduler scheduler = getScheduler();		
 		//the number of changes could be large, and some databases won't accept it (mssql packet size 1M)
 		int count = 0;
 		int binderIndex=0;

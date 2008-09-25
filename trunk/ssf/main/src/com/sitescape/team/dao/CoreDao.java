@@ -55,6 +55,7 @@ import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.UserDashboard;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.ZoneConfig;
 
 /**
  * @author Jong Kim
@@ -76,7 +77,7 @@ public interface CoreDao {
 	public void delete(Binder binder, Class entryClass);
 	public void delete(Definition def);
 	public void deleteEntityAssociations(String whereClause);
-	public List findCompanies();
+	public List<Workspace> findCompanies();
     public  Long findFileNameEntryId(Binder binder, String name);
 	public Workspace findTopWorkspace(String zoneName);
 	public void flush();
@@ -142,6 +143,7 @@ public interface CoreDao {
 	public TemplateBinder loadTemplateByName(String name, Long zoneId);
 	public UserDashboard loadUserDashboard(EntityIdentifier ownerId, Long binderId);
 	public List<LdapConnectionConfig> loadLdapConnectionConfigs(Long zoneId);
+	public ZoneConfig loadZoneConfig(Long zoneId);
 	public Object merge(Object obj); 
     public void move(Binder binder);
     public SFQuery queryObjects(ObjectControls objs, FilterControls filter, Long zoneId);
