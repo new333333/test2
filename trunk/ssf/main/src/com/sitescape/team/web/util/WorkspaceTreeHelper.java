@@ -123,7 +123,9 @@ public class WorkspaceTreeHelper {
 		Binder binder = null;
 		String entryIdString =  PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		Long entryId = null;
-		if (Validator.isNotNull(entryIdString) && !entryIdString.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) {
+		if (Validator.isNotNull(entryIdString) && entryIdString.equals(WebKeys.URL_USER_ID_PLACE_HOLDER)) {
+			entryId= user.getId();
+		} else if (Validator.isNotNull(entryIdString) && !entryIdString.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) {
 			entryId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
 		}
 		//see if it is a user workspace - can also get directly to user ws by a binderId
