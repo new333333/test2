@@ -62,7 +62,9 @@ public class LoginPostAction extends AbstractAction {
 			if(user == null)
 				throw new ActionException("User not found");
 
-			doSSOWithCoApp(req, res, company.getWebId(), user.getScreenName());
+			String password = PortalUtil.getUserPassword(req);
+
+			doSSOWithCoApp(req, res, company.getWebId(), user.getScreenName(), password);
 			
 			SessionManager.createSession(req, ses.getId(), company.getWebId(), user.getScreenName());
 		} catch(ActionException e) {
@@ -72,7 +74,7 @@ public class LoginPostAction extends AbstractAction {
 		}
 	}
 
-	protected void doSSOWithCoApp(HttpServletRequest request, HttpServletResponse response, String zoneName, String userName) 
+	protected void doSSOWithCoApp(HttpServletRequest request, HttpServletResponse response, String zoneName, String userName, String password) 
 	throws ActionException, ServletException, IOException {
 		// Retrieve the servlet context of the portal
 		ServletContext ctx = (ServletContext) request.getAttribute(WebKeys.CTX);
@@ -90,6 +92,7 @@ public class LoginPostAction extends AbstractAction {
 
 		req.setParameter("teaming.coapp.operation", "sso");
 		req.setParameter("teaming.coapp.sso.username", userName);
+		req.setParameter("teaming.coapp.sso.password", password);
 		
 		NullServletResponse res = new NullServletResponse(response);
 

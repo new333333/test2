@@ -51,6 +51,11 @@ public class CoAppServlet extends HttpServlet {
 				resp.getWriter().print("Hey, I have a session. And it tells me that you are " + username);
 			else
 				resp.getWriter().print("Hey, I have a session. But I can't get username from it. Something's not quite working...");
+			String password = (String) session.getAttribute("teaming.coapp.sso.password");
+			if(password != null)
+				resp.getWriter().print("I also have your password, but for security reason, I'm not going to show what it is");
+			else
+				resp.getWriter().print("I don't have your password. Hummm... then how did you get in?");
 		}
 		else {
 			resp.getWriter().print("Hey, I don't have a session. Apparently you're not logged in");
