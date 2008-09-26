@@ -749,6 +749,10 @@ public class ListFolderHelper {
 				//Get the list of all entries to build the archive list
 				buildBlogBeans(bs, response, folder, options, model, folderEntries);
 			}
+			if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
+				//Get the pages bean
+				buildBlogPageBeans(bs, response, folder, model);
+			}
 			if (viewType.equals(Definition.VIEW_STYLE_MILESTONE)) {
 				//Get the list of all entries to build the archive list
 				loadFolderStatisticsForPlacesAttributes(bs, response, folder, options, model, folderEntries);
@@ -1027,6 +1031,39 @@ public class ListFolderHelper {
 		*/
 	}
 
+	//Routine to build the beans for the blog pages list
+	public static void buildBlogPageBeans(AllModulesInjected bs, RenderResponse response, 
+			Folder folder, Map model) {
+		List blogPages = new ArrayList();
+		Binder parentBinder = folder.getParentBinder();
+		if (parentBinder.getDefinitionType().equals(Definition.FOLDER_VIEW) && 
+				Definition.VIEW_STYLE_BLOG.equals(BinderHelper.getViewType(bs, parentBinder))) {
+			//The parent binder is a blog folder, so add it and its children blogs
+			blogPages.add(parentBinder);
+			Iterator itBinders = parentBinder.getBinders().iterator();
+			while (itBinders.hasNext()) {
+				Binder b = (Binder) itBinders.next();
+				if (b.getDefinitionType().equals(Definition.FOLDER_VIEW) &&
+						Definition.VIEW_STYLE_BLOG.equals(BinderHelper.getViewType(bs, b))) {
+					blogPages.add(b);
+				}
+			}
+		} else {
+			//Since the parent binder is not a blog folder, just add ourself
+			blogPages.add(folder);
+		}
+		//Finally, add all of the children blogs of the current folder
+		Iterator itBinders = folder.getBinders().iterator();
+		while (itBinders.hasNext()) {
+			Binder b = (Binder) itBinders.next();
+			if (b.getDefinitionType().equals(Definition.FOLDER_VIEW) &&
+					Definition.VIEW_STYLE_BLOG.equals(BinderHelper.getViewType(bs, b))) {
+				blogPages.add(b);
+			}
+		}
+		model.put(WebKeys.BLOG_PAGES, blogPages);
+	}
+	
 	public static void buildWikiBeans(AllModulesInjected bs, RenderResponse response, Binder binder, 
 			Map options, Map model, Map folderEntries) {
 		List entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
