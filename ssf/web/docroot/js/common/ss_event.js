@@ -341,28 +341,28 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 	
 	if (this._eventStartObj != null) {
 		dojo.connect(this._eventStartObj, "onChange", function(evt) {
-			that.changeStartDate(evt);
+			that.refreshEventDates();
 		});
 	}
 	if (this._eventEndObj != null) {
 		dojo.connect(this._eventEndObj, "onChange", function(evt) {
-			that.changeEndDate(evt);
+			that.refreshEventDates();
 		});
 	}
 	
 	if (this._eventStartTimeObj != null) {
 		dojo.connect(this._eventStartTimeObj, "onChange", function(evt) {
-			that.changeStartTime(evt);
+			that.refreshEventDates();
 		});	
 	}
 	if (this._eventEndTimeObj != null) {
 		dojo.connect(this._eventEndTimeObj, "onChange", function(evt) {
-			that.changeEndTime(evt);
+			that.refreshEventDates();
 		});	
 	}
 	if (this._eventAllDayObj != null) {
 		dojo.connect(this._eventAllDayObj, "onclick", function() {
-			that.changeAllTime(that._eventAllDayObj.checked);
+			that.refreshEventDates();
 		});	
 	}	
 	
@@ -612,27 +612,27 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 		that.loadData();		
 	}
 	
-	this.changeStartDate = function(date) {
-		that._setStartDate(date);
+	this.refreshEventDates = function() {
+		if (that._eventStartObj) {
+			that._setStartDate(that._eventStartObj.getValue());
+		}		
+		if (that._eventEndObj) {
+			that._setEndDate(that._eventEndObj.getValue());
+		}		
+		if (!that._eventAllDayObj || (that._eventAllDayObj && !that._eventAllDayObj.checked)) {
+			if (that._eventStartTimeObj) {
+				that._setStartTime(that._eventStartTimeObj.getValue());
+			}					
+			if (that._eventEndTimeObj) {
+				that._setEndTime(that._eventEndTimeObj.getValue());
+			}
+		} else {
+			that._setAllDayTime(true);
+		}
+		
 		that._timeLine.getBand(0).scrollToCenter(that._startDate);
 		that.loadData();
-		that._repaintEventOnTimeLine();		
-	}
-	
-	this.changeStartTime = function(dateTime) {
-		that._setStartTime(dateTime);
-		that._timeLine.getBand(0).scrollToCenter(that._startDate);
-		that.loadData();
-		that._repaintEventOnTimeLine();		
-	}	
-
-	this.changeEndDate = function(date) {
-		that._setEndDate(date);
-		that._repaintEventOnTimeLine();		
-	}	
-	
-	this.changeEndTime = function(dateTime) {
-		that._setEndTime(dateTime);
+		
 		that._repaintEventOnTimeLine();
 	}
 	
@@ -652,11 +652,6 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 			that._setStartTime(that._eventStartTimeObj.getValue());
 			that._setEndTime(that._eventEndTimeObj.getValue());
 		}
-	}
-	
-	this.changeAllTime = function(checked) {
-		that._setAllDayTime(checked);
-		that._repaintEventOnTimeLine();
 	}
 		
 	this._setStartDate = function(date) {
