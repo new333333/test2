@@ -52,6 +52,11 @@ public class SSOServlet extends GenericServlet {
 				HttpSession session = ((HttpServletRequest) req).getSession();
 				session.setAttribute("teaming.coapp.sso.username", username);
 			}
+			String password = req.getParameter("teaming.coapp.sso.password");
+			if(password != null && !password.equals("")) {
+				HttpSession session = ((HttpServletRequest) req).getSession();
+				session.setAttribute("teaming.coapp.sso.password", password);
+			}
 		}
 	}
 	
