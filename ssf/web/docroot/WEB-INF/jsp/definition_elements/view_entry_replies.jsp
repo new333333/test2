@@ -35,15 +35,14 @@
 <c:if test="${ssEntry == ssDefinitionEntry}" >
   <c:if test="${!empty ssFolderEntryDescendants}">
 
-<div class="ss_entryContent" style="padding:15px 20px 0px 30px;">
+<div class="div.ss_entryContent">
 <c:if test="${!empty property_caption}">
-<span class="ss_largerprint ss_bold"><c:out value="${property_caption}"/></span>
-<br/>
+<span class="ss_topic_replies"><c:out value="${property_caption}"/></span>
 </c:if>
 
 <c:forEach var="reply" items="${ssFolderEntryDescendants}">
   <jsp:useBean id="reply" type="com.sitescape.team.domain.Entry" />
-  <div class="ss_replies">
+  <div class="ss_entryContent ss_replies">
 
   <c:if test="${!empty reply.entryDef}">
  	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 

@@ -637,7 +637,7 @@ div.ss_canvas {
 	color:#5A9A98!important;
 	font-size:18px;
 	}
-.ss_link_7, .ss_link_7 span .ss_link_7 a:hover {
+.ss_link_7 a:hover {
 	text-decoration: none;
 	color:#999!important;
 	}		

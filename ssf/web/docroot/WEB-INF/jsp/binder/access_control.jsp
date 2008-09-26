@@ -313,8 +313,8 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 
   <ssf:ifnotaccessible>
   
-	<div id="ss_addRolesMenu${renderResponse.namespace}" class="ss_actions_bar2 ss_actions_bar_submenu" >
-		<ul class="ss_actions_bar2 ss_actions_bar_submenu" style="width:250px;">
+	<div id="ss_addRolesMenu${renderResponse.namespace}" class="ss_actions_bar5 ss_actions_bar_submenu" >
+		<ul class="ss_actions_bar5 ss_actions_bar_submenu" style="width:250px;">
 		  <div align="right">
 		    <a href="javascript:;" onClick="ss_hideDiv('ss_addRolesMenu${renderResponse.namespace}');return false;">
 		      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>

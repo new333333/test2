@@ -324,7 +324,6 @@ a.ss_new_thread:hover {
 	}	
 #ss_navbar_inline ul li{
 	display: inline!important;
-	white-space: nowrap;
 	margin-right: 12px!important;
 	}
 #ss_navbar_inline ul a{
@@ -547,5 +546,25 @@ div.ssPageNavi {
 	padding-top: 15px;
 	padding-bottom:15px;
 	background-color: #E9F1F1;
+	}
+/*******replies -s comments*****************/	
+div.ss_entryContent {
+	margin-left: 0px;
+	margin-top: 2px;
+
+	}
+div.ss_replies{	
+	margin-left: 80px;
+	border-right: 2px dotted #E9F1F1;
+	}
+.ss_topic_replies{
+	padding-left: 10px;
+	padding-top: 25px;
+	padding-bottom: 10px;
+	font-size:1.8em;
+	font-style:italic;
+	font-weight: 200;
+	font-family: 'Lucida Sans', 'Lucida Grande', sans-serif;	
+	color:#5A9A98!important;
 	}
 	  

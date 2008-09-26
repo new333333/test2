@@ -271,11 +271,6 @@ ul.ss_icon_list li {
 .ss_replies_background {
   background-color: ${ss_replies_background_color} !important;
   }
-     
-div.ss_replies div.ss_entryContent {
-	margin-left: 30px;
-	margin-top: 2px;
-	}
 
 div.ss_replies div.ss_entryDescription {
 	background-color: ${ss_replies_background_color};
@@ -323,7 +318,9 @@ div.ss_style textarea {
 	}
 div.ss_style input[type="text"],
 div.ss_style input[type="password"],
-div.ss_style select,
+ div.ss_style select {
+	border: 1px solid #CCC;
+	padding: 3px;
 	} 
 .ss_form textarea {
   background-color: ${ss_form_element_color};
@@ -427,11 +424,11 @@ div.ss_entryDescription ol li {
 
 div.ss_editableTab {
   float: right; 
-  width:100%;
-  /* background-color: ${ss_style_background_color_opaque}; */
+  width:20px;
+  background-color: ${ss_style_background_color_opaque};
   margin-left: 0px;
   margin-top: -4px;
-  padding-bottom: 35px;
+  padding-bottom: 10px;
   padding-right: 5px;
   padding-left: 5px;
 }
@@ -470,27 +467,21 @@ div.ss_editableTab a, div.ss_editableTab a:hover {
 
 
 div.ss_replies .ss_editableTab {
-	background-color: ${ss_replies_background_color};
-}
-
+	background-color: ${ss_style_background_color_opaque};
+	}
 div.ss_workflow { 
-  border: 1px #666666 solid;
-  padding: 2px;
-}
-
-
-
+  	border: 1px #666666 solid;
+  	padding: 2px;
+	}
 .ss_replies .ss_entryDescription {
-  padding-left: 15px;
-  padding-right: 15px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-   
+  	padding-left: 15px;
+  	padding-right: 15px;
+  	padding-top: 5px;
+  	padding-bottom: 5px;
+	} 
 .ss_entryDescriptionLead {
 	display: inline;
-}
-
+	}
 .ss_replies .ss_entryDescriptionLead {
 	display: inline;
 	background-image: url(<html:imagesPath/>icons/comment.png);
@@ -499,7 +490,7 @@ div.ss_workflow {
 	float: left;
 	margin-left: 11px;
 	margin-top: 3px;
-}
+	}
 
 .ss_blockquote_watermark {
 	background-color: transparent;
@@ -2080,8 +2071,9 @@ div.ss_thumbnail_small_no_text img,  div.ss_thumbnail_standalone_small img {
     margin-right: 5px;    
 }
 .ss_thumbnail_standalone_medium img {
-    width: 90px;
-    height: 90px;
+    width: 70px;
+    height: 70px;
+    margin-top: 28px;
 }
 
 div.ss_thumbnail_small_buddies_list, div.ss_thumbnail_small_buddies_list img {
@@ -2932,8 +2924,7 @@ div.ss_calendarNaviBarAccessible {
 	vertical-align: middle;
 	padding: 0px;
 	margin: 0px 0px 5px 0px;
-}
-
+	}
 div.ss_cal_eventBody {
   font-size: 11px;
   color: #666666;
@@ -2945,9 +2936,7 @@ div.ss_cal_eventBody {
   border-left-style: solid;
   border-top: 0;
   border-bottom: 0;
-}
-
-
+	}
 div.ss_cal_eventBox {
   overflow: hidden;
   position: absolute;
@@ -4246,22 +4235,7 @@ ul.placesForm, ul.placesForm li {
 .ss_fileUploadProgressBarContainer .ss_progressTimeSpeed, .ss_fileUploadProgressBarContainer .ss_progress {
 	width: 160px;
 	}
-.ss_combobox_autocomplete {
-	background-color: ${ss_form_element_color};
-	background-image: none;
-	border: 0.1em solid #777777;
-	color: ${ss_form_element_text_color};
-	padding: 1px;
-	font-size: ${ss_style_font_normalprint};
-	font-family: ${ss_style_folder_view_font_family}; 	
-	height: 14px;
-	width: 70px;
-	overflow: hidden;
-	}
-.ss_combobox_autocomplete a:hover {
-	background-color: #555;
-	}
-	
+
 /*****GLOBAL SEARCH******/
 
 .ss_combobox_autocomplete_advanced{

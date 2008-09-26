@@ -346,7 +346,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 					                offsetX="0" 
 								    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 								
-							<input name="searchText" class="ss_combobox_autocomplete ss_combobox_autocomplete_advanced" type="text" /> 
+							<input name="searchText" class="ss_combobox_search" type="text" /> 
 										
 							<a href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" >
 								

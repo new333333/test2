@@ -37,7 +37,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	/*WRAPPER*/
 #ss_top_nav_wrapper{
 	width: 100%;
-	background-color:#EBEBEA;*/bleeds through breadcrumbs*/
+	background-color:#FFF;
 	border-color:#CCCCCC;
 	border: 1px;
 	padding-bottom:0px;	
@@ -59,7 +59,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 .ss_searchtext {
 	font-family: Arial, Helvetica, sans-serif !important;
-	font-size: 10px !important;
+	font-size: 11px !important;
 	color: #FFFFFF !important;
 	background-color: #5A9A98;		/* boulder: #5A9A98; kablink: #449EFF */
 	text-align: left;
@@ -71,7 +71,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color: #FFFFFF !important;
 }
 .ss_searchtext a:hover{
-	color: #F47400!important;
+	color: #555!important;
 }
 .ss_search_title {
 	font-family: Arial, Helvetica, sans-serif !important;
@@ -108,6 +108,35 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-position: right;
 	background-color: #FFF;
 	}
+	/********FIND PEOPLE PLACES TAGS*****/	
+.ss_combobox_autocomplete {
+	background-color: ${ss_form_element_color};
+	background-image: none;
+	border: 0.1em solid #777777;
+	color: ${ss_form_element_text_color};
+	padding: 1px;
+	font-size: ${ss_style_font_normalprint};
+	font-family: ${ss_style_folder_view_font_family}; 	
+	height: 14px;
+	width: 70px;
+	overflow: hidden;
+	}
+/******** SEARCH - MASTHEAD*****/	
+.ss_combobox_search {
+	background-image: none;
+	border: 1px solid #777777 !important;
+	color: ${ss_form_element_text_color}!important;
+	padding: 1px!important;
+	font-size: 10px !important;
+	font-family: ${ss_style_folder_view_font_family}; 	
+	width: 140px!important;
+	overflow: hidden;
+	margin-bottom: 2px;
+	}
+.ss_combobox_autocomplete a:hover {
+	background-color: #555;
+	}
+	
 	
 /***********THIS SHOULD BE MOVED TO A STYLE SHEET FOR CUSTOMIZATION************/
 .ss_companyName {	
@@ -172,7 +201,7 @@ ss_masthead_favorites a:hover{
 	color: #F47400 !important;
 	}
 	/* LOGO DIVS */		
-  .ss_logo1 {   
+ .ss_logo1 {   
 	background-position: 0px 0px;
 	background-repeat:no-repeat;
 	margin-left: -43px;

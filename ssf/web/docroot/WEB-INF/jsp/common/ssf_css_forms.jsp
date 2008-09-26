@@ -104,7 +104,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding: 6px 3px 6px 3px;
 	margin: 2px;
 	}
-.ss_table_data_TD: a hover {
+.ss_table_data_TD a:hover {
 	background-color: #F2F2F2;
 	}
 .ss_table_data_mid{
@@ -178,7 +178,7 @@ fieldset{
   	background-image: url(<html:imagesPath/>pics/login_bk.png);
   	background-repeat: no-repeat;
   	width: 480px;
-  	height: 200px;
+  	height: 190px;
     -moz-border-radius: 2%;
 	} 
 fieldset.ss_fieldset_square {

@@ -59,7 +59,7 @@
 	    <c:if test="${fileEntry._entityType == 'folderEntry' || 
       		fileEntry._entityType == 'reply'}">
 		<ssf:menu titleId="ss_folderName_${hitCount}_${componentId}_${ss_namespace}/>" 
-		    menuClass="ss_actions_bar2 ss_actions_bar_submenu">
+		    menuClass="ss_actions_bar5 ss_actions_bar_submenu">
 		  <ssf:param name="title" useBody="true">
 		      <c:if test="${empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}">
 		        <img border="0" src="<html:imagesPath/>icons/folder.gif" <ssf:alt/> />

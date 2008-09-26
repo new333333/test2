@@ -41,9 +41,9 @@
 </ssf:ifadapter>
 <div align="center">
   <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
-  <fieldset class="ss_fieldset_login">
+   <fieldset class="ss_fieldset_login">
     <div class="ss_legend_login"><ssf:nlt tag="login.please"/></div>
-    <table><tbody>
+     <table><tbody>
       <tr>
         <td valign="middle" align="right">
           <span><ssf:nlt tag="login.name"/></span>
@@ -70,10 +70,10 @@
         </td>
       </tr>
       <c:if test="${!empty ss_loginError}">
-        <tr>
-		  <td>&nbsp;</td>
-          <td style="color: red;" colspan="2"><ssf:nlt tag="errorcode.login.failed"/></td>
-        </tr>
+       <tr>
+		 <td>&nbsp;</td>
+         <td style="color: red;" colspan="2"><ssf:nlt tag="errorcode.login.failed"/></td>
+       </tr>
       </c:if>
  		<tr>
    			<td colspan="2" align="center">
@@ -83,14 +83,14 @@
 			  <br/>
 			</td>
 		</tr>		  
-	 </tbody></table>
-<c:if test="${!empty ssUrl}">
+	 </table></tbody>
+	  <c:if test="${!empty ssUrl}">
     <input type="hidden" name="spring-security-redirect" value="${ssUrl}"/>
-    </div>
+    </div> 
+    </fieldset>
 </c:if>
-  </fieldset>
   </form>
-</div>
+</div></DIV>
 <script type="text/javascript">
 	var formObj = self.document.getElementById('loginForm');
 	formObj.j_username.focus();

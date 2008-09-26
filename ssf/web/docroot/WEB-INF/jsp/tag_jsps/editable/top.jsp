@@ -44,5 +44,5 @@
 --%><c:if test="${empty ss_editableDivIdNumber}"><%--
 	--%><c:set var="ss_editableDivIdNumber" value="0" scope="request"/><%--
 --%></c:if><%--
---%><div class="ss_entryContent ss_entryDescription" <%--
+--%><div class="ss_entryDescription" <%--
     --%> id="${renderResponse.namespace}ss_editableDiv${ss_editableDivIdNumber}">
