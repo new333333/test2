@@ -122,16 +122,24 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 <table>
 	<tbody>
 	 <tr>
+	   <td width="50%"></td>
+	   <td class="ss_blogLeftCol"><img class="ss_blogLeftCol" border="0" alt="" style="height:1px;"
+	     src="<html:imagesPath/>pics/1pix.gif"/></td>
+	   <td class="ss_blogRightCol"><img class="ss_blogRightCol" border="0" alt="" style="height:1px;"
+	     src="<html:imagesPath/>pics/1pix.gif"/></td>
+	   <td width="50%"></td>
+	 </tr>
+	 <tr>
 	   <td width="50%">
 	   </td>
-	   <td id="ss_blogLeftCol">
+	   <td class="ss_blogLeftCol">
        <!-- Start Left Column -->
       <div class="ss_folder">
 <%@ include file="/WEB-INF/jsp/definition_elements/blog/blog_folder_listing.jsp" %>
 </div>
        </td><!-- end of left col -->
         <!-- Start Right Column -->
-      	<td id="ss_blogRightCol" valign="top">
+      	<td class="ss_blogRightCol" valign="top">
       	<div id="ss_blogNav_wrap">
 <jsp:include page="/WEB-INF/jsp/sidebars/blog_tools.jsp" />
 </div>
