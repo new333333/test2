@@ -6279,8 +6279,9 @@ function ss_setClass(selector, className) {
 }
 
 function ss_getTimeZoneDate(date, timeZoneOffset) {
-	var utc = date.getTime();
-	var timeZoneTime = utc + timeZoneOffset;
+	var u = date.getTime();
+	var o = date.getTimezoneOffset() * 60 * 1000;
+	var timeZoneTime = u + o + timeZoneOffset;
 	return new Date(timeZoneTime);
 }
 
@@ -6310,7 +6311,7 @@ function ss_printSchedulerTime(hoursObjId, minutesObjId, paneObjId, timeZoneOffs
 	date.setMinutes(minutes);
 	date = ss_getTimeZoneDate(date, timeZoneOffset);
 	
-	paneObj.innerHTML = dojo.date.format(date, {formatLength:"short", timePattern:"", selector:"timeOnly", locale: locale});
+	paneObj.innerHTML = dojo.date.locale.format(date, {formatLength:"short", timePattern:"", selector:"time", locale: locale});
 }
 
 function ss_FileUploadProgressBar(container) {

@@ -162,7 +162,15 @@
 	</select>
 &nbsp;<span class="ss_bold"><%= TimeZone.getDefault().getID() %></span>
 	<c:set var="defaultTimeZoneId" value="<%= TimeZone.getDefault().getID() %>" />
-	<c:if test="${defaultTimeZoneId != ssUser.timeZone.ID}">
+	
+	<%
+		User ssUser = (User) request.getAttribute("ssUser");
+	%>
+	
+	<c:set var="defaultTimeZoneOffset" value="<%= TimeZone.getDefault().getOffset((new Date()).getTime()) %>" />
+	<c:set var="userTimeZoneOffset" value="<%= ssUser.getTimeZone().getOffset((new Date()).getTime()) %>" />
+		
+	<c:if test="${defaultTimeZoneOffset != userTimeZoneOffset}">
 		<span class="ss_fineprint ss_bright">
 			
 		<ssf:nlt tag="schedule.timeInTimeZone">
@@ -172,18 +180,15 @@
 			<ssf:param name="value" value="${ssUser.timeZone.displayName}" />
 		</ssf:nlt>
 		 </span>
-		<%
-			User ssUser = (User) request.getAttribute("ssUser");
-		%>
 		<script type="text/javascript">
-			dojo.require('dojo.date.format');
+			dojo.require('dojo.date.locale');
 			dojo.addOnLoad(function() {
 				function toConnect() { 
 					ss_printSchedulerTime('${schedPrefix}schedHours', '${schedPrefix}schedMinutes', '${schedPrefix}userTime', <%= ssUser.getTimeZone().getOffset((new Date()).getTime()) %>, '${ssUser.locale}')
 				}
 				toConnect();
-				dojo.event.connect(dojo.byId("${schedPrefix}schedHours"),  "onchange", toConnect);
-				dojo.event.connect(dojo.byId("${schedPrefix}schedMinutes"),  "onchange", toConnect);
+				dojo.connect(dojo.byId("${schedPrefix}schedHours"),  "onchange", toConnect);
+				dojo.connect(dojo.byId("${schedPrefix}schedMinutes"),  "onchange", toConnect);
 			});
 		</script>
 	</c:if>
