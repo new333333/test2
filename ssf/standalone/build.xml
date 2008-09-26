@@ -104,6 +104,15 @@
 		<antcall target="deploy-additional-components" />
 		
 		<delete file="${app.server.ssf.dir}/WEB-INF/lib/xercesImpl.jar" />
+	
+		<!-- Delete the following file from SSF web app. This library already exists in
+		     the common/lib/ext area. Having duplicate files causes the file download 
+		     operation in web services to crash with the following error:
+		     java.lang.LinkageError: loader constraints violated when linking javax/activation/DataHandler class
+		-->
+		<delete>
+			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="activation.jar"/>
+		</delete>		
 	</target>
 		
 	<target name="deploy-standalone-jboss-tomcat" depends="clean, init-standalone, clean-app-server">		
