@@ -156,7 +156,7 @@ public class ViewPermalinkController  extends SAbstractController {
 	 			}
 	 			url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
 	 			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
-	 			url.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_ENTRY_ID_PLACE_HOLDER);
+	 			url.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_USER_ID_PLACE_HOLDER);
 	 		} else {
 	 			Long workspaceId  = getProfileModule().getEntryWorkspaceId(Long.valueOf(entryId));
 	 			entity = getBinderModule().getBinder(workspaceId);
