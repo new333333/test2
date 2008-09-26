@@ -2,7 +2,7 @@
 /* general styles, used most everywhere */
 
 /*
- * But first... some hacks for Liferay...
+ * But first... some hacks for Liferay...(Do we still need this? rs)
  *
  * These two changes are inter-related.  The first fixes a
  * layout problem with IE when the box model is changed.
@@ -13,71 +13,57 @@
  
 .xportlet-minimum-height {
 	height: auto;
-}
-
+	}
 div.xportlet-box {
     position: relative;
-}
-
+	}
 .ss_normal {
-  font-weight: normal !important;
-  }
-  
+  	font-weight: normal !important;
+  	} 
 .ss_bold {
-  font-weight: bold !important;
-  }
-  
+  	font-weight: bold !important;
+  	}  
 .ss_unseen {
-  font-weight: bold !important;
-  text-decoration: none!important;
-  padding: 0px !important;
-  }
-  
+  	font-weight: bold !important;
+  	text-decoration: none!important;
+  	padding: 0px !important;
+  	} 
 .ss_italic {
-  font-style: italic !important;
-  }
-  
+  	font-style: italic !important;
+  	} 
 .ss_underline {
-  text-decoration:underline;
-  padding:0px;
-  }
-  
+  	text-decoration:underline;
+  	padding:0px;
+  	} 
 .ss_underlinePlus {
-  text-decoration:underline;
-  margin:0 0 0 16px;
-  padding:0px;
-  }  
+  	text-decoration:underline;
+  	margin:0 0 0 16px;
+  	padding:0px;
+  	}  
 .ss_noUnderlinePlus {
-  text-decoration:none;
-  margin:0 0 0 16px;
-  padding:0px;
-  
-  }  
+  	text-decoration:none;
+  	margin:0 0 0 16px;
+  	padding:0px; 
+  	}  
 .ss_selected {
-  background-color:#CECECE;
-  }
-    
+  	background-color:#CECECE;
+  	}   
 .ss_indent_small {
-  margin: 2px 2px 2px 2px;
-  }
-  
+  	margin: 2px 2px 2px 2px;
+  	} 
 .ss_indent_medium {
-  margin: 2px 2px 2px 5px;
-  }
-  
+  	margin: 2px 2px 2px 5px;
+  	}
 .ss_indent_large {
-  margin: 2px 2px 2px 8px;
-  }
-  
+  	margin: 2px 2px 2px 8px;
+  	}
 .ss_compact {
-  margin:0px;
-  padding:0px;
-  }
-  
+  	margin:0px;
+  	padding:0px;
+  	} 
 .ss_nowrap {
-  white-space: nowrap;
-  }
-  
+  	white-space: nowrap;
+  	}
 table.ss_compact20 {
   margin:0px;
   padding:0px;
@@ -447,7 +433,7 @@ table.ss_sortableList {
   padding-left: 5px;
   padding-right: 2px;
   border: .01em solid #CCCCCC;
-  background-color: #DDE5EF;
+  background-color: #E9F1F1;
   }
 /* rules around the table and between rows for Folder View */
 table.ss_borderFolderTable {
@@ -473,7 +459,7 @@ table.ss_borderFolderTable tr.ss_headerRow th {
   padding-left: 5px;
   padding-right: 2px;
   border: .01em solid #CCCCCC;
-  background-color: #DDE5EF;
+  background-color: #E9F1F1;
   text-align:center;
 }
 /* rules around the table and between rows */
