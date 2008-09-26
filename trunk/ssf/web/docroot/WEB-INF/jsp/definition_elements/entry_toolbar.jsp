@@ -30,4 +30,4 @@
 %>
 <% // Entry toolbar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" />
+<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar5 ss_actions_bar" />

@@ -168,7 +168,7 @@
 <br/>
 <div class="ss_buttonBarLeft">
   <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"/>
-  <input type="submit" class="ss_submit" style="padding-left:15px;"
+  <input type="submit" class="ss_submit" 
     name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" 
     onClick="self.window.close();return false;"/>
 </div>

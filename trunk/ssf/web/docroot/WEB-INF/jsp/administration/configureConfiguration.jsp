@@ -52,7 +52,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <span class="ss_titlebold"><ssf:nlt tag="administration.configure_configurations" /></span>
 <br/>
 <br/>
-<ssf:toolbar toolbar="${ss_toolbar}" style="ss_actions_bar2 ss_actions_bar" />
+<ssf:toolbar toolbar="${ss_toolbar}" style="ss_actions_bar5 ss_actions_bar" />
 <br/>
 <div style="padding-top: 10px; padding-bottom: 2px;"><span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.standardTemplates"/></span></div>
 <ul class="ss_square">
@@ -176,7 +176,7 @@ function ss_confirmDeleteConfig() {
 
 	<% // Folder toolbar %>
 	<div class="ss_content_inner">
-	<ssf:toolbar toolbar="${ssForumToolbar}" style="ss_actions_bar2 ss_actions_bar"/>
+	<ssf:toolbar toolbar="${ssForumToolbar}" style="ss_actions_bar5"/>
 	</div>
 	
 	<div class="ss_content_inner">

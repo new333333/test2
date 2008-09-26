@@ -41,9 +41,8 @@
      	<ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;</span>
   	 </div>
 	</td>
-	<td align="left" width=89%">
+	<td align="left" width=93%">
 	 <div id="ss_navbar_inline">
-			
 		<ul>
 			<c:if test="${ssConfigJspStyle != 'template'}">
 			<li>
@@ -57,8 +56,7 @@
 					>
 						<ssf:nlt tag="None"/></span>
 				</a>
-			</li>
-					
+			</li>				
 			<c:forEach var="filter" items="${ssUserFolderProperties.searchFilterMap}">
 			 <li><a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssBinder.id}"/><ssf:param 
@@ -72,6 +70,7 @@
 				</a>
 			 </li>
 			</c:forEach>
+		</ul>			
 			</c:if>
 			<c:if test="${ssConfigJspStyle == 'template'}">
 			</c:if>
@@ -81,9 +80,8 @@
 		</ul>
 				
 	 </div>
-
 	</td>
-	<td align="right" width="8%">
+	<td align="left" width="5%">
 		<div class="ss_normal ss_navbar_new">
 			<c:if test="${ssConfigJspStyle != 'template'}">
 			  <a href="<ssf:url ><ssf:param 

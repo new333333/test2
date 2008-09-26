@@ -35,13 +35,13 @@
 
 <div class="ss_folder_border" >
 <% // Add the toolbar with the navigation widgets, commands and filter %>
-<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
+<ssf:toolbar style="ss_actions_bar5 ss_actions_bar">
 <ssHelpSpot 
   		helpId="workspaces_folders/menus_toolbars/folder_toolbar" offsetX="0" offsetY="0" 
   		title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>"></ssHelpSpot>
  <% // Entry toolbar %>
  <c:if test="${!empty ssEntryToolbar}">
-  <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
+  <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar5 ss_actions_bar" item="true" />
  </c:if>
 </ssf:toolbar>
 <div class="ss_clear"></div>
