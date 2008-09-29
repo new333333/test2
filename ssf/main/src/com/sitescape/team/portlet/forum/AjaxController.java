@@ -136,6 +136,8 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractControllerRetry;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
+import com.sitescape.team.web.upload.FileUploadProgressListener;
+import com.sitescape.team.web.upload.ProgressListenerSessionResolver;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.Favorites;
@@ -453,6 +455,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxGetUserStatus(request, response);
 		} else if (op.equals(WebKeys.OPERATION_VIEW_MINIBLOG)) {
 			return ajaxViewMiniBlog(request, response);
+		} else if (op.equals(WebKeys.OPERATION_GET_UPLOAD_PROGRESS_STATUS)) {
+			return ajaxGetUploadProgressStatus(request, response);
 		}
 
 		return ajaxReturn(request, response);
@@ -2667,6 +2671,45 @@ public class AjaxController  extends SAbstractControllerRetry {
 		          }
 			}
 		}
+	}
+	
+	private ModelAndView ajaxGetUploadProgressStatus(RenderRequest request, RenderResponse response) {
+		Map model = new HashMap();
+		
+		String uploadRequestUid = PortletRequestUtils.getStringParameter(request, WebKeys.URL_UPLOAD_REQUEST_UID, "");
+		
+		FileUploadProgressListener progressListener = ProgressListenerSessionResolver.get(request.getPortletSession(), uploadRequestUid);
+	
+		if (progressListener != null) {
+			
+			model.put("ss_progress", progressListener.getPercentDone());
+			model.put("ss_mbytes_read", progressListener.getReadMB());
+			model.put("ss_content_length", progressListener.getContentLengthMB());
+			model.put("ss_speed", (int)progressListener.getUploadSpeedKBproSec());
+			
+			int runnigSeconds = progressListener.getRunnigSeconds();
+			int runnigHours = (int)runnigSeconds/60/60;
+			int runnigMinutes = (int)(runnigSeconds - runnigHours*60*60)/60;
+			int runnigOnlySeconds = runnigSeconds - runnigHours*60*60 - runnigMinutes*60;
+			
+			model.put("ss_running_time", runnigSeconds);
+			model.put("ss_running_time_text", String.format((runnigHours > 0 ? "%1$02d:" : "") + "%2$02d:%3$02d", runnigHours, runnigMinutes, runnigOnlySeconds));
+			
+			int leftSeconds = progressListener.getTimeLeftSeconds();
+			int leftHours = (int)leftSeconds/60/60;
+			int leftMinutes = (int)(leftSeconds - leftHours*60*60)/60;
+			int leftOnlySeconds = leftSeconds - leftHours*60*60 - leftMinutes*60;
+			
+			model.put("ss_left_time", leftSeconds);
+			model.put("ss_left_time_text", String.format((leftHours > 0 ? "%1$02d:" : "") + "%2$02d:%3$02d", leftHours, leftMinutes, leftOnlySeconds));
+			
+			if (progressListener.isFinished()) {
+				ProgressListenerSessionResolver.remove(request.getPortletSession(), uploadRequestUid);
+			}
+		}
+		
+		response.setContentType("text/xml");
+		return new ModelAndView("forum/json/upload_progress_status", model);
 	}
 
 	private ModelAndView ajaxGetUserStatus(RenderRequest request, 
