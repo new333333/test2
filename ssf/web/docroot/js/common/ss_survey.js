@@ -236,10 +236,11 @@ if (!window.ssSurvey) {
 						ss_toSend[ind].answers = new Array();
 						aCounter = 0;
 						for (var j=0; j<ss_questionsArray[i].answersNo; j++) {
-							if (dojo.byId(prefix + "question"+i+"answer"+j)) {
+							var answerObj = dojo.byId(prefix + "question"+i+"answer"+j);
+							if (answerObj && answerObj.value && trim(answerObj.value)) {
 								var answerIndexInput = dojo.byId(prefix + "question"+i+"answer"+j+"_index");
 								ss_toSend[ind].answers[aCounter] = {
-									'text' : dojo.byId(prefix + "question"+i+"answer"+j).value
+									'text' : trim(answerObj.value)
 								};
 								if (answerIndexInput) {
 									ss_toSend[ind].answers[aCounter].index = answerIndexInput.value;
@@ -477,4 +478,8 @@ ssSurvey.removeVote = function(formId, binderId, entryId) {
 		preventCache: true,
 		formNode: document.getElementById(formId)
 	});
+}
+
+function trim(stringToTrim) {
+	return stringToTrim.replace(/^\s+|\s+$/g,"");
 }
