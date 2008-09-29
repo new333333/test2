@@ -139,5 +139,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/spring.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc-portlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc.jar"/>
+	<classpathentry kind="lib" path="lib/jsp-api.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
