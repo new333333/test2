@@ -30,7 +30,6 @@ package com.sitescape.team.portlet.administration;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,14 +42,10 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.dom4j.Document;
-import org.dom4j.io.SAXReader;
-import org.dom4j.util.XMLErrorHandler;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.Binder;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -119,7 +114,7 @@ public class ImportDefinitionController extends  SAbstractController {
 		try {
 			if (binderId == null) {
 				
-				return getDefinitionModule().addDefinition(fIn, null, null, null, replace).getId();
+				return getDefinitionModule().addDefinition(fIn, replace).getId();
 			} else {
 				return getDefinitionModule().addDefinition(fIn, getBinderModule().getBinder(binderId), null, null, replace).getId();				
 			}

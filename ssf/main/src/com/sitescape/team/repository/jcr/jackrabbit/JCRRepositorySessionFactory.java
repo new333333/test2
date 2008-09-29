@@ -42,6 +42,7 @@ import javax.jcr.SimpleCredentials;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.core.TransientRepository;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -52,7 +53,6 @@ import com.sitescape.team.repository.RepositoryServiceException;
 import com.sitescape.team.repository.RepositorySession;
 import com.sitescape.team.repository.impl.AbstractExclusiveRepositorySessionFactory;
 import com.sitescape.team.repository.jcr.JCRRepositorySession;
-import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.SPropsUtil;
 
 public class JCRRepositorySessionFactory extends AbstractExclusiveRepositorySessionFactory
@@ -63,14 +63,14 @@ implements JCRRepositorySessionFactoryMBean {
 	protected FileTypeMap mimeTypes;
 	protected String repositoryRootDir;
 	protected String homeSubdirName;
-	protected String configFileName;
+	private String configFileLocation;
+	private String configFileName;
 	protected String username;
 	protected char[] password;
 	protected boolean initializeOnStartup;
 	protected boolean versionDeletionAllowed = false;
 
 	private String repositoryHomeDir;
-	private boolean initialized; 
 	private Repository repository;
 	private String workspaceName;
 	
@@ -78,11 +78,18 @@ implements JCRRepositorySessionFactoryMBean {
 		this.mimeTypes = mimeTypes;
 	}
 	
+	
+	@Required
 	public void setConfigFileName(String configFileName) {
 		this.configFileName = configFileName;
 	}
+
+	@Required
+	public void setConfigFileLocation(String configFileLocation) {
+		this.configFileLocation = configFileLocation;
+	}
 	public String getConfigFileName() {
-		return configFileName;
+		return configFileLocation;
 	}
 
 	public void setHomeSubdirName(String homeSubdirName) {
@@ -104,10 +111,10 @@ implements JCRRepositorySessionFactoryMBean {
 	}
 
 	public void setRepositoryRootDir(String repositoryRootDir) {
-		if(repositoryRootDir.endsWith(Constants.SLASH))
+		if(repositoryRootDir.endsWith(File.separator))
 			this.repositoryRootDir = repositoryRootDir;
 		else
-			this.repositoryRootDir = repositoryRootDir + Constants.SLASH;
+			this.repositoryRootDir = repositoryRootDir + File.separator;
 	}
 	public String getRepositoryRootDir() {
 		return repositoryRootDir;
@@ -205,7 +212,7 @@ implements JCRRepositorySessionFactoryMBean {
 		}
 		else {
 			// In this case we use factory-shipped default configuration file.
-			Resource configFileResource = new ClassPathResource("config/" + configFileName);
+			Resource configFileResource = new ClassPathResource(configFileLocation + configFileName);
 			try {
 				repositoryFile = configFileResource.getFile();
 			} catch (IOException e) {
@@ -221,8 +228,6 @@ implements JCRRepositorySessionFactoryMBean {
 		Session session = createSession(null);
 		
 		session.logout();
-		
-		initialized = true;		
 	}
 
 	public boolean supportSmartCheckin() {

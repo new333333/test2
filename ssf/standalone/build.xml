@@ -17,7 +17,7 @@
 	</target>
 
 	<target name="clean-app-server">
-		<delete>
+		<delete failonerror="false">
 			<fileset dir="${app.server.shared.lib.dir}" includes="ssf-*.jar" />
 		</delete>		
 		

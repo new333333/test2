@@ -47,6 +47,7 @@ import com.sitescape.team.domain.EntityDashboard;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.NotifyStatus;
+import com.sitescape.team.domain.PersistentLongIdObject;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.IndexNode;
 import com.sitescape.team.domain.SimpleName;
@@ -183,6 +184,17 @@ public interface CoreDao {
     public SimpleName loadSimpleNameByEmailAddress(String emailAddress, Long zoneId);
     
     public List<SimpleName> loadSimpleNames(Long binderId, Long zoneId);
+
+    /**
+	 * Type-safe method for loading a {@link PersistentLongIdObject} from
+	 * storage.
+	 * 
+	 * @param <T> - the type of object to be returned
+	 * @param type - the {@link Class} of the desired result
+	 * @param id - the unique id of the object 
+	 * @return the persistent object with the specified id and type
+	 */
+    public <T extends PersistentLongIdObject> T findById(Class<T> type, Long id);
     
     /**
      * Returns <code>IndexNode</code> matching the criteria, or <code>null</code> if no match is found.

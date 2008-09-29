@@ -48,9 +48,7 @@ import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectExistsException;
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.GroupPrincipal;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.module.file.WriteFilesException;

@@ -8,7 +8,6 @@ import org.dom4j.Document;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.security.AccessControlException;
-import com.sitescape.team.security.function.WorkArea;
 
 public interface TemplateModule {
 	public enum TemplateOperation {
@@ -49,6 +48,7 @@ public interface TemplateModule {
      * @return
      */
 	public Long addTemplate(Document document, boolean replace) throws AccessControlException;
+
 	/**
 	 * Create a template
 	 * @param type

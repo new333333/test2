@@ -85,17 +85,14 @@ public class GeneratePortletProperties {
 		
 		for(int i = 0; i < propNames.length; i++) {
 			for(int j = 0; j < localeCodes.length; j++) {
-				File file=null;
 				OutputStreamWriter writer=null;
 				String outFile;
 				
 				if (localeCodes[j].equals("en"))
 					outFile = outPath + File.separator + propNames[i] + ".properties";
 				else
-					outFile = outPath + File.separator + propNames[i] + "_" 
+					outFile = outPath + File.separator +  propNames[i] + "_" 
 						+ localeCodes2[j] + ".native";
-				
-				file = new File(outFile);
 				
 				try {
 					//explicitly set encoding so there is no mistake.
@@ -132,7 +129,6 @@ public class GeneratePortletProperties {
 			    	throw(ex);
 			    } finally {
 			    	if (writer != null) writer.close();
-			    	else if (file != null) file = null;
 			    }
 			}
 		}

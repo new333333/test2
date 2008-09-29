@@ -56,7 +56,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     protected Long logVersion=Long.valueOf(0);
     protected Binder parentBinder; 
     protected boolean attachmentsParsed = false;
-    protected Set attachments;	//initialized by hiberate access=field
+    protected Set<Attachment> attachments;	//initialized by hiberate access=field
     protected Map customAttributes;	//initialized by hiberate access=field
     protected Definition entryDef; //initialized by hiberate access=field
     protected Set events;	//initialized by hiberate access=field
@@ -65,7 +65,8 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     protected AverageRating rating=null;
     protected Long popularity=null;
     // these collections are loaded for quicker indexing, hibernate will not persist them
-    protected Set iEvents,iAttachments;
+    protected Set iEvents;
+    protected Set<Attachment> iAttachments;
     protected Map iCustomAttributes;
     protected EntityIdentifier entityIdentifier;
 	protected boolean deleted=false;
@@ -279,27 +280,29 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
      * Return all attachments.
      * 
 	 */
-    public Set getAttachments() {
+    public Set<Attachment> getAttachments() {
     	if (iAttachments != null) return iAttachments;
        	//need to implement here to setup the doclet tags
-    	if (attachments == null) attachments = new HashSet();
+    	if (attachments == null) attachments = new HashSet<Attachment>();
     	return attachments;
     	
     }
     /**
      * Set attachments - this will effect File type custom attributes also
      */
-    public void setAttachments(Collection attachments) {   	
+	public void setAttachments(Collection<Attachment> attachments) {   	
     	getAttachments();
-    	Set remM = CollectionUtil.differences(this.attachments, attachments);
-    	Set addM = CollectionUtil.differences(attachments, this.attachments);
-        for (Iterator iter = remM.iterator(); iter.hasNext();) {
+    	@SuppressWarnings("unchecked")
+    	Set<Attachment> remM = CollectionUtil.differences(this.attachments, attachments);
+    	@SuppressWarnings("unchecked")
+    	Set<Attachment> addM = CollectionUtil.differences(attachments, this.attachments);
+        for (Iterator<Attachment> iter = remM.iterator(); iter.hasNext();) {
         	Attachment a = (Attachment)iter.next();
         	cleanupAttributes(a);
         	a.setOwner((AnyOwner)null);
         	this.attachments.remove(a);
         }
-        for (Iterator iter = addM.iterator(); iter.hasNext();) {
+        for (Iterator<Attachment> iter = addM.iterator(); iter.hasNext();) {
         	Attachment a = (Attachment)iter.next();
         	a.setOwner(this);
         	this.attachments.add(a);

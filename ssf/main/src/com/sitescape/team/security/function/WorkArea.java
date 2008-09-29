@@ -73,7 +73,7 @@ public interface WorkArea {
     public Principal getOwner();
     public void setOwner(Principal owner);
     /**
-     * Return true if currently inheritty team membership
+     * Return true if currently inheriting team membership
      * @return
      */
     public boolean isTeamMembershipInherited();

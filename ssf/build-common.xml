@@ -2,7 +2,7 @@
 
 <project name="build-common">
 	<property environment="env" />
-	<property name="project.dir" value=".." />
+	<property name="project.dir" location=".." />
 	<property file="${project.dir}/app.server.${user.name}.properties" />
 	<property file="${project.dir}/app.server.properties" />
 	<property file="${project.dir}/build.${user.name}.properties" />
@@ -48,6 +48,7 @@
 			memoryMaximumSize="${javac.memoryMaximumSize}"
 			nowarn="${javac.nowarn}"
 			srcdir="${source.dir}"
+			excludes="**/test/**"
 			source="${javac.source}"
 			target="${javac.target}"
 		/>

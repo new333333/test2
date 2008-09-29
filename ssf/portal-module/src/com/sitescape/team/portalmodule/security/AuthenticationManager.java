@@ -38,8 +38,8 @@ public class AuthenticationManager {
 	
 	private static final String SERVICE_METHOD_NAME = "authenticate";
 	
-	private static final Class[] SERVICE_METHOD_ARG_TYPES = 
-		new Class[] {String.class, String.class, String.class, Map.class, String.class};
+	private static final Class<?>[] SERVICE_METHOD_ARG_TYPES = 
+		new Class<?>[] {String.class, String.class, String.class, Map.class, String.class};
 
 	/**
 	 * 
@@ -50,7 +50,7 @@ public class AuthenticationManager {
 	 * @param updates may be null
 	 * @throws Exception 
 	 */
-	public static void authenticate(String zoneName, String userName, String password, Map updates) throws Exception {		
+	public static void authenticate(String zoneName, String userName, String password, Map<String, Object> updates) throws Exception {		
 		BridgeClient.invoke(zoneName, null, SERVICE_CLASS_NAME, 
 				SERVICE_METHOD_NAME, SERVICE_METHOD_ARG_TYPES,
 				new Object[] {zoneName, userName, password, updates, "portal"});

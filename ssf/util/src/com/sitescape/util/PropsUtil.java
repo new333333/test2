@@ -32,6 +32,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * XXX singletons should be managed by Spring
+ */
 public class PropsUtil {
 	// This is a singleton class. 
 	

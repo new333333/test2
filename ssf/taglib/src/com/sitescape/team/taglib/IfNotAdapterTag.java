@@ -36,6 +36,8 @@ import com.sitescape.team.web.WebKeys;
 
 public class IfNotAdapterTag extends IfAdapterTag {
 
+	private static final long serialVersionUID = -999963717518901699L;
+
 	/**
 	 * Return <code>EVAL_BODY_INCLUDE</code> only if the request is being 
 	 * made through the portlet container. Otherwise (that is, the request 

@@ -41,11 +41,10 @@ import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
-import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebHelper;
