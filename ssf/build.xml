@@ -71,6 +71,7 @@
 		<delete dir="${docs.api.dir}" />
 		
 		<ant dir="util" target="clean" />
+		<ant dir="util-search" target="clean" />
 		<ant dir="commons-httpclient-contrib" target="clean" />
 		<ant dir="lucene-contrib" target="clean" />
 		<ant dir="indexer-lucene" target="clean" />
@@ -102,6 +103,7 @@
 
 	<target name="compile">
 		<ant dir="util" target="compile" />
+		<ant dir="util-search" target="compile" />
 		<ant dir="commons-httpclient-contrib" target="compile" />
 		<ant dir="lucene-contrib" target="compile" />
 		<ant dir="indexer-lucene" target="compile" />			
@@ -130,6 +132,7 @@
 
 	<target name="jar">
 		<ant dir="util" target="jar" />
+		<ant dir="util-search" target="jar" />
 		<ant dir="commons-httpclient-contrib" target="jar" />
 		<ant dir="lucene-contrib" target="jar" />
 		<ant dir="indexer-lucene" target="jar" />
@@ -162,6 +165,7 @@
 
 	<target name="deploy">
 		<ant dir="util" target="deploy" />
+		<ant dir="util-search" target="deploy" />
 		<ant dir="commons-httpclient-contrib" target="deploy" />
 		<ant dir="lucene-contrib" target="deploy" />
 		<ant dir="indexer-lucene" target="deploy" />
@@ -194,6 +198,7 @@
 		<delete dir="${docs.api.dir}" />
 
 		<ant dir="util" target="java2html" />
+		<ant dir="util-search" target="java2html" />
 		<ant dir="commons-httpclient-contrib" target="java2html" />
 		<ant dir="lucene-contrib" target="java2html" />
 		<ant dir="indexer-lucene" target="java2html" />
@@ -216,6 +221,7 @@
 		<delete dir="${javadoc.combined.dir}" />
 
 		<ant dir="util" target="javadoc" />
+		<ant dir="util-search" target="javadoc" />
 		<ant dir="commons-httpclient-contrib" target="javadoc" />
 		<ant dir="lucene-contrib" target="javadoc" />
 		<ant dir="indexer-lucene" target="javadoc" />
