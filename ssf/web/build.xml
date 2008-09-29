@@ -180,7 +180,7 @@
 	
 		<copy
 			preservelastmodified="true"
-			file="${web.dir}/WEB-INF/classes/config/ssf.properties"
+			file="${ssf.resources.dir}/ssf.properties"
 			tofile="temp/WEB-INF/classes/config/ssf.properties"/>
 	
 		<replace file="temp/WEB-INF/classes/config/ssf.properties">
