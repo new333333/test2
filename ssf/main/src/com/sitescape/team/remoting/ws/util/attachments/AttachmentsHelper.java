@@ -22,6 +22,7 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.util.FileUtil;
+import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
 public class AttachmentsHelper  {
 
@@ -77,6 +78,7 @@ public class AttachmentsHelper  {
 		responseMessage.addAttachmentPart(part);
 	}
 	public static Map<String, AxisMultipartFile> getFileAttachments(String fileUploadDataItemName, String[] fileNames) {
+		fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
 
 		// Get all the attachments
 		AttachmentPart[] attachments;
@@ -100,7 +102,7 @@ public class AttachmentsHelper  {
 			// Wrap it up in a datastructure expected by our app.
 			String name = null;
 			if(i < fileNames.length) {
-				name = fileNames[i];
+				name = StringCheckUtil.check(fileNames[i]);
 			} else {
 				name = "attachment" + (i+1);
 			}
@@ -113,7 +115,8 @@ public class AttachmentsHelper  {
 		return fileItems;
 	}
 	public static Map<String, AxisMultipartFile> getFileAttachment(String fileUploadDataItemName, String fileName) {
-
+		fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
+		fileName = StringCheckUtil.check(fileName);
 		// Get all the attachments
 		AttachmentPart[] attachments;
 		try {

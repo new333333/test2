@@ -62,9 +62,8 @@ public class AttachmentUtilities {
 	public void uploadFolderFile(Long binderId, Long entryId, 
 				String fileUploadDataItemName, String fileName, String modifier, Calendar modificationDate, Map options) {
 		if (Validator.isNull(fileUploadDataItemName)) fileUploadDataItemName="ss_attachFile1";
-		fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
 		File originalFile = new File(fileName);
-		fileName = StringCheckUtil.check(originalFile.getName());
+		fileName = originalFile.getName();
 
 		// Wrap it up in a datastructure expected by our app.
 		Map fileItems = AttachmentsHelper.getFileAttachment(fileUploadDataItemName, fileName);

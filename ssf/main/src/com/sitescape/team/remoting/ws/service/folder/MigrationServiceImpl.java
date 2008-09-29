@@ -45,7 +45,6 @@ import com.sitescape.team.remoting.ws.model.FolderEntry;
 import com.sitescape.team.remoting.ws.model.Timestamp;
 import com.sitescape.team.remoting.ws.util.DomInputData;
 import com.sitescape.team.remoting.ws.util.ModelInputData;
-import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
 public class MigrationServiceImpl extends FolderServiceImpl implements
 		MigrationService {
@@ -102,8 +101,6 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 	}
 	public long migration_addBinderWithXML(String accessToken, long parentId, String definitionId,
 			String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
-		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
-		
 		try {
 			Map options = new HashMap();
 			//let binder be indexed, so it can be found
