@@ -150,8 +150,6 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	}
 	protected long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName, Map options) {
 
-		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
-		
 		Document doc = getDocument(inputDataAsXML);
 		if(profiler == null) {
 			profiler = new SimpleProfiler("webServices");
@@ -174,8 +172,6 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	}
 	
 	public void folder_modifyEntryWithXML(String accessToken, long binderId, long entryId, String inputDataAsXML) {
-		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
-		
 		Document doc = getDocument(inputDataAsXML);
 		
 		try {
@@ -192,8 +188,6 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	}
 	
 	protected long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName, Map options) {
-		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
-
 		Document doc = getDocument(inputDataAsXML);
 		
 		try {
@@ -216,6 +210,8 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	}
 	public void folder_setWorkflowResponse(String accessToken, long entryId, long stateId, String question, String response) {
 		Map params = new HashMap();
+		response = StringCheckUtil.check(response);
+		question = StringCheckUtil.check(question);
 		params.put(question, response);
 		getFolderModule().setWorkflowResponse(null, entryId, stateId, new MapInputData(params));
 	}

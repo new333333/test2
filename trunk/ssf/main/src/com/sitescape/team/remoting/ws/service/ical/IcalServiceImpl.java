@@ -45,12 +45,10 @@ public class IcalServiceImpl extends BaseService implements IcalService {
 
 	public void ical_uploadCalendarEntriesWithXML(String accessToken, long folderId, String iCalDataAsXML)
 	{
-		iCalDataAsXML = StringCheckUtil.check(iCalDataAsXML);
-		
 		Document doc = getDocument(iCalDataAsXML);
 		List<Node> entryNodes = (List<Node>) doc.selectNodes("//entry");
 		for(Node entryNode : entryNodes) {
-			String iCal = entryNode.getText();
+			String iCal = StringCheckUtil.check(entryNode.getText());
 			try {
 				getIcalModule().parseToEntries(folderId, new StringBufferInputStream(iCal));
 			} catch(IOException e) {

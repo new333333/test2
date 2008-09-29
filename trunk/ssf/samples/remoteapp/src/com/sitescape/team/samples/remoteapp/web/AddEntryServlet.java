@@ -141,6 +141,7 @@ public class AddEntryServlet extends HttpServlet {
 							.getTeamingService();
 
 					FolderEntry entry = new FolderEntry();
+					entry.setParentBinderId(Long.valueOf(binderId));
 					entry.setTitle(title);
 					Description desc = new Description();
 					desc.setFormat(1);					

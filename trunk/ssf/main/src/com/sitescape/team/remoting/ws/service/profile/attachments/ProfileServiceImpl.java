@@ -1,7 +1,6 @@
 package com.sitescape.team.remoting.ws.service.profile.attachments;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 
 import com.sitescape.team.domain.FileAttachment;
@@ -10,15 +9,13 @@ import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.util.attachments.AttachmentsHelper;
 import com.sitescape.team.remoting.ws.util.attachments.CalendarHelper;
-import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.util.Validator;
 
 public class ProfileServiceImpl extends com.sitescape.team.remoting.ws.service.profile.ProfileServiceImpl {
 	public void profile_uploadFile(String accessToken, long principalId, String fileUploadDataItemName, String fileName) {
 		if (Validator.isNull(fileUploadDataItemName)) fileUploadDataItemName="ss_attachFile1";
-		fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
 		File originalFile = new File(fileName);
-		fileName = StringCheckUtil.check(originalFile.getName());
+		fileName = originalFile.getName();
 
 		// Wrap it up in a datastructure expected by our app.
 		Map fileItems = AttachmentsHelper.getFileAttachment(fileUploadDataItemName, fileName);

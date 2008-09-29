@@ -29,14 +29,20 @@
 package com.sitescape.team.remoting.ws.service.zone;
 
 import com.sitescape.team.remoting.ws.BaseService;
-
+import com.sitescape.team.util.stringcheck.StringCheckUtil;
 public class ZoneServiceImpl extends BaseService implements ZoneService {
 
 	public Long zone_addZone(String accessToken, String zoneName, String virtualHost, String mailDomain) {
+		zoneName = StringCheckUtil.check(zoneName);
+		virtualHost = StringCheckUtil.check(virtualHost);
+		mailDomain = StringCheckUtil.check(mailDomain);
 		return getZoneModule().addZone(zoneName, virtualHost, mailDomain);
 	}
 
 	public void zone_modifyZone(String accessToken, String zoneName, String virtualHost, String mailDomain) {
+		zoneName = StringCheckUtil.check(zoneName);
+		virtualHost = StringCheckUtil.check(virtualHost);
+		mailDomain = StringCheckUtil.check(mailDomain);
 		getZoneModule().modifyZone(zoneName, virtualHost, mailDomain);
 	}
 

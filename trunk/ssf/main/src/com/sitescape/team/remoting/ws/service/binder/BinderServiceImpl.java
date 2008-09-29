@@ -49,8 +49,8 @@ import com.sitescape.team.comparator.BinderComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.NoFileByTheNameException;
 import com.sitescape.team.domain.Principal;
@@ -76,7 +76,6 @@ import com.sitescape.team.remoting.ws.util.ModelInputData;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.LongIdUtil;
-import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.team.web.util.PermaLinkUtil;
 import com.sitescape.util.search.Constants;
 
@@ -92,7 +91,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 	
 	public long binder_addBinderWithXML(String accessToken, long parentId, String definitionId, String inputDataAsXML)
 	{
-		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
 		try {
 			Document doc = getDocument(inputDataAsXML);

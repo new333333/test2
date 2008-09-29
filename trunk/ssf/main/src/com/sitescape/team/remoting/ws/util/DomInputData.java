@@ -43,6 +43,7 @@ import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.survey.Survey;
 import com.sitescape.team.util.DateUtil;
+import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
 /**
  * An implementation of <code>InputDataAccessor</code> based on element-only
@@ -72,9 +73,9 @@ public class DomInputData implements InputDataAccessor {
 		Element valueElem = (Element) root.selectSingleNode("attribute[@name='" + key + "']/value");
 		
 		if(valueElem != null) {
-			return valueElem.getText();
+			return StringCheckUtil.check(valueElem.getText());
 		} else if(elem != null) {
-			return elem.getText();
+			return StringCheckUtil.check(elem.getText());
 		}
 		else {
 			return null;
@@ -91,10 +92,10 @@ public class DomInputData implements InputDataAccessor {
 
 	public Event getEventValue(String key, boolean hasDuration, boolean hasRecurrence)
 	{
-		Element eventElem = (Element) root.selectSingleNode("attribute[@name='" + key + "']");
-		if(eventElem != null) {
+		String val = getSingleValue(key);
+		if(val != null) {
 			try {
-				List<Event> events = icalModule.parseEvents(new StringReader(eventElem.getText()));
+				List<Event> events = icalModule.parseEvents(new StringReader(val));
 				return events.get(0);
 			} catch(IOException e) {
 			} catch(ParserException e) {
@@ -122,7 +123,7 @@ public class DomInputData implements InputDataAccessor {
 		if(size > 0) {
 			String[] values = new String[size];
 			for(int i = 0; i < size; i++) {
-				values[i] = ((Element) nodes.get(i)).getText();
+				values[i] = StringCheckUtil.check(((Element) nodes.get(i)).getText());
 			}
 			return values;
 		}

@@ -43,11 +43,13 @@ import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
 import com.sitescape.team.remoting.ws.model.TemplateBrief;
 import com.sitescape.team.remoting.ws.model.TemplateCollection;
+import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
 public class TemplateServiceImpl extends BaseService implements TemplateService, TemplateServiceInternal {
 
 	public long template_addBinder(String accessToken, long parentBinderId, long binderConfigId, String title)
 	{
+		title = StringCheckUtil.check(title);
 		try {
 			return getTemplateModule().addBinder(binderConfigId, parentBinderId, title, null);
 		} catch(WriteFilesException e) {

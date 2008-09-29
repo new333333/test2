@@ -53,7 +53,7 @@ import com.sitescape.team.util.DateUtil;
 import com.sitescape.team.util.InvokeUtil;
 import com.sitescape.team.util.ObjectPropertyNotFoundException;
 import com.sitescape.team.util.SpringContextUtil;
-
+import com.sitescape.team.util.stringcheck.StringCheckUtil;
 public class ModelInputData implements InputDataAccessor {
 
 	private static Log logger = LogFactory.getLog(ModelInputData.class);
@@ -110,10 +110,25 @@ public class ModelInputData implements InputDataAccessor {
 		Object obj = null;
 		try {
 			// Try static fields first
-			return InvokeUtil.invokeGetter(entity, key);
+			obj = InvokeUtil.invokeGetter(entity, key);
+			if (obj instanceof String) return StringCheckUtil.check((String)obj);
+			if (obj instanceof String[]) {
+				//need new array
+				String[] oldVals = (String [])obj;
+	    		String[] newVals = new String[oldVals.length];
+		    	for (int i=0; i<oldVals.length; ++i) {
+		    		newVals[i] = StringCheckUtil.check(oldVals[i]);
+		    	}
+		    	return newVals;
+			}
+			return obj;
 		}
 	    catch (ObjectPropertyNotFoundException e) {
 	    	// Try custom/dynamic fields
+	    	obj = entity.findCustomStringField(key);
+	    	if(obj != null)
+	    		return StringCheckUtil.check(((CustomStringField)obj).getValue());
+ 
 	    	obj = entity.findCustomBooleanField(key);
 	    	if(obj != null) 
 	    		return ((CustomBooleanField)obj).getValue();
@@ -127,15 +142,15 @@ public class ModelInputData implements InputDataAccessor {
 	    		return ((CustomLongArrayField)obj).getValues();
 	    	
 	    	obj = entity.findCustomStringArrayField(key);
-	    	if(obj != null) 
-	    		return ((CustomStringArrayField)obj).getValues();
-	    	
-	    	obj = entity.findCustomStringField(key);
-	    	if(obj != null)
-	    		return ((CustomStringField)obj).getValue();
-	    	
-	    	return null;
-	    }	
+	    	if(obj != null) {
+	    		String[] vals = ((CustomStringArrayField)obj).getValues();
+		    	for (int i=0; i<vals.length; ++i) {
+		    		vals[i] = StringCheckUtil.check(vals[i]);
+		    	}
+		    	return vals;
+	    	}
+		    return null;	    	
+	    }	    	
 	}
 
 	public String getSingleValue(String key) {
