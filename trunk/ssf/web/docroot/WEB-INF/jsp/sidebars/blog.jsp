@@ -57,6 +57,23 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	  <c:out value="${ssBlogMonthTitles[monthYear.key]}"/></a></td>
 	  <td align="right">(<c:out value="${monthYear.value}"/>)</td>
 	  </tr>
+
+	  <c:if test="${monthYear.key == ss_yearMonth}">
+	     <c:forEach var="blogPage" items="${ssBlogPages}">
+	      <c:set var="monthFolder" value="${monthYear.key}/${blogPage.id}"/>
+	      <c:if test="${!empty ssBlogMonthFolderHits[monthFolder]}">
+	       <tr>
+	        <td style="padding-left:10px;">
+	         <a style="background-color:#e5e5e5;"
+	           href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"><ssf:param 
+	           name="yearMonth" value="${ss_yearMonth}" /></ssf:url>"
+	         >${blogPage.title}</a>
+	        </td>
+	        <td align="right">(<c:out value="${ssBlogMonthFolderHits[monthFolder]}"/>)</td>
+	       </tr>
+	      </c:if>
+	     </c:forEach>
+      </c:if>
 	</c:forEach>
 	</table>
   </div>
