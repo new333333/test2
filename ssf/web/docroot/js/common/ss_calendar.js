@@ -32,6 +32,8 @@ dojo.require("dojo.date");
 dojo.require("dojo.date.locale");
 dojo.require("dijit.dijit");
 
+dojo.requireLocalization("ssf.cldr","custom", null, "da,de,de-de,en,en-gb,en_us,es,es-es,fi,fi-fi,fr,fr-fr,hu,it,it-it,ROOT,ja,ja-jp,ko,ko-kr,nl,nl-nl,pl,pt,pt-br,sv,zh,zh-cn,zh-hk,zh-tw");
+dojo.date.locale.addCustomFormats("ssf.cldr","custom");
 
 function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard) {
 	
@@ -61,7 +63,7 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard)
 										binderIds: calendarIds,
 										ssDashboardRequest: isDashboard,
 										calendarStickyId: stickyId}, reqParams)),
-			handleAs: "json",
+			handleAs: "json-comment-filtered",
 			error: function(err) {
 				alert(ss_not_logged_in);
 			},
@@ -78,7 +80,7 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard)
 											binderId: binderId, 
 											binderIds: calendarIds,
 											ssDashboardRequest: isDashboard}, reqParams)),
-			handleAs: "json",
+			handleAs: "json-comment-filtered",
 			error: function(err) {
 				alert(ss_not_logged_in);
 			},
@@ -99,7 +101,6 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard)
 		
 		dojo.xhrGet({
 	    	url: url,
-	    	handleAs: "json",
 			error: function(err) { },
 			load: function(data) { return data },
 			preventCache: true
@@ -335,9 +336,8 @@ function ss_calendarEngine(
 	
 	function getDayHeader(date) {
 		return that.locale.dayNamesShort[date.getDay()] + " " +
-		 			// The "monthAndDayOnly format is undocumented and unknown in any Dojo version!  Attempting to approximate in Dojo 1.1.1
-					//dojo.date.format(date, {formatLength: 'monthAndDayOnly', locale: that.locale.lang});
-					dojo.date.locale.format(date, {datePattern:"MMdd", selector:"date", locale: that.locale.lang});
+		 			// The "monthAndDayOnly" is custom date format added under dojo/ssf
+					dojo.date.locale.format(date, {formatLength: "monthAndDayOnly", selector:"date", locale: that.locale.lang});
 	}
 	
 	function getMinutesOfTheDay(date) {
@@ -2528,7 +2528,7 @@ if (!window["ss_calendar_import"]) {
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"loadICalendarByURL"});
 			dojo.xhrGet({
 		    	url: url,
-		    	handleAs: "json",
+		    	handleAs: "json-comment-filtered",
 				error: function(err) {
 					alert(ss_not_logged_in);
 					ss_calendar_import.cancel();
@@ -2630,7 +2630,7 @@ if (!window.ss_calendar_settings) {
 			//console.log("save calendar configuration");
 			dojo.xhrGet({
 		    	url: url,
-		    	handleAs: "json",		    	
+		    	handleAs: "json-comment-filtered",		    	
 				error: function(err) {
 					alert(ss_not_logged_in);
 					ss_calendar_import.cancel();
@@ -2661,10 +2661,8 @@ if (!window.ss_calendar_settings) {
 function ss_calendar_formatHour(hour, lang) {
 	var d = new Date();
 	d.setHours(hour);
-	// I have no idea what is expected of this...  not documented in any Dojo version
-	//var hourS = dojo.date.format(d, {formatLength: 'hourOnly', locale: lang});
-	// Best guess follows
-	var hourS = dojo.date.locale.format(d, {timePattern:'K',selector:'time', locale: lang});
+	// The "hourOnly" is custom date format added under dojo/ssf
+	var hourS = dojo.date.locale.format(d, {formatLength: 'hourOnly', locale: lang});
 	// next line because dojo.date.format requires to use separators in pattern 
 	return hourS.replace(" ", "").toLowerCase();
 }

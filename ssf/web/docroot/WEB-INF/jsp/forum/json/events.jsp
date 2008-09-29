@@ -31,6 +31,7 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // This is JSON type AJAX response  %>
+/*
 {<c:if test="${!empty ssCalendarViewBean.eventType}"><%--
 	--%>eventType: "<ssf:escapeJavaScript value="${ssCalendarViewBean.eventType}"/>", <%--
 --%></c:if><%--
@@ -110,3 +111,4 @@
 			--%>viewOnClick: "ss_loadEntry(this, '${evim.entry._docId}', '${evim.entry._binderId}', '${evim.entry._entityType}', '${ss_namespace}'<c:if test="${ssDashboardRequest}">, 'yes'</c:if>);"}<c:if test="${!status.last}">,</c:if><%--
 	--%></c:forEach>]<%--
 --%>}
+*/
