@@ -61,7 +61,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
 		    </c:if>
 		     xAlignment="left" title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
 		  </ssHelpSpot>
-		  <div class="ss_iconed_label ss_add_tag"><ssf:nlt tag="tags.tags"/></div>
+		  <div class="ss_tag_label"><ssf:nlt tag="tags.tags"/>:</div>
 
 		  <div id="ss_tags_anchor${ss_tagViewNamespace}_${ss_tagDivNumber}">
 		  </div>
