@@ -71,7 +71,7 @@
 			</ssf:ifnotaccessible>
 			<ssf:title tag="title.open.tag.menu" />
 		  >
-		  	<div class="ss_iconed_label ss_add_tag"><ssf:nlt tag="tags.tags"/></div>
+		  	<div class="ss_iconed_label ss_add_tag"><ssf:nlt tag="tags.tags"/>:</div>
 		  </a>
 		  <div id="ss_tags_anchor${ss_tagViewNamespace}_${ss_tagDivNumber}"></div>
 	 </td>
