@@ -59,7 +59,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	  </tr>
 
 	  <c:if test="${monthYear.key == ss_yearMonth}">
-	     <c:forEach var="blogPage" items="${ssBlogPages}">
+	     <c:forEach var="blogPage" items="${ssBlogFolders}">
 	      <c:set var="monthFolder" value="${monthYear.key}/${blogPage.id}"/>
 	      <c:if test="${!empty ssBlogMonthFolderHits[monthFolder]}">
 	       <tr>
