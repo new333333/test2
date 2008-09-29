@@ -28,6 +28,9 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value="<%= NLT.get("login.please") %>" scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
 <div class="ss_mobile">
