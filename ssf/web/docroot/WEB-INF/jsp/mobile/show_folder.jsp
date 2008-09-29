@@ -28,6 +28,10 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:if test="${!empty ssBinder.title}">
+  <c:set var="ss_windowTitle" value="${ssBinder.title}" scope="request"/>
+</c:if>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <div class="ss_mobile">
 <div class="ss_mobile_breadcrumbs">
