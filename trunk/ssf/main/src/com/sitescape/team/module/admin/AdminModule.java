@@ -28,17 +28,16 @@
  */
 
 package com.sitescape.team.module.admin;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.sitescape.team.domain.IndexNode;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
+import com.sitescape.team.domain.IndexNode;
 import com.sitescape.team.domain.MailConfig;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.jobs.ScheduleInfo;
@@ -169,7 +168,7 @@ public interface AdminModule {
     public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body) throws Exception;
     	 
     public void setMailConfigAndSchedules(MailConfig mailConfig, ScheduleInfo notifications, ScheduleInfo postings) throws AccessControlException;  
- 	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships) throws AccessControlException;
+	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships) throws AccessControlException;
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;
     public void setWorkAreaOwner(WorkArea workArea, Long userId, boolean propagate) throws AccessControlException;
 	public void updateDefaultDefinitions(Long topId);

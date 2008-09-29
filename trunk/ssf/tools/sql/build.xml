@@ -1,8 +1,11 @@
 <?xml version="1.0"?>
 <project name="sql-open" basedir="." default="">
-	<property name="project.dir" value="../.." />
+	<property name="project.dir" location="../.." />
+	<property name="project-dir" location="../.." />
+	
 
-	<import file="${project.dir}/build-common.xml"/>
+	<echo message="*** ${project-dir}" />
+	<import file="${project-dir}/build-common.xml"/>
 	
 	<property name="main.project.dir" value="${project.dir}/main" />
 	<property name="main.classes.dir" value="${main.project.dir}/${classes.dir}" />

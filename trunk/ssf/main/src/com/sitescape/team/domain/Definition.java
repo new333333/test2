@@ -55,7 +55,7 @@ public class Definition extends PersistentTimestampObject  {
     private String title="";
     private String iId;
     //type values
-    //types 5 and 9 are used in naming processorKeys.  Kep model-processor-mappings.xml up to date
+    //types 5 and 9 are used in naming processorKeys.  Keep model-processor-mappings.xml up to date
     public static final int FOLDER_ENTRY=1;
 	public static final int WORKFLOW=2;
 	public static final int REPORT=3;

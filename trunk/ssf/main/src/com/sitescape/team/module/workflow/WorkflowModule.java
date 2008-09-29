@@ -29,6 +29,7 @@
 package com.sitescape.team.module.workflow;
 
 import java.util.Map;
+
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.WorkflowState;

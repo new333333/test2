@@ -29,17 +29,16 @@
 package com.sitescape.team.web.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Collection;
-import java.util.TreeMap;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.portlet.PortletRequest;
-import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
 import org.dom4j.Element;

@@ -40,7 +40,6 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.springframework.web.bind.RequestUtils;
 
 import com.sitescape.team.portal.AbstractPortalLogin;
 import com.sitescape.team.servlet.portal.PortalLoginException;

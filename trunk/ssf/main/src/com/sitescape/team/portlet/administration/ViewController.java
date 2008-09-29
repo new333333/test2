@@ -28,9 +28,9 @@
  */
 package com.sitescape.team.portlet.administration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.Iterator;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -58,9 +58,9 @@ import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionModule.DefinitionOperation;
+import com.sitescape.team.module.ldap.LdapModule.LdapOperation;
 import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.module.license.LicenseModule.LicenseOperation;
-import com.sitescape.team.module.ldap.LdapModule.LdapOperation;
 import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.NLT;

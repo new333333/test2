@@ -38,7 +38,7 @@ public class LongIdUtil {
 	private static String COMMA_SEPARATOR = ",";
 	
 	public static Set<Long> getIdsAsLongSet(String []sIds) {
-		Set<Long> memberIds = new HashSet();
+		Set<Long> memberIds = new HashSet<Long>();
 		if (sIds != null) {
 			for (int i = 0; i < sIds.length; i++) {
 				memberIds.addAll(getIdsAsLongSet(sIds[i]));

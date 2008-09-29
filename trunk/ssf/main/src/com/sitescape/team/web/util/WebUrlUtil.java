@@ -27,9 +27,15 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.web.util;
-import java.util.Map;
-import java.util.List;
+import static com.sitescape.team.util.CollectionUtil.foldl;
+import static com.sitescape.team.util.CollectionUtil.map;
+
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
@@ -37,8 +43,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.VersionAttachment;
@@ -49,6 +57,8 @@ import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.team.util.CollectionUtil.Func1;
+import com.sitescape.team.util.CollectionUtil.Func2;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Http;
 import com.sitescape.util.Validator;
@@ -68,6 +78,8 @@ public class WebUrlUtil {
 	private static int icalWebProtocol 		= -1;
 	private static int ssfsWebProtocol 		= -1;
 	private static int simpleURLWebProtocol = -1;
+	
+	private static final String lastVersionUrlComponent = "last";
 	
 	private static final String SSFS_HOST_REWRITE = "ssfs.default.host.rewrite";
 	private static final String SSFS_IGNORE_PASSWORD_ENABLED = "ssfs.ignore.password.enabled";
@@ -351,7 +363,7 @@ public class WebUrlUtil {
 	}
 	public static String getFileUrl(String webPath, String action, String entityId, String entityType, String attDate, String version, 
 			String fileName) {
-		if (Validator.isNull(version)) version = "last";
+		if (Validator.isNull(version)) version = lastVersionUrlComponent;
 		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
 		StringBuffer webUrl = new StringBuffer(webPath + action);
 		webUrl.append(Constants.SLASH + entityType);
@@ -360,6 +372,43 @@ public class WebUrlUtil {
 		webUrl.append(Constants.SLASH + version);					
 		webUrl.append(Constants.SLASH + fileName);  //not urlencoded cause not queryparameter
 		return webUrl.toString();
+	}
+	/**
+	 * Returns a set of absolute URLs to the {@link FileAttachment}s of the
+	 * specified {@link Entry}.
+	 * 
+	 * @param request -
+	 *            an {@link HttpServletRequest} to use as a template for
+	 *            generating the URL
+	 * @param entry -
+	 *            the <code>Entry</code> whose resource URLs are to be
+	 *            generated
+	 * @return a set of absolute URLs to the {@link FileAttachment}s of the
+	 *         specified {@link Entry}.
+	 */
+	public static List<String> getAttachmentUrls(final HttpServletRequest request, final Entry entry) {
+		return map(
+				new Func1<FileAttachment, String>() {
+					public <A extends FileAttachment> String apply(A attachment) {
+						return getFileUrl(getServletRootURL(request),
+							WebKeys.ACTION_READ_FILE,
+							entry.getId().toString(),
+							entry.getEntityType().name(),
+							String.valueOf(attachment.getModification().getDate().getTime()),
+							null, // always grab last version
+							attachment.getFileItem().getName());
+					}
+				},
+				foldl(
+						new Func2<Set<FileAttachment>, Attachment, Set<FileAttachment>>() {
+							public <FAS extends Set<FileAttachment>, A extends Attachment> Set<FileAttachment> apply(
+									FAS acc, A a) {
+								if (a instanceof FileAttachment) {
+									acc.add((FileAttachment) a);
+								}
+								return acc;
+							}
+						}, new HashSet<FileAttachment>(), entry.getAttachments()));
 	}
 
 	public static String getSSFContextRootURL(PortletRequest req) {
