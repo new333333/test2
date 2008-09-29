@@ -41,7 +41,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
     title="<ssf:nlt tag="helpSpot.blogControls"/>">
   </ssHelpSpot>
 
-  <div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.archives"/></div>
+  <div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.archives"/> 
+    <ssf:inlineHelp jsp="workspaces_folders/menus_toolbars/blog_archives"/></div>
   <div class="ss_blog_sidebar_box">		
 	<table>
 	<c:forEach var="monthYear" items="${ssBlogMonthHits}">

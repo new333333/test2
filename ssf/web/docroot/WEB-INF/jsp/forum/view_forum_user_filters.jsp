@@ -42,7 +42,7 @@
   	 </div>
 	</td>
 	<td align="left" width=93%">
-	 <div id="ss_navbar_inline">
+	 <div class="ss_navbar_inline">
 		<ul>
 			<c:if test="${ssConfigJspStyle != 'template'}">
 			<li>
@@ -73,10 +73,10 @@
 		</ul>			
 			</c:if>
 			<c:if test="${ssConfigJspStyle == 'template'}">
+			  <li>
+			    <ssf:nlt tag="None"/></span>
+			  </li>
 			</c:if>
-			<li>
-			<ssf:nlt tag="None"/></span>
-			</li>
 		</ul>
 				
 	 </div>
@@ -88,10 +88,10 @@
 			  name="action" value="build_filter"/><ssf:param 
 			  name="binderId" value="${ssBinder.id}"/><ssf:param 
 			  name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
-			  ><span><ssf:nlt tag="sidebar.tags.filter" text="New Filter"/></span></a>
+			  ><span><ssf:nlt tag="sidebar.tags.filter"/></span></a>
 			</c:if>
 			<c:if test="${ssConfigJspStyle == 'template'}">
-			  <span><ssf:nlt tag="sidebar.tags.filter" text="New Filter"/></span>
+			  <span><ssf:nlt tag="sidebar.tags.filter"/></span>
 			</c:if>
 		</div>
 	</td>

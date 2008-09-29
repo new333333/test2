@@ -62,7 +62,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
     <input type="hidden" name="searchTitle"/>
     </form>
 	
-	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.archives"/></div>
+  <div style="margin-top: 15px;">
+	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.archives"/>
+	  <ssf:inlineHelp jsp="workspaces_folders/menus_toolbars/blog_archives"/></div>
     <div class="ss_blog_sidebar_box">		
 	<table>
 	<c:forEach var="monthYear" items="${ssBlogMonthHits}">
@@ -78,7 +80,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	</c:forEach>
 	</table>
     </div>		
-	
+  </div>
+  	
    <c:if test="${!empty ssFolderEntryCommunityTags}"> 
 	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
     <div class="ss_blog_sidebar_box">		

@@ -131,7 +131,9 @@
   </xsd:complexType>
 
   <xsd:complexType name="option_selectType">
-     <xsd:sequence/>
+    <xsd:sequence>
+      <xsd:element name="exclude" type="excludeType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
     <xsd:attribute name="definitionType" type="xsd:string"/>
     <xsd:attribute name="path" type="xsd:string"/>
     <xsd:attribute name="optionCaption" type="xsd:string"/>

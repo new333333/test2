@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_blogFolder" caption="__definition_default_folder_blog" type="5" nextId="17" definitionType="5" databaseId="402883c6115753d8011157619e35000b"> 
+<definition name="_blogFolder" caption="__definition_default_folder_blog" type="5" nextId="18" definitionType="5" databaseId="402883c6115753d8011157619e35000b" internalId="402883c6115753d8011157619e35000b"> 
   <item name="folderForm" caption="__folder_form" type="form" id="1" display="form"> 
     <properties/>  
     <item name="title" caption="__title" type="data" id="3"> 
@@ -38,28 +38,29 @@
     </item> 
   </item>  
   <item name="forumView" caption="__folder_view" id="6"> 
-    <item name="folderTitleView" caption="__title" category="folderViewData" display="view" id="14">
-      <properties>
-        <property name="caption" value="__title"/>
-      </properties>
-    </item>
-    <item name="descriptionView" caption="__description" category="commonEntryViewData" display="view" id="16">
+    <item name="folderTitleView" caption="__title" category="folderViewData" display="view" id="14"> 
+      <properties> 
+        <property name="caption" value="__title"/> 
+      </properties> 
+    </item>  
+    <item name="folderDescriptionView" caption="__description" category="folderViewData" display="view" id="17">
       <properties>
         <property name="caption" value="__description"/>
+        <property name="viewType" value="top"/>
       </properties>
     </item>
     <item name="folderList" caption="__folder_listing" id="9"> 
       <properties/> 
     </item>  
-    <properties>
-      <property name="type" value="blog"/>
-    </properties>
+    <properties> 
+      <property name="type" value="blog"/> 
+    </properties> 
   </item>  
-  <properties>
-    <property name="caption" value="__definition_default_folder_blog"/>
-    <property name="name" value="_blogFolder"/>
-    <property name="family" value="blog"/>
-    <property name="icon" value="/icons/folder_blue_blog.gif"/>
-  </properties>
+  <properties> 
+    <property name="caption" value="__definition_default_folder_blog"/>  
+    <property name="name" value="_blogFolder"/>  
+    <property name="family" value="blog"/>  
+    <property name="icon" value="/icons/folder_blue_blog.gif"/> 
+  </properties>  
   <export-mappings/>
 </definition>

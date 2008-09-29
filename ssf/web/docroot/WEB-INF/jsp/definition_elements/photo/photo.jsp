@@ -64,7 +64,6 @@ function ss_setPhotoIframeSize${renderResponse.namespace}() {
 
 </script>
 
-<jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 <div class="ss_folder_border">
 <% // Add the toolbar with the navigation widgets, commands and filter %>
 <ssf:toolbar style="ss_actions_bar5 ss_actions_bar">
@@ -79,16 +78,34 @@ function ss_setPhotoIframeSize${renderResponse.namespace}() {
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
 <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <table cellspacing="0" cellpadding="0" width="100%">
-<tr>
-<td valign="top">
-<div class="ss_folder" id="ss_photo_folder_div">
-<%@ include file="/WEB-INF/jsp/definition_elements/photo/photo_folder_listing.jsp" %>
-</div>
-</td>
-<td valign="top" width="200">
-<div id="ss_sideNav_wrap">
-<jsp:include page="/WEB-INF/jsp/sidebars/photo.jsp" />
-</div>
-</td>
-</tr>
+  <tbody>
+	 <tr>
+	   <td colspan="2" align="right">
+	     <div class="ss_navbar_inline">
+	     <ul>
+	     <c:forEach var="blogPage" items="${ssBlogPages}">
+	       <li>
+	         <a href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"><ssf:param 
+	         name="yearMonth" value="${ss_yearMonth}" /></ssf:url>"
+	         >${blogPage.title}</a>
+	       </li>
+	     </c:forEach>
+	     </ul>
+	     </div>
+	   </td>
+	 </tr>
+	<tr>
+	  <td valign="top">
+		<div class="ss_folder" id="ss_photo_folder_div">
+		  <%@ include file="/WEB-INF/jsp/definition_elements/photo/photo_folder_listing.jsp" %>
+		</div>
+	  </td>
+	  <td valign="top" width="200">
+		<div id="ss_sideNav_wrap">
+		  <jsp:include page="/WEB-INF/jsp/sidebars/photo.jsp" />
+		</div>
+	  </td>
+	</tr>
+  </tbody>
 </table>
+<jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />

@@ -91,6 +91,7 @@ import com.sitescape.team.module.rss.util.UrlUtil;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.SearchFieldResult;
+import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.security.AccessControlException;
@@ -723,7 +724,7 @@ public class ListFolderHelper {
 			buildWebDAVURLs(bs, req, folderEntries, model, folder);
 			
 			//Get the list of all entries to build the archive list
-			buildBlogBeans(bs, response, folder, options, model, folderEntries);
+			buildBlogBeans(bs, response, folder, options, model, folderEntries, viewType);
 		} else {
 			String strUserDisplayStyle = user.getDisplayStyle();
 			if (strUserDisplayStyle == null) { strUserDisplayStyle = ""; }
@@ -744,14 +745,9 @@ public class ListFolderHelper {
 			if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 				buildWikiBeans(bs, response, folder, options, model, folderEntries);
 			}
-			if (viewType.equals(Definition.VIEW_STYLE_BLOG) || 
-					viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
+			if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
 				//Get the list of all entries to build the archive list
-				buildBlogBeans(bs, response, folder, options, model, folderEntries);
-			}
-			if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
-				//Get the pages bean
-				buildBlogPageBeans(bs, response, folder, model);
+				buildBlogBeans(bs, response, folder, options, model, folderEntries, viewType);
 			}
 			if (viewType.equals(Definition.VIEW_STYLE_MILESTONE)) {
 				//Get the list of all entries to build the archive list
@@ -871,7 +867,7 @@ public class ListFolderHelper {
 		Toolbar entryToolbar = new Toolbar();
 //FolderEntries need folders as parents, not templates
 //		if (bs.getAdminModule().testAccess(AdminOperation.manageTemplate)) {				
-//			addEntryToolbar(bs, req, response, folder, entryToolbar, model);
+//			addEntryToolbar(bs, req, response, folder, entryToolbar, model, viewType);
 //		}
 		entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.folder_views"));
 		//Get the definitions available for use in this folder
@@ -901,7 +897,7 @@ public class ListFolderHelper {
 			model.put(WebKeys.FOLDER_ENTRIES_WEBDAVURLS, new HashMap());
 			
 			//Get the list of all entries to build the archive list
-//			buildBlogBeans(bs, response, folder, options, model, folderEntries);
+//			buildBlogBeans(bs, response, folder, options, model, folderEntries, viewType);
 		} else if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 			//Get the list of all entries to build the archive list
 			model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, folder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE));
@@ -929,7 +925,10 @@ public class ListFolderHelper {
 	
 	//Routine to build the beans for the blog archives list
 	public static void buildBlogBeans(AllModulesInjected bs, RenderResponse response, 
-			Folder folder, Map options, Map model, Map folderEntries) {
+			Folder folder, Map options, Map model, Map folderEntries, String viewType) {
+		//Get the pages bean
+		buildBlogPageBeans(bs, response, folder, model, viewType);
+		
 		Document searchFilter = (Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER);
 		if (searchFilter == null) {
 			searchFilter = DocumentHelper.createDocument();
@@ -947,9 +946,14 @@ public class ListFolderHelper {
 			Document searchFilter2 = DocumentHelper.createDocument();
     		Element rootElement = searchFilter2.addElement(Constants.AND_ELEMENT);
     		Element field = rootElement.addElement(Constants.FIELD_ELEMENT);
-        	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.BINDER_ID_FIELD);
+        	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ENTRY_ANCESTRY);
         	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-        	child.setText(folder.getId().toString());
+        	Binder blogSetBinder = (Binder) model.get(WebKeys.BLOG_SET_BINDER);
+        	if (blogSetBinder != null) {
+        		child.setText(blogSetBinder.getId().toString());
+        	} else {
+        		child.setText(folder.getId().toString());
+        	}
         	
         	//Look only for docType=entry and entryType=entry
         	field = rootElement.addElement(Constants.FIELD_ELEMENT);
@@ -1033,31 +1037,33 @@ public class ListFolderHelper {
 
 	//Routine to build the beans for the blog pages list
 	public static void buildBlogPageBeans(AllModulesInjected bs, RenderResponse response, 
-			Folder folder, Map model) {
+			Folder folder, Map model, String viewType) {
 		List blogPages = new ArrayList();
 		Binder parentBinder = folder.getParentBinder();
 		if (parentBinder.getDefinitionType().equals(Definition.FOLDER_VIEW) && 
-				Definition.VIEW_STYLE_BLOG.equals(BinderHelper.getViewType(bs, parentBinder))) {
+				viewType.equals(BinderHelper.getViewType(bs, parentBinder))) {
 			//The parent binder is a blog folder, so add it and its children blogs
 			blogPages.add(parentBinder);
+			model.put(WebKeys.BLOG_SET_BINDER, parentBinder);
 			Iterator itBinders = parentBinder.getBinders().iterator();
 			while (itBinders.hasNext()) {
 				Binder b = (Binder) itBinders.next();
 				if (b.getDefinitionType().equals(Definition.FOLDER_VIEW) &&
-						Definition.VIEW_STYLE_BLOG.equals(BinderHelper.getViewType(bs, b))) {
+						viewType.equals(BinderHelper.getViewType(bs, b))) {
 					blogPages.add(b);
 				}
 			}
 		} else {
 			//Since the parent binder is not a blog folder, just add ourself
 			blogPages.add(folder);
+			model.put(WebKeys.BLOG_SET_BINDER, folder);
 		}
 		//Finally, add all of the children blogs of the current folder
 		Iterator itBinders = folder.getBinders().iterator();
 		while (itBinders.hasNext()) {
 			Binder b = (Binder) itBinders.next();
 			if (b.getDefinitionType().equals(Definition.FOLDER_VIEW) &&
-					Definition.VIEW_STYLE_BLOG.equals(BinderHelper.getViewType(bs, b))) {
+					viewType.equals(BinderHelper.getViewType(bs, b))) {
 				blogPages.add(b);
 			}
 		}
@@ -1143,7 +1149,8 @@ public class ListFolderHelper {
 		
 	}
 	
-	protected static void addEntryToolbar(AllModulesInjected bs, RenderRequest request, RenderResponse response, Binder folder, Toolbar entryToolbar, Map model) {
+	protected static void addEntryToolbar(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Binder folder, Toolbar entryToolbar, Map model, String viewType) {
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
 		if (defaultEntryDefinitions != null && defaultEntryDefinitions.size() > 1) {
 			int count = 1;
@@ -1178,7 +1185,8 @@ public class ListFolderHelper {
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
 			adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-			String title = NLT.get("toolbar.new") + ": " + NLT.getDef(def.getTitle());
+			String[] nltArgs = new String[] {NLT.getDef(def.getTitle())};
+			String title = NLT.get("toolbar.new_with_arg", nltArgs);
 			Map qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
 			qualifiers.put("highlight", new Boolean(true));
@@ -1187,8 +1195,56 @@ public class ListFolderHelper {
 			adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
 			adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
 			model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
-
-
+		}
+		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
+			if (bs.getBinderModule().testAccess(folder, BinderOperation.addFolder)) {
+				String blogDefId = "";
+				List<Definition> defs = bs.getDefinitionModule().getDefinitions(null, Boolean.FALSE, Definition.FOLDER_VIEW);
+				for (Definition def:defs) {
+					if (ObjectKeys.DEFAULT_FOLDER_BLOG_DEF.equals(def.getInternalId())) {
+						blogDefId = def.getId().toString();
+	  					break;
+  					}
+  				}
+				Map qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+	        	Binder blogSetBinder = (Binder) model.get(WebKeys.BLOG_SET_BINDER);
+	        	if (blogSetBinder != null) {
+	        		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, blogSetBinder.getId().toString());
+	        	} else {
+	        		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+	        	}
+				adapterUrl.setParameter(WebKeys.URL_BINDER_DEF_ID, blogDefId);
+				entryToolbar.addToolbarMenu("1_add_folder", NLT.get("toolbar.menu.add_blog_folder"), 
+						adapterUrl.toString(), qualifiers);
+			}
+		}		
+		if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
+			if (bs.getBinderModule().testAccess(folder, BinderOperation.addFolder)) {
+				String blogDefId = "";
+				List<Definition> defs = bs.getDefinitionModule().getDefinitions(null, Boolean.FALSE, Definition.FOLDER_VIEW);
+				for (Definition def:defs) {
+					if (ObjectKeys.DEFAULT_FOLDER_PHOTO_ALBUM_DEF.equals(def.getInternalId())) {
+						blogDefId = def.getId().toString();
+	  					break;
+  					}
+  				}
+				Map qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+	        	Binder blogSetBinder = (Binder) model.get(WebKeys.BLOG_SET_BINDER);
+	        	if (blogSetBinder != null) {
+	        		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, blogSetBinder.getId().toString());
+	        	} else {
+	        		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+	        	}
+				adapterUrl.setParameter(WebKeys.URL_BINDER_DEF_ID, blogDefId);
+				entryToolbar.addToolbarMenu("1_add_folder", NLT.get("toolbar.menu.add_photo_album_folder"), 
+						adapterUrl.toString(), qualifiers);
+			}
 		}		
 	}
 	protected static void buildFolderToolbars(AllModulesInjected bs, RenderRequest request, 
@@ -1219,7 +1275,7 @@ public class ListFolderHelper {
 		Map qualifiers;
 		PortletURL url;
 		if (bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {				
-			addEntryToolbar(bs, request, response, folder, entryToolbar, model);
+			addEntryToolbar(bs, request, response, folder, entryToolbar, model, viewType);
 		}
 		//The "Administration" menu
 		qualifiers = new HashMap();
