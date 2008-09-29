@@ -42,7 +42,7 @@
 
 <%@include file="/WEB-INF/jsp/administration/commonSelectTree.jsp" %>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
+<input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick='self.location.href="<ssf:url action="manage_definitions" 
 			actionUrl="false"><ssf:param name="binderId" value="${ssBinderId}"/></ssf:url>";return false;'>
 <script type="text/javascript">

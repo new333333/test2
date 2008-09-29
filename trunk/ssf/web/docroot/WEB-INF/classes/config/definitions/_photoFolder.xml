@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_photoFolder" caption="__definition_default_folder_photo" type="5" nextId="16" definitionType="5" databaseId="402883c6115753d8011157619e350008"> 
+<definition name="_photoFolder" caption="__definition_default_folder_photo" type="5" nextId="16" definitionType="5" databaseId="402883c6115753d8011157619e350008" internalId="402883c6115753d8011157619e350008"> 
   <item name="folderForm" caption="__folder_form" type="form" id="1"> 
     <properties/>  
     <item name="title" caption="__title" type="data" id="3"> 

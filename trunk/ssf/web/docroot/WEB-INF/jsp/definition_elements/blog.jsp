@@ -130,9 +130,24 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 	   <td width="50%"></td>
 	 </tr>
 	 <tr>
+	   <td colspan="4" align="right">
+	     <div class="ss_navbar_inline">
+	     <ul>
+	     <c:forEach var="blogPage" items="${ssBlogPages}">
+	       <li>
+	         <a href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"><ssf:param 
+	         name="yearMonth" value="${ss_yearMonth}" /></ssf:url>"
+	         >${blogPage.title}</a>
+	       </li>
+	     </c:forEach>
+	     </ul>
+	     </div>
+	   </td>
+	 </tr>
+	 <tr>
 	   <td width="50%">
 	   </td>
-	   <td class="ss_blogLeftCol">
+	   <td class="ss_blogLeftCol" valign="top">
        <!-- Start Left Column -->
       <div class="ss_folder">
 <%@ include file="/WEB-INF/jsp/definition_elements/blog/blog_folder_listing.jsp" %>

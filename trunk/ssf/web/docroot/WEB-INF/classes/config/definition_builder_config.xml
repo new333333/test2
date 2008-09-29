@@ -667,11 +667,13 @@
 		<options optionCaption="__standard_entry_options">
 			<option name="folderTitleView" />
 			<option name="dashboardCanvas" initial="true" />
-			<option name="descriptionView" initial="true" />
+			<option name="folderDescriptionView" initial="true" />
 			<option name="folderDataItem" caption="__folder_data_item" 
 				definitionType="5" />
 			<option name="folderList" initial="true" />
-			<option_select path="//item[@category='commonEntryViewData']" />
+			<option_select path="//item[@category='commonEntryViewData']">
+				<exclude name="descriptionView"/>
+			</option_select>
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 		</options>
 	</item>
@@ -686,6 +688,23 @@
 		</jsps>
 	</item>
 	
+	<item name="folderDescriptionView" caption="__description" category="folderViewData" display="view">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__description"/>
+			<property name="viewType" caption="__folder_description_type" type="radio" 
+				  default="this" value="this">
+				<option name="this" caption="__folder_description_this" />
+				<option name="top" caption="__folder_description_top" />
+				<help>ihelp.designers.description_view_type</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_folder_description.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
+		</jsps>
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription"/>
+	</item>
+
 	<item name="folderDataItem" type="dataView"  caption="__folder_data_item" category="folderViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>

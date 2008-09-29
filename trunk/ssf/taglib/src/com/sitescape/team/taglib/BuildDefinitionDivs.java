@@ -438,7 +438,14 @@ public class BuildDefinitionDivs extends TagSupport {
 						String optionPath = e_option.attributeValue("path", "");
 						Iterator itOptionsSelect = rootConfigElement.selectNodes(optionPath).iterator();
 						if (!itOptionsSelect.hasNext()) continue;
-					
+
+						//build list of names to exclude
+						List<Element> excludes = e_option.selectNodes("./exclude");
+						List excludeNames = new ArrayList();
+						for (Element ex:excludes) {
+							excludeNames.add(ex.attributeValue("name"));
+						}
+
 						optionCaption = NLT.getDef(e_option.attributeValue("optionCaption", "").replaceAll("&", "&amp;"));
 						if (!optionCaption.equals("")) {
 							//flush contents of current buffers to make way for new header
@@ -452,6 +459,8 @@ public class BuildDefinitionDivs extends TagSupport {
 						while (itOptionsSelect.hasNext()) {
 							Element optionSelectItem = (Element) itOptionsSelect.next();
 							String optionSelectName = optionSelectItem.attributeValue("name");
+							//this won't work if these items are nested
+							if (excludeNames.contains(optionSelectName)) continue;
 							//See if multiple are allowed
 							if (optionsSeen.containsKey(optionSelectName)) continue;
 							//flag that already handled
@@ -466,8 +475,8 @@ public class BuildDefinitionDivs extends TagSupport {
 								}
 							} else {
 								//build list of names to exclude
-								List<Element> excludes = optionSelect.selectNodes("./exclude");
-								List excludeNames = new ArrayList();
+								excludes = optionSelect.selectNodes("./exclude");
+								excludeNames = new ArrayList();
 								for (Element ex:excludes) {
 									excludeNames.add(ex.attributeValue("name"));
 								}
@@ -695,11 +704,11 @@ public class BuildDefinitionDivs extends TagSupport {
 								sb.append("</option>\n");
 								optionCount++;
 							} else if (type.equals("radio")) {
+								sb.append("<br/>\n");
 								sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 								sb.append(selection.attributeValue("name", ""));
 								sb.append("\"").append(checked).append("/>");
 								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", "")).replaceAll("&", "&amp;")));
-								sb.append("<br/>\n");
 							}
 						}
 						//See if there are any items to be shown from the "sourceRoot"
@@ -766,11 +775,11 @@ public class BuildDefinitionDivs extends TagSupport {
 											sb.append("</option>\n");
 											optionCount++;
 										} else if (type.equals("radio")) {
+											sb.append("<br/>\n");
 											sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 											sb.append(entryFormItemNamePropertyName);
 											sb.append("\"").append(checked).append("/>");
 											sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", "")).replaceAll("&", "&amp;")));
-											sb.append("<br/>\n");
 										}
 									}
 								}

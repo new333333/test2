@@ -428,7 +428,8 @@ public class ListProfilesController extends   SAbstractController {
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
 			adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-			String title = NLT.get("toolbar.new") + ": " + NLT.getDef(def.getTitle());
+			String[] nltArgs = new String[] {NLT.getDef(def.getTitle())};
+			String title = NLT.get("toolbar.new_with_arg", nltArgs);
 			Map qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
 			qualifiers.put("highlight", new Boolean(true));

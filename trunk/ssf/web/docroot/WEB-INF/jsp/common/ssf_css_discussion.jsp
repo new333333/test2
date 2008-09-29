@@ -310,7 +310,7 @@ a.ss_new_thread:hover {
 	
 /**** INLINE NAVBAR STYLE ************/
 
-#ss_navbar_inline {
+.ss_navbar_inline {
 	font-size: 12px;
 	padding:1px 0px 0px 0px;
 	line-height: 16px;
@@ -319,21 +319,21 @@ a.ss_new_thread:hover {
  		padding-bottom:3px;
  	</c:if>
 	}
-#ss_navbar_inline ul{
+.ss_navbar_inline ul{
 	margin:2px !important;
 	}	
-#ss_navbar_inline ul li{
+.ss_navbar_inline ul li{
 	display: inline!important;
 	margin-right: 12px!important;
 	}
-#ss_navbar_inline ul a{
+.ss_navbar_inline ul a{
 	color:#666666;
 	}	
-#ss_navbar_inline ul a:hover{
+.ss_navbar_inline ul a:hover{
 	color:#0000FF;
 	font-weight:bold;
 	}
-#ss_navbar_inline ul a:active{
+.ss_navbar_inline ul a:active{
 	font-weight:bold;
 	}	
 .ss_navbar_current {
