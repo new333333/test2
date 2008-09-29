@@ -134,6 +134,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
 	}
+	public BinderModule getBinderModule() {
+		return binderModule;
+	}
 	private LdapModule ldapModule;
 	public void setLdapModule(LdapModule ldapModule) {
 		this.ldapModule = ldapModule;
