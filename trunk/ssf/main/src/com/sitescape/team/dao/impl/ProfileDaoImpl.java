@@ -181,7 +181,10 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		   			//delete dahsboards in Zone = not totally correct, but if we are here the zone is being deleted
 		   			session.createQuery("Delete com.sitescape.team.domain.Dashboard where zoneId=" + binder.getZoneId())
 		   				.executeUpdate();
-		   			
+		   			session.createQuery("Delete com.sitescape.team.domain.EmailAddress where zoneId=" + binder.getZoneId())
+		   				.executeUpdate();
+		   			session.createQuery("Delete com.sitescape.team.domain.SharedEntity where zoneId=" + binder.getZoneId())
+	   				.executeUpdate();
 		   		/*Pre zoneId on each item
   
  		   			session.createQuery("Delete com.sitescape.team.domain.SeenMap where principalId in " + 
@@ -333,6 +336,11 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
  		   			session.createQuery("Delete com.sitescape.team.domain.EmailAddress where principal in (:pList)")
 	   					.setParameterList("pList", entries)
 		   				.executeUpdate();
+		   			session.createQuery("Delete com.sitescape.team.domain.SharedEntity where accessId in (:pList) and accessType=:accessType")
+	   					.setParameterList("pList", entries)
+	   				.setParameter("accessType", SharedEntity.ACCESS_TYPE_PRINCIPAL)
+	   				.executeUpdate();
+
  		   			List types = new ArrayList();
 	       			types.add(EntityIdentifier.EntityType.user.getValue());
 	       			types.add(EntityIdentifier.EntityType.group.getValue());

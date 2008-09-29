@@ -339,6 +339,13 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 		   			  	.setEntity("folder", folder)
 		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
 		   				.executeUpdate();
+		   			//delete shares for these entries
+ 		   			session.createQuery("Delete com.sitescape.team.domain.SharedEntity where entityId in " + 
+ 			   				"(select p.id from com.sitescape.team.domain.FolderEntry p where " +
+		   			  			" p.parentBinder=:folder) and entityType=:entityType")
+		   			  	.setEntity("folder", folder)
+		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.name())
+		   				.executeUpdate();
  		   			//brute force delete of jbpm data structures
    		   			//load top level tokens
  		   		   	Set tokenIds = new HashSet(session.createQuery("select w.tokenId from com.sitescape.team.domain.WorkflowState w where w.owner.owningBinderId=:id")
@@ -404,6 +411,11 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
      		   			session.createQuery("Delete com.sitescape.team.domain.Rating where entityId in (:pList) and entityType=:entityType")
          	   				.setParameterList("pList", ids)
     		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
+    		   				.executeUpdate();
+       		   			//delete shares for these entries
+     		   			session.createQuery("Delete com.sitescape.team.domain.SharedEntity where entityId in (:pList) and entityType=:entityType")
+         	   				.setParameterList("pList", ids)
+    		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.name())
     		   				.executeUpdate();
        		   			//delete subscriptions to these entries
      		   			session.createQuery("Delete com.sitescape.team.domain.Subscription where entityId in (:pList) and entityType=:entityType")
