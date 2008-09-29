@@ -118,7 +118,6 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
 <% // Begins blog page %>
 <div id="ss_blogContent_wrap" >
-<div align="center">
 <table>
 	<tbody>
 	 <tr>
@@ -156,7 +155,7 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
         <!-- Start Right Column -->
       	<td class="ss_blogRightCol" valign="top">
       	<div id="ss_blogNav_wrap">
-<jsp:include page="/WEB-INF/jsp/sidebars/blog_tools.jsp" />
+<jsp:include page="/WEB-INF/jsp/sidebars/blog.jsp" />
 </div>
       	</td><!-- end of Right Column -->
 	   <td width="50%">
@@ -164,6 +163,7 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
     </tr>
 </tbody>
 </table>
+</div>
 <div class="ss_clear_float"></div>
 <c:if test="${!empty ssPageCount && ssPageCount > 1.0}">
 <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />

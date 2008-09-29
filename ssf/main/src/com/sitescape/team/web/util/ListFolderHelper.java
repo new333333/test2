@@ -969,6 +969,7 @@ public class ListFolderHelper {
 		Map entriesMap = bs.getBinderModule().executeSearchQuery(searchFilter, options2);
 		List entries = (List) entriesMap.get(ObjectKeys.SEARCH_ENTRIES);
 		LinkedHashMap monthHits = new LinkedHashMap();
+		Map folderHits = new HashMap();
 		Map monthTitles = new HashMap();
 		Map monthUrls = new HashMap();
 		Iterator itEntries = entries.iterator();
@@ -990,6 +991,14 @@ public class ListFolderHelper {
 				}
 				int hitCount = (Integer) monthHits.get(yearMonth);
 				monthHits.put(yearMonth, new Integer(++hitCount));
+				//Keep track of the hits per folder
+				String entryBinderId = (String)entry.get(Constants.BINDER_ID_FIELD);
+				if (entryBinderId != null) {
+					String monthFolder = yearMonth + "/" + entryBinderId;
+					if (!folderHits.containsKey(monthFolder)) folderHits.put(monthFolder, new Integer(0));
+					int f = (Integer) folderHits.get(monthFolder);
+					folderHits.put(monthFolder, new Integer(++f));
+				}
 			}
 			if (entry.containsKey(Constants.CREATION_YEAR_MONTH_FIELD)) {
 				//TODO - ???
@@ -1012,6 +1021,7 @@ public class ListFolderHelper {
 		entryCommunityTags = BinderHelper.determineSignBeforeTag(entryCommunityTags, "");
 		entryPersonalTags = BinderHelper.determineSignBeforeTag(entryPersonalTags, "");
 		model.put(WebKeys.BLOG_MONTH_HITS, monthHits);
+		model.put(WebKeys.BLOG_MONTH_FOLDER_HITS, folderHits);
 		model.put(WebKeys.BLOG_MONTH_TITLES, monthTitles);
 		model.put(WebKeys.BLOG_MONTH_URLS, monthUrls);
 		model.put(WebKeys.FOLDER_ENTRYTAGS, entryCommunityTags);

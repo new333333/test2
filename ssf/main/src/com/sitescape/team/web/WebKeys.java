@@ -530,6 +530,7 @@ public class WebKeys {
 	public static final String BLOG_ENTRY="ssBlogEntry"; 
 	public static final String BLOG_FOLDER_COMMUNITY_TAGS="ssBlogFolderCommunityTags"; 
 	public static final String BLOG_FOLDER_PERSONAL_TAGS="ssBlogFolderPersonalTags"; 
+	public static final String BLOG_MONTH_FOLDER_HITS="ssBlogMonthFolderHits"; 
 	public static final String BLOG_MONTH_HITS="ssBlogMonthHits"; 
 	public static final String BLOG_MONTH_TITLES="ssBlogMonthTitles"; 
 	public static final String BLOG_MONTH_URLS="ssBlogMonthUrls"; 
