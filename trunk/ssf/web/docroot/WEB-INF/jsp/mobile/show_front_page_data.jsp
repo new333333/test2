@@ -44,7 +44,7 @@
 
 <c:if test="${!empty ss_mobileBinderList}">
 <div>
-  <scan class="ss_bold"><ssf:nlt tag="portlet.title.bookmarks"/></span>
+  <span class="ss_bold"><ssf:nlt tag="portlet.title.bookmarks"/></span>
 </div>
 <table class="ss_mobile" cellspacing="0" cellpadding="0">
 <c:forEach var="binder" items="${ss_mobileBinderList}">

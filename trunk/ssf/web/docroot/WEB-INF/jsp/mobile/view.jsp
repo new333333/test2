@@ -32,6 +32,7 @@
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <c:set var="ss_noEnableAccessibleLink" value="1" scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body>
 <style>
 .ss_mobile, .ss_mobile td, .ss_mobile th {
   font-family: Lucida Sans Unicode, Arial, sans-serif;
@@ -39,3 +40,5 @@
 }
 </style>
 <%@ include file="/WEB-INF/jsp/mobile/show_front_page_data.jsp" %>
+</body>
+</html>

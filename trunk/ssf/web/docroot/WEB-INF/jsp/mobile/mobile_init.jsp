@@ -40,7 +40,9 @@
 <head>
 <META http-equiv="Content-Script-Type" content="text/javascript">
 <META http-equiv="Content-Style-Type" content="text/css">
+<META name = "viewport" content = "width = 320">
 <jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_mobile_head.jsp" />
+<c:if test="${!empty ss_windowTitle}"><title>${ss_windowTitle}</title></c:if>
 <%
 	if (isWap) {
 %>
@@ -61,6 +63,8 @@ function ss_resizeMobileIframe() {
 		if (ss_tryToResizeLater == 1) {
 			ss_tryToResizeLater = 0
 			setTimeout("self.ss_resizeMobileIframe();", 500)
+		} else {
+			//window.resizeTo(300, 400)
 		}
 	}
 }
