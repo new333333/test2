@@ -91,6 +91,7 @@ import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.IndexNode;
 import com.sitescape.team.domain.SimpleName;
+import com.sitescape.team.domain.SharedEntity;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.TemplateBinder;
@@ -310,6 +311,16 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   				.setLong("entityId", binder.getId())
 		   				.setParameter("entityType", binder.getEntityType().getValue())
 		   				.executeUpdate();
+		   			//delete shares of this folder
+		   			session.createQuery("Delete com.sitescape.team.domain.SharedEntity where entityId=:entityId and entityType=:entityType")
+	   					.setLong("entityId", binder.getId())
+	   					.setParameter("entityType", binder.getEntityType().name())
+	   					.executeUpdate();
+		   			//delete shared for this team
+		   			session.createQuery("Delete com.sitescape.team.domain.SharedEntity where accessId=:accessId and accessType=:accessType")
+	   				.setLong("accessId", binder.getId())
+	   				.setParameter("accessType", SharedEntity.ACCESS_TYPE_TEAM)
+	   				.executeUpdate();
 		   			//delete tags on this binder
 		   			session.createQuery("Delete com.sitescape.team.domain.Tag where entity_id=:entityId and entity_type=:entityType")
 		   				.setLong("entityId", binder.getId())
