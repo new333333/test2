@@ -44,6 +44,7 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.mock.jndi.SimpleNamingContextBuilder;
 import org.springframework.test.context.ContextConfiguration;
@@ -127,8 +128,8 @@ public abstract class AbstractTestBase extends AbstractTransactionalJUnit4Spring
 	 * @see org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests#setDataSource(javax.sql.DataSource)
 	 */
 	@Override
-	@Resource(name = "dataSource")
-	public void setDataSource(DataSource dataSource) {
+	@Autowired
+	public void setDataSource(@Qualifier("dataSource") DataSource dataSource) {
 		super.setDataSource(dataSource);
 	}
 

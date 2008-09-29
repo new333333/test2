@@ -89,7 +89,7 @@
  			<fileset dir="resources/slide-war" excludes="WEB-INF/*.tmpl,WEB-INF/*.web.xml,WEB-INF/*.jboss-web.xml,WEB-INF/*.context.xml" />
 		</copy>
 		<copy file="${jar.file}" todir="${temp.dir}/WEB-INF/lib" />
-		<copy file="${basedir}/../lib/spring-2.5.4.jar" todir="${temp.dir}/WEB-INF/lib" />
+		<copy file="${basedir}/../lib/spring.jar" todir="${temp.dir}/WEB-INF/lib" />
 	</target>
 	
 	<target name="war" depends="apply-changes">		

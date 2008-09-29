@@ -7,13 +7,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.lang.RandomStringUtils;
 import org.dom4j.Element;
 import org.dom4j.tree.DefaultElement;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockPageContext;
 import org.springframework.mock.web.MockServletContext;
@@ -40,7 +39,8 @@ import com.sitescape.team.web.util.WebUrlUtil;
 
 public class AttachmentUrlTagTest extends AbstractTestBase {
 	
-	@Resource(name = "defaultFolderCoreProcessor")
+	@Autowired
+	@Qualifier("defaultFolderCoreProcessor")
 	private EntryProcessor entries;
 	@Autowired
 	private TemplateModule templates;
