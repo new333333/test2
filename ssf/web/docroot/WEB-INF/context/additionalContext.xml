@@ -2,26 +2,6 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../dtd/spring-beans.dtd">
 
 <beans>
-		
-	<!-- Hibernate session factory -->
-	<bean id="sessionFactory" class="com.sitescape.team.spring.orm.hibernate3.LocalSessionFactoryBean">
-		<property name="lobHandler"><ref bean="lobHandler"/></property>
-		<property name="configFiles">
-			<list>
-				<value>com/sitescape/team/domain/hibernate.cfg.xml</value>
-				<value>optional:config/hibernate-ext.cfg.xml</value>
-			</list>
-		</property>
-		<property name="entityInterceptor"><ref bean="zoneInterceptor"/></property>
-		
-		<!-- Hibernate properties are loaded from a separate file - hibernate.properties -->
-	</bean>
-	<!-- ========================= Data Access (DAO) Components ====================== -->
-	<bean id="folderDao" class="com.sitescape.team.dao.impl.FolderDaoImpl">
-		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
-		<property name="coreDao"><ref bean="coreDao"/></property>
-	</bean>
-
 	<!-- ============================== Modules ============================= -->
 
 	<bean id="folderModuleTarget" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.folder.impl.BaseFolderModule">
@@ -45,9 +25,9 @@
 		<property name="ldapModule"><ref bean="ldapModule"/></property>
 		<property name="scheduleModules">
 			<list>
-				<ref bean="folderModule"/>
-				<ref bean="licenseModule"/>
-				<ref bean="mailModule"/>
+			<ref bean="folderModule"/>
+			<ref bean="licenseModule"/>
+			<ref bean="mailModule"/>
 			</list>
 		</property>
 	</bean>
@@ -70,7 +50,7 @@
 	</bean>
 	
 	<bean id="licenseManager" class="com.sitescape.team.license.impl.NullLicenseManager"/>
-
+	
 	<!-- ============================== Document Converter ============================ -->
 
 	<!-- View file as HTML manager implementation -->

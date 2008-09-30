@@ -63,6 +63,22 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 		</xsl:otherwise>
 	</xsl:choose>
 	<xsl:choose>
+		<xsl:when test="$doc2/zoneConfiguration/ldapConfiguration/userFilter">
+			<xsl:copy-of select="$doc2/zoneConfiguration/ldapConfiguration/userFilter"/>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:copy-of select="./userFilter" />
+		</xsl:otherwise>
+	</xsl:choose>
+	<xsl:choose>
+		<xsl:when test="$doc2/zoneConfiguration/ldapConfiguration/groupFilter">
+			<xsl:copy-of select="$doc2/zoneConfiguration/ldapConfiguration/groupFilter"/>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:copy-of select="./groupFilter" />
+		</xsl:otherwise>
+	</xsl:choose>
+	<xsl:choose>
 		<xsl:when test="$doc2/zoneConfiguration/ldapConfiguration/userMapping">
 			<xsl:copy-of select="$doc2/zoneConfiguration/ldapConfiguration/userMapping"/>
 		</xsl:when>
