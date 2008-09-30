@@ -475,14 +475,14 @@ ul.ss_dropdownmenu li {
   	}
 table.ss_popup {
 	position: relative;
-	background-color: transparent;
+	background-color: #ffffff;
 	border: 1px solid ${ss_toolbar1_background_color};
 	}
 div.ss_popup_top {
   	position: relative;
   	background-image: url(<html:imagesPath/>pics/background_base_title_bar.jpg);
   	background-repeat: repeat-x;
-  	/* height: 14px; */
+  	height: 14px; 
   padding: 0px;
 	}
 div.ss_popup_title {
@@ -498,7 +498,7 @@ div.ss_popup_close {
   	background-image: url(<html:imagesPath/>pics/popup_close_box.gif);
  	background-repeat: no-repeat;
   	width: 12px;
-  	/* height: 13px; */
+  	height: 13px;
   	top: 1px;
   	left: -1px;
 	}
