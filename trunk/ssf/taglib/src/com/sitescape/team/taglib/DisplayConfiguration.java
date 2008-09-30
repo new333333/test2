@@ -93,7 +93,7 @@ public class DisplayConfiguration extends TagSupport {
 	 * not both.
 	 */
 	private boolean processThisItem = false;
-	private DefinableEntity entry;
+	private Object entry;
 
 	private ProfileModule profileModule;
 
@@ -344,7 +344,7 @@ public class DisplayConfiguration extends TagSupport {
 		this.processThisItem = flag;
 	}
 
-	public void setEntry(DefinableEntity entry) {
+	public void setEntry(Object entry) {
 		this.entry = entry;
 	}
 
