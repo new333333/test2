@@ -10,7 +10,7 @@
 -->
 
 <!-- Definitions -->
-<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="classpath:/com/sitescape/team/dtd/definition_builder_config-0.1.xsd">
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../dtd/definition_builder_config.xsd">
 	<definition name="entryTypeDefinition" definitionType="1" caption="__entry_definitions" canBeDeleted="false">		
 		<operations>
 			<operation name="addDefinition" item="entryType" caption="__add_a_new_entry_definition" />
@@ -108,7 +108,23 @@
 		<properties>
 <!-- don't want caption by default -->
 			<property name="caption" caption="__caption" type="text" value=""/>
+			<property name="showPicture" caption="__show_picture" type="boolean" default="false"/>
+			<property name="displayType" caption="__displayType" type="selectbox" default="inline">
+				<option name="inline" caption="__display_inline"/>
+				<option name="leftAligned" caption="__display_left_aligned"/>
+			</property>
 		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option name="titleView" caption="__title" />
+			<option name="entrySignatureView" caption="__entry_signature" />
+			<option name="descriptionView" caption="__description" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="entryWorkflow" caption="__entry_workflow" />
+			<option name="entryAttachments" caption="__entry_attachments" />
+			<option name="entryReplies" caption="__entry_replies" />
+			<option_select path="//item[@category='commonEntryViewData']" />
+			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
+		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_signature.jsp" />
@@ -177,11 +193,15 @@
 			<property name="family" caption="__family" type="selectbox" 
 				  default="" value="">
 				<option name="" caption="__family_unspecified" />
+				<option name="blog" caption="__family_blog" />
 				<option name="calendar" caption="__family_calendar" />
+				<option name="discussion" caption="__family_discussion" />
 				<option name="task" caption="__family_task" />
 				<option name="milestone" caption="__family_milestone" />
 				<option name="photo" caption="__family_photo" />
+				<option name="wiki" caption="__family_wiki" />
 				<option name="file" caption="__family_file" />
+				<option name="miniblog" caption="__family_miniblog" />
 				<help>ihelp.other.definition_family</help>
 			</property>
 			<property name="replyStyle" caption="__reply_style" type="replyStyle" />
@@ -223,6 +243,7 @@
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="title" initial="true" />
+			<option name="guestName" initial="true" />
 			<option name="description" initial="true" />
 			<option name="attachFiles" default="true" initial="true"/>
 			<option name="entryFormButtons" initial="true" />
@@ -301,6 +322,24 @@
 		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEvent"/>
 	</item>
 
+	<item name="guestName" caption="__guestName" type="data" multipleAllowed="false" 
+		category="entryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__guest.default.caption" />
+			<property name="name" caption="__data_name" type="text" readonly="true" value="_guestName"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean"
+				default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/entry_guest_name_form.jsp"/>
+		</jsps>
+		<index apply="true"
+			fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderGuestName"/>
+	</item>
+	
 	<item name="subscribe" caption="__subscribe" multipleAllowed="false" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__subscribe" />
@@ -328,6 +367,7 @@
 				  default="entryView" value="entryView">
 				<option name="entryView" caption="__entry_view" />
 				<option name="guestbook" caption="__entry_guestbook" />
+				<option name="miniblog" caption="__entry_miniblog" />
 				<help>ihelp.designers.view_type</help>
 			</property>
 		</properties>
@@ -340,6 +380,7 @@
 			<option name="entryWorkflow" caption="__entry_workflow" initial="true" />
 			<option name="entryAttachments" caption="__entry_attachments" initial="true" />
 			<option name="entryReplies" caption="__entry_replies" initial="true" />
+			<option_select path="//item[@category='entryViewData']" />
 			<option_select path="//item[@category='commonEntryViewData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 		</options>
@@ -371,6 +412,7 @@
 	    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item" 
 				optionCaption="__data_items_from_the_entry_form">
 				<exclude name="title" />
+				<exclude name="guestName" />
 				<exclude name="description" />
 				<exclude name="attachFiles" />
 		</option_entry_data>
@@ -412,6 +454,7 @@
 				  default="blog" value="blog">
 				<option name="blog" caption="__blog_view" />
 				<option name="guestbook" caption="__entry_guestbook" />
+				<option name="miniblog" caption="__entry_miniblog" />
 				<help>ihelp.designers.view_type</help>
 			</property>
 		</properties>
@@ -507,10 +550,15 @@
 			<property name="family" caption="__family" type="selectbox" 
 				  default="" value="">
 				<option name="" caption="__family_unspecified" />
+				<option name="blog" caption="__family_blog" />
 				<option name="calendar" caption="__family_calendar" />
+				<option name="discussion" caption="__family_discussion" />
+				<option name="photo" caption="__family_photo" />
+				<option name="wiki" caption="__family_wiki" />
 				<option name="task" caption="__family_task" />
 				<option name="milestone" caption="__family_milestone" />
 				<option name="file" caption="__family_file" />
+				<option name="miniblog" caption="__family_miniblog" />
 				<help>ihelp.other.definition_family</help>
 			</property>
 			<property name="icon" caption="__icons.folder" type="iconList" 
@@ -612,17 +660,20 @@
 				<option name="task" caption="__folder_task" />
 				<option name="survey" caption="__folder_survey" />
 				<option name="milestone" caption="__folder_milestone" />
+				<option name="miniblog" caption="__folder_miniblog" />
 				<help>ihelp.designers.view_type</help>
 			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="folderTitleView" />
 			<option name="dashboardCanvas" initial="true" />
-			<option name="descriptionView" initial="true" />
+			<option name="folderDescriptionView" initial="true" />
 			<option name="folderDataItem" caption="__folder_data_item" 
 				definitionType="5" />
 			<option name="folderList" initial="true" />
-			<option_select path="//item[@category='commonEntryViewData']" />
+			<option_select path="//item[@category='commonEntryViewData']">
+				<exclude name="descriptionView"/>
+			</option_select>
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 		</options>
 	</item>
@@ -637,6 +688,23 @@
 		</jsps>
 	</item>
 	
+	<item name="folderDescriptionView" caption="__description" category="folderViewData" display="view">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__description"/>
+			<property name="viewType" caption="__folder_description_type" type="radio" 
+				  default="this" value="this">
+				<option name="this" caption="__folder_description_this" />
+				<option name="top" caption="__folder_description_top" />
+				<help>ihelp.designers.description_view_type</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_folder_description.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
+		</jsps>
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription"/>
+	</item>
+
 	<item name="folderDataItem" type="dataView"  caption="__folder_data_item" category="folderViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
@@ -657,7 +725,6 @@
 	<item name="folderList" caption="__folder_listing" category="folderViewData"  display="view">
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/folder_list.jsp" />
-			<jsp name="template" value="/WEB-INF/jsp/definition_elements/template_list.jsp" />
 		</jsps>
 	</item>
 		
@@ -942,6 +1009,7 @@
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="profileName" initial="true" />
+			<option name="profilePassword" initial="true" />
 			<option name="profileEntryPicture" initial="true" />
 			<option name="profileFirstName" initial="true" />
 			<option name="profileMiddleName" initial="true" />
@@ -950,6 +1018,8 @@
 			<option name="profileMobileEmailAddress" initial="true" />
 			<option name="profileTxtEmailAddress" initial="true" />
 			<option name="profileZonName" initial="true" />
+			<option name="profileTimeZone" initial="true" />
+			<option name="profileLocale" initial="true" />
 			<option name="profileSkypeId" initial="false" />
 			<option name="profileTwitterId" initial="false" />
 			<option name="entryFormButtons" initial="true" />
@@ -978,6 +1048,19 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderName" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderName" />
+	</item>
+	
+	<item name="profilePassword" caption="__profile_password" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__profile_password"/>
+			<property name="name" caption="__data_name" type="text" value="password" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_password_form.jsp" />
+		</jsps>
 	</item>
 	
 	<item name="profileFirstName" caption="__firstName" type="data" 
@@ -1114,6 +1197,32 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+	</item>
+	<item name="profileTimeZone" caption="__timeZone" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData"  display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__timeZone"/>
+			<property name="name" caption="__data_name" type="text" value="timeZone" 
+			  readonly="true" unique="//item[@type='data']"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_timezone_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+	</item>
+	<item name="profileLocale" caption="__locale" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData"  display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__locale"/>
+			<property name="name" caption="__data_name" type="text" value="locale" 
+			  readonly="true" unique="//item[@type='data']"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_locale_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
@@ -1341,6 +1450,7 @@
 				<option name="" caption="__family_unspecified" />
 				<option name="workspace" caption="__family_workspace" />
 				<option name="team" caption="__family_team" />
+				<option name="blog" caption="__family_blog" />
 				<option name="discussion" caption="__family_discussion" />
 				<option name="project" caption="__family_project" />
 				<help>ihelp.other.definition_family</help>
@@ -1635,7 +1745,7 @@
 		</jsps>
 	</item>
 
-	<item name="userListSelectbox" caption="__userListSelectbox" type="data" category="commonEntryData" display="form">
+	<item name="userListSelectbox" caption="__userListSelectbox" type="data" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text"
@@ -1662,7 +1772,7 @@
 		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPrincipalList" />
 	</item>
 	
-	<item name="eventScheduler" caption="__eventScheduler" type="data" category="commonEntryData" display="form">
+	<item name="eventScheduler" caption="__eventScheduler" type="data" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="sourceEventElement" caption="__event_items_from_the_entry_form_for_scheduler" definitionType="1" type="selectbox">
@@ -2168,6 +2278,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/expandable_div.jsp" />
 		</jsps>
+		<help>ihelp.designers.expand_area</help>
 		<notify velocity="expandable_div.vm" />
 	</item>
 		
@@ -2232,6 +2343,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
 		</jsps>
+		<help>ihelp.designers.divider</help>
 		<notify velocity="divider.vm" />
 	</item>
 		
@@ -2352,6 +2464,19 @@
 		</jsps>
 		<notify velocity="table3.vm" />
 	</item>
+
+	<item name="mashupCanvas" caption="__mashup_canvas" category="generalLayout" 
+		type="data" canBeDeleted="true" multipleAllowed="true" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__mashup_canvas"/>
+			<property name="name" caption="__name" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/mashup_canvas_form.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/mashup_canvas.jsp" />
+		</jsps>
+	</item>
+	
 	<item name="html" caption="__html" category="generalLayout" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
@@ -2461,6 +2586,7 @@
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
+		<help>ihelp.designers.custom_jsp</help>
 	</item>
 	<item name="remoteApp" caption="__remoteApp" type="data" category="entryData" display="form">
 		<properties>
@@ -2484,21 +2610,14 @@
 		<help>ihelp.designers.remote_app</help>
 	</item>
 		
-	<item name="remoteAppView" type="dataView" caption="__remoteApp" category="entryViewData" display="view">
+	<item name="remoteAppView" caption="__remoteApp" category="entryViewData" display="view">
 		<properties>
 			<property name="remoteApp" caption="__remoteApp" type="remoteApp"/>
 		</properties>
-		<options optionCaption="__standard_entry_options">
-			<option_select path="//item[@category='commonEntryViewData']" />
-			<option_select definitionType="5" path="//item[@category='folderViewData']" />
-			<option_select definitionType="6" path="//item[@category='profileViewData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
-			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
-			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
-			<option_select definitionType="1" path="//item[@category='entryViewData']" />
-			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
-		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/remote_application_entry_view.jsp" />
+		</jsps>
+		<help>ihelp.designers.remote_app</help>
 	</item>
 		
 <!-- Workflow items -->
@@ -2518,6 +2637,10 @@
 			<property name="initialState" caption="__initialState" type="itemSelect" path="//item[@name='state']" />
 			<property name="endState" caption="__endState" type="itemSelect" 
 				path="//item[@name='state']" multipleAllowed="true"/>
+			<property name="runAs" caption="__workflow_default_runas" type="selectbox" default="binderowner">
+				<option name="entryowner" caption="__workflow_action_runas_entryowner"/>
+				<option name="binderowner" caption="__workflow_action_runas_binderowner"/>
+			</property>
 		</properties>
 
 		<options>
@@ -2548,16 +2671,26 @@
 	<item name="workflowAction" caption="__workflow_action">
 		<properties>
 			<property name="class" caption="__workflow_action_class" type="text" />
-			<property name="runAs" caption="__workflow_action_runas" type="selectbox">
+		</properties>
+	</item>
+
+	<item name="workflowRemoteApp" caption="__remoteApp">
+		<properties>
+			<property name="remoteApp" caption="__remoteApp" type="remoteApp"/>
+			<property name="variable" caption="__workflow_variable_name" type="text" 
+				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" >
+				<help>ihelp.workflow.remoteApp.variable</help>
+			</property>	
+			<property name="runAs" caption="__workflow_action_runas" type="selectbox" default="currentuser">
 				<option name="currentuser" caption="__workflow_action_runas_currentuser"/>
 				<option name="entryowner" caption="__workflow_action_runas_entryowner"/>
 				<option name="binderowner" caption="__workflow_action_runas_binderowner"/>
 			</property>
 		</properties>
 	</item>
-
 	<item name="transitions" caption="__transitions" unique="./item[@name='transitions']">
 		<options>
+			<option name="transitionImmediate" />
 			<option name="transitionManual" />
 			<option name="transitionOnModify" />
 			<option name="transitionOnReply" />
@@ -2571,6 +2704,14 @@
 	</item>
 	
 	<item name="transitionManual" caption="__transitionManual" type="transition" >
+		<properties>
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
+		<options>
+			<option name="variable" caption="__workflow_variable_set_on_transition" />
+		</options>
+	</item>
+	<item name="transitionImmediate" caption="__transitionImmediate" type="transition" >
 		<properties>
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
@@ -2775,10 +2916,12 @@
 			<option name="variable" caption="__workflow_variable_set" />
 			<option name="startParallelThread" />
 			<option name="stopParallelThread" />
+			<option name="startProcess" />
 			<option name="notifications" />
 			<option name="moveEntry" />
 			<option name="copyEntry" />
 			<option name="workflowAction"/>
+			<option name="workflowRemoteApp"/>
 		</options>
 		<help>ihelp.workflow.on_entry</help>
 	</item>
@@ -2789,17 +2932,13 @@
 			<option name="variable" caption="__workflow_variable_set" />
 			<option name="startParallelThread" />
 			<option name="stopParallelThread" />
+			<option name="startProcess" />
 			<option name="notifications" />
 			<option name="moveEntry" />
 			<option name="copyEntry" />
 			<option name="workflowAction"/>
+			<option name="workflowRemoteApp"/>
 		</options>
-	</item>
-	<!-- not implemented yet -->
-	<item name="subProcess" caption="__subProcess" >
-		<properties>
-			<property name="definitionId" caption="__subProcess_name" type="subProcess"/>
-		</properties>
 	</item>
 	<item name="notifications" caption="__notifications"
 		  multipleAllowedInParent="false">
@@ -2830,6 +2969,12 @@
 		<properties>
 			<property name="name" caption="__parallelStateName" type="itemSelect" path="//item[@name='parallelThread']" />
 		</properties>
+	</item>
+	<item name="startProcess" caption="__startProcess" >
+		<properties>
+			<property name="definitionId" caption="__process" type="subProcess" />
+		</properties>
+		<help>ihelp.workflow.process</help>
 	</item>
 	
 	<item name="waitForParallelThread" caption="__waitForParallelThread" type="transition" >
