@@ -118,6 +118,7 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
 <% // Begins blog page %>
 <div id="ss_blogContent_wrap" >
+<c:set var="currentPage" value="${ssBinder.id}"/>
 <table>
 	<tbody>
 	 <tr>
@@ -134,8 +135,12 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 	     <ul>
 	     <c:forEach var="blogPage" items="${ssBlogPages}">
 	       <li>
-	         <a href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"><ssf:param 
-	         name="yearMonth" value="${ss_yearMonth}" /></ssf:url>"
+	         <a class="ss_link_8
+	         		<c:if test="${blogPage.id == currentPage}"> ss_navbar_current</c:if>
+					<c:if test="${blogPage.id != currentPage}"></c:if>
+	         	" 
+	         	href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"><ssf:param 
+	         	name="yearMonth" value="${ss_yearMonth}" /></ssf:url>"
 	         >${blogPage.title}</a>
 	       </li>
 	     </c:forEach>
