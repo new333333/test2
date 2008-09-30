@@ -47,6 +47,11 @@ public interface ObjectKeys {
 	//Original zoneId for V1 zones
 	public static final String DEFAULT_ZONE_ID_FOR_V1="1";
 	
+	//Reserved template and definition names
+	public static final String DEFAULT_TEMPLATE_NAME_BLOG="_folder_blog";
+	public static final String DEFAULT_TEMPLATE_NAME_MINIBLOG="_folder_miniblog";
+	public static final String DEFAULT_TEMPLATE_NAME_PHOTO="_folder_photo";
+		
 	// reserved internalIds for Definitions (not necessarily databaseId)
 	public static final String DEFAULT_DISCUSSIONS_WORKSPACE_DEF="402880e619c6250f0119c62794b9000c";
 	public static final String DEFAULT_FOLDER_DEF="402883b90cc53079010cc539bf260001";

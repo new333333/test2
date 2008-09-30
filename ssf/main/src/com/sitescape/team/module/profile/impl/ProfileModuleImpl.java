@@ -745,21 +745,16 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
  		try {	
   			if (!entry.isReserved() || (!ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(entry.getInternalId()) &&
  					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
-				List<Definition> defs = getDefinitionModule().getDefinitions(null, Boolean.FALSE, Definition.FOLDER_VIEW);
-				for (Definition def:defs) {
-					if (ObjectKeys.DEFAULT_FOLDER_MINIBLOG_DEF.equals(def.getInternalId())) {
-						Map data = new HashMap(); // Input data
-						data.put(ObjectKeys.FIELD_ENTITY_TITLE, mbTitle);
-						Long miniBlogId = getBinderModule().addBinder(entry.getWorkspaceId(), def.getId(), 
-								new MapInputData(data), null, null);
-	  					if (miniBlogId != null) 
-	  						miniBlog = (Folder)getCoreDao().loadBinder(miniBlogId, entry.getZoneId());
-	  					break;
-  					}
+				TemplateBinder miniblogTemplate = getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_MINIBLOG);
+				if (miniblogTemplate != null) {
+					Long miniBlogId = getTemplateModule().addBinder(miniblogTemplate.getId(), 
+							entry.getWorkspaceId(), mbTitle, null);
+  					if (miniBlogId != null) 
+  						miniBlog = (Folder)getCoreDao().loadBinder(miniBlogId, entry.getZoneId());
   				}
   			}
-   		} catch (WriteFilesException wf) {
-   			logger.error("Error create user MiniBlog: ", wf);
+   		} catch (Exception e) {
+   			logger.error("Error create user MiniBlog: ", e);
    		}
   		
         return miniBlog;
