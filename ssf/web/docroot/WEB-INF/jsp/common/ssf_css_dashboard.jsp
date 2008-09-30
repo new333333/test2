@@ -597,7 +597,7 @@ div.ss_canvas {
 	}	
 	/* PEOPLE LINKS */
 .ss_link_1, .ss_link_1 span { 
-	font-size:12px;
+	font-size:${ss_style_font_normalprint};
 	font-style: italic;
 	font-weight: 200;
 	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
@@ -608,24 +608,24 @@ div.ss_canvas {
 .ss_link_2, .ss_link_2 span	{
 	text-decoration: underline!important;
 	color:#777!important;
-	font-size:11px!important;
+	font-size:${ss_style_font_smallprint}!important;
 	}
 	/* ENTRY LINKS*/	
 .ss_link_3, .ss_link_3 span	{
 	color:#555!important;
-	font-size:12px!important;
+	font-size:${ss_style_font_normalprint}!important;
 	font-weight: bold !important;
 	}
 .ss_link_4, .ss_link_4 span{
 	text-decoration: none!important;
 	color:#888!important;
-	font-size:11px!important;
+	font-size:${ss_style_font_smallprint}!important;
 	padding-left:6px;
 	}
 .ss_link_5, .ss_link_5 span	{
 	text-decoration: underline!important;
 	color:#888!important;
-	font-size:11px!important;
+	font-size:${ss_style_font_smallprint}!important;
 	line-height:14px;
 	}
 /*======THIS IS FOR THE DISCUSSION PAGE STYLE========*/
@@ -644,7 +644,7 @@ div.ss_canvas {
 .ss_link_8, .ss_link_8 span{
 	font-family: ${ss_style_folder_view_font_family};
 	color:#5A9A98!important;
-	font-size:12px;
+	font-size:${ss_style_font_normalprint};
 	}
 				
 /* ============ End link styles =========================== */		
@@ -689,7 +689,6 @@ div.ss_canvas {
     font-size:93%;
     line-height:normal;
     border-bottom: 1px solid #666;
-    border-right: 10px solid #666;
     margin-top:0px
       }
  #ss_tabsC ul {

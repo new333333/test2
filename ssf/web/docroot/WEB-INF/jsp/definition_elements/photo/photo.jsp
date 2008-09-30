@@ -77,6 +77,7 @@ function ss_setPhotoIframeSize${renderResponse.namespace}() {
 </div>
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
 <jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
+<c:set var="currentAlbum" value="${ssBinder.id}"/>
 <table cellspacing="0" cellpadding="0" width="100%">
   <tbody>
 	 <tr>
@@ -85,7 +86,11 @@ function ss_setPhotoIframeSize${renderResponse.namespace}() {
 	     <ul>
 	     <c:forEach var="blogPage" items="${ssBlogPages}">
 	       <li>
-	         <a href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"><ssf:param 
+	         <a class="ss_link_8
+	         		<c:if test="${blogPage.id == currentAlbum}"> ss_navbar_current</c:if>
+					<c:if test="${blogPage.id != currentAlbum}"></c:if>
+	         "
+	         href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"><ssf:param 
 	         name="yearMonth" value="${ss_yearMonth}" /></ssf:url>"
 	         >${blogPage.title}</a>
 	       </li>
