@@ -331,10 +331,10 @@ a.ss_new_thread:hover {
 	}	
 .ss_navbar_inline ul a:hover{
 	color:#0000FF;
-	font-weight:bold;
+/*	font-weight:bold;	*/
 	}
 .ss_navbar_inline ul a:active{
-	font-weight:bold;
+/*	font-weight:bold;	*/
 	}	
 .ss_navbar_current {
 	font-weight: bold !important;
