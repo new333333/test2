@@ -70,12 +70,12 @@
     			  <span class="ss_title_th1">
     				<a 
     				  <c:if test="${binder._entityType == 'workspace'}">
-      				    href="<ssf:url 
+      				    href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
         			    action="view_ws_listing"
         			    binderId="${binder._docId}"/>"
 			  		  </c:if>
 			  		  <c:if test="${binder._entityType == 'profiles'}">
-      					href="<ssf:url 
+      					href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
         				action="view_ws_listing"
         				binderId="${binder._docId}"/>"
     				  </c:if>
@@ -108,10 +108,14 @@
         					<span class="ss_title_th1">
         					<a 
           						<c:if test="${subBinder._entityType == 'workspace'}">
-            					  href="<ssf:url action="view_ws_listing" binderId="${subBinder._docId}"/>"
+            					  href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+            					  action="view_ws_listing" 
+            					  binderId="${subBinder._docId}"/>"
           						</c:if>
           						<c:if test="${subBinder._entityType == 'profiles'}">
-            					  href="<ssf:url action="view_profile_listing" binderId="${subBinder._docId}"/>"
+            					  href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+            					  action="view_profile_listing" 
+            					  binderId="${subBinder._docId}"/>"
           						</c:if>
         					>${subBinder.title}
         					</a>
@@ -160,7 +164,9 @@
       				  <div id="ss_topic_thread">
         				<div style="padding-left:10px;">
        						<img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle" <ssf:alt tag="folder"/>/> 
-        					<a href="<ssf:url action="view_folder_listing" binderId="${subBinder._docId}"/>">
+        					<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
+        					action="view_folder_listing" 
+        					binderId="${subBinder._docId}"/>">
           					  <span>${subBinder.title}</span>
         					</a>
         					<c:set var="ss_binderNumbers4" value="${ss_binderUnseenCounts[subBinder._docId].count}"/>
@@ -186,7 +192,9 @@
   		<c:if test="${binder._entityType == 'folder'}">
   			<div id="ss_topic_title" class="ss_disc_folder_th1">
     			<span class="ss_title_th1">
-    			  <a href="<ssf:url action="view_folder_listing" binderId="${binder._docId}"/>">
+    			  <a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+    			    action="view_folder_listing" 
+    			    binderId="${binder._docId}"/>">
       				${binder.title}
     			  </a>
     			</span> 

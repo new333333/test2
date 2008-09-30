@@ -54,7 +54,7 @@
 <div style="padding-bottom:10px;">
 <span style="ss_fineprint ss_light">
 <a
-  href="<ssf:url 
+  href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
   folderId="${ssDefinitionEntry.parentBinder.id}" 
   entryId="${nextEntry.id}" 
   action="view_folder_entry"/>"
@@ -84,7 +84,8 @@ ${nextEntry.docNumber}.
 		namespace="${renderResponse.namespace}_${ssDefinitionEntry.id}">
 	
 			<ssf:param name="url" useBody="true">
-				<ssf:url adapter="true" portletName="ss_forum" folderId="${ssDefinitionEntry.parentFolder.id}" 
+				<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+				folderId="${ssDefinitionEntry.parentFolder.id}" 
 				action="view_folder_entry" entryId="${ssDefinitionEntry.id}" actionUrl="true" ><ssf:param
 				name="namespace" value="${ss_title_namespace}"/></ssf:url>
 			</ssf:param>

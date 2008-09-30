@@ -484,8 +484,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	</c:if>
 	
   	<a  class="ss_new_thread"
-  	href="<ssf:url     
-    adapter="<%= useAdaptor %>" 
+  	href="<ssf:url crawlable="true"
+    adapter="true" 
     portletName="ss_forum" 
     binderId="${ssBinder.id}" 
     action="view_folder_entry" 

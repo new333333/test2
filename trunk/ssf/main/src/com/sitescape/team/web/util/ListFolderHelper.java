@@ -78,6 +78,7 @@ import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Subscription;
+import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.AuditTrail.AuditType;
@@ -1211,52 +1212,42 @@ public class ListFolderHelper {
 		}
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			if (bs.getBinderModule().testAccess(folder, BinderOperation.addFolder)) {
-				String blogDefId = "";
-				List<Definition> defs = bs.getDefinitionModule().getDefinitions(null, Boolean.FALSE, Definition.FOLDER_VIEW);
-				for (Definition def:defs) {
-					if (ObjectKeys.DEFAULT_FOLDER_BLOG_DEF.equals(def.getInternalId())) {
-						blogDefId = def.getId().toString();
-	  					break;
-  					}
-  				}
-				Map qualifiers = new HashMap();
-				qualifiers.put("popup", new Boolean(true));
-				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
-	        	Binder blogSetBinder = (Binder) model.get(WebKeys.BLOG_SET_BINDER);
-	        	if (blogSetBinder != null) {
-	        		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, blogSetBinder.getId().toString());
-	        	} else {
-	        		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
-	        	}
-				adapterUrl.setParameter(WebKeys.URL_BINDER_DEF_ID, blogDefId);
-				entryToolbar.addToolbarMenu("1_add_folder", NLT.get("toolbar.menu.add_blog_folder"), 
-						adapterUrl.toString(), qualifiers);
+				TemplateBinder blogTemplate = bs.getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_BLOG);
+				if (blogTemplate != null) {
+					Map qualifiers = new HashMap();
+					qualifiers.put("popup", new Boolean(true));
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+		        	Binder blogSetBinder = (Binder) model.get(WebKeys.BLOG_SET_BINDER);
+		        	if (blogSetBinder != null) {
+		        		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, blogSetBinder.getId().toString());
+		        	} else {
+		        		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+		        	}
+					adapterUrl.setParameter(WebKeys.URL_TEMPLATE_NAME, ObjectKeys.DEFAULT_TEMPLATE_NAME_BLOG);
+					entryToolbar.addToolbarMenu("1_add_folder", NLT.get("toolbar.menu.add_blog_folder"), 
+							adapterUrl.toString(), qualifiers);
+				}
 			}
 		}		
 		if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
 			if (bs.getBinderModule().testAccess(folder, BinderOperation.addFolder)) {
-				String blogDefId = "";
-				List<Definition> defs = bs.getDefinitionModule().getDefinitions(null, Boolean.FALSE, Definition.FOLDER_VIEW);
-				for (Definition def:defs) {
-					if (ObjectKeys.DEFAULT_FOLDER_PHOTO_ALBUM_DEF.equals(def.getInternalId())) {
-						blogDefId = def.getId().toString();
-	  					break;
-  					}
-  				}
-				Map qualifiers = new HashMap();
-				qualifiers.put("popup", new Boolean(true));
-				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
-	        	Binder blogSetBinder = (Binder) model.get(WebKeys.BLOG_SET_BINDER);
-	        	if (blogSetBinder != null) {
-	        		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, blogSetBinder.getId().toString());
-	        	} else {
-	        		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
-	        	}
-				adapterUrl.setParameter(WebKeys.URL_BINDER_DEF_ID, blogDefId);
-				entryToolbar.addToolbarMenu("1_add_folder", NLT.get("toolbar.menu.add_photo_album_folder"), 
-						adapterUrl.toString(), qualifiers);
+				TemplateBinder photoTemplate = bs.getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_PHOTO);
+				if (photoTemplate != null) {
+					Map qualifiers = new HashMap();
+					qualifiers.put("popup", new Boolean(true));
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+		        	Binder blogSetBinder = (Binder) model.get(WebKeys.BLOG_SET_BINDER);
+		        	if (blogSetBinder != null) {
+		        		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, blogSetBinder.getId().toString());
+		        	} else {
+		        		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+		        	}
+					adapterUrl.setParameter(WebKeys.URL_TEMPLATE_NAME, ObjectKeys.DEFAULT_TEMPLATE_NAME_PHOTO);
+					entryToolbar.addToolbarMenu("1_add_folder", NLT.get("toolbar.menu.add_photo_album_folder"), 
+							adapterUrl.toString(), qualifiers);
+				}
 			}
 		}		
 	}
