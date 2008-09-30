@@ -28,8 +28,6 @@
  */
 package com.sitescape.team.module.shared;
 
-import static com.sitescape.team.util.Maybe.maybe;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -41,7 +39,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.dom4j.Element;
-import org.dom4j.Node;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -54,7 +51,6 @@ import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.util.LongIdUtil;
-import com.sitescape.team.util.CollectionUtil.Func1;
 import com.sitescape.util.Validator;
 
 public class XmlUtils {
@@ -248,12 +244,5 @@ public class XmlUtils {
 		 List ids = ci.getCoreDao().loadObjects("select id from com.sitescape.team.domain.Principal where zoneId=:zoneId and name in (:name)", filter);
 		 return new HashSet(ids);
 	 }
-	
-	public static String maybeGetText(Node context, String xpath, String alternative) {
-		return maybe(context.selectSingleNode(xpath)).and(new Func1<Node, String>() {
-			public <Source extends Node> String apply(Source x) {
-				return x.getText();
-			}}, alternative);
-	}
 
 }

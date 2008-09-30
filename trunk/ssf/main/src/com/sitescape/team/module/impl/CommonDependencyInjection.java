@@ -31,7 +31,6 @@ package com.sitescape.team.module.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.Scheduler;
-import org.springframework.beans.factory.annotation.Required;
 
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.FolderDao;
@@ -79,50 +78,39 @@ public abstract class CommonDependencyInjection {
 	protected LicenseManager licenseManager;
 	protected AccessTokenManager accessTokenManager;
 	
-	@Required
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
 	}
-	@Required
 	public void setAclManager(AclManager aclManager) {
 		this.aclManager = aclManager;
 	}
-	@Required
 	public void setCoreDao(CoreDao coreDao) {
 		this.coreDao = coreDao;
 	}
-	@Required
 	public void setFolderDao(FolderDao folderDao) {
 		this.folderDao = folderDao;
 	}
-	@Required
 	public void setProfileDao(ProfileDao profileDao) {
 		this.profileDao = profileDao;
 	}
-	@Required
 	public void setFunctionManager(FunctionManager functionManager) {
 		this.functionManager = functionManager;
 	}
-	@Required
 	public void setProcessorManager(ProcessorManager processorManager) {
 		this.processorManager = processorManager;
 	}
-	@Required
 	public void setScheduler(Scheduler scheduler) {
 		this.scheduler = scheduler;
 	}
-	@Required
 	public void setLuceneSessionFactory(LuceneSessionFactory luceneSessionFactory) {
 		this.luceneSessionFactory = luceneSessionFactory;
 	}
 	public void setPresenceService(PresenceManager presenceService) {
 		this.presenceService = presenceService;
 	}
-	@Required
 	public LuceneSessionFactory getLuceneSessionFactory() {
 		return luceneSessionFactory;
 	}
-	@Required
 	public AccessControlManager getAccessControlManager() {
 		return accessControlManager;
 	}
@@ -150,7 +138,6 @@ public abstract class CommonDependencyInjection {
 	public PresenceManager getPresenceService() {
 		return presenceService;
 	}
-	@Required
 	public void setWorkAreaFunctionMembershipManager(WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager) {
 		this.workAreaFunctionMembershipManager=workAreaFunctionMembershipManager;
 	}
@@ -160,21 +147,18 @@ public abstract class CommonDependencyInjection {
 	public ResourceDriverManager getResourceDriverManager() {
 		return resourceDriverManager;
 	}
-	@Required
 	public void setResourceDriverManager(ResourceDriverManager resourceDriverManager) {
 		this.resourceDriverManager = resourceDriverManager;
 	}
 	public LicenseManager getLicenseManager() {
 		return licenseManager;
 	}
-	@Required
 	public void setLicenseManager(LicenseManager licenseManager) {
 		this.licenseManager = licenseManager;
 	}
 	public AccessTokenManager getAccessTokenManager() {
 		return accessTokenManager;
 	}
-	@Required
 	public void setAccessTokenManager(AccessTokenManager accessTokenManager) {
 		this.accessTokenManager = accessTokenManager;
 	}

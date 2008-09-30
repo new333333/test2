@@ -54,10 +54,6 @@ public class SessionUtil {
 	public static void sessionStartup() {
 		//open shared session
 		Session session = SessionFactoryUtils.getSession(getSessionFactory(), true);
-		if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
-			// XXX required in multi-threaded invocation context, remove ASAP!!!
-			TransactionSynchronizationManager.unbindResource(sessionFactory);
-		}
 		TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));		
 	}
 	public static void sessionStartup(Interceptor interceptor) {
@@ -85,13 +81,5 @@ public class SessionUtil {
 	   	if (TransactionSynchronizationManager.hasResource(getSessionFactory())) return true;
 	   	return false;
 		
-	}
-	
-	/**
-	 * This setter has been added for testing because of the inflexible architecture of this class.
-	 * @param sessionFactory
-	 */
-	public static void setSessionFactory(SessionFactory sessionFactory) {
-		SessionUtil.sessionFactory = sessionFactory;
 	}
 }

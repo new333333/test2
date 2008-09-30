@@ -42,6 +42,7 @@ import org.dom4j.Document;
 
 import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.ApplicationGroup;
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;

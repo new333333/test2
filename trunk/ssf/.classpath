@@ -34,6 +34,8 @@
 	<classpathentry exported="true" kind="lib" path="lib/axis-ant.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-collections.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-httpclient.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-lang.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/concurrent.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dom4j.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxrpc.jar"/>
@@ -52,11 +54,14 @@
 	<classpathentry exported="true" kind="lib" path="lib/jtds.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bsh.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dbunit-2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/easymock.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jakarta-slide-webdavlib.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mail.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-discovery.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/saaj.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/wsdl4j.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/wss4j.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xmlrpc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/addressing.jar"/>
@@ -100,45 +105,17 @@
 	<classpathentry exported="true" kind="lib" path="ws-client/ssf-wsclient.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/velocity-tools-view.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-test.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc-portlet.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mina-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mina-filter-ssl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mina-integration-jmx.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/slf4j-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/subethasmtp.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-net.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-fileupload.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jbpm.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-ldap.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-core.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/slf4j-log4j12.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/antlr.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/asm.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/asm-attrs.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/backport-concurrent.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk15.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-dbcp.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-digester.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-io.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/easymock-2.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/easymockclassextension-2.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackrabbit-spi.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackrabbit-spi-commons.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jsp-api-2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jstl.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jstl-impl.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/junit-4.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/mysql-connector.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ojdbc14.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/oro.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/util-bridges.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/util-taglib.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/xercesImpl.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/xmlrpc-2.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-fileupload.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-lang.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-logging.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc-portlet.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc.jar"/>
-	<classpathentry kind="lib" path="lib/jsp-api.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>

@@ -45,9 +45,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 	<% // Share %>
   	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_share.jsp" />
-
-	<% // Email %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" />  	
 	
 <%--
 * The following line is used to call customer supplied customizations.
@@ -79,6 +76,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 	<!-- Search Tag cloud -->
 	<jsp:include page="/WEB-INF/jsp/search/tags.jsp" />
+
+	<% // Email %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" />
 	
 	<% // Team Sidebar %>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_team.jsp" />

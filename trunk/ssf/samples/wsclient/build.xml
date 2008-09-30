@@ -17,7 +17,7 @@
 		<mkdir dir="lib"/>
 		<!-- Copy Teaming WS client library -->
 		<copy file="${project.dir}/ws-client/ssf-wsclient.jar" todir="lib"/>
-		<copy file="${project.dir}/util-search/ssf-util-search.jar" todir="lib"/>
+		<copy file="${project.dir}/util/ssf-util-search.jar" todir="lib"/>
 		<!-- Copy libraries needed by the Teaming WS client library -->
 		<copy todir="lib">
 			<fileset dir="${project.dir}/lib"

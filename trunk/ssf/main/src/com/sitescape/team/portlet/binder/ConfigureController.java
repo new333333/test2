@@ -233,7 +233,7 @@ public class ConfigureController extends AbstractBinderController {
 			}
 			model.put(WebKeys.SIMPLE_EMAIL_HOSTNAME, hostname);
 			model.put(WebKeys.SIMPLE_EMAIL_ENABLED,
-					  getSmtpService() != null && getSmtpService().isEnabled() &&
+					  getSmtpService().isEnabled() &&
 					  	binder.getEntityType().equals(EntityType.folder) &&
 					  	simpleNames.size() > 0);
 		}

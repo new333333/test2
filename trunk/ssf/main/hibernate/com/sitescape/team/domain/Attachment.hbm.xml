@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class discriminator-value="N" dynamic-update="true" lazy="false" table="SS_Attachments" name="com.sitescape.team.domain.Attachment">
+    <id unsaved-value="null" name="id" node="@id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <discriminator type="char" column="type"/>
+    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+    <property name="zoneId" access="field"/>
+    <property name="type" update="false" insert="false"/>
+     
+    <component name="owner" class="com.sitescape.team.domain.AnyOwner">
+      <many-to-one name="folderEntry" index="ownerFolderEntry_Att"/>
+      <many-to-one name="principal" index="ownerPrincipal_Att"/>
+      <many-to-one name="binder" index="ownerBinder_Att"/>
+      <any name="entity" id-type="java.lang.Long" meta-type="string" index="entityOwner_Att">
+        <meta-value class="com.sitescape.team.domain.FolderEntry" value="folderEntry"/>
+        <meta-value class="com.sitescape.team.domain.User" value="user"/>
+        <meta-value class="com.sitescape.team.domain.Group" value="group"/>
+        <meta-value class="com.sitescape.team.domain.Folder" value="folder"/>
+        <meta-value class="com.sitescape.team.domain.Workspace" value="workspace"/>
+        <meta-value class="com.sitescape.team.domain.ProfileBinder" value="profileBinder"/>
+        <meta-value class="com.sitescape.team.domain.TemplateBinder" value="template"/>
+        <column name="ownerType" length="16"/>
+        <column name="ownerId"/>
+      </any>
+      <property name="ownerType" update="false" insert="false"/>
+      <property name="ownerId" update="false" insert="false"/>
+      <property name="owningBinderKey" length="255"/>
+      <property name="owningBinderId" index="owningBinder_Att"/>
+    </component>
+    <property name="name" length="64"/>
+    <component name="creation" class="com.sitescape.team.domain.HistoryStamp">
+      <property name="date" column="creation_date" type="timestamp"/>
+      <many-to-one class="com.sitescape.team.domain.UserPrincipal" name="principal">
+        <column name="creation_principal"/>
+      </many-to-one>
+    </component>
+    <component name="modification" class="com.sitescape.team.domain.HistoryStamp">
+      <property name="date" column="modification_date" type="timestamp"/>
+      <many-to-one class="com.sitescape.team.domain.UserPrincipal" name="principal">
+        <column name="modification_principal"/>
+      </many-to-one>
+    </component>
+    <subclass name="com.sitescape.team.domain.FileAttachment" discriminator-value="F" dynamic-update="true">
+      <component name="fileItem">
+        <property name="name" length="256">
+          	<column name="fileName"/>
+       </property>
+        <property name="length" column="fileLength"/>
+      </component>
+      <property name="lastVersion"/>
+
+      <bag inverse="true" access="field" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" batch-size="4" name="fileVersions">
+        <key column="parentAttachment"/>
+        <one-to-many class="com.sitescape.team.domain.VersionAttachment"/>
+      </bag>
+      <property name="repositoryName" access="field" length="128"/>
+      <component name="fileLock" class="com.sitescape.team.domain.FileAttachment$FileLock">
+      	<property name="id" length="128" column="filelock_id"/>
+      	<property name="subject" length="192" column="filelock_subject"/>
+        <many-to-one class="com.sitescape.team.domain.UserPrincipal" embed-xml="false" node="Principal" name="owner">
+          <column name="filelock_owner"/>
+        </many-to-one>
+        <property name="expirationDate" column="filelock_expirationDate" type="timestamp"/>
+      	<property name="ownerInfo" length="256" column="filelock_ownerInfo"/>
+      	<property name="dirty" column="filelock_dirty"/>
+      </component>
+      <subclass name="com.sitescape.team.domain.VersionAttachment" discriminator-value="V" dynamic-update="true">
+        <property name="versionNumber"/>
+        <property name="versionName" length="256"/>
+        <many-to-one class="com.sitescape.team.domain.FileAttachment" name="parentAttachment">
+          <column name="parentAttachment" sql-type="char(32)" index="owningAttachment_Att"/>
+        </many-to-one>
+      </subclass>
+    </subclass>
+  </class>
+</hibernate-mapping>

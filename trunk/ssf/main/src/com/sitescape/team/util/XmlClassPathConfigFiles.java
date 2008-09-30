@@ -30,7 +30,8 @@ package com.sitescape.team.util;
 
 import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Required;
+
+import com.sitescape.team.util.EntityResolver;
 
 /**
  *
@@ -39,8 +40,7 @@ import org.springframework.beans.factory.annotation.Required;
 public class XmlClassPathConfigFiles extends ClassPathConfigFiles 
 	implements InitializingBean {
     
-    private org.xml.sax.EntityResolver entityResolver;
-	protected boolean validating = true;
+    protected boolean validating = true;
     protected org.dom4j.Document[] docs; 
     
     public boolean isValidating() {
@@ -62,7 +62,7 @@ public class XmlClassPathConfigFiles extends ClassPathConfigFiles
                 reader.setFeature("http://apache.org/xml/features/validation/schema", true); // Enables XML Schema validation
                 reader.setFeature("http://apache.org/xml/features/validation/schema-full-checking",true); // Enables full (if slow) schema checking
             }
-            reader.setEntityResolver(entityResolver);
+            reader.setEntityResolver(new EntityResolver());
             docs[i] = reader.read(this.getAsInputStream(i));
         }
     }
@@ -85,10 +85,4 @@ public class XmlClassPathConfigFiles extends ClassPathConfigFiles
     public org.dom4j.Document getAsDom4jDocument(int index) {
         return docs[index];
     }
-	
-    @Required
-    public void setEntityResolver(org.xml.sax.EntityResolver entityResolver) {
-		this.entityResolver = entityResolver;
-	}
-
 }

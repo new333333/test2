@@ -28,30 +28,14 @@
  */
 package com.sitescape.team.security.authentication.impl;
 
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.classextension.EasyMock.createMock;
-import static org.easymock.classextension.EasyMock.replay;
-import static org.easymock.classextension.EasyMock.reset;
-import static org.easymock.classextension.EasyMock.verify;
-import static org.junit.Assert.assertEquals;
+import org.easymock.MockControl;
+import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.sitescape.team.context.request.RequestContext;
-import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
-import com.sitescape.team.dao.util.FilterControls;
-import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.FileItem;
-import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.security.authentication.UserDoesNotExistException;
-import com.sitescape.team.support.AbstractTestBase;
+import com.sitescape.team.security.authentication.impl.AuthenticationManagerImpl;
 
 
 /**
@@ -59,52 +43,64 @@ import com.sitescape.team.support.AbstractTestBase;
  * 
  * @author Jong Kim
  */
-public class AuthenticationManagerImplTests extends AbstractTestBase {
-	private ProfileDao mProfileDao;
-	private User user;
-	@Autowired(required = true)
-	protected AuthenticationManagerImpl authenticationManager;
+public class AuthenticationManagerImplTests extends AbstractTransactionalDataSourceSpringContextTests {
+	MockControl profileDaoControl;
+	ProfileDao profileDaoMock;
+	User user;
+	AuthenticationManagerImpl authMgr;
 	
-	@Before
-	public void mockSetUp() {
+	protected String[] getConfigLocations() {
+		mockSetUp();
+		//authentication manager now requires Session
+		return new String[] {"/com/sitescape/team/security/authentication/impl/applicationContext-authenticationManager.xml"};
+	}
+	protected void mockSetUp() {
 		// Set up mock object and control
-		mProfileDao = createMock(ProfileDao.class);
+		profileDaoControl = MockControl.createControl(ProfileDao.class);
+		profileDaoMock = (ProfileDao) profileDaoControl.getMock();
 		user = new User();
+//		user.setZoneName("testZone");
 		user.setName("testUser");
 		
-		authenticationManager.setProfileDao(mProfileDao);
+		// Set up the actual object that we are testing.
+		authMgr = new AuthenticationManagerImpl();
+		authMgr.setProfileDao(profileDaoMock);
 	}
 	
-	@Test
-	public void authenticateOk() {
-		String zone = "testZone";
-		expect(mProfileDao.findUserByName("testUser", zone)).andReturn(user);
-		replay(mProfileDao);
+	public void testAuthenticateOk() {
+		// Define expected behavior of the mock object.
+		profileDaoControl.reset();
+		profileDaoMock.findUserByName("testUser", "testZone");
+		profileDaoControl.setReturnValue(user);
+		profileDaoControl.replay();
 		
 		user.setPassword("testPassword");
-		RequestContext mRequestContext = fakeRequestContext();
-		expect(mRequestContext.getZoneName()).andReturn(zone);
-		replay(mRequestContext);
 
-		try {
-		User authenticatedUser = authenticationManager.authenticate(zone, "testUser", "testPassword", false, false, null);
+		// Execute the method being tested.
+		User authenticatedUser = authMgr.authenticate("testZone", "testUser", "testPassword", false, false, null);
 		assertEquals(user, authenticatedUser);
-		} finally {
-			RequestContextHolder.clear();
-		}
-		verify(mProfileDao);
+		
+		// Verifies that all expectations have been met.
+		profileDaoControl.verify();
 	}
 	
-	@Test(expected=UserDoesNotExistException.class)
-	public void authenticateUserDoesNotExistException() {
-		String zone = "testZone";
-		expect(mProfileDao.findUserByName("testUser", zone)).andThrow(
-				new NoUserByTheNameException("mock expection"));
-		replay(mProfileDao);
-		RequestContext mRequestContext = fakeRequestContext();
-		expect(mRequestContext.getZoneName()).andReturn(zone);
-		replay(mRequestContext);
+	public void testAuthenticateUserDoesNotExistException() {
+		// Define expected behavior of the mock object. 
+		profileDaoControl.reset();
+		profileDaoMock.findUserByName("testUser", "testZone");
+		profileDaoControl.setThrowable(new NoUserByTheNameException(""));
+		profileDaoControl.replay();
 		
-		authenticationManager.authenticate(zone, "testUser", "testPassword", false, false, "test");
+		// Execute the method being tested.
+		try {
+			authMgr.authenticate("testZone", "testUser", "testPassword", false, false, "test");
+			fail("Should throw UserDoesNotExistException");
+		}
+		catch(UserDoesNotExistException e) {
+			assertTrue(true); // All is well
+		}
+		
+		// Verifies that all expectations have been met.
+		profileDaoControl.verify();
 	}
 }

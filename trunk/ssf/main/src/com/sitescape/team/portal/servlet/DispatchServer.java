@@ -29,6 +29,7 @@
 package com.sitescape.team.portal.servlet;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.servlet.GenericServlet;
 import javax.servlet.RequestDispatcher;
@@ -57,8 +58,6 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
 
 public class DispatchServer extends GenericServlet {
-
-	private static final long serialVersionUID = 7934121965144112064L;
 
 	protected static final Log logger = LogFactory.getLog(DispatchServer.class);
 	

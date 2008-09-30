@@ -32,8 +32,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-import java.util.List;
 import java.util.Locale;
+import java.util.List;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -58,23 +58,24 @@ public class GenerateStringsXml {
 	}
 	private static void doMain(String pathname) throws Exception {
 		
-		File path = new File(pathname);
-		File in = new File(path, "xslt" + File.separator + "strings.xml.tmpl");
-		File out = new File (path, "xslt" + File.separator + "strings.xml");
+		String inFile = pathname + File.separator + "xslt" + File.separator + "strings.xml.tmpl";
+		String outFile = pathname + File.separator + "xslt" + File.separator + "strings.xml";
 		
 		Document document = null;
         SAXReader reader = new SAXReader();
         InputStreamReader fIn=null;
         try {
-        	fIn = new InputStreamReader(new FileInputStream(in), "UTF-8");
+        	fIn = new InputStreamReader(new FileInputStream(inFile), "UTF-8");
         	document = reader.read(fIn);
  
         } catch (Exception ex) {
-        	System.out.println("Cannot read XML template file " + in.getAbsolutePath() + ": error is: " + ex.getLocalizedMessage());
+        	System.out.println("Cannot read XML template file " + inFile + ": error is: " + ex.getLocalizedMessage());
         	throw ex;
         } finally {
         	if (fIn != null) {
-        			fIn.close();
+        		try {
+        			fIn.close(); 
+        		} catch (Exception ex) {}
         	}
         }
 		FileOutputStream fOut = null;
@@ -82,7 +83,7 @@ public class GenerateStringsXml {
 		try {
 			//explicitly set encoding so there is no mistake.
 			//cannot guarantee default will be set to UTF-8
-			fOut = new FileOutputStream(out);
+			fOut = new FileOutputStream(outFile);
 			OutputFormat fmt = OutputFormat.createPrettyPrint();
 			fmt.setEncoding("UTF-8");
     		xOut = new XMLWriter(fOut, fmt);
@@ -96,7 +97,7 @@ public class GenerateStringsXml {
             xOut.write(strRoot);
     		xOut.flush();
 	    } catch (Exception ex) {
-	    	System.out.println("Can't write XML file " + out.getAbsolutePath() + ":error is: " + ex.getLocalizedMessage());
+	    	System.out.println("Can't write XML file " + outFile + ":error is: " + ex.getLocalizedMessage());
 	    	throw(ex);
 	    } finally {
 	    	if (xOut != null) xOut.close();
@@ -105,7 +106,6 @@ public class GenerateStringsXml {
 	}
 				
 	private static void generateTags(Element node, String []localeCodes, String pathname)  throws Exception {
-		@SuppressWarnings("unchecked")
 		List <Element> elements = node.elements();
 		
 		ReloadableResourceBundleMessageSource rrbms = new ReloadableResourceBundleMessageSource();

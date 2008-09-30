@@ -47,7 +47,7 @@ public class WorkAreaOperation {
 
     // It is critically important to have this map instantiated here
     // BEFORE pre-defined WorkAreOperation instances are created. 
-    private static final Map<String, WorkAreaOperation> Instances = new HashMap<String, WorkAreaOperation>();
+    private static final Map Instances = new HashMap();
 
     //Workarea operations
     //  Important: do not create operations that control the viewing of an entry of folder.

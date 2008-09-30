@@ -5,10 +5,7 @@
                          
 <web-app>
 
-	<!-- NOTE: for Liferay 4.4.x display-name must equal the context path due 
-		to a Liferay bug --> 
-	<!--<display-name>SiteScape Forum</display-name>-->
-	<display-name>ssf</display-name>
+	<display-name>SiteScape Forum</display-name>
 
 	<context-param>
 		<param-name>webAppRootKey</param-name>
@@ -22,7 +19,7 @@
 	
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/classes/context/applicationContext.xml /WEB-INF/classes/context/additionalContext.xml optional:/WEB-INF/context/applicationContext-ext.xml /WEB-INF/context/security.xml optional:/WEB-INF/context/security-ext.xml </param-value>
+		<param-value>/WEB-INF/context/applicationContext.xml /WEB-INF/context/additionalContext.xml /WEB-INF/context/security.xml optional:/WEB-INF/context/security-ext.xml optional:/WEB-INF/context/applicationContext-ext.xml optional:/WEB-INF/context/portalContext.xml</param-value>
 	</context-param>
 
 	<context-param>
@@ -243,11 +240,6 @@
 	<taglib>
 		<taglib-uri>http://www.sitescape.com/tags-portletadapter</taglib-uri>
 		<taglib-location>/WEB-INF/tags/ssf-portletadapter.tld</taglib-location>
-	</taglib>
-	
-	<taglib>
-		<taglib-uri>http://www.kablink.org/tags</taglib-uri>
-		<taglib-location>/WEB-INF/tags/kablink.tld</taglib-location>
 	</taglib>
 
 	<resource-ref>

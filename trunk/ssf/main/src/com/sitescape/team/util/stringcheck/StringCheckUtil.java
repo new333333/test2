@@ -37,10 +37,6 @@ import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SPropsUtil;
 
-/**
- * Deprecated, singletons should be managed by Spring.
- */
-@Deprecated
 public class StringCheckUtil implements InitializingBean {
 
 	private static StringCheckUtil instance; // A singleton instance

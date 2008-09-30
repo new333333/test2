@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE model-processor-mapping SYSTEM "classpath:/com/sitescape/team/dtd/model-processor-mapping-1_0_0.dtd">
 
 <model-processor-mapping>
 	<processors>

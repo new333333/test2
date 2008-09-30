@@ -75,33 +75,31 @@
 
 <div class="ss_content_rule" style="margin-bottom: 10px; margin-top: 5px; padding-right: 5px;" align="right">
 
- <div id='show'
+<div id='show'
   <c:choose>  
     <c:when test= "${showBusinessCard == 'yes'}">style='display:none'</c:when>
     <c:otherwise>style='display:block'</c:otherwise>
   </c:choose>
- >
+>
   <a href="javascript:;" 
     onClick="ss_showHideBusinessCard('show','${scopeBusinessCard}');toggle_visibility('hide');"
-    title="<ssf:nlt tag="profile.page.toggleStyle"/>">
-    <img border="0" src="<html:imagesPath/>icons/profile_bizcard_full.gif"/>
-  </a>
- </div>
+    title="<ssf:nlt tag="profile.page.toggleStyle"/>"
+  ><img border="0" src="<html:imagesPath/>icons/profile_bizcard_full.gif"/></a>
+</div>
 
- <div id='hide'
+<div id='hide'
   <c:choose>
     <c:when test= "${showBusinessCard == 'no'}">style='display:none'</c:when>
     <c:otherwise>style='display:block'</c:otherwise>
   </c:choose>
- >
+>
   <a href="javascript:;" 
     onClick="ss_showHideBusinessCard('hide','${scopeBusinessCard}');toggle_visibility('show');"
-    title="<ssf:nlt tag="profile.page.toggleStyle"/>">
-    <img border="0" src="<html:imagesPath/>icons/profile_bizcard_small.gif"/>
-  </a>
- </div>
+    title="<ssf:nlt tag="profile.page.toggleStyle"/>"
+  ><img border="0" src="<html:imagesPath/>icons/profile_bizcard_small.gif"/></a>
+</div>
 
-</div><% //end of ss_content_rule %>
+</div>
 
 <c:if test="${showBusinessCard == 'no'}"><div id="ss_largeBusinessCard" style="display:none;"></c:if>
 <c:if test="${showBusinessCard == 'yes'}"><div id="ss_largeBusinessCard" style="display:block;"></c:if>
@@ -111,152 +109,136 @@
 <c:if test="${empty property_maxHeight}">
   <c:set var="property_maxHeight" value="200" scope="request"/>
 </c:if>
- <table style="width: 80%;">
-  <tbody>
-   <tr>
-	<td valign="top" style="width:${property_maxWidth + 30}px;" >
-	   <div class="ss_smallRBoxTop2 ss_profileBox1"></div>
-	   <div class="ss_smallRBoxTop1 ss_profileBox1"></div>
-	   <div class="ss_profileBox1" style="padding: 1px;">
-	    <div style="height:${property_maxHeight + 10}px;">
- 		 <div class="ss_profile_matte">
-		  <c:if test="${empty ssDefinitionEntry.customAttributes['picture']}">
-  			<div class="ss_profile_picture_frame ss_profile_photo_box_empty">
-		  </c:if>
-		  <c:if test="${!empty ssDefinitionEntry.customAttributes['picture']}">
-  			<div class="ss_profile_picture_frame">
-			<c:set var="selections" value="${ssDefinitionEntry.customAttributes['picture'].value}" />
-			<c:set var="pictureCount" value="0"/>
-			<c:forEach var="selection" items="${selections}">
-  			  <c:if test="${pictureCount == 0}">
-				<a href="javascript:;" onClick="ss_showThisImage(this);return false;">
-				  <img align="middle" id="ss_profilePicture${renderResponse.namespace}"
-	  			  border="0" src="<ssf:fileUrl webPath="readScaledFile" file="${selection}"/>"
-				  alt="${property_caption}" />
-				</a>
-  			  </c:if>
-  			  <c:set var="pictureCount" value="${pictureCount + 1}"/>
-			</c:forEach>
-		  </c:if>
-  		 </div><% //end of ...photo_box_empty %>
- 		</div><% //end of ss_profile_matte %>
-	   </div><% //end of div height:${property_maxHeight...} %>
-	  </div><% //end of ss_profileBox1 %>
-	  <div class="ss_smallRBoxBtm1 ss_profileBox1"></div>
-	  <div class="ss_smallRBoxBtm2 ss_profileBox1"></div>
-	</td>
+<table style="width: 600px; padding-left: 20px;">
+<tr>
+<td valign="top" style="width:${property_maxWidth + 30}px;" >
+<div class="ss_smallRBoxTop2 ss_profileBox1"></div><div class="ss_smallRBoxTop1 ss_profileBox1"></div>
+<div class="ss_profileBox1" style="padding: 1px;"><div style="height:${property_maxHeight + 10}px;">
+ <div class="ss_profile_matte">
+<c:if test="${empty ssDefinitionEntry.customAttributes['picture']}">
+  <div class="ss_profile_picture_frame ss_profile_photo_box_empty">
+</c:if>
+<c:if test="${!empty ssDefinitionEntry.customAttributes['picture']}">
+  <div class="ss_profile_picture_frame">
+<c:set var="selections" value="${ssDefinitionEntry.customAttributes['picture'].value}" />
+<c:set var="pictureCount" value="0"/>
+<c:forEach var="selection" items="${selections}">
+  <c:if test="${pictureCount == 0}">
+	<a href="javascript:;" onClick="ss_showThisImage(this);return false;"><img 
+	  align="middle" id="ss_profilePicture${renderResponse.namespace}"
+	  border="0" 
+	  src="<ssf:fileUrl webPath="readScaledFile" file="${selection}"/>"
+		alt="${property_caption}" /></a>
+  </c:if>
+  <c:set var="pictureCount" value="${pictureCount + 1}"/>
+</c:forEach>
+</c:if>
+  </div>
+ </div>
+</div>
+</div><div class="ss_smallRBoxBtm1 ss_profileBox1"></div><div class="ss_smallRBoxBtm2 ss_profileBox1"></div>
+</td>
 
-	<td valign="top" align="center"><% //Define User %>
-	  <c:set var="ss_element_display_style" value="tableAlignLeft" scope="request"/>
+<td valign="top" align="center">
+<c:set var="ss_element_display_style" value="tableAlignLeft" scope="request"/>
 
-		<div class="ss_entryContent">
-  		 <div id="ss_presenceOptions1_${renderResponse.namespace}"></div>
-  		 <ssf:presenceInfo user="${ssDefinitionEntry}" 
-      		optionsDivId="ss_presenceOptions1_${renderResponse.namespace}"/>
-			<c:if test="${empty ssDefinitionEntry.title}">
-			  <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.name}"/></span>
-			</c:if>
-			<c:if test="${!empty ssDefinitionEntry.title}">
-			  <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.title}"/></span> 
-			  <span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}"/>)</span>
-			</c:if>
-		</div><% //end of ss_entryContent %>
-	  <% //Define Contact Info %>	
- 	  <table class="ss_transparent" style="border-spacing: 10px 2px;">
- 	   <tbody>
+<div class="ss_entryContent">
+  <div id="ss_presenceOptions1_${renderResponse.namespace}"></div>
+  <ssf:presenceInfo user="${ssDefinitionEntry}" 
+      optionsDivId="ss_presenceOptions1_${renderResponse.namespace}"/>
+<c:if test="${empty ssDefinitionEntry.title}">
+<span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.name}"/></span>
+</c:if>
+<c:if test="${!empty ssDefinitionEntry.title}">
+<span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.title}"/></span> 
+<span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}"/>)</span>
+</c:if>
+</div>
 
-		<c:forEach var="element" items="${propertyValues__elements}">
- 		 <c:if test="${element != 'name' && element != 'title'}">
- 		  <tr>
-  			<td valign="bottom" align="right">
-   			  <span class="ss_light"><ssf:nlt tag="profile.element.${element}"/></span>
-  			</td>
-  			<td valign="bottom" align="left">
-   			  <c:if test="${!empty ssDefinitionEntry[element]}">
-    		   <span class="ss_bold">
-    		     <c:if test="${element == 'emailAddress' || element == 'mobileEmailAddress' || element == 'txtEmailAddress'}">
-        		  <a href="mailto:${ssDefinitionEntry[element]}">
-    		     </c:if>    
-    		     <c:out value="${ssDefinitionEntry[element]}"/>
-    		     <c:if test="${element == 'emailAddress' || element == 'mobileEmailAddress' || element == 'txtEmailAddress'}">
-    		       </a>
-    		     </c:if>
-    		  </span>
-             </c:if>
-   			 <c:if test="${!empty ssDefinitionEntry.customAttributes[element]}">
-    			<span class="ss_bold"><c:out value="${ssDefinitionEntry.customAttributes[element]}"/></span>
-   			 </c:if>
-  			</td>
- 		  </tr>
- 		 </c:if>
-		</c:forEach>
+ <table class="ss_transparent" style="border-spacing: 10px 2px;">
 
-  		<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-       		configElement="<%= item %>" 
-       		configJspStyle="${ssConfigJspStyle}" />
+<c:forEach var="element" items="${propertyValues__elements}">
+ <c:if test="${element != 'name' && element != 'title'}">
+ <tr>
+  <td valign="top" align="right">
+   <span class="ss_light"><ssf:nlt tag="profile.element.${element}"/></span>
+  </td>
+  <td valign="top" align="left">
+   <c:if test="${!empty ssDefinitionEntry[element]}">
+    <span class="ss_bold">
+    <c:if test="${element == 'emailAddress' || element == 'mobileEmailAddress' || element == 'txtEmailAddress'}">
+        <a href="mailto:${ssDefinitionEntry[element]}">
+    </c:if>    
+    <c:out value="${ssDefinitionEntry[element]}"/>
+    <c:if test="${element == 'emailAddress' || element == 'mobileEmailAddress' || element == 'txtEmailAddress'}"></a></c:if>
+    </span>
+   </c:if>
+   <c:if test="${!empty ssDefinitionEntry.customAttributes[element]}">
+    <span class="ss_bold"><c:out value="${ssDefinitionEntry.customAttributes[element]}"/></span>
+   </c:if>
+  </td>
+ </tr>
+ </c:if>
+</c:forEach>
 
- 	 </tbody>
- 	</table>
+  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+       configElement="<%= item %>" 
+       configJspStyle="${ssConfigJspStyle}" />
 
-    <c:set var="ss_element_display_style" value="" scope="request"/>
-   </td>
-   <td valign="top">
-	<c:if test="${!empty ssDefinitionEntry.status}">
-	 <div align="left" style="margin-left:25px; padding-top:10px;">
-	  <table cellspacing="0" cellpadding="0">
-	   <tr>
+ 
+ </table>
+
+<c:if test="${!empty ssDefinitionEntry.status}">
+<div align="left" style="padding-top:10px;">
+	<table cellspacing="0" cellpadding="0">
+	<tr>
 		<td>
 			<a href="javascript: ;" onClick="ss_viewMiniBlog('${ssDefinitionEntry.id}', '0', true);return false;"
 			  style="text-decoration:underline;">
 				<span class="ss_bold"><ssf:nlt tag="miniblog"/></span>
 			</a>
 		</td>
-		<td align="right" style="padding-left:5px; padding-top:1px;">
-			<span class="ss_smallprint ss_nowrap">
+		<td style="padding-left:10px;">
+			<span class="ss_smallprint">
 			  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 			    value="${ssDefinitionEntry.statusDate}" type="both" 
 			    timeStyle="short" dateStyle="short" />
 			</span>
 		</td>
-	   </tr>
-	   <tr>
+	</tr>
+	<tr>
 		<td colspan="2">
 			<span class="ss_normalprint ss_italic">${ssDefinitionEntry.status}</span>
 		</td>
-	   </tr>
-	  </table>
-	 </div>
-    </c:if>
-   </td>
-  </tr>
-  <tr>
-   <td>&nbsp;</td>
-   <td>
-	<c:if test="${pictureCount > 1}">
-	 <table width="99%">
-	  <tr>
-	   <td colspan="2" align="left">
-  		<div class="ss_thumbnail_gallery ss_thumbnail_small_no_text">
-  		  <c:set var="selections" value="${ssDefinitionEntry.customAttributes['picture'].value}" />
-  		  <c:forEach var="selection" items="${selections}">
-			<div>
-			 <a href="javascript:;" onClick="ss_showThisImage(this);return false;"
-	  		  onMouseover="ss_showProfileImg(this, 'ss_profilePicture${renderResponse.namespace}'); return false;">
-			  <img <ssf:alt text="${selection.fileItem.name}"/> border="0" src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>" />
-			 </a>
-			</div>
-  		  </c:forEach>
-  		</div>
-	   </td>
-	  </tr>
-	 </table>
-	</c:if>
-   </td>
-  </tr>
- </tbody>
+	</tr>
+	</table>
+</div>
+</c:if>
+
+<c:if test="${pictureCount > 1}">
+<table width="99%">
+<tr>
+<td align="left">
+  <div class="ss_thumbnail_gallery ss_thumbnail_small_no_text">
+  <c:set var="selections" value="${ssDefinitionEntry.customAttributes['picture'].value}" />
+  <c:forEach var="selection" items="${selections}">
+	<div><a href="javascript:;" onClick="ss_showThisImage(this);return false;"
+	  onMouseover="ss_showProfileImg(this, 'ss_profilePicture${renderResponse.namespace}'); return false;">
+	<img <ssf:alt text="${selection.fileItem.name}"/> border="0" src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>" />
+	</a></div>
+  </c:forEach>
+  </div>
+</td>
+</tr>
+</table>
+</c:if>
+
+<c:set var="ss_element_display_style" value="" scope="request"/>
+</td>
+</tr>
 </table>
 
-</div><% //end of div align:left %>
+</div>
 <c:if test="${showBusinessCard == 'no'}"><div id="ss_smallBusinessCard" style="display:block;"></c:if>
 <c:if test="${showBusinessCard == 'yes'}"><div id="ss_smallBusinessCard" style="display:none;"></c:if>
  <div class="ss_entryContent">
@@ -265,14 +247,15 @@
       optionsDivId="ss_presenceOptions2_${renderResponse.namespace}"/>
 
  <c:if test="${empty ssDefinitionEntry.title}">
- 	<span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.name}"/></span>
+ <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.name}"/></span>
  </c:if>
  <c:if test="${!empty ssDefinitionEntry.title}">
- 	<span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.title}"/></span> 
- 	<span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}"/>)</span>
+ <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.title}"/></span> 
+ <span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}"/>)</span>
  </c:if>
- <c:if test="${!empty ssDefinitionEntry.status}">
-	<br/>
-	<span class="ss_normalprint ss_italic">${ssDefinitionEntry.status}</span>
- </c:if>
- </div><% //end of ss_entryContent %>
+<c:if test="${!empty ssDefinitionEntry.status}">
+<br/>
+<span class="ss_normalprint ss_italic">${ssDefinitionEntry.status}</span>
+</c:if>
+ </div>
+</div>

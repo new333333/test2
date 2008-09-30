@@ -55,7 +55,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
@@ -82,7 +81,6 @@ import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.IndexNode;
 import com.sitescape.team.domain.LdapConnectionConfig;
 import com.sitescape.team.domain.LibraryEntry;
 import com.sitescape.team.domain.NoBinderByTheIdException;
@@ -90,8 +88,8 @@ import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.NoWorkspaceByTheNameException;
 import com.sitescape.team.domain.NotifyStatus;
-import com.sitescape.team.domain.PersistentLongIdObject;
 import com.sitescape.team.domain.PostingDef;
+import com.sitescape.team.domain.IndexNode;
 import com.sitescape.team.domain.SimpleName;
 import com.sitescape.team.domain.SharedEntity;
 import com.sitescape.team.domain.Subscription;
@@ -1598,16 +1596,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 
 	}
 
-	public <T extends PersistentLongIdObject> T findById(final Class<T> type, final Long id) {
-		return (T) getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session)
-					throws HibernateException, SQLException {
-				return session.createCriteria(type)
-					.add(Restrictions.idEq(id))
-					.uniqueResult();
-			}});
-	}
-
 	public IndexNode findIndexNode(final String nodeName, final String indexName) {
 		return (IndexNode)getHibernateTemplate().execute(
 		        new HibernateCallback() {
@@ -1619,7 +1607,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		        }
 		     );
 	}
-
+	
 	public void purgeIndexNodeByIndexName(final String indexName) {
 	   	getHibernateTemplate().execute(
 	    	   	new HibernateCallback() {

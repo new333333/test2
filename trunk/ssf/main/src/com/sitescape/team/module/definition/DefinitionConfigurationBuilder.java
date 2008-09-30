@@ -42,7 +42,7 @@ import com.sitescape.team.util.DefaultMergeableXmlClassPathConfigFiles;
 public class DefinitionConfigurationBuilder extends
 		DefaultMergeableXmlClassPathConfigFiles {
 	
-	private Map<String, Map<String, String>> jspCache = new HashMap<String, Map<String, String>>();
+	private Map<String, Map> jspCache = new HashMap<String, Map>();
 	private Map<String, Element> itemCache = new HashMap<String, Element>();
 	
     public void afterPropertiesSet() throws Exception {
@@ -51,13 +51,16 @@ public class DefinitionConfigurationBuilder extends
         //TODO: add any caching we want
         // (rsordillo) adding '_cache' to store jsp page references in Definitions. This should help speed up
         // performance when rendering a Definition
-    	loadItems();
+        if (jspCache.isEmpty()) {
+        	loadItems();
+        }
+        
     }
 
     private void loadItems()
     	throws Exception
     {
-    	Iterator<?> itItems = getAsMergedDom4jDocument().getRootElement().selectNodes("//item").listIterator();
+    	Iterator itItems = getAsMergedDom4jDocument().getRootElement().selectNodes("//item").listIterator();
 		
     	while (itItems.hasNext()) {
 			Element nextItem = (Element) itItems.next();
@@ -68,9 +71,9 @@ public class DefinitionConfigurationBuilder extends
 			String licenseValue = nextItem.attributeValue("feature");
 			if (licenseValue != null && !LicenseChecker.isAuthorizedByLicense(licenseValue)) continue;
 			itemCache.put(nameValue, nextItem);
-			Iterator<?> itJsps = nextItem.selectNodes("jsps/jsp").listIterator();
+			Iterator itJsps = nextItem.selectNodes("jsps/jsp").listIterator();
 			
-			Map<String, String> jspsObj = new HashMap<String, String>();
+			Map jspsObj = new HashMap();
 			while (itJsps.hasNext()) {
 				Element nextJsp = (Element) itJsps.next();
 				jspsObj.put(nextJsp.attributeValue("name"), nextJsp.attributeValue("value"));
@@ -83,11 +86,11 @@ public class DefinitionConfigurationBuilder extends
     {
     	//should probably check some version
       	    	
-       		Map<String, String> jspsObj = jspCache.get(name);
+       		Map jspsObj = jspCache.get(name);
        		if (jspsObj != null) {
-       			String jsp = jspsObj.get(style);
+       			String jsp = (String)jspsObj.get(style);
        			if (jsp != null) return jsp;
-       			return jspsObj.get(Definition.JSP_STYLE_DEFAULT);
+       			return (String)jspsObj.get(Definition.JSP_STYLE_DEFAULT);
        		}
     	
        		return null;
@@ -95,8 +98,8 @@ public class DefinitionConfigurationBuilder extends
     }
     public Element getItem(Document config, String item) {
        	//should probably check some version
-    	Element result = itemCache.get(item);
-    	return result != null? result : (Element) config.getRootElement().selectSingleNode("item[@name='"+item+"']");
+    	return itemCache.get(item);
+    	//return (Element)config.getRootElement().selectSingleNode("item[@name='"+item+"']");
     }
     
 

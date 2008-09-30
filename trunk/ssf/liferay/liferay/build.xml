@@ -191,8 +191,6 @@
 		</delete>		
 		
 		<copy file="resources/${liferay.version.jboss.tomcat}/Language-ext.properties" todir="${app.server.deploy.dir}/liferay-portal.ear/ext-ejb.jar/content" />
-		
-		
 	</target>		
 	
 	<target name="copy-liferay-specific-ssf-artifacts">

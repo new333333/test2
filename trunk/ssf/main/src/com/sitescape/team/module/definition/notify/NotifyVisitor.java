@@ -2,10 +2,9 @@ package com.sitescape.team.module.definition.notify;
 
 import java.io.Writer;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.HashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -15,6 +14,7 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.WebUrlUtil;
 
 public class NotifyVisitor {
 	protected Log logger = LogFactory.getLog(getClass());

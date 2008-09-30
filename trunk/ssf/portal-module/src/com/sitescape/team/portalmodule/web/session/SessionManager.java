@@ -58,6 +58,10 @@ public class SessionManager {
 	public static void setupSession(HttpServletRequest request, 
 			String portalSessionId, String zoneName, String userName) 
 		throws ServletException, IOException {
+		//System.out.println("### SessionManager [createSession]: ");
+		//System.out.println("\tportal session id: " + portalSessionId);
+		//System.out.println("\tzone name: " + zoneName);
+		//System.out.println("\tuser name: " + userName);
 		
 		DynamicServletRequest req = new DynamicServletRequest(request);
 

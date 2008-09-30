@@ -47,6 +47,7 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.jobs.ScheduleInfo;
+import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;

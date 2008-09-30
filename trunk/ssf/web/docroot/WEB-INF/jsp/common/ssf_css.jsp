@@ -590,7 +590,7 @@ div.ss_iconed_label {
   background-position: 13px 50%;
   padding-left: 30px;
   padding-right: 4px;
-  padding-top:	7px;
+  padding-top:	6px;
   padding-bottom: 6px;
   margin-left: 2px;
   font-size: 11px;
@@ -609,16 +609,6 @@ div.ss_iconed_label hover {
   font-weight: bold;
   color: ${ss_style_muted_label_color};
 }
-div.ss_tag_label {
-  font-family: ${ss_style_title_font_family};
-  padding-left: 30px;
-  padding-right: 4px;
-  margin-left: 2px;
-  font-size: 11px;
-  font-weight: bold;
-  line-height: 16px;
-  color: ${ss_style_muted_label_color};
-}
 .ss_muted_label_small {
   font-size: 11px;
   color: ${ss_style_muted_label_color};
@@ -630,7 +620,6 @@ div.ss_tag_label {
 }
 .ss_muted_tag_cloud {
   width: 70%;
-  padding-top: 1px;
  
 }
 
