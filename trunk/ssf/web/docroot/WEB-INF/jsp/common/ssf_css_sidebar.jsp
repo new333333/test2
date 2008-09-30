@@ -266,6 +266,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color:#FFF;
 	cursor: pointer;
 	}
+.ss_sidebarSlide span{
+	vertical-align: middle !important;
+	color: #c00000 !important;
+	}	
 .ss_sidebarSlidesm {
 	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_sm.png"); 
 	background-position:top left;
@@ -276,7 +280,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
  	</c:if>			
 	color:#FFF;
 	cursor: pointer;	
+	vertical-align: center;	
 	}
+.ss_sidebarSlidetext {
+	padding-left: 22px;
+	padding-top: 0px;
+	padding-bottom: 0px
+	}	
 .ss_hideShow {
 	font-size: ${ss_style_font_smallprint};
 	padding-left:20px;
