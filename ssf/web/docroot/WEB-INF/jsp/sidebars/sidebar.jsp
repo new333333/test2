@@ -45,7 +45,15 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 	<% // Share %>
   	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_share.jsp" />
-	
+
+	<% // Email %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" />  	
+		
+	<% // Clipboard %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" />
+		
+	<% // RSS Feed %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" />
 <%--
 * The following line is used to call customer supplied customizations.
 * Jsp files added to the custom_jsps directory will not be overwritten during upgrades
@@ -76,9 +84,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 	<!-- Search Tag cloud -->
 	<jsp:include page="/WEB-INF/jsp/search/tags.jsp" />
-
-	<% // Email %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" />
 	
 	<% // Team Sidebar %>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_team.jsp" />
@@ -89,12 +94,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 	<% // Meet %>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" />
-	
-	<% // Clipboard %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" />
-		
-	<% // RSS Feed %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" />
 	
 	<% // Personal Preferences %>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_personal.jsp" />
