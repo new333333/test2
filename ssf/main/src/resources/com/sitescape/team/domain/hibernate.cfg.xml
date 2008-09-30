@@ -51,6 +51,7 @@
 	    <mapping resource="com/sitescape/team/domain/FolderEntry.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/IndexingJournal.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/IndexNode.hbm.xml"/>
+	    <mapping resource="com/sitescape/team/domain/LdapConnectionConfig.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/LibraryEntry.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/LicenseStats.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/Membership.hbm.xml"/>

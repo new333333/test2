@@ -89,11 +89,9 @@ function ss_showMiniblogPage${renderResponse.namespace}(id, currentPage, directi
   <table>
   <tr>
   <td valign="top" align="center">
-    <% try { %>
 	  <ssf:buddyPhoto style="ss_thumbnail_standalone ss_thumbnail_standalone_small" 
 					photos="${ss_miniblog_user.customAttributes['picture'].value}" 
 					folderId="${ss_miniblog_user.parentBinder.id}" entryId="${ss_miniblog_user.id}" />
-    <% } catch(java.lang.Exception e) {} %>
   </td>
   <td valign="top" style="padding-left:10px;">
 	  <ul>

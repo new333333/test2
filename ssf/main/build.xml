@@ -10,7 +10,7 @@
 	<import file="../deploy-support.xml" />
 	
 	<property name="jar.file" value="ssf-main.jar" />
-	<property name="hibernate.dir" value="${basedir}/src/resources/com/sitescape/team/domain" />
+	<property name="hibernate.dir" value="${basedir}/hibernate" />
 	<target name="clean" depends="ss-hib-clean,build-common.clean" />
 
 	<target name="compile" depends="compile-common,build-common.compile" />
@@ -36,6 +36,10 @@
 			basedir="${classes.dir}"
 			jarfile="${jar.file}"
 		>
+			<!-- No longer necessary
+			<manifest>
+				<attribute name="Class-Path" value="${classpath.manifest.ss} ${classpath.manifest.3rd}" />
+			</manifest>-->
 		</jar>
 		<antcall target="jar-manifest">
 			<param name="jar-manifest.jar.file" value="${jar.file}"/>

@@ -28,324 +28,360 @@
  */
 package com.sitescape.team.taglib;
 
-import static com.sitescape.team.module.shared.XmlUtils.maybeGetText;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.Node;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
-import com.sitescape.team.module.definition.DefinitionUtils;
-import com.sitescape.team.module.profile.ProfileModule;
-import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.DefinitionHelper;
-import com.sitescape.util.Pair;
+import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.profile.ProfileModule;
+import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 
+
 /**
  * @author Peter Hurley
- * 
+ *
  */
-public class DisplayConfiguration extends TagSupport {
-	private static final String CUSTOM_JSP_PATH = "/WEB-INF/jsp/custom_jsps/";
-	private static final String EXTENSION_WEB_PATH = "/opt/";
-	private static final String VIEW_JSP_TYPE = "viewJsp";
-	private static final String MOBILE_JSP_TYPE = "mobileJsp";
-	private static final String EXTENSION_ATTR = "extension";
-	private static final String DATA_VIEW_ATTR = "dataView";
-	private static final String CUSTOM_JSP_ATTR = "customJsp";
-	private static final String CUSTOM_JSP_NAME_ATTR = "customJspName";
-	private static final String FORM_ATTR = "formItem";
-	private static final String PROP_LIST_KEY = "propertyValues_";
-	private static final String PROP_KEY = "property_";
-	private static final long serialVersionUID = 1L;
-	private Document configDefinition;
-	private Element configElement;
-	private String configJspStyle;
-	/**
-	 * FIXME
-	 * This attribute should be removed so we can treat item processing
-	 * uniformly. Either process a single element or all children elements,
-	 * not both.
-	 */
-	private boolean processThisItem = false;
-	private Object entry;
+public class DisplayConfiguration extends BodyTagSupport implements ParamAncestorTag {
+	private static final long serialVersionUID=1L;
+    private Document configDefinition;
+    private Element configElement;
+    private String configJspStyle;
+    private boolean processThisItem = false;
+    private DefinableEntity entry;
+    private Map entryMap;
+	private Map _params;
+    
+    private ProfileModule profileModule;
+    
+	public int doStartTag() {
+		return EVAL_BODY_BUFFERED;
+	}
 
-	private ProfileModule profileModule;
-
-	@Override
-	public int doStartTag() throws JspException {
-		profileModule = (ProfileModule) SpringContextUtil
-				.getBean("profileModule");
-		DefinitionConfigurationBuilder configBuilder = DefinitionHelper
-				.getDefinitionBuilderConfig();
-
-		if (this.configDefinition == null) {
-			release();
-			throw new JspException("A non-null configuration definition is required.");
-		}
-		List<Element> items = new ArrayList<Element>();
-		if (processThisItem) {
-			items.add(this.configElement);
-		} else {
-			@SuppressWarnings("unchecked")
-			// assigning to temp list to avoid unchecked cast warning
-			List<Element> elems = this.configElement.elements("item");
-			items.addAll(elems);
-		}
-		for (Element item : items) {
-			String name = item.attributeValue("name", "");
-			Element itemDef = configBuilder.getItem(configDefinition, name);
-			if (itemDef == null) {
-				throw new JspException(
-						"Unable to determine definition for item with name \""
-								+ name + "\"");
-			}
-			Pair<String, String> jsps = determineJsps(item, itemDef);
-
-			if (StringUtils.isBlank(jsps.getFirst())) {
-				throw new JspException("Unable to determine primary view for "
-						+ item.getName());
-			}
-			RequestDispatcher rd = pageContext.getRequest()
-					.getRequestDispatcher(jsps.getFirst());
-			ServletRequest req = new DynamicServletRequest(
-					(HttpServletRequest) pageContext.getRequest());
-
-			setRequestAttributes(req, item, itemDef, jsps);
-
-			StringServletResponse res = new StringServletResponse(
-					(HttpServletResponse) pageContext.getResponse());
-			try {
-				rd.include(req, res);
-				pageContext.getOut().print("<!-- " + jsps.getFirst() + " -->");
-				pageContext.getOut().print(res.getString());
-				pageContext.getOut().print(
-						"<!-- end " + jsps.getFirst() + " -->");
-			} catch (ServletException e) {
-				release();
-				throw new JspException(
-						"Servlet exception when attempting to include JSP "
-								+ jsps.getFirst(), e);
-			} catch (IOException e) {
-				release();
-				throw new JspException("IO error writing JSP "
-						+ jsps.getFirst(), e);
-			}
-		}
+	public int doAfterBody() {
 		return SKIP_BODY;
 	}
 
-	/**
-	 * Returns a {@link Pair} of the proper JSP and a fall-back option. The
-	 * complexity of this algorithm seems a bit off-balance with its function...
-	 * 
-	 * @return a {@link Pair} of the proper JSP and a fall-back option,
-	 *         respectively
-	 */
-	private Pair<String, String> determineJsps(Element item, Element itemDef) {
-		String name = item.attributeValue("name", "");
-		DefinitionConfigurationBuilder configBuilder = DefinitionHelper
-				.getDefinitionBuilderConfig();
-		String result = null;
-		String extName = item.getDocument().getRootElement().attributeValue(
-				EXTENSION_ATTR);
-		String prefixPath = extName != null ? EXTENSION_WEB_PATH + extName
-				+ "/" : CUSTOM_JSP_PATH;
-		String fallback = configBuilder.getItemJspByStyle(itemDef, name,
-				this.configJspStyle);
+	public int doEndTag() throws JspException {
+		profileModule = (ProfileModule)SpringContextUtil.getBean("profileModule");
+		DefinitionConfigurationBuilder configBuilder=DefinitionHelper.getDefinitionBuilderConfig();
+		try {
+			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
+			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
-		if (CUSTOM_JSP_ATTR.equals(name)) {
-			// item[@name='customJsp']
-			result = DefinitionUtils.getPropertyValue(item, "formJsp");
-			if (StringUtils.isNotBlank(result)) {
-				return new Pair<String, String>(prefixPath + result,
-						fallback);
-			}
-		}
+			if (this.configDefinition == null) {
+					throw new JspException("No configuration definition available for this item.");
+			} else if (this.configElement != null) {
+				
+				List<Element> itemList;
+				if (processThisItem == true) {
+					itemList = new ArrayList();
+					itemList.add(this.configElement);
+				} else {
+					itemList = this.configElement.elements("item");
+				}
+				if (itemList != null) {										
+					for (Element nextItem:itemList) {
+						
+						//Find the jsp to run. Look in the definition configuration for this.
+						//Get the item type of the current item being processed 
+						String itemType = nextItem.attributeValue("name", "");
+						String formItem = nextItem.attributeValue("formItem", "");
+						String customJsp = null; 
+						Boolean inherit=Boolean.FALSE;
+						Element jspEle= (Element)nextItem.selectSingleNode("./jsps/jsp[@name='custom']");
+						if (jspEle != null) {
+							String jspName = jspEle.attributeValue("value");
+							if ("true".equals(jspEle.attributeValue("inherit"))) inherit=Boolean.TRUE;							
+							if (!inherit && Validator.isNotNull(jspName)) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
+						}
 
-		String jspType = Definition.JSP_STYLE_MOBILE.equals(configJspStyle) ? MOBILE_JSP_TYPE
-				: VIEW_JSP_TYPE;
-		if (CUSTOM_JSP_NAME_ATTR.equals(name)) {
-			// item[@name='customJspName']
-			result = DefinitionUtils.getPropertyValue(item, jspType);
-			if (StringUtils.isNotBlank(result)) {
-				return new Pair<String, String>(prefixPath + result,
-						fallback);
-			}
-		}
-		if (!"true".equals(maybeGetText(item, "jsps/jsp[@name='custom']/@inherit", null))) {
-			// <jsp> defined, inherit is false or undefined
-			result = maybeGetText(item, "jsps/jsp[@name='custom']/@value", null);
-			if (StringUtils.isNotBlank(result)) {
-				return new Pair<String, String>(prefixPath + result,
-						fallback);
-			}
-		}
-
-		String form = item.attributeValue(FORM_ATTR, "");
-		if (!DATA_VIEW_ATTR.equals(item.attributeValue("type"))) {
-			return new Pair<String, String>(fallback, fallback);
-		}
-		if (CUSTOM_JSP_ATTR.equals(form)) {
-			// item[@formItem='customJsp']
-			result = DefinitionUtils.getPropertyValue(item, jspType);
-			if (StringUtils.isNotBlank(result)) {
-				return new Pair<String, String>(prefixPath + result,
-						fallback);
-			}
-		}
-		// maybe inherit jsp definition
-		String nameProp = maybeGetText(item, ".//item/properties/property[@name='name']/@value", "");
-		result = maybeGetText(this.configDefinition, "//item[@type='form']//item/properties/property[@name='name' and @value='"
-				+ nameProp
-				+ "']/../../jsps/jsp[@name='custom']/@value", null);
-		result = StringUtils.isNotBlank(result) ? prefixPath + result
-				: fallback;
-		return new Pair<String, String>(result, fallback);
-	}
-	
-	@SuppressWarnings("unchecked")
-	private void setRequestAttributes(ServletRequest req, Element item,
-			Element itemDef, Pair<String, String> jsps) {
-		String name = item.attributeValue("name", "");
-		req.setAttribute("item", item);
-		req.setAttribute(WebKeys.CONFIG_DEFINITION, this.configDefinition);
-		req.setAttribute(WebKeys.CONFIG_ELEMENT, this.configElement);
-		req.setAttribute(WebKeys.CONFIG_JSP_STYLE, this.configJspStyle);
-		req.setAttribute(WebKeys.CONFIG_FALLBACK_JSP, jsps.getSecond());
-		// Each item property that has a value is added as a
-		// "request attribute".
-		// The key name is "property_xxx" where xxx is the
-		// property name.
-		// At a minimum, make sure the name and caption
-		// variables are defined
-		req.setAttribute("property_name", "");
-		req.setAttribute("property_caption", "");
-
-		// Also set up the default values for all properties
-		// defined in the definition configuration
-		// These will be overwritten by the real values (if
-		// they exist) below
-		List<Element> itemDefProperties = itemDef
-				.selectNodes("properties/property");
-		for (Element property : itemDefProperties) {
-			String propertyName = property.attributeValue("name", "");
-			String propertyType = property.attributeValue("type", "text");
-			String val = NLT.getDef(property.attributeValue("value",
-					""));
-			// Get the value(s) from the actual definition
-			if (propertyType.equals("selectbox")) {
-				String requestKey = PROP_LIST_KEY + propertyName;
-				req.setAttribute(requestKey, CollectionUtil.map(
-						new CollectionUtil.Func1<Node, String>() {
-							public <Source extends Node> String apply(Source x) {
-								return NLT.get(x.getText());
+						//get Item from main config document
+						Element itemDefinition = configBuilder.getItem(configDefinition, itemType);
+						if (itemDefinition != null) {
+							String jspName;
+							String defaultJsp=configBuilder.getItemJspByStyle(itemDefinition, itemType, this.configJspStyle);
+							if (itemType.equals("customJsp")) {
+								jspName = DefinitionUtils.getPropertyValue(nextItem, "formJsp");
+								if (Validator.isNotNull(jspName)) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
+							} else if (customJsp == null && "dataView".equals(nextItem.attributeValue("type")) &&
+									(inherit || formItem.equals("customJsp"))) { //wraps a form element
+								Element entryFormItem = (Element)configDefinition.getRootElement().selectSingleNode("item[@type='form']");
+								if (entryFormItem != null) {
+									//see if item is generated and save source
+									String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
+									if (Validator.isNotNull(nameValue)) {
+										Element itemEle = (Element)entryFormItem.selectSingleNode(".//item/properties/property[@name='name' and @value='" + nameValue + "']");
+										if (itemEle != null) {
+											itemEle = itemEle.getParent().getParent();
+											if (formItem.equals("customJsp")) {
+												String jspType = "viewJsp";
+												if (configJspStyle.equals(Definition.JSP_STYLE_MOBILE)) jspType = "mobileJsp";
+												jspName = DefinitionUtils.getPropertyValue(nextItem, jspType);
+												if (Validator.isNotNull(jspName)) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
+											}
+											if (Validator.isNull(customJsp) && inherit) {
+												jspEle= (Element)itemEle.selectSingleNode("./jsps/jsp[@name='custom']");
+												if (jspEle != null) {
+													jspName = jspEle.attributeValue("value");
+													if (Validator.isNotNull(jspName) ) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
+												}
+												
+											}
+										}
+									}
+								}
+							} else if (itemType.equals("customJspView")) {
+								String jspType = "viewJsp";
+								if (configJspStyle.equals(Definition.JSP_STYLE_MOBILE)) jspType = "mobileJsp";
+								jspName = DefinitionUtils.getPropertyValue(nextItem, jspType);
+								if (Validator.isNotNull(jspName)) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
 							}
-						}, item.selectNodes("properties/property[@name='"
-								+ propertyName + "']/@value")));
-				continue;
+							String jsp = customJsp;
+							if (Validator.isNull(jsp)) jsp = defaultJsp;
+							
+							if (!Validator.isNull(jsp)) {
+								RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
+									
+								ServletRequest req = new DynamicServletRequest(httpReq);
+									
+								if (_params != null ) {
+									Iterator _it = _params.entrySet().iterator();
+									while (_it.hasNext()) {
+										Map.Entry me = (Map.Entry) _it.next();
+										req.setAttribute((String) me.getKey(), (String)me.getValue());
+									}
+								}
+								req.setAttribute("item", nextItem);
+								req.setAttribute(WebKeys.CONFIG_DEFINITION, this.configDefinition);
+								req.setAttribute(WebKeys.CONFIG_ELEMENT, this.configElement);
+								req.setAttribute(WebKeys.CONFIG_JSP_STYLE, this.configJspStyle);
+								req.setAttribute(WebKeys.CONFIG_FALLBACK_JSP, defaultJsp);  //pass to any custom jsps if they cannot handle configStyle
+								//Each item property that has a value is added as a "request attribute". 
+								//  The key name is "property_xxx" where xxx is the property name.
+								//At a minimum, make sure the name and caption variables are defined
+								req.setAttribute("property_name", "");
+								req.setAttribute("property_caption", "");
+									
+								//Also set up the default values for all properties defined in the definition configuration
+								//  These will be overwritten by the real values (if they exist) below
+								List<Element> itemDefinitionProperties = itemDefinition.selectNodes("properties/property");
+								Map propertyValuesMap = new HashMap();
+								Map savedReqAttributes = new HashMap();
+								for (Element property:itemDefinitionProperties) {
+									String propertyName = property.attributeValue("name", "");
+									if (Validator.isNull(propertyName)) continue;
+									//Get the type from the config definition
+									String propertyConfigType = property.attributeValue("type", "text");
+									String propertyValue = "";	
+									//Get the value(s) from the actual definition
+									if (propertyConfigType.equals("selectbox")) {
+										//get all items with same name
+										List<Element> selProperties = nextItem.selectNodes("properties/property[@name='"+propertyName+"']");
+										if (selProperties == null) continue;
+										//There might be multiple values so bulid a list
+										List propertyValues = new ArrayList();
+										for (Element selItem:selProperties) {
+											String selValue = NLT.getDef(selItem.attributeValue("value", ""));
+											if (Validator.isNotNull(selValue)) propertyValues.add(selValue);
+											
+										}
+										propertyValuesMap.put("propertyValues_"+propertyName, propertyValues);
+										propertyValuesMap.put("property_"+propertyName, "");
+									} else {
+										Element selItem = (Element)nextItem.selectSingleNode("properties/property[@name='"+propertyName+"']");
+										if (selItem == null) selItem=property;
+										if (propertyConfigType.equals("textarea")) {
+											propertyValue = selItem.getText();
+										} else {										
+											propertyValue = NLT.getDef(selItem.attributeValue("value", ""));
+										}
+										//defaults don't apply here
+										//Set up any "setAttribute" values that need to be passed along. Save the old value so it can be restored
+										String reqAttrName = property.attributeValue("setAttribute", "");
+										if (Validator.isNotNull(reqAttrName)) {
+											//Find this property in the current config
+											savedReqAttributes.put(reqAttrName, req.getAttribute(reqAttrName));
+											req.setAttribute(reqAttrName, propertyValue);
+										}
+										if (Validator.isNull(propertyValue)) {
+											propertyValue = property.attributeValue("default", "");
+											if (!Validator.isNull(propertyValue)) propertyValue = NLT.getDef(propertyValue);
+										}
+										propertyValuesMap.put("property_"+propertyName, propertyValue);
+									
+									}
+								}
+								//See if this item is a remote app data view item
+								if (formItem.equals("remoteApp")) {
+									//Get the remote app id from the form side of the definition
+									Element entryFormItem = (Element)configDefinition.getRootElement().selectSingleNode("item[@type='form']");
+									if (entryFormItem != null) {
+										//Get the name of the remote app element we are looking for in the form part of the definition
+										String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
+										if (Validator.isNotNull(nameValue)) {
+											//Find the actual remoteApp element if the form part of the definition
+											Element itemEle = (Element)entryFormItem.selectSingleNode(".//item/properties/property[@name='name' and @value='" + nameValue + "']");
+											if (itemEle != null) {
+												//Found the form element, get the "properties" element
+												itemEle = itemEle.getParent();
+												//Now get the property where the remote application id is stored
+												Element remoteAppEle = (Element)itemEle.selectSingleNode("./property[@name='remoteApp']");
+												if (remoteAppEle != null) {
+													//Ok, we have the remoteApp property, now get the app id
+													String remoteAppId = remoteAppEle.attributeValue("value", "");
+													//Create a bean for the remote app id
+													if (!remoteAppId.equals("")) 
+														propertyValuesMap.put("property_remoteApp", new Long(remoteAppId));
+												}
+											}
+										}
+									}
+								}
+									
+								//not sure if this is necessary
+//								List<Element> itProperties = nextItem.selectNodes("properties/property");
+//								for (Element property:itProperties) {
+//									String propertyName = property.attributeValue("name", "");
+//									if (Validator.isNull(propertyName)) continue;
+//									if (!propertyValuesMap.containsKey("property_"+propertyName)) 
+//										propertyValuesMap.put("property_"+propertyName, "");
+//								}
+								
+								Iterator itPropertyValuesMap = propertyValuesMap.entrySet().iterator();
+								while (itPropertyValuesMap.hasNext()) {
+									Map.Entry entry = (Map.Entry)itPropertyValuesMap.next();
+									req.setAttribute((String)entry.getKey(), entry.getValue());
+								}
+									
+									
+								//Store the entry object
+								if (this.entryMap != null) {
+									req.setAttribute(WebKeys.DEFINITION_ENTRY, this.entryMap);
+								} else if (this.entry != null) {
+									req.setAttribute(WebKeys.DEFINITION_ENTRY, this.entry);
+								}
+								
+								//Set up any item specific beans
+								if (itemType.equals(ObjectKeys.DEFINITION_WORKSPACE_REMOTE_APPLICATION) ||
+										itemType.equals(ObjectKeys.DEFINITION_FOLDER_REMOTE_APPLICATION) ||
+										itemType.equals(ObjectKeys.DEFINITION_ENTRY_REMOTE_APPLICATION)) {
+									Map options = new HashMap();
+									options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
+									options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
+									//get them all
+									options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
+
+									Document searchFilter = DocumentHelper.createDocument();
+									Element field = searchFilter.addElement(Constants.FIELD_ELEMENT);
+							    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ENTRY_TYPE_FIELD);
+							    	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
+							    	child.setText(Constants.ENTRY_TYPE_APPLICATION);
+							    	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
+							    	
+									Map searchResults = profileModule.getApplications(options);
+									List remoteAppList = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
+									req.setAttribute(WebKeys.REMOTE_APPLICATION_LIST, remoteAppList);
+								}
+									
+								StringServletResponse res = new StringServletResponse(httpRes);
+								rd.include(req, res);
+								pageContext.getOut().print("<!-- " + jsp + " -->");
+								pageContext.getOut().print(res.getString());
+								pageContext.getOut().print("<!-- end " + jsp.substring(jsp.lastIndexOf('/')+1) + " -->");
+
+								//Restore the saved properties
+								for (Element property:itemDefinitionProperties) {
+									String reqAttrName = property.attributeValue("setAttribute", "");
+									if (Validator.isNotNull(reqAttrName)) {
+										savedReqAttributes.put(reqAttrName, req.getAttribute(reqAttrName));
+										req.setAttribute(reqAttrName, req.getAttribute(reqAttrName));
+									}
+								}
+							} else {
+								if (!"mail".equals(configJspStyle)) {
+									/*
+									 pageContext.getOut().print("<br><i>[No jsp for configuration element: "
+											+NLT.getDef(nextItem.attributeValue("caption", "unknown"))+"]</i><br>");
+									*/
+								}
+							}
+						} else {
+							/*
+							 pageContext.getOut().print("<br><i>[No configuration element: "
+										+NLT.getDef(nextItem.attributeValue("caption", "unknown"))+"]</i><br>");
+							 */
+						}
+					} //end for
+				} //end no itemlist
 			}
-			Element selItem = (Element) item
-					.selectSingleNode("properties/property[@name='"
-							+ propertyName + "']");
-			val = (selItem != null && "textarea".equals(propertyType)) ? selItem.getText()
-					: val;
-			req.setAttribute(property.attributeValue("setAttribute",
-					PROP_KEY + propertyName), val);
-		}
-		req.setAttribute(WebKeys.DEFINITION_ENTRY, this.entry);
-
-		// Set up any item specific beans
-		if (name.equals(ObjectKeys.DEFINITION_WORKSPACE_REMOTE_APPLICATION)
-				|| name
-						.equals(ObjectKeys.DEFINITION_FOLDER_REMOTE_APPLICATION)
-				|| name
-						.equals(ObjectKeys.DEFINITION_ENTRY_REMOTE_APPLICATION)) {
-			Map<String, Object> options = new HashMap<String, Object>();
-			options.put(ObjectKeys.SEARCH_SORT_BY,
-					Constants.SORT_TITLE_FIELD);
-			options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
-			// get them all
-			options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE - 1);
-
-			Document searchFilter = DocumentHelper.createDocument();
-			Element field = searchFilter
-					.addElement(Constants.FIELD_ELEMENT);
-			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,
-					Constants.ENTRY_TYPE_FIELD);
-			Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-			child.setText(Constants.ENTRY_TYPE_APPLICATION);
-			options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
-
-			req.setAttribute(WebKeys.REMOTE_APPLICATION_LIST, profileModule
-					.getApplications(
-							options).get(ObjectKeys.SEARCH_ENTRIES));
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.servlet.jsp.tagext.TagSupport#release()
-	 */
-	@Override
-	public void release() {
-		super.release();
-		this.configDefinition = null;
-		this.configElement = null;
-		this.configJspStyle = null;
-		this.processThisItem = false;
-		this.entry = null;
-	}
-
-	@Override
-	public int doEndTag() {
-		return EVAL_PAGE;
+		}  catch(Exception e) {
+	        throw new JspException(e);
+	    }  finally {
+	    	this.configDefinition = null;
+	    	this.configElement = null;
+	    	this.configJspStyle = null;
+	    	this.processThisItem = false;
+	    	this.entry = null;
+	    	this.entryMap = null;
+			this._params = null;
+	    }
+	    
+	    return EVAL_PAGE;
 	}
 
 	public void setConfigDefinition(Document configDefinition) {
-		this.configDefinition = configDefinition;
+	    this.configDefinition = configDefinition;
 	}
 
 	public void setConfigElement(Element configElement) {
-		this.configElement = configElement;
+	    this.configElement = configElement;
 	}
 
 	public void setConfigJspStyle(String configJspStyle) {
-		this.configJspStyle = configJspStyle;
+	    this.configJspStyle = configJspStyle;
 	}
 
 	public void setProcessThisItem(boolean flag) {
-		this.processThisItem = flag;
+	    this.processThisItem = flag;
 	}
 
 	public void setEntry(Object entry) {
-		this.entry = entry;
+	    if (entry instanceof Map) this.entryMap = (Map)entry;
+	    if (entry instanceof DefinableEntity) this.entry = (DefinableEntity)entry;
 	}
 
+	public void addParam(String name, String value) {
+		if (_params == null) {
+			_params = new HashMap();
+		}
+		_params.put(name, value);
+	}
 }
+
+

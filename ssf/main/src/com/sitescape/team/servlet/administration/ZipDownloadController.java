@@ -70,8 +70,7 @@ public abstract class ZipDownloadController extends  SAbstractController {
 		while (itFormData.hasNext()) {
 			Map.Entry me = (Map.Entry) itFormData.next();
 			if (((String)me.getKey()).startsWith("id_")) {
-				String defId = ((String)me.getKey()).substring(4);
-				if (defId.startsWith("%")) defId = defId.substring(1);
+				String defId = ((String)me.getKey()).substring(3);
 				if (defId.startsWith("%")) defId = defId.substring(1);
 				if (Validator.isNotNull(defId)) {
 					try {

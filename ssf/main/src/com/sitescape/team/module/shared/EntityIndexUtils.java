@@ -28,50 +28,10 @@
  */
 	package com.sitescape.team.module.shared;
 
-import static com.sitescape.util.search.Constants.BINDERS_PARENT_ID_FIELD;
-import static com.sitescape.util.search.Constants.BINDER_ID_FIELD;
-import static com.sitescape.util.search.Constants.COMMAND_DEFINITION_FIELD;
-import static com.sitescape.util.search.Constants.CREATION_DATE_FIELD;
-import static com.sitescape.util.search.Constants.CREATION_DAY_FIELD;
-import static com.sitescape.util.search.Constants.CREATION_YEAR_FIELD;
-import static com.sitescape.util.search.Constants.CREATION_YEAR_MONTH_FIELD;
-import static com.sitescape.util.search.Constants.CREATORID_FIELD;
-import static com.sitescape.util.search.Constants.CREATOR_NAME_FIELD;
-import static com.sitescape.util.search.Constants.CREATOR_TITLE_FIELD;
-import static com.sitescape.util.search.Constants.DEFINITION_TYPE_FIELD;
-import static com.sitescape.util.search.Constants.DOCID_FIELD;
-import static com.sitescape.util.search.Constants.ENTITY_FIELD;
-import static com.sitescape.util.search.Constants.ENTRY_ANCESTRY;
-import static com.sitescape.util.search.Constants.EVENT_COUNT_FIELD;
-import static com.sitescape.util.search.Constants.EVENT_DATES_FIELD;
-import static com.sitescape.util.search.Constants.EVENT_FIELD;
-import static com.sitescape.util.search.Constants.FAMILY_FIELD;
-import static com.sitescape.util.search.Constants.FILENAME_FIELD;
-import static com.sitescape.util.search.Constants.FILE_EXT_FIELD;
-import static com.sitescape.util.search.Constants.FILE_ID_FIELD;
-import static com.sitescape.util.search.Constants.FILE_SIZE_FIELD;
-import static com.sitescape.util.search.Constants.FILE_TIME_FIELD;
-import static com.sitescape.util.search.Constants.FILE_TYPE_FIELD;
-import static com.sitescape.util.search.Constants.FILE_UNIQUE_FIELD;
-import static com.sitescape.util.search.Constants.MODIFICATIONID_FIELD;
-import static com.sitescape.util.search.Constants.MODIFICATION_DATE_FIELD;
-import static com.sitescape.util.search.Constants.MODIFICATION_DAY_FIELD;
-import static com.sitescape.util.search.Constants.MODIFICATION_NAME_FIELD;
-import static com.sitescape.util.search.Constants.MODIFICATION_TITLE_FIELD;
-import static com.sitescape.util.search.Constants.MODIFICATION_YEAR_FIELD;
-import static com.sitescape.util.search.Constants.MODIFICATION_YEAR_MONTH_FIELD;
-import static com.sitescape.util.search.Constants.RATING_FIELD;
-import static com.sitescape.util.search.Constants.SORT_CREATOR_TITLE_FIELD;
-import static com.sitescape.util.search.Constants.TEAM_MEMBERS_FIELD;
-import static com.sitescape.util.search.Constants.WORKFLOW_PROCESS_FIELD;
-import static com.sitescape.util.search.Constants.WORKFLOW_STATE_CAPTION_FIELD;
-import static com.sitescape.util.search.Constants.WORKFLOW_STATE_FIELD;
-
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -80,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.Collection;
 
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
@@ -106,13 +67,14 @@ import com.sitescape.team.domain.WfAcl;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.TagUtil;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
+import static com.sitescape.util.search.Constants.*;
 
 /**
  * Index the fields common to all Entry types.
@@ -181,8 +143,10 @@ public class EntityIndexUtils {
    public static void addRating(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	//rating may not exist or not be supported
     	try {
-        	Field rateField = new Field(RATING_FIELD, entry.getAverageRating().getAverage().toString(), Field.Store.NO, Field.Index.UN_TOKENIZED);
-        	doc.add(rateField);
+    		if(entry.getAverageRating() != null) {
+	        	Field rateField = new Field(RATING_FIELD, entry.getAverageRating().getAverage().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+	        	doc.add(rateField);
+    		}
         } catch (Exception ex) {};
    	
     }
@@ -415,7 +379,7 @@ public class EntityIndexUtils {
         if (entry.getEntryDef() != null) {
         	org.dom4j.Document def = entry.getEntryDef().getDefinition();
         	String family = DefinitionUtils.getFamily(def);
-        	if (family != null) {
+        	if (Validator.isNotNull(family)) {
       			Field eField = new Field(FAMILY_FIELD, family, Field.Store.NO, Field.Index.UN_TOKENIZED);
     	       	doc.add(eField);	
         	}
@@ -655,6 +619,10 @@ public class EntityIndexUtils {
         	doc.add(fileTimeField); 
         	Field fileNameField = new Field(FILENAME_FIELD, fa.getFileItem().getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         	doc.add(fileNameField);
+        	//create names that groups all the related values together for parsing in displays
+        	doc.add(new Field(FILE_SIZE_FIELD+fa.getId(), fileSizeField.stringValue(), Field.Store.YES, Field.Index.UN_TOKENIZED));
+        	doc.add(new Field(FILE_TIME_FIELD+fa.getId(), fileTimeField.stringValue(), Field.Store.YES, Field.Index.UN_TOKENIZED));
+        	doc.add(new Field(FILENAME_FIELD+fa.getId(), fileNameField.stringValue(), Field.Store.YES, Field.Index.UN_TOKENIZED));
         }
     }    
     //Used to index the file.  Only want info about this file, so remove extraneous stuff

@@ -28,21 +28,17 @@
  */
 package com.sitescape.team.dao.impl;
 
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.classextension.EasyMock.replay;
-import static org.easymock.classextension.EasyMock.reset;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.List;
+import java.util.ArrayList;
 
-import org.junit.Test;
+import org.hibernate.LazyInitializationException;
+import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
-import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.dao.impl.CoreDaoImpl;
+import com.sitescape.team.dao.impl.ProfileDaoImpl;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.Binder;
@@ -51,6 +47,7 @@ import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FileItem;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.Membership;
 import com.sitescape.team.domain.NoUserByTheIdException;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.NoWorkspaceByTheNameException;
@@ -71,21 +68,22 @@ import com.sitescape.team.support.AbstractTestBase;
 public class ProfileDaoImplTests extends AbstractTestBase {
 
 	private static String zoneName ="testZone";
+	protected String[] getConfigLocations() {
+		return new String[] {"/com/sitescape/team/dao/impl/applicationContext-coredao.xml"};
+	}
 	
-	@Test
 	public void testFindUserByName() {
-		setupWorkspace(zoneName);
-		User user = profileDao.findUserByName(adminUser, zoneName);
+		createZone(zoneName);
+		User user = pdi.findUserByName(adminUser, zoneName);
 		assertNotNull(user);
 	}
 	
-	@Test
 	public void testFindUserByNameNoUserByTheNameException() {
-		setupWorkspace(zoneName);
+		createZone(zoneName);
 		// Test three slightly different cases:
 		// Test the situation where zone exists but username does not. 
 		try {
-			profileDao.findUserByName("nonExistingUser", zoneName);			
+			pdi.findUserByName("nonExistingUser", zoneName);			
 			fail("Should throw NoUserByTheNameException");
 		}
 		catch(NoUserByTheNameException e) {
@@ -94,7 +92,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		
 		// Test the situation where username exists but zone doesn't.
 		try {
-			profileDao.findUserByName(adminUser, "nonExistingZone");			
+			pdi.findUserByName(adminUser, "nonExistingZone");			
 			fail("Should throw NoUserByTheNameException");
 		}
 		catch(NoWorkspaceByTheNameException e) {
@@ -103,7 +101,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		
 		// Test the situation where neither exists.
 		try {
-			profileDao.findUserByName("nonExistingUser", "nonExistingZone");			
+			pdi.findUserByName("nonExistingUser", "nonExistingZone");			
 			fail("Should throw NoUserByTheNameException");
 		}
 		catch(NoWorkspaceByTheNameException e) {
@@ -111,30 +109,47 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		}
 	}
 	
-	@Test
-	public void testLoadUser() {
+	public void testLoadUserAndLazyLoading() {
 		// phase1: Load it. 
-		Binder top = setupWorkspace(zoneName).getSecond();
+		Binder top = createZone(zoneName);
 
-		User user =	profileDao.findUserByName(adminUser, zoneName);	
-		coreDao.evict(user);
-		user = profileDao.loadUser(user.getId(), top.getId());
+		User user =	pdi.findUserByName(adminUser, zoneName);	
+		cdi.evict(user);
+		user = pdi.loadUser(user.getId(), top.getId());
 		assertNotNull(user);
+		
+		// phase2: Test lazy loading, by ending the transation (it rolls back).
+		// Here we expect LazyInitializationException from Hibernate because
+		// the session is already closed. If we had open-session-in-view
+		// setup, lazy loading would have worked. But that is not the case here.
+		endTransaction();
+		try {
+			Map customAttrs = user.getCustomAttributes();
+			for(Iterator i = customAttrs.entrySet().iterator(); i.hasNext();) {
+				Map.Entry ent = (Map.Entry) i.next();
+				Object key = ent.getKey();
+				Object val = ent.getValue();
+			}
+			// If you're still here, something's wrong.
+			fail("Should throw LazyInitializationException");
+		}
+		catch(LazyInitializationException e) {
+			assertTrue(true); // As expected
+		}
 	}
 	
-	@Test
 	public void testAddGroup() {
-		Binder top = setupWorkspace(zoneName).getSecond();
-		long count = coreDao.countObjects(Group.class, null, top.getZoneId());
+		Binder top = createZone(zoneName);
+		long count = cdi.countObjects(Group.class, null, top.getZoneId());
 		
 		Group newGroup = new Group();
 		newGroup.setName("brandNewGroup");
 		newGroup.setForeignName("brandNewGroup");
 		newGroup.setZoneId(top.getZoneId());
 		
-		coreDao.save(newGroup);
+		cdi.save(newGroup);
 		
-		long newCount = coreDao.countObjects(Group.class, null, top.getZoneId());
+		long newCount = cdi.countObjects(Group.class, null, top.getZoneId());
 		
 		assertEquals(count + 1, newCount);
 	}
@@ -143,60 +158,56 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 	 * Verify attributes exist
 	 *
 	 */
-	@Test
 	public void testAddUser() {
 		String userName = "testUser";
-		Workspace top = setupWorkspace(zoneName).getSecond();
-		
+		Workspace top = createZone(zoneName);;
 		FilterControls filter = new FilterControls("zoneId", top.getId());
-		long count = coreDao.countObjects(User.class, filter, top.getZoneId());
+		long count = cdi.countObjects(User.class, filter, top.getZoneId());
 		User user = createBaseUser(top, userName);
-		long newCount = coreDao.countObjects(User.class, filter, top.getZoneId());
+		long newCount = cdi.countObjects(User.class, filter, top.getZoneId());
 		assertEquals(count + 1, newCount);
 
 		FilterControls fc = new FilterControls("owner.principal", user);
 		//make sure attributes are there
-		if (coreDao.countObjects(CustomAttribute.class, fc, top.getZoneId()) != 3)
+		if (cdi.countObjects(CustomAttribute.class, fc, top.getZoneId()) != 3)
 			fail("Custom attributes missing");
-		if (coreDao.countObjects(Attachment.class, fc, top.getZoneId()) != 1)
+		if (cdi.countObjects(Attachment.class, fc, top.getZoneId()) != 1)
 			fail("Attachments missing");
-		if (coreDao.countObjects(Event.class, fc, top.getZoneId()) != 0)
+		if (cdi.countObjects(Event.class, fc, top.getZoneId()) != 0)
 			fail("Events missing");
-		if (coreDao.countObjects(WorkflowState.class, fc, top.getZoneId()) != 0)
+		if (cdi.countObjects(WorkflowState.class, fc, top.getZoneId()) != 0)
 			fail("WorkflowStates missing");
-		// XXX Membership does not have a reference to zoneId
-//		if (coreDao.countObjects(Membership.class, new FilterControls("userId", user.getId()), top.getZoneId()) != 1)
-//			fail("Membership not added for user " + user.getName());
+		if (cdi.countObjects(Membership.class, new FilterControls("userId", user.getId()), top.getZoneId()) != 1)
+			fail("Membership not added for user " + user.getName());
 	}
 	/**
 	 * test loadUsers,countUsers,loadGroups,countGroups with null filter
 	 * test loadPrincipals with ids
 	 *
 	 */
-	@Test
 	public void testLoadPrincipals() {
-		Workspace top = setupWorkspace("testZone").getSecond();
-		long count = coreDao.countObjects(User.class, null, top.getZoneId());
-		List users = profileDao.loadUsers(new FilterControls(), top.getZoneId());
+		Workspace top = createZone("testZone");
+		long count = cdi.countObjects(User.class, null, top.getZoneId());
+		List users = pdi.loadUsers(new FilterControls(), top.getZoneId());
 		assertEquals(count,users.size());
 
-		count = coreDao.countObjects(Group.class, null, top.getZoneId());
-		List groups = profileDao.loadGroups(new FilterControls(), top.getZoneId());
+		count = cdi.countObjects(Group.class, null, top.getZoneId());
+		List groups = pdi.loadGroups(new FilterControls(), top.getZoneId());
 		assertEquals(count,groups.size());
 		List ids = new ArrayList();
 		for (int i=0; i<users.size(); ++i) {
 			User u = (User)users.get(i);
 			ids.add(u.getId());
-			coreDao.evict(u);
+			cdi.evict(u);
 		}
 		
 		for (int i=0; i<groups.size(); ++i) {
 			Group g = (Group)groups.get(i);
 			ids.add(g.getId());
-			coreDao.evict(g);
+			cdi.evict(g);
 		}
 		
-		List prins = profileDao.loadUserPrincipals(ids, top.getZoneId(), true);
+		List prins = pdi.loadUserPrincipals(ids, top.getZoneId(), true);
 		if (prins.size() != (users.size() + groups.size())) {
 			fail("Principals don't add up " + prins.size());
 		}
@@ -213,27 +224,25 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 	 * Test loadUserOnlyifEnabled nad loadEnabledUsers
 	 *
 	 */
-	@Test
 	public void testDisablePrincipals() {
-		Workspace top = setupWorkspace("testZone").getSecond();
-		
+		Workspace top = createZone("testZone");
 		User user1 = createBaseUser(top, "user1");
 		user1.setDisabled(true);
-		coreDao.flush();
-		coreDao.clear();
+		cdi.flush();
+		cdi.clear();
 		try {
-			profileDao.loadUser(user1.getId(), top.getZoneId());
+			pdi.loadUser(user1.getId(), top.getZoneId());
 			fail("Disabled user loaded with loadUserOnlyIfEnabled");
 		} catch (NoUserByTheIdException nu) {}
 		//load all users
-		List users = profileDao.loadUsers(new FilterControls(), top.getZoneId());
+		List users = pdi.loadUsers(new FilterControls(), top.getZoneId());
 		List ids = new ArrayList();
 		for (int i=0; i<users.size(); ++i) {
 			User u = (User)users.get(i);
 			ids.add(u.getId());
-			coreDao.evict(u);
+			cdi.evict(u);
 		}
-		users = profileDao.loadUsers(ids, top.getZoneId());
+		users = pdi.loadUsers(ids, top.getZoneId());
 		if (users.contains(user1))
 			fail("Disabled user loaded with loadEnabledUsers");
 
@@ -245,14 +254,13 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 	 * This test uses hibernate delete
 	 *
 	 */
-	@Test
 	public void testDeleteBaseUser() {
-		Workspace top = setupWorkspace("testZone").getSecond();
+		Workspace top = createZone("testZone");
 		User user = createBaseUser(top, "testUser");
 		//remove user from groups
 		user.setMemberOf(new ArrayList());
 		//delete as a hibernate object - will delete all associations with cascade=delete-all-orphan
-		coreDao.delete((Object)user);
+		cdi.delete((Object)user);
 		//make sure attributes are gone
 		checkDeleted(user);
 		
@@ -263,17 +271,16 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 	 * hibernate deletes because of cascade.
 	 *
 	 */
-	@Test
 	public void testDeleteFullUser() {
 
-		Workspace top = setupWorkspace("testZone").getSecond();
+		Workspace top = createZone("testZone");
 		//Now add another association not handled by hibernate cascade
 		User user = createBaseUser(top, "testUser2");
 			
-		coreDao.flush();
+		cdi.flush();
 		//have to clear cache cause group owns membership and may try to re-add the user
-		coreDao.clear();
-		profileDao.delete(user);
+		cdi.clear();
+		pdi.delete(user);
 		//make sure attributes are gone
 		checkDeleted(user);
 	}
@@ -281,16 +288,15 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 	 * Test profileDao.delete of a list of users
 	 *
 	 */
-	@Test
 	public void testDeleteFullPrincipals() {
-		Workspace top = setupWorkspace("testZone").getSecond();
-		List<Principal> entries = fillProfile(top);
+		Workspace top = createZone("testZone");
+		List entries = fillProfile(top);
 		
 		//have to clear session cause we are bypassing hibernate cascade.
-		coreDao.clear();
-		profileDao.deleteEntries(entries);
+		cdi.clear();
+		pdi.deleteEntries(entries);
 		for (int i=0; i<entries.size(); ++i) {
-			checkDeleted(entries.get(i));
+			checkDeleted((Principal)entries.get(i));
 		}
 		
 	}
@@ -299,64 +305,78 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 	 * Test profileDao.deleteEntries and delete of the binder
 	 *
 	 */
-	@Test
 	public void testDeleteBinder() {
-		Workspace top = setupWorkspace("testZone").getSecond();
-		List<Principal> entries = fillProfile(top);
+		Workspace top = createZone("testZone");
+		List entries = fillProfile(top);
 		
 		//have to clear session cause we are bypassing hibernate cascade.
-		coreDao.clear();
+		cdi.clear();
 		
-		ProfileBinder p = profileDao.getProfileBinder(top.getZoneId());
-		profileDao.delete(p);
+		ProfileBinder p = pdi.getProfileBinder(top.getZoneId());
+		pdi.delete(p);
 		for (int i=0; i<entries.size(); ++i) {
-			checkDeleted(entries.get(i));
+			checkDeleted((Principal)entries.get(i));
 		}
 		
 	}
-	
-	private List<Principal> fillProfile(Workspace top) {
+
+	private User createBaseUser(Workspace top, String name) {
+		User user = new User();
+		user.setZoneId(top.getZoneId());
+		user.setName(name);
+		user.setForeignName(name);
+		user.setParentBinder(pdi.getProfileBinder(top.getZoneId()));
+		//add some attributes
+		user.addCustomAttribute("aString", "I am a string");
+		String vals[] = new String[] {"red", "white", "blue"};
+		user.addCustomAttribute("aList", vals);
+		FileAttachment att = new FileAttachment("aFile");
+		FileItem fi = new FileItem();
+		fi.setName("dummy.txt");
+		att.setFileItem(fi);
+		cdi.save(att);
+		assertNotNull(att.getId());
+		user.addCustomAttribute("aFile", att);
+		cdi.save(user);
+		assertNotNull(user.getId());
+		//add user to a group
+		Group group = (Group)pdi.loadGroups(new FilterControls("name", adminGroup), top.getZoneId()).get(0);
+		group.addMember(user);
+		try {
+			user = pdi.findUserByName(name, top.getName());			
+		} catch (NoUserByTheNameException e) {
+			fail("New user test not found");
+		}
+		assertNotNull(user.getCustomAttribute("aString"));
+		assertNotNull(user.getCustomAttribute("aFile"));
+		Set sVal = (Set)user.getCustomAttribute("aList").getValue();
+		assertEquals(sVal.toArray(vals), vals);
+		return user;
 		
-		List<Principal> entries = new ArrayList<Principal>();
+	}
+	private List fillProfile(Workspace top) {
+		List entries = new ArrayList();
 		User user1 = createBaseUser(top, "testUser1");
-		
-		RequestContext mRequestContext = fakeRequestContext();
-		expect(mRequestContext.getZoneId()).andReturn(top.getId());
-		expectLastCall().times(2);
-		replay(mRequestContext);
-		
 		entries.add(user1);
-		profileDao.loadUserProperties(user1.getId());
-		profileDao.loadSeenMap(user1.getId());
+		pdi.loadUserProperties(user1.getId());
+		pdi.loadSeenMap(user1.getId());
 		
 		User user2 = createBaseUser(top, "testUser2");
-		
-		mRequestContext = fakeRequestContext();
-		expect(mRequestContext.getZoneId()).andReturn(top.getId());
-		expectLastCall().times(2);
-		replay(mRequestContext);
-		
 		entries.add(user2);
-		profileDao.loadUserProperties(user2.getId());
-		profileDao.loadSeenMap(user2.getId());
+		pdi.loadUserProperties(user2.getId());
+		pdi.loadSeenMap(user2.getId());
 
 		User user3 = createBaseUser(top, "testUser3");
-		
-		mRequestContext = fakeRequestContext();
-		expect(mRequestContext.getZoneId()).andReturn(top.getId());
-		expectLastCall().times(2);
-		replay(mRequestContext);
-		
 		entries.add(user3);
-		profileDao.loadUserProperties(user3.getId());
-		profileDao.loadSeenMap(user3.getId());
+		pdi.loadUserProperties(user3.getId());
+		pdi.loadSeenMap(user3.getId());
 		
 		Group group1 = new Group();
 		group1.setName("group1");
 		group1.setForeignName("group1");
 		group1.setZoneId(top.getZoneId());
 		group1.setParentBinder(user1.getParentBinder());
-		coreDao.save(group1);
+		cdi.save(group1);
 		entries.add(group1);
 		
 		Group group2 = new Group();
@@ -364,7 +384,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		group2.setForeignName("group2");
 		group2.setZoneId(top.getZoneId());
 		group2.setParentBinder(user1.getParentBinder());
-		coreDao.save(group2);
+		cdi.save(group2);
 		entries.add(group2);
 		
 		Group group3 = new Group();
@@ -372,7 +392,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		group3.setForeignName("group3");
 		group3.setZoneId(top.getZoneId());
 		group3.setParentBinder(user1.getParentBinder());
-		coreDao.save(group3);
+		cdi.save(group3);
 		entries.add(group3);
 
 		group1.addMember(user1);
@@ -382,54 +402,23 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		group3.addMember(user3);
 		group3.addMember(user1);
 		
-		coreDao.flush();
+		cdi.flush();
 		return entries;
 	}
 	private void checkDeleted(Principal p) {
 		FilterControls fc = new FilterControls("owner.principal", p);
-		if (coreDao.countObjects(CustomAttribute.class, fc, p.getZoneId()) != 0)
+		if (cdi.countObjects(CustomAttribute.class, fc, p.getZoneId()) != 0)
 			fail("Custom attributes not deleted from user " + p.getName());
-		if (coreDao.countObjects(Attachment.class, fc, p.getZoneId()) != 0)
+		if (cdi.countObjects(Attachment.class, fc, p.getZoneId()) != 0)
 			fail("Attachments not deleted from user " + p.getName());
-		if (coreDao.countObjects(Event.class, fc, p.getZoneId()) != 0)
+		if (cdi.countObjects(Event.class, fc, p.getZoneId()) != 0)
 			fail("Events not deleted from user " + p.getName());
-		if (coreDao.countObjects(WorkflowState.class, fc, p.getZoneId()) != 0)
+		if (cdi.countObjects(WorkflowState.class, fc, p.getZoneId()) != 0)
 			fail("WorkflowStates not deleted from user " + p.getName());
-		if (coreDao.countObjects(UserProperties.class, new FilterControls("id.principalId", p.getId()), p.getZoneId()) != 0)
+		if (cdi.countObjects(UserProperties.class, new FilterControls("id.principalId", p.getId()), p.getZoneId()) != 0)
 			fail("User properties were not deleted for user " + p.getName());
-		if (coreDao.countObjects(SeenMap.class, new FilterControls("principalId", p.getId()), p.getZoneId()) != 0)
+		if (cdi.countObjects(SeenMap.class, new FilterControls("principalId", p.getId()), p.getZoneId()) != 0)
 			fail("Seen map was not deleted for user " + p.getName());
 		
-	}
-
-	private User createBaseUser(Workspace top, String name) {
-		RequestContext mRequestContext = fakeRequestContext();
-		reset(mRequestContext);
-		expect(mRequestContext.getZoneId()).andReturn(top.getId());
-		expectLastCall().times(7);
-		replay(mRequestContext);
-		
-		User user = new User();
-		user.setZoneId(top.getZoneId());
-		user.setName(name);
-		user.setForeignName(name);
-		user.setParentBinder(profileDao.getProfileBinder(top.getZoneId()));
-		//add some attributes
-		user.addCustomAttribute("aString", "I am a string");
-		String vals[] = new String[] {"red", "white", "blue"};
-		user.addCustomAttribute("aList", vals);
-		FileAttachment att = new FileAttachment("aFile");
-		FileItem fi = new FileItem();
-		fi.setName("dummy.txt");
-		att.setFileItem(fi);
-		coreDao.save(att);
-		user.addCustomAttribute("aFile", att);
-		coreDao.save(user);
-		//add user to a group
-		Group group = (Group)profileDao.loadGroups(new FilterControls("name", adminGroup), top.getZoneId()).get(0);
-		group.addMember(user);
-		user = profileDao.findUserByName(name, top.getName());
-		
-		return user;
 	}
 }

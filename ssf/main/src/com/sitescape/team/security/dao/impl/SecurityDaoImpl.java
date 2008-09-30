@@ -81,9 +81,8 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
         throw new NoObjectByTheIdException("errorcode.no.role.by.the.id", id);
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Function> findFunctions(final Long zoneId) {
-        return (List<Function>)getHibernateTemplate().execute(
+    public List findFunctions(final Long zoneId) {
+        return (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                         List<Function> results = session.createCriteria(Function.class)
@@ -110,8 +109,7 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
         return (WorkAreaFunctionMembership) getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
-                    	@SuppressWarnings("unchecked")
-                    	List<WorkAreaFunctionMembership> results = session.createCriteria(WorkAreaFunctionMembership.class)
+                    	List results = session.createCriteria(WorkAreaFunctionMembership.class)
                                 .add(Expression.conjunction() 
                                			.add(Expression.eq(ZONE_ID, zoneId))
                                			.add(Expression.eq(WORK_AREA_ID, workAreaId))

@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+
 <project name="web" basedir="." default="war">
 	<import file="../build-common.xml" />
 	
@@ -126,19 +127,11 @@
 			excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,WEB-INF/xslt/*.tmpl"
 			webxml="${web.dir}/WEB-INF/${generic.web.xml}"
 		>
-			<classes dir="${ssf.dir}/src" />
-			<classes dir="${ssf.resources.dir}" excludes="${ssf.resources.dir}/*" />
+			<!-- No longer necessary
+			<manifest>
+				<attribute name="Class-Path" value="ssf-main.jar ${classpath.manifest.ss} ${classpath.manifest.3rd}" />
+			</manifest>-->
 		</war>
-	
-		<!-- Process top-level resources -->
-		<copy todir="temp/WEB-INF/classes" overwrite="true" filtering="true">
-			<fileset dir="${ssf.resources.dir}" includes="*.properties context/**" />
-			<filterset>
-				<filter token="app.server.ssf.extension.dir" value="${app.server.liferay.tomcat.ssf.extension.dir}" />
-				<filter token="app.server.ssf.extension.web.dir" value="${app.server.liferay.tomcat.ssf.extension.web.dir}" />
-			</filterset>
-		</copy>
-		<war basedir="temp"	destfile="${war.file}" update="true" />
 	
 		<antcall target="add-image-themes"/>
 	
@@ -180,7 +173,7 @@
 	
 		<copy
 			preservelastmodified="true"
-			file="${ssf.resources.dir}/ssf.properties"
+			file="${web.dir}/WEB-INF/classes/config/ssf.properties"
 			tofile="temp/WEB-INF/classes/config/ssf.properties"/>
 	
 		<replace file="temp/WEB-INF/classes/config/ssf.properties">
@@ -197,11 +190,10 @@
 	</target>
 	
 	<target name="deploy-light">
-		<copy todir="${app.server.ssf.dir}" overwrite="true" filtering="true">
+		<copy todir="${app.server.ssf.dir}" overwrite="true">
 			<fileset dir="${web.dir}"
 				includes="WEB-INF/context/applicationContext.xml,WEB-INF/context/additionalContext.xml,WEB-INF/context/security.xml"
 			/>
-			<fileset dir="${ssf.resources.dir}/context" includes="applicationContext.xml,additionalContext.xml" />
 		</copy>
 		<copy todir="${app.server.ssf.dir}">
 			<fileset dir="${web.dir}"

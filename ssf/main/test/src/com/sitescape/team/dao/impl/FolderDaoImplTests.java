@@ -28,38 +28,24 @@
  */
 package com.sitescape.team.dao.impl;
 
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.classextension.EasyMock.replay;
-import static org.easymock.classextension.EasyMock.reset;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.hibernate.LazyInitializationException;
 
-import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Event;
-import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.FileItem;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoFolderByTheIdException;
-import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.support.AbstractTestBase;
@@ -70,9 +56,10 @@ import com.sitescape.team.support.AbstractTestBase;
  */
 public class FolderDaoImplTests extends AbstractTestBase {
 	private static String zoneName ="testZone";
-	
-	@Autowired(required = true)
-	protected FolderDaoImpl folderDao;
+	protected FolderDaoImpl fdi;
+	protected String[] getConfigLocations() {
+		return new String[] {"/com/sitescape/team/dao/impl/applicationContext-folderdao.xml"};
+	}
 	
 	/*
 	 * This method is provided to set the CoreDaoImpl instance being tested
@@ -80,11 +67,10 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	 * superclass.
 	 */
 	public void setFolderDaoImpl(FolderDaoImpl fdi) {
-		this.folderDao = fdi;
+		this.fdi = fdi;
 	}
-	@Test
 	public void testAddFolder() {
-		Workspace top = setupWorkspace(zoneName).getSecond();
+		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
 		assertNull(folder.getTopFolder());
 		assertNull(folder.getParentFolder());
@@ -92,9 +78,8 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		assertEquals(folder.getBinderKey().getLevel(), 2);
 		assertEquals(folder.getBinderKey().getSortKey(), top.getBinderKey().getSortKey() + "00004");
 	}
-	@Test
 	public void testAddSubFolder() {
-		Workspace top = setupWorkspace(zoneName).getSecond();
+		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
  		Folder sub = createFolder(folder, "subFolder1");
 		assertEquals(sub.getTopFolder(), folder);
@@ -122,34 +107,27 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		assertEquals(sub.getBinderKey().getSortKey() + "00002", sub2.getBinderKey().getSortKey());
 		assertEquals(folder.getBinderKey().getSortKey() + "0000200002", sub2.getBinderKey().getSortKey());
 		FilterControls fc = new FilterControls("topFolder", folder);
-		
-		RequestContext mrc = fakeRequestContext();
-		expect(mrc.getZoneId()).andStubReturn(top.getZoneId());
-		replay(mrc);
-		
-		assertEquals(coreDao.countObjects(Folder.class, fc, top.getZoneId()), 4);
+		assertEquals(cdi.countObjects(Folder.class, fc, top.getZoneId()), 4);
 	}
-	@Test
 	public void testFindFolderById() {
-		Workspace top = setupWorkspace(zoneName).getSecond();
+		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
-		coreDao.clear();
-		Folder f = folderDao.loadFolder(folder.getId(), top.getZoneId());
+		cdi.clear();
+		Folder f = fdi.loadFolder(folder.getId(), top.getZoneId());
 		assertEquals(f, folder);
 		assertEquals(f.getName(),"testFolder"); 
 	}
 	
-	@Test
 	public void testFindFolderNoFolderByTheIdException() {
 		// Test three slightly different cases: It throws the same exception
 		// for all cases. Throwing different exception for each case will make
 		// the database lookup more expensive, so it's not worth it. 
-		Workspace top = setupWorkspace(zoneName).getSecond();
+		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
 		
 		// Test the situation where zone exists but folder does not. 
 		try {
-			folderDao.loadFolder(Long.valueOf(-1), top.getZoneId());			
+			fdi.loadFolder(Long.valueOf(-1), top.getZoneId());			
 			fail("Should throw NoFolderByTheIdException");
 		}
 		catch(NoFolderByTheIdException e) {
@@ -158,7 +136,7 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		
 		// Test the situation where folder exists but zone doesn't.
 		try {
-			folderDao.loadFolder(folder.getId(), Long.valueOf(-1));			
+			fdi.loadFolder(folder.getId(), Long.valueOf(-1));			
 			fail("Should throw NoFolderByTheIdException");
 		}
 		catch(NoFolderByTheIdException e) {
@@ -167,7 +145,7 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		
 		// Test the situation where folder and zone don't exist
 		try {
-			folderDao.loadFolder(Long.valueOf(-1), Long.valueOf(-1));			
+			fdi.loadFolder(Long.valueOf(-1), Long.valueOf(-1));			
 			fail("Should throw NoFolderByTheIdException");
 		}
 		catch(NoFolderByTheIdException e) {
@@ -180,9 +158,8 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	 * Verify attributes exist
 	 *
 	 */
-	@Test
 	public void testAddEntry() {
-		Workspace top = setupWorkspace(zoneName).getSecond();
+		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
 		int oldCount = folder.getNextEntryNumber();
  		FolderEntry entry = createBaseEntry(folder);
@@ -190,26 +167,45 @@ public class FolderDaoImplTests extends AbstractTestBase {
 
 		FilterControls fc = new FilterControls("owner.folderEntry", entry);
 		//make sure attributes are there
-		if (coreDao.countObjects(CustomAttribute.class, fc, top.getZoneId()) != entry.getCustomAttributes().size())
+		if (cdi.countObjects(CustomAttribute.class, fc, top.getZoneId()) != entry.getCustomAttributes().size())
 			fail("Custom attributes missing");
-		if (coreDao.countObjects(Attachment.class, fc, top.getZoneId()) != entry.getAttachments().size())
+		if (cdi.countObjects(Attachment.class, fc, top.getZoneId()) != entry.getAttachments().size())
 			fail("Attachments missing");
 		 
-		if (coreDao.countObjects(Event.class, fc, top.getZoneId()) != entry.getEvents().size())
+		if (cdi.countObjects(Event.class, fc, top.getZoneId()) != entry.getEvents().size())
 			fail("Events missing");
-		if (coreDao.countObjects(WorkflowState.class, fc, top.getZoneId()) != entry.getWorkflowStates().size())
+		if (cdi.countObjects(WorkflowState.class, fc, top.getZoneId()) != entry.getWorkflowStates().size())
 			fail("WorkflowStates missing");
 	}
 	
-	@Test
 	public void testLoadFolderEntryAndLazyLoading() {
 		// phase1: Load it. 
-		Workspace top = setupWorkspace(zoneName).getSecond();
+		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
 		FolderEntry entry = createBaseEntry(folder);
 		//clear session
-		coreDao.clear();
-		assertNotNull(folderDao.loadFolderEntry(folder.getId(), entry.getId(), top.getZoneId()));
+		cdi.clear();
+		FolderEntry partial = fdi.loadFolderEntry(folder.getId(), entry.getId(), top.getZoneId());
+		
+		// phase2: Test lazy loading, by ending the transation (it rolls back).
+		// Here we expect LazyInitializationException from Hibernate because
+		// the session is already closed. If we had open-session-in-view
+		// setup, lazy loading would have worked. But that is not the case here.
+		endTransaction();
+		try {
+			Map customAttrs = partial.getCustomAttributes();
+			for(Iterator i = customAttrs.entrySet().iterator(); i.hasNext();) {
+				Map.Entry ent = (Map.Entry) i.next();
+				CustomAttribute val = (CustomAttribute)ent.getValue();
+				val.getValue();
+				System.out.println(val);
+			}
+			// If you're still here, something's wrong. 
+			fail("Should throw LazyInitializationException");
+		}
+		catch (LazyInitializationException e) {
+			assertTrue(true); // As expected
+		}
 	}
 	
 	/**
@@ -218,14 +214,13 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	 * This test uses hibernate delete
 	 *
 	 */
-	@Test
 	public void testDeleteEntry() {
-		Workspace top = setupWorkspace("testZone").getSecond();
+		Workspace top = createZone("testZone");
 		Folder folder = createFolder(top, "testFolder");
 		FolderEntry entry = createBaseEntry(folder);
 		
 		//delete as a hibernate object - will delete all associations with cascade=delete-all-orphan
-		coreDao.delete((Object)entry);
+		cdi.delete((Object)entry);
 		//make sure attributes are gone
 		checkDeleted(entry);
 		
@@ -234,15 +229,14 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	 * Test folderDao.delete of a list of users
 	 *
 	 */
-	@Test
 	public void testDeleteEntries() {
-		Workspace top = setupWorkspace("testZone").getSecond();
+		Workspace top = createZone("testZone");
 		Folder folder = createFolder(top, "testFolder");
 		List entries = fillFolderEntries(folder);
 		
 		//have to clear session cause we are bypassing hibernate cascade.
-		coreDao.clear();
-		folderDao.deleteEntries(folder, entries);
+		cdi.clear();
+		fdi.deleteEntries(folder, entries);
 		for (int i=0; i<entries.size(); ++i) {
 			checkDeleted((FolderEntry)entries.get(i));
 		}
@@ -253,16 +247,15 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	 * Test profileDao.deleteEntries and delete of the binder
 	 *
 	 */
-	@Test
 	public void testDeleteFolder() {
-		Workspace top = setupWorkspace("testZone").getSecond();
+		Workspace top = createZone("testZone");
 		Folder folder = createFolder(top, "testFolder");
 		List entries = fillFolderEntries(folder);
-		profileDao.loadUserProperties(Long.valueOf(0), folder.getId());
+		pdi.loadUserProperties(Long.valueOf(0), folder.getId());
 		//have to clear session cause we are bypassing hibernate cascade.
-		coreDao.clear();
+		cdi.clear();
 		
-		folderDao.delete(folder);
+		fdi.delete(folder);
 		for (int i=0; i<entries.size(); ++i) {
 			checkDeleted((FolderEntry)entries.get(i));
 		}
@@ -273,27 +266,23 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		Folder folder = new Folder();
 		folder.setName(name);
 		folder.setZoneId(top.getId());
-		coreDao.save(folder);
+		cdi.save(folder);
 		top.addBinder(folder);
 		return folder;
 		
 	}
 	private Folder createFolder(Folder top, String name) {
-		RequestContext mrc = fakeRequestContext();
-		expect(mrc.getZoneId()).andReturn(top.getZoneId());
-		replay(mrc);
-		
 		Folder folder = new Folder();
 		folder.setName(name);
 		folder.setZoneId(top.getZoneId());
-		coreDao.save(folder);
+		cdi.save(folder);
 		assertNotNull(folder.getId());
 		top.addFolder(folder);
 		folder.addCustomAttribute("aString", "I am a string");
 		String vals[] = new String[] {"red", "white", "blue"};
 		folder.addCustomAttribute("aList", vals);
 		Event event = new Event();
-		coreDao.save(event);
+		cdi.save(event);
 		assertNotNull(event.getId());
 		folder.addCustomAttribute("anEvent", event);
 		assertNotNull(folder.getCustomAttribute("aString"));
@@ -305,10 +294,6 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	}
 	
 	private FolderEntry createBaseEntry(Folder top) {
-		RequestContext mrc = fakeRequestContext();
-		expect(mrc.getZoneId()).andStubReturn(top.getZoneId());
-		replay(mrc);
-		
 		FolderEntry entry = new FolderEntry();
 		top.addEntry(entry);
 		//add some attributes
@@ -316,10 +301,10 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		String vals[] = new String[] {"red", "white", "blue"};
 		entry.addCustomAttribute("aList", vals);
 		Event event = new Event();
-		coreDao.save(event);
+		cdi.save(event);
 		assertNotNull(event.getId());
 		entry.addCustomAttribute("anEvent", event);
-		coreDao.save(entry);
+		cdi.save(entry);
 		assertNotNull(entry.getId());
 		assertNotNull(entry.getCustomAttribute("aString"));
 		assertNotNull(entry.getCustomAttribute("anEvent"));
@@ -344,12 +329,12 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		for (int i=0; i<4; ++i) {
 			Event event = new Event();
 			event.setCreation(stamp); //needed for setValue ordering
-			coreDao.save(event);
+			cdi.save(event);
 			eVals.add(event);
 			assertNotNull(event.getId());
 		}
 		entry.addCustomAttribute("anEventList", eVals);
-		coreDao.save(entry);
+		cdi.save(entry);
 		assertNotNull(entry.getId());
 		assertNotNull(entry.getCustomAttribute("aString"));
 		assertEquals(entry.getCustomAttribute("anEventList").getValueSet(), eVals);
@@ -383,13 +368,13 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	private void checkDeleted(FolderEntry e) {
 		Long zoneId = e.getParentFolder().getZoneId();
 		FilterControls fc = new FilterControls("owner.folderEntry", e);
-		if (coreDao.countObjects(CustomAttribute.class, fc, zoneId) != 0)
+		if (cdi.countObjects(CustomAttribute.class, fc, zoneId) != 0)
 			fail("Custom attributes not deleted from entry " + e.getId());
-		if (coreDao.countObjects(Attachment.class, fc, zoneId) != 0)
+		if (cdi.countObjects(Attachment.class, fc, zoneId) != 0)
 			fail("Attachments not deleted from entry " + e.getId());
-		if (coreDao.countObjects(Event.class, fc, zoneId) != 0)
+		if (cdi.countObjects(Event.class, fc, zoneId) != 0)
 			fail("Events not deleted from entry " + e.getId());
-		if (coreDao.countObjects(WorkflowState.class, fc, zoneId) != 0)
+		if (cdi.countObjects(WorkflowState.class, fc, zoneId) != 0)
 			fail("WorkflowStates not deleted from entry " + e.getId());
 		
 	}

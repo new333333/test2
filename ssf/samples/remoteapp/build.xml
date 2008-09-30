@@ -21,7 +21,7 @@
 				includes="${libraries.wsclient}" />
 		</copy>
 		<!-- Copy search utility library useful when writing WS client -->
-		<copy file="${project.dir}/util-search/ssf-util-search.jar" todir="war/WEB-INF/lib"/>
+		<copy file="${project.dir}/util/ssf-util-search.jar" todir="war/WEB-INF/lib"/>
 		<!-- Copy additional libraries needed by the remote application sample -->
 		<copy todir="war/WEB-INF/lib">
 			<fileset dir="${project.dir}/lib">

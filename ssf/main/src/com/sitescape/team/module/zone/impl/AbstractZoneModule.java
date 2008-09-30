@@ -40,6 +40,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -134,7 +135,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
 	}
-	public BinderModule getBinderModule() {
+	protected BinderModule getBinderModule() {
 		return binderModule;
 	}
 	private LdapModule ldapModule;
@@ -145,7 +146,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		return ldapModule;
 	}
 	protected List<ZoneSchedule> startupModules;
-	public void setScheduleModules(List<ZoneSchedule> modules) {
+	public void setScheduleModules(List modules) {
 		startupModules = modules;		
 	}
 	/**
@@ -203,22 +204,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  		
  	}
  	
-	/* (non-Javadoc)
-	 * @see com.sitescape.team.module.zone.ZoneModule#getZoneByName(java.lang.String)
-	 */
-	public Workspace getZoneByName(String name) {
-		return getCoreDao().findTopWorkspace(name);
-	}
 	public Long getZoneIdByZoneName(String zoneName) {
 		Workspace top = getCoreDao().findTopWorkspace(zoneName);
 		return top.getId();
-	}
-
-	/* (non-Javadoc)
-	 * @see com.sitescape.team.module.zone.ZoneModule#getDefaultZone()
-	 */
-	public Workspace getDefaultZone() {
-		return getZoneByName(SZoneConfig.getDefaultZoneName());
 	}
 	public ZoneConfig getZoneConfig(Long zoneId) throws ZoneException {
 		return getCoreDao().loadZoneConfig(zoneId);
@@ -442,6 +430,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getCoreDao().merge(superU);	
 			getProfileModule().indexEntry(superU);
 		}
+ 		try {
+ 			getZoneConfig(zone.getId());
+ 		} catch (NoObjectByTheIdException zx) {
+			// Make sure there is a ZoneConfig; new for v2
+ 			addZoneConfigTx(zone);
+ 		}
 		//make sure only one
 		getCoreDao().executeUpdate(
 				"update com.sitescape.team.domain.User set internalId=null where " +
@@ -627,7 +621,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		addMembership(top, adminRole, top, members);
     		//use module instead of processor directly so index synchronziation works correctly
     		//index flushes entries from session - don't make changes without reload
-       		binderModule.indexTree(top.getId());
+       		getBinderModule().indexTree(top.getId());
     		//this will force the Ids to be cached 
     		getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, top.getId());
     		getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, top.getId());
@@ -651,7 +645,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		RequestContextUtil.setThreadContext(name, adminName);
 		try {
-  	        return (Long) getTransactionTemplate().execute(new TransactionCallback() {
+  	        Workspace zone =  (Workspace) getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
 	    			IndexSynchronizationManager.begin();
 
@@ -663,13 +657,16 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	        		getAdminModule().setWorkAreaOwner(guestWs, zone.getOwnerId() ,true);
 	        		//do now, with request context set - won't have one if here on zone startup
 	        		IndexSynchronizationManager.applyChanges();
-	        		for (ZoneSchedule zoneM:startupModules) {
-						zoneM.startScheduledJobs(zone);
-					}
 	    		
-	        		return zone.getId();
+	        		return zone;
 	        	}
 	        });
+  	        //do outside of transaction, so commited.
+  	        //otherwise jobs may start and fail cause data not saved.
+        	for (ZoneSchedule zoneM:startupModules) {
+				zoneM.startScheduledJobs(zone);
+			}
+        	return zone.getId();
 		} finally  {
 			//leave new context for indexing
 			RequestContextHolder.setRequestContext(oldCtx);

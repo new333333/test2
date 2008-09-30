@@ -35,17 +35,6 @@
 	     "build-and-full-deploy", which will re-build correct artifacts before 
 	     deploying them. -->
 	<target name="full-deploy-internal" depends="init">
-		<!-- deploy tomcat JNDI context -->
-		<copy overwrite="true"
-			file="${basedir}/main/src/resources/com/sitescape/team/jndi/ssf.xml"
-			tofile="${app.server.liferay.tomcat.conf.dir}/ssf.xml"
-			filtering="true">
-			<filterset>
-				<filter token="com.sitescape.db.mysql.url" value="${com.sitescape.db.mysql.url}" />
-				<filter token="com.sitescape.db.user" value="${com.sitescape.db.user}" />
-				<filter token="com.sitescape.db.password" value="${com.sitescape.db.password}" />
-			</filterset>
-		</copy>
 		<if>
 			<equals arg1="${portal.type}" arg2="liferay" />
 			<then>				

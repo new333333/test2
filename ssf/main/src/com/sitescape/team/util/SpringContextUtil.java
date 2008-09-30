@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.util;
 import java.io.File;
+import java.io.IOException;
 
 import javax.servlet.ServletContext;
 
@@ -39,6 +40,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.core.io.Resource;
 import org.springframework.web.context.ServletContextAware;
 
 import com.sitescape.team.SingletonViolationException;
@@ -64,10 +66,8 @@ public class SpringContextUtil implements ApplicationContextAware, ServletContex
 	public SpringContextUtil() {
 		if(sc == null)
 			sc = this;
-		// XXX removing the constraint below so tests can actually run
-		// I think it's unlikely that this class is necessary, try to deprecate and remove entirely
-//		else
-//			throw new SingletonViolationException(SpringContextUtil.class);
+		else
+			throw new SingletonViolationException(SpringContextUtil.class);
 	}
 	
     public void setApplicationContext(ApplicationContext ac) throws BeansException {

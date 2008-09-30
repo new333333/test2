@@ -17,11 +17,11 @@ import java.util.Iterator;
 import org.dom4j.io.SAXReader;
 import org.jbpm.JbpmContext;
 import org.jbpm.scheduler.exe.Timer;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
+import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.impl.FolderDaoImpl;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Definition;
@@ -30,23 +30,32 @@ import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workflow.impl.WorkflowFactory;
 import com.sitescape.team.module.workflow.impl.WorkflowModuleImpl;
 import com.sitescape.team.support.AbstractTestBase;
 import com.sitescape.util.cal.Duration;
 
-
 public class WorkflowTransitionTests extends AbstractTestBase {
 
-	@javax.annotation.Resource(name = "workflowModule")
-	private WorkflowModule wfi;
-	@Autowired
+	protected WorkflowModuleImpl wfi;
 	protected FolderDaoImpl fdi;
 	private static String zoneName ="testZone";
+	protected String[] getConfigLocations() {
+		return new String[] {"/com/sitescape/team/module/folder/impl/applicationContext-workflowTransition.xml"};
+	}
 	
-	@Test
-	public void testManualTransition() throws Exception {
+	/*
+	 * This method is provided to set the CoreDaoImpl instance being tested
+	 * by the Dependency Injection, which is done automatically by the
+	 * superclass.
+	 */
+	public void setWorkflowModule(WorkflowModuleImpl wfi) {
+		this.wfi = wfi;
+	}
+	public void setFolderDao(FolderDaoImpl fdi) {
+		this.fdi = fdi;
+	}
+	public void testManualTransition() {
 		try {
 			Workspace top = createZone(zoneName);
 			Folder folder = createFolder(top, "testFolder");
@@ -79,8 +88,7 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 	 * Also tests transitions on variables.
 	 *
 	 */
-	@Test
-	public void testVariableTransition() throws Exception {
+	public void testVariableTransition() {
 		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
 
@@ -115,8 +123,7 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 	 * Test transitions when entry data is modified.
 	 *
 	 */
-	@Test
-	public void testDataTransition() throws Exception {
+	public void testDataTransition() {
 		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
 
@@ -188,8 +195,7 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 	 * to do the work.
 	 *
 	 */
-	@Test
-	public void testDateTransition() throws Exception {
+	public void testDateTransition() {
 		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
 
@@ -204,7 +210,7 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 			wfi.modifyWorkflowState(entry, ws, "doDates");
 			checkState(ws, "doDates");
 			Date passed = new Date(0);
-			entry.addCustomAttribute("datePassed", passed);			
+			CustomAttribute attr = entry.addCustomAttribute("datePassed", passed);			
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			checkState(ws, "datePassed");
 			entry.removeCustomAttribute("datePassed");
@@ -212,7 +218,7 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 			checkState(ws, "doDates");
 			passed = new Date();
 			passed.setTime(passed.getTime() + 50000);
-			entry.addCustomAttribute("dateBefore", passed);
+			attr = entry.addCustomAttribute("dateBefore", passed);
 			
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			checkState(ws, "dateBefore");
@@ -221,7 +227,7 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 			checkState(ws, "doDates");
 			passed = new Date();
 			passed.setTime(passed.getTime() - 70000);
-			entry.addCustomAttribute("dateAfter", passed);
+			attr = entry.addCustomAttribute("dateAfter", passed);
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			checkState(ws, "dateAfter");
 	} finally {
@@ -229,8 +235,7 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 		
 	}
 
-	@Test
-	public void testEventNoRecurTransition() throws Exception {
+	public void testEventNoRecurTransition() {
 		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
 
@@ -248,10 +253,10 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 			//event started 1 minute ago
 			GregorianCalendar cal = new GregorianCalendar();
 			Event event = new Event();
-			coreDao.save(event);
+			cdi.save(event);
 			Date date = new Date();
 			cal.setTimeInMillis(date.getTime()-60000);
-			entry.addCustomAttribute("eventStarted", event);			
+			CustomAttribute attr = entry.addCustomAttribute("eventStarted", event);			
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			checkState(ws, "eventStarted");
 			entry.removeCustomAttribute("eventStarted");
@@ -263,8 +268,8 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 			date = new Date();
 			cal.setTimeInMillis(date.getTime()-60*1000);
 			event = new Event(cal, new Duration(0,0,30));
-			coreDao.save(event);
-			entry.addCustomAttribute("eventEnded", event);			
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventEnded", event);			
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			checkState(ws, "eventEnded");
 			entry.removeCustomAttribute("eventEnded");
@@ -276,8 +281,8 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 			//Test 1 hour before trigger
 			cal.setTimeInMillis(date.getTime()+59*60*1000);
 			event = new Event(cal, new Duration(0,0,30));
-			coreDao.save(event);
-			entry.addCustomAttribute("eventBeforeStart", event);			
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventBeforeStart", event);			
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			checkState(ws, "eventBeforeStart");
 			entry.removeCustomAttribute("eventBeforeStart");
@@ -289,8 +294,8 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 			//check for 5 minutes before end 
 			cal.setTimeInMillis(date.getTime()-26*60*1000);
 			event = new Event(cal, new Duration(0,30,0));
-			coreDao.save(event);
-			entry.addCustomAttribute("eventBeforeEnd", event);			
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventBeforeEnd", event);			
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			checkState(ws, "eventBeforeEnd");
 			entry.removeCustomAttribute("eventBeforeEnd");
@@ -302,8 +307,8 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 			//test 1 day after trigger
 			cal.setTimeInMillis(date.getTime()-24*61*60*1000);
 			event = new Event(cal, new Duration(0,0,30));
-			coreDao.save(event);
-			entry.addCustomAttribute("eventAfterStart", event);			
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventAfterStart", event);			
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			checkState(ws, "eventAfterStart");
 			entry.removeCustomAttribute("eventAfterStart");
@@ -315,8 +320,8 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 			//test 1 minute after end
 			cal.setTimeInMillis(date.getTime()-120*1000);
 			event = new Event(cal, new Duration(0,0,30));
-			coreDao.save(event);
-			entry.addCustomAttribute("eventAfterEnd", event);			
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventAfterEnd", event);			
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			checkState(ws, "eventAfterEnd");
 			entry.removeCustomAttribute("eventAfterEnd");
@@ -325,8 +330,7 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 		}
 		
 	}
-	@Test
-	public void testEventRecurTransition() throws Exception {
+	public void testEventRecurTransition() {
 		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
 		
@@ -343,13 +347,13 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 			
 			GregorianCalendar cal = new GregorianCalendar();
 			Event event = new Event();
-			coreDao.save(event);
+			cdi.save(event);
 			Date date = new Date();
 			//event started 1 second ago, lasts 1 second and repeats every seconds
 			cal.setTimeInMillis(date.getTime()-1000);
 			event.setDuration(new Duration(0, 0, 1));
 			event.setFrequency("SECONDLY");
-			entry.addCustomAttribute("eventStarted", event);			
+			CustomAttribute attr = entry.addCustomAttribute("eventStarted", event);			
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			checkState(ws, "eventStarted");
 			entry.removeCustomAttribute("eventStarted");
@@ -364,8 +368,8 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 			cal.setTimeInMillis(date.getTime()-2*60*60*1000-2*60*1000);
 			event = new Event(cal, new Duration(0,0,30));
 			event.setFrequency("HOURLY");
-			coreDao.save(event);
-			entry.addCustomAttribute("eventBeforeStart", event);			
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventBeforeStart", event);			
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			checkState(ws, "eventBeforeStart");
 			entry.removeCustomAttribute("eventBeforeStart");
@@ -381,8 +385,8 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 			cal.setTimeInMillis(date.getTime()-60*1000);
 			event = new Event(cal, new Duration(0,0,30));
 			event.setFrequency("DAILY");
-			coreDao.save(event);
-			entry.addCustomAttribute("eventEnded", event);			
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventEnded", event);			
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			if (ws.getTimerId() == null)
 				throw new RuntimeException("Expecting wait for timer at " + ws.getState());		
@@ -402,8 +406,8 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 			cal.setTimeInMillis(date.getTime()-25*60*1000);
 			event = new Event(cal, new Duration(0,30,0));
 			event.setFrequency("HOURLY");
-			coreDao.save(event);
-			entry.addCustomAttribute("eventBeforeEnd", event);			
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventBeforeEnd", event);			
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			if (ws.getTimerId() == null)
 				throw new RuntimeException("Expecting wait for timer at " + ws.getState());		
@@ -423,8 +427,8 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 			cal.setTimeInMillis(date.getTime()-24*61*60*1000);
 			event = new Event(cal, new Duration(0,0,30));
 			event.setFrequency("HOURLY");
-			coreDao.save(event);
-			entry.addCustomAttribute("eventAfterStart", event);			
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventAfterStart", event);			
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			checkState(ws, "doRecur");
 			WorkflowFactory.getContext().getSession().delete(WorkflowFactory.getContext().getSession().load(Timer.class, ws.getTimerId()));
@@ -439,8 +443,8 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 			cal.setTimeInMillis(date.getTime()-2*60*1000);
 			event = new Event(cal, new Duration(0,0,30));
 			event.setFrequency("HOURLY");
-			coreDao.save(event);
-			entry.addCustomAttribute("eventAfterEnd", event);			
+			cdi.save(event);
+			attr = entry.addCustomAttribute("eventAfterEnd", event);			
 			wfi.modifyWorkflowStateOnUpdate(entry);
 			checkState(ws, "doRecur");
 			WorkflowFactory.getContext().getSession().delete(WorkflowFactory.getContext().getSession().load(Timer.class, ws.getTimerId()));
@@ -453,8 +457,8 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 		
 	}
 	private WorkflowState checkState(FolderEntry entry, String stateName) {
-		for (Iterator<WorkflowState> iter=entry.getWorkflowStates().iterator(); iter.hasNext();) {
-			WorkflowState ws = iter.next();
+		for (Iterator iter=entry.getWorkflowStates().iterator(); iter.hasNext();) {
+			WorkflowState ws = (WorkflowState)iter.next();
 			if (ws.getState().equals(stateName)) return ws;
 		}
 		return null;
@@ -464,8 +468,8 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 		throw new RuntimeException("Invalid transition, expecting state " + stateName + " at " + ws.getState());		
 	}
 	protected Workspace createZone(String name) {
-		Workspace top = defaultRequestContext().getZone();
-//		RequestContextHolder.setRequestContext(new RequestContext(name, adminUser, null));
+		Workspace top=super.createZone(name);
+		RequestContextHolder.setRequestContext(new RequestContext(name, adminUser, null));
 		return top;
 		
 	}
@@ -473,7 +477,7 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 		Folder folder = new Folder();
 		folder.setName(name);
 		folder.setZoneId(top.getZoneId());
-		coreDao.save(folder);
+		cdi.save(folder);
 		top.addBinder(folder);
 		return folder;
 		
@@ -481,24 +485,26 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 	private FolderEntry createEntry(Folder top) {
 		FolderEntry entry = new FolderEntry();
 		top.addEntry(entry);
-		coreDao.save(entry);
+		cdi.save(entry);
 		return entry;
 		
 	}
-	private Definition importWorkflow(Workspace top, String name)
-			throws Exception {
+	private Definition importWorkflow(Workspace top, String name) {
 		Definition def = new Definition();
 		def.setZoneId(top.getId());
 		def.setType(Definition.WORKFLOW);
 		def.setName(name);
 		def.setTitle(name);
-		Resource r = new ClassPathResource(
-				"com/sitescape/team/module/folder/impl/" + name);
-		SAXReader xIn = new SAXReader();
-		def.setDefinition(xIn.read(r.getInputStream()));
-		coreDao.save(def);
+	   	try {
+           Resource r = new ClassPathResource("com/sitescape/team/module/folder/impl/" + name);
+           SAXReader xIn = new SAXReader();
+           def.setDefinition(xIn.read(r.getInputStream()));   
+    	} catch (Exception fe) {
+			logger.error(fe.getLocalizedMessage(), fe);
+    	}
+		cdi.save(def);
 		wfi.modifyProcessDefinition(def.getId(), def);
-		return def;
+    	return def;		
 	}
 	private Definition importCommand(Workspace top, String name) {
 		Definition def = new Definition();
@@ -518,7 +524,7 @@ public class WorkflowTransitionTests extends AbstractTestBase {
 		String id = def.getDefinition().getRootElement().attributeValue("databaseId", "");
 		//import - try reusing existing guid
 		def.setId(id);
-		coreDao.replicate(def);
+		cdi.replicate(def);
     	return def;		
 	}
 }

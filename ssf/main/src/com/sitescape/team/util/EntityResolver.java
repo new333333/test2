@@ -32,14 +32,9 @@ import com.sitescape.util.KeyValuePair;
 
 import java.io.InputStream;
 
-import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.xml.sax.InputSource;
 
-public class EntityResolver implements org.xml.sax.EntityResolver, BeanClassLoaderAware {
-	
-	private static final String CLASSPATH_URL = "classpath:/";
-	
-	private ClassLoader classLoader;
+public class EntityResolver implements org.xml.sax.EntityResolver {
 
 	public static KeyValuePair[] IDS = {
 		new KeyValuePair(
@@ -116,14 +111,8 @@ public class EntityResolver implements org.xml.sax.EntityResolver, BeanClassLoad
 	    if(systemId != null) {
 	        String dtdOrXsdFile = systemId.substring(systemId.lastIndexOf("/") + 1);
 			InputStream is =
-				classLoader.getResourceAsStream(
+				getClass().getClassLoader().getResourceAsStream(
 					"dtd/" + dtdOrXsdFile);
-			
-			if (systemId.startsWith(CLASSPATH_URL)) {
-				// attempt to load the resource interpreting the SYSTEM id as a
-				// classpath directly
-				is = classLoader.getResourceAsStream(systemId.substring(CLASSPATH_URL.length()));
-			}
 
 			// If failed to load the resource above, try loading it using
 			// the context class loader of the thread. 
@@ -135,10 +124,6 @@ public class EntityResolver implements org.xml.sax.EntityResolver, BeanClassLoad
 	    }
 	   
 	    return null;
-	}
-
-	public void setBeanClassLoader(ClassLoader classLoader) {
-		this.classLoader = classLoader;		
 	}
 
 }

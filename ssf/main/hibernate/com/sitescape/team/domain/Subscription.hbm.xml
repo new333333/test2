@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_Subscriptions" name="com.sitescape.team.domain.Subscription">
+    <composite-id name="id" class="com.sitescape.team.domain.UserEntityPK">
+      <key-property name="principalId"/>
+      <key-property name="entityId"/>
+      <key-property name="entityType"/>
+    </composite-id>
+    <property name="zoneId" access="field"/>
+    <property name="style" access="field"/>
+    <property name="encodedStyles" length="256"/>
+  </class>
+</hibernate-mapping>

@@ -33,6 +33,7 @@
 	     separate interceptor. -->
 	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<!--<property name="singleSession"><value>false</value></property>-->
 	</bean>	
 
 	<bean id="resolveRequestContextInterceptor" class="com.sitescape.team.web.servlet.handler.ResolveRequestContextInterceptor"/>

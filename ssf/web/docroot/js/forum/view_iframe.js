@@ -183,6 +183,7 @@ function ss_repositionEntryDiv() {
     }
 }
 
+//ss_createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
 ss_createOnResizeObj('ss_repositionEntryDiv', ss_repositionEntryDiv)
 
 var ss_divDragObj = null

@@ -51,3 +51,4 @@ public class NotifyBuilderEntryAttributes extends AbstractNotifyBuilder {
 	   }
 
 }
+

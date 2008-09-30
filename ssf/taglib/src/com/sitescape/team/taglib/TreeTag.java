@@ -1018,9 +1018,9 @@ public class TreeTag extends TagSupport {
 	
 	private String getIdChoicesInputId() {
 		if (this.multiSelect != null && !this.multiSelectPrefix.equals("")) {
-			return treeName + this.multiSelectPrefix + "_" + WebKeys.URL_ID_CHOICES;
+			return treeName + this.multiSelectPrefix + WebKeys.URL_ID_CHOICES_SEPARATOR + WebKeys.URL_ID_CHOICES;
 		} else if (this.singleSelectName != null && !this.singleSelectName.equals("")) {
-			return treeName + this.singleSelectName + "_" + WebKeys.URL_ID_CHOICES;
+			return treeName + this.singleSelectName + WebKeys.URL_ID_CHOICES_SEPARATOR + WebKeys.URL_ID_CHOICES;
 		}
 		return null;
 	}
