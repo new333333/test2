@@ -289,7 +289,8 @@
 							namespace="${renderResponse.namespace}" >		
 						
 							<ssf:param name="url" useBody="true">
-								<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+								<ssf:url crawlable="true" adapter="true" 
+								portletName="ss_forum" folderId="${entry._binderId}" 
 								action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
 							</ssf:param>
 						

@@ -266,7 +266,7 @@
 			<td>
 				<ul class="ss_nobullet">
 					<c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getBinderTitlesAndIcons(entry.get("tasks")) %>" varStatus="status">
-						<li><a href="<ssf:url 
+						<li><a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
 			  				folderId="${selection.key}" 
 			  				action="view_folder_listing">
 			  				<ssf:param name="binderId" value="${selection.key}"/>

@@ -51,6 +51,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
@@ -128,18 +129,27 @@ public class AddFolderController extends SAbstractController {
 			
 		} else if (formData.containsKey("addBtn")) {
 			//This is the short form
-			Long binderDefId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_DEF_ID));				
-			Map data = new HashMap(); // Input data
-			data.put(ObjectKeys.FIELD_ENTITY_TITLE, PortletRequestUtils.getStringParameter(request, "title", ""));
-			Long newBinderId = getBinderModule().addBinder(binderId, binderDefId.toString(), 
-					new MapInputData(data), null, null);
-			Binder newBinder = null;
-			if (newBinderId != null) newBinder = getBinderModule().getBinder(newBinderId);
-			
-			if (newBinder != null) {
-				//Inherit team members
-				getBinderModule().setTeamMembershipInherited(newBinderId, true);
+			String templateName = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_TEMPLATE_NAME);				
+			String title = PortletRequestUtils.getStringParameter(request, "title", "");
+			TemplateBinder binderTemplate = getTemplateModule().getTemplateByName(templateName);
+			Long newBinderId = null;
+			if (binderTemplate != null) {
+				newBinderId = getTemplateModule().addBinder(binderTemplate.getId(), 
+						binderId, title, null);
+				Binder newBinder = null;
+				if (newBinderId != null) newBinder = getBinderModule().getBinder(newBinderId);
+				
+				if (newBinder != null) {
+					//Inherit team members
+					getBinderModule().setTeamMembershipInherited(newBinderId, true);
+				}
 			}
+			if (newBinderId != null) {
+				setupReloadOpener(response, newBinderId);
+			} else {
+				response.setRenderParameters(formData);
+			}
+			
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			setupCloseWindow(response);
 		} else {
@@ -153,9 +163,11 @@ public class AddFolderController extends SAbstractController {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map model = new HashMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		String templateName = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_TEMPLATE_NAME);				
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Binder binder = getBinderModule().getBinder(binderId);
 		model.put(WebKeys.BINDER, binder); 
+		model.put(WebKeys.BINDER_TEMPLATE_NAME, templateName);
 		model.put(WebKeys.OPERATION, operation);
 		model.put(WebKeys.USER_PRINCIPAL, user);
 

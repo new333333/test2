@@ -99,7 +99,7 @@
 </c:if>
 <c:if test="${!empty ssBinder.parentFolder}">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${ssBinderparentFolder.id}" 
+	folderId="${ssBinder.parentFolder.id}" 
 	action="__ajax_mobile" operation="mobile_show_folder" 
 	actionUrl="false" />"><ssf:nlt tag="mobile.returnToParentFolder"/></a>
 <br/>

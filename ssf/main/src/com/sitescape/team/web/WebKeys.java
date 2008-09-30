@@ -178,6 +178,7 @@ public class WebKeys {
 	public static final String URL_TAG_COMMUNITY = "cTag";
 	public static final String URL_TAG_PERSONAL = "pTag";
 	public static final String URL_TAG_ID = "tagId";
+	public static final String URL_TEMPLATE_NAME = "templateName";
 	public static final String URL_TREE_SELECT_TYPE = "tree_select_type";
 	public static final String URL_TREE_SELECT_ID = "tree_select_id";
 	public static final String URL_TREE_MULTI_SELECT = "ss_tree_select";
@@ -516,11 +517,13 @@ public class WebKeys {
 	public static final String BINDER_CONFIG="ssBinderConfig";
 	public static final String BINDER_CONFIG_TEAM="ssBinderConfigTeam";
 	public static final String BINDER_CONFIGS="ssBinderConfigs";
+	public static final String BINDER_DEFINITION_ID="ssBinderDefinitionId";
 	public static final String BINDER_DEFINITION_TYPE="ssBinderDefinitionType";
 	public static final String BINDER_ENTRIES="ssBinderEntries";
 	public static final String BINDER_DATA="ssBinderData";
 	public static final String BINDERS="ss_binders";
 	public static final String BINDERS_SUB_BINDERS="ss_bindersSubBinders";
+	public static final String BINDER_TEMPLATE_NAME="ssBinderTemplateName";
 	public static final String BINDER_TITLE="binderTitle";
 	public static final String BINDER_UNSEEN_COUNTS="ss_binderUnseenCounts";
 	public static final String BINDER_WEBDAV_URL="ssWebDavURL";
@@ -766,7 +769,6 @@ public class WebKeys {
     public static final String MASHUP_BINDERS="ss_mashupBinders"; 
     public static final String MASHUP_BINDER_ENTRIES="ss_mashupBinderEntries"; 
     public static final String MASHUP_ENTRIES="ss_mashupEntries"; 
-    public static final String MINIBLOG_ACCESS_DENIED="ss_miniblog_access_denied"; 
     public static final String MINIBLOG_STATUSES="ss_miniblog_statuses"; 
     public static final String MINIBLOG_PAGE="ss_miniblogPage"; 
     public static final String MINIBLOG_USER="ss_miniblog_user"; 

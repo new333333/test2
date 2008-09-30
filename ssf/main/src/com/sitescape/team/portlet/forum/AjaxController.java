@@ -2729,25 +2729,17 @@ public class AjaxController  extends SAbstractControllerRetry {
 		int pageStart = Integer.valueOf(page) * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
 		Long userId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_USER_ID);
 		Principal p = null;
-		Boolean miniblogAccessAllowed = false;
-		try {
-			p = getProfileModule().getEntry(userId);
-			getBinderModule().getBinder(p.getWorkspaceId());
-			miniblogAccessAllowed = true;
-		} catch(Exception e) {}
 		
 		model.put(WebKeys.MINIBLOG_USER_ID, userId);
 		model.put(WebKeys.MINIBLOG_USER, p);
 		model.put(WebKeys.MINIBLOG_PAGE, page);
-		model.put(WebKeys.MINIBLOG_ACCESS_DENIED, miniblogAccessAllowed);
 		
-		if (miniblogAccessAllowed) {
-			Long[] userIds = new Long[]{userId};
-			List statuses = getReportModule().getUsersStatuses(userIds, null, null, 
-					pageStart + Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
-			if (statuses != null && statuses.size() > pageStart) {
-				model.put(WebKeys.MINIBLOG_STATUSES, statuses.subList(pageStart, statuses.size()));
-			}
+		//Get the list of miniblog entries by this user (uses the "miniblog" family attribute to find them)
+		Long[] userIds = new Long[]{userId};
+		List statuses = getReportModule().getUsersStatuses(userIds, null, null, 
+				pageStart + Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
+		if (statuses != null && statuses.size() > pageStart) {
+			model.put(WebKeys.MINIBLOG_STATUSES, statuses.subList(pageStart, statuses.size()));
 		}
 		return new ModelAndView("forum/miniblog", model);
 	}

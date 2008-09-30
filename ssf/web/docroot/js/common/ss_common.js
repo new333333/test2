@@ -4072,6 +4072,7 @@ function ssFavorites(namespace) {
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_favorites_tree"});
 		ss_setupStatusMessageDiv()
 		var fObj = self.document.getElementById("ss_favorites_pane" + namespace);
+		if (fObj == null) return;
 		ss_moveObjectToBody(fObj);
 		fObj.style.zIndex = ssMenuZ;
 		fObj.style.visibility = "visible";
@@ -4229,6 +4230,8 @@ function ssFavorites(namespace) {
 	}
 	
 	this.hideFavoritesPane = function() {
+		var fObj = self.document.getElementById("ss_favorites_pane" + namespace);
+		if (fObj == null) return;
 		ss_hideDivFadeOut('ss_favorites_pane'+namespace, 20);
 	}
 
@@ -4271,6 +4274,7 @@ function ss_moveElementDown(node) {
 function ssTeams(namespace) {
 	this.show = function() {
 		var fObj = self.document.getElementById("ss_myteams_pane" + namespace);
+		if (fObj == null) return;
 		ss_moveObjectToBody(fObj);
 		fObj.style.zIndex = ssMenuZ;
 		fObj.style.visibility = "visible";
@@ -4297,6 +4301,8 @@ function ssTeams(namespace) {
 		d.innerHTML = data;
 	}
 	this.hide = function() {
+		var fObj = self.document.getElementById("ss_myteams_pane" + namespace);
+		if (fObj == null) return;
 		ss_hideDivFadeOut('ss_myteams_pane'+namespace, 20);
 	}
 	this.showAccessible = function() {

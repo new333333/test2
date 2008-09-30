@@ -51,7 +51,8 @@
   <c:if test="${!empty mashupBinder}">
 	<c:if test="${ssConfigJspStyle == 'form' || !empty mashup_attributes['showTitle']}">
 	  <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
-		<a href="<ssf:url action="view_folder_listing" 
+		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+		  action="view_folder_listing" 
 		  folderId="${mashupBinder.id}">
 		  <ssf:param name="newTab" value="1"/>
 		  </ssf:url>"><span class="ss_largeprint ss_bold">${mashupBinder.title}</span></a>
@@ -67,7 +68,7 @@
 	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashup_attributes['folderId']]}" varStatus="status">
 	    <c:if test="${empty mashup_attributes['entriesToShow'] || status.count <= mashup_attributes['entriesToShow']}">
 	      <div style="padding-left:6px;">
-	        <a href="<ssf:url     
+	        <a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"    
 		      action="view_folder_entry" 
 		      binderId="${entry._binderId}"
 		      entryId="${entry._docId}"
@@ -85,7 +86,8 @@
 	    <c:if test="${empty mashup_attributes['entriesToShow'] || status.count <= mashup_attributes['entriesToShow']}">
 	      <div style="padding:10px 0px;">
 			<div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
-			  <a href="<ssf:url action="view_folder_entry" 
+			  <a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+			      action="view_folder_entry" 
 				  folderId="${entry._binderId}"
 				  entryId="${entry._docId}">
 				  <ssf:param name="entryViewStyle" value="full"/>
@@ -114,7 +116,8 @@
 
   <c:if test="${empty mashupBinder}">
 	<div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
-	  <a href="<ssf:url action="view_folder_listing" 
+	  <a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+	      action="view_folder_listing" 
 		  folderId="${mashupBinder.id}">
 		  <ssf:param name="newTab" value="1"/>
 		  </ssf:url>"

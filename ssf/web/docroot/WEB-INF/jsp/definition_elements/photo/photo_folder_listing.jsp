@@ -75,8 +75,8 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 				<% } %>			    
 			    
 			    <a 
-				    href="<ssf:url     
-				    adapter="<%= useAdaptor %>" 
+				    href="<ssf:url crawlable="true"    
+				    adapter="true" 
 				    portletName="ss_forum" 
 				    binderId="${ssBinder.id}" 
 				    action="view_folder_entry" 
@@ -113,8 +113,8 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 				<% } %>
 
 			    <a 
-				    href="<ssf:url     
-  					adapter="<%= useAdaptor %>" 
+				    href="<ssf:url crawlable="true"    
+  					adapter="true" 
 				    portletName="ss_forum" 
 				    folderId="${ssFolder.id}" 
 				    action="view_folder_entry" 

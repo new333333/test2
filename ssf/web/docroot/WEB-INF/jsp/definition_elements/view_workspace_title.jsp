@@ -31,8 +31,9 @@
 <% //Workspace title view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <p><span class="ss_largestprint ss_bold">
- <a style="text-decoration: none;" href="<ssf:url 
-    folderId="${ssDefinitionEntry.id}" 
+ <a style="text-decoration: none;" href="<ssf:url crawlable="true"
+     adapter="true" portletName="ss_forum"
+     folderId="${ssDefinitionEntry.id}" 
     action="view_workspace"/>">
 <c:if test="${empty ssDefinitionEntry.title}">
     <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>

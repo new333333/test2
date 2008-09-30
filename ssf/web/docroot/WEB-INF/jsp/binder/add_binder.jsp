@@ -32,6 +32,10 @@
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${!empty ssBinderTemplateName}">
+  <%@ include file="/WEB-INF/jsp/binder/add_binder_short_form.jsp" %>
+</c:if>
+<c:if test="${empty ssBinderTemplateName}">
 <%
 	String workspaceId = com.sitescape.team.ObjectKeys.DEFAULT_WORKSPACE_CONFIG;
 %>
@@ -464,3 +468,4 @@ function ss_checkForm(obj) {
 <script type="text/javascript">
 ss_createOnLoadObj("ss_showAddBinderOptions", ss_showAddBinderOptions);
 </script>
+</c:if>

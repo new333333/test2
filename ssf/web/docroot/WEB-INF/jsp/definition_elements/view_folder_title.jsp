@@ -38,14 +38,16 @@
   <c:if test="${!empty ssDefinitionEntry.parentBinder.title}">
 	<span class="ss_link_7">
   	  <a class="ss_link_7" 
-  	    href="<ssf:url action="${actionVar}" 
+  	    href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
+  	    action="${actionVar}" 
 		binderId="${ssDefinitionEntry.parentBinder.id}"/>"
 	  >${ssDefinitionEntry.parentBinder.title}</a>&nbsp;&gt;&gt;&nbsp;&nbsp;
 	</span>
   </c:if>
   <span class="ss_link_8">
 	  <img src="<html:rootPath/>images/pics/discussion/folder_orange.png">&nbsp;<a
-	    href="<ssf:url action="view_folder_listing" binderId="${ssDefinitionEntry.id}"/>"
+	    href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+	    action="view_folder_listing" binderId="${ssDefinitionEntry.id}"/>"
 	  ><c:if test="${empty ssDefinitionEntry.title}" >--<ssf:nlt tag="entry.noTitle" />--</c:if
 	  >${ssDefinitionEntry.title}</a>
   </span>

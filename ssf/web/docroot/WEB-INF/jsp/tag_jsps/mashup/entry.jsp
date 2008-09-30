@@ -52,7 +52,8 @@
   <div style="padding:10px;" width="100%">
 	<c:if test="${ssConfigJspStyle == 'form' || !empty mashup_attributes['showTitle']}">
 	  <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
-		<a href="<ssf:url action="view_folder_entry" 
+		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+		  action="view_folder_entry" 
 		  folderId="${mashupEntry.parentBinder.id}"
 		  entryId="${mashupEntry.id}">
 		  <ssf:param name="entryViewStyle" value="full"/>

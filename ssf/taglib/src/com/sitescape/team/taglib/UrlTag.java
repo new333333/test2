@@ -162,6 +162,8 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				pageContext.getOut().print(webUrl);
 			
 			} else if (this.adapter) {
+				//???Temporarially turn off crawlable until it is fixed for empty params
+				crawlable=false;
 				if (!Validator.isNull(action)) {
 					params.put("action", new String[] {this.action});
 				}
