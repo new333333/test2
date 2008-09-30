@@ -119,7 +119,6 @@
 	<!-- Hibernate session factory -->
 	<bean id="sessionFactory" class="com.sitescape.team.spring.orm.hibernate3.LocalSessionFactoryBean">
 		<property name="lobHandler"><ref bean="lobHandler"/></property>
-		<property name=""></property>
 		<property name="configFiles">
 			<list>
 				<value>config/hibernate.cfg.xml</value>
