@@ -602,6 +602,17 @@
 	</tag>
 	
 	<tag>
+		<name>form</name>
+		<tag-class>com.sitescape.team.taglib.FormTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>class</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
 		<name>htmleditor</name>
 		<tag-class>com.sitescape.team.taglib.Htmleditor</tag-class>
 		<body-content>JSP</body-content>
