@@ -55,7 +55,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-left-color: #CCCCCC;
 	padding: 0 25px 25px 25px!important;
 	}
-.ss_miniblog_wrap {
+.ss_form_wrap {
 	border-top-width: 24px;
 	border-right-width: thin;
 	border-bottom-width: thin;
@@ -68,6 +68,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding: 0 25px 25px 25px!important;
 	margin: 25px 25px 25px 25px;
 	}
+.ss_form_subhead {
+	 font-weight: bold;
+	 color: #333;
+	 }
+.ss_form_subhead a:hover{
+	 color: #555;
+	 }	
 .ss_table_heading {
 	font-size: 10px;
 	font-weight: bold;
@@ -220,13 +227,6 @@ fieldset a:hover{
 	padding-top: 10px;
   	color: #555;
 	}
-.ss_miniblog_subhead {
-	 font-weight: bold;
-	 color: #333;
-	 }
-.ss_miniblog_subhead a:hover{
-	 color: #555;
-	 }	
 /******END******/	
 .ss_labelLeft {
   	font-weight: bold;

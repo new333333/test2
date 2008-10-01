@@ -49,7 +49,7 @@ function ss_showMiniblogPage${renderResponse.namespace}(id, currentPage, directi
 </script>
 
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
-<div class="ss_style ss_portlet ss_miniblog_wrap">
+<div class="ss_style ss_portlet ss_form_wrap">
   <div>
     <div style="float:right;">
 	      <span class="ss_labelAbove ss_labelminiBlog"><ssf:nlt tag="navigation.findPerson"/></span>
@@ -60,7 +60,7 @@ function ss_showMiniblogPage${renderResponse.namespace}(id, currentPage, directi
 	</div>
     <div class="ss_form_header"><ssf:nlt tag="miniblog"/></div>
     <div class="ss_clear_float"></div>
-    <div class="ss_miniblog_subhead"><ssf:showUser user="${ss_miniblog_user}"/></div>
+    <div class="ss_form_subhead"><ssf:showUser user="${ss_miniblog_user}"/></div>
     
   </div>
   <div id="ss_nextPage" align="right">
