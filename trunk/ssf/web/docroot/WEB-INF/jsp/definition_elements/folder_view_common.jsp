@@ -48,6 +48,7 @@ if (isIECheck) strBrowserType = "ie";
 var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 		binderId="${ssBinder.id}"><ssf:param 
 		name="operation" value="save_folder_columns"/></ssf:url>";
+var ss_closeText = "<ssf:nlt tag="button.close"/>";
 </script>
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation_init.jsp" />
 
