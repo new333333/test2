@@ -3794,18 +3794,15 @@ function ss_setWindowHighWaterMark(height) {
 
 var ss_loadEntryInPlaceLastRowObj = null;
 var ss_loadEntryInPlaceLastId = null;
+//Note: this routine can be called (below) with obj = null
 function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType, isDashboard, hoverOverId) {
 	if (ss_userDisplayStyle == "accessible") {
-		self.location.href = obj.href;
+		if (obj != null) self.location.href = obj.href;
 		return false;
 	}
 	var random = ++ss_random;
-	if (hoverOverId != "") ss_hideHoverOver(hoverOverId);
+	if (typeof hoverOverId != "undefined" && hoverOverId != "") ss_hideHoverOver(hoverOverId);
 	
-	trObj = ss_findOwningElement(obj, "tr")
-	tbodyObj = ss_findOwningElement(trObj, "tbody")
-	tableObj = ss_findOwningElement(trObj, "table")
-	tableDivObj = ss_findOwningElement(trObj, "div")
 	if (ss_loadEntryInPlaceLastRowObj != null) {
 		ss_setWindowHighWaterMark(ss_getObjectHeight(ss_loadEntryInPlaceLastRowObj))
 		var divId = 'ss_entry_iframeDiv'+ ss_loadEntryInPlaceLastId.substr(ss_loadEntryInPlaceLastId.indexOf(",")+1) + parseInt(random - 1);
@@ -3820,6 +3817,11 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType,
 			ss_loadEntryInPlaceLastId = null;
 		}
 	}
+	if (obj == null) return;
+	trObj = ss_findOwningElement(obj, "tr")
+	tbodyObj = ss_findOwningElement(trObj, "tbody")
+	tableObj = ss_findOwningElement(trObj, "table")
+	tableDivObj = ss_findOwningElement(trObj, "div")
 	tbodyObj.insertBefore(trObj.cloneNode(true), trObj)
 	ss_loadEntryInPlaceLastId = binderId + ',' + id;
 	
@@ -3843,7 +3845,11 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType,
 	iframeRow.appendChild(iframeCol);
 	//Draw Iframe for discussion thread
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, entryId:id, entityType:entityType, entryViewType:"entryView", entryViewStyle:"inline", entryViewStyle2:viewType, namespace:namespace}, "view_folder_entry");
-	iframeCol.innerHTML = '<div id="ss_entry_iframeDiv'+id+random+'" style="width:'+(ss_getObjectWidth(tableDivObj)-50)+'px;">' +
+	iframeCol.innerHTML = '<div id="ss_entry_iframeDiv'+id+random+'" ' +
+		'style="width:'+(ss_getObjectWidth(tableDivObj)-50)+'px;">' +
+		'<div align="right"><a href="javascript: ;" ' +
+		'onClick="ss_loadEntryInPlace(null, \''+id+'\', \''+binderId+'\');return false;">' +
+		'<span class="ss_smallprint ss_italic">['+ss_closeText+']</span></div>' +
 		'<iframe id="ss_entry_iframe'+id+random+'" name="ss_entry_iframe'+id+random+'"' +
     	' src="'+url+'"' +
     	' style="height:300px;width:'+(ss_getObjectWidth(tableDivObj)-50)+'px; margin:10px 10px 10px 20px; padding:0px;" frameBorder="0"' +
