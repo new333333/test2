@@ -1050,38 +1050,29 @@ public class ListFolderHelper {
 	public static void buildBlogPageBeans(AllModulesInjected bs, RenderResponse response, 
 			Folder folder, Map model, String viewType) {
 		List blogPages = new ArrayList();
-		List blogFolders = new ArrayList();
 		Binder parentBinder = folder.getParentBinder();
 		if (parentBinder.getDefinitionType().equals(Definition.FOLDER_VIEW) && 
 				viewType.equals(BinderHelper.getViewType(bs, parentBinder))) {
 			//The parent binder is a blog folder, so add it and its children blogs
 			blogPages.add(parentBinder);
-			blogFolders.add(parentBinder);
 			model.put(WebKeys.BLOG_SET_BINDER, parentBinder);
 			Iterator itBinders = parentBinder.getBinders().iterator();
 			while (itBinders.hasNext()) {
 				Binder b = (Binder) itBinders.next();
-				if (b.getDefinitionType().equals(Definition.FOLDER_VIEW) &&
-						viewType.equals(BinderHelper.getViewType(bs, b))) {
-					blogPages.add(b);
-					blogFolders.add(b);
-				}
+				blogPages.add(b);
 			}
 		} else {
 			//Since the parent binder is not a blog folder, just add ourself
 			blogPages.add(folder);
-			blogFolders.add(folder);
 			model.put(WebKeys.BLOG_SET_BINDER, folder);
 		}
 		//Finally, add all of the children blogs of the current folder
 		Iterator itBinders = folder.getBinders().iterator();
 		while (itBinders.hasNext()) {
 			Binder b = (Binder) itBinders.next();
-			blogFolders.add(b);
 			blogPages.add(b);
 		}
 		model.put(WebKeys.BLOG_PAGES, blogPages);
-		model.put(WebKeys.BLOG_FOLDERS, blogFolders);
 	}
 	
 	public static void buildWikiBeans(AllModulesInjected bs, RenderResponse response, Binder binder, 
