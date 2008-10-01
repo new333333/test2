@@ -191,6 +191,18 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 		findWorkflows.selectItem({id: wfIdValue});
 	}	
 	
+	var pulldown = document.createElement('img');
+	pulldown.style.paddingLeft = "3px";
+	pulldown.style.paddingBottom = "3px";
+	dojo.connect(pulldown, "onclick", function(event) {
+	    var newEvent = document.createEvent("MouseEvents");
+	    newEvent.initEvent("click",true,true);
+	    textAreaWorkflowsObj.dispatchEvent(newEvent);
+	} );
+	pulldown.setAttribute("src", ss_imagesPath + "pics/menudown.gif");
+	wDiv.appendChild(pulldown);
+	
+	
 	var brObj = document.createElement('br');
 	brObj.setAttribute("style", "clear: both; ");
 	div.appendChild(brObj);
@@ -445,6 +457,21 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 				findEntryFields.setValue(fieldName, ss_searchFields[entryId+"-"+fieldName], ss_searchFieldsTypes[entryId+"-"+fieldName]);
 				findEntryFields.selectItem({id: fieldName});
 			}
+
+
+			var pulldown = document.createElement('img');
+			pulldown.style.paddingLeft = "3px";
+			pulldown.style.paddingBottom = "3px";
+			dojo.connect(pulldown, "onclick", function(event) {
+			    var newEvent = document.createEvent("MouseEvents");
+			    newEvent.initEvent("click",true,true);
+			    textAreaFieldsObj.dispatchEvent(newEvent);
+			} );
+			pulldown.setAttribute("src", ss_imagesPath + "pics/menudown.gif");
+			fieldsDiv.appendChild(pulldown);
+
+
+
 		}		
 	});
 	
@@ -454,6 +481,19 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 		// , fieldName, ss_searchFields[entryId+"-"+fieldName], 
 		// value, ss_searchFieldsTypes[entryId+"-"+fieldName], valueLabel);
 	}	
+
+
+	var pulldown = document.createElement('img');
+	pulldown.style.paddingLeft = "3px";
+	pulldown.style.paddingBottom = "3px";
+	dojo.connect(pulldown, "onclick", function(event) {
+	    var newEvent = document.createEvent("MouseEvents");
+	    newEvent.initEvent("click",true,true);
+	    textAreaEntriesObj.dispatchEvent(newEvent);
+	} );
+	pulldown.setAttribute("src", ss_imagesPath + "pics/menudown.gif");
+	entryTypeDiv.appendChild(pulldown);
+
 	
 /*
 	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", 
