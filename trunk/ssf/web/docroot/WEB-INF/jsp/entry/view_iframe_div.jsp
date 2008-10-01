@@ -65,7 +65,7 @@
     <ssf:param name="box_id" value="ss_iframe_box_div${renderResponse.namespace}" />
     <ssf:param name="box_width" value="400" />
     <ssf:param name="box_color" value="${ss_entry_border_color}" />
-    <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
+    <ssf:param name="box_canvas_color" value="${ss_style_background_color_opaque}" />
     <ssf:param name="box_title" useBody="true">
       <div style="position:relative;">
       <c:set var="ss_history_bar_table_class" value="ss_title_bar_history_bar" scope="request"/>
@@ -79,6 +79,7 @@
     <ssf:param name="box_show_move_routine" value="ss_startDragDiv('move')" />
     <ssf:param name="box_show_close_icon" value="true" />
     <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
+  <div id="ss_iframe_holder_div${renderResponse.namespace}">
   <iframe id="ss_showentryframe${renderResponse.namespace}" 
     name="ss_showentryframe${renderResponse.namespace}" style="width:99%; 
     display:block; position:relative; left:5px;"
@@ -86,6 +87,7 @@
     height="99%" width="99%" 
     onLoad="if (self.ss_setEntryDivHeight && self.document.getElementById('ss_showentrydiv') && self.document.getElementById('ss_showentrydiv').style.display != 'none') ss_setEntryDivHeight();" 
     frameBorder="0" >xxx</iframe>
+  </div>
   </ssf:box>
 </div>
 

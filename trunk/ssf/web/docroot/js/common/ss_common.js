@@ -3735,6 +3735,7 @@ function ss_showEntryDivInitialization(namespace) {
 	divObj = self.document.getElementById("ss_showentrydiv"+namespace);
 	var iframeObj = self.document.getElementById("ss_showentryframe"+namespace);
 	var boxObj = self.document.getElementById("ss_iframe_box_div"+namespace);
+	var holderObj = self.document.getElementById("ss_iframe_holder_div"+namespace);
 	var formObj = self.document.getElementById("ss_saveEntryWidthForm"+namespace);
 	if (divObj == null || iframeObj == null) return;
 	iframeObj.id = "ss_showentryframe";
@@ -3742,6 +3743,7 @@ function ss_showEntryDivInitialization(namespace) {
 	divObj.id = "ss_showentrydiv";
 	if (formObj != null) formObj.id = "ss_saveEntryWidthForm";
 	boxObj.id = "ss_iframe_box_div";
+	holderObj.id = "ss_iframe_holder_div";
 }
 
 function ss_loadEntry(obj, id, binderId, entityType, namespace, isDashboard) {
@@ -3928,6 +3930,26 @@ function ss_showForumEntryInIframe_Overlay(url) {
 		ss_showForumEntryInIframe_Popup(url);
 		return true;
 	}
+    var wObj2 = self.document.getElementById('ss_iframe_holder_div')
+    if (wObj2 == null && wObj == null) {
+		ss_showForumEntryInIframe_Popup(url);
+		return true;
+    }
+    if (wObj == null) {
+    	//The iframe does not exist, create it
+        iframeObj = self.document.createElement("iframe");
+        iframeObj.setAttribute("id", "ss_showentryframe");
+        iframeObj.setAttribute("name", "ss_showentryframe");
+        iframeObj.style.display = "block"
+        iframeObj.style.position = "relative"
+        iframeObj.style.left = "5px"
+        iframeObj.style.width = "99%"
+        iframeObj.style.height = "99%"
+        iframeObj.frameBorder = "0"
+        iframeObj.onload = ss_iframeOnloadSetHeight;
+		wObj2.appendChild(iframeObj);
+    	wObj = self.document.getElementById('ss_showentryframe');
+    }
 	
     ss_hideSpannedAreas();
     wObj1.style.display = "block";
@@ -3977,10 +3999,6 @@ function ss_showForumEntryInIframe_Popup(url) {
 function ss_showForumEntryInIframe_Newpage(url) {
 	self.location.href = url;
     return false;
-}
-
-function ss_postComment(replyStyle) {
-	alert(replyStyle)
 }
 
 function ss_dummyMethodCall() {
@@ -5074,7 +5092,7 @@ function ss_Clipboard () {
 	 * afterPostRoutine - optional
 	 */
 	this.addUsersToClipboard = function (userIds, afterPostRoutine) {
-		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"add_to_clipboard", muster_class:"ss_muster_usersss_miniblog_subhead"}, "clipboard");
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"add_to_clipboard", muster_class:"ss_muster_users ss_form_subhead"}, "clipboard");
 		for (var i = 0; i < userIds.length; i++) {
 			url += "&muster_ids=" + userIds[i];
 		}
