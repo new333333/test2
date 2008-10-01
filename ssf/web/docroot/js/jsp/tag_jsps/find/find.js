@@ -27,7 +27,6 @@
  * are trademarks of SiteScape, Inc.
  */
 
-
 if (typeof ssFind === "undefined" || !ssFind) {
     var ssFind = {};
 	
@@ -114,12 +113,14 @@ ssFind.configSingle = function(params) {
 	var displayValue = ("displayValue" in params) ? (params.displayValue != "false" ? true : false) : false;
 	var displayValueOnly = ("displayValueOnly" in params) ? (params.displayValueOnly != "false" ? true : false) : false;
 	var searchOnInitialClick = ("searchOnInitialClick" in params) ? (params.searchOnInitialClick != "false" ? true : false) : false;
+    var clearSubordinates = ("clearSubordinates" in params) ? params.clearSubordinates : null;
 
 	var addCurrentUserToResult = ("addCurrentUserToResult" in params) ? (params.addCurrentUserToResult != "false" ? true : false) : false;
 		
 	findObj.single(inputId, prefix, clickRoutineObj, clickRoutine, viewUrl, viewAccesibleUrl, searchUrl,
 					leaveResultsVisible, listType, renderNamespace, binderId, subFolders, foldersOnly, 
-					showUserTitleOnly, displayArrow, displayValue, displayValueOnly, addCurrentUserToResult, searchOnInitialClick);
+					showUserTitleOnly, displayArrow, displayValue, displayValueOnly, addCurrentUserToResult,
+				    searchOnInitialClick, clearSubordinates);
 	
 	return findObj;
 }
@@ -197,9 +198,16 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 			});
 		}
 		
+		// Destroy list container if it already exists
+		var listContainerId = "ss_autoCompleteComboBoxListContainer_" + that._singlePrefix;
+		
+		that._listContainer = dojo.byId(listContainerId);
+		if (that._listContainer) {
+			that._listContainer.parentNode.removeChild(that._listContainer);
+		}
 		
 		that._listContainer = document.createElement("div");
-		that._listContainer.id = "ss_autoCompleteComboBoxListContainer_" + that._singlePrefix;
+		that._listContainer.id = listContainerId;
 		that._listContainer.className = "ss_typeToFindResults";
 		that._listContainer.style.display = "none";
 		dojo.connect(that._listContainer, "onmouseover", function() {
@@ -262,7 +270,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 						   singleLeaveResultsVisible, singleListType, singleRenderNamespace,
 						   singleBinderId, singleSubFolders, singleFoldersOnly,
 						   showUserTitleOnly, displayArrow, displayValue, displayValueOnly,
-						   addCurrentUserToResult, searchOnInitialClick) {
+						   addCurrentUserToResult, searchOnInitialClick, clearSubordinates) {
 		that.inputId = inputId;
 		if (that.inputId) {
 			that._inputObj = document.getElementById(that.inputId);
@@ -285,6 +293,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		that._displayValueOnly = displayValueOnly;
 		that._addCurrentUserToResult = addCurrentUserToResult;
 		that._searchOnInitialClick = searchOnInitialClick;
+		that._clearSubordinates = clearSubordinates;
 		that.init();
 	}
 	
@@ -475,6 +484,16 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 				that._listContainerInnerDiv.removeChild(that._nextPrevTableObj);
 			} catch(err){}
 		}
+
+		// Since we are repopulating the results list, get rid of the selection.
+		that._hiddenInputSelectedId.value = "";
+
+		// If there are any subordinate structures dependent on the results
+		// we can opt to clear them out here.
+		if (that._clearSubordinates) {
+			that._clearSubordinates();
+		}
+
 	}
 
 	this._addNextPrevToSearchList = function(data) {
