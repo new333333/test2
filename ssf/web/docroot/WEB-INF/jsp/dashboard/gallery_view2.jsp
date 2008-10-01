@@ -52,7 +52,7 @@
 	  <a href="<ssf:fileUrl search="${fileEntry}"/>"
 		onClick="return ss_openUrlInWindow(this, '_blank');">
     <img <ssf:alt text="${fileEntry.title}"/> border="0" src="<ssf:fileUrl webPath="readThumbnail" search="${fileEntry}"/>"/></a>
-    <br\>
+    <br/>
   	<c:choose>
   	<c:when test="${fileEntry._entityType == 'folderEntry'}">
 	<ssf:titleLink 

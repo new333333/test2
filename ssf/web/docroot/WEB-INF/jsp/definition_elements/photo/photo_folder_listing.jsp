@@ -56,7 +56,7 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 			      onMouseOut="ss_hideHoverOver('ss_photoTitle_${fileEntry._docId}')"
 			      href="<ssf:fileUrl search="${fileEntry}"/>"
 					onClick="return ss_openUrlInWindow(this, '_blank');">
-			    <img <ssf:alt text="${fileEntry.title}"/> border="0" src="<ssf:fileUrl webPath="readThumbnail" search="${fileEntry}"/>"></a><br\>
+			    <img <ssf:alt text="${fileEntry.title}"/> border="0" src="<ssf:fileUrl webPath="readThumbnail" search="${fileEntry}"/>"></a><br/>
 			    
 			    <% if (!ssSeenMap.checkIfSeen(fileEntry)) { %>
 								    

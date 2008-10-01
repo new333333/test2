@@ -2067,6 +2067,10 @@ div.ss_thumbnail_small_no_text a:hover img {
 	</c:if>
 	}
 div.ss_thumbnail_small img {
+    width: 75px;
+    height: 75px;
+	}
+div.ss_thumbnail_tiny img {
     width: 35px;
     height: 35px;
 	}
