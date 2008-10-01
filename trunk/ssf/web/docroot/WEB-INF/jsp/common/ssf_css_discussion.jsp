@@ -554,8 +554,10 @@ div.ss_entryContent {
 
 	}
 div.ss_replies{	
-	margin-left: 80px;
 	border-right: 2px dotted #E9F1F1;
+	}
+div.ss_replies_indent {
+	margin-left:80px;
 	}
 .ss_topic_replies{
 	padding-left: 10px;
