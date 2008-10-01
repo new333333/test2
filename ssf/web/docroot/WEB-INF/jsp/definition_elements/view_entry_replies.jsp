@@ -36,33 +36,33 @@
   <c:if test="${!empty ssFolderEntryDescendants}">
 
 <div class="div.ss_entryContent">
-<c:if test="${!empty property_caption}">
-<span class="ss_topic_replies"><c:out value="${property_caption}"/></span>
-</c:if>
-
-<c:forEach var="reply" items="${ssFolderEntryDescendants}">
-  <jsp:useBean id="reply" type="com.sitescape.team.domain.Entry" />
-  <div class="ss_entryContent ss_replies">
-
-  <c:if test="${!empty reply.entryDef}">
- 	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-		configElement="<%= (Element) reply.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView' or @name='profileEntryView' or @name='fileEntryView']") %>" 
-		configJspStyle="${ssConfigJspStyle}" 
-		processThisItem="false" 
-		entry="<%= reply %>" />
+  <c:if test="${!empty property_caption}">
+    <span class="ss_topic_replies"><c:out value="${property_caption}"/></span>
   </c:if>
-  <c:if test="${empty reply.entryDef}">
- 	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-		configElement="${ssConfigElement}" 
-		configJspStyle="${ssConfigJspStyle}" 
-		processThisItem="false" 
-		entry="<%= reply %>" />
-  </c:if>
- 
-  </div>
-
-</c:forEach>
-
+	<div class="ss_replies_indent">
+	<c:forEach var="reply" items="${ssFolderEntryDescendants}">
+	  <jsp:useBean id="reply" type="com.sitescape.team.domain.Entry" />
+	  <div class="ss_entryContent ss_replies">
+	
+	  <c:if test="${!empty reply.entryDef}">
+	 	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+			configElement="<%= (Element) reply.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView' or @name='profileEntryView' or @name='fileEntryView']") %>" 
+			configJspStyle="${ssConfigJspStyle}" 
+			processThisItem="false" 
+			entry="<%= reply %>" />
+	  </c:if>
+	  <c:if test="${empty reply.entryDef}">
+	 	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+			configElement="${ssConfigElement}" 
+			configJspStyle="${ssConfigJspStyle}" 
+			processThisItem="false" 
+			entry="<%= reply %>" />
+	  </c:if>
+	 
+	  </div>
+	
+	</c:forEach>
+	</div>
 </div>
   </c:if>
 </c:if>
