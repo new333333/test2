@@ -74,7 +74,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	    //This is IE and a ppt file; use the edit app to launch powerpoint because of bug in IE and/or powerpoint
 %>
 		<td valign="top" width="80" rowspan="${thumbRowSpan}">
-		  <div class="ss_thumbnail_gallery ss_thumbnail_small"> 
+		  <div class="ss_thumbnail_gallery ss_thumbnail_tiny"> 
 			<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="applet">
 				<ssf:isFileEditorConfiguredForOS relativeFilePath="${selection.fileItem.name}" operatingSystem="<%= operatingSystem %>">
 					<a style="text-decoration: none;" href="<ssf:ssfsInternalAttachmentUrl 
@@ -148,7 +148,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
 %>
 		<td valign="top" width="80" rowspan="${thumbRowSpan}">
-		<div class="ss_thumbnail_gallery ss_thumbnail_small"> 
+		<div class="ss_thumbnail_gallery ss_thumbnail_tiny"> 
 			<a style="text-decoration: none;" href="<ssf:fileUrl file="${selection}"/>" 
 					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
 					
