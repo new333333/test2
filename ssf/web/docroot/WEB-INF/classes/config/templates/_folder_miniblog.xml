@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<template type="5">
+<template type="5" internalId="402883b90d0de1f3010d0df5582b001c">
   <attribute name="templateTitle" type="string">__template_folder_miniblog</attribute>
-  <attribute name="templateDescription" type="description">__template_folder_miniblog_description&lt;br /&gt;</attribute>
+  <attribute name="templateDescription" type="description">__template_folder_miniblog_description</attribute>
   <attribute name="title" type="string">__template_folder_miniblog</attribute>
   <attribute name="description" type="description"></attribute>
   <attribute name="iconName" type="string">/icons/folder_blue_discussion.gif</attribute>

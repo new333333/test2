@@ -40,6 +40,7 @@
 	<templateFile>config/templates/_folder_guestbook.xml</templateFile>
 	<templateFile>config/templates/_folder_library.xml</templateFile>
 	<templateFile>config/templates/_folder_milestone.xml</templateFile>
+	<templateFile>config/templates/_folder_miniblog.xml</templateFile>
 	<templateFile>config/templates/_folder_photo.xml</templateFile>
 	<templateFile>config/templates/_folder_wiki.xml</templateFile>
 	<templateFile>config/templates/_folder_task.xml</templateFile>
