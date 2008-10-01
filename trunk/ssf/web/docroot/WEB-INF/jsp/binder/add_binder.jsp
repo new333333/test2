@@ -45,6 +45,7 @@
 
 <c:set var="ss_stdConfigId_desc" value="<%= ObjectKeys.DEFAULT_FOLDER_CONFIG %>"/>
 <c:set var="ss_stdConfigId_blog" value="<%= ObjectKeys.DEFAULT_FOLDER_BLOG_CONFIG %>"/>
+<c:set var="ss_stdConfigId_miniblog" value="<%= ObjectKeys.DEFAULT_FOLDER_MINIBLOG_CONFIG %>"/>
 <c:set var="ss_stdConfigId_wiki" value="<%= ObjectKeys.DEFAULT_FOLDER_WIKI_CONFIG %>"/>
 <c:set var="ss_stdConfigId_cal" value="<%= ObjectKeys.DEFAULT_FOLDER_CALENDAR_CONFIG %>"/>
 <c:set var="ss_stdConfigId_guest" value="<%= ObjectKeys.DEFAULT_FOLDER_GUESTBOOK_CONFIG %>"/>
@@ -369,6 +370,7 @@ function ss_checkForm(obj) {
   <c:forEach var="config" items="${ssFolderConfigs}" varStatus="status">
    <c:if test="${config.internalId == ss_stdConfigId_desc || 
                  config.internalId == ss_stdConfigId_blog ||  
+                 config.internalId == ss_stdConfigId_miniblog ||  
                  config.internalId == ss_stdConfigId_wiki ||  
                  config.internalId == ss_stdConfigId_cal ||  
                  config.internalId == ss_stdConfigId_guest ||  
@@ -398,6 +400,7 @@ function ss_checkForm(obj) {
   <c:forEach var="config" items="${ssFolderConfigs}" varStatus="status">
    <c:if test="${config.internalId != ss_stdConfigId_desc && 
                  config.internalId != ss_stdConfigId_blog &&  
+                 config.internalId != ss_stdConfigId_miniblog &&  
                  config.internalId != ss_stdConfigId_wiki &&  
                  config.internalId != ss_stdConfigId_cal &&  
                  config.internalId != ss_stdConfigId_guest &&  

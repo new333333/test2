@@ -79,6 +79,7 @@ public interface ObjectKeys {
 	//presence is used to distinquish system templates from customer templates
 	public static final String DEFAULT_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0001";
 	public static final String DEFAULT_FOLDER_BLOG_CONFIG="402883b90d0de1f3010d0df5582b000c";
+	public static final String DEFAULT_FOLDER_MINIBLOG_CONFIG="402883b90d0de1f3010d0df5582b001c";
 	public static final String DEFAULT_FOLDER_WIKI_CONFIG="402883b90d0de1f3010d0df5582b000d";
 	public static final String DEFAULT_FOLDER_CALENDAR_CONFIG="402883b90d0de1f3010d0df5582b000e";
 	public static final String DEFAULT_FOLDER_GUESTBOOK_CONFIG="402883b90d0de1f3010d0df5582b000f";
