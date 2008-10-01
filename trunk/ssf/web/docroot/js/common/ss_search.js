@@ -183,6 +183,9 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 						preventCache: true
 					});
 				},
+				clearSubordinates: function () {
+					stepsContainer.innerHTML = "";
+				},
 				displayArrow: true
 		});
 	
@@ -318,7 +321,6 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 			
 			fieldsDiv.appendChild(textAreaFieldsObj);
 
-			
 			var findEntryFields = ssFind.configSingle({
 				inputId: fieldsInputId,
 				prefix: fieldsInputId, 
@@ -450,6 +452,11 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 						fieldValue2Div.appendChild(inpt);
 					}
 					
+				},
+				clearSubordinates: function() {
+					ss_removeAllChildren(fieldValueDiv);
+					ss_removeAllChildren(fieldValue2Div);
+				    valueLabelDiv.style.display = "none";
 				}
 			});
 			
@@ -472,6 +479,13 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 
 
 
+		},
+		clearSubordinates: function() {
+			ss_removeAllChildren(fieldsDiv);
+			ss_removeAllChildren(fieldValueDiv);
+			ss_removeAllChildren(fieldValue2Div);
+            fieldsLabelDiv.style.display = "none";
+		    valueLabelDiv.style.display = "none";
 		}		
 	});
 	
