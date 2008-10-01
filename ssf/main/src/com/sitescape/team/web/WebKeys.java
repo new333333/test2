@@ -528,7 +528,6 @@ public class WebKeys {
 	public static final String BINDER_UNSEEN_COUNTS="ss_binderUnseenCounts";
 	public static final String BINDER_WEBDAV_URL="ssWebDavURL";
 	public static final String BLOG_ENTRIES="ssBlogEntries"; 
-	public static final String BLOG_FOLDERS="ssBlogFolders"; 
 	public static final String BLOG_PAGES="ssBlogPages"; 
 	public static final String BLOG_SET_BINDER="ssBlogSetBinder"; 
 	public static final String BLOG_ENTRY="ssBlogEntry"; 
