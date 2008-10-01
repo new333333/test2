@@ -55,6 +55,26 @@ function ss_showForumEntryInIframe(url) {
     var wObj = self.document.getElementById('ss_showentryframe')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
 	if (wObj1 == null) return true;
+
+    var wObj2 = self.document.getElementById('ss_iframe_holder_div')
+    if (wObj2 == null && wObj == null) {
+		return true;
+    }
+    if (wObj == null) {
+    	//The iframe does not exist, create it
+        iframeObj = self.document.createElement("iframe");
+        iframeObj.setAttribute("id", "ss_showentryframe");
+        iframeObj.setAttribute("name", "ss_showentryframe");
+        iframeObj.style.display = "block"
+        iframeObj.style.position = "relative"
+        iframeObj.style.left = "5px"
+        iframeObj.style.width = "99%"
+        iframeObj.style.height = "99%"
+        iframeObj.frameBorder = "0"
+        iframeObj.onload = ss_iframeOnloadSetHeight;
+		wObj2.appendChild(iframeObj);
+		wObj = self.document.getElementById('ss_showentryframe')
+    }
 	
     ss_hideSpannedAreas();
     wObj1.style.display = "block";
@@ -75,6 +95,13 @@ function ss_showForumEntryInIframe(url) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 
     return false;
+}
+
+function ss_iframeOnloadSetHeight() {
+	if (self.ss_setEntryDivHeight && 
+			self.document.getElementById('ss_showentrydiv') && 
+			self.document.getElementById('ss_showentrydiv').style.display != 'none') 
+		ss_setEntryDivHeight();
 }
 // If you can't control the box model, you may need to set this to around 40.
 var ss_scrollHeightFudge = 0;
@@ -98,6 +125,8 @@ function ss_positionEntryDiv() {
     ss_moveObjectToBody(wObj1)
     var wObj2 = self.document.getElementById(ss_iframe_box_div_name)
     var wObj3 = self.document.getElementById('ss_showentryframe')
+    var wObj4 = self.document.getElementById('ss_iframe_holder_div')
+    if (wObj3 == null) return;
 
     if (ss_entryWindowTop <= 0 || ss_entryWindowLeft <= 0) {
     	//ss_debug("initial setting of top and left " + ss_entryWindowWidth)
@@ -128,19 +157,22 @@ function ss_positionEntryDiv() {
     //wObj1.style.background = ss_entryBackgroundColor;
     wObj1.style.background = "";
     wObj1.style.visibility = "visible";
-
+    
     //Allow the entry section to grow to as large as needed to show the entry
 	try {
 		if (window.ss_showentryframe && window.ss_showentryframe.document && 
 				window.ss_showentryframe.document.body) {
 		    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight) + ss_scrollHeightFudge
+		    
 		    if (entryHeight < ss_minEntryWindowHeight) entryHeight = ss_minEntryWindowHeight;
 		    if (entryHeight > (ss_entryHeightHighWaterMark + ss_scrollHeightFudge)) {
 			    //Only expand the height. Never shrink it. Otherwise the screen jumps around.
 			    ss_entryHeightHighWaterMark = entryHeight;
 			    
 				ss_setObjectHeight(wObj1, entryHeight);
+				ss_setObjectHeight(wObj2, entryHeight);
 				ss_setObjectHeight(wObj3, entryHeight);
+				//ss_setObjectHeight(wObj4, entryHeight);
 			}
 			if (!ss_draggingDiv &&  ss_getScrollXY()[1] < ss_entryLastScrollTop) {
 				//See if the entry runs off the bottom of the screen and should be moved up some
@@ -170,6 +202,17 @@ function ss_hideEntryDiv() {
     if (wObj1 != null) {
     	wObj1.style.visibility = "hidden";
     	wObj1.style.display = "none";
+    	var wObj2 = self.document.getElementById(ss_iframe_box_div_name)
+    	var wObj3 = self.document.getElementById('ss_iframe_holder_div')
+    	if (0 == 1 && wObj3 != null) {
+    		//Turned off because it doesn't work yet
+    		//Delete the iframe obj; it will get recreated again
+    		var iframeObj = self.document.getElementById('ss_showentryframe')
+    		if (iframeObj != null) iframeObj.parentNode.removeChild(iframeObj);
+    		ss_setObjectHeight(wObj3, "200px");
+    		ss_setObjectHeight(wObj2, "200px");
+    		ss_setObjectHeight(wObj1, "200px");
+    	}
     }
     ss_showSpannedAreas();
 }
