@@ -42,6 +42,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.XmlFileUtil;
@@ -76,11 +77,12 @@ public class GetController extends SAbstractController {
 			Calendar calendar = getIcalModule().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE));
 			calendarOutputter.output(calendar, response.getWriter());
 		} else {
+			Folder folder = getFolderModule().getFolder(binderId);
 			Map entries = getFolderModule().getFullEntries(binderId, null);
 			List folderEntries = (List)entries.get(ObjectKeys.FULL_ENTRIES);
 			
 			CalendarOutputter calendarOutputter = new CalendarOutputter();
-			Calendar calendar = getIcalModule().generate(folderEntries, mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE));
+			Calendar calendar = getIcalModule().generate(folder.getTitle(), folderEntries, mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE));
 			calendarOutputter.output(calendar, response.getWriter());
 		}
 		
