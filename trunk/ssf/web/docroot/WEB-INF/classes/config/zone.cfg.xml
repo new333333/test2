@@ -13,6 +13,9 @@
 		<posting session="java:comp/env/mail/SiteScapePosting"/>
 		<property name="notify.timezone">America/New_York</property>
 	</mailConfiguration>	
+	<folderConfiguration>
+		<property name="delete.timeout.hours">2</property>
+	</folderConfiguration>
 	<ldapConfiguration>	
 		<property name="java.naming.provider.url">ldap://localhost:389</property>
 		<property name="create.flush.threshhold">100</property>
