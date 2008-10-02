@@ -130,8 +130,8 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 	   <td width="50%"></td>
 	 </tr>
 	 <tr>
-	   <td colspan="4" align="right">
-	     <div class="ss_navbar_inline">
+	   <td colspan="3" align="right">
+	     <div class="ss_navbar_inline ss_navbar_padRt">
 	     <ul>
 	     <c:forEach var="blogPage" items="${ssBlogPages}">
 	       <li>
@@ -146,6 +146,8 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 	     </c:forEach>
 	     </ul>
 	     </div>
+	   </td>
+	   <td width="50%">
 	   </td>
 	 </tr>
 	 <tr>

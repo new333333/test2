@@ -357,6 +357,9 @@ a.ss_new_thread:hover {
 	}	
 .ss_navbar_new a:hover {
 	color: #FFFFFF !important;
+	}	
+.ss_navbar_padRt {
+	padding-right: 8px;
 	}		
 
 /******* PAGINATION STYLES *************/
