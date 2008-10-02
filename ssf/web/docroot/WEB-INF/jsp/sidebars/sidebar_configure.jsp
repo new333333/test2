@@ -39,7 +39,7 @@
   initOpen="false" sticky="false">
 
 <c:if test="${!empty ssFolderViewsToolbar || !empty ssCalendarImportToolbar}">
-  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.folderConfiguration"/> 
+  <div class="ss_sidebarTitle"> 
 	<div class="ss_sub_sidebarMenu">
 	  <c:if test="${!empty ssFolderViewsToolbar}">
 	    <ssf:toolbar toolbar="${ssFolderViewsToolbar}" style="ss_actions_bar4 ss_actions_bar" />

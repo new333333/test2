@@ -262,7 +262,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_lg.png"); 
 	background-position:top left;
 	background-repeat: no-repeat;
-	height:22px;	
+	height:18px;	
 	color:#FFF;
 	cursor: pointer;
 	}
@@ -274,18 +274,15 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_sm.png"); 
 	background-position:top left;
 	background-repeat: no-repeat;
-	height:22px;	
-	<c:if test="<%= isIE %>">
-		height:23px;
- 	</c:if>			
+	height:18px;			
 	color:#FFF;
 	cursor: pointer;	
 	vertical-align: center;	
 	}
 .ss_sidebarSlidetext {
 	padding-left: 22px;
-	padding-top: 0px;
-	padding-bottom: 0px
+	padding-top: 4px;
+	padding-bottom: 0px;
 	}	
 .ss_hideShow {
 	font-size: ${ss_style_font_smallprint};
