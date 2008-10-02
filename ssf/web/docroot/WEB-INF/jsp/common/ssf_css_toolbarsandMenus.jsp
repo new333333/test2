@@ -41,7 +41,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_actions_bar {
 	list-style-type:none;	
 	padding: 0px 0px 0px 0px;
-	height: 22px;	
+/*	height: 22px;	*/
 	margin: 0px;
 	}
 .ss_action_bar ul, .ss_actions_bar_submenu {
@@ -168,6 +168,7 @@ table.ss_actions_bar4_pane {
 	font-weight: bold;
 	margin:15px 0 0 0;
 	padding:5px 0 5px 25px;
+	height: 22px;
 	}
 ul.ss_actions_bar1  {
 	/* height: 22px;	*/
@@ -483,7 +484,6 @@ div.ss_popup_top {
   	background-image: url(<html:imagesPath/>pics/background_base_title_bar.jpg);
   	background-repeat: repeat-x;
   	height: 14px; 
-  padding: 0px;
 	}
 div.ss_popup_title {
    font-family: ${ss_style_title_font_family};
@@ -508,6 +508,9 @@ div.ss_popup_body {
   	background-color: #FFFFFF;
   	padding: 10px;
 	}
+.ss_popup ul{
+	text-decoration: none;
+	}	
 /* ENTRY VIEW TOOLBAR STYLES */
 /* FAMILY TYPES = (10)unspecified (11)blog (12)calendar (13)discussion (14)photo (15)wiki (16)task (17)file */
 

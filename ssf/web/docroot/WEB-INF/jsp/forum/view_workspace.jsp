@@ -182,19 +182,19 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 <tbody>
 <tr>
 <ssf:ifnotaccessible>
-<td valign="left">
+<td valign="middle">
 <a href="javascript: ;" 
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
-><span style="padding:0px 0 0 22px; display:${ss_sidebarVisibilityShow};"
+><span style="padding-left:12px; display:${ss_sidebarVisibilityShow};"
   id="ss_sidebarHide${renderResponse.namespace}" 
-  class="ss_fineprint ss_sidebarSlidesm"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
-  style="padding:0px 0 0 22px; display:${ss_sidebarVisibilityHide};"
+  class="ss_fineprint ss_sidebarSlidesm ss_sidebarSlidetext"><ssf:nlt tag="toolbar.sidebar.show"/></span>
+  <span style="display:${ss_sidebarVisibilityHide};"
   id="ss_sidebarShow${renderResponse.namespace}" 
-  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
+  class="ss_fineprint ss_sidebarSlide ss_sidebarSlidetext"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
 </td>
 </ssf:ifnotaccessible>
 
-<td valign="left">
+<td valign="middle">
 	<ssf:toolbar style="ss_actions_bar1 ss_actions_bar">			
 	<% // Workspace toolbar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
