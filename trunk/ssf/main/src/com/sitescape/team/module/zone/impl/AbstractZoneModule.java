@@ -30,9 +30,11 @@ package com.sitescape.team.module.zone.impl;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -87,6 +89,7 @@ import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SessionUtil;
+import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
 public abstract class AbstractZoneModule extends CommonDependencyInjection implements ZoneModule,InitializingBean {
 	protected DefinitionModule definitionModule;
@@ -228,11 +231,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	}
  	protected void upgradeZoneTx(Workspace zone) {
  		Integer version = zone.getUpgradeVersion(); //in future release, start using version from zoneConfig
+		String superName = SZoneConfig.getAdminUserName(zone.getName());
+ 		//	get super user from config file - must exist or throws and error
+ 		User superU = getProfileDao().findUserByName(superName, zone.getName());
+ 		RequestContextUtil.setThreadContext(superU).resolve();
  		if ((version == null) || version.intValue() <= 1) {
- 			String superName = SZoneConfig.getAdminUserName(zone.getName());
- 			//	get super user from config file - must exist or throws and error
- 			User superU = getProfileDao().findUserByName(superName, zone.getName());
- 			RequestContextUtil.setThreadContext(superU).resolve();
  			//TODO: setZoneId as non=null, only do based on version
 			getCoreDao().executeUpdate("update com.sitescape.team.domain.AuditTrail set zoneId=" + zone.getId() + 
 				" where zoneId is null");
@@ -451,6 +454,18 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				}
 			}
 			zone.setUpgradeVersion(2);
+ 		}
+ 		if (version.intValue() <= 2) {
+ 			//Change the definition of the top workspace to become the welcome page
+ 			Workspace top = getCoreDao().findTopWorkspace(zone.getName());
+ 			List definitions = new ArrayList();
+ 			Map workflowAssociations = new HashMap();
+ 			String defBinderId = ObjectKeys.DEFAULT_WELCOME_WORKSPACE_DEF;
+ 			definitions.add(defBinderId);
+			getBinderModule().setDefinitions(top.getId(), definitions, workflowAssociations);
+ 			zone.setUpgradeVersion(3);
+ 			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(top.getId());
+ 			zoneConfig.setUpgradeVersion(3);
  		}
 
   	}
