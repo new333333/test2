@@ -576,7 +576,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <!-- Start of favorites pane -->
 <ssf:ifLoggedIn>
 <div class="ss_style_trans" id="ss_favorites_pane${renderResponse.namespace}" 
-  style="position:absolute; visibility:hidden;">
+  style="position:absolute; visibility:hidden; display:none;">
 
   <ssf:popupPane width="200px" titleTag=""
     closeScript="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();return false;">
@@ -603,8 +603,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
   		  src="<html:brandedImagesPath/>icons/button_edit_bookmark.gif" border="0" />
 		<a href="javascript: ;" 
 		 onClick="ssMyFavorites${renderResponse.namespace}.showhideFavoritesEditor()"
-		><span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.edit" 
-			text="Edit Favorites"/></span></a>
+		><span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.edit" text="Edit Favorites"/></span></a>
   	  </div>
 	  <hr style="width: 90%" class="ss_att_divider"/>
 	  <div class="ss_style_trans" id="ss_favorites${renderResponse.namespace}" align="left">
