@@ -5600,15 +5600,20 @@ function ss_changeUITheme(idListText, nameListText) {
 	var nameList = nameListText.split(",");
 	var divObj = ss_createDivInBody('ss_uiThemeSelector', 'ss_themeMenu');
 	divObj.style.zIndex = parseInt(ssLightboxZ + 1);
+	
+	var txt = '<div class="ss_popup_top ss_themeMenu_top ss_popup_title">';
+	txt += 'Choose a Theme';
+	txt += '</div>';
+	
 	var divHtml = '<ul>';	
 	for (var t=0; t<idList.length; t++) {
-		var link = '<li><a href="javascript: ;" onclick="ss_changeUIThemeRequest(';
+		var link = '<li><a class="ss_link_3" href="javascript: ;" onclick="ss_changeUIThemeRequest(';
 		link += "'" + idList[t] + "'" + ');">';
 		link += nameList[t] + '</a></li>';
 		divHtml += link;
 	}
 	divHtml += '</ul>';
-	divObj.innerHTML = divHtml;
+	divObj.innerHTML = txt + divHtml;
 	var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
 	lightBox.onclick = function(e) {ss_cancelUITheme();};
 	divObj.style.visibility = "visible";
