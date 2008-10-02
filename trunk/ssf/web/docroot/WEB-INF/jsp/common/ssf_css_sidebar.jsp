@@ -265,6 +265,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	height:18px;	
 	color:#FFF;
 	cursor: pointer;
+	width: 210px;
 	}
 .ss_sidebarSlide span{
 	vertical-align: middle !important;
@@ -277,10 +278,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	height:18px;			
 	color:#FFF;
 	cursor: pointer;	
-	vertical-align: center;	
+	width: 120px;
 	}
 .ss_sidebarSlidetext {
-	padding-left: 22px;
 	padding-top: 4px;
 	padding-bottom: 0px;
 	}	
