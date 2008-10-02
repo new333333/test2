@@ -160,6 +160,7 @@ table.ss_actions_bar4_pane {
 	font-weight: normal;
 	font-size: ${ss_style_font_smallprint};
 	font-family: ${ss_style_title_font_family};
+	height: 22px;
 	}
 .ss_actions_bar5 {
 	background-color:#72AEB6;

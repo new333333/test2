@@ -56,8 +56,8 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 <jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
-<div class="ss_actions_bar1_pane ss_sidebarImage" width="100%">
-<table cellspacing="0" cellpadding="0" width="100%">
+<div class="ss_actions_bar1_pane ss_sidebarImage">
+<table cellspacing="0" cellpadding="0">
 <tr><td valign="middle">
 <a href="javascript: ;" 
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"

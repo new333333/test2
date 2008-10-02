@@ -177,8 +177,8 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
   <c:set var="ss_sidebarVisibilityHide" value="block"/>
   <c:set var="ss_sidebarTdStyle" value="ss_view_sidebar"/>
 </c:if>
-<div class="ss_actions_bar1_pane ss_sidebarImage" width="100%">
-<table cellspacing="0" cellpadding="0" width="100%">
+<div class="ss_actions_bar1_pane ss_sidebarImage">
+<table cellspacing="0" cellpadding="0">
 <tbody>
 <tr>
 <ssf:ifnotaccessible>
@@ -188,7 +188,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 ><span style="padding-left:12px; display:${ss_sidebarVisibilityShow};"
   id="ss_sidebarHide${renderResponse.namespace}" 
   class="ss_fineprint ss_sidebarSlidesm ss_sidebarSlidetext"><ssf:nlt tag="toolbar.sidebar.show"/></span>
-  <span style="display:${ss_sidebarVisibilityHide};"
+  <span style="padding-left:12px; display:${ss_sidebarVisibilityHide};"
   id="ss_sidebarShow${renderResponse.namespace}" 
   class="ss_fineprint ss_sidebarSlide ss_sidebarSlidetext"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
 </td>
