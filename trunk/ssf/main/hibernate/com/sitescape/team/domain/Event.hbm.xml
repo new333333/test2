@@ -72,7 +72,7 @@
     </component>
 	<property name="timeZone" access="field" length="80"/>
 <!--length of uid field specified by ical-->
-	<property name="uid" length="255"/>
+	<property name="uid" length="255" column="calUid" />
 	<property name="freeBusy" length="32" access="field" type="com.sitescape.team.dao.util.FreeBusyEnumUserType"/>
   </class>
 </hibernate-mapping>
