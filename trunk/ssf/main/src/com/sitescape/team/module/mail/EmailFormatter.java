@@ -41,7 +41,7 @@ import com.sitescape.team.module.definition.notify.Notify;
  */
 public interface EmailFormatter {
     public static final String PROCESSOR_KEY = "processorKey_emailFormatter";
-    public static final String PLAIN="plain";
+    public static final String TEXT="text";
     public static final String HTML="html";
     public static final String ATTACHMENT="attachment";
     public List buildDistributionList(Binder binder, Collection entries, Collection subscriptions, int style);

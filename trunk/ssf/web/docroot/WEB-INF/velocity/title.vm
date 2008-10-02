@@ -26,8 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
-#parse ("icecore.vm")
-
+#if ($ssVisitor.isHtml())  
 <div style="#ss_entryContent() #ss_entryTitle()">
 <span>
 <table border="0" width="100%">
@@ -68,3 +67,13 @@ line-height: 200%; text-decoration:
 </table>
 
 </div>
+#else
+#if ($ssVisitor.Entity.DocNumber)
+#ss_print("${ssVisitor.Entity.DocNumber}. ") 
+#end
+#if ($ssVisitor.Entity.Title)
+#ss_printLn($ssVisitor.Entity.Title)
+#else
+#ss_printLn("--$ssVisitor.getNLT('entry.noTitle')--")
+#end
+#end

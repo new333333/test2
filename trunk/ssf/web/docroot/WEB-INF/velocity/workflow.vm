@@ -26,12 +26,12 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
-#parse ("icecore.vm")
 #if ($ssVisitor.Entity.WorkflowStates)
+#if ($ssVisitor.isHtml())
 <div style="#ss_entryContent()">
 
 <table border="0" cellspacing="0" cellpadding="0">
-<tr><th align="left" colspan="2" style="padding:0px 0px 6px 2px;"><span style="#ss_labelAbove()">${ssVisitor.getNLT("workflow")}</span></th></tr>
+<tr><th align="left" colspan="2" style="padding:0px 0px 6px 2px;"><span style="#ss_labelAbove()">${ssVisitor.getNLT('workflow')}</span></th></tr>
 <tr>
   <th align="left" style="#ss_fineprint() #ss_light() text-decoration:underline;padding:0px 0px 4px 30px;font-weight:normal;">
     $ssVisitor.getNLT("workflow.process")</th>
@@ -61,7 +61,20 @@
   #end
 #end
 </table>
-
 </div>
-
+#else
+#ss_printLn("${ssVisitor.getNLT('workflow')}")
+#foreach ($workflow in $ssVisitor.Entity.WorkflowStates)
+#if ($workflow.Definition && !$workflow.ThreadName)
+#ss_printLn("$ssVisitor.getNLTDef($workflow.Definition.Title) ${ssCaptions.get($workflow.Id)}")
+#foreach ($workflow2 in $ssVisitor.Entity.WorkflowStates)
+#if ($workflow2.Definition.Id == $workflow.Definition.Id)
+#if ($workflow2.ThreadName)
+#ss_printLn("     $ssVisitor.getNLTDef($workflow2.ThreadName) ${ssCaptions.get($workflow2.Id)}")
+#end
+#end
+#end
+#end
+#end
+#end
 #end

@@ -70,7 +70,7 @@ public class NotifyBuilderEntry extends AbstractNotifyBuilder {
     }
     protected void doTitle(NotifyVisitor visitor, VelocityContext ctx) {
        	try {
-    		NotifyBuilderUtil.getVelocityEngine().mergeTemplate("digestTitle.vm", ctx, visitor.getWriter());
+    		visitor.processTemplate("digestTitle.vm", ctx);
     	} catch (Exception ex) {
     		NotifyBuilderUtil.logger.error("Error processing template " + "digestTitle", ex);
     	}

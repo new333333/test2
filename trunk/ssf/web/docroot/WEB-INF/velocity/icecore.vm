@@ -26,52 +26,25 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
-#macro (ss_entryContent)
-  font-size:12px;font-weight:normal;font-family:Arial;margin:0px;padding:2px;padding-left:22px;
+#macro (ss_printLn $line)$line
 #end
-#macro (ss_entryTitle)
-  font-weight:bold;font-size:14px;font-family:Arial,Helvetica,sans-serif;margin-bottom:4px;margin-top:4px;
-#end
-#macro (ss_entryDescription)
-  padding-left:24px;padding-right:14px;padding-top:4px;padding-bottom:4px;background-color:inherit;font-size:12px;
-  color: #333333;
-#end
-#macro (ss_entrySignature)
-  font-size:10px;padding-left:5px;color:#666666;
-#end 
-#macro (ss_labelLeft)
-  font-weight:bold;font-size:12px;display:inline;padding-right:2px;
-#end
-#macro (ss_labelRight)
-  font-weight:bold;font-size:12px;display:inline;padding-left:2px;
-#end
-#macro (ss_labelAbove)
-   font-weight:bold;font-size:12px;padding-top:2px;padding-bottom:2px;display:block;
-#end
-
-#macro (ss_fineprint)
-  font-size:10px !important; 
-#end
-
-#macro (ss_light)
-  color: #999999;   
-#end
-#macro (ss_legend)
-  font-family:Arial;font-weight:bold;font-size:12px;color:#333333;
-#end
-#macro (ss_fieldset)
-  margin-top:6px;margin-bottom:4px;border:1px solid #CCCCCC;
-#end
-#macro (ss_ul)
-margin-left:0em;padding-left:0em;margin-top:0px;margin-bottom:2px;
-#end
-#macro (ss_li)
-list-style-type:none;margin-left:0px;margin-bottom:0px;padding-left:0px;
-#end
+#macro (ss_print $line)$line#end 
+#macro (ss_entryContent)#ss_print("font-size:12px;font-weight:normal;font-family:Arial;margin:0px;padding:2px;padding-left:22px;")#end
+#macro (ss_entryTitle)#ss_print("font-weight:bold;font-size:14px;font-family:Arial,Helvetica,sans-serif;margin-bottom:4px;margin-top:4px;")#end
+#macro (ss_entryDescription)#ss_print("padding-left:24px;padding-right:14px;padding-top:4px;padding-bottom:4px;background-color:inherit;font-size:12px; color: #333333;")#end
+#macro (ss_entrySignature)#ss_print("font-size:10px;padding-left:5px;color:#666666;")#end 
+#macro (ss_labelLeft)#ss_print("font-weight:bold;font-size:12px;display:inline;padding-right:2px;")#end
+#macro (ss_labelRight)#ss_print("font-weight:bold;font-size:12px;display:inline;padding-left:2px;")#end
+#macro (ss_labelAbove)#ss_print("font-weight:bold;font-size:12px;padding-top:2px;padding-bottom:2px;display:block;")#end
+#macro (ss_fineprint)#ss_print("font-size:10px !important; ")#end
+#macro (ss_light)#ss_print("color: #999999;")#end
+#macro (ss_legend)#ss_print("font-family:Arial;font-weight:bold;font-size:12px;color:#333333;")#end
+#macro (ss_fieldset)#ss_print("margin-top:6px;margin-bottom:4px;border:1px solid #CCCCCC;")#end
+#macro (ss_ul)#ss_print("margin-left:0em;padding-left:0em;margin-top:0px;margin-bottom:2px;")#end
+#macro (ss_li)#ss_print("list-style-type:none;margin-left:0px;margin-bottom:0px;padding-left:0px;")#end
 #macro (ss_getUserLink $user)
 #if ($user.WorkspaceId)
-	  <a href="$ssVisitor.getPermaLink(${user.ParentBinder.Id}, ${user.Id}, 'workspace')">
-	  $esc.html(${user.Title})</a>
+	  <a href="$ssVisitor.getPermaLink(${user.ParentBinder.Id}, ${user.Id}, 'workspace')">$esc.html(${user.Title})</a>
 #else
 	  $esc.html(${user.Title})
 #end

@@ -29,11 +29,9 @@
 package com.sitescape.team.module.definition.notify;
 import java.sql.Timestamp;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -62,7 +60,7 @@ public class Notify {
 	protected Locale locale;
 	protected DateFormat dateFormat,dateTimeFormat;
 	protected Set files= null;
-	protected Map events= null;// sorted by entry
+	protected Map<DefinableEntity, Set> events= null;// sorted by entry
 	protected Timestamp startTs;
 	protected boolean includeAttachments=false;
 	protected TimeZone timezone;
@@ -86,7 +84,7 @@ public class Notify {
 
 	}
 	public Set getAttachments() {
-		if (files == null) files = new HashSet();
+		if (files == null) files = new HashSet();//may be called for same attachment
 		return files;
 	}
 	public void addAttachment(FileAttachment att) {
@@ -101,16 +99,16 @@ public class Notify {
 	public void setAttachmentsIncluded(boolean includeAttachments) {
 		this.includeAttachments = includeAttachments;
 	}
-	public Map getEvents() {
+	public Map<DefinableEntity, Set> getEvents() {
 		if (events == null) events = new HashMap();
 		return events;
 	}
 	public void addEvent(DefinableEntity entry, Event event) {
 		Map events = getEvents();
 		if (events.get(entry) == null) {
-			events.put(entry, new ArrayList());
+			events.put(entry, new HashSet()); //may be called for same event
 		}
-		List entryEventsList = (List)events.get(entry);
+		Set entryEventsList = (Set)events.get(entry);
 		entryEventsList.add(event);
 	}
 	public void clearEvents() {

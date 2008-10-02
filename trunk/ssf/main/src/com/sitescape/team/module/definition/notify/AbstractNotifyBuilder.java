@@ -70,7 +70,7 @@ public abstract class AbstractNotifyBuilder implements NotifyBuilder {
     }
     protected void build(NotifyVisitor visitor, String template, VelocityContext ctx) {
     	try {
-    		NotifyBuilderUtil.getVelocityEngine().mergeTemplate(template, ctx, visitor.getWriter());
+    		visitor.processTemplate(template, ctx);
     	} catch (Exception ex) {
     		NotifyBuilderUtil.logger.error("Error processing template " + template, ex);
     	}

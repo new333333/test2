@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
-#parse ("icecore.vm")
+
 #set ($ssElement = ${ssVisitor.getParam('ssElement')})
 <div style="border-bottom:thin solid #cccccc;"></div>
 <div style="#ss_entryContent()">

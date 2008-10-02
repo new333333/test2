@@ -27,7 +27,7 @@
  * are trademarks of SiteScape, Inc.
  *#
 
-#parse ("icecore.vm")
+#if ($ssVisitor.isHtml())
 <div style="#ss_entryContent() ">
 <span style="#ss_labelLeft()">${property_caption}</span><br/>
 <ul style="#ss_ul()">
@@ -45,5 +45,10 @@
 #end
 </ul>
 </div>
-
+#else
+#ss_printLn("${property_caption}")
+#foreach ($selection in ${ssVisitor.Entity.getCustomAttribute($property_name).ValueSet})
+#ss_printLn("    ${selection.fileItem.name}")
+#end
+#end
 		

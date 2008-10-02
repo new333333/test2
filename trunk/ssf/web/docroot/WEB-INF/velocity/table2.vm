@@ -26,8 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
-#parse ("icecore.vm")
-
+#if ($ssVisitor.isHtml())
 <table cellspacing="0" cellpadding="0" width="100%">
 #foreach ($selection in $ssVisitor.Items)
 #if ($velocityCount % 2 == 1)
@@ -46,3 +45,8 @@ $ssVisitor.visit($selection)
 <td>&nbsp;</td></tr>
 #end
 </table>
+#else
+#foreach ($selection in $ssVisitor.Items)
+$ssVisitor.visit($selection)
+#end
+#end

@@ -509,12 +509,12 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	protected void doDigestEntry(FolderEntry entry, Notify notify, StringWriter writer, Element element) {
 		Map params = new HashMap();
 		params.put("ssElement", element);
-		NotifyBuilderUtil.buildElements(entry, notify, writer, params);
+		NotifyBuilderUtil.buildElements(entry, notify, writer, NotifyVisitor.WriterType.HTML, params);
 	}
 	protected void doTOC(Folder folder, Document document, Notify notifyDef, StringWriter writer) {
 		try {
 		    VelocityContext ctx = NotifyBuilderUtil.getVelocityContext();
-           	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, null);
+           	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, NotifyVisitor.WriterType.HTML, null);
 			ctx.put("ssDocument", document);
 			ctx.put("ssVisitor", visitor);
 			NotifyBuilderUtil.getVelocityEngine().mergeTemplate("digestTOC.vm", ctx, writer);
@@ -526,7 +526,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	protected void doFolderDigest(Folder folder, StringWriter writer, Notify notifyDef) {
 		try {
 		    VelocityContext ctx = NotifyBuilderUtil.getVelocityContext();
-           	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, null);
+           	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, NotifyVisitor.WriterType.HTML, null);
 			ctx.put("ssVisitor", visitor);
 			NotifyBuilderUtil.getVelocityEngine().mergeTemplate("folder.vm", ctx, writer);
 		} catch (Exception ex) {
@@ -537,25 +537,34 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	public Map buildMessage(Binder binder, Entry entry,  Notify notify) {
 		Map result = new HashMap();
 	    if (notify.getStartDate() == null) return result;
-		final StringWriter writer = new StringWriter();
+		StringWriter writer = new StringWriter();
 		if (Notify.NotifyType.interactive.equals(notify.getType())) {
 			Map params = new HashMap();
 			params.put("com.sitescape.team.notify.params.replies",getFolderDao().loadEntryDescendants((FolderEntry)entry));
-			NotifyBuilderUtil.buildElements(entry, notify, writer, params);
+			NotifyBuilderUtil.buildElements(entry, notify, writer, NotifyVisitor.WriterType.HTML, params);
+			result.put(EmailFormatter.HTML, writer.toString());
+			writer = new StringWriter();
+			NotifyBuilderUtil.buildElements(entry, notify, writer, NotifyVisitor.WriterType.TEXT, params);
+			result.put(EmailFormatter.TEXT, writer.toString());
+			
 		} else {
-			doEntry((FolderEntry)entry, notify, writer);
+			doEntry((FolderEntry)entry, notify, writer, NotifyVisitor.WriterType.HTML);
+			result.put(EmailFormatter.HTML, writer.toString());
+			writer = new StringWriter();
+			doEntry((FolderEntry)entry, notify, writer, NotifyVisitor.WriterType.TEXT);
+			result.put(EmailFormatter.TEXT, writer.toString());
 		}
 
-		result.put(EmailFormatter.HTML, writer.toString());
 		
 		return result;
 
 	}
-	private void doEntry(FolderEntry entry, Notify notify, StringWriter writer) {
+	//summary entry
+	private void doEntry(FolderEntry entry, Notify notify, StringWriter writer, NotifyVisitor.WriterType type) {
 		if (entry == null) return;
 		//handle direct ancestors of the changed entry first
-		doEntry(entry.getParentEntry(), notify, writer); 
-		NotifyBuilderUtil.buildElements(entry, notify, writer, new HashMap());
+		doEntry(entry.getParentEntry(), notify, writer, type); 
+		NotifyBuilderUtil.buildElements(entry, notify, writer, type, new HashMap());
 	}
 	/**
 	 * Build a message for and entry and replies you can see.

@@ -26,7 +26,11 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
+#if ($ssVisitor.isHtml()) 
 <div style="border:solid black 1px; padding:2px; margin-bottom:2px;">
 $ssVisitor.visit()
 </div>
+#else
+$ssVisitor.visit()
+#end
 

@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
-#parse ("icecore.vm")
+#if ($ssVisitor.isHtml()) 
 <div style="#ss_entryContent()">
 <span style="#ss_labelAbove()">${property_caption}</span>
 #if ($ssDescription_markup)
@@ -39,3 +39,7 @@ $ssDescription_markup
 #end
 #end
 </div>
+#else
+#ss_printLn("${property_caption}")
+#ss_printLn("$ssDescription_markup")
+#end

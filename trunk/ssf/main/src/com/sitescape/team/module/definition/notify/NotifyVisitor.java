@@ -2,11 +2,13 @@ package com.sitescape.team.module.definition.notify;
 
 import java.io.Writer;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.velocity.VelocityContext;
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.DefinableEntity;
@@ -14,26 +16,35 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.WebUrlUtil;
 
 public class NotifyVisitor {
 	protected Log logger = LogFactory.getLog(getClass());
 	DefinableEntity entity;
 	Notify notifyDef; 
-	Writer writer;
 	Element currentElement;
 	List items=null;
 	Map params;
-	public NotifyVisitor(DefinableEntity entity, Notify notifyDef, Element currentElement, Writer writer, Map params) {
+	public enum WriterType {
+		HTML,
+		TEXT
+	}
+	WriterType currentWriterType;
+	Writer currentWriter;
+	
+	public NotifyVisitor(DefinableEntity entity, Notify notifyDef, Element currentElement, Writer writer, WriterType writerType, Map params) {
 		this.entity = entity;
 		this.notifyDef = notifyDef;
 		this.currentElement = currentElement;
-		this.writer = writer;
+		this.currentWriter = writer;
+		this.currentWriterType = writerType;
 		this.params = params;
 	}
  	
  	public DefinableEntity getEntity() {
  		return entity;
+ 	}
+ 	public Boolean isHtml() {
+ 		return WriterType.HTML.equals(currentWriterType);
  	}
  	public Notify getNotifyDef() {
  		return notifyDef;
@@ -50,16 +61,22 @@ public class NotifyVisitor {
  		
  	}
  	public Writer getWriter() {
- 		return writer;
+ 		return currentWriter;
  	}
  	//parameters set for entity
  	public Object getParam(String name) {
  		if (params == null) return null;
  		return params.get(name);
  	}
+ 	//start processing templates.
+ 	public void processTemplate(String template, VelocityContext ctx) throws Exception {
+ 		NotifyBuilderUtil.getVelocityEngine().mergeTemplate(template, ctx, currentWriter);
+
+ 	}
+ 	//used to process contents
 	public void visit() {
 		try {
-			NotifyBuilderUtil.buildElements(entity, currentElement, notifyDef, writer, params, false);
+			NotifyBuilderUtil.buildElements(entity, currentElement, notifyDef, currentWriter, currentWriterType, params,  false);
 		} catch (Exception ex) {
 			NotifyBuilderUtil.logger.error("Error processing template:", ex);
 		}
@@ -67,14 +84,15 @@ public class NotifyVisitor {
 	//process this item
 	public void visit(Element nextItem) {
 		try {
-			NotifyBuilderUtil.buildElements(entity, nextItem, notifyDef, writer, params, true);
+			NotifyBuilderUtil.buildElements(entity, nextItem, notifyDef, currentWriter, currentWriterType, params, true);
 		} catch (Exception ex) {
 			NotifyBuilderUtil.logger.error("Error processing template:", ex);
 		}
   	}
+	//Used to process replies
 	public void visit(DefinableEntity entry) {
 		try {
-			NotifyBuilderUtil.buildElements(entry, notifyDef, writer, new HashMap());
+			NotifyBuilderUtil.buildElements(entry, notifyDef, currentWriter, currentWriterType, new HashMap());
 		} catch (Exception ex) {
 			NotifyBuilderUtil.logger.error("Error processing template:", ex);
 		}
