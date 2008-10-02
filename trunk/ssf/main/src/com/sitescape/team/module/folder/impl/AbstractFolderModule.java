@@ -204,7 +204,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	//make sure a delete job is scheduled for the zone
 		FolderDelete job = getDeleteProcessor(zone);
 		String hrsString = (String)SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_HOURS + "']");
-    	int hours = 24;
+    	int hours = 2;
     	try {
     		hours = Integer.parseInt(hrsString);
     	} catch (Exception ex) {};
