@@ -74,3 +74,7 @@ create table SS_LdapConnectionConfig (id char(32) not null, zoneId number(19,0),
 create table SS_IndexingJournal (id number(19,0) not null, zoneId number(19,0), nodeName varchar2(128 char), indexName varchar2(160 char), operationName varchar2(32 char), operationArgs blob, primary key (id));
 create index indexingJournal_nodeIndex on SS_IndexingJournal (nodeName, indexName);
 create sequence ss_indexingjournal_id_sequence;
+create table SS_WorkflowHistory (id char(32) not null, zoneId number(19,0), startBy number(19,0), startDate timestamp, endBy number(19,0), endDate timestamp, entityId number(19,0), entityType varchar2(16 char), owningBinderId number(19,0), owningBinderKey varchar2(255 char), tokenId number(19,0), state varchar2(64 char), threadName varchar2(64 char), definitionId varchar2(32 char), ended number(1,0), primary key (id));
+create index owningBinder_wfhistory on SS_WorkflowHistory (owningBinderId);
+create index entityTransaction_wfhistory on SS_WorkflowHistory (startDate, entityId, entityType);
+create index entityOwner_wfhistory on SS_WorkflowHistory (entityId, entityType);

@@ -106,8 +106,6 @@ public interface ReportModule {
 	public void addLoginInfo(LoginInfo loginInfo);
 	public void addStatusInfo(User user);
 	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment);
-	public void addWorkflowStateHistory(WorkflowStateHistory workflowStateHistory);
-	public void addWorkflowStateHistory(WorkflowState state, HistoryStamp end, boolean isEnded);
 
 	public void addLicenseStats(LicenseStats stats);
 	public LicenseStats getLicenseHighWaterMark(Calendar startDate, Calendar endDate);

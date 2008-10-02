@@ -73,3 +73,7 @@ create table SS_AuthenticationConfig (zoneId bigint not null, allowLocalLogin bi
 create table SS_LdapConnectionConfig (id char(32) not null, zoneId bigint, url varchar(255), userIdAttribute varchar(255), mappings text, userSearches text, groupSearches text, principal varchar(255), credentials varchar(255), position integer, primary key (id)) ENGINE=InnoDB;
 create table SS_IndexingJournal (id bigint not null auto_increment, zoneId bigint, nodeName varchar(128), indexName varchar(160), operationName varchar(32), operationArgs longblob, primary key (id)) ENGINE=InnoDB;
 create index indexingJournal_nodeIndex on SS_IndexingJournal (nodeName, indexName);
+create table SS_WorkflowHistory (id char(32) not null, zoneId bigint, startBy bigint, startDate datetime, endBy bigint, endDate datetime, entityId bigint, entityType varchar(16), owningBinderId bigint, owningBinderKey varchar(255), tokenId bigint, state varchar(64), threadName varchar(64), definitionId varchar(32), ended bit, primary key (id)) ENGINE=InnoDB;
+create index owningBinder_wfhistory on SS_WorkflowHistory (owningBinderId);
+create index entityTransaction_wfhistory on SS_WorkflowHistory (startDate, entityId, entityType);
+create index entityOwner_wfhistory on SS_WorkflowHistory (entityId, entityType);

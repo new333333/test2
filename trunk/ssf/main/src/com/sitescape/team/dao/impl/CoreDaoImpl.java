@@ -228,7 +228,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
   	   				.executeUpdate();
 	       	   		session.createQuery("DELETE com.sitescape.team.domain.NotifyStatus where " + whereClause)
   	   				.executeUpdate();
- 	       	   		
+	       	   		
 /*
  * db servers can deal with these cause on-delete cascade will work
  * 	    	   		session.createQuery("DELETE com.sitescape.team.domain.Event where " + whereClause)
@@ -296,6 +296,10 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     	   			deleteEntityAssociations("owningBinderId=" + binder.getId());
 
 		   		    // Delete associations not maintained with foreign-keys = this just handles the binder itself
+	       	   		//delete history
+    	   			session.createQuery("DELETE com.sitescape.team.domain.WorkflowHistory where owningBinderId=:binderId")
+ 		   				.setLong("binderId", binder.getId())
+ 		   				.executeUpdate();
 	     	   		//delete dashboard
 	     	   		session.createQuery("Delete com.sitescape.team.domain.Dashboard where owner_id=:entityId and owner_type=:entityType")
   		     	   			.setLong("entityId", binder.getId())
@@ -399,7 +403,20 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     				.setString("sortKey", binder.getBinderKey().getSortKey())
 	   				.setLong("id", binder.getId().longValue())
 	   				.executeUpdate();
-		   			return null;
+	    			session.createQuery("update com.sitescape.team.domain.WorkflowHistory set owningBinderKey=:sortKey where owningBinderId=:id")
+    					.setString("sortKey", binder.getBinderKey().getSortKey())
+    					.setLong("id", binder.getId().longValue())
+    					.executeUpdate();
+	       			//move things that are only on the entry and have binder association
+      	   			session.createQuery("update com.sitescape.team.domain.WorkflowState set owningBinderKey=:sortKey where owningBinderId=:id")
+	    	   			.setString("sortKey", binder.getBinderKey().getSortKey())
+	    	   			.setLong("id", binder.getId().longValue())
+	       	   			.executeUpdate();
+       	   			session.createQuery("update com.sitescape.team.domain.WorkflowResponse set owningBinderKey=:sortKey where owningBinderId=:id")
+       	   				.setString("sortKey", binder.getBinderKey().getSortKey())
+       	   				.setLong("id", binder.getId().longValue())
+       	   				.executeUpdate();
+    		   			return null;
     	   		}
     	   	}
     	 );    	

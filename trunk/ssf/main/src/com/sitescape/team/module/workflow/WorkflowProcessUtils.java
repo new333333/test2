@@ -62,16 +62,17 @@ import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WfAcl;
+import com.sitescape.team.domain.WorkflowHistory;
 import com.sitescape.team.domain.WorkflowResponse;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.workflow.impl.WorkflowFactory;
 import com.sitescape.team.module.workflow.jbpm.CalloutHelper;
 import com.sitescape.team.module.workflow.support.WorkflowCondition;
 import com.sitescape.team.runas.RunasCallback;
 import com.sitescape.team.runas.RunasTemplate;
-import com.sitescape.team.util.AbstractAllModulesInjected;
 import com.sitescape.team.util.InvokeUtil;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.ObjectPropertyNotFoundException;
@@ -79,7 +80,7 @@ import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 
-public class WorkflowProcessUtils extends AbstractAllModulesInjected {
+public class WorkflowProcessUtils extends CommonDependencyInjection {
 	protected static Log logger = LogFactory.getLog(WorkflowProcessUtils.class);
 	protected static boolean debugEnabled=logger.isDebugEnabled();
 	protected static BusinessCalendar businessCalendar = new BusinessCalendar();
@@ -157,13 +158,15 @@ public class WorkflowProcessUtils extends AbstractAllModulesInjected {
 					Token child = (Token)iter.next();
 					WorkflowState w = wEntry.getWorkflowState(new Long(child.getId()));
 					if (w != null) {
-						getInstance().getReportModule().addWorkflowStateHistory(w, endit, true);
+						WorkflowHistory history = new WorkflowHistory(w, endit, true);
+						getInstance().getCoreDao().save(history);
 						wEntry.removeWorkflowState(w);
 					}
 				}
 			}
 			//log end
-			getInstance().getReportModule().addWorkflowStateHistory(state, endit, true);
+			WorkflowHistory history = new WorkflowHistory(state, endit, true);
+			getInstance().getCoreDao().save(history);
 			wEntry.setWorkflowChange(endit);
 			if (!current.isRoot()) {
 				wEntry.removeWorkflowState(state);
@@ -816,7 +819,9 @@ public class WorkflowProcessUtils extends AbstractAllModulesInjected {
 	protected static Set<User> getUsers(final Set<Long>ids) {
 		return (Set<User>)RunasTemplate.runasAdmin(new RunasCallback() {
 			public Object doAs() {
-				 return getInstance().getProfileModule().getUsersFromPrincipals(ids);				
+			  
+				Set userIds = getInstance().getProfileDao().explodeGroups(ids, RequestContextHolder.getRequestContext().getZoneId());
+		      	return getInstance().getProfileDao().loadUsers(userIds, RequestContextHolder.getRequestContext().getZoneId());
 			}
 		}, RequestContextHolder.getRequestContext().getZoneName());
 
