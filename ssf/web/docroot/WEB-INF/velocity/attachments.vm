@@ -27,7 +27,7 @@
  * are trademarks of SiteScape, Inc.
  *#
 #if ($ssVisitor.Entity.FileAttachments.size() > 0)
-#parse ("icecore.vm")
+#if ($ssVisitor.isHtml())
 <div style="#ss_entryContent() ">
 <span style="#ss_labelAbove()">${property_caption}</span>
 #if (${ssVisitor.NotifyDef.Type} == 'summary')
@@ -65,5 +65,10 @@
 </table>
 #end
 </div>
+#else
+#ss_printLn("${property_caption}")
+#foreach ($selection in ${ssVisitor.Entity.FileAttachments})
+#ss_printLn("    ${selection.fileItem.name}")
 #end
-		
+#end
+#end

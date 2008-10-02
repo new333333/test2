@@ -26,12 +26,20 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
-#parse ("icecore.vm")
+#if ($ssVisitor.isHtml())
 <div style="#ss_entryContent() ">
 #if (!$ssVisitor.Entity.getCustomAttributes($property_name).Value)
-($ssVisitor.getNLT("notchecked"))
+($ssVisitor.getNLT('notchecked'))
 #else
-($ssVisitor.getNLT("checked"))
+($ssVisitor.getNLT('checked'))
 #end
 <span style="#ss_labelRight()">${property_caption}</span>
 </div>
+#else
+#if (!$ssVisitor.Entity.getCustomAttributes($property_name).Value)
+#ss_print("($ssVisitor.getNLT('notchecked'))")
+#else
+#ss_print("($ssVisitor.getNLT('checked'))")
+#end
+#ss_printLn("  ${property_caption}")
+#end

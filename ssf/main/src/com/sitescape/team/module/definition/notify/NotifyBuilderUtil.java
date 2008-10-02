@@ -113,22 +113,22 @@ public class NotifyBuilderUtil implements InitializingBean {
 	private static NotifyBuilderUtil getInstance() {
 		return instance;
 	}
-    public static void buildElements(DefinableEntity entity, Notify notifyDef, Writer writer, Map params) {
+    public static void buildElements(DefinableEntity entity, Notify notifyDef, Writer writer, NotifyVisitor.WriterType writerType, Map params) {
 		Definition def = entity.getEntryDef();
-		if (def == null) return;
+		if (def == null) return ;
 		Document definitionTree = def.getDefinition();
 		if (definitionTree != null) {
 			Element root = definitionTree.getRootElement();
 
 			//	Get a list of all of the items in the definition
 			Element entryItem = (Element)root.selectSingleNode("//item[@name='entryView']");
-			if (entryItem == null) return;
+			if (entryItem == null) return ;
 	    	params.put("com.sitescape.team.notify.params.family",DefinitionUtils.getFamily(definitionTree));
-	    	buildElements(entity, entryItem, notifyDef, writer, params, true);
+	    	buildElements(entity, entryItem, notifyDef, writer, writerType, params, true);
 		}
 
     }
-    public static void buildElements(DefinableEntity entity, Element item, Notify notifyDef, Writer writer, Map params, boolean processItem) {
+    public static void buildElements(DefinableEntity entity, Element item, Notify notifyDef, Writer writer, NotifyVisitor.WriterType writerType,  Map params, boolean processItem) {
         String flagElementPath = "./notify";
         List<Element> items;
         if (processItem) {  //starting point
@@ -160,15 +160,15 @@ public class NotifyBuilderUtil implements InitializingBean {
 
            	if (flagElem == null) {
            		//proceed to contents
-           		buildElements(entity, nextItem, notifyDef, writer, params, false);
+           		buildElements(entity, nextItem, notifyDef, writer, writerType, params, false);
            		continue;
            	}
            	Map oArgs = DefinitionUtils.getOptionalArgs(flagElem);
-           	NotifyVisitor visitor = new NotifyVisitor(entity, notifyDef, nextItem, writer, params);
+           	NotifyVisitor visitor = new NotifyVisitor(entity, notifyDef, nextItem, writer, writerType, params);
            	buildElement(entity, visitor, flagElem, oArgs);
         }
     }
-    protected static void buildElement(DefinableEntity entity, NotifyVisitor visitor,	Element flagElement, Map oArgs) {
+    protected static void buildElement(DefinableEntity entity, NotifyVisitor visitor, Element flagElement, Map oArgs) {
     	VelocityContext ctx = getVelocityContext(oArgs);
 		//Each item property that has a value is added as a "request attribute". 
 		//  The key name is "property_xxx" where xxx is the property name.
@@ -248,7 +248,7 @@ public class NotifyBuilderUtil implements InitializingBean {
        		} else {
        			if (Validator.isNull(template)) template = "dataElement.vm";
        			try {
-       				getVelocityEngine().mergeTemplate(template, ctx, visitor.getWriter());
+       				visitor.processTemplate(template, ctx);
        			} catch (Exception ex) {
        				NotifyBuilderUtil.logger.error("Error processing template", ex);
        			}

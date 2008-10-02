@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
-#parse ("icecore.vm")
+#if ($ssVisitor.isHtml()) 
 <div style="#ss_entryContent()">
 #if (!$ssVisitor.Entity.ParentEntry)
 $ssVisitor.getNLT("notify.forum.label")
@@ -43,3 +43,16 @@ $ssVisitor.visit($selection)
 #end
 #end
 </div>
+#else
+#if (!$ssVisitor.Entity.ParentEntry)
+#ss_printLn("$ssVisitor.getNLT('notify.forum.label') (${ssVisitor.Entity.ParentBinder.PathName})")
+#end
+$ssVisitor.visit()
+#set ($replies = ${ssVisitor.getParam("com.sitescape.team.notify.params.replies")})
+#if ($replies && !$replies.isEmpty())
+#ss_printLn("$ssVisitor.getNLT('__entry_replies')")
+#foreach ($selection in $replies)
+$ssVisitor.visit($selection)
+#end
+#end
+#end

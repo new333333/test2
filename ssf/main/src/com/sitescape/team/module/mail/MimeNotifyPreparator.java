@@ -4,7 +4,6 @@ package com.sitescape.team.module.mail;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -21,8 +20,8 @@ import org.apache.commons.logging.Log;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.sitescape.team.calendar.TimeZoneHelper;
-import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.ical.IcalModule;
@@ -128,7 +127,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		
 		if (!messageType.equals(Notify.NotifyType.text)) {
 			//use MailHelper so alternative part added for calendars
-			setText(null, (String)result.get(EmailFormatter.HTML), helper);
+			setText((String)result.get(EmailFormatter.TEXT), (String)result.get(EmailFormatter.HTML), helper);
 			if (sendAttachments) prepareAttachments(notify.getAttachments(), helper);
 			notify.clearAttachments();
 			prepareICalendars(helper);
@@ -148,7 +147,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		for (Iterator entryEventsIt = notify.getEvents().entrySet().iterator(); entryEventsIt.hasNext();) { 
 				Map.Entry mapEntry = (Map.Entry)entryEventsIt.next();
 				DefinableEntity entry = (DefinableEntity)mapEntry.getKey();
-				List events = (List)mapEntry.getValue();
+				Collection events = (Collection)mapEntry.getValue();
 				Calendar iCal = icalModule.generate(entry, events, notify.getTimeZone().getID());
 				
 				String fileName = entry.getTitle() + MailModule.ICAL_FILE_EXTENSION;

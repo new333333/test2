@@ -12,6 +12,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.util.NLT;
+import com.sitescape.util.Validator;
 public class MimeEntryPreparator extends MimeNotifyPreparator {
 	Map details;
 	
@@ -44,7 +45,11 @@ public class MimeEntryPreparator extends MimeNotifyPreparator {
 	}
 
 	protected void setText(String plainText, String htmlText, MimeMessageHelper helper) throws MessagingException {
-		super.setText(plainText, (String)details.get(MailModule.HTML_MSG) +  htmlText, helper);
+		String plain = (String)details.get(MailModule.TEXT_MSG);
+		if (Validator.isNotNull(plain)) plainText = plain + plainText;
+		String html = (String)details.get(MailModule.HTML_MSG);
+		if (Validator.isNotNull(html)) htmlText = html + htmlText;
+		super.setText(plainText, htmlText, helper);
 	}
 
 }

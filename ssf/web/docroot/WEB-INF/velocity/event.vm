@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
-#parse ("icecore.vm")
+#if ($ssVisitor.isHtml())
 <div style="#ss_entryContent()">
  <span style="#ss_labelAbove()">$property_caption</span>
  #if (${ssVisitor.Entity.getCustomAttribute($property_name)})
@@ -44,4 +44,18 @@
 
 #end
 </div>
-
+#else
+#ss_printLn("$property_caption ")
+#if (${ssVisitor.Entity.getCustomAttribute($property_name)})
+#if ((${ssVisitor.Entity.getCustomAttribute($property_name).Value.AllDayEvent} && $ssEvent_startString == $ssEvent_endString) || 
+			${ssVisitor.Entity.getCustomAttribute($property_name).Value.Duration.Interval} == 0)
+#ss_printLn(" ${ssVisitor.getNLT('calendar.when')}: ${ssEvent_startString}")
+#else
+#ss_printLn(" ${ssVisitor.getNLT('calendar.start')}: ${ssEvent_startString}")
+#ss_printLn(" ${ssVisitor.getNLT('calendar.end')}: ${ssEvent_endString}")
+#end
+#if (${ssEvent_repeatString})
+#ss_printLn(" ${ssVisitor.getNLT('calendar.frequency')}: ${ssEvent_repeatString}")
+#end
+#end
+#end

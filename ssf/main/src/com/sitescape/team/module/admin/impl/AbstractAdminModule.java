@@ -29,7 +29,6 @@
 package com.sitescape.team.module.admin.impl;
 
 import java.io.InputStream;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
 import javax.mail.internet.InternetAddress;
 
 import org.dom4j.Document;
@@ -60,12 +60,12 @@ import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.HistoryStamp;
-import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.MailConfig;
-import com.sitescape.team.domain.ZoneConfig;
+import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.ZoneConfig;
 import com.sitescape.team.jobs.EmailNotification;
 import com.sitescape.team.jobs.EmailPosting;
 import com.sitescape.team.jobs.ScheduleInfo;
@@ -91,8 +91,8 @@ import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.util.Html;
 import com.sitescape.util.Validator;
-
 /**
  * @author Janet McCann
  *
@@ -673,7 +673,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			return result;
     	}
    		message.put(MailModule.HTML_MSG, body.getText());
-    		
+   		message.put(MailModule.TEXT_MSG, Html.stripHtml(body.getText()) + "\r\n");
+   		
     	message.put(MailModule.SUBJECT, subject);
  		message.put(MailModule.TO, emailSet);
  		boolean sent;

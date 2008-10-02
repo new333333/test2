@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
-#parse ("icecore.vm")
+#if ($ssVisitor.isHtml())
 <div style="#ss_entryContent() padding-top:3px;">
 <fieldset style="#ss_fieldset()">
 #if ($property_legend)
@@ -35,4 +35,7 @@
 $ssVisitor.visit()
 </fieldset>
 </div>
-
+#else
+#ss_printLn("$ssVisitor.getNLTDef($property_legend)")
+$ssVisitor.visit()
+#end

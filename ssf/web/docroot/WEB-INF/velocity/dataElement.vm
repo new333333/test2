@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
-#parse ("icecore.vm")
+#if ($ssVisitor.isHtml())
 <div style="#ss_entryContent()">
  <span style="#ss_labelLeft()">$property_caption</span>&nbsp;
 #if ($ssObject)
@@ -36,3 +36,13 @@ $esc.html(${ssVisitor.Entity.CustomAttributes.get($property_name).Value})
 #end
 </div>
 <br/>
+#else
+#ss_print("${property_caption} ")
+#if ($ssObject)
+#ss_printLn("$esc.html($ssObject)")
+#elseif (${ssVisitor.Entity.getCustomAttribute($property_name)})
+#ss_printLn("$esc.html(${ssVisitor.Entity.CustomAttributes.get($property_name).Value})")
+#else
+#ss_printLn("")
+#end
+#end

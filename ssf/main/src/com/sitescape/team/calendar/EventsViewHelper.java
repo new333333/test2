@@ -635,7 +635,7 @@ public class EventsViewHelper {
 
 		}
 		if (event.getFrequencyString() != null) {
-			untilString += "<br>";
+			// This is used by text mail, cannot add html untilString += "<br>";
 			if (event.getCount() == 0) {
 				untilString += NLT.get("event.repeat_forever", locale);
 			} else if (event.getCount() == -1) {

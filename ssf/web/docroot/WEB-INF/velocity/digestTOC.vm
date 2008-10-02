@@ -26,8 +26,6 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
- #parse ("icecore.vm")
-
 <div style="#ss_entryContent()">
  #set ($top = ${ssDocument.selectSingleNode("//topFolder")})
 <span style="font-weight:bold;">

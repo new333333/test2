@@ -28,30 +28,33 @@
  */
 package com.sitescape.team.module.definition.notify;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.velocity.VelocityContext;
 
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.MarkupUtil;
-
+import com.sitescape.util.Html;
 /**
 *
 * @author Janet McCann
 */
 public class NotifyBuilderDescription extends AbstractNotifyBuilder {
-
+	
     public String getDefaultTemplate() {
     	return "description.vm";
     }
     public void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
     	Object obj = attr.getValue();
     	String value;
-    	if (obj instanceof Description)
+    	if (obj instanceof Description && !visitor.isHtml())
     		value = MarkupUtil.markupStringReplacement(null, null, null, null, visitor.getEntity(), ((Description)obj).getText(), WebKeys.MARKUP_VIEW);	
     	else
     		value = obj.toString();	
-    			
+    	if (!visitor.isHtml()) value = replaceHtml(value);
     	ctx.put("ssDescription_markup", value);
     	super.build(visitor, template, ctx);
     }
@@ -59,10 +62,24 @@ public class NotifyBuilderDescription extends AbstractNotifyBuilder {
     	ctx.remove("property_name");
     	Description obj = visitor.getEntity().getDescription();
     	String value="";
-    	if (obj != null)
-    		value = MarkupUtil.markupStringReplacement(null, null, null, null, visitor.getEntity(), obj.getText(), WebKeys.MARKUP_VIEW);
-	    	
-    	ctx.put("ssDescription_markup", value);
+    	if (obj != null) {
+    		if (visitor.isHtml())
+    			value = MarkupUtil.markupStringReplacement(null, null, null, null, visitor.getEntity(), obj.getText(), WebKeys.MARKUP_VIEW);
+    		else 
+    			value = obj.getText();
+    	}
+    	if (!visitor.isHtml()) value = replaceHtml(value);
+     	ctx.put("ssDescription_markup", value);
     	super.build(visitor, template, ctx);
+    }
+    private String replaceHtml(String value) {
+    	//Now, replace the url with special markup version
+    	Pattern returnPattern = Pattern.compile("<(br|p)[ /]*>", Pattern.CASE_INSENSITIVE);
+
+    	Matcher m3 = returnPattern.matcher(value);
+    	if (m3.find()) {
+    		value = m3.replaceAll("\r\n");
+    	}
+    	return  Html.stripHtml(value);
     }
 }

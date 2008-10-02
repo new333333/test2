@@ -27,7 +27,7 @@
  * are trademarks of SiteScape, Inc.
  *#
 
-#parse ("icecore.vm")
+#if ($ssVisitor.isHtml())
 <div style="#ss_entryContent() ">
 <span style="#ss_labelLeft()">${property_caption}</span>
 <ul>
@@ -36,3 +36,9 @@
 #end
 </ul>
 </div>
+#else
+#ss_printLn("${property_caption}")
+#foreach ($question in ${ssVisitor.Entity.getCustomAttribute($property_name).Value.SurveyModel.Questions})
+#ss_printLn("$question.Question")
+#end
+#end
