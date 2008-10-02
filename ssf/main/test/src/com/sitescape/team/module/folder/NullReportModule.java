@@ -48,17 +48,6 @@ public class NullReportModule implements ReportModule {
 		// TODO Auto-generated method stub
 		
 	}
-	public void addWorkflowStateHistory(
-			WorkflowStateHistory workflowStateHistory) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void addWorkflowStateHistory(WorkflowState state, HistoryStamp end,
-			boolean isEnded) {
-		// TODO Auto-generated method stub
-
-	}
 	
 	public void addLicenseStats(LicenseStats stats)
 	{

@@ -22,7 +22,7 @@
  	<property name="fileId">
  		<column name="fileId" sql-type="char(32)"/>
  	</property>
-
+<!-- deprecated - moved to WorkflowHistory as own class -->
     <subclass name="com.sitescape.team.domain.WorkflowStateHistory" discriminator-value="W">
  		<property name="tokenId"/>
     	<property name="state" length="64"/>

@@ -32,7 +32,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.sitescape.team.ObjectKeys;
 import com.sitescape.util.Validator;
 
 /**
@@ -45,7 +44,6 @@ public abstract class WorkflowControlledEntry extends Entry
 	protected Set iWorkflowStates;
     protected HistoryStamp workflowChange;//initialized by hiberate access=field  
     protected Set workflowResponses; //initialized by hiberate access=field  
-	protected ChangeLog changes=null;
 	public WorkflowControlledEntry() {
 		super();
 	}
@@ -165,22 +163,6 @@ public abstract class WorkflowControlledEntry extends Entry
  
 	    return result;
 	    	
-	}
-	/**
-	 * Hold change document.  Must be saved by some other mechanism.
-	 * This allows a string of state changes to be handled by one log entry
-	 * @param ws
-	 */
-	public void setStateChange(WorkflowState ws) {
-		if (changes == null) {
-			changes = new ChangeLog(this, ChangeLog.MODIFYWORKFLOWSTATE);
-			changes.setOperationDate(ws.getWorkflowChange().getDate());
-		}
-		//record change
-		ws.addChangeLog(changes.getEntityRoot());
-	}
-	public ChangeLog getStateChanges() {
-		return changes;
 	}
 
     /*

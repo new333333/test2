@@ -68,6 +68,7 @@
 	    <mapping resource="com/sitescape/team/domain/Visits.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/WorkflowResponse.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/WorkflowState.hbm.xml"/>
+	    <mapping resource="com/sitescape/team/domain/WorkflowHistory.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/ZoneConfig.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/ZoneInfo.hbm.xml"/>
 	    <!-- jbpms -->

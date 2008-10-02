@@ -32,12 +32,12 @@ package com.sitescape.team.domain;
  * @hibernate.subclass discriminator-value="W"
  * 
  * @author Janet McCann
- * 
+  * @deprecated As of ICEcore version 1.1, see WorkflowHistory
  * Log workflow history for reporting
  * We only update rows in this table if a binder moves
  *
  */
-public class WorkflowStateHistory extends AuditTrail {
+public class  WorkflowStateHistory extends AuditTrail {
     protected String state;
     protected String threadName;
     protected Long tokenId;

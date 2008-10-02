@@ -68,6 +68,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowResponse;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
+import com.sitescape.team.domain.WorkflowHistory;
 import com.sitescape.team.jobs.WorkflowProcess;
 import com.sitescape.team.modelprocessor.ProcessorManager;
 import com.sitescape.team.module.binder.processor.EntryProcessor;
@@ -119,7 +120,6 @@ public class EnterExitEvent extends AbstractActionHandler {
 					ws.setWorkflowChange(stamp);
 				}
 				ws.setState(state);
-				entry.setStateChange(ws);
 				if (debugEnabled) logger.debug("Workflow event (" + executionContext.getEvent().getEventType() + ") recorded: " + state);
 				//remove old responses associated with this state
 				Set names = WorkflowProcessUtils.getQuestionNames(ws.getDefinition(), ws.getState());
@@ -171,7 +171,8 @@ public class EnterExitEvent extends AbstractActionHandler {
 	   		}
 			if (Event.EVENTTYPE_NODE_LEAVE.equals(executionContext.getEvent().getEventType())) {
 				//leaving a state - logit
-				getReportModule().addWorkflowStateHistory(ws, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()), false);
+				WorkflowHistory history = new WorkflowHistory(ws, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()), false);
+				getCoreDao().save(history);
 			}
 			//See if other threads conditions are now met.
 			WorkflowProcessUtils.processConditions(entry, token);
@@ -369,7 +370,8 @@ public class EnterExitEvent extends AbstractActionHandler {
 				childToken.end();
 			}
 			//leaving a state - logit
-			getReportModule().addWorkflowStateHistory(thread, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()), true);
+			WorkflowHistory history = new WorkflowHistory(thread, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()), true);
+			getCoreDao().save(history);
 			entry.removeWorkflowState(thread);
 			if (debugEnabled) logger.debug("Stoping thread: " + threadName);
 			return true;

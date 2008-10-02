@@ -407,7 +407,12 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 		   					EntityType.folderEntry.name() + "'";
             			//need to use ownerId, cause versionattachments/customattributeList sets not indexed by folderentry
     		   			getCoreDao().deleteEntityAssociations(entityString);
-    		   			//delete ratings/visits for these entries
+        	   			//delete workflow history
+    		   			session.createQuery("Delete com.sitescape.team.domain.WorkflowHistory where entityId in (:pList) and entityType=:entityType")
+         	   				.setParameterList("pList", ids)
+    		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.name())
+    		   				.executeUpdate();
+        	   			//delete ratings/visits for these entries
      		   			session.createQuery("Delete com.sitescape.team.domain.Rating where entityId in (:pList) and entityType=:entityType")
          	   				.setParameterList("pList", ids)
     		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
@@ -469,16 +474,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	   	getHibernateTemplate().execute(
 	     	new HibernateCallback() {
 	       		public Object doInHibernate(Session session) throws HibernateException {
-	       			//move things that are only on the entry and have binder association
-      	   			session.createQuery("update com.sitescape.team.domain.WorkflowState set owningBinderKey=:sortKey where owningBinderId=:id")
-	    	   			.setString("sortKey", folder.getBinderKey().getSortKey())
-	    	   			.setLong("id", folder.getId().longValue())
-	       	   			.executeUpdate();
-       	   			session.createQuery("update com.sitescape.team.domain.WorkflowResponse set owningBinderKey=:sortKey where owningBinderId=:id")
-       	   				.setString("sortKey", folder.getBinderKey().getSortKey())
-       	   				.setLong("id", folder.getId().longValue())
-       	   				.executeUpdate();
-     	   			session.createQuery("update com.sitescape.team.domain.FolderEntry set owningBinderKey=:sortKey where parentBinder=:id")
+	 	   			session.createQuery("update com.sitescape.team.domain.FolderEntry set owningBinderKey=:sortKey where parentBinder=:id")
       	   				.setString("sortKey", folder.getBinderKey().getSortKey())
       	   				.setLong("id", folder.getId().longValue())
       	   				.executeUpdate();
@@ -529,6 +525,13 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	    	   			.setString("type", EntityType.folderEntry.name())
 	       	   			.executeUpdate();
       	   			session.createQuery("update com.sitescape.team.domain.WorkflowResponse set owningBinderKey=:sortKey,owningBinderId=:id where " +
+      	   				"ownerId in (:pList) and ownerType=:type")
+      	   				.setString("sortKey", folder.getBinderKey().getSortKey())
+      	   				.setLong("id", folder.getId().longValue())
+      	   				.setParameterList("pList", ids)
+      	   				.setString("type", EntityType.folderEntry.name())
+      	   				.executeUpdate();
+      	   			session.createQuery("update com.sitescape.team.domain.WorkflowHistory set owningBinderKey=:sortKey,owningBinderId=:id where " +
       	   				"ownerId in (:pList) and ownerType=:type")
       	   				.setString("sortKey", folder.getBinderKey().getSortKey())
       	   				.setLong("id", folder.getId().longValue())

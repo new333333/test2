@@ -18,7 +18,7 @@ ss_workflowstates state threadName
 ss_zoneinfo zoneName virtualHost
 ss_simplename name emailaddress
 ss_ldapconnectionconfig url userSearches groupSearches principal userIdAttribute mappings credentials
-
+ss_workflowhistory state threadName
 jbpm_action TRANSITIONNAME_
 jbpm_decisionconditions TRANSITIONNAME_
 jbpm_message TRANSITIONNAME_ TEXT_

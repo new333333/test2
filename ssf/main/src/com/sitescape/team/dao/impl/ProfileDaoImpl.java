@@ -311,7 +311,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         			//need to use ownerId, cause versionattachments/customattributeList sets not indexed by principal
 		   			getCoreDao().deleteEntityAssociations("ownerId in (" + inList.toString() + ") and (ownerType='" +
 		   					EntityType.user.name() + "' or ownerType='" + EntityType.group.name() + "')");
-		   			session.createQuery("Delete com.sitescape.team.domain.SeenMap where principalId in (:pList)")
+ 		   			session.createQuery("Delete com.sitescape.team.domain.SeenMap where principalId in (:pList)")
 		   				.setParameterList("pList", ids)
        	   				.executeUpdate();
 		   			session.createQuery("Delete com.sitescape.team.domain.Membership where userId in (:uList) or groupId in (:gList)")
@@ -342,6 +342,14 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	   				.executeUpdate();
 
  		   			List types = new ArrayList();
+	       			types.add(EntityIdentifier.EntityType.user.name());
+	       			types.add(EntityIdentifier.EntityType.group.name());
+      	   			//delete workflow history
+		   			session.createQuery("Delete com.sitescape.team.domain.WorkflowHistory where entityId in (:pList) and entityType in (:tList)")
+ 	   					.setParameterList("pList", ids)
+	   					.setParameterList("tList", types)
+		   				.executeUpdate();
+		   			types.clear();
 	       			types.add(EntityIdentifier.EntityType.user.getValue());
 	       			types.add(EntityIdentifier.EntityType.group.getValue());
 	       			//delete subscriptions to these principals - not likely to exist

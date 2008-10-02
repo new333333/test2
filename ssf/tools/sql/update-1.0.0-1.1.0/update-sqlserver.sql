@@ -74,3 +74,7 @@ create table SS_AuthenticationConfig (zoneId numeric(19,0) not null, allowLocalL
 create table SS_LdapConnectionConfig (id char(32) not null, zoneId numeric(19,0) null, url nvarchar(255) null, userIdAttribute nvarchar(255) null, mappings ntext null, userSearches ntext null, groupSearches ntext null, principal nvarchar(255) null, credentials nvarchar(255) null, position int null, primary key (id)
 create table SS_IndexingJournal (id numeric(19,0) identity not null, zoneId numeric(19,0) null, nodeName varchar(128) null, indexName varchar(160) null, operationName varchar(32) null, operationArgs image null, primary key (id));
 create index indexingJournal_nodeIndex on SS_IndexingJournal (nodeName, indexName);
+create table SS_WorkflowHistory (id char(32) not null, zoneId numeric(19,0) null, startBy numeric(19,0) null, startDate datetime null, endBy numeric(19,0) null, endDate datetime null, entityId numeric(19,0) null, entityType varchar(16) null, owningBinderId numeric(19,0) null, owningBinderKey varchar(255) null, tokenId numeric(19,0) null, state nvarchar(64) null, threadName nvarchar(64) null, definitionId varchar(32) null, ended tinyint null, primary key (id));
+create index owningBinder_wfhistory on SS_WorkflowHistory (owningBinderId);
+create index entityTransaction_wfhistory on SS_WorkflowHistory (startDate, entityId, entityType);
+create index entityOwner_wfhistory on SS_WorkflowHistory (entityId, entityType);

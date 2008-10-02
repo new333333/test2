@@ -51,7 +51,5 @@ public interface WorkflowSupport  {
      */
     public void removeWorkflowState(WorkflowState workflowState);
     public void removeWorkflowResponse(WorkflowResponse workflowResponse);
-	public void setStateChange(WorkflowState workflowState);
-	public ChangeLog getStateChanges();
     public void setWorkflowChange(HistoryStamp workflowChange);
 }

@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -46,11 +45,11 @@ import java.util.TreeMap;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.Expression;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -58,22 +57,18 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.ProfileDao;
-import com.sitescape.team.domain.AnyOwner;
 import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.HKey;
-import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.LicenseStats;
 import com.sitescape.team.domain.LoginInfo;
-import com.sitescape.team.domain.NoBinderByTheIdException;
-import com.sitescape.team.domain.NoFolderEntryByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.VersionAttachment;
+import com.sitescape.team.domain.WorkflowHistory;
 import com.sitescape.team.domain.WorkflowState;
-import com.sitescape.team.domain.WorkflowStateHistory;
 import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.admin.AdminModule;
@@ -83,9 +78,7 @@ import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.report.ReportModule;
-import com.sitescape.team.module.report.ReportModule.ActivityInfo;
 import com.sitescape.team.search.SearchUtils;
-import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.AccessControlManager;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
@@ -203,13 +196,6 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		audit.setFileId(attachment.getId());
 		addAuditTrail(audit);
 		
-	}
-	public void addWorkflowStateHistory(WorkflowStateHistory workflowStateHistory) {
-		addAuditTrail(workflowStateHistory);
-		
-	}
-	public void addWorkflowStateHistory(WorkflowState state, HistoryStamp end, boolean isEnded) {
-		addAuditTrail(new WorkflowStateHistory(state, end, isEnded));		
 	}
 
 	public void addLicenseStats(LicenseStats stats) {
@@ -818,7 +804,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 									.add(Projections.groupProperty("state"))
 									.add(Projections.avg("startDate"))
 									.add(Projections.avg("endDate"));
-					Criteria crit = session.createCriteria(WorkflowStateHistory.class)
+					Criteria crit = session.createCriteria(WorkflowHistory.class)
 						.setProjection(proj)
 						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, binder.getZoneId()))
 						.add(Restrictions.like("owningBinderKey", binder.getBinderKey().getSortKey() + "%"))

@@ -61,6 +61,8 @@ import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.WorkflowHistory;
+import com.sitescape.team.domain.WorkflowStateHistory;
 import com.sitescape.team.domain.ZoneConfig;
 import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.jobs.ZoneSchedule;
@@ -374,6 +376,40 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	 			if (query != null) query.close();
 	 			query=null;
 	 		}
+			//move old workflowStateHistory rows to new table
+	 		try {
+	 			query = getCoreDao().queryObjects(new ObjectControls(WorkflowStateHistory.class), null, zone.getId());
+	      		while (query.hasNext()) {
+	       			int count=0;
+	       			batch.clear();
+	       			// process 1000 entries
+	       			while (query.hasNext() && (count < 1000)) {
+	       				Object obj = query.next();
+	       				if (obj instanceof Object[])
+	       					obj = ((Object [])obj)[0];
+	       				WorkflowStateHistory old = (WorkflowStateHistory)obj;
+	       				WorkflowHistory wfHistory = new WorkflowHistory(old);
+	       				getCoreDao().replicate(wfHistory);
+	       				++count;
+	       				batch.add(old);
+	       			}
+	       			//flush updates
+	       			getCoreDao().flush();
+	       			//flush cache
+       				getCoreDao().evict(batch);
+	      		}
+	   			//flush updates
+	   			getCoreDao().flush();
+	   			//flush cache
+  				getCoreDao().evict(batch);
+	
+			} finally {
+	 			if (query != null) query.close();
+	 			query=null;
+	 		}
+			//remove the old history
+			getCoreDao().executeUpdate("delete com.sitescape.team.domain.WorkflowStateHistory where zoneId=" + zone.getId());
+
 			//create schedule first time through
 	 		ZoneConfig zoneConfig = addZoneConfigTx(zone);
 			ScheduleInfo notify = getAdminModule().getNotificationSchedule();
