@@ -44,7 +44,7 @@
 #macro (ss_li)#ss_print("list-style-type:none;margin-left:0px;margin-bottom:0px;padding-left:0px;")#end
 #macro (ss_getUserLink $user)
 #if ($user.WorkspaceId)
-	  <a href="$ssVisitor.getPermaLink(${user.ParentBinder.Id}, ${user.Id}, 'workspace')">$esc.html(${user.Title})</a>
+	  <a href="$ssVisitor.getPermaLink(${user.ParentBinder.Id}, ${user.Id}, 'user')">$esc.html(${user.Title})</a>
 #else
 	  $esc.html(${user.Title})
 #end
