@@ -41,6 +41,7 @@ import com.sitescape.team.portletadapter.support.KeyNames;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Http;
+import com.sitescape.util.Validator;
 
 public class AdaptedPortletURL {
 
@@ -274,10 +275,14 @@ public class AdaptedPortletURL {
 			String[] values = (String[])entry.getValue();
 
 			for (int i = 0; i < values.length; i++) {
-				if(crawler)
+				if(crawler) {
+					if(Validator.isNull(values[i]))
+							continue;
 					sb.append(Constants.SLASH);
-				else
+				}
+				else {
 					sb.append(Constants.AMPERSAND);
+				}
 				sb.append(name);
 				if(crawler)
 					sb.append(Constants.SLASH);
