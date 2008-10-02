@@ -1533,6 +1533,7 @@
 				<option name="team" caption="__team_workspace" />
 				<option name="discussion" caption="__discussion_workspace" />
 				<option name="project" caption="__project_management" />
+				<option name="landingPage" caption="__landingPage" />
 			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">

@@ -12,5 +12,6 @@
   <property name="inheritFunctionMembership">true</property>
   <property name="inheritDefinitions">false</property>
   <property name="inheritTeamMembers">true</property>
-  <definition name="_discussionFolderList" internalId="402883b90cc53079010cc539bf260001" databaseId="402883b90cc53079010cc539bf260001"/>
+  <definition name="_miniBlogFolder" internalId="402883b51c470e76011c4859ba200010" databaseId="402883b51c470e76011c4859ba200010"/>
+  <definition name="_miniblog_entry" internalId="402883b51c48633a011c4866de050002" databaseId="402883b51c48633a011c4866de050002"/>
 </template>
