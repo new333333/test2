@@ -74,6 +74,7 @@ public interface ObjectKeys {
 	public static final String DEFAULT_ENTRY_SURVEY_VOTE_DEF="40288182131025d101131029d4920002";
 	public static final String DEFAULT_ENTRY_MILESTONE_DEF="4028818213118b17011311b1f6210017";
 	public static final String DEFAULT_ENTRY_MINIBLOG_DEF="402883b51c48633a011c4866de050002";
+	public static final String DEFAULT_WELCOME_WORKSPACE_DEF="402883b51cbdbdc2011cbdfe2857000b";
 
 	//reserved internalIds for templates.
 	//presence is used to distinquish system templates from customer templates
