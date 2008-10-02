@@ -27,6 +27,7 @@ alter table SS_Principals drop foreign key FK7693816493118767;
 alter table SS_Principals drop foreign key FK76938164DB0761E4;
 
 alter table SS_PrincipalMembership drop foreign key FK176F6225AEB5AABF;
+alter table SS_PrincipalMembership drop foreign key FK176F6225197D4C44;
 
 create index owningBinder_audit on SS_AuditTrail (owningBinderId);
 create index entityOwner_audit on SS_AuditTrail (entityId, entityType);
@@ -52,7 +53,7 @@ create table SS_TokenInfo (id char(32) not null, type char(1) not null, zoneId b
 create index userId_tokenInfoSession on SS_TokenInfo (userId);
 create table SS_SharedEntity (id char(32) not null, referer bigint, zoneId bigint, sharedDate datetime, accessId bigint, accessType bigint, entityType varchar(16), entityId bigint, primary key (id)) ENGINE=InnoDB;
 create index access_shared on SS_SharedEntity (sharedDate, accessId, accessType);
-alter table SS_SharedEntity add constraint FK93426C47E6E76CBB foreign key (referer) references SS_Principals (id);
+alter table SS_SharedEntity add constraint FK93426C47F68E5AD foreign key (referer) references SS_Principals (id);
 alter table SSQRTZ_TRIGGERS  add PRIORITY integer null;
 update SSQRTZ_TRIGGERS set PRIORITY=5 where PRIORITY is null;
 alter table SSQRTZ_TRIGGERS add JOB_DATA blob null;
@@ -64,7 +65,7 @@ create index binderId_simpleName on SS_SimpleName (binderId);
 create index name_simpleName on SS_SimpleName (name);
 create index emailAddress_simpleName on SS_SimpleName (emailAddress);
 alter table SS_Forums add branding mediumtext;
-alter table SS_Events add uid varchar(255) null;
+alter table SS_Events add calUid varchar(255) null;
 alter table SS_Events add freeBusy varchar(32) null;
 alter table SS_Definitions add binderId bigint;
 alter table SS_Definitions add unique definition_name(zoneId, name, binderId);

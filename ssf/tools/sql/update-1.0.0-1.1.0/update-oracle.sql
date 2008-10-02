@@ -1,32 +1,33 @@
-alter table SS_Attachments drop constraint FKA1AD4C3193118767
-alter table SS_Attachments drop constraint FKA1AD4C31DB0761E4
-alter table SS_Attachments drop constraint FKA1AD4C31F93A11B4
+alter table SS_Attachments drop constraint FKA1AD4C3193118767;
+alter table SS_Attachments drop constraint FKA1AD4C31DB0761E4;
+alter table SS_Attachments drop constraint FKA1AD4C31F93A11B4;
 
-alter table SS_Forums drop constraint FKDF668A5193118767
-alter table SS_Forums drop constraint FKDF668A51DB0761E4
+alter table SS_Forums drop constraint FKDF668A5193118767;
+alter table SS_Forums drop constraint FKDF668A51DB0761E4;
 
-alter table SS_Notifications drop constraint FK9131F9296EADA262
+alter table SS_Notifications drop constraint FK9131F9296EADA262;
 
-alter table SS_Dashboards drop constraint FKFA9653BE93118767
-alter table SS_Dashboards drop constraint FKFA9653BEDB0761E4
+alter table SS_Dashboards drop constraint FKFA9653BE93118767;
+alter table SS_Dashboards drop constraint FKFA9653BEDB0761E4;
 
-alter table SS_Definitions drop constraint FK7B56F60193118767
-alter table SS_Definitions drop constraint FK7B56F601DB0761E4
+alter table SS_Definitions drop constraint FK7B56F60193118767;
+alter table SS_Definitions drop constraint FK7B56F601DB0761E4;
 
-alter table SS_Events drop constraint FKDE0E53F893118767
-alter table SS_Events drop constraint FKDE0E53F8DB0761E4
+alter table SS_Events drop constraint FKDE0E53F893118767;
+alter table SS_Events drop constraint FKDE0E53F8DB0761E4;
 
-alter table SS_FolderEntries drop constraint FKA6632C83F7719C70
-alter table SS_FolderEntries drop constraint FKA6632C8393118767
-alter table SS_FolderEntries drop constraint FKA6632C83DB0761E4
-alter table SS_FolderEntries drop constraint FKA6632C83A3644438
+alter table SS_FolderEntries drop constraint FKA6632C83F7719C70;
+alter table SS_FolderEntries drop constraint FKA6632C8393118767;
+alter table SS_FolderEntries drop constraint FKA6632C83DB0761E4;
+alter table SS_FolderEntries drop constraint FKA6632C83A3644438;
 
-alter table SS_WorkflowStates drop constraint FK8FA8AA80A3644438
+alter table SS_WorkflowStates drop constraint FK8FA8AA80A3644438;
 
-alter table SS_Principals drop constraint FK7693816493118767
-alter table SS_Principals drop constraint FK76938164DB0761E4
+alter table SS_Principals drop constraint FK7693816493118767;
+alter table SS_Principals drop constraint FK76938164DB0761E4;
 
-alter table SS_PrincipalMembership drop constraint FK176F6225AEB5AABF
+alter table SS_PrincipalMembership drop constraint FK176F6225AEB5AABF;
+alter table SS_PrincipalMembership drop constraint FK176F6225197D4C44;
 
 create index owningBinder_audit on SS_AuditTrail (owningBinderId);
 create index entityOwner_audit on SS_AuditTrail (entityId, entityType);
@@ -52,19 +53,19 @@ create table SS_TokenInfo (id char(32) not null, type char(1 char) not null, zon
 create index userId_tokenInfoSession on SS_TokenInfo (userId);
 create table SS_SharedEntity (id char(32) not null, referer number(19,0), zoneId number(19,0), sharedDate timestamp, accessId number(19,0), accessType number(19,0), entityType varchar2(16 char), entityId number(19,0), primary key (id));
 create index access_shared on SS_SharedEntity (sharedDate, accessId, accessType);
-alter table SS_SharedEntity add constraint FK93426C47E6E76CBB foreign key (referer) references SS_Principals;
+alter table SS_SharedEntity add constraint FK93426C47F68E5AD foreign key (referer) references SS_Principals;
 alter table SSQRTZ_triggers add PRIORITY NUMBER(13) null;
 update SSQRTZ_TRIGGERS set PRIORITY=5 where PRIORITY is null;
 alter table SSQRTZ_triggers add JOB_DATA blob null;
 alter table SSQRTZ_fired_triggers add PRIORITY NUMBER(13) null;
 update SSQRTZ_fired_triggers set PRIORITY=5 where PRIORITY is null;
 alter table SSQRTZ_scheduler_state drop column RECOVERER;
-create table SS_SimpleName (zoneId number(19,0) not null, name varchar2(128 char) not null, emailAddress varchar2(128 char) not null, emailAddress varchar(128) not null, binderId number(19,0), binderType varchar2(16 char), primary key (zoneId, name));
+create table SS_SimpleName (zoneId number(19,0) not null, name varchar2(128 char) not null, emailAddress varchar2(128 char) not null, binderId number(19,0), binderType varchar2(16 char), primary key (zoneId, name));
 create index binderId_simpleName on SS_SimpleName (binderId);
 create index name_simpleName on SS_SimpleName (name);
 create index emailAddress_simpleName on SS_SimpleName (emailAddress);
 alter table SS_Forums add branding clob;
-alter table SS_Events add uid varchar2(255 char) null;
+alter table SS_Events add calUid varchar2(255 char) null;
 alter table SS_Events add freeBusy varchar2(32 char) null;
 alter table SS_Definitions add binderId number(19,0);
 create unique index definition_name on SS_Definitions (zoneId, name, binderId);
