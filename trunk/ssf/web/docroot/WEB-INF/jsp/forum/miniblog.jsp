@@ -29,6 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <ssf:ifadapter>
 <body class="ss_style_body">
 </ssf:ifadapter>
@@ -48,8 +49,8 @@ function ss_showMiniblogPage${renderResponse.namespace}(id, currentPage, directi
 }
 </script>
 
-<div id="ss_pseudoPortalDiv${renderResponse.namespace}">
-<div class="ss_style ss_portlet ss_form_wrap">
+<div class="ss_style ss_portlet">
+  <ssf:form title="<%= NLT.get("miniblog") %>">
   <div>
     <div style="float:right;">
 	      <span class="ss_labelAbove ss_labelminiBlog"><ssf:nlt tag="navigation.findPerson"/></span>
@@ -58,7 +59,6 @@ function ss_showMiniblogPage${renderResponse.namespace}(id, currentPage, directi
 		    leaveResultsVisible="false"
 		    width="100px" singleItem="true"/> 
 	</div>
-    <div class="ss_form_header"><ssf:nlt tag="miniblog"/></div>
     <div class="ss_clear_float"></div>
     <div class="ss_form_subhead"><ssf:showUser user="${ss_miniblog_user}"/></div>
     
@@ -107,8 +107,7 @@ function ss_showMiniblogPage${renderResponse.namespace}(id, currentPage, directi
   </td>
   </tr>
   </table>
-</div>
-</div>
+</ssf:form>
 </div>
 <ssf:ifadapter>
 </body>

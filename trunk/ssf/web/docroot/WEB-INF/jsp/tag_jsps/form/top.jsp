@@ -35,4 +35,5 @@
 --%><ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter><%--
 --%>
 <div class="${ss_formClass}">
+    <div class="ss_form_header"><ssf:nlt tag="${ss_title}" checkIfTag="true"/></div>
     

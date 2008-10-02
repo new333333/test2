@@ -158,6 +158,7 @@ function ss_positionEntryDiv() {
     wObj1.style.background = "";
     wObj1.style.visibility = "visible";
     
+    alert(window.frames['ss_showentryframe'])
     //Allow the entry section to grow to as large as needed to show the entry
 	try {
 		if (window.ss_showentryframe && window.ss_showentryframe.document && 
@@ -409,3 +410,85 @@ function ss_postEntryWidthRequest(obj) {
 	}
 }
 
+function WindowDimensions(windowFrame)
+{
+	windowFrame = windowFrame || window;
+	
+	//****************************************************//
+	//***** screen, browser, and viewport dimensions *****//
+	//****************************************************//
+	
+	this.screen = {
+		width: screen.width,
+		height: screen.height,
+		//available screen dimensions; excludes taskbar, etc.
+		availWidth: screen.availWidth,
+		availHeight: screen.availHeight,
+		colorDepth: screen.colorDepth
+	};
+	this.browser = {
+		width: window.outerWidth,	//undefined in IE
+		height: window.outerHeight,	//undefined in IE
+		left: window.screenX,		//undefined in IE, incorrect in Opera
+		top: window.screenY			//undefined in IE, incorrect in Opera
+	};
+	this.viewport = {
+		//includes scroll bars
+		width: window.top.innerWidth,	//undefined in IE
+		height: window.top.innerHeight	//undefined in IE
+	};
+	
+	//***********************************//
+	//***** window/frame dimensions *****//
+	//***********************************//
+	
+	//dimensions of window/frame (includes scrollbars)
+	this.window = this.frame = {
+		width: windowFrame.innerWidth,	//undefined in IE
+		height: windowFrame.innerHeight	//undefined in IE
+	};
+	
+	//*******************************//
+	//***** document dimensions *****//
+	//*******************************//
+	
+	var width, height, left, top;
+	
+	//dimensions of document (excludes scrollbars)
+	if(windowFrame.document.documentElement && !isNaN(windowFrame.document.documentElement.clientWidth))
+	{
+		width = windowFrame.document.documentElement.clientWidth;
+		height = windowFrame.document.documentElement.clientHeight;
+	}
+	else	//IE quirks mode
+	{
+		width = windowFrame.document.body.clientWidth;
+		height = windowFrame.document.body.clientHeight;
+	}
+	
+	//scroll position of document
+	if(window.pageYOffset)	//all except IE
+	{
+		left = windowFrame.pageXOffset;
+		top = windowFrame.pageYOffset;
+	}
+	else if(windowFrame.document.documentElement && !isNaN(windowFrame.document.documentElement.scrollTop))	//IE standards compliance mode
+	{
+		left = windowFrame.document.documentElement.scrollLeft;
+		top = windowFrame.document.documentElement.scrollTop;
+	}
+	else	//IE quirks mode
+	{
+		left = windowFrame.document.body.scrollLeft;
+		top = windowFrame.document.body.scrollTop;
+	}
+	
+	this.document = {
+		width: width,
+		height: height,
+		scroll: {
+			left: left,
+			top: top
+		}
+	};
+}

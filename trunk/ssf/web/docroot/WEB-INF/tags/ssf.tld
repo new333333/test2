@@ -606,7 +606,12 @@
 		<tag-class>com.sitescape.team.taglib.FormTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
-			<name>class</name>
+			<name>formClass</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>title</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>

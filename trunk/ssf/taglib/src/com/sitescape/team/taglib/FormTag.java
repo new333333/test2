@@ -43,6 +43,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
  *
  */
 public class FormTag extends BodyTagSupport implements ParamAncestorTag {
+	private String title = "";
 	private String formClass = "";
 	private String _bodyContent;
 	private Map _params;
@@ -62,7 +63,7 @@ public class FormTag extends BodyTagSupport implements ParamAncestorTag {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
-			if (this.formClass.equals("")) this.formClass = "ss_formWrap";
+			if (this.formClass.equals("")) this.formClass = "ss_form_wrap";
 			
 			// Top
 			String jsp = "/WEB-INF/jsp/tag_jsps/form/top.jsp";
@@ -76,6 +77,7 @@ public class FormTag extends BodyTagSupport implements ParamAncestorTag {
 				req = pageContext.getRequest();
 			}
 			StringServletResponse res = new StringServletResponse(httpRes);
+			req.setAttribute("ss_title", this.title);
 			req.setAttribute("ss_formClass", this.formClass);
 			rd.include(req, res);
 
@@ -100,8 +102,13 @@ public class FormTag extends BodyTagSupport implements ParamAncestorTag {
 			if (_params != null) {
 				_params.clear();
 			}
+			this.title = "";
 			this.formClass = "";
 		}
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public void setFormClass(String formClass) {
