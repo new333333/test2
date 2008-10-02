@@ -2,6 +2,7 @@ package com.sitescape.team.portlet.binder;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -30,6 +31,8 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
+import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.security.function.OperationAccessControlExceptionNoName;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -181,73 +184,80 @@ public class TypeToFindAjaxController extends SAbstractController {
 			}
 		}
 		
-		//Do a search to find the first few items that match the search text
-		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
-		if (findType.equals(WebKeys.FIND_TYPE_PLACES)) {
-			Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
-			List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
-			model.put(WebKeys.ENTRIES, entries);
-			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-		} else if (findType.equals(WebKeys.FIND_TYPE_TEAMS)) {
-			Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
-			List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
-			model.put(WebKeys.ENTRIES, entries);
-			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-		} else if (findType.equals(WebKeys.FIND_TYPE_ENTRIES)) {
-			Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
-			List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
-			model.put(WebKeys.ENTRIES, entries);
-			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-		} else if (findType.equals(WebKeys.FIND_TYPE_TAGS) ||
-				findType.equals(WebKeys.FIND_TYPE_PERSONAL_TAGS) ||
-				findType.equals(WebKeys.FIND_TYPE_COMMUNITY_TAGS)) {
-			
-			String wordRoot = searchText;
-			int i = wordRoot.indexOf("*");
-			if (i > 0) wordRoot = wordRoot.substring(0, i);
-			
-			List tags = getBinderModule().getSearchTags(wordRoot, findType);
-			
-			List tagsPage = new ArrayList();			
-			if (tags.size() > startingCount.intValue()) {
-				int endTag = startingCount.intValue() + Integer.valueOf(maxEntries);
-				if (tags.size() < endTag) endTag = tags.size();
-				tagsPage = tags.subList(startingCount.intValue(), endTag);
+		try {
+		
+			//Do a search to find the first few items that match the search text
+			options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
+			if (findType.equals(WebKeys.FIND_TYPE_PLACES)) {
+				Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
+				List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
+				model.put(WebKeys.ENTRIES, entries);
+				model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+			} else if (findType.equals(WebKeys.FIND_TYPE_TEAMS)) {
+				Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
+				List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
+				model.put(WebKeys.ENTRIES, entries);
+				model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+			} else if (findType.equals(WebKeys.FIND_TYPE_ENTRIES)) {
+				Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
+				List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
+				model.put(WebKeys.ENTRIES, entries);
+				model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+			} else if (findType.equals(WebKeys.FIND_TYPE_TAGS) ||
+					findType.equals(WebKeys.FIND_TYPE_PERSONAL_TAGS) ||
+					findType.equals(WebKeys.FIND_TYPE_COMMUNITY_TAGS)) {
+				
+				String wordRoot = searchText;
+				int i = wordRoot.indexOf("*");
+				if (i > 0) wordRoot = wordRoot.substring(0, i);
+				
+				List tags = getBinderModule().getSearchTags(wordRoot, findType);
+				
+				List tagsPage = new ArrayList();			
+				if (tags.size() > startingCount.intValue()) {
+					int endTag = startingCount.intValue() + Integer.valueOf(maxEntries);
+					if (tags.size() < endTag) endTag = tags.size();
+					tagsPage = tags.subList(startingCount.intValue(), endTag);
+				}
+				model.put(WebKeys.ENTRIES, tagsPage);
+				model.put(WebKeys.SEARCH_TOTAL_HITS, Integer.valueOf(tags.size()));
+			} else if (findType.equals(WebKeys.FIND_TYPE_GROUP)) {
+				Map entries = getProfileModule().getGroups(options);
+				model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
+				model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+			} else if (findType.equals(WebKeys.FIND_TYPE_USER)) {
+				Map entries = getProfileModule().getUsers(options);
+				
+				int page = 0;
+				try {
+					page = Integer.parseInt(pageNumber);
+				} catch (NumberFormatException e) {}
+				
+				List resultList = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
+				if (addCurrentUser && page == 0 && (searchText.equals("") || searchText.equals("*"))) {
+					// add relative option "current user" and "me"
+					Map currentUserPlaceholder = new HashMap();
+					currentUserPlaceholder.put("title", NLT.get("searchForm.currentUserTitle"));
+					currentUserPlaceholder.put("_docId", SearchFilterKeys.CurrentUserId);
+					resultList.add(0, currentUserPlaceholder);
+				}
+				model.put(WebKeys.ENTRIES, resultList);
+				model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+				model.put(WebKeys.FIND_SHOW_USER_TITLE_ONLY, showUserTitleOnly);
+			} else if (findType.equals(WebKeys.FIND_TYPE_APPLICATION_GROUP)) {
+				Map entries = getProfileModule().getApplicationGroups(options);
+				model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
+				model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+				model.put(WebKeys.FIND_SHOW_USER_TITLE_ONLY, showUserTitleOnly);
+			} else if (findType.equals(WebKeys.FIND_TYPE_APPLICATION)) {
+				Map entries = getProfileModule().getApplications(options);
+				model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
+				model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 			}
-			model.put(WebKeys.ENTRIES, tagsPage);
-			model.put(WebKeys.SEARCH_TOTAL_HITS, Integer.valueOf(tags.size()));
-		} else if (findType.equals(WebKeys.FIND_TYPE_GROUP)) {
-			Map entries = getProfileModule().getGroups(options);
-			model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
-			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-		} else if (findType.equals(WebKeys.FIND_TYPE_USER)) {
-			Map entries = getProfileModule().getUsers(options);
 			
-			int page = 0;
-			try {
-				page = Integer.parseInt(pageNumber);
-			} catch (NumberFormatException e) {}
-			
-			List resultList = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
-			if (addCurrentUser && page == 0 && (searchText.equals("") || searchText.equals("*"))) {
-				// add relative option "current user" and "me"
-				Map currentUserPlaceholder = new HashMap();
-				currentUserPlaceholder.put("title", NLT.get("searchForm.currentUserTitle"));
-				currentUserPlaceholder.put("_docId", SearchFilterKeys.CurrentUserId);
-				resultList.add(0, currentUserPlaceholder);
-			}
-			model.put(WebKeys.ENTRIES, resultList);
-			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-			model.put(WebKeys.FIND_SHOW_USER_TITLE_ONLY, showUserTitleOnly);
-		} else if (findType.equals(WebKeys.FIND_TYPE_APPLICATION_GROUP)) {
-			Map entries = getProfileModule().getApplicationGroups(options);
-			model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
-			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-			model.put(WebKeys.FIND_SHOW_USER_TITLE_ONLY, showUserTitleOnly);
-		} else if (findType.equals(WebKeys.FIND_TYPE_APPLICATION)) {
-			Map entries = getProfileModule().getApplications(options);
-			model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
-			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+		} catch(AccessControlException e) {
+			model.put(WebKeys.ENTRIES, Collections.EMPTY_LIST);
+			model.put(WebKeys.SEARCH_TOTAL_HITS, 0);
 		}
 		model.put(WebKeys.FIND_TYPE, findType);
 		model.put(WebKeys.PAGE_SIZE, maxEntries);
