@@ -33,6 +33,9 @@
 <%
 	//Get the form item being displayed
 	Element item = (Element) request.getAttribute("item");
+	//Get the name of the definition
+	Document defDoc = (Document) request.getAttribute("ssConfigDefinition");
+	String defName = (String) defDoc.getRootElement().attributeValue("caption");
 	String enctype = "application/x-www-form-urlencoded";
 	if (item.selectSingleNode(".//item[@name='file']") != null || 
 			item.selectSingleNode(".//item[@name='fileEntryTitle']") != null || 
@@ -58,6 +61,7 @@
 	if (formViewTypeEle != null) formViewStyle = formViewTypeEle.attributeValue("value", "form");
 
 %>
+<ssf:form title="<%= defName %>">
 <c:set var="ss_form_form_formName" value="<%= formName %>" scope="request"/>
 <c:set var="ss_formViewStyle" value="<%= formViewStyle %>" scope="request" />
 <jsp:useBean id="ss_formViewStyle" type="String" scope="request" />
@@ -85,3 +89,4 @@
   </c:otherwise>  
   
 </c:choose>
+</ssf:form>
