@@ -270,24 +270,27 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		if(errors == null)
 			errors = new FilesErrors();
 		
-		Collection<FileAttachment> fAtts = entry.getFileAttachments();
-		if (fAtts.isEmpty()) return errors;
-		List<ChangeLog> changeLogs = new ArrayList<ChangeLog>();
 		boolean updateMetadata = deleteAttachment;
-		for(FileAttachment fAtt :fAtts) {
+		List<ChangeLog> changeLogs = new ArrayList<ChangeLog>();
+		Collection<FileAttachment> fAtts = entry.getFileAttachments();
+		if (!fAtts.isEmpty()) {
+			for(FileAttachment fAtt :fAtts) {
 
-			try {
-				ChangeLog changeLog = deleteFileInternal(binder, entry, fAtt, 
-						deleteMirroredSource, errors, updateMetadata);
-				if(changeLog != null)
-					changeLogs.add(changeLog);
-			}
-			catch(Exception e) {
-				logger.error("Error deleting file " + fAtt.getFileItem().getName(), e);
-    			errors.addProblem(new FilesErrors.Problem
+				try {
+					ChangeLog changeLog = deleteFileInternal(binder, entry, fAtt, 
+							deleteMirroredSource, errors, updateMetadata);
+					if(changeLog != null)
+						changeLogs.add(changeLog);
+				}
+				catch(Exception e) {
+					logger.error("Error deleting file " + fAtt.getFileItem().getName(), e);
+					errors.addProblem(new FilesErrors.Problem
     					(fAtt.getRepositoryName(),  fAtt.getFileItem().getName(), 
     							FilesErrors.Problem.OTHER_PROBLEM, e));
+				}
 			}
+		} else {
+			updateMetadata = true; //nothing to update, but want directory deleted
 		}
 		
 		String entityPath = FilePathUtil.getEntityDirPath(binder, entry);
