@@ -158,7 +158,6 @@ function ss_positionEntryDiv() {
     wObj1.style.background = "";
     wObj1.style.visibility = "visible";
     
-    alert(window.frames['ss_showentryframe'])
     //Allow the entry section to grow to as large as needed to show the entry
 	try {
 		if (window.ss_showentryframe && window.ss_showentryframe.document && 
