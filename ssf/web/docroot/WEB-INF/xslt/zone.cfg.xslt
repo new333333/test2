@@ -15,6 +15,10 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <ldapConfiguration>
 	<xsl:apply-templates select="/zoneConfiguration/ldapConfiguration"/>
 </ldapConfiguration>
+<folderConfiguration>
+	<xsl:apply-templates select="/zoneConfiguration/folderConfiguration"/>
+</folderConfiguration>
+
 </zoneConfiguration>
 </xsl:template>
 
@@ -50,6 +54,29 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 			<xsl:copy-of select="./posting" />
 		</xsl:otherwise>
 	</xsl:choose>
+</xsl:template>
+<xsl:template match="mailConfiguration">
+	<xsl:copy-of select="$doc2/zoneConfiguration/mailConfiguration/property | ./property[not(@name=$doc2/zoneConfiguration/mailConfiguration/property/@name)]"/>
+	<xsl:copy-of select="$doc2/zoneConfiguration/mailConfiguration/account"/>
+	<xsl:choose>
+		<xsl:when test="$doc2/zoneConfiguration/mailConfiguration/notify">
+				<xsl:copy-of select="$doc2/zoneConfiguration/mailConfiguration/notify"/>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:copy-of select="./notify" />
+		</xsl:otherwise>
+	</xsl:choose>
+		<xsl:choose>
+		<xsl:when test="$doc2/zoneConfiguration/mailConfiguration/posting">
+			<xsl:copy-of select="$doc2/zoneConfiguration/mailConfiguration/posting"/>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:copy-of select="./posting" />
+		</xsl:otherwise>
+	</xsl:choose>
+</xsl:template>
+<xsl:template match="folderConfiguration">
+	<xsl:copy-of select="$doc2/zoneConfiguration/folderConfiguration/property | ./property[not(@name=$doc2/zoneConfiguration/folderConfiguration/property/@name)]"/>
 </xsl:template>
 
 <xsl:template match="ldapConfiguration">
