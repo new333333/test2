@@ -90,7 +90,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
 			if (WebKeys.OPERATION_ADD.equals(operation)) {
 				//adding top level config
 				Integer type = PortletRequestUtils.getIntParameter(request, "definitionType");
@@ -168,6 +168,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				}
 				getBinderModule().modifyBinder(configId, new MapInputData(formData), fileMap, deleteAtts, null);
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+	   			if (formData.containsKey("applyBtn")) response.setRenderParameters(formData);
 			} else if (WebKeys.OPERATION_MODIFY_TEMPLATE.equals(operation)) {
 				Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 				//Get the function id from the form
@@ -311,6 +312,10 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				}
 				path = WebKeys.VIEW_MODIFY_TEMPLATE;	
 				model.put(WebKeys.OPERATION, operation);
+				//Build the mashup beans
+				Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
+				DefinitionHelper.buildMashupBeans(this, binder, configDocument, model);
+
 			} else if (WebKeys.OPERATION_MODIFY_TEMPLATE.equals(operation)) {
 				model.put(WebKeys.OPERATION, operation);
 				path = WebKeys.VIEW_MODIFY_TEMPLATE;

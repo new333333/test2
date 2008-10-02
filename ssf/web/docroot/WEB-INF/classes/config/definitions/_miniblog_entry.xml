@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_miniblog_entry" caption="__family_miniblog" type="1" nextId="24" definitionType="1" 
-	databaseId="402883b51c48633a011c4866de050002" internalId="402883b51c48633a011c4866de050002"> 
+<definition name="_miniblog_entry" caption="__family_miniblog" type="1" nextId="24" definitionType="1" databaseId="402883b51c48633a011c4866de050002" internalId="402883b51c48633a011c4866de050002"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1" display="form"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -9,15 +8,6 @@
         <property name="name" value="form1"/>  
         <property name="type" value="form"/> 
       </properties>  
-      <item name="title" caption="__title" type="data" display="form" id="23">
-        <properties>
-          <property name="caption" value="__title"/>
-          <property name="name" value="title"/>
-          <property name="width" value="60"/>
-          <property name="generated" value="false"/>
-          <property name="itemSource" value="ss_none"/>
-        </properties>
-      </item>
       <item name="description" caption="__description" type="data" id="5"> 
         <properties> 
           <property name="caption" value="__description"/>  
