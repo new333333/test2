@@ -84,6 +84,7 @@ import net.fortuna.ical4j.model.property.RecurrenceId;
 import net.fortuna.ical4j.model.property.Transp;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Version;
+import net.fortuna.ical4j.model.property.XProperty;
 import net.fortuna.ical4j.util.CompatibilityHints;
 
 import org.apache.commons.logging.Log;
@@ -514,13 +515,13 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	
 	public Calendar generate(DefinableEntity entry,
 			Collection events, String defaultTimeZoneId) {
-		Calendar calendar = createICalendar();
+		Calendar calendar = createICalendar(null);
 		generate(calendar, entry, events, defaultTimeZoneId);
 		return calendar;
 	}
 	
-	public Calendar generate(List folderEntries, String defaultTimeZoneId) {
-		Calendar calendar = createICalendar();
+	public Calendar generate(String calendarName,  List folderEntries, String defaultTimeZoneId) {
+		Calendar calendar = createICalendar(calendarName);
 		
 		if (folderEntries == null) {
 			return calendar;
@@ -570,12 +571,15 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	/**
 	 * Creates new iCalendar object and sets fields.
 	 */
-	private Calendar createICalendar() {
+	private Calendar createICalendar(String calendarName) {
 		Calendar calendar = new Calendar();
 		calendar.getProperties().add(PROD_ID);
 		calendar.getProperties().add(Version.VERSION_2_0);
 		calendar.getProperties().add(CalScale.GREGORIAN);
 		calendar.getProperties().add(Method.REQUEST);
+		if (calendarName != null) {
+			calendar.getProperties().add(new XProperty("X-WR-CALNAME", calendarName));
+		}
 		return calendar;
 	}
 
