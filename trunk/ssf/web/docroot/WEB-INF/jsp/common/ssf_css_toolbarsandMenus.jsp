@@ -41,7 +41,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_actions_bar {
 	list-style-type:none;	
 	padding: 0px 0px 0px 0px;
-/*	height: 22px;	*/
+	height: 22px;	
 	margin: 0px;
 	}
 .ss_action_bar ul, .ss_actions_bar_submenu {
@@ -160,7 +160,6 @@ table.ss_actions_bar4_pane {
 	font-weight: normal;
 	font-size: ${ss_style_font_smallprint};
 	font-family: ${ss_style_title_font_family};
-	height: 22px;
 	}
 .ss_actions_bar5 {
 	background-color:#72AEB6;
@@ -169,7 +168,6 @@ table.ss_actions_bar4_pane {
 	font-weight: bold;
 	margin:15px 0 0 0;
 	padding:5px 0 5px 25px;
-	height: 22px;
 	}
 ul.ss_actions_bar1  {
 	/* height: 22px;	*/
