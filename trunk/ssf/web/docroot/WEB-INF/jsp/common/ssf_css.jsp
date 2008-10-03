@@ -4131,26 +4131,22 @@ div.ssPageNavi table td {
 
 div.ss_themeMenu {
   position:absolute;
-  border:1px solid #777777;
+  border:1px solid ${ss_toolbar1_background_color};
   margin: 0px;
   background-color:${ss_style_background_color_opaque};
   text-align: left;
 }
 .ss_themeMenu_top {
-	font-family: ${ss_style_font_family};
-	font-size: ${ss_smallprint};
-	color: #333333;
 	text-align: center;
 	padding: 0px 15px;
 }
 div.ss_themeMenu a {
   font-family: ${ss_style_font_family};
   font-size: ${ss_style_font_size}; 
-  font-weight: bold;
-  text-decoration: none;
+  text-decoration: underline;
 }
 div.ss_themeMenu a:hover {
-	color: blue !important;
+	color: #333333 !important;
 }
 
 div.ss_themeMenu ul {

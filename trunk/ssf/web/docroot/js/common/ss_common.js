@@ -5607,7 +5607,7 @@ function ss_changeUITheme(idListText, nameListText) {
 	
 	var divHtml = '<ul>';	
 	for (var t=0; t<idList.length; t++) {
-		var link = '<li><a class="ss_link_3" href="javascript: ;" onclick="ss_changeUIThemeRequest(';
+		var link = '<li><a class="" href="javascript: ;" onclick="ss_changeUIThemeRequest(';
 		link += "'" + idList[t] + "'" + ');">';
 		link += nameList[t] + '</a></li>';
 		divHtml += link;
