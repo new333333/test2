@@ -37,8 +37,8 @@ String titleClassName = ParamUtil.get(request, "box_title_class", "ss_largestpri
 
 String title = ParamUtil.get(request, "box_title", "");
 %>
-<c:set var="boxColor" value="<%= ParamUtil.get(request, "box_color", ss_box_color) %>" />
-<c:set var="boxBgColor" value="<%= ParamUtil.get(request, "box_canvas_color", ss_box_canvas_color) %>" />
+<c:set var="boxColor" value='<%= ParamUtil.get(request, "box_color", ss_box_color) %>' />
+<c:set var="boxBgColor" value='<%= ParamUtil.get(request, "box_canvas_color", ss_box_canvas_color) %>' />
 <%
 int iWidth = (int)ParamUtil.get(request, "box_width", 600);
 String width = Integer.toString(iWidth);
