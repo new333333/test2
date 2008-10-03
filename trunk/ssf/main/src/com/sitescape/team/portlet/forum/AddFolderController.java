@@ -163,7 +163,7 @@ public class AddFolderController extends SAbstractController {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map model = new HashMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		String templateName = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_TEMPLATE_NAME);				
+		String templateName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TEMPLATE_NAME, "");				
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Binder binder = getBinderModule().getBinder(binderId);
 		model.put(WebKeys.BINDER, binder); 

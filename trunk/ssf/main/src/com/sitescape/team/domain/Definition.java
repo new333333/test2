@@ -79,6 +79,7 @@ public class Definition extends PersistentTimestampObject  {
 	public static final String VIEW_STYLE_BLOG="blog";
 	public static final String VIEW_STYLE_GUESTBOOK="guestbook"; 
 	public static final String VIEW_STYLE_MILESTONE="milestone"; 
+	public static final String VIEW_STYLE_MINIBLOG="miniblog"; 
 	public static final String VIEW_STYLE_TASK="task"; 
 	public static final String VIEW_STYLE_PHOTO_ALBUM="photo"; 
 	public static final String VIEW_STYLE_FILE="file"; 
