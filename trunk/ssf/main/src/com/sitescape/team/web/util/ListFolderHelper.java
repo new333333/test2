@@ -1650,7 +1650,7 @@ public class ListFolderHelper {
 			}
 		}
 		
-		if (isAppletSupported && !folder.isMirroredAndReadOnly() && 
+		if (!viewType.equals(Definition.VIEW_STYLE_MINIBLOG) && isAppletSupported && !folder.isMirroredAndReadOnly() && 
 				bs.getFolderModule().testAccess(folder, FolderOperation.addEntry) && 
 				!isAccessible) {
 			qualifiers = new HashMap();
