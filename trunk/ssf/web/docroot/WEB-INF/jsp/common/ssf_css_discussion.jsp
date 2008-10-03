@@ -195,10 +195,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color: #00ADef;
 	}
 .ss_disc_sub_th1{
-	background-image: url("<html:rootPath/>images/novell/icons/workspace_spreadsheet.gif");
+	background-image: url("<html:rootPath/>images/icecore/icons/workspace_disc_sm.png");
 	background-repeat: no-repeat;
-	background-position: 2% 1%!important;
+	background-position: 4% 1%!important;
 	color: #00ADef;
+	margin-left: 20px;
+	margin-top: 2px;
 	}
 .ss_disc_folder_th1{
 	background-image: url("<html:rootPath/>images/icons/folder_blue.gif");
@@ -231,8 +233,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding-right:2px;
 	font-weight: 800;
 	color:#777;
-	margin-right:5px;
-	margin-left: 10px;
+	margin-right:5px
 	margin-bottom:2px;
 	}	
 #ss_topic_thread a{
