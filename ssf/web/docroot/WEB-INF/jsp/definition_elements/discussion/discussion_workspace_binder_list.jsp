@@ -103,9 +103,10 @@
 		  		</div>
     			<c:forEach var="subBinder" items="${ss_bindersSubBinders[binder._docId]}">
       				<c:if test="${subBinder._entityType == 'workspace' || subBinder._entityType == 'profiles'}">
-      					<div id="ss_topic_thread" class="ss_disc_sub_th1">
+      					<div id="ss_topic_thread" class="">
         				  <div style="padding-left:10px;">
         					<span class="ss_title_th1">
+        					<img src="<html:rootPath/>images/icecore/icons/workspace_disc_sm.png" align="absmiddle" width="14" height="16"<ssf:alt tag="workspace"/>/> 
         					<a 
           						<c:if test="${subBinder._entityType == 'workspace'}">
             					  href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
