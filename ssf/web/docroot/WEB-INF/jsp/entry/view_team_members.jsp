@@ -83,7 +83,9 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 	<div class="ss_actions_bar1_pane ss_sidebarImage">
 		<table cellspacing="0" cellpadding="0">
-		<tr><td valign="middle">
+		<tr>
+		<ssf:ifnotaccessible>
+		<td valign="middle">
 			<a href="javascript: ;" 
 			  onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
 			><span style="padding-left:12px; display:${ss_sidebarVisibilityShow};"
@@ -92,12 +94,15 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 			  style="padding-left:12px; display:${ss_sidebarVisibilityHide};"
 			  id="ss_sidebarShow${renderResponse.namespace}" 
 			  class="ss_fineprint ss_sidebarSlide ss_sidebarSlidetext"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
-		</td><td valign="middle">
+		</td>
+		</ssf:ifnotaccessible>
+		<td valign="middle">
 		<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 		</td></tr>
 		</table>
 	</div>
 
+    <ssf:ifnotaccessible>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
@@ -105,6 +110,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
 	<td valign="top" class="ss_view_info">
+	</ssf:ifnotaccessible>
 	    <div class="ss_style_color" >
   	<c:choose>
   		<c:when test="${ss_showTeamMembers}">
@@ -126,10 +132,17 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		</div>
 		<% // Footer toolbar %>
 		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+	<ssf:ifnotaccessible>
 	</td>
 	</tr>
 	</tbody>
 	</table>
+	</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+  <div>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
+  </div>
+</ssf:ifaccessible>
 </div>
 
 <script type="text/javascript">

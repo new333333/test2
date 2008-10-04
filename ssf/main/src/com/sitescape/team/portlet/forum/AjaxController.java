@@ -2725,12 +2725,18 @@ public class AjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxViewMiniBlog(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
+		User user = RequestContextHolder.getRequestContext().getUser();
 		String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE, "0");
 		int pageStart = Integer.valueOf(page) * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
-		Long userId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_USER_ID);
+		Long userId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_USER_ID);
+		if (userId == null) userId = user.getId();
+		List ids = new ArrayList();
+		ids.add(userId);
+		SortedSet principals = getProfileModule().getPrincipals(ids);
 		Principal p = null;
+		if (!principals.isEmpty()) p = (Principal)principals.iterator().next();
 		
-		model.put(WebKeys.MINIBLOG_USER_ID, userId);
+		model.put(WebKeys.MINIBLOG_USER_ID, p.getId());
 		model.put(WebKeys.MINIBLOG_USER, p);
 		model.put(WebKeys.MINIBLOG_PAGE, page);
 		

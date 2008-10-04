@@ -747,6 +747,12 @@ public class DefinitionHelper {
 	        		}
 	        	}
     		}
+    		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_SHOW_BRANDING);
+    		if (attr != null) model.put(WebKeys.MASHUP_SHOW_BRANDING, attr.getValue());
+    		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_MASTHEAD);
+    		if (attr != null) model.put(WebKeys.MASHUP_HIDE_MASTHEAD, attr.getValue());
+    		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_SIDEBAR);
+    		if (attr != null) model.put(WebKeys.MASHUP_HIDE_SIDEBAR, attr.getValue());
     	}
     	model.put(WebKeys.MASHUP_BINDERS, mashupBinders);
     	model.put(WebKeys.MASHUP_BINDER_ENTRIES, mashupBinderEntries);

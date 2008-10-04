@@ -170,7 +170,9 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
       <tbody>
       <tr>
         <td width="74%" rowspan="3" valign="top">
-            <jsp:include page="/WEB-INF/jsp/definition_elements/view_binder_branding.jsp" />
+            <c:if test="${!ss_mashupHideMasthead || ss_mashupShowBranding}">
+              <jsp:include page="/WEB-INF/jsp/definition_elements/view_binder_branding.jsp" />
+            </c:if>
         </td>
         <td height="24" colspan="2" class="ss_mastheadtoplinks ss_masthead_portals" >
         	<ssHelpSpot helpId="navigation_bar/my_portal_button" offsetY="10" offsetX="0" 
@@ -220,9 +222,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
         <td width="6%" height="24" class="ss_workspace">&nbsp;</td>
         <td width="3%" height="24" class="ss_workspace" colspan="2">
         	
-        	
 			<table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
-		
 			<td valign="middle" style="height: 22px; white-space: nowrap;">
 			<a href="javascript: window.print();"><img border="0" 
     		class="ss_print_button"
@@ -234,8 +234,10 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			
         </td>
       </tr>
+    <c:if test="${!ss_mashupHideMasthead || ss_mashupShowBranding}">
       <tr>
         <td width="20%" height="19" class="ss_mastheadtoplinks ss_masthead_favorites">
+          <c:if test="${!ss_mashupHideMasthead}">
         	<!-- Begin Favorites -->  
         	<div id="ss_navbar_favorites${renderResponse.namespace}" style="display:inline;"></div>
 		      <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="0" offsetY="10"  
@@ -260,8 +262,10 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		      </a>  
 			    <div id="ss_navbarMyTeamsButton${renderResponse.namespace}" style="display:none;">
 			    </div>
+		  </c:if>
 		</td>
         <td height="19" colspan="4" valign="top" align="right" >
+        <c:if test="${!ss_mashupHideMasthead || ss_mashupShowBranding}">
         <span class="ss_mastheadName">
         <a title="<ssf:nlt tag="navigation.myWorkspace"/>"
 				  href="<ssf:url 
@@ -269,8 +273,10 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			      	action="view_ws_listing"
 			      	binderId="${ssUser.workspaceId}"/>"
               	>${ssUser.title}</a></span>
+        </c:if>
         </td>
-	    </tr>
+	  </tr>
+	</c:if>
       <tr>
         <td colspan="5">&nbsp;</td>
       </tr>
@@ -278,6 +284,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
     </table>
    </td>
   </tr>
+<c:if test="${!ss_mashupHideMasthead}">
   <tr>
     <td class="ss_search_bar"> <!-- Sets background for search area table kablink = #449EFF kablink blue = #6BC5CE -->
     <!-- Start of search area with find boxes -->
@@ -565,6 +572,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
   <!-- End of Search/Find boxes -->
     </td>
   </tr>
+</c:if>
 </tbody>
 </table>
 
@@ -673,9 +681,11 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <!-- end of iframe div -->
 </c:if>
 
+<c:if test="${!ss_mashupHideMasthead}">
 <div style="padding-bottom:0px;"></div>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 <div style="padding-bottom:2px;"></div>
+</c:if>
 <div class="ss_clear_float"></div>
 
 <script type="text/javascript">

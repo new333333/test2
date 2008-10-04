@@ -182,6 +182,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 <tbody>
 <tr>
 <ssf:ifnotaccessible>
+<c:if test="${!ss_mashupHideSidebar}">
 <td valign="middle">
 <a href="javascript: ;" 
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
@@ -192,6 +193,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
   id="ss_sidebarShow${renderResponse.namespace}" 
   class="ss_fineprint ss_sidebarSlide ss_sidebarSlidetext"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
 </td>
+</c:if>
 </ssf:ifnotaccessible>
 
 <td valign="middle">
@@ -206,9 +208,11 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
+    <c:if test="${!ss_mashupHideSidebar}">
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
+	</c:if>
 	<td valign="top" class="ss_view_info">
 </ssf:ifnotaccessible>
 		<div class="ss_tab_canvas">
