@@ -196,12 +196,15 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 </c:if>
 </ssf:ifnotaccessible>
 
+<c:if test="${!ss_mashupHideToolbar}">
 <td valign="middle">
 	<ssf:toolbar style="ss_actions_bar1 ss_actions_bar">			
 	<% // Workspace toolbar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 	</ssf:toolbar>
-</td></tr></tbody>
+</td>
+</c:if>
+</tr></tbody>
 </table>
 </div>
 <ssf:ifnotaccessible>
@@ -251,6 +254,9 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 
 			<% // Footer toolbar %>
 			<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+		  <c:if test="${ss_mashupShowAlternateToolbar}">
+		    <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
+		  </c:if>
 			
 			<c:if test="${ss_userWorkspace}">
 				<div width="100%" style="margin:10px;">

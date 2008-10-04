@@ -60,6 +60,10 @@
         <c:if test="${ss_mashupHideSidebar}">checked</c:if> >
       <span class="ss_labelRight"><ssf:nlt tag="mashup.hideSidebar"/></span>
       <br/>
+      <input type="checkbox" name="${ss_mashupPropertyName}__hideToolbar"
+        <c:if test="${ss_mashupHideToolbar}">checked</c:if> >
+      <span class="ss_labelRight"><ssf:nlt tag="mashup.hideToolbar"/></span>
+      <br/>
     </div>
 </c:if>
 <div <c:if test="${ssConfigJspStyle == 'form'}"> style="border: 1px silver solid; padding: 30px;" </c:if> >

@@ -74,9 +74,12 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 </td>
 </c:if>
 </ssf:ifnotaccessible>
+<c:if test="${!ss_mashupHideToolbar}">
 <td valign="middle">
 <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
-</td></tr>
+</td>
+</c:if>
+</tr>
 </table>
 </div>
     <ssf:ifnotaccessible>
@@ -105,6 +108,9 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		</div>
 		<% // Footer toolbar %>
 		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+		  <c:if test="${ss_mashupShowAlternateToolbar}">
+		    <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
+		  </c:if>
 	<ssf:ifnotaccessible>
 	</td>
 	</tr>

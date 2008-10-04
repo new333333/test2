@@ -57,6 +57,7 @@ import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
@@ -753,6 +754,13 @@ public class DefinitionHelper {
     		if (attr != null) model.put(WebKeys.MASHUP_HIDE_MASTHEAD, attr.getValue());
     		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_SIDEBAR);
     		if (attr != null) model.put(WebKeys.MASHUP_HIDE_SIDEBAR, attr.getValue());
+    		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_TOOLBAR);
+    		if (attr != null) model.put(WebKeys.MASHUP_HIDE_TOOLBAR, attr.getValue());
+    	}
+    	if (entity instanceof Binder && 
+    			bs.getBinderModule().testAccess((Binder)entity, BinderOperation.manageConfiguration)) {
+    		//Don't hide the toolbar from the manager
+    		model.put(WebKeys.MASHUP_SHOW_ALTERNATE_TOOLBAR, true);
     	}
     	model.put(WebKeys.MASHUP_BINDERS, mashupBinders);
     	model.put(WebKeys.MASHUP_BINDER_ENTRIES, mashupBinderEntries);
