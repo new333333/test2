@@ -1998,9 +1998,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						Boolean showBranding = false;
 						Boolean hideMasthead = false;
 						Boolean hideSidebar = false;
+						Boolean hideToolbar = false;
 						if (inputData.exists(nameValue + MASHUP_SHOW_BRANDING)) showBranding = true;
 						if (inputData.exists(nameValue + MASHUP_HIDE_MASTHEAD)) hideMasthead = true;
 						if (inputData.exists(nameValue + MASHUP_HIDE_SIDEBAR)) hideSidebar = true;
+						if (inputData.exists(nameValue + MASHUP_HIDE_TOOLBAR)) hideToolbar = true;
 						if (inputData.exists(nameValue + "__idCounter")) {
 							int idCounter = Integer.valueOf(inputData.getSingleValue(nameValue + "__idCounter"));
 							String value = "";
@@ -2062,6 +2064,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							entryData.put(nameValue + "__showBranding", showBranding);
 							entryData.put(nameValue + "__hideMasthead", hideMasthead);
 							entryData.put(nameValue + "__hideSidebar", hideSidebar);
+							entryData.put(nameValue + "__hideToolbar", hideToolbar);
 						}
 					} else {
 						if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getSingleValue(nameValue));
