@@ -88,6 +88,9 @@ public interface DefinitionModule {
 	
 	public static String ENTRY_ATTRIBUTES_SET = "__set__";
 	public static String ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED = "__setMultipleAllowed__";
+	public static String MASHUP_HIDE_MASTHEAD = "__hideMasthead";
+	public static String MASHUP_HIDE_SIDEBAR = "__hideSidebar";
+	public static String MASHUP_SHOW_BRANDING = "__showBranding";
 	
 	/**
 	 * Routine to process the input data and return a map of only the entry data

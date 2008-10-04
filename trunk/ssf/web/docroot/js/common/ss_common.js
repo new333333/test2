@@ -6235,6 +6235,7 @@ function ss_showAttachmentVersions(prefix, start, end) {
 //Routine to show or hide the sidebar
 function ss_showHideSidebar(namespace) {
 	var divObj = self.document.getElementById('ss_sidebarDiv'+namespace);
+	if (divObj == null) return;
 	var tdObj = self.document.getElementById('ss_sidebarTd'+namespace);
 	var sidebarHide = self.document.getElementById('ss_sidebarHide'+namespace);
 	var sidebarShow = self.document.getElementById('ss_sidebarShow'+namespace);

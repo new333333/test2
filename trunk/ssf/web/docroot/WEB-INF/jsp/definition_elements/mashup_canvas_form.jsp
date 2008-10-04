@@ -47,6 +47,20 @@
 <c:if test="${ssConfigJspStyle == 'form'}">
   <div style="padding: 20px 0px 20px 0px;">
     <div><span class="ss_bold">${property_caption}</span></div>
+    <div>
+      <input type="checkbox" name="${ss_mashupPropertyName}__showBranding"
+        <c:if test="${ss_mashupShowBranding}">checked</c:if> >
+      <span class="ss_labelRight"><ssf:nlt tag="mashup.showBranding"/></span>
+      <br/>
+      <input type="checkbox" name="${ss_mashupPropertyName}__hideMasthead"
+        <c:if test="${ss_mashupHideMasthead}">checked</c:if> >
+      <span class="ss_labelRight"><ssf:nlt tag="mashup.hideMasthead"/></span>
+      <br/>
+      <input type="checkbox" name="${ss_mashupPropertyName}__hideSidebar"
+        <c:if test="${ss_mashupHideSidebar}">checked</c:if> >
+      <span class="ss_labelRight"><ssf:nlt tag="mashup.hideSidebar"/></span>
+      <br/>
+    </div>
 </c:if>
 <div <c:if test="${ssConfigJspStyle == 'form'}"> style="border: 1px silver solid; padding: 30px;" </c:if> >
   <c:if test="${ssConfigJspStyle == 'form'}">

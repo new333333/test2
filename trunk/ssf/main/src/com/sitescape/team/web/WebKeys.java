@@ -768,6 +768,9 @@ public class WebKeys {
     public static final String MASHUP_BINDERS="ss_mashupBinders"; 
     public static final String MASHUP_BINDER_ENTRIES="ss_mashupBinderEntries"; 
     public static final String MASHUP_ENTRIES="ss_mashupEntries"; 
+    public static final String MASHUP_HIDE_MASTHEAD="ss_mashupHideMasthead"; 
+    public static final String MASHUP_HIDE_SIDEBAR="ss_mashupHideSidebar"; 
+    public static final String MASHUP_SHOW_BRANDING="ss_mashupShowBranding"; 
     public static final String MINIBLOG_STATUSES="ss_miniblog_statuses"; 
     public static final String MINIBLOG_PAGE="ss_miniblogPage"; 
     public static final String MINIBLOG_USER="ss_miniblog_user"; 

@@ -32,17 +32,15 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${ssConfigJspStyle != 'form'}">
 <div>
-<div>
-<p>
-  <a href="javascript:;" 
-       onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'print_manuals', '', 200, 230, 'center', 'middle');">
-     <span class="ss_getting_started"><ssf:nlt tag="help.viewBooks.title"/></span>
-   </a>
-</p>
-<img src="<html:brandedImagesPath/>pics/getting_started.gif">
-<jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
-
-</div>
+<table>
+  <tr>
+    <td width="70%">
+      <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/welcome/getting_started.jsp" />
+    </td>
+    <td width="30%">
+    </td>
+  </tr>
+</table>
 </div>
 </c:if>
 

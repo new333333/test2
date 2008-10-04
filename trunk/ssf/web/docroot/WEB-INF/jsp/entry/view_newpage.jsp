@@ -59,7 +59,10 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <div class="ss_actions_bar1_pane ss_sidebarImage">
 <table cellspacing="0" cellpadding="0">
-<tr><td valign="middle">
+<tr>
+<ssf:ifnotaccessible>
+<c:if test="${!ss_mashupHideSidebar}">
+<td valign="middle">
 <a href="javascript: ;" 
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
 ><span style="padding-left:12px; display:${ss_sidebarVisibilityShow};"
@@ -68,18 +71,25 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
   style="padding-left:12px; display:${ss_sidebarVisibilityHide};"
   id="ss_sidebarShow${renderResponse.namespace}" 
   class="ss_fineprint ss_sidebarSlide ss_sidebarSlidetext"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
-</td><td valign="middle">
+</td>
+</c:if>
+</ssf:ifnotaccessible>
+<td valign="middle">
 <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 </td></tr>
 </table>
 </div>
-     <table cellpadding="0" cellspacing="0" border="0" width="100%">
+    <ssf:ifnotaccessible>
+    <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
+    <c:if test="${!ss_mashupHideSidebar}">
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
+	</c:if>
 	<td valign="top" class="ss_view_info">
+	</ssf:ifnotaccessible>
 		<jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
 		<div id="ss_whatsNewDiv${ss_namespace}">
 		<c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
@@ -94,11 +104,18 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		</div>
 		<% // Footer toolbar %>
 		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+	<ssf:ifnotaccessible>
 	</td>
 	</tr>
 	</tbody>
 	</table>
+	</ssf:ifnotaccessible>
 
+<ssf:ifaccessible>
+  <div>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
+  </div>
+</ssf:ifaccessible>
 </div>
 <script type="text/javascript">
 ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));

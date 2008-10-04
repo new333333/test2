@@ -1995,6 +1995,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					    	}
 					    }
 					} else if (itemName.equals("mashupCanvas")) {
+						Boolean showBranding = false;
+						Boolean hideMasthead = false;
+						Boolean hideSidebar = false;
+						if (inputData.exists(nameValue + MASHUP_SHOW_BRANDING)) showBranding = true;
+						if (inputData.exists(nameValue + MASHUP_HIDE_MASTHEAD)) hideMasthead = true;
+						if (inputData.exists(nameValue + MASHUP_HIDE_SIDEBAR)) hideSidebar = true;
 						if (inputData.exists(nameValue + "__idCounter")) {
 							int idCounter = Integer.valueOf(inputData.getSingleValue(nameValue + "__idCounter"));
 							String value = "";
@@ -2023,9 +2029,23 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 										int colCount = 2;
 										if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_COLS)) 
 											colCount = Integer.valueOf((String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_COLS));
+										String[] colWidths = new String[colCount];
+										if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_COL_WIDTHS)) {
+											String colWidths2 = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_COL_WIDTHS);
+											for (int j = 0; j < colCount; j++) {
+												String colWidth = colWidths2;
+												if (colWidths2.indexOf("|") >= 0) {
+													colWidth = colWidths2.substring(0, colWidths2.indexOf("|"));
+													colWidths2 = colWidths2.substring(colWidths2.indexOf("|")+1, colWidths2.length());
+												}
+												colWidths[j] = colWidth;
+											}
+										}
 										nextValue = ObjectKeys.MASHUP_TYPE_TABLE_START + attrs + ";";
-										for (int j = 0; j < colCount; j++) 
-											nextValue += ObjectKeys.MASHUP_TYPE_TABLE_COL + ";";
+										for (int j = 0; j < colCount; j++) {
+											nextValue += ObjectKeys.MASHUP_TYPE_TABLE_COL + ",";
+											nextValue += ObjectKeys.MASHUP_ATTR_COL_WIDTH + "=" + colWidths[j] + ";";
+										}
 										nextValue += ObjectKeys.MASHUP_TYPE_TABLE_END;
 									} else if (type.equals(ObjectKeys.MASHUP_TYPE_TABLE_END_DELETE)) {
 										//This is a request to delete a table
@@ -2039,6 +2059,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								}
 							}
 							entryData.put(nameValue, value);
+							entryData.put(nameValue + "__showBranding", showBranding);
+							entryData.put(nameValue + "__hideMasthead", hideMasthead);
+							entryData.put(nameValue + "__hideSidebar", hideSidebar);
 						}
 					} else {
 						if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getSingleValue(nameValue));

@@ -2467,7 +2467,7 @@
 	</item>
 
 	<item name="mashupCanvas" caption="__mashup_canvas" category="generalLayout" 
-		type="data" canBeDeleted="true" multipleAllowed="true" display="form">
+		type="data" canBeDeleted="true" multipleAllowed="false" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__mashup_canvas"/>
 			<property name="name" caption="__name" type="text"/>

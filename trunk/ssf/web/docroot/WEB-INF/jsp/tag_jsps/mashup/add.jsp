@@ -91,6 +91,7 @@ var ss_mashupAttr_showFolderDescription${ss_mashupItemId} = "";
 var ss_mashupAttr_showEntriesOpened${ss_mashupItemId} = "";
 var ss_mashupAttr_numberOfLines${ss_mashupItemId} = "";
 var ss_mashupAttr_numberOfCols${ss_mashupItemId} = "";
+var ss_mashupAttr_columnWidths${ss_mashupItemId} = "";
 var ss_mashupAttr_customJsp${ss_mashupItemId} = "";
 
 function ss_mashupClearAttrs${ss_mashupItemId}() {
@@ -100,6 +101,7 @@ function ss_mashupClearAttrs${ss_mashupItemId}() {
 	ss_mashupAttr_showEntriesOpened${ss_mashupItemId} = "";
 	ss_mashupAttr_numberOfLines${ss_mashupItemId} = "";
 	ss_mashupAttr_numberOfCols${ss_mashupItemId} = "";
+	ss_mashupAttr_columnWidths${ss_mashupItemId} = "";
 	ss_mashupAttr_customJsp${ss_mashupItemId} = "";
 }
 function ss_mashupBuildAttrs${ss_mashupItemId}() {
@@ -112,6 +114,10 @@ function ss_mashupBuildAttrs${ss_mashupItemId}() {
 		attr += ",entriesToShow=" + ss_mashupAttr_numberOfLines${ss_mashupItemId}
 	if (ss_mashupAttr_numberOfCols${ss_mashupItemId} != "") 
 		attr += ",cols=" + ss_mashupAttr_numberOfCols${ss_mashupItemId}
+	if (ss_mashupAttr_columnWidths${ss_mashupItemId} != "") {
+		var colWidths = ss_replaceSubStrAll(ss_mashupAttr_columnWidths${ss_mashupItemId}, ",", "|");
+		attr += ",colWidths=" + colWidths;
+	}
 	if (ss_mashupAttr_customJsp${ss_mashupItemId} != "") 
 		attr += ",customJsp=" + ss_mashupAttr_customJsp${ss_mashupItemId}
 	//alert(attr)
@@ -236,15 +242,22 @@ function ss_mashupSubmit${ss_mashupItemId}() {
 	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:401;
 	  	padding:10px;" 
   >
-  		<div><ssf:nlt tag="mashup.addTable"/></div>
+  		<div style="padding-bottom:16px;"><ssf:nlt tag="mashup.addTable"/></div>
   		<div>
           <input type="checkbox" name="${ss_mashupPropertyName}__showBorder"
             onChange="ss_mashupAttr_showBorder${ss_mashupItemId} = this.value;"/> 
-          <span><ssf:nlt tag="mashup.showBorder"/></span>
+          <span class="ss_labelRight"><ssf:nlt tag="mashup.showBorder"/></span>
           <br/>
+          <br/>
+          <span class="ss_labelAbove"><ssf:nlt tag="mashup.numberOfCols"/></span>
           <input type="text" name="${ss_mashupPropertyName}__numberOfCols"
             onChange="if (ss_isInteger(this.value)) {ss_mashupAttr_numberOfCols${ss_mashupItemId} = this.value;}"/> 
-          <span><ssf:nlt tag="mashup.numberOfCols"/></span>
+          <br/>
+          <br/>
+          <span class="ss_labelAbove"><ssf:nlt tag="mashup.columnWidths"/></span>
+          <input type="text" name="${ss_mashupPropertyName}__columnWidths"
+            onChange="ss_mashupAttr_columnWidths${ss_mashupItemId} = this.value;"/> 
+          <br/>
           <br/>
 		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
 		    class="ss_linkButton ss_fineprint"

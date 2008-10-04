@@ -105,4 +105,3 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 	</div> <% // end of new sidebar format %>
 </div> <% // end of ss_sidebarDiv %>
-	
