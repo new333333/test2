@@ -92,6 +92,7 @@ public interface DefinitionModule {
 	public static String MASHUP_HIDE_SIDEBAR = "__hideSidebar";
 	public static String MASHUP_SHOW_BRANDING = "__showBranding";
 	public static String MASHUP_HIDE_TOOLBAR = "__hideToolbar";
+	public static String MASHUP_HIDE_FOOTER = "__hideFooter";
 	
 	/**
 	 * Routine to process the input data and return a map of only the entry data

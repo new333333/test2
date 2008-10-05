@@ -770,6 +770,7 @@ public class WebKeys {
     public static final String MASHUP_ENTRIES="ss_mashupEntries"; 
     public static final String MASHUP_HIDE_MASTHEAD="ss_mashupHideMasthead"; 
     public static final String MASHUP_HIDE_SIDEBAR="ss_mashupHideSidebar"; 
+    public static final String MASHUP_HIDE_FOOTER="ss_mashupHideFooter"; 
     public static final String MASHUP_HIDE_TOOLBAR="ss_mashupHideToolbar"; 
     public static final String MASHUP_SHOW_ALTERNATE_TOOLBAR="ss_mashupShowAlternateToolbar"; 
     public static final String MASHUP_SHOW_BRANDING="ss_mashupShowBranding"; 

@@ -106,7 +106,9 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 					  entry="${ssBinder}" />
 		  </div>
 		  <% // Footer toolbar %>
-		  <jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+		  <c:if test="${!ss_mashupHideFooter}">
+		    <jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+		  </c:if>
 		  
 		  <c:if test="${ss_mashupShowAlternateToolbar}">
 		    <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />

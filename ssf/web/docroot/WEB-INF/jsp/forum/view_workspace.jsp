@@ -252,8 +252,10 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 
 				</div>
 
-			<% // Footer toolbar %>
-			<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+		  <% // Footer toolbar %>
+		  <c:if test="${!ss_mashupHideFooter}">
+		    <jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+		  </c:if>
 		  <c:if test="${ss_mashupShowAlternateToolbar}">
 		    <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 		  </c:if>
