@@ -28,26 +28,18 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //Mashup welcome view %>
+<% //Mashup utility view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${ssConfigJspStyle != 'form'}">
 <div>
-<table>
-  <tr>
-    <td width="70%">
-      <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/welcome/getting_started.jsp" />
-    </td>
-    <td width="30%">
-    </td>
-  </tr>
-</table>
+  <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/utility/getting_started.jsp" />
 </div>
 </c:if>
 
 <c:if test="${ssConfigJspStyle == 'form'}">
 	<script type="text/javascript">
-	//Routine called when "Delete welcome" is clicked
-	function ss_mashup_deleteWelcome${ss_mashupItemId}_${renderResponse.namespace}() {
+	//Routine called when "Delete utility" is clicked
+	function ss_mashup_deleteUtility${ss_mashupItemId}_${renderResponse.namespace}() {
 		var formObj = self.document.forms['${ss_form_form_formName}'];
 		formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "";
 	}
@@ -55,11 +47,11 @@
 
    <div style="padding:10px;" width="100%">
 	 <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
-	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.welcome"/></span>
+	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.utility"/></span>
 	    <br/>
 	    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
 	      class="ss_linkButton ss_fineprint"
-	      onClick="ss_mashup_deleteWelcome${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
+	      onClick="ss_mashup_deleteUtility${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
 	 </div>
    </div>
 </c:if>
