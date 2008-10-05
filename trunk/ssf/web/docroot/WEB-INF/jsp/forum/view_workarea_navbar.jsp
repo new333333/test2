@@ -160,6 +160,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 }
 </script>
 
+<c:if test="${!ss_mashupHideMasthead || ss_mashupShowBranding}">
 <div id="ss_top_nav_wrapper">
 <!-- Begin New Header  -->  
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -687,8 +688,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <div style="padding-bottom:2px;"></div>
 </c:if>
 <div class="ss_clear_float"></div>
-
+</div>
+</c:if>
 <script type="text/javascript">
 ss_workarea_showPseudoPortal${renderResponse.namespace}()
 </script>
-</div>

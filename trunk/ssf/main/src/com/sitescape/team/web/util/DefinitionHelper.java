@@ -756,6 +756,8 @@ public class DefinitionHelper {
     		if (attr != null) model.put(WebKeys.MASHUP_HIDE_SIDEBAR, attr.getValue());
     		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_TOOLBAR);
     		if (attr != null) model.put(WebKeys.MASHUP_HIDE_TOOLBAR, attr.getValue());
+    		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_FOOTER);
+    		if (attr != null) model.put(WebKeys.MASHUP_HIDE_FOOTER, attr.getValue());
     	}
     	if (entity instanceof Binder && 
     			bs.getBinderModule().testAccess((Binder)entity, BinderOperation.manageConfiguration)) {

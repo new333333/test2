@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_welcomeWorkspace" caption="__definition_default_welcome_workspace" type="8" nextId="10" definitionType="8" 
-	databaseId="402883b51cbdbdc2011cbdfe2857000b" internalId="402883b51cbdbdc2011cbdfe2857000b">
+<definition name="_welcomeWorkspace" caption="__definition_default_welcome_workspace" type="8" nextId="11" definitionType="8" databaseId="402883b51cbdbdc2011cbdfe2857000b">
   <item name="workspaceForm" caption="__workspace_form" type="form" id="1" display="form">
     <properties/>
     <item name="title" caption="__title" type="data" id="2">
@@ -37,6 +36,16 @@
       <properties>
         <property name="caption" value="__icon"/>
         <property name="name" value="iconName"/>
+      </properties>
+    </item>
+    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="10">
+      <properties>
+        <property name="caption" value="__attach_files"/>
+        <property name="name" value="ss_attachFile"/>
+        <property name="width" value="60"/>
+        <property name="number" value=""/>
+        <property name="storage" value="simpleFileRepository"/>
+        <property name="hide" value="false"/>
       </properties>
     </item>
   </item>
