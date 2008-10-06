@@ -106,7 +106,7 @@ public class ImportDefinitionController extends  SAbstractController {
 			if (WebKeys.OPERATION_RELOAD_CONFIRM.equals(operation)) {
 				response.setRenderParameters(formData);
 			} else if (WebKeys.OPERATION_RELOAD.equals(operation)) {
-				getAdminModule().updateDefaultDefinitions(RequestContextHolder.getRequestContext().getZoneId());
+				getAdminModule().updateDefaultDefinitions(RequestContextHolder.getRequestContext().getZoneId(), false);
 				response.setRenderParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
 			} else {
 				response.setRenderParameters(formData);

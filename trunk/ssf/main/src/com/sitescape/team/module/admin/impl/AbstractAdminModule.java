@@ -50,12 +50,15 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.NotSupportedException;
+import com.sitescape.team.ObjectExistsException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.OrderBy;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.DefinitionInvalidException;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
@@ -334,7 +337,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
                             + emailNotifyClass + "'");
         }
     }    
-	public void updateDefaultDefinitions(Long topId) {
+	public void updateDefaultDefinitions(Long topId, Boolean newDefinitionsOnly) {
 		Workspace top = (Workspace)getCoreDao().loadBinder(topId, topId);
 		
 		//default definitions stored in separate config file
@@ -352,7 +355,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				reader = new SAXReader(false);  
 				try {
 					in = new ClassPathResource(file).getInputStream();
-					defs.add(getDefinitionModule().addDefinition(in, null, null, null, true).getId());
+					boolean replace = true;
+					if (newDefinitionsOnly) replace = false;
+					Definition newDef = getDefinitionModule().addDefinition(in, null, null, null, replace);
+					if (newDef != null) defs.add(newDef.getId());
 					getCoreDao().flush();
 				} catch (Exception ex) {
 					logger.error("Cannot read definition from file: " + file + " " + ex.getMessage());

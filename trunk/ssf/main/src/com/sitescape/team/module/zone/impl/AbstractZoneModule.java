@@ -231,6 +231,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	}
  	protected void upgradeZoneTx(Workspace zone) {
  		Integer version = zone.getUpgradeVersion(); //in future release, start using version from zoneConfig
+		Workspace top = getCoreDao().findTopWorkspace(zone.getName());
 		String superName = SZoneConfig.getAdminUserName(zone.getName());
  		//	get super user from config file - must exist or throws and error
  		User superU = getProfileDao().findUserByName(superName, zone.getName());
@@ -457,7 +458,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  		}
  		if (version.intValue() <= 2) {
  			//Change the definition of the top workspace to become the welcome page
- 			Workspace top = getCoreDao().findTopWorkspace(zone.getName());
  			List definitions = new ArrayList();
  			Map workflowAssociations = new HashMap();
  			String defBinderId = ObjectKeys.DEFAULT_WELCOME_WORKSPACE_DEF;
@@ -467,7 +467,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(top.getId());
  			zoneConfig.setUpgradeVersion(3);
  		}
-
+ 		//Always do the following items
+		//Get any new definitions
+ 		getAdminModule().updateDefaultDefinitions(top.getId(), true);
   	}
  	// Must be running inside a transaction set up by the caller 
  	protected void validateZoneTx(Workspace zone) {
@@ -607,7 +609,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		Function adminRole = addAdminRole(top);
     		Function teamWsRole = addTeamWorkspaceRole(top);
     		//make sure allusers group and roles are defined, may be referenced by templates
-    		getAdminModule().updateDefaultDefinitions(top.getId());
+    		getAdminModule().updateDefaultDefinitions(top.getId(), false);
     		getTemplateModule().updateDefaultTemplates(top.getId());
 
     		//Update after import of definitions
