@@ -2056,7 +2056,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 										// Delete all the way back to the "tableStart"
 										// Only delete empty tables
 										int j = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_TABLE_START + ",");
-										value = value.substring(0, j);
+										if (j >= 0) {
+											value = value.substring(0, j);
+										} else {
+											value="";
+										}
 										nextValue = "";
 									}
 									value = value + nextValue;

@@ -32,7 +32,21 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${ssConfigJspStyle != 'form'}">
 <div>
-  <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/utility/getting_started.jsp" />
+  <c:if test="${mashup_attributes['element'] == 'gettingStarted'}">
+    <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/utility/getting_started.jsp" />
+  </c:if>
+  <c:if test="${mashup_attributes['element'] == 'signInForm'}">
+    <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/utility/signin_form.jsp" />
+  </c:if>
+  <c:if test="${mashup_attributes['element'] == 'siteAdmin'}">
+    <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/utility/site_admin.jsp" />
+  </c:if>
+  <c:if test="${mashup_attributes['element'] == 'myWorkspace'}">
+    <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/utility/my_workspace.jsp" />
+  </c:if>
+  <c:if test="${mashup_attributes['element'] == 'workspaceTree'}">
+    <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/utility/workspace_tree.jsp" />
+  </c:if>
 </div>
 </c:if>
 
@@ -48,6 +62,22 @@
    <div style="padding:10px;" width="100%">
 	 <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
 	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.utility"/></span>
+		  &nbsp;-&nbsp;
+		  <c:if test="${mashup_attributes['element'] == 'gettingStarted'}">
+		    <span><ssf:nlt tag="mashup.gettingStarted"/></span>
+		  </c:if>
+		  <c:if test="${mashup_attributes['element'] == 'signInForm'}">
+		    <span><ssf:nlt tag="mashup.signInForm"/></span>
+		  </c:if>
+		  <c:if test="${mashup_attributes['element'] == 'siteAdmin'}">
+		    <span><ssf:nlt tag="mashup.siteAdmin"/></span>
+		  </c:if>
+		  <c:if test="${mashup_attributes['element'] == 'myWorkspace'}">
+		    <span><ssf:nlt tag="mashup.myWorkspace"/></span>
+		  </c:if>
+		  <c:if test="${mashup_attributes['element'] == 'workspaceTree'}">
+		    <span><ssf:nlt tag="mashup.workspaceTree"/></span>
+		  </c:if>
 	    <br/>
 	    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
 	      class="ss_linkButton ss_fineprint"

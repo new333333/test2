@@ -565,7 +565,9 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 				    windowState="${ss_urlWindowState}"
 			      	action="view_ws_listing"
 			      	binderId="${ssUser.workspaceId}"/>"
-              	><img src="<html:rootPath/>images/pics/masthead/ss_banner_guy.png" width="30" height="34" border="0" align="absmiddle" />&nbsp;&nbsp;<ssf:nlt tag="navigation.myWorkspace"/></a> 
+              	><img src="<html:rootPath/>images/pics/masthead/ss_banner_guy.png" 
+              	  width="30" height="34" border="0" align="absmiddle" 
+              	 />&nbsp;&nbsp;<ssf:nlt tag="navigation.myWorkspace"/></a> 
        </td>
           </tr><!-- kablink: ss_banner_guy_ka.gif -->
     </tbody>
