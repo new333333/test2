@@ -1521,6 +1521,13 @@ div.ss_box_top_rounded {
   margin:0px;
   padding:0px;
   }
+.ss_twNoPlusMinus {
+  width:1px;
+  height:20px;
+  border:none;
+  margin:0px;
+  padding:0px;
+  }
 .ss_twPlusTop {
   width:19px;
   height:20px;
