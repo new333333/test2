@@ -55,17 +55,19 @@
 </c:choose>
 
 <img src="<html:imagesPath/>pics/1pix.gif" <ssf:alt/>
-		onload="dojo.addOnLoad(function(){window['findMultiple${prefix}'] = ssFind.configMultiple({
-			prefix: '${prefix}', 
-			clickRoutineObj: '${ssFindClickRoutineObj}', 
-			clickRoutine: '${ssFindClickRoutine}',
-			formName: '${ssFindFormName}',
-			elementName: '${ssFindFormElement}',
-			displayValue: '${ssDisplayValue}',
-			displayValueOnly: '${ssDisplayValueOnly}'
-				});
+		onload="dojo.addOnLoad(function(){
+			if (!window['findMultiple${prefix}']) {<%-- prevents FF problem - img.onload called sometimes twice --%>
+				window['findMultiple${prefix}'] = ssFind.configMultiple({
+					prefix: '${prefix}', 
+					clickRoutineObj: '${ssFindClickRoutineObj}', 
+					clickRoutine: '${ssFindClickRoutine}',
+					formName: '${ssFindFormName}',
+					elementName: '${ssFindFormElement}',
+					displayValue: '${ssDisplayValue}',
+					displayValueOnly: '${ssDisplayValueOnly}'
+			});
 	<c:forEach var="item" items="${ssFindUserList}" varStatus="status"> window['findMultiple${prefix}'].addValue('<c:out value="${item.id}"/>');</c:forEach>
-	});" />
+	}});" />
 
 <input type="hidden" name="${ssFindFormElement}" id="${prefix}_ss_find_multiple_input"/>		
 
