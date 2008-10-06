@@ -18,7 +18,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationException;
 import org.springframework.security.AuthenticationServiceException;
@@ -42,18 +41,8 @@ import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.util.Validator;
 
 public class AuthenticationModuleImpl extends BaseAuthenticationModule
-		implements AuthenticationProvider, InitializingBean {
+		implements AuthenticationProvider {
 	protected Log logger = LogFactory.getLog(getClass());
-
-	private ProviderManager providerManager;
-
-	public ProviderManager getProviderManager() {
-		return providerManager;
-	}
-
-	public void setProviderManager(ProviderManager providerManager) {
-		this.providerManager = providerManager;
-	}
 
 	protected Map<Long, ProviderManager> authenticators = null;
 
@@ -64,10 +53,6 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		authenticators = new HashMap<Long, ProviderManager>();
 		localProviders = new HashMap<Long, SsfAuthenticationProvider>();
 		lastUpdates = new HashMap<Long, Long>();
-	}
-
-	public void afterPropertiesSet() throws Exception {
-		getProviderManager().getProviders().add(this);
 	}
 
 	protected void addZone(ZoneConfig zoneConfig) throws Exception
