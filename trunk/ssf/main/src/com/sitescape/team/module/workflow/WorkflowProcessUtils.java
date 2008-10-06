@@ -137,7 +137,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	    		}
 	    	}
     	}
-    	n.users = getUsers(ids);
+    	n.users = new HashSet(getUsers(ids));
     	return n;    	
     }
 
@@ -816,8 +816,8 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		return result;
 	}
 	//make sure have rights to read principals
-	protected static Set<User> getUsers(final Set<Long>ids) {
-		return (Set<User>)RunasTemplate.runasAdmin(new RunasCallback() {
+	protected static List<User> getUsers(final Set<Long>ids) {
+		return (List<User>)RunasTemplate.runasAdmin(new RunasCallback() {
 			public Object doAs() {
 			  
 				Set userIds = getInstance().getProfileDao().explodeGroups(ids, RequestContextHolder.getRequestContext().getZoneId());
