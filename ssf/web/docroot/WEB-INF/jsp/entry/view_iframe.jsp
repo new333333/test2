@@ -110,7 +110,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		    <jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
 		  </c:if>
 		  
-		  <c:if test="${ss_mashupShowAlternateToolbar}">
+		  <c:if test="${ss_mashupHideToolbar && ss_mashupShowAlternateToolbar}">
 		    <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 		  </c:if>
 		</div>

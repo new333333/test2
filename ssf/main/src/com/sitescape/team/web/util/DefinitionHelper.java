@@ -57,6 +57,7 @@ import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
+import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionModule;
@@ -764,6 +765,10 @@ public class DefinitionHelper {
     		//Don't hide the toolbar from the manager
     		model.put(WebKeys.MASHUP_SHOW_ALTERNATE_TOOLBAR, true);
     	}
+		if (bs.getAdminModule().testAccess(AdminOperation.manageFunction)) {
+			//This user can do site admin functions
+			model.put(WebKeys.MASHUP_SITE_ADMINISTRATOR, true);
+		}
     	model.put(WebKeys.MASHUP_BINDERS, mashupBinders);
     	model.put(WebKeys.MASHUP_BINDER_ENTRIES, mashupBinderEntries);
     	model.put(WebKeys.MASHUP_ENTRIES, mashupEntries);

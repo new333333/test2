@@ -28,27 +28,10 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value='<%= NLT.get("login.please") %>' scope="request"/>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<ssf:ifadapter>
-<body class="ss_style_body">
-<div id="ss_pseudoPortalDiv${renderResponse.namespace}">
-<div class="ss_style ss_portlet ss_content_outer">
-<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
-<div class="ss_clear_float"></div>
-</ssf:ifadapter>
-<div align="center">
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
+<c:if test="${ssUser.internalId == guestInternalId}">
+<div class="ss_style">
   <jsp:include page="/WEB-INF/jsp/forum/login_form.jsp" />
-</div></DIV>
-<script type="text/javascript">
-	var formObj = self.document.getElementById('loginForm');
-	formObj.j_username.focus();
-</script>
-<ssf:ifadapter>
 </div>
-</div>
-	</body>
-</html>
-</ssf:ifadapter>
+</c:if>

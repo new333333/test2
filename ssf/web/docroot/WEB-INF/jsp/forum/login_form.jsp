@@ -30,25 +30,57 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value='<%= NLT.get("login.please") %>' scope="request"/>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<ssf:ifadapter>
-<body class="ss_style_body">
-<div id="ss_pseudoPortalDiv${renderResponse.namespace}">
-<div class="ss_style ss_portlet ss_content_outer">
-<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
-<div class="ss_clear_float"></div>
-</ssf:ifadapter>
-<div align="center">
-  <jsp:include page="/WEB-INF/jsp/forum/login_form.jsp" />
-</div></DIV>
+  <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
+   <fieldset class="ss_fieldset_login">
+    <div class="ss_legend_login"><ssf:nlt tag="login.please"/></div>
+     <table><tbody>
+      <tr>
+        <td valign="middle" align="right">
+          <span><ssf:nlt tag="login.name"/></span>
+        </td>
+        <th valign="top" style="padding-left:4px;">
+          <input type="text" class="ss_text_login" size="40" name="j_username"/>
+        </td>
+		<td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td valign="middle" align="right">
+          <span><ssf:nlt tag="login.password"/></span>
+        </td>
+        <td valign="top" style="padding-left:4px;">
+          <input class="ss_text_login" type="password" size="40" name="j_password"/>
+        </td>
+      </tr>
+      <tr>
+        <td valign="middle" align="right">
+          <span><ssf:nlt tag="login.remember"/></span>
+        </td>
+        <td valign="top" align="left" style="padding-left:6px;">
+          <input type="checkbox" name="remember"/>
+        </td>
+      </tr>
+      <c:if test="${!empty ss_loginError}">
+       <tr>
+		 <td>&nbsp;</td>
+         <td style="color: red;" colspan="2"><ssf:nlt tag="errorcode.login.failed"/></td>
+       </tr>
+      </c:if>
+ 		<tr>
+   			<td colspan="2" align="center">
+    		  <br/>
+    		  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
+    		  <input type="reset" class="ss_submit" style="margin-left:20px;" value="<ssf:nlt tag="button.reset"/>"/>
+			  <br/>
+			</td>
+		</tr>		  
+	 </table></tbody>
+	  <c:if test="${!empty ssUrl}">
+    <input type="hidden" name="spring-security-redirect" value="${ssUrl}"/>
+    </div> 
+    </fieldset>
+</c:if>
+  </form>
 <script type="text/javascript">
 	var formObj = self.document.getElementById('loginForm');
 	formObj.j_username.focus();
 </script>
-<ssf:ifadapter>
-</div>
-</div>
-	</body>
-</html>
-</ssf:ifadapter>
