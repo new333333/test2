@@ -468,8 +468,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  			zoneConfig.setUpgradeVersion(3);
  		}
  		//Always do the following items
-		//Get any new definitions
+		//Get any new definitions and templates
  		getAdminModule().updateDefaultDefinitions(top.getId(), true);
+		getTemplateModule().updateDefaultTemplates(RequestContextHolder.getRequestContext().getZoneId(), false);
   	}
  	// Must be running inside a transaction set up by the caller 
  	protected void validateZoneTx(Workspace zone) {
