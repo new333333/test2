@@ -81,7 +81,9 @@
 	 <c:set var="nextBinder" value="<%= nextBinder %>"/>
      <li>
 	   <c:if test="${empty ssNavigationLinkTree[nextBinder.id]}">
-	  	<a
+	   <div class="ss_treeWidget">
+	    <img class="ss_twNoPlusMinus" border="0" alt="" src="<html:imagesPath/>pics/1pix.gif" />
+	  	<a class="ss_tree_highlight"
 		  <c:if test="${nextBinder.entityType == 'folder'}">
   			href="<ssf:url 
   			folderId="${nextBinder.id}" 
@@ -104,6 +106,7 @@
 	  	  </c:if>
 	  	  <c:out value="${nextBinder.title}" />
 		</a>
+	  </div>
    	  </c:if>
       <c:if test="${!empty ssNavigationLinkTree[nextBinder.id]}">
 		<div style="display:inline">
