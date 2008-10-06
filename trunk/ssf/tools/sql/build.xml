@@ -70,7 +70,8 @@
 
   		<!-- Make sure to compile the Java code we're about to run. -->
   		<ant dir=".." target="compile" inheritAll="false" />
-  		
+		<property file="${project.dir}/tools/sql/ddl-${database.type}.properties"/>
+
   		<java
   			classname="com.sitescape.team.tools.sql.GenerateCreateTablesUnconstrained"
   			classpathref="project.classpath"
@@ -78,6 +79,7 @@
   			dir="${basedir}"
   			failonerror="true">
   			<arg value="${create.dir}/source-tables-core-${database.type}-temp.sql" />
+ 			<arg value="${ddl.schema}" />
   		</java>
 		<delete file="${create.dir}/source-tables-core-${database.type}-temp.sql" />
  		<java
@@ -87,7 +89,8 @@
   			dir="${basedir}"
   			failonerror="true">
   			<arg value="${create.dir}/source-tables-jbpm-${database.type}-temp.sql" />
-  		</java>
+ 			<arg value="${ddl.schema}" />
+ 		</java>
 		<delete file="${create.dir}/source-tables-jbpm-${database.type}-temp.sql" />
  		<java
   			classname="com.sitescape.team.tools.sql.GenerateCreateTablesUnconstrained"
@@ -96,6 +99,7 @@
   			dir="${basedir}"
   			failonerror="true">
   			<arg value="${create.dir}/source-tables-quartz-${database.type}-temp.sql" />
+ 			<arg value="${ddl.schema}" />
   		</java>
 		<delete file="${create.dir}/source-tables-quartz-${database.type}-temp.sql" />
 	  	<concat destfile="${internal.dir}/create-unconstrained-tables-${database.type}.sql">
@@ -130,8 +134,11 @@
 	  	    <fileset dir="${create.dir}"
 	  	         includes="create-tables-*-${database.type}-temp.sql" />
 	  	</concat>
-	
-		<property file="${project.dir}/tools/sql/ddl-${database.type}.properties"/>
+	  	<concat destfile="${create.dir}/create-synonyms-${database.type}.sql">
+	  	    <fileset dir="${internal.dir}"
+	  	         includes="create-synonyms-*-${database.type}.sql" />
+	  	</concat>
+
 		
   		
  		<concat destfile="${create.dir}/recreate-tables-core-${database.type}-temp.sql">
