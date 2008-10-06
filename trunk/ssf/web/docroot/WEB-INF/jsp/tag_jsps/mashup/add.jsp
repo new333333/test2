@@ -299,8 +299,11 @@ function ss_mashupSubmit${ss_mashupItemId}() {
           <br/>
           <span class="ss_labelAbove"><ssf:nlt tag="mashup.graphic"/></span>
           <select name="${ss_mashupPropertyName}__graphic"
-            onChange="ss_mashupAttr_graphic${ss_mashupItemId} = this.value;}"> 
+            onChange="ss_mashupAttr_graphic${ss_mashupItemId} = this.value;"> 
             <option value=""><ssf:nlt tag="general.please_select"/></option>
+            <c:forEach var="selection" items="${ssBinder.fileAttachments}" >
+              <option value="${selection.id}">${selection.fileItem.name}</option>
+            </c:forEach>
           </select>
           <br/>
           <br/>
