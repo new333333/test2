@@ -30,5 +30,5 @@
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <div>
-  [Workspace tree goes here]
+  [Workspace tree goes here (not implemented yet)]
 </div>
