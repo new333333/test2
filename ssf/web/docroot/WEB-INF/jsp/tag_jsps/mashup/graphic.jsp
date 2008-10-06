@@ -39,7 +39,14 @@
 %>
 <c:if test="${ssConfigJspStyle != 'form'}">
 <div>
-  [The graphic gets shown here (not implemented yet)]
+  <c:if test="${!empty mashup_attributes['graphic']}">
+    <img src="<ssf:url 
+		    webPath="viewFile"
+		    folderId="${ssBinder.id}"
+		    entityType="${ssBinder.entityType}" >
+	    	<ssf:param name="fileId" value="${mashup_attributes['graphic']}"/>
+	    	</ssf:url>">
+  </c:if>
 </div>
 </c:if>
 
