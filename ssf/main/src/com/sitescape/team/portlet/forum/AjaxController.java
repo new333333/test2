@@ -2156,7 +2156,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 			if (miniBlogId == null) {
 				//The miniblog folder doesn't exist, so create it
 				miniBlog = getProfileModule().addUserMiniBlog(user);
-				if (miniBlog != null) getProfileModule().setMiniBlogId(miniBlog.getId());
 				
 			} else {
 				try {
@@ -2164,12 +2163,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 					if (miniBlog.isDeleted()) {
 						//The miniblog folder doesn't exist anymore, so try create it again
 						miniBlog = getProfileModule().addUserMiniBlog(user);
-						if (miniBlog != null) getProfileModule().setMiniBlogId(miniBlog.getId());
 					}
 				} catch(NoBinderByTheIdException e) {
 					//The miniblog folder doesn't exist anymore, so try create it again
 					miniBlog = getProfileModule().addUserMiniBlog(user);
-					if (miniBlog != null) getProfileModule().setMiniBlogId(miniBlog.getId());
 				}
 			}
 			if (miniBlog != null) {
@@ -2181,12 +2178,14 @@ public class AjaxController  extends SAbstractControllerRetry {
 				Map data = new HashMap(); // Input data
 				data.put(ObjectKeys.FIELD_ENTITY_TITLE, mbTitle);
 				data.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, status);
-						
-				List<Definition> defs = getDefinitionModule().getDefinitions(null, Boolean.FALSE, Definition.FOLDER_ENTRY);
-				for (Definition def:defs) {
-					if (ObjectKeys.DEFAULT_ENTRY_MINIBLOG_DEF.equals(def.getInternalId())) {
-	  					getFolderModule().addEntry(miniBlog.getId(), def.getId(), new MapInputData(data), null, null);
-  					}
+				Definition def = miniBlog.getDefaultEntryDef();
+				if (def == null) {
+					try {
+						def = getDefinitionModule().getDefinitionByReservedId(ObjectKeys.DEFAULT_ENTRY_MINIBLOG_DEF);
+					} catch (Exception ex) {}
+				}
+				if (def != null) {
+					getFolderModule().addEntry(miniBlog.getId(), def.getId(), new MapInputData(data), null, null);
   				}
 			}
 		}
@@ -2196,8 +2195,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 			ActionResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String visibility = PortletRequestUtils.getStringParameter(request, "visibility", "block");
-		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
-		Map properties = userProperties.getProperties();
 		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_SIDEBAR_VISIBILITY, visibility);
 	}
 	

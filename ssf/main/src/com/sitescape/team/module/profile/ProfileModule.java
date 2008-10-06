@@ -386,11 +386,6 @@ public interface ProfileModule {
      */
     public void setShares(DefinableEntity entity, Collection<Long> principalIds, Collection<Long> bindersIds);
     /**
-     * Set miniBlogId.  
-     * @param id
-     */
-    public void setMiniBlogId(Long miniBlogId);
-    /**
      * Set status.  Sets the status of the current user
      * @param status
      */

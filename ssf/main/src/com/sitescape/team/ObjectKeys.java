@@ -52,13 +52,10 @@ public interface ObjectKeys {
 	public static final String DEFAULT_TEMPLATE_NAME_MINIBLOG="_folder_miniblog";
 	public static final String DEFAULT_TEMPLATE_NAME_PHOTO="_folder_photo";
 		
-	// reserved internalIds for Definitions (not necessarily databaseId)
-	public static final String DEFAULT_DISCUSSIONS_WORKSPACE_DEF="402880e619c6250f0119c62794b9000c";
+	// reserved internalIds for Definitions (not necessarily databaseId cause of multi-zone support)
+	//Used only to locate a minimual set of definitions if something isn't configured correctly
 	public static final String DEFAULT_FOLDER_DEF="402883b90cc53079010cc539bf260001";
 	public static final String DEFAULT_FOLDER_ENTRY_DEF="402883b90cc53079010cc539bf260002";
-	public static final String DEFAULT_FOLDER_BLOG_DEF="402883c6115753d8011157619e35000b";
-	public static final String DEFAULT_FOLDER_MINIBLOG_DEF="402883b51c470e76011c4859ba200010";
-	public static final String DEFAULT_FOLDER_PHOTO_ALBUM_DEF="402883c6115753d8011157619e350008";
 	public static final String DEFAULT_WORKSPACE_DEF="402883b90cc53079010cc539bf260005";
 	public static final String DEFAULT_USER_WORKSPACE_DEF="402883b90cc53079010cc539bf26000b";
 	public static final String DEFAULT_PROFILES_DEF="402883b90cc53079010cc539bf260006";
@@ -66,13 +63,6 @@ public interface ObjectKeys {
 	public static final String DEFAULT_GROUP_DEF="402883b90cc53079010cc539bf260008";
 	public static final String DEFAULT_APPLICATION_DEF="402883b90cc53079010cc539bf26000c";
 	public static final String DEFAULT_APPLICATION_GROUP_DEF="402883b90cc53079010cc539bf26000d";
-
-	//reserved databaseIds for Definitions
-	public static final String DEFAULT_ENTRY_TASK_DEF="402883c1129b1f8101129b28bbe50002";
-	public static final String DEFAULT_ENTRY_CALENDAR_DEF="402883c6115753d80111577dbe29000d";
-	public static final String DEFAULT_ENTRY_SURVEY_DEF="402883c1129b1f8101129b28bbe50004";
-	public static final String DEFAULT_ENTRY_SURVEY_VOTE_DEF="40288182131025d101131029d4920002";
-	public static final String DEFAULT_ENTRY_MILESTONE_DEF="4028818213118b17011311b1f6210017";
 	public static final String DEFAULT_ENTRY_MINIBLOG_DEF="402883b51c48633a011c4866de050002";
 	public static final String DEFAULT_WELCOME_WORKSPACE_DEF="402883b51cbdbdc2011cbdfe2857000b";
 

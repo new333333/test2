@@ -384,11 +384,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    }  	
 
    //RW transaction
-   public void setMiniBlogId(Long miniBlogId) {
-	    User user = RequestContextHolder.getRequestContext().getUser();
-	    user.setMiniBlogId(miniBlogId);
-   }  	
-   //RW transaction
    public void setStatus(String status) {
 	    User user = RequestContextHolder.getRequestContext().getUser();
 	    user.setStatus(status);
@@ -741,15 +736,15 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         }
 
 		Folder miniBlog = null;
-		String mbTitle = NLT.getDef("__template_folder_miniblog");
  		try {	
   			if (!entry.isReserved() || (!ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(entry.getInternalId()) &&
  					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
 				TemplateBinder miniblogTemplate = getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_MINIBLOG);
 				if (miniblogTemplate != null) {
 					Long miniBlogId = getTemplateModule().addBinder(miniblogTemplate.getId(), 
-							entry.getWorkspaceId(), mbTitle, null);
-  					if (miniBlogId != null) 
+							entry.getWorkspaceId(), null, null);
+  					entry.setMiniBlogId(miniBlogId);
+					if (miniBlogId != null) 
   						miniBlog = (Folder)getCoreDao().loadBinder(miniBlogId, entry.getZoneId());
   				}
   			}

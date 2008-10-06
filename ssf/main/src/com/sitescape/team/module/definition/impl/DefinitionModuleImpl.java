@@ -491,6 +491,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		// Controllers need access to definitions.  Allow world read
  		return coreDao.loadDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
 	}
+	public Definition getDefinitionByReservedId(String internalId) {
+		return getCoreDao().loadReservedDefinition(internalId, RequestContextHolder.getRequestContext().getZoneId());
+		
+	}
     //lookup definition by name going up tree including public
 	public Definition getDefinitionByName(Binder binder, Boolean includeAncestors, String name) {
 		List<Definition> defs;
