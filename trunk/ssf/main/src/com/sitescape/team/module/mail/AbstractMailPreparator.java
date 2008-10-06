@@ -53,12 +53,26 @@ public class AbstractMailPreparator implements MimeMessagePreparator {
 		
 	protected void prepareICalendar(Calendar iCal, String fileName, String componentType, boolean addAttachment, boolean addAlternative, MimeMessageHelper helper) throws MessagingException {
 		try {				
-			ByteArrayOutputStream icalOutputStream = ICalUtils.toOutputStraem(iCal);				
-			String contentType = getCalendarContentType(componentType, ICalUtils.getMethod(iCal));
-			DataSource dataSource = createDataSource(new ByteArrayResource(icalOutputStream.toByteArray()), contentType, fileName);
 			//always send ICAL attachments, not bound by "file attachment" flag	cause part of entry fields
-			if (addAttachment) addAttachment(fileName, new DataHandler(dataSource), helper);			
-			if (addAlternative) addAlternativeBodyPart(new DataHandler(dataSource), helper);
+			
+			// addAttachment && addAlternative => only alternative with attachment disposition 
+			//		it prevents problem in GW: if there is alternative AND attachment then all event
+			//		reccurances (but not the first one)	occure twice in calendar
+			// addAttachment && !addAlternative => only attachment
+			// !addAttachment && addAlternative => only alternative
+			if (addAttachment && !addAlternative) {
+				ByteArrayOutputStream icalOutputStream = ICalUtils.toOutputStream(iCal);				
+				String contentType = getCalendarContentType(componentType, ICalUtils.getMethod(iCal));
+				DataSource dataSource = createDataSource(new ByteArrayResource(icalOutputStream.toByteArray()), contentType, fileName);
+				addAttachment(fileName, new DataHandler(dataSource), helper);			
+			}
+			if (addAlternative) {
+				boolean asAttachmentDisposition = addAttachment;
+				ByteArrayOutputStream icalOutputStream = ICalUtils.toOutputStream(iCal);				
+				String contentType = getCalendarContentType(componentType, ICalUtils.getMethod(iCal));
+				DataSource dataSource = createDataSource(new ByteArrayResource(icalOutputStream.toByteArray()), contentType, fileName);
+				addAlternativeBodyPart(fileName, asAttachmentDisposition, new DataHandler(dataSource), helper);
+			}
 		} catch (IOException e) {
 			logger.error(e);
 		} catch (ValidationException e) {
@@ -146,13 +160,16 @@ public class AbstractMailPreparator implements MimeMessagePreparator {
 		helper.getMimeMultipart().addBodyPart(attachmentPart);	
 	}
 
-	public void addAlternativeBodyPart(DataHandler dataHandler, MimeMessageHelper helper) throws MessagingException, IOException {
+	public void addAlternativeBodyPart(String fileName, boolean asAttachmentDisposition, DataHandler dataHandler, MimeMessageHelper helper) throws MessagingException, IOException {
 		MimeBodyPart bodyPart = getMainPart(helper);
 		MimeMultipart bodyContent = (MimeMultipart)bodyPart.getContent();
 		
 		MimeBodyPart alternativePart = new MimeBodyPart();
 		alternativePart.setDataHandler(dataHandler);
-		
+		if (asAttachmentDisposition && fileName != null) {
+			alternativePart.setDisposition(MimeBodyPart.ATTACHMENT);
+			alternativePart.setFileName(fileName);
+		}
 		bodyContent.addBodyPart(alternativePart);
 	}
 	

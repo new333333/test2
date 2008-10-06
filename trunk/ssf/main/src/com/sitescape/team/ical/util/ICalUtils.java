@@ -65,7 +65,7 @@ public class ICalUtils {
 		return null;
 	}
 
-	public static ByteArrayOutputStream toOutputStraem(Calendar calendar) throws IOException, ValidationException {
+	public static ByteArrayOutputStream toOutputStream(Calendar calendar) throws IOException, ValidationException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		CalendarOutputter calendarOutputter = new CalendarOutputter();
 		calendarOutputter.output(calendar, out);
