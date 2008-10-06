@@ -147,7 +147,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				}
 				response.setRenderParameter(WebKeys.URL_OPERATION,  WebKeys.OPERATION_IMPORT);
 			} else if (WebKeys.OPERATION_RESET.equals(operation)) {
-				getTemplateModule().updateDefaultTemplates(RequestContextHolder.getRequestContext().getZoneId());
+				getTemplateModule().updateDefaultTemplates(RequestContextHolder.getRequestContext().getZoneId(), true);
 			} else if (WebKeys.OPERATION_MODIFY.equals(operation)) {
 				Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 				//	The modify form was submitted. Go process it

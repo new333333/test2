@@ -610,7 +610,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		Function teamWsRole = addTeamWorkspaceRole(top);
     		//make sure allusers group and roles are defined, may be referenced by templates
     		getAdminModule().updateDefaultDefinitions(top.getId(), false);
-    		getTemplateModule().updateDefaultTemplates(top.getId());
+    		getTemplateModule().updateDefaultTemplates(top.getId(), true);
 
     		//Update after import of definitions
     		getDefinitionModule().setDefaultBinderDefinition(top);

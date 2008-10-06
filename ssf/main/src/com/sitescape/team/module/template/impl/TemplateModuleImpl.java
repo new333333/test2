@@ -145,8 +145,9 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		return (BinderProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 	}
 
-	public void updateDefaultTemplates(Long topId) {
+	public boolean updateDefaultTemplates(Long topId, boolean replace) {
 		Workspace top = (Workspace)getCoreDao().loadBinder(topId, topId);
+		boolean result = true;
 		
 		//default definitions stored in separate config file
 		String startupConfig = SZoneConfig.getString(top.getName(), "property[@name='startupConfig']", "config/startup.xml");
@@ -165,11 +166,12 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				try {
 					in = new ClassPathResource(file).getInputStream();
 					Document doc = reader.read(in);
-					addTemplate(doc,true);
+					Long templateId = addTemplate(doc,true);
+					if (templateId == null) result = false;
 					getCoreDao().flush();
 				} catch (Exception ex) {
 					logger.error("Cannot add template:" + file + " " + ex.getMessage());
-					return; //cannot continue, rollback is enabled
+					return false; //cannot continue, rollback is enabled
 				} finally {
 					if (in!=null) in.close();
 				}
@@ -177,6 +179,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		} catch (Exception ex) {
 			logger.error("Cannot read startup configuration:", ex);
 		}
+		return result;
 	}
     //These should be created when the zone is created, but just incase provide minimum backup
 	public TemplateBinder addDefaultTemplate(int type) {

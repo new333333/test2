@@ -72,22 +72,25 @@
 </c:if>
 <div <c:if test="${ssConfigJspStyle == 'form'}"> style="border: 1px silver solid; padding: 30px;" </c:if> >
   <c:if test="${ssConfigJspStyle == 'form'}">
-    <%@ include file="/WEB-INF/jsp/tag_jsps/mashup/add.jsp" %>
+    <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/add.jsp" />
     <c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
   </c:if>
   <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
     <c:set var="mashupValue" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
     <jsp:useBean id="mashupValue" type="java.lang.String" />
     <%
+    	if (mashupValue == null) mashupValue = "";
     	String[] mashupValues = mashupValue.split(";");
     	Map inputElements = new HashMap();
     %>
+    <% if (mashupValues != null && mashupValues.length > 0) { %>
     <c:forEach var="mashupItem" items="<%= mashupValues %>">
       <c:if test="${!empty mashupItem}">
 	      <jsp:useBean id="mashupItem" type="java.lang.String" />
 	      <%
 	    	  String[] mashupItemValues = mashupItem.split(",");
-	    	  String type = mashupItemValues[0];
+	    	  String type = "";
+	    	  if (mashupItemValues.length > 0) type = mashupItemValues[0];
 	      %>
 	 	  <c:if test="${ssConfigJspStyle == 'form'}">
 	  	    <%
@@ -99,12 +102,13 @@
 		  <% if (!type.equals("") && !type.equals("tableStart")) { %>
 			  <c:if test="${ssConfigJspStyle == 'form'}">
 	      		<c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
-			    <%@ include file="/WEB-INF/jsp/tag_jsps/mashup/add.jsp" %>
+				<jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/add.jsp" />
 	      		<c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
 			  </c:if>
 		  <% } %>
 	    </c:if>
      </c:forEach>
+     <% } %>
      <%
      	Iterator itInputElements = inputElements.entrySet().iterator();
      	while (itInputElements.hasNext()) {
