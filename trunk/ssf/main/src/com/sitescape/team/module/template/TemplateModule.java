@@ -100,5 +100,5 @@ public interface TemplateModule {
 	 */
 	public List<TemplateBinder> getTemplates(int type);
 
-	public void updateDefaultTemplates(Long topId);
+	public boolean updateDefaultTemplates(Long topId, boolean replace);
 }

@@ -212,9 +212,9 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
     <tbody>
     <tr>
     <c:if test="${!ss_mashupHideSidebar}">
-    <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
+      <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
-	</td>
+	  </td>
 	</c:if>
 	<td valign="top" class="ss_view_info">
 </ssf:ifnotaccessible>

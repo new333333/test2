@@ -75,9 +75,9 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 </c:if>
 </ssf:ifnotaccessible>
 <c:if test="${!ss_mashupHideToolbar}">
-<td valign="middle">
-<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
-</td>
+  <td valign="middle">
+   <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
+  </td>
 </c:if>
 </tr>
 </table>
@@ -87,32 +87,32 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
     <tbody>
     <tr>
     <c:if test="${!ss_mashupHideSidebar}">
-    <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
+      <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
-	</td>
+	  </td>
 	</c:if>
 
 	<td valign="top" class="ss_view_info">
 	</ssf:ifnotaccessible>
-		<jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
-		<div id="ss_whatsNewDiv${ss_namespace}">
-		<c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
-		<%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>
-		</c:if>
-		</div>
-	    <div id="ss_folder_type_${ssDefinitionFamily}" class="ss_style_color">
-			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-					  configElement="${ssConfigElement}" 
-					  configJspStyle="${ssConfigJspStyle}" 
-					  entry="${ssBinder}" />
-		</div>
-		  <% // Footer toolbar %>
-		  <c:if test="${!ss_mashupHideFooter}">
-		    <jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
-		  </c:if>
-		  <c:if test="${ss_mashupHideToolbar && ss_mashupShowAlternateToolbar}">
-		    <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
-		  </c:if>
+	<jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
+	<div id="ss_whatsNewDiv${ss_namespace}">
+	<c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
+	  <%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>
+	</c:if>
+	</div>
+    <div id="ss_folder_type_${ssDefinitionFamily}" class="ss_style_color">
+		<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+				  configElement="${ssConfigElement}" 
+				  configJspStyle="${ssConfigJspStyle}" 
+				  entry="${ssBinder}" />
+	</div>
+	  <% // Footer toolbar %>
+	  <c:if test="${!ss_mashupHideFooter}">
+	    <jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+	  </c:if>
+	  <c:if test="${ss_mashupHideToolbar && ss_mashupShowAlternateToolbar}">
+	    <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
+	  </c:if>
 	<ssf:ifnotaccessible>
 	</td>
 	</tr>

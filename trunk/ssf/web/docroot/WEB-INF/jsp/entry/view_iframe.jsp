@@ -79,18 +79,19 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 </table>
 </div>
 <div width="100%">
-    <ssf:ifnotaccessible>
+  <ssf:ifnotaccessible>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
-    <c:if test="${!ss_mashupHideSidebar}">
+   <c:if test="${!ss_mashupHideSidebar}">
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
-	</c:if>
-	<c:if test="${!ss_mashupHideToolbar}">
+   </c:if>
+  </ssf:ifnotaccessible>
+  <c:if test="${!ss_mashupHideToolbar}">
+   <ssf:ifnotaccessible>
 	<td valign="top" class="ss_view_info">
-	</ssf:ifnotaccessible>
 	  <jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
 	  <div align="center">
 	    <div id="ss_folder_wrap">
@@ -115,9 +116,10 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		  </c:if>
 		</div>
 	  </div>
-	<ssf:ifnotaccessible>
 	</td>
-	</c:if>
+	</ssf:ifnotaccessible>
+   </c:if>
+	<ssf:ifnotaccessible>
 	</tr>
 	</tbody>
 	</table>
