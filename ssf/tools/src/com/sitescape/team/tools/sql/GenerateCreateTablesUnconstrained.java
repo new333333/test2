@@ -22,25 +22,30 @@ public class GenerateCreateTablesUnconstrained {
 	static BufferedWriter addConstraints = null;
 	static BufferedWriter dropConstraints = null;
 	static BufferedWriter dropTables = null;
+	static BufferedWriter createSynonyms = null;
 
 	public static void main(String[] args) {
-		if (args.length != 1) {
-			System.out.println("usage: java GenerateCreateTablesUnconstrained <unconstrained script name>");
+		if (args.length == 0) {
+			System.out.println("usage: java GenerateCreateTablesUnconstrained <unconstrained script name> [schema]");
 			return;
 		}
-		else {
-			System.out.println("java GenerateCreateTablesUnconstrained " + args[0]);
+		else if  (args.length > 2 ) {
+			System.out.println("java GenerateCreateTablesUnconstrained " + args);
 		}
 		
 		try {
-			doMain(args[0]);
+			if (args.length == 1)
+				doMain(args[0], "sitescape");
+			else {
+				doMain(args[0], args[1]);
+			}
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private static void doMain(String inputFileName) throws IOException {
+	private static void doMain(String inputFileName, String schema) throws IOException {
 		String databaseTypeStr = getDatabaseTypeStr(inputFileName);
 		Map typeMap = getTypeMap(databaseTypeStr);
 		String tableGroupName = getTableGroupNameStr(inputFileName);
@@ -59,7 +64,10 @@ public class GenerateCreateTablesUnconstrained {
 		addConstraints = new BufferedWriter(new FileWriter(addConstraintsFile));
 		dropConstraints = new BufferedWriter(new FileWriter(dropConstraintsFile));
 		dropTables = new BufferedWriter(new FileWriter(dropTablesFile));
-		
+		if(databaseTypeStr.equals("oracle")) {
+			File createSynonymsFile = new File(inputFile.getParentFile(), "internal/create-synonyms-" + tableGroupName + "-" + databaseTypeStr + ".sql");
+			createSynonyms = new BufferedWriter(new FileWriter(createSynonymsFile));
+		}
 		String line = null;
 		String trimmedLine = null;
 		while((line = in.readLine()) != null) {
@@ -78,6 +86,17 @@ public class GenerateCreateTablesUnconstrained {
 				}
 				createUnconstrainedTables.write(doUtf8(sb.toString(), typeMap, columnConvert));
 				createUnconstrainedTables.newLine();
+				if(createSynonyms!= null) {
+					String [] works = sb.toString().split(",");
+					if (works.length != 0) {
+						String [] first = works[0].split (" ");
+						if (first.length >= 3) {
+							String tableName = first[2];
+							createSynonyms.write("create synonym " + tableName + " for " + schema + "." + tableName + ";");
+							createSynonyms.newLine();
+						}
+					}
+				}
 			}
 			else if (trimmedLine.startsWith("create index") || trimmedLine.startsWith("CREATE INDEX") ||
 					trimmedLine.startsWith("insert") || trimmedLine.startsWith("INSERT")) {
@@ -135,6 +154,20 @@ public class GenerateCreateTablesUnconstrained {
 					bw.newLine();					
 				}
 			}
+			else if (trimmedLine.contains("create sequence") || trimmedLine.contains("CREATE SEQUENCE")) {
+				BufferedWriter bw = selectWriter();
+				bw.write(trimTrailing(line));
+				bw.newLine();
+				if(createSynonyms!= null) {
+					String [] works = line.toString().split(" ");
+					if (works.length >= 3) {
+						String seqName = works[2];
+						if (seqName.lastIndexOf(";") > -1) seqName=seqName.substring(0, seqName.lastIndexOf(";"));
+						createSynonyms.write("create synonym " + seqName + " for " + schema + "." + seqName + ";");
+						createSynonyms.newLine();
+					}
+				}
+			}
 			else {
 				// some command/line we don't recognize
 				BufferedWriter bw = selectWriter();
@@ -147,6 +180,7 @@ public class GenerateCreateTablesUnconstrained {
 		addConstraints.close();
 		dropConstraints.close();
 		dropTables.close();
+		if(createSynonyms!= null) createSynonyms.close();
 		
 		if(createUnconstrainedTablesFile.length() == 0) {
 			System.out.println("*** WARNING: zero length file [" + createUnconstrainedTablesFile.getAbsolutePath());
@@ -303,7 +337,6 @@ public class GenerateCreateTablesUnconstrained {
 			
 		}
 		return out;
-		
-		
 	}
 }
+

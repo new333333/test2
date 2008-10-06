@@ -27,7 +27,6 @@ alter table SS_Principals drop foreign key FK7693816493118767;
 alter table SS_Principals drop foreign key FK76938164DB0761E4;
 
 alter table SS_PrincipalMembership drop foreign key FK176F6225AEB5AABF;
-alter table SS_PrincipalMembership drop foreign key FK176F6225197D4C44;
 
 create index owningBinder_audit on SS_AuditTrail (owningBinderId);
 create index entityOwner_audit on SS_AuditTrail (entityId, entityType);
