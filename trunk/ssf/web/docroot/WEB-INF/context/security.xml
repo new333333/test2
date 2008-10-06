@@ -11,6 +11,14 @@
 		<s:custom-filter position="FIRST"/>
 	</bean>
 	
+	<bean id="_authenticationManager" class="org.springframework.security.providers.ProviderManager">
+		<property name="providers">
+			<list>
+				<ref local="authenticationModule"/>
+			</list>
+		</property>
+	</bean>
+	
     <s:http session-fixation-protection="newSession">
         <s:intercept-url pattern="/ws/**" filters="none" />
         <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED,ROLE_ANONYMOUS" />
@@ -37,8 +45,6 @@
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.authentication.impl.AuthenticationModuleImpl">
 				<property name="zoneModule"><ref bean="zoneModule"/></property>
-				<!-- The _authenticationManager bean is defined by Spring Security (via the <http> entry in security.xml) -->
-				<property name="providerManager"><ref bean="_authenticationManager"/></property>
 			</bean>
 		</property>
 	</bean>
