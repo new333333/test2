@@ -78,6 +78,7 @@ public interface DefinitionModule {
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException, AccessControlException;
 
 	public Definition getDefinition(String id);
+	public Definition getDefinitionByReservedId(String id);
 	public Definition getDefinitionByName(Binder binder, Boolean includeAncestors, String name);
 	public List<Definition> getAllDefinitions();
 	public List<Definition> getAllDefinitions(Integer type);
