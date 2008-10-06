@@ -34,6 +34,7 @@
 	<definitionFile>config/definitions/_projectWorkspace.xml</definitionFile>
 	<definitionFile>config/definitions/_team_workspace.xml</definitionFile>
 	<definitionFile>config/definitions/_team_root.xml</definitionFile>
+	<definitionFile>config/definitions/_welcomeWorkspace.xml</definitionFile>
 	<templateFile>config/templates/_folder_blog.xml</templateFile>
 	<templateFile>config/templates/_folder_calendar.xml</templateFile>
 	<templateFile>config/templates/_folder.xml</templateFile>
@@ -50,4 +51,5 @@
 	<templateFile>config/templates/_workspace_user.xml</templateFile>
 	<templateFile>config/templates/_workspace_project_management.xml</templateFile>
 	<templateFile>config/templates/_workspace_discussions.xml</templateFile>
+	<templateFile>config/templates/_workspace_welcome.xml</templateFile>
 </zoneConfiguration>

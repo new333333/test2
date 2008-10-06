@@ -94,7 +94,7 @@ public interface ObjectKeys {
 	public static final String DEFAULT_TEAM_WORKSPACE_CONFIG="402883c1129b1f8101129b28bc620004";
 	public static final String DEFAULT_PROJECT_WORKSPACE_CONFIG="402883c1129b1f8101129b28bc620005";
 	public static final String DEFAULT_DISCUSSIONS_WORKSPACE_CONFIG="402880e619c6250f0119c62794b9000c";
-	public static final String DEFAULT_WELCOME_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0016";
+	public static final String DEFAULT_WORKSPACE_WELCOME_CONFIG="402883b90d0de1f3010d0df5582b0016";
 	
 	//reserved internalIds for binders
 	public static final String PROFILE_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b0005";

@@ -6,7 +6,7 @@
   <attribute name="title" type="string">__template_workspace_welcome</attribute>
   <attribute name="description" type="description"></attribute>
   <attribute name="iconName" type="string">/icons/workspace.gif</attribute>
-  <attribute name="name" type="string">_welcome_workspace</attribute>
+  <attribute name="name" type="string">_workspace_welcome</attribute>
   <property name="library">false</property>
   <property name="uniqueTitle">false</property>
   <property name="inheritFunctionMembership">true</property>
