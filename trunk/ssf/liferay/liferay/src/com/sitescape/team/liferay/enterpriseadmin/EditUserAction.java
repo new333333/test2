@@ -92,8 +92,8 @@ public class EditUserAction extends com.liferay.portlet.enterpriseadmin.action.E
 		// Update user attributes.
 		String password = AdminUtil.getUpdateUserPassword(req, user.getUserId());
 		
-		if(password == null)
-			password = ""; // temporary...only until user specifies real password
+		if(Validator.isNull(password))
+			password = null;
 					
 		synchAddOrUpdateUser(PortalUtil.getCompany(req).getWebId(), 
 				user.getScreenName(), password, Util.getUpdatesMap(user));
