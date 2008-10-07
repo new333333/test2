@@ -509,7 +509,39 @@ div.ss_popup_body {
 	}
 .ss_popup ul{
 	text-decoration: none;
-	}	
+	}
+	
+/* THEME MENU STYLES */
+
+div.ss_themeMenu {
+  position:absolute;
+  border:1px solid ${ss_toolbar1_background_color};
+  margin: 0px;
+  background-color:${ss_style_background_color_opaque};
+  text-align: left;
+  width: 25%;
+  min-width: 150px;
+}
+.ss_themeMenu_top {
+	text-align: center;
+	padding: 0px 15px;
+	white-space: nowrap;
+}
+div.ss_themeMenu a {
+  font-family: ${ss_style_font_family};
+  font-size: ${ss_style_font_size}; 
+  text-decoration: underline;
+}
+div.ss_themeMenu a:hover {
+	color: #333333 !important;
+}
+
+div.ss_themeMenu ul {
+	list-style-type: none;
+	padding-left: 0px;
+	margin-left: 20px;
+}
+		
 /* ENTRY VIEW TOOLBAR STYLES */
 /* FAMILY TYPES = (10)unspecified (11)blog (12)calendar (13)discussion (14)photo (15)wiki (16)task (17)file */
 

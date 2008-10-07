@@ -4135,34 +4135,6 @@ div.ssPageNavi table td {
 	font-weight: bold;
 }
 
-
-div.ss_themeMenu {
-  position:absolute;
-  border:1px solid ${ss_toolbar1_background_color};
-  margin: 0px;
-  background-color:${ss_style_background_color_opaque};
-  text-align: left;
-}
-.ss_themeMenu_top {
-	text-align: center;
-	padding: 0px 15px;
-}
-div.ss_themeMenu a {
-  font-family: ${ss_style_font_family};
-  font-size: ${ss_style_font_size}; 
-  text-decoration: underline;
-}
-div.ss_themeMenu a:hover {
-	color: #333333 !important;
-}
-
-div.ss_themeMenu ul {
-	list-style-type: none;
-	padding-left: 0px;
-	margin-left: 20px;
-}
-
-
 div.ss_license_warning {
   color: red;
   font-weight: bold;
