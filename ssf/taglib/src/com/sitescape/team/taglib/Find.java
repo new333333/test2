@@ -127,6 +127,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			req.setAttribute(WebKeys.FIND_INSTANCE_COUNT, this.instanceCount);
 			req.setAttribute(WebKeys.FIND_INSTANCE_CODE, this.hashCode() + "_" + this.formName + "_" + this.formElement);
 			req.setAttribute(WebKeys.FIND_LEAVE_RESULTS_VISIBLE, this.leaveResultsVisible.toString());
+			req.setAttribute(WebKeys.FIND_FOLDERS_ONLY, this.foldersOnly.toString());
 			req.setAttribute(WebKeys.FIND_SEARCH_SUBFOLDERS, this.searchSubFolders.toString());
 			req.setAttribute(WebKeys.FIND_SHOW_USER_TITLE_ONLY, this.showUserTitleOnly.toString());
 			req.setAttribute(WebKeys.FIND_DISPLAY_VALUE, this.displayValue.toString());

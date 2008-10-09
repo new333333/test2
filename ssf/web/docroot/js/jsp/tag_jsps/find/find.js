@@ -395,6 +395,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 										+ "&findType=" + that._singleListType 
 										+ (that._singleBinderId != null?"&binderId=" + that._singleBinderId:"")
 										+ (that._singleSubFolders != null?"&searchSubFolders=" + that._singleSubFolders: "")
+										+ (that._singleFoldersOnly != null?"&foldersOnly=" + that._singleFoldersOnly: "")
 										+ "&listDivId=" + that._listContainerInnerDiv.id
 										+ "&showUserTitleOnly=" + that._showUserTitleOnly
 										+ "&namespace=" + that._singlePrefix
