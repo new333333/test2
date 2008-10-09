@@ -51,7 +51,7 @@ public class NotifyBuilderDescription extends AbstractNotifyBuilder {
     	Object obj = attr.getValue();
     	String value;
     	if (obj instanceof Description && !visitor.isHtml())
-    		value = MarkupUtil.markupStringReplacement(null, null, null, null, visitor.getEntity(), ((Description)obj).getText(), WebKeys.MARKUP_VIEW);	
+    		value = MarkupUtil.markupStringReplacement(null, null, null, null, visitor.getEntity(), ((Description)obj).getText(), WebKeys.MARKUP_EXPORT);	
     	else
     		value = obj.toString();	
     	if (!visitor.isHtml()) value = replaceHtml(value);
@@ -64,7 +64,7 @@ public class NotifyBuilderDescription extends AbstractNotifyBuilder {
     	String value="";
     	if (obj != null) {
     		if (visitor.isHtml())
-    			value = MarkupUtil.markupStringReplacement(null, null, null, null, visitor.getEntity(), obj.getText(), WebKeys.MARKUP_VIEW);
+    			value = MarkupUtil.markupStringReplacement(null, null, null, null, visitor.getEntity(), obj.getText(), WebKeys.MARKUP_EXPORT);
     		else 
     			value = obj.getText();
     	}
