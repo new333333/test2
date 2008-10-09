@@ -26,6 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
+#if ($ssVisitor.isHtml())
 <div style="#ss_entryContent()">
  #set ($top = ${ssDocument.selectSingleNode("//topFolder")})
 <span style="font-weight:bold;">
@@ -57,4 +58,29 @@
  #end
  </div>
  <br/>
- 
+#else
+#set ($top = ${ssDocument.selectSingleNode("//topFolder")})
+#ss_print("${top.attributeValue('changeCount')}")
+#if ($top.attributeValue("changeCount") == 1)
+#ss_print("$ssVisitor.getNLT('notify.changedOne')")
+#else
+#ss_print("$ssVisitor.getNLT('notify.changedMany')")
+#end
+#ss_printLn("$esc.html(${ssVisitor.Entity.Title})")
+#ss_printLn("${ssVisitor.getNLT('notify.TOC')}:")
+#foreach ($folder in ${ssDocument.selectNodes("//folder")})
+#ss_printLn("${folder.attributeValue('title')}")
+#foreach ($entry in $folder.selectNodes("./folderEntry"))
+#if (${entry.attributeValue('docLevel')} == '1' || ${entry.attributeValue('hasChanges')} == 'true')
+#if (${entry.attributeValue('docLevel')} != '1')
+#ss_print("     ")
+#end
+#ss_print("     ${entry.attributeValue('docNumber')} $esc.html(${entry.attributeValue('title')})")
+#if (${entry.attributeValue("hasChanges")} == 'true')
+#ss_print(" ($ssVisitor.getNLT(${entry.attributeValue('notifyType')}))")
+#end
+#ss_printLn("")
+#end
+#end
+#end
+#end

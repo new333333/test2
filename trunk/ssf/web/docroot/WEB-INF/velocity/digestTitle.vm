@@ -26,8 +26,8 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  *#
-
 #set ($ssElement = ${ssVisitor.getParam('ssElement')})
+#if ($ssVisitor.isHtml())
 <div style="border-bottom:thin solid #cccccc;"></div>
 <div style="#ss_entryContent()">
 <a href="#toc">${ssVisitor.getNLT("notify.TOC")}</a><br>
@@ -74,3 +74,19 @@ line-height: 200%; text-decoration:
 <span style="#ss_labelLeft()">${ssVisitor.getNLT("notify.date")}</span>&nbsp;${ssElement.attributeValue('notifyDate')}<br/>
 
 </div>
+#else
+#if ($ssVisitor.Entity.DocNumber)
+#ss_print("${ssVisitor.Entity.DocNumber}. ") 
+#end
+#if ($ssVisitor.Entity.Title)
+#ss_print($ssVisitor.Entity.Title)
+#else
+#ss_print("--$ssVisitor.getNLT('entry.noTitle')--")
+#end
+#if (${ssElement.attributeValue("hasChanges")} == 'true')
+#ss_print(" (${ssVisitor.getNLT(${ssElement.attributeValue('notifyType')})} , $esc.html(${ssElement.attributeValue('notifyBy')}))")
+#end
+#ss_printLn("")
+#ss_printLn("${ssVisitor.getNLT('notify.fromLabel')} $esc.html(${ssElement.attributeValue('notifyFrom')})")
+#ss_printLn("${ssVisitor.getNLT('notify.date')} ${ssElement.attributeValue('notifyDate')}")
+#end
