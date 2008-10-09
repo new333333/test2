@@ -468,13 +468,16 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		element.addAttribute("changeCount", String.valueOf(entries.size()));
 		final StringWriter entryWriter = new StringWriter();
 		final StringWriter tocWriter = new StringWriter();
+		final StringWriter entryWriterText = new StringWriter();
+		final StringWriter tocWriterText = new StringWriter();
 		for (Iterator i=entries.iterator();i.hasNext();) {
 			parentChain.clear();
 			FolderEntry entry = (FolderEntry)i.next();	
 			if (!entry.getParentFolder().equals(lastFolder)) {
 				fElement = rootElement.addElement("folder"); //build TOC
 				fElement.addAttribute("title", entry.getParentFolder().getTitle());
-				doFolderDigest(entry.getParentFolder(), entryWriter, notify);
+				doFolderDigest(entry.getParentFolder(), entryWriter, NotifyVisitor.WriterType.HTML, notify);
+				doFolderDigest(entry.getParentFolder(), entryWriterText, NotifyVisitor.WriterType.TEXT, notify);
 				lastFolder = entry.getParentFolder();
 			}
 			//make sure change of entries exist from topentry down to changed entry
@@ -489,46 +492,49 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				element = fElement.addElement("folderEntry");
 				parent = (FolderEntry)parentChain.get(pos);
 				doEntry(element, parent, notify, false);
-				doDigestEntry(parent, notify, entryWriter, element);
+				doDigestEntry(parent, notify, entryWriter, NotifyVisitor.WriterType.HTML, element);
+				doDigestEntry(parent, notify, entryWriterText, NotifyVisitor.WriterType.TEXT, element);
 				seenIds.add(parent.getId());
 			}
 					
 			seenIds.add(entry.getId());
 			element = fElement.addElement("folderEntry");
 			doEntry(element, entry, notify, true);
-			doDigestEntry(entry, notify, entryWriter, element);
+			doDigestEntry(entry, notify, entryWriter, NotifyVisitor.WriterType.HTML, element);
+			doDigestEntry(entry, notify, entryWriterText, NotifyVisitor.WriterType.TEXT, element);
 		}
 		
 			
-//		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailModule.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), notify.isSummary()));
-		doTOC((Folder)binder, toc, notify, tocWriter);
+		doTOC((Folder)binder, toc, notify, tocWriter, NotifyVisitor.WriterType.HTML);
+		doTOC((Folder)binder, toc, notify, tocWriterText, NotifyVisitor.WriterType.TEXT);
 		result.put(EmailFormatter.HTML, tocWriter.toString() + entryWriter.toString());
+		result.put(EmailFormatter.TEXT, tocWriterText.toString() + entryWriterText.toString());
 		
 		return result;
 	}
-	protected void doDigestEntry(FolderEntry entry, Notify notify, StringWriter writer, Element element) {
+	protected void doDigestEntry(FolderEntry entry, Notify notify, StringWriter writer, NotifyVisitor.WriterType type, Element element) {
 		Map params = new HashMap();
 		params.put("ssElement", element);
-		NotifyBuilderUtil.buildElements(entry, notify, writer, NotifyVisitor.WriterType.HTML, params);
+		NotifyBuilderUtil.buildElements(entry, notify, writer, type, params);
 	}
-	protected void doTOC(Folder folder, Document document, Notify notifyDef, StringWriter writer) {
+	protected void doTOC(Folder folder, Document document, Notify notifyDef, StringWriter writer, NotifyVisitor.WriterType type) {
 		try {
 		    VelocityContext ctx = NotifyBuilderUtil.getVelocityContext();
-           	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, NotifyVisitor.WriterType.HTML, null);
+           	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, type, null);
 			ctx.put("ssDocument", document);
 			ctx.put("ssVisitor", visitor);
-			NotifyBuilderUtil.getVelocityEngine().mergeTemplate("digestTOC.vm", ctx, writer);
+			visitor.processTemplate("digestTOC.vm", ctx);
 		} catch (Exception ex) {
 			NotifyBuilderUtil.logger.error("Error processing template", ex);
 		}
 		
 	}
-	protected void doFolderDigest(Folder folder, StringWriter writer, Notify notifyDef) {
+	protected void doFolderDigest(Folder folder, StringWriter writer, NotifyVisitor.WriterType type, Notify notifyDef) {
 		try {
 		    VelocityContext ctx = NotifyBuilderUtil.getVelocityContext();
-           	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, NotifyVisitor.WriterType.HTML, null);
+           	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, type, null);
 			ctx.put("ssVisitor", visitor);
-			NotifyBuilderUtil.getVelocityEngine().mergeTemplate("folder.vm", ctx, writer);
+			visitor.processTemplate("folder.vm", ctx);
 		} catch (Exception ex) {
 			NotifyBuilderUtil.logger.error("Error processing template", ex);
 		}
@@ -559,7 +565,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		return result;
 
 	}
-	//summary entry
+	
 	private void doEntry(FolderEntry entry, Notify notify, StringWriter writer, NotifyVisitor.WriterType type) {
 		if (entry == null) return;
 		//handle direct ancestors of the changed entry first
