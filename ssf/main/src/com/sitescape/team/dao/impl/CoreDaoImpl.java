@@ -55,6 +55,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.engine.SessionFactoryImplementor;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
@@ -273,9 +274,12 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	    			Statement s = null;
 	    			try {
 		   				s = session.connection().createStatement();
-		   				s.executeUpdate("delete from SS_DefinitionMap where binder=" + binder.getId());
-		   				s.executeUpdate("delete from SS_WorkflowMap where binder=" + binder.getId());
-		   				s.executeUpdate("delete from SS_Notifications where binderId=" + binder.getId());
+		   				String schema = ((SessionFactoryImplementor)session.getSessionFactory()).getSettings().getDefaultSchemaName();
+		   				if (Validator.isNotNull(schema)) schema = schema+".";
+		   				else schema = "";
+		   				s.executeUpdate("delete from " + schema + "SS_DefinitionMap where binder=" + binder.getId());
+		   				s.executeUpdate("delete from " + schema + "SS_WorkflowMap where binder=" + binder.getId());
+		   				s.executeUpdate("delete from " + schema + "SS_Notifications where binderId=" + binder.getId());
 		   			} catch (SQLException sq) {
 		   				throw new HibernateException(sq);
      	   			} finally {

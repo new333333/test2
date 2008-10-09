@@ -156,7 +156,7 @@
 		<property name="quartzProperties">
 		<props>
 			<prop key="org.quartz.threadPool.makeThreadsDaemons">true</prop>
-			<prop key="org.quartz.jobStore.tablePrefix">SSQRTZ_</prop>
+			<prop key="org.quartz.jobStore.tablePrefix">${org.quartz.jobStore.tablePrefix}</prop>
 			<prop key="org.quartz.plugin.triggHistory.class">org.quartz.plugins.history.LoggingJobHistoryPlugin</prop>
 			<prop key="org.quartz.jobStore.driverDelegateClass">${org.quartz.jobStore.driverDelegateClass}</prop>
 			<prop key="org.quartz.jobStore.selectWithLockSQL">${org.quartz.jobStore.selectWithLockSQL}</prop>

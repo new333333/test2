@@ -50,6 +50,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
+import org.hibernate.engine.SessionFactoryImplementor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateSystemException;
@@ -95,6 +96,7 @@ import com.sitescape.team.domain.Visits;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.util.Validator;
 /**
  * @author Jong Kim
  *
@@ -144,10 +146,13 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	   			Statement s = null;
        	   			try {
        	   				s = session.connection().createStatement();
-      	   				s.executeUpdate("delete from SS_WorkAreaFunctionMembers where memberId in " + 
-      	   						"(select p.id from SS_Principals p where  p.parentBinder=" + binder.getId() + ")");
-      	   				s.executeUpdate("delete from SS_Notifications where principalId in " + 
-      	   						"(select p.id from SS_Principals p where  p.parentBinder=" + binder.getId() + ")");
+		   				String schema = ((SessionFactoryImplementor)session.getSessionFactory()).getSettings().getDefaultSchemaName();
+		   				if (Validator.isNotNull(schema)) schema = schema+".";
+		   				else schema = "";
+     	   				s.executeUpdate("delete from " + schema + "SS_WorkAreaFunctionMembers where memberId in " + 
+      	   						"(select p.id from " + schema + "SS_Principals p where  p.parentBinder=" + binder.getId() + ")");
+      	   				s.executeUpdate("delete from " + schema + "SS_Notifications where principalId in " + 
+      	   						"(select p.id from " + schema + "SS_Principals p where  p.parentBinder=" + binder.getId() + ")");
      	   			} catch (SQLException sq) {
        	   				throw new HibernateException(sq);
       	   			} finally {
