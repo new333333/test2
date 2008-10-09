@@ -59,7 +59,7 @@ public class MarkupUtil {
 	protected final static Pattern titleUrlBinderPattern = Pattern.compile("binderId=([^ ]*)");
 	protected final static Pattern titleUrlTitlePattern = Pattern.compile("title=([^ ]*)");
 	protected final static Pattern titleUrlTextPattern = Pattern.compile("text=(.*)$");
-	
+	protected final static Pattern hrefPattern = Pattern.compile("((<a[\\s]href[=\\s]\")([^\":]*)\")");
 	protected final static Pattern pageTitleUrlTextPattern = Pattern.compile("(\\[\\[([^\\]]*)\\]\\])");
 	protected final static Pattern sectionPattern =Pattern.compile("(==[=]*)([^=]*)(==[=]*)");
 	/**
@@ -205,11 +205,17 @@ public class MarkupUtil {
 		public String getFileUrlById(String fileId);
 		public String getRelativeTitleUrl(String normalizedTitle);
 		public String getTitleUrl(String binderId, String normalizedTitle);
+		public String getRootUrl();
 	}
 	public static String markupStringReplacement(final RenderRequest req, final RenderResponse res, 
 			final HttpServletRequest httpReq, final HttpServletResponse httpRes,
 			final Map searchResults, String inputString, String type) {
 		UrlBuilder builder = new UrlBuilder() {
+			public String getRootUrl() {
+				if (httpReq != null) return WebUrlUtil.getAdapterRootURL(httpReq, req.isSecure());
+				if (req != null) return WebUrlUtil.getAdapterRootURL(req, req.isSecure());
+				return WebUrlUtil.getAdapterRootUrl();
+			}
 			public String getFileUrlByName(String fileName) {				
 				return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, searchResults, fileName);
 			}
@@ -244,6 +250,11 @@ public class MarkupUtil {
 			final HttpServletRequest httpReq, final HttpServletResponse httpRes,
 			final DefinableEntity entity, String inputString, String type) {
 		UrlBuilder builder = new UrlBuilder() {
+			public String getRootUrl() {
+				if (httpReq != null) return WebUrlUtil.getAdapterRootURL(httpReq, req.isSecure());
+				if (req != null) return WebUrlUtil.getAdapterRootURL(req, req.isSecure());
+				return WebUrlUtil.getAdapterRootUrl();
+			}
 			public String getFileUrlByName(String fileName) {
 				return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, entity, fileName);
 			}
@@ -277,130 +288,185 @@ public class MarkupUtil {
 			HttpServletRequest httpReq, HttpServletResponse httpRes, UrlBuilder builder, 
 			String entityId, String entityType, String inputString, String type) {
 		if (Validator.isNull(inputString)) return inputString;  //don't waste time
-		String outputString = new String(inputString);
+		StringBuffer outputBuf = new StringBuffer(inputString);
+		
 //why?		outputString = outputString.replaceAll("%20", " ");
 //		outputString = outputString.replaceAll("%7B", "{");
 //		outputString = outputString.replaceAll("%7D", "}");
 		int loopDetector;
 		try {
-	    	//Replace the markup urls with real urls {{attachmentUrl: tempFileHandle}}
-			Matcher matcher = attachmentUrlPattern.matcher(outputString);
-			loopDetector = 0;
-			while (matcher.find()) {
-				if (loopDetector++ > 2000) {
-					logger.error("Error processing markup [3]: " + inputString);
-					return outputString;
+			Matcher matcher; //Pattern.compile("((<a[\\s]href[=\\s]\")([^\":]*)\")");
+			//do first, before add hrefs
+			if (type.equals(WebKeys.MARKUP_EXPORT)) {
+				//tinymce stores relative urls.  If this isn't going to be used by tinymce, need to change the urls
+				matcher = hrefPattern.matcher(outputBuf);
+				if (matcher.find()) {
+					loopDetector = 0;
+					outputBuf = new StringBuffer();
+					do {						
+						if (loopDetector++ > 2000) {
+							logger.error("Error processing markup [6]: " + inputString);
+							return outputBuf.toString();
+						}
+						int count = matcher.groupCount();
+						String link = matcher.group(3);
+						String root = builder.getRootUrl();
+						if (link.startsWith("../")) {
+							root = root.substring(0, root.length()-1); //strip last /
+							do {
+								link = link.substring(3, link.length());
+								root = root.substring(0, root.lastIndexOf("/"));
+							} while (link.startsWith("../"));
+							link = root + "/" + link; 
+						} else {
+							link = root + link;
+						}
+						matcher.appendReplacement(outputBuf, "$2" + link.replace("$", "\\$") + "\"");
+						//outputString = matcher.replaceFirst("$2" + link.replace("$", "\\$") + "\"");
+						//matcher = hrefPattern.matcher(outputString);
+					} while (matcher.find());
+					matcher.appendTail(outputBuf);
 				}
-				if (matcher.groupCount() >= 2) {
-					String fileName = matcher.group(2);
-					//remove escaping that timyMce adds
-					fileName = StringEscapeUtils.unescapeHtml(fileName);
-	           		try {
-						//remove escaping for urls
-	        			URI uri = new URI(fileName);
-	        			fileName = uri.getPath();
-	        		} catch (Exception ex) {};
-
-					String webUrl = builder.getFileUrlByName(fileName);
-					outputString = matcher.replaceFirst(webUrl.replace("$", "\\$"));
-					matcher = attachmentUrlPattern.matcher(outputString);
-				}
+			}
+			
+			//Replace the markup urls with real urls {{attachmentUrl: tempFileHandle}}
+			matcher = attachmentUrlPattern.matcher(outputBuf);
+			if (matcher.find()) {
+				loopDetector = 0;
+				outputBuf = new StringBuffer();
+				do {
+					if (loopDetector++ > 2000) {
+						logger.error("Error processing markup [3]: " + inputString);
+						return outputBuf.toString();
+					}
+					if (matcher.groupCount() >= 2) {
+						String fileName = matcher.group(2);
+						//remove escaping that timyMce adds
+						fileName = StringEscapeUtils.unescapeHtml(fileName);
+		           		try {
+							//remove escaping for urls
+		        			URI uri = new URI(fileName);
+		        			fileName = uri.getPath();
+		        		} catch (Exception ex) {};
+	
+						String webUrl = builder.getFileUrlByName(fileName);
+						matcher.appendReplacement(outputBuf, webUrl.replace("$", "\\$"));
+					}
+				} while (matcher.find());
+				matcher.appendTail(outputBuf);
 	    	}
 	    	
 	    	//Replace the markup v1 attachmentFileIds {{attachmentFileId: binderId=xxx entryId=xxx fileId=xxx entityType=xxx}}
 			//with v2 urls 
 			//  from the fileId, we can get the fileName and use the new URLS.
-			matcher = v1AttachmentFileIdPattern.matcher(outputString);
-			loopDetector = 0;
-			while (matcher.find()) {
-				if (loopDetector++ > 2000) {
-					logger.error("Error processing markup [4]: " + inputString);
-					return outputString;
-		    	}
-				if (matcher.groupCount() >= 2) {
-					String fileIds = matcher.group(2).trim();
-			   		String fileId = "";
-		        	Matcher fieldMatcher = fileIdPattern.matcher(fileIds);
-		        	if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) fileId = fieldMatcher.group(1).trim();
-		    		//the old url had binderId, entryId and entityType, but you could only point to a file in the same entry
-		        	//so these are not needed - this needs to be replaced with readFile url.
-		        	//This code is here to capture old urls that are lingering
-			    	if (Validator.isNotNull(fileId)) {
-			    		String webUrl = builder.getFileUrlById(fileId);
-						outputString = matcher.replaceFirst(webUrl.replace("$", "\\$"));
-			    		matcher = v1AttachmentFileIdPattern.matcher(outputString);
+			matcher = v1AttachmentFileIdPattern.matcher(outputBuf);
+			if (matcher.find()) {
+				loopDetector = 0;
+				outputBuf = new StringBuffer();
+				do {
+					if (loopDetector++ > 2000) {
+						logger.error("Error processing markup [4]: " + inputString);
+						return outputBuf.toString();
 			    	}
-				}
+					if (matcher.groupCount() >= 2) {
+						String fileIds = matcher.group(2).trim();
+				   		String fileId = "";
+			        	Matcher fieldMatcher = fileIdPattern.matcher(fileIds);
+			        	if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) fileId = fieldMatcher.group(1).trim();
+			    		//the old url had binderId, entryId and entityType, but you could only point to a file in the same entry
+			        	//so these are not needed - this needs to be replaced with readFile url.
+			        	//This code is here to capture old urls that are lingering
+				    	if (Validator.isNotNull(fileId)) {
+				    		String webUrl = builder.getFileUrlById(fileId);
+				    		matcher.appendReplacement(outputBuf, webUrl.replace("$", "\\$"));
+				    	}
+					}
+				} while (matcher.find());
+				matcher.appendTail(outputBuf);
 			}
-		
 	    	//Replace the markup {{titleUrl}} with real urls {{titleUrl: binderId=xxx title=xxx}}
-			matcher = titleUrlPattern.matcher(outputString);
-			loopDetector = 0;
-			while (matcher.find()) {
-				if (loopDetector++ > 2000) {
-					logger.error("Error processing markup [5]: " + inputString);
-					return outputString;
-				}
-				if (matcher.groupCount() < 2) continue;
-				String urlParts = matcher.group(2).trim();
-				String s_binderId = "";
-				Matcher fieldMatcher = titleUrlBinderPattern.matcher(urlParts);
-				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_binderId = fieldMatcher.group(1).trim();
-		    		
-				String normalizedTitle = "";
-				fieldMatcher = titleUrlTitlePattern.matcher(urlParts);
-				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) normalizedTitle = fieldMatcher.group(1).trim();
-		        	
-				String title = "";
-				fieldMatcher = titleUrlTextPattern.matcher(urlParts); //html stripped on input
-				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) title = fieldMatcher.group(1).trim();
-		        	
-				//build the link
-	    		StringBuffer titleLink = new StringBuffer();				
-		    	if (type.equals(WebKeys.MARKUP_FORM)) {
-		        	titleLink.append("<a class=\"ss_icecore_link\" rel=\"binderId=");
-		        	titleLink.append(s_binderId).append(" title=").append(Html.stripHtml(normalizedTitle)).append("\">");
-		        	titleLink.append(title).append("</a>");
-		    	} else {
-		    		String webUrl = builder.getTitleUrl(s_binderId, WebHelper.getNormalizedTitle(normalizedTitle));
-		    		titleLink.append("<a href=\"").append(webUrl);
-		    		titleLink.append("\" onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this);\">");
-		    		titleLink.append("<span class=\"ss_title_link\">").append(title).append("</span></a>");
-		    	}
-    			outputString = matcher.replaceFirst(titleLink.toString().replace("$", "\\$"));
-    			matcher = titleUrlPattern.matcher(outputString);   		
-	    	}
-	    	
-	    	//When viewing the string, replace the markup title links with real links    [[page title]]
-			if (entityType.equals(EntityType.folderEntry.name()) && type.equals(WebKeys.MARKUP_VIEW)) {
-		    	matcher  = pageTitleUrlTextPattern.matcher(outputString);
-		    	loopDetector = 0;
-		    	while (matcher.find()) {
-		    		if (loopDetector++ > 2000) {
-			        	logger.error("Error processing markup [6]: " + inputString);
-		    			return outputString;
-		    		}
-		    		//Get the title
-		    		String title = matcher.group(2).trim();
-		    		String normalizedTitle = WebHelper.getNormalizedTitle(title);
-		    		if (Validator.isNotNull(normalizedTitle)) {
-		    			//Build the url to that entry
-			    		StringBuffer titleLink = new StringBuffer();				
-		    			String webUrl = builder.getRelativeTitleUrl(normalizedTitle);
+			matcher = titleUrlPattern.matcher(outputBuf.toString());
+			if (matcher.find()) {
+				loopDetector = 0;
+				outputBuf = new StringBuffer();
+				do {
+					if (loopDetector++ > 2000) {
+						logger.error("Error processing markup [5]: " + inputString);
+						return outputBuf.toString();
+					}
+					if (matcher.groupCount() < 2) continue;
+					String urlParts = matcher.group(2).trim();
+					String s_binderId = "";
+					Matcher fieldMatcher = titleUrlBinderPattern.matcher(urlParts);
+					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_binderId = fieldMatcher.group(1).trim();
+			    		
+					String normalizedTitle = "";
+					fieldMatcher = titleUrlTitlePattern.matcher(urlParts);
+					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) normalizedTitle = fieldMatcher.group(1).trim();
+			        	
+					String title = "";
+					fieldMatcher = titleUrlTextPattern.matcher(urlParts); //html stripped on input
+					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) title = fieldMatcher.group(1).trim();
+			        	
+					//build the link
+		    		StringBuffer titleLink = new StringBuffer();				
+			    	if (type.equals(WebKeys.MARKUP_FORM)) {
+			        	titleLink.append("<a class=\"ss_icecore_link\" rel=\"binderId=");
+			        	titleLink.append(s_binderId).append(" title=").append(Html.stripHtml(normalizedTitle)).append("\">");
+			        	titleLink.append(title).append("</a>");
+			    	} else if (type.equals(WebKeys.MARKUP_VIEW)){
+			    		String webUrl = builder.getTitleUrl(s_binderId, WebHelper.getNormalizedTitle(normalizedTitle));
 			    		titleLink.append("<a href=\"").append(webUrl);
 			    		titleLink.append("\" onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this);\">");
 			    		titleLink.append("<span class=\"ss_title_link\">").append(title).append("</span></a>");
-				    	//use substring so don't have to parse $ out of replacement string
-		    			outputString = matcher.replaceFirst(titleLink.toString().replace("$", "\\$"));
-		    			matcher = pageTitleUrlTextPattern.matcher(outputString);
-		    		}
+			    	} else {
+			    		String webUrl = builder.getTitleUrl(s_binderId, WebHelper.getNormalizedTitle(normalizedTitle));
+			    		titleLink.append("<a href=\"").append(webUrl).append("\">").append(title).append("</a>");
+			    		
+			    	}
+	    			matcher.appendReplacement(outputBuf, titleLink.toString().replace("$", "\\$"));
+		    	} while (matcher.find());
+				matcher.appendTail(outputBuf);
+			}
+		    	
+	    	//When viewing the string, replace the markup title links with real links    [[page title]]
+			if (entityType.equals(EntityType.folderEntry.name()) && (type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_EXPORT))) {
+		    	matcher  = pageTitleUrlTextPattern.matcher(outputBuf);
+				if (matcher.find()) {
+					loopDetector = 0;
+					outputBuf = new StringBuffer();
+			    	do {
+			    		if (loopDetector++ > 2000) {
+				        	logger.error("Error processing markup [6]: " + inputString);
+			    			return outputBuf.toString();
+			    		}
+			    		//Get the title
+			    		String title = matcher.group(2).trim();
+			    		String normalizedTitle = WebHelper.getNormalizedTitle(title);
+			    		if (Validator.isNotNull(normalizedTitle)) {
+			    			//Build the url to that entry
+				    		StringBuffer titleLink = new StringBuffer();				
+			    			String webUrl = builder.getRelativeTitleUrl(normalizedTitle);
+			    			if (type.equals(WebKeys.MARKUP_VIEW)) {
+			    				titleLink.append("<a href=\"").append(webUrl);
+			    				titleLink.append("\" onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this);\">");
+			    				titleLink.append("<span class=\"ss_title_link\">").append(title).append("</span></a>");
+			    			} else {
+			    				titleLink.append("<a href=\"").append(webUrl).append("\">").append(title).append("</a>");
+			    				
+			    			}
+					    	//use substring so don't have to parse $ out of replacement string
+			    			matcher.appendReplacement(outputBuf, titleLink.toString().replace("$", "\\$"));
+			    		}
+					} while (matcher.find());
+					matcher.appendTail(outputBuf);
 				}
 			}
 		} catch(Exception e) {
 			logger.error("Error processing markup [7]: " + inputString, e);
 			return inputString;
 		}
-     	return outputString;
+     	return outputBuf.toString();
 	}
 	
 	//Routine to split a body of text into sections
