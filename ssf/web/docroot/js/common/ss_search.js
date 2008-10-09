@@ -198,9 +198,13 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	pulldown.style.paddingLeft = "3px";
 	pulldown.style.paddingBottom = "3px";
 	dojo.connect(pulldown, "onclick", function(event) {
-	    var newEvent = document.createEvent("MouseEvents");
-	    newEvent.initEvent("click",true,true);
-	    textAreaWorkflowsObj.dispatchEvent(newEvent);
+	    if (ss_isIE) {
+		    textAreaWorkflowsObj.click();
+	    } else {
+		    var newEvent = document.createEvent("MouseEvents");
+		    newEvent.initEvent("click",true,true);
+		    textAreaWorkflowsObj.dispatchEvent(newEvent);
+		}
 	} );
 	pulldown.setAttribute("src", ss_imagesPath + "pics/menudown.gif");
 	wDiv.appendChild(pulldown);
@@ -470,9 +474,13 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 			pulldown.style.paddingLeft = "3px";
 			pulldown.style.paddingBottom = "3px";
 			dojo.connect(pulldown, "onclick", function(event) {
-			    var newEvent = document.createEvent("MouseEvents");
-			    newEvent.initEvent("click",true,true);
-			    textAreaFieldsObj.dispatchEvent(newEvent);
+			    if (ss_isIE) {
+				    textAreaFieldsObj.click();
+			    } else {
+				    var newEvent = document.createEvent("MouseEvents");
+				    newEvent.initEvent("click",true,true);
+				    textAreaFieldsObj.dispatchEvent(newEvent);
+				}
 			} );
 			pulldown.setAttribute("src", ss_imagesPath + "pics/menudown.gif");
 			fieldsDiv.appendChild(pulldown);
@@ -501,9 +509,13 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	pulldown.style.paddingLeft = "3px";
 	pulldown.style.paddingBottom = "3px";
 	dojo.connect(pulldown, "onclick", function(event) {
-	    var newEvent = document.createEvent("MouseEvents");
-	    newEvent.initEvent("click",true,true);
-	    textAreaEntriesObj.dispatchEvent(newEvent);
+	    if (ss_isIE) {
+		    textAreaEntriesObj.click();
+	    } else {
+		    var newEvent = document.createEvent("MouseEvents");
+		    newEvent.initEvent("click",true,true);
+		    textAreaEntriesObj.dispatchEvent(newEvent);
+		}
 	} );
 	pulldown.setAttribute("src", ss_imagesPath + "pics/menudown.gif");
 	entryTypeDiv.appendChild(pulldown);
