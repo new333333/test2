@@ -175,13 +175,11 @@ public class ModifyEntryController extends SAbstractController {
 			} else {
 				DefinitionHelper.getDefinition(entryDef, model, "//item[@type='form']");
 			}
-			if (Validator.isNotNull(entry.getForeignName())) {
-				Map readOnly = new HashMap();
-				for (String name:getAuthenticationModule().getMappedAttributes(entry)) {
-					readOnly.put(name, Boolean.TRUE);
-				}
-				model.put(WebKeys.READ_ONLY, readOnly);
+			Map readOnly = new HashMap();
+			for (String name:getAuthenticationModule().getMappedAttributes(entry)) {
+				readOnly.put(name, Boolean.TRUE);
 			}
+			model.put(WebKeys.READ_ONLY, readOnly);
 			return new ModelAndView(WebKeys.VIEW_MODIFY_ENTRY, model);
 		}
 	}

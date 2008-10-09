@@ -210,7 +210,7 @@ public class ListProfilesController extends   SAbstractController {
 		model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 		model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 		
-		return new ModelAndView(BinderHelper.getViewListingJsp(this, BinderHelper.getViewType(this, binderId)), model);
+		return new ModelAndView(BinderHelper.getViewListingJsp(this, BinderHelper.getViewType(this, binder)), model);
 	}
 
 	protected void initPageCounts(RenderRequest request, Map userProperties, Tabs.TabEntry tab, Map options) {

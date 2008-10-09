@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +34,7 @@ import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.util.Validator;
-
+import com.sitescape.team.util.SPropsUtil;
 public class BaseAuthenticationModule extends CommonDependencyInjection
 		implements AuthenticationModule {
 	protected Log logger = LogFactory.getLog(getClass());
@@ -126,25 +127,32 @@ public class BaseAuthenticationModule extends CommonDependencyInjection
 
 	public Set<String>getMappedAttributes(Principal principal) {
 		Set<String>attributes = new HashSet();
-		if (Validator.isNull(principal.getForeignName())) return attributes;
 		
 		if (principal.getEntityType().equals(EntityIdentifier.EntityType.user)) {
+			getPortalAttributes(attributes);
+			if (principal.getName().equalsIgnoreCase(principal.getForeignName())) { //not synched with ldap
+				return attributes;
+			}
 			for (LdapConnectionConfig config : getLdapConnectionConfigs(principal.getZoneId())) {
 				attributes.addAll(config.getMappings().values());
 			}
-			//see if synchnching - as long as we push back to liferay, shouldn't matter
-//			if (!"standalone".equals(SPropsUtil.getString("deployment.portal"))) {
-//				String[] props = SPropsUtil.getStringArray("portal.user.auto.synchronize", ",");
-//				attributes.addAll(Arrays.asList(props));
-//			}
 		} else if (principal.getEntityType().equals(EntityIdentifier.EntityType.group)) {
-	    	List mappings  = SZoneConfig.getElements("ldapConfiguration/groupMapping/mapping");
-	    	for(int i=0; i < mappings.size(); i++) {
-	    		Element next = (Element) mappings.get(i);
-	    		attributes.add(next.attributeValue("to"));
-	    	}
+			// for groups the name and foreignname are the same, so look for signs of ldap
+			if (principal.getName().contains("=")) {
+				List mappings  = SZoneConfig.getElements("ldapConfiguration/groupMapping/mapping");
+				for(int i=0; i < mappings.size(); i++) {
+					Element next = (Element) mappings.get(i);
+					attributes.add(next.attributeValue("to"));
+				}
+			}
 		} 
 		return attributes;
+	}
+	private void getPortalAttributes(Set<String>attributes) {
+		if (!"standalone".equals(SPropsUtil.getString("deployment.portal"))) {
+			String[] props = SPropsUtil.getStringArray("portal.user.auto.synchronize", ",");
+			attributes.addAll(Arrays.asList(props));
+		}
 	}
 
 }
