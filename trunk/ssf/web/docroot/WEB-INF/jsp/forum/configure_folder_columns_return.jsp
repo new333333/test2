@@ -59,6 +59,7 @@
 <c:set var="ratingChecked" value=""/>
 <c:if test="${empty folderColumns || !empty folderColumns.rating}"><c:set var="ratingChecked" value="checked"/></c:if>
 
+<div style="height:420px; overflow:scroll">
 <div class="ss_style" align="left">
 <form method="post" onSubmit="ss_setActionUrl(this, ss_saveFolderColumnsUrl);">
 <span class="ss_largerprint ss_bold"><ssf:nlt tag="folder.selectColumns"/></span>
@@ -129,6 +130,7 @@
   
 </div>
 </form>
+</div>
 </div>
 </c:otherwise>
 </c:choose>
