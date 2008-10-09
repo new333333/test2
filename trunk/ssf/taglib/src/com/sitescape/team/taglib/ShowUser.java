@@ -96,7 +96,7 @@ public class ShowUser extends BodyTagSupport {
 				}
 			}
 
-			if ((user != null) && user.getWorkspaceId() != null && (user instanceof User || user instanceof Group)) {
+			if (user != null) {
 				httpReq.setAttribute(WebKeys.SHOW_USER_INSTANCE_COUNT, UUID.randomUUID().toString());
 				httpReq.setAttribute(WebKeys.SHOW_USER_USER, user);		
 				httpReq.setAttribute(WebKeys.SHOW_USER_TITLE_STYLE, titleStyle);

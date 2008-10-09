@@ -489,7 +489,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					row[1] = user.getId();
 				}
 			}
-			
 			//if disable is enabled, remove users that were not found in ldap
 			if (delete && !notInLdap.isEmpty()) {
 				if (logger.isInfoEnabled()) {
@@ -500,6 +499,21 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 
 				deletePrincipals(zoneId, notInLdap.keySet(), deleteWorkspace);
+			}
+			//Set foreign names of users to self; needed to recognize sync names and mark attributes read-only
+			if (!delete && !notInLdap.isEmpty()) {
+		    	Map users = new HashMap();
+				for (Map.Entry<Long, String>me:notInLdap.entrySet()) {
+					Long id = me.getKey();
+					String name = me.getValue();
+					Object row[] = (Object[])ssUsers.get(name);
+					if (!name.equalsIgnoreCase((String)row[4])) {//was synched from somewhere else	
+						Map updates = new HashMap();
+				    	updates.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, name);
+			    		users.put(id, updates);
+			     	}
+				}
+				if (!users.isEmpty()) updateUsers(zoneId, users);
 			}
 			return dnUsers;
 
@@ -1069,7 +1083,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     	return newGroups;
 	    	
     }
-    public void deletePrincipals(Long zoneId, Collection ids, boolean deleteWS) {
+     public void deletePrincipals(Long zoneId, Collection ids, boolean deleteWS) {
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, Boolean.valueOf(deleteWS));
 

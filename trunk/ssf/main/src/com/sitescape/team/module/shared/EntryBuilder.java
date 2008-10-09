@@ -124,9 +124,11 @@ public class EntryBuilder {
 						changed=true;
 						InvokeUtil.invokeSetter(target, attr, val);
 					}
-				} else if (val != null) {
-					changed=true;
-					InvokeUtil.invokeSetter(target, attr, val);
+				} else if (val != null) { //already know currentVal is null
+					if (!val.equals("")) { //oracle converts "" to null.  This results in lots of updates, especially when synching with portal
+						changed=true;
+						InvokeUtil.invokeSetter(target, attr, val);
+					}
 				}
 			} catch (ObjectPropertyNotFoundException pe) {
 				if (val == null) { 
