@@ -687,13 +687,18 @@ div.ss_canvas {
     width:100%;
     background:transparent;
     font-size:93%;
-    line-height:normal;
+  /*  line-height:normal; */
     border-bottom: 1px solid #666;
-    margin-top:0px
+    margin-top:0px;
+ 	<c:if test="<%= isIE %>">
+ 	    margin-top:20px !important;
+ 	</c:if>	    
       }
- #ss_tabsC ul {
-    margin: 0px!important;
+ #ss_tabsC ul { 
     padding:10px 10px 0 10px;
+ 	<c:if test="<%= isIE %>">
+ 	    padding:0px 10px 0px 10px;
+ 	</c:if>	
     list-style:none;
       }
 #ss_tabsC li {
@@ -708,7 +713,6 @@ div.ss_canvas {
     padding:0 0 0 4px;
       }
  #ss_tabsC a span {
-    float:left;
     display:block;
     background:url("<html:rootPath/>images/pics/tabsrightf2.gif") no-repeat right top;
     padding:5px 15px 4px 6px;
