@@ -237,6 +237,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  		User superU = getProfileDao().findUserByName(superName, zone.getName());
  		RequestContextUtil.setThreadContext(superU).resolve();
  		if ((version == null) || version.intValue() <= 1) {
+ 			version = 2;
  			//TODO: setZoneId as non=null, only do based on version
 			getCoreDao().executeUpdate("update com.sitescape.team.domain.AuditTrail set zoneId=" + zone.getId() + 
 				" where zoneId is null");
