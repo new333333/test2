@@ -40,7 +40,7 @@
 	  <ssHelpSpot helpId="workspaces_folders/menus_toolbars/more_folder_navigation" offsetX="-5" offsetY="3" 
 	    title="<ssf:nlt tag="helpSpot.moreFolderNavigation"/>"></ssHelpSpot>
 <div class="ss_pagination ss_style">
-<table border="0" cellspacing="0" cellpadding="0">
+<table border="0" cellspacing="0" cellpadding="0" width="99%">
 		<tbody>
 		<tr>
 			<td valign="middle" align="right" width="25%">
@@ -161,7 +161,7 @@
 			<% // goto page option %>
 			<td valign="middle" width="25%">
 			<div id="ss_goBox">
-			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
+			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable" width="99%">
 				<tbody><tr>
 				<td class="ss_page_IE2" valign="middle">
 			
