@@ -41,6 +41,9 @@
  <c:if test="${!empty ssFolderToolbar}">
   <ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />
  </c:if>
+ <c:if test="${!empty ssEmailSubscriptionToolbar}">
+  <ssf:toolbar toolbar="${ssEmailSubscriptionToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />
+ </c:if>
 </ssf:toolbar>
 
 </div>

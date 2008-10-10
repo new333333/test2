@@ -1257,6 +1257,7 @@ public class ListFolderHelper {
 		Toolbar dashboardToolbar = new Toolbar();
 		Toolbar footerToolbar = new Toolbar();
 		Toolbar whatsNewToolbar = new Toolbar();
+		Toolbar emailSubscriptionToolbar = new Toolbar();
 		
 		boolean isAppletSupported = SsfsUtil.supportApplets();
         boolean isAccessible = false;
@@ -1454,7 +1455,6 @@ public class ListFolderHelper {
 			if (!user.isShared()) {
 				qualifiers = new HashMap();
 				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageSubscriptionsMenu");
-				//folderToolbar.addToolbarMenu("3_administration", NLT.get("toolbar.manageFolderSubscriptions"), "", qualifiers);
 			
 				Subscription sub = bs.getBinderModule().getSubscription(folder);
 				qualifiers = new HashMap();
@@ -1465,18 +1465,12 @@ public class ListFolderHelper {
 				adapterUrl.setParameter("rn", "ss_randomNumberPlaceholder");			
 				qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_menu');return false;");
 				if (sub == null) {
-					//folderToolbar.addToolbarMenuItem("3_administration", "", 
-							//NLT.get("toolbar.menu.subscribeToFolder"), adapterUrl.toString(), qualifiers);	
+					emailSubscriptionToolbar.addToolbarMenu("1_email", NLT.get("toolbar.menu.subscribeToFolder"), adapterUrl.toString(), qualifiers);	
 					model.put(WebKeys.TOOLBAR_SUBSCRIBE_EMAIL, adapterUrl.toString());
 				} else {
-					//folderToolbar.addToolbarMenuItem("3_administration", "", 
-							//NLT.get("toolbar.menu.subscriptionToFolder"), adapterUrl.toString(), qualifiers);
+					emailSubscriptionToolbar.addToolbarMenu("1_email", NLT.get("toolbar.menu.subscriptionToFolder"), adapterUrl.toString(), qualifiers);
 					model.put(WebKeys.TOOLBAR_SUBSCRIBE_EMAIL, adapterUrl.toString());
 				}
-			} else {
-				qualifiers = new HashMap();
-				//folderToolbar.addToolbarMenu("3_administration", NLT.get("toolbar.manageFolderSubscriptions"), "", qualifiers);
-
 			}
 			//RSS link 
 			qualifiers = new HashMap();
@@ -1873,6 +1867,7 @@ public class ListFolderHelper {
 		model.put(WebKeys.CALENDAR_IMPORT_TOOLBAR,  calendarImportToolbar.getToolbar());
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 		model.put(WebKeys.WHATS_NEW_TOOLBAR,  whatsNewToolbar.getToolbar());
+		model.put(WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR,  emailSubscriptionToolbar.getToolbar());
 	}
 	
 
