@@ -254,7 +254,8 @@ div.ss_actions_bar_submenu ul.ss_actions_bar4 {
  <c:if test="<%= isIE %>">
   	filter: alpha(opacity=75);
  </c:if>
- margin: 0px;
+ 	margin: 0px;
+ 	border: 1px solid ${ss_toolbar1_background_color};
 	}
 .ss_actions_bar_submenu {
  <c:if test="<%= isIE %>">
@@ -486,7 +487,7 @@ div.ss_popup_top {
 	}
 div.ss_popup_title {
    font-family: ${ss_style_title_font_family};
-   font-size: 11px;
+   font-size: ${ss_style_font_smallprint};
    font-weight: bold;
    color: ${ss_style_header_bar_title_color};
    position: relative;
@@ -506,10 +507,31 @@ div.ss_popup_body {
  /* background-color: ${ss_toolbar4_background_color}; */
   	background-color: #FFFFFF;
   	padding: 10px;
+    font-family: ${ss_style_title_font_family}; 
+    font-size: ${ss_style_font_smallprint}; 	
 	}
 .ss_popup ul{
 	text-decoration: none;
+	}	
+.ss_popupMenu {
+  	position:absolute;
+  	border:1px solid black;
+  	margin:2px;
+  	padding:2px;
+  	background-color: ${ss_style_background_color_opaque};
+  	}
+.ss_popupDiv {
+  	position:absolute;
+  	margin:2px;
+  	padding:0 2px 2px 2px;
+  	background-color: ${ss_style_background_color_opaque};
+  	}  
+.ss_popupMenuClose {
+  	width:100%;
+  	padding:0px 8px 0px 0px;
+  	text-align:right;
 	}
+
 	
 /* THEME MENU STYLES */
 

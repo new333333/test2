@@ -59,12 +59,17 @@
 <c:set var="ratingChecked" value=""/>
 <c:if test="${empty folderColumns || !empty folderColumns.rating}"><c:set var="ratingChecked" value="checked"/></c:if>
 
-<div style="height:420px; overflow:scroll">
-<div class="ss_style" align="left">
+
+<table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: ${width}; height:420px; overflow:scroll;">
+ <tbody>
+  <tr>
+   <td valign="top" width="100%"><div class="ss_popup_top">
+   <div class="ss_popup_title"><ssf:nlt tag="folder.selectColumns"/></div></div>
+      </td>
+  </tr>
+  <tr><td valign="top">
+   <div class="ss_popup_body">
 <form method="post" onSubmit="ss_setActionUrl(this, ss_saveFolderColumnsUrl);">
-<span class="ss_largerprint ss_bold"><ssf:nlt tag="folder.selectColumns"/></span>
-<br/>
-<br/>
 <div class="ss_indent_medium">
   <c:if test="${ssFolderType == 'search'}">
     <input type="checkbox" name="folder" ${folderChecked}> <ssf:nlt tag="folder.column.Folder"/><br/>
@@ -131,6 +136,6 @@
 </div>
 </form>
 </div>
-</div>
+</td></tr></tbody></table>
 </c:otherwise>
 </c:choose>
