@@ -32,7 +32,7 @@
         <div id="ss_wikiEntryDiv${renderResponse.namespace}">
           <iframe id="ss_wikiIframe${renderResponse.namespace}" 
             name="ss_wikiIframe${renderResponse.namespace}" 
-            style="width:100%; display:block; position:relative;"
+            style=""
     		<c:if test="${empty ss_wikiHomepageEntryId && empty ssEntryIdToBeShown}">
     		  src="<html:rootPath/>js/forum/null.html" 
     		</c:if>

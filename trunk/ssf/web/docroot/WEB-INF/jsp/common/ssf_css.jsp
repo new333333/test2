@@ -403,7 +403,7 @@ div.ss_entryContent a:hover {
   	padding-top: 10px;
   	margin-top: 10px;
   	padding-bottom: 10px;
-  	background-color: #E9F1F1 !important;
+  	background-color: #A6C5C5;  /* switch back to this:  #E9F1F1 !important; */
   	font-family: "Lucida Sans"; 
   	font-size: 12px;
   	font-style: italic;
@@ -654,20 +654,6 @@ div.ss_subscribe {
 div.ss_send_friend {
   background-image: url(<html:imagesPath/>icons/send_friend.gif);
   padding-left: 35px;
-}
-
-
-.ss_popupMenu {
-  position:absolute;
-  border:1px solid black;
-  margin:2px;
-  padding:2px;
-  background-color: ${ss_style_background_color_opaque};
-  }
-.ss_popupMenuClose {
-  width:100%;
-  padding:0px 8px 0px 0px;
-  text-align:right;
 }
 
 .ss_permalink {
@@ -1624,10 +1610,11 @@ div.ss_box_top_rounded {
 
 
 /* -------------------Skins-------------------- */
-div.ss_content_outer {
-    position: relative;
+div.ss_content_outer {		/* also see ss_pseudoPortal */
+    position: absolute;
     background: #FFFFFF;
 	margin-top:0px;
+	margin-right: 15px;		/* give right margin to match pseudoPortal */
 	border: 1px solid #ccc;
 }
 
@@ -4182,7 +4169,7 @@ table.ssMeetingRecords .ssHeader {
 }
 
 .ss_pseudoPortal {
-	margin:25px;
+	margin:15px;		/* see also ss_content_outer */
 	padding:0px;
 	border:1px solid white;
 	background: white;

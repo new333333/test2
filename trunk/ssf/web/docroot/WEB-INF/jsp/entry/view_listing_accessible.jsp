@@ -73,7 +73,7 @@
 
   <c:if test="<%= !reloadCaller %>">
     <c:if test="<%= !isViewEntry %>">
- <div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer" style="margin:0px; padding:0px;">
+ <div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer" style="margin:0px 15px 0px 0px; padding:0px; width:100%;">
  <%@ include file="/WEB-INF/jsp/entry/view_accessible.jsp" %>
  </div>
  <c:if test="${!ss_mashupHideSidebar}">

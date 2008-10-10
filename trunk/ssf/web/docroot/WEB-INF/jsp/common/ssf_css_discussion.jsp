@@ -130,7 +130,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /* DISCUSSION TOPIC FOLDER */	
 
 #ss_folder_wrap{
-	width:95%;
+	width:98%;
 	text-align:left;
 	}
 #ss_folder_inset{
@@ -369,6 +369,7 @@ a.ss_new_thread:hover {
 	background-color: #CCDFDE !important;
 /*	height:38px !important;		*/
 	margin-bottom: 0px;
+	width: 100%;
 	}
 /***********This is the style sub-group for the "Go boxes" ***********/
 #ss_goBox {
