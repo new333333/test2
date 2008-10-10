@@ -738,6 +738,15 @@ div.ss_canvas {
 #ss_tabsC .ss_tabsCCurrent a span {
      background-position:100% -42px;
         }	
+/* PROFILE STYLES*/
+
+.ss_profileData{
+	vertical-align: bottom;	
+	}
+.ss_profileTitle{
+	width: 40%;	
+	}	
+
 /* FOOTER STYLES*/
 
 #ss_footer{
