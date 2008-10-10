@@ -65,6 +65,13 @@ public class PortalLoginController extends SAbstractController {
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 		
+		// This controller is used to allow users to log into portal through Teaming UI
+		// (as opposed to portal UI), and works in conjunction with a sign-in form.
+		// If form-based login is disallowed, this controller shouldn't even be called
+		// normally. And even if so, this should be noop. 
+		if(SPropsUtil.getBoolean("form.login.auth.disallowed", false))
+			return null;
+		
 		Map<String,Object> model = new HashMap();
 		String view = WebKeys.VIEW_LOGIN_RETURN;
 		

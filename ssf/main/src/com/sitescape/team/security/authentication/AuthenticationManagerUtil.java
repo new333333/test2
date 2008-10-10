@@ -33,6 +33,7 @@ import java.util.Map;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.runas.RunasCallback;
 import com.sitescape.team.runas.RunasTemplate;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SpringContextUtil;
 
 public class AuthenticationManagerUtil {
@@ -52,6 +53,20 @@ public class AuthenticationManagerUtil {
 		}, zoneName);
 	}
 
+	public static User authenticate(final String zoneName,
+			final String username, final String password,
+			final Map updates, final String authenticatorName)
+			throws PasswordDoesNotMatchException, UserDoesNotExistException {
+		boolean passwordAutoSynch = 
+			SPropsUtil.getBoolean("portal.password.auto.synchronize", true);
+		boolean ignorePassword =
+			SPropsUtil.getBoolean("portal.password.ignore", true);
+		boolean createUser = 
+			SPropsUtil.getBoolean("portal.user.auto.create", true);
+		
+		return authenticate(zoneName, username, password, createUser, passwordAutoSynch, ignorePassword, updates, authenticatorName);
+	}
+	
 	public static User authenticate(final String zoneName,
 			final String username, final String password,
 			final boolean passwordAutoSynch, final boolean ignorePassword,

@@ -33,13 +33,15 @@
 <div class="ss_mobile">
 <c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
 <c:if test="${ssUser.internalId == guestInternalId}">
-  <div>
-  <a href="<ssf:url action="__ajax_mobile" actionUrl="false" 
+  <c:if test='<%= !com.sitescape.team.util.SPropsUtil.getBoolean("form.login.auth.disallowed",false) %>' >
+    <div>
+    <a href="<ssf:url action="__ajax_mobile" actionUrl="false" 
 					operation="mobile_login" />"
-  >
-  <span><ssf:nlt tag="login"/></span>
-  </a>
-  </div>
+    >
+    <span><ssf:nlt tag="login"/></span>
+    </a>
+    </div>
+  </c:if>
 </c:if>
 
 <c:if test="${!empty ss_mobileBinderList}">

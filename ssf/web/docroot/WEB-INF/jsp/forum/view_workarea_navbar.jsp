@@ -210,16 +210,19 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 	 			  </c:if>
 	            onClick="ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(this);return false;"
 	          title="<ssf:nlt tag="navigation.goToMaximizedView"/>"
-              ><ssf:nlt tag="navigation.expandedView"/></a> | 
-              <ssf:ifLoggedIn>
-  					<a href="${ss_logoutUrl}"><span><ssf:nlt tag="logout"/></span></a>
-			 </ssf:ifLoggedIn>
-			 <ssf:ifNotLoggedIn>
-				  <form method="post" id="ss_loginForm${renderResponse.namespace}" 
-				    action="" style="display:inline;"><a href="${ss_loginUrl}"
-				    onClick="return(ss_requestLogin(this, '${ssBinder.id}', '${ssUser.workspaceId}', '${ssUser.name}'));"
-				  ><span><ssf:nlt tag="login"/></span></a><input type="hidden" name="url" /></form>
-			</ssf:ifNotLoggedIn></td>
+              ><ssf:nlt tag="navigation.expandedView"/></a>
+              <c:if test='<%= !com.sitescape.team.util.SPropsUtil.getBoolean("form.login.auth.disallowed",false) %>' > | 
+                <ssf:ifLoggedIn>
+  				  	  <a href="${ss_logoutUrl}"><span><ssf:nlt tag="logout"/></span></a>
+			    </ssf:ifLoggedIn>
+			    <ssf:ifNotLoggedIn>
+				    <form method="post" id="ss_loginForm${renderResponse.namespace}" 
+				      action="" style="display:inline;"><a href="${ss_loginUrl}"
+				      onClick="return(ss_requestLogin(this, '${ssBinder.id}', '${ssUser.workspaceId}', '${ssUser.name}'));"
+				    ><span><ssf:nlt tag="login"/></span></a><input type="hidden" name="url" /></form>
+			    </ssf:ifNotLoggedIn>
+			  </c:if>
+			  </td>
         <td width="6%" height="24" class="ss_workspace">&nbsp;</td>
         <td width="3%" height="24" class="ss_workspace" colspan="2">
         	
