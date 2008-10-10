@@ -4359,7 +4359,7 @@ function ss_showPopupDiv(divId) {
 function ss_createPopupDiv(obj, divId) {
 	url = obj.href
 	url = ss_replaceSubStr(url, 'ss_randomNumberPlaceholder', ss_random++)
-	var divObj = ss_createDivInBody(divId, 'ss_popupMenu');
+	var divObj = ss_createDivInBody(divId, 'ss_popupDiv');
 	divObj.style.zIndex = parseInt(ssLightboxZ + 1);
 	divObj.style.visibility = "hidden";
 	
