@@ -45,6 +45,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.portletadapter.portlet.PortletRequestImpl;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractControllerRetry;
 import com.sitescape.team.web.util.BinderHelper;
@@ -70,6 +71,12 @@ public class LoginController  extends SAbstractControllerRetry {
 	
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+
+		// This controller is used to display the sign-in form used for login. 
+		// If form-based login is disallowed, this controller shouldn't display
+		// the sign-in form. 
+		if(SPropsUtil.getBoolean("form.login.auth.disallowed", false))
+			return null;
 
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map<String,Object> model = new HashMap<String,Object>();

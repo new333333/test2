@@ -37,7 +37,6 @@ import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
 import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.team.security.authentication.UserDoesNotExistException;
-import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
 
 public class AuthenticationBridge {
@@ -57,17 +56,7 @@ public class AuthenticationBridge {
 		}
 
 		// Authenticate the user against SSF user database.
-	
-		// runtime argument can temporarily override static config settings
-		boolean passwordAutoSynch = 
-			SPropsUtil.getBoolean("portal.password.auto.synchronize", false);
-		boolean ignorePassword =
-			SPropsUtil.getBoolean("portal.password.ignore", false);
-		boolean createUser = 
-			SPropsUtil.getBoolean("portal.user.auto.create", false);
-		
-		AuthenticationManagerUtil.authenticate(zoneName, userName, password,
-				createUser, passwordAutoSynch, ignorePassword, updates, authenticator);
+		AuthenticationManagerUtil.authenticate(zoneName, userName, password, updates, authenticator);
 	}
 
 	public static void authenticateEasy(String zoneName, String userName, 

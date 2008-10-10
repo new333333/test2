@@ -19,6 +19,7 @@
 		</property>
 	</bean>
 	
+    <!-- Form-based authentication -->
     <s:http session-fixation-protection="newSession">
         <s:intercept-url pattern="/ws/**" filters="none" />
         <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED,ROLE_ANONYMOUS" />
@@ -28,7 +29,19 @@
         <s:logout logout-url="/s/portalLogout" logout-success-url="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login" />
 
     </s:http>
-
+    
+    <!-- Basic authentication. This option is reserved only for use in conjunction with 
+         iChain/NAM or similar authentication proxy where the proxy handles all first-line
+         authentication and subsequently sends login token in the form of Basic Auth header
+         to the Teaming server. In all other situations, the form-based authentication must
+         be used. -->
+    <!--<s:http session-fixation-protection="newSession">
+        <s:intercept-url pattern="/ws/**" filters="none" />
+        <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
+        
+        <s:http-basic/>
+    </s:http>-->
+    
 	<bean id="_anonymousProcessingFilter"
 	      class="com.sitescape.team.spring.security.ZoneAwareAnonymousProcessingFilter">
 		<property name="key" value="thisIsIgnored"/>
