@@ -75,8 +75,9 @@ ${nextEntry.docNumber}.
 </div>
 </c:if>
 <c:set var="ss_title_breadcrumbs_seen" value="1" scope="request"/>
-<span class="ss_entryTitle   ss_link_7 ss_link_7 span ">
-	<c:if test="${!empty ssDefinitionEntry.docNumber}">
+<span class="ss_entryTitle ss_link_7">
+	<c:if test="${(empty property_showDocNumber || property_showDocNumber == 'true') && 
+	  	!empty ssDefinitionEntry.docNumber}">
 	  <c:out value="${ssDefinitionEntry.docNumber}"/>.
 	</c:if>
 		<ssf:titleLink action="view_folder_entry" entryId="${ssDefinitionEntry.id}" 

@@ -395,6 +395,7 @@
 	<item name="titleView" caption="__title" category="entryViewData"  display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__title"/>
+			<property name="showDocNumber" caption="__showDocNumber" type="boolean" default="true"/>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/title_view.jsp" />
@@ -479,6 +480,7 @@
 	<item name="titleBlogView" caption="__title" category="blogEntryViewData"  display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__title"/>
+			<property name="showDocNumber" caption="__showDocNumber" type="boolean" default="false"/>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/blog/view_blog_title.jsp" />

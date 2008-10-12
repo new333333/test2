@@ -938,6 +938,21 @@ function ss_showFolderPageDiv(s, divId) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
+function ss_showWikiFolderPage(hrefUrl, binderId, currentPageIndex, divId, cTag, pTag, yearMonth, endDate) {
+	if (currentPageIndex == "") currentPageIndex = "0";
+	var page = parseInt(currentPageIndex);
+	
+	var divObj = self.document.getElementById(divId);
+	if (divObj == null || ss_userDisplayStyle == "accessible") {
+		//In accessible mode, redraw the whole page
+		self.location.href = hrefUrl;
+	} else {
+		ss_setupStatusMessageDiv();
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, operation:"show_wiki_folder_page", ssPageStartIndex:page, cTag:cTag, pTag:pTag, yearMonth:yearMonth, endDate:endDate, random:ss_random++});
+		ss_fetch_url(url, ss_showFolderPageDiv, divId)
+	}
+}
+
 function ss_showDashboardPage(binderId, type, op, currentPage, direction, divId, namespace) {
 	if (currentPage == "") currentPage = "0";
 	var page = parseInt(currentPage);

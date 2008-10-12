@@ -52,7 +52,14 @@
 </div>
 <%
 	} else if (thisEntry instanceof Map) {
-		SearchFieldResult valueSet = (SearchFieldResult) ((Map)thisEntry).get(property_name);
+		java.lang.Object valueObj = ((Map)thisEntry).get(property_name);
+		SearchFieldResult valueSet = null;
+		if (valueObj instanceof SearchFieldResult) {
+			valueSet = (SearchFieldResult) ((Map)thisEntry).get(property_name);
+		} else if (valueObj instanceof java.lang.String) {
+			valueSet = new SearchFieldResult();
+			valueSet.addValue((java.lang.String)valueObj);
+		}
 %>
 <c:set var="selections" value="<%= valueSet %>"/>
 <div class="ss_entryContent">

@@ -410,6 +410,7 @@ public class WebKeys {
 	public static final String OPERATION_SHOW_ALL_DASHBOARD_COMPONENTS = "show_all_dashboard_components";
 	public static final String OPERATION_SHOW_FOLDER_PAGE = "show_folder_page";
 	public static final String OPERATION_SHOW_HELP_PANEL = "show_help_panel";
+	public static final String OPERATION_SHOW_WIKI_FOLDER_PAGE = "show_wiki_folder_page";
 	public static final String OPERATION_START_MEETING = "start_meeting";
 	public static final String OPERATION_SCHEDULE_MEETING = "schedule_meeting";
 	public static final String OPERATION_SELECT_FILTER = "select_filter";

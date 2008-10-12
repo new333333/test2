@@ -56,7 +56,6 @@
   <% if (((FolderEntry)thisEntry).getParentEntry() == null) { %><c:set var="entryType" value="entry"/><% } %>
   <c:set var="entityType" value="<%= ((FolderEntry)thisEntry).getEntityType() %>"/>
   <c:set var="title" value="<%= ((FolderEntry)thisEntry).getTitle() %>"/>
-  <c:set var="docNum" value="<%= ((FolderEntry)thisEntry).getDocNumber() %>"/>
   <c:set var="creationDate" value="<%= ((FolderEntry)thisEntry).getCreation().getDate() %>"/>
   <c:set var="creationPrincipal" value="<%= ((FolderEntry)thisEntry).getCreation().getPrincipal() %>"/>
   <c:set var="totalReplyCount" value="<%= ((FolderEntry)thisEntry).getTotalReplyCount() %>"/>
@@ -64,8 +63,8 @@
 <%
 		//Get a dispalyable number for the replies
 		if (((FolderEntry)thisEntry).getParentEntry() == null) entryType = "entry";
+		docNumber = (String) ((FolderEntry)thisEntry).getDocNumber() + ".";
 		if ("reply".equals(entryType) && ((FolderEntry)thisEntry).getDocNumber() != null) {
-			docNumber = (String) ((FolderEntry)thisEntry).getDocNumber();
 			int i = docNumber.indexOf(".");
 			if (i > 0) {
 				docNumber = docNumber.subSequence(i+1, docNumber.length()) + ". ";
@@ -80,7 +79,6 @@
   <c:set var="entryType" value="<%= ((Map)thisEntry).get("_entryType") %>"/>
   <c:set var="entityType" value="<%= ((Map)thisEntry).get("_entityType") %>"/>
   <c:set var="title" value="<%= ((Map)thisEntry).get("title") %>"/>
-  <c:set var="docNum" value="<%= ((Map)thisEntry).get("_docNum") %>"/>
   <c:set var="creationDate" value="<%= ((Map)thisEntry).get("_creationDate") %>"/>
   <c:set var="creationPrincipal" value="<%= ((Map)thisEntry).get("_principal") %>"/>
   <c:set var="totalReplyCount" value="<%= ((Map)thisEntry).get("_totalReplyCount") %>"/>
@@ -88,8 +86,8 @@
 <%
 		//Get a dispalyable number for the replies
 		entryType = (String) ((Map)thisEntry).get("_entryType");
+		docNumber = (String) ((Map)thisEntry).get("_docNum") + ".";
 		if ("reply".equals(entryType) && ((Map)thisEntry).get("_docNum") != null) {
-			docNumber = (String) ((Map)thisEntry).get("_docNum");
 			int i = docNumber.indexOf(".");
 			if (i > 0) {
 				docNumber = docNumber.subSequence(i+1, docNumber.length()) + ". ";
@@ -98,7 +96,17 @@
 		if (!ssSeenMap.checkIfSeen((Map)thisEntry)) seen = false;
 	}
 %>
-
+<%
+	if ("entry".equals(entryType)) {
+%>
+<c:if test="${!empty property_showDocNumber && property_showDocNumber == 'false'}">
+<%
+		docNumber = "";
+%>
+</c:if>
+<%
+	}
+%>
 <div class="ss_blog_title">
 <%
 	if (!seen) {

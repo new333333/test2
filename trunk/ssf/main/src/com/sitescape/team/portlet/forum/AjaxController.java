@@ -164,7 +164,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 		response.setRenderParameters(request.getParameterMap());
 		if (WebHelper.isUserLoggedIn(request)) {
 			String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-			if (op.equals(WebKeys.OPERATION_SHOW_FOLDER_PAGE)) {
+			if (op.equals(WebKeys.OPERATION_SHOW_FOLDER_PAGE) || 
+					op.equals(WebKeys.OPERATION_SHOW_WIKI_FOLDER_PAGE)) {
 				ajaxSaveFolderPage(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_COLUMN_POSITIONS)) {
 				ajaxSaveColumnPositions(request, response);
@@ -242,7 +243,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.AJAX_STATUS, statusMap);
 
 			//Check for calls from "ss_fetch_url" (which return 
-			if (op.equals(WebKeys.OPERATION_SHOW_FOLDER_PAGE)) {
+			if (op.equals(WebKeys.OPERATION_SHOW_FOLDER_PAGE) || 
+					op.equals(WebKeys.OPERATION_SHOW_WIKI_FOLDER_PAGE)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} else if (op.equals(WebKeys.OPERATION_SHOW_BLOG_REPLIES)) {
 				return new ModelAndView("forum/fetch_url_return", model);
@@ -330,10 +332,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 		//The user is logged in
 		if (op.equals(WebKeys.OPERATION_SHOW_FOLDER_PAGE)) {
 			return ajaxGetFolderPage(this, request, response);
-			
+		} else if (op.equals(WebKeys.OPERATION_SHOW_WIKI_FOLDER_PAGE)) {
+			return ajaxGetWikiFolderPage(this, request, response);
 		} else if (op.equals(WebKeys.OPERATION_UNSEEN_COUNTS)) {
 			return ajaxGetUnseenCounts(request, response);
-			
 		} else if (op.equals(WebKeys.OPERATION_CHECK_IF_LOGGED_IN)) {
 			return ajaxCheckIfLoggedIn(request, response);
 
@@ -667,7 +669,14 @@ public class AjaxController  extends SAbstractControllerRetry {
 		ModelAndView modelAndView = ListFolderHelper.BuildFolderBeans(bs, request, response, binderId);
 		modelAndView.setView("definition_elements/folder_view_common_page");
 		return modelAndView;
-	
+	}
+
+	private ModelAndView ajaxGetWikiFolderPage(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		ModelAndView modelAndView = ListFolderHelper.BuildFolderBeans(bs, request, response, binderId);
+		modelAndView.setView("definition_elements/wiki/wiki_folder_page_ajax");
+		return modelAndView;
 	}
 
 	private ModelAndView ajaxGetUnseenCounts(RenderRequest request, 
