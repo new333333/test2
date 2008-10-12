@@ -745,6 +745,9 @@ public class ListFolderHelper {
 			}
 			if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 				buildWikiBeans(bs, response, folder, options, model, folderEntries);
+				//Get the pages bean
+				buildBlogPageBeans(bs, response, folder, model, viewType);
+
 			}
 			if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
 				//Get the list of all entries to build the archive list
@@ -1098,6 +1101,9 @@ public class ListFolderHelper {
 		model.put(WebKeys.FOLDER_ENTRYTAGS, entryCommunityTags);
 		model.put(WebKeys.FOLDER_ENTRYPERSONALTAGS, entryPersonalTags);
 		model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, binder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE));
+		if (model.get(WebKeys.WIKI_HOMEPAGE_ENTRY_ID) == null && !entries.isEmpty()) {
+			model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, ((Map)entries.get(0)).get("_docId"));
+		}
 	}
 	
 	//Routine to build the beans for the blog archives list
@@ -1237,6 +1243,26 @@ public class ListFolderHelper {
 		        	}
 					adapterUrl.setParameter(WebKeys.URL_TEMPLATE_NAME, ObjectKeys.DEFAULT_TEMPLATE_NAME_PHOTO);
 					entryToolbar.addToolbarMenu("1_add_folder", NLT.get("toolbar.menu.add_photo_album_folder"), 
+							adapterUrl.toString(), qualifiers);
+				}
+			}
+		}		
+		if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
+			if (bs.getBinderModule().testAccess(folder, BinderOperation.addFolder)) {
+				TemplateBinder wikiTemplate = bs.getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_WIKI);
+				if (wikiTemplate != null) {
+					Map qualifiers = new HashMap();
+					qualifiers.put("popup", new Boolean(true));
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+		        	Binder blogSetBinder = (Binder) model.get(WebKeys.BLOG_SET_BINDER);
+		        	if (blogSetBinder != null) {
+		        		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, blogSetBinder.getId().toString());
+		        	} else {
+		        		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+		        	}
+					adapterUrl.setParameter(WebKeys.URL_TEMPLATE_NAME, ObjectKeys.DEFAULT_TEMPLATE_NAME_WIKI);
+					entryToolbar.addToolbarMenu("1_add_folder", NLT.get("toolbar.menu.add_wiki_folder"), 
 							adapterUrl.toString(), qualifiers);
 				}
 			}

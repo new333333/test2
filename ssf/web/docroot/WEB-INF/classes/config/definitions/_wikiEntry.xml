@@ -65,10 +65,11 @@
     <properties> 
       <property name="type" value="entryView"/> 
     </properties>  
-    <item name="titleView" caption="__title" id="10"> 
-      <properties> 
-        <property name="caption" value="__title"/> 
-      </properties> 
+    <item name="titleView" caption="__title" id="10" category="entryViewData" display="view"> 
+      <properties>
+        <property name="caption" value="__title"/>
+        <property name="showDocNumber" value="false"/>
+      </properties>
     </item>  
     <item name="entrySignatureView" caption="__entry_signature" id="11"> 
       <properties> 
@@ -100,10 +101,11 @@
     <properties> 
       <property name="type" value="blog"/> 
     </properties>  
-    <item name="titleBlogView" caption="__title" id="17"> 
-      <properties> 
-        <property name="caption" value="__title"/> 
-      </properties> 
+    <item name="titleBlogView" caption="__title" id="17" category="blogEntryViewData" display="view"> 
+      <properties>
+        <property name="caption" value="__title"/>
+        <property name="showDocNumber" value="false"/>
+      </properties>
     </item>  
     <item name="descriptionBlogView" caption="__description" id="18"> 
       <properties> 

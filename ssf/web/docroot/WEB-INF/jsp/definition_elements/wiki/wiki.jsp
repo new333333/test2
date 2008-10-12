@@ -93,7 +93,7 @@ function ss_confirmSetWikiHomepage() {
 <div class="ss_clear"></div>
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
 
-<table cellspacing="0" cellpadding="0" width="100%">
+<table cellspacing="0" cellpadding="0" width="100%" style="padding-top:10px;">
 <tr>
 <td valign="top">
 <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_listing.jsp" %>

@@ -96,10 +96,6 @@ a.ss_displaytag {
 .ss_blog_sidebar table {
 	background-color: transparent;
 }
-div.ss_blog_sidebar_hole {
-	margin-left: 18px;
-	margin-right: 0px;
-}
 .ss_blog_content, .ss_blog_content table {
   background-color:${ss_blog_content_background_color};
 }

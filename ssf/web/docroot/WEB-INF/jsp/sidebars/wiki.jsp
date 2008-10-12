@@ -36,7 +36,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <% //View the listing part of a wiki folder %>
 <%@ page import="java.util.Date" %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
-<div class="ss_blog_sidebar">
+<div class="ss_wiki_sidebar">
    
 	  <ssHelpSpot helpId="workspaces_folders/misc_tools/wiki_controls" offsetX="0" 
 	    title="<ssf:nlt tag="helpSpot.wikiControls"/>"></ssHelpSpot>
@@ -67,7 +67,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	    <br/>
 	    </c:if>
 
-        <div class="ss_blog_sidebar_subhead"><ssf:nlt tag="wiki.findPage"/></div>
+        <div class="ss_wiki_sidebar_subhead"><ssf:nlt tag="wiki.findPage"/></div>
 	    <c:if test="${ssConfigJspStyle != 'template'}">
 	    <form method="post" name="ss_findWikiPageForm${renderResponse.namespace}"
 	    	action="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
@@ -88,96 +88,32 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	  <br/>
 
 
-	  <ssf:expandableArea title="<%= NLT.get("wiki.pages") %>" titleClass="ss_blog_sidebar_subhead" action="wipe" initOpen="true">
-	  <div class="ss_blog_sidebar_box">
-       <table cellspacing="0" cellpadding="0">
-		  <c:forEach var="entry1" items="${ssFolderEntries}" >
-<jsp:useBean id="entry1" type="java.util.HashMap" />
-<%
-	String folderLineId = "folderLine_" + (String) entry1.get("_docId");
-	String seenStyle = "";
-	String seenStyleFine = "ss_finePrint";
-	if (!ssSeenMap.checkIfSeen(entry1)) {
-		seenStyle = "ss_unseen";
-		seenStyleFine = "ss_unseen ss_fineprint";
-	}
-%>
-		    <tr><td><div style="padding:0px 4px 4px 8px;">
-		    <a 
-		    href="<ssf:url     
-		    adapter="true" 
-		    portletName="ss_forum" 
-		    folderId="${ssFolder.id}" 
-		    action="view_folder_entry" 
-		    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true"><ssf:param
-		    name="entryViewStyle" value="popup"/><ssf:param
-		    name="namespace" value="${renderResponse.namespace}"/><ssf:ifaccessible><ssf:param name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
-
-		    <ssf:title tag="title.open.folderEntry">
-			    <ssf:param name="value" useBody="true"><c:choose><c:when test="${!empty entry1.title}">${entry1.title}</c:when><c:otherwise>--<ssf:nlt tag="entry.noTitle"/>--</c:otherwise></c:choose></ssf:param>
-		    </ssf:title>
-
-		    <ssf:ifnotaccessible>
-		    	onClick="ss_loadWikiEntry(this, '${entry1._docId}');return false;" 		    	
-		    </ssf:ifnotaccessible>
-		    
-		    <ssf:ifaccessible>
-			    onClick="ss_loadWikiEntryInParent(this, '${entry1._docId}');return false;" 
-		    </ssf:ifaccessible>
-		    
-		    ><c:if test="${empty entry1.title}"
-		    ><span id="folderLine_${entry1._docId}" class="ss_smallprint <%= seenStyleFine %>"
-		      >--<ssf:nlt tag="entry.noTitle"/>--</span
-		    ></c:if><span id="folderLine_${entry1._docId}" class="ss_smallprint <%= seenStyle %>"
-		      ><c:out value="${entry1.title}"/></span></a>
-		    </td></tr>
-		  </c:forEach>
-		</table>
-		<table cellspacing="0" cellpadding="0" width="100%">
-		<tr>
-		<td width="50%">
-		<c:choose>
-		  <c:when test="${ssPagePrevious.ssPageNoLink == 'true'}"></c:when>
-		  <c:otherwise>
-			<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-				name="operation" value="save_folder_page_info"/><ssf:param 
-				name="binderId" value="${ssFolder.id}"/><ssf:param 
-				name="ssPageStartIndex" value="${ssPagePrevious.ssPageInternalValue}"/><c:if test="${!empty cTag}"><ssf:param 
-				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
-				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty ss_yearMonth}"><ssf:param 
-				name="yearMonth" value="${ss_yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
-				name="endDate" value="${endDate}"/></c:if></ssf:url>" 
-				<ssf:title tag="title.goto.prev.page" /> >&lt;&lt;
-			</a>
-		  </c:otherwise>
-		</c:choose>
-		</td><td align="right" width="50%">
-		<c:choose>
-		  <c:when test="${ssPageNext.ssPageNoLink == 'true'}">
-			
-		  </c:when>
-		  <c:otherwise>
-			<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-				name="operation" value="save_folder_page_info"/><ssf:param 
-				name="binderId" value="${ssFolder.id}"/><ssf:param 
-				name="ssPageStartIndex" value="${ssPageNext.ssPageInternalValue}"/><c:if test="${!empty cTag}"><ssf:param 
-				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
-				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty ss_yearMonth}"><ssf:param 
-				name="yearMonth" value="${ss_yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
-				name="endDate" value="${endDate}"/></c:if></ssf:url>" 
-				<ssf:title tag="title.goto.next.page" />>&gt;&gt;
-			</a>
-		  </c:otherwise>
-		</c:choose>
-		</td>
-		</tr>
-		</table>
+	  <ssf:expandableArea title="<%= NLT.get("wiki.topics") %>" titleClass="ss_wiki_sidebar_subhead" 
+	  	action="wipe" initOpen="true">
+	  <div class="ss_wiki_sidebar_box">
+        <table cellspacing="0" cellpadding="0">
+	     <c:forEach var="blogPage" items="${ssBlogPages}">
+ 		   <tr><td><div style="padding:0px 4px 4px 8px;">
+	         <a class="<c:if test="${blogPage.id == ssBinder.id}"> ss_navbar_current</c:if>
+					   <c:if test="${blogPage.id != ssBinder.id}"></c:if>" 
+				href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"/>"
+	         >${blogPage.title}</a>
+	       </td></tr>
+	     </c:forEach>
+	    </table>
        </div>
       </ssf:expandableArea>
 
+	  <ssf:expandableArea title="<%= NLT.get("wiki.pages") %>" titleClass="ss_wiki_sidebar_subhead" 
+	    action="wipe" initOpen="true">
+		<div id="ss_wikiFolderList${renderResponse.namespace}" class="ss_wiki_sidebar_box">
+	      <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_page.jsp" %>
+	    </div>
+      </ssf:expandableArea>
+
     <c:if test="${!empty ssFolderEntryCommunityTags}"> 
-	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
-    <div class="ss_blog_sidebar_box">		
+	<div class="ss_wiki_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
+    <div class="ss_wiki_sidebar_box">		
 		   <c:if test="${!empty ssFolderEntryCommunityTags}">
 		   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
 			   	<a href="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
@@ -195,8 +131,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
     </div>
     </c:if>
     <c:if test="${!empty ssFolderEntryPersonalTags}"> 
-	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
-    <div class="ss_blog_sidebar_box">		
+	<div class="ss_wiki_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
+    <div class="ss_wiki_sidebar_box">		
 		   <c:if test="${!empty ssFolderEntryPersonalTags}">
 		   <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
 		   	<a href="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 

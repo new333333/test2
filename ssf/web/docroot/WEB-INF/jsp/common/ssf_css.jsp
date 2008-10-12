@@ -4254,6 +4254,7 @@ ul.placesForm, ul.placesForm li {
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_sidebar.jsp" />
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_toolbarsandMenus.jsp" />
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_blog.jsp" />
+<jsp:include page="/WEB-INF/jsp/common/ssf_css_wiki.jsp" />
 
 <% // Place all CSS code above this line %>
 </c:if> <%// test="${empty ss_skipCssStyles || ss_skipCssStyles != true} %>

@@ -31,7 +31,7 @@
 <% // Folder level entry toolbar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<c:if test="${ss_folderViewStyle == 'blog' || ss_folderViewStyle == 'wiki'}">
+<c:if test="${ss_folderViewStyle == 'blog'}">
 	<ssf:toolbar style="ss_actions_bar5 ss_actions_bar">
 	<ssHelpSpot 
 	  		helpId="workspaces_folders/menus_toolbars/folder_toolbar" offsetX="0" offsetY="0" 

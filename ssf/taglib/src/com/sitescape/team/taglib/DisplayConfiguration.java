@@ -193,12 +193,15 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 								List<Element> itemDefinitionProperties = itemDefinition.selectNodes("properties/property");
 								Map propertyValuesMap = new HashMap();
 								Map savedReqAttributes = new HashMap();
+								String propertyName = "";
+								String propertyConfigType = "";
+								String propertyValue = "";
 								for (Element property:itemDefinitionProperties) {
-									String propertyName = property.attributeValue("name", "");
+									propertyName = property.attributeValue("name", "");
 									if (Validator.isNull(propertyName)) continue;
 									//Get the type from the config definition
-									String propertyConfigType = property.attributeValue("type", "text");
-									String propertyValue = "";	
+									propertyConfigType = property.attributeValue("type", "text");
+									propertyValue = "";	
 									//Get the value(s) from the actual definition
 									if (propertyConfigType.equals("selectbox")) {
 										//get all items with same name
@@ -310,10 +313,20 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 								}
 									
 								StringServletResponse res = new StringServletResponse(httpRes);
-								rd.include(req, res);
-								pageContext.getOut().print("<!-- " + jsp + " -->");
-								pageContext.getOut().print(res.getString());
-								pageContext.getOut().print("<!-- end " + jsp.substring(jsp.lastIndexOf('/')+1) + " -->");
+								try {
+									rd.include(req, res);
+									pageContext.getOut().print("\n<!-- " + jsp + " -->\n");
+									pageContext.getOut().print(res.getString());
+									pageContext.getOut().print("\n<!-- end " + jsp.substring(jsp.lastIndexOf('/')+1) + " -->\n");
+								} catch(Exception e) {
+									pageContext.getOut().print("\n<!-- " + jsp + " -->\n");
+									pageContext.getOut().print("<!-- Error: itemType=" +itemType);
+									pageContext.getOut().print(", formType=" + formItem);
+									pageContext.getOut().print(", propertyName=" + propertyName);
+									pageContext.getOut().print(", propertyValue=" + propertyValue);
+									pageContext.getOut().print(", error=" + e.toString() + " -->\n");
+									pageContext.getOut().print("<!-- end " + jsp.substring(jsp.lastIndexOf('/')+1) + " -->\n");
+								}
 
 								//Restore the saved properties
 								for (Element property:itemDefinitionProperties) {
