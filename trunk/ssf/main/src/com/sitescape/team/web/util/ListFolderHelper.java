@@ -28,6 +28,12 @@
  */
 package com.sitescape.team.web.util;
 
+import static com.sitescape.util.search.Constants.DOC_TYPE_FIELD;
+import static com.sitescape.util.search.Constants.ENTRY_ANCESTRY;
+import static com.sitescape.util.search.Constants.ENTRY_TYPE_FIELD;
+import static com.sitescape.util.search.Constants.MODIFICATION_DATE_FIELD;
+import static com.sitescape.util.search.Restrictions.in;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,6 +76,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
@@ -106,6 +113,8 @@ import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
+import com.sitescape.util.search.Criteria;
+import com.sitescape.util.search.Order;
 public class ListFolderHelper {
 
 	public static final String[] monthNames = { 
@@ -1054,26 +1063,39 @@ public class ListFolderHelper {
 			Folder folder, Map model, String viewType) {
 		List blogPages = new ArrayList();
 		Binder parentBinder = folder.getParentBinder();
-		if (parentBinder.getDefinitionType().equals(Definition.FOLDER_VIEW) && 
-				viewType.equals(BinderHelper.getViewType(bs, parentBinder))) {
-			//The parent binder is a blog folder, so add it and its children blogs
-			blogPages.add(parentBinder);
-			model.put(WebKeys.BLOG_SET_BINDER, parentBinder);
-			Iterator itBinders = parentBinder.getBinders().iterator();
-			while (itBinders.hasNext()) {
-				Binder b = (Binder) itBinders.next();
-				blogPages.add(b);
-			}
-		} else {
-			//Since the parent binder is not a blog folder, just add ourself
-			blogPages.add(folder);
-			model.put(WebKeys.BLOG_SET_BINDER, folder);
+		Binder topBinder = folder;
+		while (parentBinder != null) {
+			if (!parentBinder.getDefinitionType().equals(Definition.FOLDER_VIEW) || 
+					!viewType.equals(BinderHelper.getViewType(bs, parentBinder))) break;
+			topBinder = parentBinder;
+			parentBinder = parentBinder.getParentBinder();
 		}
-		//Finally, add all of the children blogs of the current folder
-		Iterator itBinders = folder.getBinders().iterator();
-		while (itBinders.hasNext()) {
-			Binder b = (Binder) itBinders.next();
-			blogPages.add(b);
+		//The top binder is a blog folder, so add it and its descendants
+		//blogPages.add(topBinder);
+		model.put(WebKeys.BLOG_SET_BINDER, topBinder);
+				
+		List folderIds = new ArrayList();
+		folderIds.add(topBinder.getId().toString());
+		Criteria crit = new Criteria();
+		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
+			.add(in(Constants.ENTRY_ANCESTRY, folderIds));
+		crit.addOrder(Order.asc(Constants.SORT_TITLE_FIELD));
+		Map binderMap = bs.getBinderModule().executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+
+		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
+		List binderIdList = new ArrayList();
+
+      	for (Iterator iter=binderMapList.iterator(); iter.hasNext();) {
+      		Map entryMap = (Map) iter.next();
+      		binderIdList.add(new Long((String)entryMap.get("_docId")));
+      	}
+      	SortedSet binderList = bs.getBinderModule().getBinders(binderIdList);
+        for (Iterator iter=binderList.iterator(); iter.hasNext();) {
+     		Binder b = (Binder)iter.next();
+      		if (b.isDeleted()) continue;
+      		if (b.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
+      			blogPages.add(b);
+      		}
 		}
 		model.put(WebKeys.BLOG_PAGES, blogPages);
 	}
