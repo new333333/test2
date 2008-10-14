@@ -108,6 +108,7 @@ ssFind.configSingle = function(params) {
 	var binderId = ("binderId" in params) ? params.binderId : null;
 	var subFolders = ("subFolders" in params) ? params.subFolders : null;
 	var foldersOnly = ("foldersOnly" in params) ? params.foldersOnly : null;
+	var showFolderTitles = ("showFolderTitles" in params) ? params.showFolderTitles : false;
 	var showUserTitleOnly = ("showUserTitleOnly" in params) ? params.showUserTitleOnly : false;
 	var displayArrow = ("displayArrow" in params) ? (params.displayArrow != "false" ? true : false) : false;
 	var displayValue = ("displayValue" in params) ? (params.displayValue != "false" ? true : false) : false;
@@ -119,8 +120,8 @@ ssFind.configSingle = function(params) {
 		
 	findObj.single(inputId, prefix, clickRoutineObj, clickRoutine, viewUrl, viewAccesibleUrl, searchUrl,
 					leaveResultsVisible, listType, renderNamespace, binderId, subFolders, foldersOnly, 
-					showUserTitleOnly, displayArrow, displayValue, displayValueOnly, addCurrentUserToResult,
-				    searchOnInitialClick, clearSubordinates);
+					showFolderTitles, showUserTitleOnly, displayArrow, displayValue, displayValueOnly, 
+					addCurrentUserToResult, searchOnInitialClick, clearSubordinates);
 	
 	return findObj;
 }
@@ -151,6 +152,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	this._singleBinderId;
 	this._singleSubFolders;
 	this._singleFoldersOnly;
+	this._showFolderTitles;
 	this._showUserTitleOnly;
 	this._displayArrow = false;
 	this._addCurrentUserToResult = false;
@@ -269,7 +271,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 						   singleViewUrl, singleViewAccesibleUrl, singleSearchUrl, 
 						   singleLeaveResultsVisible, singleListType, singleRenderNamespace,
 						   singleBinderId, singleSubFolders, singleFoldersOnly,
-						   showUserTitleOnly, displayArrow, displayValue, displayValueOnly,
+						   showFolderTitles, showUserTitleOnly, displayArrow, displayValue, displayValueOnly,
 						   addCurrentUserToResult, searchOnInitialClick, clearSubordinates) {
 		that.inputId = inputId;
 		if (that.inputId) {
@@ -287,6 +289,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		that._singleBinderId = singleBinderId;
 		that._singleSubFolders = singleSubFolders;
 		that._singleFoldersOnly = singleFoldersOnly;
+		that._showFolderTitles = showFolderTitles;
 		that._showUserTitleOnly = showUserTitleOnly;
 		that._displayArrow = displayArrow;
 		that._displayValue = displayValue;
@@ -397,6 +400,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 										+ (that._singleSubFolders != null?"&searchSubFolders=" + that._singleSubFolders: "")
 										+ (that._singleFoldersOnly != null?"&foldersOnly=" + that._singleFoldersOnly: "")
 										+ "&listDivId=" + that._listContainerInnerDiv.id
+										+ "&showFolderTitles=" + that._showFolderTitles
 										+ "&showUserTitleOnly=" + that._showUserTitleOnly
 										+ "&namespace=" + that._singlePrefix
 										+ "&addCurrentUser=" + that._addCurrentUserToResult,

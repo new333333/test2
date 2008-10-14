@@ -582,6 +582,12 @@
 			<type>java.lang.Boolean</type>
 		</attribute>
 		<attribute>
+			<name>showFolderTitles</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
 			<name>showUserTitleOnly</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

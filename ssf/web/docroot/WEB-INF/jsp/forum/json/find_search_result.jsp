@@ -66,6 +66,7 @@
   		          --%><c:otherwise><%--
   		          	--%><ssf:escapeJavaScript value="${entry.title}"/><%--
   		          	--%><c:if test="${ssShowUserTitleOnly != 'true' && !empty entry._loginName}"> (${entry._loginName})</c:if><%--
+  		          	--%><c:if test="${ssShowFolderTitles == 'true' && !empty entry.binderTitle}"> (${entry.binderTitle})</c:if><%--
   		          --%></c:otherwise></c:choose>',
   		          'type': '${entry._entityType}'
   		    }<c:if test="${!status.last}">,</c:if>
