@@ -97,7 +97,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	         <a class="<c:if test="${blogPage.id == ssBinder.id}"> ss_navbar_current</c:if>
 					   <c:if test="${blogPage.id != ssBinder.id}"></c:if>" 
 				href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"/>"
-	         >${blogPage.title}</a>
+	         >${blogPage.title}</a></div>
 	       </td></tr>
 	     </c:forEach>
 	    </table>

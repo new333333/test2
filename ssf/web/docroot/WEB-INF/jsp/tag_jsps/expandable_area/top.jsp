@@ -53,7 +53,7 @@ border="0"
 <c:if test="${initOpen}"><ssf:alt tag="alt.hide"/> src="<html:imagesPath />pics/sym_s_collapse.gif"</c:if>
 <c:if test="${!initOpen}"><ssf:alt tag="alt.expand"/> src="<html:imagesPath />pics/sym_s_expand.gif"</c:if>
 
-id="${renderResponse.namespace}img_<%= name %>" name="${renderResponse.namespace}img_<%= name %>" /></td>
+id="${renderResponse.namespace}img_<%= name %>" name="${renderResponse.namespace}img_<%= name %>" /></a></td>
 <td valign="middle"><a href="javascript: ;" 
 onClick="ss_toggleImage('${renderResponse.namespace}img_<%= name %>', 'sym_s_expand.gif', 'sym_s_collapse.gif');ss_showHide('${renderResponse.namespace}<%= name %>'); return false;"
 ><span class="${titleClass}">${title}</span></a></td>

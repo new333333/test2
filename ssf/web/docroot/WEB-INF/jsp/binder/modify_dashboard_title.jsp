@@ -97,7 +97,7 @@
 		<br/>
 	
 	    <span class="ss_bold"><ssf:nlt tag="dashboard.titleScope"/></span><br>
-	    <input type="radio" name="_scope" value="local" checked/><ssf:nlt tag="dashboard.titleScope.local"/><br>
+	    <input type="radio" name="_scope" value="local" checked="checked" /><ssf:nlt tag="dashboard.titleScope.local"/><br>
 	    <input type="radio" name="_scope" value="global"/><ssf:nlt tag="dashboard.titleScope.global"/><br>
 	    <c:if test="${ssDashboard.sharedModificationAllowed}">
 	      <input type="radio" name="_scope" value="binder"/><ssf:nlt tag="dashboard.titleScope.binder"/><br>
