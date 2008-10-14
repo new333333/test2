@@ -1611,11 +1611,11 @@ div.ss_box_top_rounded {
 
 /* -------------------Skins-------------------- */
 div.ss_content_outer {		/* also see ss_pseudoPortal */
-    position: absolute;
     background: #FFFFFF;
 	margin-top:0px;
 	margin-right: 15px;		/* give right margin to match pseudoPortal */
 	border: 1px solid #ccc;
+	width:100%;
 }
 
 .ss_content_inner {

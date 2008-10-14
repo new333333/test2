@@ -92,7 +92,7 @@
 		tabTitle = tabTitle.substring(0, maxTitle) + "...";
 	}
 %>	
-		   <div class="ss_tabs_title"><%= tabTitle %></div></a>
+		   <span class="ss_tabs_title"><%= tabTitle %></span></a>
    </li>
    </c:if>
 </c:forEach>

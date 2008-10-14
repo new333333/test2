@@ -31,8 +31,6 @@
 <% // Folder level toolbar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<div class="ss_actions_bar1_pane ss_sidebarImage" align="right">
-
 <ssf:toolbar style="ss_actions_bar1 ss_actions_bar">
  <% // Folder toolbar %>
  <c:if test="${!empty ss_whatsNewToolbar}">
@@ -45,5 +43,3 @@
   <ssf:toolbar toolbar="${ssEmailSubscriptionToolbar}" style="ss_actions_bar1 ss_actions_bar" item="true" />
  </c:if>
 </ssf:toolbar>
-
-</div>

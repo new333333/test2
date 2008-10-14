@@ -69,14 +69,16 @@
 					<c:set var="binderId" value="${ssDashboardPortlet.id}"/>
 				</c:if>
 				<c:if test="${ss_pageNumber > 0}">
-					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
+					<a href="javascript: ;"
+						onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
 					><img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif" /></a>
 				</c:if>
 				<c:if test="${ss_pageNumber > 1 || ssPageEndIndex < ssResultTotalRecords}">
 				<span class="ss_pageNumber">${ss_pageNumber+1}</span>
 				</c:if>
 				<c:if test="${ssPageEndIndex < ssResultTotalRecords}">
-					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
+					<a href="javascript: ;"
+						onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
 					><img <ssf:alt tag="general.nextPage"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
 				</c:if>
 			</c:if>
@@ -126,14 +128,16 @@
 					<c:set var="binderId" value="${ssDashboardPortlet.id}"/>
 				</c:if>
 				<c:if test="${ss_pageNumber > 0}">
-					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
+					<a href="javascript: ;"
+						onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
 					><img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif" /></a>
 				</c:if>
 				<c:if test="${ss_pageNumber > 1 || ssPageEndIndex < ssResultTotalRecords}">
 					<span class="ss_pageNumber">${ss_pageNumber+1}</span>
 				</c:if>
 				<c:if test="${ssPageEndIndex < ssResultTotalRecords}">
-					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
+					<a href="javascript: ;"
+						onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
 					><img <ssf:alt tag="general.nextPage"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
 				</c:if>
 			</c:if>

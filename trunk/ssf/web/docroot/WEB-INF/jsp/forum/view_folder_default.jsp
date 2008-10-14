@@ -54,7 +54,7 @@
 			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_action_dispatch.jsp" />
 		
 			<% // RSS Feed %>
-			<div id="ss_leftNav">
+			<div class="ss_leftNav">
 				<ul>
 					<li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" /></li>
 				</ul>

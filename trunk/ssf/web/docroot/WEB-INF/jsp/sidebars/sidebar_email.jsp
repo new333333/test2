@@ -35,7 +35,7 @@
 
 <c:if test="${!ss_searchResultsPage}">
 	<c:if test="${!empty ss_toolbar_sendmail_url}">
-		<div id="ss_leftNav">
+		<div class="ss_leftNav">
 		  <ul>
 			<li>
 			<c:if test="${!ss_toolbar_sendmail_post}">

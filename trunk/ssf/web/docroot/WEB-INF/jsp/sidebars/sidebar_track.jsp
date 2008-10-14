@@ -33,7 +33,7 @@
 	<ssf:ifLoggedIn>
 		<c:if test="${(empty ssEntry || ssEntry.entityType != 'folderEntry') && 
 				!empty ssBinder && ssBinder.entityType != 'profiles'}">
-			<div id="ss_leftNav">
+			<div class="ss_leftNav">
 			  <ul>
 				<li>
 				   <a href="javascript: ;"   
