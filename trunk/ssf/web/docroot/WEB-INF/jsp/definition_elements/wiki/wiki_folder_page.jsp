@@ -67,7 +67,7 @@
 	    ><span id="folderLine_${entry1._docId}" class="ss_smallprint <%= seenStyleFine %>"
 	      >--<ssf:nlt tag="entry.noTitle"/>--</span
 	    ></c:if><span id="folderLine_${entry1._docId}" class="ss_smallprint <%= seenStyle %>"
-	      ><c:out value="${entry1.title}"/></span></a>
+	      ><c:out value="${entry1.title}"/></span></a></div>
 	    </td></tr>
     </c:forEach>
   </table>
