@@ -55,9 +55,9 @@
 					<form class="inline" action="${ss_toolbar_sendmail_url}" method="post" 
 					  target="footerToolbarOptionWnd"
 					>
-					<input type="hidden" name="ssUsersIdsToAdd" value="${contributorIdList}"/>
-					<a href="javascript: ;" onclick="ss_toolbarPopupUrl('', 'footerToolbarOptionWnd'); ss_submitParentForm(this); "
-					><span><ssf:nlt tag="profile.abv.element.emailAddress"/></span></a>
+						<input type="hidden" name="ssUsersIdsToAdd" value="${contributorIdList}"/>
+						<a href="javascript: ;" onclick="ss_toolbarPopupUrl('', 'footerToolbarOptionWnd'); ss_submitParentForm(this); "
+						><span><ssf:nlt tag="profile.abv.element.emailAddress"/></span></a>
 					</form>
 			</c:if>
 			</li>
