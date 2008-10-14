@@ -77,7 +77,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 		return EntityIdentifier.EntityType.user;
 	}
 	public TimeZone getTimeZone() {
-		if (timeZone != null) return timeZone;
+		if (timeZone != null) return TimeZoneHelper.fixTimeZone(timeZone);
 		return TimeZoneHelper.getDefault();
 	}
 	public void setTimeZone(TimeZone timeZone) {
