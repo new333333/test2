@@ -121,7 +121,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-image:  url("<html:rootPath/>images/pics/sidebar/backgrounddropdowns.png");
 	background-position: 1px -57px;
 	<c:if test="<%= isIE %>">
-		background-position: 1px -48px;
+		background-position: 1px -57px;
  	</c:if>	
 	background-color: transparent;
 	background-repeat: no-repeat;
@@ -132,7 +132,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-image: url("<html:rootPath/>images/pics/sidebar/backgrounddropdowns.png");
 	background-position: 1px -31px;
 	<c:if test="<%= isIE %>">
-		background-position: 1px -21px;
+		background-position: 1px -31px;
  	</c:if>		
 	background-color: transparent;
 	background-repeat: no-repeat;
