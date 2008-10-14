@@ -526,6 +526,17 @@ div.ss_popup_body {
   	padding:0 2px 2px 2px;
   	background-color: ${ss_style_background_color_opaque};
   	}  
+.ss_popupDiv input[type="submit"]:hover {	
+  	border: 1px dotted #333;
+  	padding: 0px 7px 0px 7px;
+	<c:if test="<%= isIE %>">
+  		padding: 0px;
+  		padding-top: -2px;
+  		padding-bottom: 1px;
+  		padding-left: 1px; 
+  		padding-right: 0px;
+	</c:if>  	
+	}  	
 .ss_popupMenuClose {
   	width:100%;
   	padding:0px 8px 0px 0px;
