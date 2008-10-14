@@ -74,7 +74,9 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 </c:if>
 </ssf:ifnotaccessible>
 <td valign="middle">
-<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
+<c:if test="${!ss_mashupHideToolbar}">
+  <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
+</c:if>
 </td></tr>
 </table>
 </div>
@@ -89,10 +91,11 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	</td>
    </c:if>
   </ssf:ifnotaccessible>
-  <c:if test="${!ss_mashupHideToolbar}">
-   <ssf:ifnotaccessible>
+  <ssf:ifnotaccessible>
 	<td valign="top" class="ss_view_info">
-	  <jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
+	  <c:if test="${!ss_mashupHideToolbar}">
+	    <jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
+	  </c:if>
 	  <div align="center">
 	    <div id="ss_folder_wrap">
 		  <div id="ss_whatsNewDiv${ss_namespace}">
@@ -112,13 +115,22 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		  </c:if>
 		  
 		  <c:if test="${ss_mashupHideToolbar && ss_mashupShowAlternateToolbar}">
-		    <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
+			<ssf:ifnotaccessible>
+			<div class="ss_actions_bar1_pane ss_sidebarImage">
+			  <table cellspacing="0" cellpadding="0">
+			    <tr>
+			      <td valign="middle">
+		            <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
+		          </td>
+		        </tr>
+		      </table>
+		    </div>
+		    </ssf:ifnotaccessible>
 		  </c:if>
 		</div>
 	  </div>
 	</td>
-	</ssf:ifnotaccessible>
-   </c:if>
+  </ssf:ifnotaccessible>
 	<ssf:ifnotaccessible>
 	</tr>
 	</tbody>

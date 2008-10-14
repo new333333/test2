@@ -45,7 +45,6 @@
 
 <c:if test="${ss_toolbar_item}">
 <!-- Start of toolbar item -->
-  <li class="ss_toolBarItem">
 </c:if>
 <c:if test="${!ss_toolbar_item}">
 <!-- Start of toolbar -->

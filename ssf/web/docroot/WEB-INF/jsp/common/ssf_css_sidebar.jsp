@@ -198,7 +198,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 /* This is for the box style links */
 
-#ss_leftNav {
+.ss_leftNav {
       margin-left: 8px;
       margin-right: 8px;
 	<c:if test="<%= isIE %>">
@@ -206,13 +206,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
  	</c:if>	      
       margin-bottom: 2px;
       }
-#ss_leftNav ul {
+.ss_leftNav ul {
     text-decoration: none;
     margin: 0px;
     padding: 0px;
       }
         
-#ss_leftNav li a {
+.ss_leftNav li a {
     color: #666666;
     display: block;
 	border-style: solid;
@@ -224,10 +224,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
     padding: 7px 0 7px 30px;
 	margin-bottom: 3px;
     }		
-#ss_leftNav a:visited {
+.ss_leftNav a:visited {
 	color:#333333;	/* #990099 (magenta) */
 	}
-#ss_leftNav li a:hover {
+.ss_leftNav li a:hover {
     color: #333333;
     background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_hover.png") 5px 2px;
     background-repeat: no-repeat !important;
@@ -237,7 +237,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     padding: 7px 0 7px 30px;
 	margin-bottom:3px;	
      }
-#ss_leftNav li a:active {
+.ss_leftNav li a:active {
     color: #fff;
     background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_a.png") 5px 2px;
     background-repeat: no-repeat !important;

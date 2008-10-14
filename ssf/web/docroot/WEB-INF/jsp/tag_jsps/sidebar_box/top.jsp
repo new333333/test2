@@ -51,8 +51,7 @@ Boolean sticky = ParamUtil.getBoolean(request, "sticky", true);
         --%><c:if test="${!initOpen}">class="ss_menuClosed" </c:if><%--
         --%> onClick="ss_showHideSidebarBox('${renderResponse.namespace}_${divId}', this, ${sticky}, '${divId}');"><%--
         --%><%= title %><%--
-        --%><div><img alt="" src="<html:imagesPath/>pics/1pix.gif" height="1" width="180"/></div><%--
-    --%></a><%--
+    --%></a><div><img alt="" src="<html:imagesPath/>pics/1pix.gif" height="1" width="180"/></div><%--
 --%><div id="${renderResponse.namespace}_${divId}" style="overflow: hidden; <%--
 --%><c:if test="${initOpen}">visibility: visible; display: block;</c:if><%--
 --%><c:if test="${!initOpen}">visibility: hidden; display: none;</c:if><%--

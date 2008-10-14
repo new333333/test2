@@ -39,7 +39,7 @@
 	<jsp:include page="/WEB-INF/jsp/sidebars/status.jsp" />	
 	
 	<!-- "It Boxes" -->
-	<div id="ss_leftNav">
+	<div class="ss_leftNav">
 		<ul>
             <li>
 			<a href="#">Take Out the Tabbar! xxx</a>

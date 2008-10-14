@@ -43,7 +43,7 @@
 			document.getElementsByTagName("head")[0].appendChild(ss_linkEle);
 		}
 	  </script>
-		<div id="ss_leftNav">
+		<div class="ss_leftNav">
 		<ul>
 			<li>
 				<a href="${ss_toolbar_subscribe_rss}" 

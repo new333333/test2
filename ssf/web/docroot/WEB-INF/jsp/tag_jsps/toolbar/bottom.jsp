@@ -44,11 +44,9 @@
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
 
 <c:if test="${ss_toolbar_item}">
-	</li>
 	<c:if test="${!ss_toolbar_skip_separator}">
 		<li class="ss_actions_bar_separator"></li>
 	</c:if>
-  </li>
 <!-- End of toolbar item -->
 
 </c:if>

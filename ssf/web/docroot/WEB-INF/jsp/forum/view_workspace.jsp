@@ -163,7 +163,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 		var ss_reloadUrl = "${ss_reloadUrl}";
 		var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 	</script>
-	<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
+<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}" scope="request"/>
 <c:if test="${empty ss_sidebarVisibility}"><c:set var="ss_sidebarVisibility" value="block" scope="request"/></c:if>
