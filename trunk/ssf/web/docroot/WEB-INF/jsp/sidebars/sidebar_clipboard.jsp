@@ -34,7 +34,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:if test="${ss_toolbar_clipboard_show}">
-		<div id="ss_leftNav">
+		<div class="ss_leftNav">
 		  <ul>
 			<li>
 			<c:set var="answer" value=""/>
@@ -46,7 +46,7 @@
 			  <a href="${ss_muster.showForm}"
 			    onClick="ss_muster.showForm('ss_muster_users', '${answer}', '${ssBinder.id}');return false;"
 			  >
-			    <span><ssf:nlt tag="sidebar.clipboard"/></span>
+			    <ssf:nlt tag="sidebar.clipboard"/>
 			  </a>
 			</li>
 		  </ul>
