@@ -68,6 +68,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
     private String instanceCount;
     private String accessibilityText;
     private Boolean addCurrentUser;
+    private Boolean showFolderTitles;
     private Boolean showUserTitleOnly;
     private Boolean displayValue;
     private Boolean displayValueOnly;
@@ -94,6 +95,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			if (singleItem == null) singleItem = false;
 			if (leaveResultsVisible == null) leaveResultsVisible = false;
 			if (searchSubFolders == null) searchSubFolders = false;
+			if (showFolderTitles == null) showFolderTitles = false;
 			if (showUserTitleOnly == null) showUserTitleOnly = false;
 			if (displayValue == null) displayValue = false;
 			if (displayValueOnly == null) displayValueOnly = false;
@@ -129,6 +131,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			req.setAttribute(WebKeys.FIND_LEAVE_RESULTS_VISIBLE, this.leaveResultsVisible.toString());
 			req.setAttribute(WebKeys.FIND_FOLDERS_ONLY, this.foldersOnly.toString());
 			req.setAttribute(WebKeys.FIND_SEARCH_SUBFOLDERS, this.searchSubFolders.toString());
+			req.setAttribute(WebKeys.FIND_SHOW_FOLDER_TITLES, this.showFolderTitles.toString());
 			req.setAttribute(WebKeys.FIND_SHOW_USER_TITLE_ONLY, this.showUserTitleOnly.toString());
 			req.setAttribute(WebKeys.FIND_DISPLAY_VALUE, this.displayValue.toString());
 			req.setAttribute(WebKeys.FIND_DISPLAY_VALUE_ONLY, this.displayValueOnly.toString());
@@ -156,6 +159,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			this.leaveResultsVisible = false;
 			this.binderId = "";
 			this.searchSubFolders = false;
+			this.showFolderTitles = false;
 			this.showUserTitleOnly = false;
 			this.displayValue = false;
 			this.displayValueOnly = false;
@@ -231,6 +235,10 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 
 	public void setSearchSubFolders(Boolean searchSubFolders) {
 	    this.searchSubFolders = searchSubFolders;
+	}
+	
+	public void setShowFolderTitles(Boolean showFolderTitles) {
+	    this.showFolderTitles = showFolderTitles;
 	}
 	
 	public void setShowUserTitleOnly(Boolean showUserTitleOnly) {

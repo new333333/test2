@@ -2265,7 +2265,7 @@ public class BinderHelper {
 		model.put(WebKeys.FOLDER_ENTRYPEOPLE, peoplesRatingToShow);
 		model.put(WebKeys.FOLDER_ENTRYPLACES, placesRating);
 
-		Map folders = prepareFolderList(placesWithCounters);
+		Map folders = prepareFolderList(placesWithCounters, true);
 		extendEntriesInfo(entries, folders);
 
 		// TODO check and make it better, copied from SearchController
@@ -2282,7 +2282,7 @@ public class BinderHelper {
 		model.put(WebKeys.FOLDER_ENTRYPERSONALTAGS, entryPersonalTags);
 	}
 
-	protected static List sortPlacesInEntriesSearchResults(BinderModule binderModule, List entries) {
+	public static List sortPlacesInEntriesSearchResults(BinderModule binderModule, List entries) {
 		HashMap placeMap = new HashMap();
 		ArrayList placeList = new ArrayList();
 		// first go thru the original search results and 
@@ -2361,7 +2361,7 @@ public class BinderHelper {
 		return ratedList;
 	}
 	
-	private static Map prepareFolderList(List placesWithCounters) {
+	public static Map prepareFolderList(List placesWithCounters, Boolean includeParentBinderTitle) {
 		Map folderMap = new HashMap();
 		Iterator it = placesWithCounters.iterator();
 		while (it.hasNext()) {
@@ -2370,13 +2370,14 @@ public class BinderHelper {
 			if (binder == null) continue;
 			Binder parentBinder = binder.getParentBinder();
 			String parentBinderTitle = "";
-			if (parentBinder != null) parentBinderTitle = parentBinder.getTitle() + " // ";
+			if (includeParentBinderTitle && parentBinder != null) 
+				parentBinderTitle = parentBinder.getTitle() + " // ";
 			folderMap.put(binder.getId(), parentBinderTitle + binder.getTitle());
 		}
 		return folderMap;
 	}
 	
-	private static void extendEntriesInfo(List entries, Map folders) {
+	public static void extendEntriesInfo(List entries, Map folders) {
 		Iterator it = entries.iterator();
 		while (it.hasNext()) {
 			Map entry = (Map) it.next();

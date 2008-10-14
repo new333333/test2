@@ -37,6 +37,7 @@ import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.TreeHelper;
+import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebHelper;
@@ -100,6 +101,8 @@ public class TypeToFindAjaxController extends SAbstractController {
 		String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "10");
 		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "0");
 		String foldersOnly = PortletRequestUtils.getStringParameter(request, "foldersOnly", "false");
+		String searchSubFolders = PortletRequestUtils.getStringParameter(request, "searchSubFolders", "false");
+		String showFolderTitles = PortletRequestUtils.getStringParameter(request, "showFolderTitles", "false");
 		String binderId = PortletRequestUtils.getStringParameter(request, "binderId", "");
 		String showUserTitleOnly = PortletRequestUtils.getStringParameter(request, "showUserTitleOnly", "false");
 		boolean addCurrentUser = PortletRequestUtils.getBooleanParameter(request, "addCurrentUser", false);
@@ -167,10 +170,11 @@ public class TypeToFindAjaxController extends SAbstractController {
 			
 			//Add terms to search this folder
 			if (!binderId.equals("")) {
-				
-				searchTermFilter.addAndFolderId(binderId);
-				
-				//TODO Need to implement "searchSubFolders"
+				if (searchSubFolders.equals("false")) {
+					searchTermFilter.addAndFolderId(binderId);
+				} else {
+					searchTermFilter.addAncestryId(binderId);
+				}
 			}
 			
 		} else if (findType.equals(WebKeys.FIND_TYPE_TAGS)) {
@@ -201,8 +205,12 @@ public class TypeToFindAjaxController extends SAbstractController {
 			} else if (findType.equals(WebKeys.FIND_TYPE_ENTRIES)) {
 				Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
 				List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
+				List placesWithCounters = BinderHelper.sortPlacesInEntriesSearchResults(getBinderModule(), entries);
+				Map foldersMap = BinderHelper.prepareFolderList(placesWithCounters, false);
+				BinderHelper.extendEntriesInfo(entries, foldersMap);
 				model.put(WebKeys.ENTRIES, entries);
 				model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+				model.put(WebKeys.FIND_SHOW_FOLDER_TITLES, showFolderTitles);
 			} else if (findType.equals(WebKeys.FIND_TYPE_TAGS) ||
 					findType.equals(WebKeys.FIND_TYPE_PERSONAL_TAGS) ||
 					findType.equals(WebKeys.FIND_TYPE_COMMUNITY_TAGS)) {

@@ -129,5 +129,6 @@ onload="dojo.addOnLoad(function(){
 		      		binderId: '${binderId}',
 		      		subFolders: '${ssFindSearchSubFolders}',
 		      		foldersOnly: '${ssFindFoldersOnly}',
+		      		showFolderTitles: '${ssShowFolderTitles}',
 		      		showUserTitleOnly: '${ssShowUserTitleOnly}' 
 		})}}); " />    		

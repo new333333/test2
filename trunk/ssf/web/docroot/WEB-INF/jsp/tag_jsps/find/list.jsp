@@ -89,6 +89,7 @@
 				    displayValueOnly="${ssDisplayValueOnly}"
 				    accessibilityText="${accessibilityText}"
 				    addCurrentUser="${ssFindAddCurrentUser}"
+				    showFolderTitles="${ssShowFolderTitles}"
 				    showUserTitleOnly="${ssShowUserTitleOnly}"
 				    /> 
 			    <c:if test="${ssFindListType == 'user'}">
