@@ -121,6 +121,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_ENTRY)) {
 			return ajaxMobileShowEntry(request, response);
 			
+		} else if (op.equals(WebKeys.OPERATION_MOBILE_WHATS_NEW)) {
+			return ajaxMobileWhatsNew(this, request, response);
+			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_LOGIN)) {
 			return ajaxMobileLogin(this, request, response);
 			
@@ -296,6 +299,43 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 		return new ModelAndView("mobile/show_folder", model);
+	}
+
+	private ModelAndView ajaxMobileWhatsNew(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		if (binderId == null) binderId = getWorkspaceModule().getTopWorkspace().getId();
+		Binder binder = getBinderModule().getBinder(binderId);
+		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, WebKeys.URL_WHATS_NEW);
+
+		Map options = new HashMap();		
+		if (binder== null) {
+			return ajaxMobileFrontPage(request, response);
+		} 
+		model.put(WebKeys.BINDER, binder);
+
+      	Integer pageNumber = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER);
+      	if (pageNumber == null || pageNumber < 0) pageNumber = 0;
+      	int pageSize = Integer.valueOf(WebKeys.MOBILE_PAGE_SIZE_WHATS_NEW).intValue();
+      	int pageStart = pageNumber.intValue() * pageSize;
+      	String nextPage = "";
+      	String prevPage = "";
+      	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(pageSize));
+      	options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(pageStart));
+
+		if (type.equals(WebKeys.URL_WHATS_NEW)) {
+			BinderHelper.setupWhatsNewBinderBeans(bs, binder, model, String.valueOf(pageNumber));
+		} else if (type.equals(WebKeys.URL_UNSEEN)) {
+			BinderHelper.setupUnseenBinderBeans(bs, binder, model, String.valueOf(pageNumber));
+		}
+
+		model.put(WebKeys.PAGE_NUMBER, pageNumber.toString());
+		model.put(WebKeys.NEXT_PAGE, nextPage);
+		model.put(WebKeys.PREV_PAGE, prevPage);
+
+		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
+		return new ModelAndView("mobile/show_whats_new", model);
 	}
 
 	private ModelAndView ajaxMobileShowWorkspace(RenderRequest request, 

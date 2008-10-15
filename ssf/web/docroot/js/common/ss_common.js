@@ -5580,10 +5580,11 @@ function ss_showSavedQueriesList(relObj, divId, resultUrl) {
 	dojo.xhrGet(bindArgs);	
 }
 
-function ss_placeOnScreen(div, rel, offsetTop, offsetLeft) {
+function ss_placeOnScreen(divId, rel, offsetTop, offsetLeft) {
 	var box = dojo.coords(rel);
-	ss_moveDivToBody(div);
-	dojo.placeOnScreen(div, box.l + offsetLeft, box.t + offsetTop, 0, false, "TL");
+	ss_moveDivToBody(divId);
+	var divObj = document.getElementById(divId);
+	dijit.placeOnScreen(divObj, {x: (box.l + offsetLeft), y: (box.t + offsetTop)}, "TL", false);
 }
 
 
