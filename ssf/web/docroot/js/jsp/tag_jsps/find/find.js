@@ -776,10 +776,16 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		}
 		if (that._singleClickRoutine && callbackObj && callbackObj[that._singleClickRoutine]) {
 			var objMethod = callbackObj[that._singleClickRoutine];
+			var name = "";
+			if (obj && obj.firstChild && obj.firstChild.firstChild && obj.firstChild.firstChild.innerText) {
+				name = obj.firstChild.firstChild.innerText;
+			} else if (obj && obj.firstChild && obj.firstChild.firstChild && obj.firstChild.firstChild.textContent) {
+				name = obj.firstChild.firstChild.textContent;
+			}
 			if (that._singleListType == "places") {
-				objMethod.apply(this, [id, entityType, obj]);
+				objMethod.apply(this, [id, entityType, obj, name]);
 			} else {
-				objMethod.apply(this, [id, obj]);
+				objMethod.apply(this, [id, obj, name]);
 			}
 		} else if (that._singleClickRoutine && typeof that._singleClickRoutine == "function") {
 			that._singleClickRoutine();
