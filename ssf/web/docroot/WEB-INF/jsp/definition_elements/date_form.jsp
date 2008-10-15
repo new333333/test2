@@ -67,6 +67,7 @@
 
 		<input type="hidden" name="${property_name}_timezoneid" value="${ssUser.timeZone.ID}" />
 		<input type="hidden" name="${property_name}_skipTime" value="false" />
+		<input type="hidden" name="${property_name}" value="" />
 		
 	<script type="text/javascript">
 		dojo.addOnLoad(function() {
