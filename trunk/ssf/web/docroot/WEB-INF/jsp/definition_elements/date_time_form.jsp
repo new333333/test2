@@ -84,6 +84,8 @@
 		</tr>
 	</table>
 	
+	<input type="hidden" name="${property_name}" value="" />
+	
 	<script type="text/javascript">
 		dojo.addOnLoad(function() {
 				dojo.addClass(document.body, "tundra");
