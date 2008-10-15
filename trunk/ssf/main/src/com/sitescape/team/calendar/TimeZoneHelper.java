@@ -171,14 +171,12 @@ public class TimeZoneHelper {
 		}
 		
 		if (cZoneIdConversion.containsKey(id)) {
-		//	System.out.println("get from list: " + cZoneIdConversion.get(id));
 			return (String) cZoneIdConversion.get(id);
 		}
 		
 		try {
 			DateTimeZone dateTimeZone = DateTimeZone.forID(id);
 			if (dateTimeZone != null) {
-				// System.out.println("get from joda by ID: " + dateTimeZone.toTimeZone().getID());
 				return dateTimeZone.toTimeZone().getID();
 			}
 		} catch (IllegalArgumentException e) {
