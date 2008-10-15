@@ -613,6 +613,9 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 	}
 	
 	this.refreshEventDates = function() {
+		if (!that._timeLine) {
+			return;
+		}
 		if (that._eventStartObj) {
 			that._setStartDate(that._eventStartObj.getValue());
 		}		
