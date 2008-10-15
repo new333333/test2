@@ -323,7 +323,7 @@ ss_debug('e.pageY = '+e.pageY)
 		switch(e.dragStatus){
 
 			case "dropSuccess":
-				dojo.dom.removeNode(this.dragClone);
+				this.dragClone.parentNode.removeChild(this.dragClone);
 				this.dragClone = null;
 				break;
 
@@ -339,7 +339,7 @@ ss_debug('e.pageY = '+e.pageY)
 				dojo.event.connect(anim, "onEnd", function (e) {
 					// pause for a second (not literally) and disappear
 					dojo.lang.setTimeout(function() {
-							dojo.html.removeNode(dragObject.dragClone);
+							dragObject.dragClone.parentNode.removeChild(dragObject.dragClone);
 							// Allow drag clone to be gc'ed
 							dragObject.dragClone = null;
 						},
@@ -414,7 +414,7 @@ dojo.lang.extend(dojo.dnd.ss_dashboard_target, {
 		this.domNode.className = "ss_dashboardDropTarget";
 
 		if(this.dropIndicator) {
-			dojo.dom.removeNode(this.dropIndicator);
+			this.dropIndicator.parentNode.removeChild(this.dropIndicator);
 			delete this.dropIndicator;
 		}
 	},
