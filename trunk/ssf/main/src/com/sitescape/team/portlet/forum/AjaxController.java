@@ -44,6 +44,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -57,9 +58,11 @@ import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.OrderedMap;
 import org.apache.commons.collections.map.LinkedMap;
@@ -71,6 +74,8 @@ import org.dom4j.Document;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.jsf.FacesContextUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
@@ -81,6 +86,7 @@ import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.calendar.StartEndDatesView;
 import com.sitescape.team.calendar.OneDayView;
 import com.sitescape.team.calendar.OneMonthView;
+import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
@@ -114,6 +120,7 @@ import com.sitescape.team.module.ical.AttendedEntries;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.portletadapter.portlet.PortletRequestImpl;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFiltersBuilder;
 import com.sitescape.team.security.AccessControlException;
@@ -134,6 +141,7 @@ import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.util.TempFileUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractControllerRetry;
+import com.sitescape.team.web.servlet.ParamsWrappedHttpServletRequest;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.upload.FileUploadProgressListener;
@@ -208,8 +216,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 				ajaxSaveSearchQuery(request, response);
 			} else if (op.equals(WebKeys.OPERATION_REMOVE_SEARCH_QUERY)) {
 				ajaxRemoveSearchQuery(request, response);
-			} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY)) {
-				ajaxVoteSurvey(request, response);
 			} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY_REMOVE)) {
 				ajaxVoteSurveyRemove(request, response);				
 			} else if (op.equals(WebKeys.OPERATION_ATTACHE_MEETING_RECORDS)) {
@@ -416,9 +422,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_LIST_SAVED_QUERIES)) {
 			return ajaxListSavedQueries(request, response);
 		} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY)) {
-			return ajaxVoteSurveyStatus(request, response);	
+			return ajaxVoteSurvey(request, response);	
 		} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY_REMOVE)) {
-			return ajaxVoteSurveyStatus(request, response);				
+			return ajaxSurveyRemoveVoteStatus(request, response);				
 		} else if (op.equals(WebKeys.OPERATION_CHECK_STATUS)) {
 			return ajaxCheckStatus(request, response);
 		} else if (op.equals(WebKeys.OPERATION_WIKILINK_FORM)) {
@@ -2301,67 +2307,97 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("forum/json/savedQueries", model);	
 	}
 	
-	private void ajaxVoteSurvey(ActionRequest request, ActionResponse response) throws AccessControlException, ReservedByAnotherUserException, WriteFilesException {
+	
+	private ModelAndView ajaxVoteSurvey(RenderRequest request, RenderResponse response) throws AccessControlException, ReservedByAnotherUserException, WriteFilesException {
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID, -1);
 		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID, -1);
 		String attributeName = PortletRequestUtils.getStringParameter(request, "attributeName", "");
+		User user = RequestContextHolder.getRequestContext().getUser();
 		
+		String status = null;
+			
 		if (binderId == -1 || entryId == -1 || Validator.isNull(attributeName)) {
-			return;
+			status = "wrongParameters";
 		}
 		
 		FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
 		CustomAttribute surveyAttr = entry.getCustomAttribute(attributeName);
 		if (surveyAttr == null || surveyAttr.getValue() == null) {
-			return;
+			status = "noSurvey";
 		}
 		
 		Survey surveyAttrValue = ((Survey)surveyAttr.getValue());
 		SurveyModel survey = surveyAttrValue.getSurveyModel();
 		if (survey == null) {
-			return;
+			status = "noSurvey";
 		}
-		survey.removeVote();
-		Iterator formDataIt = request.getParameterMap().entrySet().iterator();
-		while (formDataIt.hasNext()) {
-			Map.Entry mapEntry = (Map.Entry)formDataIt.next();
-			String key = (String)mapEntry.getKey();
-			String[] value = (String[])mapEntry.getValue();
-			if (key.startsWith("answer_")) {
-				String[] temp = key.split("_");
-				if (temp != null && temp.length == 2) {
-					int questionIndex = -1;
-					try {
-						questionIndex = Integer.parseInt(temp[1]);
-					} catch (NumberFormatException e) {
-						logger.warn(e);
-					}
-					
-					if (questionIndex != -1) {
-						Question question = survey.getQuestionByIndex(questionIndex);
-						if (question != null) {
-							question.vote(value);
+		
+		String guestEmail = PortletRequestUtils.getStringParameter(request, "guest_email", null);
+		if (user.isShared() && guestEmail == null) {
+			status = "missingEmail";
+		}
+		
+		if (survey.isAlreadyVotedCurrentUser(guestEmail) &&
+				!survey.isAllowedToChangeVote()) {
+			status = "alreadyVoted";
+		}
+		
+		if (status == null) {
+				
+			survey.removeVote();
+			Iterator formDataIt = request.getParameterMap().entrySet().iterator();
+			while (formDataIt.hasNext()) {
+				Map.Entry mapEntry = (Map.Entry)formDataIt.next();
+				String key = (String)mapEntry.getKey();
+				String[] value = (String[])mapEntry.getValue();
+				if (key.startsWith("answer_")) {
+					String[] temp = key.split("_");
+					if (temp != null && temp.length == 2) {
+						int questionIndex = -1;
+						try {
+							questionIndex = Integer.parseInt(temp[1]);
+						} catch (NumberFormatException e) {
+							logger.warn(e);
+						}
+						
+						if (questionIndex != -1) {
+							Question question = survey.getQuestionByIndex(questionIndex);
+							if (question != null) {
+								question.vote(value, guestEmail);
+							}
 						}
 					}
 				}
 			}
+	
+			survey.setVoteRequest();
+			
+			Map formData = new HashMap(); 
+			formData.put(attributeName, surveyAttrValue.toString());
+			getFolderModule().addVote(binderId, entryId, new MapInputData(formData), null);
+			
+			status = "ok";
 		}
-
-		survey.setVoteRequest();
+		Map model = new HashMap();
+		model.put("status", status);
 		
-		Map formData = new HashMap(); 
-		formData.put(attributeName, surveyAttrValue.toString());
-		getFolderModule().addVote(binderId, entryId, new MapInputData(formData), null);
+		return new ModelAndView("forum/json/vote_survey", model);
 	}
 	
 	private void ajaxVoteSurveyRemove(ActionRequest request, ActionResponse response) throws AccessControlException, ReservedByAnotherUserException, WriteFilesException {
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID, -1);
 		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID, -1);
 		String attributeName = PortletRequestUtils.getStringParameter(request, "attributeName", "");
+		User user = RequestContextHolder.getRequestContext().getUser();
 		
 		if (binderId == -1 || entryId == -1 || Validator.isNull(attributeName)) {
 			return;
 		}
+		
+		if (user.isShared()) {
+			return;
+		}
+		
 		
 		FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
 		CustomAttribute surveyAttr = entry.getCustomAttribute(attributeName);
@@ -2384,10 +2420,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 		getFolderModule().addVote(binderId, entryId, new MapInputData(formData), null);
 	}
 	
-	private ModelAndView ajaxVoteSurveyStatus(RenderRequest request, RenderResponse response) {
+	private ModelAndView ajaxSurveyRemoveVoteStatus(RenderRequest request, RenderResponse response) {
 		Map model = new HashMap();
 		model.put("status", true);
-		return new ModelAndView("forum/json/vote_survey", model);	
+		return new ModelAndView("forum/json/remove_vote_survey", model);	
 	}
 	
 	private ModelAndView ajaxCheckStatus(RenderRequest request, RenderResponse response)  throws PortletRequestBindingException { 

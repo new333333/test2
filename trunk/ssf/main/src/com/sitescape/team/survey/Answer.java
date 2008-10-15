@@ -30,6 +30,9 @@ package com.sitescape.team.survey;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import net.sf.json.JSONArray;
@@ -53,12 +56,15 @@ public class Answer {
 	
 	private List votedUserIds;
 	
+	private SurveyModel survey;
+	
 	public int getIndex() {
 		return index;
 	}
 
-	public Answer(JSONObject jsonObj, Question question) {
+	public Answer(JSONObject jsonObj, Question question, SurveyModel surveyModel) {
 		this.jsonObj = jsonObj;
+		this.survey = surveyModel;
 		
 		this.text = jsonObj.getString("text");
 		try {
@@ -95,13 +101,17 @@ public class Answer {
 		return this.votesCount;
 	}
 
-	public void vote() {
+	public void vote(String guestEmail) {
 		this.votesCount++;
 		if (this.votedUserIds == null) {
 			this.votedUserIds = new ArrayList();
 		}
 		User currentUser = RequestContextHolder.getRequestContext().getUser();
-		this.votedUserIds.add(currentUser.getId().toString());
+		if (currentUser.isShared()) {
+			this.votedUserIds.add(guestEmail);
+		} else {
+			this.votedUserIds.add(currentUser.getId().toString());
+		}
 		
 		setVotesCount(this.votesCount);
 		setVotedBy(this.votedUserIds);
@@ -121,6 +131,9 @@ public class Answer {
 
 	public void removeVote() {
 		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		if (currentUser.isShared()) {
+			return;
+		}
 		String currentUserId = currentUser.getId().toString();
 		if (this.votedUserIds == null || !this.votedUserIds.contains(currentUserId)) {
 			return;
@@ -142,8 +155,17 @@ public class Answer {
 	}
 	
 	public boolean isAlreadyVotedCurrentUser() {
+		return isAlreadyVotedCurrentUser(null);
+	}
+	
+	public boolean isAlreadyVotedCurrentUser(String guestEmail) {
 		User currentUser = RequestContextHolder.getRequestContext().getUser();
-		return this.votedUserIds != null && this.votedUserIds.contains(currentUser.getId().toString());
+		String userId = currentUser.getId().toString();
+		if (currentUser.isShared()) {
+			userId = guestEmail;
+		}
+		
+		return this.votedUserIds != null && this.votedUserIds.contains(userId);
 	}
 	
 	public boolean isAlreadyVoted() {
@@ -154,6 +176,23 @@ public class Answer {
 	public List getVotedUserIds() {
 		return votedUserIds;
 	}
+	
+	public List getVotedGuestsEmails() {
+		if (this.votedUserIds == null || this.votedUserIds.isEmpty()) {
+			return Collections.EMPTY_LIST;
+		}
+		List result = new ArrayList();
+		Iterator it = this.votedUserIds.iterator();
+		while (it.hasNext()) {
+			String userId = (String)it.next();
+			try {
+				Long.parseLong(userId);
+			} catch (NumberFormatException e) {
+				result.add(userId);
+			}
+		}
+		return result;
+	}	
 
 	public void updateFrom(Answer oldAnswer) {
 		if (this.index != oldAnswer.index) {

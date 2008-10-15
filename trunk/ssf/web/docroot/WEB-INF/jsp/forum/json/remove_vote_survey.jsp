@@ -38,24 +38,7 @@
 		notLoggedIn : ${ss_ajaxStatus.ss_ajaxNotLoggedIn} 
 	</c:when>
 	<c:otherwise>
-		status: "${status}",
-		<c:choose>
-			<c:when test="${status == 'alreadyVoted'}">
-				statusMsg: "<ssf:nlt tag="survey.vote.status.answere.alreadyVoted"/>"
-			</c:when>
-			<c:when test="${status == 'wrongParameters'}">
-				statusMsg: "<ssf:nlt tag="survey.vote.status.answere.wrongParameters"/>"
-			</c:when>
-			<c:when test="${status == 'noSurvey'}">
-				statusMsg: "<ssf:nlt tag="survey.vote.status.answere.noSurvey"/>"
-			</c:when>	
-			<c:when test="${status == 'missingEmail'}">
-				statusMsg: "<ssf:nlt tag="survey.vote.status.answere.missingEmail"/>"
-			</c:when>									
-			<c:otherwise>		
-				statusMsg: "<ssf:nlt tag="survey.vote.status.answere.voted"/>"
-			</c:otherwise>
-		</c:choose>
+		status: "ok"
 	</c:otherwise>
 </c:choose>
 }

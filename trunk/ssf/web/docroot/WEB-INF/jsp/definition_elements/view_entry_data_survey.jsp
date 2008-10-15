@@ -56,21 +56,47 @@
 <c:set var="operationViewResults" value="${operation=='viewResults'}" />
 <c:set var="operationViewDetails" value="${operation=='viewDetails'}" />
 
+<jsp:useBean id="ssBinder" type="com.sitescape.team.domain.Binder" scope="request" />
+<jsp:useBean id="ssEntry" type="com.sitescape.team.domain.FolderEntry" scope="request"/>
+
+<c:set var="alreadyVotedByGuest" value="false" />
+<c:if test="${ssUser.shared}">
+	<%
+	String cookieName = "Vote-" + ssBinder.getId() + "-" + ssEntry.getId();
+	String cookieValue = null;
+	Cookie cookies [] = request.getCookies ();
+	if (cookies != null) {
+		for (int i = 0; i < cookies.length; i++) {
+			if (cookies [i].getName().equals (cookieName)) {
+				cookieValue = cookies[i].getValue();
+				break;
+			}
+		}
+	}
+	%>
+	<c:set var="cookieValue" value="<%=cookieValue%>" />
+	<c:if test="${!empty cookieValue}">
+		<c:set var="alreadyVotedByGuest" value="true" />
+	</c:if>
+</c:if>
+
+
 <form id="ssSurveyForm_${property_name}" method="post">
 	<input type="hidden" name="attributeName" value="${property_name}" />
 	<c:set var="hasAnyQuestion" value="${fn:length(surveyModel.questions) > 0}" />
 
-	<c:set var="showSurveyForm" value="${!overdue && !surveyModel.alreadyVotedCurrentUser && hasRightsToVote && !(operationViewResults || operationViewDetails)}" />
-	<c:set var="showSurveyModifyForm" value="${operationChangeVote && !overdue && surveyModel.alreadyVotedCurrentUser && surveyModel.allowedToChangeVote && hasRightsToVote}" />	
-	<c:set var="showResults" value="${((!overdue && !surveyModel.alreadyVotedCurrentUser && !hasRightsToVote && (surveyModel.allowedToViewBeforeDueDateCurrentUser || (surveyModel.allowedModeratorToViewBeforeDueDate && isModerator))) ||
-									(!overdue && surveyModel.alreadyVotedCurrentUser && !operationChangeVote && (surveyModel.allowedToViewBeforeDueDateCurrentUser || (surveyModel.allowedModeratorToViewBeforeDueDate && isModerator))) ||
-									(overdue && (surveyModel.allowedToViewAfterDueDateCurrentUser || (surveyModel.allowedModeratorToViewAfterDueDate && isModerator))) ||
-									(!overdue && !surveyModel.alreadyVotedCurrentUser && hasRightsToVote && (operationViewResults || operationViewDetails)))}" />
+	<c:set var="showSurveyForm" value="${!overdue && !surveyModel.alreadyVotedCurrentUser &&!alreadyVotedByGuest && hasRightsToVote && !(operationViewResults || operationViewDetails)}" />
+	<c:set var="showSurveyModifyForm" value="${operationChangeVote && !overdue && surveyModel.alreadyVotedCurrentUser && !alreadyVotedByGuest && surveyModel.allowedToChangeVote && hasRightsToVote}" />	
+						
+	<c:set var="showResults" value="${((!overdue && !surveyModel.alreadyVotedCurrentUser && !hasRightsToVote && (surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator)) ||
+									(!overdue && (surveyModel.alreadyVotedCurrentUser || alreadyVotedByGuest) && !operationChangeVote && (surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator)) ||
+									(overdue && (surveyModel.allowedToViewAfterDueDateCurrentUser || isModerator)) ||
+									(!overdue && !surveyModel.alreadyVotedCurrentUser && (surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator) && hasRightsToVote && (operationViewResults || operationViewDetails)))}" />
 	
-	<c:if test="${!overdue && !surveyModel.alreadyVotedCurrentUser && !hasRightsToVote && !(surveyModel.allowedToViewBeforeDueDateCurrentUser || (surveyModel.allowedModeratorToViewBeforeDueDate && isModerator)) && !(surveyModel.allowedToViewAfterDueDateCurrentUser || (surveyModel.allowedModeratorToViewAfterDueDate && isModerator))}" >
+	<c:if test="${!overdue && !surveyModel.alreadyVotedCurrentUser && !hasRightsToVote && !(surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator) && !(surveyModel.allowedToViewAfterDueDateCurrentUser || isModerator)}" >
 		<ssf:nlt tag="survey.vote.status.noRightsToVoteAndSeeResults"/>
 	</c:if>
-	<c:if test="${!overdue && !surveyModel.alreadyVotedCurrentUser && !hasRightsToVote && !(surveyModel.allowedToViewBeforeDueDateCurrentUser || (surveyModel.allowedModeratorToViewBeforeDueDate && isModerator)) && (surveyModel.allowedToViewAfterDueDateCurrentUser || (surveyModel.allowedModeratorToViewAfterDueDate && isModerator))}" >
+	<c:if test="${!overdue && !surveyModel.alreadyVotedCurrentUser && !hasRightsToVote && !(surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator) && (surveyModel.allowedToViewAfterDueDateCurrentUser || isModerator)}" >
 	    <ssf:nlt tag="survey.vote.status.noRightsToVote">
 	    	<ssf:param name="value" useBody="true"><fmt:formatDate value="${dueDate}" 
 					    		 										timeZone="${ssUser.timeZone.ID}" type="both" 
@@ -79,24 +105,24 @@
 	<c:if test="${!overdue && surveyModel.alreadyVotedCurrentUser && operationChangeVote && !surveyModel.allowedToChangeVote}" >
 	    <ssf:nlt tag="survey.vote.status.noRightsToChangeVote"/>
 	</c:if>		
-	<c:if test="${!overdue && surveyModel.alreadyVotedCurrentUser && !operationChangeVote && !(surveyModel.allowedToViewBeforeDueDateCurrentUser || (surveyModel.allowedModeratorToViewBeforeDueDate && isModerator)) && surveyModel.allowedToChangeVote}" >
+	<c:if test="${!overdue && (alreadyVotedByGuest || surveyModel.alreadyVotedCurrentUser) && !operationChangeVote && !(surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator) && surveyModel.allowedToChangeVote}" >
 		<ssf:nlt tag="survey.vote.status.voted"/>
 	    <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${ssBinder.id}" 
 						action="view_folder_entry" entryId="${ssEntry.id}" actionUrl="true"><ssf:param name="operation" value="changeVote" /></ssf:url>"><ssf:nlt tag="survey.title.changeVote"/></a>
 	</c:if>
-	<c:if test="${!overdue && surveyModel.alreadyVotedCurrentUser && !(surveyModel.allowedToViewBeforeDueDateCurrentUser || (surveyModel.allowedModeratorToViewBeforeDueDate && isModerator)) && !surveyModel.allowedToChangeVote && (surveyModel.allowedToViewAfterDueDateCurrentUser || (surveyModel.allowedModeratorToViewAfterDueDate && isModerator))}" >
+	<c:if test="${!overdue && (surveyModel.alreadyVotedCurrentUser || alreadyVotedByGuest) && !(surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator) && !surveyModel.allowedToChangeVote && (surveyModel.allowedToViewAfterDueDateCurrentUser || isModerator)}" >
 		<ssf:nlt tag="survey.vote.status.alreadyVoted">
 	    	<ssf:param name="value" useBody="true"><fmt:formatDate value="${dueDate}" 
 					    		 										timeZone="${ssUser.timeZone.ID}" type="both" 
 																	  timeStyle="short" dateStyle="medium"/></ssf:param></ssf:nlt>
 	</c:if>	
-	<c:if test="${!overdue && surveyModel.alreadyVotedCurrentUser && !(surveyModel.allowedToViewBeforeDueDateCurrentUser || (surveyModel.allowedModeratorToViewBeforeDueDate && isModerator)) && !surveyModel.allowedToChangeVote && !(surveyModel.allowedToViewAfterDueDateCurrentUser || (surveyModel.allowedModeratorToViewAfterDueDate && isModerator))}" >
+	<c:if test="${!overdue && surveyModel.alreadyVotedCurrentUser && !(surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator) && !surveyModel.allowedToChangeVote && !(surveyModel.allowedToViewAfterDueDateCurrentUser || isModerator)}" >
 	    <ssf:nlt tag="survey.vote.status.alreadyVotedNoResult"/>
 	</c:if>
-	<c:if test="${overdue && !(surveyModel.allowedToViewAfterDueDateCurrentUser || (surveyModel.allowedModeratorToViewAfterDueDate && isModerator))}" >
+	<c:if test="${overdue && !(surveyModel.allowedToViewAfterDueDateCurrentUser || isModerator)}" >
 		<ssf:nlt tag="survey.vote.status.noRightsToSeeResults"/>
 	</c:if>
-	
+
 	<c:if test="${showResults}">
 		<c:forEach var="question" items="${surveyModel.questions}" >
 			
@@ -116,7 +142,7 @@
 							<c:if test="${question.type == 'multiple' || question.type == 'single'}">
 								<div class="ss_clear"></div>
 							</c:if>
-							<c:if test="${!empty answer.votedUserIds && operationViewDetails && (surveyModel.allowedToViewDetailsCurrentUser || (surveyModel.allowedModeratorToViewDetails && isModerator))}">
+							<c:if test="${!empty answer.votedUserIds && operationViewDetails && (surveyModel.allowedToViewDetailsCurrentUser || isModerator)}">
 								<div>
 									<ul class="ss_survey_users_list">
 										<c:set var="users_list" value="${answer.votedUserIds}"/>
@@ -124,6 +150,9 @@
 										<c:forEach var="voter" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(users_list) %>" >
 											<li><ssf:showUser user="${voter}" /></li>
 										</c:forEach>
+										<c:forEach var="email" items="${answer.votedGuestsEmails}" >
+											<li>${email}</li>
+										</c:forEach>										
 									</ul>
 								</div>								
 							</c:if>
@@ -138,15 +167,23 @@
 			</div>
 		</c:forEach>
 		
+	</c:if>
+		
 		<c:if test="${operationViewDetails}">
 			<a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${ssBinder.id}" 
 						action="view_folder_entry" entryId="${ssEntry.id}" actionUrl="true" />"><ssf:nlt tag="survey.title.shortResults"/></a>
 		</c:if>
-		<c:if test="${!operationViewDetails && (surveyModel.allowedToViewDetailsCurrentUser || (surveyModel.allowedModeratorToViewDetails && isModerator))}">
-			<a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${ssBinder.id}" 
-						action="view_folder_entry" entryId="${ssEntry.id}" actionUrl="true"><ssf:param name="operation" value="viewDetails" /></ssf:url>"><ssf:nlt tag="survey.title.details"/></a>
+	
+		<c:if test="${showResults}">
+			<c:if test="${((!overdue && (surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator) ||
+							(overdue && (surveyModel.allowedToViewAfterDueDateCurrentUser || isModerator))) &&
+							!operationViewDetails && (surveyModel.allowedToViewDetailsCurrentUser || isModerator))}">
+				<a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${ssBinder.id}" 
+							action="view_folder_entry" entryId="${ssEntry.id}" actionUrl="true"><ssf:param name="operation" value="viewDetails" /></ssf:url>"><ssf:nlt tag="survey.title.details"/></a>
+			</c:if>
 		</c:if>
-		<c:if test="${!overdue && surveyModel.alreadyVotedCurrentUser && !operationChangeVote && (surveyModel.allowedToViewBeforeDueDateCurrentUser || (surveyModel.allowedModeratorToViewBeforeDueDate && isModerator)) && surveyModel.allowedToChangeVote}">
+		
+		<c:if test="${!overdue && surveyModel.alreadyVotedCurrentUser && !operationChangeVote && (surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator) && surveyModel.allowedToChangeVote}">
 			<a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${ssBinder.id}" 
 						action="view_folder_entry" entryId="${ssEntry.id}" actionUrl="true"><ssf:param name="operation" value="changeVote" /></ssf:url>"><ssf:nlt tag="survey.title.changeVote"/></a>
 		</c:if>
@@ -154,20 +191,29 @@
 		<c:if test="${overdue}">
 		    <ssf:nlt tag="survey.vote.notAllowed.overdue"/>
 		</c:if>
-		
-		<c:if test="${!overdue && surveyModel.alreadyVotedCurrentUser && !operationChangeVote && (surveyModel.allowedToViewBeforeDueDateCurrentUser || (surveyModel.allowedModeratorToViewBeforeDueDate && isModerator))}">
-				    <ssf:nlt tag="survey.vote.status.alreadyVotedStillOpen">
-	    	<ssf:param name="value" useBody="true"><fmt:formatDate value="${dueDate}" 
-					    		 										timeZone="${ssUser.timeZone.ID}" type="both" 
-																	  timeStyle="short" dateStyle="medium"/></ssf:param></ssf:nlt>
+
+		<c:if test="${showResults}">
+			<c:if test="${!overdue && (surveyModel.alreadyVotedCurrentUser || alreadyVotedByGuest) && !operationChangeVote}">
+					    <ssf:nlt tag="survey.vote.status.alreadyVotedStillOpen">
+		    	<ssf:param name="value" useBody="true"><fmt:formatDate value="${dueDate}" 
+						    		 										timeZone="${ssUser.timeZone.ID}" type="both" 
+																		  timeStyle="short" dateStyle="medium"/></ssf:param></ssf:nlt>
+			</c:if>
 		</c:if>
 		
-		<c:if test="${!overdue && !surveyModel.alreadyVotedCurrentUser && !hasRightsToVote && (surveyModel.allowedToViewBeforeDueDateCurrentUser || (surveyModel.allowedModeratorToViewBeforeDueDate && isModerator))}">
+		<c:if test="${!overdue && !surveyModel.alreadyVotedCurrentUser && !hasRightsToVote && (surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator)}">
 			<ssf:nlt tag="survey.vote.status.noRightsToVoteRightsToViewBefore"/>
 		</c:if>
-	</c:if>
+
 		
-	<c:if test="${showSurveyForm || showSurveyModifyForm}">
+	<c:if test="${showSurveyForm || (showSurveyModifyForm && !ssUser.shared)}">
+	
+		<c:if test="${ssUser.shared}">
+			<div id="${ss_namespace}_${property_name}_guest_email_container">
+				<label for="${ss_namespace}_${property_name}_guest_email"><ssf:nlt tag="survey.vote.guest.email"/></label> 
+				<input type="text" name="guest_email" id="${ss_namespace}_${property_name}_guest_email" />
+			</div>
+		</c:if>
 
 		<c:forEach var="question" items="${surveyModel.questions}" >
 			<div class="ss_questionContainer" id="${ss_namespace}_${property_name}_question_${question.index}">
@@ -216,7 +262,7 @@
 		</c:forEach>
 		
 		
-		<c:if test="${(surveyModel.allowedToViewBeforeDueDateCurrentUser || (surveyModel.allowedModeratorToViewBeforeDueDate && isModerator))}">
+		<c:if test="${(surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator)}">
 			<a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${ssBinder.id}" 
 						action="view_folder_entry" entryId="${ssEntry.id}" actionUrl="true"><ssf:param name="operation" value="viewResults" /></ssf:url>"><ssf:nlt tag="survey.title.results"/></a>
 		</c:if>	

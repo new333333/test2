@@ -107,6 +107,10 @@ public class SurveyModel {
 	}
 	
 	public boolean isAlreadyVotedCurrentUser() {
+		return isAlreadyVotedCurrentUser(null);
+	}
+	
+	public boolean isAlreadyVotedCurrentUser(String guestEmail) {
 		if (this.questions == null) {
 			return false;
 		}
@@ -114,13 +118,13 @@ public class SurveyModel {
 		Iterator it = this.questions.iterator();
 		while (it.hasNext()) {
 			Question question = (Question)it.next();
-			if (question.isAlreadyVotedCurrentUser()) {
+			if (question.isAlreadyVotedCurrentUser(guestEmail)) {
 				return true;
 			}
 		}
 		
 		return false;
-	}	
+	}
 	
 	@Override
 	public String toString() {
@@ -183,7 +187,12 @@ public class SurveyModel {
 	}
 
 	public boolean isAllowedToChangeVote() {
-		return allowedToChangeVote != null?allowedToChangeVote:false;
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		if (currentUser.isShared() || allowedToChangeVote == null) {
+			return false;
+		}
+		
+		return allowedToChangeVote;
 	}
 
 	public String getAllowedToViewAfterDueDate() {
@@ -199,6 +208,9 @@ public class SurveyModel {
 	}
 	
 	public boolean isAllowedToViewDetailsCurrentUser() {
+		return isAllowedToViewDetailsCurrentUser(null);
+	}
+	public boolean isAllowedToViewDetailsCurrentUser(String guestEmail) {
 		if (this.allowedToViewDetails == null) {
 			// v1.0 compatibility
 			return true;
@@ -209,7 +221,7 @@ public class SurveyModel {
 		}
 		
 		if (VOTERS.equals(this.allowedToViewDetails) &&
-				this.isAlreadyVotedCurrentUser()) {
+				this.isAlreadyVotedCurrentUser(guestEmail)) {
 			return true;
 		}
 		
@@ -224,6 +236,10 @@ public class SurveyModel {
 	}	
 	
 	public boolean isAllowedToViewBeforeDueDateCurrentUser() {
+		return isAllowedToViewBeforeDueDateCurrentUser(null);
+	}
+	
+	public boolean isAllowedToViewBeforeDueDateCurrentUser(String guestEmail) {
 		if (this.allowedToViewBeforeDueDate == null) {
 			// v1.0 compatibility
 			return true;
@@ -234,7 +250,7 @@ public class SurveyModel {
 		}
 		
 		if (VOTERS.equals(this.allowedToViewBeforeDueDate) &&
-				this.isAlreadyVotedCurrentUser()) {
+				this.isAlreadyVotedCurrentUser(guestEmail)) {
 			return true;
 		}
 		
@@ -249,6 +265,10 @@ public class SurveyModel {
 	}
 	
 	public boolean isAllowedToViewAfterDueDateCurrentUser() {
+		return isAllowedToViewAfterDueDateCurrentUser(null);
+	}
+	
+	public boolean isAllowedToViewAfterDueDateCurrentUser(String guestEmail) {
 		if (this.allowedToViewAfterDueDate == null) {
 			// v1.0 compatibility
 			return true;
@@ -259,7 +279,7 @@ public class SurveyModel {
 		}
 		
 		if (VOTERS.equals(this.allowedToViewAfterDueDate) &&
-				this.isAlreadyVotedCurrentUser()) {
+				this.isAlreadyVotedCurrentUser(guestEmail)) {
 			return true;
 		}
 		
