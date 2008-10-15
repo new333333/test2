@@ -79,18 +79,18 @@ function ss_close_popup_folder() {
     dojo.style("folder_popup", "display", "none");
 }
 
-function ss_loadLinkBinderId(binderId, type, obj) {
+function ss_loadLinkBinderId(binderId, type, listObj, name) {
 	dojo.byId("binderId").value = binderId;
     ss_findEntriesBinderIdss_findLinkEntryForm_searchTitle = binderId;
-	dojo.byId("linkToFolderName").innerHTML = obj.innerText;
+	dojo.byId("linkToFolderName").innerHTML = name;
 	ss_popup_folder();
 	// May need to probe bgcolor...
 	dojo.animateProperty({node: "linkToFolderName", duration: 1000,
 	       properties: { backgroundColor: {start: "#FFFFFF", end: "#FFFF66"} }}).play();
 }
 
-function ss_loadLinkEntryId(entryId, obj) {
-	dojo.byId("pageName").value = obj.innerText;
+function ss_loadLinkEntryId(entryId, listObj, name) {
+	dojo.byId("pageName").value = name;
 	ss_popup_page();
 }
 
