@@ -1482,7 +1482,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	public TimeZone getTimeZone() {
-		return timeZone;
+		return TimeZoneHelper.fixTimeZone(timeZone);
 	}
 	
 	public boolean isAllDayEvent() {
