@@ -271,7 +271,7 @@ function ss_post(url, formId, callBackRoutine, callbackData, toggleCall) {
 	eval(toggleCall);
 	var bindArgs = {
     	url: url,
-    	formNode: dojo.byId(formId),
+    	form: dojo.byId(formId),
 		error: function(err) {
 			eval(toggleCall);
 			alert(err);
@@ -5138,7 +5138,7 @@ function ss_Clipboard () {
 	this.removeFromClipboard = function (formId) {
 		var bindArgs = {
 	    	url: ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"remove_from_clipboard"}, "clipboard"),
-	    	formNode: dojo.byId(formId),	    	
+	    	form: dojo.byId(formId),	    	
 			error: function(err) {
 				alert(err);
 			},
@@ -5197,7 +5197,7 @@ function ss_startMeeting(url, formId, ajaxLoadingIndicatorPane) {
 			}
 			
 		},
-		formNode: $(formId),
+		form: $(formId),
 		handleAs: "json",
 		method: "post"
 	};
