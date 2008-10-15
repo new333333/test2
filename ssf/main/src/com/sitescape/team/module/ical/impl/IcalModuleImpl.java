@@ -271,7 +271,11 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		if (isAllDaysEvent(start)) {
 			event.allDaysEvent();
 		} else {
-			event.setTimeZone(timeZones.get(start.getParameter(Parameter.TZID)));
+			Parameter tzId = start.getParameter(Parameter.TZID);
+			if (start.getParameter(Parameter.TZID) != null) {
+				TimeZone tz = timeZones.get(tzId.getValue());
+				event.setTimeZone(tz);
+			}
 		}
 		if(end != null) {
 			java.util.Date endDate = end.getDate();
