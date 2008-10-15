@@ -98,11 +98,13 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	  </c:if>
 	  <div align="center">
 	    <div id="ss_folder_wrap">
-		  <div id="ss_whatsNewDiv${ss_namespace}">
-		  <c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
-		  <%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>
+		  <c:if test="${!ss_mashupHideToolbar}">
+		    <div id="ss_whatsNewDiv${ss_namespace}">
+		    <c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
+		    <jsp:include page="/WEB-INF/jsp/forum/whats_new_page.jsp" />
+		    </c:if>
+		    </div>
 		  </c:if>
-		  </div>
 	      <div id="ss_folder_type_${ssDefinitionFamily}" class="ss_style_color" >
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 					  configElement="${ssConfigElement}" 
@@ -124,6 +126,11 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		          </td>
 		        </tr>
 		      </table>
+		    </div>
+		    <div id="ss_whatsNewDiv${ss_namespace}">
+		    <c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
+		    <jsp:include page="/WEB-INF/jsp/forum/whats_new_page.jsp" />
+		    </c:if>
 		    </div>
 		    </ssf:ifnotaccessible>
 		  </c:if>
