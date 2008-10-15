@@ -140,7 +140,8 @@
 		  		 <span>${title}</span></a>
 			</c:if>
 	  	 </span>
-	  	 &nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
+	  	 &nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" 
+	  	   width="11" height="10" hspace="2" border="0" align="absmiddle" />
 	  	 <c:if test="${!empty entryWn._desc}">
 	    	<br/>
 	    	<span class="ss_summary"><ssf:textFormat 

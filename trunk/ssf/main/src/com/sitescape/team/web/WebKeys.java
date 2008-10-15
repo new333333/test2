@@ -190,6 +190,7 @@ public class WebKeys {
 	public static final String URL_UPLOAD_FILE_ID = "ss_upload_file_id";
 	public static final String URL_WORKFLOW_TYPE = "workflowType";
 	public static final String URL_WHATS_NEW = "whatsNew";
+	public static final String URL_WHATS_UNREAD = "whatsUnread";
 	public static final String URL_OBJECT_ID="objectId";
 	public static final String URL_YEAR_MONTH="yearMonth";
 	public static final String URL_ZONE_ID="zoneId";
@@ -366,6 +367,7 @@ public class WebKeys {
     public static final String OPERATION_MOBILE_SHOW_FRONT_PAGE="mobile_show_front_page"; 
     public static final String OPERATION_MOBILE_SHOW_SEARCH_RESULTS="mobile_show_search_results"; 
     public static final String OPERATION_MOBILE_SHOW_WORKSPACE="mobile_show_workspace"; 
+    public static final String OPERATION_MOBILE_WHATS_NEW="mobile_whats_new"; 
 	public static final String OPERATION_OPEN_WEBDAV_FILE = "open_webdav_file";
 	public static final String OPERATION_OPEN_WEBDAV_FILE_BY_FILEID = "open_webdav_file_by_fileid";
 	public static final String OPERATION_RELOAD="reload";
@@ -784,6 +786,7 @@ public class WebKeys {
     public static final String MINIBLOG_USER_ID="ss_miniblog_user_id"; 
     public static final String MOBILE_BINDER_LIST="ss_mobileBinderList"; 
     public static final String MOBILE_PAGE_SIZE="15"; 
+    public static final String MOBILE_PAGE_SIZE_WHATS_NEW="8"; 
 	public static final String MY_CALENDAR_ENTRIES = "ss_myCalendarEntries";
 	public static final String MY_DOCUMENTS = "ss_myDocs";
 	public static final String MY_DOCUMENTS_FOLDERS = "ss_myDocsFolders";

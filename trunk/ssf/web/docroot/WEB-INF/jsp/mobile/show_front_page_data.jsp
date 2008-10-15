@@ -44,6 +44,24 @@
   </c:if>
 </c:if>
 
+<div>
+  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+					action="__ajax_mobile" actionUrl="false" 
+					operation="mobile_whats_new" ><ssf:param
+					name="type" value="whatsNew"/></ssf:url>">
+    <span class="ss_bold"><ssf:nlt tag="toolbar.menu.whatsNew"/></span>
+  </a>
+  <br/>
+  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+					action="__ajax_mobile" actionUrl="false" 
+					operation="mobile_whats_new" ><ssf:param
+					name="type" value="unseen"/></ssf:url>">
+    <span class="ss_bold"><ssf:nlt tag="toolbar.menu.whatsUnread"/></span>
+  </a>
+</div>
+
+<br/>
+
 <c:if test="${!empty ss_mobileBinderList}">
 <div>
   <span class="ss_bold"><ssf:nlt tag="portlet.title.bookmarks"/></span>
