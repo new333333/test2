@@ -2377,13 +2377,13 @@ function ss_calendarEngine(
 					
 					var lightBox = ss_showLightbox(null, null, null, "ss_lightBox_transparent");
 					dojo.connect(lightBox, "onclick", function(evt) {
-						dojo.dom.removeNode(moreEventsDiv);
-						dojo.dom.removeNode(lightBox);
+						moreEventsDiv.parentNode.removeChild(moreEventsDiv);
+						lightBox.parentNode.removeChild(lightBox);
 					});
 					
 					dojo.connect(moreEventsDiv, "onclick", function(evt) {
-						dojo.dom.removeNode(moreEventsDiv);
-						dojo.dom.removeNode(lightBox);
+						moreEventsDiv.parentNode.removeChild(moreEventsDiv);
+						lightBox.parentNode.removeChild(lightBox);
 					});
 			    });
 			})(eboxInner, dayOfWeek, container, vOffsetSize, week, hOffsetSize, eventCount, eventList, date);
