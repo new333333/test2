@@ -27,6 +27,9 @@
  * are trademarks of SiteScape, Inc.
  */
 
+dojo.require("dojox.validate.web");
+dojo.require("dojo.cookie");
+
 if (!window.ssSurvey) {
 	function ssSurvey(hiddenInputValueId, surveyContainerId, prefix) {
 		
@@ -406,6 +409,16 @@ ssSurvey.clearAnswers = function(questionIndex, answerIndexes, prefix) {
 
 ssSurvey.vote = function(formId, binderId, entryId, requiredQuestions, prefix) {
 	var missingAnswers = false;
+	
+	var guestUserEmail = dojo.byId(prefix + "_guest_email");
+	if (guestUserEmail && (!guestUserEmail.value || guestUserEmail.value == "" || !dojox.validate.isEmailAddress(guestUserEmail.value))) {
+		missingAnswers = true;
+		var guestUserEmailContainer = dojo.byId(prefix + "_guest_email_container");
+		if (guestUserEmailContainer) {
+			dojo.addClass(guestUserEmailContainer, "ss_survey_required");
+		}
+	}
+	
 	for (qId in requiredQuestions) {
 		var hasAnswer = false;
 		if (requiredQuestions[qId].length > 0) {
@@ -443,12 +456,17 @@ ssSurvey.vote = function(formId, binderId, entryId, requiredQuestions, prefix) {
 			alert(ss_not_logged_in);
 		},
 		load: function(data) {
-			if (data.notLoggedIn) {
+			if (data && data.notLoggedIn) {
 				alert(ss_not_logged_in);
-			} else if (window["ss_reloadUrl"]) {
-				ss_random++;
-				url = ss_replaceSubStr(ss_reloadUrl, "ss_randomPlaceholder", ss_random);
-				document.location.href = ss_reloadUrl;
+			} else if (data && data.status == "ok") {
+				if (guestUserEmail && guestUserEmail.value) {
+					dojo.cookie("Vote-" + binderId + "-" + entryId, guestUserEmail.value, { expires: 10000 });				
+				}
+				if (window["ss_reloadUrl"]) {
+					document.location.href = ss_replaceSubStr(ss_reloadUrl, "ss_randomPlaceholder", ss_random++);
+				}
+			} else {
+				alert(data.statusMsg);
 			}
 		},
 		preventCache: true,
@@ -476,7 +494,7 @@ ssSurvey.removeVote = function(formId, binderId, entryId) {
 			}
 		},
 		preventCache: true,
-		formNode: document.getElementById(formId)
+		form: document.getElementById(formId)
 	});
 }
 

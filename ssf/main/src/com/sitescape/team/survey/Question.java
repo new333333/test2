@@ -63,11 +63,11 @@ public class Question {
 	
 	private Boolean requiredAnswer = false;
 	
-	private SurveyModel parent;
+	private SurveyModel survey;
 
 	public Question(JSONObject jsonObj, SurveyModel surveyModel) {
 		this.jsonObj = jsonObj;
-		this.parent = surveyModel;
+		this.survey = surveyModel;
 		
 		this.type = Type.valueOf(jsonObj.getString("type"));
 		this.question = jsonObj.getString("question");
@@ -87,7 +87,7 @@ public class Question {
 			Iterator<JSONObject> answersIt = jsonObj.getJSONArray("answers").iterator();
 			while (answersIt.hasNext()) {
 				JSONObject answer = answersIt.next();
-				this.answers.add(new Answer(answer, this));
+				this.answers.add(new Answer(answer, this, this.survey));
 			}
 		} catch (JSONException e) { 
 			// input has no answers
@@ -119,10 +119,10 @@ public class Question {
 		return type.name();
 	}
 	
-	public boolean isAlreadyVotedCurrentUser() {
+	public boolean isAlreadyVotedCurrentUser(String guestEmail) {
 		Iterator<Answer> it = answers.iterator();
 		while (it.hasNext()) {
-			if (it.next().isAlreadyVotedCurrentUser()) {
+			if (it.next().isAlreadyVotedCurrentUser(guestEmail)) {
 				return true;
 			}
 		}
@@ -168,9 +168,9 @@ public class Question {
 		return null;
 	}
 
-	public List<Answer> vote(String[] value) {
+	public List<Answer> vote(String[] value, String guestEmail) {
 		List<Answer> answers = new ArrayList();
-		if (isAlreadyVotedCurrentUser()) {
+		if (isAlreadyVotedCurrentUser(guestEmail)) {
 			return answers;
 		}
 		if (value == null || value.length == 0) {
@@ -180,10 +180,10 @@ public class Question {
 		for (int i = 0; i < value.length; i++) {
 			if (this.type.equals(Type.multiple) || this.type.equals(Type.single)) {
 				Answer answer = getAnswerByIndex(Integer.parseInt(value[i]));
-				answer.vote();
+				answer.vote(guestEmail);
 				answers.add(answer);
 			} else {
-				Answer answer = addInputAnswer(value[i]);
+				Answer answer = addInputAnswer(value[i], guestEmail);
 				answers.add(answer);
 			}
 		}
@@ -194,11 +194,15 @@ public class Question {
 	}
 	
 	public void removeVote() {
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		if (currentUser.isShared()) {
+			return;
+		}
 		boolean hasVoted = false;
 		Iterator<Answer> it = answers.iterator();
 		while (it.hasNext()) {
 			Answer answer = (Answer)it.next();
-			if (answer.isAlreadyVotedCurrentUser()) {
+			if (answer.isAlreadyVotedCurrentUser(null)) {
 				hasVoted = true;
 				if (this.type.equals(Type.multiple) || this.type.equals(Type.single)) {
 					answer.removeVote();
@@ -214,12 +218,16 @@ public class Question {
 		}
 	}
 
-	private Answer addInputAnswer(String txt) {
+	private Answer addInputAnswer(String txt, String guestEmail) {
 		JSONObject newInputAnswer = new JSONObject();
 		newInputAnswer.put("text", txt);
 		
 		User currentUser = RequestContextHolder.getRequestContext().getUser();
-		newInputAnswer.put("votedBy", Collections.singletonList( currentUser.getId().toString() ));
+		String userId = currentUser.getId().toString();
+		if (currentUser.isShared()) {
+			userId = guestEmail;
+		}
+		newInputAnswer.put("votedBy", Collections.singletonList(userId));
 		newInputAnswer.put("votesCount", 1);
 		
 		try {
@@ -231,7 +239,7 @@ public class Question {
 			jsonObj.put("answers", a);
 		}
 		
-		Answer answer = new Answer(newInputAnswer, this);
+		Answer answer = new Answer(newInputAnswer, this, this.survey);
 		this.answers.add(answer);
 		
 		return answer;
