@@ -112,7 +112,15 @@ public class WebServiceClientUtil {
 		stub.addAttachment(dhSource); // add the file
     
 		// Use DIME for the attachment format (the default is MIME in Axis)
-		stub._setProperty(Call.ATTACHMENT_ENCAPSULATION_FORMAT, Call.ATTACHMENT_ENCAPSULATION_FORMAT_DIME);
+		
+		// 10/15/2008 - Do not use DIME format but use the default MIME.
+		// Apparently, due to a bug in the tool, the attachment stream is prematurely 
+		// cut off, when sent in DIME format. This seems to happen only with large
+		// attachments that exceed 1M in size. When that happens, the system throws
+		// an error that looks like the following: 
+		// java.io.IOException: End of physical stream detected when 202 more bytes  expected.
+
+		//stub._setProperty(Call.ATTACHMENT_ENCAPSULATION_FORMAT, Call.ATTACHMENT_ENCAPSULATION_FORMAT_DIME);
 	}
 	
 	/**
@@ -204,7 +212,7 @@ public class WebServiceClientUtil {
 		call.addAttachmentPart(dhSource); // add the file
     
 		// Use DIME for the attachment format (the default is MIME in Axis)
-		call.setProperty(Call.ATTACHMENT_ENCAPSULATION_FORMAT, Call.ATTACHMENT_ENCAPSULATION_FORMAT_DIME);
+		//call.setProperty(Call.ATTACHMENT_ENCAPSULATION_FORMAT, Call.ATTACHMENT_ENCAPSULATION_FORMAT_DIME);
 	}
 	
 	/**
