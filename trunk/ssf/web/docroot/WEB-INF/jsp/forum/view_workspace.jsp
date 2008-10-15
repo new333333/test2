@@ -236,7 +236,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 
 								<div id="ss_whatsNewDiv${ss_namespace}">
 								<c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
-								<%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>
+								<jsp:include page="/WEB-INF/jsp/forum/whats_new_page.jsp" />
 								</c:if>
 								</div>
 
