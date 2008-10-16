@@ -49,15 +49,18 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.LongIdUtil;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractControllerRetry;
 import com.sitescape.team.web.util.BinderHelper;
+import com.sitescape.team.web.util.PermaLinkUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.RelevanceDashboardHelper;
 import com.sitescape.team.web.util.WebHelper;
@@ -215,6 +218,11 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		}
 
 		getProfileModule().setShares(entity, ids, teams);
+		String title = entity.getTitle();
+		if (entity.getParentBinder() != null) title = entity.getParentBinder().getPathName() + "/" + title;
+		Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalinkURL(request, entity) +
+				"\">" + title + "</a>");
+		getAdminModule().sendMail(ids, teams, null, NLT.get("relevance.mailShared", new Object[]{RequestContextHolder.getRequestContext().getUser().getTitle()}), body);
 	}
 	
 	private ModelAndView ajaxGetRelevanceDashboard(RenderRequest request, 
