@@ -90,6 +90,7 @@ import com.sitescape.team.module.mail.MimeMessagePreparator;
 import com.sitescape.team.module.mail.MimeMapPreparator;
 import com.sitescape.team.module.mail.MimeNotifyPreparator;
 import com.sitescape.team.util.Constants;
+import com.sitescape.team.util.FilePathUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.PortabilityUtil;
 import com.sitescape.team.util.ReflectHelper;
@@ -261,7 +262,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	}
 
 	public File getMailDirPath(Binder binder) {
-		return new File(new StringBuffer(mailRootDir).append(RequestContextHolder.getRequestContext().getZoneName()).append(File.separator).append(binder.getId().toString()).append(File.separator).toString());
+		return new File(mailRootDir + FilePathUtil.getBinderDirPath(binder));
 	}
 	public String getMailProperty(String zoneName, MailModule.Property property) {
 		return getMailProperty(zoneName, property.getKey());
