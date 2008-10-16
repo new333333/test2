@@ -45,10 +45,12 @@
 	for (int i=0; i<ids.length; ++i) {
 		map.put(java.util.TimeZone.getTimeZone(ids[i]).getDisplayName(currentLocale) + " (" + ids[i] + ")", ids[i]);
 	}
-	if (user != null) 
+	String tzId;
+	if (user != null) tzId = user.getTimeZone().getID();
+	else tzId = com.sitescape.team.calendar.TimeZoneHelper.getDefault().getID();
 	for (java.util.Map.Entry<String, String> me: map.entrySet()) {
 		String checked = "";
-		if (me.getValue().equals(user.getTimeZone().getID()))
+		if (me.getValue().equals(tzId))
 			checked="selected=\"selected\"";
 %>
 <option value="<%= me.getValue() %>" <%= checked %>><%= me.getKey() %></option>
