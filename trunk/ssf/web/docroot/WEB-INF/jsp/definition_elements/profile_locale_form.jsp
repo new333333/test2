@@ -41,14 +41,15 @@
 	com.sitescape.team.domain.User user = (com.sitescape.team.domain.User)request.getAttribute("ssDefinitionEntry");
 	com.sitescape.team.domain.User currentUser = (com.sitescape.team.domain.User)request.getAttribute("ssUser");
 	java.util.TreeMap<String,java.util.Locale> map = new java.util.TreeMap(new com.sitescape.team.comparator.StringComparator(currentUser.getLocale())); //sort
-	java.util.Locale currentLocale = currentUser.getLocale();
 	for (int i=0; i<ids.length; ++i) {
-		map.put(ids[i].getDisplayName(currentLocale), ids[i]);
+		map.put(ids[i].getDisplayName(currentUser.getLocale()), ids[i]);
 	}
-	if (user != null) 
+	java.util.Locale userLocale;
+	if (user != null) userLocale = user.getLocale();
+	else userLocale = java.util.Locale.getDefault();
 	for (java.util.Map.Entry<String, java.util.Locale> me: map.entrySet()) {
 		String checked = "";
-		if (me.getValue().equals(currentLocale))
+		if (me.getValue().equals(userLocale))
 			checked="selected=\"selected\"";
 		
 %>
