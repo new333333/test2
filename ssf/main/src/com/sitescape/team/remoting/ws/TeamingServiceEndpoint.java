@@ -130,8 +130,8 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public long binder_copyBinder(String accessToken, long sourceId, long destinationId, boolean cascade) {
 		return getBinderService().binder_copyBinder(accessToken, sourceId, destinationId, cascade);
 	}
-	public String[] binder_deleteBinder(String accessToken, long binderId, boolean deleteMirroredSource) {
-		return getBinderService().binder_deleteBinder(accessToken, binderId, deleteMirroredSource);
+	public void binder_deleteBinder(String accessToken, long binderId, boolean deleteMirroredSource) {
+		getBinderService().binder_deleteBinder(accessToken, binderId, deleteMirroredSource);
 	}
 	public Binder binder_getBinder(String accessToken, long binderId, boolean includeAttachments) {
 		return getBinderService().binder_getBinder(accessToken, binderId, includeAttachments);

@@ -46,9 +46,6 @@ public interface MailModule {
 		SENDMAIL_JOB ("mail.send"),
 		SUBSCRIPTION_JOB ("subscription.job"),
 		SUBSCRIPTION_MINUTES ("subscription.minutes"),
-		NOTIFY_TEMPLATE_TEXT ("notify.mailText"),
-		NOTIFY_TEMPLATE_HTML ("notify.mailHtml"),
-		NOTIFY_TEMPLATE_CACHE_DISABLED ("notify.templateCacheDisabled"),
 		NOTIFY_FROM ("notify.from"),
 		NOTIFY_SUBJECT ("notify.subject"),
 	    DEFAULT_TIMEZONE ("notify.timezone");

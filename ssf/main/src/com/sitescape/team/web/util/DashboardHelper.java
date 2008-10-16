@@ -1334,7 +1334,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		return null;
 
 	}
-	public static void resolveRelativeBinders(Binder binder, Dashboard d) {
+	//resolve binder type refernces.  Since this is called to create user workspace on zone creation,
+	//don't use modules cause not setup yet.
+	public static void resolveRelativeBinders(Collection<Binder> binders, Dashboard d) {
 		Map components = (Map)d.getProperty(Dashboard.COMPONENTS);
 		for (Iterator iter=components.entrySet().iterator(); iter.hasNext();) {
 			Map.Entry me = (Map.Entry)iter.next();
@@ -1344,13 +1346,22 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			if (data.containsKey(ChooseType) && data.get(ChooseType) instanceof String) {
 				String viewType = (String)data.get(ChooseType);
 				data.remove(ChooseType);
-				String id = getInstance().resolveBinder(binder, viewType);
-				if (Validator.isNotNull(id)) {
+				Long id = null;
+				for (Binder b:binders) {
+					Definition def = b.getDefaultViewDef();
+					String type = DefinitionUtils.getViewType(def.getDefinition());
+					if (viewType.equals(type)) {
+						id = b.getId();
+						break;
+					}
+				}	
+
+				if (id != null) {
 					String savedIds = "";
 					if (data.get(DashboardHelper.SearchFormSavedFolderIdList) instanceof String) 
 						savedIds = (String)data.get(DashboardHelper.SearchFormSavedFolderIdList);
 					Set<String> folderIds = LongIdUtil.getIdsAsStringSet(savedIds);
-					folderIds.add(id);
+					folderIds.add(id.toString());
 					SearchFilter searchFilter = new SearchFilter();
 					searchFilter.addFolderIds(folderIds);
 					data.put(DashboardHelper.SearchFormSavedSearchQuery, searchFilter.getFilter().asXML());

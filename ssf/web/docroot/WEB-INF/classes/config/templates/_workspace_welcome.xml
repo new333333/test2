@@ -13,5 +13,5 @@
   <property name="inheritDefinitions">false</property>
   <property name="inheritTeamMembers">true</property>
   <attribute name="mashup" type="string">welcome</attribute>
-  <definition name="_welcomeWorkspace" databaseId="402883b51cbdbdc2011cbdfe2857000b"/>
+  <definition name="_welcomeWorkspace" internalId="402883b51cbdbdc2011cbdfe2857000b"/>
 </template>

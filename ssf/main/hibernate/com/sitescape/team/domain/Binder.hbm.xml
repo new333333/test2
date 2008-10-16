@@ -16,7 +16,6 @@
 	<property name="deleted"/>
 	<property name="uniqueTitles"/>
 	<property name="logVersion"/>
-	<property name="upgradeVersion" access="field"/>
     <property name="mirrored"/>
     <property name="binderCount"/>
     <property name="type" update="false" insert="false"/> 

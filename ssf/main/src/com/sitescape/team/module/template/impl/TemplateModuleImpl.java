@@ -360,17 +360,17 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 template.setDefinitionType(type);
 		 template.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
 		 template.setModification(template.getCreation());
+		 getCoreDao().save(template); //need id for custom attributes
+		 if (template.isRoot()) {
+			 template.setupRoot();
+			 getCoreDao().flush(); //flush cause binderSortKey is null before setup and need to reserve unique key
+		 }
 		 EntryBuilder.updateEntry(template, updates);
 		 if (Validator.isNull(template.getTitle())) template.setTitle(template.getTemplateTitle());
 		 if (template.isRoot()) {
 			 template.setPathName("/" + template.getTitle());
 		 } else {
 			 template.setPathName(template.getParentBinder().getPathName() + "/" + template.getTitle());
-		 }
-		 getCoreDao().save(template);
-		 if (template.isRoot()) {
-			 template.setupRoot();
-			 getCoreDao().flush(); //flush cause binderSortKey is null before setup
 		 }
 		 return template;
 	 }
@@ -666,7 +666,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
         			try {
         				EntityDashboard dashboard = getCoreDao().loadEntityDashboard(b.getEntityIdentifier());
         				if (dashboard != null) {
-        					DashboardHelper.resolveRelativeBinders(b, dashboard);
+        					DashboardHelper.resolveRelativeBinders(b.getBinders(), dashboard);
         				}
         			} catch (Exception ex) {
         				//at this point just log errors  index has already been updated

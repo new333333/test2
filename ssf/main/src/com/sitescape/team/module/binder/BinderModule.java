@@ -119,10 +119,9 @@ public interface BinderModule {
 	 * Any errors deleting child-binders will be returned, but
 	 * will continue deleting as much as possible.  Mirrored source will be deleted
 	 * @param binderId
-	 * @return Set of exceptions when deleting child binders
 	 * @throws AccessControlException
 	 */
-	public Set<Exception> deleteBinder(Long binderId) 
+	public void deleteBinder(Long binderId) 
 		throws AccessControlException;
 	/**
 	 * Delete a binder including any sub-binders and entries.
@@ -133,10 +132,9 @@ public interface BinderModule {
 	 * corresponding source resources (directories and files) if this binder
 	 * or any of the child binders is mirrored.
 	 * @param options - processing options or null
-	 * @return Set of exceptions when deleting child binders
 	 * @throws AccessControlException
 	 */
-	public Set<Exception> deleteBinder(Long binderId, boolean deleteMirroredSource, Map options) 
+	public void deleteBinder(Long binderId, boolean deleteMirroredSource, Map options) 
 		throws AccessControlException;
 		
 	/**

@@ -45,7 +45,7 @@ public interface BinderService {
 	 */
 	public long binder_addBinder(String accessToken, Binder binder);
 	public long binder_copyBinder(String accessToken, long sourceId, long destinationId, boolean cascade);
-	public String[] binder_deleteBinder(String accessToken, long binderId, boolean deleteMirroredSource); 
+	public void binder_deleteBinder(String accessToken, long binderId, boolean deleteMirroredSource); 
 	public Binder binder_getBinder(String accessToken, long binderId, boolean includeAttachments);
 	public Binder binder_getBinderByPathName(String accessToken, String pathName, boolean includeAttachments);
 	public void binder_moveBinder(String accessToken, long binderId, long destinationId);

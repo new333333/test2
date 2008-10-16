@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_welcomeWorkspace" caption="__definition_default_welcome_workspace" type="8" nextId="11" definitionType="8" databaseId="402883b51cbdbdc2011cbdfe2857000b">
+<definition name="_welcomeWorkspace" caption="__definition_default_welcome_workspace" type="8" nextId="11" definitionType="8" internalId="402883b51cbdbdc2011cbdfe2857000b">
+
   <item name="workspaceForm" caption="__workspace_form" type="form" id="1" display="form">
     <properties/>
     <item name="title" caption="__title" type="data" id="2">
