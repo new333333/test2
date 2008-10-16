@@ -190,6 +190,7 @@ public class WebKeys {
 	public static final String URL_UPLOAD_FILE_ID = "ss_upload_file_id";
 	public static final String URL_WORKFLOW_TYPE = "workflowType";
 	public static final String URL_WHATS_NEW = "whatsNew";
+	public static final String URL_WHATS_NEW_TRACKED = "whatsNewTracked";
 	public static final String URL_WHATS_UNREAD = "whatsUnread";
 	public static final String URL_OBJECT_ID="objectId";
 	public static final String URL_YEAR_MONTH="yearMonth";
@@ -360,6 +361,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_ACCESS_CONTROL_TABLE = "get_access_control_table";
 	public static final String OPERATION_ADD_ATTACHMENT_OPTIONS = "add_attachment_options";
 	public static final String OPERATION_ADD_FOLDER_ATTACHMENT_OPTIONS = "add_folder_attachment_options";
+    public static final String OPERATION_MOBILE_ADD_ENTRY="mobile_add_entry"; 
     public static final String OPERATION_MOBILE_FIND_PEOPLE="mobile_find_people"; 
     public static final String OPERATION_MOBILE_LOGIN="mobile_login"; 
     public static final String OPERATION_MOBILE_SHOW_FOLDER="mobile_show_folder"; 

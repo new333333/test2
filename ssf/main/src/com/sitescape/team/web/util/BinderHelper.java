@@ -1749,8 +1749,12 @@ public class BinderHelper {
 		}		
 	}
 	
-	public static void setupWhatsNewBinderBeans(AllModulesInjected bs, Binder binder, Map model, String page) {		
-		//Get the documents bean for the documents th the user just authored or modified
+	public static void setupWhatsNewBinderBeans(AllModulesInjected bs, Binder binder, Map model, String page) {	
+		setupWhatsNewBinderBeans(bs, binder, model, page, "");
+	}
+	public static void setupWhatsNewBinderBeans(AllModulesInjected bs, Binder binder, Map model, String page,
+			String type) {		
+		//Get the documents bean for the documents just created or modified
 		Map options = new HashMap();
 		if (page == null || page.equals("")) page = "0";
 		Integer pageNumber = Integer.valueOf(page);
@@ -1784,7 +1788,11 @@ public class BinderHelper {
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
 		List<String> trackedPlaces = new ArrayList<String>();
-		trackedPlaces.add(binder.getId().toString());
+		if (type.equals(WebKeys.URL_WHATS_NEW_TRACKED)) {
+			trackedPlaces = SearchUtils.getTrackedPlacesIds(bs, binder);
+		} else {
+			trackedPlaces.add(binder.getId().toString());
+		}
 		Criteria crit = SearchUtils.entriesForTrackedPlaces(bs, trackedPlaces);
 		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 

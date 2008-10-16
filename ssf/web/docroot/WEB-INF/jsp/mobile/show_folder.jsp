@@ -34,6 +34,25 @@
 </c:if>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <div class="ss_mobile">
+
+<div>
+  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+					action="__ajax_mobile" actionUrl="false" 
+					binderId="${ssBinder.id}"
+					operation="mobile_whats_new" ><ssf:param
+					name="type" value="whatsNew"/></ssf:url>">
+    <span class="ss_bold"><ssf:nlt tag="toolbar.menu.whatsNew"/></span>
+  </a>&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+					action="__ajax_mobile" actionUrl="false" 
+					binderId="${ssBinder.id}"
+					operation="mobile_whats_new" ><ssf:param
+					name="type" value="unseen"/></ssf:url>">
+    <span class="ss_bold"><ssf:nlt tag="toolbar.menu.whatsUnseen"/></span>
+  </a>
+</div>
+<br/>
 <div class="ss_mobile_breadcrumbs">
 <c:if test="${empty ssBinder.parentFolder && !empty ssBinder.parentBinder}">
 //<a href="<ssf:url adapter="true" portletName="ss_forum" 

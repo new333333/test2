@@ -164,6 +164,19 @@
 
   <br/>
   <div class="ss_mobile_breadcrumbs ss_mobile_small">
+  <c:if test="${ssBinder.entityIdentifier.entityType == 'folder'}">
+	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+		action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false"
+		binderId="${ssBinder.id}" />"
+		><ssf:nlt tag="mobile.currentFolder"/></a>
+  </c:if>
+  <c:if test="${ssBinder.entityIdentifier.entityType == 'workspace'}">
+	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+		action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false"
+		binderId="${ssBinder.id}" />"
+		><ssf:nlt tag="mobile.currentWorkspace"/></a>
+  </c:if>
+  <br/>
   <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
 	><ssf:nlt tag="mobile.returnToTop"/></a>
