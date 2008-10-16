@@ -82,7 +82,7 @@ public class SendEntryMailController extends SAbstractController {
 			boolean sendAttachments = PortletRequestUtils.getBooleanParameter(request, "attachments", false);
 			FolderEntry entry  = getFolderModule().getEntry(folderId, entryId);
 			
-			Map status = getAdminModule().sendMail(entry, memberIds, emailAddress, subject, 
+			Map status = getAdminModule().sendMail(entry, memberIds, null, emailAddress, subject, 
 					new Description(body, Description.FORMAT_HTML), sendAttachments);
 			
 			String result = (String)status.get(ObjectKeys.SENDMAIL_STATUS);

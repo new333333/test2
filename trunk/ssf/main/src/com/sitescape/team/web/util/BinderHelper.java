@@ -1919,7 +1919,7 @@ public class BinderHelper {
 
 			if (!users.isEmpty()) {
 				try {
-					bs.getAdminModule().sendMail(entry, users, null, subject, 
+					bs.getAdminModule().sendMail(entry, users, null, null, subject, 
 							new Description(body, Description.FORMAT_HTML), incAtt);
 				} catch (Exception e) {
 					//TODO Log that mail wasn't sent

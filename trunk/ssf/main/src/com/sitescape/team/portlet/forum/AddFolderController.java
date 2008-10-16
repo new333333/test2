@@ -118,7 +118,7 @@ public class AddFolderController extends SAbstractController {
 					messageBody += announcementText;
 					Set teamMemberIds = newBinder.getTeamMemberIds();
 					if (!teamMemberIds.isEmpty()) {
-						Map status = getAdminModule().sendMail(teamMemberIds, null, 
+						Map status = getAdminModule().sendMail(teamMemberIds, null, null,
 								NLT.get("binder.announcement", new Object[] {user.getTitle(), newBinder.getTitle()}), 
 								new Description(messageBody, Description.FORMAT_HTML));
 					}

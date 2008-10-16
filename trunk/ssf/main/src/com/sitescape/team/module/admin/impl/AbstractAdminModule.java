@@ -616,10 +616,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
        	}
 	}
 
-    public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body) throws Exception {
-    	return sendMail(null, ids, emailAddresses, subject, body, false); 
+    public Map<String, Object> sendMail(Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, String subject, Description body) throws Exception {
+    	return sendMail(null, ids, teamIds, emailAddresses, subject, body, false); 
     }
-    public Map<String, Object> sendMail(Entry entry, Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body, boolean sendAttachments) throws Exception {
+    public Map<String, Object> sendMail(Entry entry, Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, String subject, Description body, boolean sendAttachments) throws Exception {
 		if (!getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled()) {
 			throw new ConfigurationException(NLT.getDef("errorcode.sendmail.disabled"));
 		}
@@ -647,7 +647,16 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				}
 			}
 		}
-		Set<Long> userIds = getProfileDao().explodeGroups(ids, user.getZoneId());
+		Set<Long> userIds = new HashSet(ids);
+		//get team members
+		if (teamIds != null && !teamIds.isEmpty()) {
+			List<Binder> teams = getCoreDao().loadObjects(teamIds, Binder.class, user.getZoneId());
+			for (Binder t:teams) {
+				userIds.addAll(t.getTeamMemberIds());
+			}
+		}
+		
+		userIds = getProfileDao().explodeGroups(userIds, user.getZoneId());
 		List<User> users = getCoreDao().loadObjects(userIds, User.class, user.getZoneId());
 		for (User e:users) {
 			try {

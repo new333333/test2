@@ -76,7 +76,7 @@ public class SendMailController extends SAbstractController {
 			if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
 			if (formData.containsKey("groups")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
 			
-			Map status = getAdminModule().sendMail(memberIds, emailAddress, subject, new Description(body, Description.FORMAT_HTML));
+			Map status = getAdminModule().sendMail(memberIds, null, emailAddress, subject, new Description(body, Description.FORMAT_HTML));
 			String result = (String)status.get(ObjectKeys.SENDMAIL_STATUS);
 			List errors = (List)status.get(ObjectKeys.SENDMAIL_ERRORS);
 			List addrs = (List)status.get(ObjectKeys.SENDMAIL_DISTRIBUTION);
