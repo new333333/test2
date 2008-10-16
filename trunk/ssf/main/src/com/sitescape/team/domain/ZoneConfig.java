@@ -1,7 +1,8 @@
 package com.sitescape.team.domain;
 
 public class ZoneConfig extends ZonedObject {
-	private Integer upgradeVersion=2; 
+	public static Integer ZONE_LATEST_VERSION=3;
+	private Integer upgradeVersion=ZONE_LATEST_VERSION; 
 	private AuthenticationConfig authenticationConfig;
 	private MailConfig mailConfig;
 	public ZoneConfig()

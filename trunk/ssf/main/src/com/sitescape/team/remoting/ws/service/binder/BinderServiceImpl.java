@@ -226,14 +226,8 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 	public long binder_copyBinder(String accessToken, long sourceId, long destinationId, boolean cascade) {
 		return getBinderModule().copyBinder(sourceId, destinationId, cascade, null);
 	}
-	public String[] binder_deleteBinder(String accessToken, long binderId, boolean deleteMirroredSource) {
-		Set<Exception>errors = getBinderModule().deleteBinder(binderId, deleteMirroredSource, null);
-		String[] strErrors = new String[errors.size()];
-		int i=0;
-		for (Exception ex:errors) {
-			strErrors[i++] = ex.getLocalizedMessage();
-		}
-		return strErrors;
+	public void binder_deleteBinder(String accessToken, long binderId, boolean deleteMirroredSource) {
+		getBinderModule().deleteBinder(binderId, deleteMirroredSource, null);
 	}
 	public void binder_moveBinder(String accessToken, long binderId, long destinationId) {
 		getBinderModule().moveBinder(binderId, destinationId, null);

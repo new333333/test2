@@ -64,7 +64,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Map properties;
     protected NotificationDef notificationDef;
     protected PostingDef posting;
-    protected Integer upgradeVersion=1; //initialzed by hiberaten access=field
     protected String pathName;
     protected List definitions;	//initialized by hiberate access=field
     protected List binders;//initialized by hibernate access="field"
@@ -109,7 +108,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		 teamMembershipInherited=source.teamMembershipInherited;
 		 library=source.library;
 		 uniqueTitles = source.uniqueTitles;
-		 upgradeVersion = source.upgradeVersion;
 		 if (source.properties != null) properties = new HashMap(source.properties);
 		 owner = source.owner;
 		 mirrored = source.mirrored;
@@ -407,17 +405,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	return properties.get(name);
     }
     
-    /**
-     * Set on top workspace to track object versions
-     * @hibernate.property 
-     */
-    public Integer getUpgradeVersion() {
-        return this.upgradeVersion;
-    }
-    public void setUpgradeVersion(Integer upgradeVersion) {
-        this.upgradeVersion = upgradeVersion;
-    }
-    
+     
     /**
      * Return the pathName
      */

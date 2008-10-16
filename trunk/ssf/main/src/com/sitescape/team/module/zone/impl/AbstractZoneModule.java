@@ -230,14 +230,22 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		return zoneConfig;
 	}
  	protected void upgradeZoneTx(Workspace zone) {
- 		Integer version = zone.getUpgradeVersion(); //in future release, start using version from zoneConfig
 		Workspace top = getCoreDao().findTopWorkspace(zone.getName());
 		String superName = SZoneConfig.getAdminUserName(zone.getName());
  		//	get super user from config file - must exist or throws and error
  		User superU = getProfileDao().findUserByName(superName, zone.getName());
  		RequestContextUtil.setThreadContext(superU).resolve();
+ 		
+ 		ZoneConfig zoneConfig;
+ 		Integer version=0;
+ 		try {
+ 			zoneConfig = getZoneConfig(zone.getId());
+ 			version = zoneConfig.getUpgradeVersion();
+ 		} catch (NoObjectByTheIdException zx) {
+			// Make sure there is a ZoneConfig; new for v2
+ 			zoneConfig = addZoneConfigTx(zone);
+ 		}
  		if ((version == null) || version.intValue() <= 1) {
- 			version = 2;
  			//TODO: setZoneId as non=null, only do based on version
 			getCoreDao().executeUpdate("update com.sitescape.team.domain.AuditTrail set zoneId=" + zone.getId() + 
 				" where zoneId is null");
@@ -416,7 +424,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getCoreDao().executeUpdate("delete com.sitescape.team.domain.WorkflowStateHistory where zoneId=" + zone.getId());
 
 			//create schedule first time through
-	 		ZoneConfig zoneConfig = addZoneConfigTx(zone);
 			ScheduleInfo notify = getAdminModule().getNotificationSchedule();
 	 		notify.getSchedule().setDaily(true);
 	 		notify.getSchedule().setHours("0");
@@ -455,23 +462,23 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 					getCoreDao().save(connection);
 				}
 			}
-			zone.setUpgradeVersion(2);
  		}
- 		if (version.intValue() <= 2) {
+		//make sure zoneConfig upto date
+		if (zoneConfig.getUpgradeVersion() < ZoneConfig.ZONE_LATEST_VERSION) {
+			//Always do the following items
+			//Get any new definitions and templates
+			getAdminModule().updateDefaultDefinitions(top.getId(), true);
+			getTemplateModule().updateDefaultTemplates(RequestContextHolder.getRequestContext().getZoneId(), false);
+			zoneConfig.setUpgradeVersion(ZoneConfig.ZONE_LATEST_VERSION);
+		}
+		if (version.intValue() <= 2) {
  			//Change the definition of the top workspace to become the welcome page
  			List definitions = new ArrayList();
  			Map workflowAssociations = new HashMap();
- 			String defBinderId = ObjectKeys.DEFAULT_WELCOME_WORKSPACE_DEF;
- 			definitions.add(defBinderId);
+ 			Definition def = getDefinitionModule().getDefinitionByReservedId(ObjectKeys.DEFAULT_WELCOME_WORKSPACE_DEF);
+ 			definitions.add(def.getId());
 			getBinderModule().setDefinitions(top.getId(), definitions, workflowAssociations);
- 			zone.setUpgradeVersion(3);
- 			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(top.getId());
- 			zoneConfig.setUpgradeVersion(3);
- 		}
- 		//Always do the following items
-		//Get any new definitions and templates
- 		getAdminModule().updateDefaultDefinitions(top.getId(), true);
-		getTemplateModule().updateDefaultTemplates(RequestContextHolder.getRequestContext().getZoneId(), false);
+   		}
   	}
  	// Must be running inside a transaction set up by the caller 
  	protected void validateZoneTx(Workspace zone) {
@@ -613,20 +620,19 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		//make sure allusers group and roles are defined, may be referenced by templates
     		getAdminModule().updateDefaultDefinitions(top.getId(), false);
     		getTemplateModule().updateDefaultTemplates(top.getId(), true);
-
-    		//Update after import of definitions
-    		getDefinitionModule().setDefaultBinderDefinition(top);
+ 			Definition def = getDefinitionModule().getDefinitionByReservedId(ObjectKeys.DEFAULT_WELCOME_WORKSPACE_DEF);
+    		//fill in config for top
+			top.setEntryDef(def);
+ 			List<Definition>defs = top.getDefinitions();
+ 			defs.add(def);
+ 			//Update after import of definitions
     		getDefinitionModule().setDefaultBinderDefinition(profiles);
     		getDefinitionModule().setDefaultEntryDefinition(user);
-
     		//fill in config for profiles
-    		List defs = profiles.getDefinitions();
+    		defs = profiles.getDefinitions();
     		defs.add(profiles.getEntryDef());
     		defs.add(user.getEntryDef());
-    		
-    		defs = top.getDefinitions();
-    		defs.add(top.getEntryDef());
-    			        		
+    		    			        		
     		//fill in timestampes
     		top.setCreation(stamp);
     		top.setModification(stamp);

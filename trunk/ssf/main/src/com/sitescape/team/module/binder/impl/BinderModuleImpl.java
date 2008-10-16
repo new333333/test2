@@ -499,48 +499,67 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		checkAccess(binder, BinderOperation.setProperty);
 		binder.setProperty(property, value);	
    }    
-   //inside write transaction    
-    public Set<Exception> deleteBinder(Long binderId) {
-    	return deleteBinder(binderId, true, null);
+   //no transaction    
+    public void deleteBinder(Long binderId) {
+    	deleteBinder(binderId, true, null);
     }
-    //inside write transaction    
-   public Set<Exception> deleteBinder(Long binderId, boolean deleteMirroredSource, Map options) {
-    	Binder binder = loadBinder(binderId);
-		checkAccess(binder, BinderOperation.deleteBinder);
-		boolean deleteMirroredSourceForChildren = deleteMirroredSource;
-		if(binder.isMirrored() && deleteMirroredSource)
-			deleteMirroredSourceForChildren = false;
-			
-		Set<Exception> errors = deleteChildBinders(binder, deleteMirroredSourceForChildren, options);
-   		if (!errors.isEmpty()) return errors;
-   		loadBinderProcessor(binder).deleteBinder(binder, deleteMirroredSource, options);
-   		return errors;
+    
+    //no transaction    
+   public void deleteBinder(Long binderId, final boolean deleteMirroredSource, final Map options) {
+    	final Binder top = loadBinder(binderId);
+		checkAccess(top, BinderOperation.deleteBinder);
+		Map params = new HashMap();
+		params.put("deleted", Boolean.FALSE);
+		//get list of ids, so don't have to load large trees all at once
+   		List<Object[]> objs = getCoreDao().loadObjects("select x.id,x.binderKey.sortKey from com.sitescape.team.domain.Binder x where x.binderKey.sortKey like '" +
+   				top.getBinderKey().getSortKey() + "%' and deleted=:deleted order by x.binderKey.sortKey desc", params);
+   		//convert to list of ids
+   		List<Long>ids = new ArrayList();//maintain order, bottom up
+   		for (Object row[]:objs) {
+   			ids.add((Long)row[0]);
+   		}
+   		ids.remove(top);
+  		for (Long id:ids) {
+  			try {
+  				final Binder child = getCoreDao().loadBinder(id, top.getZoneId());
+  				if (child.isDeleted()) continue;
+  				checkAccess(child, BinderOperation.deleteBinder);
+  				//determine if need to deleted mirrored for this binder, or if parent will take care of it
+  				boolean deleteMirroredSourceForChildren = deleteMirroredSource;
+  				if(top.isMirrored() && deleteMirroredSource)
+  					deleteMirroredSourceForChildren = false;
+  				if (deleteMirroredSourceForChildren == true) {
+  					//top is not mirrored; see if a parent is
+  					Binder parent = child.getParentBinder();
+  					while (parent != top) {
+  						if (parent.isMirrored()) {
+  							deleteMirroredSourceForChildren = false;
+  							break;
+  						}
+  						parent = parent.getParentBinder();	 	  						
+  					}						
+  				}
+  				final boolean doMirrored = deleteMirroredSourceForChildren;
+  				getTransactionTemplate().execute(new TransactionCallback() {
+  					public Object doInTransaction(TransactionStatus status) {
+  						loadBinderProcessor(child).deleteBinder(child, doMirrored, options);
+  						return null;
+  					}
+  				});
+  				getCoreDao().evict(child); //update commited
+
+			} catch (NoObjectByTheIdException musthavebeendeleted) {continue;}
+  		}
+  		getTransactionTemplate().execute(new TransactionCallback() {
+  			public Object doInTransaction(TransactionStatus status) {
+  				loadBinderProcessor(top).deleteBinder(top, deleteMirroredSource, options);
+  				return null;
+  			}
+  		});
+
+  
     }
-    protected Set<Exception> deleteChildBinders(Binder binder, boolean deleteMirroredSource, Map options) {
-    	//First process all child folders
-    	List binders = new ArrayList(binder.getBinders());
-    	Set errors = new HashSet();
-    	boolean deleteMirroredSourceForChildren;
-    	for (int i=0; i<binders.size(); ++i) {
-    		Binder b = (Binder)binders.get(i);
-    		//see if already taken care of
-    		if (b.isDeleted()) continue;
-        	try {
-        		checkAccess(b, BinderOperation.deleteBinder);
-        		deleteMirroredSourceForChildren = deleteMirroredSource;
-        		if(b.isMirrored() && deleteMirroredSource)
-        			deleteMirroredSourceForChildren = false;
-        		Set<Exception> e = deleteChildBinders(b, deleteMirroredSourceForChildren, options);
-       			if (e.isEmpty()) loadBinderProcessor(b).deleteBinder(b, deleteMirroredSource, options);
-       			else errors.addAll(e);
-        	} catch (Exception ex) {
-        		errors.add(ex);
-        	}
-    		
-    	}
-    	return errors;
-    }
-    //inside write transaction    
+     //inside write transaction    
      public void moveBinder(Long fromId, Long toId, Map options) {
        	Binder source = loadBinder(fromId);
 		checkAccess(source, BinderOperation.moveBinder);
