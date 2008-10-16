@@ -150,6 +150,7 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	      		listType: "workflows",
 				displayValue: true,
 				searchOnInitialClick: true,
+				appendToSearchUrlRoutine: ss_getSelectedBinders,
 				clickRoutine: function () {
 					var workflowId = findWorkflows.getSingleId();
 					var defaultStepsIds = workflowId == wfIdValue ? stepsValue : [];
@@ -220,10 +221,11 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 
 
 
-function ss_getSelectedBinders() {
+function ss_getSelectedBinders(url) {
 	var value = "";
 	var obj = document.getElementById('search_currentFolder');
 	if (obj !== undefined && obj != null && obj.checked) {
+		//get current folder
 		obj = document.getElementById('search_dashboardFolders');
 		return 	" searchFolders_" + obj.value;
 	}
@@ -239,7 +241,7 @@ function ss_getSelectedBinders() {
 		value = value.replace(re, "");
 		value += id;
 	}
-	return value;
+	return url += "&idChoices=" + encodeURIComponent(value);
  
 }
 function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
@@ -307,6 +309,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 		displayValue: true,
 		displayArrow: true,
 		searchOnInitialClick: true,
+		appendToSearchUrlRoutine: ss_getSelectedBinders,
 		clickRoutine: function () {
 			ss_removeAllChildren(fieldsDiv);
 			ss_removeAllChildren(fieldValueDiv);
