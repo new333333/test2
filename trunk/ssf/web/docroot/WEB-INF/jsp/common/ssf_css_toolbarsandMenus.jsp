@@ -474,17 +474,37 @@ ul.ss_dropdownmenu li {
  /* background-color:${ss_style_background_color}; */
   	background-color: #FFFFFF;
   	}
-table.ss_popup {
+table.ss_popup, div.ss_popup {
 	position: relative;
 	background-color: #ffffff;
 	border: 1px solid ${ss_toolbar1_background_color};
 	}
+div.ss_popup {
+	position: relative;
+	background-color: #ffffff;
+	border: 1px solid ${ss_toolbar1_background_color};
+  	margin: 0px;
+  	background-color:${ss_style_background_color_opaque};
+  	text-align: left;
+  	width: 300px;	
+	}	
 div.ss_popup_top {
   	position: relative;
   	background-image: url(<html:imagesPath/>pics/background_base_title_bar.jpg);
   	background-repeat: repeat-x;
   	height: 14px; 
 	}
+div.ss_popup_topLg {
+  	position: relative;
+  	background-image: url(<html:imagesPath/>pics/background_toolbar1.gif);
+  	background-repeat: repeat-x;
+  	height: 22px; 
+  	width: 100%!important;
+  	vertical-align:top;
+	<c:if test="<%= isIE %>">
+  		margin-top: 0px!important; 
+	</c:if>  	
+	}	
 div.ss_popup_title {
    font-family: ${ss_style_title_font_family};
    font-size: ${ss_style_font_smallprint};
@@ -534,15 +554,23 @@ div.ss_popup_body {
   		padding-top: -2px;
   		padding-bottom: 1px;
   		padding-left: 1px; 
-  		padding-right: 0px;
+  		padding-right: 1px;
 	</c:if>  	
-	}  	
+	}  
+.ss_popupDiv input[type="submit"] {	
+	<c:if test="<%= isIE %>">
+  		margin-left: 1px; 
+  		margin-right: 1px;
+	</c:if>  	
+	}		
 .ss_popupMenuClose {
   	width:100%;
   	padding:0px 8px 0px 0px;
   	text-align:right;
 	}
-
+.ss_valignTop {
+	vertical-align: top;
+	}
 	
 /* THEME MENU STYLES */
 
