@@ -102,6 +102,7 @@ ssFind.configSingle = function(params) {
 	var viewUrl = ("viewUrl" in params) ? params.viewUrl : null;
 	var viewAccesibleUrl = ("viewAccesibleUrl" in params) ? params.viewAccesibleUrl : null;
 	var searchUrl = ("searchUrl" in params) ? params.searchUrl : null;
+	var appendToSearchUrlRoutine = ("appendToSearchUrlRoutine" in params) ? params.appendToSearchUrlRoutine : null;
 	var leaveResultsVisible = ("leaveResultsVisible" in params) ? params.leaveResultsVisible : null;
 	var listType = ("listType" in params) ? params.listType : null;
 	var renderNamespace = ("renderNamespace" in params) ? params.renderNamespace : null;
@@ -118,7 +119,7 @@ ssFind.configSingle = function(params) {
 
 	var addCurrentUserToResult = ("addCurrentUserToResult" in params) ? (params.addCurrentUserToResult != "false" ? true : false) : false;
 		
-	findObj.single(inputId, prefix, clickRoutineObj, clickRoutine, viewUrl, viewAccesibleUrl, searchUrl,
+	findObj.single(inputId, prefix, clickRoutineObj, clickRoutine, viewUrl, viewAccesibleUrl, searchUrl, appendToSearchUrlRoutine, 
 					leaveResultsVisible, listType, renderNamespace, binderId, subFolders, foldersOnly, 
 					showFolderTitles, showUserTitleOnly, displayArrow, displayValue, displayValueOnly, 
 					addCurrentUserToResult, searchOnInitialClick, clearSubordinates);
@@ -146,6 +147,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	this._singleViewUrl;
 	this._singleViewAccesibleUrl;
 	this._singleSearchUrl;
+	this._appendToSearchUrlRoutine;
 	this._singleLeaveResultsVisible;
 	this._singleListType;
 	this._singleRenderNamespace;
@@ -268,7 +270,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	}
 
 	this.single = function(inputId, singlePrefix, singleClickRoutineObj, singleClickRoutine, 
-						   singleViewUrl, singleViewAccesibleUrl, singleSearchUrl, 
+						   singleViewUrl, singleViewAccesibleUrl, singleSearchUrl, appendToSearchUrlRoutine,
 						   singleLeaveResultsVisible, singleListType, singleRenderNamespace,
 						   singleBinderId, singleSubFolders, singleFoldersOnly,
 						   showFolderTitles, showUserTitleOnly, displayArrow, displayValue, displayValueOnly,
@@ -283,6 +285,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		that._singleViewUrl = singleViewUrl;
 		that._singleViewAccesibleUrl = singleViewAccesibleUrl;
 		that._singleSearchUrl = singleSearchUrl;
+		that._appendToSearchUrlRoutine = appendToSearchUrlRoutine;
 		that._singleLeaveResultsVisible = singleLeaveResultsVisible;
 		that._singleListType = singleListType;
 		that._singleRenderNamespace = singleRenderNamespace;
@@ -390,21 +393,25 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 			searchInProgress = false;
 			return;
 		}
-		
-		dojo.xhrGet({
-	    	url: that._singleSearchUrl  + "&searchText=" + searchText 
+		var url = that._singleSearchUrl  + "&searchText=" + searchText 
 										+ "&maxEntries=10" 
 										+ "&pageNumber=" + pageNumber 
 										+ "&findType=" + that._singleListType 
-										+ (that._singleBinderId != null?"&binderId=" + that._singleBinderId:"")
-										+ (that._singleSubFolders != null?"&searchSubFolders=" + that._singleSubFolders: "")
-										+ (that._singleFoldersOnly != null?"&foldersOnly=" + that._singleFoldersOnly: "")
 										+ "&listDivId=" + that._listContainerInnerDiv.id
 										+ "&showFolderTitles=" + that._showFolderTitles
 										+ "&showUserTitleOnly=" + that._showUserTitleOnly
 										+ "&namespace=" + that._singlePrefix
-										+ "&addCurrentUser=" + that._addCurrentUserToResult,
-			error: function (err) {
+										+ "&addCurrentUser=" + that._addCurrentUserToResult;
+		if (that._singleBinderId != null) url += "&binderId=" + that._singleBinderId;
+		if (that._singleSubFolders != null) url +="&searchSubFolders=" + that._singleSubFolders;
+		if (that._singleFoldersOnly != null) url += "&foldersOnly=" + that._singleFoldersOnly;
+		
+		if (that._appendToSearchUrlRoutine && typeof that._appendToSearchUrlRoutine !== "undefined")
+			url = that._appendToSearchUrlRoutine(url);
+			
+		dojo.xhrGet({
+	    	url: url,
+	    	error: function (err) {
 				alert(ss_not_logged_in);
 			},
 			load: function (data) {
