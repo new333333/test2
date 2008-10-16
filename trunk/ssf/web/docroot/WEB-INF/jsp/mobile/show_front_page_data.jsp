@@ -44,20 +44,40 @@
   </c:if>
 </c:if>
 
+<c:if test="${ssUser.internalId != guestInternalId}">
 <div>
-  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+  <span>
+    <ssf:nlt tag="mobile.welcome">
+      <ssf:param name="value" useBody="true">
+        <a href="<ssf:url adapter="true" portletName="ss_forum" 
+			    action="__ajax_mobile"
+			    operation="mobile_show_workspace"
+			    binderId="${ssUser.workspaceId}" />">${ssUser.title}</a>
+      </ssf:param>
+    </ssf:nlt>
+  </span>
+</div>
+<br/>
+</c:if>
+
+<div>
+  <span class="ss_bold"><ssf:nlt tag="toolbar.menu.whatsNew"/></span>
+  <br/>
+  <div style="padding-left:10px;">
+	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+					action="__ajax_mobile" actionUrl="false" 
+					operation="mobile_whats_new" ><ssf:param
+					name="type" value="whatsNewTracked"/></ssf:url>">
+	    <span class="ss_bold"><ssf:nlt tag="mobile.whatsNewTracked"/></span>
+	  </a>
+	  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 					action="__ajax_mobile" actionUrl="false" 
 					operation="mobile_whats_new" ><ssf:param
 					name="type" value="whatsNew"/></ssf:url>">
-    <span class="ss_bold"><ssf:nlt tag="toolbar.menu.whatsNew"/></span>
-  </a>
-  <br/>
-  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_mobile" actionUrl="false" 
-					operation="mobile_whats_new" ><ssf:param
-					name="type" value="unseen"/></ssf:url>">
-    <span class="ss_bold"><ssf:nlt tag="toolbar.menu.whatsUnread"/></span>
-  </a>
+	    <span class="ss_bold"><ssf:nlt tag="mobile.whatsNewSite"/></span>
+	  </a>
+  </div>
 </div>
 
 <br/>
