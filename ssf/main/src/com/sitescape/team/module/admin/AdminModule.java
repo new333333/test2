@@ -156,7 +156,7 @@ public interface AdminModule {
 	 * @return
 	 * @throws Exception
 	 */
-    public Map<String, Object> sendMail(Entry entry, Collection<Long> userIds, Collection<String> emailAddresses, String subject, Description body,  boolean sendAttachments) throws Exception;
+    public Map<String, Object> sendMail(Entry entry, Collection<Long> userIds, Collection<Long> teamIds, Collection<String> emailAddresses, String subject, Description body,  boolean sendAttachments) throws Exception;
     /**
      * Send a mail message to a collection of users and/or explicit email address. 
      * @param ids
@@ -166,7 +166,7 @@ public interface AdminModule {
      * @return
      * @throws Exception
      */
-    public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body) throws Exception;
+    public Map<String, Object> sendMail(Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, String subject, Description body) throws Exception;
     	 
     public void setMailConfigAndSchedules(MailConfig mailConfig, ScheduleInfo notifications, ScheduleInfo postings) throws AccessControlException;  
  	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships) throws AccessControlException;
