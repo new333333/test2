@@ -5,6 +5,7 @@ ss_changelogs userName xmlString
 ss_customattributes stringValue description_text xmlValue
 ss_definitions name title
 ss_emailaddresses address
+ss_events calUid
 ss_folderentries postedBy description_text title normalTitle
 ss_forums name pathName branding resourcePath description_text title normalTitle searchTitle templateTitle tDescription_text notify_email notify_fromAddress notify_subject
 ss_functions name

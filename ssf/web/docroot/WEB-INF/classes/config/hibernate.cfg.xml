@@ -34,7 +34,6 @@
  		<!-- Do not set the following property to true on a production system since it significantly affects performance -->
 		<property name="show_sql">false</property>
 		<property name="hibernate.generate_statistics">false</property>
- 		<property name="hibernate.hbm2ddl.auto">update</property>
 		<!-- Sitescape Mappings -->
 		<mapping resource="com/sitescape/team/security/accesstoken/impl/TokenInfo.hbm.xml"/>
 		<mapping resource="com/sitescape/team/security/function/Function.hbm.xml"/>

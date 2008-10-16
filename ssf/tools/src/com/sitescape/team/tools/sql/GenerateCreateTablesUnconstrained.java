@@ -23,21 +23,31 @@ public class GenerateCreateTablesUnconstrained {
 	static BufferedWriter dropConstraints = null;
 	static BufferedWriter dropTables = null;
 	static BufferedWriter createSynonyms = null;
+	static BufferedWriter updateTables = null;
 
 	public static void main(String[] args) {
 		if (args.length == 0) {
-			System.out.println("usage: java GenerateCreateTablesUnconstrained <unconstrained script name> [schema]");
+			System.out.println("usage: java  GenerateCreateTablesUnconstrained [-update] <unconstrained script name> [schema]");
 			return;
 		}
-		else if  (args.length > 2 ) {
+		else if  (args.length > 3 ) {
 			System.out.println("java GenerateCreateTablesUnconstrained " + args);
 		}
 		
 		try {
-			if (args.length == 1)
-				doMain(args[0], "sitescape");
-			else {
-				doMain(args[0], args[1]);
+			if (args[0].equals("-update")) {
+				if (args.length == 2)
+					doUpdate(args[1], "sitescape");
+				else {
+					doUpdate(args[1], args[2]);
+				}
+				
+			} else {
+				if (args.length == 1)
+					doCreate(args[0], "sitescape");
+				else {
+					doCreate(args[0], args[1]);
+				}
 			}
 		}
 		catch(Exception e) {
@@ -45,7 +55,7 @@ public class GenerateCreateTablesUnconstrained {
 		}
 	}
 	
-	private static void doMain(String inputFileName, String schema) throws IOException {
+	private static void doCreate(String inputFileName, String schema) throws IOException {
 		String databaseTypeStr = getDatabaseTypeStr(inputFileName);
 		Map typeMap = getTypeMap(databaseTypeStr);
 		String tableGroupName = getTableGroupNameStr(inputFileName);
@@ -84,7 +94,7 @@ public class GenerateCreateTablesUnconstrained {
 					trimmedLine = line.trim();
 					sb.append(trimTrailing(line));
 				}
-				createUnconstrainedTables.write(doUtf8(sb.toString(), typeMap, columnConvert));
+				createUnconstrainedTables.write(doTableUtf8(sb.toString(), typeMap, columnConvert));
 				createUnconstrainedTables.newLine();
 				if(createSynonyms!= null) {
 					String [] works = sb.toString().split(",");
@@ -200,6 +210,75 @@ public class GenerateCreateTablesUnconstrained {
 		}
 	}
 	
+	private static void doUpdate(String inputFileName, String schema) throws IOException {
+		//Input scripts have create table, alter table only; come from hibernate.  no delimiter except new line
+		String databaseTypeStr = getDatabaseTypeStr(inputFileName);
+		Map typeMap = getTypeMap(databaseTypeStr);
+		String tableGroupName = getTableGroupNameStr(inputFileName);
+		
+		File inputFile = new File(inputFileName);
+		
+		BufferedReader in = new BufferedReader(new FileReader(inputFile));
+		//list of tables and columns to convert
+		Map columnConvert = getColumnConvert(new File(inputFile.getParentFile().getParentFile(), "table_column_types"));
+		File updateTablesFile = new File(inputFile.getParentFile(), "internal/update-tables-" + tableGroupName + "-" + databaseTypeStr + ".sql");
+		if(databaseTypeStr.equals("oracle")) {
+			File createSynonymsFile = new File(inputFile.getParentFile(), "internal/create-synonyms-" + tableGroupName + "-" + databaseTypeStr + ".sql");
+			createSynonyms = new BufferedWriter(new FileWriter(createSynonymsFile));
+		}
+		
+		updateTables = new BufferedWriter(new FileWriter(updateTablesFile));
+		String line = null;
+		String trimmedLine = null;
+		while((line = in.readLine()) != null) { 
+			trimmedLine = line.trim();
+			if (trimmedLine.length() == 0) continue;
+			if (trimmedLine.startsWith("#")) continue;
+			trimmedLine = trimmedLine + ";";//on update straight from hibernate, no delimiers
+			if (trimmedLine.contains("create table") || trimmedLine.contains("CREATE TABLE")) {
+				// Processing "create table" statement
+				updateTables.write(doTableUtf8(trimmedLine, typeMap, columnConvert));
+				updateTables.newLine();
+				if(createSynonyms!= null) {
+					String [] works = line.split(",");
+					if (works.length != 0) {
+						String [] first = works[0].split (" ");
+						if (first.length >= 3) {
+							String tableName = first[2];
+							createSynonyms.write("create synonym " + tableName + " for " + schema + "." + tableName + ";");
+							createSynonyms.newLine();
+						}
+					}
+				}
+			}
+			else if (trimmedLine.startsWith("create index") || trimmedLine.startsWith("CREATE INDEX")) {
+				//don't think hibernate generates these
+				updateTables.write(trimmedLine);
+				updateTables.newLine();
+			}
+			else if(trimmedLine.contains("alter table") || trimmedLine.contains("ALTER TABLE")) {
+				updateTables.write(doColumnUtf8(trimmedLine, typeMap, columnConvert));
+				updateTables.newLine();
+			}
+			else if (trimmedLine.contains("create sequence") || trimmedLine.contains("CREATE SEQUENCE")) {
+				updateTables.write(trimmedLine);
+				updateTables.newLine();
+				if(createSynonyms!= null) {
+					String [] works = line.toString().split(" ");
+					if (works.length >= 3) {
+						String seqName = works[2];
+						if (seqName.lastIndexOf(";") > -1) seqName=seqName.substring(0, seqName.lastIndexOf(";"));
+						createSynonyms.write("create synonym " + seqName + " for " + schema + "." + seqName + ";");
+						createSynonyms.newLine();
+					}
+				}
+			}
+		}
+		
+		updateTables.close();
+		if(createSynonyms!= null) createSynonyms.close();
+
+	}
 	private static String getDatabaseTypeStr(String inputFileName) 
 		throws IllegalArgumentException {
 		if(inputFileName.contains("-db2"))
@@ -300,7 +379,7 @@ public class GenerateCreateTablesUnconstrained {
 		}
 		return columnConvert;
 	}
-	private static String doUtf8(String input, Map typeMap, Map columnConvert) {
+	private static String doTableUtf8(String input, Map typeMap, Map columnConvert) {
 		if (typeMap.isEmpty()) return input;
 		String [] works = input.toString().split(",");
 		if (works.length == 0) return input;
@@ -314,7 +393,7 @@ public class GenerateCreateTablesUnconstrained {
 		int index = works[0].indexOf("(");
 		//strip 'create table xxx'
 		works[0] = works[0].substring(index+1);
-		for (int i=1; i<vals.length; ++i) {
+		for (int i=1; i<vals.length; ++i) {//0 is table name
 			String field = vals[i]; //exact case field name
 			for (int j=0; j<works.length; ++j) {
 				String currentField = works[j].trim();
@@ -337,6 +416,36 @@ public class GenerateCreateTablesUnconstrained {
 			
 		}
 		return out;
+	}
+	//alter table add column
+	private static String doColumnUtf8(String input, Map typeMap, Map columnConvert) {
+		if (typeMap.isEmpty()) return input;
+		String [] first = input.split (" ");
+		if (first.length < 5) return input;
+		String tableName = first[2].toLowerCase();
+		if (!columnConvert.containsKey(tableName)) return input;
+		if (!first[3].equalsIgnoreCase("add")) return input;
+		String [] vals = (String[])columnConvert.get(tableName);
+		for (int i=1; i<vals.length; ++i) { //0 is tablename
+			String dataType=null;
+			if (vals[i].equalsIgnoreCase(first[4])) {
+				dataType = first[5];
+			}else if ("column".equals(first[4]) && vals[i].equalsIgnoreCase(first[5])) {
+				dataType = first[6];
+			}
+			if (dataType != null) {
+			//string regexp syntax
+				int paren = dataType.indexOf("(");					
+				if (paren != -1) dataType = dataType.substring(0, paren);
+				String replaceType = (String)typeMap.get(dataType);
+				if (replaceType == null) continue;
+				String output = input.replaceFirst(dataType, replaceType);
+				System.out.println("Replaced: '" + input + "' FOR '" + output + "'");
+				return output;
+			}
+
+		}
+		return input;
 	}
 }
 
