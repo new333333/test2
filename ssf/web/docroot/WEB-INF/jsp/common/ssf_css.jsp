@@ -562,14 +562,6 @@ a.ss_tinyButton:focus, a.ss_tinyButton:hover {
   	white-space: nowrap;
 }
 
-/* styles for labels: required for forms; optional for views */
-.ss_labelAbove {
-  padding-top: 2px;
-  padding-bottom: 2px;
-  display: block;
-  font-weight: bold;
-}
-
 .ss_labelLeft {
   font-weight: bold;
   font-size: ${ss_style_font_normalprint};
@@ -1615,7 +1607,8 @@ div.ss_content_outer {		/* also see ss_pseudoPortal */
 	margin-top:0px;
 	margin-right: 15px;		/* give right margin to match pseudoPortal */
 	border: 1px solid #ccc;
-	width:100%;
+
+	position: absolute;	
 }
 
 .ss_content_inner {
