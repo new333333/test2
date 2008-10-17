@@ -623,6 +623,23 @@ public class DefinitionHelper {
 	}
     
 	
+	public static String getCaptionFromElement(Definition def, String eleName, String type, 
+			String defaultCaption) {
+		Document defDoc = def.getDefinition();
+		Element rootEle = defDoc.getRootElement();
+		String retVal = defaultCaption;
+		Element itemEle = (Element) rootEle.selectSingleNode("//item[@type='"+type+"']//item/properties/property[@name='name' and @value='"+eleName+"']");
+		if (itemEle != null) {
+			itemEle = itemEle.getParent().getParent();
+			Element captionEle = (Element) itemEle.selectSingleNode("./properties/property[@name='caption']");
+			if (captionEle != null) {
+				String caption = (String)captionEle.attributeValue("value");
+				if (caption != null && !caption.equals("")) retVal = caption;
+			}
+		}
+		return retVal;
+	}
+	
 	public static String getCaptionsFromValues(Definition def, String eleName, String values) {
 		Document defDoc = def.getDefinition();
 		Element rootEle = defDoc.getRootElement();

@@ -44,7 +44,7 @@
 ${ssDefinitionEntry.docNumber}.
 </c:if>
 <c:if test="${empty ssDefinitionEntry.title}" >
---<ssf:nlt tag="ssDefinitionEntry.noTitle" />--
+(<ssf:nlt tag="entry.noTitle" />)
 </c:if>
 <c:out value="${ssDefinitionEntry.title}" />
 </span>

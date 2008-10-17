@@ -95,6 +95,7 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/title_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/mobile/title_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.title_field</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderTitle" />
@@ -253,6 +254,7 @@
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/form_form.jsp" />
 		</jsps>
 	</item>
 <!-- folder entry form data items -->
@@ -347,6 +349,7 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/subscribe_form_entry.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/null.jsp" />
 		</jsps>
 	</item>
 	
@@ -357,6 +360,7 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/send_mail_form_entry.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/null.jsp" />
 		</jsps>
 	</item>
 	
@@ -1703,6 +1707,7 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/textarea_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDescription" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDescription" />
@@ -1932,6 +1937,7 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/attach_files_form.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/attach_files_form.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderAttachments" />
 	</item>
@@ -1949,6 +1955,7 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/textarea_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDescription" />
 	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDescription" />
@@ -1971,6 +1978,7 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/file_form.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/file_form.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderFile" />
 		<notify  notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderFile"/>
@@ -2035,6 +2043,7 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/userlist_form.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/userlist_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderUserlist" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderUserlist" />
