@@ -51,7 +51,7 @@
 </c:otherwise>
 </c:choose>
 
-<ssf:skipLink tag="<%= NLT.get("skip.navigation.links") %>" id="navigationLinks_${ss_nav_linksCount}_${renderResponse.namespace}">
+<ssf:skipLink tag='<%= NLT.get("skip.navigation.links") %>' id="navigationLinks_${ss_nav_linksCount}_${renderResponse.namespace}">
 
 <div class="ss_clear_float"></div>
 <div class="ss_breadcrumb">
