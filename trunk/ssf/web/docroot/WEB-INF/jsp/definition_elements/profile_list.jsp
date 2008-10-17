@@ -112,7 +112,7 @@
   oddStyle="${slidingTableRowOddStyle}" evenStyle="${slidingTableRowEvenStyle}">
 
   <ssf:slidingTableColumn style="${slidingTableColStyle}">
-  <ssf:showUser user="<%=(User)entry.get("_principal")%>" />
+  <ssf:showUser user='<%=(User)entry.get("_principal")%>' />
   </ssf:slidingTableColumn>
   
   <ssf:slidingTableColumn style="${slidingTableColStyle}">

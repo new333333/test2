@@ -45,7 +45,7 @@ Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHe
 	--%></c:otherwise><%--
 --%></c:choose><%--
 
---%><ssf:skipLink tag="<%= NLT.get("skip.footer.toolbar") %>" id="footerToolbar_${ss_footerToolbarCount}_${renderResponse.namespace}"><%--
+--%><ssf:skipLink tag='<%= NLT.get("skip.footer.toolbar") %>' id="footerToolbar_${ss_footerToolbarCount}_${renderResponse.namespace}"><%--
 
 --%><c:set var="isWebdavSupported" value="<%= webdavSupportedFooter %>"/><%--
 

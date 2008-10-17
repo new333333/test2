@@ -89,7 +89,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	  <br/>
 
 
-	  <ssf:expandableArea title="<%= NLT.get("wiki.topics") %>" titleClass="ss_wiki_sidebar_subhead" 
+	  <ssf:expandableArea title='<%= NLT.get("wiki.topics") %>' titleClass="ss_wiki_sidebar_subhead" 
 	  	action="wipe" initOpen="true">
 	  <div class="ss_wiki_sidebar_box">
         <table cellspacing="0" cellpadding="0">
@@ -105,7 +105,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
        </div>
       </ssf:expandableArea>
 
-	  <ssf:expandableArea title="<%= NLT.get("wiki.pages") %>" titleClass="ss_wiki_sidebar_subhead" 
+	  <ssf:expandableArea title='<%= NLT.get("wiki.pages") %>' titleClass="ss_wiki_sidebar_subhead" 
 	    action="wipe" initOpen="true">
 		<div id="ss_wikiFolderList${renderResponse.namespace}" class="ss_wiki_sidebar_box">
 	      <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_page.jsp" %>

@@ -31,7 +31,7 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value="<%= NLT.get("toolbar.menu.whatsNew") %>" scope="request"/>
+<c:set var="ss_windowTitle" value='<%= NLT.get("toolbar.menu.whatsNew") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <div id="ss_para">
   <div style="padding-left:20px;padding-bottom:16px;">

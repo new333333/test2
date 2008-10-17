@@ -57,7 +57,7 @@
 </font>
 </c:if>
 
-<ssf:expandableArea title="<%= NLT.get("administration.configure_roles.add") %>">
+<ssf:expandableArea title='<%= NLT.get("administration.configure_roles.add") %>'>
 <form class="ss_style ss_form" method="post" 
 	action="<ssf:url action="configure_roles" actionUrl="true"/>">
 		
@@ -80,7 +80,7 @@
 
 <c:forEach var="function" items="${ssFunctions}">
 <jsp:useBean id="function" type="com.sitescape.team.security.function.Function" />
-<ssf:expandableArea title="<%= NLT.getDef(function.getName()) %>">
+<ssf:expandableArea title='<%= NLT.getDef(function.getName()) %>'>
 <form class="ss_style ss_form" method="post" 
 	action="<ssf:url action="configure_roles" actionUrl="true"/>">
 	<span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span>

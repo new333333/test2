@@ -53,7 +53,7 @@ function ss_saveResults() {
 			</ssf:url>"
   onSubmit="return ss_onSubmit(this);">
 		
-<ssf:expandableArea title="<%= NLT.get("administration.modify.group") %>">
+<ssf:expandableArea title='<%= NLT.get("administration.modify.group") %>'>
 	<span class="ss_bold"><ssf:nlt tag="administration.add.groupTitle"/></span><br/>
 	<input type="text" class="ss_text" size="40" name="title" value="${ssGroup.title}"><br/><br/>
 		

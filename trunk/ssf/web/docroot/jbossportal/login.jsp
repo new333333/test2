@@ -44,7 +44,7 @@
 <table width="100%" height="600" cellpadding="0" cellspacing="1" >
    <tr>
       <td valign="middle" align="center">
-         <form method="POST" action="<%= response.encodeURL("j_security_check") %>" name="loginform" id="loginForm">
+         <form method="POST" action='<%= response.encodeURL("j_security_check") %>' name="loginform" id="loginForm">
 
             <% String prefix = request.getContextPath(); %>
 

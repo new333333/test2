@@ -84,7 +84,7 @@ var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 	  topId="${ssWsDomTreeBinderId}" 
 	  treeDocument="<%= ssWsDomTree %>"  
 	  rootOpen="true"
-	  showIdRoutine="<%= wsTreeName + "_showId" %>"
+	  showIdRoutine='<%= wsTreeName + "_showId" %>'
 	  namespace="${renderResponse.namespace}"
 	  />
 </c:if>

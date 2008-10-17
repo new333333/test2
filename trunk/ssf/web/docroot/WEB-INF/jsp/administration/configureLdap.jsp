@@ -79,7 +79,7 @@
 </td></tr></table>
 
 <br/>
-<ssf:expandableArea title="<%= NLT.get("ldap.schedule") %>">
+<ssf:expandableArea title='<%= NLT.get("ldap.schedule") %>'>
 <c:set var="schedule" value="${ssLdapConfig.schedule}"/>
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
 <div class="ss_divider"></div>
@@ -499,11 +499,11 @@ jQuery(document).ready(function() {
 <div id="ldapSearchTemplate" style="display:none">
 	<div class="ldapSearch">
 		<div>
-			<div class="errorMessage"><ssf:nlt tag="ldap.error.invalid"><ssf:param name="value" value="<%=NLT.get("ldap.error.baseDn")%>"/></ssf:nlt></div>
+			<div class="errorMessage"><ssf:nlt tag="ldap.error.invalid"><ssf:param name="value" value='<%=NLT.get("ldap.error.baseDn")%>'/></ssf:nlt></div>
 			<label><ssf:nlt tag="ldap.search.baseDn" /></label><input class="ldapBaseDn" value=""/>
 		</div>
 		<div>
-			<div class="errorMessage"><ssf:nlt tag="ldap.error.invalid"><ssf:param name="value" value="<%=NLT.get("ldap.error.filter")%>"/></ssf:nlt></div>
+			<div class="errorMessage"><ssf:nlt tag="ldap.error.invalid"><ssf:param name="value" value='<%=NLT.get("ldap.error.filter")%>'/></ssf:nlt></div>
 			<label><ssf:nlt tag="ldap.search.filter" /></label><input class="ldapFilter" value=""/>
 		</div>
 		<input type="checkbox" class="ldapSearchSubtree" value="true"/><span><ssf:nlt tag="ldap.search.searchSubtree" /></span>

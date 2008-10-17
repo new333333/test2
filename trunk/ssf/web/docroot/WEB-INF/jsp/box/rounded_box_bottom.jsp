@@ -29,7 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/box/init.jsp" %>
-<c:set var="backgroundClass" value="<%= ParamUtil.get(request, "backgroundClass", "") %>" />
+<c:set var="backgroundClass" value='<%= ParamUtil.get(request, "backgroundClass", "") %>' />
 
     </div>
   </div>

@@ -449,15 +449,15 @@
 							</div>
 								<c:if test="${entry._entityType == 'folder'}">
 								<c:set var="actionVar" value="view_folder_listing"/>
-								<c:set var="binderLabel" value="<%= NLT.get("general.type.folder") %>"/>
+								<c:set var="binderLabel" value='<%= NLT.get("general.type.folder") %>'/>
 								</c:if>
 								<c:if test="${entry._entityType == 'workspace'}">
 								<c:set var="actionVar" value="view_ws_listing"/>
-								<c:set var="binderLabel" value="<%= NLT.get("general.type.workspace") %>"/>
+								<c:set var="binderLabel" value='<%= NLT.get("general.type.workspace") %>'/>
 								</c:if>								
 								<c:if test="${entry._entityType == 'profiles'}">
 								<c:set var="actionVar" value="view_profile_listing"/>
-								<c:set var="binderLabel" value="<%= NLT.get("general.profiles") %>"/>
+								<c:set var="binderLabel" value='<%= NLT.get("general.profiles") %>'/>
 								</c:if>								
 							<div class="ss_entry">
 								<div class="ss_entryHeader">

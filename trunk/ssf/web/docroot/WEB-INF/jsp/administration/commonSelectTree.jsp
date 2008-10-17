@@ -70,7 +70,7 @@ function ss_selectAllIfNoneSelected(prefix) {
 	return true;
 }
 </script>
-<ssf:tree treeName="<%= "t_" + renderResponse.getNamespace()+ "_tree" %>" treeDocument="${ssDomTree}"  
+<ssf:tree treeName='<%= "t_" + renderResponse.getNamespace()+ "_tree" %>' treeDocument="${ssDomTree}"  
   rootOpen="true" multiSelect="<%= new java.util.ArrayList() %>" multiSelectPrefix="id" />
 
 <br>

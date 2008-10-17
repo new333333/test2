@@ -62,7 +62,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 	<li><a class="ss_bold ss_style ss_title_link" href="javascript:" onClick="return <%=cTreeName%>_showId('${bconfig.id}', this, 'configure_configuration');">
 	<ssf:nlt tag="${bconfig.templateTitle}" checkIfTag="true"/></a>
 		<c:if test="${!empty bconfig.templateDescription.text}">
-		- <c:out value="<%= NLT.getDef(bconfig.getTemplateDescription().getText()) %>" escapeXml="false" />
+		- <c:out value='<%= NLT.getDef(bconfig.getTemplateDescription().getText()) %>' escapeXml="false" />
 		</c:if>
 		</li>
 	</c:if>
@@ -77,7 +77,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 	<li><a class="ss_bold ss_style ss_title_link" href="javascript:" onClick="return <%=cTreeName%>_showId('${cconfig.id}', this, 'configure_configuration');">
 	<ssf:nlt tag="${cconfig.templateTitle}" checkIfTag="true"/></a>
 		<c:if test="${!empty cconfig.templateDescription.text}">
-		- <c:out value="<%= NLT.getDef(cconfig.getTemplateDescription().getText()) %>" escapeXml="false" />
+		- <c:out value='<%= NLT.getDef(cconfig.getTemplateDescription().getText()) %>' escapeXml="false" />
 		</c:if>
 	</li>
 	</c:if>
@@ -182,7 +182,7 @@ function ss_confirmDeleteConfig() {
 	<div class="ss_content_inner">
 	<% // Navigation links %>
 	<c:if test="${!empty ssNavigationLinkTree}">
-	<c:set var="ss_breadcrumbsShowIdRoutine" value="<%= cTreeName + "_showId"%>" scope="request" />
+	<c:set var="ss_breadcrumbsShowIdRoutine" value='<%= cTreeName + "_showId"%>' scope="request" />
 	<c:set var="ss_breadcrumbsTreeName"  value="<%=cTreeName%>" scope="request" />
 	
 	<div class="ss_content_inner">

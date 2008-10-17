@@ -114,7 +114,7 @@
 	 
 	  	 <br/>
 	  	 <span>
-			<ssf:showUser user="<%=(com.sitescape.team.domain.User)entryWn.get("_principal")%>" 
+			<ssf:showUser user='<%=(com.sitescape.team.domain.User)entryWn.get("_principal")%>'
 		  	titleStyle="ss_link_1" /> 
 	  	 </span>
 	  

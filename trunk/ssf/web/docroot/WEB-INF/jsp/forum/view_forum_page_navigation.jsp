@@ -34,7 +34,7 @@
 <c:if test="${!empty ssPageCount}">
 <c:if test="${ssPageLast == '0'}"><c:set var="ssPageLast" value="1" scope="request"/></c:if>
 
-<ssf:skipLink tag="<%= NLT.get("skip.paging.links") %>" id="navigationLinks_${renderResponse.namespace}">
+<ssf:skipLink tag='<%= NLT.get("skip.paging.links") %>' id="navigationLinks_${renderResponse.namespace}">
 
 <c:if test="${ssConfigJspStyle != 'template'}">
 	  <ssHelpSpot helpId="workspaces_folders/menus_toolbars/more_folder_navigation" offsetX="-5" offsetY="3" 

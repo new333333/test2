@@ -72,7 +72,7 @@
 %>
   <c:set var="binder" value="${ssBinder}"/>
   <jsp:useBean id="binder" type="com.sitescape.team.domain.DefinableEntity" />
-	<c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(binder.getCustomAttribute(propertySource)) %>" >
+	<c:forEach var="selection" items='<%= com.sitescape.team.util.ResolveIds.getPrincipals(binder.getCustomAttribute(propertySource)) %>' >
 	  <c:set var="selected" value=""/>
 	  <c:forEach var="selection2" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}" >
   		<c:if test="${selection2 == selection.id}">
@@ -88,7 +88,7 @@
 <c:if test="${!empty ssBinder.customAttributes[property_source].valueSet}">
 
   <jsp:useBean id="ssBinder" type="com.sitescape.team.domain.DefinableEntity" />
-	<c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(ssBinder.getCustomAttribute((String) request.getAttribute("property_source"))) %>" >
+	<c:forEach var="selection" items='<%= com.sitescape.team.util.ResolveIds.getPrincipals(ssBinder.getCustomAttribute((String) request.getAttribute("property_source"))) %>' >
 	  <c:set var="selected" value=""/>
 	  <c:forEach var="selection2" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}" >
   		<c:if test="${selection2 == selection.id}">
