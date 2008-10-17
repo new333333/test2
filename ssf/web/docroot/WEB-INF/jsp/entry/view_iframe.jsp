@@ -93,14 +93,9 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
   </ssf:ifnotaccessible>
   <ssf:ifnotaccessible>
 	<td valign="top" class="ss_view_info">
-<<<<<<< .mine
-	<ssf:ifnotaccessible>
-	  <jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
-=======
 	  <c:if test="${!ss_mashupHideToolbar}">
 	    <jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
 	  </c:if>
->>>>>>> .r9531
 	  <div align="center">
 	    <div id="ss_folder_wrap">
 		  <c:if test="${!ss_mashupHideToolbar}">
@@ -141,13 +136,9 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		  </c:if>
 		</div>
 	  </div>
-<<<<<<< .mine
-	</ssf:ifnotaccessible>
-=======
 	</td>
   </ssf:ifnotaccessible>
 	<ssf:ifnotaccessible>
->>>>>>> .r9531
 	</tr>
 	</tbody>
 	</table>
