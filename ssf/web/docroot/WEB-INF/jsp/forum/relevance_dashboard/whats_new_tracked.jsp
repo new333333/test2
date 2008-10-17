@@ -77,7 +77,7 @@
 	  <br/>
 	  
 	  <span>
-		<ssf:showUser user="<%=(com.sitescape.team.domain.User)entry.get("_principal")%>" titleStyle="ss_link_1" /> 
+		<ssf:showUser user='<%=(com.sitescape.team.domain.User)entry.get("_principal")%>' titleStyle="ss_link_1" /> 
 	  </span>
 	  <span class="ss_link_4">
 	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"

@@ -59,7 +59,7 @@ function ss_confirmDeleteZone() {
 <span class="ss_titlebold"><ssf:nlt tag="administration.manage.zones" /></span>
 <br>
 <br>
-<ssf:expandableArea title="<%= NLT.get("administration.add.zone") %>">
+<ssf:expandableArea title='<%= NLT.get("administration.add.zone") %>'>
 <form class="ss_style ss_form" method="post" 
 	action="<ssf:url action="manage_zones" actionUrl="true"/>" 
 	onSubmit="return(${renderResponse.namespace}_onsub(this))">

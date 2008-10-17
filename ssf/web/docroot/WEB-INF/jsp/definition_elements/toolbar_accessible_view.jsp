@@ -65,7 +65,7 @@ Boolean webdavSupported = new Boolean(com.sitescape.team.web.util.BinderHelper.i
   <c:set var="ss_toolbar_style" value="ss_toolbar"/>
 </c:if>
 
-<ssf:skipLink tag="<%= NLT.get("skip.toolbar") %>" id="toolbar_${ss_toolbarCount}_${renderResponse.namespace}">
+<ssf:skipLink tag='<%= NLT.get("skip.toolbar") %>' id="toolbar_${ss_toolbarCount}_${renderResponse.namespace}">
 
 <c:forEach var="toolbarMenu" items="${ss_toolbar}">
     <c:if test="${empty toolbarMenu.value.url && empty toolbarMenu.value.urlParams}">

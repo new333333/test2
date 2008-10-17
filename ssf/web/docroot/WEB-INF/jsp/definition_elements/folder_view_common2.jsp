@@ -115,22 +115,24 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'true'}">
 	  	<ssf:title tag="title.sort.by.column.asc">
-	  		<ssf:param name="value" value="<%= NLT.get("folder.column.Number") %>" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.Number") %>' />
 	  	</ssf:title>
 	  </c:when>
 	  <c:otherwise>
 	  	<ssf:title tag="title.sort.by.column.desc">
-	  		<ssf:param name="value" value="<%= NLT.get("folder.column.Number") %>" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.Number") %>' />
 	  	</ssf:title>
 	  </c:otherwise>
 	</c:choose>
 	>
     	<ssf:nlt tag="folder.column.Number"/>
 	    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Number") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+			value='<%= NLT.get("folder.column.Number") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 	    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'false'}">
-			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Number") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+			value='<%= NLT.get("folder.column.Number") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
     </ssf:slidingTableColumn>
@@ -149,22 +151,24 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
 	  	<ssf:title tag="title.sort.by.column.desc">
-	  		<ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.Title") %>' />
 	  	</ssf:title>
 	  </c:when>
 	  <c:otherwise>
 	  	<ssf:title tag="title.sort.by.column.asc">
-	  		<ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.Title") %>' />
 	  	</ssf:title>
 	  </c:otherwise>
 	</c:choose>	
 	 >
       <div class="ss_title_menu"><ssf:nlt tag="folder.column.Title"/> </div>
     	<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+			value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
-			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+			value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
       
@@ -185,22 +189,24 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
 	  	<ssf:title tag="title.sort.by.column.desc">
-	  		<ssf:param name="value" value="<%= NLT.get("folder.column.Author") %>" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.Author") %>' />
 	  	</ssf:title>
 	  </c:when>
 	  <c:otherwise>
 	  	<ssf:title tag="title.sort.by.column.asc">
-	  		<ssf:param name="value" value="<%= NLT.get("folder.column.Author") %>" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.Author") %>' />
 	  	</ssf:title>
 	  </c:otherwise>
 	</c:choose>
 	>
 		<ssf:nlt tag="folder.column.Author"/>
 	    <c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Author") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+			value='<%= NLT.get("folder.column.Author") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
-			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Author") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+			value='<%= NLT.get("folder.column.Author") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
     </ssf:slidingTableColumn>
@@ -259,22 +265,24 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
 	  	<ssf:title tag="title.sort.by.column.desc">
-	  		<ssf:param name="value" value="<%= NLT.get("folder.column.State") %>" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.State") %>' />
 	  	</ssf:title>
 	  </c:when>
 	  <c:otherwise>
 	  	<ssf:title tag="title.sort.by.column.asc">
-	  		<ssf:param name="value" value="<%= NLT.get("folder.column.State") %>" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.State") %>' />
 	  	</ssf:title>
 	  </c:otherwise>
 	</c:choose>
 	>
     	<ssf:nlt tag="folder.column.State"/>
 	    <c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.State") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+			value='<%= NLT.get("folder.column.State") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
-			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.State") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+			value='<%= NLT.get("folder.column.State") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
     </ssf:slidingTableColumn>
@@ -294,22 +302,24 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">
 	  	<ssf:title tag="title.sort.by.column.asc">
-	  		<ssf:param name="value" value="<%= NLT.get("folder.column.LastActivity") %>" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.LastActivity") %>' />
 	  	</ssf:title>
 	  </c:when>
 	  <c:otherwise>
 	  	<ssf:title tag="title.sort.by.column.desc">
-	  		<ssf:param name="value" value="<%= NLT.get("folder.column.LastActivity") %>" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.LastActivity") %>' />
 	  	</ssf:title>
 	  </c:otherwise>
 	</c:choose>
 	>
 		<ssf:nlt tag="folder.column.LastActivity"/>
 	    <c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.LastActivity") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+			value='<%= NLT.get("folder.column.LastActivity") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'false'}">
-			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.LastActivity") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+			value='<%= NLT.get("folder.column.LastActivity") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
     </ssf:slidingTableColumn>
@@ -363,21 +373,23 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'false'}">
 	  	<ssf:title tag="title.sort.by.column.desc">
-	  		<ssf:param name="value" value="<%= NLT.get("folder.column.Rating") %>" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.Rating") %>' />
 	  	</ssf:title>
 	  </c:when>
 	  <c:otherwise>
 	  	<ssf:title tag="title.sort.by.column.asc">
-	  		<ssf:param name="value" value="<%= NLT.get("folder.column.Rating") %>" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.Rating") %>' />
 	  	</ssf:title>
 	  </c:otherwise>
 	</c:choose>
 	><ssf:nlt tag="folder.column.Rating"/>
 	    <c:if test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Rating") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+			value='<%= NLT.get("folder.column.Rating") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'false'}">
-			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Rating") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+			value='<%= NLT.get("folder.column.Rating") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
     </ssf:slidingTableColumn>
@@ -527,7 +539,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   
   <c:if test="${!empty ssFolderColumns['author']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
-	<ssf:showUser user="<%=(User)entry1.get("_principal")%>" titleStyle="<%= seenStyleAuthor %>"/> 
+	<ssf:showUser user='<%=(User)entry1.get("_principal")%>' titleStyle="<%= seenStyleAuthor %>"/> 
   </ssf:slidingTableColumn>
  </c:if>
  
@@ -593,7 +605,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     portletName="ss_forum" 
     binderId="${ssBinder.id}" 
     action="view_folder_entry" 
-    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" >
+    entryId='<%= entry1.get("_docId").toString() %>' actionUrl="true" >
     <ssf:param name="entryViewStyle" value="${ss_entryViewStyle}"/>
     <ssf:param name="entryViewStyle2" value="${ss_entryViewStyle2}"/></ssf:url>" 
 <c:if test="${slidingTableStyle != 'fixed'}">

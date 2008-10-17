@@ -63,7 +63,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     <input type="hidden" name="searchTitle"/>
     </form>
 	
-	  <ssf:expandableArea title="<%= NLT.get("photo.albums") %>" titleClass="ss_wiki_sidebar_subhead" 
+	  <ssf:expandableArea title='<%= NLT.get("photo.albums") %>' titleClass="ss_wiki_sidebar_subhead" 
 	  	action="wipe" initOpen="true">
 	  <div class="ss_wiki_sidebar_box">
         <table cellspacing="0" cellpadding="0">
@@ -79,7 +79,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
        </div>
       </ssf:expandableArea>
 
-	  <ssf:expandableArea title="<%= NLT.get("photo.entries") %>" titleClass="ss_wiki_sidebar_subhead" 
+	  <ssf:expandableArea title='<%= NLT.get("photo.entries") %>' titleClass="ss_wiki_sidebar_subhead" 
 	    action="wipe" initOpen="true">
 
 	  <div style="margin-top: 15px;">

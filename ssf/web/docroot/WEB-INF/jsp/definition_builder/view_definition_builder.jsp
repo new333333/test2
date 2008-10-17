@@ -673,7 +673,7 @@ function ss_saveUserGroupResults(s) {
 
 <div>
 
-<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
+<ssf:buildDefinitionDivs title='<%= NLT.get("definition.select_item") %>'
   sourceDocument="${data.sourceDefinition}" 
   configDocument="${ssConfigDefinition}"
   />

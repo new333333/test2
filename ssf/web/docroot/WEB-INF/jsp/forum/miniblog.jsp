@@ -50,7 +50,7 @@ function ss_showMiniblogPage${renderResponse.namespace}(id, currentPage, directi
 </script>
 
 <div class="ss_style ss_portlet">
-  <ssf:form title="<%= NLT.get("miniblog") %>">
+  <ssf:form title='<%= NLT.get("miniblog") %>'>
   <div>
     <div style="float:right;">
 	      <span class="ss_labelAbove ss_labelminiBlog"><ssf:nlt tag="navigation.findPerson"/></span>

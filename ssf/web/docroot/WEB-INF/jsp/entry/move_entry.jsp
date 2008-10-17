@@ -30,7 +30,7 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value="<%= NLT.get("window.title.moveEntry") %>" scope="request"/>
+<c:set var="ss_windowTitle" value='<%= NLT.get("window.title.moveEntry") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <ssf:ifadapter>
 <body class="tundra">

@@ -30,7 +30,7 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value="<%= NLT.get("mobile.frontPage") %>" scope="request"/>
+<c:set var="ss_windowTitle" value='<%= NLT.get("mobile.frontPage") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <%@ include file="/WEB-INF/jsp/mobile/show_front_page_data.jsp" %>
 </body>

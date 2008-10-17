@@ -46,12 +46,12 @@
 				<c:choose>
 				  <c:when test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
 				  	<ssf:title tag="title.sort.by.column.desc">
-				  		<ssf:param name="value" value="<%= NLT.get("survey.title") %>" />
+				  		<ssf:param name="value" value='<%= NLT.get("survey.title") %>' />
 				  	</ssf:title>
 				  </c:when>
 				  <c:otherwise>
 				  	<ssf:title tag="title.sort.by.column.asc">
-				  		<ssf:param name="value" value="<%= NLT.get("survey.title") %>" />
+				  		<ssf:param name="value" value='<%= NLT.get("survey.title") %>' />
 				  	</ssf:title>
 				  </c:otherwise>
 				</c:choose>	
@@ -59,10 +59,12 @@
 </c:if>	
 			      <div class="ss_title_menu"><ssf:nlt tag="survey.title"/> </div>
 			    	<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
-						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 					</c:if>
 					<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
-						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    </a>
@@ -81,12 +83,12 @@
 				<c:choose>
 				  <c:when test="${ ssFolderSortBy == '_principal' && ssFolderSortDescend == 'false'}">
 				  	<ssf:title tag="title.sort.by.column.desc">
-				  		<ssf:param name="value" value="<%= NLT.get("survey.creator") %>" />
+				  		<ssf:param name="value" value='<%= NLT.get("survey.creator") %>' />
 				  	</ssf:title>
 				  </c:when>
 				  <c:otherwise>
 				  	<ssf:title tag="title.sort.by.column.asc">
-				  		<ssf:param name="value" value="<%= NLT.get("survey.creator") %>" />
+				  		<ssf:param name="value" value='<%= NLT.get("survey.creator") %>' />
 				  	</ssf:title>
 				  </c:otherwise>
 				</c:choose>	
@@ -94,10 +96,12 @@
 </c:if>	
 			      <div class="ss_title_menu"><ssf:nlt tag="survey.creator"/> </div>
 			    	<c:if test="${ ssFolderSortBy == '_principal' && ssFolderSortDescend == 'true'}">
-						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 					</c:if>
 					<c:if test="${ ssFolderSortBy == '_principal' && ssFolderSortDescend == 'false'}">
-						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    </a>
@@ -117,12 +121,12 @@
 				<c:choose>
 				  <c:when test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">
 				  	<ssf:title tag="title.sort.by.column.desc">
-				  		<ssf:param name="value" value="<%= NLT.get("survey.dueDate") %>" />
+				  		<ssf:param name="value" value='<%= NLT.get("survey.dueDate") %>' />
 				  	</ssf:title>
 				  </c:when>
 				  <c:otherwise>
 				  	<ssf:title tag="title.sort.by.column.asc">
-				  		<ssf:param name="value" value="<%= NLT.get("survey.dueDate") %>" />
+				  		<ssf:param name="value" value='<%= NLT.get("survey.dueDate") %>' />
 				  	</ssf:title>
 				  </c:otherwise>
 				</c:choose>	
@@ -130,10 +134,12 @@
 </c:if>
 			      <div class="ss_title_menu"><ssf:nlt tag="survey.dueDate"/> </div>
 			    	<c:if test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'true'}">
-						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 					</c:if>
 					<c:if test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">
-						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Title") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    </a>

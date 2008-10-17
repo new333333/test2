@@ -83,7 +83,7 @@ id="<%= titleId %>" href="javascript: ;" <ssf:title tag="title.showMenu" />
 </c:if>
 	  
 ><%= title %>
-<c:if test="<%= !("".equals(menuImage)) %>">
+<c:if test='<%= !("".equals(menuImage)) %>'>
 	<img src='<html:imagesPath/><%= menuImage %>' <ssf:alt tag="alt.showMenu"/>/>
 </c:if>
 </a></span>

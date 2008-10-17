@@ -160,7 +160,7 @@
   
 <%-- Show the photo upload browse button --%>
 <c:set var="property_name" value="picture" scope="request"/>
-<c:set var="property_caption" value="<%= NLT.get("__profile_entry_picture") %>" scope="request"/>
+<c:set var="property_caption" value='<%= NLT.get("__profile_entry_picture") %>' scope="request"/>
 <c:set var="property_storage" value="" scope="request"/>
 <%@ include file="/WEB-INF/jsp/definition_elements/graphic_form.jsp" %>
 

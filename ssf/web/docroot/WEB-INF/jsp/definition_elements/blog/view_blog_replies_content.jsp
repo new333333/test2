@@ -41,7 +41,7 @@
  <div>
 <c:if test="${!empty reply.entryDef}">
  	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-		configElement="<%= (Element) reply.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryBlogView']") %>" 
+		configElement='<%= (Element) reply.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name=\'entryBlogView\']") %>'
 		configJspStyle="view" 
 		processThisItem="false" 
 		entry="<%= reply %>" />

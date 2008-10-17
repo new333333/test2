@@ -58,7 +58,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 
 </font>
 </c:if>
-<ssf:expandableArea title="<%= NLT.get("administration.add.application.group") %>">
+<ssf:expandableArea title='<%= NLT.get("administration.add.application.group") %>'>
 <form class="ss_style ss_form" method="post" 
 	action="<ssf:url action="manage_application_groups" actionUrl="true"><ssf:param 
 	name="binderId" value="${ssBinder.id}"/></ssf:url>" 
@@ -106,7 +106,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 	name="entryId" value="${ssGroup.id}"/></ssf:url>"
   onSubmit="return ss_onSubmit(this);">
 		
-<ssf:expandableArea title="<%= NLT.get("administration.modify.applicationGroupTitle") %>">
+<ssf:expandableArea title='<%= NLT.get("administration.modify.applicationGroupTitle") %>'>
 	<span class="ss_bold"><ssf:nlt tag="administration.add.application.groupTitle"/></span><br/>
 	<input type="text" class="ss_text" size="40" name="title" value="${ssGroup.title}"><br/><br/>
 		

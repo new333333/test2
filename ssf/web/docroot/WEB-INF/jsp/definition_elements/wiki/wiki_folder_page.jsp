@@ -47,7 +47,7 @@
 	    portletName="ss_forum" 
 	    folderId="${ssFolder.id}" 
 	    action="view_folder_entry" 
-	    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true"><ssf:param
+	    entryId='<%= entry1.get("_docId").toString() %>' actionUrl="true"><ssf:param
 	    name="entryViewStyle" value="popup"/><ssf:param
 	    name="namespace" value="${renderResponse.namespace}"/><ssf:ifaccessible><ssf:param name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
 	

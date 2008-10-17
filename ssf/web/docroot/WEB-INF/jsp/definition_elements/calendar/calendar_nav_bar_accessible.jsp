@@ -208,7 +208,8 @@ Date rangeEndDate = calendarRangeEndDate.getTime();
 	  method="post" style="display:inline;"><div class="ss_toolbar_color" style="display:inline;">
 		<ssf:datepicker formName="ssCalNavBar${prefix}" showSelectors="true" 
 		 popupDivId="ss_calDivPopup${prefix}" id="ss_goto${prefix}" initDate="${ssCurrentDate}"
-		 callbackRoutine="ss_getMonthCalendarEvents${prefix}" immediateMode="true" altText="<%= NLT.get("calendar.view.popupAltText") %>"
+		 callbackRoutine="ss_getMonthCalendarEvents${prefix}" immediateMode="true" 
+		 altText='<%= NLT.get("calendar.view.popupAltText") %>'
 		 /></div></form>
 		 
 	<div id="ss_calDivPopup${prefix}" class="ss_calPopupDiv"></div>

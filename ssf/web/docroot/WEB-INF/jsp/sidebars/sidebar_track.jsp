@@ -40,21 +40,21 @@
 	  				onClick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;"
 				 	<c:if test="${ssBinder.entityType == 'workspace'}">
 	  			 		<c:if test="${ssBinder.definitionType != 12}">
-	  						title="<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>" >
+	  						title='<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>' >
 	  						<span><ssf:nlt tag="relevance.trackThisWorkspace"/></span>
 	  					</c:if>
 	  			 		<c:if test="${ssBinder.definitionType == 12}">
-	  						title="<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>" >
+	  						title='<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>' >
 	  						<span><ssf:nlt tag="relevance.trackThisPerson"/></span>
 	  					</c:if>
 				 	</c:if>
 				 	<c:if test="${ssBinder.entityType == 'folder'}">
 	  			 		<c:if test="${ssDefinitionFamily != 'calendar'}">
-	  						title="<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>" >
+	  						title='<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>' >
 	  						<span><ssf:nlt tag="relevance.trackThisFolder"/></span>
 	  					</c:if>
 	  			 		<c:if test="${ssDefinitionFamily == 'calendar'}">
-	  						title="<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>" >
+	  						title='<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>' >
 	  						<span><ssf:nlt tag="relevance.trackThisCalendar"/></span>
 	  					</c:if>
 				 	</c:if>

@@ -94,7 +94,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				<ssf:titleForEntityType entityType="file" text="<%= title %>" />
 			</c:when>
 			<c:otherwise>
-				<ssf:titleForEntityType entityType="file" text="<%= "--" + NLT.get("entry.noTitle") + "--" %>" />
+				<ssf:titleForEntityType entityType="file" text='<%= "--" + NLT.get("entry.noTitle") + "--" %>' />
 			</c:otherwise>
 		</c:choose>
 		href="<%= url %>" target="_blank"
@@ -104,11 +104,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				<ssf:titleForEntityType entityType="<%= entityType %>" text="<%= title %>" />
 			</c:when>
 			<c:otherwise>
-				<ssf:titleForEntityType entityType="<%= entityType %>" text="<%= "--" + NLT.get("entry.noTitle") + "--" %>" />
+				<ssf:titleForEntityType entityType="<%= entityType %>" text='<%= "--" + NLT.get("entry.noTitle") + "--" %>' />
 			</c:otherwise>
 		</c:choose>
 		href="javascript:;" onClick="return ss_gotoPermalink('<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>', 'yes');"
 	<% } %>
-><c:if test="<%= (title == null || title.equals("")) %>">
+><c:if test='<%= (title == null || title.equals("")) %>'>
 <span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span></c:if><span <%= seenStyle %>><%= title %></span></a>
 <% } %>

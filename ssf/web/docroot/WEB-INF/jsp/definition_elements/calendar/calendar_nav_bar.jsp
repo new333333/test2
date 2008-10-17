@@ -37,7 +37,7 @@
 	<ul class="ss_calendarNaviBar">
 		<li class="ss_calendarNaviBarOption ss_calHoursSelectorMenu">
 			<span class="ss_calHoursSelectorMenu">
-				<ssf:menu title="<%= NLT.get("calendar.hours.workday") %>" 
+				<ssf:menu title='<%= NLT.get("calendar.hours.workday") %>' 
 							titleId="ss_selectCalendarHours${prefix}" 
 							titleClass="ss_hoursSelectorTitle ss_tinyControl" 
 							menuClass="ss_actions_bar5 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
@@ -103,7 +103,8 @@
 			  method="post" style="display:inline;float:left;"><div class="ss_toolbar_color" style="display:inline;float:left;">
 				<ssf:datepicker formName="ssCalNavBar${prefix}" showSelectors="true" 
 				 popupDivId="ss_calDivPopup${prefix}" id="ss_goto${prefix}" initDate="${ssCurrentDate}"
-				 callbackRoutine="ss_getMonthCalendarEvents${prefix}" immediateMode="true" altText="<%= NLT.get("calendar.view.popupAltText") %>"
+				 callbackRoutine="ss_getMonthCalendarEvents${prefix}" immediateMode="true" 
+				 altText='<%= NLT.get("calendar.view.popupAltText") %>'
 				 /></div></form>
 				 <div id="ss_calDivPopup${prefix}" class="ss_calPopupDiv"  style="display:inline;float:left;"></div>
 		</li>

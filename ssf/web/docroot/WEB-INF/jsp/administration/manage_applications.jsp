@@ -57,7 +57,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 
 </font>
 </c:if>
-<ssf:expandableArea title="<%= NLT.get("administration.add.application") %>">
+<ssf:expandableArea title='<%= NLT.get("administration.add.application") %>'>
 <form class="ss_style ss_form" method="post" 
 	action="<ssf:url action="manage_applications" actionUrl="true">
 		<ssf:param name="binderId" value="${ssBinder.id}"/>
@@ -76,7 +76,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 	<textarea name="description" wrap="virtual" rows="4" cols="70"></textarea><br/><br/>
 	
 	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationTimeout"/></span><br/>
-	<input type="text" class="ss_text" size="15" name="timeout" value="<%=com.sitescape.team.util.SPropsUtil.getString("remoteapp.timeout")%>"><br/><br/>
+	<input type="text" class="ss_text" size="15" name="timeout" value='<%=com.sitescape.team.util.SPropsUtil.getString("remoteapp.timeout")%>'><br/><br/>
 		
 	<input type="checkbox" name="trusted" value="true"> <span class="ss_bold"><ssf:nlt tag="administration.add.applicationTrusted"/></span></input><br/><br/>
 	
@@ -113,7 +113,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 	name="entryId" value="${ssApplication.id}"/></ssf:url>"
   onSubmit="return ss_onSubmit(this);">
 		
-<ssf:expandableArea title="<%= NLT.get("administration.modify.application") %>">
+<ssf:expandableArea title='<%= NLT.get("administration.modify.application") %>'>
 	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationTitle"/></span><br/>
 	<input type="text" class="ss_text" size="50" name="title" value="${ssApplication.title}"><br/><br/>
 		

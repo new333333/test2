@@ -74,14 +74,14 @@
 	} else {
 %>
   <c:set var="objectType" value="Map"/>
-  <c:set var="docId" value="<%= ((Map)thisEntry).get("_docId") %>"/>
-  <c:set var="binderId" value="<%= ((Map)thisEntry).get("_binderId") %>"/>
-  <c:set var="entryType" value="<%= ((Map)thisEntry).get("_entryType") %>"/>
-  <c:set var="entityType" value="<%= ((Map)thisEntry).get("_entityType") %>"/>
-  <c:set var="title" value="<%= ((Map)thisEntry).get("title") %>"/>
-  <c:set var="creationDate" value="<%= ((Map)thisEntry).get("_creationDate") %>"/>
-  <c:set var="creationPrincipal" value="<%= ((Map)thisEntry).get("_principal") %>"/>
-  <c:set var="totalReplyCount" value="<%= ((Map)thisEntry).get("_totalReplyCount") %>"/>
+  <c:set var="docId" value='<%= ((Map)thisEntry).get("_docId") %>'/>
+  <c:set var="binderId" value='<%= ((Map)thisEntry).get("_binderId") %>'/>
+  <c:set var="entryType" value='<%= ((Map)thisEntry).get("_entryType") %>'/>
+  <c:set var="entityType" value='<%= ((Map)thisEntry).get("_entityType") %>'/>
+  <c:set var="title" value='<%= ((Map)thisEntry).get("title") %>'/>
+  <c:set var="creationDate" value='<%= ((Map)thisEntry).get("_creationDate") %>'/>
+  <c:set var="creationPrincipal" value='<%= ((Map)thisEntry).get("_principal") %>'/>
+  <c:set var="totalReplyCount" value='<%= ((Map)thisEntry).get("_totalReplyCount") %>'/>
   <c:if test="${empty totalReplyCount}"><c:set var="totalReplyCount" value="0"/></c:if>
 <%
 		//Get a dispalyable number for the replies

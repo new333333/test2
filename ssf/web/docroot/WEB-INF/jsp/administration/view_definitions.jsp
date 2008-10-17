@@ -136,7 +136,7 @@ name="value" value="${ssBinder.title}"/></ssf:nlt></span>
 
 <br>
 <c:if test="${!empty ssBinderId}">
-		<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
+		<ssf:buildDefinitionDivs title='<%= NLT.get("definition.select_item") %>'
 		  sourceDocument="${ssConfigDefinition}"
 		  configDocument="${ssConfigDefinition}"
 		  option="properties" 
@@ -145,7 +145,7 @@ name="value" value="${ssBinder.title}"/></ssf:nlt></span>
 		/>
 </c:if>
 <c:if test="${empty ssBinderId}">
-		<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
+		<ssf:buildDefinitionDivs title='<%= NLT.get("definition.select_item") %>'
 		  sourceDocument="${ssConfigDefinition}"
 		  configDocument="${ssConfigDefinition}"
 		  option="properties" 
