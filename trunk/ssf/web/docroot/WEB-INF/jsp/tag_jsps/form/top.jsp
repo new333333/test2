@@ -34,6 +34,9 @@
 --%><ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter><%--
 --%><ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter><%--
 --%>
+<c:if test="${empty ss_formTagTopApplied}">
 <div class="${ss_formClass}">
     <div class="ss_form_header"><ssf:nlt tag="${ss_title}" checkIfTag="true"/></div>
-    
+</c:if>
+<c:set var="ss_formTagTopApplied" value="1"/>
+

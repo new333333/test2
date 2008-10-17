@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -58,14 +59,17 @@ import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
@@ -100,6 +104,17 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	//caller will retry on OptimisiticLockExceptions
 	public void handleActionRequestWithRetry(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+
+		User user = RequestContextHolder.getRequestContext().getUser();
+		if (WebHelper.isUserLoggedIn(request) && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		
+			//The user is logged in
+			if (op.equals(WebKeys.OPERATION_MOBILE_ADD_ENTRY)) {
+				ajaxMobileDoAddEntry(request, response);
+			}
+		}
+				
 	}
 	
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -142,7 +157,28 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		return ajaxMobileFrontPage(request, response);
 	} 
 
-
+	private void ajaxMobileDoAddEntry(ActionRequest request, ActionResponse response) 
+			throws Exception {
+		//Add an entry
+		Map formData = request.getParameterMap();
+		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		//See if the add entry form was submitted
+		Long entryId=null;
+		if (formData.containsKey("okBtn")) {
+			//The form was submitted. Go process it
+			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
+			Map fileMap = new HashMap();
+			MapInputData inputData = new MapInputData(formData);
+			entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap, null);
+			
+			//See if the user wants to send mail
+			BinderHelper.sendMailOnEntryCreate(this, request, folderId, entryId);
+			
+			//See if the user wants to subscribe to this entry
+			BinderHelper.subscribeToThisEntry(this, request, folderId, entryId);
+		}
+	}
+	
 	private ModelAndView ajaxMobileLogin(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
@@ -266,10 +302,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Binder binder = getBinderModule().getBinder(binderId);
 		Map options = new HashMap();		
-		String viewType = "";
 		Map folderEntries = null;
 		
-		String view = null;
 		if (binder== null) {
 			return ajaxMobileFrontPage(request, response);
 		} 
@@ -279,7 +313,6 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
       	if (pageNumber == null || pageNumber < 0) pageNumber = 0;
       	int pageSize = Integer.valueOf(WebKeys.MOBILE_PAGE_SIZE).intValue();
       	int pageStart = pageNumber.intValue() * pageSize;
-      	int pageEnd = pageStart + pageSize;
       	String nextPage = "";
       	String prevPage = "";
       	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(pageSize));
@@ -303,36 +336,17 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 
 		List defaultEntryDefinitions = binder.getEntryDefinitions();
-		if (defaultEntryDefinitions != null && defaultEntryDefinitions.size() > 1) {
-			for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
-				Definition def = (Definition) defaultEntryDefinitions.get(i);
-				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
-				adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-				String title = NLT.getDef(def.getTitle());
-				if (i == 0) {
-					adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
-					adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
-					model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
-				}
-			}
-		} else if (defaultEntryDefinitions != null && defaultEntryDefinitions.size() != 0) {
-			// Only one option
-			Definition def = (Definition) defaultEntryDefinitions.get(0);
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-			String[] nltArgs = new String[] {NLT.getDef(def.getTitle())};
-			String title = NLT.get("toolbar.new_with_arg", nltArgs);
-			//entryToolbar.addToolbarMenu("1_add", title, adapterUrl.toString(), qualifiers);
-			
-			adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
-			adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
-			model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
+		List<Map> defTitleUrlList = new ArrayList();
+		for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
+			Definition def = (Definition) defaultEntryDefinitions.get(i);
+			String title = NLT.getDef(def.getTitle());
+			Map defTitle = new HashMap();
+			defTitle.put("title", title);
+			defTitle.put("def", def);
+			defTitleUrlList.add(defTitle);
 		}
-return new ModelAndView("mobile/show_folder", model);
+		model.put(WebKeys.MOBILE_BINDER_DEF_URL_LIST, defTitleUrlList);
+		return new ModelAndView("mobile/show_folder", model);
 	}
 
 	private ModelAndView ajaxMobileWhatsNew(AllModulesInjected bs, RenderRequest request, 
@@ -496,11 +510,28 @@ return new ModelAndView("mobile/show_folder", model);
 	private ModelAndView ajaxMobileAddEntry(RenderRequest request, 
 			RenderResponse response) throws Exception {
 	Map model = new HashMap();
-	Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-	Binder binder = getBinderModule().getBinder(binderId);
-	model.put(WebKeys.BINDER, binder);
-	
-	return new ModelAndView("mobile/add_entry", model);
+	Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));		
+	Folder folder = getFolderModule().getFolder(folderId);
+	//Adding an entry; get the specific definition
+	Map folderEntryDefs = DefinitionHelper.getEntryDefsAsMap(folder);
+	String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
+	model.put(WebKeys.FOLDER, folder);
+	model.put(WebKeys.BINDER, folder);
+	model.put(WebKeys.ENTRY_DEFINITION_MAP, folderEntryDefs);
+	model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
+	model.put(WebKeys.DEFINITION_ID, entryType);
+	//Make sure the requested definition is legal
+	if (folderEntryDefs.containsKey(entryType)) {
+		DefinitionHelper.getDefinition((Definition)folderEntryDefs.get(entryType), model, "//item[@type='form']");
+	} else {
+		DefinitionHelper.getDefinition(null, model, "//item[@name='entryForm']");
+	}
+	Map formData = request.getParameterMap();
+	if (formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
+		return ajaxMobileShowFolder(request, response);
+	} else {
+		return new ModelAndView("mobile/add_entry", model);
+	}
 }	
 
 	private ModelAndView ajaxMobileFindPeople(RenderRequest request, 

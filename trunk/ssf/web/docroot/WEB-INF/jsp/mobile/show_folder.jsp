@@ -72,6 +72,32 @@
 	actionUrl="false" />">${ssBinder.title}</a>
 </div>
 <br/>
+
+<c:if test="${!empty ss_mobileBinderDefUrlList}">
+  <form name="addEntryForm" 
+  			  action="<ssf:url adapter="true" portletName="ss_forum" 
+					action="__ajax_mobile" actionUrl="true" 
+					binderId="${ssBinder.id}"
+					operation="mobile_add_entry" ></ssf:url>" 
+			  method="post">
+  <table>
+  <tr>
+  <td valign="top">
+  <select name="entryType" >
+    <option value="">--<ssf:nlt tag="mobile.add"/>--</option>
+	<c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
+	  <option value="${def.def.id}">${def.title}</option>
+	</c:forEach>
+  </select>
+  </td>
+  <td valign="top">
+  <input type="submit" name="goBtn" value="<ssf:nlt tag="button.ok"/>">
+  </td>
+  </tr>
+  </table>  
+  </form>
+</c:if>
+
 <table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
 <c:forEach var="entry1" items="${ssFolderEntries}" >
 <jsp:useBean id="entry1" type="java.util.HashMap" />
