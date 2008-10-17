@@ -171,10 +171,12 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			 for (Element e:nameElements) {
 				 names.add(e.getTextTrim());				 
 			 }
-			 Collection<Principal> principals = getProfileModule().getPrincipalsByName(names);
 			 Set<Long>ids = new HashSet();
-			 for (Principal p:principals) {
-				 ids.add(p.getId());
+			 if(!names.isEmpty()) {
+				 Collection<Principal> principals = getProfileModule().getPrincipalsByName(names);
+				 for (Principal p:principals) {
+					 ids.add(p.getId());
+				 }
 			 }
 			 ids.addAll(LongIdUtil.getIdsAsLongSet(XmlUtils.getProperty(wfmElement, ObjectKeys.XTAG_WA_MEMBERS), ","));
 
