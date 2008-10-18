@@ -29,68 +29,15 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<script type="text/javascript">
-function ss_setupActionUrl(obj) {
-	obj.action = obj.url.value;
-}
-</script>
 <div class="ss_mobile">
-<div class="ss_mobile_breadcrumbs">
-//<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${ssBinder.id}" 
-	action="__ajax_mobile" operation="mobile_show_folder" 
-	actionUrl="false" />">${ssBinder.title}</a>
-</div>
-<br/>
-<c:if test="${!empty ssEntry}">
-<div style="padding:0px 0px 6px 8px;">
 
-<c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
+<table class="ss_style" cellpadding="10" width="100%"><tr><td>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 	configElement="${ssConfigElement}" 
 	configJspStyle="mobile" 
-	entry="${ssEntry}" />
+	processThisItem="true" />
+</td></tr></table>
 
-</c:if> 
-<br/>
-
-<c:if test="${!empty ss_mobileBinderDefUrlList}">
-  <form name="addEntryForm" action="" method="post" onSubmit="ss_setupActionUrl(this)">
-  <table>
-  <tr>
-  <td valign="top">
-  <select name="url" size="1">
-    <c:if test="${fn:length(ss_mobileBinderDefUrlList) == 1}">
-	  <c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
-	    <option value="${def.url}"><ssf:nlt tag="button.add"/>: ${def.title}</option>
-	  </c:forEach>
-    </c:if>
-    <c:if test="${fn:length(ss_mobileBinderDefUrlList) > 1}">
-      <option value="">--<ssf:nlt tag="mobile.addReply"/>--</option>
-	  <c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
-	    <option value="${def.url}">${def.title}</option>
-	  </c:forEach>
-	</c:if>
-  </select>
-  </td>
-  <td valign="top">
-  <input type="submit" name="goBtn" value="<ssf:nlt tag="button.ok"/>">
-  </td>
-  </tr>
-  </table>  
-  </form>
-</c:if>
-
-<div class="ss_mobile_breadcrumbs ss_mobile_small">
-<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${ssBinder.id}"
-	action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />"
-	><ssf:nlt tag="mobile.returnToParentFolder"/></a>
-<br/>
-<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
-	><ssf:nlt tag="mobile.returnToTop"/></a>
-</div>
 </div>
 
 </body>

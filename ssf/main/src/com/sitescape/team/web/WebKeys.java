@@ -362,8 +362,10 @@ public class WebKeys {
 	public static final String OPERATION_ADD_ATTACHMENT_OPTIONS = "add_attachment_options";
 	public static final String OPERATION_ADD_FOLDER_ATTACHMENT_OPTIONS = "add_folder_attachment_options";
     public static final String OPERATION_MOBILE_ADD_ENTRY="mobile_add_entry"; 
+    public static final String OPERATION_MOBILE_ADD_REPLY="mobile_add_reply"; 
     public static final String OPERATION_MOBILE_FIND_PEOPLE="mobile_find_people"; 
     public static final String OPERATION_MOBILE_LOGIN="mobile_login"; 
+    public static final String OPERATION_MOBILE_MODIFY_ENTRY="mobile_modify_entry"; 
     public static final String OPERATION_MOBILE_SHOW_FOLDER="mobile_show_folder"; 
     public static final String OPERATION_MOBILE_SHOW_ENTRY="mobile_show_entry"; 
     public static final String OPERATION_MOBILE_SHOW_FRONT_PAGE="mobile_show_front_page"; 
