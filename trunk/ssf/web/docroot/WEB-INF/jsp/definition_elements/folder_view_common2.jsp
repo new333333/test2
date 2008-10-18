@@ -134,7 +134,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 			value='<%= NLT.get("folder.column.Number") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
-    <a/>
+    </a>
     </ssf:slidingTableColumn>
   </c:if>
 
@@ -170,7 +170,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 			value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
-    <a/>
+    </a>
       
     </ssf:slidingTableColumn>
   </c:if>
@@ -208,7 +208,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 			value='<%= NLT.get("folder.column.Author") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
-    <a/>
+    </a>
     </ssf:slidingTableColumn>
   </c:if>
 
@@ -235,7 +235,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	    
 			<img <ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
-    <a/>
+    </a>
     </ssf:slidingTableColumn>
   </c:if>
 
@@ -284,7 +284,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 			value='<%= NLT.get("folder.column.State") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
-    <a/>
+    </a>
     </ssf:slidingTableColumn>
   </c:if>
 
@@ -321,7 +321,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 			value='<%= NLT.get("folder.column.LastActivity") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
-    <a/>
+    </a>
     </ssf:slidingTableColumn>
   </c:if>
   
@@ -391,7 +391,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 			value='<%= NLT.get("folder.column.Rating") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
-    <a/>
+    </a>
     </ssf:slidingTableColumn>
   </c:if>
 
