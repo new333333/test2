@@ -73,12 +73,7 @@
 
   <c:otherwise>
 	<form style="background: transparent;" method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
-	  id="<%= formName %>" action="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_mobile" actionUrl="true" 
-					binderId="${ssBinder.id}"
-					operation="mobile_add_entry" ><ssf:param 
-					name="entryType" value="${ssDefinitionId}"/></ssf:url>" 
-					onSubmit="return ss_onSubmit(this);">
+	  id="<%= formName %>" action="">
 	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 	  configElement="<%= item %>" 
 	  configJspStyle="${ssConfigJspStyle}" />

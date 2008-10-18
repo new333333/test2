@@ -33,6 +33,11 @@
   <c:set var="ss_windowTitle" value="${ssBinder.title}" scope="request"/>
 </c:if>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
+<script type="text/javascript">
+function ss_setupActionUrl(obj) {
+	obj.action = obj.url.value;
+}
+</script>
 <div class="ss_mobile">
 
 <div>
@@ -74,20 +79,22 @@
 <br/>
 
 <c:if test="${!empty ss_mobileBinderDefUrlList}">
-  <form name="addEntryForm" 
-  			  action="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_mobile" actionUrl="true" 
-					binderId="${ssBinder.id}"
-					operation="mobile_add_entry" ></ssf:url>" 
-			  method="post">
+  <form name="addEntryForm" onSubmit="ss_setupActionUrl(this)" action="" method="post">
   <table>
   <tr>
   <td valign="top">
-  <select name="entryType" >
-    <option value="">--<ssf:nlt tag="mobile.add"/>--</option>
-	<c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
-	  <option value="${def.def.id}">${def.title}</option>
-	</c:forEach>
+  <select name="url" size="1">
+    <c:if test="${fn:length(ss_mobileBinderDefUrlList) == 1}">
+	  <c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
+	    <option value="${def.url}"><ssf:nlt tag="button.add"/>: ${def.title}</option>
+	  </c:forEach>
+    </c:if>
+    <c:if test="${fn:length(ss_mobileBinderDefUrlList) > 1}">
+      <option value="">--<ssf:nlt tag="mobile.add"/>--</option>
+	  <c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
+	    <option value="${def.url}">${def.title}</option>
+	  </c:forEach>
+	</c:if>
   </select>
   </td>
   <td valign="top">
