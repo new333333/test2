@@ -152,7 +152,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
     </c:forEach>
     <br>
       
-<c:if test="${!ssBinder.definitionsInherited}">
+<c:if test="${!ssBinder.definitionInheritanceSupported || !ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
     </fieldset>
@@ -183,7 +183,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
      </c:forEach>
     <br>
     
-<c:if test="${!ssBinder.definitionsInherited}">
+<c:if test="${!ssBinder.definitionInheritanceSupported || !ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
   </fieldset>
@@ -200,7 +200,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
         </c:if>
       </c:forEach>
       <br>
-<c:if test="${!ssBinder.definitionsInherited}">
+<c:if test="${!ssBinder.definitionInheritanceSupported || !ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
     </fieldset>
@@ -229,7 +229,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
     </c:forEach>
     <br>
 
-<c:if test="${!ssBinder.definitionsInherited}">
+<c:if test="${!ssBinder.definitionInheritanceSupported || !ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
   </fieldset>
@@ -296,7 +296,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	</tr>
 	</table>
 	<br>
-<c:if test="${!ssBinder.definitionsInherited}">
+<c:if test="${!ssBinder.definitionInheritanceSupported || !ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
   </fieldset>
@@ -326,7 +326,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
      <br>
 
    
-<c:if test="${!ssBinder.definitionsInherited}">
+<c:if test="${!ssBinder.definitionInheritanceSupported || !ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
   </fieldset>
@@ -344,7 +344,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	      <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
 	</c:forEach>
     <br>
-<c:if test="${!ssBinder.definitionsInherited}">
+<c:if test="${!ssBinder.definitionInheritanceSupported || !ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
   </fieldset>
@@ -359,7 +359,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 		      <c:out value="${disabled}"/>> <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
    </c:forEach>
     <br>
-<c:if test="${!ssBinder.definitionsInherited}">
+<c:if test="${!ssBinder.definitionInheritanceSupported || !ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
   </fieldset>
