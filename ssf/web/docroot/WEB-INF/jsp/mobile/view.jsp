@@ -28,17 +28,13 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <c:set var="ss_noEnableAccessibleLink" value="1" scope="request"/>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<body>
-<style>
-.ss_mobile, .ss_mobile td, .ss_mobile th {
-  font-family: Lucida Sans Unicode, Arial, sans-serif;
-  font-size: 10px; 
-}
-</style>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("login.please") %>' scope="request"/>
+<%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <%@ include file="/WEB-INF/jsp/mobile/show_front_page_data.jsp" %>
 </body>
 </html>
