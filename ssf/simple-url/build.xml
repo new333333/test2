@@ -38,7 +38,9 @@
 		/>
 	</target>
 
-    <target name="deploy" depends="war">
+	<target name="build"  depends="war"/>
+
+    <target name="deploy">
         <antcall target="deploy-war">
         	<param name="deploy-support.war.name" value="${war.name}" />
         </antcall>

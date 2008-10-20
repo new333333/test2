@@ -6,7 +6,9 @@
 		
 	<property name="jar.file" value="ssf-asmodule.jar" />
 	
-	<target name="deploy" depends="jar">
+	<target name="build"  depends="jar"/>
+
+	<target name="deploy">
 		<antcall target="deploy-jar-into-shared">
 			<param name="deploy-support.jar.file" value="${jar.file}" />
 		</antcall>

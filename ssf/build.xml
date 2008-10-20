@@ -55,9 +55,10 @@
 		</if>
 	</target>
 	
-	<target name="build">
+	<target name="build" depends="init">
 		<antcall target="compile" />
 		<antcall target="jar" />
+		<ant dir="${portal.type}" target="build" inheritAll="false" />
 	</target>
 
 	<target name="clean-build" depends="clean,build" />
