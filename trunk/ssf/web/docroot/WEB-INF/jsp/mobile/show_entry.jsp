@@ -35,6 +35,7 @@ function ss_setupActionUrl(obj) {
 }
 </script>
 <div class="ss_mobile">
+<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 <div class="ss_mobile_breadcrumbs">
 //<a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.id}" 

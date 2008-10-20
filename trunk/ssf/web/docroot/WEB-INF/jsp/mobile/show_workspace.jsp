@@ -34,6 +34,7 @@
 </c:if>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <div class="ss_mobile">
+<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 
 <div>
   <a href="<ssf:url adapter="true" portletName="ss_forum" 
