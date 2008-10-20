@@ -72,8 +72,12 @@
   </c:when>
 
   <c:otherwise>
-	<form style="background: transparent;" method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
-	  id="<%= formName %>" action="">
+	<form style="background: transparent;" 
+	  method="<%= methodName %>" 
+	  enctype="<%= enctype %>" 
+	  name="<%= formName %>" 
+	  id="<%= formName %>" 
+	  action="">
 	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 	  configElement="<%= item %>" 
 	  configJspStyle="${ssConfigJspStyle}" />

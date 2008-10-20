@@ -146,6 +146,7 @@ public class WebKeys {
 	public static final String URL_FILE_VIEW_TYPE = "viewType";
 	public static final String URL_GROUP_ID="groupId";
 	public static final String URL_ADD_DEFAULT_ENTRY_FROM_INFRAME = "addEntryFromIFrame";
+    public static final String URL_MOBILE_URL="url";
     public static final String URL_MUSTER_CLASS="muster_class";
     public static final String URL_MUSTER_IDS="muster_ids";
     public static final String URL_NAMESPACE="namespace";

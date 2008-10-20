@@ -29,11 +29,6 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<script type="text/javascript">
-function ss_setupActionUrl(obj) {
-	obj.action = obj.url.value;
-}
-</script>
 <div class="ss_mobile">
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 <div class="ss_mobile_breadcrumbs">
@@ -56,7 +51,14 @@ function ss_setupActionUrl(obj) {
 <br/>
 
 <c:if test="${!empty ss_mobileBinderDefUrlList}">
-  <form name="addEntryForm" action="" method="post" onSubmit="ss_setupActionUrl(this)">
+  <form name="addEntryForm" 
+  		action="<ssf:url adapter="true" portletName="ss_forum" 
+			binderId="${ssBinder.id}" 
+			entryId="${ssEntry.id}" 
+			action="__ajax_mobile" 
+			operation="mobile_add_reply" 
+			actionUrl="true" />" 
+  		method="post">
   <table>
   <tr>
   <td valign="top">
