@@ -17,11 +17,13 @@
 	</target>
 	
 	<!-- Incremental deploy for ssf-liferay.jar -->
-	<target name="deploy" depends="jar">
+	<target name="deploy">
 		<antcall target="deploy-jar-into-portal">
 			<param name="deploy-support.jar.file" value="${jar.file}" />
 		</antcall>
 	</target>
+
+	<target name="build" depends="jar"/>
 
 	<target name="clean-app-server">
 		<delete>
@@ -87,7 +89,7 @@
 		</if>
 	</target>
 	
-	<target name="deploy-liferay-tomcat" depends="clean, init-liferay, clean-app-server">
+	<target name="deploy-liferay-tomcat" depends="init-liferay, clean-app-server">
 		<copy file="${project.dir}/war/ssf.war" todir="temp2"/>
 
 		<antcall target="copy-liferay-specific-ssf-artifacts"/>
@@ -130,7 +132,7 @@
 		<delete file="${app.server.ssf.dir}/WEB-INF/lib/xercesImpl.jar" />
 	</target>
 		
-	<target name="deploy-liferay-jboss-tomcat" depends="clean, init-liferay, clean-app-server">		
+	<target name="deploy-liferay-jboss-tomcat" depends="init-liferay, clean-app-server">		
 		<copy file="${project.dir}/war/ssf.war" todir="temp2"/>
 	
 		<antcall target="copy-liferay-specific-ssf-artifacts"/>

@@ -70,20 +70,39 @@
 		</if>
 	</target>
 	
-	<!-- Deploy additional components that are not part of ssf web app -->
-	<target name="deploy-additional-components">
-		<!-- AS core component is deployed into the app server's shared area -->
-		<ant dir="${project.dir}/as-module" target="deploy" inheritAll="false" />
-		<!-- ssfs component is deployed into its own web app -->
-		<ant dir="${project.dir}/ssfs" target="deploy" inheritAll="false" />
-		<!-- ssr component is deployed into its own web app -->
-		<ant dir="${project.dir}/ssr" target="deploy" inheritAll="false" />
-		<!-- simnple-url component is deployed into its own web app -->
-		<ant dir="${project.dir}/simple-url" target="deploy" inheritAll="false" />
-		<ant dir="${project.dir}/mobile" target="deploy" inheritAll="false" />
+	<target name="build">
+		<antcall target="build-additional-components"/>
+	</target>
+	
+	<!-- Build additional components that are not part of ssf web app -->
+	<target name="build-additional-components">
+		<antcall target="handle-additional-components">
+			<param name="target" value="build"/>
+		</antcall>
 	</target>
 
-	<target name="deploy-standalone-tomcat" depends="clean, init-standalone, clean-app-server">
+	<!-- Deploy additional components that are not part of ssf web app -->
+	<target name="deploy-additional-components">
+		<antcall target="handle-additional-components">
+			<param name="target" value="deploy"/>
+		</antcall>
+	</target>
+
+	<!-- Utility to call specified target (as param "target") on additional component projects -->
+	<target name="handle-additional-components" depends="init-standalone">
+		<!-- AS core component is deployed into the app server's shared area -->
+		<ant dir="${project.dir}/as-module" target="${target}" inheritAll="false" />
+		<!-- ssfs component is deployed into its own web app -->
+		<ant dir="${project.dir}/ssfs" target="${target}" inheritAll="false" />
+		<!-- ssr component is deployed into its own web app -->
+		<ant dir="${project.dir}/ssr" target="${target}" inheritAll="false" />
+		<!-- simple-url component is deployed into its own web app -->
+		<ant dir="${project.dir}/simple-url" target="${target}" inheritAll="false" />
+		<!-- mobile component is deployed into its own web app -->
+		<ant dir="${project.dir}/mobile" target="${target}" inheritAll="false" />
+	</target>
+
+	<target name="deploy-standalone-tomcat" depends="init-standalone, clean-app-server">
 		<copy file="${project.dir}/war/ssf.war" todir="temp2"/>
 
 		<antcall target="copy-standalone-specific-ssf-artifacts"/>
@@ -115,7 +134,7 @@
 		</delete>		
 	</target>
 		
-	<target name="deploy-standalone-jboss-tomcat" depends="clean, init-standalone, clean-app-server">		
+	<target name="deploy-standalone-jboss-tomcat" depends="init-standalone, clean-app-server">		
 		<copy file="${project.dir}/war/ssf.war" todir="temp2"/>
 		
 		<antcall target="copy-standalone-specific-ssf-artifacts"/>

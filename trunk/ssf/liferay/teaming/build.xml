@@ -15,11 +15,13 @@
 	</target>
 	
 	<!-- Incremental deploy for ssf-liferay-hooks.jar -->
-	<target name="deploy" depends="jar">
+	<target name="deploy">
 		<antcall target="deploy-jar">
 			<param name="deploy-support.jar.file" value="${jar.file}" />
 		</antcall>
 	</target>
+
+	<target name="build" depends="jar"/>
 
 	<target name="clean-app-server">
 		<delete>
@@ -42,10 +44,10 @@
 		</if>
 	</target>
 
-	<target name="deploy-liferay-tomcat" depends="clean, clean-app-server">
+	<target name="deploy-liferay-tomcat" depends="clean-app-server">
 	</target>
 		
-	<target name="deploy-liferay-jboss-tomcat" depends="clean, clean-app-server">		
+	<target name="deploy-liferay-jboss-tomcat" depends="clean-app-server">		
 	</target>		
 
 </project>

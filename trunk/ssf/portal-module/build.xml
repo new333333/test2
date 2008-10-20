@@ -26,7 +26,9 @@
 		</antcall>
 	</target>
 	
-	<target name="deploy" depends="jar">
+	<target name="build" depends="jar"/>
+
+	<target name="deploy">
 		<antcall target="deploy-jar-into-portal">
 			<param name="deploy-support.jar.file" value="${jar.file}" />
 		</antcall>
