@@ -185,6 +185,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			
 			//See if the user wants to subscribe to this entry
 			BinderHelper.subscribeToThisEntry(this, request, folderId, entryId);
+		} else {
+			String sUrl = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MOBILE_URL, "");
+			if (!sUrl.equals("")) response.sendRedirect(sUrl);
 		}
 	}
 	
@@ -205,6 +208,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 			//See if the user wants to subscribe to this entry
 			BinderHelper.subscribeToThisEntry(this, request, folderId, entryId);
+		} else {
+			String sUrl = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MOBILE_URL, "");
+			if (!sUrl.equals("")) response.sendRedirect(sUrl);
 		}
 	}
 
@@ -579,6 +585,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//Adding an entry; get the specific definition
 		Map folderEntryDefs = DefinitionHelper.getEntryDefsAsMap(folder);
 		String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
+    	request.setAttribute(WebKeys.URL_ENTRY_TYPE, entryType);
 		model.put(WebKeys.FOLDER, folder);
 		model.put(WebKeys.BINDER, folder);
 		model.put(WebKeys.ENTRY_DEFINITION_MAP, folderEntryDefs);
@@ -625,6 +632,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
     	//Adding an entry; get the specific definition
 		Map folderEntryDefs = DefinitionHelper.getEntryDefsAsMap(folder);
     	String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
+    	request.setAttribute(WebKeys.URL_ENTRY_TYPE, entryType);
 		model.put(WebKeys.DEFINITION_ID, entryType);
     	model.put(WebKeys.ENTRY_DEFINITION_MAP, folderEntryDefs);
     	model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);

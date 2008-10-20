@@ -33,11 +33,6 @@
   <c:set var="ss_windowTitle" value="${ssBinder.title}" scope="request"/>
 </c:if>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<script type="text/javascript">
-function ss_setupActionUrl(obj) {
-	obj.action = obj.url.value;
-}
-</script>
 <div class="ss_mobile">
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 
@@ -80,7 +75,13 @@ function ss_setupActionUrl(obj) {
 <br/>
 
 <c:if test="${!empty ss_mobileBinderDefUrlList}">
-  <form name="addEntryForm" onSubmit="ss_setupActionUrl(this)" action="" method="post">
+  <form name="addEntryForm" 
+  		action="<ssf:url adapter="true" portletName="ss_forum" 
+			binderId="${ssBinder.id}" 
+			action="__ajax_mobile" 
+			operation="mobile_add_entry" 
+			actionUrl="true" />" 
+		method="post">
   <table>
   <tr>
   <td valign="top">
