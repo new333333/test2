@@ -237,7 +237,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  		RequestContextUtil.setThreadContext(superU).resolve();
  		
  		ZoneConfig zoneConfig;
- 		Integer version=0;
+ 		Integer version=0;  //used to mimic pre-boulder upgradeVersion on ws
  		try {
  			zoneConfig = getZoneConfig(zone.getId());
  			version = zoneConfig.getUpgradeVersion();
@@ -464,7 +464,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
  		}
 		//make sure zoneConfig upto date
-		if (zoneConfig.getUpgradeVersion() < ZoneConfig.ZONE_LATEST_VERSION) {
+		if (version.intValue() <= 2 || zoneConfig.getUpgradeVersion() < ZoneConfig.ZONE_LATEST_VERSION) {
 			//Always do the following items
 			//Get any new definitions and templates
 			getAdminModule().updateDefaultDefinitions(top.getId(), true);
