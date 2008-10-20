@@ -23,3 +23,7 @@
 .ss_mobile_workflow {
 	border: solid 1px #CCCCCC;
 }
+.ss_mobile_masthead {
+	border: solid 1px black;
+	background-color: #cecece;
+}

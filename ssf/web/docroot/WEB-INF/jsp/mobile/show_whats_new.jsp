@@ -29,12 +29,28 @@
  */
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
-<%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("toolbar.menu.whatsNew") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
+<div class="ss_mobile">
+<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
+<div>
+  <span>
+    <ssf:nlt tag="mobile.whatsNewIn">
+      <ssf:param name="value" useBody="true">
+        <a href="<ssf:url adapter="true" 
+        		portletName="ss_forum" 
+				binderId="${ssBinder.id}" 
+				action="__ajax_mobile" 
+				operation="mobile_show_folder" 
+				actionUrl="false" />"
+		>${ssBinder.title}</a>
+      </ssf:param>
+    </ssf:nlt>
+  </span>
+</div>
 <div id="ss_para">
-  <div style="padding-left:20px;padding-bottom:16px;">
+  <div style="padding:10px 20px 14px 0px;" align="right">
 	<c:if test="${ss_pageNumber > '0'}">
 		<a href="<ssf:url 
 		  action="__ajax_mobile" 
@@ -44,11 +60,12 @@
 		  name="pageNumber" value="${ss_pageNumber - 1}"/><ssf:param
 		  name="namespace" value="${ss_namespace}"/></ssf:url>" 
 		><img border="0" src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-		    title="<ssf:nlt tag="general.previousPage"/>"/></a>&nbsp;&nbsp;&nbsp;
+		    title="<ssf:nlt tag="general.previousPage"/>"/></a>
 	</c:if>
 	<c:if test="${empty ss_pageNumber || ss_pageNumber <= '0'}">
 	  <img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
 	</c:if>
+	&nbsp;&nbsp;&nbsp;&nbsp;
 	<c:if test="${!empty ss_whatsNewBinder}">
 	  <a href="<ssf:url 
 		action="__ajax_mobile" 
@@ -134,7 +151,7 @@
    </c:forEach>
   </div>
   
-  <div style="padding-left:20px;">
+  <div style="padding:14px 0px 10px 20px;">
 	<c:if test="${ss_pageNumber > '0'}">
 		<a href="<ssf:url 
 		  action="__ajax_mobile" 
@@ -144,11 +161,12 @@
 		  name="pageNumber" value="${ss_pageNumber - 1}"/><ssf:param
 		  name="namespace" value="${ss_namespace}"/></ssf:url>" 
 		><img border="0" src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-		    title="<ssf:nlt tag="general.previousPage"/>"/></a>&nbsp;&nbsp;&nbsp;
+		    title="<ssf:nlt tag="general.previousPage"/>"/></a>
 	</c:if>
 	<c:if test="${empty ss_pageNumber || ss_pageNumber <= '0'}">
 	  <img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
 	</c:if>
+	&nbsp;&nbsp;&nbsp;&nbsp;
 	<c:if test="${!empty ss_whatsNewBinder}">
 	  <a href="<ssf:url 
 		action="__ajax_mobile" 
@@ -184,6 +202,8 @@
 	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
 	><ssf:nlt tag="mobile.returnToTop"/></a>
   </div>
-  
+</div>  
 </div><!-- end of ss_para -->
 
+</body>
+</html>

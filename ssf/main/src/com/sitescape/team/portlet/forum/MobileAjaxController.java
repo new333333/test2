@@ -399,6 +399,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			return ajaxMobileFrontPage(request, response);
 		} 
 		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.TYPE, type);
 
       	Integer pageNumber = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER);
       	if (pageNumber == null || pageNumber < 0) pageNumber = 0;
