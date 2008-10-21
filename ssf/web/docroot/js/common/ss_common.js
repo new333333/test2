@@ -4899,8 +4899,8 @@ function ss_Clipboard () {
 	    musterDiv.className = "ss_muster_div";
 	    musterDiv.style.display = "none";
 		musterDiv.innerHTML = '<table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: 220px;">' +
-         '<tbody><tr class="ss_base_title_bar"><td width="30px"><div class="ss_popup_topleft"></div></td><td width="100%"><div class="ss_popup_topcenter"><div id="ss_muster_title"></div></div></td><td width="40px"><div class="ss_popup_topright"><div id="ss_muster_close" class="ss_popup_close"></div></div>' +
-         '</td></tr><tr><td colspan="3"><div id="ss_muster_inner" style="padding: 3px 10px;" class="ss_popup_body"></div></td></tr><tr><td width="30px"><div class="ss_popup_bottomleft"></div></td><td width="100%"><div class="ss_popup_bottomcenter"></div></td>' +
+         '<tbody><tr class="ss_base_title_bar"><td width="30px"><div class="ss_popup_topleft"></div></td><td width="100%"><div class="ss_popup_topcenter"><div id="ss_muster_title"></div></div></td><td width="40px"><div class="ss_popup_topright"><div id="ss_muster_close" class="ss_popup_close" align="right"></div></div>' +
+         '</td></tr><tr><td colspan="3"><div id="ss_muster_inner" style="padding: 10px 10px;" class="ss_popup_body"></div></td></tr><tr><td width="30px"><div class="ss_popup_bottomleft"></div></td><td width="100%"><div class="ss_popup_bottomcenter"></div></td>' +
          '<td width="40px"><div class="ss_popup_bottomright"></div></td></tr></tbody></table>';
 
 		// Link into the document tree
@@ -4918,7 +4918,7 @@ function ss_Clipboard () {
 	    var hiddenObj = document.createElement("input");
 	    hiddenObj.setAttribute("type", "hidden");
 	    hiddenObj.setAttribute("name", "muster_class");
-	    hiddenObj.setAttribute("value", musterClass);
+	    hiddenObj.setAttribute("value", "musterClass");
 	    formObj.appendChild(hiddenObj);
 		
 		var brObj = document.createElement("br");

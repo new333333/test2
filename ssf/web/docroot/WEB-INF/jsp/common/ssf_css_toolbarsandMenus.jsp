@@ -571,6 +571,15 @@ div.ss_popup_body {
 .ss_valignTop {
 	vertical-align: top;
 	}
+.ss_popup_topright {
+	text-align: right!important;
+	}
+.ss_popup_topcenter {
+	text-align: center!important;
+	}
+.ss_popup_topleft {
+	text-align: left!important;
+	}			
 	
 /* THEME MENU STYLES */
 

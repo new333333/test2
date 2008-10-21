@@ -30,9 +30,9 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<div class="ss_style" align="left">
+<div class="ss_style ss_popup" align="left">
 <form method="post" id="${ss_namespace}subscription_form${ssBinder.id}">
-<span class="ss_largerprint ss_bold"><ssf:nlt tag="subscribe.select.type"/></span><ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_notifications_explained"/>
+<div align="center" class="ss_popup_topLg ss_bold"><ssf:nlt tag="subscribe.select.type"/><ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_notifications_explained"/></div>
 
 <br/>
 <br/>
@@ -55,7 +55,7 @@
 	request.setAttribute("currentStyles", currentStyles);
 %>
 </c:if>
-<div class="ss_indent_medium">
+<div class="ss_indent_medium  ss_valignTop">
 <c:set var="nothing" value="${true}"/>
 
 <c:forEach var="email" items="${ssUser.emailAddresses}"> 	
@@ -65,7 +65,7 @@
 	</c:if>
 </c:forEach>
 
-   <span class="ss_labelAbove"><ssf:nlt tag="subscribe.digest"/>
+<span class="ss_labelAbove"><ssf:nlt tag="subscribe.digest"/>
 <c:if test="${!ssScheduleInfo.enabled}">
 <br/>(<ssf:nlt tag="subscribe.select.disabled"/>
 <br/><ssf:nlt tag="administration.notify.nodefault.schedule"/>
@@ -89,7 +89,7 @@
 	</c:if>
 </c:forEach>
 
-   <span class="ss_labelAbove"><ssf:nlt tag="subscribe.message"/></span> 
+  <br/><br/><span class="ss_labelAbove"><ssf:nlt tag="subscribe.message"/></span> 
   <select multiple="multiple" name="_subscribe2">
 		<option value="" <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
@@ -108,7 +108,7 @@
 	</c:if>
 </c:forEach>
 
-	<span class="ss_labelAbove"><ssf:nlt tag="subscribe.noattachments"/></span>
+	<br/><br/><span class="ss_labelAbove"><ssf:nlt tag="subscribe.noattachments"/></span>
     <select multiple="multiple" name="_subscribe3">
 		<option value="" <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
@@ -127,7 +127,7 @@
 	</c:if>
 </c:forEach>
    
-	<span class="ss_labelAbove"><ssf:nlt tag="subscribe.text"/></span>
+	<br/><br/><span class="ss_labelAbove"><ssf:nlt tag="subscribe.text"/></span>
     <select multiple="multiple" name="_subscribe5">
 		<option value="" <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
@@ -137,7 +137,7 @@
 	</c:forEach>
    </select>
  
-<br/>
+<br/><br/>
   <input type="checkbox" name="disable" id="notifyType_${ssSubscription.id.entityId}_4"
   <c:if test="${!empty currentStyles['4']}"> checked="checked"</c:if>
   /><label for="notifyType_${ssSubscription.id.entityId}_4"><ssf:nlt tag="subscribe.disable"/></label> <ssf:inlineHelp tag="ihelp.email.disable_admin_notify"/><br/>

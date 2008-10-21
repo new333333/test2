@@ -31,7 +31,7 @@
 <%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<div class="ss_style" align="left">
+<div class="ss_style" align="left" style="width: 40%;">
 
 <form method="post" id="${ss_namespace}subscription_entry_form${ssEntry.id}">
   <span class="ss_bold"><ssf:nlt tag="subscribe.select.type"/></span><br/><br/>
