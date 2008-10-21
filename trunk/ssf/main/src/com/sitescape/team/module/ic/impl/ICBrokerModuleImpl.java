@@ -541,25 +541,16 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	}
 
 	private String getModelLink(Binder binder, Entry entry) {
-		AdaptedPortletURL adapterUrl = AdaptedPortletURL
-				.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 
-		if (entry == null && binder != null) {
-			return PermaLinkUtil.getPermalinkURL(binder);
-		} else if (entry != null && binder != null) {
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId()
-					.toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId()
-					.toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry
-					.getEntityType().toString());
+		if (entry == null) {
+			return PermaLinkUtil.getPermalink(binder);
+		} else if (entry != null) {
+			return PermaLinkUtil.getPermalink(entry);
 		} else {
 			// no model no link
 			return "";
 		}
 
-		return adapterUrl.toString();
 	}
 
 	private String getMeetingDescription(Binder binder, Entry entry) {

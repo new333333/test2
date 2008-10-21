@@ -111,7 +111,7 @@ public class AddFolderController extends SAbstractController {
 				//Announce this new workspace?
 				if (formData.containsKey("announce")) {
 					String messageBody = "<a href=\"";
-					String permaLink = PermaLinkUtil.getPermalinkURL(newBinder);
+					String permaLink = PermaLinkUtil.getPermalink(newBinder);
 					messageBody += permaLink;
 					messageBody += "\">" + newBinder.getTitle() + "</a><br/><br/>";
 					String announcementText = PortletRequestUtils.getStringParameter(request, "announcementText", "");

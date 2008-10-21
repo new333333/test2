@@ -764,29 +764,35 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	        				}
 	        				Element process = (Element)wfDoc.getRootElement().selectSingleNode("./item[@name='workflowProcess']");
 	        				runAsId = WorkflowProcessUtils.getRunAsUser(process, (WorkflowSupport)entry, ws);
+	        				if (runAsId == null) {
+	        					logger.error("No user to run timer");
+	        					timer.setException("No user to run timer");
+	        				}
 	        				
 	        			} else {
 	        				runAsId=RequestContextHolder.getRequestContext().getUserId();
 	        			};
-	        			try {
-	        				final Entry wfEntry = entry;
-	        				RunasTemplate.runas(new RunasCallback() {
-	        					public Object doAs() {
-	        						timer.execute();
-	        						//re-index for state changes
-	        						if (wfEntry != null) {
-	        							EntryProcessor processor = loadEntryProcessor(wfEntry.getParentBinder());
-	        							wfEntry.incrLogVersion();
-	        							processor.processChangeLog(wfEntry, ChangeLog.WORKFLOWTIMEOUT);
-	        							processor.indexEntry(wfEntry);
-	        						}
-	        						return null;
-	        					}
-	        				}, zoneId, runAsId);
-	           			} catch (Exception ex) {
-	           				logger.error("Error processing workflow timeout " +
-	           						(entry!=null?entry.getParentBinder().getPathName() + "/" + entry.getTitle():""), ex);
-	           			}
+	        			if (runAsId != null) {
+		        			try {
+		        				final Entry wfEntry = entry;
+		        				RunasTemplate.runas(new RunasCallback() {
+		        					public Object doAs() {
+		        						timer.execute();
+		        						//re-index for state changes
+		        						if (wfEntry != null) {
+		        							EntryProcessor processor = loadEntryProcessor(wfEntry.getParentBinder());
+		        							wfEntry.incrLogVersion();
+		        							processor.processChangeLog(wfEntry, ChangeLog.WORKFLOWTIMEOUT);
+		        							processor.indexEntry(wfEntry);
+		        						}
+		        						return null;
+		        					}
+		        				}, zoneId, runAsId);
+		           			} catch (Exception ex) {
+		           				logger.error("Error processing workflow timeout " +
+		           						(entry!=null?entry.getParentBinder().getPathName() + "/" + entry.getTitle():""), ex);
+		           			}
+	        			}
 	        			if (!timer.getName().equals("onDataValue")) {
 	        				//jbpm defined timer - we don't support repeats currently (copied from jbpm scheduler thread)
 							// if there was an exception, just save the timer
@@ -816,6 +822,9 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 									schedulerSession.deleteTimer(timer);
 								}
 							} else {
+								logger.error(timer.getException());
+								//want it to run again, so remove exception
+								timer.setException(null);
 								schedulerSession.saveTimer(timer);
 							}
 						}

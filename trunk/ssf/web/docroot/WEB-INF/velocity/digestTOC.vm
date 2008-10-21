@@ -36,7 +36,7 @@
  #else
  	$ssVisitor.getNLT("notify.changedMany")
  #end
- <a href="${ssVisitor.getPermaLink($ssVisitor.Entity.id, null, 'folder')}">
+ <a href="${ssVisitor.getPermaLink($ssVisitor.Entity)}">
  $esc.html(${ssVisitor.Entity.Title})</a><br/><br/>
  <a name="toc"/>
  ${ssVisitor.getNLT("notify.TOC")}:<br/><br/></span>

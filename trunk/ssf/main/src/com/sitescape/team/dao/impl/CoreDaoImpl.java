@@ -1445,8 +1445,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     	Session session = sf.openSession();
 		Statement statement = null;
     	try {
+    		String schema = ((SessionFactoryImplementor)session.getSessionFactory()).getSettings().getDefaultSchemaName();
+    		if (Validator.isNotNull(schema)) schema = schema+".";
+    		else schema = "";
     		statement = session.connection().createStatement();
-    		statement.executeUpdate("update SS_Dashboards set properties=null where id='" + id + "'");
+    		statement.executeUpdate("update " + schema + "SS_Dashboards set properties=null where id='" + id + "'");
     		Dashboard d = (Dashboard)session.get(Dashboard.class, id);
     		d.setProperties(new HashMap());
     		session.flush();

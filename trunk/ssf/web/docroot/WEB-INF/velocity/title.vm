@@ -35,7 +35,7 @@
 	${ssVisitor.Entity.DocNumber}.&nbsp;
 #end
 
-<a style="text-decoration:underline;" href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder.Id, $ssVisitor.Entity.Id, "folderEntry")">
+<a style="text-decoration:underline;" href="$ssVisitor.getPermaLink($ssVisitor.Entity)">
 #if ($ssVisitor.Entity.Title)
 	$esc.html($ssVisitor.Entity.Title)
 #else

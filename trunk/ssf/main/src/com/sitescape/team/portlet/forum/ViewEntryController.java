@@ -653,7 +653,7 @@ public class ViewEntryController extends  SAbstractController {
 		//The "Footer" menu
 		Toolbar footerToolbar = new Toolbar();
 		qualifiers = new HashMap();
-		String permaLink = PermaLinkUtil.getPermalinkURL(request, entry);
+		String permaLink = PermaLinkUtil.getPermalink(request, entry);
 		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.entryPermalink"), permaLink, qualifiers);
 

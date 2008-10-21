@@ -266,6 +266,13 @@ public class WebUrlUtil {
 		catch(Exception e) {}
 		return entryUrl;
 	}
+	public static String getWapLandingPage(HttpServletRequest request, String userId) {
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId);
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name());
+		return adapterUrl.toString();
+	}
 	public static String getFileUrl(PortletRequest req, String path, FileAttachment fAtt) {
 		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, fAtt);
 	}

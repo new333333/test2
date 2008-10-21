@@ -29,7 +29,7 @@
 #if ($ssVisitor.isHtml())
 <div style="#ss_entryContent()">
 $ssVisitor.getNLT('notify.forum.label')
-<a href="$ssVisitor.getPermaLink($ssVisitor.Entity.Id, null, "folder")">
+<a href="$ssVisitor.getPermaLink($ssVisitor.Entity)">
 $esc.html(${ssVisitor.Entity.PathName})</a><br/>
 </div>
 #else

@@ -145,7 +145,7 @@ public class PortalLoginController extends SAbstractController {
 			String url = RequestUtils.getStringParameter(request, "spring-security-redirect", "");
 			if (url.equals("")) {
 				if (userId != null) {
-					url = PermaLinkUtil.getWorkspaceURL(request, userId.toString());
+					url = PermaLinkUtil.getUserPermalink(request, userId.toString());
 				}
 			}
 			model.put(WebKeys.URL, url);

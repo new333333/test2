@@ -64,8 +64,8 @@ public class PermalinkTag extends BodyTagSupport {
 			HttpServletRequest req =
 				(HttpServletRequest)pageContext.getRequest();
 			String webUrl = null;
-			if (searchResult != null) webUrl = PermaLinkUtil.getPermalinkURL(req, searchResult);
-			else webUrl = PermaLinkUtil.getPermalinkURL(req, entity);
+			if (searchResult != null) webUrl = PermaLinkUtil.getPermalink(req, searchResult);
+			else webUrl = PermaLinkUtil.getPermalink(req, entity);
 			if (Validator.isNotNull(webUrl)) pageContext.getOut().print(webUrl);
 			return SKIP_BODY;
 		} catch (Exception e) {

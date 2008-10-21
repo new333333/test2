@@ -306,8 +306,11 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
      	   			Statement s = null;
        	   			try {
        	   				s = session.connection().createStatement();
-      	   				s.executeUpdate("delete from SS_WorkAreaFunctionMembers where memberId in (" + inList.toString() + ")");
-      	   				s.executeUpdate("delete from SS_Notifications where principalId in (" + inList.toString() + ")");
+		   				String schema = ((SessionFactoryImplementor)session.getSessionFactory()).getSettings().getDefaultSchemaName();
+		   				if (Validator.isNotNull(schema)) schema = schema+".";
+		   				else schema = "";
+      	   				s.executeUpdate("delete from " + schema + "SS_WorkAreaFunctionMembers where memberId in (" + inList.toString() + ")");
+      	   				s.executeUpdate("delete from " + schema + "SS_Notifications where principalId in (" + inList.toString() + ")");
        	   			} catch (SQLException sq) {
        	   				throw new HibernateException(sq);
      	   			} finally {
@@ -342,7 +345,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	   					.setParameterList("pList", entries)
 		   				.executeUpdate();
 		   			session.createQuery("Delete com.sitescape.team.domain.SharedEntity where accessId in (:pList) and accessType=:accessType")
-	   					.setParameterList("pList", entries)
+	   					.setParameterList("pList", ids)
 	   				.setParameter("accessType", SharedEntity.ACCESS_TYPE_PRINCIPAL)
 	   				.executeUpdate();
 
@@ -840,7 +843,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	}
 		return uProps;
     }
-	//At one point dom4j (1.5) objects where serialized,  don4j(1.6) does not recognize them
+	//At one point dom4j (1.5) objects where serialized,  donm4j(1.6) does not recognize them
 	//Somewhere along the way we changed it so we saved the string value instead of the serialized object, but 
 	//occasionally they pop up at home.
 	private void executePropertiesDelete(final UserPropertiesPK id) {
@@ -849,8 +852,11 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	Session session = sf.openSession();
 		Statement statement = null;
     	try {
+    		String schema = ((SessionFactoryImplementor)session.getSessionFactory()).getSettings().getDefaultSchemaName();
+    		if (Validator.isNotNull(schema)) schema = schema+".";
+    		else schema = "";
     		statement = session.connection().createStatement();
-    		statement.executeUpdate("delete from SS_UserProperties where principalId=" + id.getPrincipalId() + 
+    		statement.executeUpdate("delete from " + schema + "SS_UserProperties where principalId=" + id.getPrincipalId() + 
     				" and binderId=" + id.getBinderId());;
    	} catch (SQLException sq) {
     		throw new HibernateException(sq);

@@ -1786,7 +1786,7 @@ public class ListFolderHelper {
 		BinderHelper.buildDashboardToolbar(request, response, bs, folder, dashboardToolbar, model);
 
 		//The "Footer" menu
-		String permaLink = PermaLinkUtil.getPermalinkURL(request, folder);
+		String permaLink = PermaLinkUtil.getPermalink(request, folder);
 		qualifiers = new HashMap();
 		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.folderPermalink"), 

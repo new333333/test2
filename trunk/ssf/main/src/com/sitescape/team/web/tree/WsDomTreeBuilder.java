@@ -191,7 +191,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 				element.addAttribute("imageClass", imageClass);
 				element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_WORKSPACE, source));
 				element.addAttribute("displayOnly", helper.getDisplayOnly(DomTreeBuilder.TYPE_WORKSPACE, source));
-				element.addAttribute("permaLink", PermaLinkUtil.getPermalinkURL(binder));
+				element.addAttribute("permaLink", PermaLinkUtil.getPermalink(binder));
 						
 			} else if ((type == DomTreeBuilder.TYPE_FOLDER)) {
 				Folder f = (Folder)source;
@@ -203,7 +203,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 				element.addAttribute("imageClass", "ss_twIcon");
 				element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_FOLDER, source));
 				element.addAttribute("displayOnly", helper.getDisplayOnly(DomTreeBuilder.TYPE_FOLDER, source));
-				element.addAttribute("permaLink", PermaLinkUtil.getPermalinkURL(f));
+				element.addAttribute("permaLink", PermaLinkUtil.getPermalink(f));
 			} else return null;
 		}
 		//add any extra attributes
