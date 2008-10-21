@@ -27,16 +27,15 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-%><%--
---%><% //Entry signature view %><%--
---%><%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+%>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<c:set var="ss_signatureShown" value="false" scope="request"/>
-<c:set var="ss_showSignatureAfterTitle" value="true" scope="request"/>
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${item}" 
-  configJspStyle="${ssConfigJspStyle}" />
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_survey.js"></script>
 
-<c:if test="${!ss_signatureShown}">
-  <%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_signature2.jsp" %>
-</c:if>
+<div class="ss_entryContent">
+	<div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
+	<div>
+	  <span><ssf:nlt tag="mobile.noSurveys"/></span>
+	</div>
+
+</div>

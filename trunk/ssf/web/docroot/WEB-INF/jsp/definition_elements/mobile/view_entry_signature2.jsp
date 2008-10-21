@@ -31,12 +31,63 @@
 --%><% //Entry signature view %><%--
 --%><%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<c:set var="ss_signatureShown" value="false" scope="request"/>
-<c:set var="ss_showSignatureAfterTitle" value="true" scope="request"/>
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${item}" 
-  configJspStyle="${ssConfigJspStyle}" />
+<table style="padding-left: 12px;" cellspacing="0" cellpadding="0">
+ <tr>
+  <td>
+    <%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_creator.jsp" %>
+  </td>
+ </tr>
+ <tr>
+  <td>
+  <c:set var="property_caption" value=""/>
+    <%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_date.jsp" %>
+  </td>
+ </tr>
+</table>
 
-<c:if test="${!ss_signatureShown}">
-  <%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_signature2.jsp" %>
+<c:if test="${!empty ss_thisWasTurnedOff}">
+<c:if test="${!empty ssDefinitionEntry.modification.principal && 
+  ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
+<table style="padding-left: 12px;" cellspacing="0" cellpadding="0">
+ <tr>
+  <td>
+	<div>
+	  <span class="ss_mobile_light ss_mobile_small"><ssf:nlt tag="entry.modifiedBy"/></span>
+	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+	    action="__ajax_mobile"
+	    operation="mobile_show_workspace"
+	    binderId="${ssDefinitionEntry.modification.principal.workspaceId}" />"
+	  ><span class="ss_mobile_light ss_mobile_small"
+	  >${ssDefinitionEntry.modification.principal.title}</span></a>
+	</div>
+  </td>
+ </tr>
+ <tr>
+  <td>
+	<div>
+	<span class="ss_mobile_light ss_mobile_small"><fmt:formatDate 
+		timeZone="${ssUser.timeZone.ID}"
+	    value="${ssDefinitionEntry.modification.date}" type="both" 
+		timeStyle="short" dateStyle="medium" /></span>
+	</div>
+  </td>
+ </tr>
+</table>
+</c:if>
+</c:if>
+
+<c:if test="${!empty ssDefinitionEntry.reservation.principal}">
+	<table style="padding-left: 12px;" cellspacing="0" cellpadding="0">
+	 <tr>
+	  <td valign="top">
+		<div>
+		  <span><img <ssf:alt tag="alt.locked"/> 
+		    src="<html:imagesPath/>pics/sym_s_caution.gif"/>
+		    <ssf:nlt tag="entry.reservedBy"/>&nbsp;
+		    <ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/>
+		  </span>
+		</div>
+	  </td>
+	 </tr>
+	</table>
 </c:if>

@@ -28,43 +28,48 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% // View replies %>
+<% //Date widget form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="com.sitescape.team.util.CalendarHelper" %>
 
-<% // Process the replies only if this is the top level entry being displayed %>
-<c:if test="${ssEntry == ssDefinitionEntry}" >
-  <c:if test="${!empty ssFolderEntryDescendants}">
+<c:if test="${empty ssReadOnlyFields[property_name]}">
 
-<div style="padding-top:15px;">
-<hr width="80%"></hr>
-<c:if test="${!empty property_caption}">
-<span class="ss_bold">${property_caption}</span>
-<br/>
-</c:if>
+<div class="ss_entryContent">
+<span class="ss_labelAbove" id='${property_name}_label'>${property_caption}<c:if test="${property_required}"><span class="ss_required">*</span></c:if></span>
+	
+	<c:set var="initDate" value="<%= new Date() %>"/>
+	<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
+		<c:set var="initDate" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
+		<c:set var="property_initialSetting" value="entry"/>
+	</c:if>
 
-<c:forEach var="reply" items="${ssFolderEntryDescendants}">
-  <jsp:useBean id="reply" type="com.sitescape.team.domain.Entry" />
-  <div style="padding-bottom:16px;">
+	<input type="text" 
+		id="date_${property_name}_${prefix}" 
+		name="${property_name}_fullDate" 
+		<c:if test="${property_initialSetting != 'none'}">
+		  value="<fmt:formatDate value="${initDate}" pattern="yyyy-MM-dd" 
+			timeZone="${ssUser.timeZone.ID}"/>"
+		</c:if>
+		<c:if test="${property_initialSetting == 'none'}">
+		  value=""
+		</c:if>
+	/>
+	<div><span class="ss_mobile_small"><ssf:nlt tag="mobile.dateFormat"/></span></div>
 
-  <c:if test="${!empty reply.entryDef}">
- 	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-		configElement='<%= (Element) reply.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name=\'entryView\' or @name=\'profileEntryView\' or @name=\'fileEntryView\']") %>' 
-		configJspStyle="${ssConfigJspStyle}" 
-		processThisItem="false" 
-		entry="<%= reply %>" />
-  </c:if>
-  <c:if test="${empty reply.entryDef}">
- 	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-		configElement="${ssConfigElement}" 
-		configJspStyle="${ssConfigJspStyle}" 
-		processThisItem="false" 
-		entry="<%= reply %>" />
-  </c:if>
- 
-  </div>
-
-</c:forEach>
-
+		<input type="hidden" name="${property_name}_timezoneid" value="${ssUser.timeZone.ID}" />
+		<input type="hidden" name="${property_name}_skipTime" value="false" />
+		<input type="hidden" name="${property_name}" value="" />
+		
 </div>
-  </c:if>
+</c:if>
+<c:if test="${!empty ssReadOnlyFields[property_name]}">
+
+<div class="ss_entryContent">
+<span class="ss_labelAbove">${property_caption}</span>
+<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
+<fmt:formatDate value="${ssDefinitionEntry.customAttributes[property_name].value}" pattern="yyyy-MM-dd" 
+			timeZone="${ssUser.timeZone.ID}"/>
+</c:if>
+</div>
 </c:if>
