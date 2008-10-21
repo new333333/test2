@@ -81,7 +81,10 @@ public interface SsfIndexInterface extends java.rmi.Remote {
 			String fieldname, String fieldvalue) throws RemoteException;
 		
 	public ArrayList getTags(String indexName, Query query, Long id, String tag, String type, boolean isSuper)
-		throws RemoteException;
+	throws RemoteException;
+
+	public ArrayList getTagsWithFrequency(String indexName, Query query, Long id, String tag, String type, boolean isSuper)
+	throws RemoteException;
 	
 	public String[] getNormTitles(String indexName, Query query, String start, String end,
 			int skipsize) throws RemoteException;
