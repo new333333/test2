@@ -31,6 +31,7 @@
 --%><%@ page import="com.sitescape.util.BrowserSniffer" %><%--
 --%><%
 	boolean isWap = BrowserSniffer.is_wap_xhtml(request);
+	boolean isIPhone = BrowserSniffer.is_iphone(request);
 %><%--
 --%><%@ include file="/WEB-INF/jsp/common/common.jsp" %><%--
 --%><c:set var="ssf_snippet" value="1" scope="request"/><%--
@@ -47,6 +48,10 @@
 	if (isWap) {
 %>
 <link href="<html:rootPath/>css/ss_mobile_wap.css" rel="stylesheet" type="text/css" />
+<%
+	} else if (isIPhone) {
+%>
+<link href="<html:rootPath/>css/ss_mobile_iphone.css" rel="stylesheet" type="text/css" />
 <%
 	} else {
 %>
