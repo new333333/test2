@@ -76,6 +76,7 @@ import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
@@ -92,6 +93,7 @@ import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
+import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.forum.ViewController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.portlet.RenderRequestImpl;
@@ -283,7 +285,7 @@ public class BinderHelper {
 		} else if (GALLERY_PORTLET.equals(displayType)) {
 			return setupSummaryPortlets(bs, request, prefs, model, WebKeys.VIEW_GALLERY);		
 		} else if (MOBILE_PORTLET.equals(displayType)) {
-			return setupMobilePortlet(bs, request, prefs, model, WebKeys.VIEW_MOBILE);		
+			return setupMobilePortlet(bs, request, response, prefs, model, WebKeys.VIEW_MOBILE);		
 		} else if (WORKAREA_PORTLET.equals(displayType)) {
 			return setupWorkareaPortlet(bs, request, response, prefs, model, WebKeys.VIEW_WORKAREA);		
 		}
@@ -402,7 +404,10 @@ public class BinderHelper {
 		
 	}
 
-	protected static ModelAndView setupMobilePortlet(AllModulesInjected bs, RenderRequest request, PortletPreferences prefs, Map model, String view) {
+	protected static ModelAndView setupMobilePortlet(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, PortletPreferences prefs, Map model, String view) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
 		//This is the portlet view; get the configured list of folders to show
 		Map userProperties = (Map) model.get(WebKeys.USER_PROPERTIES);
 		//where stored as string[] which causes unnecessary sql updates cause arrays always appear dirty to hibernate
@@ -436,6 +441,14 @@ public class BinderHelper {
 			userQueries = (Map)userProperties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
 		}
 		model.put("ss_UserQueries", userQueries);
+		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+			adapterUrl.setParameter(WebKeys.OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
+			model.put(WebKeys.URL, adapterUrl);
+			return new ModelAndView("mobile/show_login_form", model);
+
+		}
 		return new ModelAndView(view, model);
 		
 	}
@@ -2736,4 +2749,54 @@ public class BinderHelper {
 		return hmRet;
 	}
 
+	public static void addMiniBlogEntry(AllModulesInjected bs, String text) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+		if (text.length() > ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH) {
+			text = text.substring(0, ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH);
+		}
+		bs.getProfileModule().setStatus(text);
+		bs.getProfileModule().setStatusDate(new Date());
+		bs.getReportModule().addStatusInfo(user);
+		//Add this to the user's mini blog folder
+		Long miniBlogId = user.getMiniBlogId();
+		Folder miniBlog = null;
+		if (miniBlogId == null) {
+			//The miniblog folder doesn't exist, so create it
+			miniBlog = bs.getProfileModule().addUserMiniBlog(user);
+			
+		} else {
+			try {
+				miniBlog = (Folder) bs.getBinderModule().getBinder(miniBlogId);
+				if (miniBlog.isDeleted()) {
+					//The miniblog folder doesn't exist anymore, so try create it again
+					miniBlog = bs.getProfileModule().addUserMiniBlog(user);
+				}
+			} catch(NoBinderByTheIdException e) {
+				//The miniblog folder doesn't exist anymore, so try create it again
+				miniBlog = bs.getProfileModule().addUserMiniBlog(user);
+			}
+		}
+		if (miniBlog != null) {
+			//Found the mini blog folder, go add this new entry
+	        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, 
+	        		DateFormat.SHORT, user.getLocale());
+	        dateFormat.setTimeZone(user.getTimeZone());
+			String mbTitle = dateFormat.format(new Date());
+			Map data = new HashMap(); // Input data
+			data.put(ObjectKeys.FIELD_ENTITY_TITLE, mbTitle);
+			data.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, text);
+			Definition def = miniBlog.getDefaultEntryDef();
+			if (def == null) {
+				try {
+					def = bs.getDefinitionModule().getDefinitionByReservedId(ObjectKeys.DEFAULT_ENTRY_MINIBLOG_DEF);
+				} catch (Exception ex) {}
+			}
+			if (def != null) {
+				try{
+					bs.getFolderModule().addEntry(miniBlog.getId(), def.getId(), new MapInputData(data), null, null);
+				} catch (Exception ex) {}
+			}
+		}
+		
+	}
 }

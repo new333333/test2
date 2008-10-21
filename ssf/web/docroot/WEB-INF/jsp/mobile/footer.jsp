@@ -28,24 +28,31 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //File form element %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<div class="ss_entryContent">
-<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
-<c:set var="selections" value="${ssDefinitionEntry.customAttributes[property_name].value}" />
-<span class="ss_bold"><ssf:nlt tag="form.file.currentFiles"><ssf:param name="value" value="${property_caption}"/></ssf:nlt></span>
-<br/>
-<table cellspacing="0" cellpadding="0" border="0"><tbody>
-<c:forEach var="selection" items="${selections}">
-<tr id="${selection.id}">
-<td><input type="checkbox" name="_delete_${selection.id}">&nbsp;
-${selection.fileItem.name}
+<%@ page import="com.sitescape.team.ObjectKeys" %>
+
+<div class="ss_mobile_footer">
+<table style="width:100%;"><tr>
+<td>
+<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
+	><ssf:nlt tag="mobile.returnToTop"/></a>
 </td>
-</tr>
-</c:forEach>
-</tbody></table>	
-<span class="ss_small">(<ssf:nlt tag="form.file.selectForDelete"/>)</span>
-<br/>
+<td align="right">
+<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
+<c:if test="${ssUser.internalId == guestInternalId}">
+  <c:if test='<%= !com.sitescape.team.util.SPropsUtil.getBoolean("form.login.auth.disallowed",false) %>' >
+    <a href="<ssf:url action="__ajax_mobile" actionUrl="false" 
+					operation="mobile_login" />"
+    >
+    <span><ssf:nlt tag="login"/></span>
+    </a>
+  </c:if>
 </c:if>
 
+<c:if test="${ssUser.internalId != guestInternalId}">
+	<a href="${ss_logoutUrl}"><span><ssf:nlt tag="logout"/></span></a>
+</c:if>
+</td>
+</tr>
+</table>
 </div>

@@ -224,7 +224,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 				Map formData = request.getParameterMap();
 				if (formData.containsKey("okBtn")) ajaxDoSubscription(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_UESR_STATUS)) {
-				ajaxSaveUserStatus(request, response);
+				ajaxSaveUserStatus(this, request, response);
 			} else if (op.equals(WebKeys.OPERATION_SET_SIDEBAR_VISIBILITY)) {
 				ajaxSetSidebarVisibility(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SET_SUNBURST_VISIBILITY)) {
@@ -2148,7 +2148,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		}
 	}
 	
-	private void ajaxSaveUserStatus(ActionRequest request, 
+	private void ajaxSaveUserStatus(AllModulesInjected bs, ActionRequest request, 
 			ActionResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String status = PortletRequestUtils.getStringParameter(request, "status", "");
@@ -2159,50 +2159,7 @@ public class AjaxController  extends SAbstractControllerRetry {
     		status = status.substring(0, m.start(0));
     	}
 		if (!status.equals(user.getStatus())) {
-			if (status.length() > ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH) {
-				status = status.substring(0, ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH);
-			}
-			getProfileModule().setStatus(status);
-			getProfileModule().setStatusDate(new Date());
-			getReportModule().addStatusInfo(user);
-			//Add this to the user's mini blog folder
-			Long miniBlogId = user.getMiniBlogId();
-			Folder miniBlog = null;
-			if (miniBlogId == null) {
-				//The miniblog folder doesn't exist, so create it
-				miniBlog = getProfileModule().addUserMiniBlog(user);
-				
-			} else {
-				try {
-					miniBlog = (Folder) getBinderModule().getBinder(miniBlogId);
-					if (miniBlog.isDeleted()) {
-						//The miniblog folder doesn't exist anymore, so try create it again
-						miniBlog = getProfileModule().addUserMiniBlog(user);
-					}
-				} catch(NoBinderByTheIdException e) {
-					//The miniblog folder doesn't exist anymore, so try create it again
-					miniBlog = getProfileModule().addUserMiniBlog(user);
-				}
-			}
-			if (miniBlog != null) {
-				//Found the mini blog folder, go add this new entry
-		        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, 
-		        		DateFormat.SHORT, user.getLocale());
-		        dateFormat.setTimeZone(user.getTimeZone());
-				String mbTitle = dateFormat.format(new Date());
-				Map data = new HashMap(); // Input data
-				data.put(ObjectKeys.FIELD_ENTITY_TITLE, mbTitle);
-				data.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, status);
-				Definition def = miniBlog.getDefaultEntryDef();
-				if (def == null) {
-					try {
-						def = getDefinitionModule().getDefinitionByReservedId(ObjectKeys.DEFAULT_ENTRY_MINIBLOG_DEF);
-					} catch (Exception ex) {}
-				}
-				if (def != null) {
-					getFolderModule().addEntry(miniBlog.getId(), def.getId(), new MapInputData(data), null, null);
-  				}
-			}
+			BinderHelper.addMiniBlogEntry(bs, status);
 		}
 	}
 	

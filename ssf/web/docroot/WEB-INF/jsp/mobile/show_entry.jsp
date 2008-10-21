@@ -84,16 +84,16 @@
   </form>
 </c:if>
 
+<br/>
 <div class="ss_mobile_breadcrumbs ss_mobile_small">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.id}"
 	action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />"
 	><ssf:nlt tag="mobile.returnToParentFolder"/></a>
-<br/>
-<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
-	><ssf:nlt tag="mobile.returnToTop"/></a>
 </div>
+
+<br/>
+<%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
 </div>
 
 </body>

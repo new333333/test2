@@ -82,6 +82,10 @@
 
 <br/>
 
+<%@ include file="/WEB-INF/jsp/mobile/miniblog.jsp" %>
+
+<br/>
+
 <c:if test="${!empty ss_mobileBinderList}">
 <div>
   <span class="ss_bold"><ssf:nlt tag="portlet.title.bookmarks"/></span>
@@ -176,4 +180,7 @@
   name="searchBtn" value="<ssf:nlt tag="button.ok"/>" class="ss_mobile_small" />
 <input type="hidden" name="quickSearch" value="true"/>
 </form>
+<br/>
+<br/>
+<%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
 </div>
