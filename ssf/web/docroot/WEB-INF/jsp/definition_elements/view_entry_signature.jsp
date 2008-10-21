@@ -99,7 +99,7 @@
     	<ssf:param name="newTab" value="1" />
 		</ssf:url>" <ssf:title tag="title.goto.profile.page" />
 	  onClick="ss_openUrlInPortlet(this.href);return false;">
-		<ssf:buddyPhoto style="ss_thumbnail_standalone ss_thumbnail_standalone_medium" 
+		<ssf:buddyPhoto style="ss_thumbnail_standalone ss_thumbnail_standalone_signature" 
 			photos="${ssDefinitionEntry.creation.principal.customAttributes['picture'].value}" 
 			folderId="${ssDefinitionEntry.creation.principal.parentBinder.id}" entryId="${ssDefinitionEntry.creation.principal.id}" />
 	</a><br/>
