@@ -538,9 +538,22 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
   background-image: url(<html:imagesPath/>pics/background_inline_button_blue.gif);
   background-repeat: repeat-x;
 	}	
+button:a, input[type="reset"]:a, input[type="button"]:a, input[type="submit"]:a {	
+	<c:if test="<%= isIE %>">
+  		margin-left: 1px; 
+  		margin-right: 1px;
+	</c:if>
+	}
 button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {	
   	border: 1px dotted #333;
-  	padding: 0px 6px 0px 6px;
+  	padding: 1px 7px 1px 7px;
+  	<c:if test="<%= isIE %>">
+  		padding: 0px;
+  		padding-top: -2px;
+  		padding-bottom: 1px;
+  		padding-left: 1px; 
+  		padding-right: 1px;
+	</c:if>
 	}
 input.ss_tinyButton, a.ss_tinyButton:link, a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
@@ -560,6 +573,14 @@ a.ss_tinyButton:focus, a.ss_tinyButton:hover {
   	padding: 0px 3px 0px 3px;
   	cursor: pointer;
   	white-space: nowrap;
+}
+
+/* styles for labels: required for forms; optional for views */
+.ss_labelAbove {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  display: block;
+  font-weight: bold;
 }
 
 .ss_labelLeft {
@@ -1607,8 +1628,7 @@ div.ss_content_outer {		/* also see ss_pseudoPortal */
 	margin-top:0px;
 	margin-right: 15px;		/* give right margin to match pseudoPortal */
 	border: 1px solid #ccc;
-
-	position: absolute;	
+	width:100%;
 }
 
 .ss_content_inner {
