@@ -316,10 +316,11 @@
 				<%
 					java.util.Map statusCaptions = com.sitescape.team.web.util.DefinitionHelper.findSelectboxSelectionsAsMap("status", (String)entry.get("_commandDef"));
 					String caption = (String)statusCaptions.get(entry.get("status"));
+					if (caption == null) caption = "";
+					if (!caption.equals("")) {
 				%>
-				<c:if test="${!empty caption}">
-					<ssf:nlt tag="<%= caption %>"/>
-				</c:if>
+				<ssf:nlt tag="<%= caption %>"/>
+				<%  }  %>
 			</td>
 			<td ${tdClass}>
 				<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry.due_date}" type="both" dateStyle="medium" timeStyle="short" />
