@@ -538,7 +538,7 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
   background-image: url(<html:imagesPath/>pics/background_inline_button_blue.gif);
   background-repeat: repeat-x;
 	}	
-button:a, input[type="reset"]:a, input[type="button"]:a, input[type="submit"]:a {	
+button, input[type="reset"], input[type="button"], input[type="submit"] {	
 	<c:if test="<%= isIE %>">
   		margin-left: 1px; 
   		margin-right: 1px;
