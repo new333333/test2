@@ -27,16 +27,28 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-%><%--
---%><% //Entry signature view %><%--
---%><%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+%>
+<% //Event widget form element %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<c:set var="ss_signatureShown" value="false" scope="request"/>
-<c:set var="ss_showSignatureAfterTitle" value="true" scope="request"/>
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${item}" 
-  configJspStyle="${ssConfigJspStyle}" />
-
-<c:if test="${!ss_signatureShown}">
-  <%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_signature2.jsp" %>
-</c:if>
+<div class="ss_entryContent">
+	<div class="ss_labelAbove" id='${property_name}_label'>${property_caption}<c:if test="${property_required}"><span class="ss_required">*</span></c:if></div>
+	<div id="${property_name}_startError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.startDateError"/></span></div>
+	<div id="${property_name}_endError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.endDateError"/></span></div>
+	<c:choose>
+		<c:when test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
+			<c:set var="ev" value="${ssDefinitionEntry.customAttributes[property_name].value}" />	
+		</c:when>
+		<c:when test="${!empty ssInitialEvent}">
+			<c:set var="ev" value="${ssInitialEvent}" />	
+		</c:when>	
+	</c:choose>
+	<ssf:eventeditor id="${property_name}" 
+	         formName="${formName}" 
+	         initEvent="${ev}"
+	         required="${property_required}"
+	         hasDuration="${property_hasDuration}"
+	         hasRecurrence="${property_hasRecurrence}" 
+	         isTimeZoneSensitiveActive="${property_timeZoneSensitiveActive}"
+	         isFreeBusyActive="${property_freeBusyActive}" />
+</div>

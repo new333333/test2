@@ -50,3 +50,8 @@ ${ssDefinitionEntry.docNumber}.
 </span>
 <br/>
 </div>
+
+<c:if test="${ss_showSignatureAfterTitle && !ss_signatureShown}">
+  <%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_signature2.jsp" %>
+  <c:set var="ss_signatureShown" value="true" scope="request"/>
+</c:if>
