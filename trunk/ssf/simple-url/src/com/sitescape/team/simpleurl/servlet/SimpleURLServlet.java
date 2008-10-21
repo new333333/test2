@@ -29,6 +29,8 @@
 package com.sitescape.team.simpleurl.servlet;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -47,6 +49,8 @@ public class SimpleURLServlet extends HttpServlet {
 	private static final Class[] SERVICE_METHOD_ARG_TYPES = 
 		new Class[] {boolean.class, String.class, int.class, String.class};
 
+	private static final int BUFFER_SIZE = 4096;
+
 	private String landingPagePath;
 	
 	public void init(ServletConfig config) throws ServletException {
@@ -57,10 +61,27 @@ public class SimpleURLServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 	throws ServletException, IOException {
     	String simpleName = req.getPathInfo();
-		String resolvedURI;
     	
     	if(simpleName == null || simpleName.equals("/")) {
-    		resolvedURI = landingPagePath;
+    		resp.sendRedirect(landingPagePath);
+    	}
+    	else if(simpleName.equals("/favicon.ico")) {
+    		InputStream in = getServletConfig().getServletContext().getResourceAsStream(simpleName);
+    		if(in != null) {
+	    		OutputStream out = resp.getOutputStream();
+	    		try {
+	    			copyStream(in, out);
+	    		}
+	    		finally {
+	    			try {
+	    				in.close();
+	    			}
+	    			catch(IOException ignore) {}
+	    		}
+    		}
+    		else {
+    			resp.sendError(HttpServletResponse.SC_NOT_FOUND, simpleName);
+    		}
     	}
     	else {
 	    	boolean isSecure = req.isSecure();
@@ -69,6 +90,7 @@ public class SimpleURLServlet extends HttpServlet {
 	    	if(simpleName.startsWith("/"))
 	    		simpleName = simpleName.substring(1);
 	    	
+			String resolvedURI = null;
 			try {
 				resolvedURI = (String) BridgeClient.invoke(null, null, 
 						SERVICE_CLASS_NAME, SERVICE_METHOD_NAME, SERVICE_METHOD_ARG_TYPES,
@@ -76,12 +98,21 @@ public class SimpleURLServlet extends HttpServlet {
 			} catch (Exception e) {
 				throw new ServletException(e);
 			}
+			
+			if(resolvedURI != null)
+				resp.sendRedirect(resolvedURI);
+			else
+				resp.sendError(HttpServletResponse.SC_NOT_FOUND, simpleName);
     	}
-
-		if(resolvedURI != null)
-			resp.sendRedirect(resolvedURI);
-		else
-			resp.sendError(HttpServletResponse.SC_NOT_FOUND, simpleName);
     }
 
+    private void copyStream(InputStream in, OutputStream out)
+			throws IOException {
+		// Copy the input stream to the output stream
+		byte[] buffer = new byte[BUFFER_SIZE];
+		int bytesRead = -1;
+		while ((bytesRead = in.read(buffer)) != -1) {
+			out.write(buffer, 0, bytesRead);
+		}
+    }
 }
