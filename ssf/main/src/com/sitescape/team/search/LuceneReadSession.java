@@ -123,7 +123,19 @@ public interface LuceneReadSession extends LuceneSession {
 	 */
 	public ArrayList getTags(Query query, String tag, String type)
 			throws LuceneException;
-
+	
+	/**
+	 * Get all the unique tags and their frequencies that this user can see, based on the wordroot passed in.
+	 * 
+	 * @param query
+	 * @param wordroot
+	 * @param type  - if null or tags - all tags will be returnet, can be personalTags or communityTags
+	 * @return
+	 * @throws LuceneException
+	 */
+	public ArrayList getTagsWithFrequency(Query query, String tag, String type)
+			throws LuceneException;
+	
 	/**
 	 * Get all the unique sortTitles that this user can see, based on the range passed in.
 	 * 

@@ -49,6 +49,7 @@ import org.apache.lucene.search.Sort;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.lucene.LuceneHelper;
+import com.sitescape.team.lucene.TagObject;
 import com.sitescape.team.search.LuceneException;
 import com.sitescape.team.search.LuceneReadSession;
 import com.sitescape.team.web.WebKeys;
@@ -161,6 +162,21 @@ public class LocalLuceneReadSession extends LocalLuceneSession implements Lucene
 			}
 		}
 	}
+
+	public ArrayList getTags(Query query, String tag, String type)
+	throws LuceneException {
+		ArrayList<String> resultTags = new ArrayList<String>();
+		ArrayList tagObjects = getTagsWithFrequency(query, tag, type);
+		Iterator iter = tagObjects.iterator();
+		while (iter.hasNext()) {
+			resultTags.add(((TagObject)iter.next()).getTagName());
+		}
+		return resultTags;
+	}
+
+	
+	
+	
 	/**
 	 * Get all the unique tags that this user can see, based on the wordroot passed in.
 	 * 
@@ -170,13 +186,13 @@ public class LocalLuceneReadSession extends LocalLuceneSession implements Lucene
 	 * @return
 	 * @throws LuceneException
 	 */
-	public ArrayList getTags(Query query, String tag, String type)
+	public ArrayList getTagsWithFrequency(Query query, String tag, String type)
 			throws LuceneException {
 		IndexReader indexReader = null;
 		IndexSearcher indexSearcher = null;
 		;
-		TreeSet<String> results = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
-		ArrayList<String> resultTags = new ArrayList<String>();
+		TreeSet<TagObject> results = new TreeSet<TagObject>();
+		ArrayList<TagObject> resultTags = new ArrayList<TagObject>();
 		User user = RequestContextHolder.getRequestContext().getUser();
 		long startTime = System.currentTimeMillis();
 		int prefixLength = 0;
@@ -256,7 +272,10 @@ public class LocalLuceneReadSession extends LocalLuceneSession implements Lucene
 								if (userDocIds.get((termDocs.doc()))) {
 									// Add term.text to results
 									prefixLength = preTagLength + term.text().indexOf(":") + 1;
-									results.add(term.text().substring(prefixLength));
+									TagObject tagObj = new TagObject();
+									tagObj.setTagName(term.text().substring(prefixLength));
+									tagObj.setTagFreq(termDocs.freq());
+									results.add(tagObj);
 									break;
 								}
 							}
@@ -268,7 +287,7 @@ public class LocalLuceneReadSession extends LocalLuceneSession implements Lucene
 
 				Iterator iter = results.iterator();
 				while (iter.hasNext())
-					resultTags.add((String)iter.next());
+					resultTags.add((TagObject)iter.next());
 				long endTime = System.currentTimeMillis();
 				if(debugEnabled)
 					logger.debug("LocalLucene: getTags took: " + (endTime - startTime) + " milliseconds");
