@@ -30,7 +30,7 @@
 <div style="#ss_entryContent()">
 #if (!$ssVisitor.Entity.ParentEntry)
 $ssVisitor.getNLT("notify.forum.label")
-<a href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder.Id, null, "folder")">
+<a href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder)">
 $esc.html(${ssVisitor.Entity.ParentBinder.PathName})</a>
 #end
 <br/>

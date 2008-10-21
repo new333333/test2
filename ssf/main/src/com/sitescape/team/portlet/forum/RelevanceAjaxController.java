@@ -220,7 +220,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		getProfileModule().setShares(entity, ids, teams);
 		String title = entity.getTitle();
 		if (entity.getParentBinder() != null) title = entity.getParentBinder().getPathName() + "/" + title;
-		Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalinkURL(request, entity) +
+		Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalink(request, entity) +
 				"\">" + title + "</a>");
 		getAdminModule().sendMail(ids, teams, null, NLT.get("relevance.mailShared", new Object[]{RequestContextHolder.getRequestContext().getUser().getTitle()}), body);
 	}

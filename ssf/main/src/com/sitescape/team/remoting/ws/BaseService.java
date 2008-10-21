@@ -72,6 +72,7 @@ import com.sitescape.team.remoting.ws.model.Workflow;
 import com.sitescape.team.remoting.ws.model.FileVersions.FileVersion;
 import com.sitescape.team.util.AbstractAllModulesInjected;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.MarkupUtil;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
@@ -341,7 +342,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		
 		Description desc = entity.getDescription();
 		if(desc != null) {
-			entityModel.setDescription(toDescriptionModel(desc));
+			entityModel.setDescription(toDescriptionModel(entity, desc));
 		}
 		
 		if(entity.getCreation() != null) {
@@ -402,8 +403,9 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		return new com.sitescape.team.remoting.ws.model.AverageRating(ar.getAverage(), ar.getCount());
 	}
 
-	protected com.sitescape.team.remoting.ws.model.Description toDescriptionModel(Description desc) {
-		return new com.sitescape.team.remoting.ws.model.Description(desc.getText(), desc.getFormat());
+	protected com.sitescape.team.remoting.ws.model.Description toDescriptionModel(DefinableEntity entity, Description desc) {
+		return new com.sitescape.team.remoting.ws.model.Description(
+					MarkupUtil.markupStringReplacement(null, null, null, null, entity, desc.getText(), WebKeys.MARKUP_EXPORT), desc.getFormat());
 	}
 	protected com.sitescape.team.remoting.ws.model.Subscription toSubscriptionModel(Subscription subscription) {
 		com.sitescape.team.remoting.ws.model.Subscription model = new com.sitescape.team.remoting.ws.model.Subscription();

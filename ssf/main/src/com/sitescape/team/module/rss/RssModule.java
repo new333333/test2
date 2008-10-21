@@ -28,15 +28,18 @@
  */
 package com.sitescape.team.module.rss;
 
+import java.util.Collection;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Entry;
-import com.sitescape.team.domain.User;
 
 public interface RssModule {
 	
+	public void deleteRssFeed(Binder binder);
+	public void deleteRssFeed(Binder binder, Collection<Entry>entries);
 	public void updateRssFeed(Entry entry);
 	public String filterRss(HttpServletRequest request, HttpServletResponse response, Binder binder);
 	public String AuthError(HttpServletRequest request, HttpServletResponse response);

@@ -844,6 +844,11 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		ids.clear();
 		ids.add(runAsId);
 		if (!getUsers(ids).isEmpty()) return runAsId;
+		//binder owner must be deleted; try entry owner
+		//don't want to run as current user if it is backgroundProcessor; since gets all privs
+		runAsId = wfEntry.getOwnerId();
+		ids.add(runAsId);
+		if (!getUsers(ids).isEmpty()) return runAsId;
 		return null;
 
 	}

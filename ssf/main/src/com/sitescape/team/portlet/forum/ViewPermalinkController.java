@@ -223,25 +223,22 @@ public class ViewPermalinkController  extends SAbstractController {
 		String entityType= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, "");
 		String fileId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
 		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
-		//The user is allowed to see this, go redirect to the url	
+		String fileName= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_NAME, "");
 
 		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-		if (!binderId.equals("")) url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-		if (!entryId.equals("")) url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-		if (!entryTitle.equals("")) url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
-		if (!entityType.equals("")) url.setParameter(WebKeys.URL_ENTITY_TYPE, entityType);
-		if (!fileId.equals("")) url.setParameter(WebKeys.URL_FILE_ID, fileId);
-	
+		if (Validator.isNotNull(binderId)) url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+		if (Validator.isNotNull(entryId)) url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+		if (Validator.isNotNull(entryTitle)) url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
+		if (Validator.isNotNull(entityType)) url.setParameter(WebKeys.URL_ENTITY_TYPE, entityType);
+		if (Validator.isNotNull(fileId)) url.setParameter(WebKeys.URL_FILE_ID, fileId);
+		if (Validator.isNotNull(fileName)) url.setParameter(WebKeys.URL_FILE_NAME, fileName);
 		model.put(WebKeys.URL, url.toString());
 		if (!"true".equals(PortletRequestUtils.getStringParameter(request, "accessException"))) {
-			//this would be from a v1.0.3 permalink that didn't have actionUrl=1
-			//send to action
 			return new ModelAndView(WebKeys.VIEW_LOGIN_RETURN, model);
 		}
 		
 		User user = null;
-		Long zoneId = WebHelper.getZoneIdByVirtualHost(request);
 		if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
 			//User must log in to see this
 			BinderHelper.setupStandardBeans(this, request, response, model);

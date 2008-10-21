@@ -762,7 +762,7 @@ public class WorkspaceTreeHelper {
 		String[] contributorIds = collectContributorIds(workspace);
 		
 		// permalink
-		String permaLink = PermaLinkUtil.getPermalinkURL(request, workspace);
+		String permaLink = PermaLinkUtil.getPermalink(request, workspace);
 		qualifiers = new HashMap();
 		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.workspacePermalink"), 

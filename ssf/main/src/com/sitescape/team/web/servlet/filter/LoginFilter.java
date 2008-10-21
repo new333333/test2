@@ -45,6 +45,7 @@ import com.sitescape.team.runas.RunasTemplate;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.PermaLinkUtil;
+import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.BrowserSniffer;
 
@@ -106,7 +107,7 @@ public class LoginFilter  implements Filter {
 		
 		return (String) RunasTemplate.runasAdmin(new RunasCallback() {
 			public Object doAs() {
-				return PermaLinkUtil.getWorkspaceURL(req, userId);
+				return PermaLinkUtil.getUserPermalink(req, userId);
 			}
 		}, WebHelper.getRequiredZoneName(req));									
 	}
@@ -120,7 +121,7 @@ public class LoginFilter  implements Filter {
 		
 		return (String) RunasTemplate.runasAdmin(new RunasCallback() {
 			public Object doAs() {
-				return PermaLinkUtil.getWapLandingPageURL(req, userId);
+				return WebUrlUtil.getWapLandingPage(req, userId);
 			}
 		}, WebHelper.getRequiredZoneName(req));									
 	}

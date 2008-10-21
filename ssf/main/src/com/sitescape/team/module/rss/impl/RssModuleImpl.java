@@ -32,20 +32,20 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.text.SimpleDateFormat;
-
+import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.queryParser.QueryParser;
@@ -61,7 +61,6 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.User;
 import com.sitescape.team.lucene.SsfIndexAnalyzer;
 import com.sitescape.team.lucene.SsfQueryAnalyzer;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
@@ -71,13 +70,14 @@ import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.FileHelper;
+import com.sitescape.team.util.FilePathUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.MarkupUtil;
-import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.team.web.util.PermaLinkUtil;
+import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.PropertyNotFoundException;
 
 public class RssModuleImpl extends CommonDependencyInjection implements
@@ -87,12 +87,6 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			new SsfQueryAnalyzer());
 
 	private final String ALL_FIELD = "allField";
-
-	final String FS = System.getProperty("file.separator");
-
-	final String TSFILENAME = "timestampfile";
-
-	final String LOCKFILENAME = "lockfile";
 
 	private final long DAYMILLIS = 24L * 60L * 60L * 1000L;
 
@@ -132,53 +126,83 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		else
 			this.rssRootDir = rssRootDir + Constants.SLASH;
 	}
-
-	private void generateRssFeed(Binder binder) {
-
-		// See if the feed already exists
-		String rssPathName = getRssPathName(binder);
-		if (IndexReader.indexExists(rssPathName))
-			return;
-
-		// Make sure the rss directory exists
-		File rssdir = new File(rssRootDir);
-		if (!rssdir.exists())
-			rssdir.mkdir();
-
-		generateRssIndex(binder);
-	}
-
-	private String getRssPathName(Binder binder) {
-		Long id = binder.getId();
+	//directory path for this binder
+	private String getRssPath(Binder binder) {
 		if (binder instanceof Folder) {
 			Folder f = (Folder) binder;
 			if (!f.isTop())
-				id = f.getTopFolder().getId();
+				binder = f.getTopFolder();
 		}
-		String rssPathName = rssRootDir + id;
-		return rssPathName;
+		return rssRootDir + FilePathUtil.getBinderDirPath(binder);
+		
 	}
-
-	public void deleteRssIndex(Binder binder) {
+	//path of actual lucene index
+	private File getRssIndexPath(Binder binder) {
+		return new File(getRssPath(binder) + "index" + File.separatorChar);
+	}
+	//index file is 1 level up from lucene
+	private File getRssIndexLockFile(Binder binder) {
+		return new File(getRssPath(binder), "lockfile");
+	}
+	private File getRssIndexActivityFile(Binder binder) {
+		return new File(getRssPath(binder), "timestampfile");
+	}
+	public void deleteRssFeed(Binder binder) {
 
 		// See if the feed exists
-		String rssPathName = getRssPathName(binder);
-		File rf = new File(rssPathName);
+		File rf = new File(getRssPath(binder));
 		if (rf.exists())
 			FileHelper.deleteRecursively(rf);
 	}
 
+	public void deleteRssFeed(Binder binder, Collection<Entry> entries) {
+		File indexPath = getRssIndexPath(binder);
+
+		// See if the feed already exists
+		if (!indexPath.exists())
+			return; // if it doesn't already exist, then don't update it.
+
+		RssFeedLock rfl = new RssFeedLock(getRssIndexLockFile(binder));
+		try {
+			if (!rfl.getFeedLock()) {
+				logger.info("Couldn't get the RssFeedLock");
+			}
+			IndexReader indexReader = IndexReader.open(indexPath);
+			// see if the current entry is already in the index, if it is,
+			// delete it. 
+			for (Entry e: entries) {
+				indexReader.deleteDocuments(new Term("guid", e.getId().toString()));
+			}
+			indexReader.close();
+		} catch (Exception e) {
+			logger.info("Rss module error: " + e.toString());
+		} finally {
+			rfl.releaseFeedLock();
+		}
+	}
+	private void generateRssFeed(Binder binder) {
+
+		// See if the feed already exists
+		File rssdir = getRssIndexPath(binder);
+		if (IndexReader.indexExists(rssdir.getPath()))
+			return;
+
+		// Make sure the rss directory exists
+		if (!rssdir.exists())
+			rssdir.mkdirs();
+
+		generateRssIndex(binder);
+	}
 	private void generateRssIndex(Binder binder) {
 		// create a new index, then populate it
-
-		RssFeedLock rfl = new RssFeedLock(rssRootDir, binder);
+		RssFeedLock rfl = new RssFeedLock(getRssIndexLockFile(binder));
 
 		try {
 			if (!rfl.getFeedLock()) {
 				logger.info("Couldn't get the RssFeedLock");
 			}
 			IndexWriter indexWriter = new IndexWriter(this
-					.getRssPathName(binder), new SsfIndexAnalyzer(), true);
+					.getRssIndexPath(binder), new SsfIndexAnalyzer(), true);
 
 			long startDate = new Date().getTime() - (maxDays * DAYMILLIS);
 			Date start = new Date(startDate);
@@ -207,11 +231,10 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	 * @param indexPath
 	 * @return
 	 */
-	private boolean rssFeedInactive(Entry entry, String indexPath) {
+	private boolean rssFeedInactive(Binder binder) {
 		// set the pathname to the rss last read timestamp file
 		try {
-			String lastAccessedFile = indexPath + FS + TSFILENAME;
-			File tf = new File(lastAccessedFile);
+			File tf = getRssIndexActivityFile(binder);
 			// if it doesn't exist, then create it now
 			if (!tf.exists()) {
 				// create it
@@ -223,7 +246,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			long currentTime = System.currentTimeMillis();
 			long maxInactive = maxInactiveDays * DAYMILLIS;
 			if ((currentTime - lastModified) > maxInactive) {
-				deleteRssIndex(entry.getParentBinder());
+				deleteRssFeed(binder);
 				return true;
 			}
 		} catch (Exception e) {
@@ -235,9 +258,8 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	 * 
 	 * @param indexPath
 	 */
-	private void updateTimestamp(String indexPath) {
-		String lastAccessedFile = indexPath + FS + TSFILENAME;
-		File tf = new File(lastAccessedFile);
+	private void updateTimestamp(Binder binder) {
+		File tf = getRssIndexActivityFile(binder);
 		// if it doesn't exist, then create it now
 		if (!tf.exists()) {
 			// create it
@@ -264,14 +286,13 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	public void updateRssFeed(Entry entry) {
 
 		SimpleProfiler.startProfiler("RssModule.updateRssFeed");
-		String indexPath = getRssPathName(entry.getParentBinder());
+		File indexPath = getRssIndexPath(entry.getParentBinder());
 
 		// See if the feed already exists
-		File rf = new File(indexPath);
-		if (!rf.exists())
+		if (!indexPath.exists())
 			return; // if it doesn't already exist, then don't update it.
 
-		RssFeedLock rfl = new RssFeedLock(rssRootDir, entry.getParentBinder());
+		RssFeedLock rfl = new RssFeedLock(getRssIndexLockFile(entry.getParentBinder()));
 		try {
 			if (!rfl.getFeedLock()) {
 				logger.info("Couldn't get the RssFeedLock");
@@ -279,13 +300,13 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			// check to see if this feed has been read from in a month, if yes, 
 			// change the last modified timestamp, otherwise, delete it and 
 			// let the next reader recreate it.
-			if (rssFeedInactive(entry, indexPath))
+			if (rssFeedInactive(entry.getParentBinder()))
 				return;
 
 			// see if the rss capability has been disabled, if so, delete the feed.
 			boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
 			if (!rssEnabled) {
-				deleteRssIndex(entry.getParentBinder());
+				deleteRssFeed(entry.getParentBinder());
 				return;
 			}
 			
@@ -294,7 +315,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 			List<Integer> delDocIds = new ArrayList<Integer>();
 
-			IndexSearcher indexSearcher = new IndexSearcher(indexPath);
+			IndexSearcher indexSearcher = new IndexSearcher(indexPath.getPath());
 			// see if the current entry is already in the index, if it is,
 			// delete it. 
 			String qString = "guid:" + entry.getId().toString();
@@ -354,27 +375,24 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
 		if (!rssEnabled) {
 			return this.getRssDisabledString();
-///			return WebHelper.markupStringReplacement(null, null, request,
-//					response, null, this.getRssDisabledString(), WebKeys.MARKUP_VIEW);
 		}
 		
-		String indexPath = getRssPathName(binder);
-		RssFeedLock rfl = new RssFeedLock(rssRootDir, binder);
+		File indexPath = getRssIndexPath(binder);
+		RssFeedLock rfl = new RssFeedLock(getRssIndexLockFile(binder));
 
 		try {
 			// See if the feed already exists
 
-			File rf = new File(indexPath);
-			if (!rf.exists())
+			if (!indexPath.exists())
 				this.generateRssFeed(binder);
 
 			if (!rfl.getFeedLock()) {
 				logger.info("Couldn't get the RssFeedLock");
 			}
 
-			updateTimestamp(indexPath);
+			updateTimestamp(binder);
 
-			IndexSearcher indexSearcher = new IndexSearcher(indexPath);
+			IndexSearcher indexSearcher = new IndexSearcher(indexPath.getPath());
 
 			// this will add acls to the query
 			Query q = buildRssQuery();
@@ -399,8 +417,6 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			}
 			indexSearcher.close();
 			rss += addRssFooter();
-//			rss = WebHelper.markupStringReplacement(null, null, request,
-//					response, null, rss, WebKeys.MARKUP_VIEW);
 
 			return rss;
 
@@ -482,13 +498,13 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		String title = "<![CDATA[ " + entry.getTitle() + "]]>";
 		ret += "<title>" + title + "</title>\n";
 		ret += "<link>"
-				+ PermaLinkUtil.getPermalinkURL(entry).replaceAll(
+				+ PermaLinkUtil.getPermalink(entry).replaceAll(
 						"&", "&amp;") + "</link>\n";
 
 		String description = entry.getDescription() == null ? "" : entry
 				.getDescription().getText();
 		description = MarkupUtil.markupStringReplacement(null, null, null, null,
-				entry, description, WebKeys.MARKUP_VIEW);
+				entry, description, WebKeys.MARKUP_EXPORT);
 		description = "<![CDATA[ " + description + "]]>";
 		ret += "<description>" + description + "</description>\n";
 
@@ -510,9 +526,9 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		ret += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 		ret += "<rss version=\"2.0\">\n";
 		ret += "<channel>\n";
-		ret += "<title>" + title + "</title>\n";
+		ret += "<title><![CDATA[ " +  title + "]]></title>\n";
 		ret += "<link/>";
-		ret += "<description>" + title + "</description>\n";
+		ret += "<description><![CDATA[ " + title + "]]></description>\n";
 		ret += "<pubDate>" + fmt.format(new Date()) + "</pubDate>\n";
 		ret += "<ttl>60</ttl>\n";
 		ret += "<generator feedVersion=\"1.0\">IceCore</generator>\n";
@@ -552,35 +568,26 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 class RssFeedLock {
 	protected Log logger = LogFactory.getLog(getClass());
 
-	final String FS = System.getProperty("file.separator");
-
-	final String LOCKFILENAME = "lockfile";
 
 	private FileLock fileLock = null;
 
 	private FileChannel fileChannel = null;
 
-	private String indexPath = null;
+	private File lockFile=null;
 
-	private Binder binder = null;
-
-	RssFeedLock(String ip, Binder b) {
-		indexPath = ip;
-		binder = b;
+	RssFeedLock(File lockFile) {
+		this.lockFile = lockFile;
 	}
 
 	public boolean getFeedLock() {
-
-		String lockName = indexPath + FS + LOCKFILENAME + binder.getId();
-		File lf = new File(lockName);
-		if (!lf.exists()) {
+		if (!lockFile.exists()) {
 			try {
-				lf.createNewFile();
+				lockFile.createNewFile();
 			} catch (Exception e) {
 			}
 		}
 		try {
-			fileChannel = new RandomAccessFile(lf, "rw").getChannel();
+			fileChannel = new RandomAccessFile(lockFile, "rw").getChannel();
 			fileLock = fileChannel.lock();
 			return true;
 		} catch (Exception e) {

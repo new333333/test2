@@ -64,6 +64,7 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoPrincipalByTheIdException;
+import com.sitescape.team.domain.NoUserByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowResponse;
 import com.sitescape.team.domain.WorkflowState;
@@ -288,8 +289,14 @@ public class EnterExitEvent extends AbstractActionHandler {
 		if (!accessManager.testOperation(destination, WorkAreaOperation.CREATE_ENTRIES)) {
 			//see if binder owner has write access to destination.  Since the binder owner set up the workflow destination,
 			//they need write access.  The current user may not have the rights, but this shouldn't stop the process.
-			User user = getProfileDao().loadUser(entry.getParentBinder().getOwnerId(), entry.getZoneId());
-			accessManager.checkOperation(user, destination, WorkAreaOperation.CREATE_ENTRIES);
+			try {
+				User user = getProfileDao().loadUser(entry.getParentBinder().getOwnerId(), entry.getZoneId());
+				accessManager.checkOperation(user, destination, WorkAreaOperation.CREATE_ENTRIES);
+			} catch (NoUserByTheIdException nu) {	
+				//owner probably deleted.
+				//throw original error 
+				accessManager.checkOperation(destination, WorkAreaOperation.CREATE_ENTRIES);
+			}
 		}
 		return destination;
 		
@@ -403,9 +410,9 @@ public class EnterExitEvent extends AbstractActionHandler {
 			s = s + " " + entry.getTitle();
 		}
 		details.put(MailModule.SUBJECT, s);
-		String permaLink = PermaLinkUtil.getPermalinkURL(entry);
+		String permaLink = PermaLinkUtil.getPermalink(entry);
 		String msgHtml = "";
-		if (entry.getDescription() != null) msgHtml = MarkupUtil.markupStringReplacement(null, null, null, null, entry, entry.getDescription().getText(), WebKeys.MARKUP_VIEW);
+		if (entry.getDescription() != null) msgHtml = MarkupUtil.markupStringReplacement(null, null, null, null, entry, entry.getDescription().getText(), WebKeys.MARKUP_EXPORT);
 		details.put(MailModule.TO, addrs);
 		StringBuffer tMsg = new StringBuffer();
 		tMsg.append(permaLink);

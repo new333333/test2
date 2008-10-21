@@ -224,7 +224,7 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 			teamList.add(new TeamBrief(binderId, (String) binder.get(Constants.TITLE_FIELD),
 					new Timestamp((String) binder.get(Constants.CREATOR_NAME_FIELD), (Date) binder.get(Constants.CREATION_DATE_FIELD)),
 					new Timestamp((String) binder.get(Constants.MODIFICATION_NAME_FIELD), (Date) binder.get(Constants.MODIFICATION_DATE_FIELD)),
-					PermaLinkUtil.getPermalinkURL(binder)));
+					PermaLinkUtil.getPermalink(binder)));
 		}
 	
 		TeamBrief[] array = new TeamBrief[teamList.size()];

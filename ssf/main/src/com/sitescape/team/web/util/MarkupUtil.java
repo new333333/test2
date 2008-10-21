@@ -1,32 +1,29 @@
 package com.sitescape.team.web.util;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.net.URI;
 
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.web.WebKeys;
@@ -209,15 +206,17 @@ public class MarkupUtil {
 	}
 	public static String markupStringReplacement(final RenderRequest req, final RenderResponse res, 
 			final HttpServletRequest httpReq, final HttpServletResponse httpRes,
-			final Map searchResults, String inputString, String type) {
+			final Map searchResults, String inputString, final String type) {
 		UrlBuilder builder = new UrlBuilder() {
 			public String getRootUrl() {
-				if (httpReq != null) return WebUrlUtil.getAdapterRootURL(httpReq, req.isSecure());
+				if (httpReq != null) return WebUrlUtil.getAdapterRootURL(httpReq, httpReq.isSecure());
 				if (req != null) return WebUrlUtil.getAdapterRootURL(req, req.isSecure());
 				return WebUrlUtil.getAdapterRootUrl();
 			}
-			public String getFileUrlByName(String fileName) {				
-				return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, searchResults, fileName);
+			public String getFileUrlByName(String fileName) {
+				if (!WebKeys.MARKUP_EXPORT.equals(type)) return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, searchResults, fileName);
+				//need permalink
+				return PermaLinkUtil.getFilePermalink(searchResults, fileName);
 			}
 			public String getFileUrlById(String fileId) {
 				Object fileName = searchResults.get(com.sitescape.util.search.Constants.FILENAME_FIELD+fileId);
@@ -229,17 +228,14 @@ public class MarkupUtil {
 				return getTitleUrl((String)searchResults.get(com.sitescape.util.search.Constants.BINDER_ID_FIELD), normalizedTitle);
 			}
 			public String getTitleUrl(String binderId, String normalizedTitle) {
-    			String action = WebKeys.ACTION_VIEW_FOLDER_ENTRY;
-    			Map params = new HashMap();
-    			params.put(WebKeys.URL_BINDER_ID, binderId);
-    			params.put(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
-    			if (req == null && res == null && httpReq == null && httpRes == null) {
-    				action = WebKeys.ACTION_VIEW_PERMALINK;
-    				params.put(WebKeys.URL_ENTRY_TITLE, normalizedTitle);
-    				params.put(WebKeys.URL_ENTITY_TYPE, EntityType.folderEntry.name());
-    			}
-    			return getPortletUrl(req, res, httpReq, httpRes, action, true, params);
-
+				if (WebKeys.MARKUP_EXPORT.equals(type) || res == null) {
+					return PermaLinkUtil.getTitlePermalink(Long.valueOf(binderId), normalizedTitle);
+				}
+				PortletURL portletURL = portletURL = res.createActionURL();
+				portletURL.setParameter(WebKeys.URL_BINDER_ID, binderId);
+				portletURL.setParameter(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
+				portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+				return portletURL.toString();
 			}
 		};
 		return markupStringReplacement(req, res, httpReq, httpRes, builder,
@@ -248,15 +244,17 @@ public class MarkupUtil {
 	
 	public static String markupStringReplacement(final RenderRequest req, final RenderResponse res, 
 			final HttpServletRequest httpReq, final HttpServletResponse httpRes,
-			final DefinableEntity entity, String inputString, String type) {
+			final DefinableEntity entity, String inputString, final String type) {
 		UrlBuilder builder = new UrlBuilder() {
 			public String getRootUrl() {
-				if (httpReq != null) return WebUrlUtil.getAdapterRootURL(httpReq, req.isSecure());
+				if (httpReq != null) return WebUrlUtil.getAdapterRootURL(httpReq, httpReq.isSecure());
 				if (req != null) return WebUrlUtil.getAdapterRootURL(req, req.isSecure());
 				return WebUrlUtil.getAdapterRootUrl();
 			}
 			public String getFileUrlByName(String fileName) {
-				return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, entity, fileName);
+				if (!WebKeys.MARKUP_EXPORT.equals(type)) return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, entity, fileName);
+				//need permalink
+				return PermaLinkUtil.getFilePermalink(entity, fileName);
 			}
 			public String getFileUrlById(String fileId) {
 				try {
@@ -268,17 +266,14 @@ public class MarkupUtil {
 				return getTitleUrl(entity.getParentBinder().getId().toString(), normalizedTitle);
 			}
 			public String getTitleUrl(String binderId, String normalizedTitle) {
-    			String action = WebKeys.ACTION_VIEW_FOLDER_ENTRY;
-    			Map params = new HashMap();
-    			params.put(WebKeys.URL_BINDER_ID, binderId);
-    			params.put(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
-    			if (req == null && res == null && httpReq == null && httpRes == null) {
-    				action = WebKeys.ACTION_VIEW_PERMALINK;
-    				params.put(WebKeys.URL_ENTRY_TITLE, normalizedTitle);
-    				params.put(WebKeys.URL_ENTITY_TYPE, EntityType.folderEntry.name());
-    			}
-    			return getPortletUrl(req, res, httpReq, httpRes, action, true, params);
-
+				if (WebKeys.MARKUP_EXPORT.equals(type) || res == null) {
+					return PermaLinkUtil.getTitlePermalink(Long.valueOf(binderId), normalizedTitle);
+				}
+				PortletURL portletURL = portletURL = res.createActionURL();
+				portletURL.setParameter(WebKeys.URL_BINDER_ID, binderId);
+				portletURL.setParameter(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
+				portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+				return portletURL.toString();
 			}
 		};
 		return markupStringReplacement(req, res, httpReq, httpRes, builder,
@@ -583,48 +578,5 @@ public class MarkupUtil {
     	}
 		return result;
 	}
-	
-	public static String getPortletUrl(RenderRequest req, RenderResponse res, 
-			HttpServletRequest httpReq, HttpServletResponse httpRes,
-			String action, boolean actionUrl, Map params) {
-		String portletName="ss_forum";
-		if (req == null || res == null) {
-			//This call must have come from a servlet (e.g., rss)
-			//  Build a permalink url
-			if (!Validator.isNull(action)) {
-				params.put("action", action);
-			}
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(httpReq, portletName, actionUrl);
-			Iterator it = params.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry me = (Map.Entry) it.next();
-				adapterUrl.setParameter((String) me.getKey(), (String)me.getValue());
-			}
-			return adapterUrl.toString();
-
-		} else {
-			PortletURL portletURL = null;
-			if (actionUrl) {
-				portletURL = res.createActionURL();
-			} else {
-				portletURL = res.createRenderURL();
-			}
-			try {
-				portletURL.setWindowState(new WindowState(WindowState.MAXIMIZED.toString()));
-			} catch(Exception e) {}
-			
-			Iterator it = params.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry me = (Map.Entry) it.next();
-				portletURL.setParameter((String) me.getKey(), (String)me.getValue());
-			}
-			if (!Validator.isNull(action)) {
-				portletURL.setParameter("action", new String[] {action});
-			}
-	
-			return portletURL.toString();
-		}
-	}
-	
 	
 }

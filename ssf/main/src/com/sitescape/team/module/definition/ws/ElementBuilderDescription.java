@@ -41,6 +41,7 @@ import com.sitescape.team.web.util.MarkupUtil;
  */
 public class ElementBuilderDescription extends AbstractElementBuilder {
 	   protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, Object obj, DefinableEntity entity, String dataElemType, String dataElemName) {
+		if (dataElemType.equals("description")) return false;
 		if (obj instanceof Description) {
 			Description desc = (Description) obj;
 			String markup = MarkupUtil.markupStringReplacement(null, null, null, null,entity, desc.getText(), WebKeys.MARKUP_EXPORT);
@@ -48,7 +49,7 @@ public class ElementBuilderDescription extends AbstractElementBuilder {
 				element.setText(markup);
 				element.addAttribute("format", String.valueOf(desc.getFormat()));
 			}
-			if(entityModel != null && !dataElemType.equals("description")) {
+			if(entityModel != null) {
 				// Skip custom field processing for description type field, since it is treated as a static field.
 				entityModel.addCustomStringField(new CustomStringField(dataElemName, dataElemType, markup));				
 			}

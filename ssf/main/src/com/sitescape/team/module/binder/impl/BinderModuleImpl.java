@@ -518,7 +518,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
    		for (Object row[]:objs) {
    			ids.add((Long)row[0]);
    		}
-   		ids.remove(top);
+   		ids.remove(top.getId());
   		for (Long id:ids) {
   			try {
   				final Binder child = getCoreDao().loadBinder(id, top.getZoneId());

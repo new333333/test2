@@ -335,9 +335,21 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
        	}
        	getFolderDao().deleteEntries((Folder)parentBinder, entries);   
     }
+    //inside write transaction
+    protected void deleteEntry_postDelete(Binder parentBinder, Entry entry, Map ctx) {
+       	if (parentBinder.isDeleted()) return;  //will handle in bulk way
+       	List<FolderEntry> replies = (List)ctx.get("this.replies");
+      	for (FolderEntry reply: replies) {
+       		super.deleteEntry_postDelete(parentBinder, reply, null);
+    	}
+       	Collection<Entry> entries = new ArrayList((List)ctx.get("this.replies"));
+       	entries.add((FolderEntry)entry);
+ 		getRssModule().deleteRssFeed(parentBinder, entries);
+		super.deleteEntry_postDelete(parentBinder, entry, null);
+  }
     //no transaction    
     protected void deleteEntry_indexDel(Binder parentBinder, Entry entry, Map ctx) {
-       	if (parentBinder.isDeleted());  //will handle in bulk way
+       	if (parentBinder.isDeleted()) return;  //will handle in bulk way
         List<FolderEntry> replies = (List)ctx.get("this.replies");
       	for (FolderEntry reply: replies) {
       		super.deleteEntry_indexDel(parentBinder, reply, null);
@@ -628,7 +640,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	}
     }
 
- 
+   //inside write transaction    
+   protected void deleteBinder_postDelete(Binder binder, Map ctx) {
+	   //remove notification status so mail isn't sent
+	   getCoreDao().executeUpdate("delete from com.sitescape.team.domain.NotifyStatus where owningBinderId=" + binder.getId());
+	   getRssModule().deleteRssFeed(binder);
+    }
+
     //***********************************************************************************************************
    //inside write transaction    
     public void moveBinder(Binder source, Binder destination, Map options) {
