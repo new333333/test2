@@ -26,4 +26,9 @@
 .ss_mobile_masthead {
 	border: solid 1px black;
 	background-color: #cecece;
+	margin-bottom:10px;
+}
+.ss_mobile_footer {
+	border: solid 1px black;
+	background-color: #cecece;
 }

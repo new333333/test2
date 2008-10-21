@@ -118,6 +118,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				ajaxMobileDoAddEntry(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MOBILE_ADD_REPLY)) {
 				ajaxMobileDoAddReply(request, response);
+			} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE)) {
+				ajaxMobileDoFrontPage(this, request, response);
 			}
 		}
 				
@@ -158,7 +160,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			return ajaxMobileLogin(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE)) {
-			return ajaxMobileFrontPage(request, response);
+			return ajaxMobileFrontPage(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_SEARCH_RESULTS)) {
 			return ajaxMobileSearchResults(this, request, response);
@@ -166,7 +168,11 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE)) {
 			return ajaxMobileFindPeople(request, response);
 		}
-		return ajaxMobileFrontPage(request, response);
+		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			return ajaxMobileLogin(this, request, response);
+		} else {
+			return ajaxMobileFrontPage(this, request, response);
+		}
 	} 
 
 	private void ajaxMobileDoAddEntry(ActionRequest request, ActionResponse response) 
@@ -214,6 +220,19 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 	}
 
+	private void ajaxMobileDoFrontPage(AllModulesInjected bs, ActionRequest request, ActionResponse response) 
+			throws Exception {
+		//Do front page stuff
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Map formData = request.getParameterMap();
+		//See if the add entry form was submitted
+		if (formData.containsKey("miniblogBtn")) {
+			//The miniblog form was submitted. Go process it
+			String text = PortletRequestUtils.getStringParameter(request, "miniblogText", "");
+			BinderHelper.addMiniBlogEntry(bs, text);
+		}
+	}
+
 	private ModelAndView ajaxMobileLogin(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
@@ -225,11 +244,12 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	}
 	
 	
-	private ModelAndView ajaxMobileFrontPage(RenderRequest request, 
+	private ModelAndView ajaxMobileFrontPage(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		Map model = new HashMap();
+		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
 		//This is the portlet view; get the configured list of folders to show
 		Set<Long>binderIds = LongIdUtil.getIdsAsLongSet((String)userProperties.get(ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS));
 
@@ -340,7 +360,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map folderEntries = null;
 		
 		if (binder== null) {
-			return ajaxMobileFrontPage(request, response);
+			return ajaxMobileFrontPage(this, request, response);
 		} 
 		model.put(WebKeys.BINDER, binder);
 
@@ -402,7 +422,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 		Map options = new HashMap();		
 		if (binder== null) {
-			return ajaxMobileFrontPage(request, response);
+			return ajaxMobileFrontPage(bs, request, response);
 		} 
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.TYPE, type);

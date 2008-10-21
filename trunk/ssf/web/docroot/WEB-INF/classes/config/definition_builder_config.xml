@@ -1919,9 +1919,10 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/graphic_form.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/file_form.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderGraphic" />
-		<notify  notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderFile" />
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderFile" />
 	</item>
 
 	<item name="attachFiles" caption="__attach_files" type="data" canBeDeleted="false"
