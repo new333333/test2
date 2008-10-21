@@ -40,5 +40,11 @@
 	actionUrl="true" />"
   <textarea rows="2" style="width:150px;" name="miniblogText"></textarea>
   <input type="submit" name="miniblogBtn" value="<ssf:nlt tag="button.ok"/>">
+<c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">
+  <div style="padding-left:10px;"><span class="ss_mobile_small"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+        value="${ssUser.statusDate}" type="both" 
+	    timeStyle="short" dateStyle="short" /></span></div>
+  <div style="padding-left:10px;"><span class="ss_mobile_small">${ssUser.status}</span></div>
+</c:if>
 </form>
 </div>

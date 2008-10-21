@@ -2066,10 +2066,15 @@ div.ss_thumbnail_small_no_text img,  div.ss_thumbnail_standalone_small img {
     height: 50px;
     margin-right: 5px;    
 	}
-.ss_thumbnail_standalone_medium img {
+.ss_thumbnail_standalone_signature img {
     width: 70px;
     height: 70px;
     margin-top: 36px;
+	}
+.ss_thumbnail_standalone_miniblog img {
+    width: 70px;
+    height: 70px;
+    margin-top: 12px;
 	}
 div.ss_thumbnail_small_buddies_list, div.ss_thumbnail_small_buddies_list img {
     width: 35px;
