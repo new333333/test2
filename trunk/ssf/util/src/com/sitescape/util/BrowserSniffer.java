@@ -344,6 +344,27 @@ public class BrowserSniffer {
 		}
 	}
 
+	public static boolean is_iphone(HttpServletRequest req) {
+		if (req == null) {
+			return false;
+		}
+
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
+
+		if (agent == null) {
+			return false;
+		}
+
+		agent = agent.toLowerCase();
+
+		if (agent.indexOf("iphone") != -1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	public static boolean is_wml(HttpServletRequest req) {
 		if (req == null) {
 			return false;
