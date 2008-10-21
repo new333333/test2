@@ -34,15 +34,9 @@
 <%@ page import="com.sitescape.team.util.CalendarHelper" %>
 <c:if test="${empty ssReadOnlyFields[property_name]}">
 
-<style type="text/css">
-        @import "<html:rootPath />js/dojo/dijit/themes/tundra/tundra.css";
-        @import "<html:rootPath />js/dojo/dojo/resources/dojo.css"
-</style>
-
-<div class="ss_entryContent tundra">
-	<span class="ss_labelAbove" id='${property_name}_label'>${property_caption}<c:if test="${property_required}"><span class="ss_required">*</span></c:if></span>
-	<div id="${property_name}_error" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="date.validate.error"/></span></div>
-	
+<div class="ss_entryContent">
+	<span class="ss_labelAbove" id='${property_name}_label'>
+	${property_caption}<c:if test="${property_required}"><span class="ss_required">*</span></c:if></span>
 
 	<c:set var="initDate" value="<%= new Date() %>"/>
 	<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
@@ -50,13 +44,12 @@
 		<c:set var="property_initialSetting" value="entry"/>
 	</c:if>
 
-	<table class="ss_style" cellpadding="0" border="0">
+	<table cellpadding="0" border="0">
 		<tr>
 			<td>
-				<input type="text" dojoType="dijit.form.DateTextBox" 
+				<input type="text" size="12"
 					id="date_${property_name}_${prefix}" 
 					name="${property_name}_fullDate" 
-					lang="<ssf:convertLocaleToDojoStyle />" 
 					<c:if test="${property_initialSetting != 'none'}">
 					  value="<fmt:formatDate value="${initDate}" 
 					    pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/>"
@@ -65,12 +58,12 @@
 					  value=""
 					</c:if>
 				/>
+				<div><span class="ss_mobile_small"><ssf:nlt tag="mobile.dateFormat"/></span></div>
 			</td>
 			<td>
-				<input type="text" dojoType="dijit.form.TimeTextBox"
+				<input type="text" size="7"
 					id="date_time_${property_name}_${prefix}" 
 					name="${property_name}_0_fullTime" 
-					lang="<ssf:convertLocaleToDojoStyle />" 
 					<c:if test="${property_initialSetting != 'none'}">
 					  value="T<fmt:formatDate value="${initDate}" 
 					    pattern="HH:mm:ss" timeZone="${ssUser.timeZone.ID}"/>"
@@ -78,22 +71,14 @@
 					<c:if test="${property_initialSetting == 'none'}">
 					  value=""
 					</c:if>
-				></div>
+				>
+				<div><span class="ss_mobile_small"><ssf:nlt tag="mobile.timeFormat"/></span></div>
 				<input type="hidden" name="${property_name}_timezoneid" value="${ssUser.timeZone.ID}" />
 			</td>
 		</tr>
 	</table>
 	
 	<input type="hidden" name="${property_name}" value="" />
-	
-	<script type="text/javascript">
-		dojo.addOnLoad(function() {
-				dojo.addClass(document.body, "tundra");
-			}
-		);	
-		dojo.require("dijit.form.DateTextBox");
-		dojo.require("dijit.form.TimeTextBox");
-	</script>
 	
 </div>
 </c:if>

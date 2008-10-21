@@ -36,7 +36,8 @@
 <c:if test="${empty ssReadOnlyFields[property_name]}">
 
 <div class="ss_entryContent">
-<span class="ss_labelAbove" id='${property_name}_label'>${property_caption}<c:if test="${property_required}"><span class="ss_required">*</span></c:if></span>
+<span class="ss_labelAbove" id='${property_name}_label'>
+${property_caption}<c:if test="${property_required}"><span class="ss_required">*</span></c:if></span>
 	
 	<c:set var="initDate" value="<%= new Date() %>"/>
 	<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
@@ -44,6 +45,7 @@
 		<c:set var="property_initialSetting" value="entry"/>
 	</c:if>
 
+	<br/>
 	<input type="text" 
 		id="date_${property_name}_${prefix}" 
 		name="${property_name}_fullDate" 
