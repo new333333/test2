@@ -46,7 +46,7 @@
 		<div class="ss_labelAbove" id="${property_name}_label">${property_caption}</div>
 		<input type="text" class="ss_text" name="title" id="title" size="40"
 		 <c:if test="${empty ssDefinitionEntry.title}">
-		   <c:if test="${empty ssEntryTitle && !empty ssEntry}">
+		   <c:if test="${empty ssEntryTitle && !empty ssEntry && empty ssDefinitionEntry}">
 		     value="<ssf:nlt tag="reply.re.title"><ssf:param 
 		       name="value" useBody="true">${ssEntry.title}</ssf:param></ssf:nlt>"
 		   </c:if>

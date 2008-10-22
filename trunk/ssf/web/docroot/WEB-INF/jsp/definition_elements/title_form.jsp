@@ -72,7 +72,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 	onchange="ss_ajaxValidate(ss_checkTitleUrl, this,'${property_name}_label', 'ss_titleCheck');"
 </c:if>
 		 <c:if test="${empty ssDefinitionEntry.title}">
-		   <c:if test="${empty ssEntryTitle && !empty ssEntry}">
+		   <c:if test="${empty ssEntryTitle && !empty ssEntry && empty ssDefinitionEntry}">
 		     value="<ssf:nlt tag="reply.re.title"><ssf:param 
 		       name="value" useBody="true">${ssEntry.title}</ssf:param></ssf:nlt>"
 		   </c:if>
