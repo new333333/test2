@@ -95,7 +95,7 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/title_form.jsp" />
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/mobile/title_form.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/title_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.title_field</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderTitle" />
@@ -317,7 +317,7 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/event_form.jsp" />
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/mobile/event_form.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/event_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.event</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderEvent" />
@@ -2005,7 +2005,7 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/date_form.jsp" />
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/mobile/date_form.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/date_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDate" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDate" />
@@ -2029,7 +2029,7 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/date_time_form.jsp" />
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/mobile/date_time_form.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/date_time_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDateTime" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDate" />
@@ -2107,7 +2107,7 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/survey_form.jsp" />
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/mobile/survey_form.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/survey_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSurvey" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSurvey" />

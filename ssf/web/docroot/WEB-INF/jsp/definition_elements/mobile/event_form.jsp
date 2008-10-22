@@ -44,11 +44,13 @@
 		</c:when>	
 	</c:choose>
 	<ssf:eventeditor id="${property_name}" 
-	         formName="${formName}" 
-	         initEvent="${ev}"
-	         required="${property_required}"
-	         hasDuration="${property_hasDuration}"
-	         hasRecurrence="${property_hasRecurrence}" 
-	         isTimeZoneSensitiveActive="${property_timeZoneSensitiveActive}"
-	         isFreeBusyActive="${property_freeBusyActive}" />
+	     formName="${formName}" 
+	     initEvent="${ev}"
+	     required="${property_required}"
+	     hasDuration="${property_hasDuration}"
+	     hasRecurrence="${property_hasRecurrence}" 
+	     isTimeZoneSensitiveActive="${property_timeZoneSensitiveActive}"
+	     isFreeBusyActive="${property_freeBusyActive}" 
+	     mobile="true"
+	/>
 </div>

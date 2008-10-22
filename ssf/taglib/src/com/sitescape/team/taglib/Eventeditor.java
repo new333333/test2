@@ -57,22 +57,15 @@ import com.sitescape.util.servlet.StringServletResponse;
 public class Eventeditor extends TagSupport {
 
 	private String contextPath;
-
 	private String id;
-
 	private String formName;
-
 	private Event initEvent = null;
-
 	private Boolean hasDuration = false;
-
 	private Boolean hasRecurrence = true;
-
 	private Boolean isTimeZoneSensitiveActive = false;
-	
 	private Boolean isFreeBusyActive = false;
-
 	private Boolean required = false;
+	private Boolean mobile = false;
 
 	public int doStartTag() throws JspException {
 		try {
@@ -95,6 +88,7 @@ public class Eventeditor extends TagSupport {
 					.getRequest());
 
 			String jsp = "/WEB-INF/jsp/tag_jsps/eventeditor/eventeditor.jsp";
+			if (this.mobile) jsp = "/WEB-INF/jsp/tag_jsps/eventeditor/mobile_eventeditor.jsp";
 			RequestDispatcher rd = req.getRequestDispatcher(jsp);
 
 			// if initEvent is provided, take it apart and pass in two dates
@@ -169,6 +163,8 @@ public class Eventeditor extends TagSupport {
 			hasRecurrence = true;
 			isTimeZoneSensitiveActive = false;
 			isFreeBusyActive = false;
+			required = false;
+			mobile = false;
 		}
 		return SKIP_BODY;
 	}
@@ -207,6 +203,10 @@ public class Eventeditor extends TagSupport {
 
 	public void setRequired(Boolean required) {
 		this.required = required;
+	}
+
+	public void setMobile(Boolean mobile) {
+		this.mobile = mobile;
 	}
 
 }

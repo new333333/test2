@@ -50,5 +50,7 @@
 	         hasDuration="${property_hasDuration}"
 	         hasRecurrence="${property_hasRecurrence}" 
 	         isTimeZoneSensitiveActive="${property_timeZoneSensitiveActive}"
-	         isFreeBusyActive="${property_freeBusyActive}" />
+	         isFreeBusyActive="${property_freeBusyActive}" 
+	         mobile="false"
+	         />
 </div>
