@@ -80,25 +80,6 @@ function ss_setPhotoIframeSize${renderResponse.namespace}() {
 <c:set var="currentAlbum" value="${ssBinder.id}"/>
 <table cellspacing="0" cellpadding="0" width="100%">
   <tbody>
-	 <tr>
-	   <td colspan="2" align="right">
-	     <div class="ss_navbar_inline">
-	     <ul>
-	     <c:forEach var="blogPage" items="${ssBlogPages}">
-	       <li>
-	         <a class="ss_link_8
-	         		<c:if test="${blogPage.id == currentAlbum}"> ss_navbar_current</c:if>
-					<c:if test="${blogPage.id != currentAlbum}"></c:if>
-	         "
-	         href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"><ssf:param 
-	         name="yearMonth" value="${ss_yearMonth}" /></ssf:url>"
-	         >${blogPage.title}</a>
-	       </li>
-	     </c:forEach>
-	     </ul>
-	     </div>
-	   </td>
-	 </tr>
 	<tr>
 	  <td valign="top">
 		<div class="ss_folder" id="ss_photo_folder_div">
@@ -106,7 +87,7 @@ function ss_setPhotoIframeSize${renderResponse.namespace}() {
 		</div>
 	  </td>
 	  <td valign="top" width="200">
-		<div id="ss_sideNav_wrap">
+		<div id="ss_sideNav_wrap" style="padding-top: 20px; padding-bottom: 10px;">
 		  <jsp:include page="/WEB-INF/jsp/sidebars/photo.jsp" />
 		</div>
 	  </td>
