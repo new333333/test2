@@ -31,6 +31,7 @@
 --%><% //Entry signature view %><%--
 --%><%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
+<div class="ss_entryContent">
 <table style="padding-left: 12px;" cellspacing="0" cellpadding="0">
  <tr>
   <td>
@@ -91,3 +92,4 @@
 	 </tr>
 	</table>
 </c:if>
+</div>
