@@ -36,6 +36,7 @@ Jackrabbit Core 1.4.5
 Jackrabbit SPI 1.4
 Jackrabbit SPI Commons 1.4
 Jakarta Taglibs Standard 1.1
+JavaMail 1.4.1 (Sun's reference implementation)
 Jaxen 1.1-beta-7
 JAXRPC 1.1
 JBoss App Server 4.2.1.GA jbosssx.jar
