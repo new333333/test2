@@ -98,7 +98,7 @@
  <c:if test="${!empty ssWorkspaceCreator.emailAddress}">
   <tr>
    <td valign="top" align="left">
-     <span>${ssWorkspaceCreator.emailAddress}</span>
+     <span><a href="mailto://${ssWorkspaceCreator.emailAddress}">${ssWorkspaceCreator.emailAddress}</a></span>
     <span class="ss_mobile_small ss_mobile_light">(<ssf:nlt tag="profile.abv.element.emailAddress"/>)</span>
    </td>
   </tr>

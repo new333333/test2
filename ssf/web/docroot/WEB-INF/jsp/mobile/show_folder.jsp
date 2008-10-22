@@ -111,14 +111,17 @@
 <c:forEach var="entry1" items="${ssFolderEntries}" >
 <jsp:useBean id="entry1" type="java.util.HashMap" />
   <tr><td align="right" valign="top" style="padding:0px 4px 2px 4px;">${entry1._docNum}.</td>
-	<td><a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${ssBinder.id}"  entryId="${entry1._docId}"
-	action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />">
-    <c:if test="${empty entry1.title}">
-    	(<ssf:nlt tag="entry.noTitle"/>)
-    </c:if>
-	<c:out value="${entry1.title}"/>
-	</a>
+	<td>
+	<div class="ss_mobile_folder_list">
+	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+		folderId="${ssBinder.id}"  entryId="${entry1._docId}"
+		action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />">
+    	<c:if test="${empty entry1.title}">
+    		(<ssf:nlt tag="entry.noTitle"/>)
+    	</c:if>
+		<c:out value="${entry1.title}"/>
+	  </a>
+	</div>
   </td></tr>
 </c:forEach>
 <tr><td></td><td></td></tr>
