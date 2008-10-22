@@ -53,6 +53,33 @@
 			<br/><span class="ss_mobile_light">${workflow2.threadName}</span>
 		    ${ssWorkflowCaptions[workflow2.id]}
     	  </c:if>
+    	  
+
+
+	      <c:if test="${!empty ssWorkflowTransitions[workflow2.id]}">
+		      <b><ssf:nlt tag="workflow.transitionTo" /></b>
+		      <br/>
+			  <form class="ss_style ss_form" method="post" 
+			    action="<ssf:url adapter="true" portletName="ss_forum" 
+					folderId="${ssBinder.id}" 
+					entryId="${ssDefinitionEntry.id}"
+					action="__ajax_mobile" 
+					operation="mobile_show_entry" 
+					actionUrl="true" />" 
+			    style="display:inline; background: inherit !important;">
+			  <input type="hidden" name="tokenId" value="${workflow.id}">
+			  <input type="hidden" name="replyId" value="${ssDefinitionEntry.id}">
+			  <select name="toState">
+			  <c:forEach var="transition" items="${ssWorkflowTransitions[workflow2.id]}">
+			    <option value="${transition.key}">${transition.value}</option>
+			  </c:forEach>
+			  </select><input type="submit" class="ss_submit" name="changeStateBtn" 
+			   style="background: inherit !important;"
+			   value="<ssf:nlt tag="button.ok" text="OK"/>">
+			  </form>
+		  </c:if>
+    	  
+    	  
   		</c:if>
   	</c:forEach>
   <c:set var="workflowTitle" value="${workflow.definition.title}"/>

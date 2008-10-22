@@ -808,35 +808,11 @@ public class ViewEntryController extends  SAbstractController {
 		if (!seen.checkIfSeen(entry)) {  
 			getProfileModule().setSeen(null, entry);
 		}
-		Map captionMap = new HashMap();
-		Map questionsMap = new HashMap();
-		Map transitionMap = new HashMap();
-		for (int i=0; i<replies.size(); i++) {
-			FolderEntry reply = (FolderEntry)replies.get(i);
-			Set states = reply.getWorkflowStates();
-			for (Iterator iter=states.iterator(); iter.hasNext();) {
-				WorkflowState ws = (WorkflowState)iter.next();
-				//store the UI caption for each state
-				captionMap.put(ws.getTokenId(), WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState()));
-				//See if user can transition out of this state
-				if (getFolderModule().testTransitionOutStateAllowed(reply, ws.getTokenId())) {
-					//get all manual transitions
-					Map trans = getFolderModule().getManualTransitions(reply, ws.getTokenId());
-					transitionMap.put(ws.getTokenId(), trans);
-				} 
-					
-				Map qMap = getFolderModule().getWorkflowQuestions(reply, ws.getTokenId());
-				questionsMap.put(ws.getTokenId(), qMap);
-			}
-		}
+		BinderHelper.buildWorkflowSupportBeans(this, replies, model);
 		
 		Definition entryDefinition = entry.getEntryDef();
 		Map fieldsData = getDefinitionModule().getEntryDefinitionElements(entryDefinition.getId());
 		model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, fieldsData);
-		
-		model.put(WebKeys.WORKFLOW_CAPTIONS, captionMap);
-		model.put(WebKeys.WORKFLOW_QUESTIONS, questionsMap);
-		model.put(WebKeys.WORKFLOW_TRANSITIONS, transitionMap);
 		
 		return entry;
 	}

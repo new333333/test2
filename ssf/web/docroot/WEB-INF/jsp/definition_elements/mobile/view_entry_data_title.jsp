@@ -39,15 +39,19 @@
 		%><img border="0" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
 	}
 %>
-<span class="ss_bold">
 <c:if test="${!empty ssDefinitionEntry.docNumber}">
-${ssDefinitionEntry.docNumber}.
+<span class="ss_bold">${ssDefinitionEntry.docNumber}.</span>
 </c:if>
-<c:if test="${empty ssDefinitionEntry.title}" >
+<a href="<ssf:url adapter="true" portletName="ss_forum" 
+					folderId="${ssBinder.id}" 
+					entryId="${ssDefinitionEntry.id}"
+					action="__ajax_mobile" 
+					operation="mobile_show_entry" 
+					actionUrl="false" />"
+><span class="ss_bold"><c:if test="${empty ssDefinitionEntry.title}" >
 (<ssf:nlt tag="entry.noTitle" />)
 </c:if>
-<c:out value="${ssDefinitionEntry.title}" />
-</span>
+<c:out value="${ssDefinitionEntry.title}" /></span></a>
 <br/>
 </div>
 
