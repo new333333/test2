@@ -45,6 +45,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -126,6 +128,10 @@ public class DateHelper {
 			// Remove time zone information from time string. Time zone is set by dojo TimePicker widget,
 			// but this is user client time zone what is NOT the same like user profile time zone.
 			String timeString = inputData.getSingleValue(timePrefix + "fullTime");
+			//Allow hh:mm format, too
+			Pattern timeP = Pattern.compile("^[0-9]?[0-9]:[0-9]?[0-9]$");
+			Matcher m = timeP.matcher(timeString);
+			if (m.find()) timeString += ":00";
 			if (!"".equals(timeString)) {
 				timeString = timeString.replaceFirst("T", "");
 				if (timeString.indexOf("-") > -1) {
