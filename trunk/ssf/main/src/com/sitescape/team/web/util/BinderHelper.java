@@ -87,6 +87,7 @@ import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
+import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule;
@@ -94,6 +95,7 @@ import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.portlet.forum.ViewController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.portlet.RenderRequestImpl;
@@ -2797,6 +2799,32 @@ public class BinderHelper {
 				} catch (Exception ex) {}
 			}
 		}
-		
+	}
+	
+	public static void buildWorkflowSupportBeans(AllModulesInjected bs, List entryList, Map model) {
+		Map captionMap = new HashMap();
+		Map questionsMap = new HashMap();
+		Map transitionMap = new HashMap();
+		for (int i=0; i<entryList.size(); i++) {
+			FolderEntry entry = (FolderEntry)entryList.get(i);
+			Set states = entry.getWorkflowStates();
+			for (Iterator iter=states.iterator(); iter.hasNext();) {
+				WorkflowState ws = (WorkflowState)iter.next();
+				//store the UI caption for each state
+				captionMap.put(ws.getTokenId(), WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState()));
+				//See if user can transition out of this state
+				if (bs.getFolderModule().testTransitionOutStateAllowed(entry, ws.getTokenId())) {
+					//get all manual transitions
+					Map trans = bs.getFolderModule().getManualTransitions(entry, ws.getTokenId());
+					transitionMap.put(ws.getTokenId(), trans);
+				} 
+					
+				Map qMap = bs.getFolderModule().getWorkflowQuestions(entry, ws.getTokenId());
+				questionsMap.put(ws.getTokenId(), qMap);
+			}
+		}
+		model.put(WebKeys.WORKFLOW_CAPTIONS, captionMap);
+		model.put(WebKeys.WORKFLOW_QUESTIONS, questionsMap);
+		model.put(WebKeys.WORKFLOW_TRANSITIONS, transitionMap);
 	}
 }

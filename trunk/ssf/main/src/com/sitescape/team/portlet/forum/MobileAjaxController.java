@@ -120,9 +120,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				ajaxMobileDoAddReply(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE)) {
 				ajaxMobileDoFrontPage(this, request, response);
+			} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_ENTRY)) {
+				ajaxMobileDoShowEntry(this, request, response);
 			}
 		}
-				
 	}
 	
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -230,6 +231,26 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			//The miniblog form was submitted. Go process it
 			String text = PortletRequestUtils.getStringParameter(request, "miniblogText", "");
 			BinderHelper.addMiniBlogEntry(bs, text);
+		}
+	}
+
+	private void ajaxMobileDoShowEntry(AllModulesInjected bs, ActionRequest request, ActionResponse response) 
+			throws Exception {
+		Map formData = request.getParameterMap();
+		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);				
+		
+		if (entryId != null) {
+			//See if the user asked to change state
+			if (formData.containsKey("changeStateBtn")) {
+				//Change the state
+				//Get the workflow process to change and the name of the new state
+				Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
+				if (replyId == null) replyId = entryId;
+		        Long tokenId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "tokenId"));	
+				String toState = PortletRequestUtils.getRequiredStringParameter(request, "toState");
+				getFolderModule().modifyWorkflowState(folderId, replyId, tokenId, toState);
+			}
 		}
 	}
 
@@ -593,6 +614,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				}
 			}
 		}
+		List entries = new ArrayList();
+		entries.add(entry);
+		BinderHelper.buildWorkflowSupportBeans(this, entries, model);
 	}
 	return new ModelAndView("mobile/show_entry", model);
 }	
