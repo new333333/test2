@@ -554,7 +554,7 @@ div.ss_popup_body {
   		padding-top: -2px;
   		padding-bottom: 1px;
   		padding-left: 1px; 
-  		padding-right: 1px;
+  		padding-right: 0px;
 	</c:if>  	
 	}  
 .ss_popupDiv input[type="submit"] {	

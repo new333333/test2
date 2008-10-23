@@ -546,7 +546,7 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
 	}
 button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {	
   	border: 1px dotted #333;
-  	padding: 1px 7px 1px 7px;
+  	padding: 0px 6px 0px 6px;
   	<c:if test="<%= isIE %>">
   		padding: 0px;
   		padding-top: -2px;
