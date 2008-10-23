@@ -117,10 +117,6 @@ public class DefaultFillEmailSubscription extends SSStatefulJob implements FillE
 				scheduler.scheduleJob(trigger);				
     	
 			} else {
-				int state = scheduler.getTriggerState(zoneId.toString(), SUBSCRIPTION_GROUP);
-				if ((state == Trigger.STATE_PAUSED) || (state == Trigger.STATE_NONE)) {
-					scheduler.resumeJob(zoneId.toString(), SUBSCRIPTION_GROUP);
-				}
 				if (trigger.getRepeatInterval() != minutes*60*1000) {
 					trigger.setRepeatInterval(minutes*60*1000);
 					scheduler.rescheduleJob(zoneId.toString(), SUBSCRIPTION_GROUP, trigger);

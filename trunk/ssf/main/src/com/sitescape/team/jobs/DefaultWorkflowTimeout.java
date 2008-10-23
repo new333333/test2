@@ -93,10 +93,6 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
 				scheduler.scheduleJob(trigger);				
     	
 			} else {
-				int state = scheduler.getTriggerState(zoneId.toString(), WORKFLOW_TIMER_GROUP);
-				if ((state == Trigger.STATE_PAUSED) || (state == Trigger.STATE_NONE)) {
-					scheduler.resumeJob(zoneId.toString(), WORKFLOW_TIMER_GROUP);
-				}
 				if (trigger.getRepeatInterval() != seconds*1000) {
 					trigger.setRepeatInterval(seconds*1000);
 					scheduler.rescheduleJob(zoneId.toString(), WORKFLOW_TIMER_GROUP, trigger);

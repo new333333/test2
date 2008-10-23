@@ -21,12 +21,12 @@ public class Restrictions
 	
 	public static Criterion in(String field, Collection<String> values)
 	{
-		return new InCriterion(field, values);
+		return new InCriterion(field, values, true);
 	}
 	
 	public static Criterion in(String field, String[] values)
 	{
-		return new InCriterion(field, Arrays.asList(values));
+		return new InCriterion(field, Arrays.asList(values), true);
 	}
 	
 	public static Criterion between(String field, String lo, String hi)
@@ -85,7 +85,7 @@ public class Restrictions
 		{
 			Element element = super.toQuery(parent, value);
 			if(exact) {
-				element.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
+				element.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, Constants.EXACT_PHRASE_TRUE);
 			}
 			return element;
 		}
@@ -94,11 +94,13 @@ public class Restrictions
 	static class InCriterion extends FieldCriterion
 	{
 		private Collection<String> values;
+		private boolean exact;
 		
-		public InCriterion(String fieldName, Collection<String> values)
+		public InCriterion(String fieldName, Collection<String> values, boolean exact)
 		{
 			super(fieldName);
 			this.values = values;
+			this.exact = exact;
 		}
 		
 		public Element toQuery(Branch parent)
@@ -106,7 +108,10 @@ public class Restrictions
 			Element root = parent.addElement(Constants.OR_ELEMENT);
 			for(String value : values)
 			{
-				super.toQuery(root, value);
+				Element element = super.toQuery(root, value);
+				if(exact) {
+					element.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, Constants.EXACT_PHRASE_TRUE);
+				}
 			}
 			
 			return root;

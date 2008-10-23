@@ -96,10 +96,6 @@ public class DefaultFolderDelete extends SSStatefulJob implements FolderDelete {
 				scheduler.scheduleJob(trigger);				
     	
 			} else {
-				int state = scheduler.getTriggerState(zoneId.toString(), FOLDER_DELETE_GROUP);
-				if ((state == Trigger.STATE_PAUSED) || (state == Trigger.STATE_NONE)) {
-					scheduler.resumeJob(zoneId.toString(), FOLDER_DELETE_GROUP);
-				}
 				if (trigger.getRepeatInterval() != milliSeconds) {
 					trigger.setRepeatInterval(milliSeconds);
 					scheduler.rescheduleJob(zoneId.toString(), FOLDER_DELETE_GROUP, trigger);

@@ -532,7 +532,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
       	   				.setString("type", EntityType.folderEntry.name())
       	   				.executeUpdate();
       	   			session.createQuery("update com.sitescape.team.domain.WorkflowHistory set owningBinderKey=:sortKey,owningBinderId=:id where " +
-      	   				"ownerId in (:pList) and ownerType=:type")
+      	   				"entityId in (:pList) and entityType=:type")
       	   				.setString("sortKey", folder.getBinderKey().getSortKey())
       	   				.setLong("id", folder.getId().longValue())
       	   				.setParameterList("pList", ids)

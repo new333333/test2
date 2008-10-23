@@ -41,6 +41,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.hibernate.HibernateException;
 import org.jbpm.JbpmContext;
+import org.jbpm.graph.def.DelegationException;
 import org.jbpm.calendar.BusinessCalendar;
 import org.jbpm.calendar.Duration;
 import org.jbpm.context.exe.ContextInstance;
@@ -734,93 +735,69 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
     		jContext.close();
     	}
 		final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		for (Long timer:timers) {
-   			final JbpmContext context=WorkflowFactory.getContext();	   	
-   			try {
-     			final Long timerId=timer;
-    			getTransactionTemplate().execute(new TransactionCallback() {
-    				public Object doInTransaction(TransactionStatus status) {
-	        			SchedulerSession schedulerSession = context.getSchedulerSession();
-	        			final Timer timer = (Timer)context.getSession().load(Timer.class, timerId);
-	        			if (timer == null) return null;
-	        			Token token = timer.getToken();
-	        			Entry entry = null;
-	        			WorkflowState ws = null;
-	        			Long runAsId=null;
-	        			if (token != null) {
-	        				//	token id is id of workflowState
-	        				ws = (WorkflowState)getCoreDao().load(WorkflowState.class, new Long(token.getId()));
-	        				entry = (Entry)ws.getOwner().getEntity();
-	        				if (entry.isDeleted() || entry.getParentBinder().isDeleted()) {
-	        					schedulerSession.deleteTimer(timer);
-	        					return null;
-	        				}
-	        				//	only process timers in current zone
-	        				if (!ws.getDefinition().getZoneId().equals(zoneId)) return null;
-	        				Document wfDoc = ws.getDefinition().getDefinition();
-	        				if (wfDoc == null || wfDoc.getRootElement() == null) {
-	        					schedulerSession.deleteTimer(timer);
-	        					return null;
-	        				}
-	        				Element process = (Element)wfDoc.getRootElement().selectSingleNode("./item[@name='workflowProcess']");
-	        				runAsId = WorkflowProcessUtils.getRunAsUser(process, (WorkflowSupport)entry, ws);
-	        				if (runAsId == null) {
-	        					logger.error("No user to run timer");
-	        					timer.setException("No user to run timer");
-	        				}
-	        				
-	        			} else {
-	        				runAsId=RequestContextHolder.getRequestContext().getUserId();
-	        			};
-	        			if (runAsId != null) {
-		        			try {
-		        				final Entry wfEntry = entry;
-		        				RunasTemplate.runas(new RunasCallback() {
-		        					public Object doAs() {
-		        						timer.execute();
-		        						//re-index for state changes
-		        						if (wfEntry != null) {
-		        							EntryProcessor processor = loadEntryProcessor(wfEntry.getParentBinder());
-		        							wfEntry.incrLogVersion();
-		        							processor.processChangeLog(wfEntry, ChangeLog.WORKFLOWTIMEOUT);
-		        							processor.indexEntry(wfEntry);
-		        						}
-		        						return null;
-		        					}
-		        				}, zoneId, runAsId);
-		           			} catch (Exception ex) {
-		           				logger.error("Error processing workflow timeout " +
-		           						(entry!=null?entry.getParentBinder().getPathName() + "/" + entry.getTitle():""), ex);
-		           			}
+		for (Long timerId:timers) {
+			//this is all done outside the transaction
+			final JbpmContext context=WorkflowFactory.getContext();
+			//This clears the hibernate session that is shared between teaming and jbpm and is slightly dangerous
+			//Should only be a problem if the current user or zone have collections that are not loaded, or
+			//require update.
+			//This is done to reduce memory requirements between transactions.
+			context.getSession().clear();
+			try {
+				final SchedulerSession schedulerSession = context.getSchedulerSession();
+				final Timer timer = (Timer)context.getSession().load(Timer.class, timerId);
+				if (timer == null) continue;
+				final Token token = timer.getToken(); 
+				if (token == null) continue; //don't support
+				//each timer needs its own transaction so we can rollback failures with out effecting others
+ 				getTransactionTemplate().execute(new TransactionCallback() {
+ 					public Object doInTransaction(TransactionStatus status) {
+ 						Long runAsId=null;
+ 						//token id is id of workflowState
+ 						WorkflowState ws = (WorkflowState)getCoreDao().load(WorkflowState.class, new Long(token.getId()));
+ 		   				//only process timers in current zone
+ 						if (ws == null || !ws.getDefinition().getZoneId().equals(zoneId)) return null;;
+ 						final Entry entry = (Entry)ws.getOwner().getEntity();					
+ 						if (entry.isDeleted() || entry.getParentBinder().isDeleted()) {
+ 							schedulerSession.deleteTimer(timer);
+ 							return null;
+ 						}
+ 						Document wfDoc = ws.getDefinition().getDefinition();
+ 						if (wfDoc == null || wfDoc.getRootElement() == null) {
+ 							schedulerSession.deleteTimer(timer);
+ 							return null;
+ 						}
+ 						Element process = (Element)wfDoc.getRootElement().selectSingleNode("./item[@name='workflowProcess']");
+ 						runAsId = WorkflowProcessUtils.getRunAsUser(process, (WorkflowSupport)entry, ws);
+ 						if (runAsId == null) {
+ 							throw new TimerException(entry, ws, "User not found to process workflow timout");
+ 						}
+	        			try {
+	        				RunasTemplate.runas(new RunasCallback() {
+	        					public Object doAs() {
+	        						timer.execute();
+	        						//re-index for state changes
+	        						EntryProcessor processor = loadEntryProcessor(entry.getParentBinder());
+	        						entry.incrLogVersion();
+	        						processor.processChangeLog(entry, ChangeLog.WORKFLOWTIMEOUT);
+	        						processor.indexEntry(entry);
+	        						return null;
+	        					}
+	        				}, zoneId, runAsId);
+	        			} catch (DelegationException jx) {
+	        				throw new TimerException(entry, ws, "Error processing workflow timeout: " + 
+	        						jx.getCause().getMessage());
+	        			} catch (Exception ex) {
+	        				throw new TimerException(entry, ws, "Error processing workflow timeout: " + ex.getMessage());
 	        			}
+	        			//onDataValue takes care of itself
 	        			if (!timer.getName().equals("onDataValue")) {
 	        				//jbpm defined timer - we don't support repeats currently (copied from jbpm scheduler thread)
 							// if there was an exception, just save the timer
 							if (timer.getException()== null) {
-								// 	if repeat is specified
-								if (timer.getRepeat()!=null) {
-									// update timer by adding the repeat duration
-									Date dueDate = timer.getDueDate();
-		          
-									// suppose that it took the timer runner thread a 
-									// very long time to execute the timers.
-									// then the repeat action dueDate could already have passed.
-									while (dueDate.getTime()<=System.currentTimeMillis()) {
-										dueDate = businessCalendar
-										.add(dueDate, 
-												new Duration(timer.getRepeat()));
-									}
-									timer.setDueDate( dueDate );
-									// save the updated timer in the database
-									if(logger.isDebugEnabled())
-										logger.debug("saving updated timer for repetition '"+timer+"' in '"+(dueDate.getTime()-System.currentTimeMillis())+"' millis");
-									schedulerSession.saveTimer(timer);
-								} else {
-									// 	delete this timer
-									if(logger.isDebugEnabled())
-										logger.debug("deleting timer '"+timer+"'");
-									schedulerSession.deleteTimer(timer);
-								}
+								// 	delete this timer
+								if(logger.isDebugEnabled())	logger.debug("deleting timer '"+timer+"'");
+								schedulerSession.deleteTimer(timer);
 							} else {
 								logger.error(timer.getException());
 								//want it to run again, so remove exception
@@ -831,7 +808,14 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 						if (token != null) context.save(token);
 						return null;
     	        	}});
-    		} finally {
+   			} catch (TimerException tx) {
+   				//may want to record the error in the state at some point.  Will need a transaction.
+   				logger.error("Error on " +
+   						tx.entry.getParentBinder().getPathName() + "/" + tx.entry.getTitle() +
+   					 " " + tx.message);
+   			} catch (Exception ex) {
+   				logger.error("Error processing timeout: " + ex.getMessage());
+   			} finally {
 				context.close();
 			}
 		}
@@ -883,5 +867,16 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
         // com.sitescape.team.module.folder.AbstractfolderCoreProcessor class, not 
         // in this method.
 		return (EntryProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(EntryProcessor.PROCESSOR_KEY));			
-	}	
+	}
+	class TimerException extends RuntimeException {
+		protected Entry entry;
+		protected WorkflowState state;
+		protected String message;
+		public TimerException(Entry entry, WorkflowState state, String message) {
+			this.entry = entry;
+			this.state = state;
+			this.message = message;
+		}
+		
+	}
 }
