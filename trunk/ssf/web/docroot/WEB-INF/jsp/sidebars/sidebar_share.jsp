@@ -32,7 +32,7 @@
 <c:if test="${!ss_searchResultsPage}">
 	<ssf:ifLoggedIn>
 		<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
-			<div class="ss_leftNav">
+			<div class="ss_sideShare">
 			  <ul>
 				<li>
 					<a href="<ssf:url adapter="true" portletName="ss_forum" 
