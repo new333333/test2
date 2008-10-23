@@ -58,6 +58,16 @@ public class FolderServiceImpl extends com.sitescape.team.remoting.ws.service.fo
 		return xml;
 	}
 
+	public com.sitescape.team.remoting.ws.model.FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName, boolean includeAttachments) {
+		handleAttachments(includeAttachments);
+
+		com.sitescape.team.remoting.ws.model.FolderEntry entryModel = super.folder_getEntryByFileName(accessToken, binderId, fileName, includeAttachments); 
+
+		CalendarHelper.handleEvents(this, getFolderModule().getEntry(null, entryModel.getId()));
+		
+		return entryModel;
+		
+	}
 	public com.sitescape.team.remoting.ws.model.FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments) {
 		handleAttachments(includeAttachments);
 		

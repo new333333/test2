@@ -266,7 +266,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		getFolderModule().synchronize(binderId, null);
 	}
 
-	public com.sitescape.team.remoting.ws.model.FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName) {
+	public com.sitescape.team.remoting.ws.model.FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName, boolean includeAttachments) {
 		// Retrieve the raw entry.
 		FolderEntry entry = 
 			getFolderModule().getLibraryFolderEntryByFileName(getFolderModule().getFolder(binderId), fileName);
