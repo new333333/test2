@@ -30,38 +30,33 @@ package com.sitescape.team.module.definition.ws;
 
 import org.dom4j.Element;
 
-import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.remoting.ws.model.CustomStringField;
-import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.MarkupUtil;
+
 /**
  * 
  * @author Jong Kim
  */
 public class ElementBuilderDescription extends AbstractElementBuilder {
-	   protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, Object obj, DefinableEntity entity, String dataElemType, String dataElemName) {
-		if (dataElemType.equals("description")) return false;
+	protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, Object obj, String dataElemType, String dataElemName) {
 		if (obj instanceof Description) {
 			Description desc = (Description) obj;
-			String markup = MarkupUtil.markupStringReplacement(null, null, null, null,entity, desc.getText(), WebKeys.MARKUP_EXPORT);
 			if(element != null) {
-				element.setText(markup);
+				element.setText(desc.getText());
 				element.addAttribute("format", String.valueOf(desc.getFormat()));
 			}
-			if(entityModel != null) {
+			if(entityModel != null && !dataElemType.equals("description")) {
 				// Skip custom field processing for description type field, since it is treated as a static field.
-				entityModel.addCustomStringField(new CustomStringField(dataElemName, dataElemType, markup));				
+				entityModel.addCustomStringField(new CustomStringField(dataElemName, dataElemType, desc.getText()));				
 			}
 		} else if (obj != null) {
-			String markup = MarkupUtil.markupStringReplacement(null, null, null, null,entity, obj.toString(), WebKeys.MARKUP_EXPORT);
 			if(element != null) {
-				element.setText(markup);
+				element.setText(obj.toString());
 				element.addAttribute("format", String
 						.valueOf(Description.FORMAT_NONE));
 			}
 			if(entityModel != null) {
-				entityModel.addCustomStringField(new CustomStringField(dataElemName, dataElemType, markup));
+				entityModel.addCustomStringField(new CustomStringField(dataElemName, dataElemType, obj.toString()));
 			}
 		}
 		return true;
