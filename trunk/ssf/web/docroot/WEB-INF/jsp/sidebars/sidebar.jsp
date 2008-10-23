@@ -46,14 +46,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<% // Share %>
   	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_share.jsp" />
 
-	<% // Email %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" />  	
-		
-	<% // Clipboard %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" />
-		
-	<% // RSS Feed %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" />
+
 <%--
 * The following line is used to call customer supplied customizations.
 * Jsp files added to the custom_jsps directory will not be overwritten during upgrades
@@ -91,12 +84,22 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<% // Folder or Workspace Tags %>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tags.jsp" />
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_folder_tags.jsp" />
-
-	<% // Meet %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" />
 	
 	<% // Personal Preferences %>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_personal.jsp" />
+	
+	<% // Moving these to footer %>
+	<% // Meet %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" />
+
+	<% // Email %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" />  	
+		
+	<% // Clipboard %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" />
+		
+	<% // RSS Feed %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" />
 	
 <%--
 * The following line is used to call customer supplied customizations.

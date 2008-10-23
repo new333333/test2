@@ -36,7 +36,5 @@
 	<!-- "It Boxes" -->
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_track.jsp" />
   	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_share.jsp" />
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" />
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" />
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" />
+
 	
