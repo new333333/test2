@@ -74,6 +74,24 @@
 </div>
 <br/>
 
+<c:if test="${!empty ssFolders}">
+<table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
+<th colspan="2" align="left"><ssf:nlt tag="search.Folders"/></th>
+<c:forEach var="folder" items="${ssFolders}" >
+	<tr><td><a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${folder.id}" 
+	action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
+    <c:if test="${empty folder.title}">
+    	(<ssf:nlt tag="workspace.noTitle"/>)
+    </c:if>
+	<c:out value="${folder.title}"/>
+	</a>
+  </td></tr>
+</c:forEach>
+</table>
+<br/>
+</c:if>
+
 <c:if test="${!empty ss_mobileBinderDefUrlList}">
   <form name="addEntryForm" 
   		action="<ssf:url adapter="true" portletName="ss_forum" 

@@ -28,6 +28,8 @@
  */
 package com.sitescape.team.portlet.forum;
 
+import static com.sitescape.util.search.Restrictions.in;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -97,6 +99,8 @@ import com.sitescape.team.web.util.WebStatusTicket;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
+import com.sitescape.util.search.Criteria;
+import com.sitescape.util.search.Order;
 import com.sitescape.team.util.LongIdUtil;
 /**
  * @author Peter Hurley
@@ -137,19 +141,19 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		
 		//The user is logged in
 		if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FOLDER)) {
-			return ajaxMobileShowFolder(request, response);
+			return ajaxMobileShowFolder(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_WORKSPACE)) {
-			return ajaxMobileShowWorkspace(request, response);
+			return ajaxMobileShowWorkspace(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_ENTRY)) {
-			return ajaxMobileShowEntry(request, response);
+			return ajaxMobileShowEntry(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_ADD_ENTRY)) {
-			return ajaxMobileAddEntry(request, response);
+			return ajaxMobileAddEntry(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_ADD_REPLY)) {
-			return ajaxMobileAddReply(request, response);
+			return ajaxMobileAddReply(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_MODIFY_ENTRY)) {
 			//return ajaxMobileModifyEntry(request, response);
@@ -167,7 +171,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			return ajaxMobileSearchResults(this, request, response);
 		
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE)) {
-			return ajaxMobileFindPeople(request, response);
+			return ajaxMobileFindPeople(this, request, response);
 		}
 		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			return ajaxMobileLogin(this, request, response);
@@ -305,6 +309,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		Map model = new HashMap();
 		model.put("ss_queryName", queryName);
+		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
 
 		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "1");
       	int pageSize = Integer.valueOf(WebKeys.MOBILE_PAGE_SIZE).intValue();
@@ -372,11 +377,12 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("mobile/show_search_results", model);
 	}
 
-	private ModelAndView ajaxMobileShowFolder(RenderRequest request, 
+	private ModelAndView ajaxMobileShowFolder(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Binder binder = getBinderModule().getBinder(binderId);
+		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 		Map options = new HashMap();		
 		Map folderEntries = null;
 		
@@ -430,6 +436,34 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			}
 			model.put(WebKeys.MOBILE_BINDER_DEF_URL_LIST, defTitleUrlList);
 		}
+
+		List folders = new ArrayList();
+		List folderIds = new ArrayList();
+		folderIds.add(binderId.toString());
+		Criteria crit = new Criteria();
+		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
+			.add(in(Constants.BINDERS_PARENT_ID_FIELD, folderIds));
+		crit.addOrder(Order.asc(Constants.SORT_TITLE_FIELD));
+		Map binderMap = bs.getBinderModule().executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+
+		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
+		List binderIdList = new ArrayList();
+
+      	for (Iterator iter=binderMapList.iterator(); iter.hasNext();) {
+      		Map entryMap = (Map) iter.next();
+      		binderIdList.add(new Long((String)entryMap.get("_docId")));
+      	}
+      	SortedSet binderList = bs.getBinderModule().getBinders(binderIdList);
+        for (Iterator iter=binderList.iterator(); iter.hasNext();) {
+     		Binder b = (Binder)iter.next();
+      		if (b.isDeleted()) continue;
+      		if (b.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
+      			folders.add(b);
+      		}
+		}
+		if (!folders.isEmpty()) {
+			model.put(WebKeys.FOLDERS, folders);
+		}
 		return new ModelAndView("mobile/show_folder", model);
 	}
 
@@ -440,6 +474,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		if (binderId == null) binderId = getWorkspaceModule().getTopWorkspace().getId();
 		Binder binder = getBinderModule().getBinder(binderId);
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, WebKeys.URL_WHATS_NEW);
+		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 
 		Map options = new HashMap();		
 		if (binder== null) {
@@ -473,10 +508,11 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("mobile/show_whats_new", model);
 	}
 
-	private ModelAndView ajaxMobileShowWorkspace(RenderRequest request, 
+	private ModelAndView ajaxMobileShowWorkspace(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 		Workspace binder;
 		List wsList = new ArrayList();
 		List workspaces = new ArrayList();
@@ -546,11 +582,12 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("mobile/show_workspace", model);
 	}
 
-	private ModelAndView ajaxMobileShowEntry(RenderRequest request, 
+	private ModelAndView ajaxMobileShowEntry(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 	Map model = new HashMap();
 	Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 	Binder binder = getBinderModule().getBinder(binderId);
+	BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 	model.put(WebKeys.BINDER, binder);
 	Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 	User user = RequestContextHolder.getRequestContext().getUser();
@@ -621,7 +658,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	return new ModelAndView("mobile/show_entry", model);
 }	
 
-	private ModelAndView ajaxMobileAddEntry(RenderRequest request, 
+	private ModelAndView ajaxMobileAddEntry(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));		
@@ -643,13 +680,13 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 		Map formData = request.getParameterMap();
 		if (entryType.equals("") || formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
-			return ajaxMobileShowFolder(request, response);
+			return ajaxMobileShowFolder(bs, request, response);
 		} else {
 			return new ModelAndView("mobile/add_entry", model);
 		}
 	}	
 
-	private ModelAndView ajaxMobileAddReply(RenderRequest request, 
+	private ModelAndView ajaxMobileAddReply(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 
@@ -699,15 +736,16 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		
 		Map formData = request.getParameterMap();
 		if (entryType.equals("") || formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
-			return ajaxMobileShowEntry(request, response);
+			return ajaxMobileShowEntry(bs, request, response);
 		} else {
 			return new ModelAndView("mobile/add_reply", model);
 		}
 	}	
 
-	private ModelAndView ajaxMobileFindPeople(RenderRequest request, 
+	private ModelAndView ajaxMobileFindPeople(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
+		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
 		Map formData = request.getParameterMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE)) {
