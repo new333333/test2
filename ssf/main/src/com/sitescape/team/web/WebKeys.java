@@ -369,6 +369,8 @@ public class WebKeys {
     public static final String OPERATION_MOBILE_MODIFY_ENTRY="mobile_modify_entry"; 
     public static final String OPERATION_MOBILE_SHOW_FOLDER="mobile_show_folder"; 
     public static final String OPERATION_MOBILE_SHOW_ENTRY="mobile_show_entry"; 
+    public static final String OPERATION_MOBILE_SHOW_NEXT_ENTRY="mobile_show_next_entry"; 
+    public static final String OPERATION_MOBILE_SHOW_PREV_ENTRY="mobile_show_prev_entry"; 
     public static final String OPERATION_MOBILE_SHOW_FRONT_PAGE="mobile_show_front_page"; 
     public static final String OPERATION_MOBILE_SHOW_SEARCH_RESULTS="mobile_show_search_results"; 
     public static final String OPERATION_MOBILE_SHOW_WORKSPACE="mobile_show_workspace"; 
