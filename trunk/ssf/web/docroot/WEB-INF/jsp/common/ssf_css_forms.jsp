@@ -245,14 +245,12 @@ fieldset a:hover{
 
 .ss_inlineButton {
   cursor: pointer;
- <c:if test="<%= isIE %>">
-  height: 20px;
- </c:if>
- <c:if test="<%= !isIE %>">
-  /*height: 18px;*/
- </c:if>
   text-align: center;
   padding: 0px 6px 0px 6px;
+ <c:if test="<%= isIE %>">
+  	height: 20px;
+  	padding: 0px 1px 0px 1px;
+ </c:if>  
   font-size: 10px !important;
   font-family: Arial, sans-serif;
   white-space: nowrap;
