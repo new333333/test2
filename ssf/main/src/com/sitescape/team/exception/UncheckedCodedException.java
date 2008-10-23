@@ -77,7 +77,16 @@ public abstract class UncheckedCodedException extends RuntimeException implement
     		return super.getLocalizedMessage();
     	}
     }
-    
+    public String getMessage() {
+    	if (msg != null) return msg;
+    	try {
+    		return NLT.get(getErrorCode(), getErrorArgs());
+    	}
+    	catch(Exception e) {
+    		return super.getMessage();
+    	}
+    }
+
     public String getErrorCode() {
         return errorCode;
     }

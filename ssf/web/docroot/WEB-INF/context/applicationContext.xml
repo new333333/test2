@@ -151,7 +151,8 @@
 	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="dataSource"><ref local="dataSource"/></property>
 		<property name="autoStartup"><value>true</value></property>
-		<property name="startupDelay"><value>30</value></property>
+		<!--Need enough time for modules to startup and possibly register jobs -->
+		<property name="startupDelay"><value>60</value></property>
 		<property name="schedulerName"><value>Sitescape</value></property>
 		<property name="quartzProperties">
 		<props>

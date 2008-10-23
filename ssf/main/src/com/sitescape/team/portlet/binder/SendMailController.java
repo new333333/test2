@@ -51,7 +51,7 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.StringUtil;
-
+import com.sitescape.team.web.util.PermaLinkUtil;
 /**
  * @author Janet McCann
  *
@@ -113,6 +113,8 @@ public class SendMailController extends SAbstractController {
 		if (binderId != null) {
 			Binder binder = getBinderModule().getBinder(binderId);
 			model.put(WebKeys.BINDER, binder);
+			model.put("body", "<a href=\"" + PermaLinkUtil.getPermalink(request, binder)
+						+ "\">" + binder.getTitle() + "</a>");
 		}
 		
 		List userIds = PortletRequestUtils.getLongListParameters(request, WebKeys.USER_IDS_TO_ADD);
