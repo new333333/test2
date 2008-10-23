@@ -232,6 +232,7 @@ public interface ObjectKeys {
     public static final String SEARCH_USER_OFFSET = "userOffset";
     public static final int SEARCH_MAX_HITS_DEFAULT = 10;
     public static final int SEARCH_MAX_HITS_SUB_BINDERS = 1000;
+    public static final int SEARCH_MAX_HITS_FOLDER_ENTRIES = 1000;
     public static final int SEARCH_RESULTS_TO_CREATE_STATISTICS = 200;
     public static final String SEARCH_SEARCH_FILTER = "searchFilter";
     public static final String SEARCH_SEARCH_DYNAMIC_FILTER = "searchDynamicFilter";

@@ -37,6 +37,25 @@
 	action="__ajax_mobile" operation="mobile_show_folder" 
 	actionUrl="false" />">${ssBinder.title}</a>
 </div>
+
+<div align="right">
+  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+					folderId="${ssBinder.id}" 
+					entryId="${ssEntry.id}"
+					action="__ajax_mobile" 
+					operation="mobile_show_prev_entry" 
+					actionUrl="false" />">
+    <span class="ss_mobile_small"><ssf:nlt tag="nav.prevEntry"/></span>
+  </a>&nbsp;&nbsp;&nbsp;<a href="<ssf:url adapter="true" portletName="ss_forum" 
+					folderId="${ssBinder.id}" 
+					entryId="${ssEntry.id}"
+					action="__ajax_mobile" 
+					operation="mobile_show_next_entry" 
+					actionUrl="false" />">
+    <span class="ss_mobile_small"><ssf:nlt tag="nav.nextEntry"/></span>
+  </a>
+</div>
+
 <br/>
 <c:if test="${!empty ssEntry}">
 <div style="padding:0px 0px 6px 8px;">
