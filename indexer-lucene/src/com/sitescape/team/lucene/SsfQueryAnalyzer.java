@@ -48,7 +48,8 @@ public class SsfQueryAnalyzer extends Analyzer
       // Otherwise, return false - signalling that a new token should begin
       protected boolean isTokenChar(char c) 
       {
-        return Character.isLetterOrDigit(c);
+        //return Character.isLetterOrDigit(c);
+    	return !Character.isWhitespace(c);
       }
     };
   }
