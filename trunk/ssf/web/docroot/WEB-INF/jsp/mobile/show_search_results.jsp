@@ -35,11 +35,7 @@
 	Map entriesSeen = new HashMap();
 %>
 <div class="ss_mobile">
-<div class="ss_mobile_breadcrumbs">
-<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
-	><ssf:nlt tag="mobile.returnToTop"/></a>
-</div>
+<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 <br/>
   <table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
 		<c:forEach var="entry" items="${ssFolderEntries}" varStatus="status">
@@ -188,11 +184,7 @@
 
 			
 <br/>
-<div class="ss_mobile_breadcrumbs">
-<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
-	><ssf:nlt tag="mobile.returnToTop"/></a>
-</div>
+<%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
 </div>
 
 </body>
