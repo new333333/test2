@@ -168,6 +168,16 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_text_login a:hover{
 	background: #666;
 	}
+.ss_text_mashup{
+	font-family: ${ss_style_font_family};
+	font-size: 10px;
+	text-align: left;
+	padding: 3px;
+	margin: 6px;
+	}
+.ss_text_mashup a:hover{
+	background: #666;
+	}
 fieldset{
   	margin-top: 40px;
   	margin-bottom: 40px;
@@ -188,6 +198,10 @@ fieldset{
   	height: 190px;
     -moz-border-radius: 2%;
 	} 
+.ss_fieldset_mashup {
+  	display: inline;
+  	border: 1px dotted #5A9A98;
+	} 
 fieldset.ss_fieldset_square {
   	border: 1px solid #5A9A98;
   	padding: 5px;
@@ -205,6 +219,13 @@ fieldset a:hover{
  /**********LOGIN SCREEN*******/
 .ss_legend_login {
   	font-size:24px !important;
+	letter-spacing:-1px;
+	font-family:Georgia, "Times New Roman", Times, serif !important;
+	font-weight:normal !important;
+	color:#666;
+	}
+.ss_legend_mashup {
+  	font-size:16px !important;
 	letter-spacing:-1px;
 	font-family:Georgia, "Times New Roman", Times, serif !important;
 	font-weight:normal !important;

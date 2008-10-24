@@ -40,6 +40,7 @@
 <div class="ss_clear_float"></div>
 </ssf:ifadapter>
 <div align="center">
+  <c:set var="ss_loginFormStyle" value="login" scope="request"/>
   <jsp:include page="/WEB-INF/jsp/forum/login_form.jsp" />
 </div>
 <ssf:ifadapter>
