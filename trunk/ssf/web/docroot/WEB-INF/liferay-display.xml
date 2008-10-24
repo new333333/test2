@@ -12,7 +12,6 @@
 		<portlet id="ss_blog" />
 		<portlet id="ss_gallery"/>
 		<portlet id="ss_guestbook" />
-		<portlet id="ss_mobile" />
 		<portlet id="ss_wiki" />
 		<portlet id="ss_search" />
 		<portlet id="ss_task" />

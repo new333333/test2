@@ -79,10 +79,4 @@
          <portlet-ref>ss_gallery</portlet-ref>
       </instance>
    </deployment>
-   <deployment>
-      <instance>
-         <instance-id>ss_mobile-instance</instance-id>
-         <portlet-ref>ss_mobile</portlet-ref>
-      </instance>
-   </deployment>
 </deployments>
