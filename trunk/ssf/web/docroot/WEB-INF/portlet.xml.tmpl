@@ -278,6 +278,33 @@
         <resource-bundle>content.welcome</resource-bundle>
     </portlet>
 
+     <portlet>
+        <description xml:lang="en">Mobile</description>
+        <portlet-name>ss_mobile</portlet-name>
+        <display-name xml:lang="en">Mobile</display-name>
+        <portlet-class>com.sitescape.team.spring.web.portlet.DispatcherPortlet</portlet-class>
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/context/portlet/ssf.xml /WEB-INF/context/portlet/ssf-additional.xml optional:/WEB-INF/context/portlet/ssf-ext.xml</value>
+		</init-param>
+		<init-param>
+			<name>contextClass</name>
+			<value>com.sitescape.team.spring.web.portlet.context.support.XmlPortletApplicationContext</value>
+		</init-param>
+        <expiration-cache>300</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+        </supports>
+        <supports>
+            <mime-type>application/vnd.wap.xhtml+xml</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+        </supports>
+        <resource-bundle>content.mobile</resource-bundle>
+    </portlet>
+
     <user-attribute>
         <description xml:lang="en">User First Name</description>
         <name>user.name.given</name>
