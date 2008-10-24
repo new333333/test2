@@ -32,6 +32,7 @@
 <c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
 <c:if test="${ssUser.internalId == guestInternalId}">
 <div class="ss_style">
+  <c:set var="ss_loginFormStyle" value="mashup" scope="request"/>
   <jsp:include page="/WEB-INF/jsp/forum/login_form.jsp" />
 </div>
 </c:if>

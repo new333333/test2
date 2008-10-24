@@ -31,8 +31,8 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
   <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
-   <fieldset class="ss_fieldset_login">
-    <div class="ss_legend_login"><ssf:nlt tag="login.please"/></div>
+   <fieldset class="ss_fieldset_${ss_loginFormStyle}">
+    <div class="ss_legend_${ss_loginFormStyle}"><ssf:nlt tag="login.please"/></div>
      <table>
      <tbody>
       <tr>
@@ -40,7 +40,7 @@
           <span><ssf:nlt tag="login.name"/></span>
         </td>
         <th valign="top" style="padding-left:4px;">
-          <input type="text" class="ss_text_login" size="40" name="j_username"/>
+          <input type="text" class="ss_text_${ss_loginFormStyle}" size="40" name="j_username"/>
         </td>
 		<td>&nbsp;</td>
       </tr>
@@ -49,7 +49,7 @@
           <span><ssf:nlt tag="login.password"/></span>
         </td>
         <td valign="top" style="padding-left:4px;">
-          <input class="ss_text_login" type="password" size="40" name="j_password"/>
+          <input class="ss_text_${ss_loginFormStyle}" type="password" size="40" name="j_password"/>
         </td>
       </tr>
       <tr>
