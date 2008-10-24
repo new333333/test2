@@ -33,7 +33,8 @@
   <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
    <fieldset class="ss_fieldset_login">
     <div class="ss_legend_login"><ssf:nlt tag="login.please"/></div>
-     <table><tbody>
+     <table>
+     <tbody>
       <tr>
         <td valign="middle" align="right">
           <span><ssf:nlt tag="login.name"/></span>
@@ -73,12 +74,12 @@
 			  <br/>
 			</td>
 		</tr>		  
-	 </table></tbody>
-	  <c:if test="${!empty ssUrl}">
-    <input type="hidden" name="spring-security-redirect" value="${ssUrl}"/>
-    </div> 
-    </fieldset>
-</c:if>
+	 </tbody>
+	 </table>
+	 <c:if test="${!empty ssUrl}">
+	    <input type="hidden" name="spring-security-redirect" value="${ssUrl}"/>
+	 </c:if>
+	 </fieldset>
   </form>
 <script type="text/javascript">
 	var formObj = self.document.getElementById('loginForm');
