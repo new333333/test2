@@ -282,13 +282,13 @@ public class ManageDefinitionsController extends  SAbstractController {
 			model.put("definitionType", definitionType);
 			return new ModelAndView(path, model);
 		} else if (WebKeys.OPERATION_EXPORT.equals(operation)) {			
-			model.put(WebKeys.DOM_TREE, getDefinitionTree(binderId));
+			model.put(WebKeys.DOM_TREE, DefinitionHelper.getDefinitionTree(this, binderId));
 	 		return new ModelAndView(WebKeys.VIEW_ADMIN_EXPORT_DEFINITIONS, model);
 		} else if (WebKeys.OPERATION_COPY.equals(operation)) {			
 			model.put(WebKeys.OPERATION, operation);
 			String definitionId = PortletRequestUtils.getStringParameter(request, "sourceDefinitionId", "");
 			if (Validator.isNull(definitionId)) {
-				model.put(WebKeys.DOM_TREE, getDefinitionTree(binderId));
+				model.put(WebKeys.DOM_TREE, DefinitionHelper.getDefinitionTree(this, binderId));
 			} else {
 				Definition def = getDefinitionModule().getDefinition(definitionId);
 				model.put(WebKeys.DEFINITION, def);
@@ -330,60 +330,6 @@ public class ManageDefinitionsController extends  SAbstractController {
 			curDefEle.addAttribute("url", "");
 
 		}
-
-	}
-	protected Document getDefinitionTree(Long binderId) {
-		List currentDefinitions;
-		currentDefinitions = getDefinitionModule().getDefinitions(binderId, Boolean.FALSE);
-		//Build the definition tree
-		Document definitionTree = DocumentHelper.createDocument();
-		Element dtRoot = definitionTree.addElement(DomTreeBuilder.NODE_ROOT);
-		dtRoot.addAttribute("title", NLT.getDef("__definitions"));
-		dtRoot.addAttribute("id", "definitions");
-		dtRoot.addAttribute("displayOnly", "true");
-		dtRoot.addAttribute("url", "");
-		Element root = 	getDefinitionModule().getDefinitionConfig().getRootElement();
-		
-		Iterator definitions = root.elementIterator("definition");
-		Map designers = new TreeMap(new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale()));
-		while (definitions.hasNext()) {
-			Element defEle = (Element) definitions.next();
-			Element treeEle = DocumentHelper.createElement("child");
-			treeEle.addAttribute("type", "definition");
-			treeEle.addAttribute("title", NLT.getDef(defEle.attributeValue("caption")));
-			treeEle.addAttribute("id", defEle.attributeValue("name"));	
-			treeEle.addAttribute("displayOnly", "true");
-			treeEle.addAttribute("url", "");
-			//Add the current definitions (if any)
-			ListIterator li = currentDefinitions.listIterator();
-			while (li.hasNext()) {
-				Definition curDef = (Definition)li.next();
-				Document curDefDoc = curDef.getDefinition();
-				if (curDefDoc == null) continue;
-				if (curDef.getType() == Integer.valueOf(defEle.attributeValue("definitionType", "0")).intValue()) {
-					Element curDefEle = treeEle.addElement("child");
-					curDefEle.addAttribute("type", defEle.attributeValue("name"));
-					String title = NLT.getDef(curDef.getTitle());
-					if (Validator.isNull(title)) title = curDef.getName();
-					title += "  (" + curDef.getName() + ")";
-					if (Definition.VISIBILITY_DEPRECATED.equals(curDef.getVisibility())) {
-						curDefEle.addAttribute("image", "/pics/delete.gif");
-					} 
-					curDefEle.addAttribute("title", title);
-					
-					curDefEle.addAttribute("id", curDef.getId());
-					curDefEle.addAttribute("url", "");
-				}
-			}
-			if (treeEle.hasContent()) designers.put(treeEle.attributeValue("title"), treeEle);
-		}
-		//	add sorted elements
-		for (Iterator iter=designers.entrySet().iterator(); iter.hasNext(); ) {
-				Map.Entry me = (Map.Entry)iter.next();
-				dtRoot.add((Element)me.getValue());
-		}
-		
-		return definitionTree;
 
 	}
 	protected boolean hasDefinitionType(List<Definition>defs, Integer type) {

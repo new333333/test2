@@ -173,6 +173,7 @@ public interface AdminModule {
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;
     public void setWorkAreaOwner(WorkArea workArea, Long userId, boolean propagate) throws AccessControlException;
 	public void updateDefaultDefinitions(Long topId, Boolean newDefinitionsOnly);
+	public void updateDefaultDefinitions(Long topId, Boolean newDefinitionsOnly, Collection ids);
 	
 	/**
 	 * Get a list of <code>IndexNode</code>. Each IndexNode represents the state

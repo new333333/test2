@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -44,28 +46,41 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
+import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.dom4j.util.XMLErrorHandler;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
+import com.sitescape.team.util.AllModulesInjected;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.tree.TreeHelper;
+import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
 public class ImportDefinitionController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
+		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
 		Long binderId = null;
 		try {
 			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 			if (binderId != null) response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		} catch (Exception ex) {};
-		if (formData.containsKey("okBtn") && request instanceof MultipartFileSupport) {
+		if (formData.containsKey("okBtn") && WebKeys.OPERATION_RELOAD.equals(operation)) {
+			java.util.Collection<String> ids = TreeHelper.getSelectedStringIds(formData, "id");
+			getAdminModule().updateDefaultDefinitions(RequestContextHolder.getRequestContext().getZoneId(), false, ids);
+			response.setRenderParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
+		} else if (formData.containsKey("okBtn") && request instanceof MultipartFileSupport) {
 			int i=0;
 			Map fileMap = ((MultipartFileSupport) request).getFileMap();
 			if (fileMap != null) {
@@ -102,7 +117,6 @@ public class ImportDefinitionController extends  SAbstractController {
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
 		} else {
-			String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
 			if (WebKeys.OPERATION_RELOAD_CONFIRM.equals(operation)) {
 				response.setRenderParameters(formData);
 			} else if (WebKeys.OPERATION_RELOAD.equals(operation)) {
@@ -160,11 +174,47 @@ public class ImportDefinitionController extends  SAbstractController {
 		
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
 		if (WebKeys.OPERATION_RELOAD_CONFIRM.equals(operation)) {
-			return new ModelAndView(WebKeys.VIEW_ADMIN_IMPORT_ALL_DEFINITIONS_CONFIRM);
+			List currentDefinitions = new ArrayList();
+			currentDefinitions = getDefaultDefinitions(this);
+			model.put(WebKeys.DOM_TREE, DefinitionHelper.getDefinitionTree(this, null, currentDefinitions));
+			return new ModelAndView(WebKeys.VIEW_ADMIN_IMPORT_ALL_DEFINITIONS_CONFIRM, model);
 		}
 		model.put(WebKeys.ERROR_LIST, request.getParameterValues(WebKeys.ERROR_LIST));
 
 		return new ModelAndView(WebKeys.VIEW_ADMIN_IMPORT_DEFINITIONS, model);
 	}
+
+	public List getDefaultDefinitions(AllModulesInjected bs) {
+		List definitions = new ArrayList();
+		Workspace top = (Workspace)bs.getWorkspaceModule().getTopWorkspace();
+		
+		//default definitions stored in separate config file
+		String startupConfig = SZoneConfig.getString(top.getName(), "property[@name='startupConfig']", "config/startup.xml");
+		SAXReader reader = new SAXReader(false);  
+		InputStream in=null;
+		try {
+			in = new ClassPathResource(startupConfig).getInputStream();
+			Document cfg = reader.read(in);
+			in.close();
+			List<Element> elements = cfg.getRootElement().selectNodes("definitionFile");
+			for (Element element:elements) {
+				String file = element.getTextTrim();
+				//Get the definition name from the file name
+				Pattern nameP = Pattern.compile("/([^/\\.]*)\\.xml$");
+				Matcher m = nameP.matcher(file);
+				if (m.find()) {
+					String name = m.group(1);
+					if (name != null && !name.equals("")) {
+						Definition def = bs.getDefinitionModule().getDefinitionByName(null, false, name);
+						if (def != null) definitions.add(def);
+					}
+				}
+			}
+
+		} catch (Exception ex) {
+			logger.error("Cannot read startup configuration:", ex);
+		}
+		return definitions;
+	}	
 
 }

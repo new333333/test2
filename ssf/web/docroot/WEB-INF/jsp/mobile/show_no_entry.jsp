@@ -42,7 +42,7 @@
   <span><ssf:nlt tag="nav.noEntries"/><span>
 </div>
 
-<c:if test="${!empty ssEntryId">
+<c:if test="${!empty ssEntryId}">
 <div style="padding-top:20px;">
   <a href="<ssf:url adapter="true" portletName="ss_forum" 
 					folderId="${ssBinder.id}" 
