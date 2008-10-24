@@ -37,7 +37,7 @@
 	folderId="${ssBinder.id}"
 	action="__ajax_mobile" 
 	operation="mobile_show_front_page" 
-	actionUrl="true" />"
+	actionUrl="true" />">
   <textarea rows="2" style="width:150px;" name="miniblogText"></textarea>
   <input type="submit" name="miniblogBtn" value="<ssf:nlt tag="button.ok"/>">
 <c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">
