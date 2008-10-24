@@ -41,11 +41,7 @@
 </ssf:ifadapter>
 <div align="center">
   <jsp:include page="/WEB-INF/jsp/forum/login_form.jsp" />
-</div></DIV>
-<script type="text/javascript">
-	var formObj = self.document.getElementById('loginForm');
-	formObj.j_username.focus();
-</script>
+</div>
 <ssf:ifadapter>
 </div>
 </div>
