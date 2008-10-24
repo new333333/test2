@@ -33,8 +33,8 @@
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="administration.reload.definitions" /></span>
-<br>
-<br>
+<br/>
+<br/>
 
 <form class="ss_style ss_form" method="post" 
 		  action="<ssf:url action="import_definition" actionUrl="true"><ssf:param 
@@ -42,15 +42,28 @@
 		  name="binderId" value="${ssBinderId}"/></ssf:url>" 
 		  name="${renderResponse.namespace}fm">
 
+<span class="ss_titlebold"><ssf:nlt tag="administration.reset.definitions.select"/></span>
+<table class="ss_style" width="100%"><tr><td>
+
+<%@include file="/WEB-INF/jsp/administration/commonSelectTree.jsp" %>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.close"/>"
+		  onClick='self.location.href="<ssf:url action="manage_definitions" 
+			actionUrl="false"><ssf:param name="binderId" value="${ssBinderId}"/></ssf:url>";return false;'>
+<script type="text/javascript">
+document.${renderResponse.namespace}fm.onsubmit=function() { return ss_selectAllIfNoneSelected.call(this,"id_");};
+</script>
+<br>
+</td></tr></table>
+
+
+<br/>
+<br/>
 <span>
 <ssf:nlt tag="administration.reload.definitions.warning"/>
 </span>
 <br/>
 <br/>
-
-<input type="submit" class="ss_submit" name="reloadDefinitionsBtn" value="<ssf:nlt tag="button.ok" />"/>
-&nbsp;&nbsp;&nbsp;
-<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"/>
 
 </form>
 

@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.mail.internet.InternetAddress;
 
@@ -352,6 +354,55 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			List<String> defs = new ArrayList();
 			for (Element element:elements) {
 				String file = element.getTextTrim();
+				reader = new SAXReader(false);  
+				try {
+					in = new ClassPathResource(file).getInputStream();
+					boolean replace = true;
+					if (newDefinitionsOnly) replace = false;
+					Definition newDef = getDefinitionModule().addDefinition(in, null, null, null, replace);
+					if (newDef != null) defs.add(newDef.getId());
+					getCoreDao().flush();
+				} catch (Exception ex) {
+					logger.error("Cannot read definition from file: " + file + " " + ex.getMessage());
+					return; //cannot continue, rollback is enabled
+				} finally {
+					if (in!=null) in.close();
+				}
+			}
+			for (String id:defs) {
+				getDefinitionModule().updateDefinitionReferences(id);
+			}
+
+		} catch (Exception ex) {
+			logger.error("Cannot read startup configuration:", ex);
+		}
+	}	
+	public void updateDefaultDefinitions(Long topId, Boolean newDefinitionsOnly, Collection ids) {
+		Workspace top = (Workspace)getCoreDao().loadBinder(topId, topId);
+		
+		//default definitions stored in separate config file
+		String startupConfig = SZoneConfig.getString(top.getName(), "property[@name='startupConfig']", "config/startup.xml");
+		SAXReader reader = new SAXReader(false);  
+		InputStream in=null;
+		try {
+			in = new ClassPathResource(startupConfig).getInputStream();
+			Document cfg = reader.read(in);
+			in.close();
+			List<Element> elements = cfg.getRootElement().selectNodes("definitionFile");
+			List<String> defs = new ArrayList();
+			for (Element element:elements) {
+				String file = element.getTextTrim();
+				//Get the definition name from the file name
+				Pattern nameP = Pattern.compile("/([^/\\.]*)\\.xml$");
+				Matcher m = nameP.matcher(file);
+				if (m.find()) {
+					String name = m.group(1);
+					if (name != null && !name.equals("")) {
+						Definition def = getDefinitionModule().getDefinitionByName(null, false, name);
+						//If this definition is not on the list, don't read it in
+						if (def != null && !ids.contains(def.getId())) continue;
+					}
+				}
 				reader = new SAXReader(false);  
 				try {
 					in = new ClassPathResource(file).getInputStream();

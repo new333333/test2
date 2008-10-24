@@ -593,8 +593,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-		entryId = getNextPrevEntry((Folder) binder, entryId, true);	
-		if (entryId != null) return ajaxMobileShowEntry(bs, request, response, entryId);
+		Long nextEntryId = getNextPrevEntry((Folder) binder, entryId, true);	
+		if (nextEntryId != null) return ajaxMobileShowEntry(bs, request, response, nextEntryId);
 		
 		Map model = new HashMap();
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
@@ -607,8 +607,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-		entryId = getNextPrevEntry((Folder) binder, entryId, false);	
-		if (entryId != null) return ajaxMobileShowEntry(bs, request, response, entryId);
+		Long nextEntryId = getNextPrevEntry((Folder) binder, entryId, false);	
+		if (nextEntryId != null) return ajaxMobileShowEntry(bs, request, response, nextEntryId);
 		
 		Map model = new HashMap();
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");

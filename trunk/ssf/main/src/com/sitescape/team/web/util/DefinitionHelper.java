@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Collection;
 import java.util.TreeMap;
@@ -42,6 +43,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
@@ -68,6 +70,7 @@ import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
 
@@ -790,4 +793,64 @@ public class DefinitionHelper {
     	model.put(WebKeys.MASHUP_BINDER_ENTRIES, mashupBinderEntries);
     	model.put(WebKeys.MASHUP_ENTRIES, mashupEntries);
 	}
+
+	public static Document getDefinitionTree(AllModulesInjected bs, Long binderId) {
+		List currentDefinitions;
+		currentDefinitions = bs.getDefinitionModule().getDefinitions(binderId, Boolean.FALSE);
+		return getDefinitionTree(bs, binderId, currentDefinitions);
+	}
+	public static Document getDefinitionTree(AllModulesInjected bs, Long binderId, List currentDefinitions) {
+		//Build the definition tree
+		Document definitionTree = DocumentHelper.createDocument();
+		Element dtRoot = definitionTree.addElement(DomTreeBuilder.NODE_ROOT);
+		dtRoot.addAttribute("title", NLT.getDef("__definitions"));
+		dtRoot.addAttribute("id", "definitions");
+		dtRoot.addAttribute("displayOnly", "true");
+		dtRoot.addAttribute("url", "");
+		Element root = 	bs.getDefinitionModule().getDefinitionConfig().getRootElement();
+		
+		Iterator definitions = root.elementIterator("definition");
+		Map designers = new TreeMap(new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale()));
+		while (definitions.hasNext()) {
+			Element defEle = (Element) definitions.next();
+			Element treeEle = DocumentHelper.createElement("child");
+			treeEle.addAttribute("type", "definition");
+			treeEle.addAttribute("title", NLT.getDef(defEle.attributeValue("caption")));
+			treeEle.addAttribute("id", defEle.attributeValue("name"));	
+			treeEle.addAttribute("displayOnly", "true");
+			treeEle.addAttribute("url", "");
+			//Add the current definitions (if any)
+			ListIterator li = currentDefinitions.listIterator();
+			while (li.hasNext()) {
+				Definition curDef = (Definition)li.next();
+				Document curDefDoc = curDef.getDefinition();
+				if (curDefDoc == null) continue;
+				if (curDef.getType() == Integer.valueOf(defEle.attributeValue("definitionType", "0")).intValue()) {
+					Element curDefEle = treeEle.addElement("child");
+					curDefEle.addAttribute("type", defEle.attributeValue("name"));
+					String title = NLT.getDef(curDef.getTitle());
+					if (Validator.isNull(title)) title = curDef.getName();
+					title += "  (" + curDef.getName() + ")";
+					if (Definition.VISIBILITY_DEPRECATED.equals(curDef.getVisibility())) {
+						curDefEle.addAttribute("image", "/pics/delete.gif");
+					} 
+					curDefEle.addAttribute("title", title);
+					
+					curDefEle.addAttribute("id", curDef.getId());
+					curDefEle.addAttribute("url", "");
+				}
+			}
+			if (treeEle.hasContent()) designers.put(treeEle.attributeValue("title"), treeEle);
+		}
+		//	add sorted elements
+		for (Iterator iter=designers.entrySet().iterator(); iter.hasNext(); ) {
+				Map.Entry me = (Map.Entry)iter.next();
+				dtRoot.add((Element)me.getValue());
+		}
+		
+		return definitionTree;
+
+	}
+
 }
+
