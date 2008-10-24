@@ -127,7 +127,7 @@
 <table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
 <th colspan="2" align="left"><ssf:nlt tag="administration.initial.workspace.title"/></th>
 <c:forEach var="workspace" items="${ssWorkspaces}" >
-	<tr><td><a href="<ssf:url adapter="true" portletName="ss_forum" 
+	<tr><td class="ss_mobile_folder_list"><a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${workspace.id}" 
 	action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
     <c:if test="${empty workspace.title}">
@@ -167,7 +167,7 @@
 <table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
 <th colspan="2" align="left"><ssf:nlt tag="search.Folders"/></th>
 <c:forEach var="folder" items="${ssFolders}" >
-	<tr><td><a href="<ssf:url adapter="true" portletName="ss_forum" 
+	<tr><td class="ss_mobile_folder_list"><a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${folder.id}" 
 	action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
     <c:if test="${empty folder.title}">
