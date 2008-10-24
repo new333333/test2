@@ -33,8 +33,8 @@
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
-<div style="border:1px #cecece solid; background-color: #cecece;">
-  <div style="margin-top: 15px;">
+<div class="ss_photo_sidebar">
+  <div class="ss_blog_sidebar_subhead" style="padding-bottom: 5px;">
     <c:if test="${ssConfigJspStyle != 'template'}">
       <a class="ss_linkButton" href="<ssf:url action="${action}" actionUrl="true">
 	    <ssf:param name="operation" value="view_folder_listing"/>
@@ -47,7 +47,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     </c:if>
   </div>
 
-	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="photo.findPage"/></div>
+	<div class="ss_photo_sidebar_subhead"><ssf:nlt tag="photo.findPage"/>
     <form method="post" name="ss_findWikiPageForm${renderResponse.namespace}"
     	action="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssBinder.id}"/></ssf:url>">
@@ -62,13 +62,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	    clickRoutine="ss_loadPhotoEntryId${renderResponse.namespace}"/> 
     <input type="hidden" name="searchTitle"/>
     </form>
-	
-	  <ssf:expandableArea title='<%= NLT.get("photo.albums") %>' titleClass="ss_wiki_sidebar_subhead" 
+	</div>
+	<div class="ss_photo_sidebar_subhead">
+	  <ssf:expandableArea title='<%= NLT.get("photo.albums") %>' titleClass="ss_photo_title" 
 	  	action="wipe" initOpen="true">
-	  <div class="ss_wiki_sidebar_box">
+	  <div class="ss_photo_sidebar_box">
         <table cellspacing="0" cellpadding="0">
 	     <c:forEach var="blogPage" items="${ssBlogPages}">
- 		   <tr><td><div style="padding:0px 4px 4px 8px;">
+ 		   <tr><td><div style="padding:0px 4px 4px 14px;">
 	         <a class="<c:if test="${blogPage.id == ssBinder.id}"> ss_navbar_current</c:if>
 					   <c:if test="${blogPage.id != ssBinder.id}"></c:if>" 
 				href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"/>"
@@ -78,12 +79,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	    </table>
        </div>
       </ssf:expandableArea>
-
-	  <ssf:expandableArea title='<%= NLT.get("photo.entries") %>' titleClass="ss_wiki_sidebar_subhead" 
+		</div>
+	<div class="ss_photo_sidebar_subhead">	
+	  <ssf:expandableArea title='<%= NLT.get("photo.entries") %>' titleClass="ss_photo_title" 
 	    action="wipe" initOpen="true">
 
 	  <div style="margin-top: 15px;">
-		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.archives"/>
+		<div class="ss_photo_archive_subhead"><ssf:nlt tag="blog.archives"/>
 	    <div class="ss_blog_sidebar_box">		
 		<table>
 		<c:forEach var="monthYear" items="${ssBlogMonthHits}">
@@ -118,10 +120,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	    </div>		
 	  </div>
       </ssf:expandableArea>
-  	
+  	</div>
    <c:if test="${!empty ssFolderEntryCommunityTags}"> 
-	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
-    <div class="ss_blog_sidebar_box">		
+	<div class="ss_photo_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
+    <div class="ss_photo_sidebar_box">		
 	   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
 		   	<a href="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssBinder.id}"/><ssf:param 
@@ -131,8 +133,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
     </div>		
    </c:if>
    <c:if test="${!empty ssFolderEntryPersonalTags}"> 
-	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
-    <div class="ss_blog_sidebar_box">		
+	<div class="ss_photo_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
+    <div class="ss_photo_sidebar_box">		
 	   <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">		
 	   	<a href="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
 			name="binderId" value="${ssBinder.id}"/><ssf:param 
