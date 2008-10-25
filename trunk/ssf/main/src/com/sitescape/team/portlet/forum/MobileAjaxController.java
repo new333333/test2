@@ -50,6 +50,8 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
+import net.sf.json.JSONArray;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.web.portlet.ModelAndView;
@@ -70,6 +72,7 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workspace.WorkspaceModule;
@@ -270,6 +273,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+		adapterUrl.setParameter(WebKeys.OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
 		model.put(WebKeys.URL, adapterUrl);
 		return new ModelAndView("mobile/show_login_form", model);
 	}
@@ -281,14 +285,18 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		Map model = new HashMap();
 		BinderHelper.setupStandardBeans(bs, request, response, model, null, "ss_mobile");
-		//This is the portlet view; get the configured list of folders to show
-		Set<Long>binderIds = LongIdUtil.getIdsAsLongSet((String)userProperties.get(ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS));
 
-		model.put(WebKeys.MOBILE_BINDER_LIST, getBinderModule().getBinders(binderIds));
-		
-		Map unseenCounts = new HashMap();
-		unseenCounts = getFolderModule().getUnseenCounts(binderIds);
-		model.put(WebKeys.LIST_UNSEEN_COUNTS, unseenCounts);
+		Object obj = userProperties.get(ObjectKeys.USER_PROPERTY_FAVORITES);
+		Favorites f;
+		if (obj != null && obj instanceof Document) {
+			f = new Favorites((Document)obj);
+			//fixup - have to store as string cause hibernate equals fails
+			getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
+		} else {		
+			f = new Favorites((String)obj);
+		}
+		List<Map> favList = f.getFavoritesList();
+		model.put(WebKeys.MOBILE_FAVORITES_LIST, favList);
 		
 		Map userQueries = new HashMap();
 		if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {

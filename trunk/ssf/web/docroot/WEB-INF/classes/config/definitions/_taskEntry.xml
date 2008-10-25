@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_taskEntry" caption="__definition_default_task_entry" type="1" nextId="59" definitionType="1" databaseId="402883c1129b1f8101129b28bbe50002"> 
+<definition name="_taskEntry" caption="__definition_default_task_entry" type="1" nextId="60" definitionType="1" databaseId="402883c1129b1f8101129b28bbe50002"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -12,6 +12,13 @@
           <property name="inline" value=""/>  
           <property name="generated" value=""/>  
           <property name="itemSource" value=""/> 
+        </properties> 
+      </item>
+      <item name="group_list" caption="__group_list" type="data" category="commonEntryData" id="59"> 
+        <properties> 
+          <property name="caption" value="__task_assigned_to_groups"/>  
+          <property name="name" value="assignment_groups"/>  
+          <property name="required" value="false"/> 
         </properties> 
       </item>  
       <item name="description" caption="__description" type="data" id="4"> 
@@ -85,13 +92,6 @@
           <property name="name" value="assignment"/>  
           <property name="caption" value="__task_assigned_to"/>  
           <property name="inline" value="false"/>  
-          <property name="required" value="false"/> 
-        </properties> 
-      </item>  
-      <item name="group_list" caption="__group_list" type="data" category="commonEntryData" id="59"> 
-        <properties> 
-          <property name="caption" value="__task_assigned_to_groups"/>  
-          <property name="name" value="assignment_groups"/>  
           <property name="required" value="false"/> 
         </properties> 
       </item>  
@@ -265,7 +265,15 @@
             <property name="onClick" value=""/> 
           </properties> 
         </item> 
-      </item> 
+      </item>  
+      <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="59">
+        <properties>
+          <property name="caption" value="__guest.default.caption"/>
+          <property name="name" value="_guestName"/>
+          <property name="width" value=""/>
+          <property name="required" value="false"/>
+        </properties>
+      </item>
     </item> 
   </item>  
   <item name="entryView" caption="__entry_view_definition" id="9"> 

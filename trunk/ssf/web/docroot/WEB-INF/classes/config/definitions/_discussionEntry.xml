@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_discussionEntry" caption="__definition_default_discussion_entry" type="1" nextId="24" definitionType="1" databaseId="402883b90cc53079010cc539bf260002" internalId="402883b90cc53079010cc539bf260002"> 
+<definition name="_discussionEntry" caption="__definition_default_discussion_entry" type="1" nextId="28" definitionType="1" databaseId="402883b90cc53079010cc539bf260002" internalId="402883b90cc53079010cc539bf260002"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -17,6 +17,14 @@
           <property name="generated" value=""/>  
           <property name="itemSource" value=""/> 
         </properties> 
+      </item>
+      <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="24">
+        <properties>
+          <property name="caption" value="__guest.default.caption"/>
+          <property name="name" value="_guestName"/>
+          <property name="width" value=""/>
+          <property name="required" value="false"/>
+        </properties>
       </item>  
       <item name="description" caption="__description" type="data" id="4"> 
         <properties> 
@@ -26,6 +34,14 @@
           <property name="required" value=""/> 
         </properties> 
       </item>  
+      <item name="entryAttributes" caption="__attributes" type="data" category="entryData" display="form" id="25">
+        <properties>
+          <property name="caption" value="__attributes"/>
+          <property name="name" value="attributes"/>
+          <property name="source" value="attributes"/>
+          <property name="required" value="false"/>
+        </properties>
+      </item>
       <item name="attachFiles" caption="__attach_files" type="data" id="5"> 
         <properties> 
           <property name="name" value="ss_attachFile"/>  
@@ -72,27 +88,33 @@
       <property name="type" value="entryView"/> 
     </properties>  
     <item name="entrySignatureView" caption="__entry_signature" id="11" category="commonEntryViewData" display="view"> 
-      <properties>
-        <property name="caption" value=""/>
-        <property name="showPicture" value="true"/>
-        <property name="displayType" value="leftAligned"/>
-      </properties>
+      <properties> 
+        <property name="caption" value=""/>  
+        <property name="showPicture" value="true"/>  
+        <property name="displayType" value="leftAligned"/> 
+      </properties>  
       <item name="titleView" caption="__title" id="10"> 
         <properties> 
           <property name="caption" value="__title"/> 
         </properties> 
-      </item>
+      </item>  
       <item name="descriptionView" caption="__description" id="12"> 
         <properties> 
           <property name="caption" value="__description"/> 
         </properties> 
-      </item>
+      </item>  
       <item name="entryWorkflow" caption="__entry_workflow" id="13"> 
         <properties> 
           <property name="caption" value="__entry_workflow"/> 
         </properties> 
-      </item>
+      </item> 
     </item>  
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" display="view" id="26" formItem="entryAttributes">
+      <properties>
+        <property name="caption" value="__attributes"/>
+        <property name="name" value="attributes"/>
+      </properties>
+    </item>
     <item name="entryAttachments" caption="__entry_attachments" id="14"> 
       <properties> 
         <property name="caption" value="__entry_attachments"/> 
@@ -123,6 +145,12 @@
         <property name="caption" value="__entry_workflow"/> 
       </properties> 
     </item>  
+    <item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData" display="view" id="27" formItem="entryAttributes">
+      <properties>
+        <property name="caption" value="__attributes"/>
+        <property name="name" value="attributes"/>
+      </properties>
+    </item>
     <item name="entryBlogAttachments" caption="__entry_attachments" id="20"> 
       <properties> 
         <property name="caption" value="__entry_attachments"/> 

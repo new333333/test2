@@ -452,11 +452,6 @@ public class Favorites {
 		}
 	}
 
-
-
-
-
-
 	public JSONArray getFavoritesTreeJson() {
 		getFavorites();
 		JSONArray favData = new JSONArray();
@@ -488,5 +483,12 @@ public class Favorites {
     	}
 	}
 
-
+	public List<Map> getFavoritesList() {
+		List idList = new ArrayList();
+		JSONArray favs = getFavoritesTreeJson();
+		for (int i = 0; i < favs.length(); i++) {
+			idList.add(JSONUtils.getProperties(favs.getJSONObject(i)));
+		}
+		return idList;
+	}
 }

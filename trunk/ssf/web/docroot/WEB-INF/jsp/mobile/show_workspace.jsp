@@ -125,7 +125,7 @@
 <div style="padding-left:6px;">
 <c:if test="${!empty ssWorkspaces}">
 <table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
-<th colspan="2" align="left"><ssf:nlt tag="administration.initial.workspace.title"/></th>
+<tr><th colspan="2" align="left"><ssf:nlt tag="administration.initial.workspace.title"/></th></tr>
 <c:forEach var="workspace" items="${ssWorkspaces}" >
 	<tr><td class="ss_mobile_folder_list"><a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${workspace.id}" 
@@ -165,7 +165,7 @@
 
 <c:if test="${!empty ssFolders}">
 <table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
-<th colspan="2" align="left"><ssf:nlt tag="search.Folders"/></th>
+<tr><th colspan="2" align="left"><ssf:nlt tag="search.Folders"/></th></tr>
 <c:forEach var="folder" items="${ssFolders}" >
 	<tr><td class="ss_mobile_folder_list"><a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${folder.id}" 

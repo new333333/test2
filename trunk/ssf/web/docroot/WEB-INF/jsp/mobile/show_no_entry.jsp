@@ -28,6 +28,9 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("nav.noEntries") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <div class="ss_mobile">
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
@@ -39,7 +42,7 @@
 </div>
 <br/>
 <div>
-  <span><ssf:nlt tag="nav.noEntries"/><span>
+  <span><ssf:nlt tag="nav.noEntries"/></span>
 </div>
 
 <c:if test="${!empty ssEntryId}">

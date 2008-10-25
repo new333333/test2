@@ -86,59 +86,34 @@
 
 <br/>
 
-<c:if test="${!empty ss_mobileBinderList}">
+<c:if test="${0 == 1 && !empty ss_mobileFavoritesList}">
 <div>
   <span class="ss_bold"><ssf:nlt tag="portlet.title.bookmarks"/></span>
 </div>
 <table class="ss_mobile" cellspacing="0" cellpadding="0">
-<c:forEach var="binder" items="${ss_mobileBinderList}">
-<jsp:useBean id="binder" type="com.sitescape.team.domain.Binder" />
+<c:forEach var="favorite" items="${ss_mobileFavoritesList}">
+ <c:if test="${favorite.eletype == 'favorite'}">
  <tr>
-  <td valign="top">
-   <span style="color:silver;">
-	  <c:set var="folderIdFound" value="0"/>
-	  <c:forEach var="entry" items="${ss_unseenCounts}">
-	    <c:if test="${entry.key.id == binder.id}"><%--
-	      --%>${entry.value}<%--
-	      --%><c:set var="folderIdFound" value="1"/><%--
-	    --%></c:if>
-	  </c:forEach>
-   </span>&nbsp;&nbsp;</td>
   <td>
-	<c:if test="${binder.entityIdentifier.entityType == 'folder'}">
-	  <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder.id}" 
+	<c:if test="${favorite['type'] == 'binder' && favorite['action'] == 'view_folder_listing'}">
+	  <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${favorite['id']}" 
 					action="__ajax_mobile" actionUrl="false" 
-					operation="mobile_show_folder" />"><span>${binder.title}</span></a>
-	  <c:if test="${binder.parentBinder.entityIdentifier.entityType == 'folder'}">
-	    <a style="padding-left:20px;" 
-	    	href="<ssf:url adapter="true" portletName="ss_forum" 
-	    			folderId="${binder.parentBinder.id}" 
-					action="__ajax_mobile" actionUrl="false" 
-					operation="mobile_show_folder" />">
-			<span class="ss_mobile_small ss_mobile_light">(${binder.parentBinder.title})</span></a>
-	  </c:if>
+					operation="mobile_show_folder" />"><span>${favorite['name']}</span></a>
 	</c:if>
-	<c:if test="${binder.entityIdentifier.entityType == 'workspace'}">
+	<c:if test="${favorite['type'] == 'binder' && empty favorite['action']}">
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-	    			folderId="${binder.id}" 
+	    			folderId="${favorite['id']}" 
 					action="__ajax_mobile" actionUrl="false" 
-					operation="mobile_show_workspace" />"><span>${binder.title}</span></a>
-	</c:if>
-	<c:if test="${binder.entityIdentifier.entityType == 'profiles'}">
-	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-	    			folderId="${binder.id}" 
-					action="__ajax_mobile" actionUrl="false" 
-					operation="mobile_show_workspace" />"><span>${binder.title}</span></a>
+					operation="mobile_show_workspace" />"><span>${favorite['name']}</span></a>
 	</c:if>
   </td>
  </tr>
+ </c:if>
 </c:forEach>
 </table>
 </c:if>
 
 </div>
-
-<br/>
 
 <c:if test="${!empty ss_UserQueries}">
 <div class="ss_mobile">

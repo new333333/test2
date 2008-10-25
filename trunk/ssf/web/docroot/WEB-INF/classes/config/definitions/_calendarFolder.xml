@@ -44,11 +44,11 @@
     </item> 
   </item>  
   <item name="forumView" caption="__folder_view" id="6"> 
-    <item name="folderTitleView" caption="__title" category="folderViewData" display="view" id="14">
-      <properties>
-        <property name="caption" value="__title"/>
-      </properties>
-    </item>
+    <item name="folderTitleView" caption="__title" category="folderViewData" display="view" id="14"> 
+      <properties> 
+        <property name="caption" value="__title"/> 
+      </properties> 
+    </item>  
     <item name="folderDataItem" type="dataView" caption="__folder_data_item" category="folderViewData" display="view" id="13" formItem="folderRemoteApp"> 
       <properties> 
         <property name="caption" value="__remoteApp"/>  

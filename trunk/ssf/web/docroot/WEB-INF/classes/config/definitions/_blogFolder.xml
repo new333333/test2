@@ -43,12 +43,12 @@
         <property name="caption" value="__title"/> 
       </properties> 
     </item>  
-    <item name="folderDescriptionView" caption="__description" category="folderViewData" display="view" id="17">
-      <properties>
-        <property name="caption" value="__description"/>
-        <property name="viewType" value="top"/>
-      </properties>
-    </item>
+    <item name="folderDescriptionView" caption="__description" category="folderViewData" display="view" id="17"> 
+      <properties> 
+        <property name="caption" value="__description"/>  
+        <property name="viewType" value="top"/> 
+      </properties> 
+    </item>  
     <item name="folderList" caption="__folder_listing" id="9"> 
       <properties/> 
     </item>  
