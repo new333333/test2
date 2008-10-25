@@ -346,6 +346,10 @@ public class BinderHelper {
 				model.put(WebKeys.USER_FOLDER_PROPERTIES_OBJ, userFolderProperties);
 			}
 		}
+		if ("standalone".equals(SPropsUtil.getString("deployment.portal"))) {
+			model.put((WebKeys.STAND_ALONE), true);
+		}
+
 	}
 	public static Document getSearchFilter(AllModulesInjected bs, UserProperties userFolderProperties) {
 		convertV1Filters(bs, userFolderProperties);  //make sure converted
