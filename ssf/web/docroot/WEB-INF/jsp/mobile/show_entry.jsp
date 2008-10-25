@@ -28,6 +28,10 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:if test="${!empty ssEntry.title}">
+  <c:set var="ss_windowTitle" value="${ssEntry.title}" scope="request"/>
+</c:if>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <div class="ss_mobile">
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
@@ -56,19 +60,7 @@
   </a>
 </div>
 
-<br/>
 <c:if test="${!empty ssEntry}">
-<div style="padding:0px 0px 6px 8px;">
-
-<c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-	configElement="${ssConfigElement}" 
-	configJspStyle="mobile" 
-	entry="${ssEntry}" />
-
-</c:if> 
-<br/>
-
 <c:if test="${!empty ss_mobileBinderDefUrlList}">
   <form name="addEntryForm" 
   		action="<ssf:url adapter="true" portletName="ss_forum" 
@@ -101,7 +93,20 @@
   </tr>
   </table>  
   </form>
+<br/>
 </c:if>
+
+<div style="padding:0px 0px 6px 8px;">
+
+<c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	configElement="${ssConfigElement}" 
+	configJspStyle="mobile" 
+	entry="${ssEntry}" />
+
+</div>
+</c:if> 
+<br/>
 
 <br/>
 <div class="ss_mobile_breadcrumbs ss_mobile_small">

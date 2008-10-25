@@ -66,7 +66,7 @@
 	caption = NLT.getDef(caption);
 %>
 <c:set var="caption" value="<%= caption %>"/>
-<li><c:out value="${caption}" escapeXml="false"/></span></li>
+<li><c:out value="${caption}" escapeXml="false"/></li>
 </c:forEach>
 </ul>
 </div>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_wikiEntry" caption="__definition_default_wiki_entry" type="1" nextId="30" definitionType="1" databaseId="402883c6115753d80111578d0fea0011"> 
+<definition name="_wikiEntry" caption="__definition_default_wiki_entry" type="1" nextId="31" definitionType="1" databaseId="402883c6115753d80111578d0fea0011"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -17,6 +17,14 @@
           <property name="generated" value=""/>  
           <property name="itemSource" value=""/> 
         </properties> 
+      </item>
+      <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="30">
+        <properties>
+          <property name="caption" value="__guest.default.caption"/>
+          <property name="name" value="_guestName"/>
+          <property name="width" value=""/>
+          <property name="required" value="false"/>
+        </properties>
       </item>  
       <item name="description" caption="__description" type="data" id="4"> 
         <properties> 
@@ -66,10 +74,10 @@
       <property name="type" value="entryView"/> 
     </properties>  
     <item name="titleView" caption="__title" id="10" category="entryViewData" display="view"> 
-      <properties>
-        <property name="caption" value="__title"/>
-        <property name="showDocNumber" value="false"/>
-      </properties>
+      <properties> 
+        <property name="caption" value="__title"/>  
+        <property name="showDocNumber" value="false"/> 
+      </properties> 
     </item>  
     <item name="entrySignatureView" caption="__entry_signature" id="11"> 
       <properties> 
@@ -102,10 +110,10 @@
       <property name="type" value="blog"/> 
     </properties>  
     <item name="titleBlogView" caption="__title" id="17" category="blogEntryViewData" display="view"> 
-      <properties>
-        <property name="caption" value="__title"/>
-        <property name="showDocNumber" value="false"/>
-      </properties>
+      <properties> 
+        <property name="caption" value="__title"/>  
+        <property name="showDocNumber" value="false"/> 
+      </properties> 
     </item>  
     <item name="descriptionBlogView" caption="__description" id="18"> 
       <properties> 

@@ -34,70 +34,70 @@
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 <% //Title view %>
 <div class="ss_entryContent">
-<c:if test="${empty ss_title_breadcrumbs_seen && 
+  <c:if test="${empty ss_title_breadcrumbs_seen && 
                     ssDefinitionEntry.entityType == 'folderEntry' && 
                     !empty ssDefinitionEntry.parentEntry}">
-<div style="padding-bottom:10px;">
-<c:set var="parentEntry" value="${ssDefinitionEntry.parentEntry}"/>
-<jsp:useBean id="parentEntry" type="java.lang.Object" />
-<%
-	Stack parentEntryTree = new Stack();
-	while (parentEntry != null) {
-		parentEntryTree.push(parentEntry);
-		parentEntry = ((FolderEntry)parentEntry).getParentEntry();
-	}
-	while (!parentEntryTree.empty()) {
-		FolderEntry nextEntry = (FolderEntry) parentEntryTree.pop();
-%>
-<c:set var="nextEntry" value="<%= nextEntry %>"/>
-<div style="padding-bottom:6px;">
-<span style="ss_mobile_small ss_mobile_light">
-<a
-  href="<ssf:url adapter="true" portletName="ss_forum" 
-					folderId="${ssDefinitionEntry.parentBinder.id}" 
-					entryId="${nextEntry.id}"
-					action="__ajax_mobile" 
-					operation="mobile_show_entry" 
-					actionUrl="false" />"
->
-<c:if test="${!empty nextEntry.docNumber}">
-${nextEntry.docNumber}.
-</c:if>
-<c:if test="${empty nextEntry.title}" >
---<ssf:nlt tag="entry.noTitle" />--
-</c:if>
-<c:out value="${nextEntry.title}" /><img border="0" <ssf:alt/>
-  style="width:1px;height:14px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
-</span>
-<br/>
-<%
-	}
-%>
-</div>
-</c:if>
-<c:set var="ss_title_breadcrumbs_seen" value="1" scope="request"/>
-<%
-	if (!ssSeenMap.checkIfSeen(title_entry)) {
+    <div style="padding-bottom:10px;">
+	    <c:set var="parentEntry" value="${ssDefinitionEntry.parentEntry}"/>
+	    <jsp:useBean id="parentEntry" type="java.lang.Object" />
+	    <%
+		    Stack parentEntryTree = new Stack();
+		    while (parentEntry != null) {
+				parentEntryTree.push(parentEntry);
+				parentEntry = ((FolderEntry)parentEntry).getParentEntry();
+			}
+			while (!parentEntryTree.empty()) {
+				FolderEntry nextEntry = (FolderEntry) parentEntryTree.pop();
+				%>
+				<c:set var="nextEntry" value="<%= nextEntry %>"/>
+				<div style="padding-bottom:6px;">
+				  <span style="ss_mobile_small ss_mobile_light">
+					<a
+			  			href="<ssf:url adapter="true" portletName="ss_forum" 
+								folderId="${ssDefinitionEntry.parentBinder.id}" 
+								entryId="${nextEntry.id}"
+								action="__ajax_mobile" 
+								operation="mobile_show_entry" 
+								actionUrl="false" />"
+					>
+					<c:if test="${!empty nextEntry.docNumber}">
+						${nextEntry.docNumber}.
+					</c:if>
+					<c:if test="${empty nextEntry.title}" >
+						--<ssf:nlt tag="entry.noTitle" />--
+					</c:if>
+					<c:out value="${nextEntry.title}" /><img border="0" <ssf:alt/>
+			  		  style="width:1px;height:14px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
+				  </span>
+				  <br/>
+				</div>
+		<%
+			}
+		%>
+	</div>
+  </c:if>
+  <c:set var="ss_title_breadcrumbs_seen" value="1" scope="request"/>
+  <%
+	  if (!ssSeenMap.checkIfSeen(title_entry)) {
 		%><img border="0" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
-	}
-%>
-<c:if test="${!empty ssDefinitionEntry.docNumber}">
-<span class="ss_bold">${ssDefinitionEntry.docNumber}.</span>
-</c:if>
-<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	  }
+  %>
+  <c:if test="${!empty ssDefinitionEntry.docNumber}">
+	<span class="ss_bold">${ssDefinitionEntry.docNumber}.</span>
+  </c:if>
+  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 					folderId="${ssBinder.id}" 
 					entryId="${ssDefinitionEntry.id}"
 					action="__ajax_mobile" 
 					operation="mobile_show_entry" 
 					actionUrl="false" />"
-><span class="ss_bold"><c:if test="${empty ssDefinitionEntry.title}" >
-(<ssf:nlt tag="entry.noTitle" />)
-</c:if>
-<c:out value="${ssDefinitionEntry.title}" /></span></a>
-<br/>
-</div>
+  ><span class="ss_bold"><c:if test="${empty ssDefinitionEntry.title}" >
+  (<ssf:nlt tag="entry.noTitle" />)</c:if>
+  <c:out value="${ssDefinitionEntry.title}" /></span></a>
+  <br/>
 
 <c:if test="${ss_showSignatureAfterTitle && !ss_signatureShown}">
   <%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_signature2.jsp" %>
   <c:set var="ss_signatureShown" value="true" scope="request"/>
 </c:if>
+</div>

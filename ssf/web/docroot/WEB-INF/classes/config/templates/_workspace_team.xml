@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <template type="8" internalId="402883c1129b1f8101129b28bc620004">
-  <attribute name="templateTitle" type="string"><![CDATA[__template_team_workspace]]></attribute>
-  <attribute name="templateDescription" type="description"><![CDATA[__template_team_workspace_description]]></attribute>
-  <attribute name="title" type="string"><![CDATA[__template_team_workspace]]></attribute>
-  <attribute name="description" type="description"><![CDATA[]]></attribute>
+  <attribute name="templateTitle" type="string">__template_team_workspace</attribute>
+  <attribute name="templateDescription" type="description">__template_team_workspace_description</attribute>
+  <attribute name="title" type="string">__template_team_workspace</attribute>
+  <attribute name="description" type="description"></attribute>
   <attribute name="iconName" type="string">/icons/team_workspace.gif</attribute>
   <attribute name="name" type="string">_workspace_team</attribute>
   <property name="library">false</property>
@@ -13,18 +13,18 @@
   <property name="inheritDefinitions">false</property>
   <property name="inheritTeamMembers">true</property>
   <workAreaFunctionMembership>
-    <property name="functionName">__role.teamMember</property>
-    <property name="members">-2</property>
-  </workAreaFunctionMembership>
-  <workAreaFunctionMembership>
     <property name="functionName">__role.participant</property>
     <property name="members">-1 -2</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.teamMember</property>
+    <property name="members">-2</property>
   </workAreaFunctionMembership>
   <workAreaFunctionMembership>
     <property name="functionName">__role.binderAdmin</property>
     <property name="members">-1</property>
   </workAreaFunctionMembership>
-  <definition name="_workspace" internalId="402883b90cc53079010cc539bf260005" databaseId="402883b90cc53079010cc539bf260005"/>
+  <definition name="_team_workspace" databaseId="402883b513214e5801132160c3ec0002"/>
   <dashboard>
     <property name="nextComponentId">2</property>
     <property name="showComponents">true</property>
@@ -40,7 +40,7 @@
       <property name="displayStyle">border</property>
       <property name="title"></property>
       <data>
-        <property name="resultsCount"><![CDATA[10]]></property>
+        <property name="resultsCount">10</property>
       </data>
       <property name="roles"></property>
       <property name="name">teamMembersList</property>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_discussionFolderTable" caption="__definition_default_folder_discussion_table" type="5" nextId="15" definitionType="5" databaseId="4028839f11fb20390111fb43a3840001"> 
+<definition name="_discussionFolderTable" caption="__definition_default_folder_discussion_table" type="5" nextId="16" definitionType="5" databaseId="4028839f11fb20390111fb43a3840001"> 
   <item name="folderForm" caption="__folder_form" type="form" id="1"> 
     <properties/>  
     <item name="title" caption="__title" type="data" id="2"> 
@@ -20,6 +20,12 @@
         <property name="height" value=""/>  
         <property name="required" value=""/> 
       </properties> 
+    </item>
+    <item name="folderAttributeList" caption="__attributeList" type="data" category="folderData" display="form" id="15">
+      <properties>
+        <property name="caption" value="__attributeList"/>
+        <property name="name" value="attributes"/>
+      </properties>
     </item>  
     <item name="folderRemoteApp" caption="__remoteApp" type="data" category="folderData" display="form" id="10"> 
       <properties> 
@@ -41,11 +47,11 @@
     </item> 
   </item>  
   <item name="forumView" caption="__folder_view" id="5"> 
-    <item name="folderTitleView" caption="__title" category="folderViewData" display="view" id="13">
-      <properties>
-        <property name="caption" value="__title"/>
-      </properties>
-    </item>
+    <item name="folderTitleView" caption="__title" category="folderViewData" display="view" id="13"> 
+      <properties> 
+        <property name="caption" value="__title"/> 
+      </properties> 
+    </item>  
     <item name="folderDataItem" type="dataView" caption="__folder_data_item" category="folderViewData" display="view" id="12" formItem="folderRemoteApp"> 
       <properties> 
         <property name="caption" value="__remoteApp"/>  
@@ -57,11 +63,11 @@
         <property name="caption" value="__dashboard_canvas"/> 
       </properties> 
     </item>  
-    <item name="descriptionView" caption="__description" category="commonEntryViewData" display="view" id="14">
-      <properties>
-        <property name="caption" value="__description"/>
-      </properties>
-    </item>
+    <item name="descriptionView" caption="__description" category="commonEntryViewData" display="view" id="14"> 
+      <properties> 
+        <property name="caption" value="__description"/> 
+      </properties> 
+    </item>  
     <item name="folderList" caption="__folder_listing" id="8"> 
       <properties/> 
     </item>  

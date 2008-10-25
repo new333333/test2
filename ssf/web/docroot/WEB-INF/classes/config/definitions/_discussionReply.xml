@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_discussionReply" caption="__definition_default_discussion_reply" type="1" nextId="22" definitionType="1" databaseId="402883c6115753d801115773ea5a000a"> 
+<definition name="_discussionReply" caption="__definition_default_discussion_reply" type="1" nextId="23" definitionType="1" databaseId="402883c6115753d801115773ea5a000a"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -17,6 +17,14 @@
           <property name="generated" value=""/>  
           <property name="itemSource" value=""/> 
         </properties> 
+      </item>
+      <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="22">
+        <properties>
+          <property name="caption" value="__guest.default.caption"/>
+          <property name="name" value="_guestName"/>
+          <property name="width" value=""/>
+          <property name="required" value="false"/>
+        </properties>
       </item>  
       <item name="description" caption="__description" type="data" id="4"> 
         <properties> 
@@ -60,26 +68,26 @@
       <property name="type" value="entryView"/> 
     </properties>  
     <item name="entrySignatureView" caption="__entry_signature" id="11" category="commonEntryViewData" display="view"> 
-      <properties>
-        <property name="caption" value=""/>
-        <property name="showPicture" value="true"/>
-        <property name="displayType" value="leftAligned"/>
-      </properties>
+      <properties> 
+        <property name="caption" value=""/>  
+        <property name="showPicture" value="true"/>  
+        <property name="displayType" value="leftAligned"/> 
+      </properties>  
       <item name="titleView" caption="__title" id="10"> 
         <properties> 
           <property name="caption" value="__title"/> 
         </properties> 
-      </item>
+      </item>  
       <item name="descriptionView" caption="__description" id="12"> 
         <properties> 
           <property name="caption" value="__description"/> 
         </properties> 
-      </item>
+      </item>  
       <item name="entryWorkflow" caption="__entry_workflow" id="13"> 
         <properties> 
           <property name="caption" value="__entry_workflow"/> 
         </properties> 
-      </item>
+      </item> 
     </item>  
     <item name="entryAttachments" caption="__entry_attachments" id="14"> 
       <properties> 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_libraryEntry" caption="__definition_default_library_entry" type="1" nextId="31" definitionType="1" databaseId="402883c6115753d8011157829367000f"> 
+<definition name="_libraryEntry" caption="__definition_default_library_entry" type="1" nextId="32" definitionType="1" databaseId="402883c6115753d8011157829367000f"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -19,6 +19,14 @@
           <property name="generated" value="true"/>  
           <property name="itemSource" value="upload"/> 
         </properties> 
+      </item>
+      <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="31">
+        <properties>
+          <property name="caption" value="__guest.default.caption"/>
+          <property name="name" value="_guestName"/>
+          <property name="width" value=""/>
+          <property name="required" value="false"/>
+        </properties>
       </item>  
       <item name="file" caption="__file_upload" type="data" id="22"> 
         <properties> 
