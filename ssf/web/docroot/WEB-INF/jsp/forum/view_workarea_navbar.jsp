@@ -595,7 +595,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <div class="ss_style_trans" id="ss_favorites_pane${renderResponse.namespace}" 
   style="position:absolute; visibility:hidden; display:none;">
 
-  <ssf:popupPane width="200px" titleTag=""
+  <ssf:popupPane width="250px" titleTag=""
     closeScript="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();return false;">
 
     <div style="padding: 2px 5px 2px 5px;">
@@ -671,7 +671,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <ssf:ifLoggedIn>
 <div class="ss_style_trans" id="ss_myteams_pane${renderResponse.namespace}" 
   style="position:absolute; visibility:hidden; display:none;">
-	<ssf:popupPane width="175px" titleTag=""
+	<ssf:popupPane width="200px" titleTag=""
 	      closeScript="ssMyTeams${renderResponse.namespace}.hide();return false;">
 	<div style="padding: 2px 5px 2px 5px;">
 	  <div class="ss_style_trans" id="ss_myteams${renderResponse.namespace}" align="left">
