@@ -34,7 +34,7 @@
 <td valign="top">
 $ssVisitor.visit($selection)
 </td>
-#else if ($velocityCount % 3 == 2)
+#elseif ($velocityCount % 3 == 2)
 <td valign="top">
 $ssVisitor.visit($selection)
 </td>
@@ -47,7 +47,7 @@ $ssVisitor.visit($selection)
 #end
 #if ($ssVisitor.Items.size() > 0 && $ssVisitor.Items.size() % 3 == 1)
 <td>&nbsp;</td></tr><td>&nbsp;</td></tr>
-#else if ($ssVisitor.Items.size() > 0 && $ssVisitor.Items.size() % 3 == 2)
+#elseif ($ssVisitor.Items.size() > 0 && $ssVisitor.Items.size() % 3 == 2)
 <td>&nbsp;</td></tr>
 #end
 </table>

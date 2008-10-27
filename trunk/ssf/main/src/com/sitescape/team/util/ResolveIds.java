@@ -272,21 +272,5 @@ public class ResolveIds {
 		
 		return result;
 	}
-	
-	public static List longsToString(Collection ids) {
-		List result = new ArrayList();
-		
-		if (ids == null) {
-			return result;
-		}
-		
-		Iterator it = ids.iterator();
-		while (it.hasNext()) {
-			Long id = (Long)it.next();
-			result.add(id.toString());
-		}
-		
-		return result;
-	}
 
 }
