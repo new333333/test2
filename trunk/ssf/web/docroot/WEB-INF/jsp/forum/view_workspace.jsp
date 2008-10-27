@@ -87,7 +87,7 @@ function ss_workarea_showId${renderResponse.namespace}(id, action, entryId) {
 	//Build a url to go to
 	var url = "<ssf:url     
 	    		  adapter="true" 
-	    		  portletName="ss_workarea" 
+	    		  portletName="ss_forum" 
 	    		  binderId="ssBinderIdPlaceHolder" 
     			  entryId="ssEntryIdPlaceHolder" 
 	    		  action="ssActionPlaceHolder" 
@@ -141,7 +141,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
     style="width:100%; height:400px; display:block; position:relative;"
 	src="<ssf:url     
     		adapter="true" 
-    		portletName="ss_workarea" 
+    		portletName="ss_forum" 
     		binderId="${ssBinder.id}" 
     		action="view_ws_listing" 
     		actionUrl="false" >
