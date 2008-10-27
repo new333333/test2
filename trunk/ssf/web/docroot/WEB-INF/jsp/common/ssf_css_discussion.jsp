@@ -53,11 +53,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	vertical-align:top;
 	width: 48%;
 	}	
-.ss_doublecolumn .ss_dblcolleft{		
+.ss_dblcolleft{		
 /* right column width */
 	right:49%;		
 	}
-.ss_doublecolumn .ss_dblcol1{
+.ss_dblcol1{
 	width:49%;						
 /* left column content width (column width minus left and right padding) */
 	background-color:#fff;			
@@ -67,7 +67,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	margin-right:2%;
 	overflow: hidden;
 	}	
-.ss_doublecolumn .ss_dblcol2{
+.ss_dblcol2{
 	width:100%;						/* right column content width (column width minus left and right padding) */
 	left:48%;						/* (right column column width) plus (left column left and right padding) plus (right column left padding) */
 	overflow:hidden;
@@ -139,7 +139,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	text-align:left;
 	}
 #ss_topic{
-	margin: 2% 5% 2% 5px;
+	margin: 0% 5% 2% 5px;
 	color:#555;
 	font-family: Arial, Helvetica, sans-serif;
 	}
