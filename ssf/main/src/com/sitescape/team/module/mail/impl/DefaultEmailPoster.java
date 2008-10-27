@@ -1,9 +1,12 @@
 package com.sitescape.team.module.mail.impl;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -141,11 +144,14 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		if (!iCalendars.isEmpty()) {
 			entryIdsFromICalendars.addAll(processICalInline(folder, def, inputData, fileItems, iCalendars));
 		}
+//DEBUG		java.io.ByteArrayOutputStream buf = new java.io.ByteArrayOutputStream();
+//		msg.writeTo(buf);
+//		inputData.put("description", buf.toString());
 		//IF attachments left or message didn't contain ICALs; add as an entry
 		if (!fileItems.isEmpty() || entryIdsFromICalendars.isEmpty()) {
 			folderModule.addEntry(folder.getId(), def == null? null:def.getId(), new MapInputData(inputData), fileItems, null);
 		}
-		msg.setFlag(Flags.Flag.DELETED, true);
+//		msg.setFlag(Flags.Flag.DELETED, true);
 	}
 	private Message postError(String recipient, Message msg, InternetAddress from, Exception error) {
 		try {
@@ -241,6 +247,9 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 				Object bContent = part.getContent();
 				if (bContent instanceof MimeMultipart) {
 					processMultiPart(folder, (MimeMultipart)bContent, inputData, fileItems, iCalendars);
+				} else if (bContent instanceof Part) {
+					//forwarded messages
+					processPart(folder, (Part)bContent, inputData, fileItems, iCalendars);
 				} else if (part.getContentType().startsWith("image/")) {
 					// no file name, no text/html,no text/plain, no multipart
 					// so check if it's inline image - this pattern is used by GroupWise (tested with 7.0.2)
@@ -342,6 +351,11 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		
 		public FileHandler(Part part) throws MessagingException {
 			this.part = part;
+//			try {
+//				fileName = javax.mail.internet.MimeUtility.decodeWord(part.getFileName());
+//			} catch (java.io.UnsupportedEncodingException  nc) {
+//				throw new MessagingException(nc.getMessage());			
+//			}
 			fileName = part.getFileName();
 			type = part.getContentType();
 			size = part.getSize();

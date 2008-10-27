@@ -29,7 +29,6 @@
 package com.sitescape.team.portlet.forum;
 
 import static com.sitescape.util.search.Constants.DOC_TYPE_FIELD;
-import static com.sitescape.util.search.Constants.ENTRY_ANCESTRY;
 import static com.sitescape.util.search.Constants.ENTRY_TYPE_FIELD;
 import static com.sitescape.util.search.Constants.MODIFICATION_DATE_FIELD;
 import static com.sitescape.util.search.Restrictions.between;
@@ -38,14 +37,11 @@ import static com.sitescape.util.search.Restrictions.in;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -58,11 +54,9 @@ import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.OrderedMap;
 import org.apache.commons.collections.map.LinkedMap;
@@ -74,19 +68,15 @@ import org.dom4j.Document;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-import org.springframework.web.bind.RequestUtils;
-import org.springframework.web.jsf.FacesContextUtils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
+import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.AbstractIntervalView;
 import com.sitescape.team.calendar.EventsViewHelper;
-import com.sitescape.team.calendar.StartEndDatesView;
-import com.sitescape.team.calendar.OneDayView;
 import com.sitescape.team.calendar.OneMonthView;
-import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.calendar.StartEndDatesView;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
@@ -98,7 +88,6 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
-import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ReservedByAnotherUserException;
@@ -116,11 +105,9 @@ import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.ic.ICException;
 import com.sitescape.team.module.ic.RecordType;
 import com.sitescape.team.module.ical.AttendedEntries;
-
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
-import com.sitescape.team.portletadapter.portlet.PortletRequestImpl;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFiltersBuilder;
 import com.sitescape.team.security.AccessControlException;
@@ -134,14 +121,12 @@ import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.util.TempFileUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractControllerRetry;
-import com.sitescape.team.web.servlet.ParamsWrappedHttpServletRequest;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.upload.FileUploadProgressListener;
@@ -1142,12 +1127,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 		response.setRenderParameter("ssICalendarEntryAddedIdsSize", Integer.toString(attendedEntries.added.size()));
 		response.setRenderParameter("ssICalendarEntryModifiedIdsSize", Integer.toString(attendedEntries.modified.size()));
 		
-		List addedEntriesIdsAsStrings = ResolveIds.longsToString(attendedEntries.added);
+		Set addedEntriesIdsAsStrings = LongIdUtil.getIdsAsStringSet(attendedEntries.added);
 		String[] ids = new String[addedEntriesIdsAsStrings.size()];
 		ids = (String[])addedEntriesIdsAsStrings.toArray(ids);
 		response.setRenderParameter("ssICalendarAddedEntryIds", ids);
 		
-		List modifiedEntriesIdsAsStrings = ResolveIds.longsToString(attendedEntries.modified);
+		Set modifiedEntriesIdsAsStrings = LongIdUtil.getIdsAsStringSet(attendedEntries.modified);
 		ids = new String[modifiedEntriesIdsAsStrings.size()];
 		ids = (String[])modifiedEntriesIdsAsStrings.toArray(ids);
 		response.setRenderParameter("ssICalendarModifiedEntryIds", ids);
@@ -1190,12 +1175,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 		response.setRenderParameter("ssICalendarEntryAddedIdsSize", Integer.toString(attendedEntries.added.size()));
 		response.setRenderParameter("ssICalendarEntryModifiedIdsSize", Integer.toString(attendedEntries.modified.size()));
 		
-		List addedEntriesIdsAsStrings = ResolveIds.longsToString(attendedEntries.added);
+		Set addedEntriesIdsAsStrings = LongIdUtil.getIdsAsStringSet(attendedEntries.added);
 		String[] ids = new String[addedEntriesIdsAsStrings.size()];
 		ids = (String[])addedEntriesIdsAsStrings.toArray(ids);
 		response.setRenderParameter("ssICalendarAddedEntryIds", ids);
 		
-		List modifiedEntriesIdsAsStrings = ResolveIds.longsToString(attendedEntries.modified);
+		Set modifiedEntriesIdsAsStrings = LongIdUtil.getIdsAsStringSet(attendedEntries.modified);
 		ids = new String[modifiedEntriesIdsAsStrings.size()];
 		ids = (String[])modifiedEntriesIdsAsStrings.toArray(ids);
 		response.setRenderParameter("ssICalendarModifiedEntryIds", ids);

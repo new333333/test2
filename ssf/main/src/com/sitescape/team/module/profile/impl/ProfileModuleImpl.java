@@ -970,7 +970,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			return true;
 		}
     }
-	protected class GuestProperties extends UserProperties implements java.io.Serializable {
+	public class GuestProperties extends UserProperties implements java.io.Serializable {
 		static final long serialVersionUID = 12345;
 	    protected GuestProperties(UserProperties uProps) {
 	    	setId(uProps.getId());

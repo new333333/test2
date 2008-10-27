@@ -107,6 +107,7 @@ import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.binder.BinderModule;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ical.AttendedEntries;
@@ -115,10 +116,9 @@ import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.task.TaskHelper;
-import com.sitescape.team.util.ResolveIds;
-import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.util.LongIdUtil;
+import com.sitescape.util.Validator;
 import com.sitescape.util.cal.DayAndPosition;
-
 /**
  * iCalendar generator.
  * 
@@ -695,11 +695,9 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			if (customAttribute == null) {
 				return;
 			}
-	
-			Iterator principalsIt = ResolveIds.getPrincipals(customAttribute)
-					.iterator();
-			while (principalsIt.hasNext()) {
-				Principal principal = (Principal) principalsIt.next();
+			Set<Long>ids = LongIdUtil.getIdsAsLongSet(customAttribute.getValueSet());
+			List<Principal> principals = getProfileDao().loadPrincipals(ids, entry.getZoneId(), true);
+			for (Principal principal:principals) {
 				ParameterList attendeeParams = new ParameterList();
 				attendeeParams.add(new Cn(principal.getTitle()));
 				attendeeParams.add(Role.REQ_PARTICIPANT);
@@ -1062,7 +1060,9 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 
 	private void setComponentDescription(CalendarComponent component,
 			String descr) {
-		component.getProperties().add(new Description(descr));
+		//grwise was ignore mail without a description
+		if (Validator.isNotNull(descr))
+			component.getProperties().add(new Description(descr));
 	}
 
 	private void setComponentUID(CalendarComponent component,
