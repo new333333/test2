@@ -59,6 +59,8 @@ ss_presencePopupGraphics["clipboard"] = new Image();
 ss_presencePopupGraphics["clipboard"].src = '<html:imagesPath/>pics/sym_s_clipboard.gif';
 ss_presencePopupGraphics["skype"] = new Image();
 ss_presencePopupGraphics["skype"].src = '<html:imagesPath/>pics/SkypeBlue_16x16.png';
+ss_presencePopupGraphics["miniblog"] = new Image();
+ss_presencePopupGraphics["miniblog"].src = '<html:imagesPath/>pics/sym_s_miniblog.gif';
 
 
 var ss_ostatus_none = ' <ssf:nlt tag="presence.none"/>'

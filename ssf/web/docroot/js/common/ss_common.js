@@ -4729,6 +4729,9 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
     if (self.document.images["ppgskype"+ssNamespace]) {
         self.document.images["ppgskype"+ssNamespace].src = ss_presencePopupGraphics["skype"].src;
     }	
+    if (self.document.images["ppgminiblog"+ssNamespace]) {
+        self.document.images["ppgminiblog"+ssNamespace].src = ss_presencePopupGraphics["miniblog"].src;
+    }	
     if (divId == '') {
 	    // move the div up if it scrolls off the bottom
 	    var mousePosX = parseInt(ss_getClickPositionX());
