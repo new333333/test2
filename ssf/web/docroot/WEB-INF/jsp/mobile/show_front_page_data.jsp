@@ -86,31 +86,39 @@
 
 <br/>
 
-<c:if test="${0 == 1 && !empty ss_mobileFavoritesList}">
+<c:if test="${!empty ss_mobileFavoritesList}">
 <div>
-  <span class="ss_bold"><ssf:nlt tag="portlet.title.bookmarks"/></span>
+  <span class="ss_bold"><ssf:nlt tag="favorites"/></span>
 </div>
-<table class="ss_mobile" cellspacing="0" cellpadding="0">
+<table class="ss_mobile ss_mobile_table">
 <c:forEach var="favorite" items="${ss_mobileFavoritesList}">
- <c:if test="${favorite.eletype == 'favorite'}">
+ <jsp:useBean id="favorite" type="net.sf.json.JSONObject" />
+ <% try { %><c:set var="f_eletype" value='<%= favorite.get("eletype") %>'/><% } catch(Exception e) {} %>
+ <% try { %><c:set var="f_type" value='<%= favorite.get("type") %>'/><% } catch(Exception e) {} %>
+ <% try { %><c:set var="f_id" value='<%= favorite.get("id") %>'/><% } catch(Exception e) {} %>
+ <% try { %><c:set var="f_action" value='<%= favorite.get("action") %>'/><% } catch(Exception e) {} %>
+ <% try { %><c:set var="f_name" value='<%= favorite.get("name") %>'/><% } catch(Exception e) {} %>
+ <% try { %><c:set var="f_value" value='<%= favorite.get("value") %>'/><% } catch(Exception e) {} %>
+ <c:if test="${f_eletype == 'favorite'}">
  <tr>
   <td>
-	<c:if test="${favorite['type'] == 'binder' && favorite['action'] == 'view_folder_listing'}">
-	  <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${favorite['id']}" 
+	<c:if test="${f_type == 'binder' && f_action == 'view_folder_listing'}">
+	  <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${f_value}" 
 					action="__ajax_mobile" actionUrl="false" 
-					operation="mobile_show_folder" />"><span>${favorite['name']}</span></a>
+					operation="mobile_show_folder" />"><span>${f_name}</span></a>
 	</c:if>
-	<c:if test="${favorite['type'] == 'binder' && empty favorite['action']}">
+	<c:if test="${f_type == 'binder' && empty f_action}">
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-	    			folderId="${favorite['id']}" 
+	    			folderId="${f_value}" 
 					action="__ajax_mobile" actionUrl="false" 
-					operation="mobile_show_workspace" />"><span>${favorite['name']}</span></a>
+					operation="mobile_show_workspace" />"><span>${f_name}</span></a>
 	</c:if>
   </td>
  </tr>
  </c:if>
 </c:forEach>
 </table>
+<br/>
 </c:if>
 
 </div>
@@ -119,13 +127,14 @@
 <div class="ss_mobile">
 <span class="ss_bold"><ssf:nlt tag="searchResult.savedSearchTitle"/></span>
 <br/>
+<table class="ss_mobile ss_mobile_table">
 <c:forEach var="query" items="${ss_UserQueries}" varStatus="status">
-  <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder.id}" 
+  <tr><td><a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder.id}" 
 					action="__ajax_mobile" actionUrl="false" 
 					operation="mobile_show_search_results"><ssf:param 
-					name="ss_queryName" value="${query.key}" /></ssf:url>">${query.key}</a>
-  <c:if test="${!status.last}"><br/></c:if>
+					name="ss_queryName" value="${query.key}" /></ssf:url>">${query.key}</a></td></tr>
 </c:forEach>
+</table>
 </div>
 <br/>
 </c:if>
