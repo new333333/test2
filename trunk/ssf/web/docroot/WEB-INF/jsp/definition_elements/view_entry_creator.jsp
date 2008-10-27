@@ -36,14 +36,16 @@
     <ssf:showUser user="${ssDefinitionEntry.creation.principal}"/>
 
   <c:if test="${!empty ssDefinitionEntry.postedBy}">
-    (<ssf:nlt tag="entry.postedBy"/>&nbsp;<c:out value="${ssDefinitionEntry.postedBy}"/>)
+    <br/>
+    <span>(<ssf:nlt tag="entry.postedBy"/>&nbsp;<c:out value="${ssDefinitionEntry.postedBy}"/>)</span>
   </c:if>
   <c:if test="${!empty ssDefinitionEntry.customAttributes['_guestName'].valueSet}">
     <c:forEach var="guestName" items="${ssDefinitionEntry.customAttributes['_guestName'].valueSet}" varStatus="status">
     	<c:if test="${status.count == 1}"><c:set var="guestNameEntered" value="${guestName}"/></c:if>
     	<c:if test="${status.count == 2}"><c:set var="guestEmailEntered" value="${guestName}"/></c:if>
     </c:forEach>
-    (<c:if test="${!empty guestNameEntered}">${guestNameEntered}<c:if test="${!empty guestEmailEntered}">, </c:if></c:if>${guestEmailEntered})
+    <br/>
+    <span>(<c:if test="${!empty guestNameEntered}">${guestNameEntered}<c:if test="${!empty guestEmailEntered}">, </c:if></c:if>${guestEmailEntered})</span>
   </c:if>
 </c:if>
 </div>
