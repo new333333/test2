@@ -487,7 +487,7 @@ public class Favorites {
 		List idList = new ArrayList();
 		JSONArray favs = getFavoritesTreeJson();
 		for (int i = 0; i < favs.length(); i++) {
-			idList.add(JSONUtils.getProperties(favs.getJSONObject(i)));
+			idList.add(favs.getJSONObject(i));
 		}
 		return idList;
 	}
