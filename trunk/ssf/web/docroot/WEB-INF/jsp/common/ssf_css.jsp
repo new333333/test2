@@ -521,12 +521,11 @@ table.ss_guestbook {
   	line-height: 100% !important;
 	}
 input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visited {
- 	cursor: pointer;
+ cursor: pointer;
  <c:if test="<%= isIE %>">
-  height: 20px;
- </c:if>
- <c:if test="<%= !isIE %>">
-  /*height: 18px;*/
+   		height: 20px; 
+   		margin: 1px;
+  		padding: 0px 7px 0px 7px;
  </c:if>
   text-align: center;
   padding: 0px 6px 0px 6px;
@@ -555,6 +554,11 @@ button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type=
   		padding-right: 1px;
 	</c:if>
 	}
+input.ss_submit:hover, input.ss_linkButton:hover, a.ss_linkButton:hover {
+	padding: 0px 6px 0px 6px;
+	border: 1px dotted #333;
+	color: #333;
+	}	
 input.ss_tinyButton, a.ss_tinyButton:link, a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
  	font-size: ${ss_style_font_fineprint};
