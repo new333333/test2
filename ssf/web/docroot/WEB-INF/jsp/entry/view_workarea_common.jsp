@@ -59,7 +59,7 @@ function ss_workarea_showId${renderResponse.namespace}(id, action, entryId) {
 <ssf:ifnotadapter>
 	var url = "<ssf:url     
 	    		  adapter="true" 
-	    		  portletName="ss_workarea" 
+	    		  portletName="ss_forum" 
 	    		  binderId="ssBinderIdPlaceHolder" 
     			  entryId="ssEntryIdPlaceHolder" 
 	    		  action="ssActionPlaceHolder" 
@@ -70,7 +70,7 @@ function ss_workarea_showId${renderResponse.namespace}(id, action, entryId) {
 <ssf:ifadapter>
 	var url = "<ssf:url     
 	    		  adapter="true" 
-	    		  portletName="ss_workarea" 
+	    		  portletName="ss_forum" 
 	    		  binderId="ssBinderIdPlaceHolder" 
     			  entryId="ssEntryIdPlaceHolder" 
 	    		  action="ssActionPlaceHolder" 
@@ -122,7 +122,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
     style="width:100%; height:400px; display:block; position:relative;"
 	src="<ssf:url     
     		adapter="true" 
-    		portletName="ss_workarea" 
+    		portletName="ss_forum" 
     		binderId="${ssBinderId}" 
     		action="view_folder_listing" 
     		entryId="${ssEntryIdToBeShown}" 
