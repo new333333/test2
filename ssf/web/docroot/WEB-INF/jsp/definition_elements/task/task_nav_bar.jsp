@@ -29,7 +29,7 @@
  */
 %>
 <div class="ss_clear"></div>
-<script type="text/javascript">
+<script type="text/javascript"> 
 	ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
 </script>
 <div>
