@@ -29,10 +29,12 @@
 package com.sitescape.team.module.definition.index;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.document.Field;
+import org.dom4j.Element;
 
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
@@ -80,6 +82,46 @@ public abstract class AbstractFieldBuilder implements FieldBuilder {
 		        result = new HashSet();
 		        result.add(dataElemValue);	            
 	        }
+	    }
+	    
+	    return result;
+    }
+    
+    protected Set getEntryElementValueCaptions(DefinableEntity entity, String dataElemName, Element entryElement) {
+	    Object dataElemValue = null;
+	    Set elemValues = null;
+	    Set result = new HashSet();
+	    try {
+	        dataElemValue = InvokeUtil.invokeGetter(entity, dataElemName);
+	    }
+	    catch (ObjectPropertyNotFoundException pe) {
+	        CustomAttribute cAttr = entity.getCustomAttribute(dataElemName);
+	        if(cAttr != null)
+	        	//let customAttribute do set conversion to handle comman separated values
+	        	elemValues = cAttr.getValueSet();
+		}
+	    
+	    
+	    if ((elemValues == null) && (dataElemValue != null)) {
+	        if(dataElemValue instanceof Set) {
+	        	elemValues = (Set) dataElemValue;
+	        }
+	        else {
+	        	elemValues = new HashSet();
+	        	elemValues.add(dataElemValue);	            
+	        }
+	    }
+	    //Get the caption for each value
+	    if (elemValues != null) {
+	    	Iterator itElemValues = elemValues.iterator();
+		    while (itElemValues.hasNext()) {
+		    	String valueName = (String)itElemValues.next();
+		    	Element nameEle = (Element)entryElement.selectSingleNode("./item/properties/property[@name='name' and @value='"+valueName+"']");
+		    	if (nameEle != null) {
+		    		Element captionEle = (Element)nameEle.getParent().selectSingleNode("./property[@name='caption']");
+			    	if (captionEle != null) result.add(captionEle.attributeValue("value", ""));
+		    	}
+		    }
 	    }
 	    
 	    return result;

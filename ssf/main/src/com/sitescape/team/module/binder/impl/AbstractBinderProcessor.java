@@ -1793,6 +1793,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
                 	String fieldBuilder = flagElement.attributeValue("fieldBuilder");
 					String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
 					if (Validator.isNull(nameValue)) {nameValue = entryElement.attributeValue("name");}
+					args.put(DefinitionModule.DEFINITION_ELEMENT, entryElement);
                 	Field[] fields = FieldBuilderUtil.buildField(entity,
                          nameValue, fieldBuilder, args);
                 	if (fields != null) {

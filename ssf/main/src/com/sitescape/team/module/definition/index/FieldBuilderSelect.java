@@ -28,12 +28,17 @@
  */
 package com.sitescape.team.module.definition.index;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Map;
 
 import org.apache.lucene.document.Field;
+import org.dom4j.Element;
 
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.search.BasicIndexUtils;
 
 /**
@@ -47,16 +52,40 @@ public class FieldBuilderSelect extends AbstractFieldBuilder {
     	return dataElemName;
     }
     
+    public Field[] buildField(DefinableEntity entity, String dataElemName, Map args) {
+        Set dataElemValue = getEntryElementValue(entity, dataElemName);
+       	fieldsOnly = (Boolean)args.get(DefinitionModule.INDEX_FIELDS_ONLY);
+        if (fieldsOnly == null) fieldsOnly = Boolean.FALSE;
+        
+        Element entryElement = (Element)args.get(DefinitionModule.DEFINITION_ELEMENT);
+        Set dataElemValueCaptions = getEntryElementValueCaptions(entity, dataElemName, entryElement);
+        args.put(DefinitionModule.INDEX_CAPTION_VALUES, dataElemValueCaptions);
+        
+        if(dataElemValue != null)
+            return build(dataElemName, dataElemValue, args);
+        else
+            return null;
+    }
+
     protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
         // This default radio implementation ignores args.  
         
-        Field[] fields = new Field[dataElemValue.size()];
+    	Set dataElemValueCaptions = (Set) args.get(DefinitionModule.INDEX_CAPTION_VALUES);
+    	
+    	Field[] fields = new Field[dataElemValue.size() + dataElemValueCaptions.size()];
         String fieldName = makeFieldName(dataElemName);
        
         String val;
         Field field;
         int i = 0;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
+            val = (String) it.next();
+	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.UN_TOKENIZED);
+	        fields[i] = field;
+        }
+        
+        fieldName = makeFieldName(DefinitionModule.CAPTION_FIELD_PREFIX + dataElemName);
+        for(Iterator it = dataElemValueCaptions.iterator(); it.hasNext(); i++) {
             val = (String) it.next();
 	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.UN_TOKENIZED);
 	        fields[i] = field;
