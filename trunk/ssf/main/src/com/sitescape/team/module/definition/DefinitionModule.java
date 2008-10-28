@@ -51,6 +51,10 @@ import com.sitescape.team.security.AccessControlException;
  */
 public interface DefinitionModule {
 	public static String INDEX_FIELDS_ONLY="com.sitescape.team.module.definition.indexFieldsOnly";
+	public static String INDEX_CAPTION="indexCaption";
+	public static String INDEX_CAPTION_VALUES="indexCaptionValues";
+	public static String DEFINITION_ELEMENT="definitionElement";
+	public static String CAPTION_FIELD_PREFIX="_caption_";
 	public enum DefinitionOperation {
 		manageDefinition,
 	}

@@ -1735,7 +1735,11 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/selectbox_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.selectbox</help>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSelect" />
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSelect">
+		  <args>
+		    <arg name="indexCaption" type="boolean" value="true"/>
+		  </args>
+		</index>
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSelect" />
 		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSelect" />
 	</item>
@@ -1826,7 +1830,11 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/radio_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.radio_buttons</help>		
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSelect" />
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSelect">
+		  <args>
+		    <arg name="indexCaption" type="boolean" value="true"/>
+		  </args>
+		</index>
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSelect" />
 		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderRadio"/>
 	</item>

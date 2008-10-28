@@ -325,8 +325,6 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     </ssf:slidingTableColumn>
   </c:if>
   
-  <% // Beginning of Rows %>
-  
   <c:forEach var="column" items="${ssFolderColumns}">
     <c:set var="colName" value="${column.key}"/>
     <c:set var="defId" value=""/>
@@ -352,8 +350,44 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 %>
 	  <c:set var="eleName" value="<%= eleName %>"/>
 	  <c:set var="eleCaption" value="<%= eleCaption %>"/>
+	  <c:set var="eleType" value="<%= eleType %>"/>
 	  <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="20%">
-	    <div class="ss_title_menu">${eleCaption}</div>
+	    <c:if test="${eleType != 'selectbox' && eleType != 'radio' && eleType != 'text' && eleType != 'checkbox'}">
+	      <div class="ss_title_menu">${eleCaption}</div>
+	    </c:if>
+	    <c:if test="${eleType == 'selectbox' || eleType == 'radio' || eleType == 'text' || eleType == 'checkbox'}">
+		    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+		    	name="operation" value="save_folder_sort_info"/><ssf:param 
+		    	name="binderId" value="${ssBinder.id}"/><ssf:param 
+		    	name="ssFolderSortBy" value="${eleName}"/><c:choose><c:when 
+		    	test="${ ssFolderSortBy == eleName && ssFolderSortDescend == 'false'}"><ssf:param 
+		    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
+		    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></ssf:url>"
+			
+			<c:choose>
+			  <c:when test="${ ssFolderSortBy == eleName && ssFolderSortDescend == 'true'}">
+			  	<ssf:title tag="title.sort.by.column.asc">
+			  		<ssf:param name="value" value='${eleCaption}' />
+			  	</ssf:title>
+			  </c:when>
+			  <c:otherwise>
+			  	<ssf:title tag="title.sort.by.column.desc">
+			  		<ssf:param name="value" value='${eleCaption}' />
+			  	</ssf:title>
+			  </c:otherwise>
+			</c:choose>
+			>
+				${eleCaption}
+			    <c:if test="${ ssFolderSortBy == eleName && ssFolderSortDescend == 'true'}">
+					<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+					value="${eleCaption}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+				</c:if>
+				<c:if test="${ ssFolderSortBy == eleName && ssFolderSortDescend == 'false'}">
+					<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+					value='${eleCaption}' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+				</c:if>
+		    </a>
+	    </c:if>
 	  </ssf:slidingTableColumn>
 <%
 	}
@@ -397,6 +431,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 
 </ssf:slidingTableRow>
 
+  <% // Beginning of Rows %>
+  
 <c:forEach var="entry1" items="${ssFolderEntries}" >
 <c:set var="folderLineId" value="folderLine_${entry1._docId}"/>;
 <jsp:useBean id="entry1" type="java.util.HashMap" />
