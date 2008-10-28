@@ -151,7 +151,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		if (!fileItems.isEmpty() || entryIdsFromICalendars.isEmpty()) {
 			folderModule.addEntry(folder.getId(), def == null? null:def.getId(), new MapInputData(inputData), fileItems, null);
 		}
-//		msg.setFlag(Flags.Flag.DELETED, true);
+		msg.setFlag(Flags.Flag.DELETED, true);
 	}
 	private Message postError(String recipient, Message msg, InternetAddress from, Exception error) {
 		try {
@@ -351,12 +351,11 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		
 		public FileHandler(Part part) throws MessagingException {
 			this.part = part;
-//			try {
-//				fileName = javax.mail.internet.MimeUtility.decodeWord(part.getFileName());
-//			} catch (java.io.UnsupportedEncodingException  nc) {
-//				throw new MessagingException(nc.getMessage());			
-//			}
-			fileName = part.getFileName();
+			try {
+				fileName = javax.mail.internet.MimeUtility.decodeText(part.getFileName());
+			} catch (java.io.UnsupportedEncodingException  nc) {
+				throw new MessagingException(nc.getMessage());	
+			}
 			type = part.getContentType();
 			size = part.getSize();
 			

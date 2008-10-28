@@ -14,6 +14,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimePart;
+import javax.mail.internet.MimeUtility;
 
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
@@ -87,7 +88,9 @@ public class AbstractMailPreparator implements MimeMessagePreparator {
 			DataSource ds = RepositoryUtil.getDataSourceVersioned(fAtt.getRepositoryName(), entry.getParentFolder(), 
 						entry, fAtt.getFileItem().getName(), fAtt.getHighestVersion().getVersionName(), helper.getFileTypeMap());
 
-			helper.addAttachment(fAtt.getFileItem().getName(), ds);
+			try {
+				helper.addAttachment(MimeUtility.encodeText(fAtt.getFileItem().getName()), ds);
+			} catch (java.io.UnsupportedEncodingException  ignore) {}
 		}
 	}
 	/**
@@ -153,6 +156,9 @@ public class AbstractMailPreparator implements MimeMessagePreparator {
 	}
 	
 	public void addAttachment(String fileName, DataHandler dataHandler, MimeMessageHelper helper) throws MessagingException {
+		try {
+			fileName = MimeUtility.encodeText(fileName);
+		} catch (java.io.UnsupportedEncodingException  ignore) {};
 		MimeBodyPart attachmentPart = new MimeBodyPart();
 		attachmentPart.setDisposition(MimeBodyPart.ATTACHMENT);
 		attachmentPart.setFileName(fileName);
@@ -167,6 +173,9 @@ public class AbstractMailPreparator implements MimeMessagePreparator {
 		MimeBodyPart alternativePart = new MimeBodyPart();
 		alternativePart.setDataHandler(dataHandler);
 		if (asAttachmentDisposition && fileName != null) {
+			try {
+				fileName = MimeUtility.encodeText(fileName);
+			} catch (java.io.UnsupportedEncodingException  ignore) {};
 			alternativePart.setDisposition(MimeBodyPart.ATTACHMENT);
 			alternativePart.setFileName(fileName);
 		}
