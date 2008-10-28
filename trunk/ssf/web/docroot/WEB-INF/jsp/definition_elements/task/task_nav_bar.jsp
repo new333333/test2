@@ -33,8 +33,8 @@
 	ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
 </script>
 <div>
-  <ssHelpSpot helpId="workspaces_folders/misc_tools/calendar_tools" offsetX="0" 
-    title="<ssf:nlt tag="helpSpot.calendarTools"/>"></ssHelpSpot>
+  <ssHelpSpot helpId="workspaces_folders/misc_tools/tasks_tools" offsetX="0" 
+    title="<ssf:nlt tag="helpSpot.tasksTools"/>"></ssHelpSpot>
     
 	<ul class="ss_calendarNaviBar">
 		<li class="ss_calendarNaviBarOption ss_taskViewOptions">
