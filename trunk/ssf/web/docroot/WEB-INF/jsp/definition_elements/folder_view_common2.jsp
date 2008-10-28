@@ -351,21 +351,23 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  <c:set var="eleName" value="<%= eleName %>"/>
 	  <c:set var="eleCaption" value="<%= eleCaption %>"/>
 	  <c:set var="eleType" value="<%= eleType %>"/>
+	  <c:set var="eleSortName" value="${eleName}"/>
+	  <c:if test="${eleType == 'selectbox' || eleType == 'radio'}"><c:set var="eleSortName" value="_caption_${eleName}"/></c:if>
 	  <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="20%">
-	    <c:if test="${eleType != 'selectbox' && eleType != 'radio' && eleType != 'text' && eleType != 'checkbox'}">
+	    <c:if test="${eleType != 'selectbox' && eleType != 'radio' && eleType != 'text' && eleType != 'checkbox' && eleType != 'date' && eleType != 'datetime'}">
 	      <div class="ss_title_menu">${eleCaption}</div>
 	    </c:if>
-	    <c:if test="${eleType == 'selectbox' || eleType == 'radio' || eleType == 'text' || eleType == 'checkbox'}">
+	    <c:if test="${eleType == 'selectbox' || eleType == 'radio' || eleType == 'text' || eleType == 'checkbox' || eleType == 'date' || eleType == 'datetime'}">
 		    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 		    	name="operation" value="save_folder_sort_info"/><ssf:param 
 		    	name="binderId" value="${ssBinder.id}"/><ssf:param 
-		    	name="ssFolderSortBy" value="${eleName}"/><c:choose><c:when 
-		    	test="${ ssFolderSortBy == eleName && ssFolderSortDescend == 'false'}"><ssf:param 
+		    	name="ssFolderSortBy" value="${eleSortName}"/><c:choose><c:when 
+		    	test="${ ssFolderSortBy == eleSortName && ssFolderSortDescend == 'false'}"><ssf:param 
 		    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
 		    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></ssf:url>"
 			
 			<c:choose>
-			  <c:when test="${ ssFolderSortBy == eleName && ssFolderSortDescend == 'true'}">
+			  <c:when test="${ ssFolderSortBy == eleSortName && ssFolderSortDescend == 'true'}">
 			  	<ssf:title tag="title.sort.by.column.asc">
 			  		<ssf:param name="value" value='${eleCaption}' />
 			  	</ssf:title>
@@ -378,11 +380,11 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			</c:choose>
 			>
 				${eleCaption}
-			    <c:if test="${ ssFolderSortBy == eleName && ssFolderSortDescend == 'true'}">
+			    <c:if test="${ ssFolderSortBy == eleSortName && ssFolderSortDescend == 'true'}">
 					<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
 					value="${eleCaption}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 				</c:if>
-				<c:if test="${ ssFolderSortBy == eleName && ssFolderSortDescend == 'false'}">
+				<c:if test="${ ssFolderSortBy == eleSortName && ssFolderSortDescend == 'false'}">
 					<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 					value='${eleCaption}' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 				</c:if>
