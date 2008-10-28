@@ -11,20 +11,27 @@
 		<s:custom-filter position="FIRST"/>
 	</bean>
 	
-	<bean id="_authenticationManager" class="org.springframework.security.providers.ProviderManager">
-		<property name="providers">
-			<list>
-				<ref local="authenticationModule"/>
-			</list>
-		</property>
-	</bean>
+	<s:authentication-manager alias="springAuthenticationManager"/>
+	
+	<bean id="authenticationProcessingFilter" class="com.sitescape.team.spring.security.AuthenticationProcessingFilter">
+    	<s:custom-filter position="AUTHENTICATION_PROCESSING_FILTER" />
+		<property name="authenticationManager" ref="springAuthenticationManager"/>
+		<property name="authenticationFailureUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>
+		<property name="defaultTargetUrl" value="/a/"/>
+		<property name="filterProcessesUrl" value="/s/portalLogin"/>
+		<property name="invalidateSessionOnSuccessfulAuthentication" value="true"/>
+		<property name="migrateInvalidatedSessionAttributes" value="false"/>
+    </bean>
+  	
+    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.ui.webapp.AuthenticationProcessingFilterEntryPoint">
+    	<property name="loginFormUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>    	
+    </bean>
 	
     <!-- Form-based authentication -->
-    <s:http session-fixation-protection="newSession">
+    <s:http session-fixation-protection="newSession" entry-point-ref="authenticationProcessingFilterEntryPoint">
         <s:intercept-url pattern="/ws/**" filters="none" />
         <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED,ROLE_ANONYMOUS" />
 
-        <s:form-login login-processing-url="/s/portalLogin" login-page="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login" default-target-url="/a/" />
         <s:anonymous granted-authority="ROLE_ANONYMOUS" username="guest"  />
         <s:logout logout-url="/s/portalLogout" logout-success-url="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login" />
 
@@ -57,6 +64,7 @@
 	<bean id="authenticationModule" parent="baseTransactionProxy" depends-on="springAuthenticationBeans">
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.authentication.impl.AuthenticationModuleImpl">
+				<property name="providerManager"><ref bean="springAuthenticationManager"/></property>
 				<property name="zoneModule"><ref bean="zoneModule"/></property>
 			</bean>
 		</property>
