@@ -65,23 +65,8 @@ public class SimpleURLServlet extends HttpServlet {
     	if(simpleName == null || simpleName.equals("/")) {
     		resp.sendRedirect(landingPagePath);
     	}
-    	else if(simpleName.equals("/favicon.ico")) {
-    		InputStream in = getServletConfig().getServletContext().getResourceAsStream(simpleName);
-    		if(in != null) {
-	    		OutputStream out = resp.getOutputStream();
-	    		try {
-	    			copyStream(in, out);
-	    		}
-	    		finally {
-	    			try {
-	    				in.close();
-	    			}
-	    			catch(IOException ignore) {}
-	    		}
-    		}
-    		else {
-    			resp.sendError(HttpServletResponse.SC_NOT_FOUND, simpleName);
-    		}
+    	else if(knownStaticResource(simpleName)) {
+    		getKnownStaticResource(simpleName, resp);
     	}
     	else {
 	    	boolean isSecure = req.isSecure();
@@ -106,6 +91,29 @@ public class SimpleURLServlet extends HttpServlet {
     	}
     }
 
+    private boolean knownStaticResource(String resourcePath) {
+    	return resourcePath.equals("/favicon.ico");
+    }
+    
+    private void getKnownStaticResource(String resourcePath, HttpServletResponse resp) throws ServletException, IOException {
+ 		InputStream in = getServletConfig().getServletContext().getResourceAsStream(resourcePath);
+		if(in != null) {
+    		OutputStream out = resp.getOutputStream();
+    		try {
+    			copyStream(in, out);
+    		}
+    		finally {
+    			try {
+    				in.close();
+    			}
+    			catch(IOException ignore) {}
+    		}
+		}
+		else {
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND, resourcePath);
+		}
+    }
+    
     private void copyStream(InputStream in, OutputStream out)
 			throws IOException {
 		// Copy the input stream to the output stream
