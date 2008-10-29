@@ -41,9 +41,10 @@
   </div>
   <div class="ss_text_login" id="ss_fieldset_login">
   <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
-    <span class="ss_mobile_large ss_bold"><ssf:nlt tag="login.please"/></span>
-    <br/>
-    <table class=" ss_table" width="57%" border="0"  cellpadding="2">
+     <table class=" ss_table" width="57%" border="0"  cellpadding="2">
+      <tr>
+        <td width="67%"><h4><ssf:nlt tag="login.please"/></h4></td>
+      </tr>
       <tr>
         <td valign="top">
           <span><ssf:nlt tag="login.name"/></span><br/>
@@ -72,6 +73,9 @@
 		var formObj = self.document.getElementById('loginForm');
 		formObj.j_username.focus();
 	</script>
+    <br/>
+    <br/>
+    <br/>
 </div>
 
 </body>
