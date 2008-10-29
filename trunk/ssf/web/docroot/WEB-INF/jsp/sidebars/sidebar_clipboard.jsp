@@ -34,7 +34,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:if test="${ss_toolbar_clipboard_show}">
-		<div class="ss_leftNav">
+		<div class="ss_leftNav ss_clipBd">
 		  <ul>
 			<li>
 			<c:set var="answer" value=""/>

@@ -36,24 +36,24 @@
 <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.entryDisplay"/> 
 	<div class="ss_sub_sidebarMenu">
         <table width="100%">
-         <tbody>
-          <tr>
-            <td><label>
-              <input type="radio" name="ss_entryDisplayStyle" value="radio" />
-              <ssf:nlt tag="sidebar.overlay"/>  </label></td>
-          </tr>
-          <tr>
-            <td><label>
-              <input type="radio" name="ss_entryDisplayStyle" value="radio" />
-              <ssf:nlt tag="sidebar.popup"/>  </label></td>
-          </tr>
-          <tr>
-            <td class= "ss_rollover"><label>
-              <input type="radio" name="ss_entryDisplayStyle" value="radio" />
-              <ssf:nlt tag="sidebar.new.page"/> 
-            </label></td>
-          </tr>
-         </tbody>
+	        <tbody>
+	          <tr>
+	            <td><label>
+	              <input type="radio" name="ss_entryDisplayStyle" value="radio" />
+	              <ssf:nlt tag="sidebar.overlay"/>  </label></td>
+	          </tr>
+	          <tr>
+	            <td><label>
+	              <input type="radio" name="ss_entryDisplayStyle" value="radio" />
+	              <ssf:nlt tag="sidebar.popup"/>  </label></td>
+	          </tr>
+	          <tr>
+	            <td class= "ss_rollover"><label>
+	              <input type="radio" name="ss_entryDisplayStyle" value="radio" />
+	              <ssf:nlt tag="sidebar.new.page"/> 
+	            </label></td>
+	          </tr>
+	        </tbody>
         </table>
 	</div> 
 </div>
