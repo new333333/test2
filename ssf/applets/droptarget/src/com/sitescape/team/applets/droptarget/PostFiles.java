@@ -90,7 +90,10 @@ public class PostFiles extends Thread {
             String td = topDir.replace('\\','/');
             
             // clip off the topDir
-            String relFileName = lfn.replaceFirst(td,"");
+            String relFileName;
+            if (0 == lfn.indexOf(td))
+                 relFileName = lfn.substring(td.length());
+            else relFileName = lfn;
 
             // Drop the initial file separator
             if (relFileName.startsWith("/")) {
@@ -134,7 +137,10 @@ public class PostFiles extends Thread {
           String lfn = localFileName.replace('\\','/');
           String td = topDir.replace('\\','/');
           // clip off the topDir
-          String relFileName = lfn.replaceFirst(td,"");
+          String relFileName;
+          if (0 == lfn.indexOf(td))
+               relFileName = lfn.substring(td.length());
+          else relFileName = lfn;
           
           // Drop the initial file separator
           if (relFileName.startsWith("/")) {
@@ -188,7 +194,10 @@ public class PostFiles extends Thread {
         String lfn = localFileName.replace('\\','/');
         String td = topDir.replace('\\','/');
         // clip off the topDir
-        String relFileName = lfn.replaceFirst(td,"");
+        String relFileName;
+        if (0 == lfn.indexOf(td))
+             relFileName = lfn.substring(td.length());
+        else relFileName = lfn;
 
         // Drop the initial file separator
         if (relFileName.startsWith("/")) {
