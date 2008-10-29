@@ -33,12 +33,17 @@
 <c:set var="ss_windowTitle" value='<%= NLT.get("login.please") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
-<div class="ss_mobile">
-<div style="padding:30px;">
+<div id="wrapper" class="header">
+  <div id="header">
+    <ul>
+      <li>&nbsp;</li>
+    </ul>
+  </div>
+  <div class="ss_text_login" id="ss_fieldset_login">
   <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
     <span class="ss_mobile_large ss_bold"><ssf:nlt tag="login.please"/></span>
     <br/>
-    <table>
+    <table class=" ss_table" width="57%" border="0"  cellpadding="2">
       <tr>
         <td valign="top">
           <span><ssf:nlt tag="login.name"/></span><br/>
@@ -62,11 +67,11 @@
     <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
     <input type="hidden" name="spring-security-redirect" value="${ssUrl}"/>
   </form>
-</div>
-<script type="text/javascript">
-	var formObj = self.document.getElementById('loginForm');
-	formObj.j_username.focus();
-</script>
+  </div>
+	<script type="text/javascript">
+		var formObj = self.document.getElementById('loginForm');
+		formObj.j_username.focus();
+	</script>
 </div>
 
 </body>
