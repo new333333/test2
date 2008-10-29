@@ -32,7 +32,7 @@
 <div class="ss_style">
 <div class="ss_help_style">
 
-    <div class="ss_help_title"> <span class="ss_titlebold">View Toolbar<ssf:nlt tag="helpSpot.tasksTools" /></span> 
+    <div class="ss_help_title"> <span class="ss_titlebold">View toolbar<ssf:nlt tag="helpSpot.tasksTools" /></span> 
     </div>
 
     <p>The View toolbar enables you to choose the tasks you want displayed in 
