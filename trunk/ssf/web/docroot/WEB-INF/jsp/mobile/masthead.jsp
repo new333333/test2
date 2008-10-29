@@ -30,32 +30,31 @@
 %>
 <%@ page import="com.sitescape.team.ObjectKeys" %>
 
-<div class="ss_mobile_masthead">
-<table style="width:100%;"><tr>
-<td>
-<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
-	><ssf:nlt tag="mobile.returnToTop"/></a>
-</td>
-<td align="right">
-<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
-<c:if test="${ssUser.internalId == guestInternalId}">
-  <c:if test='<%= !com.sitescape.team.util.SPropsUtil.getBoolean("form.login.auth.disallowed",false) %>' >
-    <a href="<ssf:url action="__ajax_mobile" actionUrl="false" 
-					operation="mobile_login" />"
-    >
-    <span><ssf:nlt tag="login"/></span>
-    </a>
-  </c:if>
-</c:if>
-
-<c:if test="${ssUser.internalId != guestInternalId}">
-	<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	    action="__ajax_mobile"
-	    operation="mobile_show_workspace"
-	    binderId="${ssUser.workspaceId}" />">${ssUser.title}</a>
-</c:if>
-</td>
-</tr>
-</table>
+<div id="header">
+  <ul>
+	<li>
+		<a href="<ssf:url adapter="true" portletName="ss_forum" 
+			action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
+			><ssf:nlt tag="mobile.returnToTop"/></a>
+	</li>
+	<li>
+		<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
+		<c:if test="${ssUser.internalId == guestInternalId}">
+		  <c:if test='<%= !com.sitescape.team.util.SPropsUtil.getBoolean("form.login.auth.disallowed",false) %>' >
+		    <a href="<ssf:url action="__ajax_mobile" actionUrl="false" 
+							operation="mobile_login" />"
+		    >
+		    <span><ssf:nlt tag="login"/></span>
+		    </a>
+		  </c:if>
+		</c:if>
+		
+		<c:if test="${ssUser.internalId != guestInternalId}">
+			<a href="<ssf:url adapter="true" portletName="ss_forum" 
+			    action="__ajax_mobile"
+			    operation="mobile_show_workspace"
+			    binderId="${ssUser.workspaceId}" />">${ssUser.title}</a>
+		</c:if>
+	</li>
+  </ul>
 </div>

@@ -30,26 +30,38 @@
 %>
 <%@ page import="com.sitescape.team.ObjectKeys" %>
 
-<div class="pagebody">
-  <div id="miniblog">
-    <span><ssf:nlt tag="miniblog"/></span>
-  </div>
-  <div class="pagebody_border">
-    <div class="maincontent">
-		<form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
-			folderId="${ssBinder.id}"
-			action="__ajax_mobile" 
-			operation="mobile_show_front_page" 
-			actionUrl="true" />">
-		  <textarea rows="2" style="width:150px;" name="miniblogText"></textarea>
-		  <input type="submit" name="miniblogBtn" value="<ssf:nlt tag="button.ok"/>">
-		  <c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">
-		    <div style="padding-left:10px;"><span class="ss_mobile_small"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-		        value="${ssUser.statusDate}" type="both" 
-			    timeStyle="short" dateStyle="short" /></span></div>
-		    <div style="padding-left:10px;"><span class="ss_mobile_small">${ssUser.status}</span></div>
-		  </c:if>
-		</form>
+<c:if test="${!empty ss_mobileFavoritesList}">
+	<div class="pagebody">
+	  <div id="favorites">
+	    <span><ssf:nlt tag="favorites"/></span>
+	  </div>
+	  <div class="pagebody_border">
+		<ul>
+		<c:forEach var="favorite" items="${ss_mobileFavoritesList}">
+		 <jsp:useBean id="favorite" type="net.sf.json.JSONObject" />
+		 <% try { %><c:set var="f_eletype" value='<%= favorite.get("eletype") %>'/><% } catch(Exception e) {} %>
+		 <% try { %><c:set var="f_type" value='<%= favorite.get("type") %>'/><% } catch(Exception e) {} %>
+		 <% try { %><c:set var="f_id" value='<%= favorite.get("id") %>'/><% } catch(Exception e) {} %>
+		 <% try { %><c:set var="f_action" value='<%= favorite.get("action") %>'/><% } catch(Exception e) {} %>
+		 <% try { %><c:set var="f_name" value='<%= favorite.get("name") %>'/><% } catch(Exception e) {} %>
+		 <% try { %><c:set var="f_value" value='<%= favorite.get("value") %>'/><% } catch(Exception e) {} %>
+		 <c:if test="${f_eletype == 'favorite'}">
+		  <li>
+			<c:if test="${f_type == 'binder' && f_action == 'view_folder_listing'}">
+			  <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${f_value}" 
+							action="__ajax_mobile" actionUrl="false" 
+							operation="mobile_show_folder" />"><span>${f_name}</span></a>
+			</c:if>
+			<c:if test="${f_type == 'binder' && empty f_action}">
+			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+			    			folderId="${f_value}" 
+							action="__ajax_mobile" actionUrl="false" 
+							operation="mobile_show_workspace" />"><span>${f_name}</span></a>
+			</c:if>
+		  </li>
+		 </c:if>
+		</c:forEach>
+		</ul>
+	  </div>
 	</div>
-  </div>
-</div>
+</c:if>

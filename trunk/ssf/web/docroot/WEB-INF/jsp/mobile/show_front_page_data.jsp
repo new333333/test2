@@ -30,141 +30,92 @@
 %>
 <%@ page import="com.sitescape.team.ObjectKeys" %>
 
-<div class="ss_mobile">
-<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
-<c:if test="${ssUser.internalId == guestInternalId}">
-  <c:if test='<%= !com.sitescape.team.util.SPropsUtil.getBoolean("form.login.auth.disallowed",false) %>' >
-    <div>
-    <a href="<ssf:url action="__ajax_mobile" actionUrl="false" 
-					operation="mobile_login" />"
-    >
-    <span><ssf:nlt tag="login"/></span>
-    </a>
-    </div>
-  </c:if>
-</c:if>
-
-<c:if test="${ssUser.internalId != guestInternalId}">
-<div>
-  <span>
-    <ssf:nlt tag="mobile.welcome">
-      <ssf:param name="value" useBody="true">
-        <a href="<ssf:url adapter="true" portletName="ss_forum" 
-			    action="__ajax_mobile"
-			    operation="mobile_show_workspace"
-			    binderId="${ssUser.workspaceId}" />">${ssUser.title}</a>
-      </ssf:param>
-    </ssf:nlt>
-  </span>
-</div>
-<br/>
-</c:if>
-
-<div>
-  <span class="ss_bold"><ssf:nlt tag="toolbar.menu.whatsNew"/></span>
-  <br/>
-  <div style="padding-left:10px;">
-	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_mobile" actionUrl="false" 
-					operation="mobile_whats_new" ><ssf:param
-					name="type" value="whatsNewTracked"/></ssf:url>">
-	    <span class="ss_bold"><ssf:nlt tag="mobile.whatsNewTracked"/></span>
-	  </a>
-	  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_mobile" actionUrl="false" 
-					operation="mobile_whats_new" ><ssf:param
-					name="type" value="whatsNew"/></ssf:url>">
-	    <span class="ss_bold"><ssf:nlt tag="mobile.whatsNewSite"/></span>
-	  </a>
-  </div>
-</div>
-
-<br/>
-
-<%@ include file="/WEB-INF/jsp/mobile/miniblog.jsp" %>
-
-<br/>
-
-<c:if test="${!empty ss_mobileFavoritesList}">
-<div>
-  <span class="ss_bold"><ssf:nlt tag="favorites"/></span>
-</div>
-<table class="ss_mobile ss_mobile_table">
-<c:forEach var="favorite" items="${ss_mobileFavoritesList}">
- <jsp:useBean id="favorite" type="net.sf.json.JSONObject" />
- <% try { %><c:set var="f_eletype" value='<%= favorite.get("eletype") %>'/><% } catch(Exception e) {} %>
- <% try { %><c:set var="f_type" value='<%= favorite.get("type") %>'/><% } catch(Exception e) {} %>
- <% try { %><c:set var="f_id" value='<%= favorite.get("id") %>'/><% } catch(Exception e) {} %>
- <% try { %><c:set var="f_action" value='<%= favorite.get("action") %>'/><% } catch(Exception e) {} %>
- <% try { %><c:set var="f_name" value='<%= favorite.get("name") %>'/><% } catch(Exception e) {} %>
- <% try { %><c:set var="f_value" value='<%= favorite.get("value") %>'/><% } catch(Exception e) {} %>
- <c:if test="${f_eletype == 'favorite'}">
- <tr>
-  <td>
-	<c:if test="${f_type == 'binder' && f_action == 'view_folder_listing'}">
-	  <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${f_value}" 
-					action="__ajax_mobile" actionUrl="false" 
-					operation="mobile_show_folder" />"><span>${f_name}</span></a>
+<div id="pagebody">
+	<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
+	<c:if test="${ssUser.internalId == guestInternalId}">
+	  <c:if test='<%= !com.sitescape.team.util.SPropsUtil.getBoolean("form.login.auth.disallowed",false) %>' >
+	    <div>
+	    <a href="<ssf:url action="__ajax_mobile" actionUrl="false" 
+						operation="mobile_login" />"
+	    >
+	    <span><ssf:nlt tag="login"/></span>
+	    </a>
+	    </div>
+	  </c:if>
 	</c:if>
-	<c:if test="${f_type == 'binder' && empty f_action}">
-	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-	    			folderId="${f_value}" 
-					action="__ajax_mobile" actionUrl="false" 
-					operation="mobile_show_workspace" />"><span>${f_name}</span></a>
+
+	<c:if test="${ssUser.internalId != guestInternalId}">
+	<div>
+	  <span>
+	    <ssf:nlt tag="mobile.welcome">
+	      <ssf:param name="value" useBody="true">
+	        <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				    action="__ajax_mobile"
+				    operation="mobile_show_workspace"
+				    binderId="${ssUser.workspaceId}" />">${ssUser.title}</a>
+	      </ssf:param>
+	    </ssf:nlt>
+	  </span>
+	</div>
+	<br/>
 	</c:if>
-  </td>
- </tr>
- </c:if>
-</c:forEach>
-</table>
-<br/>
-</c:if>
+	
+	<div id="menu">
+	  <ul>
+	    <li>
+		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+						action="__ajax_mobile" actionUrl="false" 
+						operation="mobile_whats_new" ><ssf:param
+						name="type" value="whatsNewTracked"/></ssf:url>"
+		  ><ssf:nlt tag="mobile.whatsNewTracked"/></a>
+		</li>
+		<li>
+		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+						action="__ajax_mobile" actionUrl="false" 
+						operation="mobile_whats_new" ><ssf:param
+						name="type" value="whatsNew"/></ssf:url>"
+		  ><ssf:nlt tag="mobile.whatsNewSite"/></a>
+		</li>
+	  </ul>
+	</div>
 
-</div>
+	<%@ include file="/WEB-INF/jsp/mobile/miniblog.jsp" %>
+		
+	<%@ include file="/WEB-INF/jsp/mobile/favorites.jsp" %>
+	
+	<%@ include file="/WEB-INF/jsp/mobile/saved_searches.jsp" %>
+		
+	<div class="pagebody">
+		<div id="search_people_global">
+		  <span class="ss_bold"><ssf:nlt tag="navigation.find"/></span>
+		</div>
+		<div class="pagebody_border">
+		  <div class="maincontent">
+	        <c:if test="${ss_accessControlMap['ss_canViewUserProfiles'] == true}">
+		      <form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
+							action="__ajax_mobile" actionUrl="true" 
+							operation="mobile_find_people" />">
+		    
+	    	    <label for="searchText"><ssf:nlt tag="navigation.findUser"/></label>
+	    	    <br/>
+			    <input type="text" size="15" name="searchText" />&nbsp;<input 
+		  	      type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" />
+		      </form>
+	        </c:if>
+	
+		    <form method="post"
+			  action="<ssf:url adapter="true" portletName="ss_forum" 
+							action="__ajax_mobile" actionUrl="true" 
+							operation="mobile_show_search_results" />">
+	    	  <label for="searchText"><ssf:nlt tag="searchForm.button.label"/></label>
+	    	  <br/>
+		      <input name="searchText" type="text" size="15"/>&nbsp;<input type="submit" 
+		        name="searchBtn" value="<ssf:nlt tag="button.ok"/>" />
+		      <input type="hidden" name="quickSearch" value="true"/>
+		    </form>
+		  </div>
+	    </div>
+	</div>
 
-<c:if test="${!empty ss_UserQueries}">
-<div class="ss_mobile">
-<span class="ss_bold"><ssf:nlt tag="searchResult.savedSearchTitle"/></span>
-<br/>
-<table class="ss_mobile ss_mobile_table">
-<c:forEach var="query" items="${ss_UserQueries}" varStatus="status">
-  <tr><td><a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder.id}" 
-					action="__ajax_mobile" actionUrl="false" 
-					operation="mobile_show_search_results"><ssf:param 
-					name="ss_queryName" value="${query.key}" /></ssf:url>">${query.key}</a></td></tr>
-</c:forEach>
-</table>
-</div>
-<br/>
-</c:if>
-
-<c:if test="${ss_accessControlMap['ss_canViewUserProfiles'] == true}">
-<div class="ss_mobile">
-<form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_mobile" actionUrl="true" 
-					operation="mobile_find_people" />">
-<span class="ss_bold"><ssf:nlt tag="navigation.findUser"/></span>
-<br/>
-<input type="text" size="15" name="searchText" class="ss_mobile_small" />&nbsp;<input 
-  type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" class="ss_mobile_small" />
-</form>
-</div>
-<br/>
-</c:if>
-
-<div class="ss_mobile">
-<form method="post"
-	action="<ssf:url adapter="true" portletName="ss_forum" 
-					action="__ajax_mobile" actionUrl="true" 
-					operation="mobile_show_search_results" />">
-<span class="ss_bold"><ssf:nlt tag="searchForm.button.label"/></span>
-<br/>
-<input name="searchText" type="text" size="15" class="ss_mobile_small" />&nbsp;<input type="submit" 
-  name="searchBtn" value="<ssf:nlt tag="button.ok"/>" class="ss_mobile_small" />
-<input type="hidden" name="quickSearch" value="true"/>
-</form>
-<br/>
-<br/>
-<%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
+	<%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
 </div>
