@@ -1,11 +1,415 @@
-BODY {
-  font-size:10px; 
-  font-family: Lucida Sans Unicode, Arial, sans-serif; 
-  background-color: #FFFFFF;
+/* The px -> em translation was done by using this chart:
+	 2px	0.15em
+	 5px	0.38em
+	 9px	0.69em	xx-small
+	10px	0.83em	x-small
+	11px	0.90em
+	12px	0.92
+	13px	1.0em	small
+	16px	1.2em
+	25px	1.6em
+  (based off the 13px == 1em == small equivalence, since ALA uses
+   "small" as its paragraph-size font)
+  and tweaking the result a bit (e.g. shifting 0.85em font sizes to 0.90
+  and 0.77em font sizes to 0.83em) */
+
+	/*  General rules */
+
+/* Shrink images to fit within viewport; some phones
+   can't scroll horizontally. */
+img	{
+	max-width: 100%;
+	background-image: url(images/mobile/novell_logo.gif);
+	}
+
+	/*  Establish general layout parameters */
+
+/* Reduce margin slightly
+   Drop border (it looks redundant when the spacing is small)
+   Specify only generic font family, not specific screen font,
+    because the handheld is likely to set a more readable default */ 
+body {
+	font-size: 0.83em;
+	letter-spacing: 0.07em;
+	font-family:  Helvetica, sans-serif;
+	}
+a:hover {
+	color: #ff0000;
+	background-color: #ffff00;
+	text-decoration: none;
 }
-TD {
-  font-family: Arial, sans-serif;
+
+/* Reduce margin and border sizes slightly
+   Use keyword for border-width above 3px
+   Relax width to 'auto' and set max-width instead */
+#wrapper {
+	margin: 3px auto;
+	border: 1px solid #CCC;
+	width: auto;
+	max-width: 597px;
+	height: auto;
+	font-size: 1em;
+	background: #FFFFFF;
+	color: #666666;
+	/*if you change theradius you need to not only change it here but also on the header */
+	-moz-border-radius-topleft: 5px;
+	 	-webkit-border-top-left-radius: 5px;
+	-moz-border-radius-topright: 5px;
+	 	-webkit-border-top-right-radius: 5px;
+	}
+
+/* Limit the amount of vertical room the banner takes up: it shouldn't
+    take up most of the screen! We care about physical size here, not
+    screen resolution.
+   Most of this image can be cut off without a problem, so also
+   release the max-width and clip the overflow. */
+.header img	{
+
+	}
+#header {
+	overflow: hidden;
+	background:url(images/mobile/header.png) repeat-x left top;
+	height: 24px;
+	font-size: .9em;
+	 -moz-border-radius-topleft: 5px;
+	 	-webkit-border-top-left-radius: 5px;
+	 -moz-border-radius-topright: 5px;
+	 	-webkit-border-top-right-radius: 5px;
+	}
+#header ul {
+	margin-top: 6px;
+	}
+
+#header li {
+	display: inline;
+	list-style-type: none;
+	padding-right: 5em;
+	}
+#header a {
+	text-decoration: none;
+	margin-top:4px;
+	margin-bottom:1px;
+	color: #FFF;
+	}
+.inlinelist {
+	list-style-type: none;
+	list-style-image: none;
+	line-height: 1.4em;
+	display: list-item;
+	border-right: none;
+	border-top-width: thin;
+	border-left-width: thin;
+	border-bottom: thin dotted #DBE9E8;
+	list-style-position: outside;
+	}
+/* Linearize menu */
+#menu {
+	display:inline;
+	height: auto;
+	width: auto;
+	list-style-type: none;
+	clear: both;	
+	}
+#menu ul li {
+	display: inline;
+	margin-right: 0.1em;
+	}
+#menu ul li a {
+	width: auto;
+	height: 1.5em;
+	padding: 0.15em 4% 0.15em 4%;
+	border:solid #333 1px;
+	text-decoration:none;
+	/*Safari rounded corner*/
+		-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	
+	-webkit-box-shadow: 2px 2px 2px #CCC;
+	background: #666;
+	color: #FFF;
+	}
+
+/* Turn off float -> one-column layout
+   Reduce padding to a percentage (scales well)
+   Relax width to 'auto' and set max-width instead */
+.maincontent	{
+	float: none;
+	padding: 1% 0% 1% 4%;
+	width: auto;
+	max-width: 597px;
+	font-size: .93em;
+	background-color:#DBE9E8;
+	color: #666666;
+	border: thin #777 dotted;
+	/*rounded corners for firefox and safari*/
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	}
+
+td, th{
+	}
+	
+.bottom_rule {
+	border-bottom: thin #9EC8CD dotted;
+	}
+	
+/* Reduce horizontal margins/padding; percentages scale well */
+.maincontent ol, .maincontent ul	{
+	padding-left: 1%;
+	margin-left: 1%;
+	border: thin #006666 solid;
+	}
+
+/* Vertical margins should be given either as small pixel values
+    (a few pixels for a bit of graphical breathing room) or as
+    ems (relative to the font size) so it scales with the font.
+    10px is close to font size, so it fits under the latter
+    category  0.8em
+   Switch 5px margin/padding to percentages */
+.maincontent li	{
+	line-height: 1.4;
+	margin-bottom: 0.83em;
+	padding-left: 1%;
+	margin-left: 1%;
+	}
+
+/* Vertical margin -> em, as above*/
+.maincontent ul ul li {
+	margin-top: 0.83em;
+	}
+
+/* Horizontal spacing on inline elements
+    should be given in em, not pixels, so
+    that it scales with the font size */
+.maincontent .inlinelist li	{
+	padding: 0 0.4em 0 0;
+	}
+
+/* Switch from pixels to ems in footer margins/padding */
+#footer {
+	height: 24px;
+	list-style-type: none;
+	background: url(images/mobile/footer.png) repeat-x left top;
+	font-size: 0.9em;
+	}
+#footer p	{
+	margin-top: .5em;
+	margin-right: 0;
+	margin-left: 0;
+	}
+
+#footer ul	{
+	margin: 0px;
+	padding-top: .6em;
+	}
+#footer li	{
+	display: inline;
+	list-style-type: none;
+	padding: 0 5em 0 0;
+	}
+#wrapper #footer a {
+	color: #333;
+	text-decoration: none;
+	}
+.align_middle {
+	padding-bottom: 1em;
 }
+
+/* Specify generic, not specific, fonts in font-family */
+code, pre	{
+	font-family: monospace;
+	}
+
+/* Allow preformatted lines to break */
+pre {
+	white-space: -pre-wrap; /* Opera 6 CSS Extension */
+	white-space: pre-wrap; /* CSS2.1 Addition */
+	}
+
+	/*  Typography */
+
+/* Specific fonts are ok for headlines, so leave font-family alone
+   Adjust top margin from px to em and reduce it a bit (the 2px on the
+    bottom margin is small enough to be left alone)
+   Reduce line height to 1em; headings frequently break into multiple
+    lines on such small screen, and we don't want spacing /within/ the
+    heading, only around it. */
+h1, h2, h3, h4, h5, h6	{
+	line-height: normal;
+	margin-top: 0em;
+	}
+.pagebody h1	{
+	font-size: .38em;
+	}
+.pagebody h2	{
+	font-size: 1.38em;
+	margin: .15em;	
+	}
+.pagebody  {
+	padding: 12px 12px 12px 12px;
+	}
+	
+/* Avoid specifying font sizes in px: use 'em' (if non-nesting) or keywords.
+   More margin px -> em adjustments */
+
+h3 sign_in {
+	font-size: 1.0em;
+	color: #333;
+	font-style: normal;
+	}
+#miniblog { 
+	background: #fff url(images/mobile/greem.png) repeat-x left top;
+	}
+#favorites { 
+	background: #fff url(images/mobile/ss_gray.png) repeat-x left top;
+	}
+#search_people_global { 
+	background:#fff url(images/mobile/ss_blue.png) repeat-x left top;
+		}
+#saved_searches {
+	background: #fff url(images/mobile/ss_blue.png) repeat-x left top;
+	}
+
+		
+.pagebody, #saved_searches, #search_people_global, #favorites, #miniblog {
+	padding-top: 2px;
+	padding-bottom: 2px;
+	font-size: 0.90em;
+	/*safari and firefox*/
+	 -moz-border-radius-topleft: 5px;
+	 	-webkit-border-top-left-radius: 5px;
+	 -moz-border-radius-topright: 5px;
+	 	-webkit-border-top-right-radius: 5px;
+		}
+a:link {
+	text-decoration: none;
+	
+}
+#saved_searches, #search_people_global, #favorites, #miniblog {
+	border: #777 thin dotted;
+	text-indent: 3%;
+	background: #9A9A98;
+	color: #FFF;
+	-webkit-text-stroke: #000;
+	}
+.pagebody_border{
+	border-bottom: #777 thin dotted;
+	border-left: #777 thin dotted;
+	border-right: #777 thin dotted;
+	margin-bottom: 1em;
+		
+	-webkit-box-shadow: 2px 2px 4px #CCC;
+	}
+	
+h4 {
+	font-size: 1em;
+	}
+h5 {
+	font-size: 0.83em;
+	}
+h6 {
+	margin: 0 0 2.5em 0;
+	font-size: 0.83em;
+	}
+
+
+/* Use the default font size, because the device knows what's a good size for
+   its screen and we don't. */
+.pagebody, .pagebody div, .pagebody p, .pagebody th, .pagebody td, .pagebody li, .pagebody dd, .pagebody dt {
+	font-size: 1em;
+	}
+.pagebody p.fineprint	{
+	font-size: 0.90em;
+	}
+.pagebody .trans	{
+	margin: 1.6em 0;
+	padding-top: 0;
+	}
+.pagebody .trans dt  {
+	font-size: 1.38em;
+	margin-bottom: 0.4em;
+	}
+.pagebody ul {
+	margin-top:0px;
+	padding-top:13px;
+	}
+.pagebody li {
+	border-bottom: 1px dotted #5A9A98;
+	padding-bottom: .60em;
+	padding-top: .60em;
+	list-style-position: inside;
+	list-style-type: square;
+	margin-right: 2.6em;
+	}	
+#outdated	{
+	font-size: 0.90em;
+	padding: 0.91em 0;
+	margin: 2.27em 0 0.91em 0;
+	}
+#maincontent dl	{
+	line-height: 1.4em;
+	margin-top: 0;
+	padding-top: 0;
+	}
+#maincontent dd	{
+	margin-bottom: 0.4em;
+	padding-left: 0.4em;
+	margin-left: 0.4em;
+	}
+
+	/*  Forms */
+
+/* Make sure inputs stay inside the content area */
+input, textarea, select {
+	max-width: 100%;
+	}
+#formarea label	{
+	font-size: 0.90em;
+	margin-top: 0.4em;
+	}
+#menu {
+	display: inline;
+	}
+.postdata 	{
+	background: #fff;
+	color: #999;
+	font-size: 0.83em;
+	margin: 0.83em 0 0.4em 0;
+	border: 0;
+	border-bottom: 1px dotted #ccc;
+	border-top: 1px solid #f3f3f3
+	}
+
+.postdata p  	{
+	margin: 0.83em 0;
+	}
+
+.postbody	{
+	margin: 0 0 1.6em 0;
+	line-height: 1.4;
+	}
+
+	/*  Helpers */
+
+.linewrap {
+	font-size: medium;
+	}
+
+.floatleft	{
+	margin: 0 1.15em 0 0;
+	}
+
+.form {
+	font-size: 1.0em;
+	margin-right: 5px;
+	}
+
+.form-button {
+	font-size: .83em;
+	padding-right: 5px;
+	padding-bottom: 15px;
+	}
+
 .ss_mobile, .ss_mobile td, .ss_mobile th {
 	font-size:10px;
 }
@@ -45,3 +449,56 @@ TD {
 }
 .ss_mobile_table tr {
 }
+
+/********* LOGIN TEXT BOX ************/
+.ss_text_login{
+	text-align: left;
+	border: dotted 1px #5A9A98;
+	background-image: url(images/mobile/login_bk.png);
+	padding-top: 3px;
+	padding-right: 25px;
+	padding-bottom: 3px;
+	padding-left: 25px;
+	margin-top: 50px;
+	margin-right: 6px;
+	margin-bottom: 6px;
+	margin-left: 6px;
+	}
+.ss_ttable{
+	padding-left: 5ems; 
+}
+.ss_fieldset_login {
+	margin-top: 80px;
+	margin-bottom: 100px;
+	padding-bottom:12px;
+	padding-top: 40px;
+	display: block;
+	border: 1px dotted #5A9A98;
+	background-image: url(images/mobile/login_bk.png);
+	background-repeat: no-repeat;
+	width: 50px;
+	height: 40px;
+	} 
+#fieldset.ss_fieldset_square {
+  	border: 1px solid #5A9A98;
+  	padding: 5px;
+  	margin-top: 12px;
+	}
+#fieldset a{
+	border: dotted 1px #000;
+	}
+#fieldset a:hover{
+	border: dotted 1px #000;
+	}
+.ss_legend {
+  	font-size:12px !important;
+	padding-left:12px;
+  	}
+ /**********LOGIN SCREEN*******/
+.ss_legend_login {
+	font-size:18px!important;
+	letter-spacing:-1px;
+	font-family:Georgia, "Times New Roman", Times, serif !important;
+	font-weight:200!important;
+	color:#666;
+	}
