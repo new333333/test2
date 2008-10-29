@@ -36,12 +36,11 @@
 <div id="wrapper" class="header">
   <div id="header">
     <ul>
-      <li>&nbsp;</li>
     </ul>
   </div>
   <div class="ss_text_login" id="ss_fieldset_login">
   <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
-     <table class=" ss_table" width="57%" border="0"  cellpadding="2">
+     <table class="ss_table" border="0" cellpadding="2">
       <tr>
         <td width="67%"><h4><ssf:nlt tag="login.please"/></h4></td>
       </tr>
