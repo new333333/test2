@@ -44,37 +44,37 @@ boolean isIE = BrowserSniffer.is_ie(request);
   <div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.archives"/></div>
   <div class="ss_blog_sidebar_box">		
 	<table>
-	<c:forEach var="monthYear" items="${ssBlogMonthHits}">
-	  <tr>
-	  <td><a href="${ssBlogMonthUrls[monthYear.key]}"
-	  <c:if test="${monthYear.key == ss_yearMonth}">
-        class="ss_bold" style="background-color:#e5e5e5;" 
-      </c:if>
-	  <ssf:title tag="title.entries.archived.on">
-	  	<ssf:param name="value" value="${ssBlogMonthTitles[monthYear.key]}" />
-	  	<ssf:param name="value" value="${ssBinder.title}" />
-	  </ssf:title> >
-	  <c:out value="${ssBlogMonthTitles[monthYear.key]}"/></a></td>
-	  <td align="right">(<c:out value="${monthYear.value}"/>)</td>
-	  </tr>
-
-	  <c:if test="${monthYear.key == ss_yearMonth}">
-	     <c:forEach var="blogPage" items="${ssBlogPages}">
-	      <c:set var="monthFolder" value="${monthYear.key}/${blogPage.id}"/>
-	      <c:if test="${!empty ssBlogMonthFolderHits[monthFolder]}">
-	       <tr>
-	        <td style="padding-left:10px;">
-	         <a style="background-color:#e5e5e5;"
-	           href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"><ssf:param 
-	           name="yearMonth" value="${ss_yearMonth}" /></ssf:url>"
-	         >${blogPage.title}</a>
-	        </td>
-	        <td align="right">(<c:out value="${ssBlogMonthFolderHits[monthFolder]}"/>)</td>
-	       </tr>
+		<c:forEach var="monthYear" items="${ssBlogMonthHits}">
+		  <tr>
+			  <td><a href="${ssBlogMonthUrls[monthYear.key]}"
+			  <c:if test="${monthYear.key == ss_yearMonth}">
+		        class="ss_bold" style="background-color:#e5e5e5;" 
+		      </c:if>
+			  <ssf:title tag="title.entries.archived.on">
+			  	<ssf:param name="value" value="${ssBlogMonthTitles[monthYear.key]}" />
+			  	<ssf:param name="value" value="${ssBinder.title}" />
+			  </ssf:title> >
+			  <c:out value="${ssBlogMonthTitles[monthYear.key]}"/></a></td>
+			  <td align="right">(<c:out value="${monthYear.value}"/>)</td>
+		  </tr>
+	
+		  <c:if test="${monthYear.key == ss_yearMonth}">
+		     <c:forEach var="blogPage" items="${ssBlogPages}">
+		      <c:set var="monthFolder" value="${monthYear.key}/${blogPage.id}"/>
+		      <c:if test="${!empty ssBlogMonthFolderHits[monthFolder]}">
+		       <tr>
+		        <td style="padding-left:10px;">
+		         <a style="background-color:#e5e5e5;"
+		           href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"><ssf:param 
+		           name="yearMonth" value="${ss_yearMonth}" /></ssf:url>"
+		         >${blogPage.title}</a>
+		        </td>
+		        <td align="right">(<c:out value="${ssBlogMonthFolderHits[monthFolder]}"/>)</td>
+		       </tr>
+		      </c:if>
+		     </c:forEach>
 	      </c:if>
-	     </c:forEach>
-      </c:if>
-	</c:forEach>
+		</c:forEach>
 	</table>
   </div>
   <c:if test="${!empty ssFolderEntryPersonalTags}"> 

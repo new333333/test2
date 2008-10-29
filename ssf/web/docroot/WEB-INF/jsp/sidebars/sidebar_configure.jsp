@@ -35,27 +35,27 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${ssDefinitionEntry.entityType == 'folder'}">
 
-<ssf:sidebarPanel title="sidebar.configure" id="ss_folderTags_sidebar" divClass="ss_place_tags" 
-  initOpen="false" sticky="false">
+  <ssf:sidebarPanel title="sidebar.configure" id="ss_folderTags_sidebar" divClass="ss_place_tags" 
+    initOpen="false" sticky="false">
 
-<c:if test="${!empty ssFolderViewsToolbar || !empty ssCalendarImportToolbar}">
-  <div class="ss_sidebarTitle"> 
-	<div class="ss_sub_sidebarMenu">
-	  <c:if test="${!empty ssFolderViewsToolbar}">
-	    <ssf:toolbar toolbar="${ssFolderViewsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
-	  </c:if>
-	  <c:if test="${!empty ssCalendarImportToolbar}">
-	    <ssf:toolbar toolbar="${ssCalendarImportToolbar}" style="ss_actions_bar4 ss_actions_bar" />
-	  </c:if>
-	</div>
-  </div>	
-</c:if>
+		<c:if test="${!empty ssFolderViewsToolbar || !empty ssCalendarImportToolbar}">
+		  <div class="ss_sidebarTitle"> 
+			<div class="ss_sub_sidebarMenu">
+			  <c:if test="${!empty ssFolderViewsToolbar}">
+			    <ssf:toolbar toolbar="${ssFolderViewsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
+			  </c:if>
+			  <c:if test="${!empty ssCalendarImportToolbar}">
+			    <ssf:toolbar toolbar="${ssCalendarImportToolbar}" style="ss_actions_bar4 ss_actions_bar" />
+			  </c:if>
+			</div>
+		  </div>	
+		</c:if>
    
-  <% // configure columns area %>
-  <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_columns.jsp" />
- 
-  <% // configure entries per page %>
-  <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_entriesPerPage.jsp" />
- 
-</ssf:sidebarPanel>
+	    <% // configure columns area %>
+	    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_columns.jsp" />
+	 
+	    <% // configure entries per page %>
+	    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_entriesPerPage.jsp" />
+	 
+  </ssf:sidebarPanel>
 </c:if>

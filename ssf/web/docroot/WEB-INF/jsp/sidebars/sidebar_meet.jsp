@@ -30,18 +30,18 @@
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!empty ss_toolbar_meeting_url}">
-		<div class="ss_leftNav">
+		<div class="ss_leftNav ss_sideEmail">
 		  <ul>
 			<li>
-			<c:if test="${!ss_toolbar_meeting_post}">
+			  <c:if test="${!ss_toolbar_meeting_post}">
 				  <a href="${ss_toolbar_meeting_url}"
 				    onClick="ss_toolbarPopupUrl(this.href);return false;"
 				  >
 				    <span><ssf:nlt tag="toolbar.menu.addMeeting"/></span>
 				  </a>
-			</c:if>
+			  </c:if>
 			
-			<c:if test="${ss_toolbar_meeting_post}">
+			  <c:if test="${ss_toolbar_meeting_post}">
 				<c:set var="contributorIdList" value=""/>
 				<c:forEach var="contributorId" items="${ss_toolbar_meeting_ids}">
 				  <c:if test="${!empty contributorIdList}"><c:set var="contributorIdList" value="${contributorIdList}, "/></c:if>
@@ -50,11 +50,11 @@
 					<form class="inline" action="${ss_toolbar_meeting_url}" method="post" 
 					  target="footerToolbarOptionWnd"
 					>
-					<input type="hidden" name="ssUsersIdsToAdd" value="${contributorIdList}"/>
-					<a href="javascript: ;" onclick="ss_toolbarPopupUrl('', 'footerToolbarOptionWnd'); ss_submitParentForm(this); "
-					><span><ssf:nlt tag="toolbar.menu.addMeeting"/></span></a>
+					  <input type="hidden" name="ssUsersIdsToAdd" value="${contributorIdList}"/>
+					  <a href="javascript: ;" onclick="ss_toolbarPopupUrl('', 'footerToolbarOptionWnd'); ss_submitParentForm(this); "
+					  ><span><ssf:nlt tag="toolbar.menu.addMeeting"/></span></a>
 					</form>
-			</c:if>
+			  </c:if>
 			</li>
 		  </ul>
 		</div>

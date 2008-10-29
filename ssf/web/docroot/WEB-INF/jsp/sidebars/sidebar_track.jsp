@@ -62,7 +62,7 @@
 				
 				  <div id="ss_track_this_ok${renderResponse.namespace}" 
 	  				style="position:relative; display:none; visibility:hidden; top:5px; left:10px; z-index:500;
-	         		border:1px solid black; padding-top:10px; padding-left: 10px; padding-bottom: 10px; padding-right: 10px; background-color:#ffffff; white-space:nowrap; margin-bottom:10px;">
+	         		border:1px solid black; padding-top:10px; padding-left: 10px; padding-bottom: 10px; padding-right: 10px; background-color:#FFFFFF; white-space:nowrap; margin-bottom:10px;">
 				  </div>
 				</li>
 			  </ul>

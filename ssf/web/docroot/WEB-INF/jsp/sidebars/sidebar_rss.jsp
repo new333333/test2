@@ -43,13 +43,13 @@
 			document.getElementsByTagName("head")[0].appendChild(ss_linkEle);
 		}
 	  </script>
-		<div class="ss_leftNav">
-		<ul>
+		<div class="ss_leftNav ss_sidePlus">
+		  <ul>
 			<li>
 				<a href="${ss_toolbar_subscribe_rss}" 
 				  onClick="ss_showPermalink(this);return false;"><ssf:nlt tag="sidebar.rss"/></a>
 			</li>
-		</ul>
+		  </ul>
 		</div>
 	</c:if>
 </c:if>

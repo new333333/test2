@@ -34,6 +34,7 @@
 <%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ page import="com.sitescape.team.ObjectKeys" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+
 <c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
 <c:if test="${ssUser.internalId != guestInternalId}">
   <c:if test="${empty ss_statusId}">

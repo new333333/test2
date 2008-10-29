@@ -28,6 +28,7 @@
  * are trademarks of SiteScape, Inc.     
  */
 %>
+
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
   <div class="ss_sidebarTitle"><ssf:nlt tag="misc.configureColumns"/>

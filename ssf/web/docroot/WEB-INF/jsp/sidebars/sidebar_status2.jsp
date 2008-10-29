@@ -43,15 +43,15 @@
 	    timeStyle="short" dateStyle="short" /></span>
 	</c:if>
 	<a href="javascript: ;" onClick="ss_viewMiniBlog('${ssUser.id}', '0', true);return false;"
-	  title="<ssf:nlt tag="miniblog.title"/>">
+	   title="<ssf:nlt tag="miniblog.title"/>">
 	   <span class="ss_status_header"><ssf:nlt tag="relevance.userStatus"/></span>
 	</a>
 	<ssf:ifLoggedIn>
 		<script type="text/javascript">
-		ss_statusCurrent = "";
-		<c:if test="${!empty ssUser.status}">
-		  ss_statusCurrent = "<%= java.net.URLEncoder.encode(ssUser.getStatus()) %>";
-		</c:if>
+		  ss_statusCurrent = "";
+		  <c:if test="${!empty ssUser.status}">
+		    ss_statusCurrent = "<%= java.net.URLEncoder.encode(ssUser.getStatus()) %>";
+		  </c:if>
 		</script>
 
 		<textarea cols="22" rows="2" id="ss_status_textarea${renderResponse.namespace}"
@@ -63,18 +63,20 @@
   			onMouseover="ss_setStatusBackground(this, 'mouseOver');"
   			onMouseout="ss_setStatusBackgroundCheck(this);"
   		><c:out value="${ssUser.status}" escapeXml="true"/></textarea>
+  		
   		<div style="margin-left:4px;">
-  		<table cellspacing="0" cellpadding="0" width="164">
-  		<tr>
-  		<td>
-  		  <input type="button" value="<ssf:nlt tag="button.ok"/>" class="ss_inlineButton"
-  		    onClick="ss_updateStatusNowId('ss_status_textarea${renderResponse.namespace}');return false;"/>
-  		</td>
-  		<td align="right">
-  		  <input type="button" value="<ssf:nlt tag="button.clear"/>" class="ss_inlineButton"
-  		    onClick="ss_clearStatus('ss_status_textarea${renderResponse.namespace}');return false;"/>
-  		</td>
-  		</tr>
-  		</table></div>
+	  		<table cellspacing="0" cellpadding="0" width="164">
+	  		  <tr>
+	  		    <td>
+		  		  <input type="button" value="<ssf:nlt tag="button.ok"/>" class="ss_inlineButton"
+		  		    onClick="ss_updateStatusNowId('ss_status_textarea${renderResponse.namespace}');return false;"/>
+	  		    </td>
+		  		<td align="right">
+		  		  <input type="button" value="<ssf:nlt tag="button.clear"/>" class="ss_inlineButton"
+		  		    onClick="ss_clearStatus('ss_status_textarea${renderResponse.namespace}');return false;"/>
+		  		</td>
+	  		  </tr>
+	  		</table>
+	  	</div>
 	</ssf:ifLoggedIn> 
 </c:if>

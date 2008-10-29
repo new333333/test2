@@ -52,31 +52,31 @@
 				    titleClass="ss_compact" menuClass="ss_actions_bar4 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
 				
 					<ul class="ss_actions_bar4 ss_actions_bar_submenu" style="width:150px;">
-					<li>
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '5');return false;">
-							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="5"/></ssf:nlt>
-						</a>
-					</li>
-					<li>	
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '10');return false;">
-							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="10"/></ssf:nlt>
-						</a>
-					</li>
-					<li>
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '25');return false;">
-							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="25"/></ssf:nlt>
-						</a>
-					</li>
-					<li>
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '50');return false;">
-							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="50"/></ssf:nlt>
-						</a>
-					</li>
-					<li>
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '100');return false;">
-							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="100"/></ssf:nlt>
-						</a>
-					</li>
+						<li>
+							<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '5');return false;">
+								<ssf:nlt tag="entry.shown"><ssf:param name="value" value="5"/></ssf:nlt>
+							</a>
+						</li>
+						<li>	
+							<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '10');return false;">
+								<ssf:nlt tag="entry.shown"><ssf:param name="value" value="10"/></ssf:nlt>
+							</a>
+						</li>
+						<li>
+							<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '25');return false;">
+								<ssf:nlt tag="entry.shown"><ssf:param name="value" value="25"/></ssf:nlt>
+							</a>
+						</li>
+						<li>
+							<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '50');return false;">
+								<ssf:nlt tag="entry.shown"><ssf:param name="value" value="50"/></ssf:nlt>
+							</a>
+						</li>
+						<li>
+							<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '100');return false;">
+								<ssf:nlt tag="entry.shown"><ssf:param name="value" value="100"/></ssf:nlt>
+							</a>
+						</li>
 					</ul>
 	
 				  </ssf:menu>

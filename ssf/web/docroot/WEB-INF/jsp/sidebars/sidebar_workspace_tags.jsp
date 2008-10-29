@@ -29,6 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+
 <c:if test="${!ss_searchResultsPage}">
 	<c:if test="${ssDefinitionEntry.entityType == 'workspace'}">
 		<ssf:sidebarPanel title="sidebar.tags.workspace" id="ss_workspace_tags_sidebar" 

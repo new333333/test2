@@ -32,7 +32,6 @@
 <% // Sidebars for action items %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-	
 	<!-- "It Boxes" -->
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_track.jsp" />
   	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_share.jsp" />

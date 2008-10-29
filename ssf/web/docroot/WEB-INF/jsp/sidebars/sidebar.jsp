@@ -35,76 +35,79 @@ boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <% // BEGIN SIDEBAR LAYOUT  %>
 <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
-	<div id="ss_sideNav_wrap"> <% // new sidebar format %>
+	<div id="ss_sideNav_wrap"> 
 
-	<% // Status %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
-	
-	<% // Track %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_track.jsp" />
-	
-	<% // Share %>
-  	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_share.jsp" />
-
-
-<%--
-* The following line is used to call customer supplied customizations.
-* Jsp files added to the custom_jsps directory will not be overwritten during upgrades
---%><jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_sidebar_top.jsp" />
-
-	<% // Recent Places %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
-
-	<% // Workspace Tree %>    
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tree.jsp" />
-
-<%--
-* The following line is used to call customer supplied customizations.
-* Jsp files added to the custom_jsps directory will not be overwritten during upgrades
---%><jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_sidebar_middle.jsp" />
-
-	<% // Folder Tools %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
-
-	<!-- Saved searches -->
-	<jsp:include page="/WEB-INF/jsp/search/save_search.jsp" />
-							
-	<!-- Search Places rating  -->
-	<jsp:include page="/WEB-INF/jsp/search/rating_places.jsp" />
-
-	<!-- Search People rating  -->
-	<jsp:include page="/WEB-INF/jsp/search/rating_people.jsp" />
-
-	<!-- Search Tag cloud -->
-	<jsp:include page="/WEB-INF/jsp/search/tags.jsp" />
-	
-	<% // Team Sidebar %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_team.jsp" />
-
-	<% // Folder or Workspace Tags %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tags.jsp" />
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_folder_tags.jsp" />
-	
-	<% // Personal Preferences %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_personal.jsp" />
-	
-	<% // Moving these to footer %>
-	<% // Meet %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" />
-
-	<% // Email %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" />  	
+		<% // Status %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_status.jsp" />	
 		
-	<% // Clipboard %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" />
+		<% // Track %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_track.jsp" />
 		
-	<% // RSS Feed %>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" />
-	
-<%--
-* The following line is used to call customer supplied customizations.
-* Jsp files added to the custom_jsps directory will not be overwritten during upgrades
---%><jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_sidebar_bottom.jsp" />
+		<% // Share %>
+	  	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_share.jsp" />
 
-	</div> <% // end of new sidebar format %>
+		<%--
+		* The following line is used to call customer supplied customizations.
+		* Jsp files added to the custom_jsps directory will not be overwritten during upgrades
+		--%>
+		
+		<jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_sidebar_top.jsp" />
+	
+		<% // Recent Places %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
+	
+		<% // Workspace Tree %>    
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tree.jsp" />
+
+		<%--
+		* The following line is used to call customer supplied customizations.
+		* Jsp files added to the custom_jsps directory will not be overwritten during upgrades
+		--%>
+		<jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_sidebar_middle.jsp" />
+	
+		<% // Folder Tools %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
+	
+		<!-- Saved searches -->
+		<jsp:include page="/WEB-INF/jsp/search/save_search.jsp" />
+								
+		<!-- Search Places rating  -->
+		<jsp:include page="/WEB-INF/jsp/search/rating_places.jsp" />
+	
+		<!-- Search People rating  -->
+		<jsp:include page="/WEB-INF/jsp/search/rating_people.jsp" />
+	
+		<!-- Search Tag cloud -->
+		<jsp:include page="/WEB-INF/jsp/search/tags.jsp" />
+		
+		<% // Team Sidebar %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_team.jsp" />
+	
+		<% // Folder or Workspace Tags %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_workspace_tags.jsp" />
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_folder_tags.jsp" />
+		
+		<% // Personal Preferences %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_personal.jsp" />
+		
+		<% // Moving these to footer %>
+		<% // Meet %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_meet.jsp" />
+	
+		<% // Email %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_email.jsp" />  	
+			
+		<% // Clipboard %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" />
+			
+		<% // RSS Feed %>
+		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" />
+	
+		<%--
+		* The following line is used to call customer supplied customizations.
+		* Jsp files added to the custom_jsps directory will not be overwritten during upgrades
+		--%>
+		<jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_sidebar_bottom.jsp" />
+
+	</div> <% // end of sidebar format %>
 </div> <% // end of ss_sidebarDiv %>
