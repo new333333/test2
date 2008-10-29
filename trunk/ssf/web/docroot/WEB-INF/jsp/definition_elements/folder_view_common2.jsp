@@ -526,7 +526,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   onClick="ss_hideSunburst('${entry1._docId}', '${ssBinder.id}');return false;"
 ><span 
   style="display:${ss_sunburstVisibilityHide};"
-  id="ss_sunburstShow${renderResponse.namespace}
+  id="ss_sunburstShow${renderResponse.namespace}">
   	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" border="0" <ssf:alt tag="alt.new"/> />&nbsp;
   </span>
   </a>
