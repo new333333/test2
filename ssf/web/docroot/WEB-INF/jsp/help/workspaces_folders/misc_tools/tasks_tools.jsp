@@ -32,25 +32,30 @@
 <div class="ss_style">
 <div class="ss_help_style">
 
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.calendarTools" /></span>
-</div>
+    <div class="ss_help_title"> <span class="ss_titlebold">View Toolbar<ssf:nlt tag="helpSpot.tasksTools" /></span> 
+    </div>
 
-<p><ssf:nlt tag="help.calendarTools.intro" /></p>
+    <p>The View toolbar enables you to choose the tasks you want displayed in 
+      the task list.<ssf:nlt tag="help.tasksTools.intro" /></p>
 
-<p><ssf:nlt tag="help.calendarTools.tools.listIntro" /></p>
+<p>You can sort tasks by the following categories:<ssf:nlt tag="help.tasksTools.tools.listIntro" /></p>
 
 <ul>
 
-<li><ssf:nlt tag="help.calendarTools.tools.listItem.countDays"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
+      <li><b>Closed:</b> Displays tasks that have the status of Closed.<ssf:nlt tag="help.tasksTools.tools.listItem.closed"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>      
+      <li><b>Today:</b> Displays tasks that have a due date of today.<ssf:nlt tag="help.tasksTools.tools.listItem.today" /></li>      
+      <li><b>Week:</b> Displays tasks that have a due date sometime in the next 
+        seven days.<ssf:nlt tag="help.tasksTools.tools.listItem.week" /></li>      
+      <li><b>Month:</b> Displays tasks that have a due date sometime in the next 
+        30 days.<ssf:nlt tag="help.tasksTools.tools.listItem.month" /></li>
 
-<li><ssf:nlt tag="help.calendarTools.tools.listItem.folderPage" /></li>
+      <li><b>All active:</b> Displays tasks that are currently active.<ssf:nlt tag="help.tasksTools.tools.listItem.allActive" /></li>
 
-<li><ssf:nlt tag="help.calendarTools.tools.listItem.navigation" /></li>
-
-<li><ssf:nlt tag="help.calendarTools.tools.listItem.calendarApplet" /></li>
+      <li><b>All entries:</b> Displays all tasks.<ssf:nlt tag="help.tasksTools.tools.listItem.allEntries" /></li>
 
 </ul>
+
+<p>For additional and customizable ways of sorting your tasks, use the Filter. Create new filters by clicking <i>New Filter</i>.</p>
 
 </div>
 
