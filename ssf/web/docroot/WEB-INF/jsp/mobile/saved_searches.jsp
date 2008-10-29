@@ -27,37 +27,25 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-%><%--
---%><%@ page import="com.sitescape.util.BrowserSniffer" %><%--
---%><%
-	boolean isWap = BrowserSniffer.is_wap_xhtml(request);
-	boolean isIPhone = BrowserSniffer.is_iphone(request);
-%><%--
---%><%@ include file="/WEB-INF/jsp/common/common.jsp" %><%--
---%><c:set var="ssf_snippet" value="1" scope="request"/><%--
---%><%@ page contentType="text/html; charset=UTF-8" %><%--
---%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html <c:if test="${!empty ssUser && !empty ssUser.locale}"> lang="${ssUser.locale}"</c:if>>
-<head>
-<META http-equiv="Content-Script-Type" content="text/javascript">
-<META http-equiv="Content-Style-Type" content="text/css">
-<META name = "viewport" content = "width = 320">
-<jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_mobile_head.jsp" />
-<c:if test="${!empty ss_windowTitle}"><title>${ss_windowTitle}</title></c:if>
-<%
-	if (isWap) {
 %>
-<link href="<html:rootPath/>css/ss_mobile_wap.css" rel="stylesheet" type="text/css" />
-<%
-	} else if (isIPhone) {
-%>
-<link href="<html:rootPath/>css/ss_mobile_iphone.css" rel="stylesheet" type="text/css" />
-<%
-	} else {
-%>
-<link href="<html:rootPath/>css/ss_mobile_browser.css" rel="stylesheet" type="text/css" />
-<%
-	}
-%>
-</head>
-<body>
+<%@ page import="com.sitescape.team.ObjectKeys" %>
+
+	<c:if test="${!empty ss_UserQueries}">
+	  <div class="pagebody">
+	    <div id="saved_searches">
+	      <span><ssf:nlt tag="searchResult.savedSearchTitle"/></span>
+	    </div>
+	    <div class="pagebody_border">
+		  <ul>
+		    <c:forEach var="query" items="${ss_UserQueries}" varStatus="status">
+		      <li>
+		        <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder.id}" 
+					action="__ajax_mobile" actionUrl="false" 
+					operation="mobile_show_search_results"><ssf:param 
+					name="ss_queryName" value="${query.key}" /></ssf:url>">${query.key}</a>
+			  </li>
+		    </c:forEach>
+		  </ul>
+	    </div>
+	  </div>
+ 	</c:if>
