@@ -529,7 +529,7 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
  </c:if>
   text-align: center;
   padding: 0px 6px 0px 6px;
-  font-size: 10px !important;
+  font-size: 12px !important;
   font-family: Arial, sans-serif;
   white-space: nowrap;
   text-decoration: none !important;
