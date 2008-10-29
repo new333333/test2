@@ -146,20 +146,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
  	<c:if test="<%= isIE %>">
 		padding: 8px 2px 8px 4px
  	</c:if>		
-		}		
-/*.ss_sidebarMenu .ss_menuClosed a:hover {
-    color: #5A9A98;
-	background-color: #CCFFFF;
-	border-color:#9EC8CD;
-	border-width: 1px;
-    padding: 8px 0 0 35px;
-	margin-bottom:3px;
-	}	
-.ss_sidebarMenu a:hover {
-    color: #9EC8CD;
-	background-color: #CCFFFF;	
-
-	} */
+	}		
 .ss_sidebarTitle{
 	margin:3px 0px 1px 8px;
 	}
@@ -211,23 +198,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
     margin: 0px;
     padding: 0px;
       }
-
-.ss_leftNav li a {
-    color: #666666;
-    display: block;
-	border-style: solid;
-	border-color: #9EC8CD;
-	border-width: 1px;
-	background-color: #FFFFFF;
-    background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_a.png") 5px 2px;
-    background-repeat: no-repeat !important;
-    padding: 7px 0 7px 30px;
-	margin-bottom: 3px;
-    }		
 .ss_leftNav a:visited {
 	color:#333333;	/* #990099 (magenta) */
 	}
-.ss_leftNav li a:hover {
+/* .ss_leftNav li a:hover {
     color: #333333;
     background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_hover.png") 5px 2px;
     background-repeat: no-repeat !important;
@@ -244,7 +218,69 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color: #9EC8CD;
     padding: 7px 0 7px 30px;
 	margin-bottom: 3px;
+    }      */
+.ss_sidePlus li a {
+    color: #666666;
+    display: block;
+	border-style: solid;
+	border-color: #9EC8CD;
+	border-width: 1px;
+	background-color: #FFFFFF;
+    background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_a.png") 5px 2px;
+    background-repeat: no-repeat !important;
+    padding: 7px 0 7px 30px;
+	margin-bottom: 3px;
+    }	
+.ss_clipBd li a {
+    color: #666666;
+    display: block;
+	border-style: solid;
+	border-color: #9EC8CD;
+	border-width: 1px;
+	background-color: #FFFFFF;
+    background: url("<html:rootPath/>images/pics/footer/sidebar_clip.png") 8px 5px;
+    background-repeat: no-repeat !important;
+    padding: 7px 0 7px 30px;
+	margin-bottom: 3px;
+    }    
+.ss_sideEmail li a {
+    color: #666666;
+    display: block;
+	border-style: solid;
+	border-color: #9EC8CD;
+	border-width: 1px;
+	background-color: #FFFFFF;
+    background: url("<html:rootPath/>images/pics/footer/sidebar_mail.png") 8px 5px;
+    background-repeat: no-repeat !important;
+    padding: 7px 0 7px 30px;
+	margin-bottom: 3px;
     }
+.ss_sideMeet li a {
+    color: #666666;
+    display: block;
+	border-style: solid;
+	border-color: #9EC8CD;
+	border-width: 1px;
+	background-color: #FFFFFF;
+    background: url("<html:rootPath/>images/pics/footer/sidebar_meet.png") 8px 5px;
+    background-repeat: no-repeat !important;
+    padding: 7px 0 7px 30px;
+	margin-bottom: 3px;
+    }      
+.ss_sideEmail li a:hover, .ss_sideMeet li a:hover, .ss_clipBd li a:hover {
+    color: #333333;
+	background-color: #CCFFFF;	
+     }          
+.ss_sidePlus li a:hover {
+    color: #333333;
+    background: url("<html:rootPath/>images/pics/sidebar/sidebarmenu_btn_hover.png") 5px 2px;
+    background-repeat: no-repeat !important;
+	background-color: #CCFFFF;
+	border-color:#9EC8CD;
+	border-width: 1px;
+    padding: 7px 0 7px 30px;
+	margin-bottom:3px;	
+     }    	
 .ss_sideShare li a {
     color: #666666;
     display: block;
@@ -355,7 +391,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding-left:20px;
 	padding-top: 5px;
 	}
-	
 button { 
   	border:0; 
   	cursor:pointer; 
