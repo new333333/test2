@@ -29,12 +29,13 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+
 <c:if test="${ssFolder.entityType == 'folder'}">
 	<div id="ss_div_folder_dropbox${ssFolder.id}${renderResponse.namespace}" 
 	  class="ss_border_light" style="visibility:hidden;display:none;">
 		<div align="right">
-			<a onClick="ss_hideFolderAddAttachmentDropbox('${renderResponse.namespace}','${ssFolder.id}'); return false;"><img 
-				<ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>icons/close_off.gif"/>
+			<a onClick="ss_hideFolderAddAttachmentDropbox('${renderResponse.namespace}','${ssFolder.id}'); return false;">
+			   <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/> />
 			</a>
 		</div>
 		<iframe frameborder="0" scrolling="no" 

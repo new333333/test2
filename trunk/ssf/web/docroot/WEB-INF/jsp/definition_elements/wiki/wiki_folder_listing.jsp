@@ -28,6 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+
 <% //View the listing part of a wiki folder %>
         <div id="ss_wikiEntryDiv${renderResponse.namespace}">
           <iframe id="ss_wikiIframe${renderResponse.namespace}" 
