@@ -49,6 +49,7 @@ public interface SendEmail {
 	public static final String FROM="FROM";
 	//List of InternetAddress
 	public static final String CC="CC";
+	public static final String BCC="BCC";
 	
     public void schedule(String mailSenderName, Map message, String comment);
     public boolean sendMail(String mailSenderName, Map message, String comment);

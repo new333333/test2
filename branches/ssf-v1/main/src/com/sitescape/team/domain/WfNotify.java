@@ -40,7 +40,8 @@ public class WfNotify {
 	private boolean appendTitle;
 	private boolean appendBody;
 	private Set ids;
-	
+	private Set ccIds;//added post 1.0.3
+	private Set bccIds;//added post 1.0.3
 	public String getSubject() {
 		return subject;
 	}
@@ -78,5 +79,20 @@ public class WfNotify {
 		if (ids == null) ids = new HashSet();
 		return ids;
 	}
-
+	public void addCCPrincipalIds(Set<Long> ids) {
+		if (this.ccIds == null) this.ccIds = new HashSet();
+		this.ccIds.addAll(ids);
+	}
+	public Set<Long> getCCPrincipalIds() {
+		if (ccIds == null) ccIds = new HashSet();
+		return ccIds;
+	}	
+	public void addBCCPrincipalIds(Set<Long> ids) {
+		if (this.bccIds == null) this.bccIds = new HashSet();
+		this.bccIds.addAll(ids);
+	}
+	public Set<Long> getBCCPrincipalIds() {
+		if (bccIds == null) bccIds = new HashSet();
+		return bccIds;
+	}
 }

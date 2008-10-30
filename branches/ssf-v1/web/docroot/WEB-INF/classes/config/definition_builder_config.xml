@@ -2375,12 +2375,28 @@
 		<properties>
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
 			<property name="team" caption="__team" type="checkbox" />
-			<property name="userGroupNotification" caption="__userGroup" type="userGroupSelect" />
+			<property name="userGroupNotification" caption="__notification_tolist" type="userGroupSelect" />
 			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
 			<property name="subjText" caption="__notification_subject_text" type="text" />
 			<property name="appendTitle" caption="__notification_append_title" type="checkbox" />
 			<property name="bodyText" caption="__notification_body_text" type="text" />
 			<property name="appendBody" caption="__notification_append_body" type="checkbox" />
+		</properties>
+		<options>
+			<option name="ccNotifications" caption="__notification_cclist" />
+			<option name="bccNotifications" caption="__notification_bcclist"/>
+		</options>
+	</item>
+	
+	<item name="ccNotifications" caption="__notification_cclist" multipleAllowedInParent="false">
+		<properties>
+			<property name="userGroupNotification" caption="__notification_cclist" type="userGroupSelect" />
+		</properties>
+	</item>
+	
+	<item name="bccNotifications" caption="__notification_bcclist" multipleAllowedInParent="false">
+		<properties>
+			<property name="userGroupNotification" caption="__notification_bcclist" type="userGroupSelect" />
 		</properties>
 	</item>
 	
