@@ -100,7 +100,7 @@
 	    	    <br/>
 			    <input type="text" size="15" name="searchText" />&nbsp;<input 
 		  	      type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" />
-		      </form>
+		      </form><br/>
 	        </c:if>
 	
 		    <form method="post"
