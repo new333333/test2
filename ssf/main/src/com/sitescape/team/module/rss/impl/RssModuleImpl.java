@@ -516,7 +516,8 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		ret += "<pubDate>" + fmt.format(eDate) + "</pubDate>\n";
 
 		ret += "<age>" + new Long(eDate.getTime()).toString() + "</age>\n";
-		ret += "<guid>" + entry.getId().toString() + "</guid>\n";
+		ret += "<guid>" + PermaLinkUtil.getPermalink(entry).replaceAll(
+				"&", "&amp;") + "</guid>\n";
 		ret += "</item>\n";
 		return ret;
 	}
