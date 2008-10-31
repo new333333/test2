@@ -32,6 +32,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
+boolean isIE6 = BrowserSniffer.is_ie_6(request);
 %>
 <c:if test="${!empty ss_loadCssStylesInline && ss_loadCssStylesInline == true}">
 <%@ page contentType="text/css" %>
@@ -1246,6 +1247,7 @@ table.ss_mouseOverInfo {
 }
 .ss_mouseOverInfo td a.ss_title_menu img {
   position:relative;
+<% if (isIE6) { %>  padding-top:2px;padding-bottom:1px; <% } %>
   top:0px;
 }
 
@@ -2829,6 +2831,7 @@ table.ss_typeToFindNav {
 
 a.ss_title_menu img {
 	margin-right:4px;
+<% if (isIE6) { %>  padding-top:2px;padding-bottom:1px; <% } %>
 }
 
 ul.ss_title_menu {
