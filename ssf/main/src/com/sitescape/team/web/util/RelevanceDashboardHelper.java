@@ -692,5 +692,10 @@ public class RelevanceDashboardHelper {
 		Collection myTags = bs.getBinderModule().getSearchTags("", findType);
 		model.put(WebKeys.MY_TAGS, myTags);
 	}
+	public static void setupMyTagFreqBeans(AllModulesInjected bs, Map model) {
+		String findType = WebKeys.FIND_TYPE_PERSONAL_TAGS;
+		Collection myTags = bs.getBinderModule().getSearchTagsWithFrequencies("", findType);
+		model.put(WebKeys.MY_TAGS_WITH_FREQ, myTags);
+	}
 	
 }
