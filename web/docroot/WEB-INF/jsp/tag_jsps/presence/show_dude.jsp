@@ -29,6 +29,10 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%
+boolean isIE6 = BrowserSniffer.is_ie_6(request);
+%>
 
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %>
 <%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
@@ -39,7 +43,9 @@
 <c:if test="${empty ss_presence_user && !ss_presence_show_options_inline}">
 <a href="javascript: ;"
  onClick="ss_popupPresenceMenu(this, '', '', '-1', '', '', '', '', '', '${ss_presence_component_id}', '${ss_presence_zonBridge}');return false;"
-><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
+><img border="0" 
+<% if (isIE6) { %> style="padding-top:1px;" <% } %>
+src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
  alt="<c:out value="${ss_presence_text}"/>"/></a>
 </c:if>
 <c:if test="${empty ss_presence_user && ss_presence_show_options_inline}">
@@ -86,7 +92,9 @@
     '<%= presenceUserEmailAddress %>', 
     '${ss_presence_vcard}', 
     '${current}', '${ss_presence_component_id}', '${ss_presence_zonBridge}');return false;"
-><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
+><img border="0" 
+<% if (isIE6) { %> style="padding-top:1px;" <% } %>
+src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
  alt="<c:out value="${ss_presence_text}"/>"/></a>
   <c:if test="${ss_presence_show_title}">
 	<ssf:ifadapter>
