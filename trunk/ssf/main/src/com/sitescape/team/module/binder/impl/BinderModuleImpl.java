@@ -87,6 +87,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.lucene.Hits;
+import com.sitescape.team.lucene.TagObject;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -833,6 +834,39 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 				HashMap tag = new HashMap();
 				String strTag = (String) tags.get(j);
 				tag.put(WebKeys.TAG_NAME, strTag);
+				tagList.add(tag);
+			}
+        }
+		return tagList;
+	}
+	
+	public List<Map> getSearchTagsWithFrequencies(String wordroot, String type) {
+		ArrayList tags;
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		SearchObject so = null;
+		if (!user.isSuper()) {		
+			// Top of query doc 
+			Document qTree = DocumentHelper.createDocument();				
+			qTree.addElement(Constants.QUERY_ELEMENT);
+	    	//Create the query
+	    	QueryBuilder qb = new QueryBuilder(true);
+			so = qb.buildQuery(qTree);
+		}
+    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
+        
+        try {
+	        tags = luceneSession.getTagsWithFrequency(so!=null?so.getQuery():null, wordroot, type);
+        }
+        finally {
+            luceneSession.close();
+        }
+        ArrayList tagList = new ArrayList();
+        if (tags != null) {
+			for (int j = 0; j < tags.size(); j++) {
+				HashMap tag = new HashMap();
+				TagObject tagObj = (TagObject) tags.get(j);
+				tag.put(WebKeys.TAG_NAME_FREQ, tagObj);
 				tagList.add(tag);
 			}
         }

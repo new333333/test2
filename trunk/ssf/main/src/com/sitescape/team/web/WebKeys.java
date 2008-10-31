@@ -804,7 +804,8 @@ public class WebKeys {
 	public static final String MY_TASKS = "ss_myTasks";
 	public static final String MY_TASKS_FOLDERS = "ss_myTasksFolders";
 	public static final String MY_TASKS_PAGE = "ss_myTasksPage";
-    public static final String MY_TAGS="ss_myTags"; 
+	public static final String MY_TAGS="ss_myTags";
+	public static final String MY_TAGS_WITH_FREQ="ss_myTagsWithFreq";
     public static final String MY_TEAMS="ss_myTeams"; 
     public static final String NAMING_PREFIX="ssNamespace";
     public static final String NAVIGATION_LINK_TREE="ssNavigationLinkTree";
@@ -1024,6 +1025,7 @@ public class WebKeys {
 	public static final String TAG_LENGTH_WARNING = "ssTagLengthWarning";
 	public static final String TAG_SEARCH_TEXT = "ssTagSearchText";
     public static final String TAG_SIGN="ssTagSign";
+    public static final String TAG_NAME_FREQ="ssTagwithFrequency";
 	public static final String UPLOAD_FILE_URL = "ss_upload_file_url";
 	public static final String URL = "ssUrl";
 	public static final String USER_ID = "com.sitescape.userId";

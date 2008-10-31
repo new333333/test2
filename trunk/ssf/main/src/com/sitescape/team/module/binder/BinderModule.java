@@ -233,6 +233,13 @@ public interface BinderModule {
      */
     public List<Map> getSearchTags(String wordroot, String type); 
     /**
+     * Orders list
+     * @param wordroot
+     * @param type
+     * @return
+     */
+    public List<Map> getSearchTagsWithFrequencies(String wordroot, String type); 
+    /**
      * Get your subscription to this binder
      * @param binder
      * @return
