@@ -71,7 +71,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	width:100%;						/* right column content width (column width minus left and right padding) */
 	left:48%;						/* (right column column width) plus (left column left and right padding) plus (right column left padding) */
 	overflow:hidden;
-
 	}	
 .ss_overflow {
 	overflow:hidden;
@@ -276,7 +275,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 /****  DISCUSSION THREAD IMAGES ********/
 	
-	a.ss_new_thread img {
+a.ss_new_thread img {
 	width: 12px;
 	height: 12px;
 	margin: 0px;
@@ -556,7 +555,6 @@ div.ssPageNavi {
 div.ss_entryContent {
 	margin-left: 0px;
 	margin-top: 2px;
-
 	}
 div.ss_replies{	
 	border-right: 2px dotted #E9F1F1;
