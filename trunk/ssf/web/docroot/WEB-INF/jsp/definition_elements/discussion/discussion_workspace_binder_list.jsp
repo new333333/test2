@@ -57,10 +57,10 @@
   			  <c:if test="${binderCounter2 >= (binderCounter/2) && column2Seen == '0'}">
     			<c:set var="column2Seen" value="1"/>
     			</div><!-- end of topic -->
-        </div><!-- end of ss_col 1 -->
-        <!-- Start Right Column -->
-      	<div id="ss_column_R">
-      	<div class="ss_dblcol2">
+		        </div><!-- end of ss_col 1 -->
+		        <!-- Start Right Column -->
+		      	<div id="ss_column_R">
+		      	<div class="ss_dblcol2">
       			<div id="ss_topic">
   			  </c:if>
 
