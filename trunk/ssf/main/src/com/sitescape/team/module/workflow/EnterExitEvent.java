@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collection;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -389,22 +390,13 @@ public class EnterExitEvent extends AbstractActionHandler {
 		Entry entry = (Entry)wEntry;
 		WorkflowProcessUtils.WfNotify notify = WorkflowProcessUtils.getNotification(item, wEntry);
 		HashMap details = new HashMap();
-		Set<User> users = notify.getUsers();
-		if (users == null || users.isEmpty()) return;
-		ArrayList addrs = new ArrayList();
-		for (User u: users)  {
-			String email = u.getEmailAddress();
-			try	{
-				if (!Validator.isNull(email)) {
-					InternetAddress ia = new InternetAddress(email);
-					ia.validate();
-					addrs.add(ia);
-				}
-			} catch (AddressException ae) {
-				logger.error("Skipping email notifications for " + u.getTitle() + " Bad email address");
-			}
-		} 
-		if (addrs.isEmpty()) return;
+		List<InternetAddress>addrs = getAddrs(notify.getToUsers());
+		if (addrs == null || addrs.isEmpty()) return; //need a to list
+		details.put(MailModule.TO, addrs);
+		addrs = getAddrs(notify.getCCUsers());
+		if (addrs != null && !addrs.isEmpty()) details.put(MailModule.CC, addrs);
+		addrs = getAddrs(notify.getBCCUsers());
+		if (addrs != null && !addrs.isEmpty()) details.put(MailModule.BCC, addrs);
 		String s = notify.getSubject();
 		if (notify.isAppendTitle()) {
 			s = s + " " + entry.getTitle();
@@ -413,7 +405,6 @@ public class EnterExitEvent extends AbstractActionHandler {
 		String permaLink = PermaLinkUtil.getPermalink(entry);
 		String msgHtml = "";
 		if (entry.getDescription() != null) msgHtml = MarkupUtil.markupStringReplacement(null, null, null, null, entry, entry.getDescription().getText(), WebKeys.MARKUP_EXPORT);
-		details.put(MailModule.TO, addrs);
 		StringBuffer tMsg = new StringBuffer();
 		tMsg.append(permaLink);
 		tMsg.append("\n\n");
@@ -437,6 +428,13 @@ public class EnterExitEvent extends AbstractActionHandler {
 			hMsg.append(msgHtml);
 			hMsg.append("</p>");
 		}
+		try {
+			String email = getProfileDao().loadUser(wEntry.getOwnerId(), entry.getZoneId()).getEmailAddress();
+			InternetAddress ia = new InternetAddress(email);
+			ia.validate();
+			details.put(MailModule.FROM, ia);
+		} catch  (Exception useDefault) {}
+		
 		details.put(MailModule.HTML_MSG, hMsg.toString());
 		try {
 			//to keep transaction small, schedule it
@@ -446,6 +444,23 @@ public class EnterExitEvent extends AbstractActionHandler {
 			logger.error("Failed workflow notification: " + wEntry.toString() + " " + ex.getLocalizedMessage()!=null?ex.getLocalizedMessage():ex.getMessage());
 		}
 			 
+	}
+	protected List<InternetAddress> getAddrs(Collection<User>users) {
+		if (users == null || users.isEmpty()) return null;
+		ArrayList addrs = new ArrayList();
+		for (User u: users)  {
+			String email = u.getEmailAddress();
+			try	{
+				if (!Validator.isNull(email)) {
+					InternetAddress ia = new InternetAddress(email);
+					ia.validate();
+					addrs.add(ia);
+				}
+			} catch (AddressException ae) {
+				logger.error("Skipping email notifications for " + u.getTitle() + " Bad email address");
+			}
+		} 
+		return addrs;
 	}
 
 }

@@ -109,7 +109,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	 * Determine which users have access to the entry.
 	 * Return a map from locale to a collection of email Addresses
 	 */
-	public Map buildDistributionList(Entry entry, Collection subscriptions, int style) {
+	public Map<Locale, Collection> buildDistributionList(Entry entry, Collection subscriptions, int style) {
 		FolderEntry fEntry = (FolderEntry)entry;
 		List entries = new ArrayList();
 		entries.add(entry);
@@ -317,7 +317,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		Set email = new HashSet();
 		//separate into languages
 		addAddresses(email, check.getUser(), check.getEmails(), style);
-		Map languageMap = new HashMap();
+		Map<Locale, Collection> languageMap = new HashMap();
 		languageMap.put(check.getUser().getLocale(), email);
 		//make a copy so we can alter original
 		List toDo = new ArrayList(checkList);

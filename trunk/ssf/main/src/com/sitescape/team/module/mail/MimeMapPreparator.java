@@ -50,12 +50,24 @@ public class MimeMapPreparator extends AbstractMailPreparator {
 		for (InternetAddress a : addrs) {
 			helper.addTo(a);
 		}
-		if (addrs.isEmpty()) {
+		if (addrs == null || addrs.isEmpty()) {
 			if (details.containsKey(MailModule.FROM)) 
 				helper.addTo((InternetAddress)details.get(MailModule.FROM));
 			else
 				helper.addTo(defaultFrom);
 			helper.setSubject(NLT.get("errorcode.noRecipients") + " " + (String)details.get(MailModule.SUBJECT));
+		}
+		addrs = (Collection)details.get(MailModule.CC);
+		if (addrs != null) {
+			for (InternetAddress a : addrs) {
+				helper.addCc(a);
+			}
+		}
+		addrs = (Collection)details.get(MailModule.BCC);
+		if (addrs != null) {
+			for (InternetAddress a : addrs) {
+				helper.addBcc(a);
+			}
 		}
 		// the next line creates ALTERNATIVE part, change to setText(String, boolean)
 		// which will cause error in iCalendar section (the ical is add as alternative content) 

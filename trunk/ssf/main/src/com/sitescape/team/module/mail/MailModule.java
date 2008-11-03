@@ -61,6 +61,8 @@ public interface MailModule {
 	//Inputs to sendMail from Map
 	public static final String SUBJECT="SUBJECT";//string
 	public static final String TO="TO";	//Collection of InternetAddress
+	public static final String CC="CC";	//Collection of InternetAddress
+	public static final String BCC="BCC";	//Collection of InternetAddress
 	public static final String TEXT_MSG="TEXT"; //String
 	public static final String HTML_MSG="HTML"; //String
 	public static final String ATTACHMENTS="attachments"; //fileattachments

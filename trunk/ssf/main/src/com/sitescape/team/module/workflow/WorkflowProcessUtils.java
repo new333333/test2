@@ -97,48 +97,62 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
     public static WfNotify getNotification(Element notifyElement, WorkflowSupport wfEntry) {
     	List<Element> props;
     	String name, value;
-    	props = notifyElement.selectNodes("./properties/property");
-    	if ((props == null) || props.isEmpty()) return null;
     	WfNotify n = new WfNotify();
-    	Set<Long>ids = new HashSet();
-    	DefinableEntity entity = (DefinableEntity)wfEntry;
-    	for (Element prop:props) {
-    		name = prop.attributeValue("name","");
-    		value = prop.attributeValue("value","");
-    		if ("entryCreator".equals(name) &&  GetterUtil.getBoolean(value, false)) {
-    			ids.add(wfEntry.getOwnerId());
- 	    	} else if ("team".equals(name) &&  GetterUtil.getBoolean(value, false)) {
-				ids.addAll(entity.getParentBinder().getTeamMemberIds());
-	    	} else if ("subjText".equals(name)) {
-	    		n.subject = value;
-	    	} else if ("appendTitle".equals(name)) {
-	    		n.appendTitle = GetterUtil.getBoolean(value, false);
-	    	} else if ("bodyText".equals(name)) {
-	    		n.body = value;
-	    	} else if ("appendBody".equals(name)) {
-	    		n.appendBody = GetterUtil.getBoolean(value, false);
-	    	} else if ("userGroupNotification".equals(name)) {
-	    		ids.addAll(LongIdUtil.getIdsAsLongSet(value));
-	    	} else if ("condition".equals(name)) {
-	    		if (entity.getEntryDef() != null) {
-	    			List<Element> userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
-	    					entity.getEntryDef().getId() + "']");
-	    			if (userLists != null && !userLists.isEmpty()) {
-	    				for (Element element:userLists) {
-	    					String userListName = element.attributeValue("elementName"); //custom attribute name
-	    					if (Validator.isNull(userListName)) continue;
-	    					CustomAttribute attr = entity.getCustomAttribute(userListName); 
-	    					if (attr != null) {
-	    						//comma separated value
-	    						ids.addAll(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
-	    					}
-	    				}
-	    			}
-	    		}
+    	Set<Long>toIds = new HashSet();
+    	Set<Long>ccIds = null;
+    	Set<Long>bccIds = null;
+    	props = notifyElement.selectNodes("./properties/property");
+ 		if ((props != null) && !props.isEmpty()) {
+	    	DefinableEntity entity = (DefinableEntity)wfEntry;
+	    	for (Element prop:props) {
+	    		name = prop.attributeValue("name","");
+	    		value = prop.attributeValue("value","");
+	    		if ("entryCreator".equals(name) &&  GetterUtil.getBoolean(value, false)) {
+	    			toIds.add(wfEntry.getOwnerId());
+	 	    	} else if ("team".equals(name) &&  GetterUtil.getBoolean(value, false)) {
+	 	    		toIds.addAll(entity.getParentBinder().getTeamMemberIds());
+		    	} else if ("subjText".equals(name)) {
+		    		n.subject = value;
+		    	} else if ("appendTitle".equals(name)) {
+		    		n.appendTitle = GetterUtil.getBoolean(value, false);
+		    	} else if ("bodyText".equals(name)) {
+		    		n.body = value;
+		    	} else if ("appendBody".equals(name)) {
+		    		n.appendBody = GetterUtil.getBoolean(value, false);
+		    	} else if ("userGroupNotification".equals(name)) {
+		    		toIds.addAll(LongIdUtil.getIdsAsLongSet(value));
+		    	} else if ("condition".equals(name)) {
+		    		if (entity.getEntryDef() != null) {
+		    			List<Element> userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
+		    					entity.getEntryDef().getId() + "']");
+		    			if (userLists != null && !userLists.isEmpty()) {
+		    				for (Element element:userLists) {
+		    					String userListName = element.attributeValue("elementName"); //custom attribute name
+		    					if (Validator.isNull(userListName)) continue;
+		    					CustomAttribute attr = entity.getCustomAttribute(userListName); 
+		    					if (attr != null) {
+		    						//comma separated value
+		    						toIds.addAll(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
+		    					}
+		    				}
+		    			}
+		    		}
+		    	}
 	    	}
-    	}
-    	n.users = new HashSet(getUsers(ids));
-    	return n;    	
+	 		}
+		Element cc = (Element)notifyElement.selectSingleNode("./item[@name='ccNotifications']/properties/property[@name='userGroupNotification']");
+		if (cc != null) {
+			ccIds = LongIdUtil.getIdsAsLongSet(cc.attributeValue("value",""));
+		}
+		Element bcc = (Element)notifyElement.selectSingleNode("./item[@name='bccNotifications']/properties/property[@name='userGroupNotification']");
+		if (bcc != null) {
+			bccIds = LongIdUtil.getIdsAsLongSet(bcc.attributeValue("value",""));
+		}
+
+    	if (!toIds.isEmpty()) n.toUsers = new HashSet(getUsers(toIds));
+    	if (ccIds != null) n.ccUsers = new HashSet(getUsers(ccIds));
+    	if (bccIds != null) n.bccUsers = new HashSet(getUsers(bccIds));
+ 	  	return n;    	
     }
 
  	public static void endWorkflow(WorkflowSupport wEntry, WorkflowState state, boolean deleteIt) {
@@ -815,16 +829,10 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		if (result.getPrincipalIds().isEmpty() && !result.isUseDefault()) return null;
 		return result;
 	}
-	//make sure have rights to read principals
-	protected static List<User> getUsers(final Set<Long>ids) {
-		return (List<User>)RunasTemplate.runasAdmin(new RunasCallback() {
-			public Object doAs() {
-			  
-				Set userIds = getInstance().getProfileDao().explodeGroups(ids, RequestContextHolder.getRequestContext().getZoneId());
-		      	return getInstance().getProfileDao().loadUsers(userIds, RequestContextHolder.getRequestContext().getZoneId());
-			}
-		}, RequestContextHolder.getRequestContext().getZoneName());
 
+	protected static List<User> getUsers(final Set<Long>ids) {
+		Set userIds = getInstance().getProfileDao().explodeGroups(ids, RequestContextHolder.getRequestContext().getZoneId());
+		return getInstance().getProfileDao().loadUsers(userIds, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	public static Long getRunAsUser(Element item, WorkflowSupport wfEntry, WorkflowState currentWs) {
 		String ctxType = DefinitionUtils.getPropertyValue(item, "runAs");
@@ -857,7 +865,9 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		private String body="";
 		private boolean appendTitle=false;
 		private boolean appendBody=false;
-		private Set<User> users;
+		private Set<User> toUsers;
+		private Set<User> ccUsers;
+		private Set<User> bccUsers;
 		
 		public String getSubject() {
 			return subject;
@@ -871,9 +881,16 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		public boolean isAppendBody() {
 			return appendBody;
 		}
-		public Set<User>getUsers() {
-			return users;
+		public Set<User>getToUsers() {
+			return toUsers;
 		}
+		public Set<User>getCCUsers() {
+			return ccUsers;
+		}
+		public Set<User>getBCCUsers() {
+			return bccUsers;
+		}
+
 	}
 
 }
