@@ -103,65 +103,65 @@
 	</target>
 
 	<target name="compile">
-		<ant dir="util" target="compile" />
-		<ant dir="util-search" target="compile" />
-		<ant dir="commons-httpclient-contrib" target="compile" />
-		<ant dir="lucene-contrib" target="compile" />
-		<ant dir="indexer-lucene" target="compile" />			
-		<ant dir="as-module" target="compile" />
+		<ant dir="util" target="compile" inheritall="false"/>
+		<ant dir="util-search" target="compile" inheritall="false"/>
+		<ant dir="commons-httpclient-contrib" target="compile" inheritall="false"/>
+		<ant dir="lucene-contrib" target="compile" inheritall="false"/>
+		<ant dir="indexer-lucene" target="compile" inheritall="false"/>			
+		<ant dir="as-module" target="compile" inheritall="false"/>
 
-		<ant dir="main" target="compile-common" />
+		<ant dir="main" target="compile-common" inheritall="false"/>
 
-		<ant dir="applets" target="compile" />
+		<ant dir="applets" target="compile" inheritall="false"/>
 
-		<ant dir="main" target="compile" />
-		<ant dir="slide-webdavclient" target="compile" />
+		<ant dir="main" target="compile" inheritall="false"/>
+		<ant dir="slide-webdavclient" target="compile" inheritall="false"/>
 
-		<ant dir="portal-module" target="compile" />
-		<ant dir="liferay" target="compile" />
-		<ant dir="jboss-portal" target="compile" />
-		<ant dir="taglib" target="compile" />
+		<ant dir="portal-module" target="compile" inheritall="false"/>
+		<ant dir="liferay" target="compile" inheritall="false"/>
+		<ant dir="jboss-portal" target="compile" inheritall="false"/>
+		<ant dir="taglib" target="compile" inheritall="false"/>
 		
-		<ant dir="simple-url" target="compile" />
+		<ant dir="simple-url" target="compile" inheritall="false"/>
 
-		<ant dir="mobile" target="compile" />
+		<ant dir="mobile" target="compile" inheritall="false"/>
 
-		<ant dir="tools" target="compile" />
+		<ant dir="tools" target="compile" inheritall="false"/>
 		
-		<ant dir="samples" target="compile" />
+		<ant dir="samples" target="compile" inheritall="false"/>
 	</target>
 
 	<target name="jar">
-		<ant dir="util" target="jar" />
-		<ant dir="util-search" target="jar" />
-		<ant dir="commons-httpclient-contrib" target="jar" />
-		<ant dir="lucene-contrib" target="jar" />
-		<ant dir="indexer-lucene" target="jar" />
-		<ant dir="as-module" target="jar" />
+		<ant dir="util" target="jar" inheritall="false"/>
+		<ant dir="util-search" target="jar" inheritall="false"/>
+		<ant dir="commons-httpclient-contrib" target="jar" inheritall="false"/>
+		<ant dir="lucene-contrib" target="jar" inheritall="false"/>
+		<ant dir="indexer-lucene" target="jar" inheritall="false"/>
+		<ant dir="as-module" target="jar" inheritall="false"/>
 
-		<ant dir="applets" target="jar" />
+		<ant dir="applets" target="jar" inheritall="false"/>
 
-		<ant dir="main" target="compile-common" />
-		<ant dir="main" target="jar" />
-		<ant dir="slide-webdavclient" target="jar" />
-		<ant dir="portal-module" target="jar" />
-		<ant dir="liferay" target="jar" />
-		<ant dir="jboss-portal" target="jar" />
-		<ant dir="taglib" target="jar" />
+		<ant dir="main" target="compile-common" inheritall="false"/>
+		<ant dir="main" target="jar" inheritall="false"/>
+		<ant dir="slide-webdavclient" target="jar" inheritall="false"/>
+		<ant dir="portal-module" target="jar" inheritall="false"/>
+		<ant dir="liferay" target="jar" inheritall="false"/>
+		<ant dir="jboss-portal" target="jar" inheritall="false"/>
+		<ant dir="taglib" target="jar" inheritall="false"/>
 
-		<ant dir="tools" target="jar" />
+		<ant dir="tools" target="jar" inheritall="false"/>
 		
-		<ant dir="web" target="war" />
+		<ant dir="web" target="war" inheritall="false"/>
 
-		<ant dir="war" target="war" />
+		<ant dir="war" target="war" inheritall="false"/>
 		
-		<ant dir="ssfs" target="war" />
+		<ant dir="ssfs" target="war" inheritall="false"/>
 		
-		<ant dir="ssr" target="war" />
+		<ant dir="ssr" target="war" inheritall="false"/>
 		
-		<ant dir="simple-url" target="war" />
+		<ant dir="simple-url" target="war" inheritall="false"/>
 		
-		<ant dir="mobile" target="war" />
+		<ant dir="mobile" target="war" inheritall="false"/>
 	</target>
 
 	<target name="deploy">
