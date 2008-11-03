@@ -40,7 +40,14 @@ public class MimeEntryPreparator extends MimeNotifyPreparator {
 				helper.addTo((InternetAddress)details.get(MailModule.FROM));
 			else
 				helper.addTo(defaultFrom);
-			helper.setSubject(NLT.get("errorcode.noRecipients") + " " + (String)details.get(MailModule.SUBJECT));
+		}
+		addrs = (Collection)details.get(MailModule.CC);
+		for (InternetAddress a : addrs) {
+			helper.addCc(a);
+		}
+		addrs = (Collection)details.get(MailModule.BCC);
+		for (InternetAddress a : addrs) {
+			helper.addBcc(a);
 		}
 	}
 

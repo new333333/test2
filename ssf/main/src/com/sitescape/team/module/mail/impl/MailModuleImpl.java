@@ -461,6 +461,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					store.connect(null, postingDef.getEmailAddress(), postingDef.getPassword());
 					mFolder = store.getFolder(folderName);				
 					mFolder.open(javax.mail.Folder.READ_WRITE);
+//					sendMail(new com.sun.mail.smtp.SMTPMessage((MimeMessage)mFolder.getMessages()[0]));
 					sendErrors(folder, postingDef, sender, processor.postMessages(folder, postingDef.getEmailAddress(), mFolder.getMessages(), session));							
 				} catch (AuthenticationFailedException ax) {
 					logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress() + " " + getMessage(ax));
@@ -581,11 +582,11 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	   				}
 	   				//still have to add in notifications, so continue event if subscriptions is empty
 	   				// Users wanting individual, message style email with attachments
-	   				Map messageResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
+	   				Map<Locale, Collection> messageResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
 	   				// Users wanting individual, message style email without attachments
-	   				Map messageNoAttsResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION);
+	   				Map<Locale, Collection> messageNoAttsResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION);
 	   				// Users wanting individual, text message email
-	   				Map messageTxtResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION);
+	   				Map<Locale, Collection> messageTxtResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION);
 	   				mHelper.setEntry(entry);
 	   				mHelper.setStartDate(eStatus.getLastFullSent());
 	   				if (!messageTxtResults.isEmpty()) {
@@ -639,13 +640,13 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		return end;
 	}
 	
-	private void doSubscription (Folder folder, JavaMailSender mailSender, MimeNotifyPreparator mHelper, Map results, Object ctx) {
+	private void doSubscription (Folder folder, JavaMailSender mailSender, MimeNotifyPreparator mHelper, Map<Locale, Collection> results, Object ctx) {
 		for (Iterator iter=results.entrySet().iterator(); iter.hasNext();) {			
 			//Use spring callback to wrap exceptions into something more useful than javas 
-			Map.Entry e = (Map.Entry)iter.next();
-			mHelper.setLocale((Locale)e.getKey());
+			Map.Entry<Locale, Collection> e = (Map.Entry)iter.next();
+			mHelper.setLocale(e.getKey());
 			//break to list into pieces if big
-			ArrayList rcpts = new ArrayList((Set)e.getValue());
+			ArrayList rcpts = new ArrayList(e.getValue());
 			for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
 				try {
 					List subList = rcpts.subList(i, Math.min(rcpts.size(), i+rcptToLimit));
@@ -725,7 +726,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	   		 		//get folder specific helper to build message
 					processor = (EmailFormatter)processorManager.getProcessor(currentFolder,EmailFormatter.PROCESSOR_KEY);
 	   		  		folderSubscriptions = getCoreDao().loadSubscriptionByEntity(currentFolder.getEntityIdentifier());
-	   				List digestResults = processor.buildDistributionList(currentFolder, entries, folderSubscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION);		
+	   				List<Object[]> digestResults = processor.buildDistributionList(currentFolder, entries, folderSubscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION);		
 	   				mHelper = new MimeNotifyPreparator(processor, currentFolder, begin, logger, sendVTODO);
 	   				mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
 	   				mHelper.setTimeZone(timeZone);
@@ -835,12 +836,14 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		if ((addrs == null) || addrs.isEmpty()) return true;
 		//handle large recipient list 
 		boolean sent = true;
+		Map currentMessage = new HashMap(message);
 		ArrayList rcpts = new ArrayList(addrs);
 		for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
 			List subList = rcpts.subList(i, Math.min(rcpts.size(), i+rcptToLimit));
-			message.put(MailModule.TO, subList);
-	 		MimeMessagePreparator helper = new MimeMapPreparator(message, logger, sendVTODO);
+			currentMessage.put(MailModule.TO, subList);
+	 		MimeMessagePreparator helper = new MimeMapPreparator(currentMessage, logger, sendVTODO);
 	 		try {
+	 			helper.setDefaultFrom(mailSender.getDefaultFrom());		
 	 			mailSender.send(helper);
 	 			sent = true;
 	 		} catch (MailSendException sx) {
@@ -855,9 +858,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 			//message gets thrown away here
 	 			logger.error(getMessage(ex));
 	 		}
+	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
+	 		currentMessage.remove(MailModule.BCC);
 		}
-		//replace list with original
-		message.put(MailModule.TO, addrs);
 		return sent;
     }
     public boolean sendMail(Entry entry, Map message, String comment, boolean sendAttachments) {
@@ -869,10 +872,11 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
  		boolean sent = true;
 		ArrayList rcpts = new ArrayList(addrs);
 		User user = RequestContextHolder.getRequestContext().getUser();
+		Map currentMessage = new HashMap(message);
 		for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
 			List subList = rcpts.subList(i, Math.min(rcpts.size(), i+rcptToLimit));
-			message.put(MailModule.TO, subList);
-			MimeEntryPreparator helper = new MimeEntryPreparator(processor, entry, message, logger, sendVTODO);
+			currentMessage.put(MailModule.TO, subList);
+			MimeEntryPreparator helper = new MimeEntryPreparator(processor, entry, currentMessage, logger, sendVTODO);
 	 		helper.setDefaultFrom(mailSender.getDefaultFrom());		
 	 		helper.setTimeZone(user.getTimeZone().getID());
 	 		helper.setLocale(user.getLocale());
@@ -893,9 +897,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 			//message gets thrown away here
 	 			logger.error(getMessage(ex));
 	 		}
+	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
+	 		currentMessage.remove(MailModule.BCC);
 		}
-		//replace list with original
-		message.put(MailModule.TO, addrs);
 		return sent;
 
     }
@@ -907,16 +911,18 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
  		if ((addrs == null) || addrs.isEmpty()) return;
 		//handle large recipient list 
 		ArrayList rcpts = new ArrayList(addrs);
+		Map currentMessage = new HashMap(message);
 		for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
 			List subList = rcpts.subList(i, Math.min(rcpts.size(), i+rcptToLimit));
-			message.put(MailModule.TO, subList);
-	 		MimeMessagePreparator helper = new MimeMapPreparator(message, logger, sendVTODO);
-			MimeMessage msg = mailSender.createMimeMessage();
+			currentMessage.put(MailModule.TO, subList);
+	 		MimeMessagePreparator helper = new MimeMapPreparator(currentMessage, logger, sendVTODO);
+	 		helper.setDefaultFrom(mailSender.getDefaultFrom());
+	 		MimeMessage msg = mailSender.createMimeMessage();
 			helper.prepare(msg);
 			job.schedule(mailSender, msg, comment, getMailDirPath(binder), true);
+	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
+	 		currentMessage.remove(MailModule.BCC);
 		}
-		//replace list with original
-		message.put(MailModule.TO, addrs);
 	}
  
 }

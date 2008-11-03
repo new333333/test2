@@ -1142,6 +1142,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						
 					
 					} else if (type.equals("userGroupSelect")) {
+						sb.append(propertyConfigCaption);
 						HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 						HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 						RequestDispatcher rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/definition_builder/user_group_select.jsp");
