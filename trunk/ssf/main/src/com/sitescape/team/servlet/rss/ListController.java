@@ -34,10 +34,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.NoBinderByTheIdException;
-import com.sitescape.team.domain.User;
+import com.sitescape.team.security.function.OperationAccessControlExceptionNoName;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.servlet.SAbstractController;
 import com.sitescape.team.web.util.WebHelper;
@@ -65,6 +64,8 @@ public class ListController extends SAbstractController {
 				binder = getBinderModule().getBinder(binderId);
 			} catch (NoBinderByTheIdException nbe) {
 				binderExists = false;
+			} catch (OperationAccessControlExceptionNoName oace) {
+				authErr = true;
 			}
 		} else {
 			// the authentication key is incorrect, make them wait

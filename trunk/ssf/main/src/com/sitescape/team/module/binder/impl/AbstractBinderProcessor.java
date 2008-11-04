@@ -1333,6 +1333,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 10;  //account for others in search
     		if (ids.size() <= limit) {
     			doFieldUpdate(binder, ids, Constants.FOLDER_ACL_FIELD, value);
+    			doRssUpdate(binder);
     		} else {
     			//revert to walking the tree
     	    	List<Binder> binders = new ArrayList();
@@ -1347,6 +1348,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	    		}
     	    		if (binders.size() >= limit) {
     	    			doFieldUpdate(binders, Constants.FOLDER_ACL_FIELD, value);
+    	    			doRssUpdate(binders);
     	    			//evict used binders so don't fill session cache, but don't evict starting binder
     	    			if (binders.get(0).equals(binder)) binders.remove(0);
     	    			getCoreDao().evict(binders);					
@@ -1354,10 +1356,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	    		}
     	    	}
     	       	//finish list
-    			doFieldUpdate(binders, Constants.FOLDER_ACL_FIELD, value);    	    	
+    			doFieldUpdate(binders, Constants.FOLDER_ACL_FIELD, value);
+    			doRssUpdate(binders);
     		}
     	} else {
        		doFieldUpdate(binder, Constants.FOLDER_ACL_FIELD, value);
+       		doRssUpdate(binder);
        	    		
     	}
     	
@@ -1375,6 +1379,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 10;  //account for others in search
     		if (ids.size() <= limit) {
           		doFieldUpdate(binder, ids, Constants.TEAM_ACL_FIELD, value);
+          		doRssUpdate(binder);
        		} else {
        			List<Binder> binders = new ArrayList();
        			binders.add(binder);
@@ -1388,6 +1393,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
            			} 
        	    		if (binders.size() >= limit) {
        	    			doFieldUpdate(binders, Constants.TEAM_ACL_FIELD, value);
+       	    			doRssUpdate(binders);
        	    			//evict used binders so don't fill session cache, but don't evict starting binder
        	    			if (binders.get(0).equals(binder)) binders.remove(0);
         				getCoreDao().evict(binders);					
@@ -1396,9 +1402,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         		}
         		//finish list
         		doFieldUpdate(binders, Constants.TEAM_ACL_FIELD, value);
+        		doRssUpdate(binders);
        		}
     	} else {
-    		doFieldUpdate(binder, Constants.TEAM_ACL_FIELD, value);    		
+    		doFieldUpdate(binder, Constants.TEAM_ACL_FIELD, value);
+    		doRssUpdate(binder);
     	}
     	
    }
@@ -1506,7 +1514,20 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	);
 		executeUpdateQuery(crit, field, value);
      }
-
+    
+    private void doRssUpdate(Binder binder) {
+  		// Delete the rss index since it's invalid once you change the acls
+    	this.getRssModule().deleteRssFeed(binder);
+     }
+ 
+    private void doRssUpdate(Collection<Binder>binders) {
+     	if (binders.isEmpty()) return;
+ 		// Delete the rss index since it's invalid once you change the acls
+ 		
+		for (Binder b:binders) {
+			this.getRssModule().deleteRssFeed(b);
+		}
+     }
 
     //***********************************************************************************************************
     public void indexBinder(Binder binder, boolean includeEntries) {

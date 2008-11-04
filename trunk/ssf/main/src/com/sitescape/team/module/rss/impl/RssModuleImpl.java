@@ -151,6 +151,23 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 		// See if the feed exists
 		File rf = new File(getRssPath(binder));
+		
+		File indexPath = getRssIndexPath(binder);
+		
+		if (!indexPath.exists()) return;
+		
+		RssFeedLock rfl = new RssFeedLock(getRssIndexLockFile(binder));
+		try {
+			if (!rfl.getFeedLock()) {
+				logger.info("Couldn't get the RssFeedLock");
+			}
+			if (indexPath.exists())
+				FileHelper.deleteRecursively(indexPath);
+		} catch (Exception e) {
+			logger.info("Rss module error: " + e.toString());
+		} finally {
+			rfl.releaseFeedLock();
+		}
 		if (rf.exists())
 			FileHelper.deleteRecursively(rf);
 	}
@@ -532,7 +549,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		ret += "<description><![CDATA[ " + title + "]]></description>\n";
 		ret += "<pubDate>" + fmt.format(new Date()) + "</pubDate>\n";
 		ret += "<ttl>60</ttl>\n";
-		ret += "<generator feedVersion=\"1.0\">IceCore</generator>\n";
+		ret += "<generator feedVersion=\"1.0\">kablink</generator>\n";
 		return ret;
 	}
 
@@ -559,7 +576,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		channel.addElement("pubDate").addText(fmt.format(new Date()));
 		channel.addElement("ttl").addText("60");
 		channel.addElement("generator").addAttribute("feedVersion", "1.0")
-				.addText("IceCore");
+				.addText("kablink");
 
 		return doc;
 	}
@@ -585,6 +602,7 @@ class RssFeedLock {
 			try {
 				lockFile.createNewFile();
 			} catch (Exception e) {
+				logger.info(e.toString());
 			}
 		}
 		try {
