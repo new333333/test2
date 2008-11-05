@@ -85,7 +85,7 @@ Spring LDAP 1.2.1
 Spring Portlet spring-webmvc-portlet 2.5.4 (comes with Spring)
 Spring Security 2.0.3
 Struts 1.2.9 (removed META-INF/MANIFEST.MF) - Copied from Liferay 4.1.2
-SubEthaSMTP subethasmtp.jar 2.0.1
+SubEthaSMTP subethasmtp.jar 2.1
 Trove 1.0.2
 Velocity 1.5
 Velocity-tools-view 1.4
