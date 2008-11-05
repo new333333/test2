@@ -42,12 +42,17 @@ public class MimeEntryPreparator extends MimeNotifyPreparator {
 				helper.addTo(defaultFrom);
 		}
 		addrs = (Collection)details.get(MailModule.CC);
-		for (InternetAddress a : addrs) {
-			helper.addCc(a);
+		if (addrs != null) {
+			for (InternetAddress a : addrs) {
+				helper.addCc(a);
+			}
 		}
+		
 		addrs = (Collection)details.get(MailModule.BCC);
-		for (InternetAddress a : addrs) {
-			helper.addBcc(a);
+		if (addrs != null) {
+			for (InternetAddress a : addrs) {
+				helper.addBcc(a);
+			}
 		}
 	}
 
