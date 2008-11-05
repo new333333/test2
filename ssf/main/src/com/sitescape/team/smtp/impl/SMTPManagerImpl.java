@@ -42,6 +42,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 	protected Log logger = LogFactory.getLog(getClass());
 	
 	protected boolean enabled = false;
+	protected boolean tls = false;
 	protected int port = 2525;
 
 	protected SMTPServer server = null;
@@ -51,6 +52,13 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 	}
 	public boolean isEnabled() {
 		return enabled;
+	}
+
+	public void setTls(boolean tls) {
+		this.tls = tls;
+	}
+	public boolean isTls() {
+		return tls;
 	}
 
 	public void setPort(int port) {
@@ -87,6 +95,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 					return new Handler(ctx);
 				}
 			});
+			this.server.setAnnounceTLS(this.tls);
 			this.server.setPort(this.port);
 			this.server.start();
 		}
