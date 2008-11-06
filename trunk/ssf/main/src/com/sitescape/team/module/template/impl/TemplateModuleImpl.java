@@ -56,15 +56,12 @@ import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
-import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.StatusTicket;
-import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.DashboardHelper;
-import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
@@ -382,18 +379,18 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	    TemplateBinder srcConfig = (TemplateBinder)getCoreDao().loadBinder(srcConfigId, RequestContextHolder.getRequestContext().getZoneId());
 	    return addTemplate(parentConfig, srcConfig);
 	 }
-		protected Binder copyBinderAttributes(Binder source, Binder destination) {
-			EntityDashboard dashboard = getCoreDao().loadEntityDashboard(source.getEntityIdentifier());
-			if (dashboard != null) {
-				EntityDashboard myDashboard = new EntityDashboard(dashboard);
-				myDashboard.setOwnerIdentifier(destination.getEntityIdentifier());
-				getCoreDao().save(myDashboard);
-			  }
-			//copy all file attachments
-			getFileModule().copyFiles(source, source, destination, destination);
-			EntryBuilder.copyAttributes(source, destination);
-			return destination;		
-		}
+	 protected Binder copyBinderAttributes(Binder source, Binder destination) {
+		 EntityDashboard dashboard = getCoreDao().loadEntityDashboard(source.getEntityIdentifier());
+		 if (dashboard != null) {
+			 EntityDashboard myDashboard = new EntityDashboard(dashboard);
+			 myDashboard.setOwnerIdentifier(destination.getEntityIdentifier());
+			 getCoreDao().save(myDashboard);
+		 }
+		 //copy all file attachments
+		 getFileModule().copyFiles(source, source, destination, destination);
+		 EntryBuilder.copyAttributes(source, destination);
+		 return destination;		
+	}
 	 protected Long addTemplate(TemplateBinder parentConfig, TemplateBinder srcConfig) {
 		 TemplateBinder config = new TemplateBinder(srcConfig);
 		 config.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
@@ -643,40 +640,30 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	        //need to reload incase addFolder/workspace used retry loop where session cache is flushed by exception
 	        TemplateBinder cfg = getCoreDao().loadTemplate(configId, RequestContextHolder.getRequestContext().getZoneId());
  			addBinderFinish(cfg, top);
+ 			//after children are added, resolve relative selections
+ 			List<Binder>binders = new ArrayList();
+ 			binders.add(top);
+ 			while (!binders.isEmpty()) {
+ 				Binder b = binders.remove(0);
+ 				binders.addAll(b.getBinders());
+ 				try {
+ 					EntityDashboard dashboard = getCoreDao().loadEntityDashboard(b.getEntityIdentifier());
+ 					if (dashboard != null) {
+ 						DashboardHelper.resolveRelativeBinders(b.getBinders(), dashboard);
+ 					}
+ 				} catch (Exception ex) {
+ 					//at this point just log errors  index has already been updated
+ 					//	if throw errors, rollback will take effect and must manualy remove from index
+ 					logger.error("Error adding dashboard " + ex.getLocalizedMessage());
+ 				}
+ 			}
  			return null;
-  	     }});
-
+	     }});
+	 	//need to reindex binder tree, cause copy Attributes after original index
 		IndexSynchronizationManager.discardChanges();
-	 	//need to reindex binder tree, cause of copy Attributes code
 		IndexSynchronizationManager.deleteDocuments(new Term(Constants.ENTRY_ANCESTRY, top.getId().toString()));
 	 	loadBinderProcessor(top).indexTree(top, null, StatusTicket.NULL_TICKET);
-	 	//top will be evicted, reread
-		getCoreDao().refresh(top);
-
-	 	//flush changes so we can use them to fix up dashboards
-		IndexSynchronizationManager.applyChanges();
-	 	//after children are added, resolve relative selections
-		getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
-        		List<Binder>binders = new ArrayList();
-        		binders.add(top);
-        		while (!binders.isEmpty()) {
-        			Binder b = binders.remove(0);
-        			binders.addAll(b.getBinders());
-        			try {
-        				EntityDashboard dashboard = getCoreDao().loadEntityDashboard(b.getEntityIdentifier());
-        				if (dashboard != null) {
-        					DashboardHelper.resolveRelativeBinders(b.getBinders(), dashboard);
-        				}
-        			} catch (Exception ex) {
-        				//at this point just log errors  index has already been updated
-        				//	if throw errors, rollback will take effect and must manualy remove from index
-        				logger.error("Error adding dashboard " + ex.getLocalizedMessage());
-        			}
-        		}
-        		return null;
-	     }});
-
+		IndexSynchronizationManager.applyChanges(); //get them commited, binders are
 		return top.getId();
 
 	}
