@@ -242,12 +242,16 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 					helper.setSubject(NLT.get("errorcode.noRecipients") + " " + (String)details.get(SendEmail.SUBJECT));
 				}
 				addrs = (Collection)details.get(SendEmail.CC);
-				for (InternetAddress a : addrs) {
-					helper.addCc(a);
+				if (addrs != null) {
+					for (InternetAddress a : addrs) {
+						helper.addCc(a);
+					}
 				}
 				addrs = (Collection)details.get(SendEmail.BCC);
-				for (InternetAddress a : addrs) {
-					helper.addBcc(a);
+				if (addrs != null) {
+					for (InternetAddress a : addrs) {
+						helper.addBcc(a);
+					}
 				}
 				String text = (String)details.get(SendEmail.TEXT_MSG);
 				String html = (String)details.get(SendEmail.HTML_MSG);
