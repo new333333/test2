@@ -101,10 +101,14 @@ public class Html {
 		int x = 0;
 		int y = text.indexOf("<!--");
 
-		while (y != -1) {
+		while ((y != -1) && (x != -1)) {
 			sb.append(text.substring(x, y));
-			x = text.indexOf("-->", y) + 3;
-			y = text.indexOf("<!--", x);
+			x = text.indexOf("-->", y);
+			if (x != -1)
+			{
+				x += 3;
+				y = text.indexOf("<!--", x);
+			}
 		}
 
 		if (y == -1) {
