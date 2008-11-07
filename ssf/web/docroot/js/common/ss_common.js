@@ -4148,7 +4148,7 @@ function ssFavorites(namespace) {
 			var f = favList[i];
 			if (f.eletype != 'favorite') continue
 			t += '<li id ="ss_favorite_' + f.id + '">';
-			t += '<input type="checkbox" style="display: none;" />';
+			t += '<span style="white-space:nowrap"><input type="checkbox" style="display: none;"/>';
 			t += '<a href="javascript:;" ';
 			t += 'onClick="ss_treeShowIdNoWS(';
 			t += "'" + f.value + "', this";
@@ -4156,7 +4156,7 @@ function ssFavorites(namespace) {
 				f.action = "view_ws_listing";
 			}
 			t += ", '" + f.action + "'";
-			t += ');">' + f.name + '</a>';
+			t += ');">' + f.name + '</a></span>';
 			t += '</li>';
 		}
 		// Close the list and add a space so the div has something in it
@@ -4174,22 +4174,20 @@ function ssFavorites(namespace) {
 		var callback = function(data) {
 				setFavoritesList(data);
 				ss_hideDiv("ss_favorites_loading" + namespace);
-				dojo.fadeOut({node: "ss_favorites_editor" + namespace, delay:100, onEnd: function() {
-				ss_hideDiv("ss_favorites_editor" + namespace);}}).play()
+				this.showhideFavoritesEditor();
 		}
 		ss_get_url(url, ss_createDelegate(this, callback));
 	}
 	function readFavoriteList() {
 		var container = dojo.byId("ss_favorites_list" + namespace);
 		// Get the ul inside
-	    var ul = dojox.data.dom.getFirstChildElement(container);
+	    var ul = container.getElementsByTagName("ul")[0];
 	    // Walk the list items
-	    var li = dojox.data.dom.getFirstChildElement(ul);
+	    var li = ul.getElementsByTagName("li");
 	    var favs = new Array();
-	    while (li) {
+	    for (var i = 0; i < li.length; i += 1) {
 	    	// Ids = "ss_favorite_N"
-	    	favs.push(li.id.substr(12));
-		    li = dojox.data.dom.getNextSiblingElement(li);
+	    	favs.push(li[i].id.substr(12));
 	    }    
 	    return favs.join(" ");
 	}
@@ -4203,12 +4201,13 @@ function ssFavorites(namespace) {
 		if (dojo.style(ebox, "display") != "none") {
 			dojo.fadeOut({node:ebox, delay:100}).play()
 			setFavoriteListEditable(false);
+			dojo.style(ebox, "display", "none");
 		} else {
 		    ss_showDivObj(ebox);
-		    dojo.style(ebox, "display", "block");
 		    ss_setOpacity(ebox,0);
 		    dojo.fadeIn({node:ebox, delay:300}).play();
-			setFavoriteListEditable(true);
+		    setFavoriteListEditable(true);
+		    dojo.style(ebox, "display", "");
 		}
 	}
 
@@ -4217,33 +4216,31 @@ function ssFavorites(namespace) {
 		// Clear any prior activity
 		while (deletedFavorites.length) {deletedFavorites.pop() };
 		// Get the ul inside
-	    var ul = dojox.data.dom.getFirstChildElement(container);
+	    var ul = container.getElementsByTagName("ul")[0];
 	    // Walk the list items
-	    var li = dojox.data.dom.getFirstChildElement(ul);
-	    while (li) {
-	    	var cb = dojox.data.dom.getFirstChildElement(li);
+	    var li = ul.getElementsByTagName("li");
+	    for (var i = 0; i < li.length; i += 1) {
+	    	var cb = li[i].getElementsByTagName("input")[0];
 	    	if (enable) {
-		    	ss_showDivObj(cb);
+    			cb.style.display = "";
 		    } else {
-		    	ss_hideDivObj(cb);
+    			cb.style.display = "none";
 		    }
-		    li = dojox.data.dom.getNextSiblingElement(li);
 	    }    
 	}
 
 	function getSelectedFavorites() {
 		var container = dojo.byId("ss_favorites_list" + namespace);
 		// Get the ul inside
-	    var ul = dojox.data.dom.getFirstChildElement(container);
+	    var ul = container.getElementsByTagName("ul")[0];
 	    // Walk the list items
-	    var li = dojox.data.dom.getFirstChildElement(ul);
+	    var li = ul.getElementsByTagName("li");
 	    var selected = new Array();
-	    while (li) {
-	    	var cb = dojox.data.dom.getFirstChildElement(li);
+	    for (var i = 0; i < li.length; i += 1) {
+	    	var cb = li[i].getElementsByTagName("input")[0];
 	    	if (cb.checked) {
-	    		selected.push(li);
+	    		selected.push(li[i]);
 	    	}
-		    li = dojox.data.dom.getNextSiblingElement(li);
 	    }    
 	    return selected;
 	}
@@ -4252,7 +4249,7 @@ function ssFavorites(namespace) {
 	this.deleteSelectedFavorites = function() {
 	    var toDelete = getSelectedFavorites();
 	    dojo.forEach(toDelete, recordDeletedFavorite) 
-	    dojo.forEach(toDelete, dojox.data.dom.removeNode)
+	    dojo.forEach(toDelete, function(node){node.parentNode.removeChild(node);});
 	}
 
 	function recordDeletedFavorite(node) {
@@ -4298,15 +4295,23 @@ function ss_findOwningElement(obj, eleName) {
 }
 
 function ss_moveElementUp(node) {
-	var prior = dojox.data.dom.getPreviousSiblingElement(node);
+	var prior = node.previousSibling;
 	if (prior) {
-		dojox.data.dom.insertBefore(dojox.data.dom.removeNode(node), prior);
+		prior.parentNode.insertBefore(node, prior);
 	}
 }
 function ss_moveElementDown(node) {
-	var next = dojox.data.dom.getNextSiblingElement(node);
+	var next = node.nextSibling;
 	if (next) {
-		dojox.data.dom.insertAfter(dojox.data.dom.removeNode(node), next);
+		next = next.nextSibling;
+		if (next) {
+			next.parentNode.insertBefore(node, next);
+		}
+		else {
+			var	p = node.parentNode;
+			p.removeChild(node);
+			p.appendChild(node);
+		}
 	}
 }
 
@@ -6502,11 +6507,10 @@ ss_FileUploadProgressBar.reloadProgressStatus = function(progressBar, url) {
 				preventCache: true
 	});
 }
-
-//After defining all the standard functions, identify the required dojo files
-dojo.require("dijit.dijit");
+dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
 dojo.require("dojo.io.iframe");
 dojo.require("dojox.data.dom");
 dojo.require("dojox.fx");
 dojo.require("dojox.uuid.generateRandomUuid");
+
