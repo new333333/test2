@@ -52,6 +52,8 @@ public class IndexSynchronizationManager {
 	private static final ThreadLocal autoFlushTL = new ThreadLocal();
 	
 	private static final ThreadLocal nodeNamesTL = new ThreadLocal();
+	
+	private static final ThreadLocal forceSequentialTL = new ThreadLocal();
 
     private LuceneSessionFactory luceneSessionFactory;
     
@@ -132,6 +134,18 @@ public class IndexSynchronizationManager {
     
     public static void clearNodeNames() {
     	nodeNamesTL.set(null);
+    }
+    
+    public static void setForceSequential() {
+    	forceSequentialTL.set(Boolean.TRUE);
+    }
+    
+    public static boolean isForceSequential() {
+    	return Boolean.TRUE.equals(forceSequentialTL.get());
+    }
+    
+    public static void clearForceSequential() {
+    	forceSequentialTL.set(null);
     }
     
     public static void begin() {

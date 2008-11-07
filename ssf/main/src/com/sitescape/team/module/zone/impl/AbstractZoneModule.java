@@ -706,22 +706,29 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		RequestContextUtil.setThreadContext(name, adminName);
 		try {
-  	        Workspace zone =  (Workspace) getTransactionTemplate().execute(new TransactionCallback() {
-	        	public Object doInTransaction(TransactionStatus status) {
-	    			IndexSynchronizationManager.begin();
-
-	        		Workspace zone = addZoneTx(name, adminName, virtualHost);
-	        			        		
-	    			User guest = getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zone.getId());
-	    			Workspace guestWs = getProfileModule().addUserWorkspace(guest, null);
-	        		//now change owner to admin
-	        		getAdminModule().setWorkAreaOwner(guestWs, zone.getOwnerId() ,true);
-	        		//do now, with request context set - won't have one if here on zone startup
-	        		IndexSynchronizationManager.applyChanges();
-	    		
-	        		return zone;
-	        	}
-	        });
+			Workspace zone = null;
+			IndexSynchronizationManager.setForceSequential();
+			try {		
+	  	        zone =  (Workspace) getTransactionTemplate().execute(new TransactionCallback() {
+		        	public Object doInTransaction(TransactionStatus status) {
+		    			IndexSynchronizationManager.begin();
+	
+		        		Workspace zone = addZoneTx(name, adminName, virtualHost);
+		        			        		
+		    			User guest = getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zone.getId());
+		    			Workspace guestWs = getProfileModule().addUserWorkspace(guest, null);
+		        		//now change owner to admin
+		        		getAdminModule().setWorkAreaOwner(guestWs, zone.getOwnerId() ,true);
+		        		//do now, with request context set - won't have one if here on zone startup
+		        		IndexSynchronizationManager.applyChanges();
+		    		
+		        		return zone;
+		        	}
+		        });
+			}
+			finally {
+				IndexSynchronizationManager.clearForceSequential();				
+			}
   	        //do outside of transaction, so commited.
   	        //otherwise jobs may start and fail cause data not saved.
         	for (ZoneSchedule zoneM:startupModules) {
