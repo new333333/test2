@@ -97,7 +97,8 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	int maxDays = 31;
 
 	int maxInactiveDays = 7;
-	SimpleDateFormat fmt = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+	SimpleDateFormat rssFmt = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+	SimpleDateFormat atomFmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
 	private static final String SCHEME_HOST_PORT_PATTERN = "<link>http.*/ssf/a/";
 
@@ -445,6 +446,74 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 
+	/**
+	 * Find the atom feed index. If it doesn't exist, then create it.
+	 * Filter results by the requestor's acls.
+	 * 
+	 * @param request
+	 * @param response
+	 * @param binder
+	 * @param user
+	 */
+	public String filterAtom(HttpServletRequest request,
+			HttpServletResponse response, Binder binder) {
+
+		boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
+		if (!rssEnabled) {
+			return this.getRssDisabledString();
+		}
+		
+		File indexPath = getRssIndexPath(binder);
+		RssFeedLock rfl = new RssFeedLock(getRssIndexLockFile(binder));
+
+		try {
+			// See if the feed already exists
+
+			if (!indexPath.exists())
+				this.generateRssFeed(binder);
+
+			if (!rfl.getFeedLock()) {
+				logger.info("Couldn't get the RssFeedLock");
+			}
+
+			updateTimestamp(binder);
+
+			IndexSearcher indexSearcher = new IndexSearcher(indexPath.getPath());
+
+			// this will add acls to the query
+			Query q = buildRssQuery();
+
+			// get the matching entries
+			Hits hits = indexSearcher.search(q);
+
+			// create the return string, add the channel info
+			String atom = addAtomHeader(binder.getTitle());
+			
+			String adapterRoot = WebUrlUtil.getAdapterRootURL(request, null);
+			
+			// step thru the hits and add them to the rss return string
+			int count = 0;
+			String item;
+			while (count < hits.length()) {
+				org.apache.lucene.document.Document doc = hits.doc(count);
+				item = doc.getField("atomItem").stringValue();
+				item = fixupSchemeHostPort(item, adapterRoot);
+				atom += item;
+				count++;
+			}
+			indexSearcher.close();
+			atom += addAtomFooter();
+
+			return atom;
+
+		} catch (Exception e) {
+			logger.info("filterAtom: " + e.toString());
+			return "";
+		} finally {
+			rfl.releaseFeedLock();
+		}
+	}
+
 	protected String fixupSchemeHostPort(String item, String adapterRoot) {
 		Matcher matcher = pattern.matcher(item);
 		return matcher.replaceFirst("<link>" + adapterRoot);
@@ -486,6 +555,9 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		Field rssItemField = new Field("rssItem", createRssItem(entry),
 				Field.Store.YES, Field.Index.UN_TOKENIZED);
 		doc.add(rssItemField);
+		Field atomItemField = new Field("atomItem", createAtomItem(entry),
+				Field.Store.YES, Field.Index.UN_TOKENIZED);
+		doc.add(atomItemField);
 		// add same acls(folder and entry) as search engine uses
 		EntityIndexUtils.addReadAccess(doc, entry.getParentBinder(), entry, true);
 
@@ -530,7 +602,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 		Date eDate = entry.getModification().getDate();
 		
-		ret += "<pubDate>" + fmt.format(eDate) + "</pubDate>\n";
+		ret += "<pubDate>" + rssFmt.format(eDate) + "</pubDate>\n";
 
 		ret += "<age>" + new Long(eDate.getTime()).toString() + "</age>\n";
 		ret += "<guid>" + PermaLinkUtil.getPermalink(entry).replaceAll(
@@ -547,7 +619,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		ret += "<title><![CDATA[ " +  title + "]]></title>\n";
 		ret += "<link/>";
 		ret += "<description><![CDATA[ " + title + "]]></description>\n";
-		ret += "<pubDate>" + fmt.format(new Date()) + "</pubDate>\n";
+		ret += "<pubDate>" + rssFmt.format(new Date()) + "</pubDate>\n";
 		ret += "<ttl>60</ttl>\n";
 		ret += "<generator feedVersion=\"1.0\">kablink</generator>\n";
 		return ret;
@@ -559,7 +631,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		ret += "</rss>\n";
 		return ret;
 	}
-
+	
 	private Document createEmptyRssDoc(String title) {
 		// First create our top-level document
 		Document doc = DocumentHelper.createDocument();
@@ -573,9 +645,76 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		channel.addElement("title").addText(title);
 		channel.addElement("link").addText("");
 		channel.addElement("description").addText(title);
-		channel.addElement("pubDate").addText(fmt.format(new Date()));
+		channel.addElement("pubDate").addText(rssFmt.format(new Date()));
 		channel.addElement("ttl").addText("60");
 		channel.addElement("generator").addAttribute("feedVersion", "1.0")
+				.addText("kablink");
+
+		return doc;
+	}
+	private String addAtomHeader(String title) {
+		String ret = "";
+		ret += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+		ret += "<feed xmlns=\"http://www.w3.org/2005/Atom\">\n";
+		//ret += "<title><![CDATA[ " +  title + "]]></title>\n";
+		ret += "<title> " +  title + "</title>\n";
+		ret += "<link/>";
+		//ret += "<subtitle><![CDATA[ " + title + "]]></subtitle>\n";
+		ret += "<subtitle> " + title + " </subtitle>\n";
+		ret += "<updated>" + atomFmt.format(new Date()) + "</updated>\n";
+		ret += "<generator feedVersion=\"1.0\">kablink</generator>\n";
+		return ret;
+	}
+
+	private String addAtomFooter() {
+		String ret = "";
+		ret += "</feed>\n";
+		return ret;
+	}
+	
+	private String createAtomItem(Entry entry) {
+		String ret = "<entry>\n";
+		//String title = "<![CDATA[ " + entry.getTitle() + "]]>";
+		String title = entry.getTitle();
+		ret += "<title>" + title + "</title>\n";
+		ret += "<link>"
+				+ PermaLinkUtil.getPermalink(entry).replaceAll(
+						"&", "&amp;") + "</link>\n";
+
+		String subtitle = entry.getDescription() == null ? "" : entry
+				.getDescription().getText();
+		subtitle = MarkupUtil.markupStringReplacement(null, null, null, null,
+				entry, subtitle, WebKeys.MARKUP_EXPORT);
+		//subtitle = "<![CDATA[ " + subtitle + "]]>";
+		ret += "<subtitle>" + subtitle + "</subtitle>\n";
+
+		ret += "<author>" + entry.getCreation().getPrincipal().getName()
+				+ "</author>\n";
+
+		Date eDate = entry.getModification().getDate();
+		
+		ret += "<published>" + atomFmt.format(eDate) + "</published>\n";
+
+		ret += "<age>" + new Long(eDate.getTime()).toString() + "</age>\n";
+		ret += "<id>" + PermaLinkUtil.getPermalink(entry).replaceAll(
+				"&", "&amp;") + "</id>\n";
+		ret += "</entry>\n";
+		return ret;
+	}
+	
+	private Document createEmptyAtomDoc(String title) {
+		// First create our top-level document
+		Document doc = DocumentHelper.createDocument();
+		Element root = doc.addElement("feed");
+
+		// Set Atom namespace
+		root.addAttribute("xmlns","http://www.w3.org/2005/Atom");
+
+		root.addElement("title").addText(title);
+		root.addElement("link").addText("");
+		root.addElement("subtitle").addText(title);
+		root.addElement("updated").addText(atomFmt.format(new Date()));
+		root.addElement("generator").addAttribute("feedVersion", "1.0")
 				.addText("kablink");
 
 		return doc;
