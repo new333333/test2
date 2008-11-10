@@ -778,7 +778,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
   <hr style="width: 100%" class="ss_att_divider"/>
   <div class="ss_style_trans" id="ss_favorites${renderResponse.namespace}" align="left">
 	  <div style="float: right;" id="ss_favorites_loading${renderResponse.namespace}"><ssf:nlt tag="Loading"/></div>
-	  <div id="ss_favorites_list${renderResponse.namespace}">&nbsp;</div>
+	  <br /><div id="ss_favorites_list${renderResponse.namespace}">&nbsp;</div>
   </div>
   <div class="ss_style_trans" style="display: none;" id="ss_favorites_editor${renderResponse.namespace}">
      <div style="padding: 10px 0px 7px 0px;">
