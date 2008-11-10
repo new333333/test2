@@ -1,0 +1,22 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:s="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.1.xsd">
+
+    <!-- ============================== Basic authentication ============================ -->
+    
+    <!-- Note: This option is reserved only for use in conjunction with iChain/NAM or similar 
+         authentication proxy where the proxy handles all first-line authentication and 
+         subsequently sends login token in the form of Basic Auth header to the Teaming server. 
+         In all other situations, the default authentication option based on form-based login
+         must be used instead. -->
+         
+    <s:http session-fixation-protection="newSession">
+        <s:intercept-url pattern="/ws/**" filters="none" />
+        <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
+        
+        <s:http-basic/>
+    </s:http>
+
+</beans>
