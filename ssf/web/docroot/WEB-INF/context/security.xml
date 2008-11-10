@@ -11,11 +11,17 @@
 		<s:custom-filter position="FIRST"/>
 	</bean>
 	
-	<s:authentication-manager alias="springAuthenticationManager"/>
+	<bean id="_authenticationManager" class="org.springframework.security.providers.ProviderManager">
+		<property name="providers">
+			<list>
+				<ref local="authenticationModule"/>
+			</list>
+		</property>
+	</bean>
 	
 	<bean id="authenticationProcessingFilter" class="com.sitescape.team.spring.security.AuthenticationProcessingFilter">
     	<s:custom-filter position="AUTHENTICATION_PROCESSING_FILTER" />
-		<property name="authenticationManager" ref="springAuthenticationManager"/>
+		<property name="authenticationManager" ref="_authenticationManager"/>
 		<property name="authenticationFailureUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>
 		<property name="defaultTargetUrl" value="/a/"/>
 		<property name="filterProcessesUrl" value="/s/portalLogin"/>
@@ -64,7 +70,6 @@
 	<bean id="authenticationModule" parent="baseTransactionProxy" depends-on="springAuthenticationBeans">
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.authentication.impl.AuthenticationModuleImpl">
-				<property name="providerManager"><ref bean="springAuthenticationManager"/></property>
 				<property name="zoneModule"><ref bean="zoneModule"/></property>
 			</bean>
 		</property>
