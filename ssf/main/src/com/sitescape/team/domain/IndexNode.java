@@ -33,9 +33,18 @@ import java.util.Map;
 
 public class IndexNode extends ZonedObject {
 
+	/**
+	 * Both read and write access is allowed for the node.
+	 */
 	public static final String ACCESS_MODE_READ_WRITE	= "readwrite";
+	/**
+	 * Only write access is allowed for the node.
+	 */
 	public static final String ACCESS_MODE_WRITE_ONLY	= "writeonly";
-	public static final String ACCESS_MODE_OFFLINE	    = "offline";
+	/**
+	 * Neither read nor write access is allowed for the node.
+	 */
+	public static final String ACCESS_MODE_NO_ACCESS	= "noaccess";
 	
 	private String id;
 	private Name name;
