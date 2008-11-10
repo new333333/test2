@@ -4,7 +4,9 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.1.xsd">
 
-	<!-- ============================== Portal Login Support ============================ -->
+    <!-- ========== Defines base beans that are common between different authentication mechanisms ========== -->
+
+	<!-- Portal Login Support -->
 	<bean id="portalLoginBean" class="com.sitescape.team.portal.StandaloneLogin"/>
 	
 	<bean id="zoneGrabbingFilter" class="com.sitescape.team.spring.security.ZoneGrabbingFilter">
@@ -18,43 +20,7 @@
 			</list>
 		</property>
 	</bean>
-	
-	<bean id="authenticationProcessingFilter" class="com.sitescape.team.spring.security.AuthenticationProcessingFilter">
-    	<s:custom-filter position="AUTHENTICATION_PROCESSING_FILTER" />
-		<property name="authenticationManager" ref="_authenticationManager"/>
-		<property name="authenticationFailureUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>
-		<property name="defaultTargetUrl" value="/a/"/>
-		<property name="filterProcessesUrl" value="/s/portalLogin"/>
-		<property name="invalidateSessionOnSuccessfulAuthentication" value="true"/>
-		<property name="migrateInvalidatedSessionAttributes" value="false"/>
-    </bean>
-  	
-    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.ui.webapp.AuthenticationProcessingFilterEntryPoint">
-    	<property name="loginFormUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>    	
-    </bean>
-	
-    <!-- Form-based authentication -->
-    <s:http session-fixation-protection="newSession" entry-point-ref="authenticationProcessingFilterEntryPoint">
-        <s:intercept-url pattern="/ws/**" filters="none" />
-        <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED,ROLE_ANONYMOUS" />
-
-        <s:anonymous granted-authority="ROLE_ANONYMOUS" username="guest"  />
-        <s:logout logout-url="/s/portalLogout" logout-success-url="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login" />
-
-    </s:http>
-    
-    <!-- Basic authentication. This option is reserved only for use in conjunction with 
-         iChain/NAM or similar authentication proxy where the proxy handles all first-line
-         authentication and subsequently sends login token in the form of Basic Auth header
-         to the Teaming server. In all other situations, the form-based authentication must
-         be used. -->
-    <!--<s:http session-fixation-protection="newSession">
-        <s:intercept-url pattern="/ws/**" filters="none" />
-        <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
-        
-        <s:http-basic/>
-    </s:http>-->
-    
+	    
 	<bean id="_anonymousProcessingFilter"
 	      class="com.sitescape.team.spring.security.ZoneAwareAnonymousProcessingFilter">
 		<property name="key" value="thisIsIgnored"/>
