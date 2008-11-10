@@ -623,9 +623,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		><span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.edit" text="Edit Favorites"/></span></a>
   	  </div>
 	  <hr style="width: 90%" class="ss_att_divider"/>
-	  <div class="ss_style_trans" id="ss_favorites${renderResponse.namespace}" align="left">
 		  <div style="float: right;" id="ss_favorites_loading${renderResponse.namespace}"><ssf:nlt tag="Loading"/></div>
-		  <div id="ss_favorites_list${renderResponse.namespace}">&nbsp;</div>
+		  <br /><div id="ss_favorites_list${renderResponse.namespace}">&nbsp;</div>
 	  </div>
       <div class="ss_style_trans" style="display: none;" id="ss_favorites_editor${renderResponse.namespace}">
         <div style="padding: 10px 0px 7px 0px;">
