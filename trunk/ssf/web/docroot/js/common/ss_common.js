@@ -4257,11 +4257,45 @@ function ssFavorites(namespace) {
 	}
 
 	this.moveSelectedFavorites = function(upDown) {
-	    var toMove = getSelectedFavorites();
-	    if (upDown == 'up') {
-		    dojo.forEach(toMove, ss_moveElementUp);
-		} else {
-		    dojo.forEach(toMove.reverse(), ss_moveElementDown);
+	    var	toMove;
+	    var	moves;
+	    
+		// If there aren't any items selected to move...
+	    toMove	= getSelectedFavorites();
+	    moves	= ((null == toMove) ? 0 : toMove.length);
+	    if (0 == moves)
+	    {
+	    	// ...bail.
+	    	return;
+	    }
+	    
+	    if (upDown == 'up')
+	    {
+	    	// If the first selected item is other than the first item
+	    	// in the list...
+	    	if (null != toMove[0].previousSibling)
+	    	{
+	    		// ...move the selections up.
+			    dojo.forEach(toMove, ss_moveElementUp);
+	    	}
+		}
+		else
+		{
+			// If there's more than one item selected...
+			if (1 < moves)
+			{
+				// ...reverse the list so that we move the last
+				// ...selection down first, ...
+				toMove = toMove.reverse();
+			}
+			
+			// If the last selected item is other than the last item
+			// in the list...
+	    	if (null != toMove[0].nextSibling)
+	    	{
+	    		// ...move the selections down.
+		    	dojo.forEach(toMove, ss_moveElementDown);
+	    	}
 		}
 	}
 	
