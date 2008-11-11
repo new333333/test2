@@ -721,7 +721,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    }
 
 
-    //NO transaction
+    //RW transaction
     public Folder addUserMiniBlog(User entry) throws AccessControlException {
         if (entry.getMiniBlogId() != null) {
         	try {
