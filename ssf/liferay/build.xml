@@ -23,6 +23,11 @@
 		<ant dir="teaming" target="jar" inheritall="false"/>
 	</target>
 	
+	<target name="build">
+		<ant dir="liferay" target="build" inheritall="false"/>
+		<ant dir="teaming" target="build" inheritall="false"/>
+	</target>
+
 	<target name="java2html">
 		<ant dir="liferay" target="java2html" inheritall="false"/>
 		<ant dir="teaming" target="java2html" inheritall="false"/>
