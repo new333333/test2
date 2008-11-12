@@ -84,6 +84,7 @@ import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.SharedEntity;
 import com.sitescape.team.domain.TemplateBinder;
+import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.UserPropertiesPK;
@@ -91,6 +92,7 @@ import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.profile.ProfileModule;
@@ -730,9 +732,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			} catch(AccessControlException e) {
 				return null;
         	} catch (Exception ex) {
-        		//Clear the old id
-        		entry.setMiniBlogId(null);
         	}
+        	
+    		// Clear the old ID since we can't access it or it refers
+        	// to a deleted folder.
+    		entry.setMiniBlogId(null);
         }
 
 		Folder miniBlog = null;
@@ -741,8 +745,17 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
  					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
 				TemplateBinder miniblogTemplate = getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_MINIBLOG);
 				if (miniblogTemplate != null) {
-					Long miniBlogId = getTemplateModule().addBinder(miniblogTemplate.getId(), 
-							entry.getWorkspaceId(), null, null);
+					// Can we find an existing MiniBlog Folder to use?
+				    String defaultMiniBlogTitle = NLT.getDef(miniblogTemplate.getTitle());
+				    if (Validator.isNull(defaultMiniBlogTitle)) {
+				    	defaultMiniBlogTitle = NLT.getDef(miniblogTemplate.getTemplateTitle());
+				    }
+				    Long miniBlogId = findExistingMiniBlogFolderId(entry, defaultMiniBlogTitle);
+				    if (null == miniBlogId) {
+				    	// No!  Create one.
+						miniBlogId = getTemplateModule().addBinder(miniblogTemplate.getId(), 
+								entry.getWorkspaceId(), null, null);
+				    }
   					entry.setMiniBlogId(miniBlogId);
 					if (miniBlogId != null) 
   						miniBlog = (Folder)getCoreDao().loadBinder(miniBlogId, entry.getZoneId());
@@ -753,6 +766,48 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    		}
   		
         return miniBlog;
+   }
+   private Long findExistingMiniBlogFolderId(User user, String defaultMiniBlogTitle)
+   {
+		// Scan the user's Binders.
+	    Boolean checkTitle = (!(Validator.isNull(defaultMiniBlogTitle)));
+		Binder userWorkspace = getCoreDao().loadBinder(user.getWorkspaceId(), user.getZoneId());
+		List<Binder>binders = userWorkspace.getBinders();
+		Long otherMiniBlogId = null;
+	   	for (Binder binder:binders) {
+	   		// Skip deleted Binders
+	   		if (binder.isDeleted()) {
+	   			continue;
+	   		}
+	   		
+	   		// Does this Binder have a default view defined?
+	   		Definition defaultBinderView = binder.getDefaultViewDef();
+	   		if (null != defaultBinderView) {
+	   			// Yes!  Is the default view a MiniBlog Folder?
+	   			if (defaultBinderView.getName().equals("_miniBlogFolder")) {
+	   				// Yes!  Does it use the default MiniBlog Folder
+	   				// name?
+	   				if ((!checkTitle) || binder.getTitle().equals(defaultMiniBlogTitle)) {
+	   					// Yes!  Return its ID.
+	   					otherMiniBlogId = binder.getId();
+	   					break;
+	   				}
+	   				
+	   				// No, it doesn't use the default MiniBlog Folder
+	   				// name!  If we're not tracking another MiniBlog
+	   				// Folder...
+	   				else if (null == otherMiniBlogId) {
+	   					// ...track this one.
+	   					otherMiniBlogId = binder.getId();
+	   				}
+	   			}
+	   		}
+	   	}
+	   		
+	   	// If we get here, otherMiniBlogId is the ID of a MiniBlog
+	   	// Folder to use or is null if we couldn't find one.  Return
+	   	// it.
+	   	return otherMiniBlogId;
    }
 
 
