@@ -31,6 +31,7 @@ package com.sitescape.team.module.mail.impl;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,8 +40,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.mail.Address;
 import javax.mail.AuthenticationFailedException;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -51,7 +55,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.search.OrTerm;
 import javax.mail.search.RecipientStringTerm;
 import javax.mail.search.SearchTerm;
-
+import javax.mail.SendFailedException;
 import org.dom4j.Element;
 import org.hibernate.StaleObjectStateException;
 import org.springframework.beans.factory.InitializingBean;
@@ -66,7 +70,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Entry;
@@ -89,6 +92,7 @@ import com.sitescape.team.module.mail.MimeEntryPreparator;
 import com.sitescape.team.module.mail.MimeMessagePreparator;
 import com.sitescape.team.module.mail.MimeMapPreparator;
 import com.sitescape.team.module.mail.MimeNotifyPreparator;
+import com.sitescape.team.module.mail.MailSentStatus;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.FilePathUtil;
 import com.sitescape.team.util.NLT;
@@ -502,17 +506,15 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				logger.error("Authentication Exception:" + getMessage(ax));
 			} catch (MailSendException ms) {
 				logger.error("Error sending posting reject:" + getMessage(ms));
-				Map failures = ms.getFailedMessages();
-				if ((binder != null) && !failures.isEmpty()) {
+				if ((binder != null) && ms.getFailedMessages().isEmpty()) {  //if not empty, trouble unreachable users; will have sent to some
+					logger.error("Error sending posting reject:" + getMessage(ms));						
 					SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
-					for (Iterator iter=failures.entrySet().iterator(); iter.hasNext();) {
-						Map.Entry me = (Map.Entry)iter.next();
+					for (int i=0; i<errors.size(); ++i) {
 						if (!useAliases && !Validator.isNull(postingDef.getPassword()))  {
-							job.schedule(srcSender, postingDef.getEmailAddress(), postingDef.getPassword(), (MimeMessage)me.getKey(), binder.getTitle(), getMailDirPath(binder), false);
+							job.schedule(srcSender, postingDef.getEmailAddress(), postingDef.getPassword(), (MimeMessage)errors.get(i), binder.getTitle(), getMailDirPath(binder), false);
 						} else {
-							job.schedule(srcSender, (MimeMessage)me.getKey(), binder.getTitle(), getMailDirPath(binder), false);							
+							job.schedule(srcSender, (MimeMessage)errors.get(i), binder.getTitle(), getMailDirPath(binder), false);							
 						}
-						logger.error("Error sending posting reject:" + getMessage((Exception)me.getValue()));						
 					}
 				}
 			} catch (Exception ex) {
@@ -654,8 +656,13 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					mailSender.send(mHelper, ctx);
 				} catch (MailSendException sx) {
 		    		logger.error("Error sending mail:" + getMessage(sx));
-			  		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
-			   		job.schedule(mailSender, mHelper.getMessage(), folder.getTitle(), getMailDirPath(folder), false);
+		 			Exception[] exceptions = sx.getMessageExceptions();
+		 			if (exceptions != null && exceptions.length > 0) {
+		 				logger.error(sx.toString());
+		 			} else {
+		 				SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
+		 				job.schedule(mailSender, mHelper.getMessage(), folder.getTitle(), getMailDirPath(folder), false);
+		 			}
 			   	} catch (Exception ex) {
 			   		//message gets thrown away here
 		       		logger.error(getMessage(ex));
@@ -829,14 +836,15 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     	JavaMailSender mailSender = getMailSender(mailSenderName);
 		mailSender.send(mailMsg);
     }
-    //send mail now, if fails, reschedule
-    public boolean sendMail(Binder binder, Map message, String comment) {
+ 
+    public MailSentStatus sendMail(Binder binder, Map message, String comment) {
   		JavaMailSender mailSender = getMailSender(binder);
 		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
-		if ((addrs == null) || addrs.isEmpty()) return true;
-		//handle large recipient list 
-		boolean sent = true;
-		Map currentMessage = new HashMap(message);
+		if ((addrs == null) || addrs.isEmpty()) throw new MailPreparationException(NLT.get("errorcode.noRecipients"));
+
+		MailStatus status = new MailStatus(message);
+		Map currentMessage = new HashMap(message); //make changeable copy
+		//handle large recipient list by breaking into pieces 
 		ArrayList rcpts = new ArrayList(addrs);
 		for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
 			List subList = rcpts.subList(i, Math.min(rcpts.size(), i+rcptToLimit));
@@ -845,31 +853,44 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		try {
 	 			helper.setDefaultFrom(mailSender.getDefaultFrom());		
 	 			mailSender.send(helper);
-	 			sent = true;
 	 		} catch (MailSendException sx) {
 	 			logger.error("Error sending mail:" + getMessage(sx));
-	 	  		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
-	 			job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(binder), false);
+	 			Exception[] exceptions = sx.getMessageExceptions();
+	 			if (exceptions != null && exceptions.length > 0 && exceptions[0] instanceof SendFailedException) {
+	 				SendFailedException sf = (SendFailedException)exceptions[0];
+	 				//if sent to anyone; or only 1 receipient and couldn't send don't try again
+	 				status.addFailures(sf.getInvalidAddresses());
+	 				status.addFailures(sf.getValidUnsentAddresses());	 				
+	 			} else {
+	 				SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
+	 				job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(binder), false);
+	 				try {
+	 					status.addQueued(helper.getMessage().getAllRecipients());
+	 				} catch (MessagingException ignore) {}
+	 			}
 	 	   	} catch (MailAuthenticationException ax) {
 	       		logger.error("Authentication Exception:" + getMessage(ax));				
 	      		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
 	       		job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(binder), false);
-	 		} catch (Exception ex) {
-	 			//message gets thrown away here
-	 			logger.error(getMessage(ex));
-	 		}
+	       		try {
+	       			status.addQueued(helper.getMessage().getAllRecipients());
+	       		} catch (MessagingException ignore) {}
+	 		} 
 	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
 	 		currentMessage.remove(MailModule.BCC);
 		}
-		return sent;
+		
+		return status;
     }
-    public boolean sendMail(Entry entry, Map message, String comment, boolean sendAttachments) {
+ 
+    public MailSentStatus sendMail(Entry entry, Map message, String comment, boolean sendAttachments) {
   		JavaMailSender mailSender = getMailSender(entry.getParentBinder());
 		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
-		if ((addrs == null) || addrs.isEmpty()) return true;
-		//handle large recipient list 
+		if ((addrs == null) || addrs.isEmpty()) throw new MailPreparationException(NLT.get("errorcode.noRecipients"));
+
+		MailStatus status = new MailStatus(message);
 		EmailFormatter	processor = (EmailFormatter)processorManager.getProcessor(entry.getParentBinder(), EmailFormatter.PROCESSOR_KEY);
- 		boolean sent = true;
+		//handle large recipient list 
 		ArrayList rcpts = new ArrayList(addrs);
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map currentMessage = new HashMap(message);
@@ -884,23 +905,32 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		helper.setSendAttachments(sendAttachments);
 	 		try {
 	 			mailSender.send(helper);
-	 			sent = true;
 	 		} catch (MailSendException sx) {
 	 			logger.error("Error sending mail:" + getMessage(sx));
-	 	  		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
-	 			job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(entry.getParentBinder()), false);
+	 			Exception[] exceptions = sx.getMessageExceptions();
+	 			if (exceptions != null && exceptions.length > 0 && exceptions[0] instanceof SendFailedException) {
+	 				SendFailedException sf = (SendFailedException)exceptions[0];
+	 				status.addFailures(sf.getInvalidAddresses());
+	 				status.addFailures(sf.getValidUnsentAddresses());
+	 			} else {
+	 				SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
+	 				job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(entry.getParentBinder()), false);
+	 				try {
+	 					status.addQueued(helper.getMessage().getAllRecipients());
+	 				} catch (MessagingException ignore) {}
+	 			}
 	 	   	} catch (MailAuthenticationException ax) {
 	       		logger.error("Authentication Exception:" + getMessage(ax));				
 	      		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
 	       		job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(entry.getParentBinder()), false);
-	 		} catch (Exception ex) {
-	 			//message gets thrown away here
-	 			logger.error(getMessage(ex));
+	       		try {
+	       			status.addQueued(helper.getMessage().getAllRecipients());
+	       		} catch (MessagingException ignore) {}
 	 		}
 	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
 	 		currentMessage.remove(MailModule.BCC);
 		}
-		return sent;
+		return status;
 
     }
     // schedule mail delivery - 
@@ -924,5 +954,47 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		currentMessage.remove(MailModule.BCC);
 		}
 	}
- 
+    class MailStatus implements MailSentStatus {
+    	Set<Address> failures;
+    	Set<Address> queuedTo;
+       	Set<Address> sentTo = new HashSet();
+       	protected MailStatus(Map message) {
+    		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
+    		if (addrs != null) sentTo.addAll(addrs);
+    		addrs = (Collection)message.get(MailModule.CC);
+       		if (addrs != null) sentTo.addAll(addrs);
+    		addrs = (Collection)message.get(MailModule.BCC);
+       		if (addrs != null) sentTo.addAll(addrs);
+       	 
+       	}
+    	public Collection<Address> getFailedToSend() {
+    		if (failures == null) return Collections.EMPTY_SET;
+    		return failures;
+    	}
+    	public Collection<Address> getQueuedToSend() {
+    		if (queuedTo == null) return Collections.EMPTY_SET;
+    		return queuedTo;
+    	}
+    	public Collection<Address> getSentTo() {
+    		if (sentTo == null) return Collections.EMPTY_SET;
+    		sentTo.removeAll(getQueuedToSend());
+    		sentTo.removeAll(getFailedToSend());
+    		return sentTo;
+    	}
+    	protected void addFailures(Address[] addrs) {
+    		if (addrs == null) return;
+    		if (failures == null) failures = new HashSet();
+    		for (int i=0; i<addrs.length; ++i) {
+    			failures.add(addrs[i]);
+    		}
+    	}
+    	protected void addQueued(Address[] addrs) {
+    		if (addrs == null) return;
+       		if (queuedTo == null) queuedTo = new HashSet();
+    		for (int i=0; i<addrs.length; ++i) {
+    			queuedTo.add(addrs[i]);
+    		}
+     		
+    	}
+    }
 }

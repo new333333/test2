@@ -42,31 +42,6 @@
 self.window.resizeTo(width, height);
 </script>
 <div class="ss_style ss_portlet" style="padding:10px;">
-<c:choose>
-<c:when test="${!empty ssErrorList}">
-<form class="ss_style ss_form" method="post">
-<span class="ss_titlebold"><ssf:nlt tag="sendMail.status"/></span><br/>
-<br/>
-<ul>
-<c:forEach var="item" items="${ssErrorList}">
-	<li>${item}</li>
-</c:forEach>
-</ul>
-<c:if test="${!empty ssEmailAddresses}">
-<span class="ss_titlebold"><ssf:nlt tag="sendMail.distribution"/></span><br/>
-<br/>
-<ul>
-<c:forEach var="item" items="${ssEmailAddresses}">
-	<li>${item}</li>
-</c:forEach>
-</ul>
-</c:if>
-<div class="ss_buttonBarLeft">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;">
-</div>
-</form>
-</c:when>
-<c:otherwise>
   
 <form class="ss_style ss_form" method="post" 
   onSubmit="return ss_onSubmit(this);" name="${renderResponse.namespace}fm">
@@ -193,8 +168,6 @@ tinyMCE.init(
 </div>
 </form>
 
-</c:otherwise>
-</c:choose>
 </div>
 <ssf:ifadapter>
 </body>

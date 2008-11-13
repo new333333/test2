@@ -28,12 +28,14 @@
  */
 package com.sitescape.team.portlet.forum;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.mail.Address;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
@@ -46,6 +48,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.module.mail.MailSentStatus;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
@@ -85,18 +88,11 @@ public class SendEntryMailController extends SAbstractController {
 			Map status = getAdminModule().sendMail(entry, memberIds, null, emailAddress, subject, 
 					new Description(body, Description.FORMAT_HTML), sendAttachments);
 			
-			String result = (String)status.get(ObjectKeys.SENDMAIL_STATUS);
+			MailSentStatus result = (MailSentStatus)status.get(ObjectKeys.SENDMAIL_STATUS);
+			response.setRenderParameter(WebKeys.EMAIL_SENT_ADDRESSES, getStringEmail(result.getSentTo()));
+			response.setRenderParameter(WebKeys.EMAIL_QUEUED_ADDRESSES,  getStringEmail(result.getQueuedToSend()));
+			response.setRenderParameter(WebKeys.EMAIL_FAILED_ADDRESSES,  getStringEmail(result.getFailedToSend()));
 			List errors = (List)status.get(ObjectKeys.SENDMAIL_ERRORS);
-			List addrs = (List)status.get(ObjectKeys.SENDMAIL_DISTRIBUTION);
-			if (ObjectKeys.SENDMAIL_STATUS_SENT.equals(result)) {
-				errors.add(0, NLT.get("sendMail.mailSent"));
-				response.setRenderParameter(WebKeys.EMAIL_ADDRESSES, (String[])addrs.toArray( new String[0]));
-			} else if (ObjectKeys.SENDMAIL_STATUS_SCHEDULED.equals(result)) {
-				errors.add(0, NLT.get("sendMail.mailQueued"));
-				response.setRenderParameter(WebKeys.EMAIL_ADDRESSES, (String[])addrs.toArray( new String[0]));
-			} else {
-				errors.add(0, NLT.get("sendMail.mailFailed"));
-			}
 			response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW);			
@@ -104,14 +100,22 @@ public class SendEntryMailController extends SAbstractController {
 			response.setRenderParameters(formData);
 		}
 	}
+	private String[] getStringEmail(Collection<Address> addrs) {
+		String addresses[] = new String[addrs.size()];
+		int i=0;
+		for (Address email: addrs) addresses[i++] = email.toString();
+		return addresses;
+	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		String [] errors = request.getParameterValues(WebKeys.ERROR_LIST);
 		if (errors != null) {
 			model.put(WebKeys.ERROR_LIST, errors);
-			model.put(WebKeys.EMAIL_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_ADDRESSES));
-			return new ModelAndView(WebKeys.VIEW_BINDER_SENDMAIL, model);
+			model.put(WebKeys.EMAIL_SENT_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_SENT_ADDRESSES));
+			model.put(WebKeys.EMAIL_QUEUED_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_QUEUED_ADDRESSES));
+			model.put(WebKeys.EMAIL_FAILED_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_FAILED_ADDRESSES));
+			return new ModelAndView(WebKeys.VIEW_SENDMAIL_RESULT, model);
 		}
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));	
