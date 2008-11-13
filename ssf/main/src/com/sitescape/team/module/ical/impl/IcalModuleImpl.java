@@ -740,11 +740,8 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			return;
 		}
 		
-		String value = (String) customAttribute.getValue();
-		
-		if (value == null) {
-			return;
-		}
+		String value = (String) customAttribute.getValue();		
+		if (Validator.isNull(value)) return;
 
 		component.getProperties().add(new Location(value));
 
