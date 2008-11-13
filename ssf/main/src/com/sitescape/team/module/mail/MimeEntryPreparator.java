@@ -11,7 +11,6 @@ import org.apache.commons.logging.Log;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.sitescape.team.domain.Entry;
-import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
 public class MimeEntryPreparator extends MimeNotifyPreparator {
 	Map details;
@@ -32,27 +31,22 @@ public class MimeEntryPreparator extends MimeNotifyPreparator {
 	}
 	protected void setToAddrs(MimeMessageHelper helper) throws MessagingException {
 		Collection<InternetAddress> addrs = (Collection)details.get(MailModule.TO);
-		for (InternetAddress a : addrs) {
-			helper.addTo(a);
-		}
-		if (addrs.isEmpty()) {
+		if (addrs == null || addrs.isEmpty()) {
 			if (details.containsKey(MailModule.FROM)) 
-				helper.addTo((InternetAddress)details.get(MailModule.FROM));
+				helper.setTo((InternetAddress)details.get(MailModule.FROM));
 			else
-				helper.addTo(defaultFrom);
-		}
+				helper.setTo(defaultFrom);
+		} else {
+			//Using 1 set results in 1 TO: line in mime-header - GW like this better
+			helper.setTo(addrs.toArray(new InternetAddress[addrs.size()]));
+		} 
 		addrs = (Collection)details.get(MailModule.CC);
 		if (addrs != null) {
-			for (InternetAddress a : addrs) {
-				helper.addCc(a);
-			}
-		}
-		
+			helper.setCc(addrs.toArray(new InternetAddress[addrs.size()]));
+		}		
 		addrs = (Collection)details.get(MailModule.BCC);
 		if (addrs != null) {
-			for (InternetAddress a : addrs) {
-				helper.addBcc(a);
-			}
+			helper.setBcc(addrs.toArray(new InternetAddress[addrs.size()]));
 		}
 	}
 
