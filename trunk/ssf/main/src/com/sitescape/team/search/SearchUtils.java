@@ -82,12 +82,14 @@ public class SearchUtils {
 	
 	public static Criteria entriesForTrackedMiniBlogs(Long[] userIds)
 	{
+		String[] uids = new String[userIds.length];
+		for (int i = 0; i < userIds.length; i++) {
+			uids[i] = String.valueOf(userIds[i]);
+		}
 		Criteria crit = new Criteria();
 		crit.add(eq(FAMILY_FIELD, FAMILY_FIELD_MINIBLOG))
-			.add(eq(DOC_TYPE_FIELD, DOC_TYPE_ENTRY));
-		for (int i = 0; i < userIds.length; i++) {
-			crit.add(eq(CREATORID_FIELD, String.valueOf(userIds[i])));
-		}
+			.add(eq(DOC_TYPE_FIELD, DOC_TYPE_ENTRY))
+		    .add(in(CREATORID_FIELD, uids));
 		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
 		return crit;
 	}
