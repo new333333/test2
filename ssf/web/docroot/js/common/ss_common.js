@@ -860,7 +860,7 @@ function ss_trackedPeopleDelete(obj, id) {
 	ajaxRequest.sendRequest();  //Send the request
 	
 	//Delete the row from the parent table
-	var trObj = obj.parentNode.parentNode
+	var trObj = obj.parentNode;
 	trObj.parentNode.removeChild(trObj)
 }
 
