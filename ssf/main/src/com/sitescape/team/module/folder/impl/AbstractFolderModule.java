@@ -62,6 +62,7 @@ import com.sitescape.team.comparator.BinderComparator;
 import com.sitescape.team.comparator.EntryComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
+import com.sitescape.team.dao.util.ObjectControls;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.AverageRating;
 import com.sitescape.team.domain.Binder;
@@ -1086,17 +1087,30 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     //called by scheduler to complete folder deletions
     //no transaction
     public void cleanupFolders() {
-   	    List<Folder> folders = getCoreDao().loadObjects(Folder.class, new FilterControls("deleted", Boolean.TRUE), RequestContextHolder.getRequestContext().getZoneId());
-   		logger.debug("checking for deleted folders");
-   		for (Folder f: folders) {
-   			FolderCoreProcessor processor = loadProcessor(f);
-   			try {
-  				processor.deleteBinder(f, true, null);
-   			} catch (Exception ex) {
-   				logger.error(ex);
-   			}
-   		}
-    }
+		FilterControls fc = new FilterControls();
+		fc.add("deleted", Boolean.TRUE);
+		ObjectControls objs = new ObjectControls(Folder.class, new String[] {"id"});
+		List<Object> folders = getCoreDao().loadObjects(objs, fc, RequestContextHolder.getRequestContext().getZoneId());
+		logger.debug("checking for deleted folders");
+		for (Object obj: folders) {
+			Long folderId;
+			if (obj instanceof Long) {
+				folderId = (Long)obj;
+			} else  {
+				folderId = (Long)((Object[])obj)[0];
+			} 
+			try {
+				Folder f = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext()
+						.getZoneId());
+				FolderCoreProcessor processor = loadProcessor(f);
+				processor.deleteBinder(f, true, null);
+				getCoreDao().evict(f);
+			} catch (Exception ex) {
+				logger.error(ex);
+			}
+		}
+	}
+
 
     public void indexEntry(FolderEntry entry, boolean includeReplies) {
 		FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
