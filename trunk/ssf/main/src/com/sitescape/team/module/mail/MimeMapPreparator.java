@@ -47,27 +47,23 @@ public class MimeMapPreparator extends AbstractMailPreparator {
 			helper.setFrom(defaultFrom);
 		
 		Collection<InternetAddress> addrs = (Collection)details.get(MailModule.TO);
-		for (InternetAddress a : addrs) {
-			helper.addTo(a);
-		}
 		if (addrs == null || addrs.isEmpty()) {
 			if (details.containsKey(MailModule.FROM)) 
-				helper.addTo((InternetAddress)details.get(MailModule.FROM));
+				helper.setTo((InternetAddress)details.get(MailModule.FROM));
 			else
-				helper.addTo(defaultFrom);
+				helper.setTo(defaultFrom);
 			helper.setSubject(NLT.get("errorcode.noRecipients") + " " + (String)details.get(MailModule.SUBJECT));
+		} else {
+			//Using 1 set results in 1 TO: line in mime-header - GW like this better
+			helper.setTo(addrs.toArray(new InternetAddress[addrs.size()]));			
 		}
 		addrs = (Collection)details.get(MailModule.CC);
 		if (addrs != null) {
-			for (InternetAddress a : addrs) {
-				helper.addCc(a);
-			}
+			helper.setCc(addrs.toArray(new InternetAddress[addrs.size()]));
 		}
 		addrs = (Collection)details.get(MailModule.BCC);
 		if (addrs != null) {
-			for (InternetAddress a : addrs) {
-				helper.addBcc(a);
-			}
+			helper.setBcc(addrs.toArray(new InternetAddress[addrs.size()]));
 		}
 		// the next line creates ALTERNATIVE part, change to setText(String, boolean)
 		// which will cause error in iCalendar section (the ical is add as alternative content) 

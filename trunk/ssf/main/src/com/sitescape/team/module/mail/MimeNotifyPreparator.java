@@ -10,6 +10,7 @@ import java.util.TimeZone;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import net.fortuna.ical4j.model.Calendar;
@@ -32,7 +33,7 @@ import com.sitescape.util.Validator;
 public class MimeNotifyPreparator extends AbstractMailPreparator {
 	EmailFormatter processor;
 	Binder binder;
-	Collection toAddrs;
+	Collection<String> toAddrs;
 	Collection entries;
 	Entry entry;
 	Notify.NotifyType messageType;
@@ -51,7 +52,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		this.sendVTODO = sendVTODO;
 		icalModule = (IcalModule)SpringContextUtil.getBean("icalModule");
 	}
-	public void setToAddrs(Collection toAddrs) {
+	public void setToAddrs(Collection<String> toAddrs) {
 		this.toAddrs = toAddrs;			
 	}
 	public void setEntry(Entry entry) {
@@ -86,15 +87,8 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		helper.setFrom(from);
 	}
 	protected void setToAddrs(MimeMessageHelper helper) throws MessagingException {
-		for (Iterator iter=toAddrs.iterator();iter.hasNext();) {
-			String email = (String)iter.next();
-			try	{
-				if (!Validator.isNull(email)) helper.addTo(email);
-			} catch (AddressException ae) {
-				logger.error("Skipping email notifications for " + email + " Bad email address");
-			}
-		}
-		
+		//Using 1 set results in 1 TO: line in mime-header - GW like this better
+		helper.setTo(toAddrs.toArray(new String[toAddrs.size()]));					
 	}
 	public void prepare(MimeMessage mimeMessage) throws MessagingException {
 		//make sure nothing saved yet
