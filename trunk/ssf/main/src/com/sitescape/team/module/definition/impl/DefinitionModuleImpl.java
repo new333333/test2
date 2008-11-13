@@ -191,10 +191,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Document doc = xIn.read(indoc);
 		String type = doc.getRootElement().attributeValue("type");
 	   	checkAccess(binder, Integer.valueOf(type), DefinitionOperation.manageDefinition);
-    	Definition def = doAddDefinition(doc, binder, name, title, replace);
-    	return def;
+    	return doAddDefinition(doc, binder, name, title, replace);
 
 	}
+	public Definition addDefinition(Document defDoc, Binder binder, boolean replace) {
+		String type = defDoc.getRootElement().attributeValue("type");
+	   	checkAccess(binder, Integer.valueOf(type), DefinitionOperation.manageDefinition);
+    	return doAddDefinition(defDoc, binder, null, null, replace);
+	}
+
 	public Definition copyDefinition(String id, Binder binder, String name, String title) throws AccessControlException {
 		Definition srcDef = getDefinition(id);
 		Document doc = (Document)srcDef.getDefinition().clone();
@@ -241,7 +246,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			try {
 				def = getCoreDao().loadReservedDefinition(internalId, zoneId);
 				//already exists
-				if (!replace || !type.equals(def.getType()) ) return null;
+				if (!replace || !type.equals(def.getType()) ) 
+					throw new DefinitionInvalidException("definition.error.internalAlreadyExists", new Object[] {internalId});
 				def.setName(name);
 				def.setTitle(title);
 				def.setVisibility(Definition.VISIBILITY_PUBLIC);
@@ -260,7 +266,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				if (def.getZoneId().equals(zoneId) &&
 						((binder == null && def.getBinderId() == null) ||
 								(binder != null && binder.getId().equals(def.getBinderId())))) {
-						if (!replace || !type.equals(def.getType())) return null;
+						if (!replace || !type.equals(def.getType())) 
+							throw new DefinitionInvalidException("definition.error.idAlreadyExists", new Object[] {id});
 						//	update it
 						def.setName(name);
 						def.setTitle(title);
@@ -276,7 +283,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		try {
 			def = getCoreDao().loadDefinitionByName(binder, name, zoneId);
 			//found a definition using the name for this binder and zone
-			if (!replace || !type.equals(def.getType())) return null;
+			if (!replace || !type.equals(def.getType())) 
+				throw new DefinitionInvalidException("definition.error.nameNotUnique", new Object[] {name});
+
 			def.setTitle(title);
 			def.setInternalId(internalId);
 			setDefinition(def,doc);
