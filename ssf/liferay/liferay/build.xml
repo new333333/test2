@@ -126,10 +126,12 @@
 				<!--<arg value="${app.server.deploy.dir}/liferay-portal.ear/lib/util-jsf.jar" />-->
 		</java>
 				
-		<!--<delete dir="temp" />
-		<delete dir="temp2" />-->
+		<delete dir="temp" />
+		<delete dir="temp2" />
 
-		<delete file="${app.server.ssf.dir}/WEB-INF/lib/xercesImpl.jar" />
+		<antcall target="deploy-additional-components" />
+
+		<!--<delete file="${app.server.ssf.dir}/WEB-INF/lib/xercesImpl.jar" />-->
 	</target>
 		
 	<target name="deploy-liferay-jboss-tomcat" depends="init-liferay, clean-app-server">		
@@ -171,6 +173,8 @@
 		<delete dir="temp" />
 		<delete dir="temp2" />
 		
+		<antcall target="deploy-additional-components" />
+	
 		<copy todir="${app.server.dir}" overwrite="true">
 			<fileset dir="resources/${liferay.version.jboss.tomcat}/jboss-tomcat" />
 		</copy>
@@ -204,4 +208,21 @@
 			tofile="temp/WEB-INF/jboss-web.xml"/>
 	</target>
 	
+	<!-- Deploy additional components that are not part of ssf web app -->
+	<target name="deploy-additional-components">
+		<!-- AS core component is deployed into the app server's shared area -->
+		<ant dir="${project.dir}/as-module" target="deploy" inheritAll="false" />
+		<!-- portal-module component is deployed directly into Liferay web app -->
+		<ant dir="${project.dir}/portal-module" target="deploy" inheritAll="false" />
+		<!-- liferay component is deployed directly into Liferay web app -->
+		<ant dir="${project.dir}/liferay" target="deploy" inheritAll="false" />
+		<!-- ssfs component is deployed into its own web app -->
+		<ant dir="${project.dir}/ssfs" target="deploy" inheritAll="false" />
+		<!-- ssr component is deployed into its own web app -->
+		<ant dir="${project.dir}/ssr" target="deploy" inheritAll="false" />
+		<!-- simnple-url component is deployed into its own web app -->
+		<ant dir="${project.dir}/simple-url" target="deploy" inheritAll="false" />
+		<ant dir="${project.dir}/mobile" target="deploy" inheritAll="false" />
+	</target>
+
 </project>

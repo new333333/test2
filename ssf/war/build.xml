@@ -26,6 +26,7 @@
 			<fileset dir="${project.dir}/slide-webdavclient" includes="ssf-slide-webdavclient.jar" />
 			<fileset dir="${project.dir}/taglib" includes="ssf-taglib.jar" />
 			<fileset dir="${project.dir}/indexer-lucene" includes="ssf-lucenecommon.jar" />
+			<fileset dir="${project.dir}/liferay/teaming" includes="ssf-liferay-hooks.jar" />
 			<fileset dir="${project.dir}/lib" includes="${libraries.current}" />
 			<fileset dir="${project.dir}/lib" includes="jms.jar" />
 		</copy>
