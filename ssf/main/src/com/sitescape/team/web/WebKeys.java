@@ -623,7 +623,9 @@ public class WebKeys {
     public static final String ERROR_LIST="ssErrorList";
     public static final String EXCEPTION="ssException";
     public static final String ELEMENT_NAME="ssElementName";
-    public static final String EMAIL_ADDRESSES="ssEmailAddresses";
+    public static final String EMAIL_SENT_ADDRESSES="ssSentEmailAddresses";
+    public static final String EMAIL_QUEUED_ADDRESSES="ssQueuedEmailAddresses";
+    public static final String EMAIL_FAILED_ADDRESSES="ssFailedEmailAddresses";
     public static final String EMAIL_ALIASES="ssEmailAliases";
 	public static final String ENTITY_ID = "ss_entityId";
 	public static final String ENTITY_TYPE="_entityType";
@@ -1124,6 +1126,7 @@ public class WebKeys {
     public static final String VIEW_ASPEN_TYPE="forum/select_portlet_type";
     public static final String VIEW_BINDER_CONFIGURE_EMAIL="binder/configureEmail";
     public static final String VIEW_BINDER_SENDMAIL="binder/sendMail";
+    public static final String VIEW_SENDMAIL_RESULT="binder/sendMailResult";
     public static final String VIEW_BINDER_MEETING="binder/meeting";
     public static final String VIEW_BLOG_EDIT="blog_summary/edit";
     public static final String VIEW_BLOG_SUMMARY="blog_summary/view";

@@ -108,8 +108,15 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 				return;
 				
 		   	} catch (MailSendException sx) {
-		   		//try again
-	    		logger.error("Error sending mail:" + sx.getLocalizedMessage());
+				Exception[] exceptions = sx.getMessageExceptions();
+	 			if (exceptions != null && exceptions.length > 0) {
+	 				//some users send, others not
+	 				logger.error(sx.toString()); 	
+	 				next = null;
+	 			} else {
+	 				//try again
+	 				logger.error("Error sending mail:" + sx.getLocalizedMessage());
+	 			}
 	    	} catch (MailAuthenticationException ax) {
 		   		//try again
 	       		logger.error("Authentication Exception:" + ax.getLocalizedMessage());				
@@ -172,7 +179,14 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 			context.setResult("Success");
 			return;
 	   	} catch (MailSendException sx) {
-    		logger.error("Error sending mail:" + sx.getLocalizedMessage());
+ 			Exception[] exceptions = sx.getMessageExceptions();
+ 			if (exceptions != null && exceptions.length > 0) {
+ 				//some users send, others not
+ 				logger.error(sx.toString()); 	
+ 				next = null;
+ 			} else {
+ 				logger.error("Error sending mail:" + sx.getLocalizedMessage());
+ 			}
     	} catch (MailAuthenticationException ax) {
        		logger.error("Authentication Exception:" + ax.getLocalizedMessage());				
 		} catch (Exception ex) {

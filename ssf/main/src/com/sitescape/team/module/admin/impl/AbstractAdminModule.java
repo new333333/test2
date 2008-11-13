@@ -84,6 +84,8 @@ import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.mail.MailModule;
+import com.sitescape.team.module.mail.MailSentStatus;
+
 import com.sitescape.team.module.shared.AccessUtils;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.workspace.WorkspaceModule;
@@ -360,7 +362,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 					boolean replace = true;
 					if (newDefinitionsOnly) replace = false;
 					Definition newDef = getDefinitionModule().addDefinition(in, null, null, null, replace);
-					if (newDef != null) defs.add(newDef.getId());
+					defs.add(newDef.getId());
 					getCoreDao().flush();
 				} catch (Exception ex) {
 					logger.error("Cannot read definition from file: " + file + " " + ex.getMessage());
@@ -680,7 +682,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		List errors = new ArrayList();
 		Map result = new HashMap();
 		result.put(ObjectKeys.SENDMAIL_ERRORS, errors);
-		result.put(ObjectKeys.SENDMAIL_DISTRIBUTION, distribution);
 		//add email address listed 
 		Object[] errorParams = new Object[3];
 		if (emailAddresses != null) {
@@ -723,7 +724,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		if (emailSet.isEmpty()) {
 			//no-one to send tos
 			errors.add(0, NLT.get("errorcode.noRecipients", errorParams));
-			result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_FAILED);
 			return result;			
 		}
     	Map message = new HashMap();
@@ -734,7 +734,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			errorParams[1] = user.getEmailAddress();
 			errorParams[2] = ex.getLocalizedMessage();
 			errors.add(0, NLT.get("errorcode.badFromAddress", errorParams));
-			result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_FAILED);
 			//cannot send without valid from address
 			return result;
     	}
@@ -743,14 +742,13 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    		
     	message.put(MailModule.SUBJECT, subject);
  		message.put(MailModule.TO, emailSet);
- 		boolean sent;
+ 		MailSentStatus results;
  		if (entry != null) {
- 	   		sent = getMailModule().sendMail(entry, message, user.getTitle() + " email", sendAttachments);    		
+ 			results = getMailModule().sendMail(entry, message, user.getTitle() + " email", sendAttachments);    		
  		} else {
-    		sent = getMailModule().sendMail(RequestContextHolder.getRequestContext().getZone(), message, user.getTitle() + " email");    		
+ 			results = getMailModule().sendMail(RequestContextHolder.getRequestContext().getZone(), message, user.getTitle() + " email");    		
     	}
-		if (sent) result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_SENT);
-		else result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_SCHEDULED);
+		result.put(ObjectKeys.SENDMAIL_STATUS, results);
 		return result;
     }
 
