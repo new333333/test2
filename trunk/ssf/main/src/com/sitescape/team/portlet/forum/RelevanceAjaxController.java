@@ -144,9 +144,10 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		//The list of tracked binders and shared binders are kept in the user' user workspace user folder properties
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		Binder binder = getBinderModule().getBinder(binderId);
+		boolean deletePerson = type.equals("deletePerson");
+		Binder binder = (deletePerson ? null : getBinderModule().getBinder(binderId));
 		Long userWorkspaceId = user.getWorkspaceId();
-		if (binder != null && userWorkspaceId != null) {
+		if ((deletePerson || (binder != null)) && userWorkspaceId != null) {
 			UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), userWorkspaceId);
 			Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
 			if (relevanceMap == null) relevanceMap = new HashMap();
