@@ -63,6 +63,14 @@ public class ModifyDashboardController extends AbstractBinderController {
 		String scope = "";
 		if (scope.equals("")) scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
 		if (scope.equals("")) scope = DashboardHelper.Local;
+		String componentScope = "";
+		if (componentId.contains("_")) componentScope = componentId.split("_")[0];
+		if (componentScope.equals("")) componentScope = PortletRequestUtils.getStringParameter(request, "_componentScope", "");
+		if (componentScope.equals("")) componentScope = DashboardHelper.Local;
+		if (scope.equals("") && !componentScope.equals("")) {
+			//The scope wasn't specified, so use the component scope for this operation
+			scope = componentScope;
+		}
 		String returnView = PortletRequestUtils.getStringParameter(request, "_returnView", "binder");
 
 		if (formData.containsKey("set_title")) {
@@ -126,13 +134,15 @@ public class ModifyDashboardController extends AbstractBinderController {
 		String scope = "";
 		if (scope.equals("")) scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
 		if (scope.equals("")) scope = DashboardHelper.Local;
-		String returnView = PortletRequestUtils.getStringParameter(request, "_returnView", "binder");
 		String componentScope = "";
 		if (componentId.contains("_")) componentScope = componentId.split("_")[0];
+		if (componentScope.equals("")) componentScope = PortletRequestUtils.getStringParameter(request, "_componentScope", "");
+		if (componentScope.equals("")) componentScope = DashboardHelper.Local;
 		if (scope.equals("") && !componentScope.equals("")) {
 			//The scope wasn't specified, so use the component scope for this operation
 			scope = componentScope;
 		}
+		String returnView = PortletRequestUtils.getStringParameter(request, "_returnView", "binder");
 
 		String cId = "";
 		if (operation.equals("_modifyComponentData") || 
