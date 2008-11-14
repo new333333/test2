@@ -73,7 +73,8 @@
 </c:if>
 	  <input type="hidden" name="_dashboardList" value="${ss_dashboard_dashboardList}"/>
 	  <input type="hidden" name="_componentId" value="${ss_dashboard_id}"/>
-	  <input type="hidden" name="_scope" value="${ss_dashboard_componentScope}"/>
+	  <input type="hidden" name="_scope" value="${ss_dashboard_scope}"/>
+	  <input type="hidden" name="_componentScope" value="${ss_dashboard_componentScope}"/>
 	  <input type="hidden" name="_operation" value=""/>
 	  <input type="hidden" name="_returnView" value="${ss_dashboard_returnView}"/>
 			<ul class="ss_title_bar_icons">
