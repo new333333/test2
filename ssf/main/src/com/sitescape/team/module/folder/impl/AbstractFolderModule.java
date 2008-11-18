@@ -287,7 +287,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	protected FolderEntry loadEntry(Long folderId, Long entryId) {
 		//folderId may be null
         FolderEntry entry = getFolderDao().loadFolderEntry(folderId, entryId, RequestContextHolder.getRequestContext().getZoneId());             
-		if (entry.isDeleted()) throw new NoFolderEntryByTheIdException(entryId);
+		if (entry.isDeleted() || entry.getParentBinder().isDeleted()) throw new NoFolderEntryByTheIdException(entryId);
 		return entry;
 	}
 	          
