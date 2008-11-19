@@ -66,7 +66,8 @@ function ${renderResponse.namespace}_onsub(obj) {
 	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationTitle"/></span><br/>
 	<input type="text" class="ss_text" size="70" name="title"><br/><br/>
 		
-	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationName"/></span><ssf:inlineHelp tag="ihelp.applications.data_name"/><br/>
+	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationName"/></span><ssf:inlineHelp 
+	  tag="ihelp.designers.data_name"/><br/>
 	<input type="text" class="ss_text" size="70" name="name"><br/><br/>
 		
 	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationPostUrl"/></span><br/>
