@@ -1572,13 +1572,13 @@
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
 		</properties>
-	    <option_entry_data select_type="data" path="//item[@name='workspaceForm']/.//item" 
+	    <option_entry_data select_type="data" path="//item[@name='workspaceForm' or @name='userWorkspaceForm']/.//item" 
 				optionCaption="__workspace_form_data_items">
 					<exclude name="title" />
 					<exclude name="workspaceIcon" />
 					<exclude name="description" />
 					<exclude name="attachFiles"/>
-				</option_entry_data>
+		</option_entry_data>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_workspace_data.jsp" />
 		</jsps>
@@ -1640,6 +1640,7 @@
 				definitionType="12" />
 			<option name="workspaceBinderList" />
 			<option_select path="//item[@category='userWorkspaceViewData']" />
+			<option_select path="//item[@category='workspaceViewData']" />
 			<option_select path="//item[@category='commonEntryViewData']" />
 			<option_select path="//item[@category='generalViewLayout']" 
 				optionCaption="__layout_options" />
@@ -2298,6 +2299,7 @@
 			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
 			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
 			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
+			<option_select definitionType="12" path="//item[@category='workspaceData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
@@ -2351,6 +2353,7 @@
 			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
 			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
 			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
+			<option_select definitionType="12" path="//item[@category='workspaceData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
@@ -2424,6 +2427,7 @@
 			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
 			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
 			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
+			<option_select definitionType="12" path="//item[@category='workspaceData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
@@ -2483,6 +2487,7 @@
 			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
 			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
 			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
+			<option_select definitionType="12" path="//item[@category='workspaceData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
@@ -2552,6 +2557,7 @@
 			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
 			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
 			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
+			<option_select definitionType="12" path="//item[@category='workspaceData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
@@ -2610,6 +2616,7 @@
 			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
 			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
 			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
+			<option_select definitionType="12" path="//item[@category='workspaceData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
@@ -2968,7 +2975,7 @@
 		</options>
 	</item>
 	<item name="notifications" caption="__notifications"
-		  multipleAllowedInParent="false">
+		  multipleAllowedInParent="true">
 		<properties>
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
 			<property name="team" caption="__team" type="checkbox" />
