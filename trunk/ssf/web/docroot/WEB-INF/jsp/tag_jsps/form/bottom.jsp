@@ -27,7 +27,13 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-%>
+%><%--
+--%><%@ include file="/WEB-INF/jsp/common/include.jsp" %><%--
+--%><%@ page import="com.sitescape.util.ParamUtil" %><%--
+--%><portletadapter:defineObjects1/><%--
+--%><ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter><%--
+--%><ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter><%--
+--%>
  
 <c:if test="${empty ss_formTagBottomApplied}">
 </div>
