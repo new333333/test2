@@ -2692,7 +2692,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			}
 		}
 		
-		response.setContentType("text/xml");
+		response.setContentType("text/json-comment-filtered");
 		return new ModelAndView("forum/json/upload_progress_status", model);
 	}
 
