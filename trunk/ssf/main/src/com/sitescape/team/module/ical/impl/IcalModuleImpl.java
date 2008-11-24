@@ -175,7 +175,6 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		Event event = null;
 		Map<String, TimeZone> timeZones = new HashMap();
 		try {
-			CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_PARSING, true);
 			Calendar cal = (new CalendarBuilder()).build(new UnfoldingReader(icalData));
 			for(Object comp : cal.getComponents("VTIMEZONE")) {
 				VTimeZone timeZoneComponent = (VTimeZone) comp;
