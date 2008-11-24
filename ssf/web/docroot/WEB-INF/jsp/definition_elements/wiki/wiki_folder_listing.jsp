@@ -35,7 +35,15 @@
             name="ss_wikiIframe${renderResponse.namespace}" 
             style="width:99%; display:inline; position:relative;"
     		<c:if test="${empty ss_wikiHomepageEntryId && empty ssEntryIdToBeShown}">
-    		  src="<html:rootPath/>js/forum/null.html" 
+    		  src="<ssf:url     
+		    		adapter="true" 
+		    		portletName="ss_forum" 
+		    		folderId="${ssFolder.id}" 
+		    		action="view_folder_entry" 
+		    		actionUrl="false" ><ssf:param 
+		    		name="operation" value="show_no_entries" /><ssf:param 
+		    		name="entryViewStyle" value="popup" /><ssf:param 
+		    		name="namespace" value="${renderResponse.namespace}" /></ssf:url>" 
     		</c:if>
     		<c:if test="${!empty ss_wikiHomepageEntryId || !empty ssEntryIdToBeShown}">
     		  <c:set var="entryId" value="${ss_wikiHomepageEntryId}"/>
