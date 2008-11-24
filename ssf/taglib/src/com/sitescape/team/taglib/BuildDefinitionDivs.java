@@ -942,9 +942,9 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("<td valign=\"top\">");
 									sb.append("<span class=\"ss_bold\">");
 									sb.append(NLT.get("definition.currentWorkflowConditionEntryType"));
-									sb.append("</span><br/>");
+									sb.append("</span>");
 									sb.append("</td>");
-									sb.append("<td valign=\"top\">");
+									sb.append("<td valign=\"top\" style=\"padding-left:4px;\">");
 									if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) sb.append("<del>").append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;")).append("</del>");
 									else sb.append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;"));
 									sb.append("</td>");
@@ -954,9 +954,9 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("<td valign=\"top\">");
 									sb.append("<span class=\"ss_bold\">");
 									sb.append(NLT.get("definition.currentWorkflowConditionElementName"));
-									sb.append("</span><br/>");
+									sb.append("</span>");
 									sb.append("</td>");
-									sb.append("<td valign=\"top\">");
+									sb.append("<td valign=\"top\" style=\"padding-left:4px;\">");
 									sb.append(elementName);
 									sb.append("</td>");
 									sb.append("</tr>");
@@ -965,9 +965,9 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("<td valign=\"top\">");
 									sb.append("<span class=\"ss_bold\">");
 									sb.append(NLT.get("definition.currentWorkflowConditionOperation"));
-									sb.append("</span><br/>");
+									sb.append("</span>");
 									sb.append("</td>");
-									sb.append("<td valign=\"top\">");
+									sb.append("<td valign=\"top\" style=\"padding-left:4px;\">");
 									if (operation.equals("equals")) {
 										sb.append(NLT.get("definition.operation_equals"));
 									} else if (operation.equals("started")) {
@@ -1004,9 +1004,9 @@ public class BuildDefinitionDivs extends TagSupport {
 										sb.append("<td valign=\"top\">");
 										sb.append("<span class=\"ss_bold\">");
 										sb.append(NLT.get("definition.currentWorkflowConditionDuration"));
-										sb.append("</span><br/>");
+										sb.append("</span>");
 										sb.append("</td>");
-										sb.append("<td valign=\"top\">");
+										sb.append("<td valign=\"top\" style=\"padding-left:4px;\">");
 										sb.append(duration);
 										sb.append(" ");
 										if (durationType.equals("minutes")) {
@@ -1027,9 +1027,9 @@ public class BuildDefinitionDivs extends TagSupport {
 										sb.append("<td valign=\"top\">");
 										sb.append("<span class=\"ss_bold\">");
 										sb.append(NLT.get("definition.currentWorkflowConditionValues"));
-										sb.append("</span><br/>");
+										sb.append("</span>");
 										sb.append("</td>");
-										sb.append("<td valign=\"top\">");
+										sb.append("<td valign=\"top\" style=\"padding-left:4px;\">");
 										while (it_workflowConditionValues.hasNext()) {
 											sb.append(((Element)it_workflowConditionValues.next()).getText());
 											if (it_workflowConditionValues.hasNext()) sb.append("<br/>");
@@ -1095,9 +1095,9 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("<td valign=\"top\">");
 									sb.append("<span class=\"ss_bold\">");
 									sb.append(NLT.get("definition.currentWorkflowConditionEntryType"));
-									sb.append("</span><br/>");
+									sb.append("</span>");
 									sb.append("</td>");
-									sb.append("<td valign=\"top\">");
+									sb.append("<td valign=\"top\" style=\"padding-left:4px;\">");
 									if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) sb.append("<del>").append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;")).append("</del>");
 									else sb.append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;"));
 									sb.append("</td>");
@@ -1107,9 +1107,9 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("<td valign=\"top\">");
 									sb.append("<span class=\"ss_bold\">");
 									sb.append(NLT.get("definition.currentWorkflowConditionElementName"));
-									sb.append("</span><br/>");
+									sb.append("</span>");
 									sb.append("</td>");
-									sb.append("<td valign=\"top\">");
+									sb.append("<td valign=\"top\" style=\"padding-left:4px;\">");
 									sb.append(elementName.deleteCharAt(0).toString());
 									sb.append("</td>");
 									sb.append("</tr>");
