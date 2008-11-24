@@ -39,7 +39,7 @@
         <td valign="middle" align="right">
           <span><ssf:nlt tag="login.name"/></span>
         </td>
-        <th valign="top" style="padding-left:4px;">
+        <td valign="top" style="padding-left:4px;">
           <input type="text" class="ss_text_${ss_loginFormStyle}" size="40" name="j_username"/>
         </td>
 		<td>&nbsp;</td>
