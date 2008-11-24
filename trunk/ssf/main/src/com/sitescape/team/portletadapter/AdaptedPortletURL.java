@@ -99,6 +99,11 @@ public class AdaptedPortletURL {
 			this.secure = req.isSecure();
 		this.params = new HashMap();
 	}
+
+	public AdaptedPortletURL(PortletRequest req, String portletName, boolean action, boolean crawler) {
+		this(req, portletName, action);
+		this.crawler = crawler;
+	}
 	
 	/**
 	 * Add to a preconstructed url

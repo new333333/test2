@@ -48,7 +48,7 @@ public class PermaLinkUtil {
 	
 	//userId may be placeholder
 	public static String getUserPermalink(HttpServletRequest request, String userId) {
-		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true, true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId);
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name());
@@ -56,12 +56,12 @@ public class PermaLinkUtil {
 	}
 	
 	public static String getPermalink(HttpServletRequest request, DefinableEntity entity) {
-		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true, true);
 		getPermalinkURL(url, entity.getId(), entity.getEntityType());
 		return url.toString();
 	}
 	public static String getPermalink(PortletRequest request, DefinableEntity entity) {
-		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true, true);
 		getPermalinkURL(url, entity.getId(), entity.getEntityType());
 		return url.toString();
 	}
@@ -86,12 +86,12 @@ public class PermaLinkUtil {
 		
 	}
 	public static String getPermalink(HttpServletRequest request, Map searchResults) {
-		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true, true);
 		getPermalinkURL(url, searchResults);
 		return url.toString();
 	}
 	public static String getPermalink(PortletRequest request, Map searchResults) {
-		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true, true);
 		getPermalinkURL(url, searchResults);
 		return url.toString();
 	}
