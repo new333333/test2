@@ -156,9 +156,9 @@ public class ModelInputData implements InputDataAccessor {
 	public String getSingleValue(String key) {
 		Object obj = getSingleObject(key);
 		if(obj != null) {
-			if(obj instanceof Long[])
+			if(obj instanceof Long[] && ((Long[])obj).length!=0)
 				obj = ((Long[])obj)[0];
-			else if(obj instanceof String[])
+			else if(obj instanceof String[] && ((String[])obj).length!=0)
 				obj = ((String[])obj)[0];
 		}
 		if(obj == null)
