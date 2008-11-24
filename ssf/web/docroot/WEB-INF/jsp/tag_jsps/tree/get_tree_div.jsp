@@ -54,6 +54,7 @@
 		  rootOpen="true" 
 		  showIdRoutine="${ss_tree_showIdRoutine}"
 		  namespace="${ss_namespace}"
+		  showFullLineOnHover="${ss_tree_showFullLineOnHover}"
 		/>
 	</c:when>
 	<c:when test="${ss_tree_select_type == '1'}">
@@ -67,6 +68,7 @@
 		  namespace="${ss_namespace}"
 		  singleSelect="${ss_tree_select}"
 		  singleSelectName="${ss_tree_select_id}"
+		  showFullLineOnHover="${ss_tree_showFullLineOnHover}"
 		/>
 	</c:when>
 	<c:when test="${ss_tree_select_type == '2'}">
@@ -81,6 +83,7 @@
 		  namespace="${ss_namespace}"
 		  multiSelect="<%= ss_tree_select %>"
 		  multiSelectPrefix="${ss_tree_select_id}"
+		  showFullLineOnHover="${ss_tree_showFullLineOnHover}"
 		/>
 	</c:when>
 	</c:choose>

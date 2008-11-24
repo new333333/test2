@@ -1436,6 +1436,9 @@ function m_setSubmitRoutine(submitRoutine) {
 //  unless the onClick for the submit button called ss_selectButton('cancelBtn').
 //  If any routine returns "false", then this routine returns false.
 function ss_onSubmit(obj) {
+    //Take this opportunity to fill in the action if blank. Some browsers want this to be non-blank.
+    if (typeof obj.action != 'undefined' && obj.action == '') obj.action = self.location.href;
+    
     var result = true;
     if(ss_buttonSelected == "cancelBtn") {
     	return true;
@@ -5771,11 +5774,12 @@ function ss_scrollOuter() {
 //
 var ss_treeIds;
 if (ss_treeIds == null) ss_treeIds = new Array();
-function ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey) {
+function ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey, showFullLineOnHover) {
 	ss_hideBucketText()
 	if (page == null) page = "";
+	if (showFullLineOnHover == null) showFullLineOnHover = "false";
 	if (window["ss_treeDisplayStyle"] && ss_treeDisplayStyle == 'accessible') {
-		return ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, indentKey);
+		return ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, indentKey, showFullLineOnHover);
 	}
 	ss_setupStatusMessageDiv()
     var tObj = self.document.getElementById(treeName + "div" + id);
@@ -5795,6 +5799,7 @@ function ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey) {
 		ajaxRequest.addKeyValue("page", page)
 		ajaxRequest.addKeyValue("indentKey", indentKey)
 		ajaxRequest.addKeyValue("showIdRoutine", showTreeIdRoutine)
+		ajaxRequest.addKeyValue("showFullLineOnHover", showFullLineOnHover)
  		var treeKey = window["ss_treeKey_"+treeName];
 		if (treeKey != null)
 			ajaxRequest.addKeyValue("treeKey", treeKey);
@@ -5870,7 +5875,7 @@ function ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey) {
 	}
 }
 
-function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, indentKey) {
+function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, indentKey, showFullLineOnHover) {
 	if (page == null) page = "";
     var tempObj = self.document.getElementById(treeName + "temp" + id);
     var tempObjParent = self.parent.document.getElementById(treeName + "temp" + id);
@@ -6043,17 +6048,18 @@ function ss_treeOpen(treeName, id, parentId, bottom, type) {
 	}
 }
 
-function ss_treeToggleAll(treeName, id, parentId, bottom, type, page, indentKey) {
+function ss_treeToggleAll(treeName, id, parentId, bottom, type, page, indentKey, showFullLineOnHover) {
 	ss_hideBucketText()
 	if (page == null) page = "";
+	if (showFullLineOnHover == null) showFullLineOnHover = "false";
     var tObj = self.document.getElementById(treeName + "div" + id);
     if (tObj == null) {
     	//The div hasn't been loaded yet. Only load one div at a time
-    	ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey)
+    	ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey, showFullLineOnHover)
     	return
     }
 	if (tObj.style.display == "none") {
-		ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey)
+		ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey, showFullLineOnHover)
 	}
     var children = tObj.childNodes;
     for (var i = 0; i < children.length; i++) {
@@ -6061,11 +6067,26 @@ function ss_treeToggleAll(treeName, id, parentId, bottom, type, page, indentKey)
 			var nodeRoot = treeName + "div";
 			var childnode = children[i].id.substr(nodeRoot.length)
     		if (children[i].style.display == "none") {
-    			ss_treeToggle(treeName, childnode, id, bottom, type, "", indentKey)
+    			ss_treeToggle(treeName, childnode, id, bottom, type, "", indentKey, showFullLineOnHover)
     		}
-    		ss_treeToggleAll(treeName, childnode, id, bottom, type, "", indentKey)
+    		ss_treeToggleAll(treeName, childnode, id, bottom, type, "", indentKey, showFullLineOnHover)
     	}
     }
+}
+
+function ss_getNodeById(obj, id) {
+	for( var i = 0; obj.childNodes[i]; i++ ) {
+		if (obj.childNodes[i].getAttribute("id") == id) return obj.childNodes[i];
+	}
+	return null;
+}
+
+function ss_treeShowAbsDiv(obj) {
+	obj.className = "ss_treeTitleDiv2";
+}
+
+function ss_treeHideAbsDiv(obj) {
+	obj.className = "ss_treeTitleDiv1";
 }
 
 var ss_treeIcons = new Array();

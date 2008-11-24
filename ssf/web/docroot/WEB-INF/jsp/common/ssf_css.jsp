@@ -1400,15 +1400,42 @@ span.ss_tree_highlight {
   color: ${ss_tree_highlight_line_color};
 }
 
-div.ss_sidebar_panel div.ss_treeWidget span {
+div.ss_treeWidget span {
     font-size: ${ss_style_font_smallprint};
 }
 
 a.ss_tree_highlight:active, a.ss_tree_highlight:hover {
   font-weight: bold;
   color: ${ss_tree_highlight_line_color};
-  text-decoration: underline !important;
+  text-decoration: none !important;
   }
+  
+a.ss_tree_highlight_not  {
+  text-decoration: none;
+  }
+span.ss_tree_highlight_not {
+  color: ${ss_tree_highlight_line_color};
+}
+a.ss_tree_highlight_not:active, a.ss_tree_highlight_not:hover {
+  color: ${ss_tree_highlight_line_color};
+  text-decoration: none !important;
+  }
+.ss_treeTitleDiv1 {
+  position: relative;
+  display: inline;
+  background-color: transparent;
+  border: 1px dotted transparent;
+}
+.ss_treeTitleDiv2 {
+  position: absolute;
+  padding-top:1px;
+  white-space: nowrap;
+  display: inline;
+  overflow: visible !important;
+  z-index: 500;
+  background-color: ${ss_style_background_color_opaque};
+  border: 1px dotted #cecece;
+}
   
 .ss_tree_bucket_text_div {
   position:absolute;
@@ -1811,6 +1838,9 @@ div.ss_sidebar_panel {
 	width: 200px;
 	overflow: hidden;
 	}
+div.ss_sidebar_panel {
+    font-size: ${ss_style_font_smallprint};
+}
 div.ss_sidebar_panel_featured {
 	width: 200px;
 	overflow: hidden;
