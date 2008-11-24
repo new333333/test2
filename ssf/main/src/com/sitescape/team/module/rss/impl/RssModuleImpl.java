@@ -307,8 +307,10 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		File indexPath = getRssIndexPath(entry.getParentBinder());
 
 		// See if the feed already exists
-		if (!indexPath.exists())
+		if (!indexPath.exists()) {
+			SimpleProfiler.stopProfiler("RssModule.updateRssFeed");
 			return; // if it doesn't already exist, then don't update it.
+		}
 
 		RssFeedLock rfl = new RssFeedLock(getRssIndexLockFile(entry.getParentBinder()));
 		try {
