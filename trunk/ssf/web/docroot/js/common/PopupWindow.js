@@ -246,22 +246,27 @@ function PopupWindow_isClicked(e) {
 			}
 		else if (document.all) { // Need to hard-code this to trap IE for error-handling
 			var t = window.event.srcElement;
-			while (t.parentElement != null) {
-				if (t.id==this.divName) {
-					return true;
+			try {
+				while (t.parentElement != null) {
+					if (t.id==this.divName) {
+						return true;
 					}
-				t = t.parentElement;
+					t = t.parentElement;
 				}
+			} catch(e) {}
 			return false;
 			}
 		else if (this.use_gebi && e) {
 			var t = e.originalTarget;
-			while (t.parentNode != null) {
-				if (t.id==this.divName) {
-					return true;
+			if (t == null) return false;
+			try {
+				while (typeof t.parentNode != "undefined" && t.parentNode != null) {
+					if (t.id==this.divName) {
+						return true;
 					}
-				t = t.parentNode;
+					t = t.parentNode;
 				}
+			} catch(e) {}
 			return false;
 			}
 		return false;
