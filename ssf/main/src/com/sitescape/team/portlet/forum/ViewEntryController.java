@@ -204,6 +204,9 @@ public class ViewEntryController extends  SAbstractController {
  		FolderEntry fe = null;
 		try {
 			if (Validator.isNull(entryId)) {
+				if (operation.equals(WebKeys.OPERATION_SHOW_NO_ENTRIES)) 
+					return new ModelAndView(WebKeys.VIEW_NO_ENTRIES, model);
+				
 				entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
 				model.put(WebKeys.ENTRY_TITLE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_PAGE_TITLE, ""));
 				Set entries = getFolderModule().getFolderEntryByNormalizedTitle(folderId, entryId);
