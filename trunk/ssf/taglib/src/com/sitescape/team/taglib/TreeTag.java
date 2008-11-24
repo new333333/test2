@@ -96,6 +96,7 @@ public class TreeTag extends TagSupport {
 	private boolean noInit = false;
 	private boolean flat = false;
 	private boolean finished = false;
+	private boolean showFullLineOnHover = false;
 	private String lastListStyle = "";
 	private String showIdRoutine = "";
 	private String portletName = "ss_forum";
@@ -344,6 +345,7 @@ public class TreeTag extends TagSupport {
 	    	flat=false;
 	    	className="";
 	    	callbackUrl=null;
+	    	showFullLineOnHover=false;
 	    }
 	    
 		return SKIP_BODY;
@@ -387,6 +389,7 @@ public class TreeTag extends TagSupport {
 					titleClass = "class=\""+ e.attributeValue("titleHighlightClass") +"\"";
 				}
 			} else {
+				titleClass = "class=\"ss_tree_highlight_not\"";
 				if (!className.equals("")) titleClass = "class=\"" + className + "\"";
 				if (!e.attributeValue("titleClass", "").equals("")) {
 					titleClass = "class=\"" + e.attributeValue("titleClass") + "\"";
@@ -500,9 +503,9 @@ public class TreeTag extends TagSupport {
 						}
 						jspOut.print("<a "+classField+" "+targetField+" href=\"javascript: ;\" ");
 						jspOut.print("onClick=\"");
-						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
+						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"', '"+showFullLineOnHover+"');return false;\" ");
 						jspOut.print("onDblClick=\"");
-						jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
+						jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"', '"+showFullLineOnHover+"');return false;\" ");
 						jspOut.print("style=\"text-decoration: none;\">");
 						jspOut.print("<img border=\"0\" alt=\"" +NLT.get("alt.toggleTree")+ "\" id=\"" + this.treeName + "join" + s_id + "\" class=\"");
 		
@@ -528,9 +531,9 @@ public class TreeTag extends TagSupport {
 						if (!className.equals("")) classField = "class=\""+className+"\"";
 						jspOut.print("<a "+classField+" "+targetField+" href=\"javascript: ;\" ");
 						jspOut.print("onClick=\"");
-						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
+						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"', '"+showFullLineOnHover+"');return false;\" ");
 						jspOut.print("onDblClick=\"");
-						jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
+						jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"', '"+showFullLineOnHover+"');return false;\" ");
 						jspOut.print("style=\"text-decoration: none;\">");
 						jspOut.print("<img border=\"0\" alt=\"" +NLT.get("alt.toggleTree")+ "\" id=\"" + this.treeName + "join" + s_id + "\" class=\"");
 		
@@ -585,6 +588,11 @@ public class TreeTag extends TagSupport {
 					} else {
 						classField = titleClass;
 					}
+					jspOut.print("<div class='ss_treeTitleDiv1' ");
+					if (this.showFullLineOnHover) {
+						jspOut.print("onMouseover='ss_treeShowAbsDiv(this);' onMouseout='ss_treeHideAbsDiv(this);'");
+					}
+					jspOut.print(">");
 					jspOut.print("<a "+classField+" "+targetField+" href=\"" + ((s_url == null || "".equals(s_url))?"javascript: //;":s_url) + "\" ");
 					if (s_id != null && !s_id.equals("")) {
 						jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this,'"+action+"', '"+namespace+"');}\" ");
@@ -595,7 +603,7 @@ public class TreeTag extends TagSupport {
 				jspOut.print(s_text);
 				jspOut.print("</span>");
 				
-				if (!displayOnly) jspOut.print("</a>");
+				if (!displayOnly) jspOut.print("</a></div>");
 
 				jspOut.print("<br/>\n");
 			}
@@ -799,6 +807,11 @@ public class TreeTag extends TagSupport {
 			if (!displayOnly) {
 				String classField = "class=\"ss_twA\"";
 				if (!className.equals("")) classField = "class=\"ss_twA " + className + "\"";
+				jspOut.print("<div class='ss_treeTitleDiv1' ");
+				if (this.showFullLineOnHover) {
+					jspOut.print("onMouseover='ss_treeShowAbsDiv(this);' onMouseout='ss_treeHideAbsDiv(this);'");
+				}
+				jspOut.print(">");
 				jspOut.print("<a "+classField+" "+targetField+" href=\"" + s_url + "\" ");
 				if (s_id != null && !s_id.equals("")) {
 					jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this,'"+action+"','"+namespace+"');}\" ");
@@ -809,7 +822,7 @@ public class TreeTag extends TagSupport {
 			jspOut.print(s_text);
 			jspOut.print("</span>");
 			
-			if (!displayOnly) jspOut.print("</a>");
+			if (!displayOnly) jspOut.print("</a></div>");
 			jspOut.print("<br/>\n");
 			
 			// Recurse if node has children
@@ -916,6 +929,10 @@ public class TreeTag extends TagSupport {
 	
 	public void setNoInit(boolean noInit) {
 	    this.noInit = noInit;
+	}
+	
+	public void setShowFullLineOnHover(boolean showFullLineOnHover) {
+	    this.showFullLineOnHover = showFullLineOnHover;
 	}
 	
 	public void setPortletName(String portletName)

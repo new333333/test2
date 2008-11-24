@@ -1035,6 +1035,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put("ss_tree_parentId", PortletRequestUtils.getStringParameter(request, "parentId", ""));
 		model.put("ss_tree_bottom", PortletRequestUtils.getStringParameter(request, "bottom", ""));
 		model.put("ss_tree_type", PortletRequestUtils.getStringParameter(request, "type", ""));
+		model.put("ss_tree_showFullLineOnHover", PortletRequestUtils.getStringParameter(request, "showFullLineOnHover", "false"));
 
 		model.put("ss_tree_indentKey", indentKey);
 		model.put("ss_tree_topId", op2);

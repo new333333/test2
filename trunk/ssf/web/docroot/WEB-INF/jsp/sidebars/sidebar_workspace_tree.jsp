@@ -40,7 +40,8 @@
 			  showIdRoutine="ss_treeShowId"
 			  namespace="${renderResponse.namespace}"
 			  rootOpen="true"
-			  nowrap="true"/>
+			  nowrap="true"
+			  showFullLineOnHover="true"/>
 		</c:if>
 	</ssf:sidebarPanel>
 </c:if>	
