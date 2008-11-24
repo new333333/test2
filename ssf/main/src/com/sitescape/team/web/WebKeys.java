@@ -443,6 +443,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_TEAM_MEMBERS = "get_team_members";
 	public static final String OPERATION_GET_CLIPBOARD_USERS = "get_clipboard_users";
 	public static final String OPERATION_SHOW_TEAM_MEMBERS = "show_team_members";
+	public static final String OPERATION_SHOW_NO_ENTRIES = "show_no_entries";
 	public static final String OPERATION_FIND_CALENDAR_EVENTS = "find_calendar_events";
 	public static final String OPERATION_STICKY_CALENDAR_DISPLAY_SETTINGS = "sticky_calendar_display_settings";
 	public static final String OPERATION_GET_CALENDAR_FREE_INFO = "get_calendar_free_info";
@@ -1156,6 +1157,7 @@ public class WebKeys {
     public static final String VIEW_LOGOUT_RETURN="forum/logout_return";
     public static final String VIEW_MOBILE="mobile/view";
     public static final String VIEW_MOBILE_EDIT="mobile/edit";
+    public static final String VIEW_NO_ENTRIES="forum/view_no_entries";
     public static final String VIEW_TASK_SUMMARY="task_summary/view";
     public static final String VIEW_TASK_EDIT="task_summary/edit";
     public static final String VIEW_LICENSE_REPORT="administration/license_report";
