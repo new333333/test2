@@ -30,7 +30,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!empty ss_toolbar_meeting_url}">
-		<div class="ss_leftNav ss_sideEmail">
+		<div class="ss_leftNav ss_sideMeet">
 		  <ul>
 			<li>
 			  <c:if test="${!ss_toolbar_meeting_post}">
