@@ -176,7 +176,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
             </c:if>
         </td>
         <td height="24" colspan="2" class="ss_mastheadtoplinks ss_masthead_portals" >
-          <c:if test="${empty ssStandAlone || !ssStandAlone}">
+          <c:if test="${!empty ssStandAlone && !ssStandAlone}">
         	  <ssHelpSpot helpId="navigation_bar/my_portal_button" offsetY="10" offsetX="0" 
 			      title="<ssf:nlt tag="helpSpot.myPortalButton" text="My Portal"/>">
 			  </ssHelpSpot>

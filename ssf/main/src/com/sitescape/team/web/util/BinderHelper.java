@@ -387,6 +387,8 @@ public class BinderHelper {
 		}
 		if ("standalone".equals(SPropsUtil.getString("deployment.portal"))) {
 			model.put((WebKeys.STAND_ALONE), true);
+		} else {
+			model.put((WebKeys.STAND_ALONE), false);
 		}
 
 	}
