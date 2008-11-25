@@ -629,13 +629,17 @@ div.ss_iconed_label hover {
 }
 div.ss_tag_label {
   font-family: ${ss_style_title_font_family};
-  padding-left: 30px;
+  padding-left: 6px;
   padding-right: 4px;
   margin-left: 2px;
   font-size: 11px;
   font-weight: bold;
   line-height: 16px;
   color: ${ss_style_muted_label_color};
+}
+div.ss_tag_content {
+  padding-left: 6px;
+  margin-left: 2px;
 }
 .ss_muted_label_small {
   font-size: 11px;
