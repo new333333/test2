@@ -29,6 +29,7 @@
 package com.sitescape.team.module.rss.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
@@ -148,7 +149,20 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	private File getRssIndexActivityFile(Binder binder) {
 		return new File(getRssPath(binder), "timestampfile");
 	}
+	
 	public synchronized void deleteRssFeed(Binder binder) {
+		RssFeedLock rfl = new RssFeedLock(getRssIndexLockFile(binder));
+		try {
+			if (!rfl.getFeedLock()) {
+				logger.info("Couldn't get the RssFeedLock");
+			}
+			deleteFeed(binder);
+		} finally {
+			rfl.releaseFeedLock();
+		}
+		
+	}
+	public synchronized void deleteFeed(Binder binder) {
 
 		// See if the feed exists
 		File rf = new File(getRssPath(binder));
@@ -157,18 +171,12 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		
 		if (!indexPath.exists()) return;
 		
-		RssFeedLock rfl = new RssFeedLock(getRssIndexLockFile(binder));
 		try {
-			if (!rfl.getFeedLock()) {
-				logger.info("Couldn't get the RssFeedLock");
-			}
 			if (indexPath.exists())
 				FileHelper.deleteRecursively(indexPath);
 		} catch (Exception e) {
 			logger.info("Rss module error: " + e.toString());
-		} finally {
-			rfl.releaseFeedLock();
-		}
+		} 
 		if (rf.exists())
 			FileHelper.deleteRecursively(rf);
 	}
@@ -264,7 +272,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			long currentTime = System.currentTimeMillis();
 			long maxInactive = maxInactiveDays * DAYMILLIS;
 			if ((currentTime - lastModified) > maxInactive) {
-				deleteRssFeed(binder);
+				deleteFeed(binder);
 				return true;
 			}
 		} catch (Exception e) {
@@ -326,7 +334,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			// see if the rss capability has been disabled, if so, delete the feed.
 			boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
 			if (!rssEnabled) {
-				deleteRssFeed(entry.getParentBinder());
+				deleteFeed(entry.getParentBinder());
 				return;
 			}
 			
