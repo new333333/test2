@@ -29,33 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.searchButton"/></span>
-</div>
-
-<p><ssf:nlt tag="help.searchboxes.content.intro" /></p>
-
-<div class="picture">
-<img border="0" <ssf:alt tag="alt.search"/> src="<html:imagesPath/>pics/search_icon.gif" />
-</div>
-
-<p><ssf:nlt tag="help.searchboxes.content.results"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="help.searchboxes.content.peoplePlacesTags" /></p>
-
-<p><ssf:nlt tag="help.searchboxes.content.typeFewLetters"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-</div>
-
-<p class="ss_help_moreinfo"><ssf:nlt tag="help.globalStrings.moreinfo.leadInSentence"/>
-<a href="#skip_nav_titles" title="<ssf:nlt tag="helpTitleAlt.skipNavTitles" />"><img border="0" alt="" src="<html:imagesPath/>pics/1pix.gif" /></a>
-</p>
-
-<div class="ss_help_moreinfo">
-<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('navigation_bar/search_results', 'ss_moreinfo_panel');"><ssf:nlt tag="help.searchboxes.subtopic.moreSearchInfo"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></a><a id="skip_nav_titles"/></p>
-</div>
-
-</div>
+<jsp:include page="/WEB-INF/help/${ssUser.locale}/search_button.html" />
