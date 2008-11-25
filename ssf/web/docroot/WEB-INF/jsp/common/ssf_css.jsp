@@ -742,6 +742,8 @@ div.ss_send_friend {
 div.ss_help_popup_body_frame {
   border: 1px solid #6B78A9;
   padding: 10px;
+  height: 350px;
+  overflow: auto;
 }
 
 img.ss_help_cpanel_show {
