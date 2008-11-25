@@ -48,27 +48,33 @@
 boolean isIEtag = BrowserSniffer.is_ie(request);
 %>
 
-<table class="ss_style" cellspacing="0" cellpadding="0">
+<table class="ss_style" cellspacing="0" cellpadding="0" style="padding-top:6px;">
  <tbody>
   <tr>
-	<td valign="top" style="padding-right:2px;">
-		  <ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="-10" xAlignment="left" 
-		    <c:if test="<%= isIEtag %>">
-		       offsetY="-3" 
-		    </c:if>
-		    <c:if test="<%= !isIEtag %>">
-		       offsetY="-17" 
-		    </c:if>
-		     xAlignment="left" title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
-		  </ssHelpSpot>
-		  <div class="ss_tag_label"><ssf:nlt tag="tags.tags"/>:</div>
+	<th>
+	  <ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="-10" xAlignment="left" 
+	    <c:if test="<%= isIEtag %>">
+	       offsetY="-3" 
+	    </c:if>
+	    <c:if test="<%= !isIEtag %>">
+	       offsetY="-17" 
+	    </c:if>
+	     xAlignment="left" title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
+	  </ssHelpSpot>
+	  <div class="ss_tag_label"><ssf:nlt tag="tags.tags"/>:</div>
 
-		  <div id="ss_tags_anchor${ss_tagViewNamespace}_${ss_tagDivNumber}">
-		  </div>
-	</td>
-	<td width="100%">
+	  <div id="ss_tags_anchor${ss_tagViewNamespace}_${ss_tagDivNumber}">
+	  </div>
+	</th>
+  </tr>
+  <tr>
+	<td width="100%" valign="top" >
+	  <div class="ss_tag_content">
 		<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
-	</td></tr></tbody>
+	  </div>
+	</td>
+  </tr>
+ </tbody>
 </table>
 
 <div class="ss_sub_sidebarMenu" style="padding:5px 0px 5px 10px; ">
