@@ -67,6 +67,7 @@ import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.report.ReportModule.ActivityInfo;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.SearchUtils;
+import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SpringContextUtil;
@@ -88,6 +89,22 @@ public class RelevanceDashboardHelper {
 		//No dashboard for the guest account
 		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return;
         
+		//See if this is a new "type" setting. If so, remember it
+		Long userWorkspaceId = user.getWorkspaceId();
+		if (userWorkspaceId != null) {
+			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(user.getId(), userWorkspaceId);
+			String relevanceTab = (String)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_TAB);
+			if (relevanceTab == null) relevanceTab = "";
+			if (!type.equals("") && !type.equals(relevanceTab)) {
+				//Remember the last tab
+				bs.getProfileModule().setUserProperty(user.getId(), userWorkspaceId, ObjectKeys.USER_PROPERTY_RELEVANCE_TAB, type);
+			} else if (type.equals("")) {
+				type = relevanceTab;
+				model.put("ssRDCurrentTab", type);
+			}
+		}
+		if (type.equals("")) type = ObjectKeys.RELEVANCE_DASHBOARD_PROFILE;
+		
 		//Figure out if this is a user workspace; dashboards are relative to the user workspace owner
         if (binderId == null) binderId = user.getWorkspaceId();
 		Binder userWorkspace = bs.getBinderModule().getBinder(binderId);

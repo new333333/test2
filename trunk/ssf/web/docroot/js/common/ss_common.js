@@ -887,7 +887,9 @@ function ss_selectRelevanceTab(obj, type, binderId, namespace) {
 		if (type == 'profile') {
 			//Special case for the profile tab; always refresh the whole page
 			url = window["ss_relevanceProfileUrl"+namespace];
+			url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
 			url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
+			url = ss_replaceSubStr(url, "ss_pagePlaceHolder", "0");
 			url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
 			self.location.href = url;
 		} else {

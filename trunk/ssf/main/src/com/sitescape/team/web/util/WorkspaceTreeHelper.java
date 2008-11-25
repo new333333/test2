@@ -230,8 +230,7 @@ public class WorkspaceTreeHelper {
 						model.put(WebKeys.USER_WORKSPACE, true);
 
 						//Get the dashboard initial tab if one was passed in
-						String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, ObjectKeys.RELEVANCE_DASHBOARD_PROFILE);
-
+						String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
 				        RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, request, response, 
 				        		binder.getId(), type, model);
 					} catch (Exception ex) {} //user may have been deleted, but ws left around

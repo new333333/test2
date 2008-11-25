@@ -303,7 +303,7 @@ public class BinderHelper {
 	        }
 	        Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 			//Get the dashboard initial tab if one was passed in
-			String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, ObjectKeys.RELEVANCE_DASHBOARD_PROFILE);
+			String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
 	        RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, request, response, 
 	        		binderId, type, model);
 	    	return new ModelAndView(WebKeys.VIEW_RELEVANCE_DASHBOARD, model); 		
