@@ -44,7 +44,9 @@
 		name="rn" value="ss_rnPlaceHolder" /></ssf:url>";
   var ss_relevanceProfileUrl${renderResponse.namespace} = "<ssf:url 
         action="view_ws_listing" ><ssf:param 
-      	name="binderId" value="ss_binderIdPlaceHolder"/></ssf:url>";
+      	name="binderId" value="ss_binderIdPlaceHolder"/><ssf:param 
+		name="type" value="profile" /><ssf:param 
+		name="page" value="0" /></ssf:url>";
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
   <c:if test="${ssBinder.entityType == 'workspace'}">
