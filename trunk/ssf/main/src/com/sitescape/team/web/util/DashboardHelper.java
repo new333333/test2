@@ -1464,7 +1464,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						} else {
 							//Move it into the next lower group
 							String newListKey = "";
-							if (dashboardListKey.equals(Dashboard.WIDE_TOP)) newListKey = Dashboard.NARROW_FIXED;
+// Bugzilla 445187:			if (dashboardListKey.equals(Dashboard.WIDE_TOP)) newListKey = Dashboard.NARROW_FIXED;
 							if (dashboardListKey.equals(Dashboard.NARROW_FIXED)) newListKey = Dashboard.NARROW_VARIABLE;
 							if (dashboardListKey.equals(Dashboard.NARROW_VARIABLE)) newListKey = Dashboard.WIDE_BOTTOM;
 							if (!newListKey.equals("")) {
