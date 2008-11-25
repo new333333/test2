@@ -148,7 +148,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	private File getRssIndexActivityFile(Binder binder) {
 		return new File(getRssPath(binder), "timestampfile");
 	}
-	public void deleteRssFeed(Binder binder) {
+	public synchronized void deleteRssFeed(Binder binder) {
 
 		// See if the feed exists
 		File rf = new File(getRssPath(binder));
@@ -173,7 +173,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			FileHelper.deleteRecursively(rf);
 	}
 
-	public void deleteRssFeed(Binder binder, Collection<Entry> entries) {
+	public synchronized void deleteRssFeed(Binder binder, Collection<Entry> entries) {
 		File indexPath = getRssIndexPath(binder);
 
 		// See if the feed already exists
@@ -211,7 +211,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 		generateRssIndex(binder);
 	}
-	private void generateRssIndex(Binder binder) {
+	private synchronized void generateRssIndex(Binder binder) {
 		// create a new index, then populate it
 		RssFeedLock rfl = new RssFeedLock(getRssIndexLockFile(binder));
 
@@ -301,7 +301,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	 * 
 	 * @param entry
 	 */
-	public void updateRssFeed(Entry entry) {
+	public synchronized void updateRssFeed(Entry entry) {
 
 		SimpleProfiler.startProfiler("RssModule.updateRssFeed");
 		File indexPath = getRssIndexPath(entry.getParentBinder());
@@ -389,7 +389,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	 * @param binder
 	 * @param user
 	 */
-	public String filterRss(HttpServletRequest request,
+	public synchronized String filterRss(HttpServletRequest request,
 			HttpServletResponse response, Binder binder) {
 
 		boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
@@ -457,7 +457,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	 * @param binder
 	 * @param user
 	 */
-	public String filterAtom(HttpServletRequest request,
+	public synchronized String filterAtom(HttpServletRequest request,
 			HttpServletResponse response, Binder binder) {
 
 		boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
@@ -739,6 +739,7 @@ class RssFeedLock {
 	}
 
 	public boolean getFeedLock() {
+		int tryCount = 0;
 		if (!lockFile.exists()) {
 			try {
 				lockFile.createNewFile();
@@ -748,7 +749,17 @@ class RssFeedLock {
 		}
 		try {
 			fileChannel = new RandomAccessFile(lockFile, "rw").getChannel();
-			fileLock = fileChannel.lock();
+			while (tryCount < 5) {
+				fileLock = fileChannel.tryLock();
+				if (fileLock != null) return true;
+				Thread.sleep(500);
+				tryCount++;
+			}
+			//delete the lockfile and try again
+			if (lockFile.exists()) {
+				FileHelper.deleteRecursively(lockFile);
+				getFeedLock();
+			}
 			return true;
 		} catch (Exception e) {
 		}
