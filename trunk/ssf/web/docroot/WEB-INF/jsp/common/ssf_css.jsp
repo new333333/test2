@@ -1425,7 +1425,7 @@ a.ss_tree_highlight_not:active, a.ss_tree_highlight_not:hover {
   text-decoration: none !important;
   }
 .ss_treeTitleDiv1 {
-  position: relative;
+  position: normal;
   display: inline;
   background-color: transparent;
   border: 1px dotted transparent;
