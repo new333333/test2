@@ -29,31 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.folderControlAndFiltering"/></span>
-</div>
-
-<p><ssf:nlt tag="help.folderControlAndFiltering.listIntro" /></p>
-
-<ul>
-
-<li><ssf:nlt tag="help.folderControlAndFiltering.listItem.newMenu" /></li>
-
-<li><ssf:nlt tag="help.folderControlAndFiltering.listItem.sorting" /></li>
-
-<li><ssf:nlt tag="help.folderControlAndFiltering.listItem.folderView" /></li>
-
-<li><ssf:nlt tag="help.folderControlAndFiltering.listItem.folderAction" /></li>
-
-<li><ssf:nlt tag="help.folderControlAndFiltering.listItem.importCalendar"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
-
-<li><ssf:nlt tag="help.folderControlAndFiltering.listItem.filter" /></li>
-
-</ul>
-
-</div>
-
-</div>
+<jsp:include page="/WEB-INF/help/${ssUser.locale}/tool_blog_toolbar.html" />

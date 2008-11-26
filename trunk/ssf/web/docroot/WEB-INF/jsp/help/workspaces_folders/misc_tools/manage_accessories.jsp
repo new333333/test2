@@ -29,31 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.manageDashboard"/></span>
-</div>
-
-<p><ssf:nlt tag="helpSpot.accessory.listIntro" /></p>
-
-<ul>
-
-<li><ssf:nlt tag="helpSpot.accessory.listItem.search" /></li>
-
-<li><ssf:nlt tag="helpSpot.accessory.listItem.buddyList" /></li>
-
-<li><ssf:nlt tag="helpSpot.accessory.listItem.workspaceTree" /></li>
-
-<li><ssf:nlt tag="helpSpot.accessory.listItem.guestBook" /></li>
-
-</ul>
-
-<p><ssf:nlt tag="helpSpot.accessory.adding"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="helpSpot.accessory.using" /></p>
-
-</div>
-
-</div>
+<jsp:include page="/WEB-INF/help/${ssUser.locale}/tool_accessorytools.html" />

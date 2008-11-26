@@ -29,16 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.modifyProfileButton"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></span>
-</div>
-
-<p><ssf:nlt tag="help.modifyProfileButton.intro"><ssf:param name="value" value="${ssProductConferencingTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="help.modifyProfileButton.pics"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-</div>
-</div>
+<jsp:include page="/WEB-INF/help/${ssUser.locale}/personalws_modifyprofile.html" />

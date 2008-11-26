@@ -29,35 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.myWorkspaceButton"/></span>
-</div>
-
-<p><ssf:nlt tag="help.myWorkspaceIcon.content.intro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<ul>
-
-<li><ssf:nlt tag="help.myWorkspaceIcon.content.listItem.pictures"/></li>
-
-<li><ssf:nlt tag="help.myWorkspaceIcon.content.listItem.contactInfo"/></li>
-
-<li><ssf:nlt tag="help.myWorkspaceIcon.content.listItem.blog"/></li>
-
-<li><ssf:nlt tag="help.myWorkspaceIcon.content.listItem.task"/></li>
-
-<li><ssf:nlt tag="help.myWorkspaceIcon.content.listItem.guestbook"/></li>
-
-<li><ssf:nlt tag="help.myWorkspaceIcon.content.listItem.more"/></li>
-
-</ul>
-
-<p><ssf:nlt tag="help.myWorkspaceIcon.content.ifNew"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-</div>
-</div>
-
-
-
+<jsp:include page="/WEB-INF/help/${ssUser.locale}/nav_myws.html" />

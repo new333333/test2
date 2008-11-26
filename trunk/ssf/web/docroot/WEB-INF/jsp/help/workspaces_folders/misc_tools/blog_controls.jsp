@@ -29,21 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.moreBlogTools" /></span>
-</div>
-
-<p><ssf:nlt tag="help.moreBlogTools.intro" /></p>
-
-<p><ssf:nlt tag="help.moreBlogTools.sidebar"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="help.moreBlogTools.comments" /></p>
-
-<p><ssf:nlt tag="help.moreBlogTools.modify" /></p>
-
-</div>
-
-</div>
+<jsp:include page="/WEB-INF/help/${ssUser.locale}/tool_blog_sidebar.html" />

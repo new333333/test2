@@ -29,21 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="ihelp.email.notify.understanding.topic" /></span>
-</div>
-
-<p><ssf:nlt tag="ihelp.email.notify.understanding.intro" /></p>
-
-<p><ssf:nlt tag="ihelp.email.notify.understanding.types"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="ihelp.email.notify.understanding.textMessages"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="ihelp.email.notify.understanding.users"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-</div>
-
-</div>
+<jsp:include page="/WEB-INF/help/${ssUser.locale}/tool_addentry_emailnotifications.html" />
