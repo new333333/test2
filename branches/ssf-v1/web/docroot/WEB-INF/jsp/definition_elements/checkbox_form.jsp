@@ -46,11 +46,11 @@
 %>
 <c:if test="${!ssDefinitionEntry.customAttributes[property_name].value}" >
 <c:set var="cb_checked" value=""/>
-  <input type="hidden" name="<%= elementName %>" id="hidden_<%= elementName %>" value="false"/> 
+  <input type="hidden" name="<%= elementName %>" id="hidden_<%= elementName %>" value="off"/> 
 </c:if>
 <c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
   <c:set var="cb_checked" value="checked"/>
-  <input type="hidden" name="<%= elementName %>" id="hidden_<%= elementName %>" value="true"/> 
+  <input type="hidden" name="<%= elementName %>" id="hidden_<%= elementName %>" value="on"/> 
 </c:if>
 
 <div class="ss_entryContent">
