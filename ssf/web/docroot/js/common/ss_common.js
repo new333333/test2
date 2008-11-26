@@ -6083,14 +6083,6 @@ function ss_getNodeById(obj, id) {
 	return null;
 }
 
-function ss_treeShowAbsDiv(obj) {
-	obj.className = "ss_treeTitleDiv2";
-}
-
-function ss_treeHideAbsDiv(obj) {
-	obj.className = "ss_treeTitleDiv1";
-}
-
 var ss_treeIcons = new Array();
 var ss_treeIconsClosed = new Array();
 var ss_treeIconsOpen = new Array();

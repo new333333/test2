@@ -1426,22 +1426,6 @@ a.ss_tree_highlight_not:active, a.ss_tree_highlight_not:hover {
   color: ${ss_tree_highlight_line_color};
   text-decoration: none !important;
   }
-.ss_treeTitleDiv1 {
-  position: normal;
-  display: inline;
-  background-color: transparent;
-  border: 1px dotted transparent;
-}
-.ss_treeTitleDiv2 {
-  position: absolute;
-  padding-top:1px;
-  white-space: nowrap;
-  display: inline;
-  overflow: visible !important;
-  z-index: 500;
-  background-color: ${ss_style_background_color_opaque};
-  border: 1px dotted #cecece;
-}
   
 .ss_tree_bucket_text_div {
   position:absolute;

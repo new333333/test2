@@ -588,14 +588,12 @@ public class TreeTag extends TagSupport {
 					} else {
 						classField = titleClass;
 					}
-					jspOut.print("<div class='ss_treeTitleDiv1' ");
-					if (this.showFullLineOnHover) {
-						jspOut.print("onMouseover='ss_treeShowAbsDiv(this);' onMouseout='ss_treeHideAbsDiv(this);'");
-					}
-					jspOut.print(">");
 					jspOut.print("<a "+classField+" "+targetField+" href=\"" + ((s_url == null || "".equals(s_url))?"javascript: //;":s_url) + "\" ");
 					if (s_id != null && !s_id.equals("")) {
 						jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this,'"+action+"', '"+namespace+"');}\" ");
+					}
+					if (this.showFullLineOnHover) {
+						jspOut.print(" title='"+s_text+"' ");
 					}
 					jspOut.print(">");
 				}
@@ -603,7 +601,7 @@ public class TreeTag extends TagSupport {
 				jspOut.print(s_text);
 				jspOut.print("</span>");
 				
-				if (!displayOnly) jspOut.print("</a></div>");
+				if (!displayOnly) jspOut.print("</a>");
 
 				jspOut.print("<br/>\n");
 			}
@@ -807,14 +805,12 @@ public class TreeTag extends TagSupport {
 			if (!displayOnly) {
 				String classField = "class=\"ss_twA\"";
 				if (!className.equals("")) classField = "class=\"ss_twA " + className + "\"";
-				jspOut.print("<div class='ss_treeTitleDiv1' ");
-				if (this.showFullLineOnHover) {
-					jspOut.print("onMouseover='ss_treeShowAbsDiv(this);' onMouseout='ss_treeHideAbsDiv(this);'");
-				}
-				jspOut.print(">");
 				jspOut.print("<a "+classField+" "+targetField+" href=\"" + s_url + "\" ");
 				if (s_id != null && !s_id.equals("")) {
 					jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this,'"+action+"','"+namespace+"');}\" ");
+				}
+				if (this.showFullLineOnHover) {
+					jspOut.print(" title='"+s_text+"' ");
 				}
 				jspOut.print(">");
 			}
@@ -822,7 +818,7 @@ public class TreeTag extends TagSupport {
 			jspOut.print(s_text);
 			jspOut.print("</span>");
 			
-			if (!displayOnly) jspOut.print("</a></div>");
+			if (!displayOnly) jspOut.print("</a>");
 			jspOut.print("<br/>\n");
 			
 			// Recurse if node has children

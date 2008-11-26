@@ -34,14 +34,16 @@
     <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
         initOpen="true" sticky="true">
 		<c:if test="${!empty ssSidebarWsTree}">
-			<ssf:tree treeName="sidebarWsTree${renderResponse.namespace}" 
-			  treeDocument="${ssSidebarWsTree}" 
-			  highlightNode="${ssBinder.id}" 
-			  showIdRoutine="ss_treeShowId"
-			  namespace="${renderResponse.namespace}"
-			  rootOpen="true"
-			  nowrap="true"
-			  showFullLineOnHover="true"/>
+			<div style="overflow:scroll;padding-bottom:4px;">
+				<ssf:tree treeName="sidebarWsTree${renderResponse.namespace}" 
+				  treeDocument="${ssSidebarWsTree}" 
+				  highlightNode="${ssBinder.id}" 
+				  showIdRoutine="ss_treeShowId"
+				  namespace="${renderResponse.namespace}"
+				  rootOpen="true"
+				  nowrap="true"
+				  showFullLineOnHover="true"/>
+			</div>
 		</c:if>
 	</ssf:sidebarPanel>
 </c:if>	
