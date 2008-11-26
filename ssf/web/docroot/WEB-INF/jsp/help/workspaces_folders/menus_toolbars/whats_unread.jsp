@@ -29,14 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="help.whatsUnread"/></span>
-</div>
-
-<p><ssf:nlt tag="help.whatsUnread.intro" /></p>
-
-</div>
-</div>
+<jsp:include page="/WEB-INF/help/${ssUser.locale}/personalws_whatsunread.html" />
