@@ -34,11 +34,11 @@
 <c:if test="${empty ssReadOnlyFields[property_name]}">
 <c:if test="${!ssDefinitionEntry.customAttributes[property_name].value}" >
 <c:set var="cb_checked" value=""/>
-  <input type="hidden" name="${property_name}" id="hidden_${property_name}" value="false"/> 
+  <input type="hidden" name="${property_name}" id="hidden_${property_name}" value="off"/> 
 </c:if>
 <c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
   <c:set var="cb_checked" value="checked"/>
-  <input type="hidden" name="${property_name}" id="hidden_${property_name}" value="true"/> 
+  <input type="hidden" name="${property_name}" id="hidden_${property_name}" value="on"/> 
 </c:if>
 <c:set var="required" value=""/>
 <input type="checkbox" name="${property_name}XXX" 
