@@ -204,8 +204,13 @@ public class ViewEntryController extends  SAbstractController {
  		FolderEntry fe = null;
 		try {
 			if (Validator.isNull(entryId)) {
-				if (operation.equals(WebKeys.OPERATION_SHOW_NO_ENTRIES)) 
+				if (operation.equals(WebKeys.OPERATION_SHOW_NO_ENTRIES)) {
+					String	binderType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_TYPE, "");
+					if (!binderType.equals("")) {
+						model.put(WebKeys.URL_BINDER_TYPE, binderType);
+					}
 					return new ModelAndView(WebKeys.VIEW_NO_ENTRIES, model);
+				}
 				
 				entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
 				model.put(WebKeys.ENTRY_TITLE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_PAGE_TITLE, ""));

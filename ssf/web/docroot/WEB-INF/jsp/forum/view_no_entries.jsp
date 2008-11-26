@@ -29,9 +29,20 @@
  */
 %>
 <% // Default view if the forum has not been set up yet %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-
 <div class="ss_style ss_portlet">
-<span class="ss_bold"><ssf:nlt tag="binder.no_entries"/></span>
+<span class="ss_bold">
+	<ssf:nlt tag="binder.no_entries"/>
+	<c:if test="${!empty binderType}">
+		<%
+			String	addEntryKey = ("binder.no_entries.select." + renderRequest.getAttribute("binderType"));
+			String	addEntry = NLT.get(addEntryKey);
+			if ((null != addEntry) && (0 < addEntry.length()) && (!(addEntry.equals(addEntryKey)))) {
+		%>
+				&nbsp;&nbsp;<ssf:nlt tag="binder.no_entries.select"><ssf:param name="value" useBody="true"><%= addEntry %></ssf:param>></ssf:nlt>
+		<% } %>
+	</c:if>
+</span>
 </div>
 
