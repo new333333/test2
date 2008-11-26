@@ -41,7 +41,8 @@
 		    		folderId="${ssFolder.id}" 
 		    		action="view_folder_entry" 
 		    		actionUrl="false" ><ssf:param 
-		    		name="operation" value="show_no_entries" /><ssf:param 
+		    		name="operation" value="show_no_entries" /><ssf:param
+					name="binderType" value="wiki" /><ssf:param 
 		    		name="entryViewStyle" value="popup" /><ssf:param 
 		    		name="namespace" value="${renderResponse.namespace}" /></ssf:url>" 
     		</c:if>
