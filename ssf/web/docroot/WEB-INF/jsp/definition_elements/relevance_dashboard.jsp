@@ -38,6 +38,8 @@
 		action="__ajax_relevance" actionUrl="false"><ssf:param 
 		name="operation" value="get_relevance_dashboard" /><ssf:param 
 		name="type" value="ss_typePlaceHolder" /><ssf:param 
+		name="type2" value="ss_type2PlaceHolder" /><ssf:param 
+		name="type3" value="ss_type3PlaceHolder" /><ssf:param 
 		name="page" value="0" /><ssf:param 
 		name="binderId" value="ss_binderIdPlaceHolder" /><ssf:param 
 		name="namespace" value="${renderResponse.namespace}" /><ssf:param 
@@ -55,6 +57,7 @@
       	name="binderId" value="ss_binderIdPlaceHolder"/><ssf:param 
 		name="type" value="ss_typePlaceHolder" /><ssf:param 
 		name="type2" value="ss_type2PlaceHolder" /><ssf:param 
+		name="type3" value="ss_type3PlaceHolder" /><ssf:param 
 		name="page" value="ss_pagePlaceHolder" /></ssf:url>";
   </c:if>
   <c:if test="${ssBinder.entityType == 'folder'}">
@@ -63,6 +66,7 @@
       	name="binderId" value="ss_binderIdPlaceHolder"/><ssf:param 
 		name="type" value="ss_typePlaceHolder" /><ssf:param 
 		name="type2" value="ss_type2PlaceHolder" /><ssf:param 
+		name="type3" value="ss_type3PlaceHolder" /><ssf:param 
 		name="page" value="ss_pagePlaceHolder" /></ssf:url>";
   </c:if>
 </ssf:ifaccessible>
@@ -80,14 +84,14 @@
 	><a 
 	  <c:if test="${ssRDCurrentTab == 'profile'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
 	  href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'profile', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+		onClick="ss_selectRelevanceTab(this, 'profile', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.profile"/></span></a></li>
 	
 	<li <c:if test="${ssRDCurrentTab == 'whats_new'}">class="ss_tabsCCurrent"</c:if>
 	><a 
 	  <c:if test="${ssRDCurrentTab == 'whats_new'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
 	  href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'whats_new', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+		onClick="ss_selectRelevanceTab(this, 'whats_new', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.whatsNew"/></span></a></li>
 </c:if>
 <c:if test="${empty ssRelevanceDashboardConfigElement}">
@@ -96,7 +100,7 @@
 	  class="ss_tabsCCurrent"><a 
 	  <c:if test="${ssRDCurrentTab == 'whats_new'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
 	  href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'whats_new', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+		onClick="ss_selectRelevanceTab(this, 'whats_new', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.whatsNew"/></span></a></li>
 </c:if>
 	
@@ -104,7 +108,7 @@
 	<a 
 	  <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
 	  href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'tasks_and_calendars', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
+		onClick="ss_selectRelevanceTab(this, 'tasks_and_calendars', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
 		<span><ssf:nlt tag="relevance.tab.tasksAndCalendars"/></span></a></li>
 
 
@@ -112,14 +116,14 @@
 	<a 
 	  <c:if test="${ssRDCurrentTab == 'activities'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
 	  href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'activities', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
+		onClick="ss_selectRelevanceTab(this, 'activities', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
 		<span><ssf:nlt tag="relevance.tab.activities"/></span></a></li>
 
 	<li <c:if test="${ssRDCurrentTab == 'miniblogs'}">class="ss_tabsCCurrent"</c:if>>
 	<a 
 	  <c:if test="${ssRDCurrentTab == 'miniblogs'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
 	  href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'miniblogs', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
+		onClick="ss_selectRelevanceTab(this, 'miniblogs', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
 		<span><ssf:nlt tag="relevance.tab.miniblogs"/></span></a></li>
 
   </ul>

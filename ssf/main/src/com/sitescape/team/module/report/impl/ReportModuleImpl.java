@@ -420,7 +420,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				if (entity != null && !entity.isDeleted()) 
 					list.add(new ActivityInfo(entity, (Integer) col[3], (Date) col[4]));
 			} catch (Exception ignoreAccess) {continue;}
-			if (list.size() > returnCount.intValue()) break;
+			if (list.size() >= returnCount.intValue()) break;
 		}
 		return list;
 	}

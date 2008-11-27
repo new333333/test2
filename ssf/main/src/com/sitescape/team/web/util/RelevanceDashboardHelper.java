@@ -83,21 +83,22 @@ public class RelevanceDashboardHelper {
 		String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE, "0");
 		model.put(WebKeys.PAGE_NUMBER, page);
 		String type2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE2, "");
+		String type3 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE3, "");
 		model.put(WebKeys.TYPE2, type2);
+		model.put(WebKeys.TYPE3, type3);
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
 		//No dashboard for the guest account
 		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return;
         
 		//See if this is a new "type" setting. If so, remember it
-		Long userWorkspaceId = user.getWorkspaceId();
-		if (userWorkspaceId != null) {
-			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(user.getId(), userWorkspaceId);
+		if (binderId != null) {
+			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
 			String relevanceTab = (String)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_TAB);
 			if (relevanceTab == null) relevanceTab = "";
 			if (!type.equals("") && !type.equals(relevanceTab)) {
 				//Remember the last tab
-				bs.getProfileModule().setUserProperty(user.getId(), userWorkspaceId, ObjectKeys.USER_PROPERTY_RELEVANCE_TAB, type);
+				bs.getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_RELEVANCE_TAB, type);
 			} else if (type.equals("")) {
 				type = relevanceTab;
 				model.put("ssRDCurrentTab", type);
@@ -123,7 +124,7 @@ public class RelevanceDashboardHelper {
 		if (ObjectKeys.RELEVANCE_DASHBOARD_PROFILE.equals(type)) {
 			if (!setupProfileBeans(bs, request, response, userWorkspace, model)) {
 				//The profile isn't being shown in the dashboard, so get the what's new beans instead
-				setupWhatsNewDashboardBeans(bs, userWorkspace, model);
+				setupWhatsNewDashboardBeans(bs, request, response, userWorkspace, model);
 			}
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_TASKS_AND_CALENDARS.equals(type)) {
@@ -132,7 +133,7 @@ public class RelevanceDashboardHelper {
 			setupTrackedItemsBeans(bs, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW.equals(type)) {
-			setupWhatsNewDashboardBeans(bs, userWorkspace, model);
+			setupWhatsNewDashboardBeans(bs, request, response, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_ACTIVITIES.equals(type)) {
 			setupViewedEntriesBean(bs, userWorkspace, model);
@@ -161,6 +162,8 @@ public class RelevanceDashboardHelper {
 			setupViewedEntriesBean(bs, userWorkspace, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_NEW_TRACKED.equals(type)) {
 			setupTrackedPlacesBeans(bs, userWorkspace, model);
+		} else if (ObjectKeys.RELEVANCE_PAGE_NEW_TEAMS.equals(type)) {
+			setupWhatsNewTeamsBeans(bs, userWorkspace, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_NEW_SITE.equals(type)) {
 			setupWhatsNewSite(bs, userWorkspace, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_MINIBLOGS.equals(type)) {
@@ -178,12 +181,37 @@ public class RelevanceDashboardHelper {
 		}
 	}
 	
-	protected static void setupWhatsNewDashboardBeans(AllModulesInjected bs, Binder binder, Map model) {
-		setupTrackedPlacesBeans(bs, binder, model);
-		setupTrackedItemsBeans(bs, binder, model);
-		setupWhatsHotBean(bs, model);
-		setupWhatsNewSite(bs, binder, model);
-		setupTrackedPeopleBeans(bs, binder, model);
+	protected static void setupWhatsNewDashboardBeans(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Binder binder, Map model) {
+		//See if this is a new "type" setting. If so, remember it
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String type3 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE3, "");
+		model.put(WebKeys.TYPE3, type3);
+		Long binderId = binder.getId();
+		if (binderId != null) {
+			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
+			String savedType3 = (String)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_TAB_WHATS_NEW_TYPE);
+			if (savedType3 == null) savedType3 = "";
+			if (!type3.equals("") && !type3.equals(savedType3)) {
+				//Remember the last type of results
+				bs.getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_RELEVANCE_TAB_WHATS_NEW_TYPE, type3);
+			} else if (type3.equals("")) {
+				type3 = savedType3;
+				model.put(WebKeys.TYPE3, type3);
+			}
+		}
+		if (type3.equals("")) type3 = ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_DEFAULT;
+		
+		if (type3.equals(ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_TEAMS)) {
+			setupWhatsNewTeamsBeans(bs, binder, model);
+		} else if (type3.equals(ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_TRACKED)) {
+			setupTrackedPlacesBeans(bs, binder, model);
+			setupTrackedItemsBeans(bs, binder, model);
+			setupTrackedPeopleBeans(bs, binder, model);
+		} else if (type3.equals(ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_SITE)) {
+			setupWhatsHotBean(bs, model);
+			setupWhatsNewSite(bs, binder, model);
+		}
 	}
 
 	protected static boolean setupProfileBeans(AllModulesInjected bs, RenderRequest request, 
@@ -322,7 +350,7 @@ public class RelevanceDashboardHelper {
 	}
 	
 	protected static void setupTrackedPlacesBeans(AllModulesInjected bs, Binder binder, Map model) {		
-		//Get the documents bean for the documents th the user just authored or modified
+		//Get the documents bean for the documents that the user is tracking
 		Map options = new HashMap();
 		String page = "0";
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -368,6 +396,61 @@ public class RelevanceDashboardHelper {
 	    	}
 	    	model.put(WebKeys.WHATS_NEW_TRACKED_PLACES_FOLDERS, places);
 		}
+	}
+	
+	protected static void setupWhatsNewTeamsBeans(AllModulesInjected bs, Binder binder, Map model) {		
+		//Get the documents bean for the documents that the user is tracking
+		Map options = new HashMap();
+		String page = "0";
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String displayStyle = user.getDisplayStyle();
+		if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
+				ObjectKeys.RELEVANCE_PAGE_NEW_TRACKED.equals(model.get(WebKeys.TYPE2))) 
+			page = (String) model.get(WebKeys.PAGE_NUMBER);
+		if (page == null || page.equals("")) page = "0";
+		Integer pageNumber = Integer.valueOf(page);
+		if (pageNumber < 0) pageNumber = 0;
+		model.put(WebKeys.TRACKED_TEAMS_PAGE, String.valueOf(pageNumber));
+		int pageStart = pageNumber * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
+		
+		//Prepare for a standard dashboard search operation
+		setupInitialSearchOptions(options);
+
+		options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(pageStart));
+		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
+		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+		
+		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
+		List teamIds = new ArrayList();
+		Iterator itTeams = myTeams.iterator();
+		while (itTeams.hasNext()) {
+			Map team = (Map)itTeams.next();
+			teamIds.add(team.get(Constants.DOCID_FIELD));
+		}
+		if (myTeams.size() > 0) {
+			Criteria crit = SearchUtils.entriesForTrackedPlaces(bs, teamIds);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+
+			model.put(WebKeys.WHATS_NEW_TEAM_PLACES, results.get(ObjectKeys.SEARCH_ENTRIES));
+
+			Map places = new HashMap();
+	    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+	    	if (items != null) {
+		    	Iterator it = items.iterator();
+		    	while (it.hasNext()) {
+		    		Map entry = (Map)it.next();
+					String id = (String)entry.get(Constants.BINDER_ID_FIELD);
+					if (id != null) {
+						Long bId = new Long(id);
+						if (!places.containsKey(id)) {
+							Binder place = bs.getBinderModule().getBinder(bId);
+							places.put(id, place);
+						}
+					}
+		    	}
+	    	}
+	    	model.put(WebKeys.WHATS_NEW_TEAM_PLACES_FOLDERS, places);
+}
 	}
 	
 	protected static void setupTrackedCalendarBeans(AllModulesInjected bs, Binder binder, Map model) {		

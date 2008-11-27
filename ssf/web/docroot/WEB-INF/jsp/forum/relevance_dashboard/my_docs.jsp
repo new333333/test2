@@ -37,7 +37,7 @@
 <c:if test="${!empty ss_myDocs}">
 <div id="ss_para">
 <div id="ss_today">
-<div id="ss_nextPage" align="right">
+<div align="right">
 <c:if test="${ss_myDocsPage > '0'}">
 <a href="javascript: ;" 
   onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'docs', '${ss_myDocsPage}', 'previous', 'ss_dashboardDocs', '${ss_relevanceDashboardNamespace}');return false;">

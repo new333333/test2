@@ -38,6 +38,9 @@
 <c:if test="${ss_type == 'newSite'}">
   <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_site.jsp" />
 </c:if>
+<c:if test="${ss_type == 'newTeams'}">
+  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_teams.jsp" />
+</c:if>
 <c:if test="${ss_type == 'docs'}">
   <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
 </c:if>

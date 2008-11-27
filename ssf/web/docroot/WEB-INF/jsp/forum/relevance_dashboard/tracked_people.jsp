@@ -30,7 +30,8 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div id="today">
+<div id="ss_para" "ss_link_5">
+<div id="ss_hints"><em><ssf:nlt tag="relevance.peopleBeingTracked"/></em></div>
 <c:forEach var="user" items="${ss_trackedPeople}">
 
     <div id="ss_col3_para" > 
@@ -51,4 +52,6 @@
     </div><!-- end of para -->
     
 </c:forEach>
-</div><!-- end of today -->
+	</div> <!-- end of ss_para -->
+
+<div class="ss_clear_float"></div>

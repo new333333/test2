@@ -185,6 +185,7 @@ public class WebKeys {
 	public static final String URL_TREE_MULTI_SELECT = "ss_tree_select";
 	public static final String URL_TYPE = "type";
 	public static final String URL_TYPE2 = "type2";
+	public static final String URL_TYPE3 = "type3";
 	public static final String URL_VALUE = "value";
 	public static final String URL_VERSION_ID = "versionId";
 	public static final String URL_UNSEEN = "unseen";
@@ -936,6 +937,7 @@ public class WebKeys {
     public static final String TOOLBAR_SUBSCRIBE_EMAIL="ss_toolbar_subscribe_email";
     public static final String TOOLBAR_SUBSCRIBE_RSS="ss_toolbar_subscribe_rss";
     public static final String TRACKED_PLACES_PAGE="ss_trackedPlacesPage";
+    public static final String TRACKED_TEAMS_PAGE="ss_trackedTeamsPage";
     public static final String TRACKED_SITE_PAGE="ss_trackedSitePage";
     public static final String WHATS_HOT_PAGE="ss_whatsHotPage";
     
@@ -999,6 +1001,7 @@ public class WebKeys {
     public static final String TEAM_MEMBERSHIP="ssTeamMembership";
     public static final String TYPE="ss_type";
     public static final String TYPE2="ss_type2";
+    public static final String TYPE3="ss_type3";
     public static final String SEARCH_NODES="ssSearchNodes";
     public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
     public static final String SIDEBAR_WORKSPACE_TREE="ssSidebarWsTree";
@@ -1050,6 +1053,8 @@ public class WebKeys {
     public static final String WHATS_NEW_FOLDERS="ss_whatsNewFolders";
     public static final String WHATS_NEW_BINDER="ss_whatsNewBinder";
     public static final String WHATS_NEW_BINDER_FOLDERS="ss_whatsNewBinderFolders";
+    public static final String WHATS_NEW_TEAM_PLACES="ss_whatsNewTeamPlaces";
+    public static final String WHATS_NEW_TEAM_PLACES_FOLDERS="ss_whatsNewTeamPlacesFolders";
     public static final String WHATS_NEW_TRACKED_PEOPLE="ss_whatsNewTrackedPeople";
     public static final String WHATS_NEW_TRACKED_PEOPLE_FOLDERS="ss_whatsNewTrackedPeopleFolders";
     public static final String WHATS_NEW_TRACKED_PLACES="ss_whatsNewTrackedPlaces";
