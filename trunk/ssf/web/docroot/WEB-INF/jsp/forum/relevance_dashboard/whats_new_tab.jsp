@@ -33,13 +33,16 @@
 
 <div style="padding-bottom:10px;">
 <c:if test="${empty ss_type3}"><c:set var="ss_type3" value="teams"/></c:if>
-  <input type="radio" name="whatsNewType" value="teams"
-    <c:if test="${ss_type3 == 'teams'}">checked="checked"</c:if>
-  	onClick="ss_selectRelevanceTab(null, 'whats_new', 'teams', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
-  ><a href="javascript: ;" 
-  	onClick="ss_selectRelevanceTab(null, 'whats_new', 'teams', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
-  ><span><ssf:nlt tag="relevance.whatsNewTypeTeams"/></span></a>
-  
+<c:if test="${ssBinderId != ssUser.workspaceId && ss_type3 == 'teams'}"><c:set var="ss_type3" value="tracked"/></c:if>
+  <c:if test="${ssBinderId == ssUser.workspaceId}">
+	  <input type="radio" name="whatsNewType" value="teams"
+	    <c:if test="${ss_type3 == 'teams'}">checked="checked"</c:if>
+	  	onClick="ss_selectRelevanceTab(null, 'whats_new', 'teams', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+	  ><a href="javascript: ;" 
+	  	onClick="ss_selectRelevanceTab(null, 'whats_new', 'teams', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+	  ><span><ssf:nlt tag="relevance.whatsNewTypeTeams"/></span></a>
+  </c:if>
+	  
   <input type="radio" name="whatsNewType" value="tracked" style="padding-left:20px;"
     <c:if test="${ss_type3 == 'tracked'}">checked="checked"</c:if>
   	onClick="ss_selectRelevanceTab(null, 'whats_new', 'tracked', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
@@ -61,7 +64,7 @@
       <div class="ss_dblcol1">
       <!-- Start Left Column -->
 
-		<c:if test="${ss_type3 == 'teams'}">
+		<c:if test="${ss_type3 == 'teams' && ssBinderId == ssUser.workspaceId}">
 			<ssf:canvas id="relevanceTracked" type="inline" styleId="ss_shared">
 			<ssf:param name="title" useBody="true" >
 				<div id="ss_title" class="ss_pt_title ss_green ss_tracked_img">
