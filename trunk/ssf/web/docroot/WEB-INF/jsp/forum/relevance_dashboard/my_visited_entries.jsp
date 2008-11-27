@@ -33,7 +33,7 @@
 
 <div id="ss_para">
 <div id="ss_viewedItems">
-<div id="ss_nextPage" align="right">
+<div align="right">
 <c:if test="${ssEntriesViewedPage > '0'}">
 <a href="javascript: ;" 
   onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'entriesViewed', '${ssEntriesViewedPage}', 'previous', 'ss_dashboardEntriesViewed', '${ss_relevanceDashboardNamespace}');return false;">

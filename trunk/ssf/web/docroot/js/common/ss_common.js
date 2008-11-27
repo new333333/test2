@@ -864,10 +864,10 @@ function ss_trackedPeopleDelete(obj, id) {
 	trObj.parentNode.removeChild(trObj)
 }
 
-function ss_selectRelevanceTab(obj, type, binderId, namespace) {
+function ss_selectRelevanceTab(obj, type, type3, binderId, namespace) {
 	//Clear "current" tab
 	var currentTab = window["ss_relevanceTabCurrent_"+namespace];
-	if (currentTab != null) {
+	if (currentTab != null && obj != null) {
 		currentTab.parentNode.className = "";
 	}
 	if (obj != null) {
@@ -877,6 +877,7 @@ function ss_selectRelevanceTab(obj, type, binderId, namespace) {
 	//Switch to the new tab
 	var url = window["ss_relevanceAjaxUrl"+namespace];
 	url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
+	url = ss_replaceSubStr(url, "ss_type3PlaceHolder", type3);
 	url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
 	url = ss_replaceSubStr(url, "ss_pagePlaceHolder", "0");
 	url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
@@ -888,6 +889,7 @@ function ss_selectRelevanceTab(obj, type, binderId, namespace) {
 			//Special case for the profile tab; always refresh the whole page
 			url = window["ss_relevanceProfileUrl"+namespace];
 			url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
+			url = ss_replaceSubStr(url, "ss_type3PlaceHolder", type3);
 			url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
 			url = ss_replaceSubStr(url, "ss_pagePlaceHolder", "0");
 			url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);

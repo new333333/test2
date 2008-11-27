@@ -31,7 +31,7 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_para">
-	<div id="ss_nextPage" align="right">
+	<div align="right">
 		<c:if test="${ss_activitiesPage > '0'}">
 			<a href="javascript: ;" 
 		  		onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'miniblogs', '${ss_activitiesPage}', 'previous', 'ss_dashboardActivities', '${ss_relevanceDashboardNamespace}');return false;">

@@ -230,9 +230,13 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
+		String type2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE2, "");
+		String type3 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE3, "");
 		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		Map model = new HashMap();
 		model.put(WebKeys.TYPE, type);
+		model.put(WebKeys.TYPE2, type2);
+		model.put(WebKeys.TYPE3, type3);
 		model.put(WebKeys.USER_PRINCIPAL, user);
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.NAMESPACE_RELEVANCE_DASHBOARD, namespace);
@@ -244,11 +248,13 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		String type2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE2, "");
 		String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE, "0");
 		String direction = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DIRECTION, "next");
 		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		Map model = new HashMap();
 		model.put(WebKeys.TYPE, type);
+		model.put(WebKeys.TYPE2, type2);
 		model.put(WebKeys.PAGE_NUMBER, page);
 		model.put(WebKeys.DIRECTION, direction);
 		model.put(WebKeys.USER_PRINCIPAL, user);
@@ -265,10 +271,14 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		Binder binder = getBinderModule().getBinder(binderId);
 		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
+		String type2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE2, "");
+		String type3 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE3, "");
 		String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE, "0");
 		Map model = new HashMap();
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.TYPE, type);
+		model.put(WebKeys.TYPE2, type2);
+		model.put(WebKeys.TYPE3, type3);
 		model.put(WebKeys.PAGE_NUMBER, page);
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.USER_PRINCIPAL, user);

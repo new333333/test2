@@ -31,67 +31,115 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-<div id="ss_dashboard_content" class="ss_tricolumn">
-  <div class="ss_colmid">
-    <div class="ss_colleft">
-      <div id="ss_col1" class="ss_col1">
+<div style="padding-bottom:10px;">
+<c:if test="${empty ss_type3}"><c:set var="ss_type3" value="teams"/></c:if>
+  <input type="radio" name="whatsNewType" value="teams"
+    <c:if test="${ss_type3 == 'teams'}">checked="checked"</c:if>
+  	onClick="ss_selectRelevanceTab(null, 'whats_new', 'teams', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+  ><a href="javascript: ;" 
+  	onClick="ss_selectRelevanceTab(null, 'whats_new', 'teams', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+  ><span><ssf:nlt tag="relevance.whatsNewTypeTeams"/></span></a>
+  
+  <input type="radio" name="whatsNewType" value="tracked" style="padding-left:20px;"
+    <c:if test="${ss_type3 == 'tracked'}">checked="checked"</c:if>
+  	onClick="ss_selectRelevanceTab(null, 'whats_new', 'tracked', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+  ><a href="javascript: ;" 
+  	onClick="ss_selectRelevanceTab(null, 'whats_new', 'tracked', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+  ><span><ssf:nlt tag="relevance.whatsNewTypeTracked"/></span></a>
+  
+  <input type="radio" name="whatsNewType" value="site" style="padding-left:20px;"
+    <c:if test="${ss_type3 == 'site'}">checked="checked"</c:if>
+  	onClick="ss_selectRelevanceTab(null, 'whats_new', 'site', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+  ><a href="javascript: ;" 
+  	onClick="ss_selectRelevanceTab(null, 'whats_new', 'site', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+  ><span><ssf:nlt tag="relevance.whatsNewTypeSite"/></span></a>
+  
+</div>
 
-	<ssf:canvas id="relevanceTracked" type="inline" styleId="ss_shared">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_green ss_tracked_img">
-		  <ssf:nlt tag="relevance.whatsNewTracked"/>
-		</div>
-	</ssf:param>
-		<div id="ss_dashboardWhatsNewTracked${renderResponse.namespace}">
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tracked.jsp" />
-		</div>
-	</ssf:canvas>
+<div id="ss_dashboard_content" class="ss_doublecolumn">
+  <div id="ss_column_L" class="ss_dblcolleft">
+      <div class="ss_dblcol1">
+      <!-- Start Left Column -->
+
+		<c:if test="${ss_type3 == 'teams'}">
+			<ssf:canvas id="relevanceTracked" type="inline" styleId="ss_shared">
+			<ssf:param name="title" useBody="true" >
+				<div id="ss_title" class="ss_pt_title ss_green ss_tracked_img">
+				  <ssf:nlt tag="relevance.whatsNewTeams"/>
+				</div>
+			</ssf:param>
+				<div id="ss_dashboardWhatsNewTracked${renderResponse.namespace}">
+				<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_teams.jsp" />
+				</div>
+			</ssf:canvas>
+		</c:if>
+		
+		<c:if test="${ss_type3 == 'tracked'}">
+			<ssf:canvas id="relevanceTracked" type="inline" styleId="ss_shared">
+			<ssf:param name="title" useBody="true" >
+				<div id="ss_title" class="ss_pt_title ss_green ss_tracked_img">
+				  <ssf:nlt tag="relevance.whatsNewTracked"/>
+				</div>
+			</ssf:param>
+				<div id="ss_dashboardWhatsNewTracked${renderResponse.namespace}">
+				<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tracked.jsp" />
+				</div>
+			</ssf:canvas>
+		</c:if>
 	
-	<ssf:canvas id="relevanceFolders" type="inline" styleId="ss_trackedItems">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_green ss_tracked_img">
-		  <ssf:nlt tag="relevance.trackedFolders"/>
-	    </div>
-	</ssf:param>
-	<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tracked_items.jsp" />
-	</ssf:canvas>
-	
+
+		<c:if test="${ss_type3 == 'site'}">
+			<ssf:canvas id="relevanceWhatsNewSite" type="inline" styleId="ss_trackedItems">
+			<ssf:param name="title" useBody="true" >
+				<div id="ss_title" class="ss_pt_title ss_green">
+		          <ssf:nlt tag="relevance.whatsNewSite"/>
+		        </div>
+			</ssf:param>
+				<div id="ss_dashboardWhatsNewSite${renderResponse.namespace}">
+				  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_site.jsp" /></div>
+			</ssf:canvas>
+		</c:if>
 
         </div><!-- end of ss_col 1 -->
-      <div id="ss_col2" class="ss_col2">
+        <!-- Start Right Column -->
+      	<div id="ss_column_R">
+      	<div class="ss_dblcol2">
 
-	<ssf:canvas id="relevanceWhatsNewSite" type="inline" styleId="ss_trackedItems">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_green">
-          <ssf:nlt tag="relevance.whatsNewSite"/>
-        </div>
-	</ssf:param>
-		<div id="ss_dashboardWhatsNewSite${renderResponse.namespace}">
-		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_site.jsp" /></div>
-	</ssf:canvas>
-
-	<ssf:canvas id="relevanceHot" type="inline" styleId="ss_whatshot">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.whatsHot"/></div>
-	</ssf:param>
-		<div id="ss_dashboardWhatsHot${renderResponse.namespace}">
-		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_hot.jsp" />
-		</div>
-	</ssf:canvas>
-      </div><!-- end of col2 -->
-      
-      <div id="ss_col3" class="ss_col3">	
-	<ssf:canvas id="relevancePeople" type="inline" styleId="ss_trackedPeople">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_green ss_ping_img ss_para">
-		  <ssf:nlt tag="relevance.trackedPeople"/></div>
-	</ssf:param>
-	  <c:set var="ss_show_tracked_item_delete_button" value="true" scope="request"/>
-	  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tracked_people.jsp" />
-	</ssf:canvas>
+		<c:if test="${ss_type3 == 'tracked'}">
+			<ssf:canvas id="relevancePeople" type="inline" styleId="ss_trackedPeople">
+			<ssf:param name="title" useBody="true" >
+				<div id="ss_title" class="ss_pt_title ss_green ss_ping_img ss_para">
+				  <ssf:nlt tag="relevance.trackedPeople"/></div>
+			</ssf:param>
+			  <c:set var="ss_show_tracked_item_delete_button" value="true" scope="request"/>
+			  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tracked_people.jsp" />
+			</ssf:canvas>
+			<br/>
+			<br/>
+			<ssf:canvas id="relevanceFolders" type="inline" styleId="ss_trackedItems">
+			<ssf:param name="title" useBody="true" >
+				<div id="ss_title" class="ss_pt_title ss_green ss_tracked_img">
+				  <ssf:nlt tag="relevance.trackedFolders"/>
+			    </div>
+			</ssf:param>
+			<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tracked_items.jsp" />
+			</ssf:canvas>
+		</c:if>
 		
-		</div><!-- end of col3 -->
+		<c:if test="${ss_type3 == 'site'}">
+			<ssf:canvas id="relevanceHot" type="inline" styleId="ss_whatshot">
+			<ssf:param name="title" useBody="true" >
+				<div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.whatsHot"/></div>
+			</ssf:param>
+				<div id="ss_dashboardWhatsHot${renderResponse.namespace}">
+				  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_hot.jsp" />
+				</div>
+			</ssf:canvas>
+		</c:if>
+
+      </div><!-- end of col2 (right column) -->
+      </div><!-- end of ss_col_R (right column placeholder) -->
     </div><!-- end of col left -->
-  </div><!-- end of col mid -->
+
 </div><!-- end of content -->
 <div class="ss_clear_float"></div>

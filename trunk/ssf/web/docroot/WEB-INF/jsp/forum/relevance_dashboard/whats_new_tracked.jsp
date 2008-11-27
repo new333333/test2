@@ -32,7 +32,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_para">
 
-<div id="ss_nextPage" align="right">
+<div align="right">
 <c:if test="${ss_trackedPlacesPage > '0'}">
 <a href="javascript: ;" 
   onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'newTracked', '${ss_trackedPlacesPage}', 'previous', 'ss_dashboardWhatsNewTracked', '${ss_relevanceDashboardNamespace}');return false;">

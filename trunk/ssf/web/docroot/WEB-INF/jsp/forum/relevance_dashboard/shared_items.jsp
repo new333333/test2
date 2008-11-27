@@ -33,7 +33,7 @@
 
 <div id="ss_para">
 
- <div id="ss_nextPage" align="right">
+ <div align="right">
 	<c:if test="${ss_sharedEntitiesPage > '0'}">
 		<a href="javascript: ;" 
   			onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'shared', '${ss_sharedEntitiesPage}', 'previous', 'ss_dashboardShared', '${ss_relevanceDashboardNamespace}');return false;">
