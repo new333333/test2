@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.lucene.index.Term;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
+import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.springframework.core.io.ClassPathResource;
@@ -279,7 +280,12 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		doAddTemplate(template, type, updates);
 	    return template.getId();
 	 }
-	 
+	 public Long addTemplate(InputStream indoc, boolean replace) 
+	 	throws AccessControlException, DocumentException {
+		 SAXReader xIn = new SAXReader(false);
+		 Document doc = xIn.read(indoc);
+		 return addTemplate(doc, replace);
+	 }
 		//add top level template
 	 public Long addTemplate(Document doc, boolean replace) {
 		 checkAccess(TemplateOperation.manageTemplate);
