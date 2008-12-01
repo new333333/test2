@@ -133,7 +133,7 @@ public abstract class PortletRequestUtils {
 	 */
 	public static Long getLongParameter(PortletRequest request, String name)
 			throws PortletRequestBindingException {
-		if (request.getParameter(name) == null) {
+		if (request.getParameter(name) == null || request.getParameter(name).equals("")) {
 			return null;
 		}
 		return new Long(getRequiredLongParameter(request, name));
