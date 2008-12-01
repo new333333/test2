@@ -58,7 +58,19 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-size:${ss_style_font_smallprint};
 	color: #333333
 	}	
-	
+.ss_sidebarTree {
+	overflow-x:auto;
+	padding-bottom:4px;
+	}	
+.ss_sidebarTree_IE {
+	overflow-x:scroll;
+	overflow-y:hidden;
+	padding-bottom:4px;
+	}	
+.ss_sidebarTree_IE6 {
+	overflow:hidden;
+	width:180px;
+	}	
 /*********  STATUS BOX **********/	
 .ss_myStatus{
 	background: transparent;
