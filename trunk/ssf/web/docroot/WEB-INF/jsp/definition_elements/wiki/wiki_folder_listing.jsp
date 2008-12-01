@@ -42,7 +42,8 @@
 		    		action="view_folder_entry" 
 		    		actionUrl="false" ><ssf:param 
 		    		name="operation" value="show_no_entries" /><ssf:param
-					name="binderType" value="wiki" /><ssf:param 
+		    		name="ssBinderEntryDefs" value="${ssBinderEntryDefs}" /><ssf:param
+		    		name="ssBinderEntryAdd" value="${ssBinderEntryAdd}" /><ssf:param
 		    		name="entryViewStyle" value="popup" /><ssf:param 
 		    		name="namespace" value="${renderResponse.namespace}" /></ssf:url>" 
     		</c:if>

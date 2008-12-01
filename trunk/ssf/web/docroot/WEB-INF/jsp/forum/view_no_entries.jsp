@@ -34,15 +34,18 @@
 <div class="ss_style ss_portlet">
 <span class="ss_bold">
 	<ssf:nlt tag="binder.no_entries"/>
-	<c:if test="${!empty binderType}">
-		<%
-			String	addEntryKey = ("binder.no_entries.select." + renderRequest.getAttribute("binderType"));
-			String	addEntry = NLT.get(addEntryKey);
-			if ((null != addEntry) && (0 < addEntry.length()) && (!(addEntry.equals(addEntryKey)))) {
-		%>
-				&nbsp;&nbsp;<ssf:nlt tag="binder.no_entries.select"><ssf:param name="value" useBody="true"><%= addEntry %></ssf:param>></ssf:nlt>
+	<%
+		String	binderEntryDefsS = ((String) renderRequest.getAttribute("ssBinderEntryDefs"));
+		if ((null != binderEntryDefsS) && (0 < binderEntryDefsS.length())) {
+			int	binderEntryDefs = Integer.parseInt(binderEntryDefsS);
+			if (0 < binderEntryDefs) {
+				String	addEntry = ((String) renderRequest.getAttribute("ssBinderEntryAdd"));
+				if ((null != addEntry) && (0 < addEntry.length())) {
+				%>
+					&nbsp;&nbsp;<ssf:nlt tag="binder.no_entries.select"><ssf:param name="value" useBody="true"><%= addEntry %></ssf:param>></ssf:nlt>
+				<% } %>
+			<% } %>
 		<% } %>
-	</c:if>
 </span>
 </div>
 
