@@ -25,6 +25,7 @@ import org.subethamail.smtp.server.SMTPServer;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextUtil;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.SimpleName;
@@ -36,6 +37,8 @@ import com.sitescape.team.module.mail.EmailPoster;
 import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.smtp.SMTPManager;
 import com.sitescape.team.util.SessionUtil;
+import com.sitescape.team.runas.RunasCallback;
+import com.sitescape.team.runas.RunasTemplate;
 
 public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPManager, SMTPManagerImplMBean, InitializingBean, DisposableBean {
 
@@ -113,12 +116,12 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 	{
 		MessageContext ctx;
 		String from;
-		List<String> recipients;
+		List<Recipient> recipients; 
 		
 		public Handler(MessageContext ctx)
 		{
 			this.ctx = ctx;
-			this.recipients = new LinkedList<String>();
+			this.recipients = new LinkedList<Recipient>();
 		}
 
 		public List<String> getAuthenticationMechanisms()
@@ -135,119 +138,86 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		{
 		}
 		
-		public void from(String from)
+		public void from(String from) throws RejectException
 		{
 			this.from = from;
 		}
 		
-		public void recipient(String recipient)
+		public void recipient(String recipient) throws RejectException
 		{
-			this.recipients.add(recipient);
+			//parse reciptients now, so other recipients can be handled by someone else
+			String[] parts = recipient.split("@");
+			if(parts.length != 2)  throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " not known");
+			String localPart = parts[0];
+			String hostname = parts[1];
+//			SessionUtil.sessionStartup();
+			try {
+				//no request context
+				Long zoneId = getZoneModule().getZoneIdByVirtualHost(hostname);
+				if (!getZoneModule().getZoneConfig(zoneId).getMailConfig().isSimpleUrlPostingEnabled()) {
+					throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable");
+				}
+				//skip modules to load info, so don't have to worry about user context
+				SimpleName simpleUrl = getCoreDao().loadSimpleNameByEmailAddress(localPart, zoneId);
+				if (simpleUrl == null || !simpleUrl.getBinderType().equals(EntityType.folder.name())) {
+					throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable");
+				}
+				Binder binder = getCoreDao().loadBinder(simpleUrl.getBinderId(), zoneId);
+				if(!binder.getPostingEnabled()) {
+					throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable");
+				}
+				this.recipients.add(new Recipient(recipient, simpleUrl));
+			} finally {
+//				SessionUtil.sessionStop();	
+			}
 		}
 		
 		public void data(InputStream data) throws TooMuchDataException, IOException, RejectException
 		{
 			SessionUtil.sessionStartup();
-			MimeMessage msgs[] = null;
 			Session session = Session.getDefaultInstance(new Properties());
 			try {
-				try {
-					msgs = new MimeMessage[1];
-					msgs[0] = new MimeMessage(session, data);
-				} catch (javax.mail.MessagingException ex) {
-					logger.debug("Error processing message to " + from + ": " + ex.getMessage());
-					throw new RejectException(554, "Server error");
-				}
-				for(String recipient : recipients) {
-					String hostname = hostnamePart(recipient);
-					String localPart = localPart(recipient);
-					if(hostname == null || localPart == null || determineSender(from, hostname) == null) {
-						throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable");
-					}
-					SimpleName simpleUrl = getBinderModule().getSimpleNameByEmailAddress(localPart);
-					if(simpleUrl == null || !simpleUrl.getBinderType().equals(EntityType.folder.name())) {
-						throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable");
-					}
-	
-					logger.debug("Delivering new message to " + recipient);
-					Binder binder = getBinderModule().getBinder(simpleUrl.getBinderId());
-					if(!binder.getPostingEnabled()) {
-						throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable");
-					}
+				MimeMessage msgs[] = new MimeMessage[1];
+				msgs[0] = new MimeMessage(session, data);
+				List errors = new ArrayList();
+				for(Recipient recipient : recipients) {
+					logger.debug("Delivering new message to " + recipient.email);			
+					//Run as background processing agent, same as other posting jobs.  
+					User user = getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, recipient.simpleName.getZoneId());
+					RequestContextUtil.setThreadContext(user).resolve();
+					
+					Binder binder = getCoreDao().loadBinder(recipient.simpleName.getBinderId(),recipient.simpleName.getZoneId());
 					EmailPoster processor = (EmailPoster)processorManager.getProcessor(binder,EmailPoster.PROCESSOR_KEY);
-					try {
-						List errors = processor.postMessages((Folder)binder, recipient, msgs, session);
-						if(errors.size() > 0) {
-							Message m = (Message) errors.get(0);
-							throw new RejectException(554, m.getSubject());
-						}
-					} catch (javax.mail.MessagingException ex) {
-						logger.debug("Error processing message to " + from + ": " + ex.getMessage());
-						throw new RejectException(554, "Server error");
-					}
+					errors.addAll(processor.postMessages((Folder)binder, recipient.email, msgs, session));
+			   		RequestContextHolder.clear();
+			   		getCoreDao().clear(); //clear session incase next from different zone
 				}
+				if(errors.size() > 0) {
+					Message m = (Message) errors.get(0);
+					throw new RejectException(554, m.getSubject());
+				}
+			} catch (javax.mail.MessagingException ex) {
+				logger.debug("Error processing message to " + from + ": " + ex.getMessage());
+				throw new RejectException(554, "Server error");
 			} finally {
 				SessionUtil.sessionStop();
+		   		RequestContextHolder.clear();
 			}
 		}
 	
 		public void resetMessageState()
 		{
 			from = null;
-			recipients = new LinkedList<String>();
+			recipients = new LinkedList<Recipient>();
 		}
 		
-		private String localPart(String emailAddress)
-		{
-			String[] parts = emailAddress.split("@");
-			if(parts.length != 2) {
-				return null;
+		protected class Recipient {
+			String email;
+			SimpleName simpleName;
+			public Recipient(String email, SimpleName simpleName) {
+				this.email = email;
+				this.simpleName = simpleName;
 			}
-			return parts[0];
-		}
-
-		private String hostnamePart(String emailAddress)
-		{
-			String[] parts = emailAddress.split("@");
-			if(parts.length != 2) {
-				return null;
-			}
-			return parts[1];
-		}
-
-		private User determineSender(String from, String hostname)
-		{
-			Long zone = getZoneModule().getZoneIdByVirtualHost(hostname);
-			if (!getZoneModule().getZoneConfig(zone).getMailConfig().isSimpleUrlPostingEnabled()) {
-				logger.debug("Sending mail is not enabled for " + hostname);
-				return null;
-			}
-
-			//Run as background processing agent, same as other posting jobs.  The processer will do the rest of this.
-			User user = getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, zone);
-			if (user != null) RequestContextUtil.setThreadContext(user).resolve();
-			return user;
-		/*	List<Principal> ps = getProfileDao().loadPrincipalByEmail(from, zone);
-			User user = null;
-			for (Principal p:ps) {
-	            //Make sure it is a user
-	            try {
-	            	User principal = (User)getProfileDao().loadUser(p.getId(), zone);
-	            	if (user == null) user = principal;
-	            	else if (!principal.equals(user)) {
-	        			logger.error("Multiple users with same email address, cannot use for incoming email");
-	        			break;
-	            	}
-	            } catch (Exception ignoreEx) {};  
-			}
-			if(user == null) {
-				user = getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zone);
-			}
-			if(user != null) {
-				RequestContextUtil.setThreadContext(user).resolve();
-			}
-			return user;
-			*/
 		}
 	}
 }
