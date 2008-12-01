@@ -43,10 +43,11 @@ import org.quartz.Trigger;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.domain.LicenseStats;
+import com.sitescape.team.jobs.SimpleTriggerJob.SimpleJobDescription;
 import com.sitescape.team.module.license.LicenseModule;
 import com.sitescape.team.util.SpringContextUtil;
 
-public class DefaultLicenseMonitor extends SSStatefulJob implements
+public class DefaultLicenseMonitor extends SimpleTriggerJob implements
 		LicenseMonitor {
 
 	@Override
@@ -58,60 +59,27 @@ public class DefaultLicenseMonitor extends SSStatefulJob implements
 	}
 
 	public void remove(Long zoneId) {
-		Scheduler scheduler = getScheduler();		
-		try {
-			scheduler.unscheduleJob(zoneId.toString(), LICENSE_MONITOR_GROUP);
-		} catch (SchedulerException se) {			
-			logger.error(se.getLocalizedMessage()==null?se.getMessage():se.getLocalizedMessage());
-		}
-		
+		removeJob(zoneId.toString(), LICENSE_MONITOR_GROUP);
 	}
 	public void schedule(Long zoneId, int hour)
 	{
-		Scheduler scheduler = getScheduler();		
-		try {
-			JobDetail jobDetail=scheduler.getJobDetail(zoneId.toString(), LICENSE_MONITOR_GROUP);
-			if (jobDetail == null) {
-				jobDetail = new JobDetail(zoneId.toString(), LICENSE_MONITOR_GROUP, 
-						Class.forName(this.getClass().getName()),false, false, false);
-				jobDetail.setDescription(LICENSE_MONITOR_DESCRIPTION);
-				JobDataMap data = new JobDataMap();
-				data.put("zoneId",zoneId);
-				jobDetail.setJobDataMap(data);
-				jobDetail.addJobListener(getDefaultCleanupListener());
-				scheduler.addJob(jobDetail, true);
-			}
-			int milliSeconds = 24*60*60*1000;
 
+		schedule(new JobDescription(zoneId, hour));
+	}
+	protected class JobDescription extends SimpleJobDescription {
+		int hour;
+		JobDescription(Long zoneId, int hour) {
+			super(zoneId, zoneId.toString(), LICENSE_MONITOR_GROUP, LICENSE_MONITOR_DESCRIPTION, 24*60*60);
+			this.hour = hour;
+		}
+		protected Date getStartDate() {
 			Calendar cal = GregorianCalendar.getInstance();
 			cal.set(Calendar.HOUR_OF_DAY, hour);
 			cal.set(Calendar.MINUTE, 0);
 			cal.add(Calendar.DATE, 1);
 			cal.set(Calendar.SECOND, 0);
 			cal.set(Calendar.MILLISECOND, 0);
-			
-			/* DEBUG
-			 * Uncomment the next line (which has two statements) to change the schedule
-			 *  to every 2 minutes, starting immediately
-			 */
-			// milliSeconds = 2*60*1000; cal = GregorianCalendar.getInstance();
-			
-
-			SimpleTrigger trigger =
-				new SimpleTrigger(zoneId.toString(), LICENSE_MONITOR_GROUP, zoneId.toString(), LICENSE_MONITOR_GROUP, cal.getTime(), null, 
-						SimpleTrigger.REPEAT_INDEFINITELY, milliSeconds);
-			trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT);
-			trigger.setDescription(LICENSE_MONITOR_DESCRIPTION);
-			trigger.setVolatility(false);
-			if(scheduler.getTrigger(zoneId.toString(), LICENSE_MONITOR_GROUP) == null) {
-				scheduler.scheduleJob(trigger);				
-			} else {
-				scheduler.rescheduleJob(zoneId.toString(), LICENSE_MONITOR_GROUP, trigger);
-			} 
-		} catch (SchedulerException se) {			
-			throw new ConfigurationException(se.getLocalizedMessage());			
-  		} catch (ClassNotFoundException cf) {
-			throw new ConfigurationException(cf.getLocalizedMessage());			
-  		}
+			return cal.getTime();
+		}
 	}
 }

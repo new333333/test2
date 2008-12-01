@@ -30,42 +30,50 @@
 package com.sitescape.team.jobs;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
 
 import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
-
-import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.InternalException;
 import com.sitescape.team.ConfigurationException;
-import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.WorkflowSupport;
-import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.NoObjectByTheIdException;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.domain.WorkflowSupport;
+import com.sitescape.team.extension.ExtensionCallback;
+import com.sitescape.team.extension.ZoneClassManager;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.workflow.WorkflowModule;
+import com.sitescape.team.module.workflow.jbpm.CalloutHelper;
+import com.sitescape.team.module.workflow.support.WorkflowAction;
+import com.sitescape.team.module.workflow.support.WorkflowCallout;
 import com.sitescape.team.module.workflow.support.WorkflowScheduledAction;
 import com.sitescape.team.module.workflow.support.WorkflowStatus;
-import com.sitescape.team.module.workflow.support.WorkflowCallout;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SpringContextUtil;
 
 /**
  *
  * @author Janet McCann
  */
-public class DefaultWorkflowProcess extends SSStatefulJob implements WorkflowProcess {
+public class DefaultWorkflowProcess extends SimpleTriggerJob implements WorkflowProcess {
 	 
- 
-	public void doExecute(JobExecutionContext context) throws JobExecutionException {	
-		Long entryId = new Long(jobDataMap.getLong("entityId"));
-		FolderModule folderModule = (FolderModule)SpringContextUtil.getBean("folderModule");
+	protected ZoneClassManager getZoneClassManager() {
+		return (ZoneClassManager)SpringContextUtil.getBean("zoneClassManager");
+	};
+
+	public void doExecute(final JobExecutionContext context) throws JobExecutionException {	
+		final Long entryId = new Long(jobDataMap.getLong("entityId"));
+		final FolderModule folderModule = (FolderModule)SpringContextUtil.getBean("folderModule");
 		FolderEntry entry = null;
     	try {
     		entry = folderModule.getEntry(null, entryId);
@@ -81,53 +89,59 @@ public class DefaultWorkflowProcess extends SSStatefulJob implements WorkflowPro
     		return;
     	}
 
-       	Long stateId = new Long(jobDataMap.getLong("stateId"));
+       	final Long stateId = new Long(jobDataMap.getLong("stateId"));
        	WorkflowState state = entry.getWorkflowState(stateId);
        	//workflow done, remove job
        	if (state == null) {
        		removeJob(context);
        		return;
        	}
+       	//remove from cache in case execution takes long
+       	coreDao.evict(entry);
        	String actionName = jobDataMap.getString("class");
-       	Class actionClass=null;
-       	try {
-       		actionClass = ReflectHelper.classForName(actionName);
-       		WorkflowScheduledAction job = (WorkflowScheduledAction)actionClass.newInstance();
-       		WorkflowStatus status = (WorkflowStatus)jobDataMap.get("workflowStatus");
-       		if (job.execute(entryId, stateId, status)) {
-       			//reload incase execute took a long time
-       	   		entry = folderModule.getEntry(null, entryId);
-       	   		state = entry.getWorkflowState(stateId);
-       			removeJob(context);
-       			if (state != null && job instanceof WorkflowCallout) {
-       				//could be a naming issue for variables if multiple remote apps run simultaneously for the same entry
-       				WorkflowModule wf = (WorkflowModule)SpringContextUtil.getBean("workflowModule");
-       				wf.setWorkflowVariables(entry, state, ((WorkflowCallout)job).getVariables());
-       				wf.modifyWorkflowStateOnChange(entry);
-       			}
-       		} else {
-       			//update jobdata
-       			jobDataMap.put("workflowStatus", status);
-  				SimpleTrigger trigger = (SimpleTrigger)context.getTrigger();
-       			if (status.getRetrySeconds()*1000 == trigger.getRepeatInterval()) {
-       				return;
-       			} 
-       			//change time
-				trigger.setRepeatInterval(status.getRetrySeconds()*1000);
-				context.getScheduler().rescheduleJob(context.getJobDetail().getName(), context.getJobDetail().getGroup(), trigger);
-       		}
-       	} catch (ClassNotFoundException e) {
+		try {
+			getZoneClassManager().execute(new ExtensionCallback() {
+				public Object execute(Object action) {
+		       		WorkflowScheduledAction job = (WorkflowScheduledAction)action;
+		       		WorkflowStatus status = (WorkflowStatus)jobDataMap.get("workflowStatus");
+		       		if (job.execute(entryId, stateId, status)) {
+		       			//reload incase execute took a long time
+		       			FolderEntry entry = folderModule.getEntry(null, entryId);
+		       			WorkflowState state = entry.getWorkflowState(stateId);
+		       			removeJob(context);
+		       			if (state != null && job instanceof WorkflowCallout) {
+		       				//	could be a naming issue for variables if multiple remote apps run simultaneously for the same entry
+		       				WorkflowModule wf = (WorkflowModule)SpringContextUtil.getBean("workflowModule");
+		       				wf.setWorkflowVariables(entry, state, ((WorkflowCallout)job).getVariables());
+		       				wf.modifyWorkflowStateOnChange(entry);
+		       			}
+		       		} else {
+		       			//update jobdata
+		       			jobDataMap.put("workflowStatus", status);
+		       			SimpleTrigger trigger = (SimpleTrigger)context.getTrigger();
+		       			if (status.getRetrySeconds()*1000 != trigger.getRepeatInterval()) {
+		       				//	change time
+		       				trigger.setRepeatInterval(status.getRetrySeconds()*1000);
+		       				try {
+		       					context.getScheduler().rescheduleJob(context.getJobDetail().getName(), context.getJobDetail().getGroup(), trigger);
+		       				} catch (SchedulerException se) {			
+		       					throw new ConfigurationException(se.getLocalizedMessage());			
+		       				}
+		       			}
+		       		}
+		       		return null;
+
+				};
+			}, actionName);
+ 
+		} catch (ClassNotFoundException e) {
+			logger.error("Invalid Workflow Action class name '" + actionName + "'");
+			throw new ConfigurationException("Invalid Workflow Action class name '" + actionName + "'",
+					e);
+       	} catch (InternalException e) {
    			removeJob(context);			
-      		throw new ConfigurationException("Invalid Workflowprocess class name '" + actionClass + "'");
-       	} catch (InstantiationException e) {
-   			removeJob(context);			
-      		throw new ConfigurationException("Cannot instantiate Workflowprocess of type '" 	+ actionClass + "'");
-       	} catch (IllegalAccessException e) {
-   			removeJob(context);			
-      		throw new ConfigurationException("Cannot instantiate Workflowprocess of type '"	+ actionClass + "'");
-		} catch (SchedulerException se) {			
-			throw new ConfigurationException(se.getLocalizedMessage());			
-		} catch (NoObjectByTheIdException no) {
+      		throw new ConfigurationException("Cannot instantiate Workflowprocess of type '" 	+ actionName + "'");
+ 		} catch (NoObjectByTheIdException no) {
    			removeJob(context);			
 		}
     }
@@ -147,50 +161,54 @@ public class DefaultWorkflowProcess extends SSStatefulJob implements WorkflowPro
 		return WORKFLOW_PROCESS_GROUP + ":" + ((FolderEntry)entry).getId().toString() + ":" + wfState.getId().toString();
 	}
     public void schedule(WorkflowSupport entry, WorkflowState wfState, String clazz, Map args, int seconds) {
-		Scheduler scheduler = getScheduler();		
 		String groupName = getGroupName(entry, wfState);
 		try {
 			//since scheduling is not handled by the current transaction,
 			//old jobs could be registered that were not rolledback
 			//If I integrate the transaction into quartz I get deadlocks
 			//so this will have to do.
-			scheduler.unscheduleJob(clazz, groupName);
+			removeJob(clazz, groupName);
 		} catch (Exception noexist) {};
-		try {
-			JobDetail jobDetail = new JobDetail(clazz, groupName, 
-						Class.forName(this.getClass().getName()),false, false, false);
-			jobDetail.setDescription(WORKFLOW_PROCESS_DESCRIPTION);
-			JobDataMap data = new JobDataMap();
-			data.put(ZONEID,wfState.getZoneId());
-			data.put(USERID,RequestContextHolder.getRequestContext().getUserId());
-			data.put("entityId", wfState.getOwner().getEntity().getEntityIdentifier().getEntityId());
-			data.put("entityType", wfState.getOwner().getEntity().getEntityIdentifier().getEntityType());
-			data.put("stateId", wfState.getId());
-			data.put("class", clazz);
-			WorkflowStatus status = new WorkflowStatus(args, seconds);
-			data.put("workflowStatus", status);
-			jobDetail.setJobDataMap(data);
-			jobDetail.addJobListener(getDefaultCleanupListener());
-			scheduler.addJob(jobDetail, true);
-
-			GregorianCalendar start = new GregorianCalendar();
-			start.add(Calendar.MINUTE, 1);
-			GregorianCalendar end = new GregorianCalendar(); //try for 1 week
-			end.add(Calendar.DATE, 7);
-
-			int milliSeconds = seconds*1000;
-			SimpleTrigger trigger = new SimpleTrigger(clazz, groupName, clazz, groupName, start.getTime(), end.getTime(), 
-					SimpleTrigger.REPEAT_INDEFINITELY, milliSeconds);
-			trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT);
-			trigger.setDescription(WORKFLOW_PROCESS_DESCRIPTION);
-			trigger.setVolatility(false);
-			scheduler.scheduleJob(trigger);				
-		} catch (SchedulerException se) {			
-			throw new ConfigurationException(se.getLocalizedMessage());			
-  		} catch (ClassNotFoundException cf) {
-			throw new ConfigurationException(cf.getLocalizedMessage());			
-  		}
+		JobDataMap data = new JobDataMap();
+		data.put(ZONEID,wfState.getZoneId());
+		data.put(USERID,RequestContextHolder.getRequestContext().getUserId());
+		data.put("entityId", wfState.getOwner().getEntity().getEntityIdentifier().getEntityId());
+		data.put("entityType", wfState.getOwner().getEntity().getEntityIdentifier().getEntityType());
+		data.put("stateId", wfState.getId());
+		data.put("class", clazz);
+		WorkflowStatus status = new WorkflowStatus(args, seconds);
+		data.put("workflowStatus", status);
+		
+		GregorianCalendar start = new GregorianCalendar();
+		start.add(Calendar.MINUTE, 1);
+		GregorianCalendar end = new GregorianCalendar(); //try for 1 week
+		end.add(Calendar.DATE, 7);
+			
+		schedule(new JobDescription(wfState.getZoneId(), clazz, groupName, start.getTime(), end.getTime(), seconds, data));
     }
 
+	public class JobDescription extends SimpleJobDescription {
+		Date startDate,endDate;
+		JobDataMap data;
+		JobDescription(Long zoneId, String jobName, String jobGroup, Date startDate, Date endDate, int repeatSeconds, JobDataMap data) {
+			super(zoneId, jobName, jobGroup, WORKFLOW_PROCESS_DESCRIPTION, repeatSeconds);
+			this.data = data;
+			this.startDate = startDate;
+			this.endDate = endDate;
+		}
+		protected Date getStartDate() {
+			return startDate;
+		}
+		protected Date getEndDate() {
+			return endDate;
+		}
 
+		protected JobDataMap getData() {
+			return data;
+		}
+		protected int getMisfireInstruction() {
+			return SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT;
+		}
+
+	}    
 }

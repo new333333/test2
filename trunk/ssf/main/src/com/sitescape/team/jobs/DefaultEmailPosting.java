@@ -28,8 +28,6 @@
  */
 package com.sitescape.team.jobs;
 
-import java.util.TimeZone;
-
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
@@ -37,7 +35,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.SpringContextUtil;
 
-public class DefaultEmailPosting extends SSStatefulJob implements EmailPosting {
+public class DefaultEmailPosting extends SSCronTriggerJob implements EmailPosting {
 	public void doExecute(final JobExecutionContext context) throws JobExecutionException {
 		if (!coreDao.loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isPostingEnabled()) {
 			logger.debug("Posting is not enabled for zone " + RequestContextHolder.getRequestContext().getZoneName());
@@ -47,44 +45,15 @@ public class DefaultEmailPosting extends SSStatefulJob implements EmailPosting {
 		mail.receivePostings();
     }
 	public ScheduleInfo getScheduleInfo(Long zoneId) {
-		return getScheduleInfo(new MailJobDescription(zoneId));
+		return getScheduleInfo(new CronJobDescription(zoneId, zoneId.toString(), POSTING_GROUP, zoneId.toString()));
 	}
 	public void setScheduleInfo(ScheduleInfo info) {
-		setScheduleInfo(new MailJobDescription(info.getZoneId()), info);
+		setScheduleInfo(new CronJobDescription(info.getZoneId(), info.getZoneId().toString(), POSTING_GROUP, info.getZoneId().toString()), info);
 
 	}
 
 	public void enable(boolean enable, Long zoneId) {
-		enable(enable, new MailJobDescription(zoneId));
+		enable(enable, new CronJobDescription(zoneId, zoneId.toString(), POSTING_GROUP, POSTING_DESCRIPTION));
  	}
-
-	public class MailJobDescription implements JobDescription {
-		private Long zoneId;
-		public MailJobDescription(Long zoneId) {
-			this.zoneId = zoneId;
-		}
-    	public  String getDescription() {
-    		return SSStatefulJob.trimDescription(zoneId.toString());
-    	}
-    	public Long getZoneId() {
-    		return zoneId;
-    	}
-    	public String getName() {
-    		return zoneId.toString();
-    	}
-    	public String getGroup() {
-    		return POSTING_GROUP;
-    	}		
-    	public ScheduleInfo getDefaultScheduleInfo() {
-    		ScheduleInfo info = new ScheduleInfo(zoneId);
-    		return info;
-    	}
-      	public TimeZone getTimeZone() {
-    		return getDefaultTimeZone();
-   	}
-    	public String getCleanupListener() {
-    		return getDefaultCleanupListener();
-    	}
-   	}
 
 }

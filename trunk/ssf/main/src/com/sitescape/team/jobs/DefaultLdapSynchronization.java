@@ -42,7 +42,7 @@ import com.sitescape.team.util.SpringContextUtil;
  * @author Janet McCann
  *
  */
-public class DefaultLdapSynchronization extends SSStatefulJob implements LdapSynchronization {
+public class DefaultLdapSynchronization extends SSCronTriggerJob implements LdapSynchronization {
 
 	/* (non-Javadoc)
 	 * @see com.sitescape.team.jobs.SSStatefulJob#doExecute(org.quartz.JobExecutionContext)
@@ -62,47 +62,14 @@ public class DefaultLdapSynchronization extends SSStatefulJob implements LdapSyn
 		}
 	}
 	public ScheduleInfo getScheduleInfo(Long zoneId) {
-		return getScheduleInfo(new LdapJobDescription(zoneId));
+		return getScheduleInfo(new CronJobDescription(zoneId, zoneId.toString(),LDAP_GROUP, zoneId.toString()));
 	}
 	public void setScheduleInfo(ScheduleInfo info) {
-		setScheduleInfo(new LdapJobDescription(info.getZoneId()), info);
+		setScheduleInfo(new CronJobDescription(info.getZoneId(), info.getZoneId().toString(),LDAP_GROUP, info.getZoneId().toString()), info);
 	}
 
 	public void enable(boolean enable, Long zoneId) {
-		enable(enable, new LdapJobDescription(zoneId));
+		enable(enable, new CronJobDescription(zoneId, zoneId.toString(),LDAP_GROUP, LDAP_DESCRIPTION));
  	}
-	public class LdapJobDescription implements JobDescription {
-		Long zoneId;
-		public LdapJobDescription(Long zoneId) {
-			this.zoneId = zoneId;
-		}
-	    public  String getDescription() {
-	    	return zoneId.toString();
-	    }
-	    public Long getZoneId() {
-	    	return zoneId;
-	    }
-	    public String getName() {
-	    	return zoneId.toString();
-	    }
-	    public String getGroup() {
-	    	return LdapSynchronization.LDAP_GROUP;
-	    }		
-       	public TimeZone getTimeZone() {
-    		return getDefaultTimeZone();
-    	}
-       	public String getCleanupListener() {
-    		return getDefaultCleanupListener();
-    	}
-    	public ScheduleInfo getDefaultScheduleInfo() {
-    		ScheduleInfo info = new ScheduleInfo(zoneId);
-    		//seconds minutes hours dayOfMonth months days year"
-    		info.setSchedule(new Schedule("0 15 2 ? * mon-fri *"));
-    		return info;
-    	}
-       	
-	}
-
-
 
 }

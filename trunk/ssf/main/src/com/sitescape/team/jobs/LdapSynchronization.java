@@ -36,7 +36,7 @@ package com.sitescape.team.jobs;
 public interface LdapSynchronization {
 	
 	public static final String LDAP_GROUP="ldap-synchronization";
-
+	public static final String LDAP_DESCRIPTION="Synchronzie profiles from LDAP";
 	public ScheduleInfo getScheduleInfo(Long zoneId);
 	public void setScheduleInfo(ScheduleInfo info);
 	public void enable(boolean enable, Long zoneId);

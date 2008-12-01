@@ -209,7 +209,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	try {
     		hours = Integer.parseInt(hrsString);
     	} catch (Exception ex) {};
-    	job.schedule(zone.getId(), hours);
+    	job.schedule(zone.getId(), hours*60*60);
    }
 
 	public boolean testAccess(Folder folder, FolderOperation operation) {
