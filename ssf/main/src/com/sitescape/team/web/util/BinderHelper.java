@@ -2873,4 +2873,22 @@ public class BinderHelper {
 		model.put(WebKeys.WORKFLOW_TRANSITIONS, transitionMap);
 	}
 	
+	public static List getAllApplications(AllModulesInjected bs) {
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
+		//get them all
+		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
+
+		Document searchFilter = DocumentHelper.createDocument();
+		Element field = searchFilter.addElement(Constants.FIELD_ELEMENT);
+    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ENTRY_TYPE_FIELD);
+    	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
+    	child.setText(Constants.ENTRY_TYPE_APPLICATION);
+    	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
+    	
+		Map searchResults = bs.getProfileModule().getApplications(options);
+		List applications = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
+		return applications;
+	}
 }

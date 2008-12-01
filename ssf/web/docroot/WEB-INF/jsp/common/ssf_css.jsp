@@ -539,6 +539,8 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
   background-repeat: repeat-x;
 	}	
 button, input[type="reset"], input[type="button"], input[type="submit"] {	
+  	border: 1px solid #333;
+  	padding: 0px 6px 0px 6px;
 	<c:if test="<%= isIE %>">
   		margin-left: 1px; 
   		margin-right: 1px;

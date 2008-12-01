@@ -78,6 +78,9 @@ import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.calendar.OneMonthView;
 import com.sitescape.team.calendar.StartEndDatesView;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.Application;
+import com.sitescape.team.domain.ApplicationGroup;
+import com.sitescape.team.domain.ApplicationPrincipal;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Definition;
@@ -446,6 +449,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return new ModelAndView("forum/fetch_url_return");			
 		} else if (op.equals(WebKeys.OPERATION_SAVE_UESR_STATUS)) {
 			return ajaxGetUserStatus(request, response);
+		} else if (op.equals(WebKeys.OPERATION_GET_GROUP_LIST)) {
+			return ajaxGetGroupList(this, request, response);
 		} else if (op.equals(WebKeys.OPERATION_VIEW_MINIBLOG)) {
 			return ajaxViewMiniBlog(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_UPLOAD_PROGRESS_STATUS)) {
@@ -2705,6 +2710,42 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String statusId = PortletRequestUtils.getStringParameter(request, "ss_statusId", "");
 		model.put("ss_statusId", statusId);
 		return new ModelAndView("forum/save_status_return", model);
+	}
+	
+	private ModelAndView ajaxGetGroupList(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Long groupId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_GROUP_ID);
+		String applicationName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_APPLICATION_GROUP_NAME, "");
+		if (groupId != null) {
+			Group group = (Group)getProfileModule().getEntry(groupId);		
+			model.put(WebKeys.GROUP, group);
+			List memberList = ((Group)group).getMembers();
+			Set ids = new HashSet();
+			Iterator itUsers = memberList.iterator();
+			while (itUsers.hasNext()) {
+				Principal member = (Principal) itUsers.next();
+				ids.add(member.getId());
+			}
+			model.put(WebKeys.USERS, getProfileModule().getUsers(ids));
+			model.put(WebKeys.GROUPS, getProfileModule().getGroups(ids));			
+		} else if (!applicationName.equals("")) {
+			ApplicationGroup group = getProfileModule().getApplicationGroup(applicationName);		
+			List applications = BinderHelper.getAllApplications(bs);
+			model.put(WebKeys.GROUP, group);
+			List memberList = group.getMembers();
+			Set ids = new HashSet();
+			Iterator itUsers = memberList.iterator();
+			while (itUsers.hasNext()) {
+				ApplicationPrincipal member = (ApplicationPrincipal) itUsers.next();
+				ids.add(member.getId());
+			}
+			model.put(WebKeys.USERS, getProfileModule().getApplications(ids));
+			model.put(WebKeys.GROUPS, getProfileModule().getApplicationGroups(ids));			
+			return new ModelAndView("binder/show_application_group_list", model);
+		}
+		return new ModelAndView("binder/show_group_list", model);
 	}
 	
 	private ModelAndView ajaxViewMiniBlog(RenderRequest request, 
