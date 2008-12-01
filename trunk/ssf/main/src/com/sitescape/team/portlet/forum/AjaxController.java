@@ -2721,12 +2721,16 @@ public class AjaxController  extends SAbstractControllerRetry {
 		if (groupId != null) {
 			Group group = (Group)getProfileModule().getEntry(groupId);		
 			model.put(WebKeys.GROUP, group);
-			List memberList = ((Group)group).getMembers();
 			Set ids = new HashSet();
-			Iterator itUsers = memberList.iterator();
-			while (itUsers.hasNext()) {
-				Principal member = (Principal) itUsers.next();
-				ids.add(member.getId());
+			if (ObjectKeys.ALL_USERS_GROUP_INTERNALID.equals(group.getInternalId())) {
+				//We don't try to list all the users. This could take a very long time
+			} else {
+				List memberList = ((Group)group).getMembers();
+				Iterator itUsers = memberList.iterator();
+				while (itUsers.hasNext()) {
+					Principal member = (Principal) itUsers.next();
+					ids.add(member.getId());
+				}
 			}
 			model.put(WebKeys.USERS, getProfileModule().getUsers(ids));
 			model.put(WebKeys.GROUPS, getProfileModule().getGroups(ids));			

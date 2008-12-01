@@ -29,6 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ page import="com.sitescape.team.ObjectKeys" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <ssf:ifadapter>
 <body class="tundra">
@@ -73,6 +74,17 @@
 		name="groupId" value="${group.id}"/></ssf:url>"
     onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;"> (${group.name})</a><br/>
   </c:forEach>
+</c:if>
+
+<c:if test="${empty ssGroups}">
+	<jsp:useBean id="ssGroup" type="com.sitescape.team.domain.Group" scope="request"/>
+    <% if (ObjectKeys.ALL_USERS_GROUP_INTERNALID.equals(ssGroup.getInternalId())) { %>
+    	<div style="padding:20px;">
+    		<span class="ss_italic">
+    			<ssf:nlt tag="group.allusers.contains"/>
+    		</span>
+    	</div>
+    <% } %>
 </c:if>
 
 <div style="padding-top:30px;">
