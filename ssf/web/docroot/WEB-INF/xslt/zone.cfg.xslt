@@ -18,6 +18,12 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <folderConfiguration>
 	<xsl:apply-templates select="/zoneConfiguration/folderConfiguration"/>
 </folderConfiguration>
+<extensionConfiguration>
+	<xsl:apply-templates select="/zoneConfiguration/extensionConfiguration"/>
+</extensionConfiguration>
+<licenseConfiguration>
+	<xsl:apply-templates select="/zoneConfiguration/licenseConfiguration"/>
+</licenseConfiguration>
 
 </zoneConfiguration>
 </xsl:template>
@@ -34,6 +40,15 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 		</xsl:choose>
 
 </xsl:template>
+<xsl:template match="folderConfiguration">
+	<xsl:copy-of select="$doc2/zoneConfiguration/folderConfiguration/property | ./property[not(@name=$doc2/zoneConfiguration/folderConfiguration/property/@name)]"/>
+</xsl:template>
+<xsl:template match="extensionConfiguration">
+	<xsl:copy-of select="$doc2/zoneConfiguration/extensionConfiguration/property | ./property[not(@name=$doc2/zoneConfiguration/extensionConfiguration/property/@name)]"/>
+</xsl:template>
+<xsl:template match="licenseConfiguration">
+	<xsl:copy-of select="$doc2/zoneConfiguration/licenseConfiguration/property | ./property[not(@name=$doc2/zoneConfiguration/licenseConfiguration/property/@name)]"/>
+</xsl:template>
 
 <xsl:template match="mailConfiguration">
 	<xsl:copy-of select="$doc2/zoneConfiguration/mailConfiguration/property | ./property[not(@name=$doc2/zoneConfiguration/mailConfiguration/property/@name)]"/>
@@ -74,9 +89,6 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 			<xsl:copy-of select="./posting" />
 		</xsl:otherwise>
 	</xsl:choose>
-</xsl:template>
-<xsl:template match="folderConfiguration">
-	<xsl:copy-of select="$doc2/zoneConfiguration/folderConfiguration/property | ./property[not(@name=$doc2/zoneConfiguration/folderConfiguration/property/@name)]"/>
 </xsl:template>
 
 <xsl:template match="ldapConfiguration">

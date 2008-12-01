@@ -32,7 +32,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 public class WorkflowStatus implements Serializable {
-	private static final int serialVersionUUID=1;
+	private static final long serialVersionUID = -627098193800325752L;
 	private String message;
 	private int retrySeconds=300;
 	private Map params;

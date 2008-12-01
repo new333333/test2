@@ -66,17 +66,16 @@ import com.sitescape.team.domain.WorkflowHistory;
 import com.sitescape.team.domain.WorkflowResponse;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
+import com.sitescape.team.extension.ExtensionCallback;
+import com.sitescape.team.extension.ZoneClassManager;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.workflow.impl.WorkflowFactory;
 import com.sitescape.team.module.workflow.jbpm.CalloutHelper;
 import com.sitescape.team.module.workflow.support.WorkflowCondition;
-import com.sitescape.team.runas.RunasCallback;
-import com.sitescape.team.runas.RunasTemplate;
 import com.sitescape.team.util.InvokeUtil;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.ObjectPropertyNotFoundException;
-import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 
@@ -85,6 +84,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	protected static boolean debugEnabled=logger.isDebugEnabled();
 	protected static BusinessCalendar businessCalendar = new BusinessCalendar();
 	private static WorkflowProcessUtils instance; // A singleton instance
+	private ZoneClassManager zoneClassManager;
 	public WorkflowProcessUtils() {
 		if(instance != null)
 			throw new SingletonViolationException(WorkflowProcessUtils.class);
@@ -94,6 +94,12 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
     public static WorkflowProcessUtils getInstance() {
     	return instance;
     }
+	protected ZoneClassManager getZoneClassManager() {
+		return zoneClassManager;
+	}
+	public void setZoneClassManager(ZoneClassManager zoneClassManager) {
+		this.zoneClassManager = zoneClassManager;
+	}
     public static WfNotify getNotification(Element notifyElement, WorkflowSupport wfEntry) {
     	List<Element> props;
     	String name, value;
@@ -441,7 +447,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	 * @param isReply
 	 * @return
 	 */
-	private static String processConditions(ExecutionContext executionContext, WorkflowSupport entry, WorkflowState state, 
+	private static String processConditions(final ExecutionContext executionContext, final WorkflowSupport entry, final WorkflowState state, 
 			boolean isModify, boolean isReply) {
 		List conditions = getConditionElements(state.getDefinition(), state.getState());
 //		Date currentDate = new Date();
@@ -638,27 +644,23 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 						}
 					}
 				} else if (type.equals("transitionOnCondition")) {
-					String className = DefinitionUtils.getPropertyValue(condition, "class");
-					try {
-						Class actionClass = ReflectHelper.classForName(className);
-						WorkflowCondition job = (WorkflowCondition)actionClass.newInstance();
-						job.setHelper(new CalloutHelper(executionContext));
-						if (job.execute(entry, state)) return toState;
-						
-					} catch (ClassNotFoundException e) {
-						throw new ConfigurationException(
-								"Invalid Workflow Action class name '" + className + "'",
-								e);
-					} catch (InstantiationException e) {
-						throw new ConfigurationException(
-								"Cannot instantiate Workflow Action of type '"
-								+ className + "'");
-					} catch (IllegalAccessException e) {
-						throw new ConfigurationException(
-								"Cannot instantiate Workflow Action of type '"
-								+ className + "'");
+					String conditionName = DefinitionUtils.getPropertyValue(condition, "class");
+					if (Validator.isNotNull(conditionName)) {
+						try {
+							Boolean result = (Boolean)getInstance().getZoneClassManager().execute(new ExtensionCallback() {
+								public Object execute(Object action) {
+									WorkflowCondition job = (WorkflowCondition)action;
+									job.setHelper(new CalloutHelper(executionContext));
+									return Boolean.valueOf(job.execute(entry, state));						
+								}
+							}, conditionName);
+							if (Boolean.TRUE.equals(result)) return toState;
+						} catch (ClassNotFoundException e) {
+							logger.error("Invalid Workflow Transition/Condition class name '" + conditionName + "'");
+							throw new ConfigurationException("Invalid Workflow Action class name '" + conditionName + "'",
+									e);
+						} 
 					}
-				
 				} else if (type.equals("transitionImmediate")) {
 					setVariables(condition, executionContext, entry, state);
 					if (debugEnabled) logger.debug("Take auto transition " + state.getState() + "." + toState);

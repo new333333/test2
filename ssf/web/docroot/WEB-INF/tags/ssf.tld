@@ -1880,5 +1880,16 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 	</tag>
-	
+		<tag>
+		<name>extensionUrl</name>
+		<tag-class>com.sitescape.team.taglib.ExtensionUrlTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>attr</name>
+		</attribute>
+		<attribute>
+			<name>url</name>
+			<required>true</required>
+		</attribute>		
+	</tag>
 </taglib>

@@ -29,6 +29,7 @@
 package com.sitescape.team.taglib;
 
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -73,9 +74,15 @@ public class FileUrlTag extends BodyTagSupport {
 			String webUrl = null;
 			if (attachment != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, attachment);
 			else if (searchResult != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, searchResult);
-			else {
+			else if (fileId != null) {
 				attachment = (FileAttachment)entity.getAttachment(fileId); 
 				if (attachment != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, attachment);
+			} else {
+				//try the first entity
+				Set<FileAttachment> atts = entity.getFileAttachments();
+				if (!atts.isEmpty())
+					webUrl = WebUrlUtil.getFileUrl(req, webPath, atts.iterator().next());
+				
 			}
 			if (Validator.isNotNull(webUrl)) pageContext.getOut().print(webUrl);
 			return SKIP_BODY;

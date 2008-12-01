@@ -77,7 +77,7 @@ public class TwitterServlet extends HttpServlet {
 	throws ServletException, IOException {
 		try {
 			String pathInfo = req.getPathInfo();
-			
+			if (pathInfo == null || pathInfo.equals("")) pathInfo ="/id";
 			// Get ready for web services calls to the Teaming.
 			TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 			locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS);
@@ -131,7 +131,8 @@ public class TwitterServlet extends HttpServlet {
 			String tokenScope = req.getParameter(PARAMETER_NAME_TOKEN_SCOPE);
 			boolean renderable = Boolean.parseBoolean(req.getParameter(PARAMETER_NAME_RENDERABLE));
 			String pathInfo = req.getPathInfo();
-			
+			if (pathInfo == null || pathInfo.equals("")) pathInfo ="/id";
+
 			// Get ready for web services calls to the Teaming.
 			TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 			locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS);

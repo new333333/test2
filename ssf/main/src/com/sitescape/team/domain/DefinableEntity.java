@@ -279,7 +279,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
      * Return all attachments.
      * 
 	 */
-    public Set getAttachments() {
+    public Set<Attachment> getAttachments() {
     	if (iAttachments != null) return iAttachments;
        	//need to implement here to setup the doclet tags
     	if (attachments == null) attachments = new HashSet();

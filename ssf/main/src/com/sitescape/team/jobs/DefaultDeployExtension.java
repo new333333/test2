@@ -36,7 +36,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-//import com.sitescape.team.extension.ExtensionDeployer;
+import com.sitescape.team.extension.ExtensionDeployer;
 import com.sitescape.team.util.DirPath;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.util.Utils;
@@ -53,7 +53,7 @@ public class DefaultDeployExtension extends SimpleTriggerJob implements DeployEx
      */
 
 	public void doExecute(JobExecutionContext context) throws JobExecutionException {	
-/*		ExtensionDeployer work = (ExtensionDeployer)SpringContextUtil.getBean("extDeployer");
+		ExtensionDeployer work = (ExtensionDeployer)SpringContextUtil.getBean("extDeployer");
 		String pathName = jobDataMap.getString(DEPLOY_EXTENSION_PATHNAME);
 		if (Validator.isNull(pathName)) pathName = DirPath.getExtensionDeployPath() + File.separator + Utils.getZoneKey();
 		File deployDir = new File(pathName);		
@@ -77,7 +77,6 @@ public class DefaultDeployExtension extends SimpleTriggerJob implements DeployEx
 				}
 			}
 		}
-		*/
 	}
 
 	public void remove(Long zoneId) {

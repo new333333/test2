@@ -68,6 +68,7 @@ import com.sitescape.team.domain.WorkflowStateHistory;
 import com.sitescape.team.domain.ZoneConfig;
 import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.jobs.ZoneSchedule;
+import com.sitescape.team.extension.ZoneClassManager;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
@@ -153,6 +154,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	protected List<ZoneSchedule> startupModules;
 	public void setScheduleModules(List modules) {
 		startupModules = modules;		
+	}
+	protected ZoneClassManager zoneClassManager;
+	protected ZoneClassManager getZoneClassManager() {
+		return zoneClassManager;
+	}
+	public void setZoneClassManager(ZoneClassManager zoneClassManager) {
+		this.zoneClassManager = zoneClassManager;
 	}
 	/**
      * Called after bean is initialized.  
@@ -498,6 +506,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			// Make sure there is a ZoneConfig; new for v2
  			addZoneConfigTx(zone);
  		}
+		getZoneClassManager().initialize();
+
 		//make sure only one
 		getCoreDao().executeUpdate(
 				"update com.sitescape.team.domain.User set internalId=null where " +
@@ -605,7 +615,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		RequestContextHolder.getRequestContext().setUser(user).resolve();
     		//set zone info after context is set
 			ZoneConfig zoneConfig = addZoneConfigTx(top);
-    		HistoryStamp stamp = new HistoryStamp(user);
+			getZoneClassManager().initialize();
+			HistoryStamp stamp = new HistoryStamp(user);
     		//add reserved group for use in import templates
     		Group group = addAllUserGroup(profiles, stamp);
     		ApplicationGroup applicationGroup = addAllApplicationGroup(profiles, stamp);

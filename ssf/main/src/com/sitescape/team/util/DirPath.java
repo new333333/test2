@@ -50,7 +50,18 @@ public class DirPath {
 	public static String getDTDDirPath() {
 		return getWebinfDirPath() + File.separator + "classes" + File.separator + "dtd";
 	}
-
+	public static String getExtensionWebPath() {
+		return getWebappDirPathVisible("ext");
+	}
+	public static String getExtensionBasePath() {
+		return getWebappDirPathHidden("ext");
+	}
+	public static String getExtensionDeployPath() {
+		return getWebinfDirPath() + File.separator + "deploy";
+	}
+	public static String getLibraryPath() {
+		return getWebinfDirPath() + File.separator + "lib";
+	}
 	private static String getWebinfDirPath() {
     	return SpringContextUtil.getWebappRootDirPath() + File.separator + "WEB-INF";
     }

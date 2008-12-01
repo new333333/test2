@@ -31,6 +31,7 @@ package com.sitescape.team.util;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.InternalException;
 import com.sitescape.team.context.request.RequestContextHolder;
 
@@ -79,6 +80,21 @@ public class Utils {
 		}
 		else {
 			zoneKey = zoneName;
+		}
+		return zoneKey;
+	}
+	//handle cases where request context not set
+	public static String getZoneKey(Workspace zone) {
+		// If default zone
+		//		zoneKey = zoneName
+		// else
+		//		zoneKey = zoneName + "_" + zoneId
+		String zoneKey;
+		if(!zone.getName().equals(SZoneConfig.getDefaultZoneName())) {
+			zoneKey = zone.getName() + "_" + zone.getId();
+		}
+		else {
+			zoneKey = zone.getName();
 		}
 		return zoneKey;
 	}

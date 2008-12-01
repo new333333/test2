@@ -30,7 +30,12 @@ package com.sitescape.team.module.workflow.support;
 
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
-
+/**
+ * Use to execute quick actions.  In a write transaction, so processing should be 'short'
+ * If not use WorkflowScheduledAction
+ * @author Janet
+ *
+ */
 public interface WorkflowAction  {
 	public void execute(WorkflowSupport entry, WorkflowState state);
 	public void setHelper(WorkflowCallout helper);
