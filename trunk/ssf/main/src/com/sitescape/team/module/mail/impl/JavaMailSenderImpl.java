@@ -43,6 +43,7 @@ import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 
+import com.sitescape.team.module.mail.ConnectionCallback;
 import com.sitescape.util.Validator;
 /**
  * This class extends the spring JavaMailSenderImpl.  It adds the bean name, so
@@ -99,9 +100,8 @@ public class JavaMailSenderImpl extends
 	public String getName() {
 		return name;
 	}
-	public void send(MimeMessagePreparator mimeMessagePreparator, Object ctx) throws MailException {
-		Cache cache = (Cache)ctx;
-		cache.validate();
+	public void send(Transport transport, MimeMessagePreparator mimeMessagePreparator) throws MailException {
+		validate(transport);
 
 		try {
 			MimeMessage mimeMessage = createMimeMessage();
@@ -110,7 +110,7 @@ public class JavaMailSenderImpl extends
 				mimeMessage.setSentDate(new Date());
 			}
 			mimeMessage.saveChanges();
-			cache.transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
+			transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
 		}
 		catch (MailException ex) {
 			throw ex;
@@ -125,7 +125,7 @@ public class JavaMailSenderImpl extends
 			throw new MailPreparationException(ex);
 		}
 	}
-	public Object initializeConnection() throws MailException {
+	public Object send(ConnectionCallback callback) throws MailException {
 		Transport transport;
 		try {
 			transport = super.getTransport(getSession());
@@ -136,30 +136,20 @@ public class JavaMailSenderImpl extends
 		} catch (MessagingException ex) {
 			throw new MailSendException("Mail server connection failed", ex);
 		}
-		return new Cache(transport);
-	}
-	public void releaseConnection(Object ctx) {
-		if (ctx != null) ((Cache)ctx).release();
-	}
-	private class Cache {
-		Transport transport;
-		protected Cache(Transport transport) {
-			this.transport = transport;
+		try {
+			return callback.doWithConnection(transport);
+		} finally {
+			try {transport.close();} catch (Exception ignore) {};
 		}
-		protected void release() {
-			try {
-				transport.close();
-			} catch (Exception ex) {};
+	}
+	private void validate(Transport transport) {
+		try {
+			if (!transport.isConnected()) transport.connect(getHost(), getPort(), getUsername(), getPassword());
+		} catch (AuthenticationFailedException ex) {
+			throw new MailAuthenticationException(ex);
+		} catch (MessagingException ex) {
+			throw new MailSendException("Mail server connection failed", ex);
 		}
-		protected void validate() {
-			try {
-				if (!transport.isConnected()) transport.connect(getHost(), getPort(), getUsername(), getPassword());
-			} catch (AuthenticationFailedException ex) {
-				throw new MailAuthenticationException(ex);
-			} catch (MessagingException ex) {
-				throw new MailSendException("Mail server connection failed", ex);
-			}
 				
-		}
 	}
 }

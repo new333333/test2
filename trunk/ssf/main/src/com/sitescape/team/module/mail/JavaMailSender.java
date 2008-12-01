@@ -28,7 +28,7 @@
  */
 package com.sitescape.team.module.mail;
 import javax.mail.Session;
-
+import javax.mail.Transport;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 
@@ -40,7 +40,6 @@ public interface JavaMailSender extends
 	public void setSession(Session session, String userName, String password);
 	public String getName();
 	public void setName(String name);
-	public void send(MimeMessagePreparator mimeMessagePreparator, Object ctx) throws MailException;
-	public Object initializeConnection() throws MailException;
-	public void releaseConnection(Object ctx);
+	public void send(Transport transport, MimeMessagePreparator mimeMessagePreparator) throws MailException;
+	public Object send(ConnectionCallback callback) throws MailException;
 }
