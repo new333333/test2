@@ -46,6 +46,8 @@ import java.util.Locale;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
+import org.dom4j.DocumentException;
+
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.InitializingBean;
@@ -174,7 +176,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    		else checkAccess(getCoreDao().loadBinder(def.getBinderId(), def.getZoneId()), def.getType(), operation);
    	}
 
-	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace) throws AccessControlException, Exception {
+	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace) 
+		throws AccessControlException,DocumentException {
 /*The current xsd is really for the configuration file.  The export defintions don't follow all the rules,
   xsd:sequence in particular.  Until we either fix this or build a new xsd, this validating code is disabled.
 		SAXReader xIn = new SAXReader(true);

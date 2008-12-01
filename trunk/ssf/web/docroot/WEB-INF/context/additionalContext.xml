@@ -23,11 +23,13 @@
 		<property name="profileModule"><ref bean="profileModule"/></property>
 		<property name="binderModule"><ref bean="binderModule"/></property>
 		<property name="ldapModule"><ref bean="ldapModule"/></property>
+		<property name="zoneClassManager"><ref bean="zoneClassManager"/></property>
 		<property name="scheduleModules">
 			<list>
 			<ref bean="folderModule"/>
 			<ref bean="licenseModule"/>
 			<ref bean="mailModule"/>
+			<ref bean="extDeployer"/>
 			</list>
 		</property>
 	</bean>

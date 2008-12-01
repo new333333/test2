@@ -40,6 +40,7 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.extension.ZoneClassManager;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.report.ReportModule;
@@ -69,6 +70,9 @@ public abstract class AbstractActionHandler implements ActionHandler {
 	};
 	protected MailModule getMailModule() {
 		return (MailModule)SpringContextUtil.getBean("mailModule");
+	};
+	protected ZoneClassManager getZoneClassManager() {
+		return (ZoneClassManager)SpringContextUtil.getBean("zoneClassManager");
 	};
 
 	protected WorkflowSupport loadEntry(String type, Long id) {

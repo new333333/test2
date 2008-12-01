@@ -35,6 +35,8 @@ import java.util.NoSuchElementException;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.DocumentException;
+
 import org.xml.sax.SAXException;
 
 import com.sitescape.team.ObjectExistsException;
@@ -59,7 +61,7 @@ public interface DefinitionModule {
 		manageDefinition,
 	}
 	public Definition addDefinition(Document defDoc, Binder binder, boolean replace);
-	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace) throws AccessControlException, Exception;
+	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace) throws AccessControlException, DocumentException;
 	public Definition addDefinition(Binder binder, String name, String title, Integer type, InputDataAccessor inputData) throws AccessControlException;
 	/**
 	 * Adds an item to an item in a definition tree.

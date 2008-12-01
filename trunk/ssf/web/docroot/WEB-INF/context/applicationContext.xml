@@ -661,7 +661,9 @@
 		</property>
 	</bean>	
 
-	<bean id="workflowProcessUtils" parent="dependOnCommonServicesTemplate"  class="com.sitescape.team.module.workflow.WorkflowProcessUtils"/>
+	<bean id="workflowProcessUtils" parent="dependOnCommonServicesTemplate"  class="com.sitescape.team.module.workflow.WorkflowProcessUtils">
+		<property name="zoneClassManager"><ref bean="zoneClassManager"/></property>
+	</bean>
 
 	<bean id="dashboardModule" parent="baseTransactionProxy">
 		<property name="target">
@@ -1138,5 +1140,15 @@ text/calendar											  ics
 			</bean>
 		</property>
 	</bean>		
+	<!-- ==============================Extension Module ==================== -->
 	
+	<!-- Extension deployer -->
+	<bean id="extDeployer" class="com.sitescape.team.extension.impl.ExtensionDeployerImpl" depends-on="zoneConfig">
+		<property name="templateModule"><ref bean="templateModule"/></property>
+		<property name="definitionModule"><ref bean="definitionModule"/></property>
+		<property name="zoneClassManager"><ref bean="zoneClassManager"/></property>
+
+	</bean>
+	<bean id="zoneClassManager" class="com.sitescape.team.extension.impl.ZoneClassManagerImpl"/>
+
 </beans>

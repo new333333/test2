@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.taglib;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -48,10 +49,12 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.DefinitionHelper;
@@ -61,8 +64,8 @@ import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
-
-
+import com.sitescape.team.util.DirPath;
+import com.sitescape.team.util.Utils;
 /**
  * @author Peter Hurley
  *
@@ -76,7 +79,8 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
     private DefinableEntity entry;
     private Map entryMap;
 	private Map _params;
-    
+    private String DEFAULT_JSP_BASE = "/WEB-INF/jsp/custom_jsps/";
+    private String DEFAULT_EXT_BASE = "/WEB-INF/ext/";
     private ProfileModule profileModule;
     
 	public int doStartTag() {
@@ -105,7 +109,12 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 				} else {
 					itemList = this.configElement.elements("item");
 				}
-				if (itemList != null) {										
+				if (itemList != null) {		
+					String extensionName = configElement.getDocument().getRootElement().attributeValue(ObjectKeys.XTAG_ATTRIBUTE_EXTENSION);
+					String jspBase = null;
+					if (Validator.isNotNull(extensionName)) 
+						jspBase = DEFAULT_EXT_BASE + Utils.getZoneKey() +
+							File.separator + extensionName + File.separator + "jsp" + File.separator;
 					for (Element nextItem:itemList) {
 						
 						//Find the jsp to run. Look in the definition configuration for this.
@@ -118,7 +127,10 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 						if (jspEle != null) {
 							String jspName = jspEle.attributeValue("value");
 							if ("true".equals(jspEle.attributeValue("inherit"))) inherit=Boolean.TRUE;							
-							if (!inherit && Validator.isNotNull(jspName)) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
+							if (!inherit && Validator.isNotNull(jspName)) {
+								if (Validator.isNotNull(jspBase)) customJsp = jspBase + jspName;
+								else customJsp = DEFAULT_JSP_BASE + jspName;
+							}
 						}
 
 						//get Item from main config document
@@ -128,7 +140,7 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 							String defaultJsp=configBuilder.getItemJspByStyle(itemDefinition, itemType, this.configJspStyle);
 							if (itemType.equals("customJsp")) {
 								jspName = DefinitionUtils.getPropertyValue(nextItem, "formJsp");
-								if (Validator.isNotNull(jspName)) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
+								if (Validator.isNotNull(jspName)) customJsp = DEFAULT_JSP_BASE + jspName;
 							} else if (customJsp == null && "dataView".equals(nextItem.attributeValue("type")) &&
 									(inherit || formItem.equals("customJsp"))) { //wraps a form element
 								Element entryFormItem = (Element)configDefinition.getRootElement().selectSingleNode("item[@type='form']");
@@ -143,13 +155,13 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 												String jspType = "viewJsp";
 												if (configJspStyle.equals(Definition.JSP_STYLE_MOBILE)) jspType = "mobileJsp";
 												jspName = DefinitionUtils.getPropertyValue(nextItem, jspType);
-												if (Validator.isNotNull(jspName)) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
+												if (Validator.isNotNull(jspName)) customJsp = DEFAULT_JSP_BASE + jspName;
 											}
 											if (Validator.isNull(customJsp) && inherit) {
 												jspEle= (Element)itemEle.selectSingleNode("./jsps/jsp[@name='custom']");
 												if (jspEle != null) {
 													jspName = jspEle.attributeValue("value");
-													if (Validator.isNotNull(jspName) ) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
+													if (Validator.isNotNull(jspName) ) customJsp = DEFAULT_JSP_BASE + jspName;
 												}
 												
 											}
@@ -160,7 +172,7 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 								String jspType = "viewJsp";
 								if (configJspStyle.equals(Definition.JSP_STYLE_MOBILE)) jspType = "mobileJsp";
 								jspName = DefinitionUtils.getPropertyValue(nextItem, jspType);
-								if (Validator.isNotNull(jspName)) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
+								if (Validator.isNotNull(jspName)) customJsp = DEFAULT_JSP_BASE + jspName;
 							}
 							String jsp = customJsp;
 							if (Validator.isNull(jsp)) jsp = defaultJsp;

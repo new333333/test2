@@ -29,7 +29,7 @@ EasyMock 1.2 (Java 1.3)
 Ehcache 1.3.0 (needed by Hibernate)
 ezmorph 1.0.1
 Hibernate 3.2.6.ga
-iCal4j 1.0-beta4
+iCal4j 1.0-beta5
 Jackrabbit API 1.4
 Jackrabbit JCR Commons 1.4.2
 Jackrabbit Core 1.4.5

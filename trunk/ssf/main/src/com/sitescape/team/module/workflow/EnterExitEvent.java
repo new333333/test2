@@ -71,6 +71,7 @@ import com.sitescape.team.domain.WorkflowResponse;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.WorkflowHistory;
+import com.sitescape.team.extension.ExtensionCallback;
 import com.sitescape.team.jobs.WorkflowProcess;
 import com.sitescape.team.modelprocessor.ProcessorManager;
 import com.sitescape.team.module.binder.processor.EntryProcessor;
@@ -92,12 +93,12 @@ import com.sitescape.team.web.util.PermaLinkUtil;
 import com.sitescape.util.Html;
 import com.sitescape.util.Validator;
 public class EnterExitEvent extends AbstractActionHandler {
-	private static final long serialVersionUID = 1L;
 	  
 	//Indexing the entry is handled by the code that initiates a transition/nodeEnter/nodeExit
 	//Because mutiple states can be effected, we don't want to re-index
 	//each time.  Only need one at the end of the transaction
 
+	private static final long serialVersionUID = -5904672789676975912L;
 	public void execute(ExecutionContext executionContext) throws Exception {
 		ContextInstance ctx = executionContext.getContextInstance();
 		Token token = executionContext.getToken();
@@ -163,7 +164,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 	   			} else if ("stopParallelThread".equals(name)) {
 	   				stopThread(item, executionContext, entry, ws); 
 	   			} else if ("workflowAction".equals(name)) {
-	   				startCustomProcess(item, executionContext, entry, ws);
+	   				startCustomAction(item, executionContext, entry, ws);
 	   			} else if ("workflowRemoteApp".equals(name)) {
 	   				startRemoteApp(item, executionContext, entry, ws);
 	   			} else if ("startProcess".equals(name)) {
@@ -180,38 +181,33 @@ public class EnterExitEvent extends AbstractActionHandler {
 			WorkflowProcessUtils.processConditions(entry, token);
 		}
 	}
-	protected void startCustomProcess(final Element action, final ExecutionContext executionContext, final WorkflowSupport wfEntry, final WorkflowState currentWs) {
+	protected void startCustomAction(final Element action, final ExecutionContext executionContext, final WorkflowSupport wfEntry, final WorkflowState currentWs) {
 		final String actionName = DefinitionUtils.getPropertyValue(action, "class");
 		if (Validator.isNull(actionName)) return;
 		try {
-			Class actionClass = ReflectHelper.classForName(actionName);
-			Object job = (Object)actionClass.newInstance();
-			if (job instanceof WorkflowScheduledAction) {
-				WorkflowProcess schedJob = (WorkflowProcess)SZoneConfig.getObject(RequestContextHolder.getRequestContext().getZoneName(), 
-					"workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_JOB + "']", com.sitescape.team.jobs.DefaultWorkflowProcess.class);
-				String secsString = (String)SZoneConfig.getString(RequestContextHolder.getRequestContext().getZoneName(), "workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_SECONDS + "']");
-				int seconds = 300;
-				try {
-					seconds = Integer.parseInt(secsString);
-				} catch (Exception ex) {};
-				schedJob.schedule(wfEntry, currentWs, actionName, buildParams(wfEntry, currentWs), seconds);
-					
-			} else {
-				((WorkflowAction)job).setHelper(new CalloutHelper(executionContext));
-				((WorkflowAction)job).execute(wfEntry, currentWs);
-			}
+			getZoneClassManager().execute(new ExtensionCallback() {
+				public Object execute(Object action) {
+					if (action instanceof WorkflowScheduledAction) {
+						WorkflowProcess schedJob = (WorkflowProcess)SZoneConfig.getObject(RequestContextHolder.getRequestContext().getZoneName(), 
+							"workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_JOB + "']", com.sitescape.team.jobs.DefaultWorkflowProcess.class);
+						String secsString = (String)SZoneConfig.getString(RequestContextHolder.getRequestContext().getZoneName(), "workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_SECONDS + "']");
+						int seconds = 300;
+						try {
+							seconds = Integer.parseInt(secsString);
+						} catch (Exception ex) {};
+						schedJob.schedule(wfEntry, currentWs, actionName, buildParams(wfEntry, currentWs), seconds);
+							
+					} else {
+						((WorkflowAction)action).setHelper(new CalloutHelper(executionContext));
+						((WorkflowAction)action).execute(wfEntry, currentWs);
+					}
+					return null;
+				};
+			}, actionName);
 		} catch (ClassNotFoundException e) {
-			throw new ConfigurationException(
-					"Invalid Workflow Action class name '" + actionName + "'",
+			logger.error("Invalid Workflow Action class name '" + actionName + "'");
+			throw new ConfigurationException("Invalid Workflow Action class name '" + actionName + "'",
 					e);
-		} catch (InstantiationException e) {
-		throw new ConfigurationException(
-				"Cannot instantiate Workflow Action of type '"
-				+ actionName + "'");
-		} catch (IllegalAccessException e) {
-			throw new ConfigurationException(
-					"Cannot instantiate Workflow Action of type '"
-					+ actionName + "'");
 		} 		
 
 	}
