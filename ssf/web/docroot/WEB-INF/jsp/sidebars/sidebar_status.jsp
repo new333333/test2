@@ -45,34 +45,31 @@
     <%@ include file="/WEB-INF/jsp/sidebars/sidebar_status2.jsp" %>
   </div>
 </c:if>
+
 <c:if test="${ssUser.internalId == guestInternalId}">
   <script type="text/javascript">
     function ss_setReturnUrl() {
     	var urlObj = self.document.getElementById('loginForm')['spring-security-redirect'];
-    	var url = self.location;
-    	if (self.location.search != "") {
-    		url += '?'+self.location.search;
-    	}
+    	var url = self.location.href;
     	urlObj.value = url;
     }
   </script>
+ <ssf:sidebarPanel title="login.please" id="ss_login_sidebar"
+    initOpen="true" sticky="true">
   <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}"
     onSubmit="ss_setReturnUrl();return true;"
   >
-     <table class="ss_table" border="0" cellpadding="2">
-      <tr>
-        <td><span class="ss_bold"><ssf:nlt tag="login.please"/></span></td>
-      </tr>
+     <table class="ss_table" border="0" cellpadding="2" width="95%">
       <tr>
         <td valign="top">
           <span><ssf:nlt tag="login.name"/></span><br/>
-          <input type="text" style="width:100px;" name="j_username"/>
+          <input type="text" style="width:150px;" name="j_username"/>
         </td>
       </tr>
       <tr>
         <td valign="top">
           <span><ssf:nlt tag="login.password"/></span><br/>
-          <input type="password" style="width:100px;" name="j_password"/>
+          <input type="password" style="width:150px;" name="j_password"/>
         </td>
       </tr>
     </table>
@@ -82,4 +79,5 @@
     />
     <input type="hidden" name="spring-security-redirect" value=""/>
   </form>
+ </ssf:sidebarPanel>  
 </c:if>
