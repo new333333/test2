@@ -36,12 +36,13 @@
 <div align="left" class="ssPageNavi">
 
 <table width="98%">
+ <tbody>
   <tr><td align="left" width="1%">
      <div class="ss_link_7">
-     	<ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;</span>
+     	<span><ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;</span>
   	 </div>
 	</td>
-	<td align="left" width=93%">
+	<td align="left" width="93%">
 	 <div class="ss_navbar_inline">
 		<ul>
 			<c:if test="${ssConfigJspStyle != 'template'}">
@@ -70,7 +71,6 @@
 				</a>
 			 </li>
 			</c:forEach>
-		</ul>			
 			</c:if>
 			<c:if test="${ssConfigJspStyle == 'template'}">
 			  <li>
