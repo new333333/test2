@@ -116,10 +116,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		          <td align="right">(<c:out value="${ssBlogMonthFolderHits[monthFolder]}"/>)</td>
 		         </tr>
 		        </c:if>
-		     </c:forEach>
-	        </c:if>
-		  </c:forEach>
-		 </table>
+		       </c:forEach>
+		  	  </c:if>
+		    </c:forEach>
+		   </table>
+	      </div>		
 	    </div>		
 	   </div>
       </ssf:expandableArea>
