@@ -31,22 +31,18 @@ package com.sitescape.team.jobs;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Collections;
 
 import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SimpleTrigger;
 
-import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.folder.FolderModule;
@@ -57,9 +53,9 @@ import com.sitescape.team.util.SpringContextUtil;
  *
  * @author Janet McCann
  */
-public class DefaultUserTitleChange extends SSStatefulJob implements UserTitleChange {
+public class DefaultUserTitleChange extends SimpleTriggerJob implements UserTitleChange {
 	 
-	protected static int MAX_IDS=10;
+	protected static int MAX_IDS=1000;
 	public void doExecute(JobExecutionContext context) throws JobExecutionException {	
 	   	CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
 	    BinderModule binderModule = (BinderModule)SpringContextUtil.getBean("binderModule");
@@ -109,54 +105,48 @@ public class DefaultUserTitleChange extends SSStatefulJob implements UserTitleCh
 	}
 
     public void schedule(User user, List<Long> binderIds, List<Long> entryIds) {
-		Scheduler scheduler = getScheduler();		
 		//the number of changes could be large, and some databases won't accept it (mssql packet size 1M)
 		int count = 0;
 		int binderIndex=0;
 		int entryIndex=0;
-		try {
-			while (binderIndex < binderIds.size() || entryIndex < entryIds.size()) {
-				String userIdString = user.getId().toString() + " " + user.getModification().getDate().toString() + " " + String.valueOf(count);
-				//each job is new
-				JobDetail jobDetail = new JobDetail(userIdString, USER_TITLE_GROUP, 
-						Class.forName(this.getClass().getName()),false, false, false);
-				jobDetail.setDescription(USER_TITLE_DESCRIPTION);
-				JobDataMap data = new JobDataMap();
-				data.put(ZONEID,user.getZoneId());
-				if (binderIndex < binderIds.size()) {
-					data.put("entryIds", Collections.EMPTY_LIST);
-					data.put("binderIds", new ArrayList(binderIds.subList(binderIndex, Math.min(binderIndex+MAX_IDS, binderIds.size()))));
-					binderIndex+= MAX_IDS;
+		while (binderIndex < binderIds.size() || entryIndex < entryIds.size()) {
+			String userIdString = user.getId().toString() + " " + user.getModification().getDate().toString() + " " + String.valueOf(count);
+			//each job is new
+			JobDataMap data = new JobDataMap();
+			data.put(ZONEID,user.getZoneId());
+			if (binderIndex < binderIds.size()) {
+				data.put("entryIds", Collections.EMPTY_LIST);
+				data.put("binderIds", new ArrayList(binderIds.subList(binderIndex, Math.min(binderIndex+MAX_IDS, binderIds.size()))));
+				binderIndex+= MAX_IDS;
 					
-				} else {
-					data.put("binderIds", Collections.EMPTY_LIST);
-					data.put("entryIds", new ArrayList(entryIds.subList(entryIndex, Math.min(entryIndex+MAX_IDS, entryIds.size()))));
-					entryIndex+= MAX_IDS;					
-				}
-			
-				jobDetail.setJobDataMap(data);
-				jobDetail.addJobListener(getDefaultCleanupListener());
-				scheduler.addJob(jobDetail, true);
-				//wait 3 minutes so user title is committed.  Otherwise we end up with
-				// the previously commited title and the index is wrong
-				GregorianCalendar start = new GregorianCalendar();
-				start.add(Calendar.MINUTE, 3+count);
-		
-				//repeats every 5 minutes
-				SimpleTrigger trigger = new SimpleTrigger(userIdString, USER_TITLE_GROUP, userIdString, USER_TITLE_GROUP, start.getTime(), null, 
-						SimpleTrigger.REPEAT_INDEFINITELY, 5*60*1000);
-				trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
-				trigger.setDescription(USER_TITLE_DESCRIPTION);
-				trigger.setVolatility(false);
-				scheduler.scheduleJob(trigger);			
-				++count;
+			} else {
+				data.put("binderIds", Collections.EMPTY_LIST);
+				data.put("entryIds", new ArrayList(entryIds.subList(entryIndex, Math.min(entryIndex+MAX_IDS, entryIds.size()))));
+				entryIndex+= MAX_IDS;					
 			}
-		} catch (SchedulerException se) {			
-			throw new ConfigurationException(se.getLocalizedMessage());			
-  		} catch (ClassNotFoundException cf) {
-			throw new ConfigurationException(cf.getLocalizedMessage());			
-  		}
+			//wait 3 minutes so user title is committed.  Otherwise we end up with
+			// the previously commited title and the index is wrong
+			GregorianCalendar start = new GregorianCalendar();
+			start.add(Calendar.MINUTE, 3+count);
+			schedule(new JobDescription(user.getZoneId(), userIdString, start.getTime(), data));
+		
+			++count;
+		}
     }
-
+	public class JobDescription extends SimpleJobDescription {
+		Date startDate;
+		JobDataMap data;
+		JobDescription(Long zoneId, String jobName, Date startDate, JobDataMap data) {
+			super(zoneId, jobName, USER_TITLE_GROUP, USER_TITLE_DESCRIPTION, 5*60);
+			this.data = data;
+		}
+		protected Date getStartDate() {
+			return startDate;
+		}
+		protected JobDataMap getData() {
+			return data;
+		}
+		
+	}    
 
 }

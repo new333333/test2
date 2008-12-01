@@ -44,6 +44,7 @@ import org.quartz.Trigger;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.jobs.SimpleTriggerJob.SimpleJobDescription;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.SpringContextUtil;
 
@@ -51,7 +52,7 @@ import com.sitescape.team.util.SpringContextUtil;
  * @author Janet McCann
  *
  */
-public class DefaultFillEmailSubscription extends SSStatefulJob implements FillEmailSubscription {
+public class DefaultFillEmailSubscription extends SimpleTriggerJob implements FillEmailSubscription {
 	protected Log logger = LogFactory.getLog(getClass());
 
 	/* (non-Javadoc)
@@ -74,59 +75,28 @@ public class DefaultFillEmailSubscription extends SSStatefulJob implements FillE
     }
 
 	public void remove(Long zoneId) {
-		Scheduler scheduler = getScheduler();		
-		try {
-			scheduler.unscheduleJob(zoneId.toString(), SUBSCRIPTION_GROUP);
-		} catch (SchedulerException se) {			
-			logger.error(se.getLocalizedMessage()==null?se.getMessage():se.getLocalizedMessage());
-		}
-		
+		removeJob(zoneId.toString(), SUBSCRIPTION_GROUP);		
 	}
 	
     public void schedule(Long zoneId, Date changeDate, int minutes) {
-		Scheduler scheduler = getScheduler();		
-		
-	 	String className = this.getClass().getName();
-	  	try {		
-		 	JobDetail jobDetail=scheduler.getJobDetail(zoneId.toString(), SUBSCRIPTION_GROUP);
-			if (jobDetail == null) {
-				jobDetail = new JobDetail(zoneId.toString(), SUBSCRIPTION_GROUP, 
-						Class.forName(className),false, false, false);
-				jobDetail.setDescription(SUBSCRIPTION_DESCRIPTION);
-				JobDataMap data = new JobDataMap();
-				data.put("zoneId",zoneId);
-				if (changeDate != null) {
-					data.put("lastNotification", changeDate);
-				} else {
-					data.put("lastNotification", new Date());					
-				}
-			
-				jobDetail.setJobDataMap(data);
-				jobDetail.addJobListener(getDefaultCleanupListener());
-				scheduler.addJob(jobDetail, true);
-			}
-			
-			SimpleTrigger trigger = (SimpleTrigger)scheduler.getTrigger(zoneId.toString(), SUBSCRIPTION_GROUP);
-			//	see if job exists
-			if (trigger == null) {
-				trigger = new SimpleTrigger(zoneId.toString(), SUBSCRIPTION_GROUP, zoneId.toString(), SUBSCRIPTION_GROUP, new Date(), null, 
-						SimpleTrigger.REPEAT_INDEFINITELY, minutes*60*1000);
-				trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
-				trigger.setDescription(SUBSCRIPTION_DESCRIPTION);
-				trigger.setVolatility(false);
-				scheduler.scheduleJob(trigger);				
-    	
-			} else {
-				if (trigger.getRepeatInterval() != minutes*60*1000) {
-					trigger.setRepeatInterval(minutes*60*1000);
-					scheduler.rescheduleJob(zoneId.toString(), SUBSCRIPTION_GROUP, trigger);
-				}
-			} 
-		} catch (SchedulerException se) {			
-			throw new ConfigurationException(se.getLocalizedMessage());			
-  		} catch (ClassNotFoundException cf) {
-			throw new ConfigurationException(cf.getLocalizedMessage());			
-  		}
+		schedule(new JobDescription(zoneId, changeDate, minutes*60));
     }
+    protected class JobDescription extends SimpleJobDescription {
+     	Date changeDate;
+    	JobDescription(Long zoneId, Date changeDate, int seconds) {
+    		super(zoneId, zoneId.toString(),SUBSCRIPTION_GROUP, SUBSCRIPTION_DESCRIPTION, seconds );
+    		this.changeDate = changeDate;
+    	}
+    	protected JobDataMap getData() {
+    		JobDataMap data = super.getData();
+    		if (changeDate != null) {
+    			data.put("lastNotification", changeDate);
+    		} else {
+    			data.put("lastNotification", new Date());					
+    		}
+    		return data;
+		}
+    }
+	    
 }
 

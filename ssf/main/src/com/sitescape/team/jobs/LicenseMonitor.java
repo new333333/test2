@@ -30,9 +30,9 @@ package com.sitescape.team.jobs;
 
 public interface LicenseMonitor {
 	public final static String LICENSE_MONITOR_GROUP="license-monitor";
-	public final static String LICENSE_MONITOR_DESCRIPTION="gather licensing statistics";
-	public final static String LICENSE_JOB="license.job";
-	public final static String LICENSE_HOUR="timeout.hour";
+	public final static String LICENSE_MONITOR_DESCRIPTION="Gather licensing statistics";
+	public final static String LICENSE_JOB="license.job";//property key
+	public final static String LICENSE_HOUR="timeout.hour";//property key
 	public void schedule(Long zoneId, int hour);
 	public void remove(Long zoneId);
 }

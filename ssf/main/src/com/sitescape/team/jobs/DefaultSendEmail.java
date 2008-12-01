@@ -57,6 +57,7 @@ import org.springframework.mail.MailSendException;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.jobs.SimpleTriggerJob.SimpleJobDescription;
 import com.sitescape.team.module.mail.JavaMailSender;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.mail.MimeMapPreparator;
@@ -69,7 +70,7 @@ import com.sitescape.util.Validator;
  * @author Janet McCann
  *
  */
-public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
+public class DefaultSendEmail extends SimpleTriggerJob implements SendEmail {
 	protected Log logger = LogFactory.getLog(getClass());
 
 	/* (non-Javadoc)
@@ -209,60 +210,60 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
     	schedule(mailSender, null, null, message, comment, fileDir, now);
     }
     public void schedule(JavaMailSender mailSender, String account, String password, MimeMessage message, String comment, File fileDir, boolean now) {
-		Scheduler scheduler = getScheduler();		
-		//each job is new = don't use verify schedule, cause this a unique
+		//each job is new 
 		GregorianCalendar start = new GregorianCalendar();
 		if (now) start.add(Calendar.MINUTE, 1);
 		else start.add(Calendar.HOUR_OF_DAY, 1);
-				
-		//add time to jobName - may have multiple 
-	 	String jobName =  "sendMail" + "-" + start.getTime().getTime();
-	 	String className = this.getClass().getName();
-	  	try {		
-			JobDetail jobDetail = new JobDetail(jobName, SEND_MAIL_GROUP, 
-					Class.forName(className),false, false, false);
-			jobDetail.setDescription(trimDescription(comment));
-			JobDataMap data = new JobDataMap();
-			data.put("mailSender", mailSender.getName());
-			data.put("zoneId",RequestContextHolder.getRequestContext().getZoneId());
-			if (Validator.isNotNull(account)) {
-				data.put("mailAccount", account);
-				data.put("mailPwd", password);
-			}
-			if(!fileDir.exists())
-				fileDir.mkdirs();
-			File file = new File(fileDir, String.valueOf(start.getTime().getTime()) + ".mail");
-			FileOutputStream fo=null;
+
+		JobDataMap data = new JobDataMap();
+		data.put("mailSender", mailSender.getName());
+		data.put("zoneId",RequestContextHolder.getRequestContext().getZoneId());
+		if (Validator.isNotNull(account)) {
+			data.put("mailAccount", account);
+			data.put("mailPwd", password);
+		}
+		if(!fileDir.exists())
+			fileDir.mkdirs();
+		File file = new File(fileDir, String.valueOf(start.getTime().getTime()) + ".mail");
+		FileOutputStream fo=null;
+		try {
+			file.createNewFile();
+			fo = new FileOutputStream(file);
+			message.writeTo(fo);
+		} catch (MessagingException io) {
+			throw new MailPreparationException(NLT.get("errorcode.sendMail.cannotSerialize", new Object[] {io.getLocalizedMessage()}));
+		} catch (IOException io) {
+			throw new MailPreparationException(NLT.get("errorcode.sendMail.cannotSerialize", new Object[] {io.getLocalizedMessage()}));
+		} catch (Exception ex) {
+			logger.error("Unable to queue mail: " + ex.getLocalizedMessage());
+			return;
+		} finally {
 			try {
-				file.createNewFile();
-				fo = new FileOutputStream(file);
-				message.writeTo(fo);
-			} catch (MessagingException io) {
-				throw new MailPreparationException(NLT.get("errorcode.sendMail.cannotSerialize", new Object[] {io.getLocalizedMessage()}));
-			} catch (IOException io) {
-				throw new MailPreparationException(NLT.get("errorcode.sendMail.cannotSerialize", new Object[] {io.getLocalizedMessage()}));
-			} catch (Exception ex) {
-				logger.error("Unable to queue mail: " + ex.getLocalizedMessage());
-				return;
-			} finally {
-				try {
-					fo.close();
-				} catch (Exception ex) {};
-			}
-			data.put("mailMessage", file.getPath());
-			
-			jobDetail.setJobDataMap(data);
-			jobDetail.addJobListener(getDefaultCleanupListener());
-			//retry every hour
-	  		SimpleTrigger trigger = new SimpleTrigger(jobName, SEND_MAIL_GROUP, jobName, SEND_MAIL_GROUP, start.getTime(), null, 24, 1000*60*60);
-  			trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
-  			trigger.setDescription(comment);
-  			trigger.setVolatility(false);
-			scheduler.scheduleJob(jobDetail, trigger);				
- 		} catch (Exception e) {
-   			throw new ConfigurationException("Cannot start (job:group) " + jobName 
-   					+ ":" + SEND_MAIL_GROUP, e);
-   		}
+				fo.close();
+			} catch (Exception ex) {};
+		}
+		data.put("mailMessage", file.getPath());
+		
+		schedule(new JobDescription(RequestContextHolder.getRequestContext().getZoneId(), comment, start.getTime(), data));
     }	
+	public class JobDescription extends SimpleJobDescription {
+		Date startDate;
+		JobDataMap data;
+		JobDescription(Long zoneId, String description, Date startDate, JobDataMap data) {
+			super(zoneId, "sendMail" + "-" + startDate.getTime(), SEND_MAIL_GROUP, description, 60*60);
+			this.data = data;
+			this.startDate = startDate;
+		}
+		protected Date getStartDate() {
+			return startDate;
+		}
+		protected int getRepeatCount() { //every hour for 1 day
+			return 24;
+		}
+
+		protected JobDataMap getData() {
+			return data;
+		}		
+	}    
 }
 

@@ -36,6 +36,7 @@ package com.sitescape.team.jobs;
 public interface EmailNotification  {
     
 	public static final String NOTIFICATION_GROUP="email-notifications";
+	public static final String NOTIFICATION_DESCRIPTION="Send email-notifications";
 
 	public void enable(boolean enable, Long zoneId);
 	public ScheduleInfo getScheduleInfo(Long zoneId);

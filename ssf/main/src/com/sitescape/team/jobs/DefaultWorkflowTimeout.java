@@ -29,25 +29,16 @@
 
 package com.sitescape.team.jobs;
 
-import java.util.Date;
-
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SimpleTrigger;
-import org.quartz.Trigger;
 
-import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.util.SpringContextUtil;
 
 /**
  *
  */
-public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTimeout {
+public class DefaultWorkflowTimeout extends SimpleTriggerJob implements WorkflowTimeout {
 	 
     /*
      * The bulk of this code is taken from org.jbpm.scheduler.impl.SchedulerThread
@@ -60,50 +51,10 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
 	}
 
 	public void remove(Long zoneId) {
-		Scheduler scheduler = getScheduler();		
-		try {
-			scheduler.unscheduleJob(zoneId.toString(), WORKFLOW_TIMER_GROUP);
-		} catch (SchedulerException se) {			
-			logger.error(se.getLocalizedMessage()==null?se.getMessage():se.getLocalizedMessage());
-		}
-		
+		removeJob(zoneId.toString(), WORKFLOW_TIMER_GROUP);		
 	}
     public void schedule(Long zoneId, int seconds) {
-		Scheduler scheduler = getScheduler();		
-		try {
-			JobDetail jobDetail=scheduler.getJobDetail(zoneId.toString(), WORKFLOW_TIMER_GROUP);
-			if (jobDetail == null) {
-				jobDetail = new JobDetail(zoneId.toString(), WORKFLOW_TIMER_GROUP, 
-						Class.forName(this.getClass().getName()),false, false, false);
-				jobDetail.setDescription(WORKFLOW_TIMER_DESCRIPTION);
-				JobDataMap data = new JobDataMap();
-				data.put("zoneId",zoneId);
-				jobDetail.setJobDataMap(data);
-				jobDetail.addJobListener(getDefaultCleanupListener());
-				scheduler.addJob(jobDetail, true);
-			}
-			SimpleTrigger trigger = (SimpleTrigger)scheduler.getTrigger(zoneId.toString(), WORKFLOW_TIMER_GROUP);
-			//	see if job exists
-			if (trigger == null) {
-				trigger = new SimpleTrigger(zoneId.toString(), WORKFLOW_TIMER_GROUP, zoneId.toString(), WORKFLOW_TIMER_GROUP, new Date(), null, 
-						SimpleTrigger.REPEAT_INDEFINITELY, seconds*1000);
-				trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
-				trigger.setDescription(WORKFLOW_TIMER_DESCRIPTION);
-				trigger.setVolatility(false);
-				scheduler.scheduleJob(trigger);				
-    	
-			} else {
-				if (trigger.getRepeatInterval() != seconds*1000) {
-					trigger.setRepeatInterval(seconds*1000);
-					scheduler.rescheduleJob(zoneId.toString(), WORKFLOW_TIMER_GROUP, trigger);
-				}
-			} 
-		} catch (SchedulerException se) {			
-			throw new ConfigurationException(se.getLocalizedMessage());			
-  		} catch (ClassNotFoundException cf) {
-			throw new ConfigurationException(cf.getLocalizedMessage());			
-  		}
-    }
-
+		schedule(new SimpleJobDescription(zoneId, zoneId.toString(), WORKFLOW_TIMER_GROUP, WORKFLOW_TIMER_DESCRIPTION, seconds));
+   }
 
 }

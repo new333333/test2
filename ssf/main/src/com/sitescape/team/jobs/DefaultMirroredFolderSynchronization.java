@@ -41,7 +41,7 @@ import com.sitescape.team.util.SpringContextUtil;
 /**
  *
  */
-public class DefaultMirroredFolderSynchronization extends SSStatefulJob 
+public class DefaultMirroredFolderSynchronization extends SSCronTriggerJob 
 	implements MirroredFolderSynchronization {
 	 
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
@@ -80,36 +80,17 @@ public class DefaultMirroredFolderSynchronization extends SSStatefulJob
 	public void enable(boolean enable, Long folderId) {
 		enable(enable, new SyncJobDescription(zoneId, folderId));
  	}
-	public class SyncJobDescription implements JobDescription {
-		private Long zoneId;
+	public class SyncJobDescription extends CronJobDescription {
 		private Long folderId;
 		public SyncJobDescription(Long zoneId, Long folderId) {
-			this.zoneId = zoneId;
+			super(zoneId, folderId.toString(), SYNCHRONIZATION_GROUP, SYNCHRONIZATION_DESCRIPTION + folderId);
 			this.folderId = folderId;
 		}
-    	public  String getDescription() {
-    		return SSStatefulJob.trimDescription("synchronize mirrored folder " + folderId);
-    	}
-    	public Long getZoneId() {
-    		return zoneId;
-    	}
-    	public Long getFolderId() {
+		public Long getFolderId() {
     		return folderId;
     	}
-    	public String getName() {
-    		return folderId.toString();
-    	}
-    	public String getGroup() {
-    		return MirroredFolderSynchronization.SYNCHRONIZATION_GROUP;
-    	}		
-       	public TimeZone getTimeZone() {
-    		return getDefaultTimeZone();
-     	}
-       	public String getCleanupListener() {
-    		return getDefaultCleanupListener();
-    	}
     	public ScheduleInfo getDefaultScheduleInfo() {
-    		ScheduleInfo info = new ScheduleInfo(zoneId);
+    		ScheduleInfo info = super.getDefaultScheduleInfo();
     		info.getDetails().put("lastNotification", new Date());
     		info.getDetails().put("binder", folderId);
     		info.getDetails().put(USERID,RequestContextHolder.getRequestContext().getUserId());

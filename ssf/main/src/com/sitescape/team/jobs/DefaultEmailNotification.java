@@ -29,7 +29,6 @@
 package com.sitescape.team.jobs;
 
 import java.util.Date;
-import java.util.TimeZone;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -41,7 +40,7 @@ import com.sitescape.team.util.SpringContextUtil;
 /**
  *
  */
-public class DefaultEmailNotification extends SSStatefulJob implements EmailNotification {
+public class DefaultEmailNotification extends SSCronTriggerJob implements EmailNotification {
 	 
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
 		if (!coreDao.loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled()) {
@@ -70,41 +69,21 @@ public class DefaultEmailNotification extends SSStatefulJob implements EmailNoti
 
 
 	public ScheduleInfo getScheduleInfo(Long zoneId) {
-		return getScheduleInfo(new MailJobDescription(zoneId));
+		return getScheduleInfo(new JobDescription(zoneId));
 	}
 	public void setScheduleInfo(ScheduleInfo info) {
-		setScheduleInfo(new MailJobDescription(info.getZoneId()), info);
-
+		setScheduleInfo(new JobDescription(info.getZoneId()), info);
 	}
 
 	public void enable(boolean enable, Long zoneId) {
-		enable(enable, new MailJobDescription(zoneId));
+		enable(enable, new JobDescription(zoneId));
  	}
-	public class MailJobDescription implements JobDescription {
-		private Long zoneId;
-		public MailJobDescription(Long zoneId) {
-			this.zoneId = zoneId;
+	public class JobDescription extends CronJobDescription {
+		JobDescription(Long zoneId) {
+			super(zoneId, zoneId.toString(), NOTIFICATION_GROUP, NOTIFICATION_DESCRIPTION);
 		}
-    	public  String getDescription() {
-    		return SSStatefulJob.trimDescription(zoneId.toString());
-    	}
-    	public Long getZoneId() {
-    		return zoneId;
-    	}
-    	public String getName() {
-    		return zoneId.toString();
-    	}
-    	public String getGroup() {
-    		return EmailNotification.NOTIFICATION_GROUP;
-    	}		
-       	public TimeZone getTimeZone() {
-    		return getDefaultTimeZone();
-     	}
-       	public String getCleanupListener() {
-    		return getDefaultCleanupListener();
-    	}
-    	public ScheduleInfo getDefaultScheduleInfo() {
-    		ScheduleInfo info = new ScheduleInfo(zoneId);
+     	public ScheduleInfo getDefaultScheduleInfo() {
+    		ScheduleInfo info = super.getDefaultScheduleInfo();
     		info.getDetails().put("lastNotification", new Date());
     		info.getDetails().put("binder", zoneId);
     		return info;

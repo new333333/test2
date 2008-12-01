@@ -26,18 +26,14 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-
 package com.sitescape.team.jobs;
-/**
- * @author Janet McCann
- *
- */
-public interface EmailPosting  {
-    
- 	public static final String POSTING_GROUP="email-posting";
- 	public static final String POSTING_DESCRIPTION="Retrieve incoming mail from external server";
-	public void enable(boolean enable, Long zoneId);
-	public ScheduleInfo getScheduleInfo(Long zoneId);
-	public void setScheduleInfo(ScheduleInfo schedulerInfo);
-	
+
+public interface DeployExtension {
+	public final static String DEPLOY_EXTENSION_GROUP="deployer";
+	public final static String DEPLOY_EXTENSION_DESCRIPTION="Deploy applications";
+	public final static String DEPLOY_EXTENSION_JOB="deploy.job";//property key
+	public final static String DEPLOY_EXTENSION_SECONDS="deploy.seconds";//property key
+	public final static String DEPLOY_EXTENSION_PATHNAME="deploy.pathName";//property key
+	public void schedule(Long zoneId, String pathName, int seconds);
+	public void remove(Long zoneId);
 }
