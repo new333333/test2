@@ -104,6 +104,8 @@ public class WebKeys {
     public static final String URL_BINDER_ID_PLACE_HOLDER="ss_binder_id_place_holder";
     public static final String URL_BINDER_CONFIG_ID="binderConfigId";
     public static final String URL_BINDER_DEF_ID="binderDefId";
+    public static final String URL_BINDER_ENTRY_ADD="ssBinderEntryAdd";
+    public static final String URL_BINDER_ENTRY_DEFS="ssBinderEntryDefs";
     public static final String URL_BINDER_TYPE="binderType";
     public static final String URL_BLOG_REPLY="blogReply";
     public static final String URL_BLOG_REPLY_COUNT="blogReplyCount";

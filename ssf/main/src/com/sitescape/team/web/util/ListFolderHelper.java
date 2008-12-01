@@ -1185,11 +1185,15 @@ public class ListFolderHelper {
 	protected static void addEntryToolbar(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Binder folder, Toolbar entryToolbar, Map model, String viewType) {
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
-		if (defaultEntryDefinitions != null && defaultEntryDefinitions.size() > 1) {
+		int defaultEntryDefs = ((null == defaultEntryDefinitions) ? 0 : defaultEntryDefinitions.size());
+		model.put(WebKeys.URL_BINDER_ENTRY_DEFS, String.valueOf( defaultEntryDefs ));
+		if (defaultEntryDefs > 1) {
 			int count = 1;
 			Map dropdownQualifiers = new HashMap();
 			dropdownQualifiers.put("highlight", new Boolean(true));
-			entryToolbar.addToolbarMenu("1_add", NLT.get("toolbar.new"), "", dropdownQualifiers);
+			String	entryAdd = NLT.get("toolbar.new");
+			entryToolbar.addToolbarMenu("1_add", entryAdd, "", dropdownQualifiers);
+			model.put(WebKeys.URL_BINDER_ENTRY_ADD, entryAdd);
 			Map qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
 			//String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
@@ -1211,7 +1215,7 @@ public class ListFolderHelper {
 					model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
 				}
 			}
-		} else if (defaultEntryDefinitions != null && defaultEntryDefinitions.size() != 0) {
+		} else if (defaultEntryDefs != 0) {
 			// Only one option
 			Definition def = (Definition) defaultEntryDefinitions.get(0);
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
@@ -1224,6 +1228,7 @@ public class ListFolderHelper {
 			qualifiers.put("popup", new Boolean(true));
 			qualifiers.put("highlight", new Boolean(true));
 			entryToolbar.addToolbarMenu("1_add", title, adapterUrl.toString(), qualifiers);
+			model.put(WebKeys.URL_BINDER_ENTRY_ADD, title);
 			
 			adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
 			adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
