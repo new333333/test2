@@ -30,7 +30,6 @@ package com.sitescape.team.portlet.administration;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,18 +47,17 @@ import javax.portlet.RenderResponse;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.dom4j.util.XMLErrorHandler;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.team.util.ZipEntryStream;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.TreeHelper;
@@ -97,7 +95,7 @@ public class ImportDefinitionController extends  SAbstractController {
 							ZipInputStream zipIn = new ZipInputStream(myFile.getInputStream());
 							ZipEntry entry = null;
 							while((entry = zipIn.getNextEntry()) != null) {
-								defs.add(loadDefinitions(entry.getName(), new ZipStreamWrapper(zipIn), binderId, replace, errors));
+								defs.add(loadDefinitions(entry.getName(), new ZipEntryStream(zipIn), binderId, replace, errors));
 								zipIn.closeEntry();
 							}
 						} else {
@@ -145,23 +143,6 @@ public class ImportDefinitionController extends  SAbstractController {
 		return null;
 	}
 
-	static class ZipStreamWrapper extends InputStream
-	{
-		ZipInputStream zipIn;
-		public ZipStreamWrapper(ZipInputStream zipIn)
-		{
-			this.zipIn = zipIn;
-		}
-		
-		public int read() throws IOException
-		{
-			return zipIn.read();
-		}
-		
-		public void close() throws IOException
-		{
-		}
-	}
 	
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {

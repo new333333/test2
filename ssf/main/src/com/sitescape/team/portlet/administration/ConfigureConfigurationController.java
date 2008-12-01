@@ -65,7 +65,7 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.shared.MapInputData;
-import com.sitescape.team.portlet.administration.ImportDefinitionController.ZipStreamWrapper;
+import com.sitescape.team.util.ZipEntryStream;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.util.NLT;
@@ -130,7 +130,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 									ZipInputStream zipIn = new ZipInputStream(myFile.getInputStream());
 									ZipEntry entry = null;
 									while((entry = zipIn.getNextEntry()) != null) {
-										loadTemplates(entry.getName(), new ZipStreamWrapper(zipIn), replace, errors);
+										loadTemplates(entry.getName(), new ZipEntryStream(zipIn), replace, errors);
 										zipIn.closeEntry();
 									}
 								} else {
