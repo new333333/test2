@@ -2732,14 +2732,24 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.GROUPS, getProfileModule().getGroups(ids));			
 		} else if (!applicationName.equals("")) {
 			ApplicationGroup group = getProfileModule().getApplicationGroup(applicationName);		
-			List applications = BinderHelper.getAllApplications(bs);
 			model.put(WebKeys.GROUP, group);
-			List memberList = group.getMembers();
+			List applications = new ArrayList();
 			Set ids = new HashSet();
-			Iterator itUsers = memberList.iterator();
-			while (itUsers.hasNext()) {
-				ApplicationPrincipal member = (ApplicationPrincipal) itUsers.next();
-				ids.add(member.getId());
+			if (ObjectKeys.ALL_APPLICATIONS_GROUP_INTERNALID.equals(group.getInternalId())) {
+				applications = BinderHelper.getAllApplications(bs);
+				Iterator itUsers = applications.iterator();
+				while (itUsers.hasNext()) {
+					Map member = (Map) itUsers.next();
+					String docId = (String)member.get(Constants.DOCID_FIELD);
+					ids.add(Long.valueOf(docId));
+				}
+			} else {
+				applications = group.getMembers();
+				Iterator itUsers = applications.iterator();
+				while (itUsers.hasNext()) {
+					ApplicationPrincipal member = (ApplicationPrincipal) itUsers.next();
+					ids.add(member.getId());
+				}
 			}
 			model.put(WebKeys.USERS, getProfileModule().getApplications(ids));
 			model.put(WebKeys.GROUPS, getProfileModule().getApplicationGroups(ids));			
