@@ -29,12 +29,21 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
 
 <c:if test="${!ss_searchResultsPage && !empty ssSidebarWsTree}">
     <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
         initOpen="true" sticky="true">
 		<c:if test="${!empty ssSidebarWsTree}">
-			<div style="overflow:scroll;padding-bottom:4px;">
+			<div 
+			<% if (BrowserSniffer.is_ie_6(request)) { %>
+			  class="ss_sidebarTree_IE6"
+			<% } else if (BrowserSniffer.is_ie(request)) { %>
+			  class="ss_sidebarTree_IE"
+			<% } else { %>
+			  class="ss_sidebarTree"
+			<% } %>
+			>
 				<ssf:tree treeName="sidebarWsTree${renderResponse.namespace}" 
 				  treeDocument="${ssSidebarWsTree}" 
 				  highlightNode="${ssBinder.id}" 
