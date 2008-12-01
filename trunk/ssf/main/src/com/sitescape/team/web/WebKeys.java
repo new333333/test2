@@ -85,6 +85,7 @@ public class WebKeys {
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
     public static final String URL_APPEND_TEAM_MEMBERS = "appendTeamMembers";
+    public static final String URL_APPLICATION_GROUP_NAME = "applicationGroupName";
     public static final String URL_ACTION="action";
     public static final String URL_ACTION_PLACE_HOLDER="ss_action_place_holder";
     public static final String URL_AJAX = "ajax";
@@ -392,6 +393,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_ELEMENT_VALUE_DATA = "get_element_value_data";
 	public static final String OPERATION_GET_FAVORITES_TREE = "get_favorites_tree";
 	public static final String OPERATION_GET_FILTER_TYPE = "get_filter_type";
+	public static final String OPERATION_GET_GROUP_LIST = "get_group_list";
 	public static final String OPERATION_GET_RELEVANCE_DASHBOARD = "get_relevance_dashboard";
 	public static final String OPERATION_GET_RELEVANCE_DASHBOARD_PAGE = "get_dashboard_page";
 	public static final String OPERATION_GET_WHATS_NEW_PAGE = "get_whats_new_page";

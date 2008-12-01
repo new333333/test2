@@ -50,6 +50,7 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
@@ -112,22 +113,8 @@ public class ManageApplicationsController extends  SAbstractController {
 			RenderResponse response) throws Exception {
 			
 		Binder binder = getProfileModule().getProfileBinder();
+		List applications = BinderHelper.getAllApplications(this);
 		
-		Map options = new HashMap();
-		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
-		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
-		//get them all
-		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
-
-		Document searchFilter = DocumentHelper.createDocument();
-		Element field = searchFilter.addElement(Constants.FIELD_ELEMENT);
-    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ENTRY_TYPE_FIELD);
-    	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-    	child.setText(Constants.ENTRY_TYPE_APPLICATION);
-    	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
-    	
-		Map searchResults = getProfileModule().getApplications(options);
-		List applications = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
 		Map model = new HashMap();
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.APPLICATION_LIST, applications);

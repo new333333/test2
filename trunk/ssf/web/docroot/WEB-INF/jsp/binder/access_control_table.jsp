@@ -197,8 +197,25 @@
 <input type="hidden" name="principalIds" value="${group.id}"/>
 <TR class="${rowClass}">
   <TD class="ss_table_paragraph"></TD>
-  <TD class="ss_table_paragraph">${group.title}</TD>
-  <TD class="ss_table_paragraph">${group.name}</TD>
+  <TD class="ss_table_paragraph"><a 
+    href="<ssf:url
+		adapter="true" 
+		crawlable="true"
+		portletName="ss_forum" 
+		action="__ajax_request"
+		actionUrl="false"><ssf:param 
+		name="operation" value="get_group_list"/><ssf:param 
+		name="groupId" value="${group.id}"/></ssf:url>"
+    onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">${group.title}</a></TD>
+  <TD class="ss_table_paragraph"><a href="<ssf:url
+		adapter="true" 
+		crawlable="true"
+		portletName="ss_forum" 
+		action="__ajax_request"
+		actionUrl="false"><ssf:param 
+		name="operation" value="get_group_list"/><ssf:param 
+		name="groupId" value="${group.id}"/></ssf:url>"
+	onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">${group.name}</a></TD>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <TD class="ss_table_paragraph" align="center" noWrap="noWrap">
 <c:if test="${!ssBinder.functionMembershipInherited}">
@@ -353,8 +370,25 @@
 <input type="hidden" name="principalIds" value="${group.id}"/>
 <TR class="${rowClass}">
   <TD class="ss_table_paragraph"></TD>
-  <TD class="ss_table_paragraph">${group.title}</TD>
-  <TD class="ss_table_paragraph">${group.name}</TD>
+  <TD class="ss_table_paragraph"><a 
+    href="<ssf:url
+		adapter="true" 
+		crawlable="true"
+		portletName="ss_forum" 
+		action="__ajax_request"
+		actionUrl="false"><ssf:param 
+		name="operation" value="get_group_list"/><ssf:param 
+		name="applicationGroupName" value="${group.name}"/></ssf:url>"
+    onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">${group.title}</a></TD>
+  <TD class="ss_table_paragraph"><a href="<ssf:url
+		adapter="true" 
+		crawlable="true"
+		portletName="ss_forum" 
+		action="__ajax_request"
+		actionUrl="false"><ssf:param 
+		name="operation" value="get_group_list"/><ssf:param 
+		name="applicationGroupName" value="${group.name}"/></ssf:url>"
+	onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">${group.name}</a></TD>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <TD class="ss_table_paragraph" align="center" noWrap="noWrap">
 <c:if test="${!ssBinder.functionMembershipInherited}">
