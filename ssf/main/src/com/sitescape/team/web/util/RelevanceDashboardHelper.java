@@ -89,7 +89,7 @@ public class RelevanceDashboardHelper {
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
 		//No dashboard for the guest account
-		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return;
+		//if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return;
         
 		//See if this is a new "type" setting. If so, remember it
 		if (binderId != null) {
