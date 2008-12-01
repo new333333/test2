@@ -1,14 +1,15 @@
 package com.sitescape.team.module.template;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.security.AccessControlException;
-import com.sitescape.team.security.function.WorkArea;
 
 public interface TemplateModule {
 	public enum TemplateOperation {
@@ -49,6 +50,7 @@ public interface TemplateModule {
      * @return
      */
 	public Long addTemplate(Document document, boolean replace) throws AccessControlException;
+	public Long addTemplate(InputStream stream, boolean replace) throws AccessControlException, DocumentException;
 	/**
 	 * Create a template
 	 * @param type
