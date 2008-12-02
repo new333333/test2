@@ -4,6 +4,7 @@ alter table SSQRTZ_triggers add JOB_DATA blob null;
 alter table SSQRTZ_fired_triggers add PRIORITY NUMBER(13) null;
 update SSQRTZ_fired_triggers set PRIORITY=5 where PRIORITY is null;
 alter table SSQRTZ_scheduler_state drop column RECOVERER;
+alter table SS_Events modify timeZone varchar2(80 char);
 create index owningBinder_audit on SS_AuditTrail (owningBinderId);
 create index entityOwner_audit on SS_AuditTrail (entityId, entityType);
 create index entityTransaction_audit on SS_AuditTrail (startDate, entityId, entityType, transactionType);
