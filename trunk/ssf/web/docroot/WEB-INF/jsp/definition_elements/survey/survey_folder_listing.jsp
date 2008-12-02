@@ -146,57 +146,62 @@
 </c:if>		
 	</th>
 	</tr>
-<c:forEach var="entry" items="${ssFolderEntries}" >
-	<jsp:useBean id="entry" type="java.util.HashMap" />
-	<% boolean overdue = com.sitescape.team.util.DateComparer.isOverdue((Date)entry.get("due_date")); %>
-	<c:set var="overdue" value="<%= overdue %>"/>
-	<c:if test="${overdue && entry.status != 'completed'}">
-		<c:set var="tdClass" value="class='ss_overdue'" />
+	<c:if test="${empty ssFolderEntries}">
+		<tr><td colspan="3"><jsp:include page="/WEB-INF/jsp/forum/view_no_entries.jsp" /></td></tr>
 	</c:if>
-		
-	<tr>
-		<td>
-			<span class="ss_entryTitle ss_normalprint">
-			
-   				<% if (!ssSeenMap.checkIfSeen(entry)) { %>
-								    
-				  <a id="ss_sunburstDiv${entry._binderId}_${entry._docId}" href="javascript: ;" 
-				  title="<ssf:nlt tag="sunburst.click"/>"
-				  onClick="ss_hideSunburst('${entry._docId}', '${entry._binderId}');return false;"
-				><span 
-				  style="display:${ss_sunburstVisibilityHide};"
-				  id="ss_sunburstShow${renderResponse.namespace}" 
-				  class="ss_fineprint">
-				  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" border="0" <ssf:alt tag="alt.new"/> />&nbsp;
-				  </span>
-	    		  </a>
-									    
-				<% } %>
-			
-				<ssf:titleLink action="view_folder_entry" entryId="${entry._docId}" 
-				binderId="${entry._binderId}" entityType="${entry._entityType}" 
-				namespace="${renderResponse.namespace}">
+	<c:if test="${!empty ssFolderEntries}">
+		<c:forEach var="entry" items="${ssFolderEntries}" >
+			<jsp:useBean id="entry" type="java.util.HashMap" />
+			<% boolean overdue = com.sitescape.team.util.DateComparer.isOverdue((Date)entry.get("due_date")); %>
+			<c:set var="overdue" value="<%= overdue %>"/>
+			<c:if test="${overdue && entry.status != 'completed'}">
+				<c:set var="tdClass" value="class='ss_overdue'" />
+			</c:if>
 				
-					<ssf:param name="url" useBody="true">
-						<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-						action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
-					</ssf:param>
-				
-					<c:out value="${entry.title}" escapeXml="false"/>
-				</ssf:titleLink>
-			</span>
-		</td>
-		<td>
-			<ssf:showUser user="${entry._principal}" />
-		</td>
-		<td ${tdClass}>
-			<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry.due_date}" type="both" dateStyle="medium" timeStyle="short" />
-			<c:if test="${overdue}">
-				<ssf:nlt tag="survey.overdue"/>
-			</c:if>		
-		</td>
-	</tr>
-</c:forEach>
+			<tr>
+				<td>
+					<span class="ss_entryTitle ss_normalprint">
+					
+		   				<% if (!ssSeenMap.checkIfSeen(entry)) { %>
+										    
+						  <a id="ss_sunburstDiv${entry._binderId}_${entry._docId}" href="javascript: ;" 
+						  title="<ssf:nlt tag="sunburst.click"/>"
+						  onClick="ss_hideSunburst('${entry._docId}', '${entry._binderId}');return false;"
+						><span 
+						  style="display:${ss_sunburstVisibilityHide};"
+						  id="ss_sunburstShow${renderResponse.namespace}" 
+						  class="ss_fineprint">
+						  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" border="0" <ssf:alt tag="alt.new"/> />&nbsp;
+						  </span>
+			    		  </a>
+											    
+						<% } %>
+					
+						<ssf:titleLink action="view_folder_entry" entryId="${entry._docId}" 
+						binderId="${entry._binderId}" entityType="${entry._entityType}" 
+						namespace="${renderResponse.namespace}">
+						
+							<ssf:param name="url" useBody="true">
+								<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+								action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+							</ssf:param>
+						
+							<c:out value="${entry.title}" escapeXml="false"/>
+						</ssf:titleLink>
+					</span>
+				</td>
+				<td>
+					<ssf:showUser user="${entry._principal}" />
+				</td>
+				<td ${tdClass}>
+					<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry.due_date}" type="both" dateStyle="medium" timeStyle="short" />
+					<c:if test="${overdue}">
+						<ssf:nlt tag="survey.overdue"/>
+					</c:if>		
+				</td>
+			</tr>
+		</c:forEach>
+	</c:if>
 </table>
 
 <c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>

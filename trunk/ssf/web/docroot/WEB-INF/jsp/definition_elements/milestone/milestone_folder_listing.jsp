@@ -219,117 +219,122 @@
 </c:if>		
 		</th>
 	</tr>
-	<c:forEach var="entry" items="${ssFolderEntries}" >
-		<jsp:useBean id="entry" type="java.util.HashMap" />
-		
-		<c:set var="tdClass" value="" />
-		<c:if test="${entry.status == 'completed'}">
-			<c:set var="tdClass" value="class='ss_completed'" />
-		</c:if>
-		<%
-			boolean overdue = com.sitescape.team.util.DateComparer.isOverdue((Date)entry.get("due_date"));
-		%>
-		<c:set var="overdue" value="<%= overdue %>"/>
-		<c:if test="${overdue && entry.status != 'completed'}">
-			<c:set var="tdClass" value="class='ss_overdue'" />
-		</c:if>
-		
-		<tr>
-			<td>
-				<span class="ss_entryTitle ss_normalprint">
-				
-   					<% if (!ssSeenMap.checkIfSeen(entry)) { %>
-				    
-					  <a id="ss_sunburstDiv${entry._binderId}_${entry._docId}" href="javascript: ;" 
-					  title="<ssf:nlt tag="sunburst.click"/>"
-					  onClick="ss_hideSunburst('${entry._docId}', '${entry._binderId}');return false;"
-					><span 
-					  style="display:${ss_sunburstVisibilityHide};"
-					  id="ss_sunburstShow${renderResponse.namespace}" 
-					  class="ss_fineprint">
-					  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" border="0" <ssf:alt tag="alt.new"/> />&nbsp;
-					  </span>
-					  </a>
+	<c:if test="${empty ssFolderEntries}">
+		<tr><td colspan="5"><jsp:include page="/WEB-INF/jsp/forum/view_no_entries.jsp" /></td></tr>
+	</c:if>
+	<c:if test="${!empty ssFolderEntries}">
+		<c:forEach var="entry" items="${ssFolderEntries}" >
+			<jsp:useBean id="entry" type="java.util.HashMap" />
+			
+			<c:set var="tdClass" value="" />
+			<c:if test="${entry.status == 'completed'}">
+				<c:set var="tdClass" value="class='ss_completed'" />
+			</c:if>
+			<%
+				boolean overdue = com.sitescape.team.util.DateComparer.isOverdue((Date)entry.get("due_date"));
+			%>
+			<c:set var="overdue" value="<%= overdue %>"/>
+			<c:if test="${overdue && entry.status != 'completed'}">
+				<c:set var="tdClass" value="class='ss_overdue'" />
+			</c:if>
+			
+			<tr>
+				<td>
+					<span class="ss_entryTitle ss_normalprint">
+					
+	   					<% if (!ssSeenMap.checkIfSeen(entry)) { %>
 					    
-					<% } %>
-				
-					<ssf:titleLink action="view_folder_entry" entryId="${entry._docId}" 
-					binderId="${entry._binderId}" entityType="${entry._entityType}" 
-					namespace="${renderResponse.namespace}">
+						  <a id="ss_sunburstDiv${entry._binderId}_${entry._docId}" href="javascript: ;" 
+						  title="<ssf:nlt tag="sunburst.click"/>"
+						  onClick="ss_hideSunburst('${entry._docId}', '${entry._binderId}');return false;"
+						><span 
+						  style="display:${ss_sunburstVisibilityHide};"
+						  id="ss_sunburstShow${renderResponse.namespace}" 
+						  class="ss_fineprint">
+						  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" border="0" <ssf:alt tag="alt.new"/> />&nbsp;
+						  </span>
+						  </a>
+						    
+						<% } %>
 					
-						<ssf:param name="url" useBody="true">
-							<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-							action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
-						</ssf:param>
-					
-						<c:out value="${entry.title}" escapeXml="false"/>
-					</ssf:titleLink>
-				</span>
-			</td>
-			<td>
-				<ul class="ss_nobullet">
-				<c:forEach var="principal" items='<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("responsible")) %>' >
-					<li><ssf:showUser user="${principal}" /></li>
-				</c:forEach>
-				</ul>
-			</td>
-			<td>
-				<ul class="ss_nobullet">
-					<c:forEach var="selection" items='<%= com.sitescape.team.util.ResolveIds.getBinderTitlesAndIcons(entry.get("tasks")) %>' varStatus="status">
-						<li><a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
-			  				folderId="${selection.key}" 
-			  				action="view_folder_listing">
-			  				<ssf:param name="binderId" value="${selection.key}"/>
-			  				<ssf:param name="newTab" value="1"/>
-			  				</ssf:url>"><c:out value="${selection.value.title}" escapeXml="false"/></a>
-			  				
-			  				<c:choose>
-				  				<c:when test="${selection.value.deleted}">
-				  					<span class="ss_fineprint ss_light"><ssf:nlt tag="milestone.folder.deleted"/></span>
-				  				</c:when>
-				  				<c:otherwise>
-					  				<c:if test="${!empty selection.key &&
-					  								!empty ssFolders &&
-					  								!empty ssFolders[selection.key] &&
-					  								!empty ssFolders[selection.key].customAttributes['statistics'] &&
-					  								!empty ssFolders[selection.key].customAttributes['statistics'].value &&
-					  								!empty ssFolders[selection.key].customAttributes['statistics'].value.value}">		
-						  				<c:forEach var="definition" items="${ssFolders[selection.key].customAttributes['statistics'].value.value}">
-						  					<c:if test="${!empty definition.value}">
-							  					<c:forEach var="attribute" items="${definition.value}">
-							  						<c:if test="${!empty attribute.key && !empty attribute.value}">
-								  						<c:if test="${attribute.key == 'status'}">
-								  							<ssf:drawStatistic statistic="${attribute.value}" style="shortColoredBar ss_statusBar" showLabel="false" showLegend="false"/>
-								  						</c:if>
-							  						</c:if>
-							  					</c:forEach>
-						  					</c:if>
-						  				</c:forEach>
-					  				</c:if>
-					  			</c:otherwise>
-					  		</c:choose>
-			  			</li>
+						<ssf:titleLink action="view_folder_entry" entryId="${entry._docId}" 
+						binderId="${entry._binderId}" entityType="${entry._entityType}" 
+						namespace="${renderResponse.namespace}">
+						
+							<ssf:param name="url" useBody="true">
+								<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+								action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+							</ssf:param>
+						
+							<c:out value="${entry.title}" escapeXml="false"/>
+						</ssf:titleLink>
+					</span>
+				</td>
+				<td>
+					<ul class="ss_nobullet">
+					<c:forEach var="principal" items='<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("responsible")) %>' >
+						<li><ssf:showUser user="${principal}" /></li>
 					</c:forEach>
-				</ul>
-			</td>
-			<td>
-				<%
-					java.util.Map statusCaptions = com.sitescape.team.web.util.DefinitionHelper.findSelectboxSelectionsAsMap("status", (String)entry.get("_commandDef"));
-					String caption = (String)statusCaptions.get(entry.get("status"));
-					if (caption == null) caption = "";
-					if (!caption.equals("")) {
-				%>
-				<ssf:nlt tag="<%= caption %>"/>
-				<%  }  %>
-			</td>
-			<td ${tdClass}>
-				<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry.due_date}" type="both" dateStyle="medium" timeStyle="short" />
-				<c:if test="${overdue && entry.status != 'completed'}">
-					<ssf:nlt tag="milestone.overdue"/>
-				</c:if>
-			</td>
-		</tr>
-	</c:forEach>
+					</ul>
+				</td>
+				<td>
+					<ul class="ss_nobullet">
+						<c:forEach var="selection" items='<%= com.sitescape.team.util.ResolveIds.getBinderTitlesAndIcons(entry.get("tasks")) %>' varStatus="status">
+							<li><a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
+				  				folderId="${selection.key}" 
+				  				action="view_folder_listing">
+				  				<ssf:param name="binderId" value="${selection.key}"/>
+				  				<ssf:param name="newTab" value="1"/>
+				  				</ssf:url>"><c:out value="${selection.value.title}" escapeXml="false"/></a>
+				  				
+				  				<c:choose>
+					  				<c:when test="${selection.value.deleted}">
+					  					<span class="ss_fineprint ss_light"><ssf:nlt tag="milestone.folder.deleted"/></span>
+					  				</c:when>
+					  				<c:otherwise>
+						  				<c:if test="${!empty selection.key &&
+						  								!empty ssFolders &&
+						  								!empty ssFolders[selection.key] &&
+						  								!empty ssFolders[selection.key].customAttributes['statistics'] &&
+						  								!empty ssFolders[selection.key].customAttributes['statistics'].value &&
+						  								!empty ssFolders[selection.key].customAttributes['statistics'].value.value}">		
+							  				<c:forEach var="definition" items="${ssFolders[selection.key].customAttributes['statistics'].value.value}">
+							  					<c:if test="${!empty definition.value}">
+								  					<c:forEach var="attribute" items="${definition.value}">
+								  						<c:if test="${!empty attribute.key && !empty attribute.value}">
+									  						<c:if test="${attribute.key == 'status'}">
+									  							<ssf:drawStatistic statistic="${attribute.value}" style="shortColoredBar ss_statusBar" showLabel="false" showLegend="false"/>
+									  						</c:if>
+								  						</c:if>
+								  					</c:forEach>
+							  					</c:if>
+							  				</c:forEach>
+						  				</c:if>
+						  			</c:otherwise>
+						  		</c:choose>
+				  			</li>
+						</c:forEach>
+					</ul>
+				</td>
+				<td>
+					<%
+						java.util.Map statusCaptions = com.sitescape.team.web.util.DefinitionHelper.findSelectboxSelectionsAsMap("status", (String)entry.get("_commandDef"));
+						String caption = (String)statusCaptions.get(entry.get("status"));
+						if (caption == null) caption = "";
+						if (!caption.equals("")) {
+					%>
+					<ssf:nlt tag="<%= caption %>"/>
+					<%  }  %>
+				</td>
+				<td ${tdClass}>
+					<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry.due_date}" type="both" dateStyle="medium" timeStyle="short" />
+					<c:if test="${overdue && entry.status != 'completed'}">
+						<ssf:nlt tag="milestone.overdue"/>
+					</c:if>
+				</td>
+			</tr>
+		</c:forEach>
+	</c:if>
 </table>
 
 <c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>

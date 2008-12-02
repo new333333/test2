@@ -794,13 +794,18 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 </div>
 
 
-<c:forEach var="entry2" items="${ssFolderEntries}" >
-  <div id="ss_folderEntryTitle_${entry2._docId}" class="ss_hover_over" 
-    style="visibility:hidden; display:none;">
-      <span class="ss_style" >
-		  <ssf:textFormat formatAction="limitedDescription" textMaxWords="50">
-		    <ssf:markup search="${entry2}">${entry2._desc}</ssf:markup>
-		    </ssf:textFormat>
-      </span>
-  </div>
-</c:forEach>
+<c:if test="${empty ssFolderEntries}">
+	<jsp:include page="/WEB-INF/jsp/forum/view_no_entries.jsp" />
+</c:if>
+<c:if test="${!empty ssFolderEntries}">
+	<c:forEach var="entry2" items="${ssFolderEntries}" >
+	  <div id="ss_folderEntryTitle_${entry2._docId}" class="ss_hover_over" 
+	    style="visibility:hidden; display:none;">
+	      <span class="ss_style" >
+			  <ssf:textFormat formatAction="limitedDescription" textMaxWords="50">
+			    <ssf:markup search="${entry2}">${entry2._desc}</ssf:markup>
+			    </ssf:textFormat>
+	      </span>
+	  </div>
+	</c:forEach>
+</c:if>
