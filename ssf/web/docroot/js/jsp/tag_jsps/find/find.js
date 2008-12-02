@@ -758,6 +758,38 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		that._highlight(newLiObj);
 	}
 	
+	this.addGroupValueByElement = function(id, obj) {
+		if (that._itemAlreadyAddedMultiple(id)) {
+			return;
+		}
+		var spanObj = obj.getElementsByTagName("span").item(0);
+		var ulObj = document.getElementById('added_' + that._multiplePrefix);
+		var newLiObj = document.createElement("li");
+		newLiObj.setAttribute("id", id);
+		var newGroupAnchorObj = document.createElement("a");
+		var showGroupUrl = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_group_list", groupId:id});
+		newGroupAnchorObj.setAttribute("href", showGroupUrl);
+		newGroupAnchorObj.setAttribute("onclick", "self.window.open(this.href, '_blank', 'directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no,width=400,height=600');return false;");
+		newGroupAnchorObj.className = "ss_nowrap";
+		newGroupAnchorObj.innerHTML = spanObj.innerHTML;
+		newLiObj.appendChild(newGroupAnchorObj);
+		var newAnchorObj = document.createElement("a");
+		newAnchorObj.setAttribute("href", "javascript: ;");
+		dojo.connect(newAnchorObj, "onclick", function(evt) {
+			that.removeValueByElement(evt.target.parentNode, id, spanObj.innerHTML);
+	    });	
+		var newImgObj = document.createElement("img");
+		newImgObj.setAttribute("src", ss_imagesPath + "pics/sym_s_delete.gif");
+		newImgObj.setAttribute("border", "0");
+		newImgObj.style.paddingLeft = "10px";
+		newAnchorObj.appendChild(newImgObj);
+		newLiObj.appendChild(newAnchorObj);
+		ulObj.appendChild(newLiObj);
+		that.addValue(id);
+		that._callRoutineMultiple(id, spanObj.innerHTML, onAddCallbacks);
+		that._highlight(newLiObj);
+	}
+	
 	this._callRoutineMultiple = function(id, txt, callbacks) {
 		var obj = window;
 		if (that._multipleClickRoutineObj && typeof that._multipleClickRoutineObj == "string" && window[that._multipleClickRoutineObj]) {
