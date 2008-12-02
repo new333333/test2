@@ -252,127 +252,132 @@
 		</tr>
 	</thead>
 	<tbody>
-		<c:forEach var="entry" items="${ssFolderEntries}" >
-			<jsp:useBean id="entry" type="java.util.HashMap" />
-			
-			<%
-				boolean overdue = com.sitescape.team.util.DateComparer.isOverdue((Date)entry.get("start_end#EndDate"));
-			%>
-			<c:set var="overdue" value="<%= overdue %>"/>
-			<c:if test="${entry.status == 's3' || entry.status == 's4'}">
-				<c:set var="overdue" value="false" />
-			</c:if>
-			
-			<script type="text/javascript">
-				myTasks_${renderResponse.namespace}.addTask({"id" : ${entry._docId},
-													"completed" : "${entry.completed}",
-													completedValues : {
-														<c:forEach var="completed" items="${entry.ssEntryDefinitionElementData['completed'].values}" varStatus="loopStatus">
-															"<c:out value="${completed.key}" escapeXml="false"/>" : "<c:out value="${completed.value}" escapeXml="false"/>"
-															<c:if test="${!loopStatus.last}">,</c:if>
-														</c:forEach>
-													}});
-			</script>
-			
-			<tr>
-				<td class="ss_entryTitle ss_normalprint<c:if test="${entry.status == 's3' || entry.status == 's4'}"> ss_task_completed</c:if>" 
-					id="ss_tasks_${renderResponse.namespace}_${entry._docId}_title">
-					<c:set var="isDashboard" value="yes"/>
-					
-					   	<% if (!ssSeenMap.checkIfSeen(entry)) { %>
-					    
-						<a id="ss_sunburstDiv${entry._binderId}_${entry._docId}" href="javascript: ;" 
-						 title="<ssf:nlt tag="sunburst.click"/>"
-						 onClick="ss_hideSunburst('${entry._docId}', '${entry._binderId}');return false;"
-						><span 
-						 style="display:${ss_sunburstVisibilityHide};"
-						 id="ss_sunburstShow${renderResponse.namespace}" 
-						 class="ss_fineprint">
-						 	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" border="0" <ssf:alt tag="alt.new"/> />&nbsp;
-						 </span>
-						</a>
-									    
-						<% } %>
-					
-						<ssf:titleLink 
-							action="view_folder_entry" 
-							entryId="${entry._docId}" binderId="${entry._binderId}" 
-							entityType="${entry._entityType}"  
-							namespace="${renderResponse.namespace}" >		
+		<c:if test="${empty ssFolderEntries}">
+			<tr><td colspan="6"><jsp:include page="/WEB-INF/jsp/forum/view_no_entries.jsp" /></td></tr>
+		</c:if>
+		<c:if test="${!empty ssFolderEntries}">
+			<c:forEach var="entry" items="${ssFolderEntries}" >
+				<jsp:useBean id="entry" type="java.util.HashMap" />
+				
+				<%
+					boolean overdue = com.sitescape.team.util.DateComparer.isOverdue((Date)entry.get("start_end#EndDate"));
+				%>
+				<c:set var="overdue" value="<%= overdue %>"/>
+				<c:if test="${entry.status == 's3' || entry.status == 's4'}">
+					<c:set var="overdue" value="false" />
+				</c:if>
+				
+				<script type="text/javascript">
+					myTasks_${renderResponse.namespace}.addTask({"id" : ${entry._docId},
+														"completed" : "${entry.completed}",
+														completedValues : {
+															<c:forEach var="completed" items="${entry.ssEntryDefinitionElementData['completed'].values}" varStatus="loopStatus">
+																"<c:out value="${completed.key}" escapeXml="false"/>" : "<c:out value="${completed.value}" escapeXml="false"/>"
+																<c:if test="${!loopStatus.last}">,</c:if>
+															</c:forEach>
+														}});
+				</script>
+				
+				<tr>
+					<td class="ss_entryTitle ss_normalprint<c:if test="${entry.status == 's3' || entry.status == 's4'}"> ss_task_completed</c:if>" 
+						id="ss_tasks_${renderResponse.namespace}_${entry._docId}_title">
+						<c:set var="isDashboard" value="yes"/>
 						
-							<ssf:param name="url" useBody="true">
-								<ssf:url crawlable="true" adapter="true" 
-								portletName="ss_forum" folderId="${entry._binderId}" 
-								action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
-							</ssf:param>
+						   	<% if (!ssSeenMap.checkIfSeen(entry)) { %>
+						    
+							<a id="ss_sunburstDiv${entry._binderId}_${entry._docId}" href="javascript: ;" 
+							 title="<ssf:nlt tag="sunburst.click"/>"
+							 onClick="ss_hideSunburst('${entry._docId}', '${entry._binderId}');return false;"
+							><span 
+							 style="display:${ss_sunburstVisibilityHide};"
+							 id="ss_sunburstShow${renderResponse.namespace}" 
+							 class="ss_fineprint">
+							 	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" border="0" <ssf:alt tag="alt.new"/> />&nbsp;
+							 </span>
+							</a>
+										    
+							<% } %>
 						
-							<c:out value="${entry.title}" escapeXml="false"/>
-						</ssf:titleLink>
-				</td>
-				<td class="ss_iconsContainer" id="ss_tasks_${renderResponse.namespace}_${entry._docId}_priority">
-				<c:if test="${! empty entry.priority}">
-					<c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><a <c:if test="${entry.priority == prio.key}">href="javascript:// ;" class="ss_taskPriority"</c:if><c:if test="${entry.priority != prio.key}">href="javascript: myTasks_${renderResponse.namespace}.changePriority(${entry._docId}, '${prio.key}');" class="ss_taskPriority ss_taskPriority_${prio.key}_u"</c:if> ><img <c:if test="${entry.priority == prio.key}"> src="<html:imagesPath/>icons/prio_${prio.key}.gif" </c:if><c:if test="${entry.priority != prio.key}">src="<html:imagesPath/>pics/1pix.gif"</c:if>	alt="${prio.value}" title="${prio.value}"></a></c:forEach></c:if></td>
-				<td class="ss_due<c:if test="${overdue}"> ss_overdue</c:if>" id="ss_tasks_${renderResponse.namespace}_${entry._docId}_due">
-					<c:if test="${!empty entry['start_end#EndDate']}">
-						<c:choose>
-							<c:when test="${!empty entry['start_end#TimeZoneID']}">
-								<fmt:formatDate 
-										timeZone="${ssUser.timeZone.ID}"
-										value="${entry['start_end#EndDate']}" type="both" 
-										dateStyle="short" timeStyle="short" />						
-							</c:when>	
-							<c:otherwise>
-								<fmt:formatDate 
-										timeZone="GMT"
-										value="${entry['start_end#EndDate']}" type="date" 
-										dateStyle="short"/>
-							</c:otherwise>
-						</c:choose>
-						<c:if test="${overdue}">
-							<ssf:nlt tag="milestone.overdue"/>
+							<ssf:titleLink 
+								action="view_folder_entry" 
+								entryId="${entry._docId}" binderId="${entry._binderId}" 
+								entityType="${entry._entityType}"  
+								namespace="${renderResponse.namespace}" >		
+							
+								<ssf:param name="url" useBody="true">
+									<ssf:url crawlable="true" adapter="true" 
+									portletName="ss_forum" folderId="${entry._binderId}" 
+									action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+								</ssf:param>
+							
+								<c:out value="${entry.title}" escapeXml="false"/>
+							</ssf:titleLink>
+					</td>
+					<td class="ss_iconsContainer" id="ss_tasks_${renderResponse.namespace}_${entry._docId}_priority">
+					<c:if test="${! empty entry.priority}">
+						<c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><a <c:if test="${entry.priority == prio.key}">href="javascript:// ;" class="ss_taskPriority"</c:if><c:if test="${entry.priority != prio.key}">href="javascript: myTasks_${renderResponse.namespace}.changePriority(${entry._docId}, '${prio.key}');" class="ss_taskPriority ss_taskPriority_${prio.key}_u"</c:if> ><img <c:if test="${entry.priority == prio.key}"> src="<html:imagesPath/>icons/prio_${prio.key}.gif" </c:if><c:if test="${entry.priority != prio.key}">src="<html:imagesPath/>pics/1pix.gif"</c:if>	alt="${prio.value}" title="${prio.value}"></a></c:forEach></c:if></td>
+					<td class="ss_due<c:if test="${overdue}"> ss_overdue</c:if>" id="ss_tasks_${renderResponse.namespace}_${entry._docId}_due">
+						<c:if test="${!empty entry['start_end#EndDate']}">
+							<c:choose>
+								<c:when test="${!empty entry['start_end#TimeZoneID']}">
+									<fmt:formatDate 
+											timeZone="${ssUser.timeZone.ID}"
+											value="${entry['start_end#EndDate']}" type="both" 
+											dateStyle="short" timeStyle="short" />						
+								</c:when>	
+								<c:otherwise>
+									<fmt:formatDate 
+											timeZone="GMT"
+											value="${entry['start_end#EndDate']}" type="date" 
+											dateStyle="short"/>
+								</c:otherwise>
+							</c:choose>
+							<c:if test="${overdue}">
+								<ssf:nlt tag="milestone.overdue"/>
+							</c:if>
 						</c:if>
-					</c:if>
-				</td>
-				<td class="ss_iconsContainer" id="ss_tasks_${renderResponse.namespace}_${entry._docId}_status"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><a <c:if test="${entry.status == status.key}">href="javascript: //" class="ss_taskStatus" </c:if><c:if test="${entry.status != status.key}">href="javascript:  myTasks_${renderResponse.namespace}.changeStatus(${entry._docId}, '${status.key}');" class="ss_taskStatus ss_taskStatus_${status.key}_u" </c:if>><img <c:if test="${entry.status == status.key}"> src="<html:imagesPath/>icons/status_${status.key}.gif" </c:if><c:if test="${entry.status != status.key}"> src="<html:imagesPath/>pics/1pix.gif" </c:if> alt="${status.value}" title="${status.value}"></a></c:forEach></c:if></td>
-				<td class="ss_assigned">
-					<c:set var="assignment" value='<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment")) %>' />
-					<c:if test="${!empty assignment}">
-						<ul>
-							<c:forEach var="assigned" items="${assignment}">
-								<li><ssf:showUser user="${assigned}"/></li>
-							</c:forEach>
-						</ul>
-					</c:if>
-					
-					<c:set var="assignment_groups" value='<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment_groups")) %>' />
-					<c:if test="${!empty assignment_groups}">
-						<ul>
-							<c:forEach var="assigned" items="${assignment_groups}">
-								<li><ssf:showUser user="${assigned}"/></li>
-							</c:forEach>
-						</ul>
-					</c:if>		
-					
-					<c:set var="assignment_teams" value='<%= com.sitescape.team.util.ResolveIds.getBinders(entry.get("assignment_teams")) %>' />
-					<c:if test="${!empty assignment_teams}">
-						<ul>
-							<c:forEach var="assigned" items="${assignment_teams}">
-								<li><ssf:showTeam team="${assigned}"/></li>
-							</c:forEach>
-						</ul>
-					</c:if>									
-				</td>
-				<td id="ss_tasks_${renderResponse.namespace}_${entry._docId}_completed">
-					<c:if test="${! empty entry.completed}">
-						<ssf:progressBar currentValue="${entry.completed}" 
-							valuesMap="${entry.ssEntryDefinitionElementData.completed.values}" 
-							namespace="${renderResponse.namespace}" 
-							entryId="${entry._docId}}" />
-					</c:if>
-				</td>
-			</tr>
-		
-		</c:forEach>
+					</td>
+					<td class="ss_iconsContainer" id="ss_tasks_${renderResponse.namespace}_${entry._docId}_status"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><a <c:if test="${entry.status == status.key}">href="javascript: //" class="ss_taskStatus" </c:if><c:if test="${entry.status != status.key}">href="javascript:  myTasks_${renderResponse.namespace}.changeStatus(${entry._docId}, '${status.key}');" class="ss_taskStatus ss_taskStatus_${status.key}_u" </c:if>><img <c:if test="${entry.status == status.key}"> src="<html:imagesPath/>icons/status_${status.key}.gif" </c:if><c:if test="${entry.status != status.key}"> src="<html:imagesPath/>pics/1pix.gif" </c:if> alt="${status.value}" title="${status.value}"></a></c:forEach></c:if></td>
+					<td class="ss_assigned">
+						<c:set var="assignment" value='<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment")) %>' />
+						<c:if test="${!empty assignment}">
+							<ul>
+								<c:forEach var="assigned" items="${assignment}">
+									<li><ssf:showUser user="${assigned}"/></li>
+								</c:forEach>
+							</ul>
+						</c:if>
+						
+						<c:set var="assignment_groups" value='<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment_groups")) %>' />
+						<c:if test="${!empty assignment_groups}">
+							<ul>
+								<c:forEach var="assigned" items="${assignment_groups}">
+									<li><ssf:showUser user="${assigned}"/></li>
+								</c:forEach>
+							</ul>
+						</c:if>		
+						
+						<c:set var="assignment_teams" value='<%= com.sitescape.team.util.ResolveIds.getBinders(entry.get("assignment_teams")) %>' />
+						<c:if test="${!empty assignment_teams}">
+							<ul>
+								<c:forEach var="assigned" items="${assignment_teams}">
+									<li><ssf:showTeam team="${assigned}"/></li>
+								</c:forEach>
+							</ul>
+						</c:if>									
+					</td>
+					<td id="ss_tasks_${renderResponse.namespace}_${entry._docId}_completed">
+						<c:if test="${! empty entry.completed}">
+							<ssf:progressBar currentValue="${entry.completed}" 
+								valuesMap="${entry.ssEntryDefinitionElementData.completed.values}" 
+								namespace="${renderResponse.namespace}" 
+								entryId="${entry._docId}}" />
+						</c:if>
+					</td>
+				</tr>
+			
+			</c:forEach>
+		</c:if>
 	</tbody>
 </table>
 

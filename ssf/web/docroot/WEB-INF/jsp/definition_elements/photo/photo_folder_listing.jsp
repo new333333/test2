@@ -134,20 +134,25 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 
    </div>
 
-<c:forEach var="fileEntry" items="${ssFolderEntries}" >
-  <div id="ss_photoTitle_${fileEntry._docId}" class="ss_hover_over" 
-    style="visibility:hidden; display:none;">
-    <c:if test="${empty fileEntry.title}"
-      ><span 
-      >--<ssf:nlt tag="entry.noTitle"/>--</span
-      ></c:if><span id="folderLine_${fileEntry._docId}"
-      ><c:out value="${fileEntry.title}"/></span><c:if test="${!empty fileEntry._desc}"
-      ><hr width="80%" align="left"/></c:if>
-    <span >
-    		<ssf:textFormat formatAction="limitedDescription" textMaxWords="100">
-    		<ssf:markup search="${fileEntry}">${fileEntry._desc}</ssf:markup>
-    		</ssf:textFormat></span>
-  </div>
-</c:forEach>
+	<c:if test="${empty ssFolderEntries}">
+		<jsp:include page="/WEB-INF/jsp/forum/view_no_entries.jsp" />
+	</c:if>
+	<c:if test="${!empty ssFolderEntries}">
+		<c:forEach var="fileEntry" items="${ssFolderEntries}" >
+		  <div id="ss_photoTitle_${fileEntry._docId}" class="ss_hover_over" 
+		    style="visibility:hidden; display:none;">
+		    <c:if test="${empty fileEntry.title}"
+		      ><span 
+		      >--<ssf:nlt tag="entry.noTitle"/>--</span
+		      ></c:if><span id="folderLine_${fileEntry._docId}"
+		      ><c:out value="${fileEntry.title}"/></span><c:if test="${!empty fileEntry._desc}"
+		      ><hr width="80%" align="left"/></c:if>
+		    <span >
+		    		<ssf:textFormat formatAction="limitedDescription" textMaxWords="100">
+		    		<ssf:markup search="${fileEntry}">${fileEntry._desc}</ssf:markup>
+		    		</ssf:textFormat></span>
+		  </div>
+		</c:forEach>
+	</c:if>
 
 <c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>

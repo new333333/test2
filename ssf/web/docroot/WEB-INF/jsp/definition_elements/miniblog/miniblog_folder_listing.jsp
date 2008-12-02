@@ -34,38 +34,43 @@
 <c:if test="${ssConfigJspStyle != 'template'}">
 <table>
 <tr>
-<td valign="top">
-	  <a href="<ssf:url action="view_ws_listing" binderId="${ssBinder.owner.workspaceId}" />" 
-	  title="${ssBinder.owner.title}"><ssf:buddyPhoto 
-	                style="ss_thumbnail_standalone ss_thumbnail_standalone_miniblog" 
-					photos="${ssBinder.owner.customAttributes['picture'].value}" 
-					folderId="${ssBinder.owner.parentBinder.id}" entryId="${ssBinder.owner.id}" /></a>
-</td>
-<td valign="top">
-<ul>
-<c:forEach var="entry" items="${ssFolderEntries}" >
-	<jsp:useBean id="entry" type="java.util.HashMap" />
-
-	    <li style="padding-bottom:10px;">
-		  <div><ssf:titleLink action="view_folder_entry" entryId="${entry._docId}" 
-					binderId="${entry._binderId}" entityType="${entry._entityType}" 
-					namespace="${renderResponse.namespace}">
-					<ssf:param name="url" useBody="true">
-						<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-						action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
-					</ssf:param>
-					<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-					      value="${entry._modificationDate}" type="both" 
-						  timeStyle="short" dateStyle="medium" />
-				</ssf:titleLink></div>
-		  <div style="padding-left:10px;">
-		    <span class="ss_italic" ><ssf:markup search="${entry}">${entry._desc}</ssf:markup></span>
-		  </div>
-	    </li>
-
-</c:forEach>
-</ul>
-</td>
+	<c:if test="${empty ssFolderEntries}">
+		<td><jsp:include page="/WEB-INF/jsp/forum/view_no_entries.jsp" /></td>
+	</c:if>
+	<c:if test="${!empty ssFolderEntries}">
+		<td valign="top">
+			  <a href="<ssf:url action="view_ws_listing" binderId="${ssBinder.owner.workspaceId}" />" 
+			  title="${ssBinder.owner.title}"><ssf:buddyPhoto 
+			                style="ss_thumbnail_standalone ss_thumbnail_standalone_miniblog" 
+							photos="${ssBinder.owner.customAttributes['picture'].value}" 
+							folderId="${ssBinder.owner.parentBinder.id}" entryId="${ssBinder.owner.id}" /></a>
+		</td>
+		<td valign="top">
+			<ul>
+				<c:forEach var="entry" items="${ssFolderEntries}" >
+					<jsp:useBean id="entry" type="java.util.HashMap" />
+				
+					    <li style="padding-bottom:10px;">
+						  <div><ssf:titleLink action="view_folder_entry" entryId="${entry._docId}" 
+									binderId="${entry._binderId}" entityType="${entry._entityType}" 
+									namespace="${renderResponse.namespace}">
+									<ssf:param name="url" useBody="true">
+										<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+										action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+									</ssf:param>
+									<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+									      value="${entry._modificationDate}" type="both" 
+										  timeStyle="short" dateStyle="medium" />
+								</ssf:titleLink></div>
+						  <div style="padding-left:10px;">
+						    <span class="ss_italic" ><ssf:markup search="${entry}">${entry._desc}</ssf:markup></span>
+						  </div>
+					    </li>
+				
+				</c:forEach>
+			</ul>
+		</td>
+	</c:if>
 </tr>
 </table>
 </c:if>

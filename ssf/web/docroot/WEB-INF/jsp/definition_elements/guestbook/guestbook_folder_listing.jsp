@@ -32,59 +32,64 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/guestbook/guestbook_sign.jsp" %>
 
-<c:forEach var="entry" items="${ssFolderEntries}" >
-<jsp:useBean id="entry" type="java.util.HashMap" />
-<table class="ss_guestbook" width="100%">
-		<tr>
-			<td class="ss_miniBusinessCard" style="padding-bottom: 5px;">
-				<ssf:miniBusinessCard user="${entry._principal}"/> 
-			</td>
-			<td class="ss_guestbookContainer">
-				<span class="ss_entryTitle ss_normalprint">
-				
-   				<% if (!ssSeenMap.checkIfSeen(entry)) { %>
-				    
-				  <a id="ss_sunburstDiv${entry._binderId}_${entry._docId}" href="javascript: ;" 
-				  title="<ssf:nlt tag="sunburst.click"/>"
-				  onClick="ss_hideSunburst('${entry._docId}', '${entry._binderId}');return false;"
-				><span 
-				  style="display:${ss_sunburstVisibilityHide};"
-				  id="ss_sunburstShow${renderResponse.namespace}" 
-				  class="ss_fineprint">
-				  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" border="0" <ssf:alt tag="alt.new"/> />&nbsp;
-				  </span>
-				  </a>
-					    
-				<% } %>
-				
-				<ssf:titleLink action="view_folder_entry" entryId="${entry._docId}" 
-					binderId="${entry._binderId}" entityType="${entry._entityType}" 
-					namespace="${renderResponse.namespace}">
-					
-						<ssf:param name="url" useBody="true">
-							<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-							action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
-						</ssf:param>
-					
-						<c:if test="${empty entry.title}">
-					    	${entry._principal.title} <ssf:nlt tag="guestbook.author.wrote"/>: 
-					    </c:if>
-						<c:out value="${entry.title}" escapeXml="false"/>
-					</ssf:titleLink>
-				</span>
-
-				<span class="ss_entrySignature"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-				      value="${entry._modificationDate}" type="both" 
-					  timeStyle="short" dateStyle="short" /></span>
-				
-				<c:if test="${!empty entry._desc}">
-				<div class="ss_entryContent">
-					<span><ssf:markup search="${entry}" >${entry._desc}</ssf:markup></span>
-				</div>
-				</c:if>
-			</td>
-		</tr>
-</table>
-</c:forEach>
+	<c:if test="${empty ssFolderEntries}">
+		<jsp:include page="/WEB-INF/jsp/forum/view_no_entries.jsp" />
+	</c:if>
+	<c:if test="${!empty ssFolderEntries}">
+		<c:forEach var="entry" items="${ssFolderEntries}" >
+			<jsp:useBean id="entry" type="java.util.HashMap" />
+			<table class="ss_guestbook" width="100%">
+					<tr>
+						<td class="ss_miniBusinessCard" style="padding-bottom: 5px;">
+							<ssf:miniBusinessCard user="${entry._principal}"/> 
+						</td>
+						<td class="ss_guestbookContainer">
+							<span class="ss_entryTitle ss_normalprint">
+							
+			   				<% if (!ssSeenMap.checkIfSeen(entry)) { %>
+							    
+							  <a id="ss_sunburstDiv${entry._binderId}_${entry._docId}" href="javascript: ;" 
+							  title="<ssf:nlt tag="sunburst.click"/>"
+							  onClick="ss_hideSunburst('${entry._docId}', '${entry._binderId}');return false;"
+							><span 
+							  style="display:${ss_sunburstVisibilityHide};"
+							  id="ss_sunburstShow${renderResponse.namespace}" 
+							  class="ss_fineprint">
+							  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" border="0" <ssf:alt tag="alt.new"/> />&nbsp;
+							  </span>
+							  </a>
+								    
+							<% } %>
+							
+							<ssf:titleLink action="view_folder_entry" entryId="${entry._docId}" 
+								binderId="${entry._binderId}" entityType="${entry._entityType}" 
+								namespace="${renderResponse.namespace}">
+								
+									<ssf:param name="url" useBody="true">
+										<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+										action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+									</ssf:param>
+								
+									<c:if test="${empty entry.title}">
+								    	${entry._principal.title} <ssf:nlt tag="guestbook.author.wrote"/>: 
+								    </c:if>
+									<c:out value="${entry.title}" escapeXml="false"/>
+								</ssf:titleLink>
+							</span>
+			
+							<span class="ss_entrySignature"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+							      value="${entry._modificationDate}" type="both" 
+								  timeStyle="short" dateStyle="short" /></span>
+							
+							<c:if test="${!empty entry._desc}">
+							<div class="ss_entryContent">
+								<span><ssf:markup search="${entry}" >${entry._desc}</ssf:markup></span>
+							</div>
+							</c:if>
+						</td>
+					</tr>
+			</table>
+		</c:forEach>
+	</c:if>
 
 <c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>

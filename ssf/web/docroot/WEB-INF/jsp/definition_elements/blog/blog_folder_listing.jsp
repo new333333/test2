@@ -34,21 +34,26 @@ boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <% //View the listing part of a blog folder %>
 
-		  <c:forEach var="entry" items="${ssFolderEntries}" >
-			<div class="ss_blog_content">
-			  <c:set var="ss_blog_docId" value="${entry._docId}" scope="request"/>
-			  <c:set var="ss_blog_workflowStateCaption" value="" scope="request"/>
-			  <c:set var="ss_blog_reply_url" value="${ssBlogEntries[entry._docId].replyBlogUrl}" scope="request"/>
-			  <c:if test="${!empty entry._workflowStateCaption}">
-			    <c:set var="ss_blog_workflowStateCaption" value="${entry._workflowStateCaption}" scope="request"/>
-			  </c:if>
-			  <ssf:displayConfiguration 
-			    configDefinition="${ssBlogEntries[entry._docId].ssConfigDefinition}" 
-			    configElement="${ssBlogEntries[entry._docId].ssConfigElement}" 
-			    configJspStyle="view"
-			    processThisItem="true" 
-			    entry="${entry}" />
-			</div>
-		  </c:forEach>
+	<c:if test="${empty ssFolderEntries}">
+		<jsp:include page="/WEB-INF/jsp/forum/view_no_entries.jsp" />
+	</c:if>
+	<c:if test="${!empty ssFolderEntries}">
+	  <c:forEach var="entry" items="${ssFolderEntries}" >
+		<div class="ss_blog_content">
+		  <c:set var="ss_blog_docId" value="${entry._docId}" scope="request"/>
+		  <c:set var="ss_blog_workflowStateCaption" value="" scope="request"/>
+		  <c:set var="ss_blog_reply_url" value="${ssBlogEntries[entry._docId].replyBlogUrl}" scope="request"/>
+		  <c:if test="${!empty entry._workflowStateCaption}">
+		    <c:set var="ss_blog_workflowStateCaption" value="${entry._workflowStateCaption}" scope="request"/>
+		  </c:if>
+		  <ssf:displayConfiguration 
+		    configDefinition="${ssBlogEntries[entry._docId].ssConfigDefinition}" 
+		    configElement="${ssBlogEntries[entry._docId].ssConfigElement}" 
+		    configJspStyle="view"
+		    processThisItem="true" 
+		    entry="${entry}" />
+		</div>
+	  </c:forEach>
+	</c:if>
 
 <c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>
