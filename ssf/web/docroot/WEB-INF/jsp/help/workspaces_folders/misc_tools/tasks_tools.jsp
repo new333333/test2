@@ -29,29 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %> 
-<div class="ss_style">
-<div class="ss_help_style">
-
-    <div class="ss_help_title"> <span class="ss_titlebold"><ssf:nlt tag="helpSpot.tasksTools" /></span> 
-    </div>
-
-    <p><ssf:nlt tag="help.tasksTools.intro" /></p>
-
-<p><ssf:nlt tag="help.tasksTools.tools.listIntro" /></p>
-
-<ul>
-
-      <li><ssf:nlt tag="help.tasksTools.tools.listItem.closed"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>      
-      <li><ssf:nlt tag="help.tasksTools.tools.listItem.today" /></li>      
-      <li><ssf:nlt tag="help.tasksTools.tools.listItem.week" /></li>      
-      <li><ssf:nlt tag="help.tasksTools.tools.listItem.month" /></li>
-
-      <li><ssf:nlt tag="help.tasksTools.tools.listItem.allActive" /></li>
-
-      <li><ssf:nlt tag="help.tasksTools.tools.listItem.allEntries" /></li>
-
-</ul>
-
-</div>
-
-</div>
+<jsp:include page="/WEB-INF/help/${ssUser.locale}/tool_task_viewtoolbar.html" />

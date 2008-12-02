@@ -29,29 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.calendarTools" /></span>
-</div>
-
-<p><ssf:nlt tag="help.calendarTools.intro" /></p>
-
-<p><ssf:nlt tag="help.calendarTools.tools.listIntro" /></p>
-
-<ul>
-
-<li><ssf:nlt tag="help.calendarTools.tools.listItem.countDays"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
-
-<li><ssf:nlt tag="help.calendarTools.tools.listItem.folderPage" /></li>
-
-<li><ssf:nlt tag="help.calendarTools.tools.listItem.navigation" /></li>
-
-<li><ssf:nlt tag="help.calendarTools.tools.listItem.calendarApplet" /></li>
-
-</ul>
-
-</div>
-
-</div>
+<jsp:include page="/WEB-INF/help/${ssUser.locale}/tool_cal_datetoolbar.html" />

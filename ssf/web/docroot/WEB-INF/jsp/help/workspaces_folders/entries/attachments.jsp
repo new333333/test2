@@ -29,23 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.attachments"/></span>
-</div>
-
-<p><ssf:nlt tag="help.attachments.intro"><ssf:param name="value" value="${ssProductConferencingTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="help.attachments.dragDrop.intro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="help.attachments.dragDrop.folders"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="help.attachments.dragDrop.viewPics"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="help.attachments.dragDrop.workWithNonPics"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-</div>
-
-</div>
+<jsp:include page="/WEB-INF/help/${ssUser.locale}/tool_viewentry_attachments.html" />

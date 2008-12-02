@@ -29,17 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.moreEntryTools"/></span>
-</div>
-
-<p><ssf:nlt tag="help.moreEntryTools.intro" /></p>
-
-<p><ssf:nlt tag="help.moreEntryTools.detail" /></p>
-
-</div>
-
-</div>
+<jsp:include page="/WEB-INF/help/${ssUser.locale}/tool_viewentry_edit.html" />
