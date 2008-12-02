@@ -29,21 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.wikiControls" /></span>
-</div>
-
-<p><ssf:nlt tag="help.wikiControls.intro" /></p>
-
-<p><ssf:nlt tag="help.wikiControls.default"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="help.wikiControls.search"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="help.wikiControls.sidebar" /></p>
-
-</div>
-
-</div>
+<jsp:include page="/WEB-INF/help/${ssUser.locale}/tool_wiki_sidebar.html" />

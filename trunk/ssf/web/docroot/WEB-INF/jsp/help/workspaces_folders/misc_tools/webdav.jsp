@@ -29,21 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="help.webDAV.subtopic"/></span>
-</div>
-
-<p><ssf:nlt tag="help.webDAV.intro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="help.webDAV.using"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="help.webDAV.login"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><div class="note"><ssf:nlt tag="help.webDAV.login.note"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></div></p>
-
-</div>
-
-</div>
+<jsp:include page="/WEB-INF/help/${ssUser.locale}/tool_webdav.html" />

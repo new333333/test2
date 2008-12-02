@@ -29,23 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.tags" /></span>
-</div>
-
-<p><ssf:nlt tag="help.tags.intro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="help.tags.types" /></p>
-
-<p><ssf:nlt tag="help.tags.creating" /></p>
-
-<p><ssf:nlt tag="help.tags.syntax" /></p>
-
-<p><ssf:nlt tag="help.tags.deleting" /></p>
-
-</div>
-
-</div>
+<jsp:include page="/WEB-INF/help/${ssUser.locale}/tool_viewentry_tags.html" />

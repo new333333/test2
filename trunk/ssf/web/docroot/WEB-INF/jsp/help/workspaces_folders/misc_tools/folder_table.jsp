@@ -29,27 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.folderTable"/></span>
-</div>
-
-<p><ssf:nlt tag="help.folderTable.listIntro" /></p>
-
-<ul>
-
-<li><ssf:nlt tag="help.folderTable.listItem.columnWidth" /></li>
-
-<li><ssf:nlt tag="help.folderTable.listItem.sortColumn" /></li>
-
-<li><ssf:nlt tag="help.folderTable.listItem.seeWholeTitle"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
-
-<li><ssf:nlt tag="help.folderTable.listItem.viewEntry" /></li>
-
-</ul>
-
-</div>
-
-</div>
+<jsp:include page="/WEB-INF/help/${ssUser.locale}/tool_filefolder_table.html" />

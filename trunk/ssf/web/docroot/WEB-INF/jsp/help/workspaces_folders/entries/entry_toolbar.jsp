@@ -29,31 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.entryToolbar"/></span>
-</div>
-
-<p><ssf:nlt tag="help.entryToolbar.listIntro"/></p>
-
-<ul>
-
-<li><ssf:nlt tag="help.entryToolbar.listItem.comment"/></li>
-
-<li><ssf:nlt tag="help.entryToolbar.listItem.modify"/></li>
-
-<li><ssf:nlt tag="help.entryToolbar.listItem.lock"/></li>
-
-<li><ssf:nlt tag="help.entryToolbar.listItem.move"/></li>
-
-<li><ssf:nlt tag="help.entryToolbar.listItem.delete"/></li>
-
-<li><ssf:nlt tag="help.entryToolbar.listItem.reports"/></li>
-
-</ul>
-
-</div>
-
-</div>
+<jsp:include page="/WEB-INF/help/${ssUser.locale}/tool_viewentry_toolbar.html" />
