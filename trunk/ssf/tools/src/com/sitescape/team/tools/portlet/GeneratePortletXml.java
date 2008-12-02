@@ -87,10 +87,10 @@ public class GeneratePortletXml {
            	Element strRoot = document.getRootElement();
             
            	String []localeCodes = {"en", "da", "de", "es", "fr", "hu_HU", "it", "ja",	
-           			"nl", "pl", "pt_BR", "ru_RU", "sv", "ua_UA", "zh_CN", "zh_TW"};
+           			"nl", "pl", "pt_BR", "ru_RU", "sv", "uk_UA", "zh_CN", "zh_TW"};
 
             String []localeCodes2 = {"en", "da_DK", "de_DE", "es_ES", "fr_FR", "hu_HU", "it_IT", "ja_JP",	
-            		"nl_NL", "pl_PL", "pt_BR", "ru_RU", "sv_SV", "ua_UA", "zh_CN", "zh_TW"};
+            		"nl_NL", "pl_PL", "pt_BR", "ru_RU", "sv_SV", "uk_UA", "zh_CN", "zh_TW"};
 
            	generateTags(strRoot, localeCodes, localeCodes2, pathname);
             xOut.write(strRoot);
