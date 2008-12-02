@@ -31,6 +31,7 @@
 <% // htmlarea editor %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="java.lang.String" %>
+<c:if test="${empty ss_tinyMCE_hasBeenLoaded}">
 <c:set var="wikiLinkBinderId" value="" scope="request"/><%--
 --%><c:if test="${!empty ssDefinitionEntry}"><%--
     --%><c:choose><%--
@@ -117,6 +118,9 @@ var ss_wikiLinkUrl = "<ssf:url
 	  <ssf:param name="binderId" value="${wikiLinkBinderId}" />
     </ssf:url>";
 </script>
+</c:if>
+<c:set var="ss_tinyMCE_hasBeenLoaded" value="1" scope="request"/>
+
 <div align="left" style="<c:if test="${!empty element_color}">background-color:${element_color};
 </c:if>">
 <textarea class="ss_style mceEditable"
