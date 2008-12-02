@@ -75,12 +75,14 @@
 	<tbody>
 		<tr>
 			<td>
+				  <c:set var="clickRoutine" value="addValueByElement"/>
+				  <c:if test="${ssFindListType == 'group'}"><c:set var="clickRoutine" value="addGroupValueByElement"/></c:if>
 				  <ssf:find formName="" 
 				    formElement="searchText" 
 				    type="${ssFindListType}"
 				    userList="${ssFindUserList}"
 				    width="70px" 
-				    clickRoutine="addValueByElement"
+				    clickRoutine="${clickRoutine}"
 				    clickRoutineObj="findMultiple${prefix}"
 				    findMultipleObj="findMultiple${prefix}"
 				    leaveResultsVisible="${ssFindLeaveResultsVisible}"

@@ -207,10 +207,11 @@ fieldset.ss_fieldset_square {
   	padding: 5px;
   	margin-top: 12px;
 	}
-fieldset a{
-	border: dotted 1px #000;
+fieldset a {
+	padding: 1px;
 	}
-fieldset a:hover{
+fieldset a:hover {
+	padding: 0px;
 	border: dotted 1px #000;
 	}
 .ss_legend {
