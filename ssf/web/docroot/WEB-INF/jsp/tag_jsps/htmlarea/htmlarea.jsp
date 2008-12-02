@@ -51,6 +51,7 @@
 <script type="text/javascript">
 tinyMCE.init(
  {mode: "specific_textareas", editor_selector: "mceEditable",
+  theme : "advanced", 
 <c:choose><%--
     --%><c:when test="${language == 'da_DK'}">language: 'da',</c:when><%--
     --%><c:when test="${language == 'de_DE'}">language: 'de',</c:when><%--
@@ -90,10 +91,11 @@ tinyMCE.init(
   --%><c:if test="${!empty wikiLinkBinderId}">,ss_wikilink</c:if>",
   theme_advanced_path: false,
   theme_advanced_buttons3_add: "tablecontrols", 
+  theme_advanced_disable : "image,advimage",
   theme_advanced_resizing_use_cookie : false});
 
-tinyMCE.addToLang('',{
-wikilink_desc : '<ssf:nlt tag="editor.wikilink.title" text="Insert a link to another page"/>'
+tinyMCE.addI18n('',{
+wikilink_desc : '<ssf:nlt tag="editor.wikilink.title"/>'
 });
 
 var ss_imageUploadError1 = "<ssf:nlt tag="imageUpload.badFile"/>"
