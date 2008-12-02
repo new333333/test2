@@ -63,6 +63,8 @@ tinyMCE.init(
     --%><c:when test="${language == 'nl_NL'}">language: 'nl',</c:when><%--
     --%><c:when test="${language == 'pl_PL'}">language: 'pl',</c:when><%--
     --%><c:when test="${language == 'pt_BR'}">language: 'pt_br',</c:when><%--
+    --%><c:when test="${language == 'ru_RU'}">language: 'ru',</c:when><%--
+    --%><c:when test="${language == 'ua_UA'}">language: 'uk',</c:when><%--
     --%><c:when test="${language == 'sv_SE'}">language: 'sv',</c:when><%--
     --%><c:when test="${language == 'sv_SV'}">language: 'sv',</c:when><%--
     --%><c:when test="${language == 'zh_CN'}">language: 'zh_cn_utf8',</c:when><%--

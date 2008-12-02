@@ -59,10 +59,10 @@ public class GeneratePortletProperties {
         		"workarea", "workarea_accessories", "workarea_context", "workarea_navigation"};
            	
         String []localeCodes = {"en", "da", "de", "es", "fr", "hu_HU", "it", "ja",	
-        		"nl", "pl", "pt_BR", "ru_RU", "sv", "zh_CN", "zh_TW"};
+        		"nl", "pl", "pt_BR", "ru_RU", "sv", "zh_CN", "zh_TW", "ua_UA"};
 
         String []localeCodes2 = {"en", "da_DK", "de_DE", "es_ES", "fr_FR", "hu_HU", "it_IT", "ja_JP",	
-        		"nl_NL", "pl_PL", "pt_BR", "ru_RU", "sv_SV", "zh_CN", "zh_TW"};
+        		"nl_NL", "pl_PL", "pt_BR", "ru_RU", "sv_SV", "zh_CN", "zh_TW", "ua_UA"};
         
         try {
         generatePropFiles(pathname, outPath, propNames, localeCodes, localeCodes2);
