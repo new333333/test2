@@ -407,7 +407,6 @@ div.ss_entryContent a:hover {
   	background-color: #E9F1F1;  /* switch back to this: #A6C5C5 #E9F1F1 !important; */
   	font-family: "Lucida Sans"; 
   	font-size: 12px;
-  	font-style: italic;
   	color: #333;
 	}
 div.ss_entryDescription ul li {
