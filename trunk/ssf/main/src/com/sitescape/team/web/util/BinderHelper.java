@@ -50,7 +50,6 @@ import javax.portlet.ActionRequest;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
@@ -95,15 +94,14 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.portlet.forum.ViewController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.portlet.RenderRequestImpl;
-import com.sitescape.team.portletadapter.portlet.RenderResponseImpl;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
-import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.SearchUtils;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.search.filter.SearchFilterToMapConverter;
@@ -116,6 +114,7 @@ import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReleaseInfo;
 import com.sitescape.team.util.ResolveIds;
+import com.sitescape.util.search.Restrictions;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.DomTreeBuilder;
@@ -1955,6 +1954,83 @@ public class BinderHelper {
 		}
 	}
 	
+	public static void updateUserStatus(AllModulesInjected bs, ActionRequest request, 
+			Long folderId) {
+		// Default to updating the user's status using the most recent
+		// entry in their MiniBlog folder.
+		updateUserStatus(bs, request, folderId, null);
+	}
+	
+	public static void updateUserStatus(AllModulesInjected bs, ActionRequest request, 
+			Long folderId, Long entryId) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+		Long miniBlogId = user.getMiniBlogId();
+
+		// Does the folderId refer to the user's MiniBlog? 
+		if ((null != miniBlogId) && (miniBlogId.longValue() == folderId.longValue())) {
+			Folder	miniBlog;
+			try {
+				// Yes!  Can we access the MiniBlog folder?
+				miniBlog = (Folder) bs.getBinderModule().getBinder(miniBlogId);
+				if (miniBlog.isDeleted()) {
+					//The miniblog folder doesn't exist anymore.
+					miniBlog = null;
+				}
+			} catch(NoBinderByTheIdException e) {
+				//The miniblog folder doesn't exist anymore,
+				miniBlog = null;
+			}
+			if (null != miniBlog) {
+				// Yes!  Were we given the entryId for the MiniBlog
+				// entry to update the user's status with?
+				String	text = null;
+				if (null == entryId) {
+					// No!  Use the most recent entry.  If there are no
+					// entries, we'll just set the status text to an
+					// empty string so that the string displayed
+					// gets removed.
+					Criteria crit = SearchUtils.entriesForTrackedMiniBlogs(new Long[]{user.getId()});
+					crit.add(Restrictions.eq(Constants.BINDER_ID_FIELD, folderId.toString()));
+					Map results   = bs.getBinderModule().executeSearchQuery(crit, 0, 1);
+			    	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+			    	boolean found = false;
+			    	for (Map item: items) {
+			    		text  = ((String) item.get(Constants.DESC_FIELD));
+			    		found = (null != text);
+			    		if (found) {
+			    			text = text.trim();
+			    			if (0 < text.length() && ('<' == text.charAt(0))) {
+			    				text = text.replaceAll("\\<.*?\\>","");
+			    			}
+			    		}
+			    		break;
+			    	}
+			    	if (!found) {
+			    		text = "";
+			    	}
+				}
+				else {
+					// Yes, we were given the entryId for the MiniBlog
+					// entry to update the user's status with!  Can we
+					// access it?
+					FolderEntry miniBlogEntry = bs.getFolderModule().getEntry(miniBlogId, entryId);
+					if (null != miniBlogEntry) {
+						// Yes!  Read the description from it.
+						text = miniBlogEntry.getDescription().getStrippedText();
+					}
+				}
+				
+				// Do we have the text to update the user's status with?
+				if (null != text) {
+					// Yes!  Update it.
+					bs.getProfileModule().setStatus(text);
+					bs.getProfileModule().setStatusDate(new Date());
+					bs.getReportModule().addStatusInfo(user);
+				}
+			}
+		}
+	}
+	
 	public static void sendMailOnEntryCreate(AllModulesInjected bs, ActionRequest request, 
 			Long folderId, Long entryId) {
 		String title = PortletRequestUtils.getStringParameter(request, "title", "--no title--");
@@ -2804,44 +2880,54 @@ public class BinderHelper {
 		bs.getProfileModule().setStatus(text);
 		bs.getProfileModule().setStatusDate(new Date());
 		bs.getReportModule().addStatusInfo(user);
-		//Add this to the user's mini blog folder
-		Long miniBlogId = user.getMiniBlogId();
-		Folder miniBlog = null;
-		if (miniBlogId == null) {
-			//The miniblog folder doesn't exist, so create it
-			miniBlog = bs.getProfileModule().addUserMiniBlog(user);
-			
-		} else {
-			try {
-				miniBlog = (Folder) bs.getBinderModule().getBinder(miniBlogId);
-				if (miniBlog.isDeleted()) {
+		if (0 < text.length()) {
+			//Add this to the user's mini blog folder
+			Long miniBlogId = user.getMiniBlogId();
+			Folder miniBlog = null;
+			if (miniBlogId == null) {
+				//The miniblog folder doesn't exist, so create it
+				miniBlog = bs.getProfileModule().addUserMiniBlog(user);
+				
+			} else {
+				try {
+					miniBlog = (Folder) bs.getBinderModule().getBinder(miniBlogId);
+					if (miniBlog.isDeleted()) {
+						//The miniblog folder doesn't exist anymore, so try create it again
+						miniBlog = bs.getProfileModule().addUserMiniBlog(user);
+					}
+				} catch(NoBinderByTheIdException e) {
 					//The miniblog folder doesn't exist anymore, so try create it again
 					miniBlog = bs.getProfileModule().addUserMiniBlog(user);
 				}
-			} catch(NoBinderByTheIdException e) {
-				//The miniblog folder doesn't exist anymore, so try create it again
-				miniBlog = bs.getProfileModule().addUserMiniBlog(user);
 			}
-		}
-		if (miniBlog != null) {
-			//Found the mini blog folder, go add this new entry
-	        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, 
-	        		DateFormat.SHORT, user.getLocale());
-	        dateFormat.setTimeZone(user.getTimeZone());
-			String mbTitle = dateFormat.format(new Date());
-			Map data = new HashMap(); // Input data
-			data.put(ObjectKeys.FIELD_ENTITY_TITLE, mbTitle);
-			data.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, text);
-			Definition def = miniBlog.getDefaultEntryDef();
-			if (def == null) {
-				try {
-					def = bs.getDefinitionModule().getDefinitionByReservedId(ObjectKeys.DEFAULT_ENTRY_MINIBLOG_DEF);
-				} catch (Exception ex) {}
-			}
-			if (def != null) {
-				try{
-					bs.getFolderModule().addEntry(miniBlog.getId(), def.getId(), new MapInputData(data), null, null);
-				} catch (Exception ex) {}
+			if (miniBlog != null) {
+				//Found the mini blog folder, go add this new entry
+		        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, 
+		        		DateFormat.SHORT, user.getLocale());
+		        dateFormat.setTimeZone(user.getTimeZone());
+				String mbTitle = dateFormat.format(new Date());
+				Map data = new HashMap(); // Input data
+				data.put(ObjectKeys.FIELD_ENTITY_TITLE, mbTitle);
+				data.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, text);
+				Definition def = miniBlog.getDefaultEntryDef();
+				if (def == null) {
+					try {
+						def = bs.getDefinitionModule().getDefinitionByReservedId(ObjectKeys.DEFAULT_ENTRY_MINIBLOG_DEF);
+					} catch (Exception ex) {}
+				}
+				if (def != null) {
+					FolderModule	folderModule = bs.getFolderModule();
+					Long			entryId = null;
+					
+					miniBlogId = miniBlog.getId();
+					try{
+						entryId = folderModule.addEntry(miniBlogId, def.getId(), new MapInputData(data), null, null);
+					} catch (Exception ex) {}
+					if (null != entryId) {
+						// Mark the entry as read
+						bs.getProfileModule().setSeen(user.getId(),folderModule.getEntry(miniBlogId, entryId));
+					}
+				}
 			}
 		}
 	}
