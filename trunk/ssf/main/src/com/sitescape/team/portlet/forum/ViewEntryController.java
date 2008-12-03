@@ -62,6 +62,7 @@ import com.sitescape.team.domain.NoFolderEntryByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.ical.util.UrlUtil;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
@@ -248,6 +249,13 @@ public class ViewEntryController extends  SAbstractController {
 						throw nf;
 					}
 					model.put("entryMoved", newFolder);
+					try {
+						Binder folder = getBinderModule().getBinder(folderId);
+						BinderHelper.setupStandardBeans(this, request, response, model, folderId);
+						UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
+						DefinitionHelper.getDefinitions(folder, model, 
+								(String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
+					} catch(Exception e) {}
 					throw nf;
 				} catch(OperationAccessControlExceptionNoName e) {
 					//Access is not allowed

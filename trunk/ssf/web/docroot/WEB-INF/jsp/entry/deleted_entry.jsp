@@ -28,9 +28,17 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% // Displayed when the user tries to list a deleted folder %>
+<% // Displayed when the user tries to list a moved entry %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
+<%@ page import="com.sitescape.team.module.definition.DefinitionUtils" %>
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<%
+//Get the folder type of this definition (folder, file, or event)
+String folderViewStyle1 = DefinitionUtils.getViewType(ssConfigDefinition);
+if (folderViewStyle1 == null || folderViewStyle1.equals("")) folderViewStyle1 = "folder";
+%>
+<c:set var="ss_folderViewStyle1" value="<%= folderViewStyle1 %>" scope="request" />
 <ssf:ifadapter>
 <body class="ss_style_body tundra">
 </ssf:ifadapter>
@@ -49,7 +57,8 @@
 	  <c:set var="ss_sidebarTdStyle" value="ss_view_sidebar"/>
 	</c:if>
 	
-	<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
+	<c:if test="${empty ss_folderViewStyle1 || ss_folderViewStyle1 != 'wiki'}">
+	  <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 		<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 		<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 		<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
@@ -72,10 +81,10 @@
 	    <table cellpadding="0" cellspacing="0" border="0" width="100%">
 	    <tbody>
 		    <tr>
-		    <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
-				<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
-			</td>
-			<td valign="top" class="ss_view_info">
+		      <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
+				  <jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
+			  </td>
+			  <td valign="top" class="ss_view_info">
 			    <div class="ss_style_color" >
 					<p style="text-align:center; padding-top:30px;">
 						<c:if test="${!empty entryMoved}">
@@ -88,11 +97,26 @@
 						</c:if>
 					</p>
 				</div>
-			</td>
+			  </td>
 			</tr>
 		</tbody>
 		</table>
-	</div>
+	  </div>
+	</c:if>
+	<c:if test="${ss_folderViewStyle1 == 'wiki'}">
+	    <div class="ss_style_color" >
+			<p style="text-align:center; padding-top:30px;">
+				<c:if test="${!empty entryMoved}">
+				<ssf:nlt tag="entry.moved">
+				<ssf:param name="value" value="${entryMoved.pathName}"/>
+				</ssf:nlt>
+				</c:if>
+				<c:if test="${empty entryMoved}">
+				<ssf:nlt tag="entry.deleted"/>
+				</c:if>
+			</p>
+		</div>
+	</c:if>
 </div>
 <ssf:ifadapter>
 </body>
