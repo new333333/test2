@@ -74,7 +74,6 @@ import com.sitescape.util.Validator;
 public class ModifyEntryController extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
-	
 		Map formData = request.getParameterMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
@@ -84,7 +83,10 @@ public class ModifyEntryController extends SAbstractController {
 			if (!entry.isTop()) entry = entry.getTopEntry();
 			else entry = null;
 			getFolderModule().deleteEntry(folderId, entryId);
-			setupViewFolder(response, folderId);		
+			setupViewFolder(response, folderId);
+			
+			//Force the user's status to be updated.
+			BinderHelper.updateUserStatus(this, request, folderId);
 		
 		} else if (op.equals(WebKeys.OPERATION_LOCK)) {
 			getFolderModule().reserveEntry(folderId, entryId);
@@ -128,6 +130,9 @@ public class ModifyEntryController extends SAbstractController {
 				getFolderModule().modifyEntry(folderId, entryId, 
 						new MapInputData(formData), fileMap, deleteAtts, null, null);
 								
+				//Force the user's status to be updated.
+				BinderHelper.updateUserStatus(this, request, folderId, entryId);
+
 				//See if the user wants to send mail
 				BinderHelper.sendMailOnEntryCreate(this, request, folderId, entryId);
 
@@ -146,7 +151,16 @@ public class ModifyEntryController extends SAbstractController {
 					PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 					portletSession.setAttribute(ObjectKeys.SESSION_SAVE_LOCATION_ID, destinationId);
 					getFolderModule().moveEntry(folderId, entryId, destinationId, null);
-					setupViewFolder(response, folderId);		
+					setupViewFolder(response, folderId);
+
+					//Force the user's status to be updated.  Note that
+					//we update it from both the source folder's
+					//perspective (in case it was the user's MiniBlog
+					//folder) and the destination folder's perspective
+					//(in case it was the user's MiniBlog folder.)
+					BinderHelper.updateUserStatus(this, request, folderId);
+					BinderHelper.updateUserStatus(this, request, destinationId, entryId);
+					
 				} else {
 					setupViewEntry(response, folderId, entryId);
 				}
@@ -201,6 +215,9 @@ public class ModifyEntryController extends SAbstractController {
 					}
 					//Finally, replace the section text with the new full element text in the input data
 					inputData.put(elementToEdit, newElementText);
+
+					//Force the user's status to be updated.
+					BinderHelper.updateUserStatus(this, request, folderId, entryId);
 				}
 			}
 			getFolderModule().modifyEntry(folderId, entryId, 

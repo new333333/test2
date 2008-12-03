@@ -788,6 +788,7 @@ function ss_postUpdateStatusNow(s, id) {
 	if (divObj != null) {
 		divObj.innerHTML = s;
 		ss_executeJavascript(divObj)
+		document.location.reload();
 	}
 }
 
@@ -823,6 +824,7 @@ function ss_clearStatus(textareaId) {
 	if (obj && typeof obj.value != "undefined") {
 		obj.value = "";
 		obj.focus();
+    	ss_updateStatusNow(obj);
 	}
 }
 

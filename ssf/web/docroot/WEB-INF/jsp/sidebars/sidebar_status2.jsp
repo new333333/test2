@@ -58,8 +58,7 @@
 			wrap="virtual" class="ss_input_myStatus" 
   			onFocus="ss_setStatusBackground(this, 'focus');"
   			onKeyPress="ss_updateStatusSoon(this, event, <%= ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH %>);"
-  			onChange="ss_updateStatusNow(this);"
-  			onBlur="ss_updateStatusNow(this);ss_setStatusBackground(this, 'blur')"
+  			onBlur="ss_setStatusBackground(this, 'blur')"
   			onMouseover="ss_setStatusBackground(this, 'mouseOver');"
   			onMouseout="ss_setStatusBackgroundCheck(this);"
   		><c:out value="${ssUser.status}" escapeXml="true"/></textarea>

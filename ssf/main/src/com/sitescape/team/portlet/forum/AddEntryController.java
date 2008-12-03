@@ -132,6 +132,10 @@ public class AddEntryController extends SAbstractController {
 					response.setRenderParameter(WebKeys.BINDER_ID, folderId.toString());
 				}
 			}
+			
+			//If we just added a MiniBlog entry, update the user's status
+			BinderHelper.updateUserStatus(this, request, folderId, entryId);
+			
 			//See if the user wants to send mail
 			BinderHelper.sendMailOnEntryCreate(this, request, folderId, entryId);
 			
