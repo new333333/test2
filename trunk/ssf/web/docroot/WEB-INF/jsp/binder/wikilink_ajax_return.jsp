@@ -49,48 +49,52 @@
 </head>
 <body onload="tinyMCEPopup.executeOnLoad('init();');" style="display: none">
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
-<form>
-<ssf:inlineHelp tag="ihelp.other.linksToEntries.explainTool"/> <ssf:nlt tag="wiki.link.tofolder"/>: <b><span id="linkToFolderName">(<ssf:nlt tag="wiki.link.currentfolder"/>)</span></b>
-<input type="hidden" name="binderId" id="binderId" size="5" value="${binderId}"/>
-
+<script type="text/javascript">
+var ss_wikiLinkUrl = "<ssf:url 
+    adapter="true" 
+    actionUrl="true"
+    portletName="ss_forum" 
+    action="__ajax_request">
+	  <ssf:param name="operation" value="wikilink_form" />
+	  <ssf:param name="binderId" value="ssBinderIdPlaceHolder" />
+    </ssf:url>";
+</script>
+<form method="post" name="ss_findLinkForm"
+	action="">
+<ssf:inlineHelp tag="ihelp.other.linksToEntries.explainTool"/> 
+<ssf:nlt tag="wiki.link.tofolder"/>: <b><span id="linkToFolderName">(${ssBinder.title})</span></b>
+<input type="hidden" name="binderId" id="binderId" size="5" value="${ssBinder.id}"/>
 <a href="javascript:;" onclick="ss_popup_folder();">[<ssf:nlt tag="button.change"/>]</a>
-</p>
-<p>
-<b><ssf:nlt tag="wiki.link.topage"/>:</b> <input name="pageName" id="pageName" size="30"/>
-<a href="javascript:;" onclick="ss_popup_page();">[<ssf:nlt tag="button.find"/>]</a>
-</p>
-</form>
-
-<div id="folder_popup" style="position: absolute; display: none; background: #CCCCCC; top: 30px; padding: 10px;  border: 1px solid #333333;">
+<div id="folder_popup" style="display: none; background: #CCCCCC; top: 30px; padding: 10px;  border: 1px solid #333333;">
 <div align="right" style="margin-top: -5px; margin-right: -5px;"><a href="javascript:;" onclick="ss_close_popup_folder();"><img border="0" src="<html:imagesPath/>pics/popup_close_box.gif" alt="x" title=""/></a></div>
 <ssf:nlt tag="wiki.link.differentfolder"/>:
 <br/>
-<form method="post" name="ss_findLinkPlaceForm"
-	action="">
- <ssf:find formName="ss_findLinkPlaceForm" 
-    formElement="searchTitle" 
+ <ssf:find formName="ss_findLinkForm" 
+    formElement="searchTitleFolder" 
     type="places"
     width="350px" 
-    binderId="${binderId}"
+    binderId="${ssBinder.id}"
     searchSubFolders="false"
     foldersOnly="true"
     singleItem="true"
     clickRoutine="ss_loadLinkBinderId"
     accessibilityText="wiki.findFolder"
     /> 
-<input type="hidden" name="searchTitle"/>
-</form>
+<input type="hidden" name="searchTitleFolder"/>
 </div>
-<div id="page_popup" style="position: absolute; display: none; background: #CCCCCC; top: 60px; padding: 10px; border: 1px solid #333333;">
+<p>
+<b><ssf:nlt tag="wiki.link.topage"/>:</b> <input name="pageName" id="pageName" size="30"/>
+<a href="javascript:;" onclick="ss_popup_page();">[<ssf:nlt tag="button.find"/>]</a>
+</p>
+
+<div id="page_popup" style="display: none; background: #CCCCCC; top: 60px; padding: 10px; border: 1px solid #333333;">
 <div align="right" style="margin-top: -5px; margin-right: -5px;"><a href="javascript:;" onclick="ss_close_popup_page();"><img border="0" src="<html:imagesPath/>pics/popup_close_box.gif" alt="x" title=""/></a></div>
 <ssf:nlt tag="wiki.link.findpage"/>:
-<form method="post" name="ss_findLinkEntryForm"
-	action="">
- <ssf:find formName="ss_findLinkEntryForm"
+ <ssf:find formName="ss_findLinkForm"
     formElement="searchTitle" 
     type="entries"
     width="350px" 
-    binderId="${binderId}"
+    binderId="${ssBinder.id}"
     searchSubFolders="false"
     singleItem="true"
     clickRoutine="ss_loadLinkEntryId"
@@ -101,7 +105,7 @@
 </div>
 
 
-<a href="javascript:;" onClick="ss_insertICElinkFromForm('${binderId}');"><ssf:nlt tag="button.insert"/></a>
+<a href="javascript:;" onClick="ss_insertICElinkFromForm('${ssBinder.id}');"><ssf:nlt tag="button.insert"/></a>
 &nbsp;&nbsp;<a href="javascript:;" onClick="ss_cancelICElinkEdit();"><ssf:nlt tag="button.cancel"/></a>
 </p>
 </body>
