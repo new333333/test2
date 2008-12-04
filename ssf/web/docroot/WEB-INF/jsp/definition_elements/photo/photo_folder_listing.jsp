@@ -29,7 +29,7 @@
  */
 %>
 <% //View the listing part of a photo folder %>
-<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request"/>
+<jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request"/>
 
 			<table width="99%"><tr><td>
 			<div class="ss_thumbnail_gallery ss_thumbnail_medium"> 

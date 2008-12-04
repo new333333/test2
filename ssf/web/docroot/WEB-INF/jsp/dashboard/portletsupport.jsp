@@ -30,7 +30,7 @@
 %>
 
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
-<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
+<jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 
 <%
 int entryWindowWidth = 0;

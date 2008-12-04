@@ -34,7 +34,7 @@
 
 <div class="ss_style ss_portlet" width="100%">
 <%
-	if (ssDefinitionEntry instanceof com.sitescape.team.domain.Principal) {
+	if (ssDefinitionEntry instanceof org.kablink.teaming.domain.Principal) {
 %>	
 <%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_title.jsp" %>
 <% } else {

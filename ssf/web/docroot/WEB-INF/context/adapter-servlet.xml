@@ -21,11 +21,11 @@
 		</property>
 	</bean>
 
-	<!--<bean id="initRequestContextInterceptor" class="com.sitescape.team.web.servlet.handler.InitRequestContextInterceptor"/>-->
+	<!--<bean id="initRequestContextInterceptor" class="org.kablink.teaming.web.servlet.handler.InitRequestContextInterceptor"/>-->
 
 	<!-- Adapted portlets: In order for a portlet to plug into the adapter
 	     environment, it must to be listed here. -->
-	<bean id="adaptedPortlets" class="com.sitescape.team.portletadapter.support.AdaptedPortlets">
+	<bean id="adaptedPortlets" class="org.kablink.teaming.portletadapter.support.AdaptedPortlets">
 		<property name="portletNames">
 			<list>
 				<value>ss_forum</value>
@@ -47,6 +47,6 @@
 
 	<!-- Controllers -->
 
-	<bean id="portletAdapter" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portletadapter.servlet.PortletAdapterController"/>
+	<bean id="portletAdapter" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portletadapter.servlet.PortletAdapterController"/>
 
 </beans>

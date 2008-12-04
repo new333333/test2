@@ -30,13 +30,13 @@
 %>
 <% //User_list view %>
 <c:set var="userlist_folder" value="${ssDefinitionEntry}"/>
-<jsp:useBean id="userlist_folder" type="com.sitescape.team.domain.Folder" />
+<jsp:useBean id="userlist_folder" type="org.kablink.teaming.domain.Folder" />
 
 <c:if test="${empty ss_element_display_style}">
 <div class="ss_entryContent">
 <span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
 <ul class="ss_nobullet">
-<c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(userlist_folder.getCustomAttribute(property_name)) %>" >
+<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(userlist_folder.getCustomAttribute(property_name)) %>" >
 <li><ssf:showUser user="${selection}" /></li>
 </c:forEach>
 </ul>
@@ -51,7 +51,7 @@
   </td>
   <td valign="top" align="left">
 	<ul class="ss_nobullet">
-	<c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(userlist_folder.getCustomAttribute(property_name)) %>" >
+	<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(userlist_folder.getCustomAttribute(property_name)) %>" >
  	 <li><ssf:showUser user="${selection}" /></li>
 	</c:forEach>
 	</ul>

@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.util.CalendarHelper" %>
+<%@ page import="org.kablink.teaming.util.CalendarHelper" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <c:set var="allDayEventId" value="allDayEvent_${evid}" />
@@ -201,7 +201,7 @@
 			<td colspan="4">
 				<label for="${prefix}freeBusy"><ssf:nlt tag="event.freeBusy.legend" /></label> 
 				<select name="${prefix}_freeBusy" id="${prefix}freeBusy">
-				<c:forEach var="freeBusyType" items="<%= com.sitescape.team.domain.Event.FreeBusyType.values() %>">
+				<c:forEach var="freeBusyType" items="<%= org.kablink.teaming.domain.Event.FreeBusyType.values() %>">
 					<option value="${freeBusyType}" <c:if test="${initEvent.freeBusy == freeBusyType}">
 						selected="true"
 					</c:if>><ssf:nlt tag="event.freeBusy.${freeBusyType}" /></option>

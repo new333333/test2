@@ -34,7 +34,7 @@
 <c:if test="${empty ss_element_display_style}">
 <div class="ss_entryContent">
 <span class="ss_labelLeft"><c:out value="${property_caption}"/>:</span>
-<%= ((com.sitescape.team.domain.User)request.getAttribute("ssDefinitionEntry")).getLocale().getDisplayName(((com.sitescape.team.domain.User)request.getAttribute("ssUser")).getLocale()) %>
+<%= ((org.kablink.teaming.domain.User)request.getAttribute("ssDefinitionEntry")).getLocale().getDisplayName(((org.kablink.teaming.domain.User)request.getAttribute("ssUser")).getLocale()) %>
 </div>
 </c:if>
 <c:if test="${!empty ss_element_display_style && 
@@ -45,7 +45,7 @@
   </td>
   <td valign="top">
 	<span class="ss_bold">
-<%= ((com.sitescape.team.domain.User)request.getAttribute("ssDefinitionEntry")).getLocale().getDisplayName(((com.sitescape.team.domain.User)request.getAttribute("ssUser")).getLocale()) %>
+<%= ((org.kablink.teaming.domain.User)request.getAttribute("ssDefinitionEntry")).getLocale().getDisplayName(((org.kablink.teaming.domain.User)request.getAttribute("ssUser")).getLocale()) %>
 	</span>
   </td>
 </tr>

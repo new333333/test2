@@ -38,8 +38,8 @@
 <%@ taglib prefix="ssf" uri="http://www.sitescape.com/tags-ssf" %>
 <%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
 <%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
-<%@ page import="com.sitescape.util.ParamUtil" %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.util.ParamUtil" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%
 // General variables
 String title = ParamUtil.get(request, "title", "");
@@ -61,7 +61,7 @@ String isFile = ParamUtil.get(request, "isFile", "no");
 String hrefClass = ParamUtil.get(request, "hrefClass", "ss_title_menu");
 %>
 
-<% if (isAccessible.equals("false")) { %><%@ page import="com.sitescape.util.BrowserSniffer" %>
+<% if (isAccessible.equals("false")) { %><%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
@@ -83,14 +83,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	onClick="return ss_gotoPermalink('<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>', 'yes');" 
 <% //if useBinderFunction == yes, just use href
  }%>
-><c:if test="<%= com.sitescape.util.Validator.isNull(title) %>">
+><c:if test="<%= org.kablink.util.Validator.isNull(title) %>">
 &nbsp;<span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span></c:if><span <%= seenStyle %>><%= title %></span></a>
 
 <% } else { %>
 <a class="<%= hrefClass %>" 
 	<% if ("yes".equals(isFile)) { %>
 		<c:choose>
-			<c:when test="<%= !com.sitescape.util.Validator.isNull(title) %>">
+			<c:when test="<%= !org.kablink.util.Validator.isNull(title) %>">
 				<ssf:titleForEntityType entityType="file" text="<%= title %>" />
 			</c:when>
 			<c:otherwise>
@@ -100,7 +100,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		href="<%= url %>" target="_blank"
 	<% } else { %>
 		<c:choose>
-			<c:when test="<%= !com.sitescape.util.Validator.isNull(title) %>">
+			<c:when test="<%= !org.kablink.util.Validator.isNull(title) %>">
 				<ssf:titleForEntityType entityType="<%= entityType %>" text="<%= title %>" />
 			</c:when>
 			<c:otherwise>

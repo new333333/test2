@@ -96,7 +96,7 @@
 	
 	<target name="java2html">
 		<java
-			classname="com.sitescape.util.Java2Html"
+			classname="org.kablink.util.Java2Html"
 			classpathref="project.classpath"
 			fork="true">
 				<arg value="${java2html.bat}" />
@@ -120,16 +120,16 @@
 			additionalparam="-J-Xmx128m"
 			classpathref="project.classpath"
 			destdir="${javadoc.dir}"
-			packagenames="com.sitescape.team.domain,
-							com.sitescape.team.security.function,
-							com.sitescape.team.module.binder,
-							com.sitescape.team.module.folder,
-							com.sitescape.team.module.profile,
-							com.sitescape.team.module.workspace"
-			excludepackagenames="com.sitescape.team.module.binder.impl,
-				com.sitescape.team.module.folder.impl,
-				com.sitescape.team.module.profile.impl,
-				com.sitescape.team.module.workspace.impl"
+			packagenames="org.kablink.teaming.domain,
+							org.kablink.teaming.security.function,
+							org.kablink.teaming.module.binder,
+							org.kablink.teaming.module.folder,
+							org.kablink.teaming.module.profile,
+							org.kablink.teaming.module.workspace"
+			excludepackagenames="org.kablink.teaming.module.binder.impl,
+				org.kablink.teaming.module.folder.impl,
+				org.kablink.teaming.module.profile.impl,
+				org.kablink.teaming.module.workspace.impl"
 			sourcepath="${source.dir}"
 			public="true"
 			stylesheetfile="${project.dir}/tools/javadoc.css"

@@ -798,7 +798,7 @@ work/Catalina/localhost/_/org/apache/jsp/html/portal/login_jsp.*
      <para>To enable iChain integration-related debug log messages, modify Liferay’s<literal> portal-log4j-ext.xml </literal>to add the following category:</para>
 
 <screen>
- &lt;category name="com.sitescape.team.liferay.security.auth"&gt;
+ &lt;category name="org.kablink.teaming.liferay.security.auth"&gt;
 </screen>
 
 

@@ -40,15 +40,15 @@
 <ul style="margin-left:-15px;">
 <c:if test="${!empty ssBinderConfig.parentBinder}">
 <c:set var="parentBinder" value="${ssBinderConfig.parentBinder}"/>
-<jsp:useBean id="parentBinder" type="com.sitescape.team.domain.TemplateBinder" />
+<jsp:useBean id="parentBinder" type="org.kablink.teaming.domain.TemplateBinder" />
 <%
 	Stack parentTree = new Stack();
 	while (parentBinder != null) {
 		parentTree.push(parentBinder);
-		parentBinder = (com.sitescape.team.domain.TemplateBinder)parentBinder.getParentBinder();
+		parentBinder = (org.kablink.teaming.domain.TemplateBinder)parentBinder.getParentBinder();
 	}
 	while (!parentTree.empty()) {
-		com.sitescape.team.domain.TemplateBinder nextConfig = (com.sitescape.team.domain.TemplateBinder) parentTree.pop();
+		org.kablink.teaming.domain.TemplateBinder nextConfig = (org.kablink.teaming.domain.TemplateBinder) parentTree.pop();
 %>
 <c:set var="nextConfig" value="<%= nextConfig %>"/>
 <li style="float:left;">

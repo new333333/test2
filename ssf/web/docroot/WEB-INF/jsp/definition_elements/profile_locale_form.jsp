@@ -38,9 +38,9 @@
 <select name="${property_name}">
 <%
 	java.util.Locale[] ids = java.util.Locale.getAvailableLocales();
-	com.sitescape.team.domain.User user = (com.sitescape.team.domain.User)request.getAttribute("ssDefinitionEntry");
-	com.sitescape.team.domain.User currentUser = (com.sitescape.team.domain.User)request.getAttribute("ssUser");
-	java.util.TreeMap<String,java.util.Locale> map = new java.util.TreeMap(new com.sitescape.team.comparator.StringComparator(currentUser.getLocale())); //sort
+	org.kablink.teaming.domain.User user = (org.kablink.teaming.domain.User)request.getAttribute("ssDefinitionEntry");
+	org.kablink.teaming.domain.User currentUser = (org.kablink.teaming.domain.User)request.getAttribute("ssUser");
+	java.util.TreeMap<String,java.util.Locale> map = new java.util.TreeMap(new org.kablink.teaming.comparator.StringComparator(currentUser.getLocale())); //sort
 	for (int i=0; i<ids.length; ++i) {
 		map.put(ids[i].getDisplayName(currentUser.getLocale()), ids[i]);
 	}
@@ -61,8 +61,8 @@
 </c:if>
 <c:if test="${!empty ssReadOnlyFields[property_name]}">
 <%
-	com.sitescape.team.domain.User user = (com.sitescape.team.domain.User)request.getAttribute("ssDefinitionEntry");
-	com.sitescape.team.domain.User currentUser = (com.sitescape.team.domain.User)request.getAttribute("ssUser");
+	org.kablink.teaming.domain.User user = (org.kablink.teaming.domain.User)request.getAttribute("ssDefinitionEntry");
+	org.kablink.teaming.domain.User currentUser = (org.kablink.teaming.domain.User)request.getAttribute("ssUser");
 	if (user != null) {	
 %>
 <%= user.getLocale().getDisplayName(currentUser.getLocale()) %>

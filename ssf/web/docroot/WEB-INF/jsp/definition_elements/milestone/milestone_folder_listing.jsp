@@ -231,7 +231,7 @@
 				<c:set var="tdClass" value="class='ss_completed'" />
 			</c:if>
 			<%
-				boolean overdue = com.sitescape.team.util.DateComparer.isOverdue((Date)entry.get("due_date"));
+				boolean overdue = org.kablink.teaming.util.DateComparer.isOverdue((Date)entry.get("due_date"));
 			%>
 			<c:set var="overdue" value="<%= overdue %>"/>
 			<c:if test="${overdue && entry.status != 'completed'}">
@@ -272,14 +272,14 @@
 				</td>
 				<td>
 					<ul class="ss_nobullet">
-					<c:forEach var="principal" items='<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("responsible")) %>' >
+					<c:forEach var="principal" items='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(entry.get("responsible")) %>' >
 						<li><ssf:showUser user="${principal}" /></li>
 					</c:forEach>
 					</ul>
 				</td>
 				<td>
 					<ul class="ss_nobullet">
-						<c:forEach var="selection" items='<%= com.sitescape.team.util.ResolveIds.getBinderTitlesAndIcons(entry.get("tasks")) %>' varStatus="status">
+						<c:forEach var="selection" items='<%= org.kablink.teaming.util.ResolveIds.getBinderTitlesAndIcons(entry.get("tasks")) %>' varStatus="status">
 							<li><a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
 				  				folderId="${selection.key}" 
 				  				action="view_folder_listing">
@@ -318,7 +318,7 @@
 				</td>
 				<td>
 					<%
-						java.util.Map statusCaptions = com.sitescape.team.web.util.DefinitionHelper.findSelectboxSelectionsAsMap("status", (String)entry.get("_commandDef"));
+						java.util.Map statusCaptions = org.kablink.teaming.web.util.DefinitionHelper.findSelectboxSelectionsAsMap("status", (String)entry.get("_commandDef"));
 						String caption = (String)statusCaptions.get(entry.get("status"));
 						if (caption == null) caption = "";
 						if (!caption.equals("")) {

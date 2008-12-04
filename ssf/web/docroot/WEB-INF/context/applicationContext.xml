@@ -8,7 +8,7 @@
 	<!-- Configurer that replaces ${...} placeholders with values from ssf 
 	     properties file(s) that are accessed through sPropsUtil bean. -->
 	<bean id="propertyPlaceholderConfigurer" 
-		class="com.sitescape.team.spring.beans.factory.config.PropertyPlaceholderConfigurer" 
+		class="org.kablink.teaming.spring.beans.factory.config.PropertyPlaceholderConfigurer" 
 		depends-on="sPropsUtil">	
 		<!-- As explained above, this custom configurer gets properties values
 		     from SpropsUtil, NOT from the properties file specified below.
@@ -50,7 +50,7 @@
 
 	<!-- MultipartResolver implementation (uses Jakarta Commons FileUpload) -->
 	<bean id="multipartResolver" 
-		class="com.sitescape.team.web.upload.MultipartResolverProgressListening">
+		class="org.kablink.teaming.web.upload.MultipartResolverProgressListening">
 		
 		<!-- Maximum file size in bytes = Integer.MAX_VALUE = 0x7fffffff -->
 		<property name="maxUploadSize">
@@ -111,13 +111,13 @@
 
  -->
 <!-- Postgress lob handler.  
-  	<bean id="lobHandler" class="com.sitescape.util.jdbc.support.lob.PostgressLobHandler">
+  	<bean id="lobHandler" class="org.kablink.util.jdbc.support.lob.PostgressLobHandler">
 	</bean>
 -->
-	<bean id="zoneInterceptor" class="com.sitescape.team.dao.interceptor.ZoneInterceptor"/>
+	<bean id="zoneInterceptor" class="org.kablink.teaming.dao.interceptor.ZoneInterceptor"/>
 
 	<!-- Hibernate session factory -->
-	<bean id="sessionFactory" class="com.sitescape.team.spring.orm.hibernate3.LocalSessionFactoryBean">
+	<bean id="sessionFactory" class="org.kablink.teaming.spring.orm.hibernate3.LocalSessionFactoryBean">
 		<property name="lobHandler"><ref bean="lobHandler"/></property>
 		<property name="configFiles">
 			<list>
@@ -129,7 +129,7 @@
 		
 		<!-- Hibernate properties are loaded from a separate file - hibernate.properties -->
 	</bean>
-	<bean id="hibernateConfiguration" class="com.sitescape.team.util.HibernateConfigurationFactory">
+	<bean id="hibernateConfiguration" class="org.kablink.teaming.util.HibernateConfigurationFactory">
 		<property name="sessionFactoryBean"><ref bean="&amp;sessionFactory"/></property>
 	</bean>
 	
@@ -139,9 +139,9 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	
-	<bean id="springContextUtil" class="com.sitescape.team.util.SpringContextUtil" />
+	<bean id="springContextUtil" class="org.kablink.teaming.util.SpringContextUtil" />
 
-	<bean id="dataSource" class="com.sitescape.team.spring.jndi.JndiObjectFactoryBean">
+	<bean id="dataSource" class="org.kablink.teaming.spring.jndi.JndiObjectFactoryBean">
 		<property name="jndiName"><value>java:comp/env/jdbc/SiteScapePool</value></property>
 	</bean>
   
@@ -165,7 +165,7 @@
 		</property>
 		<property name="jobListeners">
 			<list>
-			<bean class="com.sitescape.team.jobs.CleanupJobListener"/>
+			<bean class="org.kablink.teaming.jobs.CleanupJobListener"/>
 			</list>
 		</property>
 	</bean>
@@ -176,7 +176,7 @@
 	</bean>
 
 	<!-- JTA transaction manager. If using local transaction, comment out this element -->	
-	<!--<bean id="transactionManager" class="com.sitescape.team.spring.transaction.jta.JtaTransactionManager" />-->
+	<!--<bean id="transactionManager" class="org.kablink.teaming.spring.transaction.jta.JtaTransactionManager" />-->
 
 	<bean id="baseTransactionProxy" parent="baseTransactionWithoutInterceptorsProxy" abstract="true">
 		<property name="preInterceptors">
@@ -201,8 +201,8 @@
 				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="create*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException,+com.sitescape.team.exception.UncheckedCodedException</prop>
-				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
+				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException</prop>
 			</props>
 		</property>
 	</bean>
@@ -213,9 +213,9 @@
 		<property name="propagationBehaviorName"><value>PROPAGATION_REQUIRED</value></property>
 	</bean>
 
-	<bean id="modelProcessorManager" class="com.sitescape.team.modelprocessor.ProcessorManager">
+	<bean id="modelProcessorManager" class="org.kablink.teaming.modelprocessor.ProcessorManager">
 		<property name="config">
-			<bean class="com.sitescape.team.util.DefaultMergeableXmlClassPathConfigFiles">
+			<bean class="org.kablink.teaming.util.DefaultMergeableXmlClassPathConfigFiles">
 				<property name="configFiles">
 					<list>
 						<value>config/model-processor-mapping.xml</value>
@@ -228,16 +228,16 @@
 		</property>
 	</bean>
 	
-	<bean id="nlt" class="com.sitescape.team.util.NLT"/>
+	<bean id="nlt" class="org.kablink.teaming.util.NLT"/>
 	
-	<bean id="definitionHelper" class="com.sitescape.team.web.util.DefinitionHelper">
+	<bean id="definitionHelper" class="org.kablink.teaming.web.util.DefinitionHelper">
 		<property name="definitionModule"><ref bean="definitionModule"/> </property>
 		<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
 	</bean>
 	
-	<bean id="sPropsUtil" class="com.sitescape.team.util.SPropsUtil">
+	<bean id="sPropsUtil" class="org.kablink.teaming.util.SPropsUtil">
 		<property name="config">
-			<bean class="com.sitescape.team.util.PropertiesClassPathConfigFiles">
+			<bean class="org.kablink.teaming.util.PropertiesClassPathConfigFiles">
 				<property name="configFiles">
 					<list>
 						<value>config/ssf.properties</value>
@@ -249,9 +249,9 @@
 		</property>
 	</bean>
 	
-	<bean id="zoneConfig" class="com.sitescape.team.util.SZoneConfig">
+	<bean id="zoneConfig" class="org.kablink.teaming.util.SZoneConfig">
 		<property name="configDocs">
-			<bean class="com.sitescape.team.util.DefaultMergeableXmlClassPathConfigFiles">
+			<bean class="org.kablink.teaming.util.DefaultMergeableXmlClassPathConfigFiles">
 				<property name="configFiles">
 					<list>
 						<value>config/zone.cfg.xml</value>
@@ -266,7 +266,7 @@
 
 	<!-- ========================= Portlet Common Infrastructural Beans ======================== -->
 	
-	<bean id="localeResolver" class="com.sitescape.team.portletadapter.support.UserLocaleResolver" />	
+	<bean id="localeResolver" class="org.kablink.teaming.portletadapter.support.UserLocaleResolver" />	
 	
 	<!-- Portlet Parameter-based Mapping Interceptor -->
 	<bean id="portletParameterMappingInterceptor" class="org.springframework.web.portlet.handler.ParameterMappingInterceptor"/>
@@ -317,9 +317,9 @@
 		<property name="defaultErrorView"><value>common/defError</value></property>
 		<property name="exceptionMappings">
 			<props>
-				<prop key="com.sitescape.team.exception.CheckedCodedException">common/defCodedError</prop>
-				<prop key="com.sitescape.team.exception.UncheckedCodedException">common/defCodedError</prop>
-				<prop key="com.sitescape.team.module.file.WriteFilesException">common/defCodedError</prop>
+				<prop key="org.kablink.teaming.exception.CheckedCodedException">common/defCodedError</prop>
+				<prop key="org.kablink.teaming.exception.UncheckedCodedException">common/defCodedError</prop>
+				<prop key="org.kablink.teaming.module.file.WriteFilesException">common/defCodedError</prop>
 				<prop key="javax.portlet.PortletSecurityException">common/notAuthorized</prop>
 				<prop key="javax.portlet.UnavailableException">common/notAvailable</prop>
 			</props>
@@ -331,28 +331,28 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	
-	<bean id="portletLoginCheckInterceptor" class="com.sitescape.team.web.portlet.handler.LoginCheckInterceptor"/>
+	<bean id="portletLoginCheckInterceptor" class="org.kablink.teaming.web.portlet.handler.LoginCheckInterceptor"/>
 		
-	<bean id="portletInitRequestContextInterceptor" class="com.sitescape.team.web.portlet.handler.InitRequestContextInterceptor">
+	<bean id="portletInitRequestContextInterceptor" class="org.kablink.teaming.web.portlet.handler.InitRequestContextInterceptor">
 		<property name="resolve"><value>true</value></property>
 	</bean>
 		
-	<bean id="portletUserSynchInterceptor" class="com.sitescape.team.web.portlet.handler.UserSynchInterceptor" depends-on="sPropsUtil">
+	<bean id="portletUserSynchInterceptor" class="org.kablink.teaming.web.portlet.handler.UserSynchInterceptor" depends-on="sPropsUtil">
 		<property name="profileDao"><ref local="profileDao"/></property>
 		<property name="profileModule"><ref local="profileModule"/></property>
 	</bean>	
 
 	<!-- ============================ Indexing/Search Service =========================== -->
 	
-	<bean id="luceneSessionFactory" class = "com.sitescape.team.search.local.LocalLuceneSessionFactory" depends-on="sPropsUtil">
+	<bean id="luceneSessionFactory" class = "org.kablink.teaming.search.local.LocalLuceneSessionFactory" depends-on="sPropsUtil">
 		<property name="indexRootDir"><value>${data.luceneindex.root.dir}/lucene</value></property>
 	</bean>
 		
-	<bean id="indexSynchronizationManager" class="com.sitescape.team.search.IndexSynchronizationManager">
+	<bean id="indexSynchronizationManager" class="org.kablink.teaming.search.IndexSynchronizationManager">
 		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 	</bean>
 	
-	<bean id="indexSynchronizationManagerInterceptor" class="com.sitescape.team.search.interceptor.IndexSynchronizationManagerInterceptor">
+	<bean id="indexSynchronizationManagerInterceptor" class="org.kablink.teaming.search.interceptor.IndexSynchronizationManagerInterceptor">
 	</bean>	
 	
 	<!-- ============================== Document Converter ============================ -->
@@ -364,65 +364,65 @@
 	<!--  OpenOffice converter for 'view file as HTML' functionality
 			% C:\Program Files\OpenOffice.org 2.0\program\soffice.exe "-accept=socket,port=8100;urp;"
 	 -->
-    <bean id="htmlOpenOfficeConverter" class="com.sitescape.team.docconverter.impl.HtmlOpenOfficeConverter" parent="converterCommon">
+    <bean id="htmlOpenOfficeConverter" class="org.kablink.teaming.docconverter.impl.HtmlOpenOfficeConverter" parent="converterCommon">
         <property name="host"><value>localhost</value></property>
         <property name="port"><value>8100</value></property>
     </bean>
     
-    <bean id="textOpenOfficeConverter" class="com.sitescape.team.docconverter.impl.TextOpenOfficeConverter" parent="converterCommon">
+    <bean id="textOpenOfficeConverter" class="org.kablink.teaming.docconverter.impl.TextOpenOfficeConverter" parent="converterCommon">
 		<property name="host"><value>localhost</value></property>
         <property name="port"><value>8100</value></property>
         <property name="nullTransform"><value>config/null.xslt</value></property>
         <property name="excludedExtensions"><value>jpg,jpeg,gif,tiff,png,exe,mpeg,mov,bmp,exe</value></property>
     </bean>
     
-    <bean id="imageOpenOfficeConverter" class="com.sitescape.team.docconverter.impl.ImageOpenOfficeConverter" parent="converterCommon">
+    <bean id="imageOpenOfficeConverter" class="org.kablink.teaming.docconverter.impl.ImageOpenOfficeConverter" parent="converterCommon">
         <property name="host"><value>localhost</value></property>
         <property name="port"><value>8100</value></property>
     </bean>
 
     <!-- ============================== RSS Generator ============================ -->
 	
-    <bean id="rssModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.rss.impl.RssModuleImpl">
+    <bean id="rssModule" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.rss.impl.RssModuleImpl">
     	<property name="rssRootDir"><value>${data.root.dir}/rss</value></property>
     </bean>
 	
     <!-- ============================== ical Converter ============================ -->
 	
-    <bean id="icalModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.ical.impl.IcalModuleImpl">	
+    <bean id="icalModule" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.ical.impl.IcalModuleImpl">	
     	<property name="binderModule"><ref local="binderModule"/></property>
     	<property name="folderModule"><ref local="folderModule"/></property>
     </bean>
 	
 	<!-- ================================ Security Service =============================== -->
 	
-	<bean id="accessControlManager" class="com.sitescape.team.security.impl.AccessControlManagerImpl">
+	<bean id="accessControlManager" class="org.kablink.teaming.security.impl.AccessControlManagerImpl">
 		<property name="functionManager"><ref local="functionManager"/></property>
 		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
 		<property name="profileDao"><ref local="profileDao"/></property>
 		<property name="licenseManager"><ref bean="licenseManager"/></property>
 	</bean>
-	<!--<bean id="accessControlManager" class="com.sitescape.team.security.impl.NullAccessControlManager">
+	<!--<bean id="accessControlManager" class="org.kablink.teaming.security.impl.NullAccessControlManager">
 		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
 	-->
 	
-	<bean id="aclManager" class="com.sitescape.team.security.acl.impl.AclManagerImpl">
+	<bean id="aclManager" class="org.kablink.teaming.security.acl.impl.AclManagerImpl">
 	</bean>
 
-	<bean id="functionManager" class="com.sitescape.team.security.function.impl.FunctionManagerImpl">
+	<bean id="functionManager" class="org.kablink.teaming.security.function.impl.FunctionManagerImpl">
 		<property name="securityDao"><ref local="securityDao"/></property>
 	</bean>
 
-	<bean id="workAreaFunctionMembershipManager" class="com.sitescape.team.security.function.impl.WorkAreaFunctionMembershipManagerImpl">
+	<bean id="workAreaFunctionMembershipManager" class="org.kablink.teaming.security.function.impl.WorkAreaFunctionMembershipManagerImpl">
 		<property name="securityDao"><ref local="securityDao"/></property>		
 	</bean>
 	
-	<bean id="securityDao" class="com.sitescape.team.security.dao.impl.SecurityDaoImpl">
+	<bean id="securityDao" class="org.kablink.teaming.security.dao.impl.SecurityDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	
-	<bean id="authenticationManager"  class="com.sitescape.team.security.authentication.impl.AuthenticationManagerImpl" depends-on="sPropsUtil">
+	<bean id="authenticationManager"  class="org.kablink.teaming.security.authentication.impl.AuthenticationManagerImpl" depends-on="sPropsUtil">
 			<property name="profileDao"><ref local="profileDao"/></property>						
 			<property name="coreDao"><ref local="coreDao"/></property>						
 			<property name="adminModule"><ref local="adminModule"/></property>						
@@ -430,12 +430,12 @@
 			<property name="reportModule"><ref local="reportModule"/></property>						
 	</bean>	
 	
-	<bean id="stringCheckUtil" class = "com.sitescape.team.util.stringcheck.StringCheckUtil" depends-on="sPropsUtil">
+	<bean id="stringCheckUtil" class = "org.kablink.teaming.util.stringcheck.StringCheckUtil" depends-on="sPropsUtil">
 	</bean>	
 	
 	<bean id="accessTokenManager" parent="baseTransactionProxy">
 		<property name="target">
-			<bean class="com.sitescape.team.security.accesstoken.impl.AccessTokenManagerImpl">
+			<bean class="org.kablink.teaming.security.accesstoken.impl.AccessTokenManagerImpl">
 				<property name="securityDao"><ref local="securityDao"/></property>							
 			</bean>
 		</property>
@@ -490,7 +490,7 @@
 	
 	<bean id="workspaceModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.workspace.impl.WorkspaceModuleImpl">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.workspace.impl.WorkspaceModuleImpl">
 				<property name="definitionModule"><ref local="definitionModule"/></property>
 			</bean>
 		</property>
@@ -502,7 +502,7 @@
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException,+com.sitescape.team.exception.UncheckedCodedException</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
 				<prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="modify*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addDefaultTemplate">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
@@ -518,7 +518,7 @@
 
 	<bean id="templateModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.template.impl.TemplateModuleImpl">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.template.impl.TemplateModuleImpl">
 				<property name="adminModule"><ref local="adminModule"/></property>
 				<property name="definitionModule"><ref local="definitionModule"/></property>
 				<property name="folderModule"><ref local="folderModule"/></property>
@@ -539,7 +539,7 @@
 				<prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="modify*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException,+com.sitescape.team.exception.UncheckedCodedException</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
 			</props>
 		</property>
 	</bean>
@@ -555,7 +555,7 @@
 				<prop key="copyEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteEntryWorkflow">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteTag">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException,+com.sitescape.team.exception.UncheckedCodedException</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
 				<prop key="modifyWorkflowState">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="moveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="reserveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
@@ -567,7 +567,7 @@
 
 	<bean id="profileModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.profile.impl.ProfileModuleImpl">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.profile.impl.ProfileModuleImpl">
 				<property name="definitionModule"><ref bean="definitionModule"/></property>
 				<property name="templateModule"><ref local="templateModule"/></property>
 				<property name="adminModule"><ref local="adminModule"/></property>
@@ -581,24 +581,24 @@
 			<props>
 				<prop key="addUserMiniBlog">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException,+com.sitescape.team.exception.UncheckedCodedException</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteUserByName">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>
 
-	<bean id="defaultWorkspaceCoreProcessor" parent="processorDependencyTemplate" class="com.sitescape.team.module.workspace.impl.DefaultWorkspaceCoreProcessor"/>
+	<bean id="defaultWorkspaceCoreProcessor" parent="processorDependencyTemplate" class="org.kablink.teaming.module.workspace.impl.DefaultWorkspaceCoreProcessor"/>
 
-	<bean id="defaultFolderCoreProcessor" parent="processorDependencyTemplate" class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor"/>
+	<bean id="defaultFolderCoreProcessor" parent="processorDependencyTemplate" class="org.kablink.teaming.module.folder.impl.DefaultFolderCoreProcessor"/>
 
-	<bean id="defaultProfileCoreProcessor" parent="processorDependencyTemplate" class="com.sitescape.team.module.profile.impl.DefaultProfileCoreProcessor"/>
+	<bean id="defaultProfileCoreProcessor" parent="processorDependencyTemplate" class="org.kablink.teaming.module.profile.impl.DefaultProfileCoreProcessor"/>
 
-	<bean id="defaultTemplateCoreProcessor" parent="processorDependencyTemplate" class="com.sitescape.team.module.template.impl.DefaultTemplateCoreProcessor"/>
+	<bean id="defaultTemplateCoreProcessor" parent="processorDependencyTemplate" class="org.kablink.teaming.module.template.impl.DefaultTemplateCoreProcessor"/>
 	
 	<bean id="binderModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.binder.impl.BinderModuleImpl">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.binder.impl.BinderModuleImpl">
 				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 			</bean>
 		</property>
@@ -607,8 +607,8 @@
 		<property name="transactionAttributes">
 			<props>
 				<prop key="setSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException,+com.sitescape.team.exception.UncheckedCodedException</prop>
-				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
+				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException</prop>
 				<prop key="modifyNotification">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="modifyPosting">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="modifyTag">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
@@ -625,11 +625,11 @@
 			</props>
 		</property>
 	</bean>
-	<bean id="binderAccessUtils" class="com.sitescape.team.module.shared.AccessUtils">
+	<bean id="binderAccessUtils" class="org.kablink.teaming.module.shared.AccessUtils">
 		<property name="accessControlManager"><ref bean="accessControlManager"/> </property>
 		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
-	<bean id="definitionBuilderConfig" class="com.sitescape.team.module.definition.DefinitionConfigurationBuilder"
+	<bean id="definitionBuilderConfig" class="org.kablink.teaming.module.definition.DefinitionConfigurationBuilder"
 		depends-on="licenseChecker">
 		<property name="configFiles">
 			<list>
@@ -642,32 +642,32 @@
 
 	<bean id="definitionModule" parent="baseTransactionProxy" depends-on="sPropsUtil" >
 		<property name="target">
-			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.definition.impl.DefinitionModuleImpl">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.definition.impl.DefinitionModuleImpl">
 				<property name="workflowModule"><ref bean="workflowModule"/></property>
 				<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
 				<property name="binderModule"><ref local="binderModule"/></property>
 			</bean>	
 		</property>
 	</bean>
-	<bean id="workflowFactory" class="com.sitescape.team.module.workflow.impl.WorkflowFactory">
+	<bean id="workflowFactory" class="org.kablink.teaming.module.workflow.impl.WorkflowFactory">
 		<property name="hibernateSessionFactory"><ref bean="sessionFactory"/></property>
 	</bean> 
 	
 	<bean id="workflowModule" parent="baseTransactionProxy" depends-on="zoneConfig, workflowFactory" >
 		<property name="target">
-			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.workflow.impl.WorkflowModuleImpl">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.workflow.impl.WorkflowModuleImpl">
 				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
 			</bean>
 		</property>
 	</bean>	
 
-	<bean id="workflowProcessUtils" parent="dependOnCommonServicesTemplate"  class="com.sitescape.team.module.workflow.WorkflowProcessUtils">
+	<bean id="workflowProcessUtils" parent="dependOnCommonServicesTemplate"  class="org.kablink.teaming.module.workflow.WorkflowProcessUtils">
 		<property name="zoneClassManager"><ref bean="zoneClassManager"/></property>
 	</bean>
 
 	<bean id="dashboardModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.dashboard.impl.DashboardModuleImpl">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.dashboard.impl.DashboardModuleImpl">
 				<property name="binderModule"><ref local="binderModule"/></property>
 			</bean>	
 		</property>
@@ -686,24 +686,24 @@
 		</props>
 		</property>
 	</bean>
-	<bean id="defaultEmailFormatter" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.mail.impl.DefaultEmailFormatter" depends-on="notifyBuilderUtil">
+	<bean id="defaultEmailFormatter" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.mail.impl.DefaultEmailFormatter" depends-on="notifyBuilderUtil">
 		<property name="definitionModule"><ref local="definitionModule"/></property>
 		<property name="mailModule"><ref local="mailModule"/></property>
 		<property name="icalModule"><ref local="icalModule"/></property>
 		<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
 	</bean>
-	<bean id="notifyBuilderUtil" class="com.sitescape.team.module.definition.notify.NotifyBuilderUtil">
+	<bean id="notifyBuilderUtil" class="org.kablink.teaming.module.definition.notify.NotifyBuilderUtil">
 		<property name="velocityEngine"><ref local="velocityEmailEngine"/></property>
 		<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
 		<property name="toolboxConfig"><value>config/toolbox.xml</value></property>
 	</bean>
 	
-	<bean id="defaultEmailPoster" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.mail.impl.DefaultEmailPoster">
+	<bean id="defaultEmailPoster" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.mail.impl.DefaultEmailPoster">
 		<property name="folderModule"><ref local="folderModule"/></property>
 		<property name="icalModule"><ref local="icalModule"/></property>
 	</bean>
 
-	<bean id="fileModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.file.impl.FileModuleImpl" depends-on="sPropsUtil">
+	<bean id="fileModule" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.file.impl.FileModuleImpl" depends-on="sPropsUtil">
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 		<property name="htmlConverterManager"><ref bean="htmlConverterManager"/></property>
 		<property name="imageConverterManager"><ref bean="imageConverterManager"/></property>
@@ -712,7 +712,7 @@
 	<bean id="reportModule"  parent="baseTransactionProxy">
 		<!--  dependences prevent inheriting from dependOnCommonServicesTemplate -->
 		<property name="target">
-			<bean class="com.sitescape.team.module.report.impl.ReportModuleImpl" depends-on="sPropsUtil">
+			<bean class="org.kablink.teaming.module.report.impl.ReportModuleImpl" depends-on="sPropsUtil">
 				<property name="coreDao"><ref bean="coreDao"/></property>
 				<property name="profileDao"><ref bean="profileDao"/></property>
 				<property name="accessControlManager"><ref local="accessControlManager"/></property>
@@ -726,21 +726,21 @@
 	<bean id="licenseModule"  parent="baseTransactionProxy">
 		<property name="target"><ref bean="licenseModuleTarget"/></property>
 	</bean>			
-	<bean id="licenseChecker" class="com.sitescape.team.module.license.LicenseChecker">
+	<bean id="licenseChecker" class="org.kablink.teaming.module.license.LicenseChecker">
 		<property name="licenseManager"><ref bean="licenseManager"/> </property>
 	</bean>
 
-	<bean id="dashboardHelper" class="com.sitescape.team.web.util.DashboardHelper" parent="dependOnAllModulesTemplate"/>
+	<bean id="dashboardHelper" class="org.kablink.teaming.web.util.DashboardHelper" parent="dependOnAllModulesTemplate"/>
 		
 	<bean id="ssfs" class="org.springframework.aop.framework.ProxyFactoryBean" depends-on="sPropsUtil">
 		<property name="target">
-			<bean class="com.sitescape.team.ssfs.server.impl.SiteScapeFileSystemImpl" parent="dependOnAllModulesTemplate">
+			<bean class="org.kablink.teaming.ssfs.server.impl.SiteScapeFileSystemImpl" parent="dependOnAllModulesTemplate">
 				<property name="mimeTypes"><ref local="mimeTypes"/></property>
 				<property name="coreDao"><ref local="coreDao"/></property>
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.ssfs.server.SiteScapeFileSystem</value>
+			<value>org.kablink.teaming.ssfs.server.SiteScapeFileSystem</value>
 		</property>
 		<property name="interceptorNames">
 			<list>
@@ -755,15 +755,15 @@
 		</property>
 	</bean>
 	
-	<bean id="aopallianceLoggingInterceptor" class="com.sitescape.team.util.aopalliance.LoggingInterceptor"/>
+	<bean id="aopallianceLoggingInterceptor" class="org.kablink.teaming.util.aopalliance.LoggingInterceptor"/>
 	
-	<bean id="aopallianceOpenSessionInViewInterceptor" class="com.sitescape.team.util.aopalliance.OpenSessionInViewInterceptor">
+	<bean id="aopallianceOpenSessionInViewInterceptor" class="org.kablink.teaming.util.aopalliance.OpenSessionInViewInterceptor">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	
-	<bean id="aopallianceMethodInvocationTraceInterceptor" class="com.sitescape.team.util.aopalliance.MethodInvocationTraceInterceptor"/>
+	<bean id="aopallianceMethodInvocationTraceInterceptor" class="org.kablink.teaming.util.aopalliance.MethodInvocationTraceInterceptor"/>
 	
-	<bean id="aopallianceResolveRequestContextInterceptor" class="com.sitescape.team.util.aopalliance.ResolveRequestContextInterceptor"/>
+	<bean id="aopallianceResolveRequestContextInterceptor" class="org.kablink.teaming.util.aopalliance.ResolveRequestContextInterceptor"/>
 
 	<!-- referenced internally when viewing files and sending mail -->
 	<bean id="mimeTypes" class="org.springframework.mail.javamail.ConfigurableMimeFileTypeMap">
@@ -811,28 +811,28 @@ text/calendar											  ics
 
 	<!-- ========================= Data Access (DAO) Components ====================== -->
 	
-	<bean id="coreDao" class="com.sitescape.team.dao.impl.CoreDaoImpl">
+	<bean id="coreDao" class="org.kablink.teaming.dao.impl.CoreDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
-	<bean id="profileDao" class="com.sitescape.team.dao.impl.ProfileDaoImpl" depends-on="zoneConfig,sPropsUtil">
+	<bean id="profileDao" class="org.kablink.teaming.dao.impl.ProfileDaoImpl" depends-on="zoneConfig,sPropsUtil">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>
 
-	<bean id="folderDao" class="com.sitescape.team.dao.impl.FolderDaoImpl">
+	<bean id="folderDao" class="org.kablink.teaming.dao.impl.FolderDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>
 
 	<!-- ======================== File & Repository Services ====================== -->
 	
-	<bean id="simpleFileRepository" class="com.sitescape.team.repository.file.FileRepositorySessionFactory" 
+	<bean id="simpleFileRepository" class="org.kablink.teaming.repository.file.FileRepositorySessionFactory" 
 		depends-on="sPropsUtil" init-method="initialize" destroy-method="shutdown">
 		<property name="repositoryRootDir"><value>${data.simplefilerepository.root.dir}/filerepository</value></property>
 		<property name="archiveStore"><ref bean="archiveStore"/></property>
 	</bean>
 
-	<bean id="jackrabbitRepository" class="com.sitescape.team.repository.jcr.jackrabbit.JCRRepositorySessionFactory"
+	<bean id="jackrabbitRepository" class="org.kablink.teaming.repository.jcr.jackrabbit.JCRRepositorySessionFactory"
 		init-method="initialize" destroy-method="shutdown">	
 		<property name="fileTypeMap"><ref local="mimeTypes"/></property>
 		<property name="repositoryRootDir"><value>${data.jackrabbitrepository.root.dir}/jackrabbit</value></property>
@@ -846,7 +846,7 @@ text/calendar											  ics
 	</bean>
 	
 	<!-- Uncomment this to use Slide-based WebDAV server as a repository -->
-	<!--<bean id="webdavRepository" class="com.sitescape.team.repository.webdav.WebdavRepositorySessionFactory"
+	<!--<bean id="webdavRepository" class="org.kablink.teaming.repository.webdav.WebdavRepositorySessionFactory"
 		init-method="initialize" destroy-method="shutdown">
 		<property name="hostUrl"><value>${webdav.repository.hosturl}</value></property>
 		<property name="contextPath"><value>${webdav.repository.context.path}</value></property>
@@ -858,14 +858,14 @@ text/calendar											  ics
 	</bean>-->
 	
 	<!-- ================================ Presence Service =============================== -->
-	<bean id="presenceService" class="com.sitescape.team.presence.impl.PresenceManagerImpl">
+	<bean id="presenceService" class="org.kablink.teaming.presence.impl.PresenceManagerImpl">
 		<property name="jabberServer"><value>${presence.service.jabber.server}</value></property>
 		<property name="jabberServerPort"><value>${presence.service.jabber.server.port}</value></property>
 		<property name="enabled"><value>${presence.service.enable}</value></property>
 	</bean>
 	
 	<!-- ================================ Instant Collaboration Support==================== -->
-	<bean id="icBrokerModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.ic.impl.ICBrokerModuleImpl">	
+	<bean id="icBrokerModule" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.ic.impl.ICBrokerModuleImpl">	
 		<property name="adminId"><value>${presence.broker.admin.id}</value></property>
 		<property name="adminPasswd"><value>${presence.broker.admin.passwd}</value></property>
 		<property name="zonUrl"><value>${presence.broker.zon.url}</value></property>
@@ -877,13 +877,13 @@ text/calendar											  ics
 	<!-- ================================  Mail Support =============================== -->
 	<!-- this bean is only used to allow setting of initial context properties -->
 	<bean id="mailJndiAccessor" class="org.springframework.jndi.JndiAccessor"/>
-	<bean id="mailSender" class="com.sitescape.team.module.mail.impl.JavaMailSenderImpl">
+	<bean id="mailSender" class="org.kablink.teaming.module.mail.impl.JavaMailSenderImpl">
 		<property name="defaultEncoding"><value>utf-8</value></property>
 		<property name="defaultFileTypeMap"><ref local="mimeTypes"/></property>
 	</bean>
 
 
-	<bean id="mailModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.mail.impl.MailModuleImpl" 
+	<bean id="mailModule" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.mail.impl.MailModuleImpl" 
 			depends-on="zoneConfig, springContextUtil">
 		<property name="mailSender"><ref local="mailSender"/></property>
 		<property name="jndiAccessor"><ref local="mailJndiAccessor"/></property>
@@ -892,7 +892,7 @@ text/calendar											  ics
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 	</bean>	
 
-	<bean id="smtpService" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.smtp.impl.SMTPManagerImpl"
+	<bean id="smtpService" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.smtp.impl.SMTPManagerImpl"
 			depends-on="zoneConfig, springContextUtil">
 		<property name="enabled"><value>${smtp.service.enable}</value></property>
 		<property name="port"><value>${smtp.service.port}</value></property>
@@ -903,11 +903,11 @@ text/calendar											  ics
 	
 	<!-- ============================== Web Services Components ============================ -->
 	
-	<bean id="loginInfoInterceptor" class="com.sitescape.team.remoting.ws.interceptor.LoginInfoInterceptor">
+	<bean id="loginInfoInterceptor" class="org.kablink.teaming.remoting.ws.interceptor.LoginInfoInterceptor">
 		<property name="reportModule"><ref local="reportModule"/></property>
 	</bean>
 	
-	<bean id="accessTokenValidationInterceptor" class="com.sitescape.team.remoting.ws.interceptor.AccessTokenValidationInterceptor">
+	<bean id="accessTokenValidationInterceptor" class="org.kablink.teaming.remoting.ws.interceptor.AccessTokenValidationInterceptor">
 		<property name="accessTokenManager"><ref local="accessTokenManager"/></property>
 		<property name="zoneModule"><ref bean="zoneModule"/></property>
 	</bean>
@@ -949,135 +949,135 @@ text/calendar											  ics
 	
 	<bean id="templateService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.service.template.TemplateServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="org.kablink.teaming.remoting.ws.service.template.TemplateServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
 			<list>
-				<value>com.sitescape.team.remoting.ws.service.template.TemplateService</value>
-				<value>com.sitescape.team.remoting.ws.service.template.TemplateServiceInternal</value>
+				<value>org.kablink.teaming.remoting.ws.service.template.TemplateService</value>
+				<value>org.kablink.teaming.remoting.ws.service.template.TemplateServiceInternal</value>
 			</list>
 		</property>
 	</bean>
 	
 	<bean id="searchService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.service.search.SearchServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="org.kablink.teaming.remoting.ws.service.search.SearchServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
 			<list>
-				<value>com.sitescape.team.remoting.ws.service.search.SearchService</value>
-				<value>com.sitescape.team.remoting.ws.service.search.SearchServiceInternal</value>
+				<value>org.kablink.teaming.remoting.ws.service.search.SearchService</value>
+				<value>org.kablink.teaming.remoting.ws.service.search.SearchServiceInternal</value>
 			</list>
 		</property>
 	</bean>
 	
 	<bean id="definitionService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.service.definition.DefinitionServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="org.kablink.teaming.remoting.ws.service.definition.DefinitionServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
 			<list>
-				<value>com.sitescape.team.remoting.ws.service.definition.DefinitionService</value>
-				<value>com.sitescape.team.remoting.ws.service.definition.DefinitionServiceInternal</value>
+				<value>org.kablink.teaming.remoting.ws.service.definition.DefinitionService</value>
+				<value>org.kablink.teaming.remoting.ws.service.definition.DefinitionServiceInternal</value>
 			</list>
 		</property>
 	</bean>
 	
 	<bean id="folderService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.service.folder.attachments.FolderServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="org.kablink.teaming.remoting.ws.service.folder.attachments.FolderServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
 			<list>
-				<value>com.sitescape.team.remoting.ws.service.folder.FolderService</value>
-				<value>com.sitescape.team.remoting.ws.service.folder.FolderServiceInternal</value>
+				<value>org.kablink.teaming.remoting.ws.service.folder.FolderService</value>
+				<value>org.kablink.teaming.remoting.ws.service.folder.FolderServiceInternal</value>
 			</list>
 		</property>
 	</bean>
 	
 	<bean id="migrationService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.service.folder.attachments.MigrationServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="org.kablink.teaming.remoting.ws.service.folder.attachments.MigrationServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.remoting.ws.service.folder.MigrationService</value>
+			<value>org.kablink.teaming.remoting.ws.service.folder.MigrationService</value>
 		</property>
 	</bean>
 	
 	<bean id="binderService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.service.binder.attachments.BinderServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="org.kablink.teaming.remoting.ws.service.binder.attachments.BinderServiceImpl" parent="dependOnAllModulesTemplate">
 				<property name="coreDao"><ref bean="coreDao"/></property>
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
 			<list>
-				<value>com.sitescape.team.remoting.ws.service.binder.BinderService</value>
-				<value>com.sitescape.team.remoting.ws.service.binder.BinderServiceInternal</value>
+				<value>org.kablink.teaming.remoting.ws.service.binder.BinderService</value>
+				<value>org.kablink.teaming.remoting.ws.service.binder.BinderServiceInternal</value>
 			</list>
 		</property>
 	</bean>
 	
 	<bean id="icalService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.service.ical.attachments.IcalServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="org.kablink.teaming.remoting.ws.service.ical.attachments.IcalServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.remoting.ws.service.ical.IcalService</value>
+			<value>org.kablink.teaming.remoting.ws.service.ical.IcalService</value>
 		</property>
 	</bean>
 	
 	<bean id="ldapService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.service.ldap.LdapServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="org.kablink.teaming.remoting.ws.service.ldap.LdapServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.remoting.ws.service.ldap.LdapService</value>
+			<value>org.kablink.teaming.remoting.ws.service.ldap.LdapService</value>
 		</property>
 	</bean>
 	
 	<bean id="licenseService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.service.license.LicenseServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="org.kablink.teaming.remoting.ws.service.license.LicenseServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.remoting.ws.service.license.LicenseService</value>
+			<value>org.kablink.teaming.remoting.ws.service.license.LicenseService</value>
 		</property>
 	</bean>
 	
 	<bean id="profileService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.service.profile.attachments.ProfileServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="org.kablink.teaming.remoting.ws.service.profile.attachments.ProfileServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
 			<list>
-				<value>com.sitescape.team.remoting.ws.service.profile.ProfileService</value>
-				<value>com.sitescape.team.remoting.ws.service.profile.ProfileServiceInternal</value>
+				<value>org.kablink.teaming.remoting.ws.service.profile.ProfileService</value>
+				<value>org.kablink.teaming.remoting.ws.service.profile.ProfileServiceInternal</value>
 			</list>
 		</property>
 	</bean>
 	
 	<bean id="zoneService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.service.zone.ZoneServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="org.kablink.teaming.remoting.ws.service.zone.ZoneServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.remoting.ws.service.zone.ZoneService</value>
+			<value>org.kablink.teaming.remoting.ws.service.zone.ZoneService</value>
 		</property>
 	</bean>
 	
 	<!-- ============================== Remote Application Support ============================ -->
-	<bean id="remoteApplicationManager" class="com.sitescape.team.remoteapplication.impl.RemoteApplicationManagerImpl">
+	<bean id="remoteApplicationManager" class="org.kablink.teaming.remoteapplication.impl.RemoteApplicationManagerImpl">
 		<property name="profileDao"><ref local="profileDao"/></property>
 		<property name="accessTokenManager"><ref local="accessTokenManager"/></property>
 	</bean>
@@ -1132,7 +1132,7 @@ text/calendar											  ics
 	<!-- ============================== LDAP Support ============================ -->
 	<bean id="ldapModule"  parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.ldap.impl.LdapModuleImpl">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.ldap.impl.LdapModuleImpl">
 				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
 				<property name="profileModule"><ref bean="profileModule"/></property>
 				<property name="definitionModule"><ref bean="definitionModule"/></property>
@@ -1143,12 +1143,12 @@ text/calendar											  ics
 	<!-- ==============================Extension Module ==================== -->
 	
 	<!-- Extension deployer -->
-	<bean id="extDeployer" class="com.sitescape.team.extension.impl.ExtensionDeployerImpl" depends-on="zoneConfig">
+	<bean id="extDeployer" class="org.kablink.teaming.extension.impl.ExtensionDeployerImpl" depends-on="zoneConfig">
 		<property name="templateModule"><ref bean="templateModule"/></property>
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="zoneClassManager"><ref bean="zoneClassManager"/></property>
 
 	</bean>
-	<bean id="zoneClassManager" class="com.sitescape.team.extension.impl.ZoneClassManagerImpl"/>
+	<bean id="zoneClassManager" class="org.kablink.teaming.extension.impl.ZoneClassManagerImpl"/>
 
 </beans>

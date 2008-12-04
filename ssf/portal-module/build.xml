@@ -13,12 +13,12 @@
 			update="true"
 		>
 			<fileset dir="${basedir}/../util/classes"
-				includes="com/sitescape/util/servlet/DynamicServletRequest.class"
+				includes="org/kablink/util/servlet/DynamicServletRequest.class"
 			/>
 			<fileset dir="${basedir}/../main/classes">
-	        	<include name="com/sitescape/team/portal/CrossContextConstants.class"/>
-	        	<include name="com/sitescape/team/web/util/AttributesAndParamsOnlyServletRequest.class"/>
-	        	<include name="com/sitescape/team/web/util/NullServletResponse.class"/>
+	        	<include name="org/kablink/teaming/portal/CrossContextConstants.class"/>
+	        	<include name="org/kablink/teaming/web/util/AttributesAndParamsOnlyServletRequest.class"/>
+	        	<include name="org/kablink/teaming/web/util/NullServletResponse.class"/>
 			</fileset>
 		</jar>
 		<antcall target="jar-manifest">

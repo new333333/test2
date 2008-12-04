@@ -40,16 +40,16 @@
 			update="true"
 		>
 			<fileset dir="${basedir}/../main/classes">
-	        	<include name="com/sitescape/team/ssfs/CrossContextConstants.class"/>
-				<include name="com/sitescape/team/ssfs/AlreadyExistsException.class"/>
-				<include name="com/sitescape/team/ssfs/NoAccessException.class"/>
-				<include name="com/sitescape/team/ssfs/NoSuchObjectException.class"/>
-				<include name="com/sitescape/team/ssfs/LockException.class"/>
-				<include name="com/sitescape/team/ssfs/TypeMismatchException.class"/>
-				<include name="com/sitescape/team/ssfs/ZoneMismatchException.class"/>
-	        	<include name="com/sitescape/team/web/util/AttributesAndParamsOnlyServletRequest.class"/>
-	        	<include name="com/sitescape/team/web/util/NullServletResponse.class"/>
-	        	<include name="com/sitescape/team/spring/web/util/Log4jConfigListener.class"/>
+	        	<include name="org/kablink/teaming/ssfs/CrossContextConstants.class"/>
+				<include name="org/kablink/teaming/ssfs/AlreadyExistsException.class"/>
+				<include name="org/kablink/teaming/ssfs/NoAccessException.class"/>
+				<include name="org/kablink/teaming/ssfs/NoSuchObjectException.class"/>
+				<include name="org/kablink/teaming/ssfs/LockException.class"/>
+				<include name="org/kablink/teaming/ssfs/TypeMismatchException.class"/>
+				<include name="org/kablink/teaming/ssfs/ZoneMismatchException.class"/>
+	        	<include name="org/kablink/teaming/web/util/AttributesAndParamsOnlyServletRequest.class"/>
+	        	<include name="org/kablink/teaming/web/util/NullServletResponse.class"/>
+	        	<include name="org/kablink/teaming/spring/web/util/Log4jConfigListener.class"/>
 			</fileset>
 		</jar>
 		<jar 
@@ -57,7 +57,7 @@
 			update="true"
 		>
 			<fileset dir="${basedir}/../util/classes">
-	        	<include name="com/sitescape/util/ServerDetector.class"/>
+	        	<include name="org/kablink/util/ServerDetector.class"/>
 			</fileset>
 		</jar>
 		<antcall target="jar-manifest">

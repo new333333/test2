@@ -29,8 +29,8 @@
  */
 %>
 <% // View entry attachments %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
-<%@ page import="com.sitescape.team.ssfs.util.SsfsUtil" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
+<%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil" %>
 
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
@@ -83,7 +83,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	
 	</ssf:ifnotaccessible>
 		
-	<% if (com.sitescape.team.web.util.BinderHelper.isWebdavSupported(request)) { %>
+	<% if (org.kablink.teaming.web.util.BinderHelper.isWebdavSupported(request)) { %>
 	<c:if test="${ss_folderViewStyle == 'blog' && !empty ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}">
 		<c:set var="ss_entryIDForWebDAV" value="${ssDefinitionEntry.id}" />
 		<a class="ss_fineprint ss_nowrap" title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"

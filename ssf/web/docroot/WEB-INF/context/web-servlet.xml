@@ -43,7 +43,7 @@
 		</property>
 	</bean>
 
-	<bean id="initRequestContextInterceptor" class="com.sitescape.team.web.servlet.handler.InitRequestContextInterceptor">
+	<bean id="initRequestContextInterceptor" class="org.kablink.teaming.web.servlet.handler.InitRequestContextInterceptor">
 		<property name="resolve"><value>true</value></property>
 	</bean>
 
@@ -56,8 +56,8 @@
 	<bean id="handlerExceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 		<property name="exceptionMappings">
 			<props>
-				<prop key="com.sitescape.team.exception.CheckedCodedException">common/servlet.defCodedError</prop>
-				<prop key="com.sitescape.team.exception.UncheckedCodedException">common/servlet.defCodedError</prop>
+				<prop key="org.kablink.teaming.exception.CheckedCodedException">common/servlet.defCodedError</prop>
+				<prop key="org.kablink.teaming.exception.UncheckedCodedException">common/servlet.defCodedError</prop>
 			</props>
 		</property>
 		<property name="defaultErrorView"><value>common/defError</value></property>
@@ -65,36 +65,36 @@
 
 	<!-- Controllers -->
 
-	<bean id="viewFile" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewFileController">
+	<bean id="viewFile" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.forum.ViewFileController">
 		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
 	</bean>
-	<bean id="viewiCal" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewICalController">
+	<bean id="viewiCal" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.forum.ViewICalController">
 		<property name="icalModule"><ref bean="icalModule"/></property>
 		<property name="mailModule"><ref bean="mailModule"/></property>
 	</bean>
-	<bean id="viewCss" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewCssController"/>
-	<bean id="viewDefinitionXml" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.definition.ViewDefinitionXmlController"/>
-	<bean id="viewFragment" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.widget_test.FragmentController"/>
-	<bean id="reportDownload" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.administration.ReportDownloadController">
+	<bean id="viewCss" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.forum.ViewCssController"/>
+	<bean id="viewDefinitionXml" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.definition.ViewDefinitionXmlController"/>
+	<bean id="viewFragment" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.widget_test.FragmentController"/>
+	<bean id="reportDownload" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.administration.ReportDownloadController">
 		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
 	</bean>
-	<bean id="definitionDownload" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.administration.ExportDefinitionDownloadController">
+	<bean id="definitionDownload" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.administration.ExportDefinitionDownloadController">
 		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
 	</bean>
-	<bean id="templateDownload" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.administration.TemplateDownloadController">
+	<bean id="templateDownload" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.administration.TemplateDownloadController">
 		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
 	</bean>
-	<bean id="errorHandler" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ErrorController"/>
-	<bean id="readFile" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ReadFileController">
+	<bean id="errorHandler" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.forum.ErrorController"/>
+	<bean id="readFile" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.forum.ReadFileController">
 		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
 	</bean>
-	<bean id="readScaledFile" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ReadScaledFileController">
+	<bean id="readScaledFile" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.forum.ReadScaledFileController">
 		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
 	</bean>
-	<bean id="readThumbnail" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ReadThumbnailController">
+	<bean id="readThumbnail" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.forum.ReadThumbnailController">
 		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
 	</bean>
-	<bean id="portalLogin" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.portal.PortalLoginController">
+	<bean id="portalLogin" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.portal.PortalLoginController">
 		<property name="portalLogin"><ref bean="portalLoginBean"/></property>
 	</bean>
 

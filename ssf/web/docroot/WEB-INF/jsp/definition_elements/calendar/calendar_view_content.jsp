@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <c:if test="${empty isDashboard}">
 	<script type="text/javascript">
 		<% //needs its own script section to endure loaded before accessed below %>

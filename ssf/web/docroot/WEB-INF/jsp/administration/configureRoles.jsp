@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
@@ -79,7 +79,7 @@
 <h3><ssf:nlt tag="administration.configure_roles.existing" text="Currently defined roles"/></h3>
 
 <c:forEach var="function" items="${ssFunctions}">
-<jsp:useBean id="function" type="com.sitescape.team.security.function.Function" />
+<jsp:useBean id="function" type="org.kablink.teaming.security.function.Function" />
 <ssf:expandableArea title='<%= NLT.getDef(function.getName()) %>'>
 <form class="ss_style ss_form" method="post" 
 	action="<ssf:url action="configure_roles" actionUrl="true"/>">

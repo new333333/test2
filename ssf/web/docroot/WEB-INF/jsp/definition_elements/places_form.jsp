@@ -45,7 +45,7 @@
 
 <c:if test="${! empty ssDefinitionEntry}">
 	<c:set var="places_entry" value="${ssDefinitionEntry}"/>
-	<jsp:useBean id="places_entry" type="com.sitescape.team.domain.DefinableEntity" />
+	<jsp:useBean id="places_entry" type="org.kablink.teaming.domain.DefinableEntity" />
 	<%
 		if (propertyName != null && !propertyName.equals("") && places_entry.getCustomAttribute(propertyName) != null) { 
 			folderIds = places_entry.getCustomAttribute(propertyName).getValueSet();
@@ -88,7 +88,7 @@
 			<c:if test="${!empty folderIds}">
 				<ssf:nlt tag="places.delete.select.forums"/>
 				<ul class="placesForm">
-					<c:forEach var="folder" items="<%= com.sitescape.team.util.ResolveIds.getBinderTitlesAndIcons(folderIds) %>">
+					<c:forEach var="folder" items="<%= org.kablink.teaming.util.ResolveIds.getBinderTitlesAndIcons(folderIds) %>">
 						<li>
 							<input type="checkbox" name="idChoicesRemove_${propertyName}" id="${treeName}${propertyName}del_${folder.key}"
 								<c:if test="${folder.value.deleted}">

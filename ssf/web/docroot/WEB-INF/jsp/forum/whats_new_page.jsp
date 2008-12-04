@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="binderCounter" value="0"/> <% // set binder counter to zero (first pass) %>
 
@@ -114,7 +114,7 @@
 	 
 	  	 <br/>
 	  	 <span>
-			<ssf:showUser user='<%=(com.sitescape.team.domain.User)entryWn.get("_principal")%>'
+			<ssf:showUser user='<%=(org.kablink.teaming.domain.User)entryWn.get("_principal")%>'
 		  	titleStyle="ss_link_1" /> 
 	  	 </span>
 	  

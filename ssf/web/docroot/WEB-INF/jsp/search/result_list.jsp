@@ -29,8 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<%@ page import="com.sitescape.team.ObjectKeys" %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.ObjectKeys" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 
 <c:if test="${empty ss_namespace}">
 	<c:set var="ss_namespace" value="${renderResponse.namespace}" />

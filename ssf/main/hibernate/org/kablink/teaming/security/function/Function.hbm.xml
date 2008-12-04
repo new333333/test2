@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" lazy="false" table="SS_Functions" name="org.kablink.teaming.security.function.Function">
+    <cache usage="nonstrict-read-write"/>
+    <id unsaved-value="null" name="id" type="long">
+      <generator class="native"/>
+    </id>
+    <version unsaved-value="undefined" name="lockVersion" type="long"/>
+    <property name="zoneId" not-null="true"/>
+    <property name="name" length="128" not-null="true"/>
+<properties name="functionNameKey" unique="true" update="false" insert="false">
+<property name="zoneId" update="false" insert="false"/>
+<property name="name" update="false" insert="false"/>
+</properties>
+    <set cascade="all" lazy="false" table="SS_FunctionOperations" name="operationNames">
+      <cache usage="nonstrict-read-write"/>
+      <key column="functionId"/>
+      <element not-null="true" type="string" column="operationName" length="128"/>
+    </set>
+  </class>
+</hibernate-mapping>

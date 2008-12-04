@@ -29,8 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <script type="text/javascript">

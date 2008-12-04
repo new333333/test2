@@ -37,7 +37,7 @@
 <c:if test="${!empty ssFolderEntryDescendants}">
 <div class="ss_replies">
 <c:forEach var="reply" items="${ssFolderEntryDescendants}">
-<jsp:useBean id="reply" type="com.sitescape.team.domain.Entry" />
+<jsp:useBean id="reply" type="org.kablink.teaming.domain.Entry" />
  <div>
 <c:if test="${!empty reply.entryDef}">
  	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 

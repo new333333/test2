@@ -29,8 +29,8 @@
  */
 %>
 <% // The init jsp for the box tag %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
-<%@ page import="com.sitescape.util.ParamUtil" %>
-<%@ page import="com.sitescape.util.Validator" %>
-<%@ page import="com.sitescape.util.StringPool" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
+<%@ page import="org.kablink.util.ParamUtil" %>
+<%@ page import="org.kablink.util.Validator" %>
+<%@ page import="org.kablink.util.StringPool" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>

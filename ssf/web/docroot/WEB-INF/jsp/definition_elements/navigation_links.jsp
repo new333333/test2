@@ -30,9 +30,9 @@
 %>
 <% // Navigation links %>
 
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!empty ssDefinitionEntry}">
 <c:if test="${empty ss_breadcrumbsShowIdRoutine}">
@@ -71,7 +71,7 @@
 	  <%
 		Stack parentTree = new Stack();
 		while (parentBinder != null) {
-			//if (((Binder)parentBinder).getEntityType().equals(com.sitescape.team.domain.EntityIdentifier.EntityType.profiles)) break;
+			//if (((Binder)parentBinder).getEntityType().equals(org.kablink.teaming.domain.EntityIdentifier.EntityType.profiles)) break;
 			parentTree.push(parentBinder);
 			parentBinder = ((Binder)parentBinder).getParentBinder();
 		}

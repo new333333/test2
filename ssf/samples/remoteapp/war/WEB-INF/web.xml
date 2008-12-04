@@ -12,7 +12,7 @@
 	
 	<servlet>
 		<servlet-name>nameSearch</servlet-name>
-		<servlet-class>com.sitescape.team.samples.remoteapp.web.NameSearchServlet</servlet-class>
+		<servlet-class>org.kablink.teaming.samples.remoteapp.web.NameSearchServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
@@ -23,7 +23,7 @@
 
 	<servlet>
 		<servlet-name>taskList</servlet-name>
-		<servlet-class>com.sitescape.team.samples.remoteapp.web.TaskListServlet</servlet-class>
+		<servlet-class>org.kablink.teaming.samples.remoteapp.web.TaskListServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
@@ -34,7 +34,7 @@
 
 	<servlet>
 		<servlet-name>addEntry</servlet-name>
-		<servlet-class>com.sitescape.team.samples.remoteapp.web.AddEntryServlet</servlet-class>
+		<servlet-class>org.kablink.teaming.samples.remoteapp.web.AddEntryServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
@@ -45,7 +45,7 @@
 
 	<servlet>
 		<servlet-name>wsTester</servlet-name>
-		<servlet-class>com.sitescape.team.samples.remoteapp.web.WSTesterServlet</servlet-class>
+		<servlet-class>org.kablink.teaming.samples.remoteapp.web.WSTesterServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
@@ -56,7 +56,7 @@
 
 	<servlet>
 		<servlet-name>twitter</servlet-name>
-		<servlet-class>com.sitescape.team.samples.remoteapp.web.TwitterServlet</servlet-class>
+		<servlet-class>org.kablink.teaming.samples.remoteapp.web.TwitterServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
@@ -67,7 +67,7 @@
 
 	<servlet>
 		<servlet-name>helloWorld</servlet-name>
-		<servlet-class>com.sitescape.team.samples.remoteapp.web.HelloWorldServlet</servlet-class>
+		<servlet-class>org.kablink.teaming.samples.remoteapp.web.HelloWorldServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	

@@ -7,7 +7,7 @@
       <portlet-name>Teaming Portlet</portlet-name>
       <display-name>Teaming</display-name>
       <display-name xml:lang="en">Teaming</display-name>
-      <portlet-class>com.sitescape.team.portal.jsr168.TeamingPortlet</portlet-class>
+      <portlet-class>org.kablink.teaming.portal.jsr168.TeamingPortlet</portlet-class>
       <supports>
          <mime-type>text/html</mime-type>
          <portlet-mode>view</portlet-mode>

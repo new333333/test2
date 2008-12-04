@@ -29,7 +29,7 @@
  */
 %>
 <% // Default view if the forum has not been set up yet %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <div class="ss_style ss_portlet">
 <span class="ss_bold">

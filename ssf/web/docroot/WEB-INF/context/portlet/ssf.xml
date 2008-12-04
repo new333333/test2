@@ -4,84 +4,84 @@
 
 	<!-- Controllers -->
 
-	<bean id="viewController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.ViewController" />
-	<bean id="closeWindowController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.CloseWindowController" />
-	<bean id="reloadOpenerController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.ReloadOpenerController" />
-	<bean id="editController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.EditController" />
-	<bean id="appletResponseController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.AppletResponseController" />
+	<bean id="viewController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ViewController" />
+	<bean id="closeWindowController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.CloseWindowController" />
+	<bean id="reloadOpenerController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ReloadOpenerController" />
+	<bean id="editController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.EditController" />
+	<bean id="appletResponseController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.AppletResponseController" />
 
-	<bean id="folderAddEntryController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.AddEntryController" />
-	<bean id="folderAddFolderController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.AddFolderController" />
-	<bean id="profileAddEntryController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.profile.AddEntryController" />
+	<bean id="folderAddEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.AddEntryController" />
+	<bean id="folderAddFolderController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.AddFolderController" />
+	<bean id="profileAddEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.profile.AddEntryController" />
 
-	<bean id="filterController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.FilterController" />
-	<bean id="accessControlController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.AccessControlController" />
-	<bean id="configureController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ConfigureController" >
+	<bean id="filterController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.FilterController" />
+	<bean id="accessControlController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.AccessControlController" />
+	<bean id="configureController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ConfigureController" >
 			<property name="smtpService"><ref bean="smtpService"/></property>
 	</bean>
-	<bean id="definitionController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.definitionBuilder.ViewController" />
-	<bean id="binderModifyController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ModifyBinderController" />
-	<bean id="dashboardModifyController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ModifyDashboardController" />
-	<bean id="advancedSearchController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.AdvancedSearchController" />	
-	<bean id="entryVersionController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.EntryVersionController" />
-	<bean id="entryWorkflowHistoryController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.EntryWorkflowHistoryController" />
+	<bean id="definitionController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.definitionBuilder.ViewController" />
+	<bean id="binderModifyController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ModifyBinderController" />
+	<bean id="dashboardModifyController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ModifyDashboardController" />
+	<bean id="advancedSearchController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.AdvancedSearchController" />	
+	<bean id="entryVersionController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.EntryVersionController" />
+	<bean id="entryWorkflowHistoryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.EntryWorkflowHistoryController" />
 
-	<bean id="profileModifyEntryController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.profile.ModifyEntryController" />
-	<bean id="folderModifyEntryController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.ModifyEntryController" />
-	<bean id="addAttachmentEntryController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.AddAttachmentController" />
+	<bean id="profileModifyEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.profile.ModifyEntryController" />
+	<bean id="folderModifyEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ModifyEntryController" />
+	<bean id="addAttachmentEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.AddAttachmentController" />
 
-	<bean id="profileViewEntryController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.profile.ViewEntryController" />
-	<bean id="folderViewEntryController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.ViewEntryController" />
-	<bean id="binderViewPermalinkController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.ViewPermalinkController" />
+	<bean id="profileViewEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.profile.ViewEntryController" />
+	<bean id="folderViewEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ViewEntryController" />
+	<bean id="binderViewPermalinkController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ViewPermalinkController" />
 
-	<bean id="listProfilesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.profile.ListProfilesController" />
-	<bean id="listFolderController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.ListFolderController" />
-	<bean id="listWSController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.workspaceTree.WorkspaceTreeController" />
+	<bean id="listProfilesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.profile.ListProfilesController" />
+	<bean id="listFolderController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ListFolderController" />
+	<bean id="listWSController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.workspaceTree.WorkspaceTreeController" />
 
-	<bean id="updatePresenceController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.presence.UpdatePresenceController" />
-	<bean id="emailConfigController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.EmailConfigController" />
-	<bean id="sendEmailController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.SendMailController" />
-	<bean id="meetingController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.MeetingController" />	
-	<bean id="teamController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.TeamController" />	
-	<bean id="sendEntryEmailController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.SendEntryMailController" />
+	<bean id="updatePresenceController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.presence.UpdatePresenceController" />
+	<bean id="emailConfigController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.EmailConfigController" />
+	<bean id="sendEmailController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.SendMailController" />
+	<bean id="meetingController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.MeetingController" />	
+	<bean id="teamController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.TeamController" />	
+	<bean id="sendEntryEmailController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.SendEntryMailController" />
 		
-	<bean id="siteAdministrationController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ViewController" />
-	<bean id="importDefinitionController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ImportDefinitionController" />
-	<bean id="importProfilesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ImportProfilesController" />
-	<bean id="importTemplatesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureConfigurationController" />
-	<bean id="loginReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LoginReportController" />
-	<bean id="licenseReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LicenseReportController" />
-	<bean id="manageLicenseController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageLicenseController" />
-	<bean id="activityReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ActivityReportController" />
-	<bean id="quotaReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.QuotaReportController" />
-	<bean id="workflowReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.WorkflowReportController" />
-	<bean id="creditsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.CreditsController" />
-	<bean id="clipboardController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ClipboardController" />
-	<bean id="manageDefinitionsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageDefinitionsController" />
+	<bean id="siteAdministrationController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ViewController" />
+	<bean id="importDefinitionController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ImportDefinitionController" />
+	<bean id="importProfilesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ImportProfilesController" />
+	<bean id="importTemplatesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureConfigurationController" />
+	<bean id="loginReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LoginReportController" />
+	<bean id="licenseReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LicenseReportController" />
+	<bean id="manageLicenseController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageLicenseController" />
+	<bean id="activityReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ActivityReportController" />
+	<bean id="quotaReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.QuotaReportController" />
+	<bean id="workflowReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.WorkflowReportController" />
+	<bean id="creditsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.CreditsController" />
+	<bean id="clipboardController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ClipboardController" />
+	<bean id="manageDefinitionsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageDefinitionsController" />
 
-	<bean id="folderAjaxController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.AjaxController" />
-	<bean id="dashboardAjaxController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.DashboardAjaxController" />
-	<bean id="typeToFindAjaxController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.TypeToFindAjaxController" />
-	<bean id="mobileAjaxController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.MobileAjaxController" />
-	<bean id="relevanceAjaxController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.RelevanceAjaxController" />
+	<bean id="folderAjaxController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.AjaxController" />
+	<bean id="dashboardAjaxController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.DashboardAjaxController" />
+	<bean id="typeToFindAjaxController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.TypeToFindAjaxController" />
+	<bean id="mobileAjaxController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.MobileAjaxController" />
+	<bean id="relevanceAjaxController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.RelevanceAjaxController" />
 	
-	<bean id="mirroredFolderSynchronizationController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.MirroredFolderSynchronizationController" />
+	<bean id="mirroredFolderSynchronizationController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.MirroredFolderSynchronizationController" />
 
-	<bean id="adminViewChangeLogController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ViewChangeLogController" />
-	<bean id="adminConfigureLdapController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureLdapController" />
-	<bean id="adminConfigureRolesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureRolesController" />
-	<bean id="adminConfigurePostingJobController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigurePostingJobController" />
-	<bean id="adminConfigureSearchIndexController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageSearchIndexController" />
-	<bean id="adminConfigureSearchNodesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageSearchNodesController" />
-	<bean id="adminLogFileController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LogFileController" />
-	<bean id="adminManageGroupsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageGroupsController" />
-	<bean id="adminManageApplicationsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageApplicationsController" />
-	<bean id="adminManageApplicationGroupsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageApplicationGroupsController" />
-	<bean id="adminManageZonesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageZonesController" />
-	<bean id="adminConfigureConfigurationController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureConfigurationController" />
-	<bean id="definitionBuilderXmlController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.definitionBuilder.ViewDefinitionXmlController" />
+	<bean id="adminViewChangeLogController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ViewChangeLogController" />
+	<bean id="adminConfigureLdapController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureLdapController" />
+	<bean id="adminConfigureRolesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureRolesController" />
+	<bean id="adminConfigurePostingJobController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigurePostingJobController" />
+	<bean id="adminConfigureSearchIndexController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageSearchIndexController" />
+	<bean id="adminConfigureSearchNodesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageSearchNodesController" />
+	<bean id="adminLogFileController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LogFileController" />
+	<bean id="adminManageGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageGroupsController" />
+	<bean id="adminManageApplicationsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationsController" />
+	<bean id="adminManageApplicationGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationGroupsController" />
+	<bean id="adminManageZonesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageZonesController" />
+	<bean id="adminConfigureConfigurationController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureConfigurationController" />
+	<bean id="definitionBuilderXmlController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.definitionBuilder.ViewDefinitionXmlController" />
 
-	<bean id="loginController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.LoginController" />
+	<bean id="loginController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.LoginController" />
  	<!-- Handlers -->
 
 	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">

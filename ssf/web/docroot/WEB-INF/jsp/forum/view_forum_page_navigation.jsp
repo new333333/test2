@@ -30,7 +30,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // Common folder page number navigation %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <c:if test="${!empty ssPageCount}">
 <c:if test="${ssPageLast == '0'}"><c:set var="ssPageLast" value="1" scope="request"/></c:if>
 

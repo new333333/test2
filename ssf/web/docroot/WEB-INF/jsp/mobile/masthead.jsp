@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.ObjectKeys" %>
+<%@ page import="org.kablink.teaming.ObjectKeys" %>
 
 <div id="header">
   <ul>
@@ -40,7 +40,7 @@
 	<li>
 		<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
 		<c:if test="${ssUser.internalId == guestInternalId}">
-		  <c:if test='<%= !com.sitescape.team.util.SPropsUtil.getBoolean("form.login.auth.disallowed",false) %>' >
+		  <c:if test='<%= !org.kablink.teaming.util.SPropsUtil.getBoolean("form.login.auth.disallowed",false) %>' >
 		    <a href="<ssf:url action="__ajax_mobile" actionUrl="false" 
 							operation="mobile_login" />"
 		    >

@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
@@ -84,7 +84,7 @@ function ss_confirmDeleteZone() {
 <th><span class="ss_bold"><ssf:nlt tag="administration.zoneName"/></span></th>
 <th><span class="ss_bold"><ssf:nlt tag="administration.zoneVirtualHost"/></span></th>
 </tr>
-  <c:set var="default_zone_name" value="<%= com.sitescape.team.util.SZoneConfig.getDefaultZoneName() %>"/>
+  <c:set var="default_zone_name" value="<%= org.kablink.teaming.util.SZoneConfig.getDefaultZoneName() %>"/>
   <c:forEach var="zoneInfo" items="${ss_zoneInfoList}">
   <tr>
 	<form class="ss_style ss_form" method="post" 

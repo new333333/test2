@@ -29,7 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
 
 <c:if test="${!ss_searchResultsPage && !empty ssSidebarWsTree}">
     <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"

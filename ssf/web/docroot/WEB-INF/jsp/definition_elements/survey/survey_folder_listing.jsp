@@ -152,7 +152,7 @@
 	<c:if test="${!empty ssFolderEntries}">
 		<c:forEach var="entry" items="${ssFolderEntries}" >
 			<jsp:useBean id="entry" type="java.util.HashMap" />
-			<% boolean overdue = com.sitescape.team.util.DateComparer.isOverdue((Date)entry.get("due_date")); %>
+			<% boolean overdue = org.kablink.teaming.util.DateComparer.isOverdue((Date)entry.get("due_date")); %>
 			<c:set var="overdue" value="<%= overdue %>"/>
 			<c:if test="${overdue && entry.status != 'completed'}">
 				<c:set var="tdClass" value="class='ss_overdue'" />

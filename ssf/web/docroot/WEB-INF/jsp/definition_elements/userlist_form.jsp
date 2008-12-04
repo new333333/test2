@@ -37,10 +37,10 @@
 %>
 <c:if test="${! empty ssDefinitionEntry}">
   <c:set var="userlist_entry" value="${ssDefinitionEntry}"/>
-  <jsp:useBean id="userlist_entry" type="com.sitescape.team.domain.DefinableEntity" />
+  <jsp:useBean id="userlist_entry" type="org.kablink.teaming.domain.DefinableEntity" />
 <%
 	if (propertyName != null && !propertyName.equals("")) 
-		userList = com.sitescape.team.util.ResolveIds.getPrincipals(userlist_entry.getCustomAttribute(propertyName));
+		userList = org.kablink.teaming.util.ResolveIds.getPrincipals(userlist_entry.getCustomAttribute(propertyName));
 	if(userList != null) {
 		userListSet.addAll(userList);
 	}

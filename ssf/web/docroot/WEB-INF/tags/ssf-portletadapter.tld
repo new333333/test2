@@ -8,8 +8,8 @@
 	
 	<tag>
 		<name>actionURL</name>
-		<tag-class>com.sitescape.team.portletadapter.taglib.ActionURLTag</tag-class>
-		<tei-class>com.sitescape.team.portletadapter.taglib.ActionURLTei</tei-class>
+		<tag-class>org.kablink.teaming.portletadapter.taglib.ActionURLTag</tag-class>
+		<tei-class>org.kablink.teaming.portletadapter.taglib.ActionURLTei</tei-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>windowState</name>
@@ -35,27 +35,27 @@
 	
 	<tag>
 		<name>defineObjects1</name>
-		<tag-class>com.sitescape.team.portletadapter.taglib.DefineObjects1Tag</tag-class>
-		<tei-class>com.sitescape.team.portletadapter.taglib.DefineObjectsTei</tei-class>
+		<tag-class>org.kablink.teaming.portletadapter.taglib.DefineObjects1Tag</tag-class>
+		<tei-class>org.kablink.teaming.portletadapter.taglib.DefineObjectsTei</tei-class>
 		<body-content>empty</body-content>
 	</tag>
 	
 	<tag>
 		<name>defineObjects2</name>
-		<tag-class>com.sitescape.team.portletadapter.taglib.DefineObjects2Tag</tag-class>
-		<tei-class>com.sitescape.team.portletadapter.taglib.DefineObjectsTei</tei-class>
+		<tag-class>org.kablink.teaming.portletadapter.taglib.DefineObjects2Tag</tag-class>
+		<tei-class>org.kablink.teaming.portletadapter.taglib.DefineObjectsTei</tei-class>
 		<body-content>empty</body-content>
 	</tag>
 	
 	<tag>
 		<name>namespace</name>
-		<tag-class>com.sitescape.team.portletadapter.taglib.NamespaceTag</tag-class>
+		<tag-class>org.kablink.teaming.portletadapter.taglib.NamespaceTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	
 	<tag>
 		<name>param</name>
-		<tag-class>com.sitescape.team.portletadapter.taglib.ParamTag</tag-class>
+		<tag-class>org.kablink.teaming.portletadapter.taglib.ParamTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>name</name>
@@ -71,8 +71,8 @@
 	
 	<tag>
 		<name>renderURL</name>
-		<tag-class>com.sitescape.team.portletadapter.taglib.RenderURLTag</tag-class>
-		<tei-class>com.sitescape.team.portletadapter.taglib.RenderURLTei</tei-class>
+		<tag-class>org.kablink.teaming.portletadapter.taglib.RenderURLTag</tag-class>
+		<tei-class>org.kablink.teaming.portletadapter.taglib.RenderURLTei</tei-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>windowState</name>

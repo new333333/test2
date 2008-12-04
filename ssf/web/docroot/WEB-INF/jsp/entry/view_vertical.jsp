@@ -30,13 +30,13 @@
 %>
 <% //view a folder forum with the entry at the bottom in an iframe %>
 
-<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <%
 	//int sliderDivHeight = 18;
 	int sliderDivHeight = 7;
 	String sliderDivOffset = "-20";
 %>
-<%@ page import="com.sitescape.team.module.definition.DefinitionUtils" %>
+<%@ page import="org.kablink.teaming.module.definition.DefinitionUtils" %>
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <%
 //Get the folder type of this definition (folder, file, or event)

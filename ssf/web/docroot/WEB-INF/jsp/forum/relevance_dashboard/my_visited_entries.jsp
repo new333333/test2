@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <div id="ss_para">
@@ -59,7 +59,7 @@
   <c:forEach var="entryMap" items="${ssEntriesViewed}">
     <c:if test="${entryMap.type == 'view'}">
     <c:set var="entry" value="${entryMap.entity}"/>
-    <jsp:useBean id="entry" type="com.sitescape.team.domain.Entry" />
+    <jsp:useBean id="entry" type="org.kablink.teaming.domain.Entry" />
     
     <div class="ss_v_entries">
     <ul>
@@ -108,7 +108,7 @@
 
     <c:if test="${entryMap.type == 'download'}">
     <c:set var="entry2" value="${entryMap.entity}"/>
-    <jsp:useBean id="entry2" type="com.sitescape.team.domain.Entry" />
+    <jsp:useBean id="entry2" type="org.kablink.teaming.domain.Entry" />
 
     
 	<div id="ss_viewedItems" class="ss_v_attachments">

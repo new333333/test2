@@ -29,15 +29,15 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!empty ssBinderTemplateName}">
   <%@ include file="/WEB-INF/jsp/binder/add_binder_short_form.jsp" %>
 </c:if>
 <c:if test="${empty ssBinderTemplateName}">
 <%
-	String workspaceId = com.sitescape.team.ObjectKeys.DEFAULT_WORKSPACE_CONFIG;
+	String workspaceId = org.kablink.teaming.ObjectKeys.DEFAULT_WORKSPACE_CONFIG;
 %>
 <c:set var="ss_workspaceId" value="<%= workspaceId %>"/>
 <c:set var="ss_workspaceConfigId" value="<%= ObjectKeys.DEFAULT_WORKSPACE_CONFIG %>"/>

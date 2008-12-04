@@ -37,7 +37,7 @@
 	if (request.getAttribute("ssDefinitionEntry") != null &&
 		((DefinableEntity)request.getAttribute("ssDefinitionEntry")).getCustomAttribute("due_date") != null) {
 		dueDate = (Date) ((DefinableEntity)request.getAttribute("ssDefinitionEntry")).getCustomAttribute("due_date").getValue();
-		overdue = com.sitescape.team.util.DateComparer.isOverdue(dueDate);
+		overdue = org.kablink.teaming.util.DateComparer.isOverdue(dueDate);
 	}
 %>
 <c:set var="dueDate" value="<%= dueDate %>" />
@@ -56,8 +56,8 @@
 <c:set var="operationViewResults" value="${operation=='viewResults'}" />
 <c:set var="operationViewDetails" value="${operation=='viewDetails'}" />
 
-<jsp:useBean id="ssBinder" type="com.sitescape.team.domain.Binder" scope="request" />
-<jsp:useBean id="ssEntry" type="com.sitescape.team.domain.FolderEntry" scope="request"/>
+<jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
+<jsp:useBean id="ssEntry" type="org.kablink.teaming.domain.FolderEntry" scope="request"/>
 
 <c:set var="alreadyVotedByGuest" value="false" />
 <c:if test="${ssUser.shared}">
@@ -147,7 +147,7 @@
 									<ul class="ss_survey_users_list">
 										<c:set var="users_list" value="${answer.votedUserIds}"/>
 										<jsp:useBean id="users_list" type="java.util.ArrayList" />
-										<c:forEach var="voter" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(users_list) %>" >
+										<c:forEach var="voter" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(users_list) %>" >
 											<li><ssf:showUser user="${voter}" /></li>
 										</c:forEach>
 										<c:forEach var="email" items="${answer.votedGuestsEmails}" >

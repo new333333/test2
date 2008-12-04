@@ -32,7 +32,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!empty ssBinder}">
 <c:set var="binder" value="${ssBinder}"/>
-<jsp:useBean id="binder" type="com.sitescape.team.domain.Binder" />
+<jsp:useBean id="binder" type="org.kablink.teaming.domain.Binder" />
 <%
 	//See if there is branding here or up the ancestor tree
 	while (binder != null) {

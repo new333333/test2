@@ -40,12 +40,12 @@
 		{denied : "<c:out value="${ss_ajaxStatus.ss_operation_denied}" escapeXml="false"/>"}
 	</c:when>	
 	<c:otherwise>
-		<jsp:useBean id="ssEntry" type="com.sitescape.team.domain.FolderEntry" scope="request"/>
+		<jsp:useBean id="ssEntry" type="org.kablink.teaming.domain.FolderEntry" scope="request"/>
 		
 		<%	
 			boolean overdue = false;
 			if (ssEntry.getEvents() != null && !ssEntry.getEvents().isEmpty()) {
-				overdue = com.sitescape.team.util.DateComparer.isOverdue((Date)((com.sitescape.team.domain.Event)ssEntry.getEvents().iterator().next()).getDtEnd().getTime());
+				overdue = org.kablink.teaming.util.DateComparer.isOverdue((Date)((org.kablink.teaming.domain.Event)ssEntry.getEvents().iterator().next()).getDtEnd().getTime());
 			}
 			
 		%>
@@ -84,7 +84,7 @@
 			"priority" : <c:forEach var="priority" items="${ssEntry.customAttributes['priority'].valueSet}" varStatus="loopStatus">
 							<c:if test="${loopStatus.first}">"<ssf:escapeJavaScript value="${priority}" />"</c:if>
 						</c:forEach>,
-			"assigned" : [<c:forEach var="user" items='<%= com.sitescape.team.util.ResolveIds.getPrincipals(ssEntry.getCustomAttribute("assignment")) %>' varStatus="assignedStatus">
+			"assigned" : [<c:forEach var="user" items='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(ssEntry.getCustomAttribute("assignment")) %>' varStatus="assignedStatus">
 							"<ssf:escapeJavaScript value="${user.title}" />"<c:if test="${!assignedStatus.last}">,</c:if>
 						</c:forEach>],
 			statuses : 

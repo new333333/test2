@@ -29,7 +29,7 @@
  */
 %>
 <% //File view %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
 <%
 boolean isIECheck = BrowserSniffer.is_ie(request);
 String strBrowserType = "nonie";

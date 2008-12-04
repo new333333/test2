@@ -64,7 +64,7 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
    <div class="ss_toolbar_color" style="display:inline;"><ssf:datepicker formName="${formName}" showSelectors="true" 
 				 popupDivId="ss_startPopup" id="ss_startDate" initDate="${startDate}"
 				 immediateMode="false" 
-				 altText='<%= com.sitescape.team.util.NLT.get("calendar.view.popupAltText") %>'
+				 altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
 				 />
    </div>
    <div id="ss_startPopup" class="ss_calPopupDiv"></div>
@@ -72,7 +72,7 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
    <div class="ss_toolbar_color" style="display:inline;"><ssf:datepicker formName="${formName}" showSelectors="true" 
 				 popupDivId="ss_endPopup" id="ss_endDate" initDate="${endDate}"
 				 immediateMode="false" 
-				 altText='<%= com.sitescape.team.util.NLT.get("calendar.view.popupAltText") %>'
+				 altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
 				 />
    </div>
    <br/>

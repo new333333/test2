@@ -41,7 +41,7 @@
   </c:if>
 	<div class="ss_replies_indent">
 	<c:forEach var="reply" items="${ssFolderEntryDescendants}">
-	  <jsp:useBean id="reply" type="com.sitescape.team.domain.Entry" />
+	  <jsp:useBean id="reply" type="org.kablink.teaming.domain.Entry" />
 	  <div class="ss_entryContent ss_replies">
 	
 	  <c:if test="${!empty reply.entryDef}">

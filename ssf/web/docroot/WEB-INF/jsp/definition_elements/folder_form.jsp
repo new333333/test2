@@ -82,13 +82,13 @@
 <input type="hidden" name="uniqueTitles" value="${ssDefinitionEntry.uniqueTitles}"/>
 <br/>
 
-<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.folder.MirroredFolder">
+<ssf:ifAuthorizedByLicense featureName="org.kablink.teaming.module.folder.MirroredFolder">
 <c:if test="${ssDefinitionEntry.mirroredAllowed}">
 <c:set var="cb_checked" value=""/>
 <c:if test="${ssDefinitionEntry.mirrored}" >
 <c:set var="cb_checked" value="checked"/>
 </c:if>
-<c:set var="resourceDrivers" value="<%= com.sitescape.team.fi.connection.ResourceDriverManagerUtil.getAllowedResourceDrivers() %>"/>
+<c:set var="resourceDrivers" value="<%= org.kablink.teaming.fi.connection.ResourceDriverManagerUtil.getAllowedResourceDrivers() %>"/>
 <div style="display:block">
 <input type="checkbox" name="ss_mirrored" <c:if test="${ssDefinitionEntry.mirrored || empty resourceDrivers}">disabled</c:if> <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_mirrored.checked) document.${formName}.mirrored.value='true'; else document.${formName}.mirrored.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isMirrored"/></span> <ssf:inlineHelp jsp="workspaces_folders/menus_toolbars/mirrored_folders" /></input>
 </div>

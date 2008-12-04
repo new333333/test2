@@ -4,7 +4,7 @@
 
 	<!-- Controllers -->
 
-	<bean id="welcomeController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.ViewController" />
+	<bean id="welcomeController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ViewController" />
 
 	<!-- Handlers -->
 

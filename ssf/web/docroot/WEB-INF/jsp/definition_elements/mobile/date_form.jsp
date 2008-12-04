@@ -31,7 +31,7 @@
 <% //Date widget form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="java.util.Date" %>
-<%@ page import="com.sitescape.team.util.CalendarHelper" %>
+<%@ page import="org.kablink.teaming.util.CalendarHelper" %>
 
 <c:if test="${empty ssReadOnlyFields[property_name]}">
 

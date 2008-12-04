@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.ObjectKeys" %>
+<%@ page import="org.kablink.teaming.ObjectKeys" %>
 
 <c:if test="${!empty ss_mobileFavoritesList}">
 	<div class="pagebody">

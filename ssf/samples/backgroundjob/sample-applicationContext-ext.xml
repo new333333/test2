@@ -7,7 +7,7 @@
          its own custom scheduler. Do NOT re-use the factory-shipped scheduler bean for this. -->
     
 	<!--<bean id="customJob" class="org.springframework.scheduling.quartz.JobDetailBean">
-	  <property name="jobClass" value="com.sitescape.team.samples.backgroundjob.PrintNumberOfUsersJob" />
+	  <property name="jobClass" value="org.kablink.teaming.samples.backgroundjob.PrintNumberOfUsersJob" />
 	  <property name="jobDataAsMap">
 	    <map>
 	      <entry key="profileModule"><ref bean="profileModule"/></entry>

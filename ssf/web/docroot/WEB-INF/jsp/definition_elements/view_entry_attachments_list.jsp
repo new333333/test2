@@ -28,9 +28,9 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
-<%@ page import="com.sitescape.team.ssfs.util.SsfsUtil" %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
+<%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
 <div id="${ss_viewEntryAttachmentDivId}">
@@ -46,7 +46,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 <tbody>
 <c:set var="selectionCount" value="0"/>
 <c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" >
-  <jsp:useBean id="selection" type="com.sitescape.team.domain.FileAttachment" />
+  <jsp:useBean id="selection" type="org.kablink.teaming.domain.FileAttachment" />
 <%
 	String fn = selection.getFileItem().getName();
 	String ext = "";

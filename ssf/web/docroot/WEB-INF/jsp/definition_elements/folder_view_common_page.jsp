@@ -31,15 +31,15 @@
 <% // Folder page %>
 <%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
-<%@ page import="com.sitescape.team.ssfs.util.SsfsUtil" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
+<%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil" %>
 <%
 boolean isIECheck = BrowserSniffer.is_ie(request);
 String strBrowserType = "";
 if (isIECheck) strBrowserType = "ie";
 %>
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
-<jsp:useBean id="ssBinder" type="com.sitescape.team.domain.Binder" scope="request" />
+<jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
 <%
 	Map ssFolderColumns = (Map) ssUserFolderProperties.get("userFolderColumns");
 	if (ssFolderColumns == null) ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");

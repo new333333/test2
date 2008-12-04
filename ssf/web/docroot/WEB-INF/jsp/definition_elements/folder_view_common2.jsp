@@ -29,8 +29,8 @@
  */
 %>
 <% // Folder listing %>
-<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
-<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
+<jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <c:if test="${empty ss_entryViewStyle}">
   <c:set var="ss_entryViewStyle" value="" scope="request"/>
   <c:if test="${ssUser.displayStyle == 'newpage' && slidingTableStyle != 'fixed'}">
@@ -703,13 +703,13 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  <c:set var="eleCaption2" value="<%= eleCaption2 %>"/>
 	  <c:set var="entryDef" value="${ssEntryDefinitionMap[defId2]}"/>
 	  <c:if test="${!empty entryDef}">
-	  <jsp:useBean id="entryDef" type="com.sitescape.team.domain.Definition"/>
+	  <jsp:useBean id="entryDef" type="org.kablink.teaming.domain.Definition"/>
 	  <ssf:slidingTableColumn  style="${slidingTableColStyle}">
          <span <%= seenStyle %>>
          <c:if test="${!empty eleName2 && !empty entry1[eleName2]}">
 	       <c:if test="${eleType2 == 'selectbox' || eleType2 == 'radio' || eleType2 == 'checkbox' || eleType2 == 'text' || eleType2 == 'entryAttributes'}">
 	         <%
-	         	String eleValues = com.sitescape.team.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
+	         	String eleValues = org.kablink.teaming.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
 	         %>
 	         <%= eleValues %>
 	       </c:if>
@@ -735,10 +735,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <%
 	try {
 		String sr = entry1.get(eleName2).toString();
-		java.util.Set ids = com.sitescape.team.util.LongIdUtil.getIdsAsLongSet(sr, ",");
+		java.util.Set ids = org.kablink.teaming.util.LongIdUtil.getIdsAsLongSet(sr, ",");
 %>
           	<c:forEach var="user" 
-          	  items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(ids) %>"
+          	  items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(ids) %>"
           	>${separator}${user.title}<c:set var="separator" value=", "/>
           	</c:forEach>
 <%

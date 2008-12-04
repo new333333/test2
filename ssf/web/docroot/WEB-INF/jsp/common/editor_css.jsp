@@ -27,7 +27,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-%><%@ page import="com.sitescape.util.BrowserSniffer" %>
+%><%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page contentType="text/css" %>
 <%

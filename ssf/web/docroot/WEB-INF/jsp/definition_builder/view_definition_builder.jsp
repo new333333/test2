@@ -33,17 +33,17 @@
 <%@ page import="org.dom4j.Document" %>
 <%@ page import="org.dom4j.DocumentHelper" %>
 <%@ page import="org.dom4j.Element" %>
-<%@ page import="com.sitescape.team.domain.DefinitionInvalidOperation" %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.domain.DefinitionInvalidOperation" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 
 <jsp:useBean id="definitionTree" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="data" type="java.util.Map" scope="request" />
-<%@ page import="com.sitescape.team.domain.FolderEntry" %>
-<%@ page import="com.sitescape.team.domain.User" %>
-<%@ page import="com.sitescape.team.domain.Folder" %>
-<%@ page import="com.sitescape.team.domain.Workspace" %>
+<%@ page import="org.kablink.teaming.domain.FolderEntry" %>
+<%@ page import="org.kablink.teaming.domain.User" %>
+<%@ page import="org.kablink.teaming.domain.Folder" %>
+<%@ page import="org.kablink.teaming.domain.Workspace" %>
 <%
-	boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
+	boolean isIE = org.kablink.util.BrowserSniffer.is_ie(request);
 
 	String nodeOpen = " ";
 	if (data.containsKey("nodeOpen")) {
@@ -755,12 +755,12 @@ function ss_saveUserGroupResults(s) {
   codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
 </c:if>
 <c:if test="<%= !isIE %>">
-<applet CODE = "com.sitescape.team.applets.workflowviewer.WorkflowViewer" 
+<applet CODE = "org.kablink.teaming.applets.workflowviewer.WorkflowViewer" 
   JAVA_CODEBASE = "<html:rootPath/>applets" 
   ARCHIVE = "workflow-viewer/ssf-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.6.jar,lib/dom4j.jar,lib/jaxen.jar" 
   WIDTH = "100%" HEIGHT = "600">
 </c:if>
-    <PARAM NAME = CODE value = "com.sitescape.team.applets.workflowviewer.WorkflowViewer" >
+    <PARAM NAME = CODE value = "org.kablink.teaming.applets.workflowviewer.WorkflowViewer" >
     <PARAM NAME = CODEBASE value = "<html:rootPath/>applets" >
     <PARAM NAME = ARCHIVE value = "workflow-viewer/ssf-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.6.jar,lib/dom4j.jar,lib/jaxen.jar" >
     <param name="type" value="application/x-java-applet;version=1.5">

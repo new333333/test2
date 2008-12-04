@@ -4,7 +4,7 @@
 
 	<!-- Controllers -->
 
-	<bean id="dumbController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.samples.portlet.DumbController" />
+	<bean id="dumbController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.samples.portlet.DumbController" />
 
 	<!-- Handlers -->
 

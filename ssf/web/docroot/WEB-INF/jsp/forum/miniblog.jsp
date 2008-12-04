@@ -29,7 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <ssf:ifadapter>
 <body class="ss_style_body">
 </ssf:ifadapter>

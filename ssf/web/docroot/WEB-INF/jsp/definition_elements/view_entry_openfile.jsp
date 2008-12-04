@@ -54,7 +54,7 @@ function ss_resetEditClickLocal${ssEntryId}${ss_namespace}() {
 OpenFile Applet
 <br/ >
 	<%
-	 boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
+	 boolean isIE = org.kablink.util.BrowserSniffer.is_ie(request);
 	%>
 
 	<!--NOVELL_REWRITE_ATTRIBUTE_ON='value'-->
@@ -64,12 +64,12 @@ OpenFile Applet
 		  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
 	</c:if>
 	<c:if test="<%= !isIE %>">
-	<applet name="fileopenobj${ssEntryId}${ss_namespace}" id="fileopenobj${ssEntryId}${ss_namespace}" CODE = "com.sitescape.team.applets.fileopen.FileOpen" 
+	<applet name="fileopenobj${ssEntryId}${ss_namespace}" id="fileopenobj${ssEntryId}${ss_namespace}" CODE = "org.kablink.teaming.applets.fileopen.FileOpen" 
 	  JAVA_CODEBASE = "<html:rootPath/>applets" 
 	  ARCHIVE = "fileopen/ssf-fileopen-applet.jar" 
 	  WIDTH = "1" HEIGHT = "1" MAYSCRIPT="true">
 	</c:if>
-	    <PARAM NAME="CODE" value = "com.sitescape.team.applets.fileopen.FileOpen" />
+	    <PARAM NAME="CODE" value = "org.kablink.teaming.applets.fileopen.FileOpen" />
 	    <PARAM NAME ="CODEBASE" value = "<html:rootPath/>applets" />
 	    <PARAM NAME ="ARCHIVE" value = "fileopen/ssf-fileopen-applet.jar" />
 	    <PARAM NAME ="type" value="application/x-java-applet;version=1.5" />

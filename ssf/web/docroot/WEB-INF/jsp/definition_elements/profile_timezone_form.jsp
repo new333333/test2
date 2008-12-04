@@ -38,16 +38,16 @@
 <select name="${property_name}">
 <%
 	String[] ids = java.util.TimeZone.getAvailableIDs();
-	com.sitescape.team.domain.User user = (com.sitescape.team.domain.User)request.getAttribute("ssDefinitionEntry");
-	com.sitescape.team.domain.User currentUser = (com.sitescape.team.domain.User)request.getAttribute("ssUser");
-	java.util.TreeMap<String,String> map = new java.util.TreeMap(new com.sitescape.team.comparator.StringComparator(currentUser.getLocale())); //sort
+	org.kablink.teaming.domain.User user = (org.kablink.teaming.domain.User)request.getAttribute("ssDefinitionEntry");
+	org.kablink.teaming.domain.User currentUser = (org.kablink.teaming.domain.User)request.getAttribute("ssUser");
+	java.util.TreeMap<String,String> map = new java.util.TreeMap(new org.kablink.teaming.comparator.StringComparator(currentUser.getLocale())); //sort
 	java.util.Locale currentLocale = currentUser.getLocale();
 	for (int i=0; i<ids.length; ++i) {
 		map.put(java.util.TimeZone.getTimeZone(ids[i]).getDisplayName(currentLocale) + " (" + ids[i] + ")", ids[i]);
 	}
 	String tzId;
 	if (user != null) tzId = user.getTimeZone().getID();
-	else tzId = com.sitescape.team.calendar.TimeZoneHelper.getDefault().getID();
+	else tzId = org.kablink.teaming.calendar.TimeZoneHelper.getDefault().getID();
 	for (java.util.Map.Entry<String, String> me: map.entrySet()) {
 		String checked = "";
 		if (me.getValue().equals(tzId))
@@ -61,8 +61,8 @@
 </c:if>
 <c:if test="${!empty ssReadOnlyFields[property_name]}">
 <%
-	com.sitescape.team.domain.User user = (com.sitescape.team.domain.User)request.getAttribute("ssDefinitionEntry");
-	com.sitescape.team.domain.User currentUser = (com.sitescape.team.domain.User)request.getAttribute("ssUser");
+	org.kablink.teaming.domain.User user = (org.kablink.teaming.domain.User)request.getAttribute("ssDefinitionEntry");
+	org.kablink.teaming.domain.User currentUser = (org.kablink.teaming.domain.User)request.getAttribute("ssUser");
 	if (user != null) {	
 %>
 <%= user.getTimeZone().getDisplayName(currentUser.getLocale()) + " (" + user.getTimeZone().getID() + ")"%>

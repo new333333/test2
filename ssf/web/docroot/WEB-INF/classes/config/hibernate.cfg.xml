@@ -9,10 +9,10 @@
 		<property name="connection.datasource">jdbc/SiteScapePool</property>
 		<!-- Use the SIteScape connection provider to lookup JNDI datasource
 		     because it works across multiple J2EE servers. -->
-		<property name="connection.provider_class">com.sitescape.util.dao.hibernate.DSConnectionProvider</property>
+		<property name="connection.provider_class">org.kablink.util.dao.hibernate.DSConnectionProvider</property>
 		<!-- Use the SIteScape SQL dialect because it will automatically detect 
 		     the proper SQL dialect based on your connection URL. -->
-		<property name="dialect">com.sitescape.util.dao.hibernate.DynamicDialect</property>
+		<property name="dialect">org.kablink.util.dao.hibernate.DynamicDialect</property>
 		<!-- Need this for bulk Delete statements -->
 		<property name="hibernate.query.factory_class">org.hibernate.hql.ast.ASTQueryTranslatorFactory</property>
 		<!-- Other miscellaneous Hibernate properties. -->
@@ -35,41 +35,41 @@
 		<property name="show_sql">false</property>
 		<property name="hibernate.generate_statistics">false</property>
 		<!-- Sitescape Mappings -->
-		<mapping resource="com/sitescape/team/security/accesstoken/impl/TokenInfo.hbm.xml"/>
-		<mapping resource="com/sitescape/team/security/function/Function.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/security/function/WorkAreaFunctionMembership.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/Attachment.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/AuditTrail.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/Binder.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/ChangeLog.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/CustomAttribute.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/Dashboard.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/Definition.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/EmailAddress.hbm.xml"/> 
-	    <mapping resource="com/sitescape/team/domain/Event.hbm.xml"/> 
-	    <mapping resource="com/sitescape/team/domain/FolderEntry.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/IndexingJournal.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/IndexNode.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/LdapConnectionConfig.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/LibraryEntry.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/LicenseStats.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/Membership.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/NotifyStatus.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/PostingDef.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/Principal.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/Ratings.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/SeenMap.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/SharedEntity.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/SimpleName.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/Subscription.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/Tag.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/UserProperties.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/Visits.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/WorkflowResponse.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/WorkflowState.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/WorkflowHistory.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/ZoneConfig.hbm.xml"/>
-	    <mapping resource="com/sitescape/team/domain/ZoneInfo.hbm.xml"/>
+		<mapping resource="org/kablink/teaming/security/accesstoken/impl/TokenInfo.hbm.xml"/>
+		<mapping resource="org/kablink/teaming/security/function/Function.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/security/function/WorkAreaFunctionMembership.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Attachment.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/AuditTrail.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Binder.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/ChangeLog.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/CustomAttribute.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Dashboard.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Definition.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/EmailAddress.hbm.xml"/> 
+	    <mapping resource="org/kablink/teaming/domain/Event.hbm.xml"/> 
+	    <mapping resource="org/kablink/teaming/domain/FolderEntry.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/IndexingJournal.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/IndexNode.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/LdapConnectionConfig.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/LibraryEntry.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/LicenseStats.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Membership.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/NotifyStatus.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/PostingDef.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Principal.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Ratings.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/SeenMap.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/SharedEntity.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/SimpleName.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Subscription.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Tag.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/UserProperties.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/Visits.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/WorkflowResponse.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/WorkflowState.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/WorkflowHistory.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/ZoneConfig.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/ZoneInfo.hbm.xml"/>
 	    <!-- jbpms -->
 	    <mapping resource="org/jbpm/graph/action/Script.hbm.xml"/>
 	    <!-- hql queries and type defs -->

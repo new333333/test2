@@ -37,10 +37,10 @@
 %>
 <c:if test="${! empty ssDefinitionEntry}">
   <c:set var="teamlist_entry" value="${ssDefinitionEntry}"/>
-  <jsp:useBean id="teamlist_entry" type="com.sitescape.team.domain.DefinableEntity" />
+  <jsp:useBean id="teamlist_entry" type="org.kablink.teaming.domain.DefinableEntity" />
 <%
 	if (propertyName != null && !propertyName.equals("")) {
-		Map teams = com.sitescape.team.util.ResolveIds.getBinderTitlesAndIcons(teamlist_entry.getCustomAttribute(propertyName)); 
+		Map teams = org.kablink.teaming.util.ResolveIds.getBinderTitlesAndIcons(teamlist_entry.getCustomAttribute(propertyName)); 
 		Iterator<Map.Entry> it = teams.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry entry = it.next();

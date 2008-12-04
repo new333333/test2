@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_para">
 
@@ -77,7 +77,7 @@
 	  <br/>
 	  
 	  <span>
-		<ssf:showUser user='<%=(com.sitescape.team.domain.User)entry.get("_principal")%>' titleStyle="ss_link_1" /> 
+		<ssf:showUser user='<%=(org.kablink.teaming.domain.User)entry.get("_principal")%>' titleStyle="ss_link_1" /> 
 	  </span>
 	  <span class="ss_link_4">
 	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"

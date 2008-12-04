@@ -30,8 +30,8 @@
 %>
 <% //view a folder forum with folder on the left and the entry on the right in an iframe %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
-<%@ page import="com.sitescape.team.module.definition.DefinitionUtils" %>
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
+<%@ page import="org.kablink.teaming.module.definition.DefinitionUtils" %>
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <%
 //Get the folder type of this definition (folder, file, or event)

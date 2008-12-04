@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.search.SearchFieldResult" %>
+<%@ page import="org.kablink.teaming.search.SearchFieldResult" %>
 <%
 	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
 	java.util.Set placesIds = new java.util.HashSet();
@@ -47,7 +47,7 @@
 <div class="ss_entryContent">
 	<span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
 	<ul class="ss_nobullet">
-	<c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getBinderTitlesAndIcons(placesIds) %>" >
+	<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getBinderTitlesAndIcons(placesIds) %>" >
 		<li><img border="0" <ssf:alt/>
 		          src="<html:imagesPath/>${selection.value.iconName}" />
 	          <c:if test="${!selection.value.deleted}">

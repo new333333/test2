@@ -36,7 +36,7 @@
 </ssf:ifadapter>
 
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
-<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
+<jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 
 <div class="ss_style ss_portlet">
 

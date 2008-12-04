@@ -30,8 +30,8 @@
 %>
 <% // Folder listing %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
-<%@ page import="com.sitescape.team.ssfs.util.SsfsUtil" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
+<%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil" %>
 <%
 boolean isIECheck = BrowserSniffer.is_ie(request);
 String strBrowserType = "";

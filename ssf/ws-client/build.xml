@@ -60,11 +60,11 @@
 			verbose="true"
 			url="${client.url}/TeamingService?wsdl" >
 			<mapping
-				namespace="http://ws.remoting.team.sitescape.com"
-				package="com.sitescape.team.client.ws" />
+				namespace="http://ws.remoting.teaming.kablink.org"
+				package="org.kablink.teaming.client.ws" />
 			<mapping
-				namespace="http://model.ws.remoting.team.sitescape.com"
-				package="com.sitescape.team.client.ws.model" />
+				namespace="http://model.ws.remoting.teaming.kablink.org"
+				package="org.kablink.teaming.client.ws.model" />
 		</axis-wsdl2java>
 	</target>
 	

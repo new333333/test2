@@ -24,7 +24,7 @@
 
 	<context-param>
 		<param-name>contextClass</param-name>
-		<param-value>com.sitescape.team.spring.web.context.support.XmlWebApplicationContext</param-value>
+		<param-value>org.kablink.teaming.spring.web.context.support.XmlWebApplicationContext</param-value>
 	</context-param>
 
 	<context-param>
@@ -34,22 +34,22 @@
 
 	<filter>
 		<filter-name>CompressionFilter</filter-name>
-		<filter-class>com.sitescape.team.web.servlet.filter.GZIPFilter</filter-class>
+		<filter-class>org.kablink.teaming.web.servlet.filter.GZIPFilter</filter-class>
 	</filter>
 
 	<filter>
 		<filter-name>digestBasedSoftAuthenticationFilter</filter-name>
-		<filter-class>com.sitescape.team.web.servlet.filter.DigestBasedSoftAuthenticationFilter</filter-class>
+		<filter-class>org.kablink.teaming.web.servlet.filter.DigestBasedSoftAuthenticationFilter</filter-class>
 	</filter>
 
 	<filter>
 		<filter-name>digestBasedHardAuthenticationFilter</filter-name>
-		<filter-class>com.sitescape.team.web.servlet.filter.DigestBasedHardAuthenticationFilter</filter-class>
+		<filter-class>org.kablink.teaming.web.servlet.filter.DigestBasedHardAuthenticationFilter</filter-class>
 	</filter>
 
 	<filter>
 		<filter-name>zoneContextFilter</filter-name>
-		<filter-class>com.sitescape.team.web.servlet.filter.ZoneContextFilter</filter-class>
+		<filter-class>org.kablink.teaming.web.servlet.filter.ZoneContextFilter</filter-class>
 	</filter>
 
 @@LOGIN_FILTER@@
@@ -93,7 +93,7 @@
 	</listener>
 
 	<listener>
-		<listener-class>com.sitescape.team.spring.web.util.Log4jConfigListener</listener-class>
+		<listener-class>org.kablink.teaming.spring.web.util.Log4jConfigListener</listener-class>
 	</listener>
 
 	<listener>
@@ -101,11 +101,11 @@
 	</listener>
 
 	<listener>
-		<listener-class>com.sitescape.team.web.servlet.listener.ContextListener</listener-class>
+		<listener-class>org.kablink.teaming.web.servlet.listener.ContextListener</listener-class>
 	</listener>
 
     <listener>
-     	<listener-class>com.sitescape.team.web.servlet.listener.SessionListener</listener-class>
+     	<listener-class>org.kablink.teaming.web.servlet.listener.SessionListener</listener-class>
     </listener>
 
 	<servlet>
@@ -126,7 +126,7 @@
 
 	<servlet>
 		<servlet-name>portletAdapter</servlet-name>
-		<servlet-class>com.sitescape.team.portletadapter.servlet.PortletAdapterServlet</servlet-class>
+		<servlet-class>org.kablink.teaming.portletadapter.servlet.PortletAdapterServlet</servlet-class>
 		<init-param>
 			<param-name>namespace</param-name>
 			<param-value>context/adapter-servlet</param-value>
@@ -136,7 +136,7 @@
 
 	<servlet>
 		<servlet-name>axis</servlet-name>
-		<servlet-class>com.sitescape.team.remoting.ws.servlet.WSSAxisServlet</servlet-class>
+		<servlet-class>org.kablink.teaming.remoting.ws.servlet.WSSAxisServlet</servlet-class>
 		<load-on-startup>4</load-on-startup>
 	</servlet>
 
@@ -162,7 +162,7 @@
 	
 	<servlet>
 		<servlet-name>portalCCDispatcher</servlet-name>
-		<servlet-class>com.sitescape.team.portal.servlet.DispatchServer</servlet-class>
+		<servlet-class>org.kablink.teaming.portal.servlet.DispatchServer</servlet-class>
 		<init-param>
 			<param-name>ssfContextPath</param-name>
 			<param-value>/ssf</param-value>
@@ -172,7 +172,7 @@
 	
 	<servlet>
 		<servlet-name>ssfsCCDispatcher</servlet-name>
-		<servlet-class>com.sitescape.team.ssfs.servlet.DispatchServer</servlet-class>
+		<servlet-class>org.kablink.teaming.ssfs.servlet.DispatchServer</servlet-class>
 		<load-on-startup>8</load-on-startup>
 	</servlet>
 	
