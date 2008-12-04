@@ -37,23 +37,21 @@
 <c:if test="${empty ssReadOnlyFields[property_name]}">
 <select name="${property_name}">
 <%
-	String[] ids = java.util.TimeZone.getAvailableIDs();
+	java.util.Set<String> tzones = org.kablink.teaming.calendar.TimeZoneHelper.getTimeZoneIds();
 	org.kablink.teaming.domain.User user = (org.kablink.teaming.domain.User)request.getAttribute("ssDefinitionEntry");
 	org.kablink.teaming.domain.User currentUser = (org.kablink.teaming.domain.User)request.getAttribute("ssUser");
-	java.util.TreeMap<String,String> map = new java.util.TreeMap(new org.kablink.teaming.comparator.StringComparator(currentUser.getLocale())); //sort
-	java.util.Locale currentLocale = currentUser.getLocale();
-	for (int i=0; i<ids.length; ++i) {
-		map.put(java.util.TimeZone.getTimeZone(ids[i]).getDisplayName(currentLocale) + " (" + ids[i] + ")", ids[i]);
-	}
+	java.util.Set<String> map = new java.util.TreeSet(new org.kablink.teaming.comparator.StringComparator(currentUser.getLocale())); //sort
+	map.addAll(tzones);
 	String tzId;
 	if (user != null) tzId = user.getTimeZone().getID();
 	else tzId = org.kablink.teaming.calendar.TimeZoneHelper.getDefault().getID();
-	for (java.util.Map.Entry<String, String> me: map.entrySet()) {
+	map.add(tzId);
+	for (String tz:map) {
 		String checked = "";
-		if (me.getValue().equals(tzId))
+		if (tz.equals(tzId))
 			checked="selected=\"selected\"";
 %>
-<option value="<%= me.getValue() %>" <%= checked %>><%= me.getKey() %></option>
+<option value="<%= tz %>" <%= checked %>><%= tz %></option>
 <%
 };
 %>
@@ -65,7 +63,7 @@
 	org.kablink.teaming.domain.User currentUser = (org.kablink.teaming.domain.User)request.getAttribute("ssUser");
 	if (user != null) {	
 %>
-<%= user.getTimeZone().getDisplayName(currentUser.getLocale()) + " (" + user.getTimeZone().getID() + ")"%>
+<%= user.getTimeZone().getID()%>
 <%
 };
 %>

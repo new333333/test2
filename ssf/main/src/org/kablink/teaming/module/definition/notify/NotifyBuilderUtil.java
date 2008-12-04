@@ -238,29 +238,19 @@ public class NotifyBuilderUtil implements InitializingBean {
 			ctx.put((String)entry.getKey(), entry.getValue());
 		}
 			
-	   	try {
-    		String fieldBuilderClassName = flagElement.attributeValue("notifyBuilder");
-       		String template = flagElement.attributeValue("velocity");
-       		if (Validator.isNotNull(fieldBuilderClassName)) {
-       			Class fieldBuilderClass = ReflectHelper.classForName(fieldBuilderClassName);
-       			NotifyBuilder fieldBuilder = (NotifyBuilder) fieldBuilderClass.newInstance();
-        		fieldBuilder.buildElement(visitor, template, ctx);
-       		} else {
-       			if (Validator.isNull(template)) template = "dataElement.vm";
-       			try {
-       				visitor.processTemplate(template, ctx);
-       			} catch (Exception ex) {
-       				NotifyBuilderUtil.logger.error("Error processing template", ex);
-       			}
-       		}
-       
-    	} catch (ClassNotFoundException e) {
-    		throw new InternalException (e);
-    	} catch (InstantiationException e) {
-    		throw new InternalException (e);
-    	} catch (IllegalAccessException e) {
-    		throw new InternalException (e);
-    	}
+   		String fieldBuilderClassName = flagElement.attributeValue("notifyBuilder");
+   		String template = flagElement.attributeValue("velocity");
+   		if (Validator.isNotNull(fieldBuilderClassName)) {
+   			NotifyBuilder fieldBuilder = (NotifyBuilder)ReflectHelper.getInstance(fieldBuilderClassName);
+   			fieldBuilder.buildElement(visitor, template, ctx);
+   		} else {
+   			if (Validator.isNull(template)) template = "dataElement.vm";
+   			try {
+   				visitor.processTemplate(template, ctx);
+   			} catch (Exception ex) {
+   				NotifyBuilderUtil.logger.error("Error processing template", ex);
+   			}
+   		}
 
     }
  

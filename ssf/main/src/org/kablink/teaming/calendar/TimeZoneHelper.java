@@ -28,7 +28,8 @@
  */
 package org.kablink.teaming.calendar;
 
-import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -43,7 +44,7 @@ import org.joda.time.DateTimeZone;
  */
 public class TimeZoneHelper {
 
-	private static Map<String, String> cZoneIdConversion = new HashMap();
+	private static Map<String, String> cZoneIdConversion = new TreeMap();
 	static {
 		cZoneIdConversion.put("GMT", "GMT"); // leave it as it is (joda makes Etc/GMT)
 		cZoneIdConversion.put("ACDT", "Australia/Adelaide");
@@ -185,5 +186,18 @@ public class TimeZoneHelper {
 		
 		return id;
 	}
+	public static Set<String> getTimeZoneIds() {
+		String[] ids = java.util.TimeZone.getAvailableIDs();
+		//prune the list
+		Set<String> results = new java.util.HashSet();
+		for (int i=0; i<ids.length; ++i) {
+			String id = fixTimeZoneId(ids[i]);
+			if (id == null) continue;
+			if (id.startsWith("Etc/") || id.startsWith("SystemV")) continue;
+			if (id.length() == 3 && !id.equals("GMT")) continue; //UTC is only one left
+			results.add(id);
+		}
+		return results;
 
+	}
 }

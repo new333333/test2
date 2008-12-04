@@ -136,27 +136,7 @@ public class ProcessorManager {
         }
         else {
 	        // Load processor class
-	        Class processorClass;
-	        try {
-	            processorClass = ReflectHelper.classForName(processorClassName);
-	        } catch (ClassNotFoundException e) {
-	            throw new ConfigurationException(
-	                    "Invalid processor class name '" + processorClassName + "'",
-	                    e);
-	        }
-	
-	        // Instantiate a processor
-	        try {
-	            processor = processorClass.newInstance();
-	        } catch (InstantiationException e) {
-	            throw new ConfigurationException(
-	                    "Cannot instantiate processor of type '"
-	                            + processorClassName + "'");
-	        } catch (IllegalAccessException e) {
-	            throw new ConfigurationException(
-	                    "Cannot instantiate processor of type '"
-	                            + processorClassName + "'");
-	        }
+        	processor = ReflectHelper.getInstance(processorClassName);
 	        
 	        if(springBeanType == SPRING_BEAN_TYPE_EXTERNAL) {
 	            // This is an externally instantiated bean whose dependencies 

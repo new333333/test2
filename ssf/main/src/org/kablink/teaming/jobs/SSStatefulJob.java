@@ -73,7 +73,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 	public static String ZONEID="zoneId";
 	public static String USERID="userId";
 		
-	public static String trimDescription(String description) {
+	public String trimDescription(String description) {
 		return description.substring(0, Math.min(description.length(), DESCRIPTION_MAX));
 	}
 	public void execute(final JobExecutionContext context) throws JobExecutionException {

@@ -129,10 +129,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	protected int rcptToLimit = 500;
 //	protected Map<String,String> mailAccounts = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 	public MailModuleImpl() {
-		defaultProps.put(MailModule.Property.POSTING_JOB.getKey(), "org.kablink.teaming.jobs.DefaultEmailPosting");
-		defaultProps.put(MailModule.Property.NOTIFICATION_JOB.getKey(), "org.kablink.teaming.jobs.DefaultEmailNotification");
-	 	defaultProps.put(MailModule.Property.SUBSCRIPTION_JOB.getKey(), "org.kablink.teaming.jobs.DefaultFillEmailSubscription");
-	 	defaultProps.put(MailModule.Property.SENDMAIL_JOB.getKey(), "org.kablink.teaming.jobs.DefaultSendEmail");
 	}
 
 	private TransactionTemplate transactionTemplate;
@@ -218,37 +214,25 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 
 	protected FillEmailSubscription getSubscriptionJob(Workspace zone) {
     	String jobClass = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.SUBSCRIPTION_JOB);
-    	try {
-    		Class processorClass = ReflectHelper.classForName(jobClass);
-    		FillEmailSubscription job = (FillEmailSubscription)processorClass.newInstance();
-    		return job;
-    	} catch (ClassNotFoundException e) {
-    		throw new ConfigurationException(
-    				"Invalid FillEmailSubscription class name '" + jobClass + "'", e);
-    	} catch (InstantiationException e) {
-    		throw new ConfigurationException(
-    				"Cannot instantiate FillEmailSubscription of type '" + jobClass + "'");
-    	} catch (IllegalAccessException e) {
-    		throw new ConfigurationException(
-	 				"Cannot instantiate FillEmailSubscription of type '" + jobClass + "'");
-    	} 
-	}
+    	if (Validator.isNotNull(jobClass)) {
+    		try {
+    			return (FillEmailSubscription)ReflectHelper.getInstance(jobClass);
+    		} catch (Exception e) {
+ 			   logger.error("Cannot instantiate FillEmailSubscription custom class", e);
+    		}
+    	}
+    	return (FillEmailSubscription)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultFillEmailSubscription.class);
+ 	}
 	protected SendEmail getEmailJob(Workspace zone) {
     	String jobClass = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.SENDMAIL_JOB);
-    	try {
-    		Class processorClass = ReflectHelper.classForName(jobClass);
-    		SendEmail job = (SendEmail)processorClass.newInstance();
-    		return job;
-    	} catch (ClassNotFoundException e) {
-    		throw new ConfigurationException(
-    				"Invalid FillEmailSubscription class name '" + jobClass + "'", e);
-    	} catch (InstantiationException e) {
-    		throw new ConfigurationException(
-    				"Cannot instantiate FillEmailSubscription of type '" + jobClass + "'");
-    	} catch (IllegalAccessException e) {
-    		throw new ConfigurationException(
-	 				"Cannot instantiate FillEmailSubscription of type '" + jobClass + "'");
-    	} 
+    	if (Validator.isNotNull(jobClass)) {
+    		try {
+    			return (SendEmail)ReflectHelper.getInstance(jobClass);
+    		} catch (Exception e) {
+ 			   logger.error("Cannot instantiate SendEmail custom class", e);
+    		}
+    	}
+    	return (SendEmail)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultSendEmail.class);
 	}
 	//called on zone delete
 	public void stopScheduledJobs(Workspace zone) {

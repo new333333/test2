@@ -108,17 +108,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	protected ProfileModule profileModule;
 	protected DefinitionModule definitionModule;
 	protected SessionFactory sessionFactory;
-	protected static String USER_FILTER="com.sitescape.ldap.user.search";
-	protected static String GROUP_FILTER="com.sitescape.ldap.group.search";
-	protected static String USER_ATTRIBUTES="userAttributes";
 	protected static String GROUP_ATTRIBUTES="groupAttributes";
 	protected static String MEMBER_ATTRIBUTES="memberAttributes";
-	protected static String USER_ID_ATTRIBUTE="userIdAttribute";	
-	protected static String SYNC_JOB="com.sitescape.ldap.job"; //properties in xml file need a unique name
+	protected static String SYNC_JOB="ldap.job"; //properties in xml file need a unique name
 	public LdapModuleImpl () {
 		defaultProps.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
 		defaultProps.put(Context.SECURITY_AUTHENTICATION, "simple");
-		defaultProps.put(SYNC_JOB, "org.kablink.teaming.jobs.DefaultLdapSynchronization");
 	}
 	
     protected TransactionTemplate getTransactionTemplate() {
@@ -187,23 +182,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	}
     protected LdapSynchronization getSyncObject() {
     	String jobClass = getLdapProperty(RequestContextHolder.getRequestContext().getZoneName(), SYNC_JOB);
-    	try {
-            Class processorClass = ReflectHelper.classForName(jobClass);
-            LdapSynchronization job = (LdapSynchronization)processorClass.newInstance();
-            return job;
-        } catch (ClassNotFoundException e) {
-            throw new ConfigurationException(
-                    "Invalid LdapSynchronization class name '" + jobClass + "'",
-                    e);
-        } catch (InstantiationException e) {
-            throw new ConfigurationException(
-                    "Cannot instantiate LdapSynchronization of type '"
-                            + jobClass + "'");
-        } catch (IllegalAccessException e) {
-            throw new ConfigurationException(
-                    "Cannot instantiate LdapSynchronization of type '"
-                            + jobClass + "'");
-        }
+       	if (Validator.isNotNull(jobClass)) {
+    		try {
+    			return (LdapSynchronization)ReflectHelper.getInstance(jobClass);
+    		} catch (Exception e) {
+ 			   logger.error("Cannot instantiate LdapSynchronization custom class", e);
+    		}
+    	}
+    	return (LdapSynchronization)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultLdapSynchronization.class);		   		
+ 
     }	
 	
     protected Map getZoneMap(String zoneName)
@@ -323,17 +310,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
    		
 	}
 
-
-	protected void buildReserved(Collection rows, Set reservedIds) {
-		Object [] row;
-		for (Iterator iter=rows.iterator(); iter.hasNext();) {
-			row = (Object[])iter.next();
-			if (Validator.isNotNull((String)row[3])) {
-				reservedIds.add(row[1]);
-			}
-		}
-		
-	}
 	
 	class UserCoordinator
 	{
@@ -402,6 +378,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		public void record(String dn, String ssName, Attributes lAttrs) throws NamingException
 		{
+			if (logger.isDebugEnabled()) logger.debug("Retrieved user: '" + dn + "'");
+
 			//use DN as 1st priority match.  This will catch changes in USER_ID_ATTRIBUTE
 			Object[] row = ssDnUsers.get(dn); 
 			if (row != null) notInLdap.remove(row[1]);
@@ -417,11 +395,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					if (row != null && row2 == null) {
 						//user_id_attribute must have changed, just changing the name
 						if (!foundNames.containsKey(ssName)) { //if haven't just added it
+							if (logger.isDebugEnabled()) logger.debug("id changed: " + row[0] + "->" + ssName);
 							userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME, ssName);
 							row[0] = ssName;							
 						} //otherwise update the other fields, just leave old name
 					} else if (row == null && row2 != null) {
 						//name exists, DN will be updated
+						if (logger.isDebugEnabled()) logger.debug("dn changed: " + row2[4] + "->" + dn);
 						userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
 						row = row2;
 						row[4] = dn;
@@ -429,7 +409,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						//have 2 rows that want the same loginName
 						//this could only happen if the user_id_attribute has changed and the new name is already taken
 						logger.error(NLT.get("errorcode.ldap.duplicate", new Object[] {ssName, dn}));
-						//but apply updates to row anyway, just leave loginName unchagned
+						//but apply updates to row anyway, just leave loginName unchanged
 						
 					}
 					//otherwise equal and all is well
@@ -500,12 +480,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 				deletePrincipals(zoneId, notInLdap.keySet(), deleteWorkspace);
 			}
-			//Set foreign names of users to self; needed to recognize sync names and mark attributes read-only
+			//Set foreign names of users to self; needed to recognize synced names and mark attributes read-only
 			if (!delete && !notInLdap.isEmpty()) {
 		    	Map users = new HashMap();
+				if (logger.isDebugEnabled()) logger.debug("Users not found in ldap:");
 				for (Map.Entry<Long, String>me:notInLdap.entrySet()) {
 					Long id = me.getKey();
 					String name = me.getValue();
+					if (logger.isDebugEnabled()) logger.debug("'"+name+"'");
 					Object row[] = (Object[])ssUsers.get(name);
 					if (!name.equalsIgnoreCase((String)row[4])) {//was synched from somewhere else	
 						Map updates = new HashMap();
@@ -625,6 +607,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		boolean record(String dn, String relativeName, Attributes lAttrs) throws NamingException
 		{
 			boolean isSSGroup = false;
+			if (logger.isDebugEnabled()) logger.debug("Retrieved group: '" + dn + "'");
 			
 			DnToRelative.put(dn, relativeName);
 			//see if group mapping exists
@@ -643,7 +626,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME,ssName);
 						userMods.put(ObjectKeys.FIELD_ENTITY_TITLE, dn);
 						getUpdates(groupAttributeNames, groupAttributes, lAttrs, userMods);
-						Group group = createGroup(zoneId, ssName, userMods);
+						if (logger.isDebugEnabled()) logger.debug("Creating group:" + ssName);
+						Group group = createGroup(zoneId, ssName, userMods); 
 						if(group != null) {
 							userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
 							userMods.put(ObjectKeys.FIELD_ZONE, zoneId);
@@ -657,6 +641,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				ssName = (String)row[0];
 				if (sync) {
 					Map userMods = new HashMap();
+					if (logger.isDebugEnabled()) logger.debug("Updating group:" + ssName);
 					getUpdates(groupAttributeNames, groupAttributes, lAttrs, userMods);
 					updateGroup(zoneId, (Long)row[1], userMods);
 				} 
@@ -682,7 +667,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			Group temp = new Group();
 			getDefinitionModule().setDefaultEntryDefinition(temp);
 			Definition groupDef = temp.getEntryDef();
-		    try {
+			try {
 		    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
 	            	pf, ProfileCoreProcessor.PROCESSOR_KEY);
 		    	List newGroups = processor.syncNewEntries(pf, groupDef, Group.class, Arrays.asList(new MapInputData[] {groupMods}), null);
@@ -721,7 +706,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		    }
 	    }
 
-		protected void syncMembership(Long groupId, Enumeration valEnum, Set reservedIds)
+		protected void syncMembership(Long groupId, Enumeration valEnum)
 		throws NamingException
 		{
 			Object[] uRow;
@@ -735,7 +720,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				membership.add(new Membership(groupId, (Long)uRow[1]));
 			}
 			//do inside a transaction
-			updateMembership(groupId, membership, reservedIds);	
+			updateMembership(groupId, membership);	
 		}
 
 		public void deleteObsoleteGroups()
@@ -749,6 +734,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 				}
 				deletePrincipals(zoneId,notInLdap.keySet(), false);
+			} else if (!delete && !notInLdap.isEmpty()) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Groups not found in ldap:");
+					for (String name:notInLdap.values()) {
+						logger.debug("'" + name + "'");
+					}
+					
+				}
 			}
 		}
 		
@@ -764,7 +757,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		//ssname=> forum info
 		String [] sample = new String[0];
 		//ldap dn => forum info
-
 		for(LdapConnectionConfig.SearchInfo searchInfo : config.getGroupSearches()) {
 			if(Validator.isNotNull(searchInfo.getFilter())) {
 				Map groupAttributes = (Map) getZoneMap(zone.getName()).get(GROUP_ATTRIBUTES);
@@ -789,9 +781,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					} else {
 						dn = relativeName;
 					}
-					if(groupCoordinator.record(dn, relativeName, lAttrs) && syncMembership) {
+					//doing this one at a time is going to be slow for lots of groups
+					//not sure why it was changed for v2
+					if(groupCoordinator.record(dn, relativeName, lAttrs) && syncMembership) { 
 						//Get map indexed by id
-						Set reservedIds = new HashSet();
 						Object[] gRow = groupCoordinator.getGroup(dn);
 						if (gRow == null) continue; //not created
 						Long groupId = (Long)gRow[1];
@@ -819,7 +812,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							members = Collections.enumeration(membersList);
 						}
 						if(members != null) {
-							groupCoordinator.syncMembership(groupId, members, reservedIds);
+							groupCoordinator.syncMembership(groupId, members);
 						}
 					}
 				}
@@ -967,7 +960,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   	}
 	}
 
-    protected void updateMembership(Long groupId, Collection newMembers, final Collection reservedIds) {
+    protected void updateMembership(Long groupId, Collection newMembers) {
 		//have a list of users, now compare with what exists already
 		List oldMembers = getProfileDao().getMembership(groupId, RequestContextHolder.getRequestContext().getZoneId());
 		final Set newM = CollectionUtil.differences(newMembers, oldMembers);
@@ -976,12 +969,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
-        		//only remove entries that are not reserved
         		for (Iterator iter=remM.iterator(); iter.hasNext();) {
         			Membership c = (Membership)iter.next();
-        			if (!reservedIds.contains(c.getUserId())) {
-        				getCoreDao().delete(c);
-        			}
+       				getCoreDao().delete(c);
         		}
 		
         		getCoreDao().save(newM);

@@ -316,22 +316,16 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		   if (excludeIds != null) binderIds.removeAll(excludeIds);
 		   String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		   String jobClass = SZoneConfig.getString(zoneName, "userConfiguration/property[@name='" + UserTitleChange.USER_TITLE_JOB + "']");
-		   if (Validator.isNull(jobClass)) jobClass = "org.kablink.teaming.jobs.DefaultUserTitleChange";
-		   try {
-			   Class processorClass = ReflectHelper.classForName(jobClass);
-			   UserTitleChange job = (UserTitleChange)processorClass.newInstance();
-			   job.schedule(user, binderIds, entryIds);
- 	
-		   } catch (ClassNotFoundException e) {
-			   throw new ConfigurationException(
-					   "Invalid UserTitleChange class name '" + jobClass + "'", e);
-		   } catch (InstantiationException e) {
-			   throw new ConfigurationException(
-					   "Cannot instantiate UserTitleChange of type '"  + jobClass + "'");
-		   } catch (IllegalAccessException e) {
-			   throw new ConfigurationException(
-					   "Cannot instantiate UserTitleChange of type '" + jobClass + "'");
-		   }
+		   UserTitleChange job=null;
+		   if (Validator.isNotNull(jobClass)) {
+			   try {
+				   job = (UserTitleChange)ReflectHelper.getInstance(jobClass);
+			   } catch (Exception ex) {
+				   logger.error("Cannot instantiate UserTitleChange custom class", ex);
+			   }
+	   		}
+	   		if (job == null) job = (UserTitleChange)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultUserTitleChange.class);
+			job.schedule(user, binderIds, entryIds); 	
 	   }	   
    }
    /**

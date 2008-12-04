@@ -188,26 +188,35 @@ public class EnterExitEvent extends AbstractActionHandler {
 			getZoneClassManager().execute(new ExtensionCallback() {
 				public Object execute(Object action) {
 					if (action instanceof WorkflowScheduledAction) {
-						WorkflowProcess schedJob = (WorkflowProcess)SZoneConfig.getObject(RequestContextHolder.getRequestContext().getZoneName(), 
-							"workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_JOB + "']", org.kablink.teaming.jobs.DefaultWorkflowProcess.class);
+						WorkflowProcess schedJob = null;
+						String jobClass = SZoneConfig.getString(RequestContextHolder.getRequestContext().getZoneName(), 
+								"workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_JOB + "']");
+						if (Validator.isNotNull(jobClass)) {
+							try {
+								schedJob =  (WorkflowProcess)ReflectHelper.getInstance(jobClass);
+							} catch (Exception e) {
+								logger.error("Cannot instantiate WorkflowProcess custom class", e);
+							}
+						}
+						if (schedJob == null) schedJob = (WorkflowProcess)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultWorkflowProcess.class);
 						String secsString = (String)SZoneConfig.getString(RequestContextHolder.getRequestContext().getZoneName(), "workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_SECONDS + "']");
 						int seconds = 300;
 						try {
 							seconds = Integer.parseInt(secsString);
 						} catch (Exception ex) {};
 						schedJob.schedule(wfEntry, currentWs, actionName, buildParams(wfEntry, currentWs), seconds);
-							
+								
 					} else {
 						((WorkflowAction)action).setHelper(new CalloutHelper(executionContext));
 						((WorkflowAction)action).execute(wfEntry, currentWs);
 					}
 					return null;
 				};
-			}, actionName);
+			}, actionName); 
 		} catch (ClassNotFoundException e) {
 			logger.error("Invalid Workflow Action class name '" + actionName + "'");
 			throw new ConfigurationException("Invalid Workflow Action class name '" + actionName + "'",
-					e);
+				e);
 		} 		
 
 	}
@@ -223,8 +232,17 @@ public class EnterExitEvent extends AbstractActionHandler {
 			public Object doAs() {
 				try {
 					Application app = getProfileDao().loadApplication(Long.valueOf(application), RequestContextHolder.getRequestContext().getZoneId());
-					WorkflowProcess schedJob = (WorkflowProcess)SZoneConfig.getObject(RequestContextHolder.getRequestContext().getZoneName(), 
-							"workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_JOB + "']", org.kablink.teaming.jobs.DefaultWorkflowProcess.class);
+					WorkflowProcess schedJob = null;
+					String jobClass = SZoneConfig.getString(RequestContextHolder.getRequestContext().getZoneName(), 
+							"workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_JOB + "']");
+					if (Validator.isNotNull(jobClass)) {
+						try {
+							schedJob =  (WorkflowProcess)ReflectHelper.getInstance(jobClass);
+						} catch (Exception e) {
+							logger.error("Cannot instantiate WorkflowProcess custom class", e);
+						}
+					}
+					if (schedJob == null) schedJob = (WorkflowProcess)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultWorkflowProcess.class);
 					String secsString = (String)SZoneConfig.getString(RequestContextHolder.getRequestContext().getZoneName(), "workflowConfiguration/property[@name='" + WorkflowProcess.PROCESS_SECONDS + "']");
 					int seconds = 300;
 					try {
