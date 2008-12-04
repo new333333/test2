@@ -37,8 +37,12 @@
 <ssf:skipLink tag='<%= NLT.get("skip.paging.links") %>' id="navigationLinks_${renderResponse.namespace}">
 
 <c:if test="${ssConfigJspStyle != 'template'}">
-	  <ssHelpSpot helpId="workspaces_folders/menus_toolbars/more_folder_navigation" offsetX="-5" offsetY="3" 
-	    title="<ssf:nlt tag="helpSpot.moreFolderNavigation"/>"></ssHelpSpot>
+	<span>
+		<img border="0" src="<html:imagesPath/>pics/1pix.gif" />
+		<ssHelpSpot helpId="workspaces_folders/menus_toolbars/more_folder_navigation" offsetX="0" offsetY="18" 
+	    			title="<ssf:nlt tag="helpSpot.moreFolderNavigation"/>">
+		</ssHelpSpot>
+	</span>
 <div class="ss_pagination ss_style">
 <table border="0" cellspacing="0" cellpadding="0" width="99%">
 		<tbody>

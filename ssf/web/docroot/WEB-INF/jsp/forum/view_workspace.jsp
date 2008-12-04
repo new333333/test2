@@ -262,8 +262,8 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 			
 			<c:if test="${ss_userWorkspace}">
 				<div width="100%" style="margin:10px;">
-				  <ssHelpSpot helpId="workspaces_folders/misc_tools/accessible_mode" offsetX="-17" 
-                  offsetY="-12" title="<ssf:nlt tag="helpSpot.accessibleMode" text="My Workspace"/>">
+				  <ssHelpSpot helpId="workspaces_folders/misc_tools/accessible_mode" offsetX="-22" 
+                  offsetY="-4" title="<ssf:nlt tag="helpSpot.accessibleMode" text="My Workspace"/>">
 				  </ssHelpSpot>
 				<ssf:ifLoggedIn>
 				 <ssf:ifaccessible>

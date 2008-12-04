@@ -46,8 +46,10 @@
 
 <div class="ss_blog_footer">
 <ssHelpSpot helpId="workspaces_folders/misc_tools/more_blog_tools" 
-offsetX="0" offsetY="0" 
-title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
+	offsetX="0" offsetY="8" 
+	title="<ssf:nlt tag="helpSpot.moreBlogTools"/>">
+</ssHelpSpot>
+<table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
 <c:if test="${!empty ss_blog_reply_url}">
 <td valign="top" style="white-space: nowrap;">
 <a href="${ss_blog_reply_url}" 

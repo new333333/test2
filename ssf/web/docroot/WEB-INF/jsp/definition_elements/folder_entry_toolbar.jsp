@@ -34,7 +34,7 @@
 <c:if test="${ss_folderViewStyle == 'blog'}">
 	<ssf:toolbar style="ss_actions_bar5 ss_actions_bar">
 	<ssHelpSpot 
-	  		helpId="workspaces_folders/menus_toolbars/folder_toolbar" offsetX="0" offsetY="0" 
+	  		helpId="workspaces_folders/menus_toolbars/folder_toolbar" offsetX="0" offsetY="7" 
 	  		title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>"></ssHelpSpot>
 	 <% // Entry toolbar %>
 	 <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar5 ss_actions_bar" item="true" />

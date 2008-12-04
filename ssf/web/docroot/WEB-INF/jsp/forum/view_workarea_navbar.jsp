@@ -247,28 +247,34 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
           <c:if test="${!ss_mashupHideMasthead}">
         	<!-- Begin Favorites -->  
         	<div id="ss_navbar_favorites${renderResponse.namespace}" style="display:inline;"></div>
-		      <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="0" offsetY="10"  
+	      	<ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="-23" offsetY="-2"  
 		          title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
-			  </ssHelpSpot>
-        	<a title="<ssf:nlt tag="navigation.favorites"/>"
-	  			href="javascript: ;" 
-	  			onClick="ssMyTeams${renderResponse.namespace}.hide();ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
-              ><ssf:nlt tag="navigation.favorites"/> <img border="0" 
-              src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> </a>
-		      &nbsp;|
+	        	<a title="<ssf:nlt tag="navigation.favorites"/>"
+		  			href="javascript: ;" 
+		  			onClick="ssMyTeams${renderResponse.namespace}.hide();ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
+	              ><ssf:nlt tag="navigation.favorites"/>
+					<img border="0" src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/>
+				</a>
+			</ssHelpSpot>
+		    &nbsp;|
 		      
 		    <!-- Begin Teams -->   
         	<div id="ss_navbar_myteams${renderResponse.namespace}" style="display:inline;">
-		      <ssHelpSpot helpId="navigation_bar/my_teams" offsetX="0" offsetY="0"  
-		          title="<ssf:nlt tag="helpSpot.myTeamsButton"/>">
-		      </ssHelpSpot></div> 
+			</div> 
         	<a title="<ssf:nlt tag="navigation.myTeams"/>"
-			  href="javascript:;" onClick="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();ssMyTeams${renderResponse.namespace}.show();"
-				    ><ssf:nlt tag="navigation.myTeams"/><img border="0" 
-              src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> 
-		      </a>  
-			    <div id="ss_navbarMyTeamsButton${renderResponse.namespace}" style="display:none;">
-			    </div>
+				  href="javascript:;" onClick="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();ssMyTeams${renderResponse.namespace}.show();"
+				    ><ssf:nlt tag="navigation.myTeams"/>
+				<img border="0" src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> 
+	    	</a>
+			<span>
+				&nbsp;
+				<!-- The help spot is positioned relative to the position of its parent. -->
+				<!-- That's why I put the <ssHelpSpot...> in a <span> -->
+		    	<ssHelpSpot helpId="navigation_bar/my_teams" offsetX="0" offsetY="-5" title="<ssf:nlt tag="helpSpot.myTeamsButton"/>">
+		    	</ssHelpSpot>
+			</span>
+			<div id="ss_navbarMyTeamsButton${renderResponse.namespace}" style="display:none;">
+			</div>
 		  </c:if>
 		</td>
         <td height="19" colspan="4" valign="top" align="right" >
@@ -305,7 +311,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			<tbody>
 			  <tr>
 				<td rowspan="2">
-			            <div class="ss_search_title" align="right" style=""><ssf:nlt tag="navigation.search"/></div>
+			        <div class="ss_search_title" align="right" style=""><ssf:nlt tag="navigation.search"/></div>
 			    </td>
 				<td>
 					<ssf:ifnotaccessible>
@@ -355,11 +361,15 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 							  	style="display:inline;"
 							  	action="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 							  	name="newTab" value="1"/></ssf:url>">
-							  			
-						  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="0" 
-					                offsetX="0" 
-								    title="<ssf:nlt tag="helpSpot.searchButton"/>">
-								
+
+							<!-- The help spot is positioned relative to the position of its parent. -->
+							<!-- That's why I put the <ssHelpSpot...> in a <span> -->
+							<span>&nbsp;
+						  		<ssHelpSpot helpId="navigation_bar/search_button" offsetY="-5" 
+					            	    	offsetX="4" 
+								    		title="<ssf:nlt tag="helpSpot.searchButton"/>">
+								</ssHelpSpot>
+							</span>
 							<input name="searchText" class="ss_combobox_search" type="text" /> 
 										
 							<a href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" >
@@ -370,7 +380,6 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 									<input type="hidden" name="searchBtn" value="searchBtn"/>
 									<input type="hidden" name="quickSearch" value="true"/>					
 									<input type="hidden" name="operation" value="ss_searchResults"/>
-						  </ssHelpSpot>
 								 
 							<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" 
 									title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" 
@@ -388,7 +397,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 				  <ssf:ifaccessible>
 							
 					<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}" >
-						  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="15" 
+						  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="0" 
 				                offsetX="0" 
 						    	title="<ssf:nlt tag="helpSpot.searchButton"/>">
 						  </ssHelpSpot>
@@ -563,9 +572,6 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
              </div>
        </td>
        <td width="25%" class="ss_workspace">
-            	<ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="15" offsetX="0" 
-			      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
-			  	</ssHelpSpot>
               	<a title="<ssf:nlt tag="navigation.myWorkspace"/>"
 				  href="<ssf:url 
 				    windowState="${ss_urlWindowState}"
@@ -573,7 +579,15 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			      	binderId="${ssUser.workspaceId}"/>"
               	><img src="<html:rootPath/>images/pics/masthead/ss_banner_guy.png" 
               	  width="30" height="34" border="0" align="absmiddle" 
-              	 />&nbsp;&nbsp;<ssf:nlt tag="navigation.myWorkspace"/></a> 
+              	 />&nbsp;&nbsp;<ssf:nlt tag="navigation.myWorkspace"/></a>
+
+			<!-- The help spot is positioned relative to the position of its parent. -->
+			<!-- That's why I put the <ssHelpSpot...> in a <span> -->
+			<span>&nbsp;
+            	<ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="-3" offsetX="0" 
+			      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
+			  	</ssHelpSpot>
+			</span> 
        </td>
           </tr><!-- kablink: ss_banner_guy_ka.gif -->
     </tbody>
