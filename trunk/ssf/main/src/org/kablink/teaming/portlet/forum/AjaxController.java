@@ -2400,6 +2400,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		String binderIdText = PortletRequestUtils.getStringParameter(request, "binderId", "");
 		model.put("binderId", binderIdText);
+		if (!binderIdText.equals("")) {
+			Binder binder = getBinderModule().getBinder(Long.valueOf(binderIdText));
+			model.put(WebKeys.BINDER, binder);
+		}
 
 		return new ModelAndView("binder/wikilink_ajax_return", model);
 	}
