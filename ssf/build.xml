@@ -128,8 +128,7 @@
 
 		<ant dir="tools" target="compile" inheritall="false"/>
 		
-		<!-- Temporarily commented out
-		<ant dir="samples" target="compile" inheritall="false"/>-->
+		<ant dir="samples" target="compile" inheritall="false"/>
 	</target>
 
 	<target name="jar">
