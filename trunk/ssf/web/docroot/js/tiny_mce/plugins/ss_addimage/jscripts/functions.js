@@ -111,7 +111,7 @@ function init() {
 		else
 			selectByValue(formObj, 'align', getStyle(elm, 'align', 'cssFloat'));
 
-		addClassesToList('classlist', 'ss_addimage_styles');
+		addClassesToList('classlist', 'ss_addimage');
 
 		selectByValue(formObj, 'classlist', tinyMCE.getAttrib(elm, 'class'));
 		selectByValue(formObj, 'imagelistsrc', src);
@@ -122,7 +122,7 @@ function init() {
 
 		window.focus();
 	} else
-		addClassesToList('classlist', 'ss_addimage_styles');
+		addClassesToList('classlist', 'ss_addimage');
 
 	// If option enabled default contrain proportions to checked
 	if (tinyMCE.getParam("ss_addimage_constrain_proportions", true))
@@ -238,7 +238,7 @@ function insertAction() {
 		setAttrib(elm, 'longdesc');
 		setAttrib(elm, 'usemap');
 		setAttrib(elm, 'style');
-		setAttrib(elm, 'class', getSelectValue(formObj, 'classlist'));
+		setAttrib(elm, 'class', getSelectValue(formObj, 'classlist') + ' ss_addimage ');
 		setAttrib(elm, 'align', getSelectValue(formObj, 'align'));
 
 		//tinyMCE.execCommand("mceRepaint");
@@ -268,7 +268,7 @@ function insertAction() {
 		html += makeAttrib('longdesc');
 		html += makeAttrib('usemap');
 		html += makeAttrib('style');
-		html += makeAttrib('class', getSelectValue(formObj, 'classlist'));
+		html += makeAttrib('class', getSelectValue(formObj, 'classlist') + ' ss_addimage ');
 		html += makeAttrib('align', getSelectValue(formObj, 'align'));
 		html += " />";
 
@@ -402,7 +402,7 @@ function showPreviewImage(src, start) {
 	if (src == "")
 		elm.innerHTML = "";
 	else
-		elm.innerHTML = '<img src="' + src + '" border="0" />'
+		elm.innerHTML = '<img class="ss_addimage" src="' + src + '" border="0" />';
 
 	getImageData(src);
 }

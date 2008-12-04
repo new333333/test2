@@ -5,11 +5,7 @@
  * @copyright Copyright © 2004-2007, Moxiecode Systems AB, All rights reserved.
  */
 
-/* Import plugin specific language pack */
-tinymce.PluginManager.requireLangPack('ss_wikilink');
-
-
-var TinyMCE_ssWikiLinkPlugin = {
+(function() {
 	// Load plugin specific language pack
 	tinymce.PluginManager.requireLangPack('ss_wikilink');
 
@@ -27,8 +23,8 @@ var TinyMCE_ssWikiLinkPlugin = {
 			ed.addCommand('mce_ssWikiLink', function() {
 				ed.windowManager.open({
 					file : ss_wikiLinkUrl,
-					width : 250 + ed.getLang('ss_wikilink.delta_width', 0),
-					height : 160 + ed.getLang('ss_wikilink.delta_height', 0),
+					width : 550 + ed.getLang('ss_wikilink.delta_width', 0),
+					height : 500 + ed.getLang('ss_wikilink.delta_height', 0),
 					inline : 1
 				}, {
 					plugin_url : ss_wikiLinkUrl, // Plugin absolute URL
@@ -44,7 +40,7 @@ var TinyMCE_ssWikiLinkPlugin = {
 
 			// Add a node change handler, selects the button in the UI when a image is selected
 			ed.onNodeChange.add(function(ed, cm, n) {
-				cm.setActive('ss_wikilink', n.nodeName == 'IMG');
+				cm.setActive('ss_wikilink', n.className == 'ss_icecore_link');
 			});
 		},
 
