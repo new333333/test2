@@ -28,9 +28,9 @@
  * are trademarks of SiteScape, Inc.     
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
-<%@ page import="com.sitescape.team.util.SPropsUtil" %>
-<%@ page import="com.sitescape.util.PropertyNotFoundException" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.SPropsUtil" %>
+<%@ page import="org.kablink.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:if test="${ss_toolbar_clipboard_show}">

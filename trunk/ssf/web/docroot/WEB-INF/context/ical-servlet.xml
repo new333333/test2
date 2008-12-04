@@ -36,10 +36,10 @@
 		<!--<property name="singleSession"><value>false</value></property>-->
 	</bean>
 
-	<bean id="resolveRequestContextInterceptor" class="com.sitescape.team.web.servlet.handler.ResolveRequestContextInterceptor"/>
+	<bean id="resolveRequestContextInterceptor" class="org.kablink.teaming.web.servlet.handler.ResolveRequestContextInterceptor"/>
 
 	<!-- Controllers -->
-	<bean id="getController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.ical.GetController">
+	<bean id="getController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.ical.GetController">
 		<property name="icalModule"><ref bean="icalModule"/></property>
 		<property name="mailModule"><ref bean="mailModule"/></property>
 	</bean>

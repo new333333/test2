@@ -383,7 +383,7 @@
 
 	<target name="make-strings.xml">
 		<!-- not needed with replacement of velocity
-					<java 	classname="com.sitescape.team.tools.strings.GenerateStringsXml"
+					<java 	classname="org.kablink.teaming.tools.strings.GenerateStringsXml"
 					fork="true"
 					newenvironment="true"
 					failonerror="true"
@@ -394,7 +394,7 @@
 -->
 	</target>
 	<target name="make-portlet.xml">
-				<java 	classname="com.sitescape.team.tools.portlet.GeneratePortletXml"
+				<java 	classname="org.kablink.teaming.tools.portlet.GeneratePortletXml"
 						fork="true"
 						newenvironment="true"
 						failonerror="true"
@@ -406,7 +406,7 @@
 	
 	<target name="make-portlet-properties">
 					<mkdir dir="${web.dir}/WEB-INF/classes/content"/>
-					<java 	classname="com.sitescape.team.tools.portletproperties.GeneratePortletProperties"
+					<java 	classname="org.kablink.teaming.tools.portletproperties.GeneratePortletProperties"
 							fork="true"
 							newenvironment="true"
 							failonerror="true"

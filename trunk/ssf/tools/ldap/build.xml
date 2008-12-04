@@ -32,7 +32,7 @@
   		<!-- Make sure to compile the Java code we're about to run. -->
   		<ant dir=".." target="compile" inheritAll="false" />
   		<java 
-  			classname="com.sitescape.team.tools.ldap.GenerateLdapList"
+  			classname="org.kablink.teaming.tools.ldap.GenerateLdapList"
   			classpathref="initpath"
   			fork="true"
   			dir="${basedir}"

@@ -3,33 +3,33 @@
 <beans>
 
 	<!-- Controllers -->
-	<bean id="definitionBuilderController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.definitionBuilder.ViewController" />
-	<bean id="definitionBuilderXmlController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.definitionBuilder.ViewDefinitionXmlController" />
-	<bean id="adminViewController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ViewController" />
-	<bean id="adminConfigureLdapController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureLdapController" />
-	<bean id="adminConfigureRolesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureRolesController" />
-	<bean id="adminConfigurePostingJobController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigurePostingJobController" />
-	<bean id="adminConfigureSearchIndexController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageSearchIndexController" />
-	<bean id="adminConfigureSearchNodesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageSearchNodesController" />
-	<bean id="adminImportDefinitionController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ImportDefinitionController" />
-	<bean id="adminLogFileController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LogFileController" />
-	<bean id="adminConfigureConfigurationController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureConfigurationController" />
-	<bean id="adminImportProfilesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ImportProfilesController" />
-	<bean id="adminManageGroupsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageGroupsController" />
-	<bean id="adminManageApplicationsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageApplicationsController" />
-	<bean id="adminManageApplicationGroupsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageApplicationGroupsController" />
-	<bean id="adminViewChangeLogController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ViewChangeLogController" />
-	<bean id="accessControlController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.AccessControlController" />
-	<bean id="configureController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ConfigureController" />
-	<bean id="dashboardModifyController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ModifyDashboardController" />
-	<bean id="loginReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LoginReportController" />
-	<bean id="licenseReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LicenseReportController" />
-	<bean id="manageLicenseController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageLicenseController" />
-	<bean id="activityReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ActivityReportController" />
-	<bean id="quotaReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.QuotaReportController" />
-	<bean id="workflowReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.WorkflowReportController" />
-	<bean id="adminCreditsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.CreditsController" />
-	<bean id="manageDefinitionsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageDefinitionsController" />
+	<bean id="definitionBuilderController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.definitionBuilder.ViewController" />
+	<bean id="definitionBuilderXmlController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.definitionBuilder.ViewDefinitionXmlController" />
+	<bean id="adminViewController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ViewController" />
+	<bean id="adminConfigureLdapController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureLdapController" />
+	<bean id="adminConfigureRolesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureRolesController" />
+	<bean id="adminConfigurePostingJobController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigurePostingJobController" />
+	<bean id="adminConfigureSearchIndexController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageSearchIndexController" />
+	<bean id="adminConfigureSearchNodesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageSearchNodesController" />
+	<bean id="adminImportDefinitionController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ImportDefinitionController" />
+	<bean id="adminLogFileController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LogFileController" />
+	<bean id="adminConfigureConfigurationController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureConfigurationController" />
+	<bean id="adminImportProfilesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ImportProfilesController" />
+	<bean id="adminManageGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageGroupsController" />
+	<bean id="adminManageApplicationsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationsController" />
+	<bean id="adminManageApplicationGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationGroupsController" />
+	<bean id="adminViewChangeLogController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ViewChangeLogController" />
+	<bean id="accessControlController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.AccessControlController" />
+	<bean id="configureController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ConfigureController" />
+	<bean id="dashboardModifyController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.ModifyDashboardController" />
+	<bean id="loginReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LoginReportController" />
+	<bean id="licenseReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LicenseReportController" />
+	<bean id="manageLicenseController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageLicenseController" />
+	<bean id="activityReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ActivityReportController" />
+	<bean id="quotaReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.QuotaReportController" />
+	<bean id="workflowReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.WorkflowReportController" />
+	<bean id="adminCreditsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.CreditsController" />
+	<bean id="manageDefinitionsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageDefinitionsController" />
 
 	<!-- Handlers -->
 

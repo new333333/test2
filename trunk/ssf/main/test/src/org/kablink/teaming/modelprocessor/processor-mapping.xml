@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<model-processor-mapping>
+	<processors>
+		<processor class="org.kablink.teaming.modelprocessor.ProcessorManagerTests$MyTestProcessor1" spring-bean-type="internal" spring-bean-name="myTestProcessor1"/>
+		<processor class="org.kablink.teaming.modelprocessor.ProcessorManagerTests$MyTestProcessor2" spring-bean-type="external" spring-bean-name="myTestProcessor2"/>
+		<processor class="org.kablink.teaming.modelprocessor.ProcessorManagerTests$MyTestProcessor3" spring-bean-type="none"/>
+	</processors>
+	
+	<default-mappings>
+		<model-class name="org.kablink.teaming.modelprocessor.ProcessorManagerTests$TestModel">
+			<mapping processor-key="processorKey_testProcessor1" processor-class="org.kablink.teaming.modelprocessor.ProcessorManagerTests$MyTestProcessor1"/>
+			<mapping processor-key="processorKey_testProcessor2" processor-class="org.kablink.teaming.modelprocessor.ProcessorManagerTests$MyTestProcessor2"/>
+			<mapping processor-key="processorKey_testProcessor3" processor-class="org.kablink.teaming.modelprocessor.ProcessorManagerTests$MyTestProcessor3"/>
+		</model-class>
+	</default-mappings>
+</model-processor-mapping>

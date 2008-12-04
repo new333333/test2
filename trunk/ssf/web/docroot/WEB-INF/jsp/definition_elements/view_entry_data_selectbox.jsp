@@ -29,8 +29,8 @@
  */
 %>
 <% //Selectbox view %>
-<%@ page import="com.sitescape.team.web.util.DefinitionHelper" %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.web.util.DefinitionHelper" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 
 
 <c:if test="${!empty ss_element_display_style && 

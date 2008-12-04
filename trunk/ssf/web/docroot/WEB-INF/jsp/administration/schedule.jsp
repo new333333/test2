@@ -30,7 +30,7 @@
 %>
 <%@ page import="java.util.TimeZone" %>
 <%@ page import="java.util.Date" %>
-<%@ page import="com.sitescape.team.domain.User" %>
+<%@ page import="org.kablink.teaming.domain.User" %>
 <c:if test="${scheduleStringOnly}">
 <c:if test="${schedule.daily}">
 <ssf:nlt tag="schedule.everyday"/>

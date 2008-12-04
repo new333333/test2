@@ -17,17 +17,17 @@
           However, it is also possible to specify them in config file using
           the following parameters. -->
      <!--<parameter name="passwordType" value="PasswordText"/>
-     <parameter name="passwordCallbackClass" value="com.sitescape.team.samples.remoting.client.ws.security.PWCallbackText"/>-->
+     <parameter name="passwordCallbackClass" value="org.kablink.teaming.samples.remoting.client.ws.security.PWCallbackText"/>-->
      <!-- With PasswordDigest, a password digest value is sent to the server. 
           In this case, WS client must first encrypt the cleartext password using
-          the encryption method com.sitescape.util.PasswordEncryptor.encrypt()
+          the encryption method org.kablink.util.PasswordEncryptor.encrypt()
           before passing it to the WS-Security tool for subsequent digest 
           computation. Consequently the password is double hashed.
           Our sample program sets these settings programmatically.
           However, it is also possible to specify them in config file using
           the following parameters. -->
      <!--<parameter name="passwordType" value="PasswordDigest"/>
-     <parameter name="passwordCallbackClass" value="com.sitescape.team.samples.remoting.client.ws.security.PWCallbackDigest"/>-->
+     <parameter name="passwordCallbackClass" value="org.kablink.teaming.samples.remoting.client.ws.security.PWCallbackDigest"/>-->
     </handler>
    </requestFlow >
   </globalConfiguration >

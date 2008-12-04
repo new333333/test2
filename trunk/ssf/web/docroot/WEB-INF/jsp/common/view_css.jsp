@@ -133,7 +133,7 @@ var ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
 
 </script>
 <%
-	boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
+	boolean isIE = org.kablink.util.BrowserSniffer.is_ie(request);
 	%><%--
 
 --%>

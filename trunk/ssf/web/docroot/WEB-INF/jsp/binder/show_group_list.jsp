@@ -29,8 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ page import="com.sitescape.team.ObjectKeys" %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.ObjectKeys" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <ssf:ifadapter>
 <body class="tundra">
 </ssf:ifadapter>
@@ -77,7 +77,7 @@
 </c:if>
 
 <c:if test="${empty ssGroups}">
-	<jsp:useBean id="ssGroup" type="com.sitescape.team.domain.Group" scope="request"/>
+	<jsp:useBean id="ssGroup" type="org.kablink.teaming.domain.Group" scope="request"/>
     <% if (ObjectKeys.ALL_USERS_GROUP_INTERNALID.equals(ssGroup.getInternalId())) { %>
     	<div style="padding:20px;">
     		<span class="ss_italic">

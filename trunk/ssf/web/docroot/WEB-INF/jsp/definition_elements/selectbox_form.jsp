@@ -29,7 +29,7 @@
  */
 %>
 <% // The selectbox form element %>
-<%@ page import="com.sitescape.team.web.util.DefinitionHelper" %>
+<%@ page import="org.kablink.teaming.web.util.DefinitionHelper" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />

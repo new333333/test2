@@ -29,7 +29,7 @@
  */
 %><%--
 --%><%@ include file="/WEB-INF/jsp/common/include.jsp" %><%--
---%><%@ page import="com.sitescape.util.ParamUtil" %><%--
+--%><%@ page import="org.kablink.util.ParamUtil" %><%--
 --%><portletadapter:defineObjects1/><%--
 --%><ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter><%--
 --%><ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter><%--

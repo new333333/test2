@@ -1,6 +1,6 @@
 <%@ tag isELIgnored="false" body-content="empty"  %><%--
 --%><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%--
---%><c:set var="ss_brand_prefix" value='<%= com.sitescape.team.util.SPropsUtil.getString("branding.prefix")%>' scope="request"/><%--
+--%><c:set var="ss_brand_prefix" value='<%= org.kablink.teaming.util.SPropsUtil.getString("branding.prefix")%>' scope="request"/><%--
 --%><c:if test="${empty ss_brand_prefix}"><%--
     --%><c:set var="ss_brand_prefix" value="icecore" scope="request"/><%--
 --%></c:if><%--

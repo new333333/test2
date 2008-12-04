@@ -29,7 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>

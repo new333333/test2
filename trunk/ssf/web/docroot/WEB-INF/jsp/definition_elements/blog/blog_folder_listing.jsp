@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>

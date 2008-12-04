@@ -8,7 +8,7 @@
 	
 	<tag>
 		<name>alt</name>
-		<tag-class>com.sitescape.team.taglib.AltTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.AltTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>tag</name>
@@ -24,13 +24,13 @@
 
 	<tag>
 		<name>appletFileName</name>
-		<tag-class>com.sitescape.team.taglib.AppletFileName</tag-class>
+		<tag-class>org.kablink.teaming.taglib.AppletFileName</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 
 	<tag>
 		<name>box</name>
-		<tag-class>com.sitescape.team.taglib.BoxTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.BoxTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>style</name>
@@ -51,7 +51,7 @@
 
 	<tag>
 		<name>buddyPhoto</name>
-		<tag-class>com.sitescape.team.taglib.BuddyPhotoTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.BuddyPhotoTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>style</name>
@@ -78,7 +78,7 @@
 		
 	<tag>
 		<name>buildDefinitionDivs</name>
-		<tag-class>com.sitescape.team.taglib.BuildDefinitionDivs</tag-class>
+		<tag-class>org.kablink.teaming.taglib.BuildDefinitionDivs</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>title</name>
@@ -126,7 +126,7 @@
 	
 	<tag>
 		<name>canvas</name>
-		<tag-class>com.sitescape.team.taglib.CanvasTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.CanvasTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>type</name>
@@ -147,7 +147,7 @@
 
 	<tag>
 		<name>clipboard</name>
-		<tag-class>com.sitescape.team.taglib.ClipboardTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.ClipboardTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>type</name>
@@ -163,7 +163,7 @@
 
 	<tag>
 		<name>dashboard</name>
-		<tag-class>com.sitescape.team.taglib.DashboardTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.DashboardTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>id</name>
@@ -191,7 +191,7 @@
 	
 	<tag>
 		<name>datepicker</name>
-		<tag-class>com.sitescape.team.taglib.Datepicker</tag-class>
+		<tag-class>org.kablink.teaming.taglib.Datepicker</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>id</name>
@@ -256,7 +256,7 @@
 
 	<tag>
 		<name>debug</name>
-		<tag-class>com.sitescape.team.taglib.DebugTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.DebugTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>var</name>
@@ -267,7 +267,7 @@
 	
 	<tag>
 		<name>displayConfiguration</name>
-		<tag-class>com.sitescape.team.taglib.DisplayConfiguration</tag-class>
+		<tag-class>org.kablink.teaming.taglib.DisplayConfiguration</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>configDefinition</name>
@@ -290,7 +290,7 @@
 			<name>entry</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.DefinableEntity</type>
+			<type>org.kablink.teaming.domain.DefinableEntity</type>
 		</attribute>		
 		<attribute>
 			<name>processThisItem</name>
@@ -302,7 +302,7 @@
 	
 	<tag>
 		<name>convertLocaleToDojoStyle</name>
-		<tag-class>com.sitescape.team.taglib.ConvertLocaleToDojoStyle</tag-class>
+		<tag-class>org.kablink.teaming.taglib.ConvertLocaleToDojoStyle</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>locale</name>
@@ -314,7 +314,7 @@
 
 	<tag>
 		<name>drawChart</name>
-		<tag-class>com.sitescape.team.taglib.ChartTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.ChartTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>count</name>
@@ -332,7 +332,7 @@
 	
 	<tag>
 		<name>drawStatistic</name>
-		<tag-class>com.sitescape.team.taglib.StatisticTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.StatisticTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>statistic</name>
@@ -368,13 +368,13 @@
 	
 	<tag>
 		<name>editable</name>
-		<tag-class>com.sitescape.team.taglib.EditableTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.EditableTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>entity</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.DefinableEntity</type>
+			<type>org.kablink.teaming.domain.DefinableEntity</type>
 		</attribute>
 		<attribute>
 			<name>entityMap</name>
@@ -397,7 +397,7 @@
 
 	<tag>
 		<name>escapeJavaScript</name>
-		<tag-class>com.sitescape.team.taglib.EscapeJavaScript</tag-class>
+		<tag-class>org.kablink.teaming.taglib.EscapeJavaScript</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>value</name>
@@ -408,7 +408,7 @@
 	
 	<tag>
 		<name>eventeditor</name>
-		<tag-class>com.sitescape.team.taglib.Eventeditor</tag-class>
+		<tag-class>org.kablink.teaming.taglib.Eventeditor</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>id</name>
@@ -448,7 +448,7 @@
 			<name>initEvent</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.Event</type>
+			<type>org.kablink.teaming.domain.Event</type>
 		</attribute>
 		<attribute>
 			<name>required</name>
@@ -465,19 +465,19 @@
 	</tag>
 	<tag>
 		<name>eventtext</name>
-		<tag-class>com.sitescape.team.taglib.Eventtext</tag-class>
+		<tag-class>org.kablink.teaming.taglib.Eventtext</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>event</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.Event</type>
+			<type>org.kablink.teaming.domain.Event</type>
 		</attribute>
 	</tag>
 
 	<tag>
 		<name>expandableArea</name>
-		<tag-class>com.sitescape.team.taglib.ExpandableAreaTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.ExpandableAreaTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>title</name>
@@ -504,7 +504,7 @@
 	
 	<tag>
 		<name>find</name>
-		<tag-class>com.sitescape.team.taglib.Find</tag-class>
+		<tag-class>org.kablink.teaming.taglib.Find</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>formName</name>
@@ -615,7 +615,7 @@
 	
 	<tag>
 		<name>form</name>
-		<tag-class>com.sitescape.team.taglib.FormTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.FormTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>formClass</name>
@@ -631,7 +631,7 @@
 
 	<tag>
 		<name>htmleditor</name>
-		<tag-class>com.sitescape.team.taglib.Htmleditor</tag-class>
+		<tag-class>org.kablink.teaming.taglib.Htmleditor</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>id</name>
@@ -662,13 +662,13 @@
 
 	<tag>
 		<name>ifAccessAllowed</name>
-		<tag-class>com.sitescape.team.taglib.IfAccessAllowedTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.IfAccessAllowedTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>binder</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.Binder</type>
+			<type>org.kablink.teaming.domain.Binder</type>
 		</attribute>		
 		<attribute>
 			<name>operation</name>
@@ -679,31 +679,31 @@
 
 	<tag>
 		<name>ifaccessible</name>
-		<tag-class>com.sitescape.team.taglib.IfAccessibleTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.IfAccessibleTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	
 	<tag>
 		<name>ifnotaccessible</name>
-		<tag-class>com.sitescape.team.taglib.IfNotAccessibleTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.IfNotAccessibleTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	
 	<tag>
 		<name>ifadapter</name>
-		<tag-class>com.sitescape.team.taglib.IfAdapterTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.IfAdapterTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	
 	<tag>
 		<name>ifnotadapter</name>
-		<tag-class>com.sitescape.team.taglib.IfNotAdapterTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.IfNotAdapterTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	
 	<tag>
 		<name>ifAuthorizedByLicense</name>
-		<tag-class>com.sitescape.team.taglib.IfAuthorizedByLicense</tag-class>
+		<tag-class>org.kablink.teaming.taglib.IfAuthorizedByLicense</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>featureName</name>
@@ -715,7 +715,7 @@
 	
 	<tag>
 		<name>ifBrandIs</name>
-		<tag-class>com.sitescape.team.taglib.IfBrandIsTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.IfBrandIsTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>brandToCheck</name>
@@ -728,13 +728,13 @@
 
 	<tag>
 		<name>ifLicenseOutOfCompliance</name>
-		<tag-class>com.sitescape.team.taglib.LicenseOutOfComplianceTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.LicenseOutOfComplianceTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	
 	<tag>
 		<name>ifLicenseExpired</name>
-		<tag-class>com.sitescape.team.taglib.LicenseExpiredTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.LicenseExpiredTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>inThisManyDays</name>
@@ -752,25 +752,25 @@
 	
 	<tag>
 		<name>ifLicenseInvalid</name>
-		<tag-class>com.sitescape.team.taglib.LicenseInvalidTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.LicenseInvalidTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	
 	<tag>
 		<name>ifLoggedIn</name>
-		<tag-class>com.sitescape.team.taglib.IfLoggedInTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.IfLoggedInTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	
 	<tag>
 		<name>ifNotLoggedIn</name>
-		<tag-class>com.sitescape.team.taglib.IfNotLoggedInTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.IfNotLoggedInTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	
 	<tag>
 		<name>ifSupportsEditInPlace</name>
-		<tag-class>com.sitescape.team.taglib.IfSupportsEditInPlaceTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.IfSupportsEditInPlaceTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>relativeFilePath</name>
@@ -788,7 +788,7 @@
 
 	<tag>
 		<name>editorTypeToUseForEditInPlace</name>
-		<tag-class>com.sitescape.team.taglib.EditorTypeToUseForEditInPlace</tag-class>
+		<tag-class>org.kablink.teaming.taglib.EditorTypeToUseForEditInPlace</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>browserType</name>
@@ -806,7 +806,7 @@
 
 	<tag>
 		<name>isFileEditorConfiguredForOS</name>
-		<tag-class>com.sitescape.team.taglib.IsFileEditorConfiguredForOS</tag-class>
+		<tag-class>org.kablink.teaming.taglib.IsFileEditorConfiguredForOS</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>relativeFilePath</name>
@@ -824,7 +824,7 @@
 	
 	<tag>
 		<name>ifSupportsViewAsHtml</name>
-		<tag-class>com.sitescape.team.taglib.IfSupportsViewAsHtmlTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.IfSupportsViewAsHtmlTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>relativeFilePath</name>
@@ -842,7 +842,7 @@
 	
 	<tag>
 		<name>inlineHelp</name>
-		<tag-class>com.sitescape.team.taglib.InlineHelpTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.InlineHelpTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>tag</name>
@@ -858,13 +858,13 @@
 
 	<tag>
 		<name>markup</name>
-		<tag-class>com.sitescape.team.taglib.MarkupTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.MarkupTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>entity</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.DefinableEntity</type>
+			<type>org.kablink.teaming.domain.DefinableEntity</type>
 		</attribute>
 		<attribute>
 			<name>type</name>
@@ -887,7 +887,7 @@
 	
 	<tag>
 		<name>mashup</name>
-		<tag-class>com.sitescape.team.taglib.MashupTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.MashupTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>id</name>
@@ -908,7 +908,7 @@
 	
 	<tag>
 		<name>menu</name>
-		<tag-class>com.sitescape.team.taglib.MenuTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.MenuTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>title</name>
@@ -964,19 +964,19 @@
 
 	<tag>
 		<name>miniBusinessCard</name>
-		<tag-class>com.sitescape.team.taglib.MiniBusinessCard</tag-class>
+		<tag-class>org.kablink.teaming.taglib.MiniBusinessCard</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>user</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.Principal</type>
+			<type>org.kablink.teaming.domain.Principal</type>
 		</attribute>		
 	</tag>	
 	
 	<tag>
 		<name>nlt</name>
-		<tag-class>com.sitescape.team.taglib.Nlt</tag-class>
+		<tag-class>org.kablink.teaming.taglib.Nlt</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>tag</name>
@@ -998,7 +998,7 @@
 	
 	<tag>
 		<name>param</name>
-		<tag-class>com.sitescape.team.taglib.ParamTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.ParamTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>name</name>
@@ -1021,7 +1021,7 @@
 
 	<tag>
 		<name>popupPane</name>
-		<tag-class>com.sitescape.team.taglib.PopupPaneTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.PopupPaneTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>width</name>
@@ -1044,13 +1044,13 @@
 
 	<tag>
 		<name>presenceInfo</name>
-		<tag-class>com.sitescape.team.taglib.PresenceInfo</tag-class>
+		<tag-class>org.kablink.teaming.taglib.PresenceInfo</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>user</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.Principal</type>
+			<type>org.kablink.teaming.domain.Principal</type>
 		</attribute>		
 		<attribute>
 			<name>showTitle</name>
@@ -1082,7 +1082,7 @@
 	
 	<tag>
 		<name>progressBar</name>
-		<tag-class>com.sitescape.team.taglib.ProgressBar</tag-class>
+		<tag-class>org.kablink.teaming.taglib.ProgressBar</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>currentValue</name>
@@ -1118,7 +1118,7 @@
 	
 	<tag>
 		<name>servletrooturl</name>
-		<tag-class>com.sitescape.team.taglib.ServletRootUrlTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.ServletRootUrlTag</tag-class>
 		<body-content>empty</body-content>
 		<attribute>
 			<name>secure</name>
@@ -1129,13 +1129,13 @@
 	
 	<tag>
 		<name>showTeam</name>
-		<tag-class>com.sitescape.team.taglib.ShowTeam</tag-class>
+		<tag-class>org.kablink.teaming.taglib.ShowTeam</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>team</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.Binder</type>
+			<type>org.kablink.teaming.domain.Binder</type>
 		</attribute>		
 		<attribute>
 			<name>showPresence</name>
@@ -1152,13 +1152,13 @@
 
 	<tag>
 		<name>showUser</name>
-		<tag-class>com.sitescape.team.taglib.ShowUser</tag-class>
+		<tag-class>org.kablink.teaming.taglib.ShowUser</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>user</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.Principal</type>
+			<type>org.kablink.teaming.domain.Principal</type>
 		</attribute>		
 		<attribute>
 			<name>showPresence</name>
@@ -1175,7 +1175,7 @@
 	
 	<tag>
 		<name>sidebarPanel</name>
-		<tag-class>com.sitescape.team.taglib.SidebarPanelTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.SidebarPanelTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>title</name>
@@ -1208,7 +1208,7 @@
 	
 	<tag>
 		<name>skipLink</name>
-		<tag-class>com.sitescape.team.taglib.SkipLinkTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.SkipLinkTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>tag</name>
@@ -1224,7 +1224,7 @@
 
 	<tag>
 		<name>slidingTable</name>
-		<tag-class>com.sitescape.team.taglib.SlidingTableTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.SlidingTableTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>id</name>
@@ -1265,7 +1265,7 @@
 	
 	<tag>
 		<name>slidingTableRow</name>
-		<tag-class>com.sitescape.team.taglib.SlidingTableRowTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.SlidingTableRowTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>id</name>
@@ -1297,7 +1297,7 @@
 
 	<tag>
 		<name>slidingTableColumn</name>
-		<tag-class>com.sitescape.team.taglib.SlidingTableColumnTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.SlidingTableColumnTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>style</name>
@@ -1313,25 +1313,25 @@
 
 	<tag>
 		<name>ssfsInternalAttachmentUrl</name>
-		<tag-class>com.sitescape.team.taglib.SsfsInternalAttachmentUrlTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.SsfsInternalAttachmentUrlTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>binder</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.Binder</type>
+			<type>org.kablink.teaming.domain.Binder</type>
 		</attribute>		
 		<attribute>
 			<name>entity</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.DefinableEntity</type>
+			<type>org.kablink.teaming.domain.DefinableEntity</type>
 		</attribute>		
 		<attribute>
 			<name>fileAttachment</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.FileAttachment</type>
+			<type>org.kablink.teaming.domain.FileAttachment</type>
 		</attribute>
 		<attribute>
 			<name>escapeSingleQuote</name>
@@ -1342,19 +1342,19 @@
 
 	<tag>
 		<name>ssfsInternalFileUrl</name>
-		<tag-class>com.sitescape.team.taglib.SsfsInternalFileUrlTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.SsfsInternalFileUrlTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>binder</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.Binder</type>
+			<type>org.kablink.teaming.domain.Binder</type>
 		</attribute>		
 		<attribute>
 			<name>entity</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.DefinableEntity</type>
+			<type>org.kablink.teaming.domain.DefinableEntity</type>
 		</attribute>		
 		<attribute>
 			<name>elemName</name>
@@ -1366,49 +1366,49 @@
 			<name>fileAttachment</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.FileAttachment</type>
+			<type>org.kablink.teaming.domain.FileAttachment</type>
 		</attribute>		
 	</tag>	
 
 	<tag>
 		<name>ssfsInternalTitleFileUrl</name>
-		<tag-class>com.sitescape.team.taglib.SsfsInternalTitleFileUrlTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.SsfsInternalTitleFileUrlTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>binder</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.Binder</type>
+			<type>org.kablink.teaming.domain.Binder</type>
 		</attribute>		
 		<attribute>
 			<name>entity</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.DefinableEntity</type>
+			<type>org.kablink.teaming.domain.DefinableEntity</type>
 		</attribute>		
 		<attribute>
 			<name>fileAttachment</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.FileAttachment</type>
+			<type>org.kablink.teaming.domain.FileAttachment</type>
 		</attribute>		
 	</tag>	
 
 	<tag>
 		<name>ssfsLibraryFolderUrl</name>
-		<tag-class>com.sitescape.team.taglib.SsfsLibraryFolderUrlTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.SsfsLibraryFolderUrlTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>binder</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.Binder</type>
+			<type>org.kablink.teaming.domain.Binder</type>
 		</attribute>		
 	</tag>	
 	
 	<tag>
 		<name>teamMembers</name>
-		<tag-class>com.sitescape.team.taglib.TeamMembers</tag-class>
+		<tag-class>org.kablink.teaming.taglib.TeamMembers</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>binderId</name>
@@ -1434,7 +1434,7 @@
 
 	<tag>
 		<name>textFormat</name>
-		<tag-class>com.sitescape.team.taglib.TextFormat</tag-class>
+		<tag-class>org.kablink.teaming.taglib.TextFormat</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>formatAction</name>
@@ -1451,7 +1451,7 @@
 
 	<tag>
 		<name>title</name>
-		<tag-class>com.sitescape.team.taglib.TitleTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.TitleTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>tag</name>
@@ -1467,7 +1467,7 @@
 
 	<tag>
 		<name>titleForEntityType</name>
-		<tag-class>com.sitescape.team.taglib.TitleTagForEntityType</tag-class>
+		<tag-class>org.kablink.teaming.taglib.TitleTagForEntityType</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>entityType</name>
@@ -1483,7 +1483,7 @@
 
 	<tag>
 		<name>titleLink</name>
-		<tag-class>com.sitescape.team.taglib.TitleLink</tag-class>
+		<tag-class>org.kablink.teaming.taglib.TitleLink</tag-class>
 		<body-content>JSP</body-content>
 
 		<attribute>
@@ -1560,13 +1560,13 @@
 	
 	<tag>
 		<name>toolbar</name>
-		<tag-class>com.sitescape.team.taglib.ToolbarTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.ToolbarTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>toolbar</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.web.util.Toolbar</type>
+			<type>org.kablink.teaming.web.util.Toolbar</type>
 		</attribute>		
 		<attribute>
 			<name>style</name>
@@ -1595,7 +1595,7 @@
 
 	<tag>
 		<name>tree</name>
-		<tag-class>com.sitescape.team.taglib.TreeTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.TreeTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>treeName</name>
@@ -1731,7 +1731,7 @@
 
 	<tag>
 		<name>url</name>
-		<tag-class>com.sitescape.team.taglib.UrlTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.UrlTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>action</name>
@@ -1811,13 +1811,13 @@
 
 	<tag>
 		<name>fileUrl</name>
-		<tag-class>com.sitescape.team.taglib.FileUrlTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.FileUrlTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>file</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.FileAttachment</type>
+			<type>org.kablink.teaming.domain.FileAttachment</type>
 		</attribute>		
 		<attribute>
 			<name>search</name>
@@ -1829,7 +1829,7 @@
 			<name>entity</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.DefinableEntity</type>
+			<type>org.kablink.teaming.domain.DefinableEntity</type>
 		</attribute>		
 		<attribute>
 			<name>fileId</name>
@@ -1844,7 +1844,7 @@
 	</tag>
 	<tag>
 		<name>permalink</name>
-		<tag-class>com.sitescape.team.taglib.PermalinkTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.PermalinkTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>search</name>
@@ -1856,12 +1856,12 @@
 			<name>entity</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.DefinableEntity</type>
+			<type>org.kablink.teaming.domain.DefinableEntity</type>
 		</attribute>		
 	</tag>
 	<tag>
 		<name>velocity</name>
-		<tag-class>com.sitescape.team.taglib.VelocityTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.VelocityTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>name</name>
@@ -1872,7 +1872,7 @@
 	
 	<tag>
 		<name>remoteApplication</name>
-		<tag-class>com.sitescape.team.taglib.RemoteApplicationTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.RemoteApplicationTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>applicationId</name>
@@ -1882,7 +1882,7 @@
 	</tag>
 		<tag>
 		<name>extensionUrl</name>
-		<tag-class>com.sitescape.team.taglib.ExtensionUrlTag</tag-class>
+		<tag-class>org.kablink.teaming.taglib.ExtensionUrlTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>attr</name>

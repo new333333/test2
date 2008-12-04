@@ -29,5 +29,5 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
-<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_page.jsp" %>

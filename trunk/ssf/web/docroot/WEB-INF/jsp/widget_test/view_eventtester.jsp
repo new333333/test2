@@ -33,8 +33,8 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.Calendar" %>
-<%@ page import="com.sitescape.team.domain.Event" %>
-<%@ page import="com.sitescape.team.web.util.EventHelper" %>
+<%@ page import="org.kablink.teaming.domain.Event" %>
+<%@ page import="org.kablink.teaming.web.util.EventHelper" %>
 
 
 <%

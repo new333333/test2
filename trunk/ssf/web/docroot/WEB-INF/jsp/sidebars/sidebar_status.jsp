@@ -29,10 +29,10 @@
  */
 %>
 <% // Status %>
-<%@ page import="com.sitescape.team.util.NLT" %>
-<%@ page import="com.sitescape.team.util.SPropsUtil" %>
-<%@ page import="com.sitescape.util.PropertyNotFoundException" %>
-<%@ page import="com.sitescape.team.ObjectKeys" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.SPropsUtil" %>
+<%@ page import="org.kablink.util.PropertyNotFoundException" %>
+<%@ page import="org.kablink.teaming.ObjectKeys" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>

@@ -30,7 +30,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page import="java.util.ArrayList" %>
-<%@ page import="com.sitescape.team.util.CalendarHelper" %>
+<%@ page import="org.kablink.teaming.util.CalendarHelper" %>
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 <style type="text/css">
         @import "<html:rootPath />js/dojo/dijit/themes/tundra/tundra.css";

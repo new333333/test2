@@ -29,7 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 
 <div class="ss_style ss_portlet">

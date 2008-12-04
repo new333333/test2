@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_tags">
 

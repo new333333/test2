@@ -30,7 +30,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page import="java.util.ArrayList" %>
-<%@ page import="com.sitescape.team.util.CalendarHelper" %>
+<%@ page import="org.kablink.teaming.util.CalendarHelper" %>
 <script type="text/javascript">
 dojo.require("dijit.form.DateTextBox");
 dojo.require("dijit.form.TimeTextBox");

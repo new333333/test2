@@ -132,7 +132,7 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 </script>
 
 	<%
-	 boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
+	 boolean isIE = org.kablink.util.BrowserSniffer.is_ie(request);
 	%>
 	<table border="0" cellspacing="0" cellpadding="0" valign="top" height="100%" width="100%">
 		<tr><td align="center">
@@ -147,12 +147,12 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
 			</c:if>
 			<c:if test="<%= !isIE %>">
-			<applet CODE = "com.sitescape.team.applets.droptarget.TopFrame" 
+			<applet CODE = "org.kablink.teaming.applets.droptarget.TopFrame" 
 			  JAVA_CODEBASE = "<html:rootPath/>applets" 
 			  ARCHIVE = "droptarget/ssf-droptarget-applet.jar" 
 			  WIDTH = "22" HEIGHT = "22" MAYSCRIPT>
 			</c:if>
-			    <PARAM NAME="CODE" value = "com.sitescape.team.applets.droptarget.TopFrame" />
+			    <PARAM NAME="CODE" value = "org.kablink.teaming.applets.droptarget.TopFrame" />
 			    <PARAM NAME ="CODEBASE" value = "<html:rootPath/>applets" />
 			    <PARAM NAME ="ARCHIVE" value = "droptarget/ssf-droptarget-applet.jar" />
 			    <PARAM NAME ="type" value="application/x-java-applet;version=1.5" />

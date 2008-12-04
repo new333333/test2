@@ -30,13 +30,13 @@
 %>
 <% //Group_list view %>
 <c:set var="grouplist_entry" value="${ssDefinitionEntry}"/>
-<jsp:useBean id="grouplist_entry" type="com.sitescape.team.domain.Entry" />
+<jsp:useBean id="grouplist_entry" type="org.kablink.teaming.domain.Entry" />
 
 <c:if test="${empty ss_element_display_style}">
 <div class="ss_entryContent">
 <span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
 <ul class="ss_nobullet">
-<c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(grouplist_entry.getCustomAttribute(property_name)) %>" >
+<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(grouplist_entry.getCustomAttribute(property_name)) %>" >
 <li><ssf:showUser user="${selection}" showPresence="true"/></li>
 </c:forEach>
 </ul>
@@ -51,7 +51,7 @@
   </td>
   <td valign="top" align="left">
 	<ul class="ss_nobullet">
-	<c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(grouplist_entry.getCustomAttribute(property_name)) %>" >
+	<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(grouplist_entry.getCustomAttribute(property_name)) %>" >
  	 <li><ssf:showUser user="${selection}" showPresence="true"/></li>
 	</c:forEach>
 	</ul>

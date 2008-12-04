@@ -29,16 +29,16 @@
  */
 %>
 <% // Tabs %>
-<%@ page import="com.sitescape.team.util.NLT" %>
-<%@ page import="com.sitescape.team.util.SPropsUtil" %>
-<%@ page import="com.sitescape.util.PropertyNotFoundException" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.SPropsUtil" %>
+<%@ page import="org.kablink.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="ss_urlWindowState" value="maximized"/>
 <c:set var="ss_urlWindowState" value=""/>
 <c:set var="numTabs" value="0"/>
 <ul style="padding-top: 2px; padding-left: 5px;">
 <c:forEach var="tab" items="${ss_tabs.tabList}">
-<jsp:useBean id="tab" type="com.sitescape.team.web.util.Tabs.TabEntry" />
+<jsp:useBean id="tab" type="org.kablink.teaming.web.util.Tabs.TabEntry" />
   <c:set var="numTabs" value="${numTabs + 1}"/>
   <c:if test="${numTabs < 6}">
   <li>

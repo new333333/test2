@@ -38,7 +38,7 @@
 --%><%@ taglib prefix="ssf" uri="http://www.sitescape.com/tags-ssf" %><%--
 --%><%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %><%--
 --%><%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %><%--
---%><%@ page import="com.sitescape.util.BrowserSniffer" %><%--
+--%><%@ page import="org.kablink.util.BrowserSniffer" %><%--
 --%><%
 		boolean isIE = BrowserSniffer.is_ie(request);
 	%><%--

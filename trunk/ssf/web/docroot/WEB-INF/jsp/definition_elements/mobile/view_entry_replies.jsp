@@ -43,7 +43,7 @@
 </c:if>
 
 <c:forEach var="reply" items="${ssFolderEntryDescendants}">
-  <jsp:useBean id="reply" type="com.sitescape.team.domain.Entry" />
+  <jsp:useBean id="reply" type="org.kablink.teaming.domain.Entry" />
   <div style="padding-bottom:16px;">
 
   <c:if test="${!empty reply.entryDef}">

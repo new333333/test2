@@ -100,19 +100,19 @@
 					if (components != null) component = (Map)components.get(ssComponentId.toString());
 					if (component != null) data = (Map)component.get("data");
 					if (data != null && data.containsKey("assignedTo")) {
-						List userList = com.sitescape.team.util.ResolveIds.getPrincipals((Set)data.get("assignedTo"));
+						List userList = org.kablink.teaming.util.ResolveIds.getPrincipals((Set)data.get("assignedTo"));
 						if (userList != null) {
 							userListSet.addAll(userList);
 						}
 					}
 					if (data != null && data.containsKey("assignedToGroups")) {
-						List groupList = com.sitescape.team.util.ResolveIds.getPrincipals((Set)data.get("assignedToGroups"));
+						List groupList = org.kablink.teaming.util.ResolveIds.getPrincipals((Set)data.get("assignedToGroups"));
 						if (groupList != null) {
 							groupListSet.addAll(groupList);
 						}
 					}	
 					if (data != null && data.containsKey("assignedToTeams")) {
-						teamList = com.sitescape.team.util.ResolveIds.getBinders((Set)data.get("assignedToTeams"));
+						teamList = org.kablink.teaming.util.ResolveIds.getBinders((Set)data.get("assignedToTeams"));
 					}									
 				%>		
 				<div style="margin-left: 20px;">

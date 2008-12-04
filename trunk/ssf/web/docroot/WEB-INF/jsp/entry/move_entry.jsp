@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("window.title.moveEntry") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
@@ -86,8 +86,8 @@ function ${wsTreeName}_showId(forum, obj, action) {
 
 <% // similar to Navigation links %>
 
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <%
@@ -110,7 +110,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <%
 	Stack parentTree = new Stack();
 	while (parentBinder != null) {
-		//if (((Binder)parentBinder).getEntityType().equals(com.sitescape.team.domain.EntityIdentifier.EntityType.profiles)) break;
+		//if (((Binder)parentBinder).getEntityType().equals(org.kablink.teaming.domain.EntityIdentifier.EntityType.profiles)) break;
 		parentTree.push(parentBinder);
 		parentBinder = ((Binder)parentBinder).getParentBinder();
 	}

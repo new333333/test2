@@ -38,7 +38,7 @@
 <%@ taglib prefix="ssf" uri="http://www.sitescape.com/tags-ssf" %>
 <%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
 <%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
-<%@ page import="com.sitescape.util.ParamUtil" %>
+<%@ page import="org.kablink.util.ParamUtil" %>
 <portletadapter:defineObjects1/>
 <ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>

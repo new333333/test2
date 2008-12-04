@@ -63,7 +63,7 @@
 					<c:forEach var="u1" items="${ssUsers}">
 					<c:if test="${uCount < 100}">
 					<c:set var="uCount" value="${uCount + 1}"/>
-					<jsp:useBean id="u1" type="com.sitescape.team.domain.User" />
+					<jsp:useBean id="u1" type="org.kablink.teaming.domain.User" />
 					  <tr>
 					  <td><span id="${ss_namespace}_${componentId}_user_<c:out value="${u1.id}"/>"
 					  ><ssf:presenceInfo user="<%=u1%>" componentId="${ss_namespace}_${componentId}"/> </span></td>

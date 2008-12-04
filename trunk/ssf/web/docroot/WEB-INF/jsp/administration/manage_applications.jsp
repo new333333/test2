@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
@@ -77,7 +77,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 	<textarea name="description" wrap="virtual" rows="4" cols="70"></textarea><br/><br/>
 	
 	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationTimeout"/></span><br/>
-	<input type="text" class="ss_text" size="15" name="timeout" value='<%=com.sitescape.team.util.SPropsUtil.getString("remoteapp.timeout")%>'><br/><br/>
+	<input type="text" class="ss_text" size="15" name="timeout" value='<%=org.kablink.teaming.util.SPropsUtil.getString("remoteapp.timeout")%>'><br/><br/>
 		
 	<input type="checkbox" name="trusted" value="true"> <span class="ss_bold"><ssf:nlt tag="administration.add.applicationTrusted"/></span></input><br/><br/>
 	

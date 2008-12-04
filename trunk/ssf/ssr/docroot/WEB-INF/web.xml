@@ -12,10 +12,10 @@
 	</context-param>
 	<servlet>
 		<servlet-name>AxisServlet</servlet-name>
-		<servlet-class>com.sitescape.team.asmodule.servlet.SSFClassLoaderServlet</servlet-class>
+		<servlet-class>org.kablink.teaming.asmodule.servlet.SSFClassLoaderServlet</servlet-class>
 		<init-param>
 			<param-name>servlet-class</param-name>
-			<param-value>com.sitescape.team.remoting.ws.servlet.SecurityPropagatingAxisServlet</param-value>
+			<param-value>org.kablink.teaming.remoting.ws.servlet.SecurityPropagatingAxisServlet</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>

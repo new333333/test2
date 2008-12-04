@@ -31,7 +31,7 @@
 <% // Photo album folder view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="java.util.Date" %>
-<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 
 <script type="text/javascript">
 var ss_columnCount = 0;

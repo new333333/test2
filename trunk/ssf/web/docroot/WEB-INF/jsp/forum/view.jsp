@@ -99,7 +99,7 @@ function ${renderResponse.namespace}_getUnseenCountsReturn() {
 <c:if test="${!empty ssFolderList}">
 <table cellspacing="0" cellpadding="0">
 <c:forEach var="binder" items="${ssFolderList}">
-<jsp:useBean id="binder" type="com.sitescape.team.domain.Binder" />
+<jsp:useBean id="binder" type="org.kablink.teaming.domain.Binder" />
   <tr>
   <td>
       <span id="${renderResponse.namespace}_count_<c:out value="${binder.id}"/>"

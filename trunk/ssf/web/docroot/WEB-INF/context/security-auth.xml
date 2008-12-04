@@ -6,7 +6,7 @@
 
     <!-- ============================== Form-based authentication ============================ -->
     
-    <bean id="authenticationProcessingFilter" class="com.sitescape.team.spring.security.AuthenticationProcessingFilter">
+    <bean id="authenticationProcessingFilter" class="org.kablink.teaming.spring.security.AuthenticationProcessingFilter">
     	<s:custom-filter position="AUTHENTICATION_PROCESSING_FILTER" />
 		<property name="authenticationManager" ref="_authenticationManager"/>
 		<property name="authenticationFailureUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>

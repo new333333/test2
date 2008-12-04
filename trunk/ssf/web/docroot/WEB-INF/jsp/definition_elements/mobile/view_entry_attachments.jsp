@@ -30,7 +30,7 @@
 %>
 <% // View entry attachments %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
 <%
 boolean isIECheck = BrowserSniffer.is_ie(request);
 String strBrowserType = "nonie";

@@ -29,7 +29,7 @@
  */
 %>
 <% //Icon form element %>
-<%@ page import="com.sitescape.team.util.SPropsUtil" %>
+<%@ page import="org.kablink.teaming.util.SPropsUtil" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%
 	String caption = (String) request.getAttribute("property_caption");

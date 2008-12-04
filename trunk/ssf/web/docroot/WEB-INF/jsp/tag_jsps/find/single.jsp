@@ -30,7 +30,7 @@
 %>
 <% // Find a single element %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ page import="com.sitescape.util.ParamUtil" %>
+<%@ page import="org.kablink.util.ParamUtil" %>
 <%
 	String label = ParamUtil.get(request, "label", "");
 %>

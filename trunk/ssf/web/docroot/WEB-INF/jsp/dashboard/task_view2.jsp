@@ -136,9 +136,9 @@
 		</td>
 		<td class="ss_iconsContainer"  style="text-align: center;"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><c:if test="${entry.status == status.key}"><img src="<html:imagesPath/>icons/status_${status.key}.gif" class="ss_taskStatus" alt="${status.value}" title="${status.value}" /></c:if></c:forEach></c:if></td>
 		<td>
-			<c:set var="assignment" value='<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment")) %>' />
-			<c:set var="assignment_groups" value='<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment_groups")) %>' />
-			<c:set var="assignment_teams" value='<%= com.sitescape.team.util.ResolveIds.getBinders(entry.get("assignment_teams")) %>' />
+			<c:set var="assignment" value='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(entry.get("assignment")) %>' />
+			<c:set var="assignment_groups" value='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(entry.get("assignment_groups")) %>' />
+			<c:set var="assignment_teams" value='<%= org.kablink.teaming.util.ResolveIds.getBinders(entry.get("assignment_teams")) %>' />
 			<c:if test="${!empty assignment}">
 				<ul>
 					<c:forEach var="assigned" items="${assignment}">

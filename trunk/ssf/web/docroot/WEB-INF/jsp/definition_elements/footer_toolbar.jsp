@@ -30,11 +30,11 @@
 %>
 <%-- Footer toolbar --%><%--
 --%><%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %><%--
---%><%@ page import="com.sitescape.util.BrowserSniffer" %><%--
---%><%@ page import="com.sitescape.team.context.request.RequestContextHolder" %><%--
---%><%@ page import="com.sitescape.team.util.NLT" %><%--
+--%><%@ page import="org.kablink.util.BrowserSniffer" %><%--
+--%><%@ page import="org.kablink.teaming.context.request.RequestContextHolder" %><%--
+--%><%@ page import="org.kablink.teaming.util.NLT" %><%--
 --%><%
-Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHelper.isWebdavSupported(request));
+Boolean webdavSupportedFooter = new Boolean(org.kablink.teaming.web.util.BinderHelper.isWebdavSupported(request));
 %><%--
 --%><c:choose><%--
 	--%><c:when test="${empty ss_footerToolbarCount}"><%--

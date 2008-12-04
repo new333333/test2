@@ -31,7 +31,7 @@
 <% // Folder listing %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
-<jsp:useBean id="ssBinder" type="com.sitescape.team.domain.Binder" scope="request" />
+<jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
 <%
 	Map ssFolderColumns = (Map) ssUserFolderProperties.get("userFolderColumns");
 	if (ssFolderColumns == null) ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");

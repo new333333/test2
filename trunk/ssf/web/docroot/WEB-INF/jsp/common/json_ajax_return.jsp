@@ -31,7 +31,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:if test="${!empty ssAjaxErrorMessage}">
 {
-failure : "<ssf:escapeJavaScript value='<%= com.sitescape.team.util.NLT.get((String)request.getAttribute("ssAjaxErrorMessage")) %>'/>"
+failure : "<ssf:escapeJavaScript value='<%= org.kablink.teaming.util.NLT.get((String)request.getAttribute("ssAjaxErrorMessage")) %>'/>"
 
 }
 </c:if>

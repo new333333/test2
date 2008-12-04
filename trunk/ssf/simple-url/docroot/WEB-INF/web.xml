@@ -8,7 +8,7 @@
 	</context-param>
 	<servlet>
 		<servlet-name>SimpleURLServlet</servlet-name>
-		<servlet-class>com.sitescape.team.simpleurl.servlet.SimpleURLServlet</servlet-class>
+		<servlet-class>org.kablink.teaming.simpleurl.servlet.SimpleURLServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>

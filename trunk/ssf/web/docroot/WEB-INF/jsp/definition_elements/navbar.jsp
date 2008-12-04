@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />

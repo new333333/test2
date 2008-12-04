@@ -29,7 +29,7 @@
  */
 %>
 <% //Icon form for folders %>
-<%@ page import="com.sitescape.team.util.SPropsUtil" %>
+<%@ page import="org.kablink.teaming.util.SPropsUtil" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="iconListPath" value="icons.entry" scope="request"/>
 <c:set var="iconValue" value="${ssDefinitionEntry.iconName}" scope="request"/>

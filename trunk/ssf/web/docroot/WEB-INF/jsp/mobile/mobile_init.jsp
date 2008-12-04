@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %><%--
---%><%@ page import="com.sitescape.util.BrowserSniffer" %><%--
+--%><%@ page import="org.kablink.util.BrowserSniffer" %><%--
 --%><%
 	boolean isWap = BrowserSniffer.is_wap_xhtml(request);
 	boolean isIPhone = BrowserSniffer.is_iphone(request);

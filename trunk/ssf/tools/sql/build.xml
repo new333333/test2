@@ -54,7 +54,7 @@
 	    	properties="${basedir}/hibernate-${database.type}.properties" 
 	          	quiet="false" text="true">
 	    	<fileset dir="${main.hibernate.dir}" >
-	    		<include name="com/sitescape/team/**/*hbm.xml"/>
+	    		<include name="org/kablink/teaming/**/*hbm.xml"/>
 	        </fileset>
 	     </schemaexport>
 	    <schemaexport delimiter=";" output="${create.dir}/source-tables-jbpm-${database.type}-temp.sql"
@@ -77,7 +77,7 @@
 		<property file="${project.dir}/tools/sql/ddl-${database.type}.properties"/>
 
   		<java
-  			classname="com.sitescape.team.tools.sql.GenerateCreateTablesUnconstrained"
+  			classname="org.kablink.teaming.tools.sql.GenerateCreateTablesUnconstrained"
   			classpathref="project.classpath"
   			fork="true"
   			dir="${basedir}"
@@ -87,7 +87,7 @@
   		</java>
 		<delete file="${create.dir}/source-tables-core-${database.type}-temp.sql" />
  		<java
-  			classname="com.sitescape.team.tools.sql.GenerateCreateTablesUnconstrained"
+  			classname="org.kablink.teaming.tools.sql.GenerateCreateTablesUnconstrained"
   			classpathref="project.classpath"
   			fork="true"
   			dir="${basedir}"
@@ -97,7 +97,7 @@
  		</java>
 		<delete file="${create.dir}/source-tables-jbpm-${database.type}-temp.sql" />
  		<java
-  			classname="com.sitescape.team.tools.sql.GenerateCreateTablesUnconstrained"
+  			classname="org.kablink.teaming.tools.sql.GenerateCreateTablesUnconstrained"
   			classpathref="project.classpath"
   			fork="true"
   			dir="${basedir}"
@@ -327,7 +327,7 @@
 	  	  	<schemaupdate properties="${uinternal.dir}/hibernate-${database.type}-temp.properties" 
 	          	 quiet="false" text="true">
 	    		<fileset dir="${main.hibernate.dir}" >
-	    			<include name="com/sitescape/team/**/*hbm.xml"/>
+	    			<include name="org/kablink/teaming/**/*hbm.xml"/>
 	        	</fileset>
 	        </schemaupdate>
   	  	<record name="${update.dir}/source-tables-core-${database.type}-temp.sql" action="stop"/>
@@ -348,7 +348,7 @@
   		<ant dir=".." target="compile" inheritAll="false" />
 		<property file="${project.dir}/tools/sql/ddl-${database.type}.properties"/>
   		<java
-  	  			classname="com.sitescape.team.tools.sql.GenerateCreateTablesUnconstrained"
+  	  			classname="org.kablink.teaming.tools.sql.GenerateCreateTablesUnconstrained"
   	  			classpathref="project.classpath"
   	  			fork="true"
   	  			dir="${basedir}"
@@ -359,7 +359,7 @@
   	  		</java>
 		<move file="${update.dir}/source-tables-core-${database.type}-temp.sql" tofile="${uinternal.dir}/source-tables-core-${database.type}.sql"/> 
   	 	<java
-  	  			classname="com.sitescape.team.tools.sql.GenerateCreateTablesUnconstrained"
+  	  			classname="org.kablink.teaming.tools.sql.GenerateCreateTablesUnconstrained"
   	  			classpathref="project.classpath"
   	  			fork="true"
   	  			dir="${basedir}"

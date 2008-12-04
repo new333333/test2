@@ -29,13 +29,13 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <% //View the listing part of a wiki folder %>
 <%@ page import="java.util.Date" %>
-<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 
 <div class="ss_wiki_sidebar">
    

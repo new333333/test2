@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_para">
 <div id="ss_hot_para">
@@ -56,7 +56,7 @@
 </div>
 <div id="ss_hints"><em><ssf:nlt tag="relevance.hint.hotItems"/></em></div>
   <c:forEach var="entry" items="${ss_whatsHot}">
-    <jsp:useBean id="entry" type="com.sitescape.team.domain.Entry" />
+    <jsp:useBean id="entry" type="org.kablink.teaming.domain.Entry" />
     <li>
 	  <span>
 		<c:set var="isDashboard" value="yes"/>

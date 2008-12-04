@@ -31,7 +31,7 @@
 <% //View dashboard canvas %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_js.jsp" %>
-<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
+<jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 
 <%

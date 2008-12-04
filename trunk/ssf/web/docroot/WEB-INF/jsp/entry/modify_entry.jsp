@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("window.title.modifyEntry") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>

@@ -30,7 +30,7 @@
 %>
 <% // Common folder page number navigation %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <c:if test="${!empty ssPageCount}">
 
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>

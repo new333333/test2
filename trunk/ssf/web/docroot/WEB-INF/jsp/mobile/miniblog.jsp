@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.ObjectKeys" %>
+<%@ page import="org.kablink.teaming.ObjectKeys" %>
 
 <div class="pagebody">
   <div id="miniblog">

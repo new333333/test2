@@ -98,8 +98,8 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/title_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.title_field</help>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderTitle" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderText" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderTitle" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderText" />
 	</item>
 
 <!-- shared view items ie)no category -->
@@ -163,7 +163,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
 		</jsps>
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription"/>
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription"/>
 	</item>
 	<item name="entryAttachments" caption="__entry_attachments" category="commonEntryViewData" display="view">
 		<properties>
@@ -173,7 +173,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_attachments.jsp" />
 		</jsps>
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderAttachments"/>
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderAttachments"/>
 	</item>
 	
 	<item name="dashboardCanvas" caption="__dashboard_canvas" multipleAllowed="false" display="view">
@@ -269,8 +269,8 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/icon_form_entry.jsp" />
 		</jsps>
 		<help>ihelp.designers.icon</help>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderIcon" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderIcon" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderIcon" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderIcon" />
 	</item>
 	
 	<item name="entryAttributes" caption="__attributes" type="data" multipleAllowed="true" 
@@ -292,10 +292,10 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/entry_attributes_form.jsp"/>
 		</jsps>
 		<index apply="true"
-			fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderEntryAttributes"/>
+			fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderEntryAttributes"/>
 		<webService apply="true"
-			elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderEntryAttributes"/>
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEntryAttributes" />
+			elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderEntryAttributes"/>
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderEntryAttributes" />
 	</item>
 	
 	<item name="event" caption="__event" type="data" category="entryData" display="form">
@@ -320,9 +320,9 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/event_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.event</help>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderEvent" />
-	    <webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderEvent" />
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEvent"/>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderEvent" />
+	    <webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderEvent" />
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderEvent"/>
 	</item>
 
 	<item name="guestName" caption="__guestName" type="data" multipleAllowed="false" 
@@ -340,7 +340,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/entry_guest_name_form.jsp"/>
 		</jsps>
 		<index apply="true"
-			fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderGuestName"/>
+			fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderGuestName"/>
 	</item>
 	
 	<item name="subscribe" caption="__subscribe" multipleAllowed="false" category="entryData" display="form">
@@ -394,7 +394,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/entry_view.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/entry_view.jsp" />
 		</jsps>
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEntry"/>
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderEntry"/>
 	</item>
 <!-- folder entry view items -->
 	<item name="titleView" caption="__title" category="entryViewData"  display="view">
@@ -448,7 +448,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_workflow.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_workflow.jsp" />
 		</jsps>
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderWorkflow"/>
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderWorkflow"/>
 	</item>
 		
 			
@@ -610,8 +610,8 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/icon_form_folder.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderIcon" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderIcon" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderIcon" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderIcon" />
 	</item>
 
 	<item name="folderRemoteApp" caption="__remoteApp" type="data" multipleAllowed="true" 
@@ -709,7 +709,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_folder_description.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
 		</jsps>
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription"/>
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription"/>
 	</item>
 
 	<item name="folderDataItem" type="dataView"  caption="__folder_data_item" category="folderViewData" display="view">
@@ -1053,8 +1053,8 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_name_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderName" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderName" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderName" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderName" />
 	</item>
 	
 	<item name="profilePassword" caption="__profile_password" type="data" 
@@ -1084,8 +1084,8 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 
 	<item name="profileLastName" caption="__lastName" type="data" 
@@ -1102,8 +1102,8 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileMiddleName" caption="__middleName" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
@@ -1119,8 +1119,8 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	
 	<item name="profileOrganization" caption="__organization" type="data" 
@@ -1137,8 +1137,8 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileEmailAddress" caption="__emailAddress" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
@@ -1154,8 +1154,8 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileMobileEmailAddress" caption="__mobileEmailAddress" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
@@ -1171,8 +1171,8 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileTxtEmailAddress" caption="__txtEmailAddress" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
@@ -1188,8 +1188,8 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileZonName" caption="__zonName" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
@@ -1205,8 +1205,8 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileTimeZone" caption="__timeZone" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData"  display="form">
@@ -1218,8 +1218,8 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_timezone_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileLocale" caption="__locale" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData"  display="form">
@@ -1231,8 +1231,8 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_locale_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profilePhone" caption="__phone" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
@@ -1248,8 +1248,8 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileSkypeId" caption="__skypeId" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
@@ -1265,8 +1265,8 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileTwitterId" caption="__twitterId" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
@@ -1279,8 +1279,8 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileEntryPicture" caption="__profile_entry_picture" type="data" multipleAllowed="false"
 		category="profileEntryData" display="form">
@@ -1303,7 +1303,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_entry_graphic_form.jsp" />
 		</jsps>
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderGraphic" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderGraphic" />
 	</item>
 
 <!-- Profile entry view-->
@@ -1514,8 +1514,8 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/icon_form_workspace.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderIcon" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderIcon" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderIcon" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderIcon" />
 	</item>
 	
 	<item name="workspaceBranding" caption="__branding" type="data" multipleAllowed="false" 
@@ -1690,8 +1690,8 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderText" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderText" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderText" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderText" />
 		<notify />
 	</item>
 	
@@ -1711,9 +1711,9 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/textarea_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDescription" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDescription" />
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderDescription" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderDescription" />
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription" />
 	</item>
 	
 	<item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" display="form">
@@ -1736,13 +1736,13 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/selectbox_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.selectbox</help>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSelect">
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderSelect">
 		  <args>
 		    <arg name="indexCaption" type="boolean" value="true"/>
 		  </args>
 		</index>
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSelect" />
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSelect" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderSelect" />
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderSelect" />
 	</item>
 
 	<item name="selectboxSelection" caption="__selection" display="form">
@@ -1780,10 +1780,10 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/user_list_selectbox_form.jsp"/>
 		</jsps>
 		<index apply="true"
-			fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderUserListSelect"/>
+			fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderUserListSelect"/>
 		<webService apply="true"
-			elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderUserListSelect"/>
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPrincipalList" />
+			elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderUserListSelect"/>
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderPrincipalList" />
 	</item>
 	
 	<item name="eventScheduler" caption="__eventScheduler" type="data" category="entryData" display="form">
@@ -1831,13 +1831,13 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/radio_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.radio_buttons</help>		
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSelect">
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderSelect">
 		  <args>
 		    <arg name="indexCaption" type="boolean" value="true"/>
 		  </args>
 		</index>
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSelect" />
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderRadio"/>
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderSelect" />
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderRadio"/>
 	</item>
 	
 	<item name="radioSelection" caption="__radio_button" display="form">
@@ -1872,9 +1872,9 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/null.jsp" />
 		</jsps>
 		<help>ihelp.designers.places</help>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderPlaces" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderPlaces" />
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPlaces"/>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderPlaces" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderPlaces" />
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderPlaces"/>
 	</item>
 
 	<item name="checkbox" caption="__checkbox" type="data" category="commonEntryData" display="form">
@@ -1891,9 +1891,9 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/checkbox_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderCheck" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderCheck" />
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderCheck" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderCheck" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderCheck" />
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderCheck" />
 	</item>
 
 	<item name="hidden" caption="__hidden" type="data" category="commonEntryData" display="form">
@@ -1907,7 +1907,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/hidden_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderHidden" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderHidden" />
 	</item>
 	
 	<item name="graphic" caption="__graphic" type="data" category="commonEntryData" display="form">
@@ -1933,8 +1933,8 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/graphic_form.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/file_form.jsp" />
 		</jsps>
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderGraphic" />
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderFile" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderGraphic" />
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderFile" />
 	</item>
 
 	<item name="attachFiles" caption="__attach_files" type="data" canBeDeleted="false"
@@ -1952,7 +1952,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/attach_files_form.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/attach_files_form.jsp" />
 		</jsps>
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderAttachments" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderAttachments" />
 	</item>
 	<item name="description" caption="__description" type="data" multipleAllowed="false" category="commonEntryData" display="form">
 		<properties>
@@ -1970,9 +1970,9 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/textarea_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDescription" />
-	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDescription" />
-		<notify  notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderDescription" />
+	<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderDescription" />
+		<notify  notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription" />
 	</item>
 	
 	<item name="file" caption="__file_upload" type="data" category="commonEntryData" display="form">
@@ -1993,8 +1993,8 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/file_form.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/file_form.jsp" />
 		</jsps>
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderFile" />
-		<notify  notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderFile"/>
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderFile" />
+		<notify  notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderFile"/>
 	</item>
 	
 	<item name="date" caption="__date" type="data" category="commonEntryData" display="form">
@@ -2016,8 +2016,8 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/date_form.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/date_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDate" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDate" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderDate" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderDate" />
 		<notify velocity="date.vm"/> 
 	</item>
 	
@@ -2040,8 +2040,8 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/date_time_form.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/date_time_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDateTime" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDate" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderDateTime" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderDate" />
 		<notify velocity="date_time.vm"/> 
 	</item>
 	
@@ -2060,9 +2060,9 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/userlist_form.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/userlist_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderUserlist" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderUserlist" />
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPrincipalList" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderUserlist" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderUserlist" />
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderPrincipalList" />
 	</item>
 	
 	<item name="group_list" caption="__group_list" type="data" category="commonEntryData" display="form">
@@ -2079,9 +2079,9 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/grouplist_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderGrouplist" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderGrouplist" />
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPrincipalList" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderGrouplist" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderGrouplist" />
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderPrincipalList" />
 	</item>	
 	
 	<item name="team_list" caption="__team_list" type="data" category="commonEntryData" display="form">
@@ -2098,9 +2098,9 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/teamlist_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderTeamlist" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderTeamlist" />
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPlaces" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderTeamlist" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderTeamlist" />
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderPlaces" />
 	</item>		
 
 	<item name="survey" caption="__survey_queries" type="data" category="entryData" display="form">
@@ -2118,8 +2118,8 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/survey_form.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/survey_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSurvey" />
-		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSurvey" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderSurvey" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderSurvey" />
 		<notify velocity="survey.vm" />
 	</item>
 

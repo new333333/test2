@@ -29,10 +29,10 @@
  */
 %>
 <% // Profile listing %>
-<%@ page import="com.sitescape.team.domain.Principal" %>
+<%@ page import="org.kablink.teaming.domain.Principal" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
-<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
+<jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 
 <script type="text/javascript" src="<html:rootPath/>js/forum/ss_folder.js"></script>
 

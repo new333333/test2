@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
   <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
    <fieldset class="ss_fieldset_${ss_loginFormStyle}">

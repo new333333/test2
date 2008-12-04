@@ -260,7 +260,7 @@
 				<jsp:useBean id="entry" type="java.util.HashMap" />
 				
 				<%
-					boolean overdue = com.sitescape.team.util.DateComparer.isOverdue((Date)entry.get("start_end#EndDate"));
+					boolean overdue = org.kablink.teaming.util.DateComparer.isOverdue((Date)entry.get("start_end#EndDate"));
 				%>
 				<c:set var="overdue" value="<%= overdue %>"/>
 				<c:if test="${entry.status == 's3' || entry.status == 's4'}">
@@ -339,7 +339,7 @@
 					</td>
 					<td class="ss_iconsContainer" id="ss_tasks_${renderResponse.namespace}_${entry._docId}_status"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><a <c:if test="${entry.status == status.key}">href="javascript: //" class="ss_taskStatus" </c:if><c:if test="${entry.status != status.key}">href="javascript:  myTasks_${renderResponse.namespace}.changeStatus(${entry._docId}, '${status.key}');" class="ss_taskStatus ss_taskStatus_${status.key}_u" </c:if>><img <c:if test="${entry.status == status.key}"> src="<html:imagesPath/>icons/status_${status.key}.gif" </c:if><c:if test="${entry.status != status.key}"> src="<html:imagesPath/>pics/1pix.gif" </c:if> alt="${status.value}" title="${status.value}"></a></c:forEach></c:if></td>
 					<td class="ss_assigned">
-						<c:set var="assignment" value='<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment")) %>' />
+						<c:set var="assignment" value='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(entry.get("assignment")) %>' />
 						<c:if test="${!empty assignment}">
 							<ul>
 								<c:forEach var="assigned" items="${assignment}">
@@ -348,7 +348,7 @@
 							</ul>
 						</c:if>
 						
-						<c:set var="assignment_groups" value='<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment_groups")) %>' />
+						<c:set var="assignment_groups" value='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(entry.get("assignment_groups")) %>' />
 						<c:if test="${!empty assignment_groups}">
 							<ul>
 								<c:forEach var="assigned" items="${assignment_groups}">
@@ -357,7 +357,7 @@
 							</ul>
 						</c:if>		
 						
-						<c:set var="assignment_teams" value='<%= com.sitescape.team.util.ResolveIds.getBinders(entry.get("assignment_teams")) %>' />
+						<c:set var="assignment_teams" value='<%= org.kablink.teaming.util.ResolveIds.getBinders(entry.get("assignment_teams")) %>' />
 						<c:if test="${!empty assignment_teams}">
 							<ul>
 								<c:forEach var="assigned" items="${assignment_teams}">

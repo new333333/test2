@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_tagViewNamespace" value="${renderResponse.namespace}" scope="request"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_tagViewNamespace" value="${ss_namespace}" scope="request"/></c:if>

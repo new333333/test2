@@ -35,7 +35,7 @@ $esc.html(${ssVisitor.Entity.ParentBinder.PathName})</a>
 #end
 <br/>
 $ssVisitor.visit()
-#set ($replies = ${ssVisitor.getParam("com.sitescape.team.notify.params.replies")})
+#set ($replies = ${ssVisitor.getParam("org.kablink.teaming.notify.params.replies")})
 #if ($replies && !$replies.isEmpty())
 <div style="#ss_entryContent()"><span style="font-weight:bold;font-size:14px">${ssVisitor.getNLT("__entry_replies")}</span></div>
 #foreach ($selection in $replies)
@@ -48,7 +48,7 @@ $ssVisitor.visit($selection)
 #ss_printLn("$ssVisitor.getNLT('notify.forum.label') (${ssVisitor.Entity.ParentBinder.PathName})")
 #end
 $ssVisitor.visit()
-#set ($replies = ${ssVisitor.getParam("com.sitescape.team.notify.params.replies")})
+#set ($replies = ${ssVisitor.getParam("org.kablink.teaming.notify.params.replies")})
 #if ($replies && !$replies.isEmpty())
 #ss_printLn("$ssVisitor.getNLT('__entry_replies')")
 #foreach ($selection in $replies)

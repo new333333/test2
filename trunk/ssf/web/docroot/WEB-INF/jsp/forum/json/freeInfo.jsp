@@ -31,9 +31,9 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%
-	pageContext.setAttribute("tentative", com.sitescape.team.domain.Event.FreeBusyType.tentative);
-	pageContext.setAttribute("busy", com.sitescape.team.domain.Event.FreeBusyType.busy);
-	pageContext.setAttribute("outOfOffice", com.sitescape.team.domain.Event.FreeBusyType.outOfOffice);	
+	pageContext.setAttribute("tentative", org.kablink.teaming.domain.Event.FreeBusyType.tentative);
+	pageContext.setAttribute("busy", org.kablink.teaming.domain.Event.FreeBusyType.busy);
+	pageContext.setAttribute("outOfOffice", org.kablink.teaming.domain.Event.FreeBusyType.outOfOffice);	
 %>
 <% // This is JSON type AJAX response  %>
 {<%--

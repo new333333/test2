@@ -30,7 +30,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 
 <taconite-root xml:space="preserve">
 <%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>

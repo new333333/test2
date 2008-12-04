@@ -29,13 +29,13 @@
  */
 %>
 <% // Status %>
-<%@ page import="com.sitescape.team.util.NLT" %>
-<%@ page import="com.sitescape.team.util.SPropsUtil" %>
-<%@ page import="com.sitescape.util.PropertyNotFoundException" %>
-<%@ page import="com.sitescape.team.ObjectKeys" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.SPropsUtil" %>
+<%@ page import="org.kablink.util.PropertyNotFoundException" %>
+<%@ page import="org.kablink.teaming.ObjectKeys" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
-<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
+<jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <c:if test="${ssUser.internalId != guestInternalId}">
 	<c:if test="${!empty ssUser.statusDate}">
 	  <span style="float:right;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"

@@ -29,7 +29,7 @@
  */
 %>
 
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
 <div class="ss_style">
 	<form style="display: inline;">
 <%

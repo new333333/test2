@@ -30,7 +30,7 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript" src="<html:rootPath />js/binder/ss_access.js"></script>
 <script type="text/javascript">
@@ -384,7 +384,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 </div>
 
 <c:forEach var="function" items="${ssFunctions}">
-<jsp:useBean id="function" type="com.sitescape.team.security.function.Function" />
+<jsp:useBean id="function" type="org.kablink.teaming.security.function.Function" />
 <div id="${renderResponse.namespace}ss_operations${function.id}" class="ss_style ss_portlet"
   style="position:absolute; display:none; width:300px; border:1px solid #000000; 
   margin-bottom:10px; padding:4px; background-color:#ffffff;">

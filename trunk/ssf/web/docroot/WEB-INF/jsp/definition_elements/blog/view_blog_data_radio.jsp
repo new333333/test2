@@ -28,8 +28,8 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.web.util.DefinitionHelper" %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.web.util.DefinitionHelper" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%
 	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
 	String radio = "";

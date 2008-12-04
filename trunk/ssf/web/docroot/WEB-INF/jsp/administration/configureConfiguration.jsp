@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
@@ -57,7 +57,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <div style="padding-top: 10px; padding-bottom: 2px;"><span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.standardTemplates"/></span></div>
 <ul class="ss_square">
 <c:forEach var="bconfig" items="${ssBinderConfigs}">
-<jsp:useBean id="bconfig" type="com.sitescape.team.domain.TemplateBinder"/>
+<jsp:useBean id="bconfig" type="org.kablink.teaming.domain.TemplateBinder"/>
 	<c:if test="${bconfig.reserved}">
 	<li><a class="ss_bold ss_style ss_title_link" href="javascript:" onClick="return <%=cTreeName%>_showId('${bconfig.id}', this, 'configure_configuration');">
 	<ssf:nlt tag="${bconfig.templateTitle}" checkIfTag="true"/></a>
@@ -72,7 +72,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <div style="padding-top: 10px; padding-bottom: 2px;"><span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.customTemplates"/></span></div>
 <ul class="ss_square">
 <c:forEach var="cconfig" items="${ssBinderConfigs}">
-<jsp:useBean id="cconfig" type="com.sitescape.team.domain.TemplateBinder"/>
+<jsp:useBean id="cconfig" type="org.kablink.teaming.domain.TemplateBinder"/>
 	<c:if test="${!cconfig.reserved}">
 	<li><a class="ss_bold ss_style ss_title_link" href="javascript:" onClick="return <%=cTreeName%>_showId('${cconfig.id}', this, 'configure_configuration');">
 	<ssf:nlt tag="${cconfig.templateTitle}" checkIfTag="true"/></a>
@@ -117,7 +117,7 @@ document.${renderResponse.namespace}fm.onsubmit=function() { return ss_selectAll
 <c:if test="${!empty ssBinderConfig}">
 
 <c:if test="${empty ssOperation || ssOperation == ''}">
-<%@ page import="com.sitescape.team.module.definition.DefinitionUtils" %>
+<%@ page import="org.kablink.teaming.module.definition.DefinitionUtils" %>
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <%
 //Get the folder type of this definition (folder, file, or event)

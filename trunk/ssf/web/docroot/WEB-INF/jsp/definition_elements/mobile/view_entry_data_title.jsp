@@ -30,8 +30,8 @@
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="title_entry" value="${ssDefinitionEntry}"/>
-<jsp:useBean id="title_entry" type="com.sitescape.team.domain.FolderEntry" />
-<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
+<jsp:useBean id="title_entry" type="org.kablink.teaming.domain.FolderEntry" />
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <% //Title view %>
 <div class="ss_entryContent">
   <c:if test="${empty ss_title_breadcrumbs_seen && 

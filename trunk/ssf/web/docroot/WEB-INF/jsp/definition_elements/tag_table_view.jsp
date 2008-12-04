@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <table class="ss_tag_pane_color">
