@@ -63,7 +63,7 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 			this.zoneId = zoneId;
 			this.jobName = jobName;
 			this.jobGroup = jobGroup;
-			this.jobDescription = SSStatefulJob.trimDescription(jobDescription);
+			this.jobDescription = trimDescription(jobDescription);
 
 			this.seconds = seconds;
 		}

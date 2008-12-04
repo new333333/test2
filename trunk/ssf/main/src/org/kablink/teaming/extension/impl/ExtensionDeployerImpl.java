@@ -20,7 +20,6 @@ import org.dom4j.DocumentException;
 import org.dom4j.QName;
 import org.dom4j.io.SAXReader;
 import org.dom4j.tree.AbstractAttribute;
-import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.extension.ExtensionDeployer;
@@ -29,7 +28,6 @@ import org.kablink.teaming.jobs.DeployExtension;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.template.TemplateModule;
-import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.DirPath;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
@@ -78,31 +76,17 @@ public class ExtensionDeployerImpl implements ZoneSchedule,ExtensionDeployer {
 	}
 	protected DeployExtension getProcessor(Workspace zone) {
 		String jobClass = SZoneConfig.getString(zone.getName(), "extensionConfiguration/property[@name='" + DeployExtension.DEPLOY_EXTENSION_JOB + "']");
-		if (Validator.isNull(jobClass)) jobClass = "org.kablink.teaming.jobs.DefaultDeployExtension";
-		try {
-			Class processorClass = ReflectHelper.classForName(jobClass);
-			DeployExtension job = (DeployExtension)processorClass.newInstance();
-			return job;
-		} catch (ClassNotFoundException e) {
-			   throw new ConfigurationException(
-					"Invalid DeployExtension class name '" + jobClass + "'",
-					e);
-		} catch (InstantiationException e) {
-			   throw new ConfigurationException(
-					"Cannot instantiate DeployExtension of type '"
-	                    	+ jobClass + "'");
-		} catch (IllegalAccessException e) {
-			   throw new ConfigurationException(
-					"Cannot instantiate DeployExtension of type '"
-					+ jobClass + "'");
-		} 
-		   		
+    	if (Validator.isNotNull(jobClass)) {
+    		try {
+    			return (DeployExtension)ReflectHelper.getInstance(jobClass);
+    		} catch (Exception e) {
+ 			   logger.error("Cannot instantiate DeployExtension custom class", e);
+    		}
+    	}
+    	return (DeployExtension)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultDeployExtension.class);		   		
 	}
 	//called on zone delete
 	public void stopScheduledJobs(Workspace zone) {
-		//primay zone support only
-		String zoneName = SZoneConfig.getDefaultZoneName();
-		if (!zoneName.equals(zone.getName())) return;
 		DeployExtension job =getProcessor(zone);
    		job.remove(zone.getId());
 	}

@@ -291,25 +291,16 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	return info;
     }
      private EmailPosting getPostingObject() {
-    	String emailPostingClass = getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.POSTING_JOB);
-        try {
-            Class processorClass = ReflectHelper.classForName(emailPostingClass);
-            EmailPosting job = (EmailPosting)processorClass.newInstance();
-            return job;
-        } catch (ClassNotFoundException e) {
-            throw new ConfigurationException(
-                    "Invalid EmailPosting class name '" + emailPostingClass + "'",
-                    e);
-        } catch (InstantiationException e) {
-            throw new ConfigurationException(
-                    "Cannot instantiate EmailPosting of type '"
-                            + emailPostingClass + "'");
-        } catch (IllegalAccessException e) {
-            throw new ConfigurationException(
-                    "Cannot instantiate EmailPosting of type '"
-                            + emailPostingClass + "'");
-        }
-    }
+    	String jobClass = getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.POSTING_JOB);
+       	if (Validator.isNotNull(jobClass)) {
+ 		   try {
+ 			   return  (EmailPosting)ReflectHelper.getInstance(jobClass);
+ 		   } catch (Exception ex) {
+ 			   logger.error("Cannot instantiate EmailPosting custom class", ex);
+ 		   }
+       	}
+       	return (EmailPosting)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultEmailPosting.class);
+     }
 
 	/**
      * Do actual work to either enable or disable digest notification.
@@ -322,25 +313,16 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	}
 	    
     private EmailNotification getNotificationObject() {
-    	String emailNotifyClass = getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.NOTIFICATION_JOB);
-        try {
-            Class processorClass = ReflectHelper.classForName(emailNotifyClass);
-            EmailNotification job = (EmailNotification)processorClass.newInstance();
-            return job;
-        } catch (ClassNotFoundException e) {
-            throw new ConfigurationException(
-                    "Invalid EmailNotification class name '" + emailNotifyClass + "'",
-                    e);
-        } catch (InstantiationException e) {
-            throw new ConfigurationException(
-                    "Cannot instantiate EmailNotification of type '"
-                            + emailNotifyClass + "'");
-        } catch (IllegalAccessException e) {
-            throw new ConfigurationException(
-                    "Cannot instantiate EmailNotification of type '"
-                            + emailNotifyClass + "'");
-        }
-    }    
+    	String jobClass = getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.NOTIFICATION_JOB);
+    	if (Validator.isNotNull(jobClass)) {
+		   try {
+			   return  (EmailNotification)ReflectHelper.getInstance(jobClass);
+		   } catch (Exception ex) {
+			   logger.error("Cannot instantiate EmailNotification custom class", ex);
+		   }
+   		}
+   		return (EmailNotification)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultEmailNotification.class);
+     }    
 	public void updateDefaultDefinitions(Long topId, Boolean newDefinitionsOnly) {
 		Workspace top = (Workspace)getCoreDao().loadBinder(topId, topId);
 		

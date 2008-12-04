@@ -28,6 +28,10 @@
  */
 package org.kablink.teaming.util;
 import java.util.Locale;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.SingletonViolationException;
@@ -39,6 +43,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.NoSuchMessageException;
 
+import org.kablink.teaming.util.Constants;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.util.Validator;
 
 /**
  * @author hurley
@@ -180,5 +187,25 @@ public class NLT implements ApplicationContextAware {
 	
 	public static String get(String tag, Object[] args, String text, Locale locale) {
 		return getInstance().getMessageWithTextAsDefault(tag, args, text, locale);
+	}
+	public static Set<Locale> getLocales() {
+		java.util.Locale[] ids = java.util.Locale.getAvailableLocales();
+		String[] strs = SPropsUtil.getStringArray("i18n.locale.support", Constants.COMMA);
+		SortedSet supported = new TreeSet();
+		for (int i=0; i<strs.length; ++i) supported.add(strs[i]);
+		//now see which ones are supported
+		Set<Locale> results = new java.util.HashSet();
+		for (int i=0; i<ids.length; ++i) {
+			if (supported.contains(ids[i].getLanguage())) {
+				//this will skip the 'general' locales and only show those with countries
+				if ( Validator.isNotNull(ids[i].getCountry())) {
+					results.add(ids[i]);
+				}
+			} else if (supported.contains(ids[i].toString())) {
+				results.add(ids[i]);
+			}
+		}
+		return results;
+
 	}
 }

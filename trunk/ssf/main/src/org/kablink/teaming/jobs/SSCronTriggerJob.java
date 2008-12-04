@@ -130,7 +130,7 @@ public abstract class SSCronTriggerJob extends SSStatefulJob {
 			this.zoneId = zoneId;
 			this.jobName = jobName;
 			this.jobGroup = jobGroup;
-			this.jobDescription = SSStatefulJob.trimDescription(jobDescription);
+			this.jobDescription = trimDescription(jobDescription);
 		}
 		protected Long getZoneId() {
 			return zoneId;

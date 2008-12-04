@@ -42,18 +42,9 @@ import org.kablink.teaming.util.ReflectHelper;
  */
 public class FieldBuilderUtil {
     
-    public static Field[] buildField(DefinableEntity entity, String dataElemName, String fieldBuilderClassName, Map args) {
-        try {
-            Class fieldBuilderClass = ReflectHelper.classForName(fieldBuilderClassName);
-            FieldBuilder fieldBuilder = (FieldBuilder) fieldBuilderClass.newInstance();
-            return fieldBuilder.buildField(entity, dataElemName, args);
-        } catch (ClassNotFoundException e) {
-            throw new InternalException (e);
-        } catch (InstantiationException e) {
-            throw new InternalException (e);
-        } catch (IllegalAccessException e) {
-            throw new InternalException (e);
-        }
-    }
+	public static Field[] buildField(DefinableEntity entity, String dataElemName, String fieldBuilderClassName, Map args) {
+		FieldBuilder fieldBuilder = (FieldBuilder)ReflectHelper.getInstance(fieldBuilderClassName);
+		return fieldBuilder.buildField(entity, dataElemName, args);
+	}    
     
 }

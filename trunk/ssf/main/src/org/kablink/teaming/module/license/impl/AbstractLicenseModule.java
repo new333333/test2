@@ -60,24 +60,14 @@ implements LicenseModule, ZoneSchedule {
 
 	protected LicenseMonitor getProcessor(Workspace zone) {
 	   	String jobClass = SZoneConfig.getString(zone.getName(), "licenseConfiguration/property[@name='" + LicenseMonitor.LICENSE_JOB + "']");
-    	if (Validator.isNull(jobClass)) jobClass = "org.kablink.teaming.jobs.DefaultLicenseMonitor";
-    	try {
-    		Class processorClass = ReflectHelper.classForName(jobClass);
-    		LicenseMonitor job = (LicenseMonitor)processorClass.newInstance();
-    		return job;
-    	} catch (ClassNotFoundException e) {
-    		throw new ConfigurationException(
-    				"Invalid LicenseMontior class name '" + jobClass + "'",
-    				e);
-    	} catch (InstantiationException e) {
-    		throw new ConfigurationException(
-    				"Cannot instantiate LicenseMonitor of type '"
-    				+ jobClass + "'");
-    	} catch (IllegalAccessException e) {
-    		throw new ConfigurationException(
-    				"Cannot instantiate LicenseMonitor of type '"
-    				+ jobClass + "'");
-    	} 		
+    	if (Validator.isNotNull(jobClass)) {
+    		try {
+    			return (LicenseMonitor)ReflectHelper.getInstance(jobClass);
+    		} catch (Exception e) {
+ 			   logger.error("Cannot instantiate LicenseMonitor custom class", e);
+    		}
+    	}
+    	return (LicenseMonitor)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultLicenseMonitor.class);
 	}
 	//called on zone startup
     public void startScheduledJobs(Workspace zone) {

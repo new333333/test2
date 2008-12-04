@@ -37,12 +37,15 @@
 <c:if test="${empty ssReadOnlyFields[property_name]}">
 <select name="${property_name}">
 <%
-	java.util.Locale[] ids = java.util.Locale.getAvailableLocales();
+	java.util.Set<java.util.Locale> ids = org.kablink.teaming.util.NLT.getLocales();
 	org.kablink.teaming.domain.User user = (org.kablink.teaming.domain.User)request.getAttribute("ssDefinitionEntry");
 	org.kablink.teaming.domain.User currentUser = (org.kablink.teaming.domain.User)request.getAttribute("ssUser");
 	java.util.TreeMap<String,java.util.Locale> map = new java.util.TreeMap(new org.kablink.teaming.comparator.StringComparator(currentUser.getLocale())); //sort
-	for (int i=0; i<ids.length; ++i) {
-		map.put(ids[i].getDisplayName(currentUser.getLocale()), ids[i]);
+	for (java.util.Locale lc:ids) {
+		map.put(lc.getDisplayName(currentUser.getLocale()), lc);
+	}
+	if (user != null) { //make sure current users locale appears
+		map.put(user.getLocale().getDisplayName(currentUser.getLocale()), user.getLocale());
 	}
 	java.util.Locale userLocale;
 	if (user != null) userLocale = user.getLocale();

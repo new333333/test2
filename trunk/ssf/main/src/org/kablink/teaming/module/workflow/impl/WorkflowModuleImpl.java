@@ -116,25 +116,14 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
    }
 	protected WorkflowTimeout getProcessor(Workspace zone) {
 		String jobClass = SZoneConfig.getString(zone.getName(), "workflowConfiguration/property[@name='" + WorkflowTimeout.TIMEOUT_JOB + "']");
-		if (Validator.isNull(jobClass)) jobClass = "org.kablink.teaming.jobs.DefaultWorkflowTimeout";
-		try {
-			Class processorClass = ReflectHelper.classForName(jobClass);
-			WorkflowTimeout job = (WorkflowTimeout)processorClass.newInstance();
-			return job;
-		} catch (ClassNotFoundException e) {
-			   throw new ConfigurationException(
-					"Invalid WorkflowTimeout class name '" + jobClass + "'",
-					e);
-		} catch (InstantiationException e) {
-			   throw new ConfigurationException(
-					"Cannot instantiate WorkflowTimeout of type '"
-	                    	+ jobClass + "'");
-		} catch (IllegalAccessException e) {
-			   throw new ConfigurationException(
-					"Cannot instantiate WorkflowTimeout of type '"
-					+ jobClass + "'");
-		} 
-		   		
+    	if (Validator.isNotNull(jobClass)) {
+    		try {
+    			return (WorkflowTimeout)ReflectHelper.getInstance(jobClass);
+    		} catch (Exception e) {
+ 			   logger.error("Cannot instantiate WorkflowTimeout custom class", e);
+    		}
+    	}
+    	return (WorkflowTimeout)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultWorkflowTimeout.class);		   		
 	}
 	//called on zone delete
 	public void stopScheduledJobs(Workspace zone) {

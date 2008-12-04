@@ -173,27 +173,15 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 
  	protected FolderDelete getDeleteProcessor(Workspace zone) {
  	   String jobClass = SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_JOB + "']");
- 	   if (Validator.isNull(jobClass)) jobClass = "org.kablink.teaming.jobs.DefaultFolderDelete";
- 	   try {
- 		   Class processorClass = ReflectHelper.classForName(jobClass);
- 		   FolderDelete job = (FolderDelete)processorClass.newInstance();
- 		   return job;
- 	   } catch (ClassNotFoundException e) {
- 		   throw new ConfigurationException(
- 				"Invalid FolderDelete class name '" + jobClass + "'",
- 				e);
- 	   } catch (InstantiationException e) {
- 		   throw new ConfigurationException(
- 				"Cannot instantiate FolderDelete of type '"
-                     	+ jobClass + "'");
- 	   } catch (IllegalAccessException e) {
- 		   throw new ConfigurationException(
- 				"Cannot instantiate FolderDelete of type '"
- 				+ jobClass + "'");
- 	   } 
- 	   
-  		
- 	}
+ 	   if (Validator.isNotNull(jobClass)) {
+		   try {
+			   return  (FolderDelete)ReflectHelper.getInstance(jobClass);
+		   } catch (Exception ex) {
+			   logger.error("Cannot instantiate FolderDelete custom class", ex);
+		   }
+   		}
+   		return (FolderDelete)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultFolderDelete.class);
+  	}
  	//called on zone delete
 	public void stopScheduledJobs(Workspace zone) {
 		FolderDelete job = getDeleteProcessor(zone);

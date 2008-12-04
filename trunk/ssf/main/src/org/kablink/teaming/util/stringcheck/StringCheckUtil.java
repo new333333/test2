@@ -55,10 +55,8 @@ public class StringCheckUtil implements InitializingBean {
 	
 		checkers = new StringCheck[classNames.length];
 		
-		Class checkerClass;
 		for(int i = 0; i < classNames.length; i++) {
-			checkerClass = ReflectHelper.classForName(classNames[i]);
-			checkers[i] = (StringCheck) checkerClass.newInstance();
+			checkers[i] = (StringCheck) ReflectHelper.getInstance(classNames[i]);
 		}
 	}
 

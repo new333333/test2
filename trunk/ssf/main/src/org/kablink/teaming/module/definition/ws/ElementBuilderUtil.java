@@ -28,13 +28,9 @@
  */
 package org.kablink.teaming.module.definition.ws;
 
-import java.util.List;
-
-import org.dom4j.Element;
 import org.dom4j.DocumentHelper;
-import org.kablink.teaming.InternalException;
+import org.dom4j.Element;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.remoting.ws.model.Field;
 import org.kablink.teaming.util.ReflectHelper;
 
 
@@ -46,21 +42,12 @@ public class ElementBuilderUtil {
 
     public static void buildElement(Element parent, org.kablink.teaming.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity, String dataElemType, String dataElemName, 
     			String fieldBuilderClassName, ElementBuilder.BuilderContext context) {
-        try {
-            Class fieldBuilderClass = ReflectHelper.classForName(fieldBuilderClassName);
-            ElementBuilder fieldBuilder = (ElementBuilder) fieldBuilderClass.newInstance();
-            Element element = (parent != null)? DocumentHelper.createElement("attribute") : null;
-            if (fieldBuilder.buildElement(element, entityModel, entity, dataElemType, dataElemName, context)) {
-            	if(parent != null)
-            		parent.add(element);
-            }
-        } catch (ClassNotFoundException e) {
-            throw new InternalException (e);
-        } catch (InstantiationException e) {
-            throw new InternalException (e);
-        } catch (IllegalAccessException e) {
-            throw new InternalException (e);
-        }
+    	ElementBuilder fieldBuilder = (ElementBuilder)ReflectHelper.getInstance(fieldBuilderClassName);
+    	Element element = (parent != null)? DocumentHelper.createElement("attribute") : null;
+    	if (fieldBuilder.buildElement(element, entityModel, entity, dataElemType, dataElemName, context)) {
+    		if(parent != null)
+    			parent.add(element);
+    	}
     }
     
 }

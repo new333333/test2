@@ -1,5 +1,5 @@
 package org.kablink.teaming.extension;
 
 public interface ExtensionCallback {
-	Object execute(Object action) throws ClassNotFoundException;
+	Object execute(Object action);
 }

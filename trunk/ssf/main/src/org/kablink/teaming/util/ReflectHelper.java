@@ -30,7 +30,8 @@ package org.kablink.teaming.util;
 
 import java.beans.Introspector;
 import java.lang.reflect.Method;
-
+import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.InternalException;
 /**
  * @author Jong Kim
  *
@@ -45,6 +46,25 @@ public class ReflectHelper {
 		}
 	} 
 	
+	public static Object getInstance(String name) {
+		try {
+			Class clazz = classForName(name);
+			return getInstance(clazz);
+		} catch (ClassNotFoundException e) {
+			throw new ConfigurationException("Class not found", e);
+		}
+
+	}
+	public static Object getInstance(Class clazz) {
+		try {
+			return clazz.newInstance();
+ 		} catch (IllegalAccessException e) {
+			throw new InternalException(e);
+		} catch (InstantiationException e) {
+			throw new InternalException(e);
+		}
+
+	}
 	public static Method getterMethod(Class theClass, String propertyName, boolean includeInherited) {
 		Method[] methods = null;
 	    if(includeInherited)
