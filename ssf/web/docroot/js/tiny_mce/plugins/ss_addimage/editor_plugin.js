@@ -31,6 +31,11 @@
 				cmd : 'mce_ssAddImage',
 				image : url + '/images/ss_image.gif'
 			});
+
+			// Add a node change handler, selects the button in the UI when a image is selected
+			ed.onNodeChange.add(function(ed, cm, n) {
+				cm.setActive('ss_addimage', n.nodeName == 'IMG' && n.className == 'ss_addimage');
+			});
 		},
 
 		getInfo : function() {
