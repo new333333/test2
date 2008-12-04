@@ -365,7 +365,6 @@ div.ss_editorHints {
   font-size: ${ss_style_font_smallprint} !important; 
 }
 
-
 /* entry styles: common to entry views and entry forms */
 .ss_entryTitle {
   font-weight: normal;
