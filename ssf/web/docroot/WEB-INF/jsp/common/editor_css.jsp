@@ -92,3 +92,14 @@ font-size:9px !important;
 .ss_size_24px { font-size: 24px !important;}
 .ss_size_28px { font-size: 28px !important;}
 .ss_size_32px { font-size: 32px !important;}
+
+/* styles used in the editor for wikilinks */
+a.ss_icecore_link {
+  	color: #666666 !important;
+  	text-decoration:underline;
+	}
+a:hover.ss_icecore_link {
+  	color: #AFC8E3 !important;
+  	text-decoration:underline;
+}
+
