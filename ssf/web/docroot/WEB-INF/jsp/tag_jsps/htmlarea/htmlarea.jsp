@@ -80,7 +80,7 @@ tinyMCE.init(
   remove_script_host: false,
   entities:  "39,#39,34,quot,38,amp,60,lt,62,gt",
   gecko_spellcheck : true,
-  plugins: "table,<%--
+  plugins: "compat2x,table,<%--
   --%><c:if test="${empty ssInlineNoImage}">ss_addimage,</c:if><%--
   --%>preview,paste,ss_wikilink", 
   theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
@@ -97,8 +97,8 @@ tinyMCE.init(
   theme_advanced_disable : "image,advimage",
   theme_advanced_resizing_use_cookie : false});
 
-tinyMCE.addI18n('',{
-wikilink_desc : '<ssf:nlt tag="editor.wikilink.title"/>'
+tinyMCE.addI18n('en.ss_wikilink',{
+desc : "<ssf:nlt tag="editor.wikilink.title"/>"
 });
 
 var ss_imageUploadError1 = "<ssf:nlt tag="imageUpload.badFile"/>"
