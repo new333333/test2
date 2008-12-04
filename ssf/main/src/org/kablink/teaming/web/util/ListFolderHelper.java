@@ -709,26 +709,6 @@ public class ListFolderHelper {
 					
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			folderEntries = bs.getFolderModule().getFullEntries(folderId, options);
-			Collection<FolderEntry> full = (Collection)folderEntries.get(ObjectKeys.FULL_ENTRIES);
-			SeenMap seen = (SeenMap)model.get(WebKeys.SEEN_MAP);
-			//viewing a blog is seeing the entries, but still want ui to display unseen icon
-			//so return a dummy map that still has the entries unseen to the UI
-			SeenMap newMap = new DummySeenMap(seen);
-			model.put(WebKeys.SEEN_MAP, newMap);
-			for (FolderEntry f:full) {
-				//try to avoid extra set transaction if not needed
-				if (!seen.checkIfSeen(f)) {  
-					Collection<Entry> es = new ArrayList(full);
-					bs.getProfileModule().setSeen(null, es);
-					break;
-				}
-			}
-			//Set the first item in the folder as viewed in the audit trail (arbitrary action)
-			//TODO think of a better algorithm for what is viewed
-			for (FolderEntry f:full) {
-				bs.getReportModule().addAuditTrail(AuditTrail.AuditType.view, f);
-				break;
-			}
 			
 			//Get the WebDAV URLs
 			buildWebDAVURLs(bs, req, folderEntries, model, folder);
@@ -2054,35 +2034,5 @@ public class ListFolderHelper {
     	}
 		
 		return folderEntries;
-	}
-	/**
-	 * Dummy class to wrap old seenMap so we can set the entries as seen from a controller,
-	 * but maintain the previous state for the jsps.
-	 * @author Janet
-	 *
-	 */
-	public static class DummySeenMap extends SeenMap {
-		protected DummySeenMap() {};
-		
-		protected DummySeenMap(SeenMap currentMap) {
-			setSeenMap(new HashMap(currentMap.getSeenMap()));
-		}
-		public void setSeen(Entry entry) {
-		}
-		public void setSeen(FolderEntry entry) {
-		}
-		public boolean checkIfSeen(FolderEntry entry) {
-			return checkAndSetSeen(entry, false);
-		}
-		protected boolean checkAndSetSeen(FolderEntry entry, boolean setIt) {
-			return super.checkAndSetSeen(entry, false);
-		}
-		public boolean checkAndSetSeen(Map entry, boolean setIt) {
-			return super.checkAndSetSeen(entry, false);
-		}	
-		public boolean checkIfSeen(Map entry) {
-			return super.checkAndSetSeen(entry, false);
-		}   
-		   
 	}
 }
