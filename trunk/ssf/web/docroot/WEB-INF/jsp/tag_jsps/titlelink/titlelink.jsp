@@ -67,15 +67,13 @@ String hrefClass = ParamUtil.get(request, "hrefClass", "ss_title_menu");
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
 
-<c:if test="${empty ss_menuLinkHelpShown}"><ssHelpSpot 
-  helpId="workspaces_folders/entries/display_entry_control" 
-  <c:if test="<%= !isIE %>">
-  offsetX="-10" offsetY="-13" 
-  </c:if>
-  <c:if test="<%= isIE %>">
-  offsetX="24"  
-  </c:if>
-  title="<ssf:nlt tag="helpSpot.displayEntryControl"/>"></ssHelpSpot></c:if><c:set 
+<c:if test="${empty ss_menuLinkHelpShown}">
+	<ssHelpSpot 
+  		helpId="workspaces_folders/entries/display_entry_control" 
+	  	offsetX="-22" offsetY="-2"  
+  		title="<ssf:nlt tag="helpSpot.displayEntryControl"/>">
+	</ssHelpSpot>
+</c:if><c:set 
   var="ss_menuLinkHelpShown" value="1" scope="request"/><a href="<%= url %>" 
 <% if ( useBinderFunction.equals("no") ) {  %>
 	onClick="ss_loadEntryFromMenu(this,  '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= namespace %>', '<%= isDashboard %>', '<%= isFile %>');return false;" 

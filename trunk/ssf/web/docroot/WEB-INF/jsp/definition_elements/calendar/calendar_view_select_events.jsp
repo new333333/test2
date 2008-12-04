@@ -35,15 +35,18 @@
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
-	  <ssHelpSpot helpId="workspaces_folders/misc_tools/calendar_entry_control" offsetX="0" 
-        <c:if test="<%= isIE %>">
-          offsetY="7" 
-        </c:if>
-        <c:if test="<%= !isIE %>">
-          offsetY="-15" 
-        </c:if>
-	    title="<ssf:nlt tag="helpSpot.calendarEntryControl"/>"></ssHelpSpot>
+	<!-- The help spot is positioned relative to the position of its parent. -->
+	<!-- That's why I put the <ssHelpSpot...> in a <span> -->
+	<span>
+		<img border="0" src="<html:imagesPath/>pics/1pix.gif" />
+
+		<ssHelpSpot helpId="workspaces_folders/misc_tools/calendar_entry_control" offsetX="0" offsetY="-4" 
+		    title="<ssf:nlt tag="helpSpot.calendarEntryControl"/>">
+		</ssHelpSpot>
+	</span>
+
 		<input style="margin: 0px" type="checkbox" id="ss_calendarEventsTypeChoose${prefix}" onclick="ss_calendar_${prefix}.changeEventType();"><label for="ss_calendarEventsTypeChoose${prefix}">&nbsp;<ssf:nlt tag="folder.calendar.show.all.entries.by" />:</label>
+
 		<select id="ss_calendarEventsTypeSelect${prefix}" onclick="ss_calendar_${prefix}.changeEventType();">
 			<option value="creation"><ssf:nlt tag="calendar.viewType.creation"/></option>
 			<option value="activity"><ssf:nlt tag="calendar.viewType.activity"/></option>

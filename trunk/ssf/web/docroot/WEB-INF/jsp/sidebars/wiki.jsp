@@ -39,8 +39,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 <div class="ss_wiki_sidebar">
    
-	  <ssHelpSpot helpId="workspaces_folders/misc_tools/wiki_controls" offsetX="0" 
-	    title="<ssf:nlt tag="helpSpot.wikiControls"/>"></ssHelpSpot>
+	<ssHelpSpot helpId="workspaces_folders/misc_tools/wiki_controls" offsetX="-14" offsetY="8" 
+	   			title="<ssf:nlt tag="helpSpot.wikiControls"/>">
+	</ssHelpSpot>
 
 	    <c:if test="${!empty ss_wikiHomepageEntryId}">
 		    <a class="ss_linkButton" href="<ssf:url     

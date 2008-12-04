@@ -34,11 +34,8 @@
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <div class="ss_blog_sidebar">
-  <ssHelpSpot helpId="workspaces_folders/misc_tools/blog_controls" offsetX="0" 
-     <c:if test="<%= isIE %>">
-       offsetY="25"
-     </c:if>
-    title="<ssf:nlt tag="helpSpot.blogControls"/>">
+  <ssHelpSpot helpId="workspaces_folders/misc_tools/blog_controls" offsetX="-15" offsetY="8" 
+	title="<ssf:nlt tag="helpSpot.blogControls"/>">
   </ssHelpSpot>
 
   <div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.archives"/></div>

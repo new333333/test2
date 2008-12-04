@@ -63,7 +63,7 @@ Boolean webdavSupportedFooter = new Boolean(org.kablink.teaming.web.util.BinderH
 	--%></ssf:ifLicenseExpired><%--
 
 	--%><div align="center" class="ss_footer_toolbar"><%--
-		--%><ssHelpSpot helpId="workspaces_folders/misc_tools/footer_toolbar" offsetX="-13" offsetY="-15" <%--
+		--%><ssHelpSpot helpId="workspaces_folders/misc_tools/footer_toolbar" offsetX="-12" offsetY="-4" <%--
 			--%> title="<ssf:nlt tag="helpSpot.bottomLinks"/>"></ssHelpSpot><%--
 
 		--%><c:set var="delimiter" value=""/><%--

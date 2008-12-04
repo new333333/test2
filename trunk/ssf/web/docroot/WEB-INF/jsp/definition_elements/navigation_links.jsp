@@ -55,14 +55,7 @@
 
 <div class="ss_clear_float"></div>
 <div class="ss_breadcrumb">
-  <ssHelpSpot helpId="workspaces_folders/misc_tools/breadcrumbs" offsetX="0" 
-  <c:if test="<%= !BrowserSniffer.is_ie(request) %>">
-   offsetY="4"
-  </c:if>
-  <c:if test="<%= BrowserSniffer.is_ie(request) %>">
-   offsetY="2" xAlignment="center"
-  </c:if>
-    title="<ssf:nlt tag="helpSpot.breadCrumbs"/>"></ssHelpSpot>
+	<ssHelpSpot helpId="workspaces_folders/misc_tools/breadcrumbs" offsetX="0" offsetY="6" title="<ssf:nlt tag="helpSpot.breadCrumbs"/>"></ssHelpSpot> 
 
   <ul>
 	<c:if test="${!empty ssDefinitionEntry.parentBinder}">
