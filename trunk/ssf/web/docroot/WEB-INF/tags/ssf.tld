@@ -1329,7 +1329,7 @@
 		</attribute>		
 		<attribute>
 			<name>fileAttachment</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>org.kablink.teaming.domain.FileAttachment</type>
 		</attribute>
@@ -1840,6 +1840,12 @@
 			<name>webPath</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>baseUrl</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
 		</attribute>		
 	</tag>
 	<tag>

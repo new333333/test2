@@ -43,7 +43,7 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 public class SsfsInternalAttachmentUrlTag extends TagSupport {
 	private Binder binder;
 	private DefinableEntity entity;
-	private FileAttachment fa;
+	private FileAttachment fa = null;
 	private String escapeSingleQuote = "no";
     
 	public int doStartTag() throws JspException {
@@ -52,9 +52,6 @@ public class SsfsInternalAttachmentUrlTag extends TagSupport {
 		
 		if(entity == null)
 			throw new JspException("Entity must be specified");
-		
-		if(fa == null)
-			throw new JspException("File attachment must be specified");
 		
 		String url = SsfsUtil.getInternalAttachmentUrl((HttpServletRequest) pageContext.getRequest(), binder, entity, fa);
 		
@@ -68,6 +65,7 @@ public class SsfsInternalAttachmentUrlTag extends TagSupport {
 			throw new JspException(e);
 		} finally {
 			escapeSingleQuote = "no";
+			fa = null;
 		}
 	    
 		return SKIP_BODY;

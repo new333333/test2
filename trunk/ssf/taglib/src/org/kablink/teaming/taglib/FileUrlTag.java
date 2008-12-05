@@ -52,6 +52,7 @@ public class FileUrlTag extends BodyTagSupport {
     private FileAttachment attachment;
 	private DefinableEntity entity=null;
 	private String fileId=null;
+	private boolean baseUrl = false;
 	public FileUrlTag() {
 		setup();
 	}
@@ -67,6 +68,7 @@ public class FileUrlTag extends BodyTagSupport {
 		fileId = null;
 		entity = null;
 		webPath = WebKeys.ACTION_READ_FILE;
+		baseUrl = false;
 	}
 	
 	public int doEndTag() throws JspException {
@@ -80,10 +82,15 @@ public class FileUrlTag extends BodyTagSupport {
 				attachment = (FileAttachment)entity.getAttachment(fileId); 
 				if (attachment != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, attachment);
 			} else {
-				//try the first entity
-				Set<FileAttachment> atts = entity.getFileAttachments();
-				if (!atts.isEmpty())
-					webUrl = WebUrlUtil.getFileUrl(req, webPath, atts.iterator().next());
+				if (this.baseUrl) {
+					//We are building a base url that has no file name
+					webUrl = WebUrlUtil.getFileUrl(req, WebKeys.ACTION_READ_FILE, entity, "");
+				} else {
+					//try the first entity
+					Set<FileAttachment> atts = entity.getFileAttachments(); 
+					if (!atts.isEmpty())
+						webUrl = WebUrlUtil.getFileUrl(req, webPath, atts.iterator().next());
+				}
 				
 			}
 			if (Validator.isNotNull(webUrl)) pageContext.getOut().print(webUrl);
@@ -109,6 +116,9 @@ public class FileUrlTag extends BodyTagSupport {
 	}
 	public void setFileId(String fileId) {
 	    this.fileId = fileId;
+	}
+	public void setBaseUrl(boolean baseUrl) {
+	    this.baseUrl = baseUrl;
 	}
 }
 

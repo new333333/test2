@@ -95,6 +95,8 @@ public class ReadFileController extends AbstractReadFileController {
 				catch(Exception e) {
 					response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
 				}
+			} else {
+				response.getOutputStream().print(NLT.get("file.error.unknownFile"));
 			}
 			try {
 				response.getOutputStream().flush();

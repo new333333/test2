@@ -57,10 +57,15 @@ public class SsfsUtil {
 			Binder binder, DefinableEntity entity, FileAttachment fa) {
 		StringBuffer sb = getInternalCommonPart(req, binder, entity);
 		
-		return sb.append("attach/").
-		append(fa.getRepositoryName()).
-		append("/").
-		append(fa.getFileItem().getName()).toString();
+		if (fa == null) {
+			sb.append("attach/unknown/");
+		} else {
+			sb.append("attach/").
+			append(fa.getRepositoryName()).
+			append("/").
+			append(fa.getFileItem().getName()).toString();
+		}
+		return sb.toString();
 	}
 
 	public static String getInternalAttachmentUrlEncoded(PortletRequest req, Binder binder, 
@@ -69,10 +74,15 @@ public class SsfsUtil {
 		String strFileName = fa.getFileItem().getName();
 		String strUrlEncoded = URLEncoder.encode(strFileName, "UTF-8");
 		
-		return sb.append("attach/").
-		append(fa.getRepositoryName()).
-		append("/").
-		append(strUrlEncoded).toString();
+		if (fa == null) {
+			sb.append("attach/unknown/");
+		} else {
+			sb.append("attach/").
+			append(fa.getRepositoryName()).
+			append("/");
+			sb.append(strUrlEncoded);
+		}
+		return sb.toString();
 	}
 	
 	public static String getInternalFileUrl(HttpServletRequest req, Binder binder, 
