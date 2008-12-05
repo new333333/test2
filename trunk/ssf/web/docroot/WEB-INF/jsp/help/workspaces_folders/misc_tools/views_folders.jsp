@@ -29,12 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<p><ssf:nlt tag="ihelp.other.def_view_type.intro" /></p>
-
-<p><ssf:nlt tag="ihelp.other.def_view_type.folders" /></p>
-
-</div>
-</div>
+<jsp:include page="${helpDocPath}/mngfldrs_config_defaultview.html" />

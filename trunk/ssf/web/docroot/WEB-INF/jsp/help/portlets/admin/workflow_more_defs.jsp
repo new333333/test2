@@ -29,4 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:include page="/WEB-INF/help/${ssUser.locale}/personalws_workflow_definitions.html" />
+<jsp:include page="${helpDocPath}/personalws_workflow_definitions.html" />

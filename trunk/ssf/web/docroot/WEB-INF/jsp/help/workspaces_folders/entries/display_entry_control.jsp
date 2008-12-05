@@ -29,4 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:include page="/WEB-INF/help/${ssUser.locale}/tool_viewentry_display.html" />
+<jsp:include page="${helpDocPath}/tool_viewentry_display.html" />

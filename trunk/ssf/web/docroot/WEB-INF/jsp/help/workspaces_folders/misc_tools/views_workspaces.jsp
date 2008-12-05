@@ -29,4 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:include page="/WEB-INF/help/${ssUser.locale}/mngfldrs_config_wsview.html" />
+<jsp:include page="${helpDocPath}/personalws_config_wsview.html" />
