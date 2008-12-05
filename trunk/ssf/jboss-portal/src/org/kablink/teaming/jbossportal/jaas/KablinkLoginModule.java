@@ -44,10 +44,10 @@ import javax.security.auth.login.LoginException;
  * A SiteScape-supplied login module used to synchronize authenticated user
  * into SiteScape user database.
  */
-public class SiteScapeLoginModule extends UsernamePasswordLoginModule {
+public class KablinkLoginModule extends UsernamePasswordLoginModule {
 	
 	private static final org.jboss.logging.Logger log = 
-		org.jboss.logging.Logger.getLogger(SiteScapeLoginModule.class);
+		org.jboss.logging.Logger.getLogger(KablinkLoginModule.class);
 
 	private static final String SERVICE_CLASS_NAME = "org.kablink.teaming.bridge.AuthenticationBridge";
 	

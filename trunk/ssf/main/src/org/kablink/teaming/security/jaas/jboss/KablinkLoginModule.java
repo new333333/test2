@@ -26,23 +26,28 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package org.kablink.teaming.ssfs.wck;
+package org.kablink.teaming.security.jaas.jboss;
 
-import org.apache.slide.common.ServiceAccessException;
-import org.apache.slide.common.SlideToken;
-import org.apache.slide.security.AccessDeniedException;
-import org.apache.slide.security.SecurityImpl;
-import org.apache.slide.structure.ActionNode;
-import org.apache.slide.structure.ObjectNode;
+import javax.security.auth.login.LoginException;
 
-public class SiteScapeSecurity extends SecurityImpl {
+import org.kablink.teaming.security.jaas.BasicLoginModule;
+import org.kablink.teaming.security.jaas.KablinkGroup;
+import org.kablink.teaming.security.jaas.KablinkPrincipal;
 
-    public void checkCredentials(SlideToken token, ObjectNode object,
-            ActionNode action) 
-    throws ServiceAccessException, AccessDeniedException {
-    	// Do not let Slide be responsible for ACL checking.
-    	// It will be performed entirely by SSF. 
-    	
-    	// Noop
-    }
+
+public class KablinkLoginModule extends BasicLoginModule {
+
+	public boolean commit() throws LoginException {
+		boolean commitValue = super.commit();
+
+		if (commitValue) {
+			KablinkGroup group = new KablinkGroup("Roles");
+
+			group.addMember(new KablinkPrincipal(roleName));
+
+			getSubject().getPrincipals().add(group);
+		}
+
+		return commitValue;
+	}
 }

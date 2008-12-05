@@ -41,19 +41,19 @@ import org.kablink.teaming.ssfs.LockException;
 import org.kablink.teaming.ssfs.NoAccessException;
 import org.kablink.teaming.ssfs.NoSuchObjectException;
 import org.kablink.teaming.ssfs.TypeMismatchException;
-import org.kablink.teaming.ssfs.server.SiteScapeFileSystem;
+import org.kablink.teaming.ssfs.server.KablinkFileSystem;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 
 
-public class SiteScapeFileSystemImpl extends AbstractAllModulesInjected 
-implements SiteScapeFileSystem {
+public class KablinkFileSystemImpl extends AbstractAllModulesInjected 
+implements KablinkFileSystem {
 
-	private SiteScapeFileSystemInternal ssfsInt;
-	private SiteScapeFileSystemLibrary ssfsLib;
+	private KablinkFileSystemInternal ssfsInt;
+	private KablinkFileSystemLibrary ssfsLib;
 	
-	public SiteScapeFileSystemImpl() {
-		ssfsInt = new SiteScapeFileSystemInternal(this);
-		ssfsLib = new SiteScapeFileSystemLibrary(this);
+	public KablinkFileSystemImpl() {
+		ssfsInt = new KablinkFileSystemInternal(this);
+		ssfsLib = new KablinkFileSystemLibrary(this);
 	}
 	
 	public void setMimeTypes(FileTypeMap mimeTypes) {

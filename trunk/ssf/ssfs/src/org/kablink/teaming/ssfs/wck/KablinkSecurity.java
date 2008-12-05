@@ -26,26 +26,23 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package org.kablink.teaming.ssfs.server;
+package org.kablink.teaming.ssfs.wck;
 
-public class SiteScapeFileSystemException extends RuntimeException {
+import org.apache.slide.common.ServiceAccessException;
+import org.apache.slide.common.SlideToken;
+import org.apache.slide.security.AccessDeniedException;
+import org.apache.slide.security.SecurityImpl;
+import org.apache.slide.structure.ActionNode;
+import org.apache.slide.structure.ObjectNode;
 
-	// tells whether warning or error
-	private boolean warning = false; // default to 'error'
-	
-	public SiteScapeFileSystemException() {
-	}
-	
-	public SiteScapeFileSystemException(String msg) {
-		super(msg);
-	}
-	
-	public SiteScapeFileSystemException(String msg, boolean warning) {
-		this(msg);
-		this.warning = warning;
-	}
-	
-	public boolean isWarning() {
-		return warning;
-	}
+public class KablinkSecurity extends SecurityImpl {
+
+    public void checkCredentials(SlideToken token, ObjectNode object,
+            ActionNode action) 
+    throws ServiceAccessException, AccessDeniedException {
+    	// Do not let Slide be responsible for ACL checking.
+    	// It will be performed entirely by SSF. 
+    	
+    	// Noop
+    }
 }

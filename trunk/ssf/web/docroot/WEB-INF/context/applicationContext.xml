@@ -734,13 +734,13 @@
 		
 	<bean id="ssfs" class="org.springframework.aop.framework.ProxyFactoryBean" depends-on="sPropsUtil">
 		<property name="target">
-			<bean class="org.kablink.teaming.ssfs.server.impl.SiteScapeFileSystemImpl" parent="dependOnAllModulesTemplate">
+			<bean class="org.kablink.teaming.ssfs.server.impl.KablinkFileSystemImpl" parent="dependOnAllModulesTemplate">
 				<property name="mimeTypes"><ref local="mimeTypes"/></property>
 				<property name="coreDao"><ref local="coreDao"/></property>
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>org.kablink.teaming.ssfs.server.SiteScapeFileSystem</value>
+			<value>org.kablink.teaming.ssfs.server.KablinkFileSystem</value>
 		</property>
 		<property name="interceptorNames">
 			<list>

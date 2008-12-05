@@ -70,15 +70,15 @@ import org.kablink.teaming.ssfs.LockException;
 import org.kablink.teaming.ssfs.NoAccessException;
 import org.kablink.teaming.ssfs.NoSuchObjectException;
 import org.kablink.teaming.ssfs.TypeMismatchException;
-import org.kablink.teaming.ssfs.server.SiteScapeFileSystem;
-import org.kablink.teaming.ssfs.server.SiteScapeFileSystemException;
+import org.kablink.teaming.ssfs.server.KablinkFileSystem;
+import org.kablink.teaming.ssfs.server.KablinkFileSystemException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.DatedMultipartFile;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
 
-public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
+public class KablinkFileSystemInternal implements KablinkFileSystem {
 
 	private static final String BINDER = "b";
 	private static final String ENTRY = "e";
@@ -90,7 +90,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 	private FileTypeMap mimeTypes;
 	private CoreDao coreDao;
 	
-	SiteScapeFileSystemInternal(AllModulesInjected bs) {
+	KablinkFileSystemInternal(AllModulesInjected bs) {
 		this.bs = bs;
 	}
 	
@@ -382,7 +382,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());						
 		} catch (WriteFilesException e) {
-			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		}
 	}
 	
@@ -627,7 +627,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} catch (WriteFilesException e) {
-			throw new SiteScapeFileSystemException(e.getLocalizedMessage(), true);
+			throw new KablinkFileSystemException(e.getLocalizedMessage(), true);
 		}		
 	}
 	

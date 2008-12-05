@@ -66,8 +66,8 @@ import org.kablink.teaming.ssfs.LockException;
 import org.kablink.teaming.ssfs.NoAccessException;
 import org.kablink.teaming.ssfs.NoSuchObjectException;
 import org.kablink.teaming.ssfs.TypeMismatchException;
-import org.kablink.teaming.ssfs.server.SiteScapeFileSystem;
-import org.kablink.teaming.ssfs.server.SiteScapeFileSystemException;
+import org.kablink.teaming.ssfs.server.KablinkFileSystem;
+import org.kablink.teaming.ssfs.server.KablinkFileSystemException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.LibraryPathUtil;
 import org.kablink.teaming.util.NLT;
@@ -75,7 +75,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.WebHelper;
 
 
-public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
+public class KablinkFileSystemLibrary implements KablinkFileSystem {
 
 	private static final String LAST_ELEM_NAME 		= "len"; // always set
 	private static final String PARENT_BINDER_PATH 	= "pbp"; // always set
@@ -100,7 +100,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	private byte[] helpFileContentInUTF8;
 	private Date currentDate;
 
-	SiteScapeFileSystemLibrary(AllModulesInjected bs) {
+	KablinkFileSystemLibrary(AllModulesInjected bs) {
 		this.bs = bs;
 		
 		this.helpFileName = SPropsUtil.getString(NONLIBRARY_VIRTUAL_HELP_FILE, "").trim();
@@ -497,14 +497,14 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				// exists. Specify a different filename." This error message
 				// is mis-leading, so should be avoided. 
 				
-				throw new SiteScapeFileSystemException("Can not move or rename binder that is not library folder", true);
+				throw new KablinkFileSystemException("Can not move or rename binder that is not library folder", true);
 				
 				// throw new AlreadyExistsException("Can not move or rename binder that is not file folder");
 				//throw new NoAccessException("Can not move or rename binder that is not file folder");
 			}
 		}
 		else if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_VIRTUAL_HELP_FILE)) {
-			throw new SiteScapeFileSystemException("Can not move or rename virtual help file", true);
+			throw new KablinkFileSystemException("Can not move or rename virtual help file", true);
 		}
 		
 		Map targetMap = new HashMap();
@@ -514,7 +514,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			// Because we only allow "rename" (no change to parent) but not "move"
 			// (parent change), we do not allow this operation unless both the 
 			// source and the target share the same parent. 
-			throw new SiteScapeFileSystemException("Cannot move: It is not allowed", true);
+			throw new KablinkFileSystemException("Cannot move: It is not allowed", true);
 		}
 		
 		if(!targetInfo.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) {
@@ -740,13 +740,13 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			FolderUtils.createLibraryEntry(folder, fileName, content, modDate, true);
 		}
 		catch(ConfigurationException e) {
-			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		}
 		catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} 
 		catch (WriteFilesException e) {
-			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		}
 	}
 	
@@ -757,13 +757,13 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			FolderUtils.modifyLibraryEntry(entry, fileName, content, modDate, true);
 		}
 		catch(ConfigurationException e) {
-			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		}
 		catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} 
 		catch (WriteFilesException e) {
-			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		}
 	}
 	
@@ -850,13 +850,13 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			return FolderUtils.createLibraryFolder(parentBinder, folderName);
 		}
 		catch(ConfigurationException e) {
-			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		}
 		catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} 
 		catch (WriteFilesException e) {
-			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		}
 	}
 	
@@ -942,7 +942,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			throw new NoAccessException(e.getLocalizedMessage());
 		} 
 		catch (WriteFilesException e) {
-			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		} 
 	}
 	
@@ -968,7 +968,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			throw new NoAccessException(e.getLocalizedMessage());
 		} 
 		catch (WriteFilesException e) {
-			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		}
 	}
 	
@@ -987,7 +987,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			throw new NoAccessException(e.getLocalizedMessage());
 		} 
 		catch (WriteFilesException e) {
-			throw new SiteScapeFileSystemException(e.getLocalizedMessage());
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		}
 	}
 	
