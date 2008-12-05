@@ -9,12 +9,12 @@
 	
 	<import file="../deploy-support.xml" />
 	
-	<property name="jar.file" value="ssf-jbossportal.jar" />
+	<property name="jar.file" value="kablink-teaming-jbossportal.jar" />
 
 	<target name="clean">
 	</target>
 	
-	<!-- Incremental deploy for ssf-jbossportal.jar -->
+	<!-- Incremental deploy for kablink-teaming-jbossportal.jar -->
 	<target name="deploy" depends="jar">
 		<antcall target="deploy-jar-into-portal">
 			<param name="deploy-support.jar.file" value="${jar.file}" />
@@ -68,7 +68,7 @@
 
 		<antcall target="deploy-additional-components" />
 				
-		<!--<echo file="${app.server.deploy.dir}/liferay-portal.ear/portal-web.war/META-INF/MANIFEST.MF" append="true" message=" lib/ssf-liferay.jar lib/ssf-portalmodule.jar" />-->
+		<!--<echo file="${app.server.deploy.dir}/liferay-portal.ear/portal-web.war/META-INF/MANIFEST.MF" append="true" message=" lib/kablink-teaming-liferay.jar lib/kablink-teaming-portalmodule.jar" />-->
 				
 		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.server.dir}/lib" />
 		<copy file="${project.dir}/lib/mysql-connector.jar" todir="${app.server.server.dir}/lib" />

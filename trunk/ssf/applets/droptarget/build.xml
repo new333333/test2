@@ -7,8 +7,8 @@
 	<import file="${project.dir}/deploy-support.xml" />
 
 	<property name="droptargetsrc.dir" value="./src" />
-	<property name="jar.file" value="ssf-droptarget-applet.jar" />
-	<property name="signedjar.file" value="ssf-droptarget-applet-sign.jar" />
+	<property name="jar.file" value="kablink-teaming-droptarget-applet.jar" />
+	<property name="signedjar.file" value="kablink-teaming-droptarget-applet-sign.jar" />
 
 	<!-- This overrides the imported definition -->
 	<path id="project.classpath">

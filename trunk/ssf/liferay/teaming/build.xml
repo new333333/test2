@@ -9,12 +9,12 @@
 	
 	<import file="../../deploy-support.xml" />
 	
-	<property name="jar.file" value="ssf-liferay-hooks.jar" />
+	<property name="jar.file" value="kablink-teaming-liferay-hooks.jar" />
 
 	<target name="clean" depends="build-common.clean">
 	</target>
 	
-	<!-- Incremental deploy for ssf-liferay-hooks.jar -->
+	<!-- Incremental deploy for kablink-teaming-liferay-hooks.jar -->
 	<target name="deploy">
 		<antcall target="deploy-jar">
 			<param name="deploy-support.jar.file" value="${jar.file}" />

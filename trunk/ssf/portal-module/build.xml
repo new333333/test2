@@ -4,7 +4,7 @@
 	<import file="../build-common.xml" />
 	<import file="../deploy-support.xml" />
 	
-	<property name="jar.file" value="ssf-portalmodule.jar" />
+	<property name="jar.file" value="kablink-teaming-portalmodule.jar" />
 
 
 	<target name="jar" depends="compile,build-common.jar">

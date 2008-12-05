@@ -149,12 +149,12 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			<c:if test="<%= !isIE %>">
 			<applet CODE = "org.kablink.teaming.applets.droptarget.TopFrame" 
 			  JAVA_CODEBASE = "<html:rootPath/>applets" 
-			  ARCHIVE = "droptarget/ssf-droptarget-applet.jar" 
+			  ARCHIVE = "droptarget/kablink-teaming-droptarget-applet.jar" 
 			  WIDTH = "22" HEIGHT = "22" MAYSCRIPT>
 			</c:if>
 			    <PARAM NAME="CODE" value = "org.kablink.teaming.applets.droptarget.TopFrame" />
 			    <PARAM NAME ="CODEBASE" value = "<html:rootPath/>applets" />
-			    <PARAM NAME ="ARCHIVE" value = "droptarget/ssf-droptarget-applet.jar" />
+			    <PARAM NAME ="ARCHIVE" value = "droptarget/kablink-teaming-droptarget-applet.jar" />
 			    <PARAM NAME ="type" value="application/x-java-applet;version=1.5" />
 			    <param name = "scriptable" value="true" />
 			    <PARAM NAME = "NAME" value = "folderdropboxobj${ssBinderId}${ss_namespace}" />

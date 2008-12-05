@@ -11,7 +11,7 @@
 	<property file="${project.dir}/release.properties" />
 	<path id="project.classpath">
 		<pathelement path="${classpath}" />
-		<pathelement location="${project.dir}/ws-client/ssf-wsclient.jar"/>
+		<pathelement location="${project.dir}/ws-client/kablink-teaming-wsclient.jar"/>
 		<fileset dir="${project.dir}/lib" includes="*.jar" />
 	</path>
 	<taskdef classpathref="project.classpath" resource="net/sf/antcontrib/antcontrib.properties" />

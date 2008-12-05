@@ -4,7 +4,7 @@
 	<import file="../build-common.xml" />
 	<import file="../deploy-support.xml" />
 		
-	<property name="jar.file" value="ssf-util-search.jar" />
+	<property name="jar.file" value="kablink-teaming-util-search.jar" />
 	
 	<!-- This overrides the imported definition -->
 	<path id="project.classpath">
