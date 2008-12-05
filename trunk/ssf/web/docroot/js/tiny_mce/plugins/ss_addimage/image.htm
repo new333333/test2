@@ -9,6 +9,20 @@
 	<link href="css/ss_addimage.css" rel="stylesheet" type="text/css" />
 	<base target="_self" />
 	<title>{#ss_addimage.dialog_title}</title>
+	<script type="text/javascript">
+		function showUrlForm() {
+			var divObjUrl = self.document.getElementById('urlForm');
+			var divObjFile = self.document.getElementById('fileForm');
+			divObjFile.style.display = 'none';
+			divObjUrl.style.display = 'block';
+		}
+		function showFileForm() {
+			var divObjUrl = self.document.getElementById('urlForm');
+			var divObjFile = self.document.getElementById('fileForm');
+			divObjFile.style.display = 'block';
+			divObjUrl.style.display = 'none';
+		}
+	</script>
 </head>
 <body id="ss_addimage" style="display: none">
     <form onsubmit="insertAction();return false;" action="#"> 
@@ -24,11 +38,22 @@
 			<div id="general_panel" class="panel current">
 				<fieldset>
 						<legend>{#ss_addimage.general}</legend>
+						
+						<div style="padding-bottom:10px;">
+						<input type="radio" name="typeSel" value="file"
+						  onClick="showFileForm();" checked><a href="javascript: ;" 
+						  onClick="showFileForm();return false;">{#ss_addimage.addFile}</a>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="javascript: ;" 
+						  onClick="showUrlForm();return false;"<input type="radio" name="typeSel" value="url"
+						  onClick="showUrlForm();">{#ss_addimage.addUrl}</a>
+						</div>
 
-						<table class="properties">
+						<div id="fileForm" style="display:block;" width="100%">
+						  <table class="properties" width="100%">
 		                    <tr>
-						        <td class="column1"><label id="srclabel" for="src">{#ss_addimage.src}</label></td>
-						        <td colspan="2">
+						        <td class="column1"><label id="srclabel" for="src">{#ss_addimage.srcFile}</label></td>
+						        <td align="right">
 									<div id="iframeDiv" style="overflow:hidden;">
 									  <iframe id="iframe" src="image_form.htm" frameborder="0"
 										  scrolling="no"></iframe>
@@ -37,13 +62,32 @@
 								</td>
 						        <td id="srcbrowsercontainer">&nbsp;</td>
 						    </tr>
+						  </table>
+						</div>
+						
+						<div id="urlForm" style="display:none;" width="100%">
+						  <table class="properties" width="100%">
+		                    <tr>
+						        <td class="column1"><label id="srclabel" for="src">{#ss_addimage.src}</label></td>
+						        <td align="right"><input id="srcUrl" name="srcUrl" 
+						          type="text" value="" class="textbox"/></td> 
+						        <td >&nbsp;</td>
+						    </tr>
+						  </table>
+						</div>
+						
+						<table class="properties" width="100%" style="padding-top:16px;">
 							<tr> 
 								<td class="column1"><label id="altlabel" for="alt">{#ss_addimage.alt}</label></td> 
-								<td colspan="2"><input id="alt" name="alt" type="text" value="" /></td> 
+								<td align="right"><input id="alt" name="alt" 
+								  type="text" value="" class="textbox"/></td> 
+						        <td >&nbsp;</td>
 							</tr> 
 							<tr> 
 								<td class="column1"><label id="titlelabel" for="title">{#ss_addimage.title}</label></td> 
-								<td colspan="2"><input id="title" name="title" type="text" value="" /></td> 
+								<td align="right"><input id="title" name="title" 
+								  type="text" value="" class="textbox"/></td> 
+						        <td >&nbsp;</td>
 							</tr>
 						</table>
 				</fieldset>
@@ -119,7 +163,8 @@
 
 						<tr>
 							<td class="column1"><label id="stylelabel" for="style">{#ss_addimage.style}</label></td> 
-							<td colspan="2"><input id="style" name="style" type="text" value="" onchange="styleUpdated();" /></td> 
+							<td colspan="2"><input id="style" name="style" type="text" 
+							  value="" onchange="styleUpdated();" class="textbox"/></td> 
 						</tr>
 
 					</table>
@@ -133,7 +178,7 @@
 					<table border="0" cellpadding="4" cellspacing="0">
 						<tr>
 							<td class="column1"><label id="idlabel" for="id">{#ss_addimage.id}</label></td> 
-							<td><input id="id" name="id" type="text" value="" /></td> 
+							<td><input id="id" name="id" type="text" value="" class="textbox"/></td> 
 						</tr>
 
 						<tr>
@@ -150,14 +195,14 @@
 						<tr>
 							<td class="column1"><label id="langlabel" for="lang">{#ss_addimage.langcode}</label></td> 
 							<td>
-								<input id="lang" name="lang" type="text" value="" />
+								<input id="lang" name="lang" type="text" value="" class="textbox"/>
 							</td> 
 						</tr>
 
 						<tr>
 							<td class="column1"><label id="usemaplabel" for="usemap">{#ss_addimage.image_map}</label></td> 
 							<td>
-								<input id="usemap" name="usemap" type="text" value="" />
+								<input id="usemap" name="usemap" type="text" value="" class="textbox"/>
 							</td> 
 						</tr>
 
@@ -165,7 +210,7 @@
 							<td class="column1"><label id="longdesclabel" for="longdesc">{#ss_addimage.long_desc}</label></td>
 							<td><table border="0" cellspacing="0" cellpadding="0">
 									<tr>
-									  <td><input id="longdesc" name="longdesc" type="text" value="" /></td>
+									  <td><input id="longdesc" name="longdesc" type="text" value="" class="textbox"/></td>
 									  <td id="longdesccontainer">&nbsp;</td>
 									</tr>
 								</table></td> 

@@ -23,7 +23,6 @@ function getImageSrc(str) {
 	if (!str)
 		return "";
 
-	alert(src)
 	if ((pos = str.indexOf('this.src=')) != -1) {
 		var src = str.substring(pos + 10);
 
@@ -204,13 +203,14 @@ function makeAttrib(attrib, value) {
 function insertAction() {
 	var inst = tinyMCEPopup.editor;
 	var elm = inst.getFocusElement();
-	alert('elm= '+elm)
 	var formObj = document.forms[0];
 	var src = formObj.src.value;
+	var srcUrl = formObj.srcUrl.value;
+	if (src == '') src = srcUrl;
 
 	if (tinyMCE.getParam("accessibility_warnings")) {
 		if (formObj.alt.value == "") {
-			var answer = confirm(tinyMCE.getLang('lang_ss_addimage_missing_alt', '', true));
+			var answer = confirm(tinyMCEPopup.getLang('ss_addimage.missing_alt', '', true));
 			if (answer == true) {
 				formObj.alt.value = " ";
 			}
