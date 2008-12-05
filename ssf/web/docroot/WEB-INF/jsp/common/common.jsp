@@ -53,3 +53,6 @@ if (org.kablink.teaming.context.request.RequestContextHolder.getRequestContext()
 --%><ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter><%--
 
 --%>
+
+<% // Set up the path to the directory that holds the help html files. %>
+<c:set var="helpDocPath" value="/help_doc/${ssUser.locale}" scope="application"/>
