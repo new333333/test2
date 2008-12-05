@@ -12,6 +12,7 @@
 	<property name="war.file" value="${war.name}.war" />
 	
 	<target name="war" depends="jar">
+		<delete dir="war/WEB-INF/lib" failonerror="false"/>
 		<copy file="${jar.file}" todir="war/WEB-INF/lib"/>
 		<!-- Copy Teaming WS client library -->
 		<copy file="${project.dir}/ws-client/ssf-wsclient.jar" todir="war/WEB-INF/lib"/>
@@ -20,6 +21,7 @@
 			<fileset dir="${project.dir}/lib"
 				includes="${libraries.wsclient}" />
 		</copy>
+		<copy file="${project.dir}/util/ssf-util.jar" todir="war/WEB-INF/lib"/>
 		<!-- Copy search utility library useful when writing WS client -->
 		<copy file="${project.dir}/util-search/ssf-util-search.jar" todir="war/WEB-INF/lib"/>
 		<!-- Copy additional libraries needed by the remote application sample -->
