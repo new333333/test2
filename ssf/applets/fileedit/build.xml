@@ -7,8 +7,8 @@
 	<import file="${project.dir}/deploy-support.xml" />
 
 	<property name="fileeditsrc.dir" value="./src" />
-	<property name="jar.file" value="ssf-fileedit-applet.jar" />
-	<property name="signedjar.file" value="ssf-fileedit-applet-sign.jar" />
+	<property name="jar.file" value="kablink-teaming-fileedit-applet.jar" />
+	<property name="signedjar.file" value="kablink-teaming-fileedit-applet-sign.jar" />
 
 	<!-- This overrides the imported definition -->
 	<path id="project.classpath">

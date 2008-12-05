@@ -129,7 +129,7 @@
 		>
 			<!-- No longer necessary
 			<manifest>
-				<attribute name="Class-Path" value="ssf-main.jar ${classpath.manifest.ss} ${classpath.manifest.3rd}" />
+				<attribute name="Class-Path" value="kablink-teaming-main.jar ${classpath.manifest.ss} ${classpath.manifest.3rd}" />
 			</manifest>-->
 		</war>
 	

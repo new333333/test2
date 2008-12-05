@@ -9,14 +9,14 @@
 	
 	<import file="../../deploy-support.xml" />
 	
-	<property name="jar.file" value="ssf-liferay.jar" />
+	<property name="jar.file" value="kablink-teaming-liferay.jar" />
 
 	<target name="clean" depends="build-common.clean">
 		<delete dir="temp" />
 		<delete dir="temp2" />
 	</target>
 	
-	<!-- Incremental deploy for ssf-liferay.jar -->
+	<!-- Incremental deploy for kablink-teaming-liferay.jar -->
 	<target name="deploy">
 		<antcall target="deploy-jar-into-portal">
 			<param name="deploy-support.jar.file" value="${jar.file}" />

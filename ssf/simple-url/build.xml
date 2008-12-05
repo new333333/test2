@@ -4,7 +4,7 @@
 	<import file="../build-common.xml" />
 	<import file="../deploy-support.xml" />
 		
-	<property name="jar.file" value="teaming-simpleurl.jar" />
+	<property name="jar.file" value="kablink-teaming-simpleurl.jar" />
 	<property name="war.name" value="teaming" />
 	<property name="war.file" value="${war.name}.war" />
 	<property name="temp.dir" value="temp" />

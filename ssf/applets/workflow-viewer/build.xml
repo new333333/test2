@@ -6,7 +6,7 @@
 	<import file="${project.dir}/build-common.xml"/>
 	<import file="${project.dir}/deploy-support.xml" />
 	
-	<property name="jar.file" value="ssf-workflowviewer-applet.jar" />
+	<property name="jar.file" value="kablink-teaming-workflowviewer-applet.jar" />
 
 	<!-- This overrides the imported definition -->
 	<path id="project.classpath">

@@ -4,7 +4,7 @@
 	<import file="../build-common.xml" />
 	<import file="../deploy-support.xml" />
 		
-	<property name="jar.file" value="ssf-asmodule.jar" />
+	<property name="jar.file" value="kablink-teaming-asmodule.jar" />
 	
 	<target name="build"  depends="jar"/>
 

@@ -4,7 +4,7 @@
 	<import file="../build-common.xml" />
     <import file="../deploy-support.xml" />
 	
-	<property name="jar.file" value="ssf-ssfs.jar" />
+	<property name="jar.file" value="kablink-teaming-ssfs.jar" />
 
 	<property name="slide.war.file" value="slide.war" />
 	<property name="output.war.name" value="ssfs" />

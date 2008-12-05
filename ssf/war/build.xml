@@ -18,15 +18,15 @@
 	<target name="war" depends="clean">
 		
 		<copy todir="${temp.dir}/WEB-INF/lib">
-			<fileset dir="${project.dir}/main" includes="ssf-main.jar" />
-			<fileset dir="${project.dir}/util" includes="ssf-util.jar" />
-			<fileset dir="${project.dir}/util-search" includes="ssf-util-search.jar" />
-			<fileset dir="${project.dir}/commons-httpclient-contrib" includes="ssf-commons-httpclient-contrib.jar" />
-			<fileset dir="${project.dir}/lucene-contrib" includes="ssf-lucene-contrib.jar" />
-			<fileset dir="${project.dir}/slide-webdavclient" includes="ssf-slide-webdavclient.jar" />
-			<fileset dir="${project.dir}/taglib" includes="ssf-taglib.jar" />
-			<fileset dir="${project.dir}/indexer-lucene" includes="ssf-lucenecommon.jar" />
-			<fileset dir="${project.dir}/liferay/teaming" includes="ssf-liferay-hooks.jar" />
+			<fileset dir="${project.dir}/main" includes="kablink-teaming-main.jar" />
+			<fileset dir="${project.dir}/util" includes="kablink-teaming-util.jar" />
+			<fileset dir="${project.dir}/util-search" includes="kablink-teaming-util-search.jar" />
+			<fileset dir="${project.dir}/commons-httpclient-contrib" includes="kablink-teaming-commons-httpclient-contrib.jar" />
+			<fileset dir="${project.dir}/lucene-contrib" includes="kablink-teaming-lucene-contrib.jar" />
+			<fileset dir="${project.dir}/slide-webdavclient" includes="kablink-teaming-slide-webdavclient.jar" />
+			<fileset dir="${project.dir}/taglib" includes="kablink-teaming-taglib.jar" />
+			<fileset dir="${project.dir}/indexer-lucene" includes="kablink-teaming-lucenecommon.jar" />
+			<fileset dir="${project.dir}/liferay/teaming" includes="kablink-teaming-liferay-hooks.jar" />
 			<fileset dir="${project.dir}/lib" includes="${libraries.current}" />
 			<fileset dir="${project.dir}/lib" includes="jms.jar" />
 		</copy>

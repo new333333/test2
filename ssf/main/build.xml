@@ -9,7 +9,7 @@
 	<import file="../build-common.xml" />
 	<import file="../deploy-support.xml" />
 	
-	<property name="jar.file" value="ssf-main.jar" />
+	<property name="jar.file" value="kablink-teaming-main.jar" />
 	<property name="hibernate.dir" value="${basedir}/hibernate" />
 	<target name="clean" depends="ss-hib-clean,build-common.clean" />
 
