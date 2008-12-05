@@ -77,6 +77,7 @@ tinyMCE.init(
   remove_script_host : true,
   document_base_url : "<ssf:fileUrl entity="${ssDefinitionEntry}" baseUrl="true"/>",
   width: "100%",
+  accessibility_warnings: true,
 <ssf:ifnotaccessible>  accessibility_focus: false,</ssf:ifnotaccessible>
 <ssf:ifaccessible>  accessibility_focus: true,</ssf:ifaccessible>
   remove_script_host: false,
@@ -98,6 +99,12 @@ tinyMCE.init(
   theme_advanced_buttons3_add: "tablecontrols", 
   theme_advanced_disable : "image,advimage",
   theme_advanced_resizing_use_cookie : false});
+
+tinyMCE.addI18n('en.ss_addimage',{
+srcFile : "<ssf:nlt tag="editor.addimage.srcFile"/>",
+addFile : "<ssf:nlt tag="editor.addimage.addFile"/>",
+addUrl : "<ssf:nlt tag="editor.addimage.addUrl"/>"
+});
 
 tinyMCE.addI18n('en.ss_wikilink',{
 desc : "<ssf:nlt tag="editor.wikilink.title"/>"
