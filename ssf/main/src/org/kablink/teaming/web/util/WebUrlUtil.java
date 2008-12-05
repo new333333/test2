@@ -292,8 +292,15 @@ public class WebUrlUtil {
 				String.valueOf(fAtt.getModification().getDate().getTime()), null, 
 				fAtt.getFileItem().getName());
 	}
+	public static String getFileUrl(PortletRequest req, String action, DefinableEntity entity, String fileName) {
+		return getFileUrl(WebUrlUtil.getServletRootURL(req), action, entity, fileName);
+	}
+	public static String getFileUrl(HttpServletRequest req, String action, DefinableEntity entity, String fileName) {
+		return getFileUrl(WebUrlUtil.getServletRootURL(req), action, entity, fileName);
+	}
 	public static String getFileUrl(String webPath, String action, DefinableEntity entity, String fileName) {
-		FileAttachment fAtt = entity.getFileAttachment(fileName);
+		FileAttachment fAtt = null;
+		if (!fileName.equals("")) entity.getFileAttachment(fileName);
 		if (fAtt != null) {
 			return WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, entity.getId().toString(), 
 				entity.getEntityType().name(), String.valueOf(fAtt.getModification().getDate().getTime()), null, fileName);

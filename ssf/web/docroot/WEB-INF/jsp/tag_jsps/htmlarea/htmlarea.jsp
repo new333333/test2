@@ -73,7 +73,9 @@ tinyMCE.init(
     --%><c:otherwise>locale: 'en',</c:otherwise><%--
 --%></c:choose>
   content_css: "<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>",
-  relative_urls: true, 
+  relative_urls: false, 
+  remove_script_host : true,
+  document_base_url : "<ssf:fileUrl entity="${ssDefinitionEntry}" baseUrl="true"/>",
   width: "100%",
 <ssf:ifnotaccessible>  accessibility_focus: false,</ssf:ifnotaccessible>
 <ssf:ifaccessible>  accessibility_focus: true,</ssf:ifaccessible>
