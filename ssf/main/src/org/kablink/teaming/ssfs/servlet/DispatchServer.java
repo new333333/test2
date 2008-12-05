@@ -52,8 +52,8 @@ import org.kablink.teaming.ssfs.LockException;
 import org.kablink.teaming.ssfs.NoAccessException;
 import org.kablink.teaming.ssfs.NoSuchObjectException;
 import org.kablink.teaming.ssfs.TypeMismatchException;
-import org.kablink.teaming.ssfs.server.SiteScapeFileSystem;
-import org.kablink.teaming.ssfs.server.SiteScapeFileSystemException;
+import org.kablink.teaming.ssfs.server.KablinkFileSystem;
+import org.kablink.teaming.ssfs.server.KablinkFileSystemException;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 
@@ -191,7 +191,7 @@ public class DispatchServer extends GenericServlet {
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;			
 			}
-			catch(SiteScapeFileSystemException e) {
+			catch(KablinkFileSystemException e) {
 				if(e.isWarning()) {
 					req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.WARNING_GENERAL);		
 					logger.warn(e);
@@ -223,7 +223,7 @@ public class DispatchServer extends GenericServlet {
 		Map sourceUri = (Map) req.getAttribute(CrossContextConstants.SOURCE_URI);
 		Map targetUri = (Map) req.getAttribute(CrossContextConstants.TARGET_URI);
 
-		SiteScapeFileSystem ssfs = getSiteScapeFileSystem();
+		KablinkFileSystem ssfs = getSiteScapeFileSystem();
 		
 		if(operation.equals(CrossContextConstants.OPERATION_CREATE_RESOURCE)) {
 			ssfs.createResource(uri);
@@ -279,8 +279,8 @@ public class DispatchServer extends GenericServlet {
 		}		
 	}
 	
-	private SiteScapeFileSystem getSiteScapeFileSystem() {
-		return (SiteScapeFileSystem) SpringContextUtil.getBean("ssfs");
+	private KablinkFileSystem getSiteScapeFileSystem() {
+		return (KablinkFileSystem) SpringContextUtil.getBean("ssfs");
 	}
 	
 	private ZoneModule getZoneModule() {

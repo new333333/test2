@@ -61,7 +61,7 @@ import org.kablink.teaming.ssfs.TypeMismatchException;
 
 import static org.kablink.teaming.ssfs.CrossContextConstants.*;
 
-public class WebdavSiteScape implements BasicWebdavStore, 
+public class WebdavKablink implements BasicWebdavStore, 
 	WebdavStoreBulkPropertyExtension, WebdavStoreLockExtension,
 	WebdavStoreMacroCopyExtension, WebdavStoreMacroMoveExtension,
 	WebdavStoreMacroDeleteExtension {

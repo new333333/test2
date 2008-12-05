@@ -39,7 +39,7 @@ import org.kablink.teaming.ssfs.NoSuchObjectException;
 import org.kablink.teaming.ssfs.TypeMismatchException;
 
 
-public interface SiteScapeFileSystem {
+public interface KablinkFileSystem {
 
 	public void createResource(Map uri) throws 
 	NoAccessException, AlreadyExistsException, TypeMismatchException;

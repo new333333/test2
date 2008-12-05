@@ -26,26 +26,26 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package org.kablink.teaming.security.jaas.tomcat;
+package org.kablink.teaming.ssfs.server;
 
-import javax.security.auth.login.LoginException;
+public class KablinkFileSystemException extends RuntimeException {
 
-import org.kablink.teaming.security.jaas.BasicLoginModule;
-import org.kablink.teaming.security.jaas.SiteScapeRole;
-
-
-public class SiteScapeLoginModule extends BasicLoginModule {
-
-	public boolean commit() throws LoginException {
-		boolean commitValue = super.commit();
-
-		if (commitValue) {
-			SiteScapeRole role = new SiteScapeRole(roleName);
-
-			getSubject().getPrincipals().add(role);
-		}
-
-		return commitValue;
+	// tells whether warning or error
+	private boolean warning = false; // default to 'error'
+	
+	public KablinkFileSystemException() {
 	}
-
+	
+	public KablinkFileSystemException(String msg) {
+		super(msg);
+	}
+	
+	public KablinkFileSystemException(String msg, boolean warning) {
+		this(msg);
+		this.warning = warning;
+	}
+	
+	public boolean isWarning() {
+		return warning;
+	}
 }

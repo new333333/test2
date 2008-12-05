@@ -47,7 +47,7 @@ import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
-import org.kablink.teaming.security.jaas.SiteScapePrincipal;
+import org.kablink.teaming.security.jaas.KablinkPrincipal;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.Validator;
 
@@ -132,7 +132,7 @@ public class BasicLoginModule implements LoginModule {
 	}
 
 	protected Principal getSiteScapePrincipal(String userId) {
-		return new SiteScapePrincipal(userId);
+		return new KablinkPrincipal(userId);
 	}
 
 	protected String getPassword() {

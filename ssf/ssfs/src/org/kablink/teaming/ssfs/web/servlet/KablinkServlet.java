@@ -40,7 +40,7 @@ import org.kablink.teaming.ssfs.wck.Util;
 import org.kablink.teaming.ssfs.web.crosscontext.DispatchClient;
 
 
-public class SiteScapeServlet extends GenericServlet {
+public class KablinkServlet extends GenericServlet {
 
 	public void init() throws ServletException {
 		

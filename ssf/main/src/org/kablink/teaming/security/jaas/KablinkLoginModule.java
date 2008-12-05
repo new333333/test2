@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package org.kablink.teaming.asmodule.security.jaas;
+package org.kablink.teaming.security.jaas;
 
 import java.util.Map;
 
@@ -35,26 +35,48 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
-import org.kablink.teaming.asmodule.bridge.BridgeUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.util.ServerDetector;
+import org.kablink.util.Validator;
 
 
-public class SiteScapeLoginModule implements LoginModule {
+public class KablinkLoginModule implements LoginModule {
 
-	private static final String CLASS_NAME = "org.kablink.teaming.security.jaas.SiteScapeLoginModule";
-	
+	protected static Log logger = LogFactory.getLog(KablinkLoginModule.class);
+
 	private LoginModule loginModule;
-	
-	public SiteScapeLoginModule() {
-		try {
-			Class classObj = Class.forName(CLASS_NAME, true, BridgeUtil.getClassLoader());
-			loginModule = (LoginModule) classObj.newInstance();
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		} catch (InstantiationException e) {
-			throw new RuntimeException(e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}	
+
+	public KablinkLoginModule() {
+		String jassImplClassName = SPropsUtil.getString("security.jaas.impl.class", null);
+		
+		if (Validator.isNotNull(jassImplClassName)) {
+			try {
+				loginModule = (LoginModule) Class.forName(jassImplClassName).newInstance();
+			}
+			catch(Exception e) {
+				logger.error(e);
+			}
+		}
+		
+		if(loginModule == null) {
+			if (ServerDetector.isJBoss()) {
+				loginModule =
+					new org.kablink.teaming.security.jaas.jboss.KablinkLoginModule();
+			}
+			else if (ServerDetector.isTomcat()) {
+				loginModule =
+					new org.kablink.teaming.security.jaas.tomcat.KablinkLoginModule();
+			}
+			else {
+				logger.error("Unrecognized container type");
+				throw new RuntimeException("Unrecognized container type");
+			}
+		}
+		
+		if(logger.isDebugEnabled())
+			logger.debug(loginModule.getClass().getName());
 	}
 	
 	public boolean abort() throws LoginException {
@@ -65,27 +87,28 @@ public class SiteScapeLoginModule implements LoginModule {
 		return loginModule.commit();
 	}
 
-	public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState, Map<String, ?> options) {
-		loginModule.initialize(subject, callbackHandler, sharedState, options);
+	public void initialize(Subject subject, CallbackHandler callbackHandler, 
+			Map<String, ?> sharedState, Map<String, ?> options) {
+		String enableKey = (String) options.get("enableKey");
+		boolean enable = true;
+		if(Validator.isNotNull(enableKey)) {
+			enable = SPropsUtil.getBoolean(enableKey, true);
+		}
+		if(enable) {
+			loginModule.initialize(subject, callbackHandler, sharedState, options);
+		}
+		else {
+			if(logger.isDebugEnabled())
+				logger.debug("Denying remote client login: It is disabled");
+			throw new RuntimeException("The service is disabled");
+		}
 	}
 
 	public boolean login() throws LoginException {
-		ClassLoader contextClassLoader = 
-			Thread.currentThread().getContextClassLoader();
-
-		try {
-			Thread.currentThread().setContextClassLoader(
-				BridgeUtil.getClassLoader());
-
-			return loginModule.login();
-		}
-		finally {
-			Thread.currentThread().setContextClassLoader(contextClassLoader);
-		}
+		return loginModule.login();
 	}
 
 	public boolean logout() throws LoginException {
 		return loginModule.logout();
 	}
-
 }

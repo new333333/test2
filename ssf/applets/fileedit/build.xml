@@ -31,7 +31,7 @@
 		</antcall>
 
 		<signjar jar="${jar.file}" alias="myKey" 
-		keystore="sitescape.keystore" storepass="spDJOQ"/>
+		keystore="kablink.keystore" storepass="spDJOQ"/>
 	</target>
 		
 	<target name="compile" depends="compile_1.4"/>

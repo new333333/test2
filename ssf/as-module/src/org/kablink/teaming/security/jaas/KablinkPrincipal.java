@@ -31,17 +31,17 @@ package org.kablink.teaming.security.jaas;
 import java.io.Serializable;
 import java.security.Principal;
 
-public class SiteScapePrincipal implements Principal, Serializable {
+public class KablinkPrincipal implements Principal, Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
 	private final String name;
 	
-	public SiteScapePrincipal() {
+	public KablinkPrincipal() {
 		this.name = "";
 	}
 	
-	public SiteScapePrincipal(String name) {
+	public KablinkPrincipal(String name) {
 		this.name = name;
 	}
 	
@@ -64,8 +64,8 @@ public class SiteScapePrincipal implements Principal, Serializable {
 		if (this == obj)
 			return true;
 
-		if (obj instanceof SiteScapePrincipal) {
-			SiteScapePrincipal ssPrincipal = (SiteScapePrincipal)obj;
+		if (obj instanceof KablinkPrincipal) {
+			KablinkPrincipal ssPrincipal = (KablinkPrincipal)obj;
 
 			if (ssPrincipal.getName().equals(this.name)) {
 				return true;

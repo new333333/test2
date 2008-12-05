@@ -41,7 +41,7 @@ import org.apache.slide.simple.authentication.JAASLoginModule;
 import org.kablink.util.ServerDetector;
 
 
-public class SiteScapeLoginModule extends JAASLoginModule {
+public class KablinkLoginModule extends JAASLoginModule {
 
 	/**
 	 * This method overrides <code>JAASLoginModule</code> so that the login

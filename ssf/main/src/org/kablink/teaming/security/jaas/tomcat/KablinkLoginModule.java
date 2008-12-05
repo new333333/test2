@@ -26,72 +26,26 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package org.kablink.teaming.security.jaas;
+package org.kablink.teaming.security.jaas.tomcat;
 
-import java.security.Principal;
-import java.security.acl.Group;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import javax.security.auth.login.LoginException;
 
-import org.kablink.teaming.security.jaas.SiteScapePrincipal;
+import org.kablink.teaming.security.jaas.BasicLoginModule;
+import org.kablink.teaming.security.jaas.KablinkRole;
 
 
-public class SiteScapeGroup extends SiteScapePrincipal implements Group {
-	
-	private static final long serialVersionUID = 1L;
-	
-	private Map members = new HashMap();
+public class KablinkLoginModule extends BasicLoginModule {
 
-	public SiteScapeGroup(String groupName) {
-		super(groupName);
-	}
+	public boolean commit() throws LoginException {
+		boolean commitValue = super.commit();
 
-	public boolean addMember(Principal user) {
-		if (!this.members.containsKey(user)) {
-			this.members.put(user, user);
+		if (commitValue) {
+			KablinkRole role = new KablinkRole(roleName);
 
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-
-	public boolean isMember(Principal member) {
-		boolean isMember = this.members.containsKey(member);
-
-		if (!isMember) {
-			Iterator itr = this.members.values().iterator();
-
-			while (!isMember && itr.hasNext()) {
-				Object obj = itr.next();
-
-				if (obj instanceof Group) {
-					Group group = (Group)obj;
-
-					isMember = group.isMember(member);
-				}
-			}
+			getSubject().getPrincipals().add(role);
 		}
 
-		return isMember;
+		return commitValue;
 	}
 
-	public Enumeration members() {
-		return Collections.enumeration(this.members.values());
-	}
-
-	public boolean removeMember(Principal user) {
-		Object obj = this.members.remove(user);
-
-		if (obj != null) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
 }
