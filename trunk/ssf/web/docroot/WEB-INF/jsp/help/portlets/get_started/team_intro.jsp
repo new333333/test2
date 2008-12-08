@@ -29,4 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:include page="${helpDocPath}/mngfldrs_config_teams.html" />
+<iframe	frameborder="0"
+		scrolling="auto" 
+    	name="help_mngfldrs_config_teams" 
+    	src="${helpDocPath}/mngfldrs_config_teams.html" 
+    	height="100%" width="100%"></iframe>

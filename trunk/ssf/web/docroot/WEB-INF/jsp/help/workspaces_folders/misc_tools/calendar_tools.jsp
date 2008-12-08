@@ -29,4 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:include page="${helpDocPath}/tool_cal_datetoolbar.html" />
+<iframe	frameborder="0"
+		scrolling="auto" 
+    	name="help_tool_cal_datetoolbar" 
+    	src="${helpDocPath}/tool_cal_datetoolbar.html" 
+    	height="100%" width="100%"></iframe>

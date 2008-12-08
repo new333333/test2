@@ -29,4 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:include page="${helpDocPath}/mngfldrs_config_mirroredfolders.html" />
+<iframe	frameborder="0"
+		scrolling="auto" 
+    	name="help_mngfldrs_config_mirroredfolders" 
+    	src="${helpDocPath}/mngfldrs_config_mirroredfolders.html" 
+    	height="100%" width="100%"></iframe>

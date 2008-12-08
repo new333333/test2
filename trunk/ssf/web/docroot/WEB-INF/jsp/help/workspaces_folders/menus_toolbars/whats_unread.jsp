@@ -29,4 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:include page="${helpDocPath}/personalws_whatsunread.html" />
+<iframe	frameborder="0"
+		scrolling="auto" 
+    	name="help_personalws_whatsunread" 
+    	src="${helpDocPath}/personalws_whatsunread.html" 
+    	height="100%" width="100%"></iframe>

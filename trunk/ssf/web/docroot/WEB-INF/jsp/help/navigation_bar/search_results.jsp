@@ -29,4 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:include page="${helpDocPath}/nav_search_results.html" />
+<iframe	frameborder="0"
+		scrolling="auto" 
+    	name="help_nav_search_results" 
+    	src="${helpDocPath}/nav_search_results.html" 
+    	height="100%" width="100%"></iframe>

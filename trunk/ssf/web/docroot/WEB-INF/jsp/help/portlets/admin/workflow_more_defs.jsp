@@ -29,4 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:include page="${helpDocPath}/personalws_workflow_definitions.html" />
+<iframe	frameborder="0"
+		scrolling="auto" 
+    	name="help_personalws_workflow_definitions" 
+    	src="${helpDocPath}/personalws_workflow_definitions.html" 
+    	height="100%" width="100%"></iframe>
