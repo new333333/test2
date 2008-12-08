@@ -138,6 +138,7 @@ public class DefaultUserTitleChange extends SimpleTriggerJob implements UserTitl
 		JobDataMap data;
 		JobDescription(Long zoneId, String jobName, Date startDate, JobDataMap data) {
 			super(zoneId, jobName, USER_TITLE_GROUP, USER_TITLE_DESCRIPTION, 5*60);
+			this.startDate = startDate;
 			this.data = data;
 		}
 		protected Date getStartDate() {
