@@ -80,7 +80,7 @@ var ss_wikiLinkUrl = "<ssf:url
     clickRoutine="ss_loadLinkBinderId"
     accessibilityText="wiki.findFolder"
     /> 
-<input type="hidden" name="searchTitleFolder" id="searchTitleFolder"/>
+<input type="hidden" name="searchTitleFolder" id="searchTitleFolder" value="${ssBinder.title}"/>
 </div>
 <p>
 <b><ssf:nlt tag="wiki.link.topage"/>:</b> <input name="pageName" id="pageName" size="30"/>
