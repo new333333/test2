@@ -102,7 +102,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/jakarta-taglibs-standard.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/portals-bridges.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/portal-client.jar"/>
-	<classpathentry exported="true" kind="lib" path="ws-client/ssf-wsclient.jar"/>
+	<classpathentry exported="true" kind="lib" path="ws-client/kablink-teaming-wsclient.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/velocity-tools-view.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-test.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc-portlet.jar"/>
