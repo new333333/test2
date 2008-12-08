@@ -104,20 +104,12 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
     	List<Element> props;
     	String name, value;
     	WfNotify n = new WfNotify();
-    	Set<Long>toIds = new HashSet();
-    	Set<Long>ccIds = null;
-    	Set<Long>bccIds = null;
     	props = notifyElement.selectNodes("./properties/property");
- 		if ((props != null) && !props.isEmpty()) {
-	    	DefinableEntity entity = (DefinableEntity)wfEntry;
+ 		if (props != null) {
 	    	for (Element prop:props) {
 	    		name = prop.attributeValue("name","");
 	    		value = prop.attributeValue("value","");
-	    		if ("entryCreator".equals(name) &&  GetterUtil.getBoolean(value, false)) {
-	    			toIds.add(wfEntry.getOwnerId());
-	 	    	} else if ("team".equals(name) &&  GetterUtil.getBoolean(value, false)) {
-	 	    		toIds.addAll(entity.getParentBinder().getTeamMemberIds());
-		    	} else if ("subjText".equals(name)) {
+	    		if ("subjText".equals(name)) {
 		    		n.subject = value;
 		    	} else if ("appendTitle".equals(name)) {
 		    		n.appendTitle = GetterUtil.getBoolean(value, false);
@@ -125,8 +117,28 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		    		n.body = value;
 		    	} else if ("appendBody".equals(name)) {
 		    		n.appendBody = GetterUtil.getBoolean(value, false);
+		    	} 
+	    	}
+	 	}
+    	n.toUsers = getUsers(props, wfEntry); 		
+    	n.ccUsers = getUsers(notifyElement.selectNodes("./item[@name='ccNotifications']/properties/property"), wfEntry);
+    	n.bccUsers = getUsers(notifyElement.selectNodes("./item[@name='bccNotifications']/properties/property"), wfEntry);
+
+ 	  	return n;    	
+    }
+    private static List<User> getUsers(List<Element> props, WorkflowSupport wfEntry) {
+ 		if ((props != null) && !props.isEmpty()) {
+ 	    	Set<Long>ids = new HashSet();
+	    	DefinableEntity entity = (DefinableEntity)wfEntry;
+	    	for (Element prop:props) {
+	    		String name = prop.attributeValue("name","");
+	    		String value = prop.attributeValue("value","");
+	    		if ("entryCreator".equals(name) &&  GetterUtil.getBoolean(value, false)) {
+	    			ids.add(wfEntry.getOwnerId());
+	 	    	} else if ("team".equals(name) &&  GetterUtil.getBoolean(value, false)) {
+	 	    		ids.addAll(entity.getParentBinder().getTeamMemberIds());
 		    	} else if ("userGroupNotification".equals(name)) {
-		    		toIds.addAll(LongIdUtil.getIdsAsLongSet(value));
+		    		ids.addAll(LongIdUtil.getIdsAsLongSet(value));
 		    	} else if ("condition".equals(name)) {
 		    		if (entity.getEntryDef() != null) {
 		    			List<Element> userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
@@ -138,29 +150,17 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		    					CustomAttribute attr = entity.getCustomAttribute(userListName); 
 		    					if (attr != null) {
 		    						//comma separated value
-		    						toIds.addAll(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
+		    						ids.addAll(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
 		    					}
 		    				}
 		    			}
 		    		}
 		    	}
 	    	}
-	 		}
-		Element cc = (Element)notifyElement.selectSingleNode("./item[@name='ccNotifications']/properties/property[@name='userGroupNotification']");
-		if (cc != null) {
-			ccIds = LongIdUtil.getIdsAsLongSet(cc.attributeValue("value",""));
-		}
-		Element bcc = (Element)notifyElement.selectSingleNode("./item[@name='bccNotifications']/properties/property[@name='userGroupNotification']");
-		if (bcc != null) {
-			bccIds = LongIdUtil.getIdsAsLongSet(bcc.attributeValue("value",""));
-		}
+	    	return getUsers(ids);
+ 		} else return null;
 
-    	if (!toIds.isEmpty()) n.toUsers = new HashSet(getUsers(toIds));
-    	if (ccIds != null) n.ccUsers = new HashSet(getUsers(ccIds));
-    	if (bccIds != null) n.bccUsers = new HashSet(getUsers(bccIds));
- 	  	return n;    	
     }
-
  	public static void endWorkflow(WorkflowSupport wEntry, WorkflowState state, boolean deleteIt) {
 		JbpmContext context=WorkflowFactory.getContext();
 		try {
@@ -867,9 +867,9 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		private String body="";
 		private boolean appendTitle=false;
 		private boolean appendBody=false;
-		private Set<User> toUsers;
-		private Set<User> ccUsers;
-		private Set<User> bccUsers;
+		private Collection<User> toUsers;
+		private Collection<User> ccUsers;
+		private Collection<User> bccUsers;
 		
 		public String getSubject() {
 			return subject;
@@ -883,13 +883,13 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		public boolean isAppendBody() {
 			return appendBody;
 		}
-		public Set<User>getToUsers() {
+		public Collection<User> getToUsers() {
 			return toUsers;
 		}
-		public Set<User>getCCUsers() {
+		public Collection<User> getCCUsers() {
 			return ccUsers;
 		}
-		public Set<User>getBCCUsers() {
+		public Collection<User> getBCCUsers() {
 			return bccUsers;
 		}
 

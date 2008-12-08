@@ -78,6 +78,7 @@ import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SeenMap;
@@ -1455,7 +1456,8 @@ public class ListFolderHelper {
 		}
 
 		//set email
-		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageMail)) {
+		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageMail) &&
+				(folder.isTop() || bs.getAdminModule().getMailConfig().isPostingEnabled()))  {
 			try {
 				qualifiers = new HashMap();
 				qualifiers.put("popup", new Boolean(true));

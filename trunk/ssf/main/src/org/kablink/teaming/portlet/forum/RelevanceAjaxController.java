@@ -223,7 +223,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		if (entity.getParentBinder() != null) title = entity.getParentBinder().getPathName() + "/" + title;
 		Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalink(request, entity) +
 				"\">" + title + "</a>");
-		getAdminModule().sendMail(ids, teams, null, NLT.get("relevance.mailShared", new Object[]{RequestContextHolder.getRequestContext().getUser().getTitle()}), body);
+		getAdminModule().sendMail(ids, teams, null, null, null, NLT.get("relevance.mailShared", new Object[]{RequestContextHolder.getRequestContext().getUser().getTitle()}), body);
 	}
 	
 	private ModelAndView ajaxGetRelevanceDashboard(RenderRequest request, 

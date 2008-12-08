@@ -53,6 +53,7 @@ import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
+import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.Subscription;
@@ -232,8 +233,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		//keep current if was deleted
 		ScheduleInfo notify = getAdminModule().getNotificationSchedule();
 		zoneConfig.getMailConfig().setSendMailEnabled(notify.isEnabled());
-		ScheduleInfo posting = getAdminModule().getPostingSchedule();
-		zoneConfig.getMailConfig().setPostingEnabled(posting.isEnabled());
+		//remove old feature if not being used
+		if (getAdminModule().getPostings().isEmpty() && SPropsUtil.getBoolean("mail.posting.offWhenEmpty", true)) {
+			zoneConfig.getMailConfig().setPostingEnabled(false);
+		} else { 
+			zoneConfig.getMailConfig().setPostingEnabled(true);
+		}
 		getCoreDao().save(zoneConfig);
 		return zoneConfig;
 	}
@@ -290,7 +295,15 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getCoreDao().executeUpdate("update org.kablink.teaming.domain.TemplateBinder set name=templateTitle where parentBinder is null and (name is null or name='')");
 			getCoreDao().executeUpdate("update org.kablink.teaming.domain.FolderEntry set subscribed=false where subscribed is null");
 			getCoreDao().executeUpdate("update org.kablink.teaming.domain.FolderEntry set subscribed=true where id in (select id.entityId from org.kablink.teaming.domain.Subscription where id.entityType=6)");
-
+			//update jbpm
+			getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.EnterExitEvent' " +
+					"where className='com.sitescape.teaming.module.workflow.EnterExitEvent'"); 
+			getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.DecisionAction' " +
+				"where className='com.sitescape.teaming.module.workflow.DecisionAction'"); 
+			getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.TimerAction' " +
+				"where className='com.sitescape.teaming.module.workflow.TimerAction'"); 
+			getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.Notify' " +
+				"where className='com.sitescape.teaming.module.workflow.Notify'"); 
 			//fixup user emails
 	 		SFQuery query=null;
 	 		List batch = new ArrayList();
@@ -487,6 +500,16 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  			definitions.add(def.getId());
 			getBinderModule().setDefinitions(top.getId(), definitions, workflowAssociations);
    		}
+		//update jbpm --remove before ship
+		getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.EnterExitEvent' " +
+				"where className='com.sitescape.team.module.workflow.EnterExitEvent'"); 
+		getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.DecisionAction' " +
+			"where className='com.sitescape.team.module.workflow.DecisionAction'"); 
+		getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.TimerAction' " +
+			"where className='com.sitescape.team.module.workflow.TimerAction'"); 
+		getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.Notify' " +
+			"where className='com.sitescape.team.module.workflow.Notify'"); 
+
   	}
  	// Must be running inside a transaction set up by the caller 
  	protected void validateZoneTx(Workspace zone) {
@@ -500,11 +523,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getCoreDao().merge(superU);	
 			getProfileModule().indexEntry(superU);
 		}
+		ZoneConfig zoneConfig=null;
  		try {
- 			getZoneConfig(zone.getId());
+ 			zoneConfig = getZoneConfig(zone.getId());
  		} catch (NoObjectByTheIdException zx) {
 			// Make sure there is a ZoneConfig; new for v2
- 			addZoneConfigTx(zone);
+ 			zoneConfig = addZoneConfigTx(zone);
  		}
 		getZoneClassManager().initialize();
 
@@ -576,6 +600,18 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getProfileDao().getReservedApplicationGroup(ObjectKeys.ALL_APPLICATIONS_GROUP_INTERNALID, zone.getId());
 			getProfileModule().indexEntry(g);
 		}
+		//turn off or on depending on ssf.props value
+		if (zoneConfig.getMailConfig().isPostingEnabled()) {
+			if (SPropsUtil.getBoolean("mail.posting.offWhenEmpty", true) && 
+				getAdminModule().getPostings().isEmpty()) {
+			//remove old feature if not being used
+			zoneConfig.getMailConfig().setPostingEnabled(false);
+			getAdminModule().setMailConfigAndSchedules(zoneConfig.getMailConfig(), null, null);
+			}
+		} else if (!SPropsUtil.getBoolean("mail.posting.offWhenEmpty", true)) {
+			zoneConfig.getMailConfig().setPostingEnabled(true);
+		}
+
 	}
 
  	// Must be running inside a transaction set up by the caller

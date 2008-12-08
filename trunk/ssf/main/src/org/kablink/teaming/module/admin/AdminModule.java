@@ -149,25 +149,31 @@ public interface AdminModule {
 	/**
 	 * Send a mail message to a collection of users and/or explicit email address.  Include attachments  from entries if specified  
 	 * @param entry - may be null
-	 * @param ids
+	 * @param ids - toList
 	 * @param emailAddresses
+	 * @param ccIds - ccoList
+	 * @param bccIds - bccList
 	 * @param subject
 	 * @param body
 	 * @param sendAttachments
 	 * @return
 	 * @throws Exception
 	 */
-    public Map<String, Object> sendMail(Entry entry, Collection<Long> userIds, Collection<Long> teamIds, Collection<String> emailAddresses, String subject, Description body,  boolean sendAttachments) throws Exception;
+    public Map<String, Object> sendMail(Entry entry, Collection<Long> userIds, Collection<Long> teamIds, Collection<String> emailAddresses, Collection<Long> ccIds, 
+    		Collection<Long> bccIds, String subject, Description body,  boolean sendAttachments) throws Exception;
     /**
      * Send a mail message to a collection of users and/or explicit email address. 
      * @param ids
      * @param emailAddresses
-     * @param subject
+ 	 * @param ccIds - ccoList
+	 * @param bccIds - bccList
+    * @param subject
      * @param body
      * @return
      * @throws Exception
      */
-    public Map<String, Object> sendMail(Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, String subject, Description body) throws Exception;
+    public Map<String, Object> sendMail(Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, Collection<Long> ccIds, 
+    		Collection<Long> bccIds, String subject, Description body) throws Exception;
     	 
     public void setMailConfigAndSchedules(MailConfig mailConfig, ScheduleInfo notifications, ScheduleInfo postings) throws AccessControlException;  
  	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships) throws AccessControlException;

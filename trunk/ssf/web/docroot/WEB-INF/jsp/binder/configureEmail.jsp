@@ -115,6 +115,7 @@
 </table>
 <hr/>
 </c:if>
+<c:if test="${!empty ssScheduleInfo2}">
 <table class="ss_style"  border="0" cellspacing="0" cellpadding="3" width="100%">
 <tr>
 <td align="left"><span class="ss_bold"><ssf:nlt tag="incoming.header" /></span> 
@@ -148,6 +149,7 @@
 </td>
 </tr>
 </table>
+</c:if>
 <br/>
 
 <div class="ss_buttonBarLeft">

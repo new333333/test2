@@ -51,12 +51,14 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
-			MailConfig mailConfig = new MailConfig();
-			
-			ScheduleInfo posting = getAdminModule().getPostingSchedule();
-			posting.setSchedule(ScheduleHelper.getSchedule(request, "post"));
-			posting.setEnabled(PortletRequestUtils.getBooleanParameter(request, "postenabled", false));
-			mailConfig.setPostingEnabled(posting.isEnabled());
+			MailConfig mailConfig = new MailConfig(getAdminModule().getMailConfig());
+			//not present if totally disabled
+			ScheduleInfo posting=null;
+			if (mailConfig.isPostingEnabled()) { //if feature enabled
+				posting = getAdminModule().getPostingSchedule();
+				posting.setSchedule(ScheduleHelper.getSchedule(request, "post"));
+				posting.setEnabled(PortletRequestUtils.getBooleanParameter(request, "postenabled", false));
+			}
 			mailConfig.setSimpleUrlPostingEnabled(PortletRequestUtils.getBooleanParameter(request, "simplepostenabled", false));
 
 			int pos =0;
@@ -98,13 +100,14 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 		MailConfig mConfig = getAdminModule().getMailConfig();
 		model.put(WebKeys.MAIL_CONFIG, mConfig);
 		if (SPropsUtil.getBoolean("smtp.service.enable")) model.put(WebKeys.SMPT_ENABLED, Boolean.TRUE);
-		ScheduleInfo config = getAdminModule().getPostingSchedule();
-		model.put(WebKeys.SCHEDULE_INFO + "post", config);	
-		model.put(WebKeys.POSTINGS, getAdminModule().getPostings());
-		model.put(WebKeys.MAIL_POSTING_USE_ALIASES, SPropsUtil.getString("mail.posting.useAliases", "false"));
-		config = getAdminModule().getNotificationSchedule();
+		ScheduleInfo config = getAdminModule().getNotificationSchedule();
 		model.put(WebKeys.SCHEDULE_INFO + "notify", config);
-		
+		if (mConfig.isPostingEnabled()) {
+			config = getAdminModule().getPostingSchedule();
+			model.put(WebKeys.SCHEDULE_INFO + "post", config);	
+			model.put(WebKeys.POSTINGS, getAdminModule().getPostings());
+			model.put(WebKeys.MAIL_POSTING_USE_ALIASES, SPropsUtil.getString("mail.posting.useAliases", "false"));
+		}
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_POSTING_JOB, model);
 	}
 

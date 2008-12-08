@@ -41,6 +41,7 @@ import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -71,10 +72,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 				Set userList = new HashSet();
 				if (formData.containsKey("users")) userList.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
 				if (formData.containsKey("groups")) userList.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
-//				ScheduleInfo config = getBinderModule().getNotificationConfig(folderId);
-//				getScheduleData(request, config);
 				getBinderModule().modifyNotification(folderId, userList, getNotifyData(request));
-//				getBinderModule().setNotificationConfig(folderId, config);			
 			}
 			if (formData.containsKey("alias")) {
 				String alias = PortletRequestUtils.getStringParameter(request, "alias", null);
@@ -106,9 +104,6 @@ public class EmailConfigController extends  AbstractBinderController  {
 		if (folder.isTop()) {
 			ScheduleInfo config = getAdminModule().getNotificationSchedule();
 			model.put(WebKeys.SCHEDULE_INFO, config);
-//			config = getBinderModule().getNotificationConfig(folderId);
-//			model.put(WebKeys.SCHEDULE_INFO, config);
-//			model.put(WebKeys.SCHEDULE, config.getSchedule());
 			List defaultDistribution = folder.getNotificationDef().getDistribution();
 			Set gList = new HashSet();
 			Set uList = new HashSet();
@@ -122,8 +117,11 @@ public class EmailConfigController extends  AbstractBinderController  {
 			model.put(WebKeys.USERS, uList);
 			model.put(WebKeys.GROUPS, gList); 
 		}
-		model.put(WebKeys.SCHEDULE_INFO2, getAdminModule().getPostingSchedule());
-		model.put(WebKeys.MAIL_POSTING_USE_ALIASES, SPropsUtil.getString("mail.posting.useAliases", "false"));
+		MailConfig mConfig = getAdminModule().getMailConfig();
+		if (mConfig.isPostingEnabled()) {
+			model.put(WebKeys.SCHEDULE_INFO2, getAdminModule().getPostingSchedule());
+			model.put(WebKeys.MAIL_POSTING_USE_ALIASES, SPropsUtil.getString("mail.posting.useAliases", "false"));
+		}
 		return new ModelAndView(WebKeys.VIEW_BINDER_CONFIGURE_EMAIL, model);		
 			
 		
@@ -137,10 +135,6 @@ public class EmailConfigController extends  AbstractBinderController  {
 		return input;
 		
 	}
-	private void getScheduleData(PortletRequest request, ScheduleInfo config) {
-		config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));
-		config.setSchedule(ScheduleHelper.getSchedule(request, null));
 
-	}
 
 }

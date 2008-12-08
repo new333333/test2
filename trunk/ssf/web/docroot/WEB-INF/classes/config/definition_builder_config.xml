@@ -2994,13 +2994,19 @@
 	
 	<item name="ccNotifications" caption="__notification_cclist" multipleAllowedInParent="false">
 		<properties>
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="team" caption="__team" type="checkbox" />
 			<property name="userGroupNotification" caption="__notification_cclist" type="userGroupSelect" />
+			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
 		</properties>
 	</item>
 	
 	<item name="bccNotifications" caption="__notification_bcclist" multipleAllowedInParent="false">
 		<properties>
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="team" caption="__team" type="checkbox" />
 			<property name="userGroupNotification" caption="__notification_bcclist" type="userGroupSelect" />
+			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
 		</properties>
 	</item>
 	

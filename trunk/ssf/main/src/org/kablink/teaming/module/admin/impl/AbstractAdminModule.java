@@ -249,6 +249,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   	   	checkAccess(AdminOperation.manageMail);
   		//even if schedules are running, these settings should stop the processing in the job
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		boolean wasPostingEnabled = zoneConfig.getMailConfig().isPostingEnabled();
   		zoneConfig.getMailConfig().setPostingEnabled(mailConfig.isPostingEnabled());
  		zoneConfig.getMailConfig().setSimpleUrlPostingEnabled(mailConfig.isSimpleUrlPostingEnabled());
  		zoneConfig.getMailConfig().setSendMailEnabled(mailConfig.isSendMailEnabled());
@@ -256,9 +257,13 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  			notification.setEnabled(mailConfig.isSendMailEnabled());
  			getNotificationObject().setScheduleInfo(notification);
  		}
+ 		//this is being phased out
  		if (posting != null) {
  			posting.setEnabled(mailConfig.isPostingEnabled());
  			getPostingObject().setScheduleInfo(posting);
+ 		} else if (wasPostingEnabled && !zoneConfig.getMailConfig().isPostingEnabled()) {
+ 			//remove it
+ 			getPostingObject().enable(false, zoneConfig.getZoneId());
  		}
   	}
     public List<PostingDef> getPostings() {
@@ -651,36 +656,20 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
        	}
 	}
 
-    public Map<String, Object> sendMail(Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, String subject, Description body) throws Exception {
-    	return sendMail(null, ids, teamIds, emailAddresses, subject, body, false); 
+    public Map<String, Object> sendMail(Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, Collection<Long> ccIds, 
+    		Collection<Long> bccIds, String subject, Description body) throws Exception {
+    	return sendMail(null, ids, teamIds, emailAddresses, ccIds, bccIds, subject, body, false); 
     }
-    public Map<String, Object> sendMail(Entry entry, Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, String subject, Description body, boolean sendAttachments) throws Exception {
+    public Map<String, Object> sendMail(Entry entry, Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, Collection<Long> ccIds, 
+    		Collection<Long> bccIds, String subject, Description body, boolean sendAttachments) throws Exception {
 		if (!getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled()) {
 			throw new ConfigurationException(NLT.getDef("errorcode.sendmail.disabled"));
 		}
     	User user = RequestContextHolder.getRequestContext().getUser();
-		Set emailSet = new HashSet();
-		List distribution = new ArrayList();
 		List errors = new ArrayList();
 		Map result = new HashMap();
 		result.put(ObjectKeys.SENDMAIL_ERRORS, errors);
 		//add email address listed 
-		Object[] errorParams = new Object[3];
-		if (emailAddresses != null) {
-			for (String e: emailAddresses) {
-				if (!Validator.isNull(e)) {
-					try {
-						emailSet.add(new InternetAddress(e.trim()));
-						distribution.add(e);
-					} catch (Exception ex) {
-						errorParams[0] = "";
-						errorParams[1] = e;
-						errorParams[2] = ex.getLocalizedMessage();
-						errors.add(NLT.get("errorcode.badToAddress", errorParams));							
-					}
-				}
-			}
-		}
 		Set<Long> userIds = new HashSet(ids);
 		//get team members
 		if (teamIds != null && !teamIds.isEmpty()) {
@@ -689,33 +678,29 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				userIds.addAll(t.getTeamMemberIds());
 			}
 		}
-		
-		userIds = getProfileDao().explodeGroups(userIds, user.getZoneId());
-		List<User> users = getCoreDao().loadObjects(userIds, User.class, user.getZoneId());
-		for (User e:users) {
-			try {
-				emailSet.add(new InternetAddress(e.getEmailAddress().trim()));
-				distribution.add(e.getEmailAddress());
-			} catch (Exception ex) {
-				errorParams[0] = e.getTitle();
-				errorParams[1] = e.getEmailAddress();
-				errorParams[2] = ex.getLocalizedMessage();
-				errors.add(NLT.get("errorcode.badToAddress", errorParams));							
+		Set emailSet = getEmail(userIds, errors);
+		if (emailAddresses != null) {
+			for (String e: emailAddresses) {
+				if (!Validator.isNull(e)) {
+					try {
+						emailSet.add(new InternetAddress(e.trim()));
+					} catch (Exception ex) {
+						errors.add(NLT.get("errorcode.badToAddress", new Object[] {"", e, ex.getLocalizedMessage()}));						
+					}
+				}
 			}
 		}
+		
 		if (emailSet.isEmpty()) {
 			//no-one to send tos
-			errors.add(0, NLT.get("errorcode.noRecipients", errorParams));
+			errors.add(0, NLT.get("errorcode.noRecipients"));
 			return result;			
 		}
     	Map message = new HashMap();
        	try {
     		message.put(MailModule.FROM, new InternetAddress(user.getEmailAddress()));
     	} catch (Exception ex) {
-			errorParams[0] = user.getTitle();
-			errorParams[1] = user.getEmailAddress();
-			errorParams[2] = ex.getLocalizedMessage();
-			errors.add(0, NLT.get("errorcode.badFromAddress", errorParams));
+			errors.add(0, NLT.get("errorcode.badFromAddress", new Object[] {user.getTitle(), user.getEmailAddress(), ex.getLocalizedMessage()}));	
 			//cannot send without valid from address
 			return result;
     	}
@@ -724,6 +709,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    		
     	message.put(MailModule.SUBJECT, subject);
  		message.put(MailModule.TO, emailSet);
+ 		message.put(MailModule.CC, getEmail(ccIds, errors));
+		message.put(MailModule.BCC, getEmail(bccIds, errors));
  		MailSentStatus results;
  		if (entry != null) {
  			results = getMailModule().sendMail(entry, message, user.getTitle() + " email", sendAttachments);    		
@@ -734,7 +721,23 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		return result;
     }
 
-
+    private Set<InternetAddress> getEmail(Collection<Long>ids, List errors) {
+    	Set<InternetAddress> addrs=null;
+    	if (ids != null && !ids.isEmpty()) {
+			addrs = new HashSet();
+ 			Set<Long> cc = getProfileDao().explodeGroups(ids, RequestContextHolder.getRequestContext().getZoneId());
+ 			List<User> users = getCoreDao().loadObjects(cc, User.class, RequestContextHolder.getRequestContext().getZoneId());
+ 			for (User e:users) {
+ 				try {
+ 					addrs.add(new InternetAddress(e.getEmailAddress().trim()));
+ 				} catch (Exception ex) {
+ 					errors.add(NLT.get("errorcode.badToAddress", new Object[] {e.getTitle(), e.getEmailAddress(),ex.getLocalizedMessage()})); 
+ 				}
+ 			}
+ 		}
+    	return addrs;
+    }
+  
    public List<ChangeLog> getChanges(Long binderId, String operation) {
 	   FilterControls filter = new FilterControls();
 	   filter.add("owningBinderId", binderId);
