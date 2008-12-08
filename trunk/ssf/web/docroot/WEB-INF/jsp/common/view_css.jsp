@@ -139,7 +139,8 @@ var ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
 --%>
 <script type="text/javascript" src="<html:rootPath/>js/dojo/dojo/dojo.js" 
   djConfig="isDebug: false, locale: '<ssf:convertLocaleToDojoStyle />', parseOnLoad: true"></script>
-<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js"></script>
+<script type="text/javascript" 
+  src="<html:rootPath/>js/common/ss_common.js?startTime=<%= org.kablink.teaming.util.ReleaseInfo.getStartTime() %>"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
 <script type="text/javascript">
