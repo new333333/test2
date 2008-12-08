@@ -103,8 +103,7 @@ function ss_iframeOnloadSetHeight() {
 			self.document.getElementById('ss_showentrydiv').style.display != 'none') 
 		ss_setEntryDivHeight();
 }
-// If you can't control the box model, you may need to set this to around 40.
-var ss_scrollHeightFudge = 0;
+
 function ss_positionEntryDiv() {
 	//ss_debug("ss_positionEntryDiv: "+ss_entryWindowLeft)
 	var maxEntryWidth = parseInt(ss_getWindowWidth() - ss_scrollbarWidth);
@@ -162,17 +161,39 @@ function ss_positionEntryDiv() {
 	try {
 		if (window.ss_showentryframe && window.ss_showentryframe.document && 
 				window.ss_showentryframe.document.body) {
-		    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight) + ss_scrollHeightFudge
+		    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight);
+		    var windowIsScrolling = false;
+		    if (document.body.scrollHeight > parseInt(ss_getWindowHeight())) windowIsScrolling = true;
 		    
 		    if (entryHeight < ss_minEntryWindowHeight) entryHeight = ss_minEntryWindowHeight;
-		    if (entryHeight > (ss_entryHeightHighWaterMark + ss_scrollHeightFudge)) {
-			    //Only expand the height. Never shrink it. Otherwise the screen jumps around.
+		    if (windowIsScrolling || entryHeight > ss_entryHeightHighWaterMark) {
+			    //Only expand the height if there is already a scroll bar. Otherwise the screen jumps around.
 			    ss_entryHeightHighWaterMark = entryHeight;
 			    
+			    if (entryHeight > parseInt(ss_getWindowHeight())) {
+			    	//Start by resetting the window to a size big enough to not turn off scrolling
+			    	//This makes the entry div smaller, but not enough to jump around.
+			    	ss_entryHeightHighWaterMark = parseInt(ss_getWindowHeight());
+					ss_setObjectHeight(wObj1, parseInt(ss_getWindowHeight()));
+					ss_setObjectHeight(wObj2, parseInt(ss_getWindowHeight()));
+					ss_setObjectHeight(wObj3, parseInt(ss_getWindowHeight()));
+				}
+				
 				ss_setObjectHeight(wObj1, entryHeight);
 				ss_setObjectHeight(wObj2, entryHeight);
 				ss_setObjectHeight(wObj3, entryHeight);
-				//ss_setObjectHeight(wObj4, entryHeight);
+			} else if (ss_entryHeightHighWaterMark >= parseInt(ss_getWindowHeight())) {
+				ss_entryHeightHighWaterMark = parseInt(ss_getWindowHeight());
+				ss_setObjectHeight(wObj1, parseInt(ss_getWindowHeight()));
+				ss_setObjectHeight(wObj2, parseInt(ss_getWindowHeight()));
+				ss_setObjectHeight(wObj3, parseInt(ss_getWindowHeight()));
+			} else {
+				if (entryHeight < parseInt(ss_getWindowHeight()) && 
+						ss_entryHeightHighWaterMark < parseInt(ss_getWindowHeight())) {
+					ss_setObjectHeight(wObj1, entryHeight);
+					ss_setObjectHeight(wObj2, entryHeight);
+					ss_setObjectHeight(wObj3, entryHeight);
+				}
 			}
 			if (!ss_draggingDiv &&  ss_getScrollXY()[1] < ss_entryLastScrollTop) {
 				//See if the entry runs off the bottom of the screen and should be moved up some
@@ -201,7 +222,7 @@ function ss_hideEntryDiv() {
     var wObj1 = self.document.getElementById('ss_showentrydiv')
     if (wObj1 != null) {
     	wObj1.style.visibility = "hidden";
-    	wObj1.style.display = "none";
+    	//wObj1.style.display = "none";
     	var wObj2 = self.document.getElementById(ss_iframe_box_div_name)
     	var wObj3 = self.document.getElementById('ss_iframe_holder_div')
     	if (0 == 1 && wObj3 != null) {
