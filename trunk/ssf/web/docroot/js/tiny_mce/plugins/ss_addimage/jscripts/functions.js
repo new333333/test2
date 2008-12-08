@@ -205,7 +205,11 @@ function insertAction() {
 	var formObj = document.forms[0];
 	var src = formObj.src.value;
 	var srcUrl = formObj.srcUrl.value;
-	if (src == '') src = srcUrl;
+	var imageClass = " ss_addimage "
+	if (src == '') {
+		src = srcUrl;
+		imageClass = " ss_addimage_att "
+	}
 
 	if (tinyMCE.getParam("accessibility_warnings")) {
 		if (formObj.alt.value == "") {
@@ -237,7 +241,7 @@ function insertAction() {
 		setAttrib(elm, 'longdesc');
 		setAttrib(elm, 'usemap');
 		setAttrib(elm, 'style');
-		setAttrib(elm, 'class', getSelectValue(formObj, 'classlist') + ' ss_addimage ');
+		setAttrib(elm, 'class', getSelectValue(formObj, 'classlist') + imageClass);
 		setAttrib(elm, 'align', getSelectValue(formObj, 'align'));
 
 		//tinyMCE.execCommand("mceRepaint");
@@ -267,7 +271,7 @@ function insertAction() {
 		html += makeAttrib('longdesc');
 		html += makeAttrib('usemap');
 		html += makeAttrib('style');
-		html += makeAttrib('class', getSelectValue(formObj, 'classlist') + ' ss_addimage ');
+		html += makeAttrib('class', getSelectValue(formObj, 'classlist') + imageClass);
 		html += makeAttrib('align', getSelectValue(formObj, 'align'));
 		html += " />";
 

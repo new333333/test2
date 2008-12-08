@@ -48,13 +48,24 @@
 						<legend>{#ss_addimage.general}</legend>
 						
 						<div style="padding-bottom:10px;">
+						<table>
+						<tr>
+						<td valign="top">
 						<input type="radio" name="typeSel" value="file" id="typeSelFile"
-						  onClick="showFileForm();return true;" checked><a href="javascript: ;" 
+						  onClick="showFileForm();return true;" checked>
+						</td>
+						<td valign="top"><a href="javascript: ;" 
 						  onClick="showFileForm();return false;">{#ss_addimage.addFile}</a>
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						</td>
+						<td valign="top" style="padding-left:20px;">
 						<input type="radio" name="typeSel" value="url" id="typeSelUrl"
-						  onClick="showUrlForm();return true;"><a href="javascript: ;" 
+						  onClick="showUrlForm();return true;">
+						</td>
+						<td valign="top"><a href="javascript: ;" 
 						  onClick="showUrlForm();return false;">{#ss_addimage.addUrl}</a>
+						</td>
+						</tr>
+						</table>
 						</div>
 
 						<div id="fileForm" style="display:block;" width="100%">

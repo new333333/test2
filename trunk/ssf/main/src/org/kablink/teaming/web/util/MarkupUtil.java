@@ -46,6 +46,7 @@ public class MarkupUtil {
 	protected final static Pattern v1AttachmentUrlPattern = Pattern.compile("(<img [^>]*src=\"[^>]*viewType=ss_viewAttachmentFile[^>]*>)");
 	protected final static Pattern readFileImagePattern = Pattern.compile("(<img [^>]*src=\"[^>]*/readFile/[^>]*>)");
 	protected final static Pattern readFilePathPattern = Pattern.compile("/readFile/[^\"]*");
+	protected final static Pattern attachedImagePattern = Pattern.compile("(<img [^>]*class=\"ss_addimage_att\"[^>]*>)");
 	
 	protected final static Pattern iceCoreLinkPattern = Pattern.compile("(<a [^>]*class=\"ss_icecore_link\"[^>]*>)([^<]*)</a>");
 	protected final static Pattern iceCoreLinkRelPattern = Pattern.compile("rel=\"([^\"]*)");
@@ -169,6 +170,31 @@ public class MarkupUtil {
 	        		m = readFileImagePattern.matcher(description.getText());
 	        	}
 	    	}
+    	}
+
+    	m = attachedImagePattern.matcher(description.getText());
+    	loopDetector = 0;
+    	while (m.find()) {
+    		if (loopDetector++ > 2000) {
+	        	logger.error("Error processing markup [2]: " + description.getText());
+    			break;
+    		}
+    		String url = "";
+    		String img = m.group(0);
+
+	    	//See if this has already been fixed up
+    		Matcher m2 = attachmentUrlPattern.matcher(img);
+        	if (m2.find()) continue;
+
+	    	//Now, replace the url with special markup version
+	    	Matcher m1 = urlSrcPattern.matcher(img);
+        	if (m1.find()) {
+        		String fileName = m1.group(1);
+ 
+        		img = m1.replaceFirst("src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
+        		description.setText(m.replaceFirst(img.replace("$", "\\$")));  //remove regex special char
+        		m = attachedImagePattern.matcher(description.getText());
+        	}
     	}
 	}
 
