@@ -83,6 +83,10 @@ public class WfNotify {
 		if (this.ccIds == null) this.ccIds = new HashSet();
 		this.ccIds.addAll(ids);
 	}
+	public void addCCPrincipalId(Long id) {
+		if (this.ccIds == null) this.ccIds = new HashSet();
+		this.ccIds.add(id);
+	}
 	public Set<Long> getCCPrincipalIds() {
 		if (ccIds == null) ccIds = new HashSet();
 		return ccIds;
@@ -90,6 +94,10 @@ public class WfNotify {
 	public void addBCCPrincipalIds(Set<Long> ids) {
 		if (this.bccIds == null) this.bccIds = new HashSet();
 		this.bccIds.addAll(ids);
+	}
+	public void addBCCPrincipalId(Long id) {
+		if (this.bccIds == null) this.bccIds = new HashSet();
+		this.bccIds.add(id);
 	}
 	public Set<Long> getBCCPrincipalIds() {
 		if (bccIds == null) bccIds = new HashSet();

@@ -1193,17 +1193,20 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
         	loadBinderProcessor(binder).processChangeLog(binder, operation);
        	}
 	}
+	public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body, Collection<DefinableEntity> entries, boolean sendAttachments) throws Exception {
+		return sendMail(ids, emailAddresses, null, null, subject, body, entries, sendAttachments);
+	}
 
-    public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body, Collection<DefinableEntity> entries, boolean sendAttachments) throws Exception {
+    public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, Collection<Long> ccIds, Collection<Long> bccIds,
+    		String subject, Description body, Collection<DefinableEntity> entries, boolean sendAttachments) throws Exception {
     	User user = RequestContextHolder.getRequestContext().getUser();
-		Set emailSet = new HashSet();
 		List distribution = new ArrayList();
 		List errors = new ArrayList();
 		Map result = new HashMap();
 		result.put(ObjectKeys.SENDMAIL_ERRORS, errors);
 		result.put(ObjectKeys.SENDMAIL_DISTRIBUTION, distribution);
 		//add email address listed 
-		Object[] errorParams = new Object[3];
+		Set emailSet = getEmail(ids, errors, distribution);
 		if (emailAddresses != null) {
 			for (String e: emailAddresses) {
 				if (!Validator.isNull(e)) {
@@ -1211,30 +1214,14 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 						emailSet.add(new InternetAddress(e.trim()));
 						distribution.add(e);
 					} catch (Exception ex) {
-						errorParams[0] = "";
-						errorParams[1] = e;
-						errorParams[2] = ex.getLocalizedMessage();
-						errors.add(NLT.get("errorcode.badToAddress", errorParams));							
+						errors.add(NLT.get("errorcode.badToAddress", new Object[] {"", e, ex.getLocalizedMessage()}));							
 					}
 				}
 			}
 		}
-		Set<Long> userIds = getProfileDao().explodeGroups(ids, user.getZoneId());
-		List<User> users = getCoreDao().loadObjects(userIds, User.class, user.getZoneId());
-		for (User e:users) {
-			try {
-				emailSet.add(new InternetAddress(e.getEmailAddress().trim()));
-				distribution.add(e.getEmailAddress());
-			} catch (Exception ex) {
-				errorParams[0] = e.getTitle();
-				errorParams[1] = e.getEmailAddress();
-				errorParams[2] = ex.getLocalizedMessage();
-				errors.add(NLT.get("errorcode.badToAddress", errorParams));							
-			}
-		}
 		if (emailSet.isEmpty()) {
 			//no-one to send tos
-			errors.add(0, NLT.get("errorcode.noRecipients", errorParams));
+			errors.add(0, NLT.get("errorcode.noRecipients"));
 			result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_FAILED);
 			return result;			
 		}
@@ -1242,10 +1229,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
        	try {
     		message.put(SendEmail.FROM, new InternetAddress(user.getEmailAddress()));
     	} catch (Exception ex) {
-			errorParams[0] = user.getTitle();
-			errorParams[1] = user.getEmailAddress();
-			errorParams[2] = ex.getLocalizedMessage();
-			errors.add(0, NLT.get("errorcode.badFromAddress", errorParams));
+			errors.add(0, NLT.get("errorcode.badFromAddress", new Object[] {user.getTitle(), user.getEmailAddress(), ex.getLocalizedMessage()}));	
 			result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_FAILED);
 			//cannot send without valid from address
 			return result;
@@ -1257,7 +1241,9 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     		
     	message.put(SendEmail.SUBJECT, subject);
  		message.put(SendEmail.TO, emailSet);
- 		if (entries != null) {
+		message.put(SendEmail.CC, getEmail(ccIds, errors, distribution));
+		message.put(SendEmail.BCC, getEmail(bccIds, errors, distribution));
+		if (entries != null) {
  			List attachments = new ArrayList();
 			List iCalendars = new ArrayList();
 				 	 			
@@ -1278,8 +1264,24 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		else result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_SCHEDULED);
 		return result;
     }
-
-
+    private Set<InternetAddress> getEmail(Collection<Long>ids, List errors, List sendTo) {
+    	Set<InternetAddress> addrs=null;
+    	if (ids != null && !ids.isEmpty()) {
+			addrs = new HashSet();
+ 			Set<Long> cc = getProfileDao().explodeGroups(ids, RequestContextHolder.getRequestContext().getZoneId());
+ 			List<User> users = getCoreDao().loadObjects(cc, User.class, RequestContextHolder.getRequestContext().getZoneId());
+ 			for (User e:users) {
+ 				try {
+ 					addrs.add(new InternetAddress(e.getEmailAddress().trim()));
+ 					sendTo.add(e.getEmailAddress());
+ 				} catch (Exception ex) {
+ 					errors.add(NLT.get("errorcode.badToAddress", new Object[] {e.getTitle(), e.getEmailAddress(),ex.getLocalizedMessage()})); 
+ 				}
+ 			}
+ 		}
+    	return addrs;
+    }
+    
    public List<ChangeLog> getChanges(Long binderId, String operation) {
 	   FilterControls filter = new FilterControls();
 	   filter.add("owningBinderId", binderId);

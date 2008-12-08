@@ -107,6 +107,46 @@ self.window.resizeTo(width, height);
 		<ssf:teamMembers binderId="${ssBinder.id}" formElement="users" appendAll="${appendTeamMembers}"/>
 	</c:if>
 </td></tr>
+<tr><td colspan="2">
+<ssf:expandableArea title="CC">
+<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3" width="95%">
+<tr>
+<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
+<td valign="top">
+  <ssf:find formName="${renderResponse.namespace}fm" formElement="ccusers" 
+    type="user" />
+</td>
+</tr>
+<tr>
+<td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
+<td valign="top">
+  <ssf:find formName="${renderResponse.namespace}fm" formElement="ccgroups" 
+    type="group"/>
+</td>
+</tr>
+</table>
+</ssf:expandableArea>
+</td></tr>
+<tr><td colspan="2">
+<ssf:expandableArea title="BCC">
+<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3" width="95%">
+<tr>
+<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
+<td valign="top">
+  <ssf:find formName="${renderResponse.namespace}fm" formElement="bccusers" 
+    type="user" />
+</td>
+</tr>
+<tr>
+<td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
+<td valign="top">
+  <ssf:find formName="${renderResponse.namespace}fm" formElement="bccgroups" 
+    type="group"/>
+</td>
+</tr>
+</table>
+</ssf:expandableArea>
+</td></tr>
 </table>
 </fieldset>
 </td></tr>

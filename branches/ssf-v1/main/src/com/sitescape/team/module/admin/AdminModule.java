@@ -227,6 +227,8 @@ public interface AdminModule {
 	 * @throws Exception
 	 */
     public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body, Collection<DefinableEntity> entries, boolean sendAttachments) throws Exception;
+    public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, Collection<Long> ccids, Collection<Long> cccids, 
+    			String subject, Description body, Collection<DefinableEntity> entries, boolean sendAttachments) throws Exception;
 
     public void setPostingSchedule(ScheduleInfo config) throws ParseException, AccessControlException;;
 	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships) throws AccessControlException;
