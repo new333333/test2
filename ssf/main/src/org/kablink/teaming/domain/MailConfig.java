@@ -2,10 +2,9 @@ package org.kablink.teaming.domain;
 //component of zoneConfig
 public class MailConfig  {
 	protected boolean sendMailEnabled = true;
-	protected boolean postingEnabled = true;
+	protected boolean postingEnabled = false;
 	protected boolean simpleUrlPostingEnabled = false;
-	protected int simpleUrlPort=2525;
-
+	
 	public MailConfig()	{
 	}
 	public MailConfig(MailConfig src) {

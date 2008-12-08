@@ -83,6 +83,47 @@ self.window.resizeTo(width, height);
 		<ssf:teamMembers binderId="${ssBinder.id}" formElement="users" appendAll="${appendTeamMembers}"/>
 	</c:if>
 </td></tr>
+<tr><td colspan="2">
+<ssf:expandableArea title="CC">
+<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3" width="95%">
+<tr>
+<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
+<td valign="top">
+  <ssf:find formName="${renderResponse.namespace}fm" formElement="ccusers" 
+    type="user" />
+</td>
+</tr>
+<tr>
+<td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
+<td valign="top">
+  <ssf:find formName="${renderResponse.namespace}fm" formElement="ccgroups" 
+    type="group"/>
+</td>
+</tr>
+</table>
+</ssf:expandableArea>
+</td></tr>
+<tr><td colspan="2">
+<ssf:expandableArea title="BCC">
+<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3" width="95%">
+<tr>
+<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
+<td valign="top">
+  <ssf:find formName="${renderResponse.namespace}fm" formElement="bccusers" 
+    type="user" />
+</td>
+</tr>
+<tr>
+<td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
+<td valign="top">
+  <ssf:find formName="${renderResponse.namespace}fm" formElement="bccgroups" 
+    type="group"/>
+</td>
+</tr>
+</table>
+</ssf:expandableArea>
+</td></tr>
+
 </table>
 </fieldset>
 </td></tr>
@@ -106,22 +147,22 @@ self.window.resizeTo(width, height);
 tinyMCE.init(
  {mode: "specific_textareas", editor_selector: "mceEditable",
 <c:choose>
---%><c:when test="${language == 'da_DK'}">language: 'da',</c:when><%--
---%><c:when test="${language == 'de_DE'}">language: 'de',</c:when><%--
---%><c:when test="${language == 'es_ES'}">language: 'es',</c:when><%--
---%><c:when test="${language == 'fr_FR'}">language: 'fr',</c:when><%--
---%><c:when test="${language == 'hu_HU'}">language: 'hu',</c:when><%--
---%><c:when test="${language == 'it_IT'}">language: 'it',</c:when><%--
---%><c:when test="${language == 'ja_JP'}">language: 'ja_utf-8',</c:when><%--
---%><c:when test="${language == 'nl_NL'}">language: 'nl',</c:when><%--
---%><c:when test="${language == 'pl_PL'}">language: 'pl',</c:when><%--
---%><c:when test="${language == 'pt_BR'}">language: 'pt_br',</c:when><%--
---%><c:when test="${language == 'ru_RU'}">language: 'ru',</c:when><%--
---%><c:when test="${language == 'uk_UA'}">language: 'uk',</c:when><%--
---%><c:when test="${language == 'sv_SE'}">language: 'sv',</c:when><%--
---%><c:when test="${language == 'sv_SV'}">language: 'sv',</c:when><%--
---%><c:when test="${language == 'zh_CN'}">language: 'zh_cn_utf8',</c:when><%--
---%><c:when test="${language == 'zh_TW'}">language: 'zh_tw_utf8',</c:when><%--
+<c:when test="${language == 'da_DK'}">language: 'da',</c:when>
+<c:when test="${language == 'de_DE'}">language: 'de',</c:when>
+<c:when test="${language == 'es_ES'}">language: 'es',</c:when>
+<c:when test="${language == 'fr_FR'}">language: 'fr',</c:when>
+<c:when test="${language == 'hu_HU'}">language: 'hu',</c:when>
+<c:when test="${language == 'it_IT'}">language: 'it',</c:when>
+<c:when test="${language == 'ja_JP'}">language: 'ja_utf-8',</c:when>
+<c:when test="${language == 'nl_NL'}">language: 'nl',</c:when>
+<c:when test="${language == 'pl_PL'}">language: 'pl',</c:when>
+<c:when test="${language == 'pt_BR'}">language: 'pt_br',</c:when>
+<c:when test="${language == 'ru_RU'}">language: 'ru',</c:when>
+<c:when test="${language == 'uk_UA'}">language: 'uk',</c:when>
+<c:when test="${language == 'sv_SE'}">language: 'sv',</c:when>
+<c:when test="${language == 'sv_SV'}">language: 'sv',</c:when>
+<c:when test="${language == 'zh_CN'}">language: 'zh_cn_utf8',</c:when>
+<c:when test="${language == 'zh_TW'}">language: 'zh_tw_utf8',</c:when>
 <c:otherwise>locale: 'en',</c:otherwise>
 </c:choose>
   content_css: "<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>",

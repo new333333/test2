@@ -77,8 +77,14 @@ public class SendMailController extends SAbstractController {
 			if (self) memberIds.add(RequestContextHolder.getRequestContext().getUserId());
 			if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
 			if (formData.containsKey("groups")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
-			
-			Map status = getAdminModule().sendMail(memberIds, null, emailAddress, subject, new Description(body, Description.FORMAT_HTML));
+			Set ccIds = new HashSet();
+			if (formData.containsKey("ccusers")) ccIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("ccusers")));
+			if (formData.containsKey("ccgroups")) ccIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("ccgroups")));
+			Set bccIds = new HashSet();
+			if (formData.containsKey("bccusers")) bccIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("bccusers")));
+			if (formData.containsKey("bccgroups")) bccIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("bccgroups")));
+
+			Map status = getAdminModule().sendMail(memberIds, null, emailAddress, ccIds, bccIds, subject, new Description(body, Description.FORMAT_HTML));
 			MailSentStatus result = (MailSentStatus)status.get(ObjectKeys.SENDMAIL_STATUS);
 			response.setRenderParameter(WebKeys.EMAIL_SENT_ADDRESSES, getStringEmail(result.getSentTo()));
 			response.setRenderParameter(WebKeys.EMAIL_QUEUED_ADDRESSES,  getStringEmail(result.getQueuedToSend()));

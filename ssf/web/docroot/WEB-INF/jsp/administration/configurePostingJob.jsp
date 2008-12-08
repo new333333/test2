@@ -82,13 +82,10 @@ function ${renderResponse.namespace}_modifyAlias() {
 <span class="ss_labelRight"><ssf:nlt tag="incoming.enable.simple"/></span>
 <br/>
 </c:if>
+<c:if test="${!empty ssScheduleInfopost}">
 <br/>
-<input type="checkbox" class="ss_style" id="postenabled" name="postenabled" <c:if test="${ssScheduleInfopost.enabled}">checked</c:if>/>
-<span class="ss_labelRight"><ssf:nlt tag="incoming.enable.all"/> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_enable_posting" /></span>
-<br/>
-
 <fieldset class="ss_fieldset">
-  <legend class="ss_legend"><ssf:nlt tag="incoming.header" /></legend>	
+  <legend class="ss_legend"><ssf:nlt tag="incoming.header" /><ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_enable_posting" /></legend>	
 <table class="ss_style" border="0" cellspacing="3" cellpadding="3">
 <tr><td valign="top"> 
 <c:set var="schedule" value="${ssScheduleInfopost.schedule}"/>
@@ -133,6 +130,7 @@ ${alias.binder.title}&nbsp;&nbsp<span  class="ss_smallprint ss_light">(${alias.b
 </c:if>
 </table>
 </fieldset>
+</c:if>
 <br/>
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">

@@ -39,6 +39,8 @@ public class DefaultEmailPosting extends SSCronTriggerJob implements EmailPostin
 	public void doExecute(final JobExecutionContext context) throws JobExecutionException {
 		if (!coreDao.loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isPostingEnabled()) {
 			logger.debug("Posting is not enabled for zone " + RequestContextHolder.getRequestContext().getZoneName());
+	   		context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJob);
+    		context.setResult("Success");
 			return;
 		}
     	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
@@ -53,7 +55,9 @@ public class DefaultEmailPosting extends SSCronTriggerJob implements EmailPostin
 	}
 
 	public void enable(boolean enable, Long zoneId) {
-		enable(enable, new CronJobDescription(zoneId, zoneId.toString(), POSTING_GROUP, POSTING_DESCRIPTION));
+		//get rid of old functionality when
+		if (enable == false) removeJob(zoneId.toString(), POSTING_GROUP);
+		else enable(enable, new CronJobDescription(zoneId, zoneId.toString(), POSTING_GROUP, POSTING_DESCRIPTION));
  	}
 
 }
