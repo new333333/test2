@@ -458,7 +458,16 @@ function ss_openUrlInPortlet(url, popup, width, height) {
 
 
 //Routine to open a page by following a "title" markup link
-function ss_openTitleUrl(obj) {
+function ss_openTitleUrl(obj, showInParent) {
+	if (showInParent != null && showInParent) {
+		//This is a request to just open the url in the parent (if it exists)
+		if (self != self.parent) {
+			self.parent.location.href = obj.href;
+		} else {
+			self.location.href = obj.href;
+		}
+		return false;
+	}
 	//Get the title text
 	var spanObj = obj.getElementsByTagName('span').item(0);
 	var titleText = ss_replaceSubStrAll(spanObj.innerHTML, "\"", "\&quot;");

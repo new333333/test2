@@ -259,8 +259,12 @@ public class MarkupUtil {
 				}
 				PortletURL portletURL = portletURL = res.createActionURL();
 				portletURL.setParameter(WebKeys.URL_BINDER_ID, binderId);
-				portletURL.setParameter(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
-				portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+				if (normalizedTitle != null && !normalizedTitle.equals("")) {
+					portletURL.setParameter(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
+					portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+				} else {
+					portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				}
 				return portletURL.toString();
 			}
 		};
@@ -297,8 +301,12 @@ public class MarkupUtil {
 				}
 				PortletURL portletURL = portletURL = res.createActionURL();
 				portletURL.setParameter(WebKeys.URL_BINDER_ID, binderId);
-				portletURL.setParameter(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
-				portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+				if (normalizedTitle != null && !normalizedTitle.equals("")) {
+					portletURL.setParameter(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
+					portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+				} else {
+					portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				}
 				return portletURL.toString();
 			}
 		};
@@ -430,15 +438,17 @@ public class MarkupUtil {
 					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) title = fieldMatcher.group(1).trim();
 			        	
 					//build the link
-		    		StringBuffer titleLink = new StringBuffer();				
+		    		StringBuffer titleLink = new StringBuffer();
 			    	if (type.equals(WebKeys.MARKUP_FORM)) {
 			        	titleLink.append("<a class=\"ss_icecore_link\" rel=\"binderId=");
 			        	titleLink.append(s_binderId).append(" title=").append(Html.stripHtml(normalizedTitle)).append("\">");
 			        	titleLink.append(title).append("</a>");
 			    	} else if (type.equals(WebKeys.MARKUP_VIEW)){
 			    		String webUrl = builder.getTitleUrl(s_binderId, WebHelper.getNormalizedTitle(normalizedTitle));
+			    		String showInParent = "false";
+			    		if (normalizedTitle == null || normalizedTitle.equals("")) showInParent = "true";
 			    		titleLink.append("<a href=\"").append(webUrl);
-			    		titleLink.append("\" onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this);\">");
+			    		titleLink.append("\" onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this, "+showInParent+");\">");
 			    		titleLink.append("<span class=\"ss_title_link\">").append(title).append("</span></a>");
 			    	} else {
 			    		String webUrl = builder.getTitleUrl(s_binderId, WebHelper.getNormalizedTitle(normalizedTitle));
@@ -469,8 +479,10 @@ public class MarkupUtil {
 				    		StringBuffer titleLink = new StringBuffer();				
 			    			String webUrl = builder.getRelativeTitleUrl(normalizedTitle);
 			    			if (type.equals(WebKeys.MARKUP_VIEW)) {
+					    		String showInParent = "false";
+					    		if (normalizedTitle == null || normalizedTitle.equals("")) showInParent = "true";
 			    				titleLink.append("<a href=\"").append(webUrl);
-			    				titleLink.append("\" onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this);\">");
+			    				titleLink.append("\" onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this, "+showInParent+");\">");
 			    				titleLink.append("<span class=\"ss_title_link\">").append(title).append("</span></a>");
 			    			} else {
 			    				titleLink.append("<a href=\"").append(webUrl).append("\">").append(title).append("</a>");

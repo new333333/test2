@@ -12,13 +12,14 @@ function ss_editingICElink() {
 }
 
 function ss_insertICElink(binderId, title, currentBinderId) {
+	alert('searchTitle = '+document.getElementById('searchTitle').value;)
 	currentBinderId = 'xxx'
 	var link = "";
 	var inst = tinyMCEPopup.editor;
 	if (inst.wikilinkNode != null) inst.wikilinkNode.parentNode.removeChild(inst.wikilinkNode);
 	elm = inst.selection.getNode();
     var linkText = inst.selection.getSelectedText();
-    if (linkText == "") {
+    if (linkText == null || linkText == "") {
     	linkText = document.getElementById('searchTitle').value;
     	if (linkText == null || linkText == '') linkText = document.getElementById('searchTitleFolder').value;
     }
