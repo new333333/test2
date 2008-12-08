@@ -60,7 +60,8 @@
 		if (window.frames['ss_wikiIframe' + namespace] != null) {
 			eval("var iframeHeight = parseInt(window.ss_wikiIframe" + namespace + ".document.body.scrollHeight);")
 			if (iframeHeight > 0) {
-				iframeDiv.style.height = iframeHeight + ss_wikiIframeOffset + "px"
+				iframeDiv.style.height = iframeHeight + ss_wikiIframeOffset + "px";
+				targetDiv.style.height = iframeHeight + ss_wikiIframeOffset + "px";
 			}
 		}
 	}
