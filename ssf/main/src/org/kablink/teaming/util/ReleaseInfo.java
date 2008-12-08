@@ -32,11 +32,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.kablink.teaming.ObjectKeys;
+
 public class ReleaseInfo {
 
 	static String title = "ICEcore";
 	static String version;
 	static String buildNumber,buildDate;
+	static String startTime;
 	static boolean enterpriseEdition = false;
 	
 	static {
@@ -53,6 +56,8 @@ public class ReleaseInfo {
 		
 		buildNumber = SPropsUtil.getString("release.build.number", "0");
 		buildDate = SPropsUtil.getString("release.build.date", "");
+	   	Date now = new Date();
+		startTime = String.valueOf(now.getTime());
 	}
 	
 	static final String releaseInfo = 
@@ -72,6 +77,14 @@ public class ReleaseInfo {
 	 */
 	public static final int getBuildNumber() {
 		return Integer.parseInt(buildNumber);
+	}
+	
+	/**
+	 * Returns the start time of this server. 
+	 * @return
+	 */
+	public static final String getStartTime() {
+		return startTime;
 	}
 	
 	/**
