@@ -80,7 +80,7 @@ var ss_wikiLinkUrl = "<ssf:url
     clickRoutine="ss_loadLinkBinderId"
     accessibilityText="wiki.findFolder"
     /> 
-<input type="hidden" name="searchTitleFolder"/>
+<input type="hidden" name="searchTitleFolder" id="searchTitleFolder"/>
 </div>
 <p>
 <b><ssf:nlt tag="wiki.link.topage"/>:</b> <input name="pageName" id="pageName" size="30"/>
@@ -100,7 +100,7 @@ var ss_wikiLinkUrl = "<ssf:url
     clickRoutine="ss_loadLinkEntryId"
     accessibilityText="wiki.findPage"
     /> 
-<input type="hidden" name="searchTitle"/>
+<input type="hidden" name="searchTitle" id="searchTitle"/>
 </form>
 </div>
 

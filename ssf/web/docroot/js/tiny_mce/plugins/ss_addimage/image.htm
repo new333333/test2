@@ -11,12 +11,20 @@
 	<title>{#ss_addimage.dialog_title}</title>
 	<script type="text/javascript">
 		function showUrlForm() {
+			var inputObj = self.document.getElementById('typeSelUrl');
+			inputObj.checked = true;
+			inputObj = self.document.getElementById('typeSelFile');
+			inputObj.checked = false;
 			var divObjUrl = self.document.getElementById('urlForm');
 			var divObjFile = self.document.getElementById('fileForm');
 			divObjFile.style.display = 'none';
 			divObjUrl.style.display = 'block';
 		}
 		function showFileForm() {
+			var inputObj = self.document.getElementById('typeSelFile');
+			inputObj.checked = true;
+			inputObj = self.document.getElementById('typeSelUrl');
+			inputObj.checked = false;
 			var divObjUrl = self.document.getElementById('urlForm');
 			var divObjFile = self.document.getElementById('fileForm');
 			divObjFile.style.display = 'block';
@@ -40,13 +48,13 @@
 						<legend>{#ss_addimage.general}</legend>
 						
 						<div style="padding-bottom:10px;">
-						<input type="radio" name="typeSel" value="file"
-						  onClick="showFileForm();" checked><a href="javascript: ;" 
+						<input type="radio" name="typeSel" value="file" id="typeSelFile"
+						  onClick="showFileForm();return true;" checked><a href="javascript: ;" 
 						  onClick="showFileForm();return false;">{#ss_addimage.addFile}</a>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<a href="javascript: ;" 
-						  onClick="showUrlForm();return false;"<input type="radio" name="typeSel" value="url"
-						  onClick="showUrlForm();">{#ss_addimage.addUrl}</a>
+						<input type="radio" name="typeSel" value="url" id="typeSelUrl"
+						  onClick="showUrlForm();return true;"><a href="javascript: ;" 
+						  onClick="showUrlForm();return false;">{#ss_addimage.addUrl}</a>
 						</div>
 
 						<div id="fileForm" style="display:block;" width="100%">

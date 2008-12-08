@@ -70,7 +70,6 @@ function init() {
 	if (action == "update") {
 		var src = tinyMCE.getAttrib(elm, 'src');
 
-		alert(src)
 		src = convertURL(src, elm, true);
 
 		// Use mce_src if found
