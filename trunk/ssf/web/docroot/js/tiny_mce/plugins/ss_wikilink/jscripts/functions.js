@@ -15,8 +15,13 @@ function ss_insertICElink(binderId, title, currentBinderId) {
 	currentBinderId = 'xxx'
 	var link = "";
 	var inst = tinyMCEPopup.editor;
-	var elm = inst.getFocusElement();
+	if (inst.wikilinkNode != null) inst.wikilinkNode.parentNode.removeChild(inst.wikilinkNode);
+	elm = inst.selection.getNode();
     var linkText = inst.selection.getSelectedText();
+    if (linkText == "") {
+    	linkText = document.getElementById('searchTitle').value;
+    	if (linkText == null || linkText == '') linkText = document.getElementById('searchTitleFolder').value;
+    }
     var pad = "";
     if (linkText.charAt(linkText.length - 1) == " ") { pad = " "; }
     linkText = linkText.trim();
@@ -26,7 +31,7 @@ function ss_insertICElink(binderId, title, currentBinderId) {
 	tinyMCEPopup.execCommand("mceBeginUndoLevel");
 
 	// Create new anchor elements
-	if (elm == null) {
+	if (elm == null || elm == '') {
 		if (title == "" && (binderId == "" || binderId == currentBinderId)) {
 		    if (linkText != "") {
 				link = '[[' + linkText + ']]';
@@ -82,6 +87,7 @@ function ss_close_popup_folder() {
 
 function ss_loadLinkBinderId(binderId, type, listObj, name) {
 	dojo.byId("binderId").value = binderId;
+	dojo.byId("searchTitleFolder").value = name;
 	var url = ss_wikiLinkUrl;
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
 	self.location.href = url;
@@ -97,6 +103,7 @@ function ss_loadLinkBinderId(binderId, type, listObj, name) {
 
 function ss_loadLinkEntryId(entryId, listObj, name) {
 	dojo.byId("pageName").value = name;
+	dojo.byId("searchTitle").value = name;
 	ss_close_popup_page();
 }
 

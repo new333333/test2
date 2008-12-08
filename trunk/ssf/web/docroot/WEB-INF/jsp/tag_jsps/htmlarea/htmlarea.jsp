@@ -74,13 +74,12 @@ tinyMCE.init(
 --%></c:choose>
   content_css: "<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>",
   relative_urls: false, 
-  remove_script_host : true,
+  remove_script_host : false,
   document_base_url : "<ssf:fileUrl entity="${ssDefinitionEntry}" baseUrl="true"/>",
   width: "100%",
   accessibility_warnings: true,
 <ssf:ifnotaccessible>  accessibility_focus: false,</ssf:ifnotaccessible>
 <ssf:ifaccessible>  accessibility_focus: true,</ssf:ifaccessible>
-  remove_script_host: false,
   entities:  "39,#39,34,quot,38,amp,60,lt,62,gt",
   gecko_spellcheck : true,
   plugins: "compat2x,table,<%--
