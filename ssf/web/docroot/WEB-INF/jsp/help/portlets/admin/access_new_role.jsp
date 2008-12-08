@@ -29,4 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:include page="${helpDocPath}/mngfldrs_accesscontrol_roles.html" />
+<iframe	frameborder="0"
+		scrolling="auto" 
+    	name="help_mngfldrs_accesscontrol_roles" 
+    	src="${helpDocPath}/mngfldrs_accesscontrol_roles.html" 
+    	height="100%" width="100%"></iframe>

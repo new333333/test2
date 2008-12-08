@@ -29,4 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:include page="${helpDocPath}/tool_webdav.html" />
+<iframe	frameborder="0"
+		scrolling="auto" 
+    	name="help_tool_webdav" 
+    	src="${helpDocPath}/tool_webdav.html" 
+    	height="100%" width="100%"></iframe>

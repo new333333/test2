@@ -29,4 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:include page="${helpDocPath}/personalws_config.html" />
+<iframe	frameborder="0"
+		scrolling="auto" 
+    	name="help_personalws_config" 
+    	src="${helpDocPath}/personalws_config.html" 
+    	height="100%" width="100%"></iframe>

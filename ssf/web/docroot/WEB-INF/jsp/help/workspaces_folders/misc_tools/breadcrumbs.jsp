@@ -29,4 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:include page="${helpDocPath}/nav_wstree.html" />
+<iframe	frameborder="0"
+		scrolling="auto" 
+    	name="help_nav_wstree" 
+    	src="${helpDocPath}/nav_wstree.html" 
+    	height="100%" width="100%"></iframe>
