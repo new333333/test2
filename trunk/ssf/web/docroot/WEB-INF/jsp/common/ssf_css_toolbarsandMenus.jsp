@@ -347,17 +347,23 @@ div.ss_utils_bar ul.ss_utils_bar li {
 	float:left;			
 /*	text-align: left;	 this is new */	
 	margin: 0px 5px 0px 0px;
+    list-style:none !important;
+    list-style-image: url(<html:imagesPath/>pics/1pix.gif) !important;
 	}
 div.ss_utils_bar ul.ss_utils_bar li a, div.ss_utils_bar ul.ss_utils_bar li a:visited {
 	color:#003782;
 	display:block;
 	margin:0px;
 	border:0px;	
+    list-style:none !important;
+    list-style-image: url(<html:imagesPath/>pics/1pix.gif) !important;
 	}
 div.ss_utils_bar ul.ss_utils_bar li a span {
 	padding: 0px;
 	margin: 0px;
 	font-size:${ss_style_font_smallprint};
+    list-style:none !important;
+    list-style-image: url(<html:imagesPath/>pics/1pix.gif) !important;
 	}
 .ss_utils_bar li a:hover {
 	text-decoration:underline;
@@ -374,6 +380,8 @@ div.ss_utils_bar_submenu {
 	z-index:500;
 	border: 1px solid #CCCCCC;
 	white-space: nowrap;
+    list-style:none !important;
+    list-style-image: url(<html:imagesPath/>pics/1pix.gif) !important;
 	}
 ul.ss_utils_bar_submenu {
 	margin: 0px 5px 0px 0px;
@@ -390,12 +398,16 @@ ul.ss_utils_bar_submenu li  {
 	font-weight:normal;
 	border-right-style:none;
     line-height:20px;
+    list-style:none !important;
+    list-style-image: url(<html:imagesPath/>pics/1pix.gif) !important;
 	}
 ul.ss_utils_bar_submenu li a:hover {
 	text-decoration:underline;
 	background-color:transparent;
 	color:#666666;
 	font-size:${ss_style_font_smallprint};	
+    list-style:none !important;
+    list-style-image: url(<html:imagesPath/>pics/1pix.gif) !important;
 	}
 ul.ss_utils_bar_submenu a, .ss_utils_bar_submenu a:visited {
 	text-decoration:none;
