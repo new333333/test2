@@ -1078,12 +1078,11 @@ function ss_showHoverOver(parentObj, divName, event, offsetX, offsetY) {
 	divObj.style.overflow = 'hidden';
 	var x = dojo.coords(parentObj, true).x
 	var y = dojo.coords(parentObj, true).y
-	if (typeof event != 'undefined') {
+	if (event != null && typeof event != 'undefined') {
 		x = event.clientX;
 	}
 	var topOffset = parseInt(parseInt(y) + dojo.contentBox(parentObj).h + 4)
-	//firefox doesn't compute the content box height right
-	if (dojo.contentBox(parentObj).h <= 0) topOffset += offsetY;
+	topOffset += offsetY;
 	ss_setObjectTop(divObj, topOffset + "px")
 	ss_setObjectLeft(divObj, parseInt(parseInt(x) + offsetX) + "px")
 }
