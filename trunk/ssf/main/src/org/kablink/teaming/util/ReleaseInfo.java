@@ -68,6 +68,9 @@ public class ReleaseInfo {
 		return version;
 	}
 	
+	public static final String getName() {
+		return name;
+	}
 	/**
 	 * Returns build number if official release or <code>0</code> if unofficial. 
 	 * @return

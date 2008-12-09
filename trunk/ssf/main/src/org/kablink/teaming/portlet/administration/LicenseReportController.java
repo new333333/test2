@@ -38,6 +38,7 @@ import javax.portlet.RenderRequest;
 import org.dom4j.Document;
 import org.dom4j.Node;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.web.WebKeys;
 
 
@@ -58,18 +59,25 @@ public class LicenseReportController extends AbstractReportController {
 			cal.add(Calendar.DATE, 1);
 			endDate = cal.getTime();
 		}
-		model.put(WebKeys.LICENSE_DATA, getReportModule().generateLicenseReport(startDate, endDate));
-		model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
+		if (formData.containsKey("okBtn")) {
+			model.put(WebKeys.LICENSE_DATA, getReportModule().generateLicenseReport(startDate, endDate));
+			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
+			model.put("releaseInfo", ReleaseInfo.getReleaseInfo());
+	
+			StringBuffer uids = new StringBuffer();
+			for(Document doc : getLicenseModule().getLicenses()) {
+				uids.append(getValue(doc, "//KeyInfo/@uid") + " ");
+				model.put(WebKeys.LICENSE_ISSUED, getValue(doc, "//KeyInfo/@issued"));
+				model.put(WebKeys.LICENSE_EFFECTIVE, getValue(doc, "//Dates/@effective") + " - " + getValue(doc, "//Dates/@expiration"));
+				model.put(WebKeys.LICENSE_CONTACT, getValue(doc, "//AuditPolicy/ReportContact"));
+				model.put(WebKeys.LICENSE_PRODUCT_TITLE, getValue(doc, "//Product/@title"));
+				model.put(WebKeys.LICENSE_PRODUCT_VERSION, getValue(doc, "//Product/@version"));
+			}
+			model.put(WebKeys.LICENSE_KEY, uids.toString());
+			model.put(WebKeys.LICENSE_USERS, getLicenseModule().getRegisteredUsers());
+			model.put(WebKeys.LICENSE_EXTERNAL_USERS, getLicenseModule().getExternalUsers());
 
-		StringBuffer uids = new StringBuffer();
-		for(Document doc : getLicenseModule().getLicenses()) {
-			uids.append(getValue(doc, "//KeyInfo/@uid") + " ");
-			model.put(WebKeys.LICENSE_ISSUED, getValue(doc, "//KeyInfo/@issued"));
-			model.put(WebKeys.LICENSE_EFFECTIVE, getValue(doc, "//Dates/@effective") + " - " + getValue(doc, "//Dates/@expiration"));
-			model.put(WebKeys.LICENSE_CONTACT, getValue(doc, "//AuditPolicy/ReportContact"));
 		}
-		model.put(WebKeys.LICENSE_KEY, uids.toString());
-		model.put(WebKeys.LICENSE_USERS, "" + getLicenseModule().getRegisteredUsers());
 	}
 	
 	private String getValue(Document doc, String xpath)
