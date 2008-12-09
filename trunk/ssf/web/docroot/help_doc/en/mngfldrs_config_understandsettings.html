@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html xml:lang="en" lang="en">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Tuesday, December 09, 2008" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2008" />
+
+<link rel="stylesheet" type="text/css" href="css/styles.css" />
+<link rel="stylesheet" type="text/css" href="css/expandable.css" />
+
+<title>Understanding Settings for E-Mail Postings</title>
+</head>
+<body>
+<script type="text/javascript" src="css/expandable.js"></script>
+<div class="sect1"  id="mngfldrs_config_understandsettings">
+
+<h1 class="title"> Understanding Settings for E-Mail Postings</h1>
+
+<p class="para">First, work with your organization's IT representative who is responsible for creating e-mail accounts used to post messages into <span class="phrase">Kablink Teaming</span> folders. You both must decide between providing distinct e-mail accounts for posting into folders or using a single account with multiple alias addresses. (Or using a combination of both methods.)</p>
+<p class="para">It is most common to use aliases. To implement this method, use elements in the XML configuration file (see the installation guide) to indicate that you are using e-mail aliases, and to indicate your e-mail account name and password. (The syntax of an e-mail account name differs depending on the type of e-mail sever your organization uses; it might or might not look like an e-mail address.) Give the alias address to the folder owner.</p>
+<p class="para">For example, the owner of a Marketing folder requests an address for posting into the folder. Within the collab@acme.com e-mail account, your IT representative creates the collab.marketing@acme.com alias address. The folder owner places "collab.marketing@acme.com" into the posting-configuration form and leaves the password empty. All mail sent to the account using collab.marketing@acme.com is posted into the Marketing folder.</p>
+<p class="para">Some systems require a separate e-mail account for each <span class="phrase">Kablink Teaming</span> folder that needs e-mail posting. To implement this method, in the XML configuration file, indicate that you are not using aliases, and specify null strings for the account name and password. Provide a folder owner with the account name and password, both of which are placed in the posting-configuration form.</p>
+<p class="para">Remember that, after e-mail routes to a folder in <span class="phrase">Kablink Teaming</span>, it is deleted from the e-mail account.</p>
+<p class="para"><span class="phrase"></span>For more information:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem"><span class="phrase">The <a href="http://kablink.org/" class="ulink" target="_blank">Kablink Teaming Web site</a></span>.</p></li></ul></div>
+
+</div>
+
+<p class="trademark"> For trademark and copyright information, see <a href="./legal.html">Legal Notices</a>.</p>
+</body>
+</html>
