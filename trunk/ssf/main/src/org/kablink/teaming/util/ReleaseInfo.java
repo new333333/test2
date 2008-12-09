@@ -36,21 +36,18 @@ import org.kablink.teaming.ObjectKeys;
 
 public class ReleaseInfo {
 
-	static String title = "ICEcore";
+	private static final String KABLINK_TEAMING = "Kablink Teaming";
+	
+	static String name;
 	static String version;
 	static String buildNumber,buildDate;
 	static String startTime;
-	static boolean enterpriseEdition = false;
+	static boolean licenseRequiredEdition = true;
 	
 	static {
-		if(SPropsUtil.getString("release.type").equalsIgnoreCase("enterprise")) {
-			title += " Enterprise"; // Enterprise/Premium
-			enterpriseEdition = true;
-		}
-		else {
-			title += ""; // Open Source version
-			enterpriseEdition = false;
-		}
+		name = SPropsUtil.getString("product.name");
+		if(name.equalsIgnoreCase(KABLINK_TEAMING))
+			licenseRequiredEdition = false;
 			
 		version = SPropsUtil.getString("release.version", "0");
 		
@@ -61,7 +58,7 @@ public class ReleaseInfo {
 	}
 	
 	static final String releaseInfo = 
-		title + " " + version + " (Build " + buildNumber + " / " + buildDate + ")";
+		name + " " + version + " (Build " + buildNumber + " / " + buildDate + ")";
 	
 	/**
 	 * Returns version number if official release or <code>0.0.0</code> if unofficial.
@@ -108,8 +105,8 @@ public class ReleaseInfo {
 		return releaseInfo;
 	}
 	
-	public static final boolean isEnterpriseEdition() {
-		return enterpriseEdition;
+	public static final boolean isLicenseRequiredEdition() {
+		return licenseRequiredEdition;
 	}
 	
 	/*

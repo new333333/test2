@@ -847,8 +847,6 @@ public class WebKeys {
     public static final String PREV_PAGE="ss_prevPage";
 	public static final String PRODUCT_NAME="ssProductName";
 	public static final String PRODUCT_TITLE="ssProductTitle";
-	public static final String PRODUCT_NICKNAME="ssProductNickname";
-	public static final String PRODUCT_EDITION="ssProductEdition";
 	public static final String PRODUCT_CONFERENCING_NAME="ssProductConferencingName";
 	public static final String PRODUCT_CONFERENCING_TITLE="ssProductConferencingTitle";
 	public static final String PROFILE_CONFIG_ELEMENT="ssProfileConfigElement";

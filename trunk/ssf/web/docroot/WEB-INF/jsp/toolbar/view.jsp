@@ -90,14 +90,14 @@ function ${renderResponse.namespace}_wsTree_showId(id, obj, action) {
 </div>
 </ssHelpSpot>
 <div style="padding-top: 10px;" align="right">
-   <a href="javascript:;" onClick="ss_showAbout('${renderResponse.namespace}_aboutBox');"><span class="ss_light ss_smallprint"><ssf:nlt tag="navigation.about"><ssf:param name="value" value="${ssProductNickname}"/></ssf:nlt></span></a>
+   <a href="javascript:;" onClick="ss_showAbout('${renderResponse.namespace}_aboutBox');"><span class="ss_light ss_smallprint"><ssf:nlt tag="navigation.about"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span></a>
 </div>
 <div class="ss_themeMenu" onClick="ss_cancelAbout('${renderResponse.namespace}_aboutBox');" style="display: none; width: 350px;" id="${renderResponse.namespace}_aboutBox">
   <div style="padding-top: 10px; padding-bottom: 10px; padding-left: 10px; border-bottom: 1px solid #333333;">
     <table style="line-height: 30px;" cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody><tr>
      <c:choose>
-     <c:when test="${ssProductName == 'Novell'}">
+     <c:when test="${ssProductName == 'Novell Teaming'}">
         <td><img src="<html:brandedImagesPath/>pics/novell-teaming-about.png"></td>
      </c:when>
      <c:otherwise>
@@ -112,7 +112,7 @@ function ${renderResponse.namespace}_wsTree_showId(id, obj, action) {
   <div class="ss_style" style="padding-top: 10px; padding-bottom: 10px; padding-left: 20px; font-family:Arial, Helvetica, sans-serif; font-size: 12px; line-height: 20px;">
     <p>
      ${releaseInfo}<br/>
-    <c:if test="${ssProductName == 'Novell'}">
+    <c:if test="${ssProductName == 'Novell Teaming'}">
     &copy; 2007, Novell, Inc. and its licensors. All rights reserved<br/> 
     </c:if>
      &copy; 2007, SiteScape, Inc. All rights reserved<br/>
