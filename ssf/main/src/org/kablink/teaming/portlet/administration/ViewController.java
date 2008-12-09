@@ -291,7 +291,7 @@ public class ViewController extends  SAbstractController {
 		}
 
 		//Manage license
-		if(ReleaseInfo.isEnterpriseEdition()) {
+		if(ReleaseInfo.isLicenseRequiredEdition()) {
 			if (getLicenseModule().testAccess(LicenseOperation.manageLicense)) {
 				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 				element.addAttribute("title", NLT.get("administration.manage.license"));
@@ -328,7 +328,7 @@ public class ViewController extends  SAbstractController {
 			reports.put(element.attributeValue("title"), element);
 
 			//License report
-			if(ReleaseInfo.isEnterpriseEdition()) {
+			if(ReleaseInfo.isLicenseRequiredEdition()) {
 				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 				element.addAttribute("title", NLT.get("administration.report.title.license"));
 				element.addAttribute("image", "bullet");

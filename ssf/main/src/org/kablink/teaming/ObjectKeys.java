@@ -39,7 +39,6 @@ public interface ObjectKeys {
     //Default name for the product
 	public static final String PRODUCT_NAME_DEFAULT="ICEcore";
 	public static final String PRODUCT_TITLE_DEFAULT="ICEcore";
-	public static final String PRODUCT_NICKNAME_DEFAULT="ICEcore";
 	public static final String PRODUCT_EDITION_DEFAULT="OpenSource";
 	public static final String PRODUCT_CONFERENCING_NAME_DEFAULT="Conference";
 	public static final String PRODUCT_CONFERENCING_TITLE_DEFAULT="ICEcore Conference";
