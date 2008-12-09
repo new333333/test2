@@ -42,7 +42,7 @@ function ss_position_sTableCol(divName, x, y, w) {
     var ss_sTableHeight = ss_getDivHeight(ss_slidingTableId_2)
     var ss_sTableInnerHeight = parseInt(ss_sTableHeight- ss_sTableMarginTop - ss_sTableMarginBottom)
     self.document.getElementById(divName).style.left = x + "px"
-    self.document.getElementById(divName).style.top = y + "px"
+    self.document.getElementById(divName).style.top = y+1 + "px"
     self.document.getElementById(divName).style.clip = "rect(-9px " + parseInt(w) + "px " + ss_sTableInnerHeight + "px -9px)"
     //The next lines workaround an IE failure to show backgrounds correctly
     self.document.getElementById(divName).style.visibility = "hidden"
