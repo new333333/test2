@@ -236,7 +236,7 @@ function ss_saveSlidingTableCoords() {
     var ss_sTableLeft = ss_getDivLeft(ss_slidingTableId_2);
     var tableWidth = parseFloat(ss_getDivWidth(ss_slidingTableId_2) - ss_sTableMarginLeft - ss_sTableMarginRight);
     for (var i = 0; i <= ss_columnCount; i++) {
-    	var colLeft = parseFloat(parseFloat(ss_getDivLeft("col"+i)) - ss_sTableLeft - ss_sTableMarginLeft)
+    	var colLeft = parseFloat(parseFloat(ss_getDivLeft("col"+i)) +2 - ss_sTableLeft - ss_sTableMarginLeft)
     	if (colLeft < 0) colLeft = 0;
     	var percentage = parseFloat((colLeft * 100) / tableWidth);
 	    s += percentage+"% "
