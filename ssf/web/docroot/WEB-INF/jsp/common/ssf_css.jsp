@@ -1814,8 +1814,8 @@ span.ss_tabs_title {
 	float:left;
 	margin:0px;
 	padding:0px 5px 0 5px; 
-    list-style:none;
-    list-style-image: url(<html:imagesPath/>pics/1pix.gif);
+    list-style:none !important;
+    list-style-image: url(<html:imagesPath/>pics/1pix.gif) !important;
 } 
 a.ss_breadcrumb {
 	font-size: ${ss_style_font_smallprint};
