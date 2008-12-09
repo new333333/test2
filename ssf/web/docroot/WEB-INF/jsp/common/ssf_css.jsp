@@ -113,10 +113,10 @@ body.ss_style_body {
   border:0px none;
 }
 .ss_style ul li {
-  list-style:none;
-  list-style-image: url(<html:imagesPath/>pics/1pix.gif);
+  list-style-type: square;
+  list-style-image: none;
 }
-  
+
 /* LINKS */
 .ss_style a {
   	color: ${ss_style_link_color};
@@ -1806,7 +1806,7 @@ span.ss_tabs_title {
 	padding:0px 5px 0px 0px;
 	font-size: ${ss_style_font_smallprint};
 }
-.ss_breadcrumb ul{
+.ss_breadcrumb ul {
 	margin-left:-15px;
 	margin-top:-12px;
 }
@@ -1814,7 +1814,9 @@ span.ss_tabs_title {
 	float:left;
 	margin:0px;
 	padding:0px 5px 0 5px; 
-}  
+    list-style:none;
+    list-style-image: url(<html:imagesPath/>pics/1pix.gif);
+} 
 a.ss_breadcrumb {
 	font-size: ${ss_style_font_smallprint};
 }
