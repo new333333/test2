@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package org.kablink.teaming.domain;
+package com.sitescape.team.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -37,7 +37,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.dom4j.Document;
+import org.kablink.teaming.domain.CustomAttribute;
+import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.Event;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.web.util.DefinitionHelper;
 
 
