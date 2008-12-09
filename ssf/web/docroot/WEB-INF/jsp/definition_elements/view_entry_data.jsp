@@ -45,7 +45,7 @@
 	} else if (itemType.equals("description")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_description.jsp" %><%
 
-	} else if (itemType.equals("text")) {
+	} else if (itemType.equals("text") || itemType.equals("hidden")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_text.jsp" %><%
 		
 	} else if (itemType.equals("htmlEditorTextarea")) {
