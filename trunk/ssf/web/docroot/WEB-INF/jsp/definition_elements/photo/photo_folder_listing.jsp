@@ -52,7 +52,7 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 %>
 			  <c:if test="${not empty fileEntry._fileID}">
 			    <div>
-			    <a onMouseOver="ss_showHoverOver(this, 'ss_photoTitle_${fileEntry._docId}')" 
+			    <a onMouseOver="ss_showHoverOver(this, 'ss_photoTitle_${fileEntry._docId}', null, -10, 10)" 
 			      onMouseOut="ss_hideHoverOver('ss_photoTitle_${fileEntry._docId}')"
 			      href="<ssf:fileUrl search="${fileEntry}"/>"
 					onClick="return ss_openUrlInWindow(this, '_blank');">

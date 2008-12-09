@@ -82,11 +82,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
       </ssf:expandableArea>
 	</div>
 	<div class="ss_photo_sidebar_subhead">	
-	  <ssf:expandableArea title='<%= NLT.get("photo.entries") %>' titleClass="ss_photo_title" 
+	  <ssf:expandableArea title='<%= NLT.get("blog.archives") %>' titleClass="ss_photo_title" 
 	    action="wipe" initOpen="true">
-
-	   <div style="margin-top: 15px;">
-		<div class="ss_photo_archive_subhead"><ssf:nlt tag="blog.archives"/>
 	      <div class="ss_blog_sidebar_box">		
 			<table>
 			  <c:forEach var="monthYear" items="${ssBlogMonthHits}">
@@ -121,8 +118,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		    </c:forEach>
 		   </table>
 	      </div>		
-	    </div>		
-	   </div>
       </ssf:expandableArea>
   	</div>
    <c:if test="${!empty ssFolderEntryCommunityTags}"> 
