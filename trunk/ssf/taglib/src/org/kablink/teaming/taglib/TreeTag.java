@@ -400,9 +400,9 @@ public class TreeTag extends TagSupport {
 			String s_text = Html.formatTo(e.attributeValue("title"));
 			if (!s_tuple.equals("")) {
 				//This title is a range field; format it appropriately
-				s_text = getBucketDisplay(e.attributeValue("tuple1").replaceAll("'", "\\\\'").replaceAll("&", "&amp;"));
+				s_text = getBucketDisplay(e.attributeValue("tuple1"));
 				s_text += " <img alt=\"\" src=\"" + getImage("/icons/range_arrows.gif") + "\"/> ";
-				s_text += getBucketDisplay(e.attributeValue("tuple2").replaceAll("'", "\\\\'").replaceAll("&", "&amp;"));
+				s_text += getBucketDisplay(e.attributeValue("tuple2"));
 			}
 			if (Validator.isNull(s_text)) s_text = "--" + NLT.get("entry.noTitle") + "--";
 	
@@ -1009,12 +1009,14 @@ public class TreeTag extends TagSupport {
 	
 	private String getBucketDisplay(String text) {
 		String result = text;
-		Pattern p = Pattern.compile("(\\w*)\\W");
+		Pattern p = Pattern.compile("(\\S*)\\W");
 		Matcher m = p.matcher(text);
-		if (m.find()) {
+		while (m.find()) {
 			result = m.group(1);
+			if (!result.equals("")) break;
 		}
-		return "<span onMouseOver=\"ss_showBucketText(this, '" + text + "');\" onMouseOut=\"ss_hideBucketText();\" >" + result + "</span>";
+		if (result.equals("")) result = text;
+		return "<span onMouseOver=\"ss_showBucketText(this, '" + text.replaceAll("'", "\\\\'").replaceAll("&", "&amp;") + "');\" onMouseOut=\"ss_hideBucketText();\" >" + result.replaceAll("&", "&amp;") + "</span>";
 	}
 
    private static String join(Collection s, String delimiter) {
