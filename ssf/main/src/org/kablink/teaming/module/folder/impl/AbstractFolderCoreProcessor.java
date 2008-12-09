@@ -56,7 +56,6 @@ import org.kablink.teaming.domain.FolderHierarchyException;
 import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NotifyStatus;
-import org.kablink.teaming.domain.Statistics;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
@@ -77,6 +76,8 @@ import org.kablink.teaming.util.CollectionUtil;
 import org.kablink.util.Validator;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+
+import com.sitescape.team.domain.Statistics;
 
 /**
  *
@@ -100,10 +101,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	fEntry.updateLastActivity(fEntry.getModification().getDate());
     	if (fEntry.isTop()) {
     		Statistics statistics = getFolderStatistics(folder);
-    		if(statistics != null) {
-	    		statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
-	    		setFolderStatistics(folder, statistics);
-    		}
+	    	statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
+	    	setFolderStatistics(folder, statistics);
     	}
     }
     //inside write transaction
@@ -244,8 +243,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //inside write transaction
     protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
     	Statistics statistics = getFolderStatistics((Folder)binder);
-    	if(statistics != null)
-    		statistics.deleteStatistics(entry.getEntryDef(), entry.getCustomAttributes());
+    	statistics.deleteStatistics(entry.getEntryDef(), entry.getCustomAttributes());
     	super.modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
     }
     //inside write transaction
@@ -255,10 +253,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	FolderEntry fEntry = (FolderEntry)entry;
 		fEntry.updateLastActivity(fEntry.getModification().getDate());
     	Statistics statistics = getFolderStatistics((Folder)binder);
-    	if(statistics != null) {
-	        statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
-	        setFolderStatistics((Folder)binder, statistics);
-    	}
+	    statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
+	    setFolderStatistics((Folder)binder, statistics);
   }
     //no transaction
 	protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
