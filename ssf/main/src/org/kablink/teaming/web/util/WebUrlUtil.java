@@ -299,6 +299,7 @@ public class WebUrlUtil {
 		return getFileUrl(WebUrlUtil.getServletRootURL(req), action, entity, fileName);
 	}
 	public static String getFileUrl(String webPath, String action, DefinableEntity entity, String fileName) {
+		if (entity == null) return "";
 		FileAttachment fAtt = null;
 		if (!fileName.equals("")) entity.getFileAttachment(fileName);
 		if (fAtt != null) {
