@@ -287,7 +287,6 @@ div.ss_canvas {
 	line-height:1.2em;
 	}
 #ss_viewedItems .ss_v_entries ul{
-	list-style-type: none;
 	padding: 0;
 	margin-left: 4px;
 	}
@@ -299,13 +298,14 @@ div.ss_canvas {
 	padding-top: 3px;
 	padding-bottom: 1.6em;
 	border-bottom:1px dotted #5A9A98;
+    list-style:none !important;
+    list-style-image: url(<html:imagesPath/>pics/1pix.gif) !important;
 	}
-#ss_viewedItems .ss_v_attachments ul{
-	list-style-type: none;
+#ss_viewedItems .ss_v_attachments ul {
 	padding: 0;
 	margin-left: 4px;
 	}
-#ss_viewedItems .ss_v_attachments li{
+#ss_viewedItems .ss_v_attachments li {
 	background-image: url("<html:rootPath/>images/pics/attachment_icon.gif");
 	background-repeat: no-repeat;
 	background-position: 1% 1%;
@@ -313,6 +313,8 @@ div.ss_canvas {
 	padding-top: 3px;
 	padding-bottom: 1.6em;
 	border-bottom:1px dotted #5A9A98;
+    list-style:none !important;
+    list-style-image: url(<html:imagesPath/>pics/1pix.gif) !important;
 	}	
 	/* ACTIVE LINKS - VIEWED ITEMS*/	
 #ss_viewedItems a{
