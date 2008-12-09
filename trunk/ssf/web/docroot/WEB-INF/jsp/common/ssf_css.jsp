@@ -3613,6 +3613,11 @@ a.ss_button {
 	border: 1px solid #afc8e3;
 	padding: 0px 6px 0px 12px;
 }
+a:hover.ss_button {
+	background-color: #dbe6f2;
+	border: 1px dotted #888;
+	padding: 0px 6px 0px 12px;
+}
 #ss_filterSummary_content {float:left;}
 #ss_filterSummary_content p, #ss_searchForm_changeBox p {
   margin-top: 1px;
