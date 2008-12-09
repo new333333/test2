@@ -30,7 +30,8 @@ package org.kablink.teaming.portlet.administration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
@@ -76,7 +77,11 @@ public abstract class AbstractReportController extends  AbstractBinderController
 			endDate = data.getDateValue(WebKeys.URL_END_DATE);
 		} catch(Exception e) {
 		}
-		if(startDate == null) { startDate = new Date(); }
+		if(startDate == null) { 
+			GregorianCalendar cal = new GregorianCalendar();
+			cal.add(Calendar.MONTH, -1);
+			startDate = cal.getTime();
+		}
 		if(endDate == null) { endDate = new Date(); }
 		model.put(WebKeys.REPORT_START_DATE, startDate);
 		model.put(WebKeys.REPORT_END_DATE, endDate);

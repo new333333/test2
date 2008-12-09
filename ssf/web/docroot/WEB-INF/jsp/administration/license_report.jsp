@@ -45,7 +45,7 @@
 	name="${formName}">
 <input type="hidden" name="ss_reportType" value="license"/>
 <div class="ss_buttonBarRight">
-    <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
 		  onClick="self.window.close();return false;"/>
@@ -71,25 +71,41 @@
    <br/>
    <div id="ss_endPopup" class="ss_calPopupDiv"></div>
    <div class="ss_buttonBarLeft">
-    <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
 		  onClick="self.window.close();return false;"/>
    </div>
 </form>
-<c:if test="${not empty ssLicenseData}">
+<c:if test="${not empty ssLicenseKey}">
 <hr>
-<p class="ss_bold">
-ICEcore Enterprise Version 1.0<br/>
-License Audit Report  -- <fmt:formatDate value="${ssCurrentDate}" pattern="yyyy-MM-dd HH:mm:ss z" timeZone="${ssUser.timeZone.ID}"/>
-</p>
-<p>
-License Information<br/>
-  Key id:    ${ssLicenseKey}<br/>
-  Issued:    ${ssLicenseIssued}<br/>
-  Effective: ${ssLicenseEffective}<br/>
-  Users:     ${ssLicenseUsers}<br/>
-</p><%--
+<span class="ss_bold"><%= org.kablink.teaming.util.ReleaseInfo.getName() + " " + org.kablink.teaming.util.ReleaseInfo.getVersion() %>
+ <ssf:nlt tag="administration.report.title.license"/> <fmt:formatDate value="${ssCurrentDate}" pattern="yyyy-MM-dd HH:mm:ss z" timeZone="${ssUser.timeZone.ID}"/>
+</span><br/>
+<br/>
+<span class="ss_bold"><ssf:nlt tag="license.current"/></span><br/>
+<ssf:nlt tag="license.product.title"/> ${ssLicenseProductTitle} (${ssLicenseProductVersion})<br/>
+<ssf:nlt tag="license.key.uid"/> ${ssLicenseKey}<br/>
+<ssf:nlt tag="license.key.issued"/> ${ssLicenseIssued}<br/>
+<ssf:nlt tag="license.effective"/> ${ssLicenseEffective}<br/>
+<c:if test="${ssLicenseUsers < 0}">
+<ssf:nlt tag="license.users.registered.unlimited"/>
+</c:if>
+<c:if test="${ssLicenseUsers >= 0}">
+<ssf:nlt tag="license.users.registered"/> ${ssLicenseUsers}
+</c:if>
+<br/>
+<c:if test="${ssLicenseExternalUsers < 0}">
+<ssf:nlt tag="license.users.external.unlimited"/>
+</c:if>
+<c:if test="${ssLicenseExternalUsers >= 0}">
+<ssf:nlt tag="license.users.external"/> ${ssLicenseExternalUsers}
+</c:if>
+<br/>
+<br/>
+<span class="ss_bold"><ssf:nlt tag="administration.report.dates"/></span>&nbsp;<fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd HH:mm:ss z" timeZone="${ssUser.timeZone.ID}"/>
+&nbsp;<ssf:nlt tag="smallWords.and"/>&nbsp;<fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd HH:mm:ss z" timeZone="${ssUser.timeZone.ID}"/><br/>
+<c:if test="${not empty ssLicenseData}"><%--
 --%><c:set var="highWater" value="-1"/><%--
 --%><c:set var="highWaterDate" value=""/><%--
 --%><c:set var="currentUser" value="0"/><%--
@@ -100,16 +116,13 @@ License Information<br/>
 	--%></c:if><%--
 	--%><c:set var="currentUser" value="${datum.internalUserCount}"/><%--
 --%></c:forEach>
-<p>
-Users highwater mark: ${highWater} (${highWaterDate})<br/>
-Current user count: ${currentUser}
-</p>
-<p class="ss_bold">
-Usage History
-</p>
+
+<ssf:nlt tag="license.users.highwater"/> ${highWater} (${highWaterDate})<br/>
+<ssf:nlt tag="license.current.users"/> ${currentUser}<br/>
+<br/>
 <table syle="border-spacing: 2px;"><tbody>
 <tr>
-<th>Date</th><th>Registered</th><th>External</th><th>Check</th>
+<th><ssf:nlt tag="license.table.date"/></th><th><ssf:nlt tag="license.table.registered"/></th><th><ssf:nlt tag="license.table.external"/></th><th><ssf:nlt tag="license.table.check"/></th>
 </tr>
 <c:forEach var="datum" items="${ssLicenseData}" >
 <tr>
@@ -120,12 +133,9 @@ Usage History
 </tr>
 </c:forEach>
 </table>
-<p>  
-Report checksum: 41fec13e30afd9cffe48a20ba5ce55982f95c0cf
-</p>
-<p>
-${ssLicenseContact}
-</p>   
+<br/>
+${ssLicenseContact}<br/>
+</c:if>
 </c:if>
 </td></tr></table>
 </div>
