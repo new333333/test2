@@ -93,7 +93,7 @@ function ${wsTreeName}_showId(forum, obj, action) {
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
-<div class="ss_breadcrumb">
+<div class="ss_breadcrumb" style="padding:16px 6px 10px 6px;">
   <ssHelpSpot helpId="workspaces_folders/misc_tools/breadcrumbs" offsetX="0" 
   <c:if test="<%= !isIE %>">
    offsetY="4"
@@ -103,7 +103,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
   </c:if>
     title="<ssf:nlt tag="helpSpot.breadCrumbs"/>"></ssHelpSpot>
 
-<ul style="margin-left:-15px;">
+<ul>
 <c:if test="${!empty ssDefaultSaveLocation.parentBinder}">
 <c:set var="parentBinder" value="${ssDefaultSaveLocation.parentBinder}"/>
 <jsp:useBean id="parentBinder" type="java.lang.Object" />
@@ -118,34 +118,37 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		Binder nextBinder = (Binder) parentTree.pop();
 %>
 <c:set var="nextBinder" value="<%= nextBinder %>"/>
-<br style="float:left;">
 <c:if test="${empty ssNavigationLinkTree[nextBinder.id]}">
+<li>
 <c:if test="${empty nextBinder.title}" >
 --<ssf:nlt tag="entry.noTitle" />--
 </c:if>
-<c:out value="${nextBinder.title}" /></a>
+<c:out value="${nextBinder.title}" />
+</li>
 </c:if>
 <c:if test="${!empty ssNavigationLinkTree[nextBinder.id]}">
+<li>
 <div style="display:inline">
 <ssf:tree treeName="${ss_breadcrumbsTreeName}${nextBinder.id}${renderResponse.namespace}" treeDocument="${ssNavigationLinkTree[nextBinder.id]}" 
   topId="${nextBinder.id}" rootOpen="false" showImages="false" showIdRoutine="${ss_breadcrumbsShowIdRoutine}" />
 </div>
+</li>
 </c:if>
-</br>
-<br style="float:left; padding-top:2px;">&nbsp;&nbsp;//&nbsp;&nbsp;</li>
+<li>//</li>
 <%
 	}
 %>
 </c:if>
-<br style="float:left;">
 <c:if test="${ssDefaultSaveLocation.entityType == 'folderEntry' || empty ssNavigationLinkTree[ssDefaultSaveLocation.id]}">
+<li>
 <c:if test="${empty ssDefaultSaveLocation.title}" >
 --<ssf:nlt tag="move.locationUnspecified" />--
 </c:if>
-<c:out value="${ssDefaultSaveLocation.title}" /><img border="0" <ssf:alt/>
-  style="width:1px;height:14px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
+<c:out value="${ssDefaultSaveLocation.title}" /></a>
+</li>
 </c:if>
 <c:if test="${ssDefaultSaveLocation.entityType != 'folderEntry' && !empty ssNavigationLinkTree[ssDefaultSaveLocation.id]}">
+<li>
 <div style="display:inline">
 <ssf:tree treeName="${ss_breadcrumbsTreeName}${ssDefaultSaveLocation.id}${renderResponse.namespace}" 
   treeDocument="${ssNavigationLinkTree[ssDefaultSaveLocation.id]}" 
@@ -153,8 +156,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
   showImages="false" showIdRoutine="${ss_breadcrumbsShowIdRoutine}" 
   highlightNode="${ssDefaultSaveLocation.id}" />
 </div>
+</li>
 </c:if>
-</br>
 </ul>
 </div>
 <div class="ss_clear"></div>
