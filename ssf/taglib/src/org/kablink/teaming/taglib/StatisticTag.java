@@ -38,8 +38,9 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.collections.OrderedMap;
 import org.apache.commons.collections.map.LinkedMap;
-import org.kablink.teaming.domain.Statistics;
 import org.kablink.util.servlet.StringServletResponse;
+
+import com.sitescape.team.domain.Statistics;
 
 
 public class StatisticTag extends BodyTagSupport {

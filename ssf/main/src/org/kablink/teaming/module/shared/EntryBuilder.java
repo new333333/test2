@@ -45,11 +45,12 @@ import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.Statistics;
 import org.kablink.teaming.domain.UpdateAttributeSupport;
 import org.kablink.teaming.util.InvokeUtil;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
 import org.kablink.teaming.util.SpringContextUtil;
+
+import com.sitescape.team.domain.Statistics;
 
 
 
