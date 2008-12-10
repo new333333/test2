@@ -70,7 +70,8 @@ ul.ss_actions_bar li {
 	float: left;
 	margin-top: 0px;
 	}
-.ss_actions_bar li.ss_actions_bar_separator {
+li.ss_actions_bar_separator {
+    list-style-type: none;
 	margin: 0px 5px 0px 5px;
 	padding: 0px;
 	}
