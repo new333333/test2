@@ -68,6 +68,7 @@ import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.repository.RepositoryUtil;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.FileUploadItem;
@@ -351,8 +352,10 @@ public class AddEntryController extends SAbstractController {
 					DefinitionHelper.getDefinition(null, model, "//item[@name='entryForm']");
 				}
 			
-				Workspace ws = getWorkspaceModule().getTopWorkspace();
-				model.put(WebKeys.DOM_TREE, getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
+				try {
+					Workspace ws = getWorkspaceModule().getTopWorkspace();
+					model.put(WebKeys.DOM_TREE, getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
+				} catch(AccessControlException e) {}
 			
 				parseInitialCalendarEventData(model, request);
 			} else {
@@ -395,8 +398,10 @@ public class AddEntryController extends SAbstractController {
 				} else {
 					DefinitionHelper.getDefinition(null, model, "//item[@name='entryForm']");
 				}
-				Workspace ws = getWorkspaceModule().getTopWorkspace();
-				model.put(WebKeys.DOM_TREE, getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
+				try {
+					Workspace ws = getWorkspaceModule().getTopWorkspace();
+					model.put(WebKeys.DOM_TREE, getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
+				} catch(AccessControlException e) {}
 			}
 		}
 		return new ModelAndView(path, model);

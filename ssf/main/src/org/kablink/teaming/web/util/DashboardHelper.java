@@ -921,10 +921,13 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		
 		try {
 			//If allowed, get the workspace tree from the top for use by the search filter
-			Workspace ws = getWorkspaceModule().getTopWorkspace();
-			Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
-			model.put(WebKeys.DOM_TREE, tree);
-		} catch(Exception e) {}
+			if (isConfig) {
+				//This bean is only used during the config operation
+				Workspace ws = getWorkspaceModule().getTopWorkspace();
+				Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+				model.put(WebKeys.DOM_TREE, tree);
+			}
+		} catch(AccessControlException e) {}
 		
 		//Do the search and store the search results in the bean
 		Map options = new HashMap();
