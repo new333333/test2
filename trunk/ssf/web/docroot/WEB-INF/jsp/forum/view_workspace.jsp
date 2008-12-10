@@ -207,17 +207,17 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 </tr></tbody>
 </table>
 </div>
-<ssf:ifnotaccessible>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
+<ssf:ifnotaccessible>
     <c:if test="${!ss_mashupHideSidebar}">
       <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	  </td>
 	</c:if>
-	<td valign="top" class="ss_view_info">
 </ssf:ifnotaccessible>
+	<td valign="top" class="ss_view_info">
 		<div class="ss_tab_canvas">
 			<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
 				<div class="ss_style_color">				
@@ -282,12 +282,10 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 			</c:if>
 
 		</div>
-<ssf:ifnotaccessible>
 	</td>
 	</tr>
 	</tbody>
 	</table>
-</ssf:ifnotaccessible>
 <ssf:ifaccessible>
   <div>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />

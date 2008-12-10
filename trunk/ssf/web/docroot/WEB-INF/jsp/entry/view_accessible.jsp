@@ -42,27 +42,74 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer" 
   style="display:block; margin:2px;">
-<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
+	<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 
 	<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 	<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
-	    <div id="ss_folder_type_${ssDefinitionFamily}" class="ss_style_color">
-			<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
-	  		<jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
-			<div id="ss_whatsNewDiv${ss_namespace}">
-			<c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
-			<jsp:include page="/WEB-INF/jsp/forum/whats_new_page.jsp" />
-			</c:if>
-			</div>
-			<div>
+
+	<div class="ss_actions_bar1_pane ss_sidebarImage">
+	<table cellspacing="0" cellpadding="0">
+	<tr>
+	<td valign="middle">
+	<c:if test="${!ss_mashupHideToolbar}">
+	  <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
+	</c:if>
+	</td></tr>
+	</table>
+	</div>
+
+    <div width="100%">
+    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+    <tbody>
+    <tr>
+
+	<td valign="top" class="ss_view_info">
+	  <c:if test="${!ss_mashupHideToolbar}">
+	    <jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
+	  </c:if>
+	  <div align="center">
+	    <div id="ss_folder_wrap">
+		  <c:if test="${!ss_mashupHideToolbar}">
+		    <div id="ss_whatsNewDiv${ss_namespace}">
+		    <c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
+		    <jsp:include page="/WEB-INF/jsp/forum/whats_new_page.jsp" />
+		    </c:if>
+		    </div>
+		  </c:if>
+	      <div id="ss_folder_type_${ssDefinitionFamily}" class="ss_style_color" >
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 					  configElement="${ssConfigElement}" 
 					  configJspStyle="${ssConfigJspStyle}" 
 					  entry="${ssBinder}" />
-			</div>
+		  </div>
+		  <% // Footer toolbar %>
+		  <c:if test="${!ss_mashupHideFooter}">
+		    <jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+		  </c:if>
+		  
+		  <c:if test="${ss_mashupHideToolbar && ss_mashupShowAlternateToolbar}">
+			<div class="ss_actions_bar1_pane ss_sidebarImage">
+			  <table cellspacing="0" cellpadding="0">
+			    <tr>
+			      <td valign="middle">
+		            <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
+		          </td>
+		        </tr>
+		      </table>
+		    </div>
+		    <div id="ss_whatsNewDiv${ss_namespace}">
+		    <c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
+		    <jsp:include page="/WEB-INF/jsp/forum/whats_new_page.jsp" />
+		    </c:if>
+		    </div>
+		  </c:if>
 		</div>
-		<% // Footer toolbar %>
-		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+	  </div>
+	</td>
+
+	</tr>
+	</tbody>
+	</table>
 
 </div>
 <script type="text/javascript">

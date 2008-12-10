@@ -209,6 +209,9 @@ ul.ss_actions_bar1 li a:hover {
 		background-color: #FFFFFF;
 	text-decoration:none;
 	}
+ul.ss_actions_bar4 li {
+	list-style-type:none;
+	}
 div.ss_actions_bar_submenu {
 /* background-color: ${ss_style_background_color_side_panel}; */
 	margin:0px;
