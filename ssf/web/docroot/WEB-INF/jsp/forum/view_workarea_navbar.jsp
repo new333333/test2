@@ -616,7 +616,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 
 	  <c:if test="${ssBinder != null && ssEntry.entityType != 'folderEntry'}">
 	  	<div class="ss_style_trans">
-	  	<img title="<ssf:alt tag="favorites.addCurrentPage"/>" 
+	  	<img <ssf:alt tag="favorites.addCurrentPage"/>
 	  	  src="<html:brandedImagesPath/>icons/button_new_bookmark.gif" border="0" />
 			<a href="javascript: ;" 
 			 onClick="ssMyFavorites${renderResponse.namespace}.addBinderToFavorites('<ssf:url 
@@ -630,7 +630,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 	  	</div>
 	  </c:if>
   	  <div class="ss_style_trans">
-  		<img title="<ssf:alt tag="favorites.edit"/>" 
+  		<img <ssf:alt tag="favorites.edit"/> 
   		  src="<html:brandedImagesPath/>icons/button_edit_bookmark.gif" border="0" />
 		<a href="javascript: ;" 
 		 onClick="ssMyFavorites${renderResponse.namespace}.showhideFavoritesEditor()"
