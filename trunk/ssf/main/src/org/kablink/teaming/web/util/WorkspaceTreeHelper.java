@@ -220,7 +220,10 @@ public class WorkspaceTreeHelper {
 				if (owner != null) {
 					//	turn owner into real object = not hibernate proxy
 					try {
-						User u = (User)bs.getProfileModule().getEntry(owner.getId());
+						User u = user;
+						if (!user.getId().equals(owner.getId())) {
+							u = (User)bs.getProfileModule().getEntry(owner.getId());
+						}
 						model.put(WebKeys.PROFILE_CONFIG_ENTRY, u);							
 						Document profileDef = u.getEntryDef().getDefinition();
 						model.put(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);

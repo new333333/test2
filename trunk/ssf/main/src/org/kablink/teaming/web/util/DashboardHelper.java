@@ -919,9 +919,12 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(this, searchQuery);
 		searchSearchFormData.putAll(searchFilterConverter.convertAndPrepareFormData());
 		
-		Workspace ws = getWorkspaceModule().getTopWorkspace();
-		Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
-		model.put(WebKeys.DOM_TREE, tree);
+		try {
+			//If allowed, get the workspace tree from the top for use by the search filter
+			Workspace ws = getWorkspaceModule().getTopWorkspace();
+			Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+			model.put(WebKeys.DOM_TREE, tree);
+		} catch(Exception e) {}
 		
 		//Do the search and store the search results in the bean
 		Map options = new HashMap();
