@@ -117,7 +117,6 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		  </c:if>
 		  
 		  <c:if test="${ss_mashupHideToolbar && ss_mashupShowAlternateToolbar}">
-			<ssf:ifnotaccessible>
 			<div class="ss_actions_bar1_pane ss_sidebarImage">
 			  <table cellspacing="0" cellpadding="0">
 			    <tr>
@@ -132,13 +131,10 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		    <jsp:include page="/WEB-INF/jsp/forum/whats_new_page.jsp" />
 		    </c:if>
 		    </div>
-		    </ssf:ifnotaccessible>
 		  </c:if>
 		</div>
 	  </div>
 	</td>
-  </ssf:ifnotaccessible>
-	<ssf:ifnotaccessible>
 	</tr>
 	</tbody>
 	</table>

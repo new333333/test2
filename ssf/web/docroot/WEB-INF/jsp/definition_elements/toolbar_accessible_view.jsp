@@ -121,7 +121,7 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
       
 	  <c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}">
 	    <c:if test="${empty toolbarMenuCategory.key}">
-	      <span class="ss_bold"><c:out value="${toolbarMenuCategory.key}" /></span>
+	      <span><c:out value="${toolbarMenuCategory.key}" /></span>
 	    </c:if>
 	      <c:forEach var="toolbarMenuCategoryItem" items="${toolbarMenuCategory.value}">
 	        <c:set var="popup" value="false"/>
@@ -169,7 +169,7 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
 	          <c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.onClick}">
 	          	onClick="${toolbarMenuCategoryItem.value.qualifiers.onClick}">
 	          </c:if>
-	          <span
+	          <span style="color:#333"
 	          <c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.textId}">
 	            id="${toolbarMenuCategoryItem.value.qualifiers.textId}"
 	          </c:if>
@@ -185,7 +185,7 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
        <div align="center" style="margin:10px 0px 0px 0px;">
 	      <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" <ssf:title tag="title.closeMenu"/> 
 	      onClick="ss_hideAccessibleMenu('<%= menuTagDivId %>${renderResponse.namespace}');">
-	      <span><ssf:nlt tag="button.close"/></span></a>
+	      <span style="color:#333"><ssf:nlt tag="button.close"/></span></a>
        </div>
 
       </div>
