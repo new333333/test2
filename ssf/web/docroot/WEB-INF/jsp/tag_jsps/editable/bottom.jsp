@@ -54,11 +54,8 @@
     --%> onClick="ss_editablePopUp('${editUrl}', '${renderResponse.namespace}ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--
     --%> <ssf:title tag="title.edit.description" /><%--
     --%>><span class="ss_fineprint"><%--
-    --%><ssHelpSpot helpId="workspaces_folders/entries/more_entry_tools" offsetX="-15"<%--
-	--%><c:if test="<%= !isIE %>"><%--
-		--%> offsetY="-15"<%--
-	--%></c:if><%--
-	--%> title="<ssf:nlt tag="helpSpot.moreEntryTools"/>"></ssHelpSpot><%--
+    --%><ssHelpSpot helpId="workspaces_folders/entries/more_entry_tools" offsetX="-24" offSetY="-6"
+					title="<ssf:nlt tag="helpSpot.moreEntryTools"/>"></ssHelpSpot><%--
 	--%>[<ssf:nlt tag="Edit"/>]</span></a><%--
 	--%></div><%--
 --%></c:if><%--

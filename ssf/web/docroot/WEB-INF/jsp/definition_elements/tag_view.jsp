@@ -53,15 +53,6 @@
    <tbody>
     <tr>
 	 <td valign="top" style="padding-right:2px;">
-		  <ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="-10" xAlignment="left" 
-		    <c:if test="<%= isIEtag %>">
-		       offsetY="-3" 
-		    </c:if>
-		    <c:if test="<%= !isIEtag %>">
-		       offsetY="-17" 
-		    </c:if>
-		     xAlignment="left" title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
-		  </ssHelpSpot>
 		  <a href="javascript:;" 
 			<ssf:ifaccessible>
 		  		onClick="ss_showAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;"
@@ -70,8 +61,15 @@
 				onClick="ss_tagShow('${ss_tagViewNamespace}','${ss_tagDivNumber}'); return false;"
 			</ssf:ifnotaccessible>
 			<ssf:title tag="title.open.tag.menu" />
-		  >
-		  	<div class="ss_iconed_label"><ssf:nlt tag="tags.tags"/>:</div>
+
+			<!-- The help spot is positioned relative to the position of its parent. -->
+			<!-- That's why I put the <ssHelpSpot...> in a <span> -->
+			<div style="padding-left: 19px; padding-top: 10px; padding-bottom: 10px;">
+				<ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="-3" offsetY="6" 
+		    		 		  title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
+			  	</ssHelpSpot>
+				<ssf:nlt tag="tags.tags"/>:
+			</div>
 		  </a>
 		  <div id="ss_tags_anchor${ss_tagViewNamespace}_${ss_tagDivNumber}"></div>
 	 </td>

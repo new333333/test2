@@ -70,7 +70,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:if test="${empty ss_menuLinkHelpShown}">
 	<ssHelpSpot 
   		helpId="workspaces_folders/entries/display_entry_control" 
-	  	offsetX="-22" offsetY="-2"  
+	  	offsetX="-28" offsetY="0"  
   		title="<ssf:nlt tag="helpSpot.displayEntryControl"/>">
 	</ssHelpSpot>
 </c:if><c:set 

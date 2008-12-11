@@ -50,24 +50,17 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 
 <table width="90%" border="0" valign="top" cellpadding="1" cellspacing="0">
 <tr>
-	<td valign="bottom">
-		<span id="ss_browse_div_position${ssDefinitionEntry.id}${ss_attachments_namespace}" 
-		class="ss_style ss_bold ss_smallprint"><c:out value="${property_caption}"/>:&nbsp;&nbsp;</span>
+	<td valign="bottom" style="padding-left: 19px;">
+		<!-- We need the following image so the help spot has an initial position. -->
+		<span id="ss_browse_div_position${ssDefinitionEntry.id}${ss_attachments_namespace}" class="ss_style ss_bold ss_smallprint">
+		  	<ssHelpSpot helpId="workspaces_folders/entries/attachments" offsetX="-20" offsetY="-5"
+    					title="<ssf:nlt tag="helpSpot.attachments"/>">
+			</ssHelpSpot>
+			<c:out value="${property_caption}"/>:&nbsp;&nbsp;
+		</span>
 	</td>
 
 	<td valign="top" width="100%" align="left">
-  <ssHelpSpot helpId="workspaces_folders/entries/attachments" 
-  
-    <c:if test="<%= isIE %>">
-    offsetX="-10" offsetY="2"  
-    </c:if>
-    <c:if test="<%= !isIE %>">
-    offsetX="-10" offsetY="-20"   
-    </c:if>
-    
-    
-     
-    title="<ssf:nlt tag="helpSpot.attachments"/>"></ssHelpSpot>
 	<ssf:ifnotaccessible>
 	
 		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
