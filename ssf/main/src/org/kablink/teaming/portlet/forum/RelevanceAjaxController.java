@@ -84,6 +84,8 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 				ajaxSaveTrackThisBinder(request, response, "deletePerson");
 			} else if (op.equals(WebKeys.OPERATION_SHARE_THIS_BINDER)) {
 				ajaxSaveShareThisBinder(request, response);
+			} else if (op.equals(WebKeys.OPERATION_CLEAR_UNSEEN)) {
+				ajaxClearUnseenBinder(request, response);
 			}
 		}
 	}
@@ -111,6 +113,8 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_GET_RELEVANCE_DASHBOARD_PAGE)) {
 			return ajaxGetRelevanceDashboardPage(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_WHATS_NEW_PAGE)) {
+			return ajaxGetWhatsNewPage(request, response);
+		} else if (op.equals(WebKeys.OPERATION_CLEAR_UNSEEN)) {
 			return ajaxGetWhatsNewPage(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SHARE_THIS_BINDER)) {
 			if (formData.containsKey("okBtn")) {
@@ -224,6 +228,12 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalink(request, entity) +
 				"\">" + title + "</a>");
 		getAdminModule().sendMail(ids, teams, null, null, null, NLT.get("relevance.mailShared", new Object[]{RequestContextHolder.getRequestContext().getUser().getTitle()}), body);
+	}
+	
+	private void ajaxClearUnseenBinder(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		Set<Long> ids = LongIdUtil.getIdsAsLongSet(request.getParameterValues(WebKeys.URL_IDS));
+		getProfileModule().setSeenIds(null, ids);
 	}
 	
 	private ModelAndView ajaxGetRelevanceDashboard(RenderRequest request, 

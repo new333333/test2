@@ -1021,6 +1021,22 @@ function ss_showWhatsNewPageDiv(s, divId) {
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
+function ss_clearWhatsUnseen(obj, binderId, ids, type, currentPage, direction, divId, namespace) {
+	if (currentPage == "") currentPage = "0";
+	var page = parseInt(currentPage);
+	if (direction == 'next') page = page + 1;
+	if (direction == 'previous') page = page - 1;
+	if (ss_userDisplayStyle == "accessible") {
+		//In accessible mode, redraw the whole page
+		var url = obj.href;
+		self.location.href = url;
+	} else {
+		ss_setupStatusMessageDiv();
+		ss_random++;
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, ids:ids, operation:"clear_unseen", type:type, page:page, namespace:namespace, rn:ss_random}, "__ajax_relevance");
+		ss_fetch_url(url, ss_showWhatsNewPageDiv, divId+namespace)
+	}
+}
 
 function ss_selectWikiTab(obj, tab, namespace) {
 	//Clear "current" tab

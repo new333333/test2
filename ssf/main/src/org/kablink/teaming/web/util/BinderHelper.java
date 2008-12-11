@@ -1949,6 +1949,7 @@ public class BinderHelper {
 				}
 	    	}
 	    	model.put(WebKeys.WHATS_NEW_BINDER_FOLDERS, places);
+	    	model.put(WebKeys.WHATS_UNSEEN_TYPE, true);
 		}
 	}
 	
