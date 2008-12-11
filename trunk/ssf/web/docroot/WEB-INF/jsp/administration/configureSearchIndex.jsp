@@ -114,14 +114,14 @@ function <%= wsTreeName %>_showId(id, obj, action) {
   multiSelect="<%= new ArrayList() %>" multiSelectPrefix="id" />
 
 <br>
+<c:if test="${!empty ssSearchNodes}">
+<br>
 <br>
 <span class="ss_bold"><ssf:nlt tag="administration.configure.nodes.select" text="Select the nodes to apply the re-indexing to:"/></span>
 <br>
 <br>
 <ssf:nlt tag="administration.configure.nodes.select.detail"/>
 <br>
-<br>
-<c:if test="${!empty ssSearchNodes}">
   <c:forEach var="node" items="${ssSearchNodes}">
     <input type="checkbox" name="searchNodeName" value="${node.nodeName}" <c:if test="${node.accessMode == 'offline' || !node.inSynch}">disabled</c:if>>
     ${node.title} (${node.nodeName}) - <ssf:nlt tag="administration.search.node.accessmode.${node.accessMode}"/>, <ssf:nlt tag="administration.search.node.synch.${node.inSynch}"/>
