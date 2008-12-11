@@ -118,8 +118,12 @@ public class MashupTag extends BodyTagSupport {
 						RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 						ServletRequest req = pageContext.getRequest();
 						StringServletResponse res = new StringServletResponse(httpRes);
-						rd.include(req, res);
-						pageContext.getOut().print(res.getString().trim());
+						try {
+							rd.include(req, res);
+							pageContext.getOut().print(res.getString().trim());
+						} catch (Exception e) {
+							pageContext.getOut().print(e.getLocalizedMessage());
+						}
 					}
 				}
 			}
