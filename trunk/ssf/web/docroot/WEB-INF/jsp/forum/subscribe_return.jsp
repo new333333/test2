@@ -140,7 +140,7 @@
 <br/><br/>
   <input type="checkbox" name="disable" id="notifyType_${ssSubscription.id.entityId}_4"
   <c:if test="${!empty currentStyles['4']}"> checked="checked"</c:if>
-  /><label for="notifyType_${ssSubscription.id.entityId}_4"><ssf:nlt tag="subscribe.disable"/></label> <ssf:inlineHelp tag="ihelp.email.disable_admin_notify"/><br/>
+  /><label for="notifyType_${ssSubscription.id.entityId}_4"><ssf:nlt tag="subscribe.disable"/></label> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_disable_notification"/><br/>
   
   <br/>
     <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"

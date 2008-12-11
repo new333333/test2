@@ -29,29 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.moreFolderNavigation"/>
-</span></div>
-
-<p><ssf:nlt tag="help.moreFolderNavigation.listIntro" /></p>
-
-<ul>
-
-<li><ssf:nlt tag="help.moreFolderNavigation.listItem.entryNumbers"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
-
-<li><ssf:nlt tag="help.moreFolderNavigation.listItem.howManyEntries" /></li>
-
-<li><ssf:nlt tag="help.moreFolderNavigation.listItem.goToPage"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
-
-<li><ssf:nlt tag="help.moreFolderNavigation.listItem.goToPageNumber" /></li>
-
-<li><ssf:nlt tag="help.moreFolderNavigation.listItem.configureColumns" /></li>
-
-</ul>
-
-</div>
-
-</div>
+<iframe	frameborder="0"
+		scrolling="auto" 
+    	name="help_nav_wstree" 
+    	src="${helpDocPath}/tool_folderpages.html" 
+    	height="100%" width="100%"></iframe>

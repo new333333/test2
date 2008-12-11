@@ -46,7 +46,7 @@
 	<table cellspacing="0" cellpadding="0">
 		<tr>
 		<td valign="middle" nowrap colspan="2">  
-		  <ssHelpSpot helpId="workspaces_folders/entries/rating" offsetX="0" 
+		  <ssHelpSpot helpId="workspaces_folders/entries/rating" offsetX="-20" offsetY="-3" 
   			title="<ssf:nlt tag="helpSpot.rating"/>"></ssHelpSpot>
 			<%@ include file="/WEB-INF/jsp/forum/rating.jsp" %>
 		</td>
@@ -57,7 +57,7 @@
   	<table cellspacing="0" cellpadding="0">
 	<tr>
 		<td valign="middle" nowrap>  
-		 <ssHelpSpot helpId="workspaces_folders/entries/rating" offsetX="0" 
+		 <ssHelpSpot helpId="workspaces_folders/entries/rating" offsetX="-20" offsetY="-3" 
   			title="<ssf:nlt tag="helpSpot.rating"/>"></ssHelpSpot>
 			<%@ include file="/WEB-INF/jsp/forum/rating.jsp" %>
 		</td>

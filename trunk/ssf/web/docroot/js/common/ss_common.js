@@ -2547,7 +2547,7 @@ var ss_helpSystem = {
 	    	welcomeDiv.style.display = "block";
 	        //welcomeDiv.style.top = this.getPositionTop(welcomeDiv);
 	        //welcomeDiv.style.left = this.getPositionLeft(welcomeDiv);
-	        dijit.placeOnScreen(welcomeDiv, {x:0, y:0}, "TL", false);
+	        dijit.placeOnScreen(welcomeDiv, {x:50, y:0}, "TL", false);
 	        if (helpMenuAnchorDiv != null) {
 	        	helpMenuAnchorDiv.style.visibility = "visible";
 	        	helpMenuAnchorDiv.style.display = "block";

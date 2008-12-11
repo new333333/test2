@@ -29,21 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_style">
-<div class="ss_help_style">
-
-<div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.workspaceTreePortlet"/></span>
-</div>
-
-<p><ssf:nlt tag="help.workspaceTreePortlet.intro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="help.workspaceTreePortlet.using" /> <ssf:nlt tag="help.workspaceTreePortlet.using.displayPlace"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="help.workspaceTreePortlet.getStarted"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="help.getStartedProduct.content.workspaces.defined" /></p>
-
-</div>
-
-</div>
+<iframe	frameborder="0"
+		scrolling="auto" 
+    	name="help_nav_wstree" 
+    	src="${helpDocPath}/nav_wstree.html" 
+    	height="100%" width="100%"></iframe>
