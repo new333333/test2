@@ -210,6 +210,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
     margin: 0px;
     padding: 0px;
       }
+.ss_leftNav ul li, .ss_sideShare ul li, .ss_sideTrack ul li {
+    list-style-type: none !important;
+    list-style-position: outside !important;
+    list-style-image: none !important;
+    text-decoration: none;
+    margin: 0px;
+    padding: 0px;
+      }
 .ss_leftNav a:visited {
 	color:#333333;	/* #990099 (magenta) */
 	}
