@@ -30,6 +30,7 @@ package org.kablink.teaming.portlet.workspaceTree;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -40,6 +41,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -64,6 +66,10 @@ public class WorkspaceTreeController extends SAbstractController  {
 			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 			getProfileModule().modifyEntry(user.getId(), new MapInputData(updates));
+		
+		} else if (op.equals(WebKeys.OPERATION_CLEAR_UNSEEN)) {
+			Set<Long> ids = LongIdUtil.getIdsAsLongSet(request.getParameterValues(WebKeys.URL_IDS));
+			getProfileModule().setSeenIds(null, ids);
 		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
