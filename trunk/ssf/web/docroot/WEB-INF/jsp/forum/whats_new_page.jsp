@@ -92,13 +92,13 @@
     	  <c:if test="${binderCounter2 >= (binderCounter/2) && column2Seen == '0'}">
     		<c:set var="column2Seen" value="1"/>
     		</div><!-- end of ss_para -->
-        </div><!-- end of ss_col 1 -->
-        <!-- Start Right Column -->
-      	<div id="ss_column_R">
-      	<div class="ss_dblcol2">
-  			  </c:if>
-    	<jsp:useBean id="entryWn" type="java.util.Map" />
-    	<li>
+        	</div><!-- end of ss_col 1 -->
+        	<!-- Start Right Column -->
+      		<div id="ss_column_R">
+      		<div class="ss_dblcol2">
+  		  </c:if>
+    	  <jsp:useBean id="entryWn" type="java.util.Map" />
+    	  <li>
 		  <c:set var="isDashboard" value="yes"/>
 		  <ssf:titleLink hrefClass="ss_link_2"
 			entryId="${entryWn._docId}" binderId="${entryWn._binderId}" 
@@ -112,19 +112,19 @@
 			<c:out value="${entryWn.title}" escapeXml="false"/>
 		  </ssf:titleLink>
 	 
-	  	 <br/>
-	  	 <span>
+	  	  <br/>
+	  	  <span>
 			<ssf:showUser user='<%=(org.kablink.teaming.domain.User)entryWn.get("_principal")%>'
 		  	titleStyle="ss_link_1" /> 
-	  	 </span>
+	  	  </span>
 	  
-	  	 <span class="ss_link_4">
+	  	  <span class="ss_link_4">
 	    	<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
           	value="${entryWn._modificationDate}" type="both" 
 	      	timeStyle="short" dateStyle="medium" />
-	  	 </span>
+	  	  </span>
 	   
-	  	 <span class="ss_link_2">
+	  	  <span class="ss_link_2">
 			<c:set var="path" value=""/>
 			<c:if test="${!empty ss_whatsNewBinderFolders[entryWn._binderId]}">
 			  <c:set var="path" value="${ss_whatsNewBinderFolders[entryWn._binderId]}"/>
@@ -139,23 +139,23 @@
 				 >
 		  		 <span>${title}</span></a>
 			</c:if>
-	  	 </span>
-	  	 &nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" 
+	  	  </span>
+	  	  &nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" 
 	  	   width="11" height="10" hspace="2" border="0" align="absmiddle" />
-	  	 <c:if test="${!empty entryWn._desc}">
+	  	  <c:if test="${!empty entryWn._desc}">
 	    	<br/>
 	    	<span class="ss_summary"><ssf:textFormat 
 	      	  formatAction="limitedDescription" 
 	          textMaxWords="10"><ssf:markup search="${entryWn}">${entryWn._desc}</ssf:markup></ssf:textFormat>
 	        </span>
-	  	 </c:if>
+	  	  </c:if>
 	
     	</li>
 
   		<c:set var="binderCounter2" value="${binderCounter2 + 1}"/>
     	<br/>
-   </c:forEach>
-  </div><!-- end of ss_topic (see top) -->
+	   </c:forEach>
+	  </div><!-- end of ss_topic (see top) -->
       </div><!-- end of col2 (right column) -->
       </div><!-- end of ss_col_R (right column placeholder) -->
     </div><!-- end of col left -->

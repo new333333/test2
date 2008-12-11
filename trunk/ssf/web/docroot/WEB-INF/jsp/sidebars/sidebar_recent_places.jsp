@@ -38,6 +38,7 @@
 <c:set var="ss_urlWindowState" value=""/>
 <c:set var="numTabs" value="0"/>
 <ssf:sidebarPanel title="sidebar.history" id="ss_history_box" initOpen="false" sticky="true">
+  <div class="ss_leftNav">
 	<ul style="padding-top: 2px; padding-left: 0px; margin:0px;">
 		<c:forEach var="tab" items="${ss_tabs.tabList}">
 			<jsp:useBean id="tab" type="org.kablink.teaming.web.util.Tabs.TabEntry" />
@@ -97,4 +98,5 @@
 			   </c:if>
 		</c:forEach>
 	</ul>
+  </div>
 </ssf:sidebarPanel>
