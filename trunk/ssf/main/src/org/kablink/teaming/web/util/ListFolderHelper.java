@@ -1427,7 +1427,7 @@ public class ListFolderHelper {
 					adapterUrl.toString(), qualifiers);		
 		}
 	
-		if(LicenseChecker.isAuthorizedByLicense("org.kablink.teaming.module.folder.MirroredFolder")) {
+		if(LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder")) {
 			//Synchronize mirrored folder
 			if(folder.isMirrored() &&
 					bs.getFolderModule().testAccess(folder, FolderOperation.synchronize)) {
