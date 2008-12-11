@@ -82,7 +82,7 @@
 <input type="hidden" name="uniqueTitles" value="${ssDefinitionEntry.uniqueTitles}"/>
 <br/>
 
-<ssf:ifAuthorizedByLicense featureName="org.kablink.teaming.module.folder.MirroredFolder">
+<ssf:ifAuthorizedByLicense featureName="com.novell.teaming.module.folder.MirroredFolder">
 <c:if test="${ssDefinitionEntry.mirroredAllowed}">
 <c:set var="cb_checked" value=""/>
 <c:if test="${ssDefinitionEntry.mirrored}" >

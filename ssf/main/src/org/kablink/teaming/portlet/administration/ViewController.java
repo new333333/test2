@@ -403,7 +403,7 @@ public class ViewController extends  SAbstractController {
 
 		//Manage zones
 		
-		if (LicenseChecker.isAuthorizedByLicense("org.kablink.teaming.module.zone.MultiZone") &&
+		if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.zone.MultiZone") &&
 				getZoneModule().testAccess()) {
 			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.manage.zones"));

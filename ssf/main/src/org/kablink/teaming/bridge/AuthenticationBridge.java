@@ -48,7 +48,7 @@ public class AuthenticationBridge {
 	throws UserDoesNotExistException, PasswordDoesNotMatchException {
 		if(zoneName != null) {
 			if(!(zoneName.equals(SZoneConfig.getDefaultZoneName()) ||
-					LicenseChecker.isAuthorizedByLicense("org.kablink.teaming.module.zone.MultiZone")))
+					LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.zone.MultiZone")))
 				return; // don't allow it; simply return
 		}
 		else {
