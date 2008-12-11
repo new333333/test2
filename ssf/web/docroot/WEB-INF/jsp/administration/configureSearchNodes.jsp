@@ -72,7 +72,7 @@
 	<span class="ss_labelLeft"><ssf:nlt tag="administration.search.node.accessmode"/></span><br>
 		<input type="radio" name="accessMode${node.nodeName}" value="readwrite" <c:if test="${node.accessMode == 'readwrite'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.accessmode.readwrite" /></span><br>
 		<input type="radio" name="accessMode${node.nodeName}" value="writeonly" <c:if test="${node.accessMode == 'writeonly'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.accessmode.writeonly" /></span><br>
-		<input type="radio" name="accessMode${node.nodeName}" value="offline" <c:if test="${node.accessMode == 'offline'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.accessmode.offline" /></span><br>
+		<input type="radio" name="accessMode${node.nodeName}" value="noaccess" <c:if test="${node.accessMode == 'noaccess'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.accessmode.noaccess" /></span><br>
 	</td></tr>
 	</table>
 	</td></tr>
