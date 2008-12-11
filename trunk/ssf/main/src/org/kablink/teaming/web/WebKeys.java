@@ -148,6 +148,7 @@ public class WebKeys {
 	public static final String URL_FILE_VERSION = "fileVersion";
 	public static final String URL_FILE_VIEW_TYPE = "viewType";
 	public static final String URL_GROUP_ID="groupId";
+	public static final String URL_IDS="ids";
 	public static final String URL_ADD_DEFAULT_ENTRY_FROM_INFRAME = "addEntryFromIFrame";
     public static final String URL_MOBILE_URL="url";
     public static final String URL_MUSTER_CLASS="muster_class";
@@ -347,6 +348,7 @@ public class WebKeys {
     public static final String OPERATION_CHECK_TEMPLATE_NAME="check_template_name";
     public static final String OPERATION_CHECK_IF_LOGGED_IN="check_if_logged_in";
     public static final String OPERATION_CHECK_STATUS="check_status";
+    public static final String OPERATION_CLEAR_UNSEEN="clear_unseen";
     public static final String OPERATION_CONFIGURE_FOLDER_COLUMNS="configure_folder_columns";
     public static final String OPERATION_DASHBOARD_DELETE_COMPONENT="delete_component";
     public static final String OPERATION_DASHBOARD_HIDE_COMPONENT="hide_component";
@@ -1065,6 +1067,7 @@ public class WebKeys {
     public static final String WHATS_NEW_TRACKED_CALENDAR_IDS="ss_whatsNewTrackedCalendarIds";
     public static final String WHATS_NEW_TRACKED_CALENDAR_FOLDERS="ss_whatsNewTrackedCalendarFolders";
     public static final String WHATS_NEW_TOOLBAR="ss_whatsNewToolbar";
+    public static final String WHATS_UNSEEN_TYPE="ss_whatsUnseenType";
     public static final String WIKI_HOMEPAGE_ENTRY_ID="ss_wikiHomepageEntryId";
     public static final String WINDOW_STATE="ss_windowState";
     public static final String WORKAREA_OPERATIONS="ssWorkAreaOperations";

@@ -120,6 +120,12 @@ public class SeenMap extends ZonedObject {
     public void setSeen(FolderEntry entry) {
     	checkAndSetSeen(entry, true);
     }
+    public void setSeen(Long entryId) {
+    	checkAndSetSeen(entryId, null, true);
+    }
+    public void setUnseen(Long entryId) {
+    	if (seenMap.containsKey(entryId)) seenMap.remove(entryId);
+    }
     public boolean checkIfSeen(FolderEntry entry) {
     	return checkAndSetSeen(entry, false);
     }

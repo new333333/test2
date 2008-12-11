@@ -30,19 +30,44 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ids" value=""/>
+<c:forEach var="entryWn" items="${ss_whatsNewBinder}">
+  <c:if test="${!empty ids}"><c:set var="ids" value="${ids} "/></c:if>
+  <c:set var="ids" value="${ids}${entryWn._docId}"/>
+</c:forEach>
+
 <c:set var="binderCounter" value="0"/> <% // set binder counter to zero (first pass) %>
 
 <c:set var="binderCounter" value="${fn:length(ss_whatsNewBinder) }"/>
 
 <c:set var="binderCounter2" value="0"/>  <% // set binder counter to zero (second pass) %>
 <c:set var="column2Seen" value="0"/>
+<c:set var="actionVar" value="view_ws_listing"/>
+<c:if test="${ssBinder.entityType == 'folder'}">
+  <c:set var="actionVar" value="view_folder_listing"/>
+</c:if>
 
 <div id="ss_para">
-  <div align="right">
-	<c:set var="actionVar" value="view_ws_listing"/>
-	<c:if test="${ssBinder.entityType == 'folder'}">
-  	  <c:set var="actionVar" value="view_folder_listing"/>
-	</c:if>
+  <table cellspacing="0" cellpadding="0" width="100%">
+  <tr>
+  <td valign="top">
+    <c:if test="${ss_whatsUnseenType && !empty ss_whatsNewBinder}">
+		<div style="padding-bottom:10px;">
+		<a class="ss_linkButton ss_smallprint" href="<ssf:url 
+		  actionUrl="true"
+		  action="${actionVar}" binderId="${ssBinder.id}"><ssf:param
+		  name="operation" value="clear_unseen"/><ssf:param
+		  name="type" value="${ss_type}"/><ssf:param
+		  name="page" value="${ss_pageNumber - 1}"/><ssf:param
+		  name="ids" value="${ids}"/><ssf:param
+		  name="namespace" value="${ss_namespace}"/></ssf:url>" 
+	  	  onClick="ss_clearWhatsUnseen(this, '${ssBinder.id}', '${ids}', '${ss_type}', '${ss_pageNumber}', 'previous', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
+	  	  title="<ssf:nlt tag="binder.markAsReadAlt"/>"
+		><ssf:nlt tag="binder.markAsRead"/></a>
+		</div>
+    </c:if>
+  </td>
+  <td valign="top" align="right">
 	<c:if test="${ss_pageNumber > '0'}">
 		<a href="<ssf:url 
 		  action="${actionVar}" binderId="${ssBinder.id}"><ssf:param
@@ -75,7 +100,9 @@
    	  onClick="ss_hideDivNone('ss_whatsNewDiv${ss_namespace}'); return false;"><img 
   	  <ssf:alt tag="alt.hide"/> border="0" src="<html:imagesPath/>icons/close_off.gif"/>
   	</a>
-  </div>
+  </td>
+  </tr>
+  </table>
  <div id="ss_dashboard_content" class="ss_doublecolumn">
   <div align="center">
    <div id="ss_folder_inset">

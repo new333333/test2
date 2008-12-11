@@ -696,8 +696,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 </div>
 </ssf:ifLoggedIn>
 <!-- End of myteams pane -->
-
-<c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == 'iframe' || (!empty ssFolderActionVerticalOverride && ssFolderActionVerticalOverride == 'yes')}" >
+<c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == 'iframe' || ssUser.displayStyle == 'vertical' || (!empty ssFolderActionVerticalOverride && ssFolderActionVerticalOverride == 'yes')}" >
 <!-- iframe div -->
 <%@ include file="/WEB-INF/jsp/entry/view_iframe_div.jsp" %>
 <!-- end of iframe div -->

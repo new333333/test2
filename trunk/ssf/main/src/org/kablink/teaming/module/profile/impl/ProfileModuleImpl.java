@@ -383,6 +383,24 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		for (Entry reply:entries) {
 			seen.setSeen(reply);
 		}
+  }  	
+   public void setSeenIds(Long userId, Collection<Long> entryIds) {
+		User user = getUser(userId, true);
+		if (user.isShared()) return;
+		SeenMap	seen = getProfileDao().loadSeenMap(user.getId());
+		for (Long id:entryIds) {
+			seen.setSeen(id);
+		}
+  }  	
+
+   //RW transaction
+   public void setUnseen(Long userId, Collection<Long> entryIds) {
+		User user = getUser(userId, true);
+		if (user.isShared()) return;
+		SeenMap	seen = getProfileDao().loadSeenMap(user.getId());
+		for (Long id:entryIds) {
+			seen.setUnseen(id);
+		}
    }  	
 
    //RW transaction

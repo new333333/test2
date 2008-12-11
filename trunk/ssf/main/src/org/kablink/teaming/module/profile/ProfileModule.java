@@ -379,6 +379,18 @@ public interface ProfileModule {
      */
     public void setSeen(Long userId, Collection<Entry> entries);
     /**
+     * Mark a collection of entries as seen.
+     * @param userId
+     * @param entryIds
+     */
+    public void setSeenIds(Long userId, Collection<Long> entryIds);
+    /**
+     * Mark a collection of entryIds as seen.
+     * @param userId
+     * @param entryIds
+     */
+    public void setUnseen(Long userId, Collection<Long> entryIds);
+    /**
      * Share an entry 
      * @param entity
      * @param principalIds
