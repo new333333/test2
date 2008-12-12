@@ -12,7 +12,6 @@ function ss_editingICElink() {
 }
 
 function ss_insertICElink(binderId, title, currentBinderId) {
-	alert('searchTitle = '+document.getElementById('searchTitle').value;)
 	currentBinderId = 'xxx'
 	var link = "";
 	var inst = tinyMCEPopup.editor;
