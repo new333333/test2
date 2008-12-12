@@ -25,33 +25,9 @@
  * 
  * 
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
- * are trademarks of SiteScape, Inc.     
+ * are trademarks of SiteScape, Inc.
  */
-%>
-<% // Personal preferences %>
-<%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil" %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<ssf:sidebarPanel title="sidebar.personalPref" id="ss_personal_sidebar" divClass="ss_place_tags" initOpen="false" sticky="false">
-
-  <c:if test="${!empty ssFolderActionsToolbar}">
-	  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.entryDisplay"/> 
-		<div class="ss_sub_sidebarMenu">
-		  	<ssf:toolbar toolbar="${ssFolderActionsToolbar}" style="ss_actions_bar4 ss_actions_bar" />
-		</div>
-	  </div>
-  </c:if>	
-
-  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.theme"/> 
-	<div class="ss_sub_sidebarMenu">
-	  	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_theme.jsp" /> 
-	</div>
-  </div>	
-
-  <% if (SsfsUtil.supportAttachmentEdit()) { %>
-	  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.appConfig"/> 
-		<div class="ss_sub_sidebarMenu">
-		  	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_appConfig.jsp" /> 
-		</div>
-	  </div>	
-  <% } %>
-</ssf:sidebarPanel>
+%><% // Favorites tree %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ page contentType="text/json; charset=UTF-8" %>
+${UserAppConfigJSON}
