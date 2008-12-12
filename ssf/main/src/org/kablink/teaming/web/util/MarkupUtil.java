@@ -262,6 +262,7 @@ public class MarkupUtil {
 				if (normalizedTitle != null && !normalizedTitle.equals("")) {
 					portletURL.setParameter(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
 					portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+					portletURL.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, WebKeys.URL_ENTRY_VIEW_STYLE_FULL_CHECK);
 				} else {
 					portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				}

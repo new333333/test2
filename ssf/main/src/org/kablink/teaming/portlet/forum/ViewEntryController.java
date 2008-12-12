@@ -175,7 +175,11 @@ public class ViewEntryController extends  SAbstractController {
 		String displayType = BinderHelper.getDisplayType(request);
 		if (entryViewStyle.equals("")) {
 			if (ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE.equals(displayStyle) &&
-					!ViewController.WIKI_PORTLET.equals(displayType)) entryViewStyle = "full";
+					!ViewController.WIKI_PORTLET.equals(displayType)) entryViewStyle = WebKeys.URL_ENTRY_VIEW_STYLE_FULL;
+		} else if (WebKeys.URL_ENTRY_VIEW_STYLE_FULL_CHECK.equals(entryViewStyle)) {
+			if (!ViewController.WIKI_PORTLET.equals(displayType)) {
+				entryViewStyle = WebKeys.URL_ENTRY_VIEW_STYLE_FULL;
+			}
 		}
 		
 		Map formData = request.getParameterMap();

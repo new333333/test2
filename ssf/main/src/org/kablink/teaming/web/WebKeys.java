@@ -139,6 +139,8 @@ public class WebKeys {
     public static final String URL_ENTRY_TYPE="entryType";
     public static final String URL_ENTRY_VIEW_STYLE="entryViewStyle";
     public static final String URL_ENTRY_VIEW_STYLE2="entryViewStyle2";
+    public static final String URL_ENTRY_VIEW_STYLE_FULL="full";
+    public static final String URL_ENTRY_VIEW_STYLE_FULL_CHECK="full_check";
     public static final String URL_ENTRY_VIEW_TYPE="entryViewType";
 	public static final String URL_FILE = "file";
 	public static final String URL_FILE_ID = "fileId";

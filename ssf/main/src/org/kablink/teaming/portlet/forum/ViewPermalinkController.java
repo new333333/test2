@@ -127,7 +127,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			} else {
 				url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");
 			}
-			url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, "full");
+			url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, WebKeys.URL_ENTRY_VIEW_STYLE_FULL);
 		} else	if (entityType.isBinder() || entityType.equals(EntityIdentifier.EntityType.none)) {
 			entity = getBinderModule().getBinder(Long.valueOf(binderId));
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
