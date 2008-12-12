@@ -5686,14 +5686,706 @@ function ss_postSubmitFormViaAjax(obj) {
 	}
 }
 
-function ss_changeUITheme(idListText, nameListText) {
+// Edit Application Configuration Management
+
+function ss_editAppConfig() {
+	// Create the DIV to contain the menu...
+	var menuDIV = ss_createDivInBody('ss_appConfigurator', 'ss_appConfigMenu');
+	menuDIV.style.visibility = "hidden";
+	menuDIV.style.zIndex = parseInt(ssLightboxZ + 1);
+
+	// ...and run the dialog in it.	
+	var editAppConfig = new ssEditAppConfig(menuDIV);
+	editAppConfig.showDialog();	
+}
+
+
+// Object to manage the Edit Application Configuration dialog.
+function ssEditAppConfig(menuDIV) {
+	// Store the data members...
+	this.menuDIV = menuDIV;
+	this.menuDIV.n_editAppConfig = this;
+
+	// ...initialize the constants...
+	this.NBSP       = "\u00A0";
+	this.NBSP2      = "\u00A0\u00A0";
+	this.NBSP4      = "\u00A0\u00A0\u00A0\u00A0";
+	this.MENU_SPLIT = (this.NBSP + "|" + this.NBSP);
+
+	// ...and initialize everything else.
+	this.dataTABLE = null;
+	this.idBase    = 0;	
+	this.strings   = g_appConfigStrings;
+
+
+	// Called to add a row to the data table with the given
+	// extension and application.
+	this.addRow = function(extension, application) {
+		var	bHasEXT;
+		var	eCBOX;
+		var	eINPUT;
+		var	eSELECT;
+		var	eTD;
+		var	i;
+		var	iSEL;
+		var	sEXT;
+		var	sID;
+		
+
+		// Construct an ID for this row...
+		this.idBase += 1;
+		sID           = String(this.idBase);
+		
+		// ...and create it.		
+		eTR      = this.dataTABLE.insertRow(this.dataTABLE.rows.length);
+		eTR.id   = ("dataTR_" + sID);
+		eTR.n_id = sID;
+		
+		eTD        = eTR.insertCell(eTR.cells.length);
+		eTD.width  = "1%";
+		eCBOX      = document.createElement("input");
+		eCBOX.id   = ("overrideCBOX_" + sID);
+		eCBOX.type = "checkbox"
+		eTD.appendChild(eCBOX);
+		
+		eTD       = eTR.insertCell(eTR.cells.length);
+		eTD.width = "1%";
+		eTD.appendChild(document.createTextNode(this.NBSP));
+		
+		eTD              = eTR.insertCell(eTR.cells.length);
+		eSELECT          = document.createElement("select");
+		eSELECT.id       = ("extensionSELECT_" + sID);
+		eSELECT.onchange = function(e) {this.n_editAppConfig.extensionSelChanged(this);};
+		eSELECT.n_editAppConfig = this;
+		bHasEXT          = ((null != extension) && (0 < extension.length));
+		if (!bHasEXT) {
+			eSELECT.options[eSELECT.length] = new Option(this.strings['sidebar.appConfig.SelectAnExtension']);
+		}
+		iSEL = (-1);
+		for (i = 0; i < g_appEditInPlaceExtensions.length; i += 1) {
+			sEXT = g_appEditInPlaceExtensions[i];
+			eSELECT.options[eSELECT.length] = new Option(sEXT);
+			if (this.extensionsEqual(extension, sEXT)) {
+				iSEL = (eSELECT.length - 1);
+			}
+		}
+		if (((-1) == iSEL) && bHasEXT) {
+			eSELECT.options[eSELECT.length] = new Option(extension);
+			iSEL = (eSELECT.length - 1);
+		}
+		if ((-1) != iSEL) {
+			eSELECT.selectedIndex = iSEL;
+		}
+		eTD.appendChild(eSELECT);
+
+		eTD       = eTR.insertCell(eTR.cells.length);
+		eTD.width = "1%";
+		eTD.appendChild(document.createTextNode(this.NBSP));
+		
+		eTD = eTR.insertCell(eTR.cells.length);
+		eINPUT           = document.createElement("input");
+		eINPUT.id        = ("applicationINPUT_" + sID);
+		eINPUT.value     = application;
+		eINPUT.size      = 20;
+		eINPUT.maxLength = 512;
+		eTD.appendChild(eINPUT);
+		
+		eTD       = eTR.insertCell(eTR.cells.length);
+		eTD.width = "100%";
+		eTD.appendChild(document.createTextNode(this.NBSP));
+		
+		
+		// Finally, remove any empty message that's displayed.
+		this.updateEmptyMessage();
+	}
+
+
+	// Bundles the override data for pushing back to the server.
+	this.bundleData = function() {
+		var	eSELECT;
+		var	eTR;
+		var	sID;
+		var	dataA;
+		var	dataS;
+		
+
+		// Allocate an Array to hold the bundled data.		
+		dataA = new Array();
+		
+		
+		// Scan the rows containing data in the data table...
+		for (var i = 2; i< this.dataTABLE.rows.length; i += 1) {
+			// ...adding data for each row to the data Array.
+			eTR = this.dataTABLE.rows[i];
+			sID = String( eTR.n_id );
+			
+			eSELECT             = document.getElementById("extensionSELECT_" + sID);
+			dataA[dataA.length] = eSELECT.options[eSELECT.selectedIndex].text.trim();
+			dataA[dataA.length] = document.getElementById("applicationINPUT_" + sID).value.trim();
+		}
+		
+		
+		// Finally, return the data Array.
+		dataS = dataA.join("]-$-[");
+		return dataS;
+	}	
+	
+	
+	// Called to close the Edit Application Configuration dialog.	
+	this.closeDialog = function() {
+		ss_hideLightbox();
+		ss_hideDivObj(this.menuDIV);
+
+		this.release();		
+	}
+	
+	
+	// Called to create the data table structure in the DOM.
+	this.createDataTable = function() {
+		var	eA;
+		var	eCBOX;
+		var	eDIV;
+		var	eTABLE;
+		var	eTD;
+		var	eTR;
+		
+
+		// Define the data table's header.		
+		eDIV    = document.createElement("div");
+		eDIV.id = "tableHeaderDIV";
+		this.menuDIV.appendChild(eDIV);
+
+		eTABLE             = document.createElement("table");
+		eTABLE.border      = "0";
+		eTABLE.cellSpacing = "0";
+		eTABLE.cellPadding = "3";
+		eTABLE.className   = "ss_objlist_top";
+		eTABLE.width       = "100%";
+		eDIV.appendChild(eTABLE);
+		
+		eTR           = eTABLE.insertRow(eTABLE.rows.length);
+		eTR.className = "ss_objlist_tablehead";
+	
+		eTD = eTR.insertCell(eTR.cells.length);
+		eTD.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Banner']));
+
+		eTD = eTR.insertCell(eTR.cells.length);
+		eTD.appendChild(document.createTextNode(this.NBSP));
+		
+		
+		// Define the data table's menu.
+		eDIV    = document.createElement("div");
+		eDIV.id = "menu";
+		this.menuDIV.appendChild(eDIV);
+
+		eTABLE             = document.createElement("table");
+		eTABLE.border      = "0";
+		eTABLE.cellSpacing = "0";
+		eTABLE.cellPadding = "3";
+		eTABLE.width       = "100%";
+		eDIV.appendChild(eTABLE);
+		
+		eTR = eTABLE.insertRow(eTABLE.rows.length);
+	
+		eTD           = eTR.insertCell(eTR.cells.length);
+		eTD.className = "ss_objlist_smalltext";
+		eTD.vAlign    = "middle";
+		eTD.width     = "90%";
+		eTD.bgColor   = "#efeeec";
+		
+		eDIV = document.createElement("div");
+		eTD.appendChild(eDIV);
+		
+		eA = document.createElement("a");
+		eA.n_editAppConfig      = this;
+		eA.style.textDecoration = "none";
+		eA.style.paddingTop     = eA.style.paddingBottom = "1px";
+		eA.style.paddingRight   = eA.style.paddingLeft   = "5px";
+		eA.href                 = "#";
+		eA.onclick     = function(e) {this.n_editAppConfig.handleAdd(); return false;};
+		eA.onmouseover = function(e) {this.n_editAppConfig.mouseOver(this);};
+		eA.onmouseout  = function(e) {this.n_editAppConfig.mouseOut(this);};
+		eA.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Menu.Add']));
+		eDIV.appendChild(eA);
+
+//!		...this needs to be implemented...
+//!		...waiting on handleUse() to be implemented...
+/*		
+		eDIV.appendChild(document.createTextNode(this.MENU_SPLIT));
+		eA = document.createElement("a");
+		eA.n_editAppConfig = this;
+		eA.style.textDecoration = "none";
+		eA.style.paddingTop     = eA.style.paddingBottom = "1px";
+		eA.style.paddingRight   = eA.style.paddingLeft   = "5px";
+		eA.href                 = "#";
+		eA.onclick     = function(e) {this.n_editAppConfig.handleUse(); return false;};
+		eA.onmouseover = function(e) {this.n_editAppConfig.mouseOver(this);};
+		eA.onmouseout  = function(e) {this.n_editAppConfig.mouseOut(this);};
+		eA.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Menu.Use']));
+		eDIV.appendChild(eA);
+*/
+		
+		eDIV.appendChild(document.createTextNode(this.MENU_SPLIT));
+		eA = document.createElement("a");
+		eA.n_editAppConfig = this;
+		eA.style.textDecoration = "none";
+		eA.style.paddingTop     = eA.style.paddingBottom = "1px";
+		eA.style.paddingRight   = eA.style.paddingLeft   = "5px";
+		eA.href                 = "#";
+		eA.onclick     = function(e) {this.n_editAppConfig.handleDelete(); return false;};
+		eA.onmouseover = function(e) {this.n_editAppConfig.mouseOver(this);};
+		eA.onmouseout  = function(e) {this.n_editAppConfig.mouseOut(this);};
+		eA.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Menu.Delete']));
+		eDIV.appendChild(eA);
+		
+		eTD         = eTR.insertCell(eTR.cells.length);
+		eTD.vAlign  = "middle";
+		eTD.width   = "100%";
+		eTD.height  = "26";
+		eTD.bgColor = "#efeeec";
+
+		
+		// Define the data table's data.
+		eDIV                = document.createElement("div");
+		eDIV.id             = "appConfigListDiv";
+		eDIV.style.width    = "100%";
+		eDIV.style.overflow = "auto";
+		this.menuDIV.appendChild(eDIV);
+		
+		eTABLE             = document.createElement("table");
+		eTABLE.id          = "appConfigTABLE";
+		eTABLE.border      = "0";
+		eTABLE.cellSpacing = "0";
+		eTABLE.cellPadding = "3";
+		eTABLE.width       = "100%";
+		eDIV.appendChild(eTABLE);
+		this.dataTABLE = eTABLE;
+		
+		eTR = eTABLE.insertRow(eTABLE.rows.length);
+		
+		eTD           = eTR.insertCell(eTR.cells.length);
+		eTD.className = "ss_objlist_columnhead";
+		eTD.width     = "1%";
+		eCBOX         = document.createElement("input");
+		eCBOX.n_editAppConfig = this;
+		eCBOX.type    = "checkbox"
+		eCBOX.id      = "selectAllCheckbox";
+		eCBOX.onclick = function(e) {this.n_editAppConfig.handleSelectAll(this);};
+		eTD.appendChild(eCBOX);
+		
+		eTD           = eTR.insertCell(eTR.cells.length);
+		eTD.className = "ss_objlist_columnhead";
+		eTD.width     = "1%";
+		eTD.appendChild(document.createTextNode(this.NBSP));
+		
+		eTD          = eTR.insertCell(eTR.cells.length);
+		eTD.className = "ss_objlist_columnhead";
+		eTD.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Column.Extension']));
+
+		eTD           = eTR.insertCell(eTR.cells.length);
+		eTD.className = "ss_objlist_columnhead";
+		eTD.width     = "1%";
+		eTD.appendChild(document.createTextNode(this.NBSP));
+		
+		eTD          = eTR.insertCell(eTR.cells.length);
+		eTD.className = "ss_objlist_columnhead";
+		eTD.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Column.Application']));
+		
+		eTD           = eTR.insertCell(eTR.cells.length);
+		eTD.className = "ss_objlist_columnhead";
+		eTD.width     = "100%";
+		eTD.appendChild(document.createTextNode(this.NBSP));
+		
+		eTR                   = eTABLE.insertRow(eTABLE.rows.length);
+		eTD                   = eTR.insertCell(eTR.cells.length);
+		eTD.id                = "emptyRowTD";
+		eTD.className         = "ss_objlist_mediumtext";
+		eTD.colSpan           = "6";
+		eTD.style.paddingLeft = "2em";
+		eTD.style.paddingTop  = "2em";
+		
+		
+		// Display a message stating there's no overrides defined.
+		this.updateEmptyMessage();
+	}
+	
+	
+	// Called to add a footer containing the push buttons to the
+	// dialog.
+	this.createFooter = function() {
+		var	eBUTTON;
+		var	eDIV;
+		
+		
+		// Create a footer div to contain the push buttons... 
+		eDIV = document.createElement("div");
+		eDIV.className = "ss_objlist_footer";
+		this.menuDIV.appendChild(eDIV);
+
+		// ...create the OK push button...		
+		eBUTTON = document.createElement("input");
+		eBUTTON.className = "ss_submit";
+		eBUTTON.type = "button";
+		eBUTTON.value = this.strings['sidebar.appConfig.Button.OK'];
+		eBUTTON.onclick = function(e) {
+			if (this.n_editAppConfig.handleSave()) {
+				this.n_editAppConfig.closeDialog();
+			}
+			return false;
+		};
+		eBUTTON.n_editAppConfig = this;
+		eDIV.appendChild(eBUTTON);
+
+		// ...and create the Cancel push button.		
+		eDIV.appendChild(document.createTextNode(this.NBSP2));		
+		eBUTTON = document.createElement("input");
+		eBUTTON.className = "ss_submit";
+		eBUTTON.type = "button";
+		eBUTTON.value = this.strings['sidebar.appConfig.Button.Cancel'];
+		eBUTTON.onclick = function(e){this.n_editAppConfig.closeDialog(); return false;};
+		eBUTTON.n_editAppConfig = this;
+		eDIV.appendChild(eBUTTON);
+	}
+
+
+	// Called when the selection in the eSEL SELECT widget changes.
+	this.extensionSelChanged = function(eSEL) {
+		// Is other than the first item selected?
+		var	iSEL = eSEL.selectedIndex;
+		if (0 < iSEL) {
+			// Yes!  Is the first item the select an extension string?
+			if (eSEL.options[0].text == this.strings['sidebar.appConfig.SelectAnExtension']) {
+				// Yes!  Remove it.
+				eSEL.options[0] = null;
+				eSEL.selectedIndex = (-1);
+				eSEL.selectedIndex = (iSEL - 1);
+			}
+		}
+	}
+	
+	// Returns true if ext1 and ext2 are the same file extensions and
+	// false otherwise.
+	this.extensionsEqual = function(ext1, ext2) {
+		if ((null == ext1) || (null == ext2)) {
+			return(ext1 == ext2);
+		}
+		ext1 = ext1.trim();
+		ext2 = ext2.trim();
+		if ((0 == ext1.length) || (0 == ext2.length)) {
+			return(ext1 == ext2);
+		}
+		if (0 == ext1.indexOf('.')) ext1 = ext1.substring(1);
+		if (0 == ext2.indexOf('.')) ext2 = ext2.substring(1);
+		return(ext1.toLowerCase() == ext2.toLowerCase());
+	}
+		
+	// Called when the user clicks the dialog's Add menu item.
+	this.handleAdd = function() {
+		// Add a row...
+		this.addRow('', '');
+
+		// ...and put the input focus in its extension SELECT widget.		
+		var	eTR = this.dataTABLE.rows[this.dataTABLE.rows.length - 1];
+		document.getElementById("extensionSELECT_" + String(eTR.n_id)).focus();
+	}	
+	
+	
+	// Called when the user clicks the dialog's Delete menu item.
+	this.handleDelete = function() {
+		var	count;
+		
+		
+		// Scan the rows in the data table...  (Note that the row at
+		// index 0 is for the column headers and the row at index 1 is
+		// for spacing above the data and we skip those.)
+		count = 0;
+		for (var i = (this.dataTABLE.rows.length - 1); i >= 2 ; i -= 1) {
+			// ...and check/uncheck each row.
+			eTR = this.dataTABLE.rows[i];
+			if (document.getElementById("overrideCBOX_" + String(eTR.n_id)).checked) {
+				count += 1;
+				this.dataTABLE.deleteRow(i);
+			}
+		}
+		
+		
+		// Did we delete anything?
+		if (0 == count) {
+			// No!  Tell the user.
+			alert(this.strings['sidebar.appConfig.Error.NoDelete']);
+		}
+
+		
+		// Yes, we deleted something!  Are there any data rows left?
+		else if (!(this.hasData())) {
+			// No!  Put the No Data string back.
+			this.updateEmptyMessage();
+		}
+	}	
+	
+	
+	// Called when the user clicks the dialog's OK push button.
+	this.handleSave = function() {
+		var	eINPUT;
+		
+
+		// Is the information in the data table valid? 		
+		eINPUT = this.isDataValid();
+		if (null != eINPUT) {
+			// No!  isDataValid() will have told the user about the
+			// problem.  Set the focus into the widget in error and
+			// bail.
+			window.setTimeout(function(){eINPUT.focus();}, 100);
+			return false;
+		}
+		
+		
+		// The data is valid.  Issue an AJAX request to save it...
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_user_appconfig", appConfigs:this.bundleData()});
+		ss_get_url(url, ss_createDelegate(this, this.saveResults));
+
+		// ...and return false.  saveResults() will close the dialog
+		// ...AFTER a successful save.		
+		return false;
+	}	
+	
+
+	// Called when the user toggles the state of the select all
+	// checkbox.
+	this.handleSelectAll = function(eCBOX) {
+		var	check;
+		var	eTR;
+		
+
+		// Is the select all checkbox checked or unchecked?		
+		check = eCBOX.checked;
+		
+		
+		// Scan the rows in the data table...  (Note that the row at
+		// index 0 is for the column headers and the row at index 1 is
+		// for spacing above the data and we skip those.)
+		for (var i = 2; i < this.dataTABLE.rows.length; i += 1) {
+			// ...and check/uncheck each row.
+			eTR = this.dataTABLE.rows[i];
+			document.getElementById("overrideCBOX_" + String(eTR.n_id)).checked = check;
+		}
+	}
+	
+	
+	// Called when the user clicks the dialog's Use menu item.
+	this.handleUse = function() {
+//!		...this needs to be implemented...		
+		alert("in handleUse( ...this needs to be implemented... )");
+	}	
+	
+
+	// Returns true if  there are any rows defined in the data table
+	// and false otherwise.
+	this.hasData = function() {
+		return (this.dataTABLE && (2 < this.dataTABLE.rows.length));
+	}
+	
+
+	// Returns null if the information in the data table is valid or
+	// the object containing invalid data otherwise.
+	this.isDataValid = function() {
+		var	eINPUT1;
+		var	eSELECT1;
+		var	eSELECT2;
+		var	eTR1;
+		var	eTR2;
+		var	sID1;
+		var	sID2;
+		var	sAPP1;
+		var	sEXT1;
+		var	sEXT2;
+		
+
+		// Scan rows containing data in the data table.		
+		for (var i = 2; i < this.dataTABLE.rows.length; i += 1) {
+			// Does this row contain an extension selection?
+			eTR1     = this.dataTABLE.rows[i];
+			sID1     = String(eTR1.n_id);
+			eSELECT1 = document.getElementById("extensionSELECT_" + sID1);
+			sEXT1    = eSELECT1.options[eSELECT1.selectedIndex].text;
+			if (sEXT1 == this.strings['sidebar.appConfig.SelectAnExtension']) {
+				// No!  Tell the user about the problem and bail.
+				alert(this.strings['sidebar.appConfig.Error.SelectAnExtension']);
+				return eSELECT1;
+			}
+
+
+			// Scan the rows below the one that we're looking at.			
+			for (var j = (i + 1); j < this.dataTABLE.rows.length; j += 1) {
+				// Does this row contain the same extension as the row
+				// that we're looking at above?
+				eTR2     = this.dataTABLE.rows[j];
+				sID2     = String(eTR2.n_id);
+				eSELECT2 = document.getElementById("extensionSELECT_" + sID2);
+				sEXT2    = eSELECT2.options[eSELECT2.selectedIndex].text;
+				if (this.extensionsEqual(sEXT1, sEXT2)) {
+					// Yes!  Tell the user about the problem and bail.
+					alert(this.strings['sidebar.appConfig.Error.DuplicateExtension']);
+					return eSELECT2;
+				}
+			}
+
+
+			// Does this row contain an application?			
+			eINPUT1 = document.getElementById("applicationINPUT_" + sID1);
+			sAPP1   = eINPUT1.value.trim();
+			if ((null == sAPP1) || (0 == sAPP1.length)) {
+				// No!  Tell the user about the problem and bail.
+				alert(this.strings['sidebar.appConfig.Error.ApplicationMissing']);
+				return eINPUT1;
+			}
+		}
+		
+
+		// If we get here, the data in data table is valid.  Return it.		
+		return null;		
+	}	
+	
+	
+	// Called when the mouse enters an object to highlight it.
+	this.mouseOver = function(eOBJ) {
+		eOBJ.style.backgroundColor = '#458AB9';
+		eOBJ.style.color = '#ffffff';
+	}
+	
+		
+	// Called when the mouse leaves an object to remove the highlight.
+	this.mouseOut = function(eOBJ) {
+		eOBJ.style.backgroundColor = '';
+		eOBJ.style.color = '';
+	}
+	
+		
+	// Called to release the resources held by this object.	
+	this.release = function() {
+		// Forget the links back to this object...
+		this.lightBox.n_editAppConfig =
+		this.menuDIV.n_editAppConfig = null;
+
+		// ...the object constants...
+		this.NBSP =
+		this.NBSP2 =
+		this.NBSP4 =
+		this.MENU_SPLIT = null;
+		
+		// ...the object's data members...		
+		this.dataTABLE =	
+		this.dlgDIV =
+		this.idBase =	
+		this.lightBox =
+		this.menuDIV =
+		this.strings = null;
+
+		// ...and the object's methods.
+		this.addRow =
+		this.bundleData =		
+		this.closeDialog =
+		this.createDataTable =
+		this.createFooter =
+		this.extensionSelChanged =
+		this.extensionsEqual =
+		this.handleAdd =
+		this.handleDelete =
+		this.handleSave =
+		this.handleSelectAll =
+		this.handleUse =
+		this.hasData =
+		this.isDataValid =
+		this.mouseOut =
+		this.mouseOver =
+		this.release =
+		this.runDialog =
+		this.saveResults =
+		this.showDialog =
+		this.updateEmptyMessage = null;
+	}
+
+
+	// Given user application configuration JSON data in jsonData, runs
+	// the Edit Application Configuration dialog.
+	this.runDialog = function(jsonData) {
+		var	eDIV;
+		var	eSPAN;
+		var	uac;
+		
+		
+		// Create the dialog's caption bar.
+		this.menuDIV.innerHTML = '<div class="ss_popup_top ss_themeMenu_top ss_popup_title" id="ss_appConfigDlg" />';
+		this.dlgDIV = document.getElementById('ss_appConfigDlg');
+	    this.dlgDIV.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Caption']));
+	    
+
+		// Create some instructions at the top of the dialog...	    
+	    eDIV = document.createElement("div");
+	    eDIV.style.width = "400px";
+	    eDIV.style.padding = "10px";
+	    eSPAN = document.createElement("span");
+	    eSPAN.className = "ss_objlist_instructions";
+	    eSPAN.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Info']));
+	    eDIV.appendChild(eSPAN);
+	    this.menuDIV.appendChild(eDIV);
+	    
+	    // ...create and populate the data table...
+	    this.createDataTable();
+		for (var i = 0; i < jsonData.length; i += 1) {
+			uac = jsonData[i];
+			this.addRow(uac.extension, uac.application);
+		}
+		
+		// ...create a footer containing the dialog's push buttons...
+		this.createFooter();
+
+		// ...and show the dialog.			
+		var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
+		lightBox.n_editAppConfig = this;
+		this.lightBox = lightBox;
+		lightBox.onclick = function(e) {return false;};
+		this.menuDIV.style.visibility = "visible";
+		this.menuDIV.style.display= "block";	
+		ss_centerPopupDiv(this.menuDIV);
+	}
+	
+
+	// Callback from the request to save the Edit Application
+	// Configuration information.
+	this.saveResults = function() {
+		// Nothing to do but close the dialog.
+		this.closeDialog();
+	}	
+	
+	
+	// Starts the processing to run the Edit Application Configuration
+	// dialog.  Simply submits an AJAX request for the data.
+	this.showDialog = function() {
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_user_appconfig"});
+		ss_get_url(url, ss_createDelegate(this, this.runDialog));
+	}
+
+
+	// Sets or clears the in the data table about their being no
+	// overrides defined.
+	this.updateEmptyMessage = function() {
+		document.getElementById("emptyRowTD").innerHTML = '<i id="emptyRowI" />';
+		if (!(this.hasData())) {
+			var	eI = document.getElementById("emptyRowI");
+			eI.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Message.NoData']));
+		}
+	}
+}
+
+function ss_changeUITheme(idListText, nameListText, divCaption) {
 	var idList = idListText.split(",");
 	var nameList = nameListText.split(",");
 	var divObj = ss_createDivInBody('ss_uiThemeSelector', 'ss_themeMenu');
 	divObj.style.zIndex = parseInt(ssLightboxZ + 1);
 	
 	var txt = '<div class="ss_popup_top ss_themeMenu_top ss_popup_title">';
-	txt += 'Choose a Theme';
+	txt += (divCaption ? divCaption : '');
 	txt += '</div>';
 	
 	var divHtml = '<ul>';	

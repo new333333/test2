@@ -628,6 +628,39 @@ div.ss_themeMenu ul {
 	margin-left: 20px;
 }
 		
+/* EDITOR APPLICATION CONFIGURATION MENU STYLES */
+
+div.ss_appConfigMenu {
+  position:absolute;
+  border:1px solid ${ss_toolbar1_background_color};
+  margin: 0px;
+  background-color:${ss_style_background_color_opaque};
+  text-align: left;
+  <c:if test="<%= isIE %>">
+  	width: 40%;
+  	min-width: 425px;
+  </c:if>
+}
+.ss_appConfigMenu_top {
+	text-align: center;
+	padding: 0px;
+	white-space: nowrap;
+}
+div.ss_appConfigMenu a {
+  font-family: ${ss_style_font_family};
+  font-size: ${ss_style_font_size}; 
+  text-decoration: underline;
+}
+div.ss_appConfigMenu a:hover {
+	color: #333333 !important;
+}
+
+div.ss_appConfigMenu ul {
+	list-style-type: none;
+	padding-left: 0px;
+	margin-left: 20px;
+}
+		
 /* ENTRY VIEW TOOLBAR STYLES */
 /* FAMILY TYPES = (10)unspecified (11)blog (12)calendar (13)discussion (14)photo (15)wiki (16)task (17)file */
 

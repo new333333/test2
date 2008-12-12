@@ -28,14 +28,20 @@
  */
 package org.kablink.teaming.ssfs.util;
 import java.net.URLEncoder;
+import java.util.Iterator;
+
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
-import org.kablink.teaming.context.request.RequestContextHolder;
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.web.util.UserAppConfig;
 import org.kablink.teaming.web.util.WebUrlUtil;
 
 
@@ -148,18 +154,11 @@ public class SsfsUtil {
 		append("/");	
 	}
 	
-	public static boolean supportsEditInPlace(String relativeFilePath, String browserType) { 
-		String extension = null;
-		int index = relativeFilePath.lastIndexOf(".");
-		if(index < 0)
-			return false; // No extension. can not support edit-in-place
-		else
-			extension = relativeFilePath.substring(index).toLowerCase();
-		
+	public static String[] getEditInPlaceExtensions(boolean isIE) { 
 		String [] editInPlaceFileExtensions;
 		String strEditType = "";
 		
-		if (browserType != null && browserType.equalsIgnoreCase("ie")) {
+		if (isIE) {
 			if (editInPlaceFileExtensionsIE == null) {
 				strEditType = SPropsUtil.getString("edit.in.place.for.ie", "");
 				String[] s = SPropsUtil.getStringArray("edit.in.place.file." + strEditType + ".extensions", ",");
@@ -182,6 +181,20 @@ public class SsfsUtil {
 			editInPlaceFileExtensions = editInPlaceFileExtensionsNonIE;
 		}
 		
+		return editInPlaceFileExtensions;
+	}
+	
+	public static boolean supportsEditInPlace(String relativeFilePath, String browserType) { 
+		String extension = null;
+		int index = relativeFilePath.lastIndexOf(".");
+		if(index < 0)
+			return false; // No extension. can not support edit-in-place
+		else
+			extension = relativeFilePath.substring(index).toLowerCase();
+		
+		String [] editInPlaceFileExtensions;
+		
+		editInPlaceFileExtensions = getEditInPlaceExtensions(browserType != null && browserType.equalsIgnoreCase("ie"));
 		for(int i = 0; i < editInPlaceFileExtensions.length; i++) {
 			if(extension.endsWith(editInPlaceFileExtensions[i]))
 				return true;
@@ -213,6 +226,9 @@ public class SsfsUtil {
 	}
 	
 	public static String openInEditor(String relativeFilePath, String operatingSystem) {
+		return openInEditor(relativeFilePath, operatingSystem, null);
+	}
+	public static String openInEditor(String relativeFilePath, String operatingSystem, UserProperties userProperties) {
 		if (operatingSystem == null || operatingSystem.equals("")) return "";
 		String extension = null;
 		int index = relativeFilePath.lastIndexOf(".");
@@ -220,9 +236,47 @@ public class SsfsUtil {
 			return ""; // No extension. can not support edit-in-place
 		else {
 			extension = relativeFilePath.substring(index).toLowerCase();
-			String strEditor = SPropsUtil.getString("edit.in.place."+operatingSystem+".editor"+extension, "");
+			String strEditor = getAppFromUserAppConfig(userProperties, extension);
+			if (null == strEditor) {
+				strEditor = SPropsUtil.getString("edit.in.place."+operatingSystem+".editor"+extension, "");
+			}
 			return strEditor;
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static String getAppFromUserAppConfig(UserProperties userProperties, String extension) {
+		String	reply = null;
+		if ((null != userProperties) && (null != extension)) {
+			UserAppConfig	uac				= new UserAppConfig((String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_APPCONFIGS));
+			Document		appConfig		= uac.getUserAppConfig();
+	    	Element			appConfigsRoot	= appConfig.getRootElement();
+	       	Iterator		itAppConfigs	= appConfigsRoot.selectNodes("app-configs|app-config").iterator();
+	       	
+	       	extension = extension.trim();
+	       	int pPos  = extension.indexOf('.');
+	       	if (0 == pPos) {
+	       		extension = extension.substring(pPos + 1);
+	       	}
+	       	extension = extension.toLowerCase();
+	       	while (itAppConfigs.hasNext()) {
+	       		Element e	= ((Element) itAppConfigs.next());
+	       		String	ext	= e.attributeValue("extension");
+	       		if (null != ext) {
+	       			ext  = ext.trim();
+	    	       	pPos = ext.indexOf('.');
+	    	       	if (0 <= pPos) {
+	    	       		ext = ext.substring(pPos + 1);
+	    	       	}
+	    	       	ext = ext.toLowerCase();
+	    	       	if (ext.equals(extension)) {
+	    	       		reply = e.attributeValue("application").trim();
+	    	       		break;
+	    	       	}
+	       		}
+	       	}
+		}
+		return reply;
 	}
 	
 	public static boolean supportAttachmentEdit() {

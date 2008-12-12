@@ -288,6 +288,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_SEARCH_FILTERS_V1 = "searchFilters";//obsolete
     public static final String USER_PROPERTY_SEARCH_FILTERS = "searchFilterMap";
     public static final String USER_PROPERTY_USER_FILTER = "userFilter";
+    public static final String USER_PROPERTY_APPCONFIGS = "userAppConfigs";
     public static final String USER_PROPERTY_FAVORITES = "userFavorites";
     public static final String USER_PROPERTY_FOLDER_COLUMNS = "userFolderColumns";
     public static final String USER_PROPERTY_MOBILE_BINDER_IDS = "userMobileBinderIds";

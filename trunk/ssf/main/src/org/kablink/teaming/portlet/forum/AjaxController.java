@@ -79,7 +79,6 @@ import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.calendar.OneMonthView;
 import org.kablink.teaming.calendar.StartEndDatesView;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.ApplicationPrincipal;
 import org.kablink.teaming.domain.Binder;
@@ -136,6 +135,7 @@ import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.upload.FileUploadProgressListener;
 import org.kablink.teaming.web.upload.ProgressListenerSessionResolver;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.UserAppConfig;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -173,6 +173,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				ajaxModifyTags(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_FAVORITES)) {
 				ajaxSaveFavorites(request, response);
+			} else if (op.equals(WebKeys.OPERATION_SAVE_USER_APPCONFIG)) {
+				ajaxSaveUserAppConfig(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_RATING)) {
 				ajaxSaveRating(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SHOW_HELP_CPANEL) || 
@@ -267,7 +269,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 					op.equals(WebKeys.OPERATION_ADD_FAVORITE_BINDER) || 
 					op.equals(WebKeys.OPERATION_ADD_FAVORITES_CATEGORY) || 
 					op.equals(WebKeys.OPERATION_GET_FAVORITES_TREE) ||
-					op.equals(WebKeys.OPERATION_SAVE_FAVORITES)) {
+					op.equals(WebKeys.OPERATION_SAVE_FAVORITES) ||
+					op.equals(WebKeys.OPERATION_SAVE_USER_APPCONFIG)) {
 				model.put(WebKeys.AJAX_ERROR_MESSAGE, "general.notLoggedIn");	
 				response.setContentType("text/json");
 				return new ModelAndView("common/json_ajax_return", model);
@@ -449,6 +452,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return new ModelAndView("forum/fetch_url_return");			
 		} else if (op.equals(WebKeys.OPERATION_SAVE_UESR_STATUS)) {
 			return ajaxGetUserStatus(request, response);
+		} else if (op.equals(WebKeys.OPERATION_GET_USER_APPCONFIG) ||
+				   op.equals(WebKeys.OPERATION_SAVE_USER_APPCONFIG)) {
+			return ajaxGetUserAppConfig(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_GROUP_LIST)) {
 			return ajaxGetGroupList(this, request, response);
 		} else if (op.equals(WebKeys.OPERATION_VIEW_MINIBLOG)) {
@@ -551,6 +557,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Favorites f = new Favorites((String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES));
 		f.saveOrder(deletedIds, favoritesList);
 		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
+	}
+	
+	private void ajaxSaveUserAppConfig(ActionRequest request, ActionResponse response) throws Exception {
+		String appConfigs = PortletRequestUtils.getStringParameter(request, "appConfigs", "");
+		UserAppConfig uac = UserAppConfig.createFromBrowserData(appConfigs);
+		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_APPCONFIGS, uac.toString());
 	}
 	
 	private void ajaxSaveRating(ActionRequest request, ActionResponse response) throws Exception {
@@ -1536,7 +1548,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String strURLValue = PortletRequestUtils.getStringParameter(request, WebKeys.ENTRY_ATTACHMENT_URL, "");
 		String strOSInfo = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OS_INFO, "");
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
-		String strOpenInEditor = SsfsUtil.openInEditor(strURLValue, strOSInfo);
+		String strOpenInEditor = SsfsUtil.openInEditor(strURLValue, strOSInfo, getProfileModule().getUserProperties(null));
 		
 		Map model = new HashMap();
 		model.put(WebKeys.NAMESPACE, namespace);
@@ -1561,7 +1573,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		FileAttachment topAtt = (FileAttachment)entry.getAttachment(fileId);
 		String url = SsfsUtil.getInternalAttachmentUrlEncoded(request, binder, entry, topAtt);
 		url = url.replaceAll("\\+", "%20"); 
-		String strOpenInEditor = SsfsUtil.openInEditor(url, strOSInfo);
+		String strOpenInEditor = SsfsUtil.openInEditor(url, strOSInfo, getProfileModule().getUserProperties(null));
 		
 		Map model = new HashMap();
 		model.put(WebKeys.NAMESPACE, namespace);
@@ -2704,6 +2716,18 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("forum/json/upload_progress_status", model);
 	}
 
+	private ModelAndView ajaxGetUserAppConfig(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		UserProperties userProperties = getProfileModule().getUserProperties(null);
+		UserAppConfig uac = new UserAppConfig((String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_APPCONFIGS));
+		
+		Map model = new HashMap();
+		String uacJson = (String)uac.getUserAppConfigJson().toString();
+		model.put("UserAppConfigJSON",uacJson);
+		response.setContentType("text/json");
+		return new ModelAndView("forum/user_appconfig", model);
+	}
+	
 	private ModelAndView ajaxGetUserStatus(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
