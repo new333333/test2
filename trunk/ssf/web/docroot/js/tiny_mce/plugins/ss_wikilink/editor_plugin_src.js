@@ -27,7 +27,7 @@
 					height : 500 + ed.getLang('ss_wikilink.delta_height', 0),
 					inline : 1
 				}, {
-					plugin_url : ss_wikiLinkUrl, // Plugin absolute URL
+					plugin_url : ss_wikiLinkUrl // Plugin absolute URL
 				});
 			});
 
