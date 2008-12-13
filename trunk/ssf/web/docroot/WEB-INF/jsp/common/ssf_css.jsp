@@ -1304,7 +1304,7 @@ table.ss_attachments_list td.ss_att_space {
   height:18px;
 }
 table.ss_dashboardTable_off {
-	border: 1px solid transparent;
+	border: 1px solid #ffffff;
 }
 td.ss_dashboardTable_off {
   border-right:1px solid #ffffff;	
