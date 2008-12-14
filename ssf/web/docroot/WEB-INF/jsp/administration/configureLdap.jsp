@@ -50,8 +50,20 @@
 </div>
   <div>
     <div>
-		<input type="checkbox" id="allowAnonymous" name="allowAnonymous" <c:if test="${ssAuthenticationConfig.allowAnonymousAccess}">checked</c:if>/>
-			<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowAnonymous"/></span><br/>
+    	<c:set var="showGuestOption" value="<%= Boolean.FALSE %>"/>
+    	<c:set var="openEdition" value="<%= !org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>"/>
+    	<c:if test="${openEdition}">
+    		<c:set var="showGuestOption" value="<%= Boolean.TRUE %>"/>
+    	</c:if>
+    	<c:if test="${!openEdition}">
+	    	<ssf:ifAuthorizedByLicense featureName="org.kablink.teaming.GuestAccess">
+	    		<c:set var="showGuestOption" value="<%= Boolean.TRUE %>"/>
+	    	</ssf:ifAuthorizedByLicense>
+    	</c:if>
+    	<c:if test="${showGuestOption}">
+			<input type="checkbox" id="allowAnonymous" name="allowAnonymous" <c:if test="${ssAuthenticationConfig.allowAnonymousAccess}">checked</c:if>/>
+				<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowAnonymous"/></span><br/>
+		</c:if>
 		<input type="checkbox" id="allowLocalLogin" name="allowLocalLogin" <c:if test="${ssAuthenticationConfig.allowLocalLogin}">checked</c:if>/>
 			<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowLocalLogin"/></span><br/>
 		<input type="checkbox" id="allowSelfRegistration" name="allowSelfRegistration" <c:if test="${ssAuthenticationConfig.allowSelfRegistration}">checked</c:if>/>
