@@ -29,6 +29,8 @@
 package org.kablink.teaming.web.servlet.filter;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -39,15 +41,23 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
+import org.kablink.teaming.domain.AuthenticationConfig;
+import org.kablink.teaming.module.authentication.AuthenticationModule;
+import org.kablink.teaming.module.license.LicenseChecker;
+import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portal.PortalLogin;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
+import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.BrowserSniffer;
+import org.kablink.util.Validator;
 
 
 public class LoginFilter  implements Filter {
@@ -72,10 +82,10 @@ public class LoginFilter  implements Filter {
 		}
 		else {
 			if(WebHelper.isGuestLoggedIn(req)) {
-				// User is logged in as guest. Proceed to the login screen.
-				String refererUrl = getOriginalURL(req);
-				req.setAttribute(WebKeys.REFERER_URL, refererUrl);
-				chain.doFilter(request, response);
+				// User is logged in as guest, which simply means that the user
+				// is currently accessing Teaming without logging in as a regular 
+				// user (yet).
+				handleGuestAccess(req, res, chain);
 			}
 			else {
 				String url = req.getQueryString();
@@ -99,6 +109,66 @@ public class LoginFilter  implements Filter {
 	public void destroy() {
 	}
 
+	protected void handleGuestAccess(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
+		if(isPathPermittedUnauthenticated(req.getPathInfo())) {
+			chain.doFilter(req, res);										
+		}
+		else {				
+			String currentURL = getCurrentURL(req);
+			if(currentURL.contains("p_name=ss_mobile")) {
+				// Mobile interaction. Let it proceed as normal.
+				req.setAttribute(WebKeys.REFERER_URL, currentURL);
+				chain.doFilter(req, res);					
+			}
+			else if(currentURL.contains("action=__login")) {
+				// Request for login form. Let it proceed as normal.
+				String refererURL = req.getParameter("refererUrl");
+				if(Validator.isNotNull(refererURL))
+					req.setAttribute(WebKeys.REFERER_URL, refererURL);
+				chain.doFilter(req, res);										
+			}
+			else {
+				// The guest is requesting a non-mobile page that isn't the login form.
+				// We need to check whether we should allow this or not.
+				if(guestAccessAllowed()) { 
+					// Guest access allowed. Let it proceed as normal.
+					req.setAttribute(WebKeys.REFERER_URL, currentURL);
+					chain.doFilter(req, res);											
+				}
+				else {
+					// Guest access not allowed. Redirect the guest to the login page.
+					res.sendRedirect(getLoginURL(req, currentURL));
+				}
+			}
+		}		
+	}
+
+	protected boolean guestAccessAllowed() {
+		if(ReleaseInfo.isLicenseRequiredEdition()) {
+			if(LicenseChecker.isAuthorizedByLicense("org.kablink.teaming.GuestAccess")) {
+				return authenticationConfigAllowsGuestAccess();
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			return authenticationConfigAllowsGuestAccess();
+		}
+	}
+	
+	protected String getLoginURL(HttpServletRequest req, String currentURL) {
+		// Should we disallow this if form.login.auth.disallowed is true?
+		try {
+			return req.getContextPath() + 
+				SPropsUtil.getString("form.login.url", "/a/do?p_name=ss_forum&p_action=1&action=__login") +
+				"&refererUrl=" + 
+				URLEncoder.encode(currentURL, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return null;
+		}
+	}
+	
 	protected String getWorkspaceURL(final HttpServletRequest req) {
 		final String userId;
 		if(WebHelper.isGuestLoggedIn(req))
@@ -135,7 +205,7 @@ public class LoginFilter  implements Filter {
 			return false;
 	}
 	
-	protected String getOriginalURL(HttpServletRequest req) {
+	protected String getCurrentURL(HttpServletRequest req) {
 		String url;
 		if(req.getQueryString() != null)
 			url = req.getRequestURL().append("?").append(req.getQueryString()).toString();
@@ -159,5 +229,19 @@ public class LoginFilter  implements Filter {
 	
 	private PortalLogin getPortalLogin() {
 		return (PortalLogin) SpringContextUtil.getBean("portalLoginBean");
+	}
+	
+	private AuthenticationModule getAuthenticationModule() {
+		return (AuthenticationModule) SpringContextUtil.getBean("authenticationModule");
+	}	
+
+	private ZoneModule getZoneModule() {
+		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
+	}	
+
+	private boolean authenticationConfigAllowsGuestAccess() {
+		Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
+		AuthenticationConfig config = getAuthenticationModule().getAuthenticationConfigForZone(zoneId);
+		return config.isAllowAnonymousAccess();
 	}
 }

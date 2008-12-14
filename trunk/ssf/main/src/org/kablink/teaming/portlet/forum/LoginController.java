@@ -104,6 +104,9 @@ public class LoginController  extends SAbstractControllerRetry {
     		session.removeAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
     	}
 
+		String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+		if(Validator.isNotNull(refererUrl))
+			model.put(WebKeys.URL, refererUrl);
 		return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
 	} 
 }
