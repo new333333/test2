@@ -61,7 +61,6 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     protected String owningBinderKey;
     // Number of locked files - This refers to all "not-yet-cleared" locks
     // including both effective and expired locks. 
-    protected Integer lockedFileCount; // access="field"
     protected String postedBy;
     protected boolean subscribed=false;
     public FolderEntry() {
