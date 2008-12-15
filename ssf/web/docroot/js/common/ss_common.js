@@ -5707,17 +5707,57 @@ function ssEditAppConfig(menuDIV) {
 	this.menuDIV.n_editAppConfig = this;
 
 	// ...initialize the constants...
-	this.NBSP       = "\u00A0";
-	this.NBSP2      = "\u00A0\u00A0";
-	this.NBSP4      = "\u00A0\u00A0\u00A0\u00A0";
-	this.MENU_SPLIT = (this.NBSP + "|" + this.NBSP);
+	this.NBSP			= "\u00A0";
+	this.NBSP2			= (this.NBSP + this.NBSP);
+	this.NON_DATA_ROWS	= 2;
+	this.MENU_SPLIT	= (this.NBSP + "|" + this.NBSP);
 
+	// ...define the extension/application mappings for Microsoft
+	// ...Office...
+	this.msoMap          = new Array();
+	this.msoMap['.doc']  = "winword.exe";
+	this.msoMap['.xls']  = "excel.exe";
+	this.msoMap['.ppt']  = "powerpnt.exe";
+	this.msoMap['.docx'] = "winword.exe";
+	this.msoMap['.xlsx'] = "excel.exe";
+	this.msoMap['.pptx'] = "powerpnt.exe";
+	this.msoMap['.rtf']  = "winword.exe";
+	this.msoMap['.txt']  = "winword.exe";
+	
+	// ...define the extension/application mappings for Open Office...
+	this.ooMap			= new Array();
+	this.ooMap['.odf']	= "ooffice";
+	this.ooMap['.odg']	= "ooffice";
+	this.ooMap['.odp']	= "ooffice";
+	this.ooMap['.ods']	= "ooffice";
+	this.ooMap['.odt']	= "ooffice";
+	this.ooMap['.sxw']	= "ooffice";
+	this.ooMap['.doc']	= "ooffice";
+	this.ooMap['.xls']	= "ooffice";
+	this.ooMap['.ppt']	= "ooffice";
+	this.ooMap['.rtf']	= "ooffice";
+	this.ooMap['.txt']	= "ooffice";
+	
+	// ...define the extension/application mappings for Star Office...
+	this.soMap			= new Array();
+	this.soMap['.odf']	= "soffice";
+	this.soMap['.odg']	= "soffice";
+	this.soMap['.odp']	= "soffice";
+	this.soMap['.ods']	= "soffice";
+	this.soMap['.odt']	= "soffice";
+	this.soMap['.sxw']	= "soffice";
+	this.soMap['.doc']	= "soffice";
+	this.soMap['.xls']	= "soffice";
+	this.soMap['.ppt']	= "soffice";
+	this.soMap['.rtf']	= "soffice";
+	this.soMap['.txt']	= "soffice";
+	
 	// ...and initialize everything else.
 	this.dataTABLE = null;
 	this.idBase    = 0;	
 	this.strings   = g_appConfigStrings;
-
-
+	
+	
 	// Called to add a row to the data table with the given
 	// extension and application.
 	this.addRow = function(extension, application) {
@@ -5755,7 +5795,7 @@ function ssEditAppConfig(menuDIV) {
 		eTD              = eTR.insertCell(eTR.cells.length);
 		eSELECT          = document.createElement("select");
 		eSELECT.id       = ("extensionSELECT_" + sID);
-		eSELECT.onchange = function(e) {this.n_editAppConfig.extensionSelChanged(this);};
+		eSELECT.onchange = function(e) {this.n_editAppConfig.extensionSELChanged(this);};
 		eSELECT.n_editAppConfig = this;
 		bHasEXT          = ((null != extension) && (0 < extension.length));
 		if (!bHasEXT) {
@@ -5800,6 +5840,59 @@ function ssEditAppConfig(menuDIV) {
 	}
 
 
+	// Called to apply a use menu selection (e.g., use OpenOffice
+	// applications.)
+	this.applyUse = function(useWhat) {
+		var	i;
+				
+
+		// Are there any overrides defined?		
+		if (this.hasData())
+		{
+			var	inUse;
+			var	iR;
+			
+			
+			// Yes!  Are any those being 'used in' already defined?
+			for (i in useWhat) {
+				if ((-1) != this.findRowByExtension(i)) {
+					// Yes!  Does the user want to overwite them?
+					if (!(confirm(this.strings['sidebar.appConfig.Confirm.Overwrite']))) {
+						// No!  Bail.
+						return;
+					}
+					
+					
+					// Yes!  Break out of the scan loop since once the
+					// user says ok, we don't want to ask again.
+					break;
+				}
+			}
+
+
+			// Yes, the user wants to overwrite them.  Delete the
+			// existing rows.			
+			for (i in useWhat) {
+				iR = this.findRowByExtension(i);
+				while ((-1) != iR) {
+					// Note that we use a while here instead of an if
+					// for the cause where they may have multiple rows
+					// defining the same extension.
+					this.dataTABLE.deleteRow(iR);
+					iR = this.findRowByExtension(i);
+				}
+			}
+		}
+
+
+		// Scan the overrides being 'used in'...
+		for (i in useWhat) {
+			// ...adding a row for each.
+			this.addRow(i, useWhat[i]);
+		}
+	}
+	
+	
 	// Bundles the override data for pushing back to the server.
 	this.bundleData = function() {
 		var	eSELECT;
@@ -5814,7 +5907,7 @@ function ssEditAppConfig(menuDIV) {
 		
 		
 		// Scan the rows containing data in the data table...
-		for (var i = 2; i< this.dataTABLE.rows.length; i += 1) {
+		for (var i = this.NON_DATA_ROWS; i< this.dataTABLE.rows.length; i += 1) {
 			// ...adding data for each row to the data Array.
 			eTR = this.dataTABLE.rows[i];
 			sID = String( eTR.n_id );
@@ -5833,6 +5926,8 @@ function ssEditAppConfig(menuDIV) {
 	
 	// Called to close the Edit Application Configuration dialog.	
 	this.closeDialog = function() {
+		this.hidePopups();
+		
 		ss_hideLightbox();
 		ss_hideDivObj(this.menuDIV);
 
@@ -5845,6 +5940,7 @@ function ssEditAppConfig(menuDIV) {
 		var	eA;
 		var	eCBOX;
 		var	eDIV;
+		var	eIMG;
 		var	eTABLE;
 		var	eTD;
 		var	eTR;
@@ -5902,15 +5998,12 @@ function ssEditAppConfig(menuDIV) {
 		eA.style.paddingTop     = eA.style.paddingBottom = "1px";
 		eA.style.paddingRight   = eA.style.paddingLeft   = "5px";
 		eA.href                 = "#";
-		eA.onclick     = function(e) {this.n_editAppConfig.handleAdd(); return false;};
+		eA.onclick     = function(e) {this.n_editAppConfig.handleMenu_Add(); return false;};
 		eA.onmouseover = function(e) {this.n_editAppConfig.mouseOver(this);};
 		eA.onmouseout  = function(e) {this.n_editAppConfig.mouseOut(this);};
 		eA.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Menu.Add']));
 		eDIV.appendChild(eA);
 
-//!		...this needs to be implemented...
-//!		...waiting on handleUse() to be implemented...
-/*		
 		eDIV.appendChild(document.createTextNode(this.MENU_SPLIT));
 		eA = document.createElement("a");
 		eA.n_editAppConfig = this;
@@ -5918,13 +6011,22 @@ function ssEditAppConfig(menuDIV) {
 		eA.style.paddingTop     = eA.style.paddingBottom = "1px";
 		eA.style.paddingRight   = eA.style.paddingLeft   = "5px";
 		eA.href                 = "#";
-		eA.onclick     = function(e) {this.n_editAppConfig.handleUse(); return false;};
+		eA.onclick     = function(e) {this.n_editAppConfig.handleMenu_Use(); return false;};
 		eA.onmouseover = function(e) {this.n_editAppConfig.mouseOver(this);};
 		eA.onmouseout  = function(e) {this.n_editAppConfig.mouseOut(this);};
 		eA.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Menu.Use']));
+		eIMG           = document.createElement("img");
+ 		eIMG.id        = "useMenuArrow";
+ 		eIMG.className = "ss_objlist_margin5l";
+ 		eIMG.alt       =
+ 		eIMG.title     = this.strings['sidebar.appConfig.Menu.Alt.Open'];
+ 		eIMG.setAttribute("align", "absmiddle");
+ 		eIMG.setAttribute("border", "0");
+ 		eIMG.setAttribute("src", (ss_imagesPath + "pics/objlistMenuOpen.gif"));
+		eA.appendChild(eIMG);
 		eDIV.appendChild(eA);
-*/
-		
+		eDIV.appendChild(this.createUseMenuSPAN());		
+
 		eDIV.appendChild(document.createTextNode(this.MENU_SPLIT));
 		eA = document.createElement("a");
 		eA.n_editAppConfig = this;
@@ -5932,7 +6034,7 @@ function ssEditAppConfig(menuDIV) {
 		eA.style.paddingTop     = eA.style.paddingBottom = "1px";
 		eA.style.paddingRight   = eA.style.paddingLeft   = "5px";
 		eA.href                 = "#";
-		eA.onclick     = function(e) {this.n_editAppConfig.handleDelete(); return false;};
+		eA.onclick     = function(e) {this.n_editAppConfig.handleMenu_Delete(); return false;};
 		eA.onmouseover = function(e) {this.n_editAppConfig.mouseOver(this);};
 		eA.onmouseout  = function(e) {this.n_editAppConfig.mouseOut(this);};
 		eA.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Menu.Delete']));
@@ -6009,7 +6111,164 @@ function ssEditAppConfig(menuDIV) {
 		this.updateEmptyMessage();
 	}
 	
+
+	// Called to create the Use menu popup for the data table in the
+	// DOM.
+	this.createUseMenuSPAN = function() {
+		var	eA;
+		var	eIMG;
+		var	eDIV;
+		var	eUseMenu_DIV;
+		var	eUseMenu_SPAN;
+		
+
+		// Create a <SPAN><DIV> to contain the entire Use menu...		
+		eUseMenu_SPAN                = document.createElement("span");
+		eUseMenu_SPAN.id             = "usePopupMenuSPAN";
+		eUseMenu_SPAN.style.position = "relative";
+		eUseMenu_SPAN.style.display  = "none";
+		eUseMenu_DIV                 = document.createElement("div");
+		eUseMenu_DIV.className       = "ss_objlist_popupMenuDIV";
+		eUseMenu_SPAN.appendChild(eUseMenu_DIV);
+
+		// ...create the popup menu's title bar...		
+		eDIV = document.createElement("div");
+		eDIV.className = "ss_objlist_menuTitleDIV";
+		eA = document.createElement("a");
+		eA.onclick = function(e){this.n_editAppConfig.hideMenu_Use(); return false;}
+		eA.href = "#";
+		eA.alt = eA.title = "";
+		eA.n_editAppConfig = this;
+		eIMG = document.createElement("img");
+ 		eIMG.className = "ss_objlist_menuTitleIMG";
+ 		eIMG.alt       =
+ 		eIMG.title     = this.strings['sidebar.appConfig.Menu.Alt.Close'];
+ 		eIMG.setAttribute("align", "absmiddle");
+ 		eIMG.setAttribute("border", "0");
+ 		eIMG.setAttribute("src", (ss_imagesPath + "pics/objlistMenuClose.gif"));
+ 		eA.appendChild(eIMG);
+		eDIV.appendChild(eA);
+		eDIV.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Menu.Use']));
+		eUseMenu_DIV.appendChild(eDIV);
+
+		// ...create the Open Office menu item...		
+		eDIV           = document.createElement("div");
+		eDIV.className = "ss_objlist_menuItemDIV";
+		eIMG           = document.createElement("img");
+		eIMG.id        = "useOOMenuItemIMG";
+		eIMG.height    =
+		eIMG.width     = "14px";
+		eIMG.setAttribute("border", "0");
+		eIMG.setAttribute("align", "absmiddle");
+ 		eIMG.setAttribute("src", (ss_imagesPath + "pics/onePXSpacer.gif"));
+		eDIV.appendChild(eIMG);
+		eA                      = document.createElement("a");
+		eA.id                   = "useOOMenuItemA";
+		eA.href                 = "#";
+		eA.style.textDecoration = "none";
+		eA.style.paddingTop     =
+		eA.style.paddingBottom  = "1px";
+		eA.style.paddingLeft    =
+		eA.style.paddingRight   = "5px";
+		eA.n_editAppConfig      = this;
+		eA.onclick              = function(e) {this.n_editAppConfig.handleMenu_UseOO(); return false;};
+		eA.onmouseover          = function(e) {this.n_editAppConfig.mouseOver(this);};
+		eA.onmouseout           = function(e) {this.n_editAppConfig.mouseOut(this);};
+		eA.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Menu.Use.OO']));
+		eDIV.appendChild(eA);
+		eIMG        = document.createElement("img");
+		eIMG.height =
+		eIMG.width  = "14px";
+		eIMG.setAttribute("border", "0");
+		eIMG.setAttribute("align", "absmiddle");
+ 		eIMG.setAttribute("src", (ss_imagesPath + "pics/onePXSpacer.gif"));
+		eDIV.appendChild(eIMG);
+		eUseMenu_DIV.appendChild(eDIV);
+		
+		// ...create the Star Office menu item...		
+		eDIV           = document.createElement("div");
+		eDIV.className = "ss_objlist_menuItemDIV";
+		eIMG           = document.createElement("img");
+		eIMG.id        = "useSOMenuItemIMG";
+		eIMG.height    =
+		eIMG.width     = "14px";
+		eIMG.setAttribute("border", "0");
+		eIMG.setAttribute("align", "absmiddle");
+ 		eIMG.setAttribute("src", (ss_imagesPath + "pics/onePXSpacer.gif"));
+		eDIV.appendChild(eIMG);
+		eA                      = document.createElement("a");
+		eA.id                   = "useSOMenuItemA";
+		eA.href                 = "#";
+		eA.style.textDecoration = "none";
+		eA.style.paddingTop     =
+		eA.style.paddingBottom  = "1px";
+		eA.style.paddingLeft    =
+		eA.style.paddingRight   = "5px";
+		eA.n_editAppConfig      = this;
+		eA.onclick              = function(e) {this.n_editAppConfig.handleMenu_UseSO(); return false;};
+		eA.onmouseover          = function(e) {this.n_editAppConfig.mouseOver(this);};
+		eA.onmouseout           = function(e) {this.n_editAppConfig.mouseOut(this);};
+		eA.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Menu.Use.SO']));
+		eDIV.appendChild(eA);
+		eIMG        = document.createElement("img");
+		eIMG.height =
+		eIMG.width  = "14px";
+		eIMG.setAttribute("border", "0");
+		eIMG.setAttribute("align", "absmiddle");
+ 		eIMG.setAttribute("src", (ss_imagesPath + "pics/onePXSpacer.gif"));
+		eDIV.appendChild(eIMG);
+		eUseMenu_DIV.appendChild(eDIV);
+
+		// ...create the Microsoft Office menu item...		
+		eDIV           = document.createElement("div");
+		eDIV.className = "ss_objlist_menuItemDIV";
+		eIMG           = document.createElement("img");
+		eIMG.id        = "useMSOMenuItemIMG";
+		eIMG.height    =
+		eIMG.width     = "14px";
+		eIMG.setAttribute("border", "0");
+		eIMG.setAttribute("align", "absmiddle");
+ 		eIMG.setAttribute("src", (ss_imagesPath + "pics/onePXSpacer.gif"));
+		eDIV.appendChild(eIMG);
+		eA                      = document.createElement("a");
+		eA.id                   = "useMSOMenuItemA";
+		eA.href                 = "#";
+		eA.style.textDecoration = "none";
+		eA.style.paddingTop     =
+		eA.style.paddingBottom  = "1px";
+		eA.style.paddingLeft    =
+		eA.style.paddingRight   = "5px";
+		eA.n_editAppConfig      = this;
+		eA.onclick              = function(e) {this.n_editAppConfig.handleMenu_UseMSO(); return false;};
+		eA.onmouseover          = function(e) {this.n_editAppConfig.mouseOver(this);};
+		eA.onmouseout           = function(e) {this.n_editAppConfig.mouseOut(this);};
+		eA.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Menu.Use.MSO']));
+		eDIV.appendChild(eA);
+		eIMG        = document.createElement("img");
+		eIMG.height =
+		eIMG.width  = "14px";
+		eIMG.setAttribute("border", "0");
+		eIMG.setAttribute("align", "absmiddle");
+ 		eIMG.setAttribute("src", (ss_imagesPath + "pics/onePXSpacer.gif"));
+		eDIV.appendChild(eIMG);
+		eUseMenu_DIV.appendChild(eDIV);
+
+		// ...create the popup menu's footer...		
+		eDIV = document.createElement("div");
+		eDIV.className = "ss_objlist_menuBottomDIV";
+		eIMG        = document.createElement("img");
+		eIMG.height =
+		eIMG.width  = "4";
+ 		eIMG.setAttribute("border", "0");
+ 		eIMG.setAttribute("src", (ss_imagesPath + "pics/onePXSpacer.gif"));
+ 		eDIV.appendChild(eIMG);
+		eUseMenu_DIV.appendChild(eDIV);
+		
+		// ...and return the SPAN.
+		return eUseMenu_SPAN;
+	}
 	
+		
 	// Called to add a footer containing the push buttons to the
 	// dialog.
 	this.createFooter = function() {
@@ -6049,19 +6308,29 @@ function ssEditAppConfig(menuDIV) {
 
 
 	// Called when the selection in the eSEL SELECT widget changes.
-	this.extensionSelChanged = function(eSEL) {
+	this.extensionSELChanged = function(eSEL) {
 		// Is other than the first item selected?
 		var	iSEL = eSEL.selectedIndex;
 		if (0 < iSEL) {
-			// Yes!  Is the first item the select an extension string?
+			// Yes!  Is the first item the Select an Extension string?
 			if (eSEL.options[0].text == this.strings['sidebar.appConfig.SelectAnExtension']) {
 				// Yes!  Remove it.
-				eSEL.options[0] = null;
+				iSEL              -= 1;
+				eSEL.options[0]    = null;
 				eSEL.selectedIndex = (-1);
-				eSEL.selectedIndex = (iSEL - 1);
+				eSEL.selectedIndex = iSEL;
 			}
 		}
+		
+
+		// Is there a row besides this one that's already using this
+		// extension?
+		if ((-1) != this.findRowByExtension(eSEL.options[iSEL].text, eSEL.id)) {
+			// Yes!  Warn the user.
+			alert(this.strings['sidebar.appConfig.Warning.DuplicateExtension']);
+		}
 	}
+	
 	
 	// Returns true if ext1 and ext2 are the same file extensions and
 	// false otherwise.
@@ -6078,10 +6347,60 @@ function ssEditAppConfig(menuDIV) {
 		if (0 == ext2.indexOf('.')) ext2 = ext2.substring(1);
 		return(ext1.toLowerCase() == ext2.toLowerCase());
 	}
+	
+	
+	// Returns the index of a row using ext as its extension.  Returns
+	// -1 if such a row is not found.  Any row whose extension SELECT
+	// widget's ID is sSkipSELID is skipped.
+	this.findRowByExtension = function(ext, sSkipSELID) {
+		var	reply = (-1);
+		
+
+		// Do we have any overrides defined?
+		if (this.hasData()) {
+			var	eSEL;
+			var	eTR;
+			var	sSEL;
+			var	sSELID;
+		
+
+			// Yes!  If we're not skipping any of them...		
+			if (!sSkipSELID) {
+				// ...make sure we have a defined string for the skip 
+				// ...ID compare.
+				sSkipSELID = "";
+			}
+		
+		
+			// Scan the defined overrides.
+			for (i = this.NON_DATA_ROWS; i < this.dataTABLE.rows.length; i += 1) {
+				// Are we supposed to skip this row?
+				eTR    = this.dataTABLE.rows[i];
+				sSELID = ("extensionSELECT_" + String(eTR.n_id));
+				if (sSkipSELID != sSELID) {
+					// No!  Does it correspond to the extension in
+					// question?
+					eSEL = document.getElementById(sSELID);
+					sSEL = eSEL.options[eSEL.selectedIndex].text;
+					if (this.extensionsEqual(ext, sSEL)) {
+						// Yes!  Return its index.
+						reply = i;
+						break;
+					}
+				}
+			}
+		}
+		
+		
+		// If we get here, reply contains the index of the row
+		// containing ext of -1.  Return it.
+		return reply;	
+	}
 		
 	// Called when the user clicks the dialog's Add menu item.
-	this.handleAdd = function() {
+	this.handleMenu_Add = function() {
 		// Add a row...
+		this.hidePopups();
 		this.addRow('', '');
 
 		// ...and put the input focus in its extension SELECT widget.		
@@ -6091,15 +6410,16 @@ function ssEditAppConfig(menuDIV) {
 	
 	
 	// Called when the user clicks the dialog's Delete menu item.
-	this.handleDelete = function() {
+	this.handleMenu_Delete = function() {
 		var	count;
 		
 		
 		// Scan the rows in the data table...  (Note that the row at
 		// index 0 is for the column headers and the row at index 1 is
 		// for spacing above the data and we skip those.)
+		this.hidePopups();
 		count = 0;
-		for (var i = (this.dataTABLE.rows.length - 1); i >= 2 ; i -= 1) {
+		for (var i = (this.dataTABLE.rows.length - 1); i >= this.NON_DATA_ROWS ; i -= 1) {
 			// ...and check/uncheck each row.
 			eTR = this.dataTABLE.rows[i];
 			if (document.getElementById("overrideCBOX_" + String(eTR.n_id)).checked) {
@@ -6124,12 +6444,41 @@ function ssEditAppConfig(menuDIV) {
 	}	
 	
 	
+	// Called when the user clicks the dialog's Use menu item.
+	this.handleMenu_Use = function() {
+		this.hidePopups();
+		document.getElementById( "usePopupMenuSPAN" ).style.display = "";
+	}	
+	
+
+	// Called when the user clicks the dialog's Use menu item.
+	this.handleMenu_UseMSO = function() {
+		this.hidePopups();
+		this.applyUse(this.msoMap);
+	}	
+	
+
+	// Called when the user clicks the dialog's Use menu item.
+	this.handleMenu_UseOO = function() {
+		this.hidePopups();
+		this.applyUse(this.ooMap);
+	}	
+	
+
+	// Called when the user clicks the dialog's Use menu item.
+	this.handleMenu_UseSO = function() {
+		this.hidePopups();
+		this.applyUse(this.soMap);
+	}	
+	
+
 	// Called when the user clicks the dialog's OK push button.
 	this.handleSave = function() {
 		var	eINPUT;
 		
 
 		// Is the information in the data table valid? 		
+		this.hidePopups();
 		eINPUT = this.isDataValid();
 		if (null != eINPUT) {
 			// No!  isDataValid() will have told the user about the
@@ -6158,13 +6507,14 @@ function ssEditAppConfig(menuDIV) {
 		
 
 		// Is the select all checkbox checked or unchecked?		
+		this.hidePopups();
 		check = eCBOX.checked;
 		
 		
 		// Scan the rows in the data table...  (Note that the row at
 		// index 0 is for the column headers and the row at index 1 is
 		// for spacing above the data and we skip those.)
-		for (var i = 2; i < this.dataTABLE.rows.length; i += 1) {
+		for (var i = this.NON_DATA_ROWS; i < this.dataTABLE.rows.length; i += 1) {
 			// ...and check/uncheck each row.
 			eTR = this.dataTABLE.rows[i];
 			document.getElementById("overrideCBOX_" + String(eTR.n_id)).checked = check;
@@ -6172,19 +6522,24 @@ function ssEditAppConfig(menuDIV) {
 	}
 	
 	
-	// Called when the user clicks the dialog's Use menu item.
-	this.handleUse = function() {
-//!		...this needs to be implemented...		
-		alert("in handleUse( ...this needs to be implemented... )");
-	}	
-	
-
 	// Returns true if  there are any rows defined in the data table
 	// and false otherwise.
 	this.hasData = function() {
-		return (this.dataTABLE && (2 < this.dataTABLE.rows.length));
+		return (this.dataTABLE && (this.NON_DATA_ROWS < this.dataTABLE.rows.length));
 	}
 	
+
+	// Hides all the popups (menus, ...)
+	this.hidePopups = function() {
+		this.hideMenu_Use();
+	}
+
+
+	// Called when the user closes the Use menu.
+	this.hideMenu_Use = function() {
+		document.getElementById( "usePopupMenuSPAN" ).style.display = "none";
+	}
+
 
 	// Returns null if the information in the data table is valid or
 	// the object containing invalid data otherwise.
@@ -6202,7 +6557,7 @@ function ssEditAppConfig(menuDIV) {
 		
 
 		// Scan rows containing data in the data table.		
-		for (var i = 2; i < this.dataTABLE.rows.length; i += 1) {
+		for (var i = this.NON_DATA_ROWS; i < this.dataTABLE.rows.length; i += 1) {
 			// Does this row contain an extension selection?
 			eTR1     = this.dataTABLE.rows[i];
 			sID1     = String(eTR1.n_id);
@@ -6270,8 +6625,13 @@ function ssEditAppConfig(menuDIV) {
 		// ...the object constants...
 		this.NBSP =
 		this.NBSP2 =
-		this.NBSP4 =
+		this.NON_DATA_ROWS =
 		this.MENU_SPLIT = null;
+		
+		// ...the objects data maps...
+		this.msoMap =
+		this.ooMap =
+		this.soMap = null;
 		
 		// ...the object's data members...		
 		this.dataTABLE =	
@@ -6283,18 +6643,26 @@ function ssEditAppConfig(menuDIV) {
 
 		// ...and the object's methods.
 		this.addRow =
+		this.applyUse =
 		this.bundleData =		
 		this.closeDialog =
 		this.createDataTable =
+		this.createUseMenuSPAN =
 		this.createFooter =
-		this.extensionSelChanged =
+		this.extensionSELChanged =
 		this.extensionsEqual =
-		this.handleAdd =
-		this.handleDelete =
+		this.findRowByExtension =
+		this.handleMenu_Add =
+		this.handleMenu_Delete =
+		this.handleMenu_Use =
+		this.handleMenu_UseMSO =
+		this.handleMenu_UseOO =
+		this.handleMenu_UseSO =
 		this.handleSave =
 		this.handleSelectAll =
-		this.handleUse =
 		this.hasData =
+		this.hideMenu_Use =
+		this.hidePopups =
 		this.isDataValid =
 		this.mouseOut =
 		this.mouseOver =
