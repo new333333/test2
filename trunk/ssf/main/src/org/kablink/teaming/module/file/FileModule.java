@@ -274,7 +274,6 @@ public interface FileModule {
      * commits pending changes associated with the lock, and then clears
      * the lock. In all other conditions, this is noop and returns silently
      * (that is, this method is more tolerating than <code>lock</code> method).
-     * Lock count on the reservation object is adjusted accordingly. 
      * 
      * @param binder
      * @param entity
@@ -290,12 +289,12 @@ public interface FileModule {
      * Forcefully unlocks the file and commits pending changes associated
      * with it if any. This differs from <code>unlock</code> in that anyone
      * with appropriate privilege (eg. administrator) can call this to unlock
-     * a file that was not previously locked by the caller. 
+     * a file even if the file was not previously locked by the same user
+     * and also without passing in the correct lock ID. 
      * <p>
      * If the file is locked by anyone (regardless of whether the lock is
      * currently in effect or has expired), it commits pending changes 
-     * associated with the lock and releases the lock. Reservation reference 
-     * count on the enclosing entity is modified appropriately.
+     * associated with the lock and releases the lock.
      * 
      * @param binder
      * @param entity
