@@ -80,10 +80,16 @@ public class AddEntryController extends SAbstractController {
         	if (password == null || !password.equals(password2)) {
         		throw new PasswordMismatchException("errorcode.password.mismatch");
         	}
-			entryId= getProfileModule().addUser(entryType, inputData, fileMap, null);
-			setupViewEntry(response, binderId, entryId);
-			//flag reload of folder listing
-			response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
+    		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+    		if (operation.equals(WebKeys.OPERATION_RELOAD_OPENER) ) {
+    			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
+    			response.setRenderParameter(WebKeys.URL_BINDER_ID, "");				
+    		} else {
+				entryId= getProfileModule().addUser(entryType, inputData, fileMap, null);
+				setupViewEntry(response, binderId, entryId);
+				//flag reload of folder listing
+				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
+    		}
 		} else if (formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());				
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
