@@ -145,7 +145,7 @@ public class LoginFilter  implements Filter {
 
 	protected boolean guestAccessAllowed() {
 		if(ReleaseInfo.isLicenseRequiredEdition()) {
-			if(LicenseChecker.isAuthorizedByLicense("org.kablink.teaming.GuestAccess")) {
+			if(LicenseChecker.isAuthorizedByLicense("com.novell.teaming.GuestAccess")) {
 				return authenticationConfigAllowsGuestAccess();
 			}
 			else {
