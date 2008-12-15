@@ -648,11 +648,9 @@ div.ss_appConfigMenu {
 }
 div.ss_appConfigMenu a {
   font-family: ${ss_style_font_family};
-  font-size: ${ss_style_font_size}; 
+  font-size: ${ss_style_font_size};
+  color: #039; 
   text-decoration: underline;
-}
-div.ss_appConfigMenu a:hover {
-	color: #333333 !important;
 }
 
 div.ss_appConfigMenu ul {
