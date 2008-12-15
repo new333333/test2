@@ -189,6 +189,7 @@ public class ViewController extends  SAbstractController {
 				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY);
 				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, profilesBinder.getId().toString());
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_OPENER);
 				String[] nltArgs = new String[] {NLT.getDef(def.getTitle())};
 				String title = NLT.get("toolbar.new_with_arg", nltArgs);
 				element = DocumentHelper.createElement("child");

@@ -389,6 +389,7 @@ public class WebKeys {
 	public static final String OPERATION_RELOAD="reload";
 	public static final String OPERATION_RELOAD_CONFIRM="reload_confirm";
 	public static final String OPERATION_RELOAD_ENTRY_ATTACHMENTS = "reload_entry_attachments";
+	public static final String OPERATION_RELOAD_OPENER="reload_opener";
 	public static final String OPERATION_ADD_ENTRY_ATTACHMENT_BY_BROWSE = "add_entry_attachment_by_browse";
 	public static final String OPERATION_GET_CHANGE_LOG_ENTRY_FORM = "get_change_log_entry_form";
 	public static final String OPERATION_GET_CONDITION_ENTRY_ELEMENTS = "get_condition_entry_elements";
