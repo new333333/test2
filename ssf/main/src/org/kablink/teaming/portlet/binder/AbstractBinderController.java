@@ -67,6 +67,11 @@ public abstract class AbstractBinderController extends SAbstractController {
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 	}
+	protected void setupViewBinderInParent(ActionResponse response, Long binderId) {
+		//return to view binder parent
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_BINDER_IN_PARENT);
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+	}
 	protected void setupCloseWindow(ActionResponse response) {
 		//return to view entry
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW);

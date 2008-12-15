@@ -51,6 +51,7 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.NLT;
@@ -421,20 +422,22 @@ public class ListProfilesController extends   SAbstractController {
         if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
-		List defaultEntryDefinitions = binder.getEntryDefinitions();
-		if (!defaultEntryDefinitions.isEmpty()) {
-			// Only one option
-			Definition def = (Definition) defaultEntryDefinitions.get(0);
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-			String[] nltArgs = new String[] {NLT.getDef(def.getTitle())};
-			String title = NLT.get("toolbar.new_with_arg", nltArgs);
-			Map qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			qualifiers.put("highlight", new Boolean(true));
-			toolbar.addToolbarMenu("1_add", title, adapterUrl.toString(), qualifiers);
+		if (getProfileModule().testAccess(binder, ProfileOperation.addEntry)) {
+			List defaultEntryDefinitions = binder.getEntryDefinitions();
+			if (!defaultEntryDefinitions.isEmpty()) {
+				// Only one option
+				Definition def = (Definition) defaultEntryDefinitions.get(0);
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+				adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+				String[] nltArgs = new String[] {NLT.getDef(def.getTitle())};
+				String title = NLT.get("toolbar.new_with_arg", nltArgs);
+				Map qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
+				qualifiers.put("highlight", new Boolean(true));
+				toolbar.addToolbarMenu("1_add", title, adapterUrl.toString(), qualifiers);
+			}
 		}
 		return toolbar;
 	}

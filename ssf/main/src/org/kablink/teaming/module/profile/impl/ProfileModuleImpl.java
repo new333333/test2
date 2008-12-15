@@ -181,7 +181,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	public void checkAccess(ProfileBinder binder, ProfileOperation operation) throws AccessControlException {
 		switch (operation) {
 			case addEntry:
-		    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
+		    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_ENTRIES);
 		    	break;
 			case manageEntries:
 		    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);

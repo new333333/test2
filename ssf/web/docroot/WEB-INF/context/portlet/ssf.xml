@@ -7,6 +7,7 @@
 	<bean id="viewController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ViewController" />
 	<bean id="closeWindowController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.CloseWindowController" />
 	<bean id="reloadOpenerController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ReloadOpenerController" />
+	<bean id="viewBinderInParentController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ViewBinderInParentController" />
 	<bean id="editController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.EditController" />
 	<bean id="appletResponseController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.AppletResponseController" />
 
@@ -99,6 +100,7 @@
 						<entry key="modify_binder"><ref bean="binderModifyController"/></entry>
 						<entry key="modify_dashboard"><ref bean="dashboardModifyController"/></entry>
 						<entry key="reload_opener"><ref bean="reloadOpenerController"/></entry>
+						<entry key="view_binder_in_parent"><ref bean="viewBinderInParentController"/></entry>
 						<entry key="reload_opener_parent"><ref bean="reloadOpenerController"/></entry>
 						<entry key="advanced_search"><ref bean="advancedSearchController"/></entry>
 						<entry key="clipboard"><ref bean="clipboardController"/></entry>

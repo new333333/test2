@@ -137,7 +137,7 @@ public class ModifyBinderController extends AbstractBinderController {
 				//get view data, before binder is deleted
 				setupViewBinder(response, binder);	
 				getBinderModule().deleteBinder(binderId, Boolean.parseBoolean(deleteSource), null);
-				setupReloadOpener(response, parentBinder.getId());
+				setupViewBinderInParent(response, parentBinder.getId());
 			} else {
 				setupReloadOpener(response, binderId);			
 			}	

@@ -28,6 +28,7 @@
  */
 package org.kablink.teaming.portlet.administration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Iterator;
@@ -173,6 +174,28 @@ public class ViewController extends  SAbstractController {
 				url.setWindowState(WindowState.MAXIMIZED);
 				url.setPortletMode(PortletMode.VIEW);
 				element.addAttribute("url", url.toString());
+				elements.put(element.attributeValue("title"), element);
+			}
+		}
+		
+		//Add user
+		ProfileBinder profilesBinder = getProfileModule().getProfileBinder();
+		if (getProfileModule().testAccess(profilesBinder, ProfileOperation.addEntry)) {
+			List defaultEntryDefinitions = profilesBinder.getEntryDefinitions();
+			if (!defaultEntryDefinitions.isEmpty()) {
+				// Only one option
+				Definition def = (Definition) defaultEntryDefinitions.get(0);
+				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, profilesBinder.getId().toString());
+				adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+				String[] nltArgs = new String[] {NLT.getDef(def.getTitle())};
+				String title = NLT.get("toolbar.new_with_arg", nltArgs);
+				element = DocumentHelper.createElement("child");
+				element.addAttribute("title", title);
+				element.addAttribute("image", "bullet");
+				element.addAttribute("id", String.valueOf(nextId++));
+				element.addAttribute("url", adapterUrl.toString());
 				elements.put(element.attributeValue("title"), element);
 			}
 		}
