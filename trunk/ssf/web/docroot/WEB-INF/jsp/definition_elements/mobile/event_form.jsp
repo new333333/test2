@@ -30,11 +30,19 @@
 %>
 <% //Event widget form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%
+	String caption1 = (String) request.getAttribute("property_caption");
+	String caption2 = NLT.get("general.required.caption", new Object[]{caption1});
+%>
 
 <div class="ss_entryContent">
-	<div class="ss_labelAbove" id='${property_name}_label'>${property_caption}<c:if test="${property_required}"><span class="ss_required">*</span></c:if></div>
-	<div id="${property_name}_startError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.startDateError"/></span></div>
-	<div id="${property_name}_endError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.endDateError"/></span></div>
+	<div class="ss_labelAbove" id='${property_name}_label'>
+	${property_caption}<c:if test="${property_required}"><span 
+	  id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if></div>
+	<div id="${property_name}_startError" style="visibility:hidden; display:none;"><span 
+	  class="ss_formError"><ssf:nlt tag="validation.startDateError"/></span></div>
+	<div id="${property_name}_endError" style="visibility:hidden; display:none;"><span 
+	  class="ss_formError"><ssf:nlt tag="validation.endDateError"/></span></div>
 	<c:choose>
 		<c:when test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
 			<c:set var="ev" value="${ssDefinitionEntry.customAttributes[property_name].value}" />	

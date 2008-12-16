@@ -34,7 +34,7 @@
  <c:if test='${empty property_number}'>
   <c:set var="property_number" value="1"/>
  </c:if>
-<div class="ss_entryContent" ${inline}>
+<div class="ss_entryContent">
 <%@ include file="/WEB-INF/jsp/definition_elements/file_browse.jsp" %>
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
 <span class="ss_bold"><ssf:nlt tag="form.attachments.currentFiles" /></span>

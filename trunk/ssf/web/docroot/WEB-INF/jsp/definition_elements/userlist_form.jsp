@@ -31,6 +31,10 @@
 <% // User list %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%
+	String caption1 = (String) request.getAttribute("property_caption");
+	String caption2 = NLT.get("general.required.caption", new Object[]{caption1});
+%>
+<%
 	String propertyName = (String) request.getAttribute("property_name");
 	java.util.List userList = new java.util.ArrayList();
 	java.util.Set userListSet = new java.util.HashSet();
@@ -47,7 +51,8 @@
 %>
 </c:if>
 <div class="ss_entryContent">
-<div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
+<div class="ss_labelAbove">${property_caption}<c:if test="${property_required}"><span 
+  id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if></div>
 <c:if test="${empty ssReadOnlyFields[property_name]}">
 <ssf:find formName="${formName}" formElement="${property_name}" type="user" 
   userList="<%= userListSet %>"/>

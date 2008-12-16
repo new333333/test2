@@ -30,6 +30,10 @@
 %>
 <%@ page import="java.util.Date" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%
+	String caption1 = (String) request.getAttribute("property_caption");
+	String caption2 = NLT.get("general.required.caption", new Object[]{caption1});
+%>
 <c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
 <%
 	boolean overdue = false;
@@ -128,7 +132,9 @@
 			
 			<div class="ss_questionContainer" id="${ss_namespace}_${property_name}_question_${question.index}">
 				<p class="ss_survey_question" style="zoom:1;">
-					<c:out value="${question.question}" escapeXml="false"/><c:if test="${question.requiredAnswer && !showResults}"><span class=\"ss_required\">*</span></c:if>
+					<c:out value="${question.question}" escapeXml="false"/><c:if 
+					  test="${question.requiredAnswer && !showResults}"><span 
+					  id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if>
 				</p>
 
 				<ol>
@@ -218,7 +224,9 @@
 		<c:forEach var="question" items="${surveyModel.questions}" >
 			<div class="ss_questionContainer" id="${ss_namespace}_${property_name}_question_${question.index}">
 				<p class="ss_survey_question" style="zoom:1;">
-					<c:out value="${question.question}" escapeXml="false"/><c:if test="${question.requiredAnswer && !showResults}"><span class=\"ss_required\">*</span></c:if>
+					<c:out value="${question.question}" escapeXml="false"/><c:if 
+					test="${question.requiredAnswer && !showResults}"><span 
+					id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if>
 					<a href="javascript: //" onclick="ssSurvey.clearAnswers(${question.index}, [<c:forEach var="answer" items="${question.answers}" varStatus="status">${answer.index}<c:if test="${!status.last}">,</c:if></c:forEach>], '${ss_namespace}_${property_name}')"><ssf:nlt tag="survey.clear"/></a>
 				</p>
 				

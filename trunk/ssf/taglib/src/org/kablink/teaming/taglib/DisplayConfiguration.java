@@ -199,6 +199,7 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 								//At a minimum, make sure the name and caption variables are defined
 								req.setAttribute("property_name", "");
 								req.setAttribute("property_caption", "");
+								req.setAttribute("property_required", "false");
 									
 								//Also set up the default values for all properties defined in the definition configuration
 								//  These will be overwritten by the real values (if they exist) below

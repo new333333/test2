@@ -37,6 +37,7 @@
 	String orgRadioGroupName = (String) request.getAttribute("radioGroupName");
 	request.setAttribute("radioGroupName", elementName);
 	String caption = (String) request.getAttribute("property_caption");
+	String caption2 = NLT.get("general.required.caption", new Object[]{caption});
 	if (caption != null && !caption.equals("")) {
 		caption = caption;
 	}
@@ -44,7 +45,7 @@
 	String required = (String) request.getAttribute("property_required");
 	if (required == null) {required = "";}
 	if (required.equals("true")) {
-		required = "<span class=\"ss_required\">*</span>";
+		required = "<span id=\"ss_required_"+elementName+"\" title=\""+caption2+"\" class=\"ss_required\">*</span>";
 	} else {
 		required = "";
 	}

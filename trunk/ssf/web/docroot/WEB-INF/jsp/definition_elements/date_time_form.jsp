@@ -33,6 +33,10 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="org.kablink.teaming.util.CalendarHelper" %>
 <c:if test="${empty ssReadOnlyFields[property_name]}">
+<%
+	String caption1 = (String) request.getAttribute("property_caption");
+	String caption2 = NLT.get("general.required.caption", new Object[]{caption1});
+%>
 
 <style type="text/css">
         @import "<html:rootPath />js/dojo/dijit/themes/tundra/tundra.css";
@@ -40,8 +44,11 @@
 </style>
 
 <div class="ss_entryContent tundra">
-	<span class="ss_labelAbove" id='${property_name}_label'>${property_caption}<c:if test="${property_required}"><span class="ss_required">*</span></c:if></span>
-	<div id="${property_name}_error" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="date.validate.error"/></span></div>
+	<span class="ss_labelAbove" id='${property_name}_label'>
+	${property_caption}<c:if test="${property_required}"><span 
+	  id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if></span>
+	<div id="${property_name}_error" style="visibility:hidden; display:none;"><span 
+	  class="ss_formError"><ssf:nlt tag="date.validate.error"/></span></div>
 	
 
 	<c:set var="initDate" value="<%= new Date() %>"/>

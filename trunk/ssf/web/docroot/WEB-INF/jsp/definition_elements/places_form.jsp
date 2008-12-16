@@ -31,6 +31,10 @@
 <% // Places list %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%
+	String caption1 = (String) request.getAttribute("property_caption");
+	String caption2 = NLT.get("general.required.caption", new Object[]{caption1});
+%>
+<%
 	String propertyName = (String)request.getAttribute("property_name");
 	java.util.List propertyValues = (java.util.List)request.getAttribute("propertyValues_"+propertyName);
 	java.util.Set folderIds = new java.util.HashSet();
@@ -65,7 +69,8 @@
 <c:set var="folderId" value="<%= folderId %>"/>
 <c:set var="folderIds" value="<%= folderIds %>"/>
 <div class="ss_entryContent">
-	<div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
+	<div class="ss_labelAbove">${property_caption}<c:if test="${property_required}"><span 
+  id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if></div>
   
   	<c:choose>
 		<c:when test="${!empty ssDomTree}">

@@ -33,6 +33,7 @@
 <%
 	String elementName = (String) request.getAttribute("property_name");
 	String caption = (String) request.getAttribute("property_caption");
+	String caption2 = NLT.get("general.required.caption", new Object[]{caption});
 	String width = (String) request.getAttribute("property_width");
 	String rows = (String) request.getAttribute("property_rows");
 	if (rows == null || rows.equals("")) {rows = "4";}
@@ -49,7 +50,7 @@
 	String required = (String) request.getAttribute("property_required");
 	if (required == null) {required = "";}
 	if (required.equals("true")) {
-		required = "<span class=\"ss_required\">*</span>";
+		required = "<span id=\"ss_required_"+elementName+"\" title=\""+caption2+"\" class=\"ss_required\">*</span>";
 	} else {
 		required = "";
 	}

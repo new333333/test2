@@ -30,6 +30,10 @@
 %>
 <% //Title form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%
+	String caption1 = (String) request.getAttribute("property_caption");
+	String caption2 = NLT.get("general.required.caption", new Object[]{caption1});
+%>
 <c:if test="${!property_generated}">
 
 <c:if test='${ssBinderMarker}'>
@@ -63,7 +67,11 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 			}
 		%>
 		<div class="ss_entryContent">
-		<div class="ss_labelAbove" id="${property_name}_label"><c:out value="${property_caption}"/></div>
+		<div class="ss_labelAbove" id="${property_name}_label">
+		  ${property_caption}<c:if test="${property_required}"><span 
+			  id="ss_required_${property_name}" title="<ssf:escapeJavaScript 
+			  value="<%= caption2 %>"/>" class="ss_required">*</span></c:if>
+		</div>
 <c:if test='${ssBinderMarker}'>
   <div class="needed-because-of-ie-bug"><div id="ss_titleCheck" style="display:none; visibility:hidden;" ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
 </c:if>

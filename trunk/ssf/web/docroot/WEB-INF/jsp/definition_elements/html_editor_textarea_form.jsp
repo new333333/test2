@@ -39,7 +39,9 @@
 //  external_image_list_url: "/foxtrot/pics/mce_clipart.js", 
 
 
+	String elementName = (String) request.getAttribute("property_name");
 	String caption = (String) request.getAttribute("property_caption");
+	String caption2 = NLT.get("general.required.caption", new Object[]{caption});
 	String height = (String) request.getAttribute("property_height");
 	if (height == null || height.equals("")) {
 		height = "300";
@@ -59,7 +61,7 @@
 	String required = (String) request.getAttribute("property_required");
 	if (required == null) {required = "";}
 	if (required.equals("true")) {
-		required = "<span class=\"ss_required\">*</span>";
+		required = "<span id=\"ss_required_"+elementName+"\" title=\""+caption2+"\" class=\"ss_required\">*</span>";
 	} else {
 		required = "";
 	}
