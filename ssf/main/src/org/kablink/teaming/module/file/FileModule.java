@@ -302,8 +302,8 @@ public interface FileModule {
      * @throws UncheckedIOException
      * @throws RepositoryServiceException
      */
-    //public void forceUnlock(Binder binder, DefinableEntity entity, FileAttachment fa) 
-    //	throws UncheckedIOException, RepositoryServiceException;
+    public void forceUnlock(Binder binder, DefinableEntity entity, FileAttachment fa) 
+    	throws UncheckedIOException, RepositoryServiceException;
     
     /**
      * Brings locks and reservation state up-to-date by processing expired
