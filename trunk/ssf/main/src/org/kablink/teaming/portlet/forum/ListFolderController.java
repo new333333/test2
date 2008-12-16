@@ -58,6 +58,7 @@ import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.ProfilesBinderHelper;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
@@ -235,7 +236,10 @@ public class ListFolderController extends  SAbstractController {
 			try {
 				Binder binder = getBinderModule().getBinder(binderId);
 				if (binder.getEntityType().name().equals(EntityIdentifier.EntityType.workspace.name())) {
-					return WorkspaceTreeHelper.setupWorkspaceBeans(this, binderId, request, response);					}
+					return WorkspaceTreeHelper.setupWorkspaceBeans(this, binderId, request, response);
+				} else if (binder.getEntityType().name().equals(EntityIdentifier.EntityType.profiles.name())) {
+					return ProfilesBinderHelper.setupProfilesBinderBeans(this, binderId, request, response);
+				}
 			} catch(NoBinderByTheIdException e) {
 			} catch(AccessControlException e) {
 		 		Map<String,Object> model = new HashMap<String,Object>();
