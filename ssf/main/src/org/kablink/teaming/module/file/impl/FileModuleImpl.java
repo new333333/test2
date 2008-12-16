@@ -746,6 +746,21 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
     }
 
+    public void forceUnlock(Binder binder, DefinableEntity entity, FileAttachment fa) 
+    throws UncheckedIOException, RepositoryServiceException {
+		FileAttachment.FileLock lock = fa.getFileLock();
+
+		if(lock != null ) { // lock exists
+			// Commit any pending changes associated with the lock. In this 
+			// case, we don't care if the lock is effective or expired.
+			commitPendingChanges(binder, entity, fa, lock);
+			
+			fa.setFileLock(null); // Clear the lock
+			
+			triggerUpdateTransaction();
+		}
+    }
+
 
 	public void RefreshLocks(Binder binder, DefinableEntity entity) 
 		throws RepositoryServiceException, UncheckedIOException {
