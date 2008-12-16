@@ -28,6 +28,10 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%
+	String caption1 = (String) request.getAttribute("property_caption");
+	String caption2 = NLT.get("general.required.caption", new Object[]{caption1});
+%>
 <c:set var="elementName" value="${property_name}"/>
 <c:set var="caption" value="${property_caption}"/>
 <c:set var="repositoryName" value="${property_storage}"/>
@@ -38,8 +42,9 @@
 </c:if>
 
 <c:set var="required" value=""/>
-<c:if test='${property_required}'>
-<c:set var="required" value="<span class='required'>*</span>"/>
+<c:if test="${property_required}">
+<c:set var="caption3" value="<%= caption2 %>"/>
+<c:set var="required" value="<span id=\"ss_required_${property_name}\" title=\"${caption3}\" class=\"ss_required\">*</span>"/>
 </c:if>
 
 <c:set var="count" value="1"/>

@@ -92,6 +92,9 @@
 					optionCaption="__file_items_from_the_entry_form_for_title"/>
 				<help>ihelp.designers.source_data</help>					
 			</property>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/title_form.jsp" />
@@ -1884,9 +1887,6 @@
 			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/checkbox_form.jsp" />
@@ -2381,9 +2381,6 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="title" definitionType="1" caption="__title" />
@@ -2411,9 +2408,6 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
@@ -2441,9 +2435,6 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="title" definitionType="1" caption="__title" />
@@ -2471,9 +2462,6 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />

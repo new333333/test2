@@ -39,6 +39,7 @@
 	String elementName = (String) request.getAttribute("property_name");
 	request.setAttribute("selectboxName", elementName);
 	String caption = (String) request.getAttribute("property_caption");
+	String caption2 = NLT.get("general.required.caption", new Object[]{caption});
 	String multiple = (String) request.getAttribute("property_multipleAllowed");
 	if (multiple != null && multiple.equals("true")) {
 		multiple = "multiple";
@@ -51,13 +52,10 @@
 	} else {
 		size = "size='" + size + "'";
 	}
-	if (caption != null && !caption.equals("")) {
-		caption += "<br>\n";
-	}
 	String required = (String) request.getAttribute("property_required");
 	if (required == null) {required = "";}
 	if (required.equals("true")) {
-		required = "<span class=\"ss_required\">*</span>";
+		required = "<span id=\"ss_required_"+elementName+"\" title=\""+caption2+"\" class=\"ss_required\">*</span>";
 	} else {
 		required = "";
 	}
@@ -76,7 +74,7 @@
 </c:if>
 
 <div class="ss_entryContent">
-<div class="ss_labelLeft"><%= caption %><%= required %></div>
+<div class="ss_labelAbove"><%= caption %><%= required %></div>
 
 <c:if test="${empty ssReadOnlyFields[property_name]}">
 <select 

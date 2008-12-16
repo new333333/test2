@@ -43,8 +43,7 @@
 <c:set var="required" value=""/>
 <input type="checkbox" name="${property_name}XXX" 
   id="checkbox_${property_name}XXX" <c:out value="${cb_checked}"/> onClick="ss_saveCheckBoxValue(this, 'hidden_${property_name}');"/> 
- <span class="ss_labelRight"><label for="checkbox_${property_name}XXX">${property_caption}</label></span><c:if 
-  test="${property_required}" ><span class="ss_required">*</span></c:if>
+ <span class="ss_labelRight"><label for="checkbox_${property_name}XXX">${property_caption}</label></span>
 </c:if>
 <c:if test="${!empty ssReadOnlyFields[property_name] }">
 	<c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >

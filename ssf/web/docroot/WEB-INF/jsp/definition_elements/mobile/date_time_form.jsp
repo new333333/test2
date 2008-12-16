@@ -33,10 +33,15 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="org.kablink.teaming.util.CalendarHelper" %>
 <c:if test="${empty ssReadOnlyFields[property_name]}">
+<%
+	String caption1 = (String) request.getAttribute("property_caption");
+	String caption2 = NLT.get("general.required.caption", new Object[]{caption1});
+%>
 
 <div class="ss_entryContent">
 	<span class="ss_labelAbove" id='${property_name}_label'>
-	${property_caption}<c:if test="${property_required}"><span class="ss_required">*</span></c:if></span>
+	${property_caption}<c:if test="${property_required}"><span 
+	  id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if></span>
 
 	<c:set var="initDate" value="<%= new Date() %>"/>
 	<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
