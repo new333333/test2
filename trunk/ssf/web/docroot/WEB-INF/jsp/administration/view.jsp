@@ -221,10 +221,12 @@ if (typeof ss_setAdministrationIframeSize == "undefined")
 						    showIdRoutine="ss_showAdminMenuOption${renderResponse.namespace}" />
 						</ssf:ifnotaccessible>
 						<ssf:ifaccessible>
-						<ssf:tree treeName="${adminTreeName}" 
-						  treeDocument="${ssAdminDomTree}" 
-						  flat="true"
-						  rootOpen="true" />
+						  <ssf:tree treeName="${adminTreeName}" 
+						    treeDocument="${ssAdminDomTree}" 
+						    showIdRoutine="ss_showAdminMenuOption${renderResponse.namespace}" 
+						    flat="true"
+						    rootOpen="true" 
+						    allOpen="true" />
 						</ssf:ifaccessible>
 					</div>
 				</td>
