@@ -5955,16 +5955,26 @@ function ssEditAppConfig(menuDIV) {
 		eTABLE.border      = "0";
 		eTABLE.cellSpacing = "0";
 		eTABLE.cellPadding = "3";
-		eTABLE.className   = "ss_objlist_top";
+		eTABLE.className   = "ss_objlist_table_top";
 		eTABLE.width       = "100%";
 		eDIV.appendChild(eTABLE);
 		
 		eTR           = eTABLE.insertRow(eTABLE.rows.length);
-		eTR.className = "ss_objlist_tablehead";
+		eTR.className = "ss_objlist_table_tablehead";
 	
 		eTD = eTR.insertCell(eTR.cells.length);
-		eTD.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Banner']));
-
+		eTD.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Banner'] + this.NBSP2));
+		eA         = document.createElement("a");
+		eA.href    = "#";
+		eA.onclick = function(e) {ss_helpSystem.showInlineHelpSpotInfo(this, 'sidebar/edit_app_config', '', 0, 0, 10, 10);return false;};
+		eIMG       = document.createElement("img");
+ 		eIMG.alt   =
+ 		eIMG.title = this.strings['sidebar.appConfig.Banner.Help'];
+ 		eIMG.setAttribute("align", "absmiddle");
+ 		eIMG.setAttribute("border", "0");
+ 		eIMG.setAttribute("src", (ss_imagesPath + "pics/sym_s_help.gif"));
+ 		eA.appendChild(eIMG);
+ 		eTD.appendChild(eA);
 		eTD = eTR.insertCell(eTR.cells.length);
 		eTD.appendChild(document.createTextNode(this.NBSP));
 		
@@ -5984,7 +5994,7 @@ function ssEditAppConfig(menuDIV) {
 		eTR = eTABLE.insertRow(eTABLE.rows.length);
 	
 		eTD           = eTR.insertCell(eTR.cells.length);
-		eTD.className = "ss_objlist_smalltext";
+		eTD.className = "ss_objlist_table_smalltext";
 		eTD.vAlign    = "middle";
 		eTD.width     = "90%";
 		eTD.bgColor   = "#efeeec";
@@ -6017,12 +6027,12 @@ function ssEditAppConfig(menuDIV) {
 		eA.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Menu.Use']));
 		eIMG           = document.createElement("img");
  		eIMG.id        = "useMenuArrow";
- 		eIMG.className = "ss_objlist_margin5l";
+ 		eIMG.className = "ss_objlist_menu_margin";
  		eIMG.alt       =
  		eIMG.title     = this.strings['sidebar.appConfig.Menu.Alt.Open'];
  		eIMG.setAttribute("align", "absmiddle");
  		eIMG.setAttribute("border", "0");
- 		eIMG.setAttribute("src", (ss_imagesPath + "pics/objlistMenuOpen.gif"));
+ 		eIMG.setAttribute("src", (ss_imagesPath + "pics/menudown.gif"));
 		eA.appendChild(eIMG);
 		eDIV.appendChild(eA);
 		eDIV.appendChild(this.createUseMenuSPAN());		
@@ -6066,7 +6076,7 @@ function ssEditAppConfig(menuDIV) {
 		eTR = eTABLE.insertRow(eTABLE.rows.length);
 		
 		eTD           = eTR.insertCell(eTR.cells.length);
-		eTD.className = "ss_objlist_columnhead";
+		eTD.className = "ss_objlist_table_columnhead";
 		eTD.width     = "1%";
 		eCBOX         = document.createElement("input");
 		eCBOX.n_editAppConfig = this;
@@ -6076,32 +6086,32 @@ function ssEditAppConfig(menuDIV) {
 		eTD.appendChild(eCBOX);
 		
 		eTD           = eTR.insertCell(eTR.cells.length);
-		eTD.className = "ss_objlist_columnhead";
+		eTD.className = "ss_objlist_table_columnhead";
 		eTD.width     = "1%";
 		eTD.appendChild(document.createTextNode(this.NBSP));
 		
 		eTD          = eTR.insertCell(eTR.cells.length);
-		eTD.className = "ss_objlist_columnhead";
+		eTD.className = "ss_objlist_table_columnhead";
 		eTD.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Column.Extension']));
 
 		eTD           = eTR.insertCell(eTR.cells.length);
-		eTD.className = "ss_objlist_columnhead";
+		eTD.className = "ss_objlist_table_columnhead";
 		eTD.width     = "1%";
 		eTD.appendChild(document.createTextNode(this.NBSP));
 		
 		eTD          = eTR.insertCell(eTR.cells.length);
-		eTD.className = "ss_objlist_columnhead";
+		eTD.className = "ss_objlist_table_columnhead";
 		eTD.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Column.Application']));
 		
 		eTD           = eTR.insertCell(eTR.cells.length);
-		eTD.className = "ss_objlist_columnhead";
+		eTD.className = "ss_objlist_table_columnhead";
 		eTD.width     = "100%";
 		eTD.appendChild(document.createTextNode(this.NBSP));
 		
 		eTR                   = eTABLE.insertRow(eTABLE.rows.length);
 		eTD                   = eTR.insertCell(eTR.cells.length);
 		eTD.id                = "emptyRowTD";
-		eTD.className         = "ss_objlist_mediumtext";
+		eTD.className         = "ss_objlist_table_mediumtext";
 		eTD.colSpan           = "6";
 		eTD.style.paddingLeft = "2em";
 		eTD.style.paddingTop  = "2em";
@@ -6128,24 +6138,24 @@ function ssEditAppConfig(menuDIV) {
 		eUseMenu_SPAN.style.position = "relative";
 		eUseMenu_SPAN.style.display  = "none";
 		eUseMenu_DIV                 = document.createElement("div");
-		eUseMenu_DIV.className       = "ss_objlist_popupMenuDIV";
+		eUseMenu_DIV.className       = "ss_objlist_menu_popupDIV";
 		eUseMenu_SPAN.appendChild(eUseMenu_DIV);
 
 		// ...create the popup menu's title bar...		
 		eDIV = document.createElement("div");
-		eDIV.className = "ss_objlist_menuTitleDIV";
+		eDIV.className = "ss_objlist_menu_titleDIV";
 		eA = document.createElement("a");
 		eA.onclick = function(e){this.n_editAppConfig.hideMenu_Use(); return false;}
 		eA.href = "#";
 		eA.alt = eA.title = "";
 		eA.n_editAppConfig = this;
 		eIMG = document.createElement("img");
- 		eIMG.className = "ss_objlist_menuTitleIMG";
+ 		eIMG.className = "ss_objlist_menu_titleIMG";
  		eIMG.alt       =
  		eIMG.title     = this.strings['sidebar.appConfig.Menu.Alt.Close'];
  		eIMG.setAttribute("align", "absmiddle");
  		eIMG.setAttribute("border", "0");
- 		eIMG.setAttribute("src", (ss_imagesPath + "pics/objlistMenuClose.gif"));
+ 		eIMG.setAttribute("src", (ss_imagesPath + "pics/popup_close_box.gif"));
  		eA.appendChild(eIMG);
 		eDIV.appendChild(eA);
 		eDIV.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Menu.Use']));
@@ -6153,7 +6163,7 @@ function ssEditAppConfig(menuDIV) {
 
 		// ...create the Open Office menu item...		
 		eDIV           = document.createElement("div");
-		eDIV.className = "ss_objlist_menuItemDIV";
+		eDIV.className = "ss_objlist_menu_itemDIV";
 		eIMG           = document.createElement("img");
 		eIMG.id        = "useOOMenuItemIMG";
 		eIMG.height    =
@@ -6187,7 +6197,7 @@ function ssEditAppConfig(menuDIV) {
 		
 		// ...create the Star Office menu item...		
 		eDIV           = document.createElement("div");
-		eDIV.className = "ss_objlist_menuItemDIV";
+		eDIV.className = "ss_objlist_menu_itemDIV";
 		eIMG           = document.createElement("img");
 		eIMG.id        = "useSOMenuItemIMG";
 		eIMG.height    =
@@ -6221,7 +6231,7 @@ function ssEditAppConfig(menuDIV) {
 
 		// ...create the Microsoft Office menu item...		
 		eDIV           = document.createElement("div");
-		eDIV.className = "ss_objlist_menuItemDIV";
+		eDIV.className = "ss_objlist_menu_itemDIV";
 		eIMG           = document.createElement("img");
 		eIMG.id        = "useMSOMenuItemIMG";
 		eIMG.height    =
@@ -6255,7 +6265,7 @@ function ssEditAppConfig(menuDIV) {
 
 		// ...create the popup menu's footer...		
 		eDIV = document.createElement("div");
-		eDIV.className = "ss_objlist_menuBottomDIV";
+		eDIV.className = "ss_objlist_menu_bottomDIV";
 		eIMG        = document.createElement("img");
 		eIMG.height =
 		eIMG.width  = "4";
@@ -6278,7 +6288,7 @@ function ssEditAppConfig(menuDIV) {
 		
 		// Create a footer div to contain the push buttons... 
 		eDIV = document.createElement("div");
-		eDIV.className = "ss_objlist_footer";
+		eDIV.className = "ss_objlist_table_footer";
 		this.menuDIV.appendChild(eDIV);
 
 		// ...create the OK push button...		
@@ -6693,7 +6703,7 @@ function ssEditAppConfig(menuDIV) {
 	    eDIV.style.width = "400px";
 	    eDIV.style.padding = "10px";
 	    eSPAN = document.createElement("span");
-	    eSPAN.className = "ss_objlist_instructions";
+	    eSPAN.className = "ss_objlist_table_instructions";
 	    eSPAN.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Info']));
 	    eDIV.appendChild(eSPAN);
 	    this.menuDIV.appendChild(eDIV);
