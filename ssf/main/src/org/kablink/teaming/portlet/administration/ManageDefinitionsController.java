@@ -133,44 +133,50 @@ public class ManageDefinitionsController extends  SAbstractController {
 			Map qualifiers = new HashMap();
 			qualifiers.put("onClick", "{return true}");
 			//Definition builder - Entry form designer
-			if (binder == null) {
-				//Definition builder - Profile listing designer
-				if (getDefinitionModule().testAccess(binder, Definition.PROFILE_VIEW, DefinitionOperation.manageDefinition)) {
+			List defs = getDefinitionModule().getDefinitions(binderId, Boolean.FALSE);
+			//Definition builder - Profile listing designer
+			if (getDefinitionModule().testAccess(binder, Definition.PROFILE_VIEW, DefinitionOperation.manageDefinition)) {
+				if (hasDefinitionType(defs, Definition.PROFILE_VIEW)) {
 					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 					fillTypeElement(element, "__profile_views", String.valueOf(Definition.PROFILE_VIEW));
+					fillChildElements(element, Definition.PROFILE_VIEW, defs);
 					designers.put(element.attributeValue("title"), element);
-					configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='profileViewDefinition']");
-					url = response.createRenderURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
-					url.setParameter("definitionType", String.valueOf(Definition.PROFILE_VIEW));
-					toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
 				}
-				
-				//Definition builder - Profile designer
-				if (getDefinitionModule().testAccess(binder, Definition.PROFILE_ENTRY_VIEW, DefinitionOperation.manageDefinition)) {
+				configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='profileViewDefinition']");
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
+				url.setParameter("definitionType", String.valueOf(Definition.PROFILE_VIEW));
+				toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
+			}
+			
+			//Definition builder - Profile designer
+			if (getDefinitionModule().testAccess(binder, Definition.PROFILE_ENTRY_VIEW, DefinitionOperation.manageDefinition)) {
+				if (hasDefinitionType(defs, Definition.PROFILE_ENTRY_VIEW)) {
 					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 					fillTypeElement(element, "__profile_entry_view", String.valueOf(Definition.PROFILE_ENTRY_VIEW));
+					fillChildElements(element, Definition.PROFILE_ENTRY_VIEW, defs);
 					designers.put(element.attributeValue("title"), element);
-					//cannot add new ones
 				}
-				
-				
-				//Definition builder - User workspace designer
-				if (getDefinitionModule().testAccess(binder, Definition.USER_WORKSPACE_VIEW, DefinitionOperation.manageDefinition)) {
+				//cannot add new ones
+			}
+			
+			
+			//Definition builder - User workspace designer
+			if (getDefinitionModule().testAccess(binder, Definition.USER_WORKSPACE_VIEW, DefinitionOperation.manageDefinition)) {
+				if (hasDefinitionType(defs, Definition.USER_WORKSPACE_VIEW)) {
 					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 					fillTypeElement(element, "__user_workspace_view", String.valueOf(Definition.USER_WORKSPACE_VIEW));
+					fillChildElements(element, Definition.USER_WORKSPACE_VIEW, defs);
 					designers.put(element.attributeValue("title"), element);
-					configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='userWorkspaceViewDefinition']");
-					url = response.createRenderURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
-					url.setParameter("definitionType", String.valueOf(Definition.USER_WORKSPACE_VIEW));
-					toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
 				}
-			};
-			List defs=null;
-			if (binder != null) defs = getDefinitionModule().getDefinitions(binder.getId(), Boolean.FALSE);
+				configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='userWorkspaceViewDefinition']");
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
+				url.setParameter("definitionType", String.valueOf(Definition.USER_WORKSPACE_VIEW));
+				toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
+			}
 			if (getDefinitionModule().testAccess(binder, Definition.FOLDER_ENTRY, DefinitionOperation.manageDefinition)) {
 				if (hasDefinitionType(defs, Definition.FOLDER_ENTRY)) {
 					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
@@ -352,7 +358,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 				User user = RequestContextHolder.getRequestContext().getUser();
 				if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle()) &&
 						!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-					return new ModelAndView("forum/fetch_url_return", model);
+					//return new ModelAndView("forum/fetch_url_return", model);
 				}
 			} catch(Exception e) {}
 			response.setContentType("text/xml");			

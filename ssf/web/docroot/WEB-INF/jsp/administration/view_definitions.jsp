@@ -97,7 +97,7 @@ name="value" value="${ssBinder.title}"/></ssf:nlt></span>
 						  <ssf:tree treeName="${adminTreeName}" 
 						    treeDocument="${ssAdminDomTree}" 
 						    callbackUrl="${callbackUrl}"
-		 					 showIdRoutine="${adminTreeName}_showId"
+		 					showIdRoutine="${adminTreeName}_showId"
 						    rootOpen="true" />
 						</ssf:ifnotaccessible>
 						<ssf:ifaccessible>
