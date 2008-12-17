@@ -1478,7 +1478,12 @@ function ss_onSubmit(obj) {
             if (!ss_onSubmitList[i].submitRoutine(obj)) {result = false;}
         }
     }
-    return result && ss_validate(obj);
+    if (!ss_validate(obj)) result = false;
+    //After all of the other checks are done, and if the result is still true, 
+    //  check if the required fields are filled in.
+    //Do this last in case some fields get filled in by the other routines
+    if (result && !ss_checkForRequiredFields(obj)) result = false;
+    return result;
 }
 
 var ss_buttonSelected = "";
@@ -5548,6 +5553,89 @@ function ss_validate(obj) {
     }
 
     return (errors.length == 0);
+}
+
+//Check for required fields
+//Return false if there is a field left blank (after giving a alert)
+function ss_checkForRequiredFields(obj) {
+	if (tinyMCE && tinyMCE.triggerSave) tinyMCE.triggerSave();
+	var objs = ss_getElementsByClass("ss_required", obj, "span")
+	for (var i = 0; i < objs.length; i++) {
+		var id = objs[i].id.substring(12);
+		var title = objs[i].title;
+		//See if the form element is empty
+		eleObj = obj[id];
+		eleObj0 = eleObj
+		if (typeof(eleObj) != 'undefined' && typeof(eleObj.length) != 'undefined') eleObj0 = eleObj[0];
+		try {
+			if (typeof eleObj0 != 'undefined') {
+				if (eleObj0.tagName.toLowerCase() == 'input' && eleObj0.type.toLowerCase() == 'radio') {
+					for (var j = 0; j < eleObj.length; j++) {
+						var radioClicked = false;
+						if (eleObj[j].checked) {
+							//alert('radio found: '+eleObj[j].value);
+							radioClicked = true;
+							break;
+						}
+					}
+					if (radioClicked) continue;
+				} else if (typeof(eleObj.tagName) != 'undefined' && eleObj.tagName.toLowerCase() == 'select') {
+					if (typeof(eleObj.selectedIndex) != 'undefined') {
+						if (eleObj.selectedIndex >= 0) {
+							//alert('selection found: '+eleObj0.value);
+							continue;
+						}
+					}
+				} else if (eleObj0.tagName.toLowerCase() == 'input' && 
+						(eleObj0.type.toLowerCase() == 'text' || eleObj0.type.toLowerCase() == 'hidden' ||
+						 eleObj0.type.toLowerCase() == 'file')) {
+					if (typeof(eleObj0.value) != 'undefined' && eleObj0.value != "") {
+						//alert('text found: '+eleObj0.value);
+						continue;
+					}
+					
+					//See if this is a date field.
+					var dateId = id + "_fullDate";
+					var timeId = id + "_0_fullTime";
+					var dObj = obj[dateId]
+					if (typeof(dObj) != 'undefined' && typeof(dObj.length) != 'undefined') dObj = dObj[0];
+					var tObj = obj[timeId]
+					if (typeof(tObj) != 'undefined' && typeof(tObj.length) != 'undefined') tObj = tObj[0];
+					if ((dObj && dObj.value != '') || (tObj && tObj.value != '')) {
+						//alert('date found: '+dObj.value);
+						continue;
+					}
+	
+					//See if this is an event
+					var startId = "dp_" + id + "_";
+					var endId = "dp2_" + id + "_";
+					var sObj = obj[startId]
+					if (typeof(sObj) != 'undefined' && typeof(sObj.length) != 'undefined') sObj = sObj[0];
+					var eObj = obj[endId]
+					if (typeof(eObj) != 'undefined' && typeof(eObj.length) != 'undefined') eObj = eObj[0];
+					if ((sObj && sObj.value != '') || (eObj && eObj.value != '')) {
+						//alert('event found: '+sObj.value);
+						continue;
+					}
+				} else if (eleObj0.tagName.toLowerCase() == 'textarea') {
+					if (typeof(eleObj0.value) != 'undefined') {
+						var pattern = new RegExp("[\\s]*\\S");
+						if (pattern.test(eleObj0.value) ) {
+							//alert('textarea found: //'+eleObj0.value+'//');
+							continue;
+						}
+					}
+				}
+
+				//No special cases, just tell the user what field has to be filled in
+				alert(title);
+				return false;
+			}
+		} catch(e) {
+			//alert('Error processing element: '+id + ', ' + e);
+		}
+	}
+	return true;
 }
 
 function ss_ajax_result_validator(id, obj)
