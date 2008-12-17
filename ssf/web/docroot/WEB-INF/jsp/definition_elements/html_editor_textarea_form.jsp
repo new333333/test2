@@ -30,6 +30,7 @@
 %>
 <% // The html editor widget %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
 
 // TinyMCE options not current used:

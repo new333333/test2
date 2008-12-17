@@ -30,6 +30,7 @@
 %>
 <% // The radio form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
 	//Get the form item being displayed
 	Element item = (Element) request.getAttribute("item");

@@ -89,4 +89,9 @@
   </c:otherwise>  
   
 </c:choose>
+<c:if test="${!empty ss_someFieldsRequired}">
+<div style="padding:10px;">
+  <span class="ss_italic ss_fineprint"><ssf:nlt tag="general.required.info"/></span>
+</div>
+</c:if>
 </ssf:form>
