@@ -34,6 +34,8 @@
 	String propertyName = (String) request.getAttribute("property_name");
 	java.util.List teamList = new java.util.ArrayList();
 	java.util.Set teamListSet = new java.util.HashSet();
+	String caption1 = (String) request.getAttribute("property_caption");
+	String caption2 = NLT.get("general.required.caption", new Object[]{caption1});
 %>
 <c:if test="${! empty ssDefinitionEntry}">
   <c:set var="teamlist_entry" value="${ssDefinitionEntry}"/>
@@ -53,7 +55,8 @@
 %>
 </c:if>
 <div class="ss_entryContent">
-<div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
+<div class="ss_labelAbove">${property_caption}<c:if test="${property_required}"><span 
+  id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if></div>
 <c:if test="${empty ssReadOnlyFields[property_name]}">
 <ssf:find formName="${formName}" formElement="${property_name}" type="teams" 
 	userList="<%= teamListSet %>"/>

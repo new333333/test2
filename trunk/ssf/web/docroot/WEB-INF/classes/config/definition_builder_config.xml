@@ -1866,9 +1866,6 @@
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="multipleAllowed" caption="__allow_multiple" type="boolean" default="false"></property>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/places_form.jsp" />
@@ -2109,9 +2106,6 @@
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
-			</property>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
 			</property>
 		</properties>
 		<jsps>
