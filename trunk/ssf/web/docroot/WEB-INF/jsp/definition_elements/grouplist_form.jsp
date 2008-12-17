@@ -31,6 +31,7 @@
 <% // Group list %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
+<c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
 	String propertyName = (String) request.getAttribute("property_name");
 	java.util.List groupList = new java.util.ArrayList();

@@ -33,6 +33,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
 	//Get the form item being displayed
 	Element item = (Element) request.getAttribute("item");
