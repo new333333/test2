@@ -452,7 +452,7 @@ public class TreeTag extends TagSupport {
 							checked = "checked=\"checked\"";
 						}
 						jspOut.print("<input type=\"checkbox\" class=\"ss_text\"");
-						jspOut.print(" style=\"margin:0px; padding:0px; width:19px;\"");
+						jspOut.print(" style=\"margin:0px; padding:0px; width:21px;\"");
 						jspOut.print(" name=\"" + mPrefix + WebKeys.URL_ID_CHOICES_SEPARATOR + s_id + "\"");
 						jspOut.print(" id=\"");
 						jspOut.print("ss_tree_checkbox" + treeName + mPrefix + s_id + "\" ");
@@ -470,7 +470,7 @@ public class TreeTag extends TagSupport {
 						String checked = "";
 						if (s_binderId.equals(this.singleSelect)) checked = "checked=\"checked\"";
 						jspOut.print("<input type=\"radio\" class=\"ss_text\"");
-						jspOut.print(" style=\"margin:0px; padding:0px; width:19px;\" name=\"");
+						jspOut.print(" style=\"margin:0px; padding:0px; width:21px;\" name=\"");
 						jspOut.print(singleSelectName + "\" value=\""+s_binderId + "\" " + checked);
 						jspOut.print(" id=\"");
 						jspOut.print("ss_tree_radio" + treeName + this.singleSelectName + s_id + "\" ");
