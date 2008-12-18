@@ -31,7 +31,7 @@
 <% // Displayed when the user tries to list a moved entry %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
-<%@ page import="com.sitescape.team.module.definition.DefinitionUtils" %>
+<%@ page import="org.kablink.teaming.module.definition.DefinitionUtils" %>
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <%
 //Get the folder type of this definition (folder, file, or event)
