@@ -103,8 +103,11 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -671,7 +674,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	private List findUserListAttributes(Document definitionConfig) {
 		List result = new ArrayList();
 		
-    	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and @name='user_list']/properties/property[@name='name']/@value");
+    	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and (@name='user_list' or @name='group_list' or @name='team_list')]/properties/property[@name='name']/@value");
     	if (nodes == null) {
     		return result;
     	}
@@ -686,17 +689,88 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 
 	private void setComponentAttendee(Component component, DefinableEntity entry) {
 		Iterator userListsIt = findUserListAttributes(entry.getEntryDef().getDefinition()).iterator();
+		Long zoneId = entry.getZoneId();
+		ArrayList<Long> handledIds = new ArrayList<Long>();
 		while (userListsIt.hasNext()) {
+			// Read the ids from this attribute.
 			String attributeName = (String)userListsIt.next();
-		
 			CustomAttribute customAttribute = entry.getCustomAttribute(attributeName);
-	
 			if (customAttribute == null) {
 				return;
 			}
 			Set<Long>ids = LongIdUtil.getIdsAsLongSet(customAttribute.getValueSet());
-			List<Principal> principals = getProfileDao().loadPrincipals(ids, entry.getZoneId(), true);
-			for (Principal principal:principals) {
+
+			// Handle the ids for the groups.  Note that we handle this
+			// before users so that group ids will be marked as handled and
+			// skipped as users.
+			List<GroupPrincipal> groupPrincipals = getProfileDao().loadGroupPrincipals(ids, zoneId, true);
+			handleGroupAttendees(handledIds, component, groupPrincipals, zoneId);
+
+			// Handle the ids for the users.
+			List<UserPrincipal> userPrincipals = getProfileDao().loadUserPrincipals(ids, zoneId, true);
+			handleUserAttendees(handledIds, component, userPrincipals);
+
+			// Handle the ids for the teams.
+			List teams = getCoreDao().loadObjects(ids, Workspace.class, zoneId);
+			handleTeamAttendees(handledIds, component, teams, zoneId);
+		}
+	}
+	
+	private void handleGroupAttendees(ArrayList<Long> handledIds, Component component, List<GroupPrincipal> groupPrincipals, Long zoneId) {
+		ArrayList<Long>	groupIds;
+		Set<Long>		groupUserIds;
+
+		// Scan the groups.
+		groupIds = new ArrayList<Long>();
+		for (GroupPrincipal principal:groupPrincipals) {
+			// Have we already handle this group?
+			Long pid = principal.getId();
+			if ((-1) == handledIds.lastIndexOf(pid)) {
+				// No!  Mark it as having been handled and add the id
+				// to the ArrayList.
+				handledIds.add(pid);
+				groupIds.add(principal.getId());
+			}
+		}
+
+		// Did we process any groups?
+		if (0 < groupIds.size()) {
+			// Yes!  Explode them and handle the users.
+			groupUserIds = getProfileDao().explodeGroups(groupIds, zoneId);
+			List<UserPrincipal> userPrincipals = getProfileDao().loadUserPrincipals(groupUserIds, zoneId, true);
+			handleUserAttendees(handledIds, component, userPrincipals);
+		}
+	}
+	
+	private void handleTeamAttendees(ArrayList<Long> handledIds, Component component, List teams, Long zoneId) {
+		Set<Long> teamUserIds; 
+
+		// Scan the team workspaces.
+		for (Object teamWS:teams) {
+			if (teamWS instanceof Workspace) {
+				// Have we already handled this team?
+				Long tid = ((Workspace) teamWS).getId();
+				if ((-1) == handledIds.lastIndexOf(tid)) {
+					// No!  Mark it has having been handled and handle
+					// the team members.
+					handledIds.add(tid);
+					teamUserIds = getBinderModule().getTeamMemberIds(tid, true);
+					List<UserPrincipal> userPrincipals = getProfileDao().loadUserPrincipals(teamUserIds, zoneId, true);
+					handleUserAttendees(handledIds, component, userPrincipals);
+				}
+			}
+		}
+	}
+	
+	private void handleUserAttendees(ArrayList<Long> handledIds, Component component, List<UserPrincipal> userPrincipals) {
+		// Scan the users.
+		for (UserPrincipal principal:userPrincipals) {
+			// Have we already handled this user?
+			Long pid = principal.getId();
+			if ((-1) == handledIds.lastIndexOf(pid)) {
+				// No!  Mark it has having been handled and write it
+				// out.
+				handledIds.add(pid);
 				ParameterList attendeeParams = new ParameterList();
 				attendeeParams.add(new Cn(principal.getTitle()));
 				attendeeParams.add(Role.REQ_PARTICIPANT);
@@ -709,9 +783,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 							+ "] parsing problem");
 				}
 			}
-		
 		}
-
 	}
 	
 	private void setComponentOrganizer(Component component, DefinableEntity entry) {
