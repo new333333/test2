@@ -54,5 +54,9 @@ if (org.kablink.teaming.context.request.RequestContextHolder.getRequestContext()
 
 --%>
 
+<% // Read the key "Teaming.Lang" from the properties file.  This will tell us %>
+<% // what language we are running in. %>
+<% request.setAttribute( "teamingLang", org.kablink.teaming.util.NLT.get( "Teaming.Lang" ) ); %>
+
 <% // Set up the path to the directory that holds the help html files. %>
-<c:set var="helpDocPath" value="${pageContext.request.contextPath}/help_doc/${ssUser.locale}" scope="application"/>
+<c:set var="helpDocPath" value="${pageContext.request.contextPath}/help_doc/${teamingLang}" scope="application"/>
