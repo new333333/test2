@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_milestoneEntry" caption="__definition_default_milestone_entry" type="1" nextId="40" definitionType="1" databaseId="40288182131a1e4501131a2fe53a0048"> 
+<definition name="_milestoneEntry" caption="__definition_default_milestone_entry" type="1" nextId="42" definitionType="1" databaseId="40288182131a1e4501131a2fe53a0048"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -44,6 +44,20 @@
         <properties> 
           <property name="name" value="responsible"/>  
           <property name="caption" value="__milestone_responsible"/>  
+          <property name="required" value="false"/> 
+        </properties> 
+      </item>  
+      <item name="group_list" caption="__group_list" type="data" category="commonEntryData" id="40"> 
+        <properties> 
+          <property name="name" value="responsible_groups"/>  
+          <property name="caption" value="__milestone_responsible_groups"/>  
+          <property name="required" value="false"/> 
+        </properties> 
+      </item>  
+      <item name="team_list" caption="__team_list" type="data" category="commonEntryData" id="41"> 
+        <properties> 
+          <property name="name" value="responsible_teams"/>  
+          <property name="caption" value="__milestone_responsible_teams"/>  
           <property name="required" value="false"/> 
         </properties> 
       </item>  
