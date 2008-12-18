@@ -14,13 +14,6 @@
           <property name="itemSource" value=""/> 
         </properties> 
       </item>
-      <item name="group_list" caption="__group_list" type="data" category="commonEntryData" id="59"> 
-        <properties> 
-          <property name="caption" value="__task_assigned_to_groups"/>  
-          <property name="name" value="assignment_groups"/>  
-          <property name="required" value="false"/> 
-        </properties> 
-      </item>  
       <item name="description" caption="__description" type="data" id="4"> 
         <properties> 
           <property name="name" value="description"/>  
@@ -92,6 +85,13 @@
           <property name="name" value="assignment"/>  
           <property name="caption" value="__task_assigned_to"/>  
           <property name="inline" value="false"/>  
+          <property name="required" value="false"/> 
+        </properties> 
+      </item>  
+      <item name="group_list" caption="__group_list" type="data" category="commonEntryData" id="59"> 
+        <properties> 
+          <property name="caption" value="__task_assigned_to_groups"/>  
+          <property name="name" value="assignment_groups"/>  
           <property name="required" value="false"/> 
         </properties> 
       </item>  
