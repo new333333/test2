@@ -1143,7 +1143,7 @@ text/calendar											  ics
 	<!-- ==============================Extension Module ==================== -->
 	
 	<!-- Extension deployer -->
-	<bean id="extDeployer" class="org.kablink.teaming.extension.impl.ExtensionDeployerImpl" depends-on="zoneConfig">
+	<bean id="extDeployer"  parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.extension.impl.ExtensionDeployerImpl" depends-on="zoneConfig">
 		<property name="templateModule"><ref bean="templateModule"/></property>
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="zoneClassManager"><ref bean="zoneClassManager"/></property>
@@ -1151,4 +1151,23 @@ text/calendar											  ics
 	</bean>
 	<bean id="zoneClassManager" class="org.kablink.teaming.extension.impl.ZoneClassManagerImpl"/>
 
+	<!-- Scheduler for non-stateful jobs -->
+	<bean id="timer" class="org.springframework.scheduling.timer.TimerFactoryBean">
+		<property name="scheduledTimerTasks">
+			<list>
+				<!-- Extension hot-deploy listener -->
+				<bean class="org.springframework.scheduling.timer.ScheduledTimerTask">	
+					<!-- period between invocations (ms) -->
+					<property name="period" value="30000" />
+					<property name="timerTask">
+						<bean class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean">
+							<property name="targetObject" ref="extDeployer" />
+							<property name="targetMethod" value="check" />
+						</bean>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
 </beans>

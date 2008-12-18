@@ -56,9 +56,6 @@ public class DirPath {
 	public static String getExtensionBasePath() {
 		return getWebappDirPathHidden("ext");
 	}
-	public static String getExtensionDeployPath() {
-		return getWebinfDirPath() + File.separator + "deploy";
-	}
 	public static String getLibraryPath() {
 		return getWebinfDirPath() + File.separator + "lib";
 	}

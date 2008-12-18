@@ -79,7 +79,7 @@ import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.PropertyNotFoundException;
-
+import org.kablink.util.LockFile;
 
 public class RssModuleImpl extends CommonDependencyInjection implements
 		RssModule, RssModuleImplMBean {
@@ -151,14 +151,14 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	public synchronized void deleteRssFeed(Binder binder) {
-		RssFeedLock rfl = new RssFeedLock(getRssIndexLockFile(binder));
+		LockFile rfl = new LockFile(getRssIndexLockFile(binder));
 		try {
-			if (!rfl.getFeedLock()) {
+			if (!rfl.getLock()) {
 				logger.info("Couldn't get the RssFeedLock");
 			}
 			deleteFeed(binder);
 		} finally {
-			rfl.releaseFeedLock();
+			rfl.releaseLock();
 		}
 		
 	}
@@ -188,9 +188,9 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		if (!indexPath.exists())
 			return; // if it doesn't already exist, then don't update it.
 
-		RssFeedLock rfl = new RssFeedLock(getRssIndexLockFile(binder));
+		LockFile rfl = new LockFile(getRssIndexLockFile(binder));
 		try {
-			if (!rfl.getFeedLock()) {
+			if (!rfl.getLock()) {
 				logger.info("Couldn't get the RssFeedLock");
 			}
 			IndexReader indexReader = IndexReader.open(indexPath);
@@ -203,7 +203,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		} catch (Exception e) {
 			logger.info("Rss module error: " + e.toString());
 		} finally {
-			rfl.releaseFeedLock();
+			rfl.releaseLock();
 		}
 	}
 	private void generateRssFeed(Binder binder) {
@@ -221,10 +221,10 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	}
 	private synchronized void generateRssIndex(Binder binder) {
 		// create a new index, then populate it
-		RssFeedLock rfl = new RssFeedLock(getRssIndexLockFile(binder));
+		LockFile rfl = new LockFile(getRssIndexLockFile(binder));
 
 		try {
-			if (!rfl.getFeedLock()) {
+			if (!rfl.getLock()) {
 				logger.info("Couldn't get the RssFeedLock");
 			}
 			IndexWriter indexWriter = new IndexWriter(this
@@ -246,7 +246,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		} catch (Exception e) {
 			logger.info("generateRssIndex: " + e.toString());
 		} finally {
-			rfl.releaseFeedLock();
+			rfl.releaseLock();
 		}
 	}
 
@@ -320,9 +320,9 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			return; // if it doesn't already exist, then don't update it.
 		}
 
-		RssFeedLock rfl = new RssFeedLock(getRssIndexLockFile(entry.getParentBinder()));
+		LockFile rfl = new LockFile(getRssIndexLockFile(entry.getParentBinder()));
 		try {
-			if (!rfl.getFeedLock()) {
+			if (!rfl.getLock()) {
 				logger.info("Couldn't get the RssFeedLock");
 			}
 			// check to see if this feed has been read from in a month, if yes, 
@@ -378,7 +378,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		} catch (Exception e) {
 			logger.info("Rss module error: " + e.toString());
 		} finally {
-			rfl.releaseFeedLock();
+			rfl.releaseLock();
 		}
 		SimpleProfiler.stopProfiler("RssModule.updateRssFeed");
 	}
@@ -406,7 +406,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		}
 		
 		File indexPath = getRssIndexPath(binder);
-		RssFeedLock rfl = new RssFeedLock(getRssIndexLockFile(binder));
+		LockFile rfl = new LockFile(getRssIndexLockFile(binder));
 
 		try {
 			// See if the feed already exists
@@ -414,7 +414,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			if (!indexPath.exists())
 				this.generateRssFeed(binder);
 
-			if (!rfl.getFeedLock()) {
+			if (!rfl.getLock()) {
 				logger.info("Couldn't get the RssFeedLock");
 			}
 
@@ -452,7 +452,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			logger.info("filterRss: " + e.toString());
 			return "";
 		} finally {
-			rfl.releaseFeedLock();
+			rfl.releaseLock();
 		}
 	}
 
@@ -474,7 +474,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		}
 		
 		File indexPath = getRssIndexPath(binder);
-		RssFeedLock rfl = new RssFeedLock(getRssIndexLockFile(binder));
+		LockFile rfl = new LockFile(getRssIndexLockFile(binder));
 
 		try {
 			// See if the feed already exists
@@ -482,7 +482,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			if (!indexPath.exists())
 				this.generateRssFeed(binder);
 
-			if (!rfl.getFeedLock()) {
+			if (!rfl.getLock()) {
 				logger.info("Couldn't get the RssFeedLock");
 			}
 
@@ -520,7 +520,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			logger.info("filterAtom: " + e.toString());
 			return "";
 		} finally {
-			rfl.releaseFeedLock();
+			rfl.releaseLock();
 		}
 	}
 
@@ -729,65 +729,4 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 		return doc;
 	}
-
-}
-
-class RssFeedLock {
-	protected Log logger = LogFactory.getLog(getClass());
-
-
-	private FileLock fileLock = null;
-
-	private FileChannel fileChannel = null;
-
-	private File lockFile=null;
-
-	RssFeedLock(File lockFile) {
-		this.lockFile = lockFile;
-	}
-
-	public boolean getFeedLock() {
-		int tryCount = 0;
-		if (!lockFile.exists()) {
-			try {
-				lockFile.createNewFile();
-			} catch (Exception e) {
-				logger.info(e.toString());
-			}
-		}
-		try {
-			fileChannel = new RandomAccessFile(lockFile, "rw").getChannel();
-			while (tryCount < 5) {
-				fileLock = fileChannel.tryLock();
-				if (fileLock != null) return true;
-				Thread.sleep(500);
-				tryCount++;
-			}
-			//delete the lockfile and try again
-			if (lockFile.exists()) {
-				FileHelper.deleteRecursively(lockFile);
-				getFeedLock();
-			}
-			return true;
-		} catch (Exception e) {
-		}
-		return false;
-	}
-
-	public boolean releaseFeedLock() {
-		try {
-			fileLock.release();
-			fileChannel.close();
-			return true;
-		} catch (Exception e) {
-			logger.info("Couldn't release the RssFeedLock");
-		} finally {
-			try {
-				fileChannel.close();
-			} catch (Exception e) {
-			}
-		}
-		return false;
-	}
-
 }

@@ -112,7 +112,7 @@ public class PropsUtil {
 			return Long.parseLong(val);		
 	}
 	
-	public static String getDirPath(String key) throws PropertyNotFoundException, IOException {
+	public static String getDirPath(String key) throws PropertyNotFoundException {
 		String dirPath = new File(getString(key)).getAbsolutePath();
 		if(!dirPath.endsWith(File.separator))
 			dirPath += File.separator;
