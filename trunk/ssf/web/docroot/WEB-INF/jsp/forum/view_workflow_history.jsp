@@ -28,10 +28,12 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="org.dom4j.Document" %>
 <%@ page import="org.dom4j.Element" %>
+<%@ page import="org.kablink.teaming.util.ResolveIds" %>
+<%@ page import="org.kablink.teaming.domain.Principal" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/view_css.jsp" %>
-
 <ssf:ifadapter>
 <body class="tundra">
 </ssf:ifadapter>
@@ -55,60 +57,93 @@
 	 <br/>
     	<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
     		<tr>
-				<th width="4.75%" class="ss_table_heading"><ssf:nlt tag="entry.eventNumber"/></th>
-				<th width="14%" class="ss_table_heading"><ssf:nlt tag="entry.modifiedOn"/></th>
-				<th width="10.5%" class="ss_table_heading"><ssf:nlt tag="entry.modifiedBy"/></th>
-				<th width="10%" class="ss_table_heading"><ssf:nlt tag="entry.operation"/></th>
-				<th width="13%" class="ss_table_heading"><ssf:nlt tag="entry.processName"/></th>
-				<th width="13.25%" class="ss_table_heading"><p><ssf:nlt tag="entry.threadName"/></p></th>
-				<th width="7.5%" class="ss_table_heading"><ssf:nlt tag="entry.state"/></th>
+				<th width="5%" class="ss_table_heading"><ssf:nlt tag="entry.eventNumber"/></th>
+				<th width="15%" class="ss_table_heading"><ssf:nlt tag="entry.modifiedOn"/></th>
+				<th width="20%" class="ss_table_heading"><ssf:nlt tag="entry.modifiedBy"/></th>
+				<th width="15%" class="ss_table_heading"><ssf:nlt tag="entry.operation"/></th>
+				<th width="15%" class="ss_table_heading"><ssf:nlt tag="entry.processName"/></th>
+				<th width="15%" class="ss_table_heading"><p><ssf:nlt tag="entry.threadName"/></p></th>
+				<th width="15%" class="ss_table_heading"><ssf:nlt tag="entry.state"/></th>
 			</tr>
 			
-			<c:set var="odd" value="${false}"/>
-			
 			<c:forEach var="change" items="${ss_changeLogList}">
-				<c:set var="odd" value= "${not odd}"/>
+			  <c:set var="changeLog" value="${change.changeLog}"/>
+			  <jsp:useBean id="changeLog" type="org.kablink.teaming.domain.ChangeLog" />
+			  <tr>
+				<td class="ss_table_data_mid" valign="top">
+				  ${changeLog.version}&nbsp
+				</td>
 				
-				<tr <c:if test="${odd == 'true'}">class="ss_table_oddRow "</c:if>>		
-					<td width="4.75%" class="ss_table_data_mid">
-					  ${change.folderEntry.attributes.logVersion}&nbsp
-					</td>
-					
-					<td width="14%" class="ss_table_data_TD">
-					 ${change.folderEntry.attributes.modifiedOn}&nbsp
-					</td>
-					
-					<td width="10.5%" class="ss_table_data_TD">
-					 ${change.folderEntry.attributes.modifiedBy}&nbsp
-					</td>
-					
-					<td width="10%" class="ss_table_data_TD">
-					  <ssf:nlt tag="workflow.${change.folderEntry.attributes.operation}"/>&nbsp
-					</td>
-					
-					<td width="13%"class="ss_table_data_TD">			
-					  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
-						  ${workflow.value.attributes.process}&nbsp
-						<br>
-					  </c:forEach>
-					</td>
-					
-					<td width="13.25" class="ss_table_data_TD">
-					  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
-						  ${workflow.value.attributes.threadCaption}&nbsp
-						<br>
-					  </c:forEach>
-					</td>
-					
-					<td width="7.5" class="ss_table_data_TD">
-					  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
-						  ${workflow.value.attributes.stateCaption}&nbsp
-						<br>
-					  </c:forEach>
-					</td>
-				</tr>
+				<td class="ss_table_data_TD" valign="top">
+				 ${changeLog.operationDate}&nbsp
+				</td>
+				
+				<td class="ss_table_data_TD" valign="top">
+				  <%
+				  	String fullName = changeLog.getUserName();
+				  	java.util.List ps = ResolveIds.getPrincipals(changeLog.getUserId().toString());
+				  	if (!ps.isEmpty()) fullName = ((Principal)ps.get(0)).getTitle();
+				  %>
+				  <%= fullName %> (${changeLog.userName})&nbsp
+				</td>
+				
+				<td class="ss_table_data_TD" valign="top">
+				  <ssf:nlt tag="workflow.${changeLog.operation}"/>&nbsp
+				</td>
+				
+				<td class="ss_table_data_TD" valign="top">			
+				<%
+					Document doc = changeLog.getDocument();
+					Element root = doc.getRootElement();
+					java.util.List<Element> workflowStates = root.selectNodes("//folderEntry/workflowState");
+					if (workflowStates != null) {
+						for (Element workflowState : workflowStates) {
+							String stateName = workflowState.attributeValue("name", "???");
+							String stateCaption = workflowState.attributeValue("stateCaption", stateName);
+							String processName = workflowState.attributeValue("process", "???");
+							String processId = "";
+							Element property = (Element)workflowState.selectSingleNode("./property[@name='definition']");
+							if (property != null) {
+								processId = property.getText();
+							    %>
+								  <a target="_blank" 
+								    href="<ssf:url 
+									  adapter="true" 
+									  portletName="ss_forum" 
+									  action="__ajax_request" 
+									  actionUrl="false" ><ssf:param 
+									  name="operation" value="get_workflow_applet" /><ssf:param 
+									  name="workflowProcessId" value="<%= processId %>" /></ssf:url>"
+									><%= processName %></a>&nbsp
+								  <br>
+							    <%
+							} else {
+							    %>
+								  <%= processName %>&nbsp
+								  <br>
+							    <%
+							}
+						}
+					}
+				%>
+				</td>
+				
+				<td class="ss_table_data_TD" valign="top">
+				  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
+					  ${workflow.value.attributes.threadCaption}&nbsp
+					<br>
+				  </c:forEach>
+				</td>
+				
+				<td class="ss_table_data_TD" valign="top">
+				  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
+					  ${workflow.value.attributes.stateCaption}&nbsp
+					<br>
+				  </c:forEach>
+				</td>
+			  </tr>
 			</c:forEach>
-		</table> 
+    	</table> 
 	 <br />
 	 
 	 <div class="ss_formButton">

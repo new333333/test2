@@ -461,6 +461,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxViewMiniBlog(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_UPLOAD_PROGRESS_STATUS)) {
 			return ajaxGetUploadProgressStatus(request, response);
+		} else if (op.equals(WebKeys.OPERATION_GET_WORKFLOW_APPLET)) {
+			return ajaxGetWorkflowApplet(request, response);
 		}
 
 		return ajaxReturn(request, response);
@@ -928,7 +930,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			if (Validator.isNotNull(defId)) {
 				model.put(WebKeys.FILTER_WORKFLOW_DEF_ID, defId);
 				Map stateData = getDefinitionModule().getWorkflowDefinitionStates(defId);
-				model.put(WebKeys.WORKFLOW_DEFINTION_STATE_DATA, stateData);
+				model.put(WebKeys.WORKFLOW_DEFINITION_STATE_DATA, stateData);
 			}
 		}
 		
@@ -2718,6 +2720,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("forum/json/upload_progress_status", model);
 	}
 
+	private ModelAndView ajaxGetWorkflowApplet(RenderRequest request, RenderResponse response) {
+		Map model = new HashMap();
+		String workflowProcessId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKFLOW_PROCESS_ID, "");
+		model.put(WebKeys.WORKFLOW_DEFINITION_ID, workflowProcessId);
+		model.put(WebKeys.WORKFLOW_DEFINITION, null);
+		return new ModelAndView("forum/view_workflow_process", model);
+	}
 	private ModelAndView ajaxGetUserAppConfig(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		UserProperties userProperties = getProfileModule().getUserProperties(null);

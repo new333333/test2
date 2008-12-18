@@ -215,26 +215,28 @@ public class WorkflowViewer extends JApplet implements ActionListener {
 
         control_panel.add(both_panel, BorderLayout.CENTER);
         
-        JButton saveChanges = new JButton((String)appletData.get("nltSaveLayout"));
-        saveChanges.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	//Update the xml document with the latest x,y positions
-            	updateWorkflowStateLayout();
-            	
-            	Map postData = new HashMap();
-            	URL postUrl;
-            	try {
-            		postUrl = new URL((String)appletData.get("xmlPostUrl"));
-        	    } catch(MalformedURLException em) {
-        	        System.out.println("Invalid url for saving the workflow data: " + em.toString());
-        	        return;
-        	    }
-        	    postData.put("saveLayout", "saveLayout");
-        	    postData.put("xmlData", workflowDoc.asXML());
-        	    uploadToUrl(postUrl, postData);
-            }
-        });
-        both_panel.add(saveChanges);
+        if (!appletData.get("nltSaveLayout").equals("")) {
+        	JButton saveChanges = new JButton((String)appletData.get("nltSaveLayout"));
+            saveChanges.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                	//Update the xml document with the latest x,y positions
+                	updateWorkflowStateLayout();
+                	
+                	Map postData = new HashMap();
+                	URL postUrl;
+                	try {
+                		postUrl = new URL((String)appletData.get("xmlPostUrl"));
+                		if (postUrl == null || postUrl.equals("")) return;
+            	    } catch(MalformedURLException em) {
+            	        return;
+            	    }
+            	    postData.put("saveLayout", "saveLayout");
+            	    postData.put("xmlData", workflowDoc.asXML());
+            	    uploadToUrl(postUrl, postData);
+                }
+            });
+            both_panel.add(saveChanges);
+        }
 
     }
     

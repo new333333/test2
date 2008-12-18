@@ -221,8 +221,9 @@ public class WebKeys {
 	public static final String URL_ICAL_URL = "iCalURL";
 	public static final String URL_ICAL_SCHEDULE = "iCalSchedule";
 	public static final String URL_WINDOW_STATE = "windowState";
+	public static final String URL_WORKFLOW_PROCESS_ID = "workflowProcessId";
 	public static final String URL_UPLOAD_REQUEST_UID = "ss_upload_request_uid";
-	
+		
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";
 	public static final String PRESENCE_PREF_USER_LIST = "com.sitescape.portlet.presence.user.list";
@@ -495,6 +496,7 @@ public class WebKeys {
 	public static final String OPERATION_SET_SIDEBAR_VISIBILITY = "set_sidebar_visibility";
 	public static final String OPERATION_SET_SUNBURST_VISIBILITY = "set_sunburst_visibility";
 	public static final String OPERATION_GET_UPLOAD_PROGRESS_STATUS = "get_upload_progress_status";
+	public static final String OPERATION_GET_WORKFLOW_APPLET = "get_workflow_applet";
 	public static final String OPERATION_VIEW_MINIBLOG = "view_miniblog";
 	
 	// MODEL TAGS & Attributes
@@ -1078,8 +1080,10 @@ public class WebKeys {
     public static final String WINDOW_STATE="ss_windowState";
     public static final String WORKAREA_OPERATIONS="ssWorkAreaOperations";
     public static final String WORKFLOW_CAPTIONS="ssWorkflowCaptions";
-    public static final String WORKFLOW_DEFINTION_STATE_DATA="ssWorkflowDefinitionStateData";
+    public static final String WORKFLOW_DEFINITION="ssWorkflowDefinition";
+    public static final String WORKFLOW_DEFINITION_STATE_DATA="ssWorkflowDefinitionStateData";
     public static final String WORKFLOW_DEFINITION_MAP="ssWorkflowDefinitionMap";
+    public static final String WORKFLOW_DEFINITION_ID="ssWorkflowDefinitionId";
     public static final String WORKFLOW_QUESTIONS="ssWorkflowQuestions";
     public static final String WORKFLOW_TRANSITIONS="ssWorkflowTransitions";
     public static final String WORKSPACE="ssWorkspace";

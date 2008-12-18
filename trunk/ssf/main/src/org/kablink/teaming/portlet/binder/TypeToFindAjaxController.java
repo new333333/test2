@@ -426,7 +426,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		if (WebHelper.isUserLoggedIn(request)) {
 			stateData = getDefinitionModule().getWorkflowDefinitionStates(workflowId);
 		}
-		model.put(WebKeys.WORKFLOW_DEFINTION_STATE_DATA, stateData);
+		model.put(WebKeys.WORKFLOW_DEFINITION_STATE_DATA, stateData);
 		
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/find_workflow_steps", model);
