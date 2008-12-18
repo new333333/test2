@@ -29,7 +29,6 @@
 			<ref bean="folderModule"/>
 			<ref bean="licenseModule"/>
 			<ref bean="mailModule"/>
-			<ref bean="extDeployer"/>
 			</list>
 		</property>
 	</bean>
