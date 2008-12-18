@@ -107,29 +107,32 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	}
 	public void deploy() {
 		String sharedExtensionDir = SPropsUtil.getDirPath("data.extension.root.dir") + "extensions" + File.separator + Utils.getZoneKey() ;
-		File deployDir = new File(sharedExtensionDir);		
-		if (!deployDir.exists()) deployDir.mkdirs();
+		File sharedDir = new File(sharedExtensionDir);		
+		if (!sharedDir.exists()) sharedDir.mkdirs();
 		//this file controls access to the shared extensions directory which is checked by all cluster members
 		// and the local extensions web-inf directory.  In other words, the web-inf directory is only updated when this lock is held
-		LockFile lock = new LockFile(new File(deployDir, LOCKFILE));
+		LockFile lock = new LockFile(new File(sharedDir, LOCKFILE));
 		if (!lock.getLock()) {
 			logger.info("Could not get the deploy lock");
 			return;  //try again later
 		}
+		String localExtensionDir = DirPath.getExtensionBasePath() + File.separator + Utils.getZoneKey();
+		File localDir = new File(localExtensionDir);
+		if (!localDir.exists()) localDir.mkdirs();
 		try {
 		
-			File sharedTimeFile = new File(sharedExtensionDir + File.separator + TSFILE);
+			File sharedTimeFile = new File(sharedDir, TSFILE);
 			if (!sharedTimeFile.exists()) sharedTimeFile.createNewFile();
 			Properties shared = toProperties(sharedExtensionDir + File.separator + TSFILE);
-			String localExtensionDir = DirPath.getExtensionBasePath() + File.separator + Utils.getZoneKey();
-			File localTimeFile = new File(localExtensionDir + File.separator + TSFILE);
+			
+			File localTimeFile = new File(localDir, TSFILE);
 			Properties local = toProperties(localExtensionDir + File.separator + TSFILE);
-			File[] extensions = deployDir.listFiles(new FileOnlyFilter());
+			File[] extensions = sharedDir.listFiles(new FileOnlyFilter());
 			if (extensions != null && extensions.length > 0) {
 				String deployedDate = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.ENGLISH).format(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTime());
 
 				for (int i=0; i<extensions.length; ++i) {
-					File successDir = new File(deployDir, PICKUP);
+					File successDir = new File(sharedDir, PICKUP);
 					if (!successDir.exists()) successDir.mkdirs();
 					File extension = extensions[i];
 					try {
@@ -140,7 +143,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 					} catch (IOException e) {
 						logger.error("Unable to open extension " + extension.getPath(),
 							e);
-						File failedDir = new File(deployDir, "failed");
+						File failedDir = new File(sharedDir, "failed");
 						if (!failedDir.exists()) failedDir.mkdirs();
 						FileHelper.move(extension, new File(failedDir, extension.getName()));	
 					}
@@ -166,6 +169,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 				}
 				//the date isn't copied, but all that matters is that sharedTime is less than it.  
 				//No other updates to sharedTime can happen until after this new localTime.
+				
 				FileCopyUtils.copy(sharedTimeFile, localTimeFile);	
 			}
 			

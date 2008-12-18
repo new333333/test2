@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<project name="VideoEntry" basedir=".">
+	<property name="project.dir" value="${basedir}/../../.." />
+
+	<target name="zip">
+		<zip
+			basedir="${basedir}/webapp"
+			destfile="${basedir}/VideoEntry.zip"
+		/>
+	</target>
+
+	
+</project>
