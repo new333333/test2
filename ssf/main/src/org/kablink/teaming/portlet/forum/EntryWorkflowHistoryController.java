@@ -38,6 +38,9 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
@@ -66,10 +69,25 @@ public class EntryWorkflowHistoryController extends  SAbstractController {
 		if (entityId != null) {
 			changes = getAdminModule().getWorkflowChanges(entityIdentifier, null);
 			
+			ChangeLog changeLog = (ChangeLog)changes.get(1);
+			changeLog.getXmlString();
+			Document doc = changeLog.getDocument();
+			Element root = doc.getRootElement();
+			List<Element> workflowStates = root.selectNodes("//folderEntry/workflowState");
+			for (Element workflowState : workflowStates) {
+				String stateName = workflowState.attributeValue("name", "???");
+				String stateCaption = workflowState.attributeValue("stateCaption", stateName);
+				String processName = workflowState.attributeValue("process", "???");
+				Element property = (Element)workflowState.selectSingleNode("./property[@name='definition']");
+				String processId = property.getText();
+			}
+			
+			
 			changeList.addAll(BinderHelper.BuildChangeLogBeans(changes));
 		}
 
 		model.put(WebKeys.CHANGE_LOG_LIST, changeList);
+		model.put(WebKeys.CHANGE_LOGS, changes);
 		model.put(WebKeys.ENTITY_ID, entityId);
 
 		return new ModelAndView(viewPath, model);

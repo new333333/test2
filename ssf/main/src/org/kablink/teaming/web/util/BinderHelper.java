@@ -1670,6 +1670,7 @@ public class BinderHelper {
 			Document doc = log.getDocument();
 			Element root = doc.getRootElement();
 			Map changeMap = new HashMap();
+			changeMap.put("changeLog", log);
 			changeList.add(changeMap);
 			
 			//Get name of rootElement (e.g., folderEntry) and build a map of its elements
