@@ -1048,6 +1048,7 @@ public class WebKeys {
     public static final String TAG_NAME_FREQ="ssTagwithFrequency";
 	public static final String UPLOAD_FILE_URL = "ss_upload_file_url";
 	public static final String URL = "ssUrl";
+	public static final String USER_OBJECT = "ss_userObject";
 	public static final String USER_ID = "com.sitescape.userId";
 	public static final String USER_LIST = "ss_userList";
     public static final String USER_ATTRIBUTES="ssUserAttributes";
