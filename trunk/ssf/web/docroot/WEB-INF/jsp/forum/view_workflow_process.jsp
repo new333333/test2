@@ -36,6 +36,9 @@
 <body class="tundra">
 </ssf:ifadapter>
 
+<ssf:form title="${ssWorkflowDefinition.title}">
+<div style="padding:10px;">
+<div style="border:1px solid #e5e5e5;">
 <!--NOVELL_REWRITE_ATTRIBUTE_ON='value'-->
 <c:if test="${ieBrowser == 'true'}">
 <object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" WIDTH = "100%" HEIGHT = "600"  
@@ -65,7 +68,10 @@
 </object>
 </c:if>
 <!--NOVELL_REWRITE_ATTRIBUTE_OFF='value'-->
-
+</div>
+</div>
+<input type="button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;">
+</ssf:form>
 
 <ssf:ifadapter>
 </body>

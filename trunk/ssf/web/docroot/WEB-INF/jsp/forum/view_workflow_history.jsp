@@ -114,7 +114,8 @@
 									  actionUrl="false" ><ssf:param 
 									  name="operation" value="get_workflow_applet" /><ssf:param 
 									  name="workflowProcessId" value="<%= processId %>" /></ssf:url>"
-									><%= processName %></a>&nbsp
+									><%= processName %><img border="0" alt="<ssf:nlt tag="workflow.viewProcess"/>"
+									src="<html:rootPath/>images/pics/sym_s_popup.gif"></a>&nbsp
 								  <br>
 							    <%
 							} else {
