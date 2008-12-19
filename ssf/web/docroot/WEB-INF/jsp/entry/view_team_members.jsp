@@ -114,13 +114,14 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	    <div class="ss_style_color" >
   	<c:choose>
   		<c:when test="${ss_showTeamMembers}">
+			<c:if test="${!empty ss_reloadUrl}">
+				<div style="text-align: right; ">
+				  <input type="button" onClick="self.location.href='${ss_reloadUrl}';return false;"
+				    value='<ssf:nlt tag="__return_to" /> <ssf:nlt tag="__folder_view" />' >
+				</div>
+			</c:if>
 			<% // Navigation links %>
 			<%@ include file="/WEB-INF/jsp/forum/list_team_members.jsp" %>
-			
-			<c:if test="${!empty ss_reloadUrl}">
-				<div style="text-align: right; "><a href="<c:out value="${ss_reloadUrl}" />"><ssf:nlt tag="__return_to" /> <ssf:nlt tag="__folder_view" /></a></div>
-			</c:if>
-			
 		</c:when>
 		<c:otherwise>
 
