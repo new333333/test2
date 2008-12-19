@@ -106,7 +106,7 @@
 							if (property != null) {
 								processId = property.getText();
 							    %>
-								  <a target="_blank" 
+								  <a target="_blank" title="<ssf:nlt tag="workflow.viewProcess"/>"
 								    href="<ssf:url 
 									  adapter="true" 
 									  portletName="ss_forum" 
