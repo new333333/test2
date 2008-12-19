@@ -130,3 +130,7 @@
 </c:forEach>
 </ssf:slidingTable>
 </div>
+
+<div style="padding:6px;"> 
+  <span class="ss_italic ss_fineprint"><ssf:nlt tag="profiles.userWorkspacesOnly"/></span>
+</div>

@@ -153,7 +153,7 @@ public class WorkspaceTreeHelper {
 					//User workspace does not yet exist
 					User entry = null;
 					entry = (User)bs.getProfileModule().getEntry(entryId);
-					model.put(WebKeys.USER_PRINCIPAL, entry);
+					model.put(WebKeys.USER_OBJECT, entry);
 					return WebKeys.VIEW_NO_USER_WORKSPACE;
 				} catch(AccessControlException e) {
 					BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
@@ -173,7 +173,7 @@ public class WorkspaceTreeHelper {
 			} else {
 				User entry = null;
 				entry = (User)bs.getProfileModule().getEntry(entryId);
-				model.put(WebKeys.USER_PRINCIPAL, entry);
+				model.put(WebKeys.USER_OBJECT, entry);
 				return WebKeys.VIEW_NO_USER_WORKSPACE;
 			}
 			binderId = workspaceId;

@@ -30,9 +30,20 @@
 %>
 <% //View a workspace %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 
 <div class="ss_style ss_portlet">
 
-User workspace is not yet created
+<ssf:form title='<%= NLT.get("general.statusReport") %>'>
+<ssf:nlt tag="errorcode.no.user.workspace">
+  <ssf:param name="value" useBody="true">
+    <span class="ss_bold">${ss_userObject.title} (${ss_userObject.name})</span>
+  </ssf:param>
+</ssf:nlt>
+<br/>
+<br/>
+<input type="button" value="<ssf:nlt tag="button.goBack"/>" 
+  onClick="self.window.history.back();return false;" >
+</ssf:form>
 
 </div>
