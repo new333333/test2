@@ -32,5 +32,5 @@
 <iframe	frameborder="0"
 		scrolling="auto" 
     	name="help_edit_app_config" 
-    	src="${helpDocPath}/sidebar_edit_app_config.html" 
+    	src="${helpDocPath}/tool_personalpref_editoroverrides.html" 
     	height="100%" width="100%"></iframe>
