@@ -28,23 +28,15 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<ssf:ifadapter>
-<body class="ss_style_body tundra">
-<div id="ss_pseudoPortalDiv${renderResponse.namespace}">
-<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
-<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
-</ssf:ifadapter>
-
-<div style="padding-top:20px;"><span class="ss_bold ss_errorLabel">[<ssf:nlt tag="errorcode.access.denied"/>]</span></div>
-
-<c:if test="${!empty ss_refererUrl}">
-  <input type="button" value="<ssf:nlt tag="button.close"/> 
-    onClick="self.location.href='${ss_refererUrl}';return false;">
+<ssf:form title='<%= NLT.get("general.error") %>'>
+<c:if test="${!empty ss_errorMessage}">
+  <span>${ss_errorMessage}</span>
 </c:if>
+<br/>
+<br/>
+<input type="button" value="<ssf:nlt tag="button.goBack"/>" 
+  onClick="self.window.history.back();return false;" >
+</ssf:form>
 
-<ssf:ifadapter>
-</div></div>
-	</body>
-</html>
-</ssf:ifadapter>

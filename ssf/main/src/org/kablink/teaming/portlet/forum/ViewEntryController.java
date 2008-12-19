@@ -266,6 +266,8 @@ public class ViewEntryController extends  SAbstractController {
 					if (WebHelper.isUserLoggedIn(request) && 
 							!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 						//Access is not allowed
+						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+						model.put(WebKeys.URL, refererUrl);
 						return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
 					} else {
 						//Please log in
@@ -362,6 +364,8 @@ public class ViewEntryController extends  SAbstractController {
 			if (WebHelper.isUserLoggedIn(request) && 
 					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 				//Access is not allowed
+				String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+				model.put(WebKeys.URL, refererUrl);
 				return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
 			} else {
 				//Please log in
