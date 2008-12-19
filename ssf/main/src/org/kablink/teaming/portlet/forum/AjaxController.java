@@ -2724,7 +2724,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		String workflowProcessId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKFLOW_PROCESS_ID, "");
 		model.put(WebKeys.WORKFLOW_DEFINITION_ID, workflowProcessId);
-		model.put(WebKeys.WORKFLOW_DEFINITION, null);
+		Definition def = DefinitionHelper.getDefinition(workflowProcessId);
+		model.put(WebKeys.WORKFLOW_DEFINITION, def);
 		return new ModelAndView("forum/view_workflow_process", model);
 	}
 	private ModelAndView ajaxGetUserAppConfig(RenderRequest request, 
