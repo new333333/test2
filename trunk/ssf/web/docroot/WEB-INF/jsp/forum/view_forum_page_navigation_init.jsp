@@ -63,16 +63,16 @@ function ss_goToPage_${renderResponse.namespace}(formObj) {
 	var pageCount = <c:out value="${ssPageCount}"/>;
 	
 	if (strGoToPage == "") {
-		alert("<ssf:nlt tag="folder.enterPage" />");
+		alert('<ssf:escapeJavaScript value='<%= NLT.get("folder.enterPage") %>'/>');
 		return false;	
 	}
 	if (strGoToPage == "0") {
-		alert("<ssf:nlt tag="folder.enterValidPage" />");
+		alert('<ssf:escapeJavaScript value='<%= NLT.get("folder.enterValidPage") %>'/>');
 		return false;
 	}
 	var blnValueCheck = _isInteger(strGoToPage);
 	if (!blnValueCheck) {
-		alert("<ssf:nlt tag="folder.enterValidPage" />");
+		alert('<ssf:escapeJavaScript value='<%= NLT.get("folder.enterValidPage") %>'/>');
 		return false;
 	}
 	if (strGoToPage > pageCount) {
