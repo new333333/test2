@@ -290,6 +290,7 @@ public class WebKeys {
 	public static final String ACTION_READTHUMB_NAIL="readThumbnail";
 	public static final String ACTION_RELOAD_OPENER="reload_opener";
 	public static final String ACTION_RELOAD_OPENER_PARENT="reload_opener_parent";
+	public static final String ACTION_RELOAD_PREVIOUS_PAGE="reload_previous_page";
 	public static final String ACTION_APPLET_RESPONSE="applet_response";
 	public static final String ACTION_RELOAD_PARENT="reload_parent";
 	public static final String ACTION_FOLDER_INDEX_CONFIGURE="configure_index";
@@ -681,6 +682,7 @@ public class WebKeys {
     public static final String FOLDER_ACTIONS_TOOLBAR="ssFolderActionsToolbar";
     public static final String EMAIL_SUBSCRIPTION_TOOLBAR = "ssEmailSubscriptionToolbar";
     public static final String ENTRY_ATTACHMENT_FILE_RECEIVER_URL = "ssAttachmentFileReceiverURL";
+    public static final String ERROR_MESSAGE = "ss_errorMessage";
     public static final String FOLDER_ATTACHMENT_FILE_RECEIVER_URL = "ssFolderAttachmentFileReceiverURL";
     public static final String FOLDER_ATTACHMENT_APPLET_REFRESH_URL = "ssFolderAttachmentAppletRefereshURL";
 	public static final String FOLDER_CONFIGS="ssFolderConfigs";

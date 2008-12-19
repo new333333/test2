@@ -160,6 +160,8 @@ public class WorkspaceTreeHelper {
 					if (WebHelper.isUserLoggedIn(request) && 
 							!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 						//Access is not allowed
+						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+						model.put(WebKeys.URL, refererUrl);
 						return WebKeys.VIEW_ACCESS_DENIED;
 					} else {
 						//Please log in
@@ -285,6 +287,8 @@ public class WorkspaceTreeHelper {
 			if (WebHelper.isUserLoggedIn(request) && 
 					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 				//Access is not allowed
+				String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+				model.put(WebKeys.URL, refererUrl);
 				return WebKeys.VIEW_ACCESS_DENIED;
 			} else {
 				//Please log in

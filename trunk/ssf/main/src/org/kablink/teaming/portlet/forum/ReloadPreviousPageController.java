@@ -1,4 +1,3 @@
-<%
 /**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
@@ -27,24 +26,41 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-%>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<ssf:ifadapter>
-<body class="ss_style_body tundra">
-<div id="ss_pseudoPortalDiv${renderResponse.namespace}">
-<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
-<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
-</ssf:ifadapter>
+package org.kablink.teaming.portlet.forum;
 
-<div style="padding-top:20px;"><span class="ss_bold ss_errorLabel">[<ssf:nlt tag="errorcode.access.denied"/>]</span></div>
+import java.util.HashMap;
+import java.util.Map;
 
-<c:if test="${!empty ss_refererUrl}">
-  <input type="button" value="<ssf:nlt tag="button.close"/> 
-    onClick="self.location.href='${ss_refererUrl}';return false;">
-</c:if>
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 
-<ssf:ifadapter>
-</div></div>
-	</body>
-</html>
-</ssf:ifadapter>
+import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.portlet.SAbstractController;
+import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.springframework.web.portlet.ModelAndView;
+
+
+
+/**
+ * @author Peter Hurley
+ *
+ */
+public class ReloadPreviousPageController  extends SAbstractController {
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
+		response.setRenderParameters(request.getParameterMap());
+	}
+	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+			RenderResponse response) throws Exception {
+ 		Map<String,Object> model = new HashMap<String,Object>();
+ 		
+		String errorMessage = PortletRequestUtils.getStringParameter(request, WebKeys.ERROR_MESSAGE, "");
+		model.put(WebKeys.ERROR_MESSAGE, errorMessage);
+
+		return new ModelAndView("forum/reload_previous_page", model);
+	}
+
+}

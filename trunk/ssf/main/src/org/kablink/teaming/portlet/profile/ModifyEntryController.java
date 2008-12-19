@@ -49,6 +49,7 @@ import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.util.EncryptUtil;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.DefinitionHelper;
@@ -99,7 +100,8 @@ public class ModifyEntryController extends SAbstractController {
         	String password = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD);
         	String password2 = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD2);
         	if (password == null || !password.equals(password2)) {
-        		throw new PasswordMismatchException("errorcode.password.mismatch");
+        		setupReloadPreviousPage(response, NLT.get("errorcode.password.mismatch"));
+        		return;
         	}
             ProfileBinder binder = getProfileModule().getProfileBinder();
             if (!getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
@@ -108,7 +110,8 @@ public class ModifyEntryController extends SAbstractController {
             	Principal p = getProfileModule().getEntry(entryId);
             	if (p instanceof User && !password.equals("") && !passwordOriginal.equals("")) {
             		if (!EncryptUtil.encryptPassword(passwordOriginal).equals(((User)p).getPassword())) {
-                    	throw new PasswordMismatchException("errorcode.password.invalid");            			
+                		setupReloadPreviousPage(response, NLT.get("errorcode.password.invalid"));
+                		return;
             		}
             	}
             }
@@ -139,6 +142,11 @@ public class ModifyEntryController extends SAbstractController {
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+	}
+	private void setupReloadPreviousPage(ActionResponse response, String errorMessage) {
+		//return to view previous page
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_PREVIOUS_PAGE);
+		response.setRenderParameter(WebKeys.ERROR_MESSAGE, errorMessage);		
 	}
 	private void setupCloseWindow(ActionResponse response) {
 		//return to view entry
