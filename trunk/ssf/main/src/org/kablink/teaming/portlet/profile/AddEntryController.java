@@ -29,7 +29,6 @@
 package org.kablink.teaming.portlet.profile;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
@@ -37,9 +36,6 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.kablink.teaming.ObjectExistsException;
 import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -62,9 +58,7 @@ public class AddEntryController extends SAbstractController {
 		Map formData = request.getParameterMap();
 		response.setRenderParameters(formData);
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		//See if the add entry form was submitted
-		Long entryId=null;
 		if (formData.containsKey("okBtn")) {
 			//The form was submitted. Go process it
 			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
@@ -85,8 +79,8 @@ public class AddEntryController extends SAbstractController {
     			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
     			response.setRenderParameter(WebKeys.URL_BINDER_ID, "");				
     		} else {
-				entryId= getProfileModule().addUser(entryType, inputData, fileMap, null);
-				setupViewEntry(response, binderId, entryId);
+				getProfileModule().addUser(entryType, inputData, fileMap, null);
+				setupReloadOpener(response, binderId);
 				//flag reload of folder listing
 				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
     		}
@@ -98,16 +92,14 @@ public class AddEntryController extends SAbstractController {
 		}
 			
 	}
-	private void setupViewEntry(ActionResponse response, Long folderId, Long entryId) {
-		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
-		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());		
-		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_ENTRY);
+	private void setupReloadOpener(ActionResponse response, Long binderId) {
+		//return to view entry
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-			
 		Map model = new HashMap();
 		ProfileBinder binder = getProfileModule().getProfileBinder();
 		//Adding an entry; get the specific definition
