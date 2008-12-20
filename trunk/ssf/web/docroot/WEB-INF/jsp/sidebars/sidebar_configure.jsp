@@ -54,8 +54,6 @@
 	    <% // configure columns area %>
 	    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_columns.jsp" />
 	 
-	    <% // configure entries per page %>
-	    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_entriesPerPage.jsp" />
-	 
   </ssf:sidebarPanel>
 </c:if>
+

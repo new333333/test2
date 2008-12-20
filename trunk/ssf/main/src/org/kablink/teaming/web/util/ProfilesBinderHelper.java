@@ -122,11 +122,15 @@ public class ProfilesBinderHelper {
 		obj = model.get(WebKeys.CONFIG_DEFINITION);
 		if ((obj == null) || (obj.equals(""))) 
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
-		model.put(WebKeys.FOLDER_TOOLBAR, buildViewFolderToolbar(bs, request, response, binder, model).getToolbar());
+		buildViewFolderToolbars(bs, request, response, binder, model);
 		model.put(WebKeys.ENTRY_TOOLBAR, buildViewEntryToolbar(bs, request, response, binder).getToolbar());
 
 		//Build the navigation beans
 		BinderHelper.buildNavigationLinkBeans(bs, binder, model);
+		
+		//Build sidebar beans
+		BinderHelper.buildWorkspaceTreeBean(bs, binder, model, null);
+
 		Map tagResults = TagUtil.uniqueTags(bs.getBinderModule().getTags(binder));
 		model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 		model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
@@ -260,39 +264,43 @@ public class ProfilesBinderHelper {
 		return hmRet;
 	}
 	
-	protected static Toolbar buildViewFolderToolbar(AllModulesInjected bs, RenderRequest request, RenderResponse response, 
+	protected static void buildViewFolderToolbars(AllModulesInjected bs, RenderRequest request, RenderResponse response, 
 			ProfileBinder binder, Map model) {
         User user = RequestContextHolder.getRequestContext().getUser();
         String userDisplayStyle = user.getDisplayStyle();
         if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
         String binderId = binder.getId().toString();
-		Toolbar dashboardToolbar = new Toolbar();
         
-		//Build the toolbar array
-		Toolbar toolbar = new Toolbar();
+		//Build the toolbar arrays
+		Toolbar folderToolbar = new Toolbar();
+		Toolbar folderActionsToolbar = new Toolbar();
+		Toolbar dashboardToolbar = new Toolbar();
+		Toolbar footerToolbar = new Toolbar();
+		Toolbar whatsNewToolbar = new Toolbar();
+		
 		AdaptedPortletURL adapterUrl;
 		//The "Administration" menu
 		Map qualifiers = new HashMap();
 		qualifiers.put("popup", new Boolean(true));
 		boolean adminMenuCreated=false;
-		toolbar.addToolbarMenu("1_administration", NLT.get("toolbar.manageThisWorkspace"));
+		folderToolbar.addToolbarMenu("1_administration", NLT.get("toolbar.manageThisWorkspace"));
 		if (bs.getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
 			adminMenuCreated=true;
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
-			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.configuration"), adapterUrl.toString(), qualifiers);
+			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.configuration"), adapterUrl.toString(), qualifiers);
 			//Modify
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
-			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_workspace"), adapterUrl.toString(), qualifiers);
+			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_workspace"), adapterUrl.toString(), qualifiers);
 		}
 		//if no menu items were added, remove the empty menu
-		if (!adminMenuCreated) toolbar.deleteToolbarMenu("1_administration");
+		if (!adminMenuCreated) folderToolbar.deleteToolbarMenu("1_administration");
 
 		//Access control
 		if (bs.getAdminModule().testAccess(binder, AdminOperation.manageFunctionMembership)) {
@@ -304,7 +312,7 @@ public class ProfilesBinderHelper {
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
-			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.accessControl"), adapterUrl.toString(), qualifiers);
+			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.accessControl"), adapterUrl.toString(), qualifiers);
 		}
 
 		//Site administration
@@ -313,13 +321,29 @@ public class ProfilesBinderHelper {
 			PortletURL url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_SITE_ADMINISTRATION);
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-			toolbar.addToolbarMenuItem("1_administration", "", 
+			folderToolbar.addToolbarMenuItem("1_administration", "", 
 					NLT.get("toolbar.menu.siteAdministration"), url);
 		}
 
+		//Folder action menu
+		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+			//Folder action menu
+			//Build the standard toolbar
+			BinderHelper.buildFolderActionsToolbar(bs, request, response, folderActionsToolbar, binderId);
+		}
+		
 		//	The "Manage dashboard" menu
 		BinderHelper.buildDashboardToolbar(request, response, bs, binder, dashboardToolbar, model);
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
+
+		//The "Footer" menu
+		String permaLink = PermaLinkUtil.getPermalink(request, binder);
+		qualifiers = new HashMap();
+		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
+		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.folderPermalink"), 
+				permaLink, qualifiers);
+		
+		model.put(WebKeys.PERMALINK, permaLink);
 
 		//Color themes
 		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
@@ -333,7 +357,11 @@ public class ProfilesBinderHelper {
 			model.put(WebKeys.TOOLBAR_THEME_NAMES, NLT.get("ui.availableThemeNames"));
 		}
 		
-		return toolbar;
+		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
+		model.put(WebKeys.FOLDER_TOOLBAR,  folderToolbar.getToolbar());
+		model.put(WebKeys.FOLDER_ACTIONS_TOOLBAR,  folderActionsToolbar.getToolbar());
+		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
+		model.put(WebKeys.WHATS_NEW_TOOLBAR,  whatsNewToolbar.getToolbar());
 	}
 	
 	protected static Toolbar buildViewEntryToolbar (AllModulesInjected bs, RenderRequest request, RenderResponse response, ProfileBinder binder) {

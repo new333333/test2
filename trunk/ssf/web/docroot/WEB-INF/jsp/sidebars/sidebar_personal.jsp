@@ -31,7 +31,8 @@
 <% // Personal preferences %>
 <%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<ssf:sidebarPanel title="sidebar.personalPref" id="ss_personal_sidebar" divClass="ss_place_tags" initOpen="false" sticky="false">
+<ssf:sidebarPanel title="sidebar.personalPref" id="ss_personal_sidebar" 
+  divClass="ss_place_tags" initOpen="false" sticky="false">
 
   <c:if test="${!empty ssFolderActionsToolbar}">
 	  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.entryDisplay"/> 
@@ -40,6 +41,9 @@
 		</div>
 	  </div>
   </c:if>	
+
+  <% // configure entries per page %>
+  <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_entriesPerPage.jsp" />
 
   <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.theme"/> 
 	<div class="ss_sub_sidebarMenu">
