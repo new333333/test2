@@ -198,7 +198,6 @@ public class WorkspaceTreeHelper {
 			bs.getReportModule().addAuditTrail(AuditType.view, binder);
 			BinderHelper.getBinderAccessibleUrl(bs, binder, entryId, request, response, model);
 
- 
 	 		//Check special options in the URL
 			String[] debug = (String[])formData.get(WebKeys.URL_DEBUG);
 			if (debug != null && (debug[0].equals(WebKeys.DEBUG_ON) || debug[0].equals(WebKeys.DEBUG_OFF))) {

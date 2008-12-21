@@ -362,6 +362,12 @@ public class BinderHelper {
 			}
 			model.put(WebKeys.LOGOUT_URL, logoutUrl);
 			model.put(WebKeys.LOGIN_POST_URL, loginPostUrl);
+			if (binderId == null) {
+				BinderHelper.getBinderAccessibleUrl(bs, null, null, request, response, model);
+			} else {
+				Binder binder = bs.getBinderModule().getBinder(binderId);
+				BinderHelper.getBinderAccessibleUrl(bs, binder, null, request, response, model);
+			}
 		}
 		User user = null;
 		if (RequestContextHolder.getRequestContext() != null) {

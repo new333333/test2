@@ -282,6 +282,8 @@ public class ViewEntryController extends  SAbstractController {
 			//These have been documented, so don't delete any
 			model.put(WebKeys.DEFINITION_ENTRY, fe);
 			model.put(WebKeys.ENTRY, fe);
+			if (fe != null) 
+				BinderHelper.getBinderAccessibleUrl(this, fe.getParentBinder(), fe.getId(), request, response, model);
 
 			//Build the reload url (after getting the entryId from the title if necessary)
 			if (PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
