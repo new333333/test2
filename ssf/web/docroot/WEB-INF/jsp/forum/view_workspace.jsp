@@ -260,27 +260,6 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 		    <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 		  </c:if>
 			
-			<c:if test="${ss_userWorkspace}">
-				<div width="100%" style="margin:10px;">
-				  <ssHelpSpot helpId="workspaces_folders/misc_tools/accessible_mode" offsetX="-22" 
-                  offsetY="-4" title="<ssf:nlt tag="helpSpot.accessibleMode" text="My Workspace"/>">
-				  </ssHelpSpot>
-				<ssf:ifLoggedIn>
-				 <ssf:ifaccessible>
-				  <a href="${ss_accessibleUrl}">
-				    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.disableAccessibleMode"/></span>
-				  </a>
-				 </ssf:ifaccessible>
-				 <ssf:ifnotaccessible>
-				  <a href="${ss_accessibleUrl}"
-				  onClick='if (!confirm("<ssf:nlt tag="accessible.confirm"/>"))return false;'>
-				    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.enableAccessibleMode"/></span>
-				  </a>
-				 </ssf:ifnotaccessible>
-				</ssf:ifLoggedIn>
-				</div>
-			</c:if>
-
 		</div>
 	</td>
 	</tr>

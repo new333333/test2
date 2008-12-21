@@ -210,6 +210,13 @@ var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 	</tbody>
 	</table>
   </ssf:ifnotaccessible>
+
+<ssf:ifaccessible>
+  <div>
+	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
+  </div>
+</ssf:ifaccessible>
+
 </div>
 </c:if>
 

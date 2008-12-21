@@ -58,4 +58,26 @@
 		</div>
 	  </div>	
   <% } %>
+  
+  <ssf:ifLoggedIn>
+	<div class="ss_sidebarTitle"><ssf:nlt tag="accessible.accessibleMode"/>
+	  <ssHelpSpot helpId="workspaces_folders/misc_tools/accessible_mode" offsetX="-22" 
+      offsetY="-4" title="<ssf:nlt tag="helpSpot.accessibleMode"/>">
+	  </ssHelpSpot>
+	   <div class="ss_sub_sidebarMenu">
+		 <ssf:ifaccessible>
+		  <a href="${ss_accessibleUrl}">
+		    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.disableAccessibleMode"/></span>
+		  </a>
+		 </ssf:ifaccessible>
+		 <ssf:ifnotaccessible>
+		  <a href="${ss_accessibleUrl}"
+		  onClick='if (!confirm("<ssf:nlt tag="accessible.confirm"/>"))return false;'>
+		    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.enableAccessibleMode"/></span>
+		  </a>
+		 </ssf:ifnotaccessible>
+	   </div>
+	</div>
+  </ssf:ifLoggedIn>
+
 </ssf:sidebarPanel>
