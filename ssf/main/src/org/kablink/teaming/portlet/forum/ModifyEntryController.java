@@ -38,6 +38,7 @@ import java.util.Set;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletSession;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -55,6 +56,7 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
@@ -100,7 +102,11 @@ public class ModifyEntryController extends SAbstractController {
 			String workflowType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKFLOW_TYPE, "");
 			FolderEntry fEntry = getFolderModule().getEntry(folderId, entryId);
     		getFolderModule().addEntryWorkflow(folderId, entryId, workflowType, null);
-    		setupViewEntry(response, folderId, entryId);
+    		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+    		url.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+    		url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());		
+    		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+    		response.sendRedirect(url.toString());
 			
 		} else if (op.equals(WebKeys.OPERATION_STOP_WORKFLOW)) {
 			String workflowType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKFLOW_TYPE, "");
@@ -256,7 +262,7 @@ public class ModifyEntryController extends SAbstractController {
 		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, "");
 	}
-		
+	
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 		RenderResponse response) throws Exception {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
