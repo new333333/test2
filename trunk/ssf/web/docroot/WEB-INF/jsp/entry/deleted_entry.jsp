@@ -35,7 +35,8 @@
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <%
 //Get the folder type of this definition (folder, file, or event)
-String folderViewStyle1 = DefinitionUtils.getViewType(ssConfigDefinition);
+String folderViewStyle1 = "";
+if (ssConfigDefinition != null) folderViewStyle1 = DefinitionUtils.getViewType(ssConfigDefinition);
 if (folderViewStyle1 == null || folderViewStyle1.equals("")) folderViewStyle1 = "folder";
 %>
 <c:set var="ss_folderViewStyle1" value="<%= folderViewStyle1 %>" scope="request" />
