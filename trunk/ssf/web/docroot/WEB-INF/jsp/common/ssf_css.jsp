@@ -4288,7 +4288,6 @@ ul.placesForm, ul.placesForm li {
 .ss_combobox_autocomplete_list ul {
 	list-style-type: none;
 	padding: 6px 10px;
-	width: 150px;
 	margin: 1px 4px 4px 4px;
 	border: solid black 1px;
 	}

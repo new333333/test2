@@ -81,7 +81,7 @@
 </c:if>
 
 <c:if test="${!ssBinder.teamMembershipInherited}">
-<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3" width="95%">
+<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3">
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
@@ -96,7 +96,9 @@
     type="group" userList="${ssGroups}"/>
 </td>
 </tr>
-<tr><td colspan="2">
+</table>
+<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3" width="95%">
+<tr><td >
 	<ssf:clipboard type="user" formElement="users" />
 </td></tr>
 </table>

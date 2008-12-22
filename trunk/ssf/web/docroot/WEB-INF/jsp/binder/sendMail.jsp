@@ -43,15 +43,14 @@ self.window.resizeTo(width, height);
 </script>
 <div class="ss_style ss_portlet" style="padding:10px;">
   
+<ssf:form title='<%= NLT.get("sendMail.title") %>'>
+
 <form class="ss_style ss_form" method="post" 
   onSubmit="return ss_onSubmit(this);" name="${renderResponse.namespace}fm">
 
-<span class="ss_bold"><ssf:nlt tag="sendMail.title"/></span>
-<table class="ss_style"  border="0" cellspacing="0" cellpadding="0" width="95%">
- <tr><td>
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="sendMail.recipients" /></legend>
-<table class="ss_style"  border ="0" cellspacing="0" cellpadding="0">
+<table class="ss_style" border ="0" cellspacing="4" cellpadding="4">
  <tr><td>
    <span class="ss_labelAbove ss_bold"><ssf:nlt tag="sendMail.addresses"/>:</span>
    <input class="ss_style" type="text" name="addresses" id="addresses" size="86" value="">
@@ -61,8 +60,9 @@ self.window.resizeTo(width, height);
   <label for="self">${ssUser.title} (${ssUser.emailAddress})</label></span>
  </td></tr>
 </table>
+<br/>
 
-<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3" width="95%">
+<table class="ss_style" border ="0" cellspacing="4" cellpadding="4">
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
@@ -77,15 +77,20 @@ self.window.resizeTo(width, height);
     type="group" userList="${ssGroups}"/>
 </td>
 </tr>
-<tr><td colspan="2">
+</table>
+<br/>
+
+<table class="ss_style" border ="0" cellspacing="4" cellpadding="4" width="95%">
+<tr><td>
 	<ssf:clipboard type="user" formElement="users" />
 	<c:if test="${!empty ssBinder}">
 		<ssf:teamMembers binderId="${ssBinder.id}" formElement="users" appendAll="${appendTeamMembers}"/>
 	</c:if>
 </td></tr>
-<tr><td colspan="2">
+</table>
+
 <ssf:expandableArea title="CC">
-<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3" width="95%">
+<table class="ss_style" border="0" cellspacing="4" cellpadding="4">
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
@@ -102,10 +107,9 @@ self.window.resizeTo(width, height);
 </tr>
 </table>
 </ssf:expandableArea>
-</td></tr>
-<tr><td colspan="2">
+
 <ssf:expandableArea title="BCC">
-<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3" width="95%">
+<table class="ss_style" border="0" cellspacing="4" cellpadding="4">
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
@@ -122,16 +126,13 @@ self.window.resizeTo(width, height);
 </tr>
 </table>
 </ssf:expandableArea>
-</td></tr>
 
-</table>
 </fieldset>
-</td></tr>
-<tr><td>
+
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="sendMail.message" /></legend>
  
-<table class="ss_style"  border ="0" cellspacing="0" cellpadding="0" width="95%">
+<table class="ss_style"  border ="0" cellspacing="4" cellpadding="4" width="95%">
  <tr><td>
    <span class="ss_labelAbove ss_bold"><ssf:nlt tag="sendMail.subject"/></span>
    <!-- just use title, not docNumber so calendar entries contain summary -->
@@ -202,14 +203,14 @@ tinyMCE.init(
 </c:if>
 </table>
 </fieldset>
-</td></tr>
-</table>
+
 <br/>
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" onClick="window.close();">
 </div>
 </form>
+</ssf:form>
 
 </div>
 <ssf:ifadapter>

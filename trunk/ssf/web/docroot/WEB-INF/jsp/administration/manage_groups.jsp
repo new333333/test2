@@ -118,7 +118,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 <br/>
 <span class="ss_bold"><ssf:nlt tag="administration.modifyGroupMembership" /></span>
 <br/>
-<table class="ss_style" border="0" cellspacing="0" cellpadding="3" width="95%">
+<table class="ss_style" border="0" cellspacing="4" cellpadding="4">
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
@@ -133,7 +133,9 @@ function ${renderResponse.namespace}_onsub(obj) {
     type="group" userList="${ssGroups}"/>
 </td>
 </tr>
-<tr><td colspan="2">
+</table>
+<table class="ss_style" border="0" cellspacing="4" cellpadding="4" width="95%">
+<tr><td>
 	<ssf:clipboard type="user" formElement="users" />
 </td></tr>
 </table>
