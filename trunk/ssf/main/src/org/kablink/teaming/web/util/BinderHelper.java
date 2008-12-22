@@ -365,8 +365,12 @@ public class BinderHelper {
 			if (binderId == null) {
 				BinderHelper.getBinderAccessibleUrl(bs, null, null, request, response, model);
 			} else {
-				Binder binder = bs.getBinderModule().getBinder(binderId);
-				BinderHelper.getBinderAccessibleUrl(bs, binder, null, request, response, model);
+				try {
+					Binder binder = bs.getBinderModule().getBinder(binderId);
+					BinderHelper.getBinderAccessibleUrl(bs, binder, null, request, response, model);
+				} catch(Exception e) {
+					BinderHelper.getBinderAccessibleUrl(bs, null, null, request, response, model);
+				}
 			}
 		}
 		User user = null;
