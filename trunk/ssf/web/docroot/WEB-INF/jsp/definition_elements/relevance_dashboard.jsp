@@ -79,7 +79,6 @@
   <ul>
 	<!-- CSS Tabs -->
 	<% /* If we don't have a current tab we should select the "Overview" tab as the default tab. */ %>
-	<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
 	<c:if test="${empty ssRDCurrentTab}">
 		<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
 	</c:if>
