@@ -691,7 +691,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			}
 		}
 		
-		if (emailSet.isEmpty()) {
+		if (emailSet == null || emailSet.isEmpty()) {
 			//no-one to send tos
 			errors.add(0, NLT.get("errorcode.noRecipients"));
 			return result;			
