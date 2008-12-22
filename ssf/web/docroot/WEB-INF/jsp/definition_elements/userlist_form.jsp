@@ -63,4 +63,5 @@
 	${userItem.title}<br/>
 </c:forEach>
 </c:if>
+<ssf:clipboard type="user" formElement="${property_name}" />
 </div>
