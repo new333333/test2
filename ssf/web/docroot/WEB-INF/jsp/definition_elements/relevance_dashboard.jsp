@@ -78,15 +78,22 @@
 <div id="ss_tabsC">
   <ul>
 	<!-- CSS Tabs -->
+	<% /* If we don't have a current tab we should select the "Overview" tab as the default tab. */ %>
+	<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
+	<c:if test="${empty ssRDCurrentTab}">
+		<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
+	</c:if>
+
+	<% /* Add the "Overview" tab as the first tab. */ %>
+	<li <c:if test="${ssRDCurrentTab == 'overview'}">class="ss_tabsCCurrent"</c:if>>
+		<a <c:if test="${ssRDCurrentTab == 'overview'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
+			href="javascript: ;"
+			onClick="ss_selectRelevanceTab(this, 'overview', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
+			<span><ssf:nlt tag="relevance.tab.overview"/></span>
+		</a>
+	</li>
+
 <c:if test="${!empty ssRelevanceDashboardConfigElement}">
-  <c:if test="${empty ssRDCurrentTab}"><c:set var="ssRDCurrentTab" value="profile" scope="request"/></c:if>
-	<li <c:if test="${ssRDCurrentTab == 'profile'}">class="ss_tabsCCurrent"</c:if>
-	><a 
-	  <c:if test="${ssRDCurrentTab == 'profile'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
-	  href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'profile', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
-		><span><ssf:nlt tag="relevance.tab.profile"/></span></a></li>
-	
 	<li <c:if test="${ssRDCurrentTab == 'whats_new'}">class="ss_tabsCCurrent"</c:if>
 	><a 
 	  <c:if test="${ssRDCurrentTab == 'whats_new'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
@@ -126,6 +133,17 @@
 		onClick="ss_selectRelevanceTab(this, 'miniblogs', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
 		<span><ssf:nlt tag="relevance.tab.miniblogs"/></span></a></li>
 
+	<% /* Add the "Profile" tab */ %>
+	<c:if test="${!empty ssRelevanceDashboardConfigElement}">
+		<c:if test="${empty ssRDCurrentTab}"><c:set var="ssRDCurrentTab" value="profile" scope="request"/></c:if>
+		<li <c:if test="${ssRDCurrentTab == 'profile'}">class="ss_tabsCCurrent"</c:if>>
+			<a <c:if test="${ssRDCurrentTab == 'profile'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
+				href="javascript: ;"
+				onClick="ss_selectRelevanceTab(this, 'profile', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
+				<span><ssf:nlt tag="relevance.tab.profile"/></span>
+			</a>
+		</li>
+	</c:if>
   </ul>
 </div>
 <div class="ss_clear_float"></div>
@@ -139,17 +157,19 @@ ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
 <div id="relevanceCanvas_${renderResponse.namespace}" style="margin:4px 10px 10px 10px;">
 <c:set var="ss_relevanceDashboardNamespace" value="${renderResponse.namespace}" scope="request"/>
 <c:if test="${empty ssRelevanceDashboardConfigElement}">
+  <c:if test="${ssRDCurrentTab == 'overview'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/overview.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'whats_new'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tasks_and_calendars_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'activities'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'miniblogs'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/miniblogs_tab.jsp" /></c:if>
 </c:if>
 <c:if test="${!empty ssRelevanceDashboardConfigElement}">
-  <c:if test="${ssRDCurrentTab == 'profile'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/profile.jsp" /></c:if>
+  <c:if test="${ssRDCurrentTab == 'overview'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/overview.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'whats_new'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tasks_and_calendars_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'activities'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'miniblogs'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/miniblogs_tab.jsp" /></c:if>
+  <c:if test="${ssRDCurrentTab == 'profile'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/profile.jsp" /></c:if>
 </c:if>
 </div>
 </div>
