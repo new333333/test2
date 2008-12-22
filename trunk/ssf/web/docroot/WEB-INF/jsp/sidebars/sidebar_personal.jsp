@@ -72,7 +72,7 @@
 		 </ssf:ifaccessible>
 		 <ssf:ifnotaccessible>
 		  <a href="${ss_accessibleUrl}"
-		  onClick='if (!confirm("<ssf:nlt tag="accessible.confirm"/>"))return false;'>
+		  onClick='return (confirm("<ssf:nlt tag="accessible.confirm" quoteDoubleQuote="true"/>"));'>
 		    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.enableAccessibleMode"/></span>
 		  </a>
 		 </ssf:ifnotaccessible>
