@@ -903,7 +903,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	ssFind.multipleTemplateStartListHTML = 
 		  "<input type=\"hidden\" name=\"${formElement}\" id=\"${prefix}_ss_find_multiple_input\"/>"
 		+ "<table class=\"ss_style ss_combobox_autocomplete_list\" cellspacing=\"0\" cellpadding=\"0\">"
-		+ "<tbody><tr><td><textarea class=\"ss_combobox_autocomplete\" name=\"${formElement}_single\" id=\"${inputId}\"></textarea>"
+		+ "<tbody><tr><td style=\"width:80px;\"><textarea class=\"ss_combobox_autocomplete\" name=\"${formElement}_single\" id=\"${inputId}\"></textarea>"
 		+ "<div><span class=\"ss_fineprint\">${label}</span></div>"
 		+ "</td><td>"
 		+ "<ul id=\"added_${prefix}\">";

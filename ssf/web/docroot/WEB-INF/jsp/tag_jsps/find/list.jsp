@@ -74,7 +74,7 @@
 <table class="ss_style ss_combobox_autocomplete_list" cellspacing="0" cellpadding="0">
 	<tbody>
 		<tr>
-			<td>
+			<td style="width:80px;">
 				  <c:set var="clickRoutine" value="addValueByElement"/>
 				  <c:if test="${ssFindListType == 'group'}"><c:set var="clickRoutine" value="addGroupValueByElement"/></c:if>
 				  <ssf:find formName="" 
