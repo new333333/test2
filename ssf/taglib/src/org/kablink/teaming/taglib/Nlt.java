@@ -48,6 +48,8 @@ public class Nlt extends BodyTagSupport implements ParamAncestorTag {
     private String tag;
     private String text;
     private Boolean checkIfTag;
+    private Boolean quoteDoubleQuote = false;
+    private Boolean quoteSingleQuote = false;
 	private List _values;
     
 	public int doStartTag() {
@@ -60,6 +62,8 @@ public class Nlt extends BodyTagSupport implements ParamAncestorTag {
 
 	public int doEndTag() throws JspTagException {
 		if (this.checkIfTag == null) this.checkIfTag = false;
+		if (this.quoteDoubleQuote == null) this.quoteDoubleQuote = false;
+		if (this.quoteSingleQuote == null) this.quoteSingleQuote = false;
 		try {
 			JspWriter jspOut = pageContext.getOut();
 			StringBuffer sb = new StringBuffer();
@@ -74,7 +78,10 @@ public class Nlt extends BodyTagSupport implements ParamAncestorTag {
 			} else {
 				sb.append(NLT.get(this.tag, this._values.toArray(), this.text));
 			}
-			jspOut.print(sb.toString());
+			String result = sb.toString();
+			if (quoteDoubleQuote) result = result.replaceAll("\"", "\\\\\"");
+			if (quoteSingleQuote) result = result.replaceAll("\'", "\\\\\'");
+			jspOut.print(result);
 		}
 		catch (Exception e) {
 			throw new JspTagException(e.getLocalizedMessage());
@@ -83,6 +90,8 @@ public class Nlt extends BodyTagSupport implements ParamAncestorTag {
 			_values = null;
 			checkIfTag = null;
 			text = null;
+			quoteDoubleQuote = false;
+			quoteSingleQuote = false;
 		}
 	    
 		return EVAL_PAGE;
@@ -98,6 +107,14 @@ public class Nlt extends BodyTagSupport implements ParamAncestorTag {
 
 	public void setCheckIfTag(Boolean value) {
 	    this.checkIfTag = value;
+	}
+
+	public void setQuoteDoubleQuote(Boolean value) {
+	    this.quoteDoubleQuote = value;
+	}
+
+	public void setSingleDoubleQuote(Boolean value) {
+	    this.quoteSingleQuote = value;
 	}
 
 	public void addParam(String name, String value) {
