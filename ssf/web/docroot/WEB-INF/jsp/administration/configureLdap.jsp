@@ -56,7 +56,7 @@
     		<c:set var="showGuestOption" value="<%= Boolean.TRUE %>"/>
     	</c:if>
     	<c:if test="${!openEdition}">
-	    	<ssf:ifAuthorizedByLicense featureName="org.kablink.teaming.GuestAccess">
+	    	<ssf:ifAuthorizedByLicense featureName="com.novell.teaming.GuestAccess">
 	    		<c:set var="showGuestOption" value="<%= Boolean.TRUE %>"/>
 	    	</ssf:ifAuthorizedByLicense>
     	</c:if>
