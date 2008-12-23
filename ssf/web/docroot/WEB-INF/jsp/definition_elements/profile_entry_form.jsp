@@ -60,19 +60,17 @@
 </div>
 
 <div class="ss_entryContent">
-<c:if test="${empty ssReadOnlyFields['password'] || ss_isBinderAdmin}">
-<c:if test="${!empty ssDefinitionEntry.name && !ss_isBinderAdmin}">
-<div class="ss_labelAbove"><ssf:nlt tag="__profile_password_original"/></div>
-  <input type="password" size="40" name="password_original" class="ss_text" />
+  <c:if test="${empty ssReadOnlyFields['password'] || ss_isBinderAdmin}">
+    <c:if test="${!empty ssDefinitionEntry.name && !ss_isBinderAdmin}">
+		<div class="ss_labelAbove"><ssf:nlt tag="__profile_password_original"/></div>
+		<input type="password" size="40" name="password_original" class="ss_text" />
+	</c:if>
+	<div class="ss_labelAbove"><ssf:nlt tag="__profile_password_new"/></div>
+	<input type="password" size="40" name="password" class="ss_text" />
+	<div class="ss_labelAbove"><ssf:nlt tag="__profile_password_again"/></div>
+	<input type="password" size="40" name="password2" class="ss_text" />
+  </c:if>
 </div>
-</c:if>
-<div class="ss_labelAbove"><ssf:nlt tag="__profile_password_new"/></div>
-  <input type="password" size="40" name="password" class="ss_text" />
-</div>
-<div class="ss_labelAbove"><ssf:nlt tag="__profile_password_again"/></div>
-  <input type="password" size="40" name="password2" class="ss_text" />
-</div>
-</c:if>
 
 <%-- Show the first, middle and last names --%>
 <div class="ss_entryContent">
