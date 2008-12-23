@@ -34,17 +34,38 @@
 <div class="ss_entryContent">
 <div style="padding:15px 0px 15px 0px;">
 <ssf:expandableArea title="${property_caption}">
-<div class="ss_entryContent">
-  <span class="ss_labelAbove"><ssf:nlt tag="entry.sendMail.toList" /></span>
-  <ssf:find formName="${formName}" formElement="_sendMail_toList" type="user" />
 
+<% /* User selection. */ %>
+<div class="ss_entryContent">
+	<span class="ss_labelAbove"><ssf:nlt tag="entry.sendMail.toList" /></span>
+	<ssf:find formName="${formName}" formElement="_sendMail_toList" type="user" userList="<%= new java.util.HashSet() %>"/>
+	<ssf:clipboard type="user" formElement="_sendMail_toList" />
+</div>
+
+<% /* Group selection. */ %>
+<div class="ss_entryContent">
+ 	<span class="ss_labelAbove"><ssf:nlt tag="entry.sendMail.toList.groups" /></span>
+	<ssf:find formName="${formName}" formElement="_sendMail_toList_groups" type="group"/>
+</div>
+
+<% /* Named team selection. */ %>
+<div class="ss_entryContent">
+	<span class="ss_labelAbove"><ssf:nlt tag="entry.sendMail.toList.teams" /></span>
+	<ssf:find formName="${formName}" formElement="_sendMail_toList_teams" type="teams"/>
+</div>
+
+<% /* Local team selection. */ %>
 <c:if test="${!empty ssFolder.teamMemberIds}">
+  <div class="ss_entryContent">
   <input type="checkbox" name="_sendMail_toTeam" />
   <span class="ss_labelAfter"><label for="_sendMail_toTeam">
     <ssf:nlt tag="entry.sendMail.toTeam"/>
   </label></span>
   <br/>
+  </div>
 </c:if>
+
+<div class="ss_entryContent">
   <br/>
 
   <span class="ss_labelAbove"><label for="_sendMail_subject">

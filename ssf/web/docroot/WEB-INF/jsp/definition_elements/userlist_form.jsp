@@ -52,16 +52,16 @@
 %>
 </c:if>
 <div class="ss_entryContent">
-<div class="ss_labelAbove">${property_caption}<c:if test="${property_required}"><span 
-  id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if></div>
-<c:if test="${empty ssReadOnlyFields[property_name]}">
-<ssf:find formName="${formName}" formElement="${property_name}" type="user" 
-  userList="<%= userListSet %>"/>
-</c:if>
-<c:if test="${!empty ssReadOnlyFields[property_name]}">
-<c:forEach var="userItem" items="<%= userListSet %>">
-	${userItem.title}<br/>
-</c:forEach>
-</c:if>
-<ssf:clipboard type="user" formElement="${property_name}" />
+	<div class="ss_labelAbove">${property_caption}<c:if test="${property_required}"><span 
+	  id="ss_required_${property_name}" title="<%= caption2 %>" class="ss_required">*</span></c:if></div>
+	<c:if test="${empty ssReadOnlyFields[property_name]}">
+		<ssf:find formName="${formName}" formElement="${property_name}" type="user" 
+		  userList="<%= userListSet %>"/>
+		<ssf:clipboard type="user" formElement="${property_name}" />
+	</c:if>
+	<c:if test="${!empty ssReadOnlyFields[property_name]}">
+		<c:forEach var="userItem" items="<%= userListSet %>">
+			${userItem.title}<br/>
+		</c:forEach>
+	</c:if>
 </div>
