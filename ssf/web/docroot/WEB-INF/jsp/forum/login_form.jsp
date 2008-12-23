@@ -37,27 +37,29 @@
      <tbody>
       <tr>
         <td valign="middle" align="right">
-          <span><ssf:nlt tag="login.name"/></span>
+          <label for="j_username"><span><ssf:nlt tag="login.name"/></span></label>
         </td>
         <td valign="top" style="padding-left:4px;">
-          <input type="text" class="ss_text_${ss_loginFormStyle}" size="40" name="j_username"/>
+          <input type="text" class="ss_text_${ss_loginFormStyle}" size="40" 
+          name="j_username" id="j_username"/>
         </td>
 		<td>&nbsp;</td>
       </tr>
       <tr>
         <td valign="middle" align="right">
-          <span><ssf:nlt tag="login.password"/></span>
+          <label for="j_password"><span><ssf:nlt tag="login.password"/></span></label>
         </td>
         <td valign="top" style="padding-left:4px;">
-          <input class="ss_text_${ss_loginFormStyle}" type="password" size="40" name="j_password"/>
+          <input class="ss_text_${ss_loginFormStyle}" type="password" size="40" 
+          name="j_password" id="j_password"/>
         </td>
       </tr>
       <tr>
         <td valign="middle" align="right">
-          <span><ssf:nlt tag="login.remember"/></span>
+          <label for="remember"><span><ssf:nlt tag="login.remember"/></span></label>
         </td>
         <td valign="top" align="left" style="padding-left:6px;">
-          <input type="checkbox" name="remember"/>
+          <input type="checkbox" name="remember" id="remember"/>
         </td>
       </tr>
       <c:if test="${!empty ss_loginError}">
