@@ -96,6 +96,7 @@ function ss_workarea_showPseudoPortal${renderResponse.namespace}(obj) {
 		if (divObj != null) {
 			divObj.style.display = "block"
 			divObj.style.visibility = "visible"
+			divObj.focus();
 		}
 	}
 }

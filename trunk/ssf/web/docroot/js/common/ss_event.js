@@ -373,6 +373,7 @@ ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eve
 		}
 		if (that._container) {
 			that._container.style.display = "block";
+			that._container.focus();
 		}
 		that._isDisplayed = true;
 		

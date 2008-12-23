@@ -58,6 +58,7 @@ function ss_showBlogReplies(blogNamespace, binderId, entryId) {
 			targetDiv.innerHTML = "<ssf:nlt tag="Loading"/><br/>";
 			targetDiv.style.visibility = 'visible';
 			targetDiv.style.display = 'block';
+			targetDiv.focus();
 			var urlParams = {binderId :binderId, operation:"show_blog_replies", entryId:entryId, namespace:blogNamespace};
 						
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
@@ -84,6 +85,7 @@ function ss_addBlogReply(obj, blogNamespace, binderId, entryId) {
 	}
 	targetDiv.style.visibility = 'visible';
 	targetDiv.style.display = 'block';
+	targetDiv.focus();
 	var iframeDiv = document.getElementById(blogNamespace + 'ss_blog_add_reply_iframe_' + entryId)
 	iframeDiv.src = obj.href;
 	iframeDiv.style.border = "1px solid #CCCCCC";

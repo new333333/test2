@@ -84,7 +84,7 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
                 --%><c:if test="${!empty toolbarMenu.value.qualifiers.linkclass}"><%--
                 	--%> class="${toolbarMenu.value.qualifiers.linkclass}"<%--
                 --%></c:if><%--                
-                --%> onClick="${spin} ss_activateMenuLayerClone('<%= menuTagDivId %>${renderResponse.namespace}', 'parent_<%= menuTagDivId %>${renderResponse.namespace}');"><%--
+                --%> onClick="${spin} ss_activateMenuLayerClone('<%= menuTagDivId %>${renderResponse.namespace}', 'parent_<%= menuTagDivId %>${renderResponse.namespace}');"> <%--
 
                 --%><c:if test="${!empty toolbarMenu.value.qualifiers.icon}"><%--
                     --%><img border="0" <%--

@@ -102,7 +102,12 @@ public class TreeTag extends TagSupport {
 	private String portletName = "ss_forum";
 	private String namespace = "";
 	private String callbackUrl = null;
+	
 	public int doStartTag() throws JspException {
+		//The "flat" option has been turned off. This was for accessibility mode. 
+		//The tree widget is now fully accessible without the use of "flat" mode
+		this.flat = false;
+		
 	    if(treeName == null)
 	        throw new JspException("Tree name must be specified");
 	    if(tree == null && !initOnly)

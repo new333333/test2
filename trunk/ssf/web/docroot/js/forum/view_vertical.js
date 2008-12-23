@@ -89,6 +89,7 @@ function ss_showEntryDiv() {
     if (wObj1 != null) {
     	wObj1.style.visibility = "visible";
     	wObj1.style.display = "block";
+    	wObj1.focus();
     }
 }
 
