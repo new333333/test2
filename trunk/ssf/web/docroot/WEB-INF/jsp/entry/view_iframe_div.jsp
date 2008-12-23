@@ -81,7 +81,7 @@
     <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
   <div id="ss_iframe_holder_div${renderResponse.namespace}">
   <iframe id="ss_showentryframe${renderResponse.namespace}"
-  	title="ss_showentryframe${renderResponse.namespace}" 
+  	title="<ssf:nlt tag = "iframe.entry"/>" 
     name="ss_showentryframe${renderResponse.namespace}" style="width:99%; 
     display:block; position:relative; left:5px;"
     src="<html:rootPath/>js/forum/null.html" 
