@@ -93,7 +93,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 		name="binderId" value="${ssBinder.id}"/></ssf:url>" >
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.defineSimpleUrl"/>  
-      <ssf:inlineHelp tag="ihelp.other.define_simple_url"/> </legend>
+      <ssf:inlineHelp jsp="workspaces_folders/misc_tools/defineSimpleUrl"/> </legend>
 
     <span class="ss_labelAbove"><ssf:nlt tag="simpleUrl.currentlyDefinedUrls"/></span>
     <c:if test="${!empty ssSimpleUrlNames}">
@@ -308,7 +308,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   </c:if>
 
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultEntryTypes" text="Default entry types"/> <ssf:inlineHelp tag="ihelp.other.def_entry_type" /> </legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultEntryTypes" text="Default entry types"/> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/defaultEntryTypes" /> </legend>
 
     <c:forEach var="item" items="${ssAllEntryDefinitions}">
    	   <c:if test="${empty item.value.binderId}">
@@ -338,7 +338,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   <% //only display if have workflows - which covers the case where workflow is not supported %>
 <c:if test="${!empty ssAllWorkflowDefinitions}">
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.workflowAssociations" text="Workflow associations"/> <ssf:inlineHelp tag="ihelp.other.workflow_association"/> </legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.workflowAssociations" text="Workflow associations"/> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/workflowAssociations"/> </legend>
 
 	<table>	
     <tr><th><span class="ss_bold"><ssf:nlt tag="workflow.type.entry"/></span></th></tr>
@@ -398,7 +398,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   </fieldset>
   
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedWorkflows" text="Allowed workflows"/>  <ssf:inlineHelp tag="ihelp.other.allowed_workflows"/> </legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedWorkflows" text="Allowed workflows"/>  <ssf:inlineHelp jsp="workspaces_folders/misc_tools/allowedWorkflows"/> </legend>
 
     <c:forEach var="item" items="${ssAllWorkflowDefinitions}">
    	   <c:if test="${empty item.value.binderId}">

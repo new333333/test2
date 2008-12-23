@@ -51,84 +51,90 @@
 %>
 <c:set var="ss_form_form_formName" value="<%= formName %>" scope="request"/>
 <div class="ss_style ss_portlet" width="100%">
-<form class="ss_form" method="<%= methodName %>" 
-  enctype="<%= enctype %>" name="<%= formName %>" 
-  id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this);">
+	<form class="ss_form" method="<%= methodName %>" 
+  			enctype="<%= enctype %>" name="<%= formName %>" 
+  			id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this);">
 
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="<%= item %>" 
-  configJspStyle="${ssConfigJspStyle}"
-  entry="${ssDefinitionEntry}" />
+		<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  			configElement="<%= item %>" 
+  			configJspStyle="${ssConfigJspStyle}"
+  			entry="${ssDefinitionEntry}" />
 
-<br>
-<c:set var="cb_checked" value=""/>
-<c:if test="${ssDefinitionEntry.library}" >
-<c:set var="cb_checked" value="checked"/>
-</c:if>
+		<br>
+		<c:set var="cb_checked" value=""/>
+		<c:if test="${ssDefinitionEntry.library}" >
+			<c:set var="cb_checked" value="checked"/>
+		</c:if>
 
-<div style="display:block">
-<input type="checkbox" name="ss_library" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if> <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_library.checked) document.${formName}.library.value='true'; else document.${formName}.library.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isLibrary"/></span> <ssf:inlineHelp tag="ihelp.folderManagement.uniqueFiles" /></input>
-</div>
-<input type="hidden" name="library" value="${ssDefinitionEntry.library}"/>
-<br/>
+		<div style="display:block">
+			<input type="checkbox" name="ss_library"
+				<c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if>
+				<c:out value="${cb_checked}"/>
+				onClick="if (document.${formName}.ss_library.checked) document.${formName}.library.value='true'; else document.${formName}.library.value='false';">
+			&nbsp;
+			<span class="ss_labelRight"><ssf:nlt tag="folder.isLibrary"/></span>
+			<ssf:inlineHelp jsp="workspaces_folders/misc_tools/requireUniqueFiles" /></input>
+		</div>
+		<input type="hidden" name="library" value="${ssDefinitionEntry.library}"/>
+		<br/>
 
-<c:set var="cb_checked" value=""/>
-<c:if test="${ssDefinitionEntry.uniqueTitles}" >
-<c:set var="cb_checked" value="checked"/>
-</c:if>
-<div style="display:block">
-<input type="checkbox" name="ss_unique" <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_unique.checked) document.${formName}.uniqueTitles.value='true'; else document.${formName}.uniqueTitles.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isUniqueTitles"/></span></input>
-</div>
-<input type="hidden" name="uniqueTitles" value="${ssDefinitionEntry.uniqueTitles}"/>
-<br/>
+		<c:set var="cb_checked" value=""/>
+		<c:if test="${ssDefinitionEntry.uniqueTitles}" >
+			<c:set var="cb_checked" value="checked"/>
+		</c:if>
+		<div style="display:block">
+			<input type="checkbox" name="ss_unique" <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_unique.checked) document.${formName}.uniqueTitles.value='true'; else document.${formName}.uniqueTitles.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isUniqueTitles"/></span></input>
+		</div>
+		<input type="hidden" name="uniqueTitles" value="${ssDefinitionEntry.uniqueTitles}"/>
+		<br/>
 
-<ssf:ifAuthorizedByLicense featureName="com.novell.teaming.module.folder.MirroredFolder">
-<c:if test="${ssDefinitionEntry.mirroredAllowed}">
-<c:set var="cb_checked" value=""/>
-<c:if test="${ssDefinitionEntry.mirrored}" >
-<c:set var="cb_checked" value="checked"/>
-</c:if>
-<c:set var="resourceDrivers" value="<%= org.kablink.teaming.fi.connection.ResourceDriverManagerUtil.getAllowedResourceDrivers() %>"/>
-<div style="display:block">
-<input type="checkbox" name="ss_mirrored" <c:if test="${ssDefinitionEntry.mirrored || empty resourceDrivers}">disabled</c:if> <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_mirrored.checked) document.${formName}.mirrored.value='true'; else document.${formName}.mirrored.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isMirrored"/></span> <ssf:inlineHelp jsp="workspaces_folders/menus_toolbars/mirrored_folders" /></input>
-</div>
-<input type="hidden" name="mirrored" value="${ssDefinitionEntry.mirrored}"/>
-<br/>
+		<ssf:ifAuthorizedByLicense featureName="com.novell.teaming.module.folder.MirroredFolder">
+			<c:if test="${ssDefinitionEntry.mirroredAllowed}">
+				<c:set var="cb_checked" value=""/>
+				<c:if test="${ssDefinitionEntry.mirrored}" >
+					<c:set var="cb_checked" value="checked"/>
+				</c:if>
+				<c:set var="resourceDrivers" value="<%= org.kablink.teaming.fi.connection.ResourceDriverManagerUtil.getAllowedResourceDrivers() %>"/>
+				<div style="display:block">
+					<input type="checkbox" name="ss_mirrored" <c:if test="${ssDefinitionEntry.mirrored || empty resourceDrivers}">disabled</c:if> <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_mirrored.checked) document.${formName}.mirrored.value='true'; else document.${formName}.mirrored.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isMirrored"/></span> <ssf:inlineHelp jsp="workspaces_folders/menus_toolbars/mirrored_folders" /></input>
+				</div>
+				<input type="hidden" name="mirrored" value="${ssDefinitionEntry.mirrored}"/>
+				<br/>
+	
+				<c:if test="${ssDefinitionEntry.mirrored}" >
+					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
+					<input type="text" class="ss_text" size="30" name="resourceDriver" value="${ssDefinitionEntry.resourceDriver.titleAndMode}" disabled/>
+					<c:set var="resourceRootPath" value="${ssDefinitionEntry.resourceDriver.rootPath}"/>
+				</c:if>
+				<c:if test="${!ssDefinitionEntry.mirrored && !empty resourceDrivers}" >
+					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
+					<c:set var="resourceRootPath" value="${resourceDrivers[0].rootPath}"/>
+					<select name="resourceDriverName" onchange="updateResourceRootPath();" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if>>
+						<c:forEach var="driver" items="${resourceDrivers}">
+							<option value="${driver.name}" id="${driver.rootPath}" <c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}">selected</c:if>>${driver.titleAndMode}</option>
+							<c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}"><c:set var="resourceRootPath" value="${driver.rootPath}"/></c:if>
+						</c:forEach>
+					</select>
+				</c:if>
+				<br/>
+	
+				<c:if test="${ssDefinitionEntry.mirrored || !empty resourceDrivers}" >
+					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.rootpath.label"/></span>
+					<input type="text" class="ss_text" size="80" name="rootPath" value="${resourceRootPath}" disabled/><br/>
+					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.path.label"/></span>
+					<input type="text" class="ss_text" size="80" name="resourcePath" value="${ssDefinitionEntry.resourcePath}" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if>/><br/>
+				</c:if>
+				<br/>
+			</c:if>
+		</ssf:ifAuthorizedByLicense>
 
-<c:if test="${ssDefinitionEntry.mirrored}" >
-<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
-<input type="text" class="ss_text" size="30" name="resourceDriver" value="${ssDefinitionEntry.resourceDriver.titleAndMode}" disabled/>
-<c:set var="resourceRootPath" value="${ssDefinitionEntry.resourceDriver.rootPath}"/>
-</c:if>
-<c:if test="${!ssDefinitionEntry.mirrored && !empty resourceDrivers}" >
-<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
-<c:set var="resourceRootPath" value="${resourceDrivers[0].rootPath}"/>
-<select name="resourceDriverName" onchange="updateResourceRootPath();" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if>>
-<c:forEach var="driver" items="${resourceDrivers}">
-<option value="${driver.name}" id="${driver.rootPath}" <c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}">selected</c:if>>${driver.titleAndMode}</option>
-<c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}"><c:set var="resourceRootPath" value="${driver.rootPath}"/></c:if>
-</c:forEach>
-</select>
-</c:if>
-<br/>
-
-<c:if test="${ssDefinitionEntry.mirrored || !empty resourceDrivers}" >
-<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.rootpath.label"/></span>
-<input type="text" class="ss_text" size="80" name="rootPath" value="${resourceRootPath}" disabled/><br/>
-<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.path.label"/></span>
-<input type="text" class="ss_text" size="80" name="resourcePath" value="${ssDefinitionEntry.resourcePath}" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if>/><br/>
-</c:if>
-<br/>
-</c:if>
-</ssf:ifAuthorizedByLicense>
-
-<div class="ss_buttonBarLeft">
-<input type="submit" class="ss_submit" name="okBtn" 
-  value="<ssf:nlt tag="button.ok" text="  OK  "/>"  onClick="ss_buttonSelect('okBtn');">&nbsp;&nbsp;&nbsp;
-<input type="submit" class="ss_submit" name="cancelBtn" 
-  value="<ssf:nlt tag="button.cancel" text="Cancel"/>"  onClick="ss_buttonSelect('cancelBtn');">
-</div>
-</form>
+		<div class="ss_buttonBarLeft">
+			<input type="submit" class="ss_submit" name="okBtn" 
+  				value="<ssf:nlt tag="button.ok" text="  OK  "/>"  onClick="ss_buttonSelect('okBtn');">&nbsp;&nbsp;&nbsp;
+			<input type="submit" class="ss_submit" name="cancelBtn" 
+  				value="<ssf:nlt tag="button.cancel" text="Cancel"/>"  onClick="ss_buttonSelect('cancelBtn');">
+		</div>
+	</form>
 </div>
 
 <script type="text/javascript">

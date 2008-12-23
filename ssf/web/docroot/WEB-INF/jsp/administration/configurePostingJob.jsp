@@ -64,7 +64,7 @@ function ${renderResponse.namespace}_modifyAlias() {
 		  onClick="self.window.close();return false;"/>
 </div>
 <input type="checkbox" class="ss_style" id="notifyenabled" name="notifyenabled" <c:if test="${ssScheduleInfonotify.enabled}">checked</c:if> />
-<span class="ss_labelRight"><ssf:nlt tag="notify.schedule.enable"/> </span><ssf:inlineHelp tag="ihelp.email.enableCheckBox"/>
+<span class="ss_labelRight"><ssf:nlt tag="notify.schedule.enable"/> </span><ssf:inlineHelp jsp="workspaces_folders/misc_tools/enableOutgoingEmail"/>
 <br/>
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="notify.header" /></legend>	
@@ -95,7 +95,7 @@ function ${renderResponse.namespace}_modifyAlias() {
 <c:if test="${!empty ssPostings}"> 
 <tr>
 <td valign="top">
-<span class="ss_labelAbove"> <ssf:nlt tag="incoming.aliases"/><ssf:inlineHelp tag="ihelp.email.incomingAddresses" /></span>
+<span class="ss_labelAbove"> <ssf:nlt tag="incoming.aliases"/><ssf:inlineHelp jsp="workspaces_folders/misc_tools/incomingAddresses" /></span>
 <table border="0" cellspacing="0" cellpadding="0" class="ss_style ss_borderTable" >
   <tr class="ss_headerRow">
   <td class="ss_bold" align="center" width="5%" scope="col"><ssf:nlt tag="incoming.delete"/></td>

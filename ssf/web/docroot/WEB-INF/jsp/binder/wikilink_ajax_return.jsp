@@ -61,7 +61,7 @@ var ss_wikiLinkUrl = "<ssf:url
 </script>
 <form method="post" name="ss_findLinkForm"
 	action="">
-<ssf:inlineHelp tag="ihelp.other.linksToEntries.explainTool"/> 
+<ssf:inlineHelp jsp="workspaces_folders/misc_tools/linksToEntriesExplain"/> 
 <ssf:nlt tag="wiki.link.tofolder"/>: <b><span id="linkToFolderName">(${ssBinder.title})</span></b>
 <input type="hidden" name="binderId" id="binderId" size="5" value="${ssBinder.id}"/>
 <a href="javascript:;" onclick="ss_popup_folder();">[<ssf:nlt tag="button.change"/>]</a>
