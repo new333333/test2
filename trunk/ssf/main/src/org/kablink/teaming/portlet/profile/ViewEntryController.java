@@ -116,7 +116,7 @@ public class ViewEntryController extends SAbstractController {
 			DefinitionHelper.getDefaultEntryView(entry, model);
 		} else {
 			//Set up the definition used to show this profile entry
-			if (!DefinitionHelper.getDefinition(entryDef, model, "//item[@name='profileEntryView']")) {
+			if (!DefinitionHelper.getDefinition(entryDef, model, "//item[@name='profileEntryView' or @name='groupEntryView']")) {
 				DefinitionHelper.getDefaultEntryView(entry, model);
 			}
 		}
