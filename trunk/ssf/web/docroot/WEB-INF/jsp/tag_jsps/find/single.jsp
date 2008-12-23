@@ -38,7 +38,7 @@
 <c:set var="label" value="<%= label %>" />
 
 <ssf:ifaccessible>
-	<label for="ss_combobox_autocomplete_${prefix}"><ssf:nlt tag="${accessibilityText}" /></label>
+	<label for="ss_combobox_autocomplete_${prefix}"><ssf:nlt tag="${accessibilityText}" />&nbsp</label>
 </ssf:ifaccessible>
 
 <textarea 
