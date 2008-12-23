@@ -212,7 +212,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Toolbar footerToolbar = new Toolbar();
 		String[] contributorIds = collectContributorIds((List)model.get(WebKeys.FOLDER_ENTRYPEOPLE + "_all"));
 
-		addClipboardOption(footerToolbar, contributorIds);
+		addClipboardOption(footerToolbar, contributorIds, model);
 		addStartMeetingOption(footerToolbar, request, contributorIds);
 		return footerToolbar;
 	}
@@ -230,7 +230,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		}
 	}
 	
-	private void addClipboardOption(Toolbar toolbar, String[] contributorIds) {
+	private void addClipboardOption(Toolbar toolbar, String[] contributorIds, Map model) {
 		// clipboard
 		Map qualifiers = new HashMap();
 		String contributorIdsAsJSString = "";
@@ -241,7 +241,9 @@ public class AdvancedSearchController extends AbstractBinderController {
 			}
 		}
 		qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "]);return false;");
-		toolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "#", qualifiers);
+		//toolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "#", qualifiers);
+		model.put(WebKeys.TOOLBAR_CLIPBOARD_IDS_AS_JS_STRING, contributorIdsAsJSString);
+		model.put(WebKeys.TOOLBAR_CLIPBOARD_SHOW, Boolean.TRUE);
 	}
 	
 	private String[] collectContributorIds(List entries) {

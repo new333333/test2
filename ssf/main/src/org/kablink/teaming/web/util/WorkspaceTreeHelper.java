@@ -788,6 +788,8 @@ public class WorkspaceTreeHelper {
 			qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "], '" + forumId + "');return false;");
 			//footerToolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "", qualifiers);
 			model.put(WebKeys.TOOLBAR_CLIPBOARD_IDS, contributorIds);
+			model.put(WebKeys.TOOLBAR_CLIPBOARD_IDS_AS_JS_STRING, contributorIdsAsJSString);
+			model.put(WebKeys.TOOLBAR_CLIPBOARD_SHOW, Boolean.TRUE);
 		}
 		
 		// send mail

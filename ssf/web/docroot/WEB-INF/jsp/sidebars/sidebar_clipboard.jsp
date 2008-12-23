@@ -37,14 +37,8 @@
 		<div class="ss_leftNav ss_clipBd">
 		  <ul>
 			<li>
-			<c:set var="answer" value=""/>
-			  <c:forEach var="contributorId" items="${ss_toolbar_clipboard_ids}">
-			    <c:if test="${!empty answer}"><c:set var="answer" value="${answer}, "/></c:if>
-			    <c:set var="answer" value="${answer}${contributorId}"/>
-			  </c:forEach>
-			
-			  <a href="${ss_muster.showForm}"
-			    onClick="ss_muster.showForm('ss_muster_users', '${answer}', '${ssBinder.id}');return false;"
+			  <a href="javascript:;"
+			    onClick="ss_muster.showForm('ss_muster_users', [${ss_toolbar_clipboard_ids_as_js_string}], '${ssBinder.id}');return false;"
 			  >
 			    <ssf:nlt tag="sidebar.clipboard"/>
 			  </a>

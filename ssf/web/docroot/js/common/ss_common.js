@@ -5024,7 +5024,7 @@ function ss_Clipboard () {
 	    var hiddenObj = document.createElement("input");
 	    hiddenObj.setAttribute("type", "hidden");
 	    hiddenObj.setAttribute("name", "muster_class");
-	    hiddenObj.setAttribute("value", "musterClass");
+	    hiddenObj.setAttribute("value", musterClass);
 	    formObj.appendChild(hiddenObj);
 		
 		var brObj = document.createElement("br");
@@ -5213,7 +5213,7 @@ function ss_Clipboard () {
 	 * afterPostRoutine - optional
 	 */
 	this.addUsersToClipboard = function (userIds, afterPostRoutine) {
-		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"add_to_clipboard", muster_class:"ss_muster_users ss_form_subhead"}, "clipboard");
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"add_to_clipboard", muster_class:"ss_muster_users"}, "clipboard");
 		for (var i = 0; i < userIds.length; i++) {
 			url += "&muster_ids=" + userIds[i];
 		}
