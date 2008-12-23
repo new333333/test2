@@ -85,7 +85,6 @@ import net.fortuna.ical4j.model.property.Transp;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Version;
 import net.fortuna.ical4j.model.property.XProperty;
-import net.fortuna.ical4j.util.CompatibilityHints;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -98,16 +97,14 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.UserPrincipal;
-import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -671,8 +668,10 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 
 		return vToDo;
 	}
-	private List findUserListAttributes(Document definitionConfig) {
-		List result = new ArrayList();
+	
+	@SuppressWarnings("unchecked")
+	private List<String> findUserListAttributes(Document definitionConfig) {
+		List<String> result = new ArrayList<String>();
 		
     	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and (@name='user_list' or @name='group_list' or @name='team_list')]/properties/property[@name='name']/@value");
     	if (nodes == null) {
@@ -688,94 +687,37 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	}
 
 	private void setComponentAttendee(Component component, DefinableEntity entry) {
-		Iterator userListsIt = findUserListAttributes(entry.getEntryDef().getDefinition()).iterator();
 		Long zoneId = entry.getZoneId();
-		ArrayList<Long> handledIds = new ArrayList<Long>();
-		while (userListsIt.hasNext()) {
-			// Read the ids from this attribute.
-			String attributeName = (String)userListsIt.next();
+		ArrayList<Long> attendeeIds = new ArrayList<Long>();
+		
+		// Scan the possible attendee list attributes,
+		Iterator<String> listAttributes = findUserListAttributes(entry.getEntryDef().getDefinition()).iterator();
+		while (listAttributes.hasNext()) {
+			// Skip any attributes that aren't defined on the entry.
+			String attributeName = ((String) listAttributes.next());
 			CustomAttribute customAttribute = entry.getCustomAttribute(attributeName);
-			if (customAttribute == null) {
-				return;
+			if (null == customAttribute) {
+				continue;
 			}
+
+			// Read and handle this attribute's values.
 			Set<Long>ids = LongIdUtil.getIdsAsLongSet(customAttribute.getValueSet());
-
-			// Handle the ids for the groups.  Note that we handle this
-			// before users so that group ids will be marked as handled and
-			// skipped as users.
-			List<GroupPrincipal> groupPrincipals = getProfileDao().loadGroupPrincipals(ids, zoneId, true);
-			handleGroupAttendees(handledIds, component, groupPrincipals, zoneId);
-
-			// Handle the ids for the users.
-			List<UserPrincipal> userPrincipals = getProfileDao().loadUserPrincipals(ids, zoneId, true);
-			handleUserAttendees(handledIds, component, userPrincipals);
-
-			// Handle the ids for the teams.
-			List teams = getCoreDao().loadObjects(ids, Workspace.class, zoneId);
-			handleTeamAttendees(handledIds, component, teams, zoneId);
-		}
-	}
-	
-	private void handleGroupAttendees(ArrayList<Long> handledIds, Component component, List<GroupPrincipal> groupPrincipals, Long zoneId) {
-		ArrayList<Long>	groupIds;
-		Set<Long>		groupUserIds;
-
-		// Scan the groups.
-		groupIds = new ArrayList<Long>();
-		for (GroupPrincipal principal:groupPrincipals) {
-			// Have we already handle this group?
-			Long pid = principal.getId();
-			if ((-1) == handledIds.lastIndexOf(pid)) {
-				// No!  Mark it as having been handled and add the id
-				// to the ArrayList.
-				handledIds.add(pid);
-				groupIds.add(principal.getId());
-			}
+			attendeeIds.addAll(ids);
+			addTeamMembers(attendeeIds, getCoreDao().loadObjects(ids, Binder.class, zoneId), zoneId);
 		}
 
-		// Did we process any groups?
-		if (0 < groupIds.size()) {
-			// Yes!  Explode them and handle the users.
-			groupUserIds = getProfileDao().explodeGroups(groupIds, zoneId);
-			List<UserPrincipal> userPrincipals = getProfileDao().loadUserPrincipals(groupUserIds, zoneId, true);
-			handleUserAttendees(handledIds, component, userPrincipals);
-		}
-	}
-	
-	private void handleTeamAttendees(ArrayList<Long> handledIds, Component component, List teams, Long zoneId) {
-		Set<Long> teamUserIds; 
-
-		// Scan the team workspaces.
-		for (Object teamWS:teams) {
-			if (teamWS instanceof Workspace) {
-				// Have we already handled this team?
-				Long tid = ((Workspace) teamWS).getId();
-				if ((-1) == handledIds.lastIndexOf(tid)) {
-					// No!  Mark it has having been handled and handle
-					// the team members.
-					handledIds.add(tid);
-					teamUserIds = getBinderModule().getTeamMemberIds(tid, true);
-					List<UserPrincipal> userPrincipals = getProfileDao().loadUserPrincipals(teamUserIds, zoneId, true);
-					handleUserAttendees(handledIds, component, userPrincipals);
-				}
-			}
-		}
-	}
-	
-	private void handleUserAttendees(ArrayList<Long> handledIds, Component component, List<UserPrincipal> userPrincipals) {
-		// Scan the users.
-		for (UserPrincipal principal:userPrincipals) {
-			// Have we already handled this user?
-			Long pid = principal.getId();
-			if ((-1) == handledIds.lastIndexOf(pid)) {
-				// No!  Mark it has having been handled and write it
-				// out.
-				handledIds.add(pid);
+		// Did we find any attendees in any of the attributes?
+		if (0 < attendeeIds.size()) {
+			// Yes!  Explode the groups into their constituent users,
+			// load and scan them...
+			Set<Long> userAttendeeIds = getProfileDao().explodeGroups(attendeeIds, zoneId);
+			List<User> users = getProfileDao().loadUsers(userAttendeeIds, zoneId);
+			for (User user:users) {
+				// ...adding information about each to the component.
 				ParameterList attendeeParams = new ParameterList();
-				attendeeParams.add(new Cn(principal.getTitle()));
+				attendeeParams.add(new Cn(user.getTitle()));
 				attendeeParams.add(Role.REQ_PARTICIPANT);
-	
-				String uri = "MAILTO:" + principal.getEmailAddress();
+				String uri = "MAILTO:" + user.getEmailAddress();
 				try {
 					component.getProperties().add(new Attendee(attendeeParams, uri));
 				} catch (URISyntaxException e) {
@@ -783,6 +725,14 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 							+ "] parsing problem");
 				}
 			}
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void addTeamMembers(ArrayList<Long> attendeeIds, List binders, Long zoneId) {
+		// Add any team members from the binders.
+		for (Object binder:binders) {
+			attendeeIds.addAll(((Binder) binder).getTeamMemberIds());
 		}
 	}
 	
