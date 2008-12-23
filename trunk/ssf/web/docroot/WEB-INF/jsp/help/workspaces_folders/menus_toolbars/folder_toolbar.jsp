@@ -31,6 +31,6 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <iframe	frameborder="0"
 		scrolling="auto" 
-    	name="help_tool_blog_toolbar" 
-    	src="${helpDocPath}/tool_blog_toolbar.html" 
+    	name="help_tool_foldertoolbar" 
+    	src="${helpDocPath}/tool_foldertoolbar.html" 
     	height="100%" width="100%"></iframe>
