@@ -935,6 +935,7 @@ public class WebKeys {
     public static final String SMPT_ENABLED="ssSMTPEnabled";
     public static final String SNIPPET="ss_snippet";
     public static final String TOOLBAR_CLIPBOARD_IDS="ss_toolbar_clipboard_ids";
+    public static final String TOOLBAR_CLIPBOARD_IDS_AS_JS_STRING="ss_toolbar_clipboard_ids_as_js_string";
     public static final String TOOLBAR_CLIPBOARD_SHOW="ss_toolbar_clipboard_show";
     public static final String TOOLBAR_SENDMAIL_IDS="ss_toolbar_sendmail_ids";
     public static final String TOOLBAR_SENDMAIL_POST="ss_toolbar_sendmail_post";
