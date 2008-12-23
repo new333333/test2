@@ -434,7 +434,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
        <!-- Beginning of Find Bar:  Find People/Places/Tags  --> 
        <td width="2%">
           <div align="center">
-             	<img src="<html:rootPath/>images/pics/masthead/whitepixel.jpg" width="1" height="30" hspace="6"/>
+             	<img src="<html:rootPath/>images/pics/masthead/whitepixel.jpg" 
+             		<ssf:alt tag=""/> width="1" height="30" hspace="6"/>
              </div>
        </td>
        <td width="25%">
@@ -574,7 +575,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
        </td>  
        <td width="2%">
              <div align="center">
-             	<img src="<html:rootPath/>images/pics/masthead/whitepixel.jpg" width="1" height="30" hspace="6"/>
+             	<img src="<html:rootPath/>images/pics/masthead/whitepixel.jpg"
+             		<ssf:alt tag=""/> width="1" height="30" hspace="6"/>
              </div>
        </td>
        <td width="25%" class="ss_workspace">
