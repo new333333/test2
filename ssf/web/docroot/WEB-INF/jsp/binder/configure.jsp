@@ -29,7 +29,14 @@
  */
 %>
 
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("binder.configure.definitions") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<ssf:ifadapter>
+<body class="ss_style_body tundra">
+</ssf:ifadapter>
+
 <script type="text/javascript">
 function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	var binderId = id;
@@ -51,10 +58,9 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 <div class="ss_portlet">
 <div class="ss_style ss_form" style="margin:0px; padding:10px 16px 10px 10px;">
 <div style="margin:6px; width:100%;">
-<table cellpadding="0" cellspacing="0" width="100%">
-<tr>
-<td valign="top">
-<span class="ss_bold ss_largerprint"><ssf:nlt tag="binder.configure.definitions"/></span>
+
+<ssf:form title='<%= NLT.get("binder.configure.definitions") %>'>
+
 <br/>
 <br/>
 <c:if test="${ssBinder.entityType == 'folder'}">
@@ -65,8 +71,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 </c:if>
 <% //need to check tags for templates %>
 <span class="ss_bold"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
-</td>
-<td align="right" valign="top">
+<div align="right">
 <form class="ss_form" method="post" style="display:inline;" 
 	action="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
 	name="binderId" value="${ssBinder.id}"/><ssf:param 
@@ -74,13 +79,108 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   <input type="submit" class="ss_submit" name="closeBtn" 
     value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
-</td>
-</tr>
-</table>
+</div>
+
 <c:set var="ss_breadcrumbsShowIdRoutine" 
   value="ss_treeShowIdConfig${renderResponse.namespace}" 
   scope="request" />
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
+
+<br/>
+<c:if test="${ssSimpleUrlChangeAccess}">
+<form method="post" action="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
+		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/><ssf:param 
+		name="binderId" value="${ssBinder.id}"/></ssf:url>" >
+  <fieldset class="ss_fieldset">
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.defineSimpleUrl"/>  
+      <ssf:inlineHelp tag="ihelp.other.define_simple_url"/> </legend>
+
+    <span class="ss_labelAbove"><ssf:nlt tag="simpleUrl.currentlyDefinedUrls"/></span>
+    <c:if test="${!empty ssSimpleUrlNames}">
+      <c:forEach var="name" items="${ssSimpleUrlNames}">
+        <input type="checkbox" name="delete_${name.name}"/><span style="padding-left:6px;">${ssSimpleUrlPrefix}${name.name}</span><br/>
+      </c:forEach>
+    </c:if>
+    <input type="submit" class="ss_submit" name="deleteUrlBtn" 
+      value="<ssf:nlt tag="simpleUrl.deleteSelectedUrls"/>"
+      onClick="if(confirm('<ssf:escapeJavaScript><ssf:nlt tag="simpleUrl.confirmDeleteUrl"/></ssf:escapeJavaScript>')){return true}else{return false};"
+    />
+    <br/>
+    <br/>
+    <c:if test="${ss_simpleUrlNameExistsError}">
+    	<span class="ss_bold ss_errorLabel"><ssf:nlt tag="simpleUrl.nameAlreadyExists"/></span><br/><br/>
+    </c:if>
+    <c:if test="${ss_simpleUrlNameNotAllowedError}">
+    	<span class="ss_bold ss_errorLabel"><ssf:nlt tag="simpleUrl.nameNotAllowed"/></span><br/><br/>
+    </c:if>
+    
+    <span class="ss_labelAbove"><ssf:nlt tag="simpleUrl.addUrl"/></span> 
+    <table cellspacing="0" cellpadding="0">
+    <tr>
+    <td valign="top">
+      <span class="ss_bold">${ssSimpleUrlPrefix}&nbsp;</span>
+    </td>
+    <td valign="top">
+      <select name="prefix">
+        <c:if test="${ss_isSiteAdmin}">
+          <option value="" selected>--<ssf:nlt tag="simpleUrl.leaveBlank"/>--</option>
+        </c:if>
+        <option value="${ssUser.name}" selected>${ssUser.name}</option>
+        <c:if test="${ssBinder.owner.name != ssUser.name}">
+          <option value="${ssBinder.owner.name}">${ssBinder.owner.name}</option>
+        </c:if>
+        <c:forEach var="item" items="${ssSimpleUrlGlobalKeywords}">
+          <option value="${item}">${item}</option>
+        </c:forEach>
+      </select>
+    </td>
+    <td valign="top">
+      <span class="ss_bold">&nbsp;/&nbsp;</span>
+    </td>
+    <td valign="top">
+      <input type="text" name="name" size="60"/>
+    </td>
+    </tr>
+    </table>
+    <br>
+    <input type="submit" class="ss_submit" name="addUrlBtn" value="<ssf:nlt tag="button.add"/>"> 
+	<c:if test="${ssSimpleEmailEnabled}">
+		<br/><br/>
+	    <table cellspacing="0" cellpadding="0">
+	      <tr>
+	      	<td>
+		  <c:choose>
+			<c:when test="${ssBinder.postingEnabled}">
+	    	  <input type="checkbox" id="enableCB" name="allow_simple_email" checked/>
+	    	</c:when>
+	    	<c:otherwise>
+	    	  <input type="checkbox" id="enableCB" name="allow_simple_email"/>
+	    	</c:otherwise>
+	      </c:choose>
+	      	</td>
+	      	<td><label for="enableCB"><span style="padding-left:6px;"><ssf:nlt tag="simpleEmail.title"/></span><label></td>
+	      </tr>
+		  <c:forEach var="name" items="${ssSimpleUrlNames}">
+			<tr>
+		  	  <td>&nbsp;</td>
+			  <td><span style="padding-left:6px;">${name.emailAddress}@${ssSimpleEmailHostname}</span></td>
+			</tr>
+		  </c:forEach>
+		</table>
+		<br>
+		<input type="submit" class="ss_submit" name="updateEmailButton" value="<ssf:nlt tag="button.apply"/>"> 
+	</c:if>
+  </fieldset>
+  <br>
+</form>
+</c:if>
+<c:if test="${!ssSimpleUrlChangeAccess}">
+  <fieldset class="ss_fieldset">
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.defineSimpleUrl"/></legend>
+  </fieldset>
+<br/>
+</c:if>
+
 <c:set var="allDefinitionsMap" value="${ssBinder.definitionMap}"/>
 <c:if test="${ssBinder.definitionInheritanceSupported}">
 <fieldset class="ss_fieldset">
@@ -241,8 +341,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.workflowAssociations" text="Workflow associations"/> <ssf:inlineHelp tag="ihelp.other.workflow_association"/> </legend>
 
 	<table>	
-    <tr><span class="ss_bold"><ssf:nlt tag="workflow.type.entry"/></span></tr>
-    <tr>	
+    <tr><th><span class="ss_bold"><ssf:nlt tag="workflow.type.entry"/></span></th></tr>
 	<c:forEach var="item" items="${ssAllEntryDefinitions}">
 	  <c:if test="${!empty allDefinitionsMap[item.value.id]}">
 	  <tr>
@@ -265,12 +364,10 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	  </tr>
 	  </c:if>
 	</c:forEach>
-	</tr>
 	</table>
 
 	<table>
-    <tr><span class="ss_bold"><ssf:nlt tag="workflow.type.reply"/></span></tr>
-	<tr>
+    <tr><th><span class="ss_bold"><ssf:nlt tag="workflow.type.reply"/></span></th></tr>
 	<c:forEach var="item" items="${ssAllEntryDefinitions}">
 	  <c:if test="${!empty ssReplyDefinitionMap[item.value.id]}">
 	  <tr>
@@ -293,7 +390,6 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	  </tr>
 	  </c:if>
 	</c:forEach>
-	</tr>
 	</table>
 	<br>
 <c:if test="${!ssBinder.definitionInheritanceSupported || !ssBinder.definitionsInherited}">
@@ -375,106 +471,17 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 </form>
 
 </td>
-<td valign="top" width="50%" style="padding-left:20px;">
-
-<c:if test="${ssSimpleUrlChangeAccess}">
-<form method="post" action="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
-		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/><ssf:param 
-		name="binderId" value="${ssBinder.id}"/></ssf:url>" >
-  <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.defineSimpleUrl"/>  
-      <ssf:inlineHelp tag="ihelp.other.define_simple_url"/> </legend>
-
-    <span class="ss_labelAbove"><ssf:nlt tag="simpleUrl.currentlyDefinedUrls"/></span>
-    <c:if test="${!empty ssSimpleUrlNames}">
-      <c:forEach var="name" items="${ssSimpleUrlNames}">
-        <input type="checkbox" name="delete_${name.name}"/><span style="padding-left:6px;">${ssSimpleUrlPrefix}${name.name}</span><br/>
-      </c:forEach>
-    </c:if>
-    <input type="submit" class="ss_submit" name="deleteUrlBtn" 
-      value="<ssf:nlt tag="simpleUrl.deleteSelectedUrls"/>"
-      onClick="if(confirm('<ssf:escapeJavaScript><ssf:nlt tag="simpleUrl.confirmDeleteUrl"/></ssf:escapeJavaScript>')){return true}else{return false};"
-    />
-    <br/>
-    <br/>
-    <c:if test="${ss_simpleUrlNameExistsError}">
-    	<span class="ss_bold ss_errorLabel"><ssf:nlt tag="simpleUrl.nameAlreadyExists"/></span><br/><br/>
-    </c:if>
-    <c:if test="${ss_simpleUrlNameNotAllowedError}">
-    	<span class="ss_bold ss_errorLabel"><ssf:nlt tag="simpleUrl.nameNotAllowed"/></span><br/><br/>
-    </c:if>
-    
-    <span class="ss_labelAbove"><ssf:nlt tag="simpleUrl.addUrl"/></span> 
-    <table cellspacing="0" cellpadding="0">
-    <tr>
-    <td valign="top">
-      <span class="ss_bold">${ssSimpleUrlPrefix}&nbsp;</span>
-    </td>
-    <td valign="top">
-      <select name="prefix">
-        <c:if test="${ss_isSiteAdmin}">
-          <option value="" selected>--<ssf:nlt tag="simpleUrl.leaveBlank"/>--</option>
-        </c:if>
-        <option value="${ssUser.name}" selected>${ssUser.name}</option>
-        <c:if test="${ssBinder.owner.name != ssUser.name}">
-          <option value="${ssBinder.owner.name}">${ssBinder.owner.name}</option>
-        </c:if>
-        <c:forEach var="item" items="${ssSimpleUrlGlobalKeywords}">
-          <option value="${item}">${item}</option>
-        </c:forEach>
-      </select>
-    </td>
-    <td valign="top">
-      <span class="ss_bold">&nbsp;/&nbsp;</span>
-    </td>
-    <td valign="top">
-      <input type="text" name="name" size="60"/>
-    </td>
-    </tr>
-    </table>
-    <br>
-    <input type="submit" class="ss_submit" name="addUrlBtn" value="<ssf:nlt tag="button.add"/>"> 
-	<c:if test="${ssSimpleEmailEnabled}">
-		<br/><br/>
-	    <table cellspacing="0" cellpadding="0">
-	      <tr>
-	      	<td>
-		  <c:choose>
-			<c:when test="${ssBinder.postingEnabled}">
-	    	  <input type="checkbox" id="enableCB" name="allow_simple_email" checked/>
-	    	</c:when>
-	    	<c:otherwise>
-	    	  <input type="checkbox" id="enableCB" name="allow_simple_email"/>
-	    	</c:otherwise>
-	      </c:choose>
-	      	</td>
-	      	<td><label for="enableCB"><span style="padding-left:6px;"><ssf:nlt tag="simpleEmail.title"/></span><label></td>
-	      </tr>
-		  <c:forEach var="name" items="${ssSimpleUrlNames}">
-			<tr>
-		  	  <td>&nbsp;</td>
-			  <td><span style="padding-left:6px;">${name.emailAddress}@${ssSimpleEmailHostname}</span></td>
-			</tr>
-		  </c:forEach>
-		</table>
-		<br>
-		<input type="submit" class="ss_submit" name="updateEmailButton" value="<ssf:nlt tag="button.apply"/>"> 
-	</c:if>
-  </fieldset>
-  <br>
-</form>
-</c:if>
-<c:if test="${!ssSimpleUrlChangeAccess}">
-  <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.defineSimpleUrl"/></legend>
-  </fieldset>
-</c:if>
-
-</td>
 </tr>
 </table>
+
+</ssf:form>
+
 </div>
 </div>
 </div>
 
+<ssf:ifadapter>
+</body>
+</html>
+</ssf:ifadapter>
 
