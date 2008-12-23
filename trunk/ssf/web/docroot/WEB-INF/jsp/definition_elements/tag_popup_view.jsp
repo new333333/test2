@@ -56,7 +56,8 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
 			<!-- The help spot is positioned relative to the position of its parent. -->
 			<!-- That's why I put the <ssHelpSpot...> in a <span> -->
 			<span>
-				<img border="0" src="<html:imagesPath/>pics/1pix.gif" />
+				<img border="0" src="<html:imagesPath/>pics/1pix.gif" 
+					<ssf:alt tag=""/> />
 	  			<ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="0" offsetY="0" xAlignment="left" 
 	     				  	title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
 	  			</ssHelpSpot>
