@@ -35,6 +35,7 @@
 	divObj.style.display = "block";
 	divObj.visibility = "visible";
 	divObj.style.zIndex = ssMenuZ;
+	divObj.focus();
 	var anchorName = 'ss_tags_anchor' + namespace + '_' + parseInt(divNumber);
 	var anchorObj = document.getElementById(anchorName);
 	if (ss_isAdapter == 'false') {

@@ -53,8 +53,10 @@ ${exception.class}<br/>
 ${exception.localizedMessage == null ? exception : exception.localizedMessage }
 </p>
 
-<input type="button" id="ss_show" value="<ssf:nlt tag="button.showDetails"/>" onclick="document.getElementById('ss_details').style.display='block'; document.getElementById('ss_hide').style.display='inline'; this.style.display='none'"/>
-<input type="button" id="ss_hide" value="<ssf:nlt tag="button.hideDetails"/>" onclick="document.getElementById('ss_details').style.display='none'; document.getElementById('ss_show').style.display='inline'; this.style.display='none'" style="display:none;"/>
+<input type="button" id="ss_show" value="<ssf:nlt tag="button.showDetails"/>" 
+  onclick="document.getElementById('ss_details').style.display='block'; document.getElementById('ss_hide').style.display='inline'; this.style.display='none'"/>
+<input type="button" id="ss_hide" value="<ssf:nlt tag="button.hideDetails"/>" 
+  onclick="document.getElementById('ss_details').style.display='none'; document.getElementById('ss_show').style.display='inline'; this.style.display='none'" style="display:none;"/>
 <div id="ss_details" style="display:none;">
 <%((Exception)request.getAttribute("exception")).printStackTrace(new PrintWriter(out)); %>
 </div>

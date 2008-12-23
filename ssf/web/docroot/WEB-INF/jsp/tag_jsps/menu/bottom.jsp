@@ -75,7 +75,7 @@ String isAccessible = ParamUtil.get(request, "isAccessible", "false");
 id="<%= titleId %>" href="javascript: ;" <ssf:title tag="title.showMenu" />
 
 <c:if test="${isAccessible == 'false'}">
-	onClick="ss_activateMenuLayerClone('<%= menuTagDivId %>${renderResponse.namespace}', 'parent_<%= menuTagDivId %>${renderResponse.namespace}', '<%= offsetLeft %>', '<%= offsetTop %>', '<%= openStyle %>');"
+	onClick="ss_activateMenuLayerClone('<%= menuTagDivId %>${renderResponse.namespace}', 'parent_<%= menuTagDivId %>${renderResponse.namespace}', '<%= offsetLeft %>', '<%= offsetTop %>', '<%= openStyle %>');" 
 </c:if>
 
 <c:if test="${isAccessible == 'true'}">

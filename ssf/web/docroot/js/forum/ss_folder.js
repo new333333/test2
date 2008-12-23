@@ -320,6 +320,7 @@ function ss_showSearchResults(type) {
 	}
 	var obj = document.getElementById(divId);
 	obj.style.display = "block"
+	obj.focus();
 	ss_currentSearchResultsDiv = divId;
 	obj = document.getElementById(tabId);
 	obj.className = "ss_search_results_selection_active"

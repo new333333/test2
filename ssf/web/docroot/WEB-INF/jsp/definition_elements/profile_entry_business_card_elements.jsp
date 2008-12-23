@@ -63,10 +63,12 @@
        
        if(id == 'show') {
          one.style.display = 'block';
+         one.focus();
          two.style.display = 'none';  
        }
        else {
          two.style.display = 'block';
+         two.focus();
          one.style.display = 'none';
        }
     }

@@ -557,7 +557,8 @@ function ss_showPermalink(obj) {
 		var x = parseInt(ss_getClickPositionX());
 		x = x - parseInt((ss_getObjectWidth(divObj) / 3) * 2);
 		if (x < 0) x = 0;
-		divObj.style.left = x + "px";		
+		divObj.style.left = x + "px";	
+		divObj.focus();	
 	}
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
@@ -915,6 +916,7 @@ function ss_showRelevanceTab(s, namespace) {
 	canvasObj.innerHTML = s;
 	canvasObj.style.display = 'block'
 	canvasObj.style.visibility = 'visible'
+	canvasObj.focus();
 	ss_executeJavascript(canvasObj); // calendar view is generated in js
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
@@ -1018,6 +1020,7 @@ function ss_showWhatsNewPageDiv(s, divId) {
 	divObj.innerHTML = s;
 	divObj.style.display = 'block';
 	divObj.style.visibility = 'visible';
+	divObj.focus();
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
@@ -1060,12 +1063,14 @@ function ss_selectWikiTab(obj, tab, namespace) {
 		if (tab == 'directory') {
 			entObj.style.display = 'none';
 			dirObj.style.display = 'block';
+			dirObj.focus();
 			var pageSlider = "";
 			if (window["ss_pageSlider" + namespace]) eval("set pageSlider = ss_pageSlider" + namespace);
 			if (pageSlider != null && pageSlider != "") pageSlider.recalculate();
 		} else {
 			dirObj.style.display = 'none';
 			entObj.style.display = 'block';
+			entObj.focus();
 		}
 	}
 }
@@ -1128,6 +1133,7 @@ function ss_showHideObj(objName, visibility, displayStyle) {
 	    if (obj.style.visibility != visibility) {
 		    obj.style.visibility = visibility;
 		    obj.style.display = displayStyle;
+		    if (displayStyle == "block" || displayStyle == "inline") obj.focus();
 		}
 		//Signal that the layout changed
 		if (!obj.style.position || obj.style.position != "absolute") {
@@ -1145,6 +1151,7 @@ function ss_toggleShowDiv(divName) {
 		    obj.style.display = "none";
 		} else {
 			obj.style.display = "block";
+			obj.focus();
 		}
 		//Signal that the layout changed
 		if (!obj.style.position || obj.style.position != "absolute") {
@@ -1179,6 +1186,7 @@ function ss_showHide(objId){
 	    		obj.style.display == '') {
 			obj.style.visibility="visible";
 			obj.style.display="block";
+			obj.focus();
 			return true;
 		} else {	
 			obj.style.visibility="hidden";
@@ -1952,6 +1960,7 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
     var divWidth = 0;
 
 	document.getElementById(divId).style.display = "block";
+	document.getElementById(divId).focus();
 
     if (ss_isNSN6 || ss_isMoz5) {
         // need to bump layer an extra bit to the right to avoid horiz scrollbar
@@ -1977,6 +1986,8 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
     ss_ShowHideDivXY(divId, x, y);
     if (openStyle != "popup") ss_HideDivOnSecondClick(divId);
     ssf_onLayoutChange();
+	document.getElementById(divId).tabIndex=document.getElementById(parentDivId).tabIndex;
+	document.getElementById(divId).focus();
 }
 
 // activate_menulayer tests this flag to make sure the page is
@@ -2067,6 +2078,7 @@ function ss_showBackgroundIFrame(divId, frmId) {
 	
 	frm.style.position = "absolute";
 	frm.style.display = "block";
+	frm.focus();
 }
 
 /* IE6 workaround - divs under selectboxes */
@@ -2136,6 +2148,7 @@ function ss_showDivObj(divObj, backgroundIframe) {
     if (!divObj.style.display || divObj.style.display != 'inline') {
     	divObj.style.display = "block";
     }
+    divObj.focus();
 	if (typeof backgroundIframe == 'undefined' || backgroundIframe != 'no') 
 		ss_showBackgroundIFrame(divObj.id, "ss_background_iframe");
 	//Signal that the layout changed
@@ -2518,6 +2531,7 @@ function ss_showLightbox(id, zIndex, opacity, className) {
     lightBox.style.visibility = "hidden";
     lightBox.className = className;
     lightBox.style.display = "block";
+    lightBox.focus();
     lightBox.style.top = "0px";
     lightBox.style.left = "0px";
     ss_setOpacity(lightBox, 0);
@@ -2662,6 +2676,7 @@ var ss_helpSystem = {
 	        helpSpotNode.className = "ss_helpSpot";
 	        helpSpotNode.style.zIndex = ssHelpSpotZ;
 	        helpSpotNode.style.display = "block";
+	        helpSpotNode.focus();
 			
 			var helpSpotA = document.createElement("a");
 			var helpSpotTable = document.createElement("table");
@@ -2863,6 +2878,7 @@ var ss_helpSystem = {
     	tocDiv.style.visibility = "visible";
     	tocDiv.style.display = "block";
     	tocDiv.style.zIndex = parseInt(ssHelpWelcomeZ + 1);
+    	tocDiv.focus();
 	},
 	
 	hideTOC : function() {
@@ -3058,6 +3074,7 @@ var ss_helpSystem = {
 		var pObj = self.document.getElementById(panelId);
 		pObj.setAttribute("helpId", data.id);
 		pObj.style.display = "block"
+		pObj.focus();
 		var width = parseInt(dojo.marginBox(pObj).w);
 		var height = parseInt(dojo.marginBox(pObj).h);
 		var x = data.x;
@@ -3269,6 +3286,7 @@ function ss_showHideAllDashboardComponents(obj, divId, binderId) {
 	    obj.innerHTML = "<span><img src='"+ss_imagesPath+"icons/dashboard_hide.gif' title='"+ss_componentTextHide+"'></span>";
 		canvas.style.visibility = 'visible';
 		canvas.style.display = 'block';
+		canvas.focus();
 	}
 	ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_dashboard"));
 	//Signal that the layout changed
@@ -3286,6 +3304,7 @@ function ss_toggle_dashboard_toolbars(prefix) {
 			obj.style.visibility = 'visible';
 			obj.style.display = 'inline';
 			obj.style.zIndex = parseInt(ssLightboxZ + 1);
+			obj.focus();
 			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarHideContent;
 			//var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
 			//lightBox.onclick = function(e) {ss_toggle_dashboard_toolbars(prefix);};
@@ -3309,6 +3328,7 @@ function ss_toggle_dashboard_hidden_controls(prefix) {
 		if (obj.style.visibility == 'hidden') {
 			obj.style.visibility = 'visible';
 			obj.style.display = 'block';
+			obj.focus();
 			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarHideControls;
 		} else {
 			obj.style.visibility = 'hidden';
@@ -3451,6 +3471,7 @@ function ss_showComponentCallback(s, data) {
 		targetDiv.innerHTML = s;
 		targetDiv.style.visibility = "visible";
 		targetDiv.style.display = "block";
+		targetDiv.focus();
 		//Signal that the layout changed
 		if (ssf_onLayoutChange) ssf_onLayoutChange();
 		ss_callDashboardEvent(data.componentId, "onAfterShow");
@@ -4017,6 +4038,7 @@ function ss_showForumEntryInIframe_Overlay(url) {
     } else {
     	wObj.src = url
     }
+    wObj.focus();
 
 	if (self.ss_positionEntryDiv) ss_positionEntryDiv();
     
@@ -4428,6 +4450,7 @@ function ssTeams(namespace) {
 	    dojo.style(dObj, "visibility", "visible");
 	    dObj.style.zIndex = parseInt(ssMenuZ);
 	    fObj.src = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_my_teams", namespace:namespace});
+	    fObj.focus();
 	}
 	this.hideAccessible = function() {
 		var dObj = self.document.getElementById("ss_navbar_myteams" + namespace);
@@ -4444,6 +4467,7 @@ function ss_showPopupDiv(divId) {
 	divObj.style.zIndex = parseInt(ssLightboxZ + 1);
 	divObj.style.visibility = "visible";
 	divObj.style.display= "block";
+	divObj.focus();
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
@@ -4495,6 +4519,7 @@ function ss_setupPopupDiv(targetDiv) {
 		targetDiv.style.display = "block";
 		ss_centerPopupDiv(targetDiv);
 		targetDiv.style.visibility = "visible";
+		targetDiv.focus();
 		//Signal that the layout changed
 		if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
@@ -4907,6 +4932,7 @@ function ss_showSubmenu(obj) {
 			ulElements[i].style.display = 'block'
 		}
 	}
+	obj.focus();
 }
 
 function ss_hideSubmenu(obj) {
@@ -5471,6 +5497,7 @@ function ss_defaultValidationErrorHandler(vObj, isError)
   		var messageElt = document.getElementById(vObj.messageId);
   		messageElt.style.visibility='visible';
   		messageElt.style.display='block';
+  		messageElt.focus();
   	}
   	if(vObj.labelId != null && vObj.labelId != '') {
   		var labelElt = document.getElementById(vObj.labelId);
@@ -6813,6 +6840,7 @@ function ssEditAppConfig(menuDIV) {
 		lightBox.onclick = function(e) {return false;};
 		this.menuDIV.style.visibility = "visible";
 		this.menuDIV.style.display= "block";	
+		this.menuDIV.focus();
 		ss_centerPopupDiv(this.menuDIV);
 	}
 	
@@ -6867,6 +6895,7 @@ function ss_changeUITheme(idListText, nameListText, divCaption) {
 	lightBox.onclick = function(e) {ss_cancelUITheme();};
 	divObj.style.visibility = "visible";
 	divObj.style.display= "block";	
+	divObj.focus();
 	ss_centerPopupDiv(divObj);
 }
 
@@ -6906,6 +6935,7 @@ function ss_showAbout(divId) {
 	lightBox.onclick = function(e) {ss_cancelAbout(divId);};
 	divObj.style.visibility = "visible";
 	divObj.style.display= "block";	
+	divObj.focus();
 	ss_centerPopupDiv(divObj);
 }
 
@@ -7012,6 +7042,7 @@ function ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey, sh
 	    if (tObj.style.display == "none" || tObj.style.visibility == 'hidden') {
 	        tObj.style.display = "block";
 	        tObj.style.visibility = 'visible';
+	        tObj.focus();
 			if (bottom == 0) {
 				if (parentId == "") {
 					jObj.className = "ss_twMinusTop";	   // minus_top.gif
@@ -7206,6 +7237,7 @@ function ss_treeOpen(treeName, id, parentId, bottom, type) {
     } else {
         tObj.style.display = "block";
         tObj.style.visibility = 'visible';
+        tObj.focus();
 		if (jObj != null) {
 			if (bottom == '0') {
 				if (parentId == "") {
@@ -7319,6 +7351,7 @@ function ss_showBucketText(obj, text) {
 	tipObj.innerHTML = text;
 	tipObj.style.visibility = "visible";
 	tipObj.style.display = "block";
+	tipObj.focus();
 	tipObj.style.fontSize = obj.style.fontSize;
 	tipObj.style.fontFamily = obj.style.fontFamily;
 	var x = dojo.coords(obj, true).x
@@ -7516,6 +7549,7 @@ function ss_showHideSidebar(namespace) {
     	ss_setOpacity(divObj, 0);
 		divObj.style.display = 'block';
     	divObj.style.visibility = "visible";
+    	divObj.focus();
 	    dojo.fadeIn({node: divObj, start:0, end:1.0, delay:400}).play();
 		sidebarShow.style.display = 'block'
 		sidebarHide.style.display = 'none'
@@ -7536,7 +7570,7 @@ function ss_hideSunburst(s_id, s_binderId) {
 		//Hide it
    		dojo.fadeOut({node: divObj, end: 0, delay: 400, onEnd: function() {
 		    	divObj.style.visibility = "hidden";
-		    	divObj.style.display = "ss_noUnderlinePlus";
+		    	divObj.className = "ss_noUnderlinePlus";
 
    		}}).play();
 

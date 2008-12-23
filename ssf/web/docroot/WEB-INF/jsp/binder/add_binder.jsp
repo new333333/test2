@@ -136,11 +136,13 @@ function ss_showAddBinderOptions() {
 		      </c:if>
 		    </c:forEach>
 		    document.getElementById('ss_addBinderAddFoldersDiv').style.display = "block"
+		    document.getElementById('ss_addBinderAddFoldersDiv').focus()
 		}
 		//Turn on/off the add team members box
 		if (ss_addBinderOperation == 'add_team_workspace' ||
 				ss_addBinderConfigInternalIds[configId] == ss_teamWorkspaceInternalId) {
 			document.getElementById('ss_addBinderAddTeamMemebersDiv').style.display = "block";
+			document.getElementById('ss_addBinderAddTeamMemebersDiv').focus();
 			formObj['inheritFromParent'].value = 'no'
 		} else {
 			document.getElementById('ss_addBinderAddTeamMemebersDiv').style.display = "none";
@@ -152,6 +154,7 @@ function ss_showAddBinderOptions() {
 				ss_addBinderConfigInternalIds[configId] == ss_teamWorkspaceInternalId || 
 				ss_teamMembersListEmpty == 'false') {
 			document.getElementById('ss_addBinderAnnounceDiv').style.display = "block";
+			document.getElementById('ss_addBinderAnnounceDiv').focus();
 		} else {
 			document.getElementById('ss_addBinderAnnounceDiv').style.display = "none";
 		}

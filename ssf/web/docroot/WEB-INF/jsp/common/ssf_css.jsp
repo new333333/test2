@@ -123,7 +123,7 @@ body.ss_style_body {
   	color: ${ss_style_link_color};
   	text-decoration: none;
 	<ssf:ifnotaccessible>
-  		outline: none;
+  		/* outline: none; */
 	</ssf:ifnotaccessible>  
 	}
 .ss_style a:visited {
@@ -134,7 +134,10 @@ body.ss_style_body {
   	text-decoration: none;
 	<ssf:ifaccessible>
   		outline: dotted 1px gray;
-	</ssf:ifaccessible>  
+	</ssf:ifaccessible>
+	<ssf:ifnotaccessible>
+  		outline: dotted 1px gray;
+	</ssf:ifnotaccessible>
 	}
 .ss_title_link {
   	text-decoration:underline;
@@ -3432,6 +3435,9 @@ a.ss_searchButton:hover img {
 <ssf:ifaccessible>
   outline: dotted 1px gray;
 </ssf:ifaccessible>  
+<ssf:ifnotaccessible>
+  outline: dotted 1px gray;
+</ssf:ifnotaccessible>  
 }
 /***  NEW LAYOUT SEARCH BUTTON ***/
 a.ss_searchButton2 img {
@@ -3452,6 +3458,9 @@ a.ss_searchButton2:hover img {
 <ssf:ifaccessible>
   outline: dotted 1px gray;
 </ssf:ifaccessible>  
+<ssf:ifnotaccessible>
+  outline: dotted 1px gray;
+</ssf:ifnotaccessible>  
 }
 
 a.ss_advanced:link, a.ss_advanced:hover, a.ss_advanced:visited, a.ss_advanced:active {
@@ -3466,6 +3475,9 @@ a.ss_parentPointer:hover, a.ss_parentPointer:link, a.ss_parentPointer:hover, a.s
 <ssf:ifaccessible>
   outline: dotted 1px gray;
 </ssf:ifaccessible>  
+<ssf:ifnotaccessible>
+  outline: dotted 1px gray;
+</ssf:ifnotaccessible>  
 	}
 a.ss_parentPointer:hover {
 	color: #0000ff;
@@ -3473,6 +3485,9 @@ a.ss_parentPointer:hover {
 <ssf:ifaccessible>
   outline: dotted 1px gray;
 </ssf:ifaccessible>  
+<ssf:ifnotaccessible>
+  outline: dotted 1px gray;
+</ssf:ifnotaccessible>  
 }
 a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 	color: purple;

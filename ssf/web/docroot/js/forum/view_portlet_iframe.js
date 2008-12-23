@@ -73,6 +73,7 @@ function ss_showForumEntryInIframe(url) {
     } else {
     	wObj.src = url
     }
+    wObj.focus();
 
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();

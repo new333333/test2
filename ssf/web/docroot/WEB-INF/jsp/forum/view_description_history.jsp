@@ -240,6 +240,7 @@ function dodiff()
 		document.getElementById("diff-title").innerHTML = diffString(document.getElementById("title"+ss_diffOne).innerHTML, document.getElementById("title"+ss_diffTwo).innerHTML);
 		document.getElementById("diff-desc").innerHTML = diffString(document.getElementById("desc"+ss_diffOne).innerHTML, document.getElementById("desc"+ss_diffTwo).innerHTML);
 		document.getElementById("diff").style.display='block';
+		document.getElementById("diff").focus();
 	}
 }
 </script>

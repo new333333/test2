@@ -107,6 +107,7 @@ function showDisplayButtons() {
 	var displaydivButtonsObj = document.getElementById('displaydivButtons');
 	displaydivButtonsObj.style.visibility = "visible";
 	displaydivButtonsObj.style.display = "block";
+	displaydivButtonsObj.focus();
 }
 
 function hideDisplayButtons() {
@@ -125,6 +126,7 @@ function showDisplayDiv() {
 	displaydivObj.style.display = "block";
 	displaydiv0Obj.style.visibility = "visible";
 	displaydiv0Obj.style.display = "block";
+	displaydiv0Obj.focus();
 
 	//alert(displaydivObj.innerHTML) 
 	//alert("displaydiv: " + parseInt(ss_getDivHeight('displaydiv')) + ", displaydivbox: " + parseInt(ss_getDivHeight('displaydivbox')))

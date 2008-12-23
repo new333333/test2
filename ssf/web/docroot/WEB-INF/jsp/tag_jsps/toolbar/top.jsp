@@ -54,7 +54,8 @@
 <c:if test="${!empty ss_toolbar}">
 	<c:choose>
 		<c:when test="${ss_toolbar_is_accessible == 'true'}">
-			<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_accessible_view.jsp" %>
+			<!-- Accessible mode has been turned off. The regular toolbar is now fully accessible. -->
+			<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 		</c:when>
 		<c:otherwise>
 			<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>

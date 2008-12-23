@@ -81,11 +81,13 @@ function ss_administration_showPseudoPortal${renderResponse.namespace}(obj) {
 		if (divObj != null) {
 			divObj.style.display = "block"
 			divObj.style.visibility = "visible"
+			divObj.focus();
 		}
 		divObj = self.document.getElementById('ss_administrationHeader_${renderResponse.namespace}');
 		if (divObj != null) {
 			divObj.style.display = "block"
 			divObj.style.visibility = "visible"
+			divObj.focus();
 		}
 	}
 }
@@ -225,8 +227,7 @@ if (typeof ss_setAdministrationIframeSize == "undefined")
 						    treeDocument="${ssAdminDomTree}" 
 						    showIdRoutine="ss_showAdminMenuOption${renderResponse.namespace}" 
 						    flat="true"
-						    rootOpen="true" 
-						    allOpen="true" />
+						    rootOpen="true"/>
 						</ssf:ifaccessible>
 					</div>
 				</td>

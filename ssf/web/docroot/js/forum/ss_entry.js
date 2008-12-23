@@ -75,6 +75,7 @@ function ss_showRating(rating, id, namespace) {
     infoDiv.style.top = parseInt(parseInt(ss_getImageTop(imgId)) + 20) + "px";
     infoDiv.style.display = "block"
     infoDiv.style.visibility = "visible"
+    infoDiv.focus();
     ss_currentRatingInfoId = id;
 }
 function ss_clearRating(rating, id, namespace) {
