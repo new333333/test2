@@ -367,13 +367,15 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 
 							<!-- The help spot is positioned relative to the position of its parent. -->
 							<!-- That's why I put the <ssHelpSpot...> in a <span> -->
+							<label for="searchText">
 							<span>&nbsp;
 						  		<ssHelpSpot helpId="navigation_bar/search_button" offsetY="-5" 
 					            	    	offsetX="4" 
 								    		title="<ssf:nlt tag="helpSpot.searchButton"/>">
 								</ssHelpSpot>
 							</span>
-							<input name="searchText" class="ss_combobox_search" type="text" /> 
+							</label>
+							<input name="searchText" id="searchText" class="ss_combobox_search" type="text" /> 
 										
 							<a href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" >
 								
