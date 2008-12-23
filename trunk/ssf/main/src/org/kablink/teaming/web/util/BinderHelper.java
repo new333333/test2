@@ -96,6 +96,7 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
+import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.portlet.forum.ViewController;
@@ -2045,33 +2046,67 @@ public class BinderHelper {
 	
 	public static void sendMailOnEntryCreate(AllModulesInjected bs, ActionRequest request, 
 			Long folderId, Long entryId) {
-		String title = PortletRequestUtils.getStringParameter(request, "title", "--no title--");
-		String toList = PortletRequestUtils.getStringParameter(request, "_sendMail_toList", "");
+		MapInputData inputData = new MapInputData(request.getParameterMap());
+		String[] toList       = getInputValues(inputData,"_sendMail_toList");
+		String[] toListGroups = getInputValues(inputData,"_sendMail_toList_groups");
+		String[] toListTeams  = getInputValues(inputData,"_sendMail_toList_teams");
 		String toTeam = PortletRequestUtils.getStringParameter(request, "_sendMail_toTeam", "");
-		String subject = PortletRequestUtils.getStringParameter(request, "_sendMail_subject", "\"" + title + "\" entry notification");
-		String body = PortletRequestUtils.getStringParameter(request, "_sendMail_body", "");
-		String includeAttachments = PortletRequestUtils.getStringParameter(request, "_sendMail_includeAttachments", "");
-		if (!toList.equals("") || !toTeam.equals("")) {
+		if ((0 < toList.length) || (0 < toListGroups.length) || (0 < toListTeams.length) || !toTeam.equals("")) {
 			FolderEntry entry = bs.getFolderModule().getEntry(folderId, entryId);
-			Set users = new HashSet();
-			users.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("_sendMail_toList")));
+			ArrayList<Long> handledIds = new ArrayList<Long>();
+			Set<Long> recipients = new HashSet<Long>();
+			if (0 < toList.length)       handleEmailRecipients(handledIds, recipients, LongIdUtil.getIdsAsLongSet(toList));
+			if (0 < toListGroups.length) handleEmailRecipients(handledIds, recipients, LongIdUtil.getIdsAsLongSet(toListGroups));
+			if (0 < toListTeams.length)  handleTeamRecipients(handledIds,  recipients, LongIdUtil.getIdsAsLongSet(toListTeams), bs.getBinderModule());
+			if (!toTeam.equals(""))      handleEmailRecipients(handledIds, recipients, entry.getParentFolder().getTeamMemberIds());
 			
-			if (!toTeam.equals("")) {
-				Set teamMemberIds = entry.getParentFolder().getTeamMemberIds();
-				if (!teamMemberIds.isEmpty()) users.addAll(teamMemberIds);
-			}
-			
-			
-			boolean incAtt = false;
-			if (!includeAttachments.equals("")) incAtt = true;
-
-			if (!users.isEmpty()) {
+			if (!recipients.isEmpty()) {
 				try {
-					bs.getAdminModule().sendMail(entry, users, null, null, null, null, subject, 
+					String title = PortletRequestUtils.getStringParameter(request, "title", "--no title--");
+					String body = PortletRequestUtils.getStringParameter(request, "_sendMail_body", "");
+					String subject = PortletRequestUtils.getStringParameter(request, "_sendMail_subject", "\"" + title + "\" entry notification");
+					String includeAttachments = PortletRequestUtils.getStringParameter(request, "_sendMail_includeAttachments", "");
+					boolean incAtt = (!includeAttachments.equals(""));
+					bs.getAdminModule().sendMail(entry, recipients, null, null, null, null, subject, 
 							new Description(body, Description.FORMAT_HTML), incAtt);
 				} catch (Exception e) {
 					//TODO Log that mail wasn't sent
 				}
+			}
+		}
+	}
+	
+	private static String[] getInputValues(InputDataAccessor inputData, String parameter) {
+		String[] reply = inputData.getValues(parameter);
+		if (null == reply) {
+			reply = new String[0];
+		}
+		return reply;
+	}
+	
+	private static void handleEmailRecipients(ArrayList<Long> handledIds, Set<Long> recipients, Set<Long> newRecipients) {
+		// Scan the new recipients.
+		for (Long id:newRecipients) {
+			// Have we already handled this recipient?
+			if ((-1) == handledIds.indexOf(id)) {
+				// No!  Mark it has having been handled and add it to
+				// the recipients list.
+				handledIds.add(id);
+				recipients.add(id);
+			}
+		}
+	}
+	
+	private static void handleTeamRecipients(ArrayList<Long> handledIds, Set<Long> recipients, Set<Long> teamWSs, BinderModule bm) {
+		// Scan the team workspaces.
+		for (Long id:teamWSs) {
+			// Have we already handled this team?
+			if ((-1) == handledIds.lastIndexOf(id)) {
+				// No!  Mark it has having been handled and handle
+				// the team members.
+				handledIds.add(id);
+				Set<Long> teamMemberIds = bm.getTeamMemberIds(id, true);
+				handleEmailRecipients(handledIds, recipients, teamMemberIds);
 			}
 		}
 	}
