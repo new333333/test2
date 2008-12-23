@@ -47,8 +47,7 @@ public class IfAccessibleTag extends TagSupport {
 		boolean isAccessible = false;
 		if (rc != null) user = rc.getUser();
 		if (user != null && user.getDisplayStyle() != null) {
-			if (user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			if (user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 				isAccessible = true;
 			}
 		}
