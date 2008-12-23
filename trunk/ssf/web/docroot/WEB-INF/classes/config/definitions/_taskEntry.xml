@@ -13,7 +13,7 @@
           <property name="generated" value=""/>  
           <property name="itemSource" value=""/> 
         </properties> 
-      </item>
+      </item>  
       <item name="description" caption="__description" type="data" id="4"> 
         <properties> 
           <property name="name" value="description"/>  
@@ -266,14 +266,14 @@
           </properties> 
         </item> 
       </item>  
-      <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="59">
-        <properties>
-          <property name="caption" value="__guest.default.caption"/>
-          <property name="name" value="_guestName"/>
-          <property name="width" value=""/>
-          <property name="required" value="false"/>
-        </properties>
-      </item>
+      <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="59"> 
+        <properties> 
+          <property name="caption" value="__guest.default.caption"/>  
+          <property name="name" value="_guestName"/>  
+          <property name="width" value=""/>  
+          <property name="required" value="false"/> 
+        </properties> 
+      </item> 
     </item> 
   </item>  
   <item name="entryView" caption="__entry_view_definition" id="9"> 
@@ -312,17 +312,17 @@
         <property name="caption" value="__task_assigned_to"/> 
       </properties> 
     </item>  
-    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="60" formItem="group_list"> 
-      <properties> 
-        <property name="name" value="assignment_groups"/>  
-        <property name="caption" value="group"/> 
-      </properties> 
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="60" formItem="group_list" display="view"> 
+      <properties>
+        <property name="caption" value="__task_assigned_to_groups"/>
+        <property name="name" value="assignment_groups"/>
+      </properties>
     </item>  
-    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="62" formItem="team_list"> 
-      <properties> 
-        <property name="name" value="assignment_teams"/>  
-        <property name="caption" value="teams"/> 
-      </properties> 
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="62" formItem="team_list" display="view"> 
+      <properties>
+        <property name="caption" value="__task_assigned_to_teams"/>
+        <property name="name" value="assignment_teams"/>
+      </properties>
     </item>  
     <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="51" formItem="selectbox"> 
       <properties> 
