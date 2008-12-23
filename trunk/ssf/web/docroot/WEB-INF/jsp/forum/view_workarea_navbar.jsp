@@ -254,7 +254,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		  			href="javascript: ;" 
 		  			onClick="ssMyTeams${renderResponse.namespace}.hide();ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
 	              ><ssf:nlt tag="navigation.favorites"/>
-					<img border="0" src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/>
+					<img border="0" src="<html:imagesPath/>pics/menudown.gif" 
+					<ssf:alt tag="alt.showMenu"/> style="padding-left: 2px;"/>
 				</a>
 			</ssHelpSpot>
 		    &nbsp;|
@@ -265,7 +266,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
         	<a title="<ssf:nlt tag="navigation.myTeams"/>"
 				  href="javascript:;" onClick="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();ssMyTeams${renderResponse.namespace}.show();"
 				    ><ssf:nlt tag="navigation.myTeams"/>
-				<img border="0" src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> 
+				<img border="0" src="<html:imagesPath/>pics/menudown.gif" 
+				<ssf:alt tag="alt.showMenu"/> style="padding-left: 2px;"/> 
 	    	</a>
 			<span>
 				&nbsp;
@@ -387,7 +389,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 									onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane${renderResponse.namespace}',
 									'<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 									 name="newTab" value="1"/></ssf:url>');">
-									 <img border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+									 <img border="0" src="<html:imagesPath/>pics/menudown.gif"
+									 <ssf:alt tag="alt.showMenu"/>/>
 							</a>
 						  <div id="ss_navbarPopupPane${renderResponse.namespace}" class="ss_navbarPopupPane"></div>
 									
