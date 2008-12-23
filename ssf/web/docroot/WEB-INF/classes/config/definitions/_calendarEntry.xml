@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_calendarEntry" caption="__definition_default_calendar_entry" type="1" nextId="40" definitionType="1" databaseId="402883c6115753d80111577dbe29000d"> 
+<definition name="_calendarEntry" caption="__definition_default_calendar_entry" type="1" nextId="42" definitionType="1" databaseId="402883c6115753d80111577dbe29000d"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -17,14 +17,14 @@
           <property name="generated" value=""/>  
           <property name="itemSource" value=""/> 
         </properties> 
-      </item>
-      <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="36">
-        <properties>
-          <property name="caption" value="__guest.default.caption"/>
-          <property name="name" value="_guestName"/>
-          <property name="width" value=""/>
-          <property name="required" value="false"/>
-        </properties>
+      </item>  
+      <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="36"> 
+        <properties> 
+          <property name="caption" value="__guest.default.caption"/>  
+          <property name="name" value="_guestName"/>  
+          <property name="width" value=""/>  
+          <property name="required" value="false"/> 
+        </properties> 
       </item>  
       <item name="text" caption="__text" type="data" category="commonEntryData" id="29"> 
         <properties> 
@@ -161,6 +161,18 @@
         <property name="name" value="attendee"/>  
         <property name="caption" value="__calendar_attendee"/> 
       </properties> 
+    </item>
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" display="view" id="40" formItem="group_list">
+      <properties>
+        <property name="caption" value="__calendar_attendee_groups"/>
+        <property name="name" value="attendee_groups"/>
+      </properties>
+    </item>
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" display="view" id="41" formItem="team_list">
+      <properties>
+        <property name="caption" value="__calendar_attendee_teams"/>
+        <property name="name" value="attendee_teams"/>
+      </properties>
     </item>  
     <item name="entryWorkflow" caption="__entry_workflow" category="entryViewData" id="25"> 
       <properties> 
