@@ -52,6 +52,12 @@
 					<ant dir="standalone" target="full-deploy" inheritAll="false" />
 				</then>
 			</elseif>
+			<elseif>
+				<equals arg1="${portal.type}" arg2="liferay-light" />
+				<then>				
+					<ant dir="liferay-light" target="full-deploy" inheritAll="false" />
+				</then>
+			</elseif>
 		</if>
 	</target>
 	
