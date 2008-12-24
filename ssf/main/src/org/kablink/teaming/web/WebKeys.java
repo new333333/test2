@@ -990,6 +990,11 @@ public class WebKeys {
     
     public static final String SECTION_NUMBER="ss_sectionNumber";
     public static final String SECTION_TEXT="ss_sectionText";
+    public static final String SHOW_GROUP_GROUP="ss_showGroupGroup";
+    public static final String SHOW_GROUP_TITLE_STYLE="ss_showGroupTitleStyle";
+    public static final String SHOW_GROUP_SHOW_PRESENCE="ss_showGroupShowPresence";
+    public static final String SHOW_GROUP_GROUP_MEMBERS="ss_showGroupGroupMembers";
+    public static final String SHOW_GROUP_INSTANCE_COUNT="ss_showGroupInstanceCount";
     public static final String SHOW_USER_SHOW_PRESENCE="ss_showUserShowPresence";
     public static final String SHOW_USER_TITLE_STYLE="ss_showUserTitleStyle";
     public static final String SHOW_USER_USER="ss_showUserUser";
