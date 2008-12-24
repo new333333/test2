@@ -1140,6 +1140,29 @@
 	</tag>
 	
 	<tag>
+		<name>showGroup</name>
+		<tag-class>org.kablink.teaming.taglib.ShowGroup</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>group</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>org.kablink.teaming.domain.Group</type>
+		</attribute>		
+		<attribute>
+			<name>showPresence</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>		
+		<attribute>
+			<name>titleStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>	
+
+	<tag>
 		<name>showTeam</name>
 		<tag-class>org.kablink.teaming.taglib.ShowTeam</tag-class>
 		<body-content>JSP</body-content>

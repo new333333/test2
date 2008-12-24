@@ -28,33 +28,28 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //Group_list view %>
-<c:set var="grouplist_entry" value="${ssDefinitionEntry}"/>
-<jsp:useBean id="grouplist_entry" type="org.kablink.teaming.domain.Entry" />
-
-<c:if test="${empty ss_element_display_style}">
+<% // Group list %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%
+	String propertyName = (String) request.getAttribute("property_name");
+	java.util.List groupList = new java.util.ArrayList();
+	java.util.Set groupListSet = new java.util.HashSet();
+%>
+<c:if test="${! empty ssDefinitionEntry}">
+  <c:set var="grouplist_entry" value="${ssDefinitionEntry}"/>
+  <jsp:useBean id="grouplist_entry" type="org.kablink.teaming.domain.DefinableEntity" />
+<%
+	if (propertyName != null && !propertyName.equals("")) 
+		groupList = org.kablink.teaming.util.ResolveIds.getPrincipals(grouplist_entry.getCustomAttribute(propertyName));
+	if(groupList != null) {
+		groupListSet.addAll(groupList);
+	}
+%>
+</c:if>
 <div class="ss_entryContent">
-<span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
-<ul class="ss_nobullet">
-<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(grouplist_entry.getCustomAttribute(property_name)) %>" >
-<li><ssf:showGroup group="${selection}" showPresence="true"/></li>
+<div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
+<span><i><ssf:nlt tag="mobile.notSupported"/></i></span>
+<c:forEach var="groupItem" items="<%= groupListSet %>">
+	${groupItem.title}<br/>
 </c:forEach>
-</ul>
 </div>
-</c:if>
-
-<c:if test="${!empty ss_element_display_style && 
-    ss_element_display_style == 'tableAlignLeft'}">
-<tr>
-  <td class="ss_table_spacer_right" valign="top" align="right">
-    <span class="ss_light"><c:out value="${property_caption}" /></span>
-  </td>
-  <td valign="top" align="left">
-	<ul class="ss_nobullet">
-	<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(grouplist_entry.getCustomAttribute(property_name)) %>" >
- 	 <li><ssf:showGroup group="${selection}" showPresence="true"/></li>
-	</c:forEach>
-	</ul>
-  </td>
-</tr>
-</c:if>

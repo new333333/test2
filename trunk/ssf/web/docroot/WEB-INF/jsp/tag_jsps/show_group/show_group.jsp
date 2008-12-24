@@ -28,33 +28,33 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //Group_list view %>
-<c:set var="grouplist_entry" value="${ssDefinitionEntry}"/>
-<jsp:useBean id="grouplist_entry" type="org.kablink.teaming.domain.Entry" />
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-<c:if test="${empty ss_element_display_style}">
-<div class="ss_entryContent">
-<span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
-<ul class="ss_nobullet">
-<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(grouplist_entry.getCustomAttribute(property_name)) %>" >
-<li><ssf:showGroup group="${selection}" showPresence="true"/></li>
-</c:forEach>
-</ul>
-</div>
+<%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %>
+<%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
+
+<portletadapter:defineObjects1/>
+<ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
+<ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
+<c:if test="${ssConfigJspStyle != 'mobile'}">
+	<img border="0" src="<html:imagesPath/>pics/group_icon_small.gif" />
+		<span class="${ss_showGroupTitleStyle}"><c:out value="${ss_showGroupGroup.title}" /></span>
+	<a href="javascript: //"
+	onclick="ss_toggleShowDiv('ss_show_group_${ss_showGroupInstanceCount}'); return false;" class="ss_fineprint"><ssf:nlt tag="showGroup.group.members"><ssf:param name="value" value="${fn:length(ss_showGroupGroupMembers)}"/></ssf:nlt></a>
+	<div id="ss_show_group_${ss_showGroupInstanceCount}" style="display: none;">
+  		<ul>
+			<c:forEach var="member" items="${ss_showGroupGroupMembers}" >
+		 	 <li><ssf:showUser user="${member}" showPresence="${ss_showGroupShowPresence}"/></li>
+			</c:forEach>
+  		</ul>
+	</div>
 </c:if>
-
-<c:if test="${!empty ss_element_display_style && 
-    ss_element_display_style == 'tableAlignLeft'}">
-<tr>
-  <td class="ss_table_spacer_right" valign="top" align="right">
-    <span class="ss_light"><c:out value="${property_caption}" /></span>
-  </td>
-  <td valign="top" align="left">
-	<ul class="ss_nobullet">
-	<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getPrincipals(grouplist_entry.getCustomAttribute(property_name)) %>" >
- 	 <li><ssf:showGroup group="${selection}" showPresence="true"/></li>
-	</c:forEach>
+<c:if test="${ssConfigJspStyle == 'mobile'}">
+  <span class="${ss_showGroupTitleStyle}">${ss_showGroupGroup.title}</span>
+	<ul>
+		<c:forEach var="member" items="${ss_showGroupGroupMembers}" >
+			<li><ssf:showUser user="${member}" showPresence="${ss_showGroupShowPresence}"/></li>
+		</c:forEach>
 	</ul>
-  </td>
-</tr>
 </c:if>
