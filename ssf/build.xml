@@ -64,7 +64,7 @@
 	<target name="build" depends="init">
 		<antcall target="compile" />
 		<antcall target="jar" />
-		<ant dir="liferay-light" target="war"/>
+		<ant dir="liferay-light" target="war" inheritAll="false" />
 		<ant dir="${portal.type}" target="build" inheritAll="false" />
 	</target>
 
@@ -91,7 +91,7 @@
 		<ant dir="slide-webdavclient" target="clean" />
 		<ant dir="portal-module" target="clean" />
 		<ant dir="liferay" target="clean" />
-		<ant dir="liferay-light" target="clean" />
+		<ant dir="liferay-light" target="clean" inheritAll="false" />
 		<ant dir="jboss-portal" target="clean" />
 		<ant dir="taglib" target="clean" />
 
@@ -188,7 +188,6 @@
 		<ant dir="slide-webdavclient" target="deploy" />
 		<ant dir="portal-module" target="deploy" />
 		<ant dir="liferay" target="deploy" />
-		<ant dir="liferay-light" target="deploy" />
 		<ant dir="jboss-portal" target="deploy" />
 		<ant dir="taglib" target="deploy" />
 
