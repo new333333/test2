@@ -1,0 +1,1 @@
+This portlet is deprecated in Teaming 2.0.
