@@ -46,7 +46,7 @@ Boolean sticky = ParamUtil.getBoolean(request, "sticky", true);
 --%><c:set var="divId" value="<%= id %>" /><%--
 --%><c:set var="divClass" value="<%= divClass %>" /><%--
 --%><div class="ss_sidebarMenu" onmouseover="this.className='ss_mouseOver';" onmouseout="this.className='ss_sidebarMenu';"><%--
-    --%><a <%--
+    --%><a href="javascript: ;" <%--
         --%><c:if test="${initOpen}">class="ss_menuOpen" </c:if><%--
         --%><c:if test="${!initOpen}">class="ss_menuClosed" </c:if><%--
         --%> onClick="ss_showHideSidebarBox('${renderResponse.namespace}_${divId}', this, ${sticky}, '${divId}');"><%--
