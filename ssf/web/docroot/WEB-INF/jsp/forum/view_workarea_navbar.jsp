@@ -414,6 +414,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 						  		action="<ssf:url windowState="maximized" actionUrl="true"><ssf:param 
 						  		name="action" value="advanced_search"/><ssf:param 
 						  		name="newTab" value="1"/></ssf:url>">
+								
+								<label for="ss_searchSearchText${renderResponse.namespace}">&nbsp</label>
 									
 								<input name="searchText" style="width: 100px;" type="text" id="ss_searchSearchText${renderResponse.namespace}" /> 
 								<a href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" >
