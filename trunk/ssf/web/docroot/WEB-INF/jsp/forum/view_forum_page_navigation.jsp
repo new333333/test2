@@ -38,7 +38,7 @@
 
 <c:if test="${ssConfigJspStyle != 'template'}">
 	<span>
-		<img border="0" src="<html:imagesPath/>pics/1pix.gif" />
+		<img border="0" src="<html:imagesPath/>pics/1pix.gif" <ssf:alt tag=""/> />
 		<ssHelpSpot helpId="workspaces_folders/menus_toolbars/more_folder_navigation" offsetX="0" offsetY="18" 
 	    			title="<ssf:nlt tag="helpSpot.moreFolderNavigation"/>">
 		</ssHelpSpot>
