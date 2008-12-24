@@ -3894,12 +3894,14 @@ ul.ss_statisticLegend li {
 	line-height:12px;
 	margin:0px;
 	padding:0px;
+    list-style-type: none;
 }
 ul.ss_statisticLegend li div.ss_statisticLegend {
 	float:left; 
 	width:12px;
 	height:12px;
 	margin:0px 3px 3px 0px;
+    list-style-type: none;
 }
 /* Statistic styles - end */
 
