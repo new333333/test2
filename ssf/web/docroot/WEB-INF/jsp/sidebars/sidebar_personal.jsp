@@ -45,11 +45,13 @@
   <% // configure entries per page %>
   <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_configure_entriesPerPage.jsp" />
 
+<c:if test="${!empty ss_toolbar_theme_ids}">
   <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.theme"/> 
 	<div class="ss_sub_sidebarMenu">
 	  	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_theme.jsp" /> 
 	</div>
   </div>	
+</c:if>
 
   <% if (SsfsUtil.supportAttachmentEdit()) { %>
 	  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.appConfig"/> 

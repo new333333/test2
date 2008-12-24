@@ -277,6 +277,8 @@ public class TypeToFindAjaxController extends SAbstractController {
 		} else {
 			response.setContentType("text/json-comment-filtered");
 		}
+		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+		model.put(WebKeys.NAMESPACE, namespace);
 		return new ModelAndView(view, model);
 	}
 	private boolean ajaxCheckCurrentTag(String newTag){
