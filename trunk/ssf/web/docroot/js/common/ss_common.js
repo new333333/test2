@@ -4983,7 +4983,7 @@ function ss_Clipboard () {
 	this.showForm = function (musterClass, userIds, binderId) {
 		contributorsIds = userIds;
 		sBinderId = binderId;
-		buildDiv(musterClass, userIds);
+		buildDiv(musterClass);
 		showDiv();
 	}
 
@@ -5004,10 +5004,17 @@ function ss_Clipboard () {
 	    musterDiv.style.visibility = "hidden";
 	    musterDiv.className = "ss_muster_div";
 	    musterDiv.style.display = "none";
-		musterDiv.innerHTML = '<table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: 220px;">' +
-         '<tbody><tr class="ss_base_title_bar"><td width="30px"><div class="ss_popup_topleft"></div></td><td width="100%"><div class="ss_popup_topcenter"><div id="ss_muster_title"></div></div></td><td width="40px"><div class="ss_popup_topright"><div id="ss_muster_close" class="ss_popup_close" align="right"></div></div>' +
-         '</td></tr><tr><td colspan="3"><div id="ss_muster_inner" style="padding: 10px 10px;" class="ss_popup_body"></div></td></tr><tr><td width="30px"><div class="ss_popup_bottomleft"></div></td><td width="100%"><div class="ss_popup_bottomcenter"></div></td>' +
-         '<td width="40px"><div class="ss_popup_bottomright"></div></td></tr></tbody></table>';
+		musterDiv.innerHTML = '<table class="ss_popup" cellpadding="0" cellspacing="0" border="0">' +
+         '<tbody>' +
+         '<tr class="ss_base_title_bar">' +
+         '<td><div class="ss_popup_topcenter"><div id="ss_muster_title"></div></div></td>' +
+         '<td align="right" width="16"><div align="right" class="ss_popup_topright">' +
+         '<div id="ss_muster_close" class="ss_popup_close" align="right"></div></div>' +
+         '</td></tr>' +
+         '<tr><td colspan="2"><div id="ss_muster_inner" style="padding: 10px;" class="ss_popup_body"></div>' +
+         '</td></tr>' +
+         '<tr><td><div class="ss_popup_bottomcenter"></div></td>' +
+         '<td></td></tr></tbody></table>';
 
 		// Link into the document tree
 		document.getElementsByTagName("body").item(0).appendChild(musterDiv);
@@ -5030,8 +5037,7 @@ function ss_Clipboard () {
 		var brObj = document.createElement("br");
 
 		var addBtnDivObj = document.createElement("div");
-		addBtnDivObj.style.textAlign = "right";
-		addBtnDivObj.style.width = "100%";
+		addBtnDivObj.style.whiteSpace = "nowrap";
 
 		var addContrBtnObj = document.createElement("input");
 		addContrBtnObj.setAttribute("type", "button");
@@ -5043,6 +5049,7 @@ function ss_Clipboard () {
 	    });
 
 		var addTeamMembersBtnObj = document.createElement("input");
+		addTeamMembersBtnObj.style.marginLeft = "10px";
 		addTeamMembersBtnObj.setAttribute("type", "button");
 		addTeamMembersBtnObj.setAttribute("name", "add");
 		addTeamMembersBtnObj.setAttribute("value", ss_addTeamMembersToClipboardText);
@@ -5052,7 +5059,6 @@ function ss_Clipboard () {
 	    });
 
 		addBtnDivObj.appendChild(addContrBtnObj);
-		addBtnDivObj.appendChild(brObj.cloneNode(false));
 		if (sBinderId)
 			addBtnDivObj.appendChild(addTeamMembersBtnObj);
 		
@@ -5066,6 +5072,7 @@ function ss_Clipboard () {
 		
 		//Add the buttons 		
 		var deleteBtnObj = document.createElement("input");
+		deleteBtnObj.style.marginRight = "15px"
 		deleteBtnObj.setAttribute("type", "button");
 		deleteBtnObj.setAttribute("name", "clear");
 		deleteBtnObj.setAttribute("value", ss_clearClipboardText);
@@ -5074,7 +5081,14 @@ function ss_Clipboard () {
 			return false;
 	    });
 
-		deleteBtnObj.style.marginRight = "15px"
+		var closeBtnObj = document.createElement("input");
+		closeBtnObj.style.marginRight = "15px"
+		closeBtnObj.setAttribute("type", "button");
+		closeBtnObj.setAttribute("name", "close");
+		closeBtnObj.setAttribute("value", ss_closeButtonText);
+		dojo.connect(closeBtnObj, "onclick", function(evt) {
+			ss_muster.cancel();
+	    });
 
 		dojo.connect(dojo.byId("ss_muster_close"), "onclick", function(evt) {
 			ss_muster.cancel();
@@ -5082,6 +5096,7 @@ function ss_Clipboard () {
 
 		formObj.appendChild(brObj.cloneNode(false));
 		formObj.appendChild(deleteBtnObj);
+		formObj.appendChild(closeBtnObj);
 		
 
 		loadUsers(divObj);
@@ -5112,12 +5127,23 @@ function ss_Clipboard () {
 	}
 	
 	function displayUsers(data, containerObj) {
+		var divObj = document.getElementById("ss_clipboard_users_div");
+		if (divObj != null) divObj.parentNode.removeChild(divObj);
+		divObj = document.createElement("div");
+		divObj.setAttribute("id", "ss_clipboard_users_div");
+		divObj.style.padding = "10px 10px 10px 20px";
+		divObj.style.whiteSpace = "nowrap";
+			containerObj.innerHTML = "";
+			
 		if (data.length > 0) {
 			usersCheckboxes = new Array();
 
 			var ulObj = document.createElement("ul");
 			ulObj.className = 'ss_stylePopup';
-			ulObj.style.listStyle = "none";
+			ulObj.style.listStyleType = "none";
+			ulObj.style.listStylePosition = "inside";
+			ulObj.style.padding = "0px 0px 10px 0px";
+			ulObj.style.margin = "0px";
 
 			var lastIndex = 0;
 			for (var i = 0; i < data.length; i++) {
@@ -5147,11 +5173,16 @@ function ss_Clipboard () {
 			hrefDeselectAllObj.style.marginRight = "5px";
 			hrefDeselectAllObj.appendChild(document.createTextNode(ss_clearAllBtnText));
 
-			containerObj.innerHTML = "";
-			containerObj.appendChild(ulObj);
-			containerObj.appendChild(hrefSelectAllObj);
-			containerObj.appendChild(hrefDeselectAllObj);
+			divObj.appendChild(ulObj);
+			divObj.appendChild(hrefSelectAllObj);
+			divObj.appendChild(hrefDeselectAllObj);
+		} else {
+			var spanObj = document.createElement("span");
+			spanObj.className = "ss_italic";
+			spanObj.appendChild(document.createTextNode(ss_noUsersOnClipboardText));
+			divObj.appendChild(spanObj);
 		}
+		containerObj.appendChild(divObj);
 	}
 	
 	this.selectAll = function () {
@@ -5251,8 +5282,8 @@ function ss_Clipboard () {
 			load: function(data) {
 				if (data.failure) {
 					alert(data.failure);
-				} else { 
-					ss_cancelPopupDiv('ss_muster_div');
+				} else {
+					loadUsers($("ss_muster_list_container"));
 				}
 			},
 			preventCache: true,				
