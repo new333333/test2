@@ -672,8 +672,7 @@ public class BinderHelper {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_NEWPAGE;
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_POPUP;
-			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_ACCESSIBLE;
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 				/** Vertical mode has been removed
@@ -695,8 +694,7 @@ public class BinderHelper {
 			viewListingJspName = WebKeys.VIEW_LISTING_NEWPAGE;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 			viewListingJspName = WebKeys.VIEW_LISTING_POPUP;
-		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
-				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 			viewListingJspName = WebKeys.VIEW_LISTING_ACCESSIBLE;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 			/** Vertical mode has been removed

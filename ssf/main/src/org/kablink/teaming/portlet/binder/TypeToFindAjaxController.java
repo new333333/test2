@@ -130,8 +130,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 				model.put(WebKeys.TAG_LENGTH_WARNING, NLT.get("tags.maxLengthWarning"));
 				model.put(WebKeys.TAGS, thelist);
 				
-				if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle()) &&
-						!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+				if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle())) {
 					view = viewAccessible;
 				} else {
 					response.setContentType("text/json-comment-filtered");
@@ -273,8 +272,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		model.put("findObjectName", findObjectName);
 		
 		
-		if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle()) &&
-				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle())) {
 			view = viewAccessible;
 		} else {
 			response.setContentType("text/json-comment-filtered");

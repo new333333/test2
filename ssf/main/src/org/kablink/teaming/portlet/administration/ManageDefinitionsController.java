@@ -354,13 +354,6 @@ public class ManageDefinitionsController extends  SAbstractController {
 			//  The code on the calling page will output the proper translated message.
 			statusMap.put(WebKeys.AJAX_STATUS_NOT_LOGGED_IN, new Boolean(true));
 			model.put(WebKeys.AJAX_STATUS, statusMap);
-			try {
-				User user = RequestContextHolder.getRequestContext().getUser();
-				if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle()) &&
-						!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-					//return new ModelAndView("forum/fetch_url_return", model);
-				}
-			} catch(Exception e) {}
 			response.setContentType("text/xml");			
 			return new ModelAndView("tag_jsps/tree/get_tree_div", model);
 		}
@@ -413,8 +406,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 			
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String view = "tag_jsps/tree/get_tree_div";
-		if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle()) &&
-				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle())) {
 			view = "tag_jsps/tree/get_tree_div_accessible";
 		} else {
 			response.setContentType("text/xml");

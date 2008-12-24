@@ -67,8 +67,7 @@ public class TitleTagForEntityType extends BodyTagSupport {
 				if (rc != null) user = rc.getUser();
 				if (user != null) {
 					String displayStyle = user.getDisplayStyle();
-					if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-							!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+					if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 						isAccessible = true;
 					}
 				}

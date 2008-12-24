@@ -729,8 +729,7 @@ public class ListFolderHelper {
 					!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
 				folderEntries = findTaskEntries(bs, req, response, (Binder) folder, model, options);
 			} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) 
-					&& ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle) &&
-					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+					&& ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
 				folderEntries = findCalendarEvents(bs, req, response, (Binder) folder, model);
 			} else {
 				folderEntries = bs.getFolderModule().getEntries(folderId, options);
