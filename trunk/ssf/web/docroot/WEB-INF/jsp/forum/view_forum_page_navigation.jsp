@@ -69,7 +69,8 @@
 				<a href="javascript: ;" 
 				<ssf:title tag="entry.goTo" />
 				onClick="ss_clickGoToEntry_${renderResponse.namespace}('ss_goToEntryForm_${renderResponse.namespace}');return false;">
-				<img src="<html:rootPath/>images/pics/page/go.png" 
+				<img src="<html:rootPath/>images/pics/page/go.png"
+				  <ssf:alt tag="entry.goTo"/> 
 				  width="17" height="12" border="0" align="absmiddle" /></a>
 			</form>
 			</td></tr></tbody></table>
@@ -194,7 +195,9 @@
 				<a href="javascript: ;" 
 				<ssf:title tag="title.goto.page" />
 				onClick="ss_clickGoToPage_${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}'); return false;">
-				<img src="<html:rootPath/>images/pics/page/go.png" width="17" height="12" border="0" align="absmiddle" /></a>
+				<img src="<html:rootPath/>images/pics/page/go.png" 
+  				  <ssf:alt tag="title.goto.page"/>
+				  width="17" height="12" border="0" align="absmiddle" /></a>
 			</form>
 			</td></tr></tbody></table></div>
 
