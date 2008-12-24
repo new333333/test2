@@ -175,7 +175,7 @@
 			    </ssf:ifnotaccessible>
 			    
 			    <ssf:ifaccessible>
-			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
+			    	<span><label for="ssGoToPage${renderResponse.namespace}"><ssf:nlt tag="folder.GoToPage"/></label></span>
 			    </ssf:ifaccessible>
 			    </td>
 			    <td valign="middle"  class="ss_paginationGo ss_page_IE">
