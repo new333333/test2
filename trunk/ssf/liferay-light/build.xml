@@ -40,6 +40,8 @@
 		</copy>
 	</target>
 	
+	<target name="build" depends="war"/>
+	
 	<target name="war" depends="clean,jar,copy-portlet-properties-files,copy-libraries">
 		<war
 			basedir="${web.dir}"
@@ -107,6 +109,7 @@
 		<delete dir="${app.server.dir}/webapps/ssfs"/>
 		<delete dir="${app.server.dir}/webapps/ssr"/>
 		<delete dir="${app.server.dir}/webapps/teaming"/>
+		<delete dir="${app.server.dir}/webapps/mobile"/>
 	</target>
 
 	<target name="full-deploy" depends="init-liferay, clean-app-server">
