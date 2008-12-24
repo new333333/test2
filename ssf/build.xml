@@ -64,7 +64,6 @@
 	<target name="build" depends="init">
 		<antcall target="compile" />
 		<antcall target="jar" />
-		<ant dir="liferay-light" target="war" inheritAll="false" />
 		<ant dir="${portal.type}" target="build" inheritAll="false" />
 	</target>
 
