@@ -32,6 +32,7 @@
 		ss_moveDivToBody(divId);
 	}
 	var divObj = document.getElementById(divId);
+	if (divObj == null) return;
 	divObj.style.display = "block";
 	divObj.visibility = "visible";
 	divObj.style.zIndex = ssMenuZ;

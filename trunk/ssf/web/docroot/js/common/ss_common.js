@@ -1897,6 +1897,10 @@ function ss_showAccessibleMenu(divId) {
 	var divObj = document.getElementById(divId);
 	ss_showDiv(divId);
 }
+function ss_putValueInto(objId, value) {
+	document.getElementById(objId).value = value;
+}
+
 
 function ss_hideAccessibleMenu(divId) {
 	var divObj = document.getElementById(divId);
