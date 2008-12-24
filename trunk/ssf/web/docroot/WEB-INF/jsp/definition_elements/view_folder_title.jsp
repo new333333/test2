@@ -45,7 +45,8 @@
 	</span>
   </c:if>
   <span class="ss_link_8">
-	  <img src="<html:rootPath/>images/pics/discussion/folder_orange.png">&nbsp;<a
+	  <img src="<html:rootPath/>images/pics/discussion/folder_orange.png"
+	  	<ssf:alt tag=""/>>&nbsp;<a
 	    href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
 	    action="view_folder_listing" binderId="${ssDefinitionEntry.id}"/>"
 	  ><c:if test="${empty ssDefinitionEntry.title}" >--<ssf:nlt tag="entry.noTitle" />--</c:if
