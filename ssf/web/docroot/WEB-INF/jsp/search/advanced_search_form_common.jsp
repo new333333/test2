@@ -72,11 +72,16 @@
 				<div class="ss_clear"></div>
 				<table>
 					<tr>
-						<th><ssf:nlt tag="searchForm.searchText"/>:</th>
+						<label for="searchText_adv">
+							<th><ssf:nlt tag="searchForm.searchText"/>:</th>
+						</label>
 						<td><input type="text" name="searchText" id="searchText_adv" value="${ss_filterMap.searchText}" <c:if test="${empty disableSearchButton || disableSearchButton == 0}">onkeypress="return ss_submitViaEnter(event)"</c:if>/></td>
 						<td rowspan="3">
 						    <b><ssf:nlt tag="searchForm.advanced.presentationOptions"/></b><br/>
-							<ssf:nlt tag="searchForm.advanced.options.limitResults"/>:
+							
+							<label for="data_resultsCount">
+								<ssf:nlt tag="searchForm.advanced.options.limitResults"/>:
+							</label>
 							<select class="ss_compactSelectBox" name="data_resultsCount" id="data_resultsCount">
 								<option value="1" <c:if test="${resultsCount == 1}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems.single"/></option>
 								<option value="5" <c:if test="${resultsCount == 5}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="5"/></ssf:nlt></option>
@@ -86,7 +91,10 @@
 								<option value="100" <c:if test="${resultsCount == 100}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="100"/></ssf:nlt></option>
 							</select>
 							<br/>
-							<ssf:nlt tag="searchForm.advanced.options.limitWords"/>: 
+
+							<label for="data_summaryWordCount">
+								<ssf:nlt tag="searchForm.advanced.options.limitWords"/>: 
+							</label>
 							<select class="ss_compactSelectBox" name="data_summaryWordCount" id="data_summaryWordCount">
 								<option value="15" <c:if test="${summaryWordCount == 15}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="15"/></ssf:nlt></option>
 								<option value="20" <c:if test="${summaryWordCount == 20}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="20"/></ssf:nlt></option>
