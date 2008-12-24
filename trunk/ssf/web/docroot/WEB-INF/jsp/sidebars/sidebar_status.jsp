@@ -62,14 +62,18 @@
      <table class="ss_table" border="0" cellpadding="2" width="95%">
       <tr>
         <td valign="top">
-          <span><ssf:nlt tag="login.name"/></span><br/>
-          <input type="text" style="width:150px;" name="j_username"/>
+          <label for="j_username">
+	          <span><ssf:nlt tag="login.name"/></span><br/>
+	      </label>
+          <input type="text" style="width:150px;" name="j_username" id="j_username"/>
         </td>
       </tr>
       <tr>
         <td valign="top">
-          <span><ssf:nlt tag="login.password"/></span><br/>
-          <input type="password" style="width:150px;" name="j_password"/>
+          <label for="j_password">
+          	<span><ssf:nlt tag="login.password"/></span><br/>
+          </label>
+          <input type="password" style="width:150px;" name="j_password" id="j_password"/>
         </td>
       </tr>
     </table>
