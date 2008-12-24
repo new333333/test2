@@ -121,8 +121,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			User user = RequestContextHolder.getRequestContext().getUser();
 			String displayStyle = user.getDisplayStyle();
 			if (ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE.equals(displayStyle) || 
-					(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) &&
-					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()))) {
+					(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle))) {
 				url.setParameter(WebKeys.URL_ACTION, "view_folder_entry");
 			} else {
 				url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");

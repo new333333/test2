@@ -187,10 +187,10 @@ public class TreeTag extends TagSupport {
 				}
 				String displayStyle = user.getDisplayStyle();
 				if (displayStyle == null) displayStyle = "";
-				if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-						ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) 
-					//Never show guest in accessible mode
+				if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+					// accessible mode has been turned off. The regulare mode is now accessible
 					displayStyle = "";
+				}
 				sb.append("var ss_treeDisplayStyle = '" + displayStyle + "';\n");
 				sb.append("var ss_treeButtonClose = '" + NLT.get("button.close").replaceAll("'", "\\\\'") + "';\n");
 				sb.append("var ss_treeSelectId = '");

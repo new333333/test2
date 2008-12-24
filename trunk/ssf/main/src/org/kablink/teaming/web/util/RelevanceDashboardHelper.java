@@ -88,8 +88,6 @@ public class RelevanceDashboardHelper {
 		model.put(WebKeys.TYPE3, type3);
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
-		//No dashboard for the guest account
-		//if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return;
         
 		//See if this is a new "type" setting. If so, remember it
 		if (binderId != null) {
@@ -150,8 +148,6 @@ public class RelevanceDashboardHelper {
 	public static void setupRelevanceDashboardPageBeans(AllModulesInjected bs, Long binderId, 
 			String type, Map model) {
 		User user = RequestContextHolder.getRequestContext().getUser();
-		//No dashboard for the guest account
-		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return;
         
 		//Figure out if this is a user workspace; dashboards are relative to the user workspace owner
         if (binderId == null) binderId = user.getWorkspaceId();
@@ -159,25 +155,32 @@ public class RelevanceDashboardHelper {
 		model.put(WebKeys.BINDER, userWorkspace);
 		
 		if (ObjectKeys.RELEVANCE_PAGE_ENTRIES_VIEWED.equals(type)) {
-			setupViewedEntriesBean(bs, userWorkspace, model);
+			if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) 
+				setupViewedEntriesBean(bs, userWorkspace, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_NEW_TRACKED.equals(type)) {
-			setupTrackedPlacesBeans(bs, userWorkspace, model);
+			if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) 
+			 setupTrackedPlacesBeans(bs, userWorkspace, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_NEW_TEAMS.equals(type)) {
-			setupWhatsNewTeamsBeans(bs, userWorkspace, model);
+			if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) 
+				setupWhatsNewTeamsBeans(bs, userWorkspace, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_NEW_SITE.equals(type)) {
 			setupWhatsNewSite(bs, userWorkspace, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_MINIBLOGS.equals(type)) {
-			setupMiniblogsBean(bs, userWorkspace, model);
+			if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) 
+				setupMiniblogsBean(bs, userWorkspace, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_DOCS.equals(type)) {
 			setupDocumentsBeans(bs, userWorkspace, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_HOT.equals(type)) {
 			setupWhatsHotBean(bs, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_SHARED.equals(type)) {
-			setupSharedItemsBeans(bs, userWorkspace, model);
+			if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) 
+				setupSharedItemsBeans(bs, userWorkspace, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_TASKS.equals(type)) {
-			setupTasksBeans(bs, userWorkspace, model);
+			if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) 
+				setupTasksBeans(bs, userWorkspace, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_VISITORS.equals(type)) {
-			setupVisitorsBeans(bs, userWorkspace, model);
+			if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) 
+				setupVisitorsBeans(bs, userWorkspace, model);
 		}
 	}
 	
