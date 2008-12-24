@@ -45,7 +45,7 @@ public class ReleaseInfo {
 	static boolean licenseRequiredEdition = true;
 	
 	static {
-		name = SPropsUtil.getString("product.name");
+		name = SPropsUtil.getString("product.name", "");
 		if(name.equalsIgnoreCase(KABLINK_TEAMING))
 			licenseRequiredEdition = false;
 			
