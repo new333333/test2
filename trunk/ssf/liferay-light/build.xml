@@ -109,7 +109,7 @@
 		<delete dir="${app.server.dir}/webapps/teaming"/>
 	</target>
 
-	<target name="deploy" depends="init-liferay, clean-app-server">
+	<target name="full-deploy" depends="init-liferay, clean-app-server">
 		<copy file="${war.file}" todir="temp" />
 	
 		<java

@@ -58,6 +58,7 @@
 	<target name="build" depends="init">
 		<antcall target="compile" />
 		<antcall target="jar" />
+		<ant dir="liferay-light" target="war"/>
 		<ant dir="${portal.type}" target="build" inheritAll="false" />
 	</target>
 
@@ -84,6 +85,7 @@
 		<ant dir="slide-webdavclient" target="clean" />
 		<ant dir="portal-module" target="clean" />
 		<ant dir="liferay" target="clean" />
+		<ant dir="liferay-light" target="clean" />
 		<ant dir="jboss-portal" target="clean" />
 		<ant dir="taglib" target="clean" />
 
@@ -119,6 +121,7 @@
 
 		<ant dir="portal-module" target="compile" inheritall="false"/>
 		<ant dir="liferay" target="compile" inheritall="false"/>
+		<ant dir="liferay-light" target="compile" inheritall="false"/>
 		<ant dir="jboss-portal" target="compile" inheritall="false"/>
 		<ant dir="taglib" target="compile" inheritall="false"/>
 		
@@ -146,6 +149,7 @@
 		<ant dir="slide-webdavclient" target="jar" inheritall="false"/>
 		<ant dir="portal-module" target="jar" inheritall="false"/>
 		<ant dir="liferay" target="jar" inheritall="false"/>
+		<ant dir="liferay-light" target="jar" inheritall="false"/>
 		<ant dir="jboss-portal" target="jar" inheritall="false"/>
 		<ant dir="taglib" target="jar" inheritall="false"/>
 
@@ -178,6 +182,7 @@
 		<ant dir="slide-webdavclient" target="deploy" />
 		<ant dir="portal-module" target="deploy" />
 		<ant dir="liferay" target="deploy" />
+		<ant dir="liferay-light" target="deploy" />
 		<ant dir="jboss-portal" target="deploy" />
 		<ant dir="taglib" target="deploy" />
 
@@ -211,6 +216,7 @@
 		<ant dir="slide-webdavclient" target="java2html" />
 		<ant dir="portal-module" target="java2html" />
 		<ant dir="liferay" target="java2html" />
+		<ant dir="liferay-light" target="java2html" />
 		<ant dir="jboss-portal" target="java2html" />
 		<ant dir="taglib" target="java2html" />
 		<ant dir="tools" target="java2html" />
@@ -234,6 +240,7 @@
 		<ant dir="slide-webdavclient" target="javadoc" />
 		<ant dir="portal-module" target="javadoc" />
 		<ant dir="liferay" target="javadoc" />
+		<ant dir="liferay-light" target="javadoc" />
 		<ant dir="jboss-portal" target="javadoc" />
 		<ant dir="taglib" target="javadoc" />
 		<ant dir="tools" target="javadoc" />
