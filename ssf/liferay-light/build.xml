@@ -17,12 +17,8 @@
 	<target name="clean">
 		<delete dir="temp"/>
 		<delete file="${war.file}" failonerror="false" />
-		<delete>
-			<fileset dir="${web.dir}/WEB-INF/lib" includes="*.*"/>
-		</delete>
-		<delete>
-			<fileset dir="${web.dir}/WEB-INF/classes/content" includes="*.*"/>
-		</delete>
+		<delete dir="${web.dir}/WEB-INF/lib"/>
+		<delete dir="${web.dir}/WEB-INF/classes/content"/>
 	</target>
 	
 	<target name="copy-portlet-properties-files">
