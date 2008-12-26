@@ -161,23 +161,36 @@
 		  </c:forEach>
 		</ul>
 		<c:if test="${!empty ss_nextPage || !empty ss_prevPage}">
-		<table><tr><td>
-		<c:if test="${!empty ss_prevPage}">
-		<a href="<ssf:url adapter="true" portletName="ss_forum" 
-			folderId="${ssBinder.id}" 
-			action="__ajax_mobile" 
-			operation="mobile_show_workspace" 
-			actionUrl="false" ><ssf:param name="pageNumber" value="${ss_prevPage}"/></ssf:url>">&lt;&lt;&lt;</a>
-		</c:if>
-		</td><td style="padding-left:30px;">
-		<c:if test="${!empty ss_nextPage}">
-		<a href="<ssf:url adapter="true" portletName="ss_forum" 
-			folderId="${ssBinder.id}" 
-			action="__ajax_mobile" 
-			operation="mobile_show_workspace" 
-			actionUrl="false" ><ssf:param name="pageNumber" value="${ss_nextPage}"/></ssf:url>">&gt;&gt;&gt;</a>
-		</c:if>
-		</td></tr></table>
+		<table>
+		<tr>
+		  <td>
+			<c:if test="${!empty ss_prevPage}">
+			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				folderId="${ssBinder.id}" 
+				action="__ajax_mobile" 
+				operation="mobile_show_workspace" 
+				actionUrl="false" ><ssf:param name="pageNumber" value="${ss_prevPage}"/></ssf:url>"
+			  ><img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_.gif"/></a>
+			</c:if>
+			<c:if test="${empty ss_prevPage}">
+			  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_g.gif"/>
+			</c:if>
+		  </td>
+		  <td style="padding-left:20px;">
+			<c:if test="${!empty ss_nextPage}">
+			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				folderId="${ssBinder.id}" 
+				action="__ajax_mobile" 
+				operation="mobile_show_workspace" 
+				actionUrl="false" ><ssf:param name="pageNumber" value="${ss_nextPage}"/></ssf:url>"
+			  ><img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_.gif"/></a>
+			</c:if>
+			<c:if test="${empty ss_nextPage}">
+			  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_g.gif"/>
+			</c:if>
+		  </td>
+		</tr>
+		</table>
 		</c:if>
 	  </div>
 	</div>

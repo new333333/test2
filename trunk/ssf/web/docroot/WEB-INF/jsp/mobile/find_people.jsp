@@ -28,49 +28,74 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("mobile.searchResults") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <div id="wrapper">
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
-<br/>
-<table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
-<c:forEach var="user" items="${ssUsers}" >
-  <tr>
+<div id="pagebody">
+
+<div class="pagebody">
+	<h3 align="center"><ssf:nlt tag="mobile.searchResultsPeople"/></h3>
+	
+	<table class="ss_mobile" cellspacing="0" cellpadding="2" border="0">
+		<c:forEach var="user" items="${ssUsers}" >
+		  <tr>
+			<td>
+			<c:if test="${!empty user['_workspaceId']}">
+			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+			    folderId="${user['_workspaceId']}"
+			    action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
+			  <c:out value="${user.title}"/>
+			  </a>
+			</c:if>
+			<c:if test="${empty user['_workspaceId']}">
+			  <c:out value="${user.title}"/>
+			</c:if>
+		  </td></tr>
+		</c:forEach>
+		
+	<tr>
+	<td></td>
+	</tr>
+	<tr>
 	<td>
-	<c:if test="${!empty user['_workspaceId']}">
-	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-	    folderId="${user['_workspaceId']}"
-	    action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
-	  <c:out value="${user.title}"/>
-	  </a>
-	</c:if>
-	<c:if test="${empty user['_workspaceId']}">
-	  <c:out value="${user.title}"/>
-	</c:if>
-  </td></tr>
-</c:forEach>
-<tr><td></td></tr>
-<tr><td>
-<table><tr><td width="30">
-<c:if test="${!empty ss_prevPage}">
-<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	action="__ajax_mobile" 
-	operation="mobile_find_people" 
-	actionUrl="false" ><ssf:param 
-	name="searchText" value="${ss_searchText}"/><ssf:param 
-	name="pageNumber" value="${ss_prevPage}"/></ssf:url>">&lt;&lt;&lt;</a>
-</c:if>
-</td><td style="padding-left:30px;">
-<c:if test="${!empty ss_nextPage}">
-<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	action="__ajax_mobile" 
-	operation="mobile_find_people" 
-	actionUrl="false" ><ssf:param 
-	name="searchText" value="${ss_searchText}"/><ssf:param 
-	name="pageNumber" value="${ss_nextPage}"/></ssf:url>">&gt;&gt;&gt;</a>
-</c:if>
-</td></tr></table>
-</td></tr>
-</table>
+		<table>
+		 <tr>
+		  <td>
+			<c:if test="${!empty ss_prevPage}">
+				<a href="<ssf:url adapter="true" portletName="ss_forum" 
+					action="__ajax_mobile" 
+					operation="mobile_find_people" 
+					actionUrl="false" ><ssf:param 
+					name="searchText" value="${ss_searchText}"/><ssf:param 
+					name="pageNumber" value="${ss_prevPage}"/></ssf:url>"
+				><img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_.gif"/></a>
+			</c:if>
+			<c:if test="${empty ss_prevPage}">
+			  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_g.gif"/>
+			</c:if>
+		  </td>
+		  <td style="padding-left:20px;">
+			<c:if test="${!empty ss_nextPage}">
+				<a href="<ssf:url adapter="true" portletName="ss_forum" 
+					action="__ajax_mobile" 
+					operation="mobile_find_people" 
+					actionUrl="false" ><ssf:param 
+					name="searchText" value="${ss_searchText}"/><ssf:param 
+					name="pageNumber" value="${ss_nextPage}"/></ssf:url>"
+				><img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_.gif"/></a>
+			</c:if>
+			<c:if test="${empty ss_nextPage}">
+			  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_g.gif"/>
+			</c:if>
+		  </td>
+		 </tr>
+		</table>
+	  </td>
+	 </tr>
+	</table>
 <br/>
 <div class="ss_mobile">
 <form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
@@ -82,7 +107,10 @@
   type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
 </form>
 </div>
-<br/>
+
+</div>
+</div>
+
 <%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
 </div>
 
