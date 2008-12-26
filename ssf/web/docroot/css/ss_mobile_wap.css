@@ -103,9 +103,13 @@ a:hover {
 	list-style-type: none;
 	clear: both;	
 	}
+#menu ul {
+	border: none !important;
+	}
 #menu ul li {
 	display: inline;
 	margin-right: 0.1em;
+	border:none;
 	}
 #menu ul li a {
 	width: auto;
@@ -250,8 +254,11 @@ h3 sign_in {
 	color: #333;
 	font-style: normal;
 	}
+#whatsnew { 
+	background: #fff url(images/mobile/green.png) repeat-x left top;
+	}
 #miniblog { 
-	background: #fff url(images/mobile/greem.png) repeat-x left top;
+	background: #fff url(images/mobile/green.png) repeat-x left top;
 	}
 #favorites { 
 	background: #fff url(images/mobile/ss_gray.png) repeat-x left top;
@@ -264,7 +271,7 @@ h3 sign_in {
 	}
 
 		
-.pagebody, #saved_searches, #search_people_global, #favorites, #miniblog {
+.pagebody, #saved_searches, #search_people_global, #favorites, #miniblog, #whatsnew {
 	padding-top: 2px;
 	padding-bottom: 2px;
 	font-size: 0.90em;
@@ -278,7 +285,7 @@ a:link {
 	text-decoration: none;
 	
 }
-#saved_searches, #search_people_global, #favorites, #miniblog {
+#saved_searches, #search_people_global, #favorites, #miniblog, #whatsnew {
 	border: #777 thin dotted;
 	text-indent: 3%;
 	background: #9A9A98;

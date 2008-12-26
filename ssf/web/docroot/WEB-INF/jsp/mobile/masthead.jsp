@@ -35,7 +35,8 @@
 	<li>
 		<a href="<ssf:url adapter="true" portletName="ss_forum" 
 			action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
-			><ssf:nlt tag="mobile.returnToTop"/></a>
+			><img src="<html:rootPath/>css/images/mobile/home_icon.png" width="14" height="15" 
+			 hspace="3" border="0" align="bottom" /><ssf:nlt tag="mobile.returnToTop"/></a>
 	</li>
 	<li>
 		<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>

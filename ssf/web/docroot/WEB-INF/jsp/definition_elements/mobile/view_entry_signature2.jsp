@@ -52,9 +52,9 @@
 <table style="padding-left: 12px;" cellspacing="0" cellpadding="0">
  <tr>
   <td>
-	<div>
+	<div style="border:none;">
 	  <span class="ss_mobile_light ss_mobile_small"><ssf:nlt tag="entry.modifiedBy"/></span>
-	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+	  <a style="text-decoration: none !important;" href="<ssf:url adapter="true" portletName="ss_forum" 
 	    action="__ajax_mobile"
 	    operation="mobile_show_workspace"
 	    binderId="${ssDefinitionEntry.modification.principal.workspaceId}" />"

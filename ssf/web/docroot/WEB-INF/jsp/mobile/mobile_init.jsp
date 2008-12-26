@@ -39,9 +39,9 @@
 --%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html <c:if test="${!empty ssUser && !empty ssUser.locale}"> lang="${ssUser.locale}"</c:if>>
 <head>
-<META http-equiv="Content-Script-Type" content="text/javascript">
-<META http-equiv="Content-Style-Type" content="text/css">
-<META name = "viewport" content = "width = 320">
+<META http-equiv="Content-Script-Type" content="text/javascript"/>
+<META http-equiv="Content-Style-Type" content="text/css"/>
+<META name = "viewport" content = "width = 320"/>
 <jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_mobile_head.jsp" />
 <c:if test="${!empty ss_windowTitle}"><title>${ss_windowTitle}</title></c:if>
 <%

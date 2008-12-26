@@ -34,7 +34,7 @@
 <%
 	Map entriesSeen = new HashMap();
 %>
-<div class="ss_mobile">
+<div id="wrapper">
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 <br/>
   <table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">

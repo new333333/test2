@@ -95,10 +95,12 @@ import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.PortletPreferencesUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.ProfilesBinderHelper;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebStatusTicket;
 import org.kablink.teaming.web.util.WebUrlUtil;
+import org.kablink.teaming.web.util.WorkspaceTreeHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -403,6 +405,11 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		if (binder== null) {
 			return ajaxMobileFrontPage(this, request, response);
 		} 
+		if (binder.getEntityType().name().equals(EntityIdentifier.EntityType.workspace.name())) {
+			return ajaxMobileShowWorkspace(this, request, response);
+		} else if (binder.getEntityType().name().equals(EntityIdentifier.EntityType.profiles.name())) {
+			return ajaxMobileShowWorkspace(this, request, response);
+		}
 		model.put(WebKeys.BINDER, binder);
 
       	Integer pageNumber = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER);

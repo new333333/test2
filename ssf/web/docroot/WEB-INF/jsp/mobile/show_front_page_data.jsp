@@ -60,7 +60,13 @@
 	<br/>
 	</c:if>
 	
-	<div id="menu">
+<div class="pagebody">
+  <div id="whatsnew">
+    <span><ssf:nlt tag="mobile.whatsNew"/></span>
+  </div>
+  <div class="pagebody_border">
+    <div class="maincontent">
+     <div id="menu">
 	  <ul>
 	    <li>
 		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -77,7 +83,10 @@
 		  ><ssf:nlt tag="mobile.whatsNewSite"/></a>
 		</li>
 	  </ul>
-	</div>
+	 </div>
+    </div>
+  </div>
+</div>
 
 	<%@ include file="/WEB-INF/jsp/mobile/miniblog.jsp" %>
 		

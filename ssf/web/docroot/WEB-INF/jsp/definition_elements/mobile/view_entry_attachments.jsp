@@ -37,48 +37,48 @@ String strBrowserType = "nonie";
 if (isIECheck) strBrowserType = "ie";
 %>
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
-<br/>
-<c:if test="${!empty property_caption}">
-<strong>${property_caption}</strong>
-<br/>
-</c:if>
-
-<div>
-<table cellpadding="0" cellspacing="0">
-<tbody>
-<c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" >
-	  <tr>
-		<td class="ss_att_title">
-		  <a style="text-decoration: none;" 
-			href="<ssf:fileUrl file="${selection}"/>" 
-		    <ssf:title tag="title.open.file">
-			    <ssf:param name="value" value="${selection.fileItem.name}" />
-		    </ssf:title>
-			><c:out value="${selection.fileItem.name} "/></a>
-			<c:if test="${!empty selection.fileLock}">
-			  <br/>
-			  <img <ssf:alt tag="alt.locked"/> src="<html:imagesPath/>pics/sym_s_caution.gif"/>
-			  <span class="ss_mobile_small"><ssf:nlt tag="entry.lockedBy">
-	    		<ssf:param name="value" value="${selection.fileLock.owner.title}"/>
-			  </ssf:nlt></span>
-			</c:if>
-		  <ssf:ifSupportsViewAsHtml relativeFilePath="${selection.fileItem.name}" 
-		    browserType="<%=strBrowserType%>">
-				&nbsp;&nbsp;&nbsp;<a style="text-decoration: none;" href="<ssf:url 
-				    webPath="viewFile"
-				    folderId="${ssDefinitionEntry.parentBinder.id}"
-			   	 	entryId="${ssDefinitionEntry.id}"
-				    entityType="${ssDefinitionEntry.entityType}" >
-			    	<ssf:param name="fileId" value="${selection.id}"/>
-			    	<ssf:param name="fileTime" value="${selection.modification.date.time}"/>
-			    	<ssf:param name="viewType" value="html"/>
-			    	</ssf:url>"><span class="ss_mobile_small">[<ssf:nlt tag="entry.HTML" />]</span></a>
-		  </ssf:ifSupportsViewAsHtml>
-		</td>
-	</tr>
-</c:forEach>
-</tbody>
-</table>
-</div>
+  <br/>
+  <div class="ss_entryContent">
+	<c:if test="${!empty property_caption}">
+	  <strong>${property_caption}</strong>
+	  <br/>
+	</c:if>
+	
+	<table cellpadding="0" cellspacing="0">
+	  <tbody>
+		<c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" >
+			  <tr>
+				<td class="ss_att_title">
+				  <a style="text-decoration: none;" 
+					href="<ssf:fileUrl file="${selection}"/>" 
+				    <ssf:title tag="title.open.file">
+					    <ssf:param name="value" value="${selection.fileItem.name}" />
+				    </ssf:title>
+					><c:out value="${selection.fileItem.name} "/></a>
+					<c:if test="${!empty selection.fileLock}">
+					  <br/>
+					  <img <ssf:alt tag="alt.locked"/> src="<html:imagesPath/>pics/sym_s_caution.gif"/>
+					  <span class="ss_mobile_small"><ssf:nlt tag="entry.lockedBy">
+			    		<ssf:param name="value" value="${selection.fileLock.owner.title}"/>
+					  </ssf:nlt></span>
+					</c:if>
+				  <ssf:ifSupportsViewAsHtml relativeFilePath="${selection.fileItem.name}" 
+				    browserType="<%=strBrowserType%>">
+						&nbsp;&nbsp;&nbsp;<a style="text-decoration: none;" href="<ssf:url 
+						    webPath="viewFile"
+						    folderId="${ssDefinitionEntry.parentBinder.id}"
+					   	 	entryId="${ssDefinitionEntry.id}"
+						    entityType="${ssDefinitionEntry.entityType}" >
+					    	<ssf:param name="fileId" value="${selection.id}"/>
+					    	<ssf:param name="fileTime" value="${selection.modification.date.time}"/>
+					    	<ssf:param name="viewType" value="html"/>
+					    	</ssf:url>"><span class="ss_mobile_small">[<ssf:nlt tag="entry.HTML" />]</span></a>
+				  </ssf:ifSupportsViewAsHtml>
+				</td>
+			</tr>
+		</c:forEach>
+	  </tbody>
+	</table>
+  </div>
 </c:if>
 
