@@ -46,7 +46,7 @@
 							folderId="${ssBinder.owner.parentBinder.id}" entryId="${ssBinder.owner.id}" /></a>
 		</td>
 		<td valign="top">
-			<ul>
+			<ul class="ss_nobullet">
 				<c:forEach var="entry" items="${ssFolderEntries}" >
 					<jsp:useBean id="entry" type="java.util.HashMap" />
 				

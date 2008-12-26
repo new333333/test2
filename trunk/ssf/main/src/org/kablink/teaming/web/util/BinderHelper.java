@@ -2961,11 +2961,11 @@ public class BinderHelper {
 					} catch (Exception ex) {}
 				}
 				if (def != null) {
-					FolderModule	folderModule = bs.getFolderModule();
-					Long			entryId = null;
+					FolderModule folderModule = bs.getFolderModule();
+					Long entryId = null;
 					
 					miniBlogId = miniBlog.getId();
-					try{
+					try {
 						entryId = folderModule.addEntry(miniBlogId, def.getId(), new MapInputData(data), null, null);
 					} catch (Exception ex) {}
 					if (null != entryId) {

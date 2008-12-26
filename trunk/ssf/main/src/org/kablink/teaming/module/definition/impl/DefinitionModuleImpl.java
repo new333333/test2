@@ -1739,6 +1739,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					if (titleGenerated) {
 						titleSource=DefinitionUtils.getPropertyValue(titleEle, "itemSource");
 					}
+				} else {
+					//There is no title field. See if the title value is passed in anyway
+					if (inputData.exists("title")) {
+						entryData.put("title", inputData.getSingleObject("title"));
+					}
 				}
 				for (Element nextItem: itItems) {
 					String itemName = (String) nextItem.attributeValue("name", "");

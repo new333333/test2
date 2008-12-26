@@ -32,7 +32,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("nav.noEntries") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<div class="ss_mobile">
+<div id="wrapper">
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 <div class="ss_mobile_breadcrumbs">
 //<a href="<ssf:url adapter="true" portletName="ss_forum" 

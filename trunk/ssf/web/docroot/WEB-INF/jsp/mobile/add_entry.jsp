@@ -29,7 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<div class="ss_mobile">
+<div id="wrapper">
 
 <table class="ss_style" cellpadding="10" width="100%"><tr><td>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 

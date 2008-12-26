@@ -32,60 +32,62 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:if test="${!empty ssDefinitionEntry.workflowStates}">
-<div class="ss_mobile_workflow">
- <span class="ss_mobile_small ss_mobile_light" style="text-decoration:underline;"><ssf:nlt tag="workflow"/></span>
- <c:set var="lastWorkflowTitle" value=""/>
+<div class="pagebody">
+  <div id="workflow">
+    <span><ssf:nlt tag="workflow"/></span>
+    <c:set var="lastWorkflowTitle" value=""/>
+  </div>
  
-<c:forEach var="workflow" items="${ssDefinitionEntry.workflowStates}">
-  <c:if test="${!empty workflow.definition}">
+  <div class="workflow">
+	<c:forEach var="workflow" items="${ssDefinitionEntry.workflowStates}">
+	  <c:if test="${!empty workflow.definition}">
+	      <c:if test="${workflowTitle != lastWorkflowTitle}">
+	        <span>${workflow.definition.title}</span>
+	      </c:if>
+	      <c:if test="${empty workflow.threadName}">
+		    <br/><span>${ssWorkflowCaptions[workflow.id]}</span>
+	      </c:if>
+	
+	    <c:set var="workflowTitle" value="${workflow.definition.title}"/>
+	    <c:forEach var="workflow2" items="${ssDefinitionEntry.workflowStates}">
+	        <% //??? This next check needs to be fixed if multiple of the same workflow porcess is allowed %>
+	        <c:if test="${workflow2.definition.id == workflow.definition.id}">
+	          <c:if test="${!empty workflow2.threadName}">
+				<br/><span class="ss_mobile_light">${workflow2.threadName}</span>
+			    ${ssWorkflowCaptions[workflow2.id]}
+	    	  </c:if>
+	
+		      <c:if test="${!empty ssWorkflowTransitions[workflow2.id]}">
+			      <b><ssf:nlt tag="workflow.transitionTo" /></b>
+			      <br/>
+				  <form class="ss_style ss_form" method="post" 
+				    action="<ssf:url adapter="true" portletName="ss_forum" 
+						folderId="${ssBinder.id}" 
+						entryId="${ssDefinitionEntry.id}"
+						action="__ajax_mobile" 
+						operation="mobile_show_entry" 
+						actionUrl="true" />" 
+				    style="display:inline; background: inherit !important;">
+				  <input type="hidden" name="tokenId" value="${workflow.id}">
+				  <input type="hidden" name="replyId" value="${ssDefinitionEntry.id}">
+				  <select name="toState">
+				  <c:forEach var="transition" items="${ssWorkflowTransitions[workflow2.id]}">
+				    <option value="${transition.key}">${transition.value}</option>
+				  </c:forEach>
+				  </select><input type="submit" class="ss_submit" name="changeStateBtn" 
+				   style="background: inherit !important;"
+				   value="<ssf:nlt tag="button.ok" text="OK"/>">
+				  </form>
+			  </c:if>
+	  		</c:if>
+	  	</c:forEach>
+	  <c:set var="workflowTitle" value="${workflow.definition.title}"/>
       <c:if test="${workflowTitle != lastWorkflowTitle}">
-        <br/><span>${workflow.definition.title}</span>
-      </c:if>
-      <c:if test="${empty workflow.threadName}">
-	    <br/><span>${ssWorkflowCaptions[workflow.id]}</span>
-      </c:if>
-
-    <c:set var="workflowTitle" value="${workflow.definition.title}"/>
-    <c:forEach var="workflow2" items="${ssDefinitionEntry.workflowStates}">
-        <% //??? This next check needs to be fixed if multiple of the same workflow porcess is allowed %>
-        <c:if test="${workflow2.definition.id == workflow.definition.id}">
-          <c:if test="${!empty workflow2.threadName}">
-			<br/><span class="ss_mobile_light">${workflow2.threadName}</span>
-		    ${ssWorkflowCaptions[workflow2.id]}
-    	  </c:if>
-    	  
-
-
-	      <c:if test="${!empty ssWorkflowTransitions[workflow2.id]}">
-		      <b><ssf:nlt tag="workflow.transitionTo" /></b>
-		      <br/>
-			  <form class="ss_style ss_form" method="post" 
-			    action="<ssf:url adapter="true" portletName="ss_forum" 
-					folderId="${ssBinder.id}" 
-					entryId="${ssDefinitionEntry.id}"
-					action="__ajax_mobile" 
-					operation="mobile_show_entry" 
-					actionUrl="true" />" 
-			    style="display:inline; background: inherit !important;">
-			  <input type="hidden" name="tokenId" value="${workflow.id}">
-			  <input type="hidden" name="replyId" value="${ssDefinitionEntry.id}">
-			  <select name="toState">
-			  <c:forEach var="transition" items="${ssWorkflowTransitions[workflow2.id]}">
-			    <option value="${transition.key}">${transition.value}</option>
-			  </c:forEach>
-			  </select><input type="submit" class="ss_submit" name="changeStateBtn" 
-			   style="background: inherit !important;"
-			   value="<ssf:nlt tag="button.ok" text="OK"/>">
-			  </form>
-		  </c:if>
-    	  
-    	  
-  		</c:if>
-  	</c:forEach>
-  <c:set var="workflowTitle" value="${workflow.definition.title}"/>
-  </c:if>
-
-</c:forEach>
-</div>
+        <br/>
+	  </c:if>	    	  
+	  </c:if>
+	</c:forEach>
+   </div>
+  </div>
 
 </c:if>

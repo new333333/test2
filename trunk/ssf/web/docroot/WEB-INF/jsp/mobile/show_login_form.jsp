@@ -56,12 +56,6 @@
           <input type="password" style="width:150px;" name="j_password"/>
         </td>
       </tr>
-      <tr>
-        <td valign="top">
-          <input type="checkbox" name="remember"/>
-          <span><ssf:nlt tag="login.remember"/></span>
-        </td>
-      </tr>
     </table>
     <br/>
     <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
