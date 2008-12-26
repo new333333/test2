@@ -28,16 +28,65 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("mobile.searchResults") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <%
 	Map entriesSeen = new HashMap();
 %>
 <div id="wrapper">
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
-<br/>
-  <table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
+<div id="pagebody">
+
+<div class="pagebody">
+	<h3 align="center"><ssf:nlt tag="mobile.searchResults"/></h3>
+  	<div align="right">
+	  <table>
+		<tr>
+		  <td>
+			<c:if test="${!empty ss_prevPage}">
+			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				folderId="${ssBinder.id}" 
+				action="__ajax_mobile" 
+				operation="mobile_show_search_results" 
+				actionUrl="false" ><ssf:param 
+				name="quickSearch" value="true"/><ssf:param 
+				name="searchText" value="${ss_searchText}"/><ssf:param 
+				name="tabId" value="${ss_tab_id}"/><ssf:param 
+				name="pageNumber" value="${ss_pageNumber-1}"/><ssf:param 
+				name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
+			  ><img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_.gif"/></a>
+			</c:if>
+			<c:if test="${empty ss_prevPage}">
+			  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_g.gif"/>
+			</c:if>
+		  </td>
+		  <td style="padding-left:20px;">
+			<c:if test="${!empty ss_nextPage}">
+			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				folderId="${ssBinder.id}" 
+				action="__ajax_mobile" 
+				operation="mobile_show_search_results" 
+				actionUrl="false" ><ssf:param 
+				name="quickSearch" value="true"/><ssf:param 
+				name="searchText" value="${ss_searchText}"/><ssf:param 
+				name="tabId" value="${ss_tab_id}"/><ssf:param 
+				name="pageNumber" value="${ss_pageNumber+1}"/><ssf:param 
+				name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
+			  ><img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_.gif"/></a>
+			</c:if>
+			<c:if test="${empty ss_nextPage}">
+			  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_g.gif"/>
+			</c:if>
+	      </td>
+		</tr>
+	  </table>
+	</div>
+
+	<table cellspacing="2" cellpadding="4">
 		<c:forEach var="entry" items="${ssFolderEntries}" varStatus="status">
 			<jsp:useBean id="entry" type="java.util.HashMap" />
 			<%
@@ -54,90 +103,103 @@
 			
 				<c:choose>
 			  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'entry'}">
-					    <tr><td>
-					    <c:if test="${!empty entry._docNum}">
-					      ${entry._docNum}&nbsp;&nbsp;
-					    </c:if>
-						<a href="<ssf:url adapter="true" portletName="ss_forum" 
-						folderId="${entryBinderId}" entryId="${entry._docId}"
-						action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />">
-					    <c:if test="${empty entry.title}">
-					    	(<ssf:nlt tag="entry.noTitle"/>)
-					    </c:if>
-						<c:out value="${entry.title}"/>
-						</a>
-					    <c:if test="${!empty entry.binderTitle}">
-						  <div style="padding-left:10px;">
-						    <span style="font-size:9px; color:silver;">(${entry.binderTitle})</span>
-						  </div>
-					    </c:if>
-					    </td></tr>
+					    <tr>
+					      <td valign="top" align="right">
+						    <c:if test="${!empty entry._docNum}">
+						      <span>${entry._docNum}</span>
+						    </c:if>
+						  </td>
+						  <td style="padding-left: 4px;">
+							<a href="<ssf:url adapter="true" portletName="ss_forum" 
+							folderId="${entryBinderId}" entryId="${entry._docId}"
+							action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />">
+						    <c:if test="${empty entry.title}">
+						    	(<ssf:nlt tag="entry.noTitle"/>)
+						    </c:if>
+							<c:out value="${entry.title}"/>
+							</a>
+						    <c:if test="${!empty entry.binderTitle}">
+							  <div style="padding-left:10px;">
+							    <span style="font-size:9px; color:silver;">(${entry.binderTitle})</span>
+							  </div>
+						    </c:if>
+					      </td>
+					    </tr>
 						<%
 							entriesSeen.put(entry.get("_docId"), "1");
 						%>
-				  </c:when>
+				    </c:when>
 			
 			  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'attachment'}">
-					    <tr><td>
-						<a href="<ssf:fileUrl search="${entry}"/>">
-					    <c:if test="${empty entry.title}">
-					    	(<ssf:nlt tag="entry.noTitle"/>)
-					    </c:if>
-						<c:out value="${entry.title}"/>
-						</a>
-						<div style="padding-left:10px;">
-						<span style="font-size:9px; color:silver;"><a href="<ssf:url adapter="true" portletName="ss_forum" 
-						folderId="${entryBinderId}" entryId="${entry._docId}"
-						action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />">
-					    <c:if test="${empty entry.title}">
-					    	(<ssf:nlt tag="entry.noTitle"/>)
-					    </c:if>
-						<c:out value="${entry.title}"/>
-						</a></span>
-						</div>
-					    <c:if test="${!empty entry.binderTitle}">
-						  <div style="padding-left:10px;">
-						    <span style="font-size:9px; color:silver;">(${entry.binderTitle})</span>
-						  </div>
-					    </c:if>
-					    </td></tr>
+					    <tr>
+					      <td></td>
+					      <td style="padding-left: 4px;">
+							<a href="<ssf:fileUrl search="${entry}"/>">
+						    <c:if test="${empty entry.title}">
+						    	(<ssf:nlt tag="entry.noTitle"/>)
+						    </c:if>
+							<c:out value="${entry.title}"/>
+							</a>
+							<div style="padding-left:10px;">
+							<span style="font-size:9px; color:silver;"><a href="<ssf:url adapter="true" portletName="ss_forum" 
+							folderId="${entryBinderId}" entryId="${entry._docId}"
+							action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />">
+						    <c:if test="${empty entry.title}">
+						    	(<ssf:nlt tag="entry.noTitle"/>)
+						    </c:if>
+							<c:out value="${entry.title}"/>
+							</a></span>
+							</div>
+						    <c:if test="${!empty entry.binderTitle}">
+							  <div style="padding-left:10px;">
+							    <span style="font-size:9px; color:silver;">(${entry.binderTitle})</span>
+							  </div>
+						    </c:if>
+					      </td>
+					    </tr>
 				  </c:when>
 			
 				  <c:when test="${entry._docType == 'binder'}">
-					<tr><td>
-					<c:if test="${entry._entityType == 'folder'}">
-						<a href="<ssf:url adapter="true" portletName="ss_forum" 
-						folderId="${entry._docId}" 
-						action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
-						<c:out value="${entry.title}"/>
-						</a>
-					</c:if>
-					<c:if test="${entry._entityType == 'workspace'}">
-						<a href="<ssf:url adapter="true" portletName="ss_forum" 
-						folderId="${entry._docId}" 
-						action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
-						<c:out value="${entry.title}"/>
-						</a>
-					</c:if>
-				    <c:if test="${!empty entry._extendedTitle}">
-					  <div style="padding-left:10px;">
-					    <span style="font-size:9px; color:silver;">(${entry._extendedTitle})</span>
-					  </div>
-				    </c:if>
-					</td></tr>
+					<tr>
+					  <td></td>
+					  <td style="padding-left: 4px;">
+						<c:if test="${entry._entityType == 'folder'}">
+							<a href="<ssf:url adapter="true" portletName="ss_forum" 
+							folderId="${entry._docId}" 
+							action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
+							<c:out value="${entry.title}"/>
+							</a>
+						</c:if>
+						<c:if test="${entry._entityType == 'workspace'}">
+							<a href="<ssf:url adapter="true" portletName="ss_forum" 
+							folderId="${entry._docId}" 
+							action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
+							<c:out value="${entry.title}"/>
+							</a>
+						</c:if>
+					    <c:if test="${!empty entry._extendedTitle}">
+						  <div style="padding-left:10px;">
+						    <span style="font-size:9px; color:silver;">(${entry._extendedTitle})</span>
+						  </div>
+					    </c:if>
+					  </td>
+					</tr>
 					<%
 						entriesSeen.put(entry.get("_docId"), "1");
 					%>
 			      </c:when>
 
 			  	  <c:when test="${entry._entityType == 'user'}">
-					    <tr><td>
+					<tr>
+					  <td></td>
+					  <td style="padding-left: 4px;">
 						<a href="<ssf:url adapter="true" portletName="ss_forum" 
 						folderId="${entry._workspaceId}"
 						action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
 						<c:out value="${entry.title}"/>
 						</a>
-					    </td></tr>
+					  </td>
+					</tr>
 						<%
 							entriesSeen.put(entry.get("_docId"), "1");
 						%>
@@ -145,14 +207,16 @@
 			    <c:otherwise>
 			    </c:otherwise>
 			</c:choose>	
-			  </td></tr>
 			<%
 				}
 			%>
 		</c:forEach>
-	<tr><td></td><td></td></tr>
-	<tr><td colspan="2">
-	<table><tr><td width="30">
+	</table>
+
+  <br/>
+  <table>
+	<tr>
+	  <td>
 		<c:if test="${!empty ss_prevPage}">
 		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 			folderId="${ssBinder.id}" 
@@ -163,11 +227,16 @@
 			name="searchText" value="${ss_searchText}"/><ssf:param 
 			name="tabId" value="${ss_tab_id}"/><ssf:param 
 			name="pageNumber" value="${ss_pageNumber-1}"/><ssf:param 
-			name="ss_queryName" value="${ss_queryName}" /></ssf:url>">&lt;&lt;&lt;</a>
+			name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
+		  ><img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_.gif"/></a>
 		</c:if>
-	</td><td style="padding-left:30px;">
+		<c:if test="${empty ss_prevPage}">
+		  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_g.gif"/>
+		</c:if>
+	  </td>
+	  <td style="padding-left:20px;">
 		<c:if test="${!empty ss_nextPage}">
-		<a href="<ssf:url adapter="true" portletName="ss_forum" 
+		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 			folderId="${ssBinder.id}" 
 			action="__ajax_mobile" 
 			operation="mobile_show_search_results" 
@@ -176,14 +245,19 @@
 			name="searchText" value="${ss_searchText}"/><ssf:param 
 			name="tabId" value="${ss_tab_id}"/><ssf:param 
 			name="pageNumber" value="${ss_pageNumber+1}"/><ssf:param 
-			name="ss_queryName" value="${ss_queryName}" /></ssf:url>">&gt;&gt;&gt;</a>
+			name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
+		  ><img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_.gif"/></a>
 		</c:if>
-	</td></tr></table>
-	</td></tr>
+		<c:if test="${empty ss_nextPage}">
+		  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_g.gif"/>
+		</c:if>
+      </td>
+	</tr>
   </table>
-
-			
+</div>
+</div>
 <br/>
+
 <%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
 </div>
 

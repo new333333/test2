@@ -524,3 +524,30 @@ input, textarea, select {
 	padding-bottom: 15px;
 	}
 	
+.ss_form_wrap {
+	border-top-width: 14px;
+	border-right-width: thin;
+	border-bottom-width: thin;
+	border-left-width: thin;
+	border-style: solid;
+	border-top-color: #5A9A98;
+	border-right-color: #CCCCCC;
+	border-bottom-color: #CCCCCC;
+	border-left-color: #CCCCCC;
+	padding: 0 10px 10px 10px!important;
+	margin: 4px;
+	}
+.ss_form_header {
+	font-size:16px !important;
+	letter-spacing:-1px;
+	font-family:Georgia, "Times New Roman", Times, serif !important;
+	font-weight:normal !important;
+	color:#5A9A98;
+	}
+.ss_form_subhead {
+	 font-weight: bold;
+	 color: #333;
+	 }
+.ss_form_subhead a:hover{
+	 color: #555;
+	 }	

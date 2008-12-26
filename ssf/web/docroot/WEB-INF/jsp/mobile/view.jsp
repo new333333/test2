@@ -33,8 +33,17 @@
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 <c:set var="ss_noEnableAccessibleLink" value="1" scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value='<%= NLT.get("login.please") %>' scope="request"/>
+<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
+<c:if test="${ssUser.internalId == guestInternalId}">
+  <c:set var="ss_windowTitle" value='<%= NLT.get("login.please") %>' scope="request"/>
+</c:if>
+<c:if test="${ssUser.internalId != guestInternalId}">
+  <c:set var="ss_windowTitle" value='<%= NLT.get("mobile.frontPage") %>' scope="request"/>
+</c:if>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
+
+<div id="wrapper">
 <%@ include file="/WEB-INF/jsp/mobile/show_front_page_data.jsp" %>
+</div>
 </body>
 </html>

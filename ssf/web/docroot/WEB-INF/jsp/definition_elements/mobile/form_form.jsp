@@ -54,6 +54,7 @@
 
 %>
 <ssf:form title="<%= defName %>">
+<br/>
 <c:set var="ss_form_form_formName" value="<%= formName %>" scope="request"/>
 <c:set var="ss_formViewStyle" value="<%= formViewStyle %>" scope="request" />
 <jsp:useBean id="ss_formViewStyle" type="String" scope="request" />
