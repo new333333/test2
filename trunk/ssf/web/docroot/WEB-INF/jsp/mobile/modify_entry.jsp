@@ -28,28 +28,18 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //Textarea view %>
-<c:if test="${empty ss_element_display_style}">
-<div class="ss_entryContent">
-<c:if test="${!empty property_caption}">
- <div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
-</c:if>
- <div class="ss_mobile_description">
-<span><ssf:markup entity="${ssDefinitionEntry}">${ssDefinitionEntry.customAttributes[property_name].value.text}</ssf:markup></span>
- </div>
-</div>
-</c:if>
+<%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
+<div id="wrapper">
 
-<c:if test="${!empty ss_element_display_style && 
-    ss_element_display_style == 'tableAlignLeft'}">
-<tr>
-  <td class="ss_table_spacer_right" valign="top" align="right">
-    <c:out value="${property_caption}" />
-  </td>
-  <td valign="top">
-    <div class="ss_entryContent ss_mobile_description">
-     <span><ssf:markup type="view" entity="${ssDefinitionEntry}">${ssDefinitionEntry.customAttributes[property_name].value.text}</ssf:markup></span>
-    </div>
-  </td>
-</tr>
-</c:if>
+<table class="ss_style" cellpadding="10" width="100%"><tr><td>
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	configElement="${ssConfigElement}" 
+	configJspStyle="mobile" 
+	processThisItem="true" 
+	entry="${ssEntry}"/>
+</td></tr></table>
+
+</div>
+
+</body>
+</html>

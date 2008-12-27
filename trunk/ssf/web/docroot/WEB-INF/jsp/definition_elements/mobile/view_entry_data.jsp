@@ -75,7 +75,7 @@
 		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_user_list.jsp" %><%
 
 	} else if (itemType.equals("survey")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_survey.jsp" %><%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_survey.jsp" %><%
 
 	} else if (itemType.equals("event")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_event.jsp" %><%

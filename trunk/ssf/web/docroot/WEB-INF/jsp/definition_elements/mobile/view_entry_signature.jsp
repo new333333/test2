@@ -31,7 +31,6 @@
 --%><% //Entry signature view %><%--
 --%><%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<c:set var="ss_signatureShown" value="false" scope="request"/>
 <c:set var="ss_showSignatureAfterTitle" value="true" scope="request"/>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
@@ -39,4 +38,5 @@
 
 <c:if test="${!ss_signatureShown}">
   <%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_signature2.jsp" %>
+  <c:set var="ss_signatureShown" value="true" scope="request"/>
 </c:if>

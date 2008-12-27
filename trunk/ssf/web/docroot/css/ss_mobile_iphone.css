@@ -421,8 +421,10 @@ input, textarea, select {
 	color:gray;
 }
 .ss_mobile_description {
-	background-color:#e5e5e5;
-}
+  	padding: 6px 4px 6px 4px;
+  	margin: 6px 0px 6px 0px;
+  	background-color: #E9F1F1;  /* switch back to this: #A6C5C5 #E9F1F1 !important; */
+	}
 .ss_mobile_workflow {
 	border: solid 1px #CCCCCC;
 	padding: 4px;
@@ -438,6 +440,18 @@ input, textarea, select {
 }
 .ss_entryContent {
 	margin-bottom:10px;
+}
+.ss_labelAbove {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  display: block;
+  font-weight: bold;
+}
+.ss_labelLeft {
+  font-weight: bold;
+  font-size: ${ss_style_font_normalprint};
+  display: inline;
+  padding-right: 2px;
 }
 .ss_mobile_folder_list {
 	padding-bottom:6px;
@@ -554,4 +568,21 @@ input, textarea, select {
 .ss_form_subhead a:hover{
 	 color: #555;
 	 }	
-	
+	 
+/* lists */
+ul.ss_nobullet {
+  margin-left: 0em;
+  padding: 0em;
+  margin: 0px 0px 2px 0px;
+  }
+
+ul.ss_nobullet li {
+  list-style-type: none !important;
+  margin: 0px;
+  padding: 0px;
+  border:none !important;
+  }
+
+ul.ss_square li {
+  list-style-type: square;
+} 

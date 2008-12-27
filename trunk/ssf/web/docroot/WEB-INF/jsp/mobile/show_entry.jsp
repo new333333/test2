@@ -68,8 +68,11 @@
 		    <span>${ssEntry.title}</span>
 		  </div>
 		  <div class="pagebody_border">
-			<c:if test="${!empty ss_mobileBinderDefUrlList}">
-			  <div align="center">
+			<div align="center">
+			  <table>
+			  <tr>
+			  <c:if test="${!empty ss_mobileBinderDefUrlList && fn:length(ss_mobileBinderDefUrlList) > 1}">
+				<td valign="top">
 				  <form name="addEntryForm" 
 				  		action="<ssf:url adapter="true" portletName="ss_forum" 
 							binderId="${ssBinder.id}" 
@@ -82,17 +85,10 @@
 				  <tr>
 				  <td valign="top">
 				  <select name="url" size="1">
-				    <c:if test="${fn:length(ss_mobileBinderDefUrlList) == 1}">
-					  <c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
-					    <option value="${def.url}"><ssf:nlt tag="button.add"/>: ${def.title}</option>
-					  </c:forEach>
-				    </c:if>
-				    <c:if test="${fn:length(ss_mobileBinderDefUrlList) > 1}">
-				      <option value="">--<ssf:nlt tag="mobile.addReply"/>--</option>
-					  <c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
-					    <option value="${def.url}">${def.title}</option>
-					  </c:forEach>
-					</c:if>
+			      <option value="">--<ssf:nlt tag="mobile.addReply"/>--</option>
+				  <c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
+				    <option value="${def.url}">${def.title}</option>
+				  </c:forEach>
 				  </select>
 				  </td>
 				  <td valign="top">
@@ -101,8 +97,28 @@
 				  </tr>
 				  </table>  
 				  </form>
-			  </div>
-			</c:if>
+				</td>
+			  </c:if>
+			  <c:if test="${!empty ss_mobileBinderDefUrlList && fn:length(ss_mobileBinderDefUrlList) == 1}">
+			    <td valign="top">
+				  <c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
+				    <a href="${def.url}"><ssf:nlt tag="button.add"/>: ${def.title}</a>
+				  </c:forEach>
+				</td>
+			  </c:if>
+			  
+			  <c:if test="${!empty ss_mobileEntryModifyUrl}">
+			    <td 
+			      <c:if test="${!empty ss_mobileBinderDefUrlList}">
+			        style="padding-left:10px;"
+			      </c:if>
+			      valign="top">
+			  	  <a href="${ss_mobileEntryModifyUrl}"><ssf:nlt tag="mobile.modifyEntry"/></a>
+			  	</td>
+			  </c:if>
+			</tr>
+			</table>
+			</div>
 	
 	  		<div style="padding: 4px 6px;">
 			  <c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>

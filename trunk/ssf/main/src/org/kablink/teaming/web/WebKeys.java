@@ -813,6 +813,7 @@ public class WebKeys {
     public static final String MINIBLOG_USER_ID="ss_miniblog_user_id"; 
     public static final String MOBILE_BINDER_LIST="ss_mobileBinderList"; 
     public static final String MOBILE_BINDER_DEF_URL_LIST="ss_mobileBinderDefUrlList"; 
+    public static final String MOBILE_ENTRY_MODIFY_URL="ss_mobileEntryModifyUrl"; 
     public static final String MOBILE_FAVORITES_LIST="ss_mobileFavoritesList"; 
     public static final String MOBILE_PAGE_SIZE="15"; 
     public static final String MOBILE_PAGE_SIZE_WHATS_NEW="8"; 

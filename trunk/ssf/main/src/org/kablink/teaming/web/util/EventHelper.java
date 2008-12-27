@@ -129,7 +129,7 @@ public class EventHelper {
             // rangeSel is the count/ until/ forever radio button
             String rangeSel = inputData.getSingleValue(prefix+"rangeSel");
 
-            if (repeatUnit.equals("none")) {
+            if (repeatUnit == null || repeatUnit.equals("none")) {
                 event.setFrequency(Event.NO_RECURRENCE);
             } else {
 	            if (repeatUnit.equals("day")) {
@@ -163,17 +163,19 @@ public class EventHelper {
 	                parseMonths(event, inputData, prefix);
 	            }
 	            
-	            if (rangeSel.equals("count")) {
+	            if (rangeSel != null && rangeSel.equals("count")) {
 	                String repeatCount = inputData.getSingleValue(prefix+"repeatCount");
 	                event.setCount(repeatCount);
-	            } else if (rangeSel.equals("until")) {
+	            } else if (rangeSel != null && rangeSel.equals("until")) {
 	                String untilId = "endRange_" + id;
 	                Date until = inputData.getDateValue(untilId);
 	                GregorianCalendar untilCal = new GregorianCalendar();
 	                untilCal.setTime(until);
 	                event.setUntil(untilCal);
-	            } else if (rangeSel.equals("forever")) {
+	            } else if (rangeSel != null && rangeSel.equals("forever")) {
 	            	event.setCount(0);
+	            } else {
+	            	event.setCount(1);
 	            }
             }
         } else {

@@ -127,6 +127,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				ajaxMobileDoAddEntry(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MOBILE_ADD_REPLY)) {
 				ajaxMobileDoAddReply(request, response);
+			} else if (op.equals(WebKeys.OPERATION_MOBILE_MODIFY_ENTRY)) {
+				ajaxMobileDoModifyEntry(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE)) {
 				ajaxMobileDoFrontPage(this, request, response);
 			} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_ENTRY)) {
@@ -167,7 +169,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			return ajaxMobileAddReply(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_MODIFY_ENTRY)) {
-			//return ajaxMobileModifyEntry(request, response);
+			return ajaxMobileModifyEntry(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_WHATS_NEW)) {
 			return ajaxMobileWhatsNew(this, request, response);
@@ -192,7 +194,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	} 
 
 	private void ajaxMobileDoAddEntry(ActionRequest request, ActionResponse response) 
-			throws Exception {
+	throws Exception {
 		//Add an entry
 		Map formData = request.getParameterMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
@@ -204,6 +206,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			Map fileMap = new HashMap();
 			MapInputData inputData = new MapInputData(formData);
 			entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap, null);
+			response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 			
 			//See if the user wants to subscribe to this entry
 			BinderHelper.subscribeToThisEntry(this, request, folderId, entryId);
@@ -212,7 +215,36 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			if (!sUrl.equals("")) response.sendRedirect(sUrl);
 		}
 	}
-	
+
+	private void ajaxMobileDoModifyEntry(ActionRequest request, ActionResponse response) 
+	throws Exception {
+		//Modify an entry
+		Map formData = request.getParameterMap();
+		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+		//See if the modify entry form was submitted
+		if (formData.containsKey("okBtn")) {
+			//The form was submitted. Go process it
+			Map fileMap = new HashMap();
+			Set deleteAtts = new HashSet();
+			for (Iterator iter=formData.entrySet().iterator(); iter.hasNext();) {
+				Map.Entry e = (Map.Entry)iter.next();
+				String key = (String)e.getKey();
+				if (key.startsWith("_delete_")) {
+					deleteAtts.add(key.substring(8));
+				}
+			}
+			getFolderModule().modifyEntry(folderId, entryId, 
+					new MapInputData(formData), fileMap, deleteAtts, null, null);
+			
+			//See if the user wants to subscribe to this entry
+			BinderHelper.subscribeToThisEntry(this, request, folderId, entryId);
+		} else {
+			String sUrl = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MOBILE_URL, "");
+			if (!sUrl.equals("")) response.sendRedirect(sUrl);
+		}
+	}
+
 	private void ajaxMobileDoAddReply(ActionRequest request, ActionResponse response) 
 			throws Exception {
 		//Add an entry
@@ -678,6 +710,15 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			//only mark top entries as seen
 			getProfileModule().setSeen(null, entry);
 		}
+		
+		if (getFolderModule().testAccess(entry, FolderOperation.modifyEntry)) {
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_MODIFY_ENTRY);
+			model.put(WebKeys.MOBILE_ENTRY_MODIFY_URL, adapterUrl);
+		}
 
 		if (getFolderModule().testAccess(entry, FolderOperation.addReply)) {
 			Definition def = entry.getEntryDef(); //cannot be null here
@@ -733,9 +774,31 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 		Map formData = request.getParameterMap();
 		if (entryType.equals("") || formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
-			return ajaxMobileShowFolder(bs, request, response);
+			return ajaxMobileShowEntry(bs, request, response);
 		} else {
 			return new ModelAndView("mobile/add_entry", model);
+		}
+	}	
+
+	private ModelAndView ajaxMobileModifyEntry(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));		
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));		
+		Folder folder = getFolderModule().getFolder(folderId);
+		FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
+		//Adding an entry; get the specific definition
+		model.put(WebKeys.FOLDER, folder);
+		model.put(WebKeys.BINDER, folder);
+		model.put(WebKeys.ENTRY, entry);
+		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
+		DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@type='form']");
+		
+		Map formData = request.getParameterMap();
+		if (formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
+			return ajaxMobileShowEntry(bs, request, response);
+		} else {
+			return new ModelAndView("mobile/modify_entry", model);
 		}
 	}	
 
