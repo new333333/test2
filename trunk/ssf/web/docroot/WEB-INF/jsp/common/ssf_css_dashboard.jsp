@@ -685,6 +685,8 @@ div.ss_canvas {
 /* - MENU TABS FOR RELEVANCE--------------------------- */
 
 #ss_tabsC {
+    position:relative;
+    top:-1px;
     float:left;
     width:100%;
     background:transparent;
@@ -709,17 +711,19 @@ div.ss_canvas {
    	padding:0px !important;
       }
  #ss_tabsC a {
+    position:relative;
+    top:1px;
     float:left;
     background:url("<html:rootPath/>images/pics/tableftF.gif") no-repeat left top;
     margin:0;
-    padding:0 0 0 4px;
+    padding:3px 0 0 4px;
+    border-bottom: 1px #666 solid !important;
       }
  #ss_tabsC a span {
     display:block;
     background:url("<html:rootPath/>images/pics/tabsrightf2.gif") no-repeat right top;
     padding:5px 15px 4px 6px;
     white-space:nowrap !important;
-
       }
  /* Commented Backslash Hack hides rule from IE5-Mac \ */
  
@@ -736,6 +740,7 @@ div.ss_canvas {
       }
 #ss_tabsC .ss_tabsCCurrent a {
       background-position:0% -42px;
+      border-bottom: 1px #DCDCDC solid !important;
         }
 #ss_tabsC .ss_tabsCCurrent a span {
      background-position:100% -42px;
