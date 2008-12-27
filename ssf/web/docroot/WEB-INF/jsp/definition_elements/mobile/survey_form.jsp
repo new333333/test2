@@ -30,8 +30,6 @@
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<script type="text/javascript" src="<html:rootPath/>js/common/ss_survey.js"></script>
-
 <div class="ss_entryContent">
 	<div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
 	<div>

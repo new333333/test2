@@ -51,9 +51,13 @@
 		required = "";
 	}
 %>
+<c:set var="textValue" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
+<c:if test="${property_name == 'description'}">
+  <c:set var="textValue" value="${ssDefinitionEntry.description}"/>
+</c:if>
 <div class="ss_entryContent">
 <span class="ss_labelAbove"><%= caption %><%= required %></span>
 <textarea name="<%= elementName %>" wrap="virtual"
   rows="<%= rows %>" cols="40"
-><c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/></textarea>
+><c:out value="${textValue}"/></textarea>
 </div>
