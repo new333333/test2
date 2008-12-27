@@ -54,14 +54,6 @@
           name="j_password" id="j_password"/>
         </td>
       </tr>
-      <tr>
-        <td valign="middle" align="right">
-          <label for="remember"><span><ssf:nlt tag="login.remember"/></span></label>
-        </td>
-        <td valign="top" align="left" style="padding-left:6px;">
-          <input type="checkbox" name="remember" id="remember"/>
-        </td>
-      </tr>
       <c:if test="${!empty ss_loginError}">
        <tr>
 		 <td>&nbsp;</td>
