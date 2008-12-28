@@ -490,7 +490,6 @@ public class WebKeys {
 	public static final String OPERATION_VIEW_NEXT = "view_next";
 	public static final String OPERATION_VIEW_PREVIOUS = "view_previous";
 	public static final String OPERATION_VIEW_PHOTO = "view_photo";
-	public static final String OPERATION_VIEW_PHOTO_IN_FRAME = "view_photo_in_frame";
 	public static final String OPERATION_VOTE_SURVEY = "vote_survey";
 	public static final String OPERATION_VOTE_SURVEY_REMOVE = "vote_survey_remove";
 	public static final String OPERATION_MODIFY_ENTRY="modifyEntry";

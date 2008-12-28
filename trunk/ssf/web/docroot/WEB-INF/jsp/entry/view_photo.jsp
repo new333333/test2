@@ -74,10 +74,20 @@ function ss_setImgSize(obj) {
 
 <c:if test="${operation != 'view_photo_in_frame'}">
 <script type="text/javascript">
-function ss_setFrameSize() {
+function ss_setImgSize(obj) {
 	var titleDiv = document.getElementById("ss_photoTitleDiv");
-	var frameObj = document.getElementById("ss_photoFrame");
-	frameObj.style.height = parseInt(ss_getWindowHeight() - ss_getObjectHeight(titleDiv) - 50) + "px"
+	var ww = ss_getWindowWidth();
+	var wh = ss_getWindowHeight();
+	var imgW = ss_getObjectWidth(obj);
+	var imgH = ss_getObjectHeight(obj);
+	var deltaW = parseInt(imgW - ww);
+	var deltaH = parseInt(imgH - wh);
+	if (deltaW > 0 && deltaW >= deltaH) {
+		obj.width = parseInt(ww - 50);
+	} else if (deltaH > 0 && deltaH >= deltaW) {
+		obj.height = parseInt(wh - ss_getObjectHeight(titleDiv) - 50);
+	}
+	obj.style.visibility = "visible";
 }
 </script>
 
@@ -130,24 +140,25 @@ function ss_setFrameSize() {
     </a>
   </div>
 
-  <iframe id="ss_photoFrame" 
-    style="width:100%;scrolling:no;" 
-    src="<ssf:url crawlable="true"    
-				    adapter="true" 
-				    portletName="ss_forum" 
-				    binderId="${ssBinder.id}" 
-				    action="view_folder_entry" 
-				    entryId="${ssEntry.id}" 
-				    operation="view_photo_in_frame"
-				    actionUrl="true" />"
-    frameBorder="0"
-  >xxx</iframe>
+<div id="ss_imageDiv">
+</div>
+<script type="text/javascript">
+	var divObj = document.getElementById("ss_imageDiv");
+	var imgObj = document.createElement("img");
+	imgObj.style.visibility = "hidden";
+	dojo.connect(imgObj, "onload", function(evt) {
+			ss_setImgSize(this);
+	    });
+	divObj.appendChild(imgObj)
+	var url = "<ssf:fileUrl entity="${ssEntry}"/>";
+	if (url == "") {
+		imgObj.src = "<html:imagesPath/>thumbnails/NoImage.jpeg";
+	} else {
+		imgObj.src = url;
+	}
+</script>
 </div>
 
-<script type="text/javascript">
-ss_setFrameSize();
-ss_createOnResizeObj('ss_setFrameSize', ss_setFrameSize);
-</script>
 </c:if>
 
 <ssf:ifadapter>

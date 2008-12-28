@@ -406,8 +406,7 @@ public class ViewEntryController extends  SAbstractController {
 		if(fe == null) {
 			return new ModelAndView("entry/deleted_entry", model);		
 		} else {
-			if (operation.equals(WebKeys.OPERATION_VIEW_PHOTO) || 
-					operation.equals(WebKeys.OPERATION_VIEW_PHOTO_IN_FRAME)) {
+			if (operation.equals(WebKeys.OPERATION_VIEW_PHOTO)) {
 				return new ModelAndView(WebKeys.VIEW_PHOTO, model);
 			}
 			if (entryViewType.equals("entryBlogView") && PortletAdapterUtil.isRunByAdapter(request)) {
