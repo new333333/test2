@@ -154,7 +154,18 @@ function ss_setImgSize(obj) {
 	if (url == "") {
 		imgObj.src = "<html:imagesPath/>thumbnails/NoImage.jpeg";
 	} else {
-		imgObj.src = url;
+		var pattern = new RegExp("\\.([a-zA-Z]*)$");
+		var extArray = url.match(pattern);
+		var ext = "";
+		if (extArray != null && extArray.length >= 1) ext = extArray[1];
+		ext = ext.toLowerCase();
+		if (ext == 'jpg' || ext == 'jpeg' || ext == 'gif' || ext == 'png') {
+			//This is an image, show it hon this page
+			imgObj.src = url;
+		} else {
+			//We don't know what this is, show it in its own page
+			self.location.href = url;
+		}
 	}
 </script>
 </div>
