@@ -54,7 +54,14 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 			    <div>
 			    <a onMouseOver="ss_showHoverOver(this, 'ss_photoTitle_${fileEntry._docId}', null, -10, 10)" 
 			      onMouseOut="ss_hideHoverOver('ss_photoTitle_${fileEntry._docId}')"
-			      href="<ssf:fileUrl search="${fileEntry}"/>"
+			      href="<ssf:url crawlable="true"    
+				    adapter="true" 
+				    portletName="ss_forum" 
+				    binderId="${ssBinder.id}" 
+				    action="view_folder_entry" 
+				    entryId="${fileEntry._docId}" 
+				    operation="view_photo"
+				    actionUrl="true" />"
 					onClick="return ss_openUrlInWindow(this, '_blank');">
 			    <img <ssf:alt text="${fileEntry.title}"/> border="0" src="<ssf:fileUrl webPath="readThumbnail" search="${fileEntry}"/>"></a><br/>
 			    

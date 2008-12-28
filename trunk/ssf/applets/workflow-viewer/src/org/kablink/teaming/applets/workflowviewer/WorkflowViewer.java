@@ -177,23 +177,25 @@ public class WorkflowViewer extends JApplet implements ActionListener {
         //Set the starting x and y of the verticies
         double dX = 100;
         double dY = 50;
-        for (int i = 0; i < v.length; i++) {
-        	//See if the x,y is specified in the workflow document
-        	String stateName = (String)vertexName.get(v[i]);
-        	Element stateNameProperty = (Element)workflowDoc.getRootElement().selectSingleNode("//item[@name='state']/properties/property[@name='name' and @value='"+stateName+"']");
-        	if (stateNameProperty != null) {
-        		Element state = stateNameProperty.getParent().getParent();
-        		String sX = state.attributeValue("x", String.valueOf(dX));
-	         	String sY = state.attributeValue("y", "");
-	         	if (sY.equals("")) {
-	         		sY = String.valueOf(dY);
-	         		dY += 50;
-	         	}
-	        	layout.forceMove(v[i], (double)Double.parseDouble(sX), (double)Double.parseDouble(sY));
-        	} else {
-	        	layout.forceMove(v[i], dX, dY);
-	            dY += 50;
-        	}
+        if (v != null) {
+	        for (int i = 0; i < v.length; i++) {
+	        	//See if the x,y is specified in the workflow document
+	        	String stateName = (String)vertexName.get(v[i]);
+	        	Element stateNameProperty = (Element)workflowDoc.getRootElement().selectSingleNode("//item[@name='state']/properties/property[@name='name' and @value='"+stateName+"']");
+	        	if (stateNameProperty != null) {
+	        		Element state = stateNameProperty.getParent().getParent();
+	        		String sX = state.attributeValue("x", String.valueOf(dX));
+		         	String sY = state.attributeValue("y", "");
+		         	if (sY.equals("")) {
+		         		sY = String.valueOf(dY);
+		         		dY += 50;
+		         	}
+		        	layout.forceMove(v[i], (double)Double.parseDouble(sX), (double)Double.parseDouble(sY));
+	        	} else {
+		        	layout.forceMove(v[i], dX, dY);
+		            dY += 50;
+	        	}
+	        }
         }
         return jp;
     }

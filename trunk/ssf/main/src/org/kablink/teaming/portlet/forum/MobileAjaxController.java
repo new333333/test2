@@ -640,7 +640,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-		Long nextEntryId = getNextPrevEntry((Folder) binder, entryId, true);	
+		Long nextEntryId = BinderHelper.getNextPrevEntry(bs, (Folder) binder, entryId, true);	
 		if (nextEntryId != null) return ajaxMobileShowEntry(bs, request, response, nextEntryId);
 		
 		Map model = new HashMap();
@@ -654,7 +654,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-		Long nextEntryId = getNextPrevEntry((Folder) binder, entryId, false);	
+		Long nextEntryId = BinderHelper.getNextPrevEntry(bs, (Folder) binder, entryId, false);	
 		if (nextEntryId != null) return ajaxMobileShowEntry(bs, request, response, nextEntryId);
 		
 		Map model = new HashMap();
@@ -931,37 +931,6 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			}
 		}
 		return new ModelAndView("mobile/find_people", model);
-	}
-	
-	private Long getNextPrevEntry(Folder folder, Long entryId, boolean next) {
-		if (folder == null) {
-			return null;
-		} 
-		Map options = new HashMap();		
-      	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(ObjectKeys.SEARCH_MAX_HITS_FOLDER_ENTRIES));
-      	options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(0));
-
-      	Map searchResults = getFolderModule().getEntries(folder.getId(), options);
-		List folderEntries = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
-
-		for (int i = 0; i < folderEntries.size(); i++) {
-			Map entry = (Map) folderEntries.get(i);
-			if (entry.containsKey("_docId") && ((String)entry.get("_docId")).equals(entryId.toString())) {
-				//Found the current entry
-				if (next) {
-					i++;
-				} else {
-					i--;
-				}
-				if (i >= 0 && i < folderEntries.size()) {
-					entry = (Map) folderEntries.get(i);
-					String docId = (String) entry.get("_docId");
-					if (docId != null) return Long.valueOf(docId);
-				}
-				return null;
-			}
-		}
-		return null;
 	}
 	
 }

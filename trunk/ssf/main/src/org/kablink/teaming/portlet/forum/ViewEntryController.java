@@ -181,7 +181,6 @@ public class ViewEntryController extends  SAbstractController {
 				entryViewStyle = WebKeys.URL_ENTRY_VIEW_STYLE_FULL;
 			}
 		}
-		
 		Map formData = request.getParameterMap();
 		Map userProperties = getProfileModule().getUserProperties(null).getProperties();
 		
@@ -191,10 +190,33 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.ENTRY_VIEW_STYLE2, entryViewStyle2);
 		
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		String operation2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		if (!operation.equals("")) {
 			model.put(WebKeys.URL_OPERATION, operation);
 		}
-		
+
+		try {
+			Folder entryFolder = getFolderModule().getFolder(folderId);
+			if (operation2.equals(WebKeys.OPERATION_VIEW_NEXT)) {
+				Long nextEntryId = BinderHelper.getNextPrevEntry(this, entryFolder, Long.valueOf(entryId), true);
+				if (nextEntryId != null) {
+					entryId = nextEntryId.toString();
+				} else {
+					entryId = "";
+					operation = WebKeys.OPERATION_SHOW_NO_MORE_ENTRIES;
+				}
+			}
+			if (operation2.equals(WebKeys.OPERATION_VIEW_PREVIOUS)) {
+				Long prevEntryId = BinderHelper.getNextPrevEntry(this, entryFolder, Long.valueOf(entryId), false);
+				if (prevEntryId != null) {
+					entryId = prevEntryId.toString();
+				} else {
+					entryId = "";
+					operation = WebKeys.OPERATION_SHOW_NO_MORE_ENTRIES;
+				}
+			}
+		} catch(Exception e) {}
+
 		//Set up the standard beans
 		BinderHelper.setupStandardBeans(this, request, response, model);
 
@@ -209,7 +231,8 @@ public class ViewEntryController extends  SAbstractController {
  		FolderEntry fe = null;
 		try {
 			if (Validator.isNull(entryId)) {
-				if (operation.equals(WebKeys.OPERATION_SHOW_NO_ENTRIES)) {
+				if (operation.equals(WebKeys.OPERATION_SHOW_NO_ENTRIES) || 
+						operation.equals(WebKeys.OPERATION_SHOW_NO_MORE_ENTRIES)) {
 					String  binderParam = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ENTRY_DEFS, "");
 					if (!binderParam.equals("")) {
 						model.put(WebKeys.URL_BINDER_ENTRY_DEFS, binderParam);
@@ -217,6 +240,9 @@ public class ViewEntryController extends  SAbstractController {
 					binderParam = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ENTRY_ADD, "");
 					if (!binderParam.equals("")) {
 						model.put(WebKeys.URL_BINDER_ENTRY_ADD, binderParam);
+					}
+					if (operation.equals(WebKeys.OPERATION_SHOW_NO_MORE_ENTRIES)) {
+						return new ModelAndView(WebKeys.VIEW_NO_MORE_ENTRIES, model);
 					}
 					return new ModelAndView(WebKeys.VIEW_NO_ENTRIES, model);
 				}
@@ -380,6 +406,10 @@ public class ViewEntryController extends  SAbstractController {
 		if(fe == null) {
 			return new ModelAndView("entry/deleted_entry", model);		
 		} else {
+			if (operation.equals(WebKeys.OPERATION_VIEW_PHOTO) || 
+					operation.equals(WebKeys.OPERATION_VIEW_PHOTO_IN_FRAME)) {
+				return new ModelAndView(WebKeys.VIEW_PHOTO, model);
+			}
 			if (entryViewType.equals("entryBlogView") && PortletAdapterUtil.isRunByAdapter(request)) {
 				model.put(WebKeys.SNIPPET, true);
 				viewPath = "entry/view_entry_snippet";
