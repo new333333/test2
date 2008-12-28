@@ -457,6 +457,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_CLIPBOARD_USERS = "get_clipboard_users";
 	public static final String OPERATION_SHOW_TEAM_MEMBERS = "show_team_members";
 	public static final String OPERATION_SHOW_NO_ENTRIES = "show_no_entries";
+	public static final String OPERATION_SHOW_NO_MORE_ENTRIES = "show_no_more_entries";
 	public static final String OPERATION_FIND_CALENDAR_EVENTS = "find_calendar_events";
 	public static final String OPERATION_STICKY_CALENDAR_DISPLAY_SETTINGS = "sticky_calendar_display_settings";
 	public static final String OPERATION_GET_CALENDAR_FREE_INFO = "get_calendar_free_info";
@@ -486,6 +487,10 @@ public class WebKeys {
 	public static final String OPERATION_REMOVE_SEARCH_QUERY = "remove_search_query";
 	public static final String OPERATION_SYNCHRONIZE_MIRRORED_FOLDER = "synchronize_mirrored_folder";
 	public static final String OPERATION_SAVE_SEARCH_QUERY="save_search_query";
+	public static final String OPERATION_VIEW_NEXT = "view_next";
+	public static final String OPERATION_VIEW_PREVIOUS = "view_previous";
+	public static final String OPERATION_VIEW_PHOTO = "view_photo";
+	public static final String OPERATION_VIEW_PHOTO_IN_FRAME = "view_photo_in_frame";
 	public static final String OPERATION_VOTE_SURVEY = "vote_survey";
 	public static final String OPERATION_VOTE_SURVEY_REMOVE = "vote_survey_remove";
 	public static final String OPERATION_MODIFY_ENTRY="modifyEntry";
@@ -1188,6 +1193,7 @@ public class WebKeys {
     public static final String VIEW_MOBILE="mobile/view";
     public static final String VIEW_MOBILE_EDIT="mobile/edit";
     public static final String VIEW_NO_ENTRIES="forum/view_no_entries";
+    public static final String VIEW_NO_MORE_ENTRIES="forum/view_no_more_entries";
     public static final String VIEW_TASK_SUMMARY="task_summary/view";
     public static final String VIEW_TASK_EDIT="task_summary/edit";
     public static final String VIEW_LICENSE_REPORT="administration/license_report";
@@ -1213,6 +1219,7 @@ public class WebKeys {
     public static final String VIEW_NO_TITLE_ENTRY="entry/view_no_title_entry";
     public static final String VIEW_NO_USER_WORKSPACE="entry/view_no_user_workspace";
     public static final String VIEW_NOT_CONFIGURED="common/notconfigured"; 
+    public static final String VIEW_PHOTO="entry/view_photo";
     public static final String VIEW_PRESENCE="presence/view";
     public static final String VIEW_PRESENCE_AJAX="presence/view_ajax";
     public static final String VIEW_PRESENCE_EDIT="presence/edit";

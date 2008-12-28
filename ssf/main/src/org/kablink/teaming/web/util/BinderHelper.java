@@ -3034,4 +3034,36 @@ public class BinderHelper {
 		List applications = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
 		return applications;
 	}
+	
+	public static Long getNextPrevEntry(AllModulesInjected bs, Folder folder, Long entryId, boolean next) {
+		if (folder == null) {
+			return null;
+		} 
+		Map options = new HashMap();		
+      	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(ObjectKeys.SEARCH_MAX_HITS_FOLDER_ENTRIES));
+      	options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(0));
+
+      	Map searchResults = bs.getFolderModule().getEntries(folder.getId(), options);
+		List folderEntries = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
+
+		for (int i = 0; i < folderEntries.size(); i++) {
+			Map entry = (Map) folderEntries.get(i);
+			if (entry.containsKey("_docId") && ((String)entry.get("_docId")).equals(entryId.toString())) {
+				//Found the current entry
+				if (next) {
+					i++;
+				} else {
+					i--;
+				}
+				if (i >= 0 && i < folderEntries.size()) {
+					entry = (Map) folderEntries.get(i);
+					String docId = (String) entry.get("_docId");
+					if (docId != null) return Long.valueOf(docId);
+				}
+				return null;
+			}
+		}
+		return null;
+	}
+	
 }
