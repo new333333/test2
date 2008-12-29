@@ -41,10 +41,13 @@
 	<label for="ss_combobox_autocomplete_${prefix}"><ssf:nlt tag="${accessibilityText}" />&nbsp</label>
 </ssf:ifaccessible>
 
+<!-- textarea's rows and cols attributes are set to 0. -->
+<!-- They are overridden by CSS. -->
+
 <textarea 
     class="ss_combobox_autocomplete"
-    rows=""
-    cols=""
+    rows="0"
+    cols="0"
     style="width: ${ssFindElementWidth};"
     name="${ssFindFormElement}" 
     id="ss_combobox_autocomplete_${prefix}"
