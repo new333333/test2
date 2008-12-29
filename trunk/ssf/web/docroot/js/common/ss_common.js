@@ -1071,7 +1071,8 @@ function ss_showHoverOver(parentObj, divName, event, offsetX, offsetY) {
 	topOffset += offsetY;
 	ss_setObjectTop(divObj, topOffset + "px")
 	ss_setObjectLeft(divObj, parseInt(parseInt(x) + offsetX) + "px")
-	ss_showHideObj(divName, 'visible', 'block');
+	divObj.style.visibility = "visible";
+	divObj.style.display = "block";
 }
 function ss_hideHoverOver(divName) {
 	ss_showHideObj(divName, 'hidden', 'none');
