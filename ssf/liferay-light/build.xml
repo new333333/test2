@@ -36,6 +36,8 @@
 		</copy>
 	</target>
 	
+	<target name="clean-build-and-full-deploy" depends="build,full-deploy" />
+	
 	<target name="build" depends="war"/>
 	
 	<target name="war" depends="clean,jar,copy-portlet-properties-files,copy-libraries">
