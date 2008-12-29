@@ -7567,12 +7567,16 @@ function ss_showHideSidebar(namespace) {
 //Routine to hide the sunburst
 function ss_hideSunburst(s_id, s_binderId) {
 	var divObj = self.document.getElementById('ss_sunburstDiv'+s_binderId+'_'+s_id);
+	var titleObj = self.document.getElementById('folderLineSeen_' + s_id);
+	if (titleObj != null) {
+		var cn = titleObj.className;
+		titleObj.className = ss_replaceSubStrAll(cn, "ss_unseen", "")
+	}
 
 		//Hide it
    		dojo.fadeOut({node: divObj, end: 0, delay: 400, onEnd: function() {
 		    	divObj.style.visibility = "hidden";
-		    	divObj.className = "ss_noUnderlinePlus";
-
+		    	divObj.style.display = "none";
    		}}).play();
 
 	ssf_onLayoutChange()

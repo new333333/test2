@@ -104,7 +104,7 @@
 	String docId = "";
 	if (entry != null && entry.get("_docId") != null) {
 		docId = (String) entry.get("_docId");
-		folderLineId = "folderLine_" + docId;
+		folderLineId = "folderLine2_" + docId;
 	}
 %>
 

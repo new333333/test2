@@ -90,9 +90,9 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 				    entryId="${fileEntry._docId}" actionUrl="true" />" 
 				    onClick="ss_loadEntry(this, '${fileEntry._docId}', '${ssBinder.id}', '${fileEntry._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 				    ><c:if test="${empty fileEntry.title}"
-				    ><span id="folderLine_${fileEntry._docId}" <%= seenStyleFine %>
+				    ><span id="folderLineSeen_${fileEntry._docId}" <%= seenStyleFine %>
 				    >--<ssf:nlt tag="entry.noTitle"/>--</span
-				    ></c:if><span id="folderLine_${fileEntry._docId}" <%= seenStyle %>
+				    ></c:if><span id="folderLineSeen_${fileEntry._docId}" <%= seenStyle %>
 				    ><c:out value="${fileEntry.title}"/></span></a>
 			    </div>
 			 </c:if>
@@ -128,9 +128,9 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 				    entryId="${fileEntry._docId}" actionUrl="true" />" 
 				    onClick="ss_loadEntry(this, '${fileEntry._docId}', '${ssBinder.id}', '${fileEntry._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 				    ><c:if test="${empty fileEntry.title}"
-				    ><span id="folderLine_${fileEntry._docId}" <%= seenStyleFine %>
+				    ><span id="folderLineSeen_${fileEntry._docId}" <%= seenStyleFine %>
 				    >--<ssf:nlt tag="entry.noTitle"/>--</span
-				    ></c:if><span id="folderLine_${fileEntry._docId}" <%= seenStyle %>
+				    ></c:if><span id="folderLineSeen_${fileEntry._docId}" <%= seenStyle %>
 				    ><c:out value="${fileEntry.title}"/></span></a>
 			    </div>
 			 </c:if>
@@ -151,7 +151,7 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 		    <c:if test="${empty fileEntry.title}"
 		      ><span 
 		      >--<ssf:nlt tag="entry.noTitle"/>--</span
-		      ></c:if><span id="folderLine_${fileEntry._docId}"
+		      ></c:if><span id="folderLineSeen_${fileEntry._docId}"
 		      ><c:out value="${fileEntry.title}"/></span><c:if test="${!empty fileEntry._desc}"
 		      ><hr width="80%" align="left"/></c:if>
 		    <span >
