@@ -50,7 +50,27 @@
 	</target>
 
 	<target name="add-release-info">
-		<!-- Anything to do here? -->
+		<tstamp>
+	    	<format property="build.timestamp" pattern="MMMM dd, yyyy" />
+	    </tstamp>
+	
+		<delete dir="temp"/>
+	
+		<copy
+			preservelastmodified="true"
+			file="${web.dir}/WEB-INF/classes/config/ssf.properties"
+			tofile="temp/WEB-INF/classes/config/ssf.properties"/>
+	
+		<replace file="temp/WEB-INF/classes/config/ssf.properties">
+			<replacefilter
+				token="release.build.date="
+				value="release.build.date=${build.timestamp}"/>
+		</replace>
+	
+		<war
+			basedir="temp"
+			destfile="${war.file}"
+			update="true"/>
 	</target>
 	
 	<target name="deploy-jar-only" depends="jar">
