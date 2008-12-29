@@ -31,7 +31,7 @@
 <%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil, org.kablink.util.BrowserSniffer" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<style>
+<style type="text/css">
 	<% /* Object List - Table styles. */ %>
 	.ss_objlist_table_columnhead	{color: black; font-weight: bold; font-size: 0.75em; background-color: #edeeec; border-bottom: 1px solid black}
 	.ss_objlist_table_footer		{background-color: #efeeec; margin-top: 1em; padding: 0.5em; border-top: 1px solid #babdb6;}
