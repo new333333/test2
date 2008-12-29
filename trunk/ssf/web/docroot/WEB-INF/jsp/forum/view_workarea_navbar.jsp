@@ -451,7 +451,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		       </td>
 		       <td>
 		       <!-- Find People --> 
-		        <div valign="middle">     
+		        <div>     
 		        		<div class="ss_searchtext">
 		                  	<ssf:ifnotaccessible>
 		                  	
