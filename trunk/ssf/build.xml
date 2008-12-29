@@ -67,6 +67,17 @@
 		<ant dir="${portal.type}" target="build" inheritAll="false" />
 	</target>
 
+	<target name="build-all-portal-types" depends="init">
+		<antcall target="compile" />
+		<antcall target="jar" />
+		<ant dir="standalone" target="build" inheritAll="false" />
+		<ant dir="liferay-light" target="build" inheritAll="false" />
+		<!-- No longer supported portal types 
+		<ant dir="liferay" target="build" inheritAll="false" />
+		<ant dir="jbossportal" target="build" inheritAll="false" />
+		-->
+	</target>
+
 	<target name="clean-build" depends="clean,build" />
 	
 	<target name="clean-build-and-full-deploy" depends="clean-build,full-deploy-internal"/>
