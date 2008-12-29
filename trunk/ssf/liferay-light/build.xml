@@ -32,7 +32,7 @@
 		<copy todir="${web.dir}/WEB-INF/lib" file="${project.dir}/main/kablink-teaming-main.jar"/>
 		<copy todir="${web.dir}/WEB-INF/lib" file="${project.dir}/util/kablink-teaming-util.jar"/>
 		<copy todir="${web.dir}/WEB-INF/lib">
-			<fileset dir="${project.dir}/lib" includes="commons-logging.jar,*spring*.jar,dom4j.jar,jstl.jar,jstl-impl.jar,log4j.jar"/>
+			<fileset dir="${project.dir}/lib" includes="commons-logging.jar,spring.jar,spring-webmvc.jar,spring-webmvc-portlet.jar,dom4j.jar,jstl.jar,jstl-impl.jar,log4j.jar"/>
 		</copy>
 	</target>
 	
@@ -82,7 +82,7 @@
 	<target name="deploy-light">
 		<copy todir="${app.server.ssf.dir}" overwrite="true">
 			<fileset dir="${web.dir}"
-				includes="**/*.*"
+				excludes="WEB-INF/web.xml"
 			/>
 		</copy>
 	</target>
