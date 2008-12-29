@@ -43,6 +43,8 @@
 
 <textarea 
     class="ss_combobox_autocomplete"
+    rows=""
+    cols=""
     style="width: ${ssFindElementWidth};"
     name="${ssFindFormElement}" 
     id="ss_combobox_autocomplete_${prefix}"
