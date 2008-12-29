@@ -79,7 +79,7 @@
 			</td>
 			<td width="50%" valign="top" align="center" class="ss_paginationDiv">
 			<div>
-			<table valign="top" border="0" cellpadding="1" cellspacing="0" class="ss_pagination_table">
+			<table border="0" cellpadding="1" cellspacing="0" class="ss_pagination_table">
 				<tbody><tr>
 					<td bgcolor="#E9F1F1" class="ss_pagination_arrows">
 
