@@ -3,7 +3,7 @@
 <project name="liferay-light" basedir="." default="war">
 	<!-- This setting will override the value in the properties file -->
 	<property name="web.dir" value="${basedir}/webroot"/>
-	<property name="portal.type" value="liferay"/>
+	<property name="portal.type" value="liferay-light"/>
 	
 	<import file="../build-common.xml" />
 	<import file="../deploy-support.xml" />
