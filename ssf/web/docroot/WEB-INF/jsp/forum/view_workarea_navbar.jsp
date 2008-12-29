@@ -352,7 +352,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			  </tr>
 			  <tr>
 				<td colspan="3">
-					<div width="100%" class="ss_nowrap">
+					<div class="ss_nowrap">
 				
 					<ssf:ifnotaccessible>
 				
