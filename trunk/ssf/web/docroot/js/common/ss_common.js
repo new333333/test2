@@ -1058,7 +1058,6 @@ function ss_showHoverOver(parentObj, divName, event, offsetX, offsetY) {
 	if (typeof offsetX == 'undefined') offsetX = 0;
 	if (typeof offsetY == 'undefined') offsetY = 0;
 	ss_moveDivToBody(divName);
-	ss_showHideObj(divName, 'visible', 'block');
 	divObj = document.getElementById(divName)
 	if (divObj == null) return;
 	divObj.style.zIndex = '500';
@@ -1072,6 +1071,7 @@ function ss_showHoverOver(parentObj, divName, event, offsetX, offsetY) {
 	topOffset += offsetY;
 	ss_setObjectTop(divObj, topOffset + "px")
 	ss_setObjectLeft(divObj, parseInt(parseInt(x) + offsetX) + "px")
+	ss_showHideObj(divName, 'visible', 'block');
 }
 function ss_hideHoverOver(divName) {
 	ss_showHideObj(divName, 'hidden', 'none');
@@ -1929,9 +1929,6 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
     var maxWidth = 0;
     var divWidth = 0;
 
-	document.getElementById(divId).style.display = "block";
-	document.getElementById(divId).focus();
-
     if (ss_isNSN6 || ss_isMoz5) {
         // need to bump layer an extra bit to the right to avoid horiz scrollbar
         divWidth = parseInt(document.getElementById(divId).offsetWidth) + 20;
@@ -1952,12 +1949,11 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
     if (!menuObj.style || !menuObj.style.zIndex || menuObj.style.zIndex == 0) {
     	menuObj.style.zIndex = ssMenuZ;
     }
-    
+
     ss_ShowHideDivXY(divId, x, y);
     if (openStyle != "popup") ss_HideDivOnSecondClick(divId);
     ssf_onLayoutChange();
 	document.getElementById(divId).tabIndex=document.getElementById(parentDivId).tabIndex;
-	document.getElementById(divId).focus();
 }
 
 // activate_menulayer tests this flag to make sure the page is
@@ -2135,6 +2131,7 @@ function ss_hideDiv(divName) {
 function ss_hideDivObj(divObj) {
 	if (divObj != null) {
 		divObj.style.visibility = "hidden";
+		divObj.style.display = "none";
     	ss_divToBeDelayHidden[divObj.id] = null;
     }
     ss_divBeingShown = null;
@@ -5755,11 +5752,11 @@ function ss_showSavedQueriesList(relObj, divId, resultUrl) {
 				txt += "</ul>";
 				divObj.innerHTML = txt;
 
-				ss_placeOnScreen(divId, relObj, 12, -128);
+				ss_placeOnScreen(divId, relObj, 12, 12);
 				dojo.style(divId, "display", "block");
 				dojo.style(divId, "visibility", "visible");
 	            ss_setOpacity(divId,0);
-	            dojo.fadeIn({node:divId, delay:200}).play();
+	            dojo.fadeIn({node:divId, delay:50}).play();
 				//Signal that the layout changed
 				if (ssf_onLayoutChange) ssf_onLayoutChange();
 			} catch (e) {alert(e)}
@@ -5772,10 +5769,11 @@ function ss_showSavedQueriesList(relObj, divId, resultUrl) {
 }
 
 function ss_placeOnScreen(divId, rel, offsetTop, offsetLeft) {
-	var box = dojo.coords(rel);
+	var box = dojo.coords(rel, true);
 	ss_moveDivToBody(divId);
 	var divObj = document.getElementById(divId);
-	dijit.placeOnScreen(divObj, {x: (box.l + offsetLeft), y: (box.t + offsetTop)}, "TL", false);
+	dijit.placeOnScreen(divObj, {x: (box.x + offsetLeft), y: (box.y + offsetTop)}, "TL", false);
+	divObj.focus();
 }
 
 
