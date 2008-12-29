@@ -58,7 +58,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	</table>
 	</div>
 
-    <div width="100%">
+    <div>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
