@@ -444,7 +444,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 		String seenStyle = "";
 		String seenStyleAuthor = "";
 		String seenStyleFine = "class=\"ss_fineprint\"";
-		if (0 == 1 && !ssSeenMap.checkIfSeen(entry1)) {
+		if (!ssSeenMap.checkIfSeen(entry1)) {
 			seenStyle = "class=\"ss_unseen\"";
 			seenStyleAuthor="ss_unseen";
 			seenStyleFine = "class=\"ss_unseen ss_fineprint\"";
@@ -524,11 +524,9 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   <a id="ss_sunburstDiv${ssBinder.id}_${entry1._docId}" href="javascript: ;" 
   title="<ssf:nlt tag="sunburst.click"/>"
   onClick="ss_hideSunburst('${entry1._docId}', '${ssBinder.id}');return false;"
-><span 
-  style="display:${ss_sunburstVisibilityHide};"
-  id="ss_sunburstShow${renderResponse.namespace}">
-  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" border="0" <ssf:alt tag="alt.new"/> />&nbsp;
-  </span>
+>
+  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" 
+  	align="text-bottom" border="0" <ssf:alt tag="alt.new"/> />&nbsp;
   </a>
     
 	</c:if>
@@ -557,17 +555,17 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     >
     
     <c:if test="${!empty seenStyleburst}">
-  			<strong><span <%= seenStyleTitle %> ><c:if test="${empty entry1.title}" 
-    		>--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${entry1.title}"/></span></strong></a>
+  			<span id="folderLineSeen_${entry1._docId}" <%= seenStyle %> ><c:if test="${empty entry1.title}" 
+    		>--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${entry1.title}"/></span></a>
 	</c:if>
 
 	<c:if test="${empty seenStyleburst}">
 		<c:if test="${slidingTableStyle == 'fixed'}">
-    		<span <%= seenStyleTitle2 %>><c:if test="${empty entry1.title}" 
+    		<span <%= seenStyle %>><c:if test="${empty entry1.title}" 
     		>--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${entry1.title}"/></span></a> 
 		</c:if>
 	  	<c:if test="${slidingTableStyle != 'fixed'}">
-    		<span <%= seenStyleTitle2 %>><c:if test="${empty entry1.title}" 
+    		<span <%= seenStyle %>><c:if test="${empty entry1.title}" 
     		>--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${entry1.title}"/></span></a> 
 		</c:if> 		
 	</c:if>  	
