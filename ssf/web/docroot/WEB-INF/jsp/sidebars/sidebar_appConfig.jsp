@@ -50,7 +50,7 @@
 	.ss_objlist_menu_titleIMG	{position: absolute; right: 5px}
 </style>
 
-<script>
+<script type="text/javascript">
 	<% /* Load the localized strings from the resource file. */ %>
 	var	g_appConfigStrings = new Array();
 		g_appConfigStrings["sidebar.appConfig.Banner"]						= "<ssf:nlt tag="sidebar.appConfig.Banner"/>";
