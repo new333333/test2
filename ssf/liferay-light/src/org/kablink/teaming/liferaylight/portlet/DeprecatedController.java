@@ -37,7 +37,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.mvc.AbstractController;
 
-public class MasterController extends AbstractController {
+public class DeprecatedController extends AbstractController {
 
 	protected void handleActionRequestInternal(ActionRequest request,
 			ActionResponse response) throws Exception {
