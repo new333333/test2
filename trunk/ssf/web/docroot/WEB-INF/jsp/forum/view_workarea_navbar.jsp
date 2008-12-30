@@ -419,7 +419,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 									
 								<input name="searchText" style="width: 100px;" type="text" id="ss_searchSearchText${renderResponse.namespace}" /> 
 								<a href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" >
-									<img src="<html:rootPath/>images/pics/masthead/search.png" width="19" height="20" border="0" align="absmiddle"
+									<img src="<html:rootPath/>images/pics/masthead/search.png" width="19" height="20" border="0" 
+									style="vertical-align:middle;"
 									title="<ssf:nlt tag="alt.search"/>"<ssf:alt tag="alt.search"/> /></a>
 									<input type="hidden" name="searchBtn" value="searchBtn"/>
 									<input type="hidden" name="quickSearch" value="true"/>					
