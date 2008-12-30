@@ -28,7 +28,6 @@
  */
 package org.kablink.teaming.util;
 import java.io.File;
-import java.io.IOException;
 
 import javax.servlet.ServletContext;
 
@@ -41,7 +40,6 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.core.io.Resource;
 import org.springframework.web.context.ServletContextAware;
 
 /**

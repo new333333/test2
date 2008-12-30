@@ -32,8 +32,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.kablink.teaming.ObjectKeys;
-
 public class ReleaseInfo {
 
 	private static final String KABLINK_TEAMING = "Kablink Teaming";

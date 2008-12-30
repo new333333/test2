@@ -28,6 +28,9 @@
  */
 package org.kablink.teaming.util;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.SingletonViolationException;
@@ -81,13 +84,42 @@ public class SPropsUtil extends PropsUtil implements InitializingBean {
 		
 		if(logger.isInfoEnabled()) {
 			logger.info(ReleaseInfo.getReleaseInfo());
-			logger.info("System properties" + Constants.NEWLINE + Utils.toStringML(System.getProperties()));
-			logger.info("System environment" + Constants.NEWLINE + Utils.toStringML(System.getenv()));
+			logger.info("System properties" + Constants.NEWLINE + toStringML(System.getProperties()));
+			logger.info("System environment" + Constants.NEWLINE + toStringML(System.getenv()));
 		}
 		else {
 			System.out.println(ReleaseInfo.getReleaseInfo());
-			System.out.println("System properties" + Constants.NEWLINE + Utils.toStringML(System.getProperties()));
-			System.out.println("System environment" + Constants.NEWLINE + Utils.toStringML(System.getenv()));		
+			System.out.println("System properties" + Constants.NEWLINE + toStringML(System.getProperties()));
+			System.out.println("System environment" + Constants.NEWLINE + toStringML(System.getenv()));		
 		}	
 	}
+	
+	private String toStringML(Map map) {
+		StringBuffer buf = new StringBuffer();
+		buf.append("{");
+
+		Iterator<Map.Entry> i = map.entrySet().iterator();
+		boolean hasNext = i.hasNext();
+		while (hasNext) {
+			Map.Entry e = i.next();
+			Object key = e.getKey();
+			Object value = e.getValue();
+			if (key == map)
+				buf.append("(this Map)");
+			else
+				buf.append(key);
+			buf.append("=");
+			if (value == map)
+				buf.append("(this Map)");
+			else
+				buf.append(value);
+			hasNext = i.hasNext();
+			if (hasNext)
+				buf.append(Constants.NEWLINE);
+		}
+
+		buf.append("}");
+		return buf.toString();
+	}
+
 }

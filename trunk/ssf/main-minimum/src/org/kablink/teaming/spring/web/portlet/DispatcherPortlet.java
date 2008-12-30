@@ -32,7 +32,6 @@ import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.springframework.web.servlet.ViewRendererServlet;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.servlet.View;
 

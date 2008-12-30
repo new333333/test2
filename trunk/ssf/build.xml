@@ -97,6 +97,7 @@
 
 		<ant dir="applets" target="clean" />
 
+		<ant dir="main-minimum" target="clean" />
 		<ant dir="main" target="clean" />
 		<ant dir="slide-webdavclient" target="clean" />
 		<ant dir="portal-module" target="clean" />
@@ -132,6 +133,7 @@
 
 		<ant dir="applets" target="compile" inheritall="false"/>
 
+		<ant dir="main-minimum" target="compile" inheritall="false"/>
 		<ant dir="main" target="compile" inheritall="false"/>
 		<ant dir="slide-webdavclient" target="compile" inheritall="false"/>
 
@@ -161,6 +163,7 @@
 		<ant dir="applets" target="jar" inheritall="false"/>
 
 		<ant dir="main" target="compile-common" inheritall="false"/>
+		<ant dir="main-minimum" target="jar" inheritall="false"/>
 		<ant dir="main" target="jar" inheritall="false"/>
 		<ant dir="slide-webdavclient" target="jar" inheritall="false"/>
 		<ant dir="portal-module" target="jar" inheritall="false"/>
@@ -194,6 +197,7 @@
 
 		<ant dir="applets" target="deploy" />
 
+		<ant dir="main-minimum" target="deploy" />
 		<ant dir="main" target="deploy" />
 		<ant dir="slide-webdavclient" target="deploy" />
 		<ant dir="portal-module" target="deploy" />
@@ -227,6 +231,7 @@
 
 		<ant dir="applets" target="java2html" />
 
+		<ant dir="main-minimum" target="java2html" />
 		<ant dir="main" target="java2html" />
 		<ant dir="slide-webdavclient" target="java2html" />
 		<ant dir="portal-module" target="java2html" />
@@ -251,6 +256,7 @@
 		
 		<ant dir="applets" target="javadoc" />
 
+		<ant dir="main-minimum" target="javadoc" />
 		<ant dir="main" target="javadoc" />
 		<ant dir="slide-webdavclient" target="javadoc" />
 		<ant dir="portal-module" target="javadoc" />

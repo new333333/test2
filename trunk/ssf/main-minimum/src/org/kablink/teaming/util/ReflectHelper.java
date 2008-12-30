@@ -30,7 +30,6 @@ package org.kablink.teaming.util;
 
 import java.beans.Introspector;
 import java.lang.reflect.Method;
-import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.InternalException;
 /**
  * @author Jong Kim
@@ -51,7 +50,7 @@ public class ReflectHelper {
 			Class clazz = classForName(name);
 			return getInstance(clazz);
 		} catch (ClassNotFoundException e) {
-			throw new ConfigurationException("Class not found", e);
+			throw new InternalException(e);
 		}
 
 	}

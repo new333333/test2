@@ -29,46 +29,24 @@
 package org.kablink.teaming.liferaylight.portlet;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
-import javax.servlet.http.HttpServletRequest;
 
-import org.dom4j.Document;
-import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.comparator.PrincipalComparator;
-import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.portlet.forum.ViewController;
-import org.kablink.teaming.portletadapter.portlet.RenderRequestImpl;
-import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.util.LongIdUtil;
-import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
-import org.kablink.teaming.web.tree.WsDomTreeBuilder;
-import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PortletPreferencesUtil;
-import org.kablink.teaming.web.util.PortletRequestUtils;
-import org.kablink.teaming.web.util.RelevanceDashboardHelper;
-import org.kablink.util.BrowserSniffer;
-import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.mvc.AbstractController;
 
@@ -176,34 +154,34 @@ public class DeprecatedController extends AbstractController {
 		
 		//For liferay we use instances and the name will be changed slightly
 		//That is why we check for the name with contains
-		if (pName.contains(ViewController.FORUM_PORTLET))
-			return ViewController.FORUM_PORTLET;
-		else if (pName.contains(ViewController.WORKSPACE_PORTLET))
-			return ViewController.WORKSPACE_PORTLET;
-		else if (pName.contains(ViewController.PRESENCE_PORTLET))
-			return ViewController.PRESENCE_PORTLET;
-		else if (pName.contains(ViewController.BLOG_SUMMARY_PORTLET))
-			return ViewController.BLOG_SUMMARY_PORTLET;
-		else if (pName.contains(ViewController.GALLERY_PORTLET))
-			return ViewController.GALLERY_PORTLET;
-		else if (pName.contains(ViewController.GUESTBOOK_SUMMARY_PORTLET))
-			return ViewController.GUESTBOOK_SUMMARY_PORTLET;
-		else if (pName.contains(ViewController.TASK_SUMMARY_PORTLET))
-			return ViewController.TASK_SUMMARY_PORTLET;
-		else if (pName.contains(ViewController.SEARCH_PORTLET))
-			return ViewController.SEARCH_PORTLET;
-		else if (pName.contains(ViewController.TOOLBAR_PORTLET))
-			return ViewController.WORKAREA_PORTLET;
-		else if (pName.contains(ViewController.WIKI_PORTLET))
-			return ViewController.WIKI_PORTLET;
-		else if (pName.contains(ViewController.MOBILE_PORTLET))
-			return ViewController.MOBILE_PORTLET;
-		else if (pName.contains(ViewController.WORKAREA_PORTLET))
-			return ViewController.WORKAREA_PORTLET;
-		else if (pName.contains(ViewController.WELCOME_PORTLET))
-			return ViewController.WELCOME_PORTLET;
-		else if (pName.contains(ViewController.RELEVANCE_DASHBOARD_PORTLET))
-			return ViewController.RELEVANCE_DASHBOARD_PORTLET;
+		if (pName.contains(FORUM_PORTLET))
+			return FORUM_PORTLET;
+		else if (pName.contains(WORKSPACE_PORTLET))
+			return WORKSPACE_PORTLET;
+		else if (pName.contains(PRESENCE_PORTLET))
+			return PRESENCE_PORTLET;
+		else if (pName.contains(BLOG_SUMMARY_PORTLET))
+			return BLOG_SUMMARY_PORTLET;
+		else if (pName.contains(GALLERY_PORTLET))
+			return GALLERY_PORTLET;
+		else if (pName.contains(GUESTBOOK_SUMMARY_PORTLET))
+			return GUESTBOOK_SUMMARY_PORTLET;
+		else if (pName.contains(TASK_SUMMARY_PORTLET))
+			return TASK_SUMMARY_PORTLET;
+		else if (pName.contains(SEARCH_PORTLET))
+			return SEARCH_PORTLET;
+		else if (pName.contains(TOOLBAR_PORTLET))
+			return WORKAREA_PORTLET;
+		else if (pName.contains(WIKI_PORTLET))
+			return WIKI_PORTLET;
+		else if (pName.contains(MOBILE_PORTLET))
+			return MOBILE_PORTLET;
+		else if (pName.contains(WORKAREA_PORTLET))
+			return WORKAREA_PORTLET;
+		else if (pName.contains(WELCOME_PORTLET))
+			return WELCOME_PORTLET;
+		else if (pName.contains(RELEVANCE_DASHBOARD_PORTLET))
+			return RELEVANCE_DASHBOARD_PORTLET;
 		return null;
 	}
 

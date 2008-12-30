@@ -6,12 +6,12 @@
 	<!-- =========================== Basic Infrastructural Beans ========================== -->
 
 	<!-- Configurer that replaces ${...} placeholders with values from ssf 
-	     properties file(s) that are accessed through sPropsUtil bean. -->
+	     properties file(s) that are accessed through propsUtil bean. -->
 	<bean id="propertyPlaceholderConfigurer" 
 		class="org.kablink.teaming.spring.beans.factory.config.PropertyPlaceholderConfigurer" 
-		depends-on="sPropsUtil">	
+		depends-on="propsUtil">	
 		<!-- As explained above, this custom configurer gets properties values
-		     from SpropsUtil, NOT from the properties file specified below.
+		     from SPropsUtil, NOT from the properties file specified below.
 		     In other words, the following 'location' property is ignored,
 		     but nevertheless present here to satisfy initialization requirement. -->
 		<property name="location"><value>config/ssf.properties</value></property>								
@@ -42,9 +42,7 @@
 		<property name="suffix"><value>.jsp</value></property>
 	</bean>
 	
-	<bean id="nlt" class="org.kablink.teaming.util.NLT"/>
-		
-	<bean id="sPropsUtil" class="org.kablink.teaming.util.SPropsUtil">
+	<bean id="propsUtil" class="org.kablink.teaming.util.SPropsUtil">
 		<property name="config">
 			<bean class="org.kablink.teaming.util.PropertiesClassPathConfigFiles">
 				<property name="configFiles">
@@ -59,7 +57,7 @@
 	
 	<!-- ========================= Portlet Common Infrastructural Beans ======================== -->
 	
-	<bean id="localeResolver" class="org.kablink.teaming.portletadapter.support.UserLocaleResolver" />	
+	<bean id="localeResolver" class="org.kablink.teaming.portletadapter.support.RequestLocaleResolver" />	
 	
 	<!-- Portlet Parameter-based Mapping Interceptor -->
 	<bean id="portletParameterMappingInterceptor" class="org.springframework.web.portlet.handler.ParameterMappingInterceptor"/>
