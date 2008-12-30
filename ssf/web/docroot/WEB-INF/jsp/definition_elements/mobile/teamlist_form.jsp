@@ -50,6 +50,6 @@
 <div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
 <span><i><ssf:nlt tag="mobile.notSupported"/></i></span>
 <c:forEach var="teamItem" items="<%= teamListSet %>">
-	${teamItem.title}<br/>
+	<div style="margin-left:2em">${teamItem.title}</div>
 </c:forEach>
 </div>

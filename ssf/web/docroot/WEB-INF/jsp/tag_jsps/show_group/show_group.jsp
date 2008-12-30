@@ -52,9 +52,7 @@
 </c:if>
 <c:if test="${ssConfigJspStyle == 'mobile'}">
   <span class="${ss_showGroupTitleStyle}">${ss_showGroupGroup.title}</span>
-	<ul>
-		<c:forEach var="member" items="${ss_showGroupGroupMembers}" >
-			<li><ssf:showUser user="${member}" showPresence="${ss_showGroupShowPresence}"/></li>
-		</c:forEach>
-	</ul>
+	<c:forEach var="member" items="${ss_showGroupGroupMembers}" >
+		<div style="margin-left:2em"><ssf:showUser user="${member}" showPresence="${ss_showGroupShowPresence}"/></div>
+	</c:forEach>
 </c:if>
