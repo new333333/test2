@@ -371,7 +371,7 @@ a.ss_new_thread:hover {
 	width: 100%;
 	}
 /***********This is the style sub-group for the "Go boxes" ***********/
-#ss_goBox {
+.ss_goBox {
 /*	height:38px !important;		*/
 	<c:if test="<%= isIE %>">
 /*	height:38px !important;		*/
