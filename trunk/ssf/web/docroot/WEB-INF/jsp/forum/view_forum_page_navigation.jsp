@@ -48,7 +48,7 @@
 		<tbody>
 		<tr>
 			<td valign="middle" align="right" width="25%">
-			<div id="ss_goBox">
+			<div class="ss_goBox">
 			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
 				<tbody><tr>
 				<td class="ss_page_IE2" valign="middle">
@@ -165,7 +165,7 @@
 			</td>
 			<% // goto page option %>
 			<td valign="middle" width="25%">
-			<div id="ss_goBox">
+			<div class="ss_goBox">
 			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable" width="99%">
 				<tbody><tr>
 				<td class="ss_page_IE2" valign="middle">
