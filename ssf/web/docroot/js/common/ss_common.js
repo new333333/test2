@@ -3805,7 +3805,7 @@ function ss_fadeOutTableRow(rowId, divId) {
 	var divObj = self.document.getElementById(divId);
 	if (typeof rowObj == 'undefined' || typeof divObj == 'undefined') return;
 	if (divObj.visibility != 'hidden') {
-		dojo.fadeOut({node:divId, delay:600, onEnd: function() {
+		dojo.fadeOut({node:divId, delay:400, onEnd: function() {
 			var divObj = self.document.getElementById(divId);
 			var rowObj = ss_findOwningElement(divObj, "tr");
 			var tbodyObj = ss_findOwningElement(rowObj, "tbody");
