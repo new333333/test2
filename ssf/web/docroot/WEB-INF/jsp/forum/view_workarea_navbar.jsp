@@ -589,7 +589,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			      	action="view_ws_listing"
 			      	binderId="${ssUser.workspaceId}"/>"
               	><img src="<html:rootPath/>images/pics/masthead/ss_banner_guy.png" 
-              	  <ssf:alt tag=""/> width="30" height="34" border="0" align="absmiddle" 
+              	  <ssf:alt tag=""/> width="30" height="34" border="0" 
+              	  style="vertical-align:middle" 
               	 />&nbsp;&nbsp;<ssf:nlt tag="navigation.myWorkspace"/></a>
 
 			<!-- The help spot is positioned relative to the position of its parent. -->
