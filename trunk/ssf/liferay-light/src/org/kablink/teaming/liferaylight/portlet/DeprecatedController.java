@@ -28,15 +28,66 @@
  */
 package org.kablink.teaming.liferaylight.portlet;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletPreferences;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletRequest;
 
+import org.dom4j.Document;
+import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.comparator.PrincipalComparator;
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.portlet.forum.ViewController;
+import org.kablink.teaming.portletadapter.portlet.RenderRequestImpl;
+import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
+import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.tree.WsDomTreeBuilder;
+import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.PortletPreferencesUtil;
+import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.RelevanceDashboardHelper;
+import org.kablink.util.BrowserSniffer;
+import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.mvc.AbstractController;
 
 public class DeprecatedController extends AbstractController {
+	public static final String RELEVANCE_DASHBOARD_PORTLET="ss_relevance_dashboard";
+	public static final String BLOG_SUMMARY_PORTLET="ss_blog";
+	public static final String FORUM_PORTLET="ss_forum";
+	public static final String GALLERY_PORTLET="ss_gallery";
+	public static final String GUESTBOOK_SUMMARY_PORTLET="ss_guestbook";
+	public static final String TASK_SUMMARY_PORTLET="ss_task";
+	public static final String MOBILE_PORTLET="ss_mobile";
+	public static final String PRESENCE_PORTLET="ss_presence";
+	public static final String SEARCH_PORTLET="ss_search";
+	public static final String TOOLBAR_PORTLET="ss_toolbar";
+	public static final String WIKI_PORTLET="ss_wiki";
+	public static final String WORKSPACE_PORTLET="ss_workspacetree";
+	public static final String WORKAREA_PORTLET="ss_workarea";
+	public static final String ADMINISTRATION_PORTLET="ss_administration";
+	public static final String WELCOME_PORTLET="ss_welcome";
 
 	protected void handleActionRequestInternal(ActionRequest request,
 			ActionResponse response) throws Exception {
@@ -45,6 +96,115 @@ public class DeprecatedController extends AbstractController {
 
 	protected ModelAndView handleRenderRequestInternal(RenderRequest request,
 			RenderResponse response) throws Exception {
+		Map<String,Object> model = new HashMap<String,Object>();
+ 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+ 		PortletPreferences prefs = null;
+ 		try {
+ 			prefs = request.getPreferences();
+  		} catch(Exception e) {
+ 		}
+  		
+  		//Get the URL of the Teaming site
+  		String teamingUrl = SPropsUtil.getString("teaming.url", "");
+  		model.put("ssTeamingUrl", teamingUrl);
+ 		
+		String displayType = getDisplayType(request);
+		if (FORUM_PORTLET.equals(displayType)) {
+			//This is the portlet view; get the configured list of folders to show
+			String[] preferredBinderIds = new String[0];
+			if (prefs != null) preferredBinderIds = PortletPreferencesUtil.getValues(prefs, WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
+
+			//Build the jsp bean (sorted by folder title)
+			List<Long> binderIds = new ArrayList<Long>();
+			for (int i = 0; i < preferredBinderIds.length; i++) {
+				binderIds.add(new Long(preferredBinderIds[i]));
+			}
+			try {
+				response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
+			} catch(Exception e) {}
+			return new ModelAndView("bookmarks", model);
+			
+		} else if (WORKSPACE_PORTLET.equals(displayType)) {
+			return new ModelAndView("workspace_tree", model);
+			
+		} else if (WELCOME_PORTLET.equals(displayType)) {
+			return new ModelAndView("welcome", model);
+		    
+		} else if (PRESENCE_PORTLET.equals(displayType)) {
+ 			Set ids = new HashSet();		
+ 			if (prefs != null) {
+ 				ids.addAll(LongIdUtil.getIdsAsLongSet(PortletPreferencesUtil.getValue(prefs, WebKeys.PRESENCE_PREF_USER_LIST, "")));
+ 	 			ids.addAll(LongIdUtil.getIdsAsLongSet(PortletPreferencesUtil.getValue(prefs, WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
+ 			}
+			try {
+				response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
+			} catch(Exception e) {}
+  			model.put(WebKeys.USER_LIST, LongIdUtil.getIdsAsString(ids));
+  			return new ModelAndView("buddy_list", model);
+
+		} else if (TOOLBAR_PORTLET.equals(displayType) || WORKAREA_PORTLET.equals(displayType)) {
+ 			return new ModelAndView("teaming", model);
+
+		} else if (BLOG_SUMMARY_PORTLET.equals(displayType)) {
+			return new ModelAndView("blog", model);
+			
+		} else if (WIKI_PORTLET.equals(displayType)) {
+			return new ModelAndView("wiki", model);
+			
+		} else if (GUESTBOOK_SUMMARY_PORTLET.equals(displayType)) {
+			return new ModelAndView("guestbook", model);
+			
+		} else if (TASK_SUMMARY_PORTLET.equals(displayType)) {
+			return new ModelAndView("tasks", model);
+			
+		} else if (SEARCH_PORTLET.equals(displayType)) {
+			return new ModelAndView("search", model);
+			
+		} else if (GALLERY_PORTLET.equals(displayType)) {
+			return new ModelAndView("photo", model);
+			
+		} else if (ADMINISTRATION_PORTLET.equals(displayType)) {
+			return new ModelAndView("administration", model);
+		}
+
 		return new ModelAndView("deprecated");
 	}
+
+	public String getDisplayType(PortletRequest request) {
+		PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
+		String pName = pConfig.getPortletName();
+		
+		//For liferay we use instances and the name will be changed slightly
+		//That is why we check for the name with contains
+		if (pName.contains(ViewController.FORUM_PORTLET))
+			return ViewController.FORUM_PORTLET;
+		else if (pName.contains(ViewController.WORKSPACE_PORTLET))
+			return ViewController.WORKSPACE_PORTLET;
+		else if (pName.contains(ViewController.PRESENCE_PORTLET))
+			return ViewController.PRESENCE_PORTLET;
+		else if (pName.contains(ViewController.BLOG_SUMMARY_PORTLET))
+			return ViewController.BLOG_SUMMARY_PORTLET;
+		else if (pName.contains(ViewController.GALLERY_PORTLET))
+			return ViewController.GALLERY_PORTLET;
+		else if (pName.contains(ViewController.GUESTBOOK_SUMMARY_PORTLET))
+			return ViewController.GUESTBOOK_SUMMARY_PORTLET;
+		else if (pName.contains(ViewController.TASK_SUMMARY_PORTLET))
+			return ViewController.TASK_SUMMARY_PORTLET;
+		else if (pName.contains(ViewController.SEARCH_PORTLET))
+			return ViewController.SEARCH_PORTLET;
+		else if (pName.contains(ViewController.TOOLBAR_PORTLET))
+			return ViewController.WORKAREA_PORTLET;
+		else if (pName.contains(ViewController.WIKI_PORTLET))
+			return ViewController.WIKI_PORTLET;
+		else if (pName.contains(ViewController.MOBILE_PORTLET))
+			return ViewController.MOBILE_PORTLET;
+		else if (pName.contains(ViewController.WORKAREA_PORTLET))
+			return ViewController.WORKAREA_PORTLET;
+		else if (pName.contains(ViewController.WELCOME_PORTLET))
+			return ViewController.WELCOME_PORTLET;
+		else if (pName.contains(ViewController.RELEVANCE_DASHBOARD_PORTLET))
+			return ViewController.RELEVANCE_DASHBOARD_PORTLET;
+		return null;
+	}
+
 }
