@@ -402,7 +402,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 						
 				  <ssf:ifaccessible>
 							
-					<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}" >
+					<div class="ss_global_toolbar_search"  id="div_ss_simpleSearchForm${renderResponse.namespace}" >
 						  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="0" 
 				                offsetX="0" 
 						    	title="<ssf:nlt tag="helpSpot.searchButton"/>">
@@ -474,7 +474,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		
 		               		<ssf:ifaccessible>
 			  					<span style="padding-left:5px;">
-			  					<label for="ss_navbarFindPlacesButton${renderResponse.namespace}"><ssf:nlt tag="navigation.findUser"/></label>
+			  					<ssf:nlt tag="navigation.findUser"/>
 			  					</span>
 			  						<form method="post" id="ss_findUserForm${renderResponse.namespace}" 
 					  					name="ss_findUserForm${renderResponse.namespace}" 
@@ -513,7 +513,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 					<ssf:ifaccessible>
 					<div class="ss_searchtext">
 			  			<span style="padding-left:5px;">
-			  			<label for="ss_navbarFindPlacesButton${renderResponse.namespace}"><ssf:nlt tag="navigation.findPlace"/></label>
+			  			<ssf:nlt tag="navigation.findPlace"/>
 			  			</span>
 						<form method="post" id="ss_findPlacesForm${renderResponse.namespace}" 
 					  			name="ss_findPlacesForm${renderResponse.namespace}" 
@@ -553,7 +553,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 	                  </ssf:ifnotaccessible>				
 					  <ssf:ifaccessible> 
 						<span style="padding-left:5px;">
-							<label for="ss_navbarFindTagsButton${renderResponse.namespace}"><ssf:nlt tag="navigation.findTag"/></label>
+							<ssf:nlt tag="navigation.findTag"/>
 						</span>
 							<form method="post" id="ss_findTagsForm${renderResponse.namespace}" 
 					  			name="ss_findTagsForm${renderResponse.namespace}" 
