@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
+	<classpathentry kind="src" path="main-minimum/src"/>
 	<classpathentry kind="src" path="liferay-light/src"/>
 	<classpathentry kind="src" path="util-search/src"/>
 	<classpathentry kind="src" path="samples/portal/jsr168/src"/>
