@@ -46,11 +46,11 @@ import org.kablink.teaming.portletadapter.support.KeyNames;
 import org.kablink.teaming.portletadapter.support.PortletInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.servlet.ParamsWrappedHttpServletRequest;
-import org.kablink.teaming.web.servlet.SAbstractController;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
 
 
 /**
@@ -59,7 +59,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author jong
  *
  */
-public class PortletAdapterController extends SAbstractController {
+public class PortletAdapterController extends AbstractController {
 	
 	// This class overrides handleRequestInternal instead of handleRequestAfterValidation
 	// that regular controllers would normally extend. That is because this portletadapter

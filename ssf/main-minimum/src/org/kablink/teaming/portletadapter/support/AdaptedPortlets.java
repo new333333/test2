@@ -44,7 +44,6 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.kablink.teaming.SingletonViolationException;
-import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.portletadapter.portlet.PortletConfigImpl;
 import org.kablink.teaming.portletadapter.portlet.PortletContextImpl;
 import org.springframework.beans.factory.DisposableBean;

@@ -39,7 +39,7 @@ public class PropertyPlaceholderConfigurer
 
 	/**
 	 * Overrides super class's method so that it obtains properties from
-	 * the ssf properties file(s) accessed through SPropsUtil class.
+	 * the ssf properties file(s) accessed through SSPropsUtil class.
 	 * This effectively means that the properties files (if any) specified by
 	 * <code>setLocation</code> or <code>setLocations</code> method is ignored.
 	 */

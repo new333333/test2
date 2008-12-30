@@ -32,8 +32,6 @@ public interface Constants {
 
 	public static final String ID = "id";
 	
-	public static final String ANONYMOUS_USER_NAME = "anonymous";
-	
 	public static final String SLASH = "/";
 	
 	public static final String BACK_SLASH = "\\";
