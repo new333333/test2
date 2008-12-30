@@ -74,6 +74,12 @@
 	} else if (itemType.equals("user_list") || itemType.equals("userListSelectbox")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_user_list.jsp" %><%
 
+	} else if (itemType.equals("group_list")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_group_list.jsp" %><%
+
+	} else if (itemType.equals("team_list")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_team_list.jsp" %><%
+
 	} else if (itemType.equals("survey")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_survey.jsp" %><%
 
