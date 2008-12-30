@@ -1,0 +1,1 @@
+The Buddy List Portlet
