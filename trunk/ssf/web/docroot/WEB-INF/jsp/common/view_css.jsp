@@ -146,10 +146,10 @@ var ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
 <script type="text/javascript">
 </script>
 
-<link href="<html:rootPath/>css/forum.css" rel="stylesheet" type="text/css" >
-<link href="<html:rootPath/>css/slider_swing.css" rel="stylesheet" type="text/css" >
+<link href="<html:rootPath/>css/forum.css" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>css/slider_swing.css" rel="stylesheet" type="text/css" />
 <link href="<ssf:url webPath="viewCss"> <ssf:param name="theme" value="${ssUser.theme}"/>
-	    </ssf:url>" rel="stylesheet" type="text/css" >
+	    </ssf:url>" rel="stylesheet" type="text/css" />
 
 <script type="text/javascript">
 
