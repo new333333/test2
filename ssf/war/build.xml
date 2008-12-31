@@ -18,6 +18,7 @@
 	<target name="war" depends="clean">
 		
 		<copy todir="${temp.dir}/WEB-INF/lib">
+			<fileset dir="${project.dir}/main-minimum" includes="kablink-teaming-main-minimum.jar" />
 			<fileset dir="${project.dir}/main" includes="kablink-teaming-main.jar" />
 			<fileset dir="${project.dir}/util" includes="kablink-teaming-util.jar" />
 			<fileset dir="${project.dir}/util-search" includes="kablink-teaming-util-search.jar" />
