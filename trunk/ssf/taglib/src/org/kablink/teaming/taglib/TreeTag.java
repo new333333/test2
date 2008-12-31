@@ -507,9 +507,9 @@ public class TreeTag extends TagSupport {
 							classField = titleClass;
 						}
 						jspOut.print("<a "+classField+" "+targetField+" href=\"javascript: ;\" ");
-						jspOut.print("onClick=\"");
+						jspOut.print("onclick=\"");
 						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"', '"+showFullLineOnHover+"');return false;\" ");
-						jspOut.print("onDblClick=\"");
+						jspOut.print("ondblclick=\"");
 						jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"', '"+showFullLineOnHover+"');return false;\" ");
 						jspOut.print("style=\"text-decoration: none;\">");
 						jspOut.print("<img border=\"0\" alt=\"" +NLT.get("alt.toggleTree")+ "\" id=\"" + this.treeName + "join" + s_id + "\" class=\"");
@@ -535,9 +535,9 @@ public class TreeTag extends TagSupport {
 						String classField = "";
 						if (!className.equals("")) classField = "class=\""+className+"\"";
 						jspOut.print("<a "+classField+" "+targetField+" href=\"javascript: ;\" ");
-						jspOut.print("onClick=\"");
+						jspOut.print("onclick=\"");
 						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"', '"+showFullLineOnHover+"');return false;\" ");
-						jspOut.print("onDblClick=\"");
+						jspOut.print("ondblclick=\"");
 						jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"', '"+showFullLineOnHover+"');return false;\" ");
 						jspOut.print("style=\"text-decoration: none;\">");
 						jspOut.print("<img border=\"0\" alt=\"" +NLT.get("alt.toggleTree")+ "\" id=\"" + this.treeName + "join" + s_id + "\" class=\"");
@@ -595,7 +595,7 @@ public class TreeTag extends TagSupport {
 					}
 					jspOut.print("<a "+classField+" "+targetField+" href=\"" + ((s_url == null || "".equals(s_url))?"javascript: //;":s_url) + "\" ");
 					if (s_id != null && !s_id.equals("")) {
-						jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this,'"+action+"', '"+namespace+"');}\" ");
+						jspOut.print("onclick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this,'"+action+"', '"+namespace+"');}\" ");
 					}
 					if (this.showFullLineOnHover) {
 						jspOut.print(" title='"+s_text+"' ");
@@ -812,7 +812,7 @@ public class TreeTag extends TagSupport {
 				if (!className.equals("")) classField = "class=\"ss_twA " + className + "\"";
 				jspOut.print("<a "+classField+" "+targetField+" href=\"" + s_url + "\" ");
 				if (s_id != null && !s_id.equals("")) {
-					jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this,'"+action+"','"+namespace+"');}\" ");
+					jspOut.print("onclick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this,'"+action+"','"+namespace+"');}\" ");
 				}
 				if (this.showFullLineOnHover) {
 					jspOut.print(" title='"+s_text+"' ");
