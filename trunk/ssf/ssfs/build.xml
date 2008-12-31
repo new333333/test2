@@ -39,6 +39,14 @@
 			jarfile="${jar.file}"
 			update="true"
 		>
+			<fileset dir="${basedir}/../main-minimum/classes">
+				<include name="org/kablink/teaming/spring/web/util/Log4jConfigListener.class"/>
+			</fileset>
+		</jar>
+		<jar 
+			jarfile="${jar.file}"
+			update="true"
+		>
 			<fileset dir="${basedir}/../main/classes">
 	        	<include name="org/kablink/teaming/ssfs/CrossContextConstants.class"/>
 				<include name="org/kablink/teaming/ssfs/AlreadyExistsException.class"/>
@@ -49,7 +57,6 @@
 				<include name="org/kablink/teaming/ssfs/ZoneMismatchException.class"/>
 	        	<include name="org/kablink/teaming/web/util/AttributesAndParamsOnlyServletRequest.class"/>
 	        	<include name="org/kablink/teaming/web/util/NullServletResponse.class"/>
-	        	<include name="org/kablink/teaming/spring/web/util/Log4jConfigListener.class"/>
 			</fileset>
 		</jar>
 		<jar 
