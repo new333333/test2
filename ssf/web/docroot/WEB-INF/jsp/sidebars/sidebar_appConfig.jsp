@@ -53,30 +53,30 @@
 <script type="text/javascript">
 	<% /* Load the localized strings from the resource file. */ %>
 	var	g_appConfigStrings = new Array();
-		g_appConfigStrings["sidebar.appConfig.Banner"]						= "<ssf:nlt tag="sidebar.appConfig.Banner"/>";
-		g_appConfigStrings["sidebar.appConfig.Banner.Alt.Help"]				= "<ssf:nlt tag="sidebar.appConfig.Banner.Alt.Help"/>";
-		g_appConfigStrings["sidebar.appConfig.Button.Cancel"]				= "<ssf:nlt tag="sidebar.appConfig.Button.Cancel"/>";
-		g_appConfigStrings["sidebar.appConfig.Button.OK"]					= "<ssf:nlt tag="sidebar.appConfig.Button.OK"/>";
-		g_appConfigStrings["sidebar.appConfig.Caption"]						= "<ssf:nlt tag="sidebar.appConfig.Caption"/>";
-		g_appConfigStrings["sidebar.appConfig.Column.Application"]			= "<ssf:nlt tag="sidebar.appConfig.Column.Application"/>";
-		g_appConfigStrings["sidebar.appConfig.Column.Extension"]			= "<ssf:nlt tag="sidebar.appConfig.Column.Extension"/>";
-		g_appConfigStrings["sidebar.appConfig.Confirm.Overwrite"]			= "<ssf:nlt tag="sidebar.appConfig.Confirm.Overwrite"/>";
-		g_appConfigStrings["sidebar.appConfig.Error.ApplicationMissing"]	= "<ssf:nlt tag="sidebar.appConfig.Error.ApplicationMissing"/>";
-		g_appConfigStrings["sidebar.appConfig.Error.DuplicateExtension"]	= "<ssf:nlt tag="sidebar.appConfig.Error.DuplicateExtension"/>";
-		g_appConfigStrings["sidebar.appConfig.Error.NoDelete"]				= "<ssf:nlt tag="sidebar.appConfig.Error.NoDelete"/>";
-		g_appConfigStrings["sidebar.appConfig.Error.SelectAnExtension"]		= "<ssf:nlt tag="sidebar.appConfig.Error.SelectAnExtension"/>";
-		g_appConfigStrings["sidebar.appConfig.Info"]						= "<ssf:nlt tag="sidebar.appConfig.Info"/>";
-		g_appConfigStrings["sidebar.appConfig.Menu.Add"]					= "<ssf:nlt tag="sidebar.appConfig.Menu.Add"/>";
-		g_appConfigStrings["sidebar.appConfig.Menu.Alt.Close"]				= "<ssf:nlt tag="sidebar.appConfig.Menu.Alt.Close"/>";
-		g_appConfigStrings["sidebar.appConfig.Menu.Alt.Open"]				= "<ssf:nlt tag="sidebar.appConfig.Menu.Alt.Open"/>";
-		g_appConfigStrings["sidebar.appConfig.Menu.Delete"]					= "<ssf:nlt tag="sidebar.appConfig.Menu.Delete"/>";
-		g_appConfigStrings["sidebar.appConfig.Menu.Use"]					= "<ssf:nlt tag="sidebar.appConfig.Menu.Use"/>";
-		g_appConfigStrings["sidebar.appConfig.Menu.Use.MSO"]				= "<ssf:nlt tag="sidebar.appConfig.Menu.Use.MSO"/>";
-		g_appConfigStrings["sidebar.appConfig.Menu.Use.OO"]					= "<ssf:nlt tag="sidebar.appConfig.Menu.Use.OO"/>";
-		g_appConfigStrings["sidebar.appConfig.Menu.Use.SO"]					= "<ssf:nlt tag="sidebar.appConfig.Menu.Use.SO"/>";
-		g_appConfigStrings["sidebar.appConfig.Message.NoData"]				= "<ssf:nlt tag="sidebar.appConfig.Message.NoData"/>";
-		g_appConfigStrings["sidebar.appConfig.SelectAnExtension"]			= "<ssf:nlt tag="sidebar.appConfig.SelectAnExtension"/>";
-		g_appConfigStrings["sidebar.appConfig.Warning.DuplicateExtension"]	= "<ssf:nlt tag="sidebar.appConfig.Warning.DuplicateExtension"/>";
+		g_appConfigStrings["sidebar.appConfig.Banner"]						= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Banner"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Banner.Alt.Help"]				= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Banner.Alt.Help"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Button.Cancel"]				= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Button.Cancel"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Button.OK"]					= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Button.OK"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Caption"]						= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Caption"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Column.Application"]			= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Column.Application"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Column.Extension"]			= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Column.Extension"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Confirm.Overwrite"]			= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Confirm.Overwrite"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Error.ApplicationMissing"]	= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Error.ApplicationMissing"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Error.DuplicateExtension"]	= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Error.DuplicateExtension"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Error.NoDelete"]				= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Error.NoDelete"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Error.SelectAnExtension"]		= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Error.SelectAnExtension"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Info"]						= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Info"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Menu.Add"]					= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Menu.Add"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Menu.Alt.Close"]				= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Menu.Alt.Close"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Menu.Alt.Open"]				= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Menu.Alt.Open"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Menu.Delete"]					= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Menu.Delete"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Menu.Use"]					= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Menu.Use"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Menu.Use.MSO"]				= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Menu.Use.MSO"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Menu.Use.OO"]					= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Menu.Use.OO"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Menu.Use.SO"]					= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Menu.Use.SO"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Message.NoData"]				= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Message.NoData"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.SelectAnExtension"]			= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.SelectAnExtension"/></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.Warning.DuplicateExtension"]	= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Warning.DuplicateExtension"/></ssf:escapeJavaScript>";
 
 
 	<% /* Load the defined edit-in-place extensions from the */ %>
