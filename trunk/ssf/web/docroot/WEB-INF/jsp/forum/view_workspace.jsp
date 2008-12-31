@@ -119,10 +119,13 @@ var ss_workareaIframeOffset = 50;
 function ss_setWorkareaIframeSize${renderResponse.namespace}() {
 	var iframeDiv = document.getElementById('ss_workareaIframe${renderResponse.namespace}')
 	if (window.frames['ss_workareaIframe${renderResponse.namespace}'] != null) {
-		eval("var iframeHeight = parseInt(window.ss_workareaIframe${renderResponse.namespace}" + ".document.body.scrollHeight);")
-		if (iframeHeight > 100) {
-			iframeDiv.style.height = iframeHeight + ss_workareaIframeOffset + "px"
-		}
+		var iframeHeight = 0;
+		try {
+			eval("iframeHeight = parseInt(window.ss_workareaIframe${renderResponse.namespace}" + ".document.body.scrollHeight);")
+			if (iframeHeight > 100) {
+				iframeDiv.style.height = iframeHeight + ss_workareaIframeOffset + "px"
+			}
+		} catch(e) {}
 	}
 }
 ss_createOnResizeObj('ss_setWorkareaIframeSize${renderResponse.namespace}', ss_setWorkareaIframeSize${renderResponse.namespace});

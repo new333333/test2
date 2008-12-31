@@ -86,6 +86,10 @@ function ss_workarea_showPseudoPortal${renderResponse.namespace}(obj) {
 		ss_parentWorkareaNamespace${renderResponse.namespace} = windowName.substr("ss_workareaIframe".length)
 		ss_createOnResizeObj('ss_setParentWorkareaIframeSize${renderResponse.namespace}', ss_setParentWorkareaIframeSize${renderResponse.namespace});
 		ss_createOnLayoutChangeObj('ss_setParentWorkareaIframeSize${renderResponse.namespace}', ss_setParentWorkareaIframeSize${renderResponse.namespace});
+		ss_createOnLoadObj("ss_saveWindowHeight_${renderResponse.namespace}", ss_saveWindowHeight_${renderResponse.namespace});
+		ss_createOnResizeObj("ss_saveWindowHeight_${renderResponse.namespace}", ss_saveWindowHeight_${renderResponse.namespace});
+		ss_createOnLayoutChangeObj("ss_saveWindowHeight_${renderResponse.namespace}", ss_saveWindowHeight_${renderResponse.namespace});
+		
 	} else {
 		//Show the pseudo portal
 		var divObj = self.document.getElementById('ss_pseudoPortalDiv${renderResponse.namespace}');
@@ -101,11 +105,20 @@ function ss_workarea_showPseudoPortal${renderResponse.namespace}(obj) {
 	}
 }
 
+//This function sends window height to the server to be saved in the session
+
+function ss_saveWindowHeight_${renderResponse.namespace}() {
+	ss_saveWindowHeightInServer(document.body.scrollHeight, 'ss_communicationFrame' + ss_parentWorkareaNamespace${renderResponse.namespace});
+}
+
 function ss_setParentWorkareaIframeSize${renderResponse.namespace}() {
 	ss_debug('In routine: ss_setParentWorkareaIframeSize${renderResponse.namespace}')
 	if (typeof self.parent != "undefined") {
 		var resizeRoutineName = "ss_setWorkareaIframeSize" + ss_parentWorkareaNamespace${renderResponse.namespace};
-		eval("var resizeRoutineExists = typeof(self.parent."+resizeRoutineName+")");
+		var resizeRoutineExists = "undefined";
+		try {
+			eval("var resizeRoutineExists = typeof(self.parent."+resizeRoutineName+")");
+		} catch(e) {}
 		ss_debug('resizeRoutineExists = '+resizeRoutineExists)
 		if (resizeRoutineExists != "undefined") {
 			ss_debug('namespace = ${renderResponse.namespace}')
@@ -113,9 +126,11 @@ function ss_setParentWorkareaIframeSize${renderResponse.namespace}() {
 			eval("self.parent."+resizeRoutineName+"()");
 		} else {
 			//See if there is a common routine to call in case the namespaces don't match
-			if (typeof self.parent.ss_setWorkareaIframeSize != "undefined") {
-				self.parent.ss_setWorkareaIframeSize();
-			}
+			try {
+				if (typeof self.parent.ss_setWorkareaIframeSize != "undefined") {
+					self.parent.ss_setWorkareaIframeSize();
+				}
+			} catch(e) {}
 		}
 	}
 }

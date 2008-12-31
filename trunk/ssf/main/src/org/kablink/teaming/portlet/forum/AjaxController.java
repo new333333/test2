@@ -158,8 +158,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 	//caller will retry on OptimisiticLockExceptions
 	public void handleActionRequestWithRetry(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (WebHelper.isUserLoggedIn(request)) {
-			String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 			if (op.equals(WebKeys.OPERATION_SHOW_FOLDER_PAGE) || 
 					op.equals(WebKeys.OPERATION_SHOW_WIKI_FOLDER_PAGE)) {
 				ajaxSaveFolderPage(request, response);
@@ -228,11 +228,15 @@ public class AjaxController  extends SAbstractControllerRetry {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-
+		Map model = new HashMap();
+		Map statusMap = new HashMap();
+		
+		if (op.equals(WebKeys.OPERATION_SAVE_WINDOW_HEIGHT)) {
+			return ajaxSetWindowHeight(request, response);
+		} else if (op.equals(WebKeys.OPERATION_GET_WINDOW_HEIGHT)) {
+			return ajaxGetWindowHeight(request, response);
+		}
 		if (!WebHelper.isUserLoggedIn(request)) {
-			Map model = new HashMap();
-			Map statusMap = new HashMap();
-			
 			//Signal that the user is not logged in. 
 			//  The code on the calling page will output the proper translated message.
 			statusMap.put(WebKeys.AJAX_STATUS_NOT_LOGGED_IN, new Boolean(true));
@@ -458,7 +462,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return ajaxReturn(request, response);
 	} 
 
-
 	private void ajaxSaveFolderPage(ActionRequest request, ActionResponse response) throws Exception {
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		String pageStartIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_START_INDEX, "0");
@@ -625,6 +628,28 @@ public class AjaxController  extends SAbstractControllerRetry {
 					ObjectKeys.USER_PROPERTY_BUSINESS_CARD_PREFIX + scope, showBC);
 	}
 
+	private ModelAndView ajaxGetWindowHeight(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+		String windowHeight = (String)portletSession.getAttribute(WebKeys.WINDOW_HEIGHT, PortletSession.APPLICATION_SCOPE);
+		Map model = new HashMap();
+		model.put(WebKeys.WINDOW_HEIGHT, windowHeight);
+		response.setContentType("text/javascript");
+		return new ModelAndView("forum/window_height", model);
+	}
+	
+	private ModelAndView ajaxSetWindowHeight(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		String height = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+		String windowHeight = (String) portletSession.getAttribute(WebKeys.WINDOW_HEIGHT, PortletSession.APPLICATION_SCOPE);
+		portletSession.setAttribute(WebKeys.WINDOW_HEIGHT, height, PortletSession.APPLICATION_SCOPE);
+		Map model = new HashMap();
+		model.put(WebKeys.WINDOW_HEIGHT, windowHeight);
+		response.setContentType("text/html");
+		return new ModelAndView("forum/blank_return", model);
+	}
+	
 	private ModelAndView ajaxSetLastViewedBinder(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");

@@ -52,11 +52,10 @@ if (org.kablink.teaming.context.request.RequestContextHolder.getRequestContext()
 --%><ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter><%--
 --%><ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter><%--
 
+--%><% // Read the key "Teaming.Lang" from the properties file.  This will tell us %><%--
+--%><% // what language we are running in. %><%--
+--%><% request.setAttribute( "teamingLang", org.kablink.teaming.util.NLT.get( "Teaming.Lang" ) ); %><%--
+
+--%><% // Set up the path to the directory that holds the help html files. %><%--
+--%><c:set var="helpDocPath" value="${pageContext.request.contextPath}/help_doc/${teamingLang}" scope="application"/><%--
 --%>
-
-<% // Read the key "Teaming.Lang" from the properties file.  This will tell us %>
-<% // what language we are running in. %>
-<% request.setAttribute( "teamingLang", org.kablink.teaming.util.NLT.get( "Teaming.Lang" ) ); %>
-
-<% // Set up the path to the directory that holds the help html files. %>
-<c:set var="helpDocPath" value="${pageContext.request.contextPath}/help_doc/${teamingLang}" scope="application"/>
