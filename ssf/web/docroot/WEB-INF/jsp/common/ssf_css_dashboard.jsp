@@ -704,6 +704,7 @@ div.ss_canvas {
  	    padding:0px 10px 0px 10px;
  	</c:if>	
     list-style:none;
+    margin:0px;
       }
 #ss_tabsC li {
     display:inline;

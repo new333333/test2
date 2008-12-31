@@ -7780,6 +7780,24 @@ ss_FileUploadProgressBar.reloadProgressStatus = function(progressBar, url) {
 				preventCache: true
 	});
 }
+
+function ss_saveWindowHeightInServer(height, communicationIframeName) {
+	var urlParams = {operation:"save_window_height", operation2:height};
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
+
+	dojo.xhrGet({
+    	url: url,
+		error: function(err) {
+			alert(ss_not_logged_in);
+		},
+		load: function(data) {
+			//Signal that the iframe height in the portlet needs to be changed
+			parent.frames[communicationIframeName].location.href = ss_rootPath + 'js/forum/null.html?'+ ss_random++;
+		},
+		preventCache: true
+	});
+}
+
 dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
 dojo.require("dojo.io.iframe");

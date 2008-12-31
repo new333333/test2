@@ -75,7 +75,7 @@
 <% //Tabs %>
 
 <div id="ss_wrap" align="center">
-<div id="ss_tabsC">
+<div id="ss_tabsC" align="left">
   <ul>
 	<!-- CSS Tabs -->
 	<% /* If we don't have a current tab we should select the "Overview" tab as the default tab. */ %>
