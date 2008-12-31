@@ -59,7 +59,7 @@ var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
     <tr>
     <td>Debug window</td>
     <td align="right">
-      <a href="" onClick="ss_turnOffDebugMode();return false;">
+      <a href="" onclick="ss_turnOffDebugMode();return false;">
         <img <ssf:alt tag="alt.hide"/> border="0" src="<html:imagesPath/>pics/sym_s_delete.gif">
       </a>
     </td>
@@ -197,7 +197,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			      title="<ssf:nlt tag="helpSpot.myPortalButton" text="My Portal"/>">
 			  </ssHelpSpot>
 	          <a href="${ss_portalUrl}" 
-	            onClick="ss_workarea_showPortal${renderResponse.namespace}(this);return false;"
+	            onclick="ss_workarea_showPortal${renderResponse.namespace}(this);return false;"
 	            title="<ssf:nlt tag="navigation.goToPortalView"/>"
 	          ><ssf:nlt tag="navigation.portalView"/></a> | 
 	          <a
@@ -225,7 +225,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			    		<ssf:param name="newTab" value="1"/>
 						</ssf:url>"
 	 			  </c:if>
-	            onClick="ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(this);return false;"
+	            onclick="ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(this);return false;"
 	          title="<ssf:nlt tag="navigation.goToMaximizedView"/>"
               ><ssf:nlt tag="navigation.expandedView"/></a>
 		  </c:if>
@@ -237,7 +237,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			    <ssf:ifNotLoggedIn>
 				    <form method="post" id="ss_loginForm${renderResponse.namespace}" 
 				      action="" style="display:inline;"><a href="${ss_loginUrl}"
-				      onClick="return(ss_requestLogin(this, '${ssBinder.id}', '${ssUser.workspaceId}', '${ssUser.name}'));"
+				      onclick="return(ss_requestLogin(this, '${ssBinder.id}', '${ssUser.workspaceId}', '${ssUser.name}'));"
 				    ><span><ssf:nlt tag="login"/></span></a><input type="hidden" name="url" /></form>
 			    </ssf:ifNotLoggedIn>
 			  </c:if>
@@ -267,7 +267,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		          title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
 	        	<a title="<ssf:nlt tag="navigation.favorites"/>"
 		  			href="javascript: ;" 
-		  			onClick="ssMyTeams${renderResponse.namespace}.hide();ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
+		  			onclick="ssMyTeams${renderResponse.namespace}.hide();ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
 	              ><ssf:nlt tag="navigation.favorites"/>
 					<img border="0" src="<html:imagesPath/>pics/menudown.gif" 
 					<ssf:alt tag="alt.showMenu"/> style="padding-left: 2px;"/>
@@ -279,7 +279,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
         	<div id="ss_navbar_myteams${renderResponse.namespace}" style="display:inline;">
 			</div> 
         	<a title="<ssf:nlt tag="navigation.myTeams"/>"
-				  href="javascript:;" onClick="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();ssMyTeams${renderResponse.namespace}.show();"
+				  href="javascript:;" onclick="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();ssMyTeams${renderResponse.namespace}.show();"
 				    ><ssf:nlt tag="navigation.myTeams"/>
 				<img border="0" src="<html:imagesPath/>pics/menudown.gif" 
 				<ssf:alt tag="alt.showMenu"/> style="padding-left: 2px;"/> 
@@ -646,7 +646,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 	  	<img <ssf:alt tag="favorites.addCurrentPage"/>
 	  	  src="<html:brandedImagesPath/>icons/button_new_bookmark.gif" border="0" />
 			<a href="javascript: ;" 
-			 onClick="ssMyFavorites${renderResponse.namespace}.addBinderToFavorites('<ssf:url 
+			 onclick="ssMyFavorites${renderResponse.namespace}.addBinderToFavorites('<ssf:url 
 			    adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true" >
 				<ssf:param name="operation" value="add_favorite_binder" />
 				<ssf:param name="binderId" value="${ssBinder.id}" />
@@ -660,7 +660,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
   		<img <ssf:alt tag="favorites.edit"/> 
   		  src="<html:brandedImagesPath/>icons/button_edit_bookmark.gif" border="0" />
 		<a href="javascript: ;" 
-		 onClick="ssMyFavorites${renderResponse.namespace}.showhideFavoritesEditor()"
+		 onclick="ssMyFavorites${renderResponse.namespace}.showhideFavoritesEditor()"
 		><span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.edit" text="Edit Favorites"/></span></a>
   	  </div>
 	  <hr style="width: 90%" class="ss_att_divider"/>
@@ -674,18 +674,18 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		<tbody>
 		<tr>
 		  <td>
-			<a class="ss_inlineButton" onClick="ssMyFavorites${renderResponse.namespace}.moveSelectedFavorites('down')"
+			<a class="ss_inlineButton" onclick="ssMyFavorites${renderResponse.namespace}.moveSelectedFavorites('down')"
 			><img <ssf:alt tag="favorites.movedown"/> src="<html:imagesPath/>icons/button_move_down.gif" 
 			/><span><ssf:nlt tag="favorites.movedown"/></span></a>
 	  	  </td>	
 		  <td>		
-			<a class="ss_inlineButton" onClick="ssMyFavorites${renderResponse.namespace}.moveSelectedFavorites('up')"
+			<a class="ss_inlineButton" onclick="ssMyFavorites${renderResponse.namespace}.moveSelectedFavorites('up')"
 			><img <ssf:alt tag="favorites.moveup"/> src="<html:imagesPath/>icons/button_move_up.gif" 
 			/><span><ssf:nlt tag="favorites.moveup"/></span></a>
 	  	  </td>
 		  <td>
 			
-			<a class="ss_inlineButton" onClick="ssMyFavorites${renderResponse.namespace}.deleteSelectedFavorites()"
+			<a class="ss_inlineButton" onclick="ssMyFavorites${renderResponse.namespace}.deleteSelectedFavorites()"
 			><img <ssf:alt tag="favorites.delete"/> src="<html:imagesPath/>icons/button_delete.gif" 
 			/><span><ssf:nlt tag="favorites.delete"/></span></a>
 		  </td>
@@ -695,7 +695,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
         </div>
 	    <div style="padding: 3px 0px 0px 135px; width: 40px;">
 			<a class="ss_inlineButton" href="javascript: ;" 
-			 onClick="ssMyFavorites${renderResponse.namespace}.saveFavorites()"
+			 onclick="ssMyFavorites${renderResponse.namespace}.saveFavorites()"
 			><span><ssf:nlt tag="button.ok"/></span></a>
 	    </div>
 
