@@ -4,6 +4,8 @@
 
 	<import file="${project.dir}/build-common.xml"/>
 	
+	<property name="main.minimum.project.dir" value="${project.dir}/main-minimum" />
+	<property name="main.minimum.classes.dir" value="${main.minimum.project.dir}/${classes.dir}" />
 	<property name="main.project.dir" value="${project.dir}/main" />
 	<property name="main.classes.dir" value="${main.project.dir}/${classes.dir}" />
 	<property name="main.hibernate.dir" value="${main.project.dir}/hibernate" />
@@ -39,7 +41,8 @@
   	<target name="generate-create-tables-script" depends="init-database-type"
   		description="Generate sql script used for creating tables in sitescape database.">
 		<path id="initpath">
- 			<pathelement location="${main.classes.dir}"/>
+			<pathelement location="${main.minimum.classes.dir}"/>
+			<pathelement location="${main.classes.dir}"/>
 			<fileset dir="${project.dir}/util" includes="*.jar"/>
 			<fileset dir="${project.dir}/lib" includes="*.jar" />
 		</path>
@@ -304,7 +307,8 @@
 
  		<path id="initpath">
  			<path refid="project.classpath"/>
- 			<pathelement location="${main.classes.dir}"/>
+			<pathelement location="${main.minimum.classes.dir}"/>
+			<pathelement location="${main.classes.dir}"/>
 			<fileset dir="${project.dir}/util" includes="*.jar"/>
 			<fileset dir="${project.dir}/lib" includes="*.jar" />
 		</path>
