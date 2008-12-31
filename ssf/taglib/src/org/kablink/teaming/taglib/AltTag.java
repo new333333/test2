@@ -54,7 +54,7 @@ public class AltTag extends BodyTagSupport implements ParamAncestorTag {
     private String text;
     private Boolean checkIfTag;
 	private List _values;
-	private String attName = "ALT";
+	private String attName = "alt";
     
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -104,7 +104,7 @@ public class AltTag extends BodyTagSupport implements ParamAncestorTag {
 			checkIfTag = null;
 			text = null;
 			tag = null;
-			attName = "ALT";
+			attName = "alt";
 		}
 	    
 		return EVAL_PAGE;
