@@ -49,6 +49,4 @@
 
 	<bean id="portletAdapter" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portletadapter.servlet.PortletAdapterController"/>
 
-	<bean id="portletUrlToStringHelper" class="org.kablink.teaming.portletadapter.PortletUrlToStringHelper"/>
-
 </beans>

@@ -83,4 +83,6 @@
 		</property>
 	</bean>
 	
+	<bean id="portletUrlToStringHelper" class="org.kablink.teaming.portletadapter.NullPortletUrlToStringHelper"/>
+	
 </beans>

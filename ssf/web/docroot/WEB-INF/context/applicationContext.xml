@@ -342,6 +342,8 @@
 		<property name="profileModule"><ref local="profileModule"/></property>
 	</bean>	
 
+	<bean id="portletUrlToStringHelper" class="org.kablink.teaming.portletadapter.PortletUrlToStringHelper"/>
+
 	<!-- ============================ Indexing/Search Service =========================== -->
 	
 	<bean id="luceneSessionFactory" class = "org.kablink.teaming.search.local.LocalLuceneSessionFactory" depends-on="sPropsUtil">
