@@ -101,7 +101,7 @@ public class FileOpen extends JApplet implements Runnable {
                             command[2] = "start " + strEditorType[i];
                             command[3] = strURL;
                             //System.out.println("command: "+ command[0] + " " + command[1] + " " + command[2] + " " + command[3]);
-                        } else if (strOperatingSystem.equalsIgnoreCase("linux")) {
+                        } else if (strOperatingSystem.equalsIgnoreCase("linux") || strOperatingSystem.equalsIgnoreCase("mac")) {
                         	command =  new String[3];
                             command[0] = "bash";
                             command[1] = "-c";
