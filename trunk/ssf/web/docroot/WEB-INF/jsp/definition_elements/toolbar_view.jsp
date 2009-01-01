@@ -167,12 +167,12 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
                         --%> target="_blank"<%--
                     --%></c:if><%--
 
-                    --%><c:if test="${empty toolbarMenuCategoryItem.value.qualifiers.onclick}"><%--
+                    --%><c:if test="${empty toolbarMenuCategoryItem.value.qualifiers.onClick}"><%--
                         --%> onclick="${spin} return(ss_openUrlInPortlet(this.href, ${popup}, '${popupWidth}', '${popupHeight}'));"><%--
                    --%></c:if><%--
 
-                    --%><c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.onclick}"><%--
-                       --%> onclick="${spin} ${toolbarMenuCategoryItem.value.qualifiers.onclick}"><%--
+                    --%><c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.onClick}"><%--
+                       --%> onclick="${spin} ${toolbarMenuCategoryItem.value.qualifiers.onClick}"><%--
                     --%></c:if><%--
                 
                     --%><span<%--
@@ -245,7 +245,7 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
                         --%> folder="<c:out value="${toolbarMenu.value.qualifiers.folder}" />"<%--
                         --%> target="_blank"<%--
                     --%></c:if><%--
-                    --%><c:if test="${!empty spin and empty toolbarMenu.value.qualifiers.onclick}"><%--
+                    --%><c:if test="${!empty spin and empty toolbarMenu.value.qualifiers.onClick}"><%--
                         --%> onclick="${spin}"<%--
                     --%></c:if><%--
                     --%><c:if test="${!empty toolbarMenu.value.qualifiers.folder}"><%--
@@ -259,7 +259,7 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
                         --%> folder="<c:out value="${toolbarMenu.value.qualifiers.folder}" />"<%--
                         --%> target="_blank"<%--
                     --%></c:if><%--
-                    --%><c:if test="${empty toolbarMenu.value.qualifiers.onclick}"><%--
+                    --%><c:if test="${empty toolbarMenu.value.qualifiers.onClick}"><%--
                         --%><c:if test="${!empty toolbarMenu.value.qualifiers.popup}"><%--
                             --%><c:set var="popupWidth" value="${toolbarMenu.value.qualifiers.popupWidth}"/><%--
                             --%><c:set var="popupHeight" value="${toolbarMenu.value.qualifiers.popupHeight}"/><%--
@@ -269,8 +269,8 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
                              --%> onclick="${spin}"<%--
                          --%></c:if><%--
                     --%></c:if><%--
-                    --%><c:if test="${!empty toolbarMenu.value.qualifiers.onclick}"><%--
-                        --%> onclick="${spin} ${toolbarMenu.value.qualifiers.onclick}"<%--
+                    --%><c:if test="${!empty toolbarMenu.value.qualifiers.onClick}"><%--
+                        --%> onclick="${spin} ${toolbarMenu.value.qualifiers.onClick}"<%--
                     --%></c:if><%--
                     --%>><%--
                     --%><span<%--
@@ -315,15 +315,15 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
                        --%> folder="<c:out value="${toolbarMenu.value.qualifiers.folder}" />"<%--
                        --%> target="_blank"<%--
                    --%></c:if><%--
-                   --%><c:if test="${empty toolbarMenu.value.qualifiers.onclick}"><%--
+                   --%><c:if test="${empty toolbarMenu.value.qualifiers.onClick}"><%--
                        --%><c:if test="${!empty toolbarMenu.value.qualifiers.popup}"><%--
                            --%><c:set var="popupWidth" value="${toolbarMenu.value.qualifiers.popupWidth}"/><%--
                            --%><c:set var="popupHeight" value="${toolbarMenu.value.qualifiers.popupHeight}"/><%--
                            --%> onclick="ss_toolbarPopupUrl(this.href, '_blank', '${popupWidth}', '${popupHeight}');return false;"<%--
                        --%></c:if><%--
                    --%></c:if><%--
-                   --%><c:if test="${!empty toolbarMenu.value.qualifiers.onclick}"><%--
-                       --%> onclick="${spin} ${toolbarMenu.value.qualifiers.onclick}"<%--
+                   --%><c:if test="${!empty toolbarMenu.value.qualifiers.onClick}"><%--
+                       --%> onclick="${spin} ${toolbarMenu.value.qualifiers.onClick}"<%--
                    --%></c:if><%--
                    --%>><span<%--
                    --%><c:if test="${!empty toolbarMenu.value.qualifiers.textId}"><%--
