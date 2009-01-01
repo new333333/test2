@@ -35,14 +35,9 @@
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="showWorkspacePage" value="true"/>
-<ssf:ifnotadapter>
-  <c:set var="showWorkspacePage" value="false"/>
-</ssf:ifnotadapter>
 
-<ssf:ifadapter>
 <body class="ss_style_body tundra">
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
-</ssf:ifadapter>
 <ssf:ifLoggedIn><c:if test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
   <a class="ss_skiplink" href="${ss_accessibleUrl}"><img border="0"
     <ssf:alt tag="accessible.enableAccessibleMode"/> 
@@ -97,67 +92,12 @@ function ss_workarea_showId${renderResponse.namespace}(id, action, entryId) {
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
 	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-<ssf:ifnotadapter>
-	var iframeDivObj = document.getElementById('ss_workareaIframe${renderResponse.namespace}')
-	if (iframeDivObj != null) {
-		iframeDivObj.src = url;
-	} else {
-		return true;
-	}
-</ssf:ifnotadapter>
-<ssf:ifadapter>
 	self.location.href = url;
-</ssf:ifadapter>
 	return false;
 }
 if (typeof ss_workarea_showId == "undefined") 
 	ss_workarea_showId = ss_workarea_showId${renderResponse.namespace};
 </script>
-<ssf:ifnotadapter>
-<script type="text/javascript">
-var ss_workareaIframeOffset = 50;
-function ss_setWorkareaIframeSize${renderResponse.namespace}() {
-	var iframeDiv = document.getElementById('ss_workareaIframe${renderResponse.namespace}')
-	if (window.frames['ss_workareaIframe${renderResponse.namespace}'] != null) {
-		var iframeHeight = 0;
-		try {
-			eval("iframeHeight = parseInt(window.ss_workareaIframe${renderResponse.namespace}" + ".document.body.scrollHeight);")
-			if (iframeHeight > 100) {
-				iframeDiv.style.height = iframeHeight + ss_workareaIframeOffset + "px"
-			}
-		} catch(e) {}
-	}
-}
-ss_createOnResizeObj('ss_setWorkareaIframeSize${renderResponse.namespace}', ss_setWorkareaIframeSize${renderResponse.namespace});
-ss_createOnLayoutChangeObj('ss_setWorkareaIframeSize${renderResponse.namespace}', ss_setWorkareaIframeSize${renderResponse.namespace});
-
-//If this is the first definition of ss_setWorkareaIframeSize, remember its name in case we need to find it later
-if (typeof ss_setWorkareaIframeSize == "undefined") 
-	var ss_setWorkareaIframeSize = ss_setWorkareaIframeSize${renderResponse.namespace};
-
-var ss_portal_view_normal_url${renderResponse.namespace} = "<ssf:url windowState="normal"/>";
-var ss_portal_view_maximized_url${renderResponse.namespace} = "<ssf:url windowState="maximized"/>";
-var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
-</script>
-<iframe id="ss_workareaIframe${renderResponse.namespace}" 
-    name="ss_workareaIframe${renderResponse.namespace}" 
-    style="width:100%; height:400px; display:block; position:relative;"
-	src="<ssf:url     
-    		adapter="true" 
-    		portletName="ss_forum" 
-    		binderId="${ssBinder.id}" 
-    		action="view_ws_listing" 
-    		actionUrl="false" >
-        <ssf:param name="namespace" value="${renderResponse.namespace}"/>
-        </ssf:url>" 
-	onLoad="ss_setWorkareaIframeSize${renderResponse.namespace}();" 
-	frameBorder="0" >xxx</iframe>
-
-<!-- portlet iframe div -->
-<%@ include file="/WEB-INF/jsp/entry/view_iframe_div.jsp" %>
-<!-- portlet iframe div -->	
-
-</ssf:ifnotadapter>
 
 <c:if test="${showWorkspacePage}">
 	<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />

@@ -84,11 +84,9 @@ function ss_workarea_showPseudoPortal${renderResponse.namespace}(obj) {
 	if (windowName.indexOf("ss_workareaIframe") == 0) {
 		//We are running inside a portlet iframe; set up for layout changes
 		ss_parentWorkareaNamespace${renderResponse.namespace} = windowName.substr("ss_workareaIframe".length)
+		ss_createOnLoadObj("ss_setParentWorkareaIframeSize${renderResponse.namespace}", ss_setParentWorkareaIframeSize${renderResponse.namespace});
 		ss_createOnResizeObj('ss_setParentWorkareaIframeSize${renderResponse.namespace}', ss_setParentWorkareaIframeSize${renderResponse.namespace});
 		ss_createOnLayoutChangeObj('ss_setParentWorkareaIframeSize${renderResponse.namespace}', ss_setParentWorkareaIframeSize${renderResponse.namespace});
-		ss_createOnLoadObj("ss_saveWindowHeight_${renderResponse.namespace}", ss_saveWindowHeight_${renderResponse.namespace});
-		ss_createOnResizeObj("ss_saveWindowHeight_${renderResponse.namespace}", ss_saveWindowHeight_${renderResponse.namespace});
-		ss_createOnLayoutChangeObj("ss_saveWindowHeight_${renderResponse.namespace}", ss_saveWindowHeight_${renderResponse.namespace});
 		
 	} else {
 		//Show the pseudo portal
@@ -130,7 +128,10 @@ function ss_setParentWorkareaIframeSize${renderResponse.namespace}() {
 				if (typeof self.parent.ss_setWorkareaIframeSize != "undefined") {
 					self.parent.ss_setWorkareaIframeSize();
 				}
-			} catch(e) {}
+			} catch(e) {
+				//If all else fails, use the slower method of passing the height through the server
+				ss_saveWindowHeight_${renderResponse.namespace}();
+			}
 		}
 	}
 }
