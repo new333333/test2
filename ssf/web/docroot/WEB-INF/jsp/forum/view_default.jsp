@@ -36,7 +36,7 @@
 <span class="ss_bold"><ssf:nlt tag="binder.noDefinition"/></span>
 </div>
 <div id="ss_whatsNewDiv${ss_namespace}">
-<c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
+<c:if test="${ss_type == 'whatsNew' || ss_type == 'unseen'}">
 <jsp:include page="/WEB-INF/jsp/forum/whats_new_page.jsp" />
 </c:if>
 </div>
