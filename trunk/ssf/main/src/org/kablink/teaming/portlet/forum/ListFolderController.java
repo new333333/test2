@@ -76,6 +76,7 @@ public class ListFolderController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		Long binderId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		response.setRenderParameters(request.getParameterMap());
 		if (op.equals(WebKeys.OPERATION_SET_DISPLAY_STYLE)) {
 			Map<String,Object> updates = new HashMap<String,Object>();
@@ -91,6 +92,13 @@ public class ListFolderController extends  SAbstractController {
 		} else if (op.equals(WebKeys.OPERATION_SELECT_FILTER)) {
 			getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_USER_FILTER, 
 					PortletRequestUtils.getStringParameter(request, WebKeys.OPERATION_SELECT_FILTER,""));
+			if (op2.equals("global")) {
+				getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE, 
+						ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL);
+			} else {
+				getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE, 
+						ObjectKeys.USER_PROPERTY_USER_FILTER_PERSONAL);
+			}
 			response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_COLUMNS)) {
 			if (formData.containsKey("okBtn")) {
