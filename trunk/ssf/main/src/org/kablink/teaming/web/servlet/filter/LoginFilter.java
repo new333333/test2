@@ -88,6 +88,7 @@ public class LoginFilter  implements Filter {
 				handleGuestAccess(req, res, chain);
 			}
 			else {
+				// User is logged in as regular user. Proceed as normal.
 				String url = req.getQueryString();
 				String redirectUrl = url;
 				if (url != null) { 
@@ -97,9 +98,7 @@ public class LoginFilter  implements Filter {
 						return;
 					}
 				}
-
-				// User is logged in as regular user. Proceed as normal.
-				req.setAttribute("referer", req.getQueryString());
+				req.setAttribute("referer", url);
 				chain.doFilter(request, response);
 				
 			}
@@ -110,7 +109,7 @@ public class LoginFilter  implements Filter {
 	}
 
 	protected void handleGuestAccess(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
-		if(isPathPermittedUnauthenticated(req.getPathInfo())) {
+		if(isPathPermittedUnauthenticated(req.getPathInfo()) || isActionPermittedUnauthenticated(req.getParameter("action"))) {
 			chain.doFilter(req, res);										
 		}
 		else {				
