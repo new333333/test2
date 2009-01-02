@@ -382,6 +382,10 @@ public class SearchFilterRequestParser {
 		if (filterName != null && !filterName.equals("")) {
 			searchFilter.addFilterName(filterName);
 		}
+		String global = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterGlobalField, "");
+		if (global != null && global.equals("on")) {
+			searchFilter.addGlobal();
+		}
 	}
 
 	private void parseItemTypes(PortletRequest request, SearchFilter searchFilter) {

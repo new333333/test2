@@ -57,10 +57,13 @@ public class SearchFilterKeys {
 	public final static String FilterCreatorTitle = "creatorTitle";	
    	public final static String FilterRootName = "searchFilter";
    	public final static String FilterName = "filterName";
+   	public final static String FilterGlobal = "filterGlobal";
 	
 	
 //	//formData fields and values
 	public final static String FilterNameField = "filterName";
+	public final static String FilterGlobalField = "global";
+	public final static String FilterGlobalFieldIsGlobal = "true";
 //	
 	public final static String FilterEntryDefLength = "ss_entry_def_length_hidden";
 	public final static String FilterEntryDefIdField = "ss_entry_def_id";

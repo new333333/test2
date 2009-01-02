@@ -45,6 +45,11 @@ function checkFilterForm(obj) {
 		if (!confirm("<ssf:nlt tag="filter.confirmDelete"
 		/>\n" + document.forms.filterData.selectedSearchFilter.value)) return false;
 	}
+	if (ss_buttonSelected == 'deleteGlobal' && 
+			document.forms.filterData.selectedSearchFilterGlobal.value != "") {
+		if (!confirm("<ssf:nlt tag="filter.confirmDelete"
+		/>\n" + document.forms.filterData.selectedSearchFilterGlobal.value)) return false;
+	}
 	return true;
 }
 
@@ -75,6 +80,7 @@ function checkFilterForm(obj) {
 	  <table class="ss_style">
 	  <tr>
 	  <td valign="top">
+	    <span class="ss_labelAbove"><ssf:nlt tag="filter.personalFilters"/></span>
 	    <select name="selectedSearchFilter">
 	      <option value=""><ssf:nlt tag="filter.selectFilter"/></option>
 	      <c:forEach var="searchFilter" items="${ss_searchFilters}">
@@ -88,6 +94,31 @@ function checkFilterForm(obj) {
 	      value="<ssf:nlt tag="button.modify" text="Modify"/>">
 	    <br>
 	    <input type="submit" class="ss_submit" name="deleteBtn"  onClick="ss_buttonSelect('delete');"
+	      value="<ssf:nlt tag="button.delete" text="Delete"/>">
+	  </td>
+	  </tr>
+	  </table>
+	</c:if>
+	<br>
+	<br>
+	<c:if test="${!empty ss_searchFiltersGlobal}">
+	  <table class="ss_style">
+	  <tr>
+	  <td valign="top">
+	    <span class="ss_labelAbove"><ssf:nlt tag="filter.globalFilters"/></span>
+	    <select name="selectedSearchFilterGlobal">
+	      <option value=""><ssf:nlt tag="filter.selectFilter"/></option>
+	      <c:forEach var="searchFilter" items="${ss_searchFiltersGlobal}">
+	        <option value="<c:out value="${searchFilter.key}" 
+	          escapeXml="true"/>"><c:out value="${searchFilter.key}" escapeXml="true"/></option>
+	      </c:forEach>
+	    </select>
+	  </td>
+	  <td valign="top">
+	    <input type="submit" class="ss_submit" name="modifyBtnGlobal"  onClick="ss_buttonSelect('modify');"
+	      value="<ssf:nlt tag="button.modify" text="Modify"/>">
+	    <br>
+	    <input type="submit" class="ss_submit" name="deleteBtnGlobal"  onClick="ss_buttonSelect('deleteGlobal');"
 	      value="<ssf:nlt tag="button.delete" text="Delete"/>">
 	  </td>
 	  </tr>

@@ -168,6 +168,7 @@ public interface ObjectKeys {
     public static final long SEEN_TIMEOUT_DAYS = (long)30;  //entries older than 30 days are marked seen
     public static final long SEEN_MAP_TIMEOUT = (long)SEEN_TIMEOUT_DAYS*24*60*60*1000;  //older than 30 days return seen
     
+    public static final String BINDER_PROPERTY_FILTERS = "binderFilters";
     public static final String BINDER_PROPERTY_FOLDER_COLUMNS = "folderColumns";
     public static final String BINDER_PROPERTY_TEAM_MEMBERS = "teamMembers";
     public static final String BINDER_PROPERTY_WIKI_HOMEPAGE = "wikiHomepage";
@@ -288,6 +289,9 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_SEARCH_FILTERS_V1 = "searchFilters";//obsolete
     public static final String USER_PROPERTY_SEARCH_FILTERS = "searchFilterMap";
     public static final String USER_PROPERTY_USER_FILTER = "userFilter";
+    public static final String USER_PROPERTY_USER_FILTER_GLOBAL = "global";
+    public static final String USER_PROPERTY_USER_FILTER_PERSONAL = "personal";
+    public static final String USER_PROPERTY_USER_FILTER_SCOPE = "userFilterScope";
     public static final String USER_PROPERTY_APPCONFIGS = "userAppConfigs";
     public static final String USER_PROPERTY_FAVORITES = "userFavorites";
     public static final String USER_PROPERTY_FOLDER_COLUMNS = "userFolderColumns";

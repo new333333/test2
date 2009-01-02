@@ -444,6 +444,11 @@ public class SearchFilter {
 		filterNameEle.setText(name);
 	}
 	
+	public void addGlobal () {
+		Element filterNameEle = sfRoot.addElement(SearchFilterKeys.FilterGlobal);
+		filterNameEle.setText(SearchFilterKeys.FilterGlobalFieldIsGlobal);
+	}
+	
 	public void addTextFilter(String searchText) {
 		addTermInCurrentFilter(SearchFilterKeys.FilterTypeSearchText, searchText);
 	}
@@ -972,6 +977,27 @@ public class SearchFilter {
 			return null;
 		}
 		return filterName.getText();
+	}
+
+	/**
+	 * Check if a filter is global.
+	 * 
+	 * @param searchFilter <code>null</code> if search filter has no name or given document is <code>null</code>
+	 * @return
+	 */
+	public static boolean checkIfFilterGlobal(Document searchFilter) {
+		if (searchFilter == null) {
+			return false;
+		}
+		Element sfRoot = searchFilter.getRootElement();
+		if (sfRoot == null) {
+			return false;
+		}
+		Element filterGlobal = sfRoot.element(SearchFilterKeys.FilterGlobal);
+		if (filterGlobal == null) {
+			return false;
+		}
+		return true;
 	}
 
 	/**

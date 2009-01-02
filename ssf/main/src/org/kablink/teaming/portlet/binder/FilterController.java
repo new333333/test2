@@ -44,6 +44,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
 import org.kablink.teaming.search.filter.SearchFilterToMapConverter;
@@ -72,13 +73,23 @@ public class FilterController extends AbstractBinderController {
 			SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, getDefinitionModule());
 			Document searchFilter = requestParser.getSearchQuery();
 			if (searchFilter != null) {
-				UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-				Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
-				if (searchFilters == null) searchFilters = new HashMap();
-				searchFilters.put(SearchFilter.getFilterName(searchFilter), searchFilter.asXML());
-				
-				//Save the updated search filters
-				getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
+				if (SearchFilter.checkIfFilterGlobal(searchFilter)) {
+					Binder binder = getBinderModule().getBinder(binderId);
+					Map searchFilters = (Map)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
+					if (searchFilters == null) searchFilters = new HashMap();
+					searchFilters.put(SearchFilter.getFilterName(searchFilter), searchFilter.asXML());
+					if (getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
+						binder.setProperty(ObjectKeys.BINDER_PROPERTY_FILTERS, searchFilters);
+					}
+				} else {
+					UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), binderId);
+					Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+					if (searchFilters == null) searchFilters = new HashMap();
+					searchFilters.put(SearchFilter.getFilterName(searchFilter), searchFilter.asXML());
+					
+					//Save the updated search filters
+					getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
+				}
 			}
 			setupViewBinder(response, binderId, binderType);
 		
@@ -93,6 +104,20 @@ public class FilterController extends AbstractBinderController {
 					searchFilters.remove(selectedSearchFilter);
 					//Save the updated search filters
 					getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
+				}
+			}
+			setupViewBinder(response, binderId, binderType);
+		
+		} else if (formData.containsKey("deleteBtnGlobal")) {
+			//This is a request to delete a global filter
+			String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilterGlobal", "");
+			if (!selectedSearchFilter.equals("")) {
+				Binder binder = getBinderModule().getBinder(binderId);
+				Map searchFilters = (Map)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
+				if (searchFilters == null) searchFilters = new HashMap();
+				if (searchFilters.containsKey(selectedSearchFilter)) {
+					searchFilters.remove(selectedSearchFilter);
+					binder.setProperty(ObjectKeys.BINDER_PROPERTY_FILTERS, searchFilters);
 				}
 			}
 			setupViewBinder(response, binderId, binderType);
@@ -118,7 +143,7 @@ public class FilterController extends AbstractBinderController {
 		
 		//Get the name of the selected filter (if one is selected)
 		String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilter", "");
-		model.put(WebKeys.FILTER_SELECTED_FILTER_NAME, selectedSearchFilter);
+		if (!selectedSearchFilter.equals("")) model.put(WebKeys.FILTER_SELECTED_FILTER_NAME, selectedSearchFilter);
 		model.put(WebKeys.BINDER, binder);
 			
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(null, binderId);
@@ -128,15 +153,28 @@ public class FilterController extends AbstractBinderController {
 		Map searchFilterData = new HashMap();
 		model.put(WebKeys.SEARCH_FILTER_MAP, searchFilterData);
 		
+		String selectedSearchFilterGlobal = PortletRequestUtils.getStringParameter(request, "selectedSearchFilterGlobal", "");
+		if (!selectedSearchFilterGlobal.equals("")) model.put(WebKeys.FILTER_SELECTED_FILTER_NAME, selectedSearchFilterGlobal);
+		Map globalSearchFilters = (Map)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
+		if (globalSearchFilters == null) globalSearchFilters = new HashMap();
+		model.put(WebKeys.FILTER_SEARCH_FILTERS_GLOBAL, globalSearchFilters);
+		
 		Workspace ws = getWorkspaceModule().getTopWorkspace();
 		Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
 		model.put(WebKeys.DOM_TREE, tree);
 
 		if (formData.containsKey("addBtn")) {
 			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER, model);
-		} else if (formData.containsKey("modifyBtn") || formData.containsKey("deleteTerm")) {
+		} else if (formData.containsKey("modifyBtn") || formData.containsKey("modifyBtnGlobal") || 
+				formData.containsKey("deleteTerm")) {
 			//Build a bean that contains all of the fields to be shown
-			String filter = (String)searchFilters.get(selectedSearchFilter);
+			String filter = null;
+			if (formData.containsKey("modifyBtn")) {
+				filter = (String)searchFilters.get(selectedSearchFilter);
+			} else if (formData.containsKey("modifyBtnGlobal")) {
+				filter = (String)globalSearchFilters.get(selectedSearchFilterGlobal);
+				model.put(WebKeys.FILTER_SEARCH_FILTER_IS_GLOBAL, "true");
+			}
 			if (filter != null) {
 				SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(this, DocumentHelper.parseText(filter));
 				model.putAll(searchFilterConverter.convertAndPrepareFormData());
