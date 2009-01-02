@@ -86,14 +86,14 @@
     			  <c:set var="ss_binderNumbers1" value="${ss_binderUnseenCounts[binder._docId].count}"/>
 		 		  <c:choose>
 					<c:when test="${ss_binderNumbers1 == '0'}">
-					  <span class="ss_title_count">(<ssf:nlt tag="New"><ssf:param name="value" 
+					  <span class="ss_title_count">(<ssf:nlt tag="Unread"><ssf:param name="value" 
 				  		value="${ss_binderUnseenCounts[binder._docId].count}"/></ssf:nlt>) </span>
 					</c:when>
 					<c:otherwise>
 					  <span class="ss_title_count">
 					    <a href="javascript: ;"
-					      onClick="ss_showWhatsNewPage(this, '${binder._docId}', 'whatsNew', '0', '', 'ss_whatsNewDiv', '${renderResponse.namespace}');return false;"
-					    >(<ssf:nlt tag="New"><ssf:param name="value" 
+					      onClick="ss_showWhatsNewPage(this, '${binder._docId}', 'unseen', '0', '', 'ss_whatsNewDiv', '${renderResponse.namespace}');return false;"
+					    >(<ssf:nlt tag="Unread"><ssf:param name="value" 
 				  		value="${ss_binderUnseenCounts[binder._docId].count}"/></ssf:nlt>) </a></span>
 					</c:otherwise>
 		 		  </c:choose>
@@ -127,14 +127,14 @@
          				    <c:set var="ss_binderNumbers2" value="${ss_binderUnseenCounts[subBinder._docId].count}"/>
 		 				  	<c:choose>
 							  <c:when test="${ss_binderNumbers2 == '0'}">
-							    <span class="ss_title_count">(<ssf:nlt tag="New"><ssf:param name="value" 
+							    <span class="ss_title_count">(<ssf:nlt tag="Unread"><ssf:param name="value" 
 				  				  value="${ss_binderUnseenCounts[subBinder._docId].count}"/></ssf:nlt>) </span>
 							  </c:when>
 							  <c:otherwise>
 							    <span class="ss_title_count">
 							      <a href="javascript: ;"
-							        onClick="ss_showWhatsNewPage(this, '${subBinder._docId}', 'whatsNew', '0', '', 'ss_whatsNewDiv', '${renderResponse.namespace}');return false;""
-							      >(<ssf:nlt tag="New"><ssf:param name="value" 
+							        onClick="ss_showWhatsNewPage(this, '${subBinder._docId}', 'unseen', '0', '', 'ss_whatsNewDiv', '${renderResponse.namespace}');return false;""
+							      >(<ssf:nlt tag="Unread"><ssf:param name="value" 
 				  				  value="${ss_binderUnseenCounts[subBinder._docId].count}"/></ssf:nlt>) </a></span>
 							  </c:otherwise>
 		 				    </c:choose>
@@ -156,11 +156,11 @@
         				  <c:set var="ss_binderNumbers3" value="${ss_binderUnseenCounts[subBinder._docId].count}"/>
 		 			  	  <c:choose>
 							<c:when test="${ss_binderNumbers3 == '0'}">
-							  <span class="ss_title_count">(<ssf:nlt tag="New"><ssf:param name="value" 
+							  <span class="ss_title_count">(<ssf:nlt tag="Unread"><ssf:param name="value" 
 				  				value="${ss_binderUnseenCounts[subBinder._docId].count}"/></ssf:nlt>) </span>
 							</c:when>
 						    <c:otherwise>
-							  <span class="ss_title_count">(<ssf:nlt tag="New"><ssf:param name="value" 
+							  <span class="ss_title_count">(<ssf:nlt tag="Unread"><ssf:param name="value" 
 				  				value="${ss_binderUnseenCounts[subBinder._docId].count}"/></ssf:nlt>)</span>
 						    </c:otherwise>
 		 				  </c:choose>
@@ -179,14 +179,14 @@
         					<c:set var="ss_binderNumbers4" value="${ss_binderUnseenCounts[subBinder._docId].count}"/>
 		 					<c:choose>
 							  <c:when test="${ss_binderNumbers4 == '0'}">
-								<span class="ss_title_count">(<ssf:nlt tag="New"><ssf:param name="value" 
+								<span class="ss_title_count">(<ssf:nlt tag="Unread"><ssf:param name="value" 
 				  					value="${ss_binderUnseenCounts[subBinder._docId].count}"/></ssf:nlt>) </span>
 							  </c:when>
 							  <c:otherwise>
 								<span class="ss_title_count">
 								  <a href="javascript: ;"
-							        onClick="ss_showWhatsNewPage(this, '${subBinder._docId}', 'whatsNew', '0', '', 'ss_whatsNewDiv', '${renderResponse.namespace}');return false;""
-								  >(<ssf:nlt tag="New"><ssf:param name="value" 
+							        onClick="ss_showWhatsNewPage(this, '${subBinder._docId}', 'unseen', '0', '', 'ss_whatsNewDiv', '${renderResponse.namespace}');return false;""
+								  >(<ssf:nlt tag="Unread"><ssf:param name="value" 
 				  					value="${ss_binderUnseenCounts[subBinder._docId].count}"/></ssf:nlt>) </a></span>
 							  </c:otherwise>
 		 					</c:choose>
@@ -211,15 +211,15 @@
     			<c:set var="ss_binderNumbers5" value="${ss_binderUnseenCounts[binder._docId].count}"/>
 		 		<c:choose>
 				  <c:when test="${ss_binderNumbers5 == '0'}">
-					<span class="ss_title_count">(<ssf:nlt tag="New"><ssf:param name="value" 
+					<span class="ss_title_count">(<ssf:nlt tag="Unread"><ssf:param name="value" 
 				  	  value="${ss_binderUnseenCounts[binder._docId].count}"/></ssf:nlt>) 
 				  	</span>
 				  </c:when>
 				  <c:otherwise>
 					<span class="ss_title_count">
 						<a href="javascript: ;"
-						  onClick="ss_showWhatsNewPage(this, '${binder._docId}', 'whatsNew', '0', '', 'ss_whatsNewDiv', '${renderResponse.namespace}');return false;""
-						>(<ssf:nlt tag="New"><ssf:param name="value" 
+						  onClick="ss_showWhatsNewPage(this, '${binder._docId}', 'unseen', '0', '', 'ss_whatsNewDiv', '${renderResponse.namespace}');return false;""
+						>(<ssf:nlt tag="Unread"><ssf:param name="value" 
 				  	  		value="${ss_binderUnseenCounts[binder._docId].count}"/></ssf:nlt>) 
 				  	  	</a>
 				  	</span>
