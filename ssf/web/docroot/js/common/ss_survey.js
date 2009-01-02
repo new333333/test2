@@ -227,7 +227,7 @@ if (!window.ssSurvey) {
 				if (ss_questionsArray[i].type && ss_questionsArray[i].type != 'undefined') {
 					ss_toSend[ind] = {};
 					ss_toSend[ind].type = ss_questionsArray[i].type;
-					content = tinyMCE.activeEditor.getContent(prefix + "questionText"+i).replace(/\+/g, "&#43");
+					content = tinyMCE.activeEditor.getContent(dojo.byId(prefix + "questionText"+i)).replace(/\+/g, "&#43");
 					ss_toSend[ind].question = content;
 					questionIndexInput = dojo.byId(prefix + "questionText"+i+"_index");
 					if (questionIndexInput) {
