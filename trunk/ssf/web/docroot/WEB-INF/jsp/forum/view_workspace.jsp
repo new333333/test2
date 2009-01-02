@@ -99,6 +99,90 @@ if (typeof ss_workarea_showId == "undefined")
 	ss_workarea_showId = ss_workarea_showId${renderResponse.namespace};
 </script>
 
+<% /* The following javascript is used by the 'Tutorial' ui. */ %>
+<script type="text/javascript">
+	/**
+	 * This function will collapse the tutorial ui.
+	 */
+	function collapseTutorial()
+	{
+		var	table;
+
+		// Hide the expanded tutorial table.
+		table = document.getElementById( 'expandedTutorialTable' );
+		table.style.display = 'none';
+
+		// Show the collapsed tutorial table.
+		table = document.getElementById( 'collapsedTutorialTable' );
+		table.style.display = '';
+	}// end collapseTutorial()
+
+
+	/**
+	 * This function will tell the user that closing the tutorial panel will permanently remove
+	 * it and will ask the user if that is what they want to do.
+	 */
+	function confirmCloseTutorialPanel()
+	{
+		var	msg;
+
+		// Ask the user if they want to permanently remove the tutorial panel.
+		msg = '<ssf:escapeJavaScript><ssf:nlt tag="tutorial.confirmClose" /></ssf:escapeJavaScript>'; 
+		if ( window.confirm( msg ) )
+		{
+			// The user wants to permanently remove the tutorial panel.
+			// Hide the tutorial panels.
+			hideTutorialPanels();
+			
+			// Issue an ajax request to remember that the tutorial panel should not be displayed again.
+		}
+	}// end configCloseTutorialPanel()
+
+
+	/**
+	 * This function will expand the tutorial ui.
+	 */
+	function expandTutorial()
+	{
+		var	table;
+
+		// Hide the collapsed tutorial table.
+		table = document.getElementById( 'collapsedTutorialTable' );
+		table.style.display = 'none';
+
+		// Show the expanded tutorial table.
+		table = document.getElementById( 'expandedTutorialTable' );
+		table.style.display = '';
+	}// end expandTutorial()
+
+
+	/**
+	 * There are two tables that make up the tutorial ui, an expanded panel and a collapsed panel.
+	 * Hide both of them.
+	 */
+	function hideTutorialPanels()
+	{
+		var	table;
+
+		// Hide the collapsed tutorial table.
+		table = document.getElementById( 'collapsedTutorialTable' );
+		table.style.display = 'none';
+
+		// Hide the expanded tutorial table.
+		table = document.getElementById( 'expandedTutorialTable' );
+		table.style.display = 'none';
+	}// end hideTutorialPanels()
+
+
+	/**
+	 * Open a window and start the given video tutorial.
+	 */
+	function startTutorial( tutorialName )
+	{
+		alert( 'Not yet implemented' );
+	}// end startTutorial()
+</script>
+
 <c:if test="${showWorkspacePage}">
 	<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 	<jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
@@ -161,6 +245,112 @@ if (typeof ss_workarea_showId == "undefined")
 	</c:if>
 </ssf:ifnotaccessible>
 	<td valign="top" class="ss_view_info">
+		<div style="width: 100%; background-image: url('<html:imagesPath/>pics/tutorial/bgVideoBanner.gif'); background-repeat: repeat-x; ">
+			<% /* This table is displayed when the user collapses the video tutorial. */ %>
+			<table id="collapsedTutorialTable" width="100%" style="padding: 4px; display: none;">
+				<tr>
+					<td width="90%" style="padding-left: 15px;">
+						<span style="font-size: .8em; font-weight: bold; color: #906040;"><ssf:nlt tag="tutorial.heading" /></span>
+					</td>
+					<td width="10%" align="right" valign="top">
+						<a 	href="#"
+							onClick="confirmCloseTutorialPanel()">
+							<img	border="0"
+									src="<html:imagesPath/>pics/popup_close_box.gif"
+									title="<ssf:nlt tag="tutorial.alt.closeTutorial"/>"
+									alt="<ssf:nlt tag="tutorial.alt.closeTutorial"/>" />
+						</a>
+						<a 	href="#"
+							onClick="expandTutorial()">
+							<img	border="0"
+									src="<html:imagesPath/>pics/sym_s_expand.gif"
+									title="<ssf:nlt tag="tutorial.alt.expandTutorial"/>"
+									alt="<ssf:nlt tag="tutorial.alt.expandTutorial"/>" />
+						</a>
+					</td>
+				</tr>
+			</table>
+
+			<% /* This table is displayed when the video tutorial is not collapsed. */ %>
+			<table id="expandedTutorialTable" width="100%" style="padding: 4px;">
+				<tr>
+					<td style="padding-left: 15px;">
+						<span style="font-size: 1.25em; font-weight: bold; color: #906040;"><ssf:nlt tag="tutorial.heading" /></span>
+					</td>
+					<td align="center">
+						<a 	href="#"
+							title="<ssf:nlt tag="tutorial.alt.viewWhatIsTeaming" />"
+							onClick="startTutorial( 'whatIsTeaming' )">
+							<img	border="0"
+									src="<html:imagesPath/>pics/tutorial/iconVideoWhatIsTeaming.png"
+									title=""
+									alt="" />
+							<br /><span style="text-decoration: underline"><ssf:nlt tag="tutorial.whatsTeaming" /></span> 
+						</a>
+					</td>
+					<td align="center">
+						<a 	href="#"
+							title="<ssf:nlt tag="tutorial.alt.viewGettingAround" />"
+							onClick="startTutorial( 'gettingAround' )">
+							<img	border="0"
+									src="<html:imagesPath/>pics/tutorial/iconVideoGettingAround.png"
+									title=""
+									alt="" />
+							<br/><span style="text-decoration: underline"><ssf:nlt tag="tutorial.gettingAround" /></span> 
+						</a>
+					</td>
+					<td align="center">
+						<a 	href="#"
+							title="<ssf:nlt tag="tutorial.alt.viewImportingFiles" />"
+							onClick="startTutorial( 'importingFiles' )">
+							<img	border="0"
+									src="<html:imagesPath/>pics/tutorial/iconVideoImportingFiles.png"
+									title=""
+									alt="" />
+							<br/><span style="text-decoration: underline"><ssf:nlt tag="tutorial.importingFiles" /></span> 
+						</a>
+					</td>
+					<td align="center">
+						<a 	href="#"
+							title="<ssf:nlt tag="tutorial.alt.viewCustomization" />"
+							onClick="startTutorial( 'customization' )">
+							<img	border="0"
+									src="<html:imagesPath/>pics/tutorial/iconVideoCustomization.png"
+									title=""
+									alt="" />
+							<br/><span style="text-decoration: underline"><ssf:nlt tag="tutorial.customization" /></span> 
+						</a>
+					</td>
+					<td align="center">
+						<a 	href="#"
+							title="<ssf:nlt tag="tutorial.alt.viewBestPractices" />"
+							onClick="startTutorial( 'bestPractices' )">
+							<img	border="0"
+									src="<html:imagesPath/>pics/tutorial/iconVideoBestPractices.png"
+									title=""
+									alt="" />
+							<br/><span style="text-decoration: underline"><ssf:nlt tag="tutorial.bestPractices" /></span> 
+						</a>
+					</td>
+					<td width="5%" align="right" valign="top">
+						<a 	href="#"
+							onClick="confirmCloseTutorialPanel()">
+							<img	border="0"
+									src="<html:imagesPath/>pics/popup_close_box.gif"
+									title="<ssf:nlt tag="tutorial.alt.closeTutorial"/>"
+									alt="<ssf:nlt tag="tutorial.alt.closeTutorial"/>" />
+						</a>
+						<a 	href="#"
+							onClick="collapseTutorial()">
+							<img	border="0"
+									src="<html:imagesPath/>pics/sym_s_collapse.gif"
+									title="<ssf:nlt tag="tutorial.alt.collapseTutorial"/>"
+									alt="<ssf:nlt tag="tutorial.alt.collapseTutorial"/>" />
+						</a>
+					</td>
+				</tr>
+			</table>
+		</div>
 		<div class="ss_tab_canvas">
 			<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
 				<div class="ss_style_color">				
