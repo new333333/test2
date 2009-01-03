@@ -90,10 +90,75 @@ public class DateHelper {
     	
     	if (!inputData.exists(datePrefix + "fullDate") || 
     			"".equals(inputData.getSingleValue(datePrefix+"fullDate"))) {
-    		return null;
+            
+            //We must be using the old style of date picker
+    		Date d = new Date();
+            
+            // if the year isn't present, it probably means no date was entered
+            if (!inputData.exists(datePrefix+"year")) {
+                return null;
+            }
+            String year = inputData.getSingleValue(datePrefix + "year");
+            // the calendar object will instantiate some date no matter what
+            // we arbitrarily say that the date is not entered at all if the year is blank
+            if (year.matches("")) {
+                return null;
+            }
+
+            // check that the fields are there
+            // date fields (select boxes) *must* be there
+            if (!inputData.exists(datePrefix+"month")) {
+                throw new ConfigurationException("errorcode.no.date.field", new String[]{"month."});
+            }
+            if (!inputData.exists(datePrefix+"date")) {
+                throw new ConfigurationException("errorcode.no.date.field", new String[]{"date."});
+            }
+            
+            GregorianCalendar cal = new GregorianCalendar(); 
+            cal.setTimeInMillis(0);
+            cal.set(Calendar.YEAR, Integer.parseInt(year));
+            String month = inputData.getSingleValue(datePrefix + "month");
+            int mn = Integer.parseInt(month);
+            // the first (zero-th) select box is for unselected, or "--"
+            // once the year is supplied, we default any other unselected fields
+            if (mn != 0) {
+                cal.set(Calendar.MONTH, mn-1);
+            }
+
+            String date = inputData.getSingleValue(datePrefix + "date");
+            int dd = Integer.parseInt(date);
+            if (dd != 0) {
+                cal.set(Calendar.DAY_OF_MONTH, dd);
+            }
+
+            // now on to the question of whether we use the time on the page...
+            // we use time if a set of time fields is present with the specified sequenceNumber
+            // if the time fields are missing, they default to present time (should they???) 
+            if (inputData.exists(timePrefix + "hour")) {
+                String hour = inputData.getSingleValue(timePrefix + "hour");
+                int hh = Integer.parseInt(hour);
+                // note that since 0 is a valid hour, we use 99 to indicate no selection 
+                if (hh != 99) {
+                    cal.set(Calendar.HOUR_OF_DAY, hh);
+                }
+                String minute = inputData.getSingleValue(timePrefix + "minute");
+                int mm = Integer.parseInt(minute);
+                if (mm != 99) {
+                    cal.set(Calendar.MINUTE, mm);
+                }
+            }
+            
+            if (inputData.exists(datePrefix + "timezoneid")) {
+                String tzs = inputData.getSingleValue(datePrefix + "timezoneid");
+                TimeZone tz = TimeZoneHelper.getTimeZone(tzs);
+                cal.setTimeZone(tz);
+            }
+            d = cal.getTime();
+            return d;
     	}
     	
-        DateTimeZone dateTimeZone = null;
+        //This is the dojo date picker
+    	DateTimeZone dateTimeZone = null;
         if (inputData.exists(datePrefix + "timezoneid") ||
         		inputData.exists(datePrefix + "timeZoneSensitive")) {
             String timeZoneString = inputData.getSingleValue(datePrefix + "timezoneid");

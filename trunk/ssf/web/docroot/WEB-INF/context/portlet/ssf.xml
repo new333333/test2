@@ -55,6 +55,7 @@
 	<bean id="licenseReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LicenseReportController" />
 	<bean id="manageLicenseController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageLicenseController" />
 	<bean id="activityReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ActivityReportController" />
+	<bean id="activityReportByUserController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ActivityReportByUserController" />
 	<bean id="quotaReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.QuotaReportController" />
 	<bean id="workflowReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.WorkflowReportController" />
 	<bean id="creditsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.CreditsController" />
@@ -154,6 +155,7 @@
 						<entry key="license_report"><ref bean="licenseReportController"/></entry>
 						<entry key="manage_license"><ref bean="manageLicenseController"/></entry>
 						<entry key="activity_report"><ref bean="activityReportController"/></entry>
+						<entry key="activity_report_by_user"><ref bean="activityReportByUserController"/></entry>
 						<entry key="quota_report"><ref bean="quotaReportController"/></entry>
 						<entry key="view_change_log"><ref bean="adminViewChangeLogController"/></entry>
 						<entry key="workflow_report"><ref bean="workflowReportController"/></entry>

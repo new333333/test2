@@ -66,6 +66,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowHistory;
 import org.kablink.teaming.domain.WorkflowState;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -75,6 +76,7 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
+import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.util.NLT;
@@ -93,6 +95,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	protected ProfileDao profileDao;
 	protected AccessControlManager accessControlManager;
 	protected BinderModule binderModule;
+	protected WorkspaceModule workspaceModule;
 	protected FolderModule folderModule;
 	protected AdminModule adminModule;
 	protected ProfileModule profileModule;
@@ -121,6 +124,14 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 
 	public BinderModule getBinderModule() {
 		return this.binderModule;
+	}
+
+	public void setWorkspaceModule(WorkspaceModule workspaceModule) {
+		this.workspaceModule = workspaceModule;
+	}
+
+	public WorkspaceModule getWorkspaceModule() {
+		return this.workspaceModule;
 	}
 
 	public void setFolderModule(FolderModule folderModule) {
@@ -608,6 +619,44 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
     	return report;
 	}
 
+	public List<Map<String,Object>> generateActivityReportByUser(final Set<Long> userIdsToReport,
+			final Date startDate, final Date endDate, final String reportType) {
+        final User user = RequestContextHolder.getRequestContext().getUser();
+        getAdminModule().testAccess(AdminOperation.report);
+
+		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				List auditTrail = null;
+				try {
+					ProjectionList proj = Projections.projectionList()
+									.add(Projections.groupProperty("startBy"))
+									.add(Projections.max("startDate"))
+									.add(Projections.groupProperty("transactionType"));
+					if (reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
+						proj.add(Projections.rowCount());
+					} else {
+						proj.add(Projections.alias(Projections.rowCount(), "hits"))
+									.add(Projections.groupProperty("owningBinderId"))
+									.add(Projections.groupProperty("entityId"))
+									.add(Projections.groupProperty("entityType"));
+					}
+					Criteria crit = session.createCriteria(AuditTrail.class)
+						.setProjection(proj)
+						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, user.getZoneId()))
+						.add(Restrictions.in("transactionType", activityTypes))
+						.add(Restrictions.ge("startDate", startDate))
+						.add(Restrictions.lt("startDate", endDate))
+						.add(Restrictions.in("startBy", userIdsToReport))
+						.addOrder(Order.asc("startBy"));
+					auditTrail = crit.list();
+				} catch(Exception e) {
+				}
+				return auditTrail;
+			}});
+		
+		return generateShortActivityByUserReportList(result, reportType);
+	}
+
 	public List<Map<String,Object>> generateLoginReport(final Date startDate, final Date endDate, 
 			String optionType, String sortType, String sortType2, Set memberIds) {
 		getAdminModule().checkAccess(AdminOperation.report);
@@ -773,6 +822,48 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			Timestamp temp = ((Timestamp) cols[1]);
 			
 			row.put(ReportModule.LOGIN_DATE, sdFormat.format(temp.getTime()));
+		}
+		return report;
+	}
+	
+	private LinkedList<Map<String,Object>> generateShortActivityByUserReportList(List activities, String reportType) {
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss aa");
+		
+		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+		
+		if (reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
+			Long lastUserId = new Long(-1);
+			Long userId = null;
+			HashMap<String,Object> row = null;
+			for(Object o : activities) {
+				Object[] col = (Object []) o;
+				userId = (Long) col[ReportModule.USER_ID_INDEX];
+				if (row == null || !lastUserId.equals(userId)) {
+					row = new HashMap<String,Object>();
+					report.add(row);
+					row.put(ReportModule.USER_ID, userId);
+					for(String t : activityTypes) {
+						row.put(t, new Integer(0));
+					}
+					lastUserId = userId;
+				}
+				row.put((String) col[ReportModule.ACTIVITY_TYPE_INDEX], col[ReportModule.ACTIVITY_COUNT_INDEX]);
+			}
+		} else {
+			for(Object o : activities) {
+				Object[] cols = (Object[]) o;
+				Map<String, Object> row = new HashMap<String, Object>();
+				report.add(row);
+				row.put(ReportModule.USER_ID, cols[ReportModule.USER_ID_INDEX]);
+				
+				Timestamp temp = ((Timestamp) cols[ReportModule.ACTIVITY_DATE_INDEX]);
+				
+				row.put(ReportModule.ACTIVITY_DATE, sdFormat.format(temp.getTime()));
+				row.put(ReportModule.ACTIVITY_TYPE, cols[ReportModule.ACTIVITY_TYPE_INDEX]);
+				row.put(ReportModule.BINDER_ID, cols[ReportModule.ACTIVITY_BINDER_ID_INDEX]);
+				row.put(ReportModule.ENTRY_ID, cols[ReportModule.ACTIVITY_ENTRY_ID_INDEX]);
+				row.put(ReportModule.ENTITY, cols[ReportModule.ACTIVITY_ENTITY_TYPE_INDEX]);
+			}
 		}
 		return report;
 	}

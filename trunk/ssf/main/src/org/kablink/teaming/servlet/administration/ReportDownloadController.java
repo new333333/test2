@@ -48,7 +48,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuditTrail;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.report.ReportModule;
@@ -76,6 +78,9 @@ public class ReportDownloadController extends  SAbstractController {
 		columnNames.put(ReportModule.BINDER_ID, "report.columns.id");
 		columnNames.put(ReportModule.BINDER_PARENT, "report.columns.parent");
 		columnNames.put(ReportModule.BINDER_TITLE, "report.columns.title");
+		columnNames.put(ReportModule.ENTRY_TITLE, "report.columns.entryTitle");
+		columnNames.put(ReportModule.ENTITY, "report.columns.entity");
+		columnNames.put(ReportModule.FOLDER, "report.columns.folder");
 		columnNames.put(ReportModule.USER_ID, "report.columns.user");
 		columnNames.put(ReportModule.USER_TITLE, "report.columns.user");
 		columnNames.put(AuditTrail.AuditType.add.name(), "report.columns.add");
@@ -91,6 +96,8 @@ public class ReportDownloadController extends  SAbstractController {
 		columnNames.put(ReportModule.AVERAGE_TI, "report.columns.average_ti");
 		columnNames.put(ReportModule.COUNT, "report.columns.count");
 		columnNames.put(ReportModule.SIZE, "report.columns.size");
+		columnNames.put(ReportModule.ACTIVITY_TYPE, "report.columns.activityType");
+		columnNames.put(ReportModule.ACTIVITY_DATE, "report.columns.activityDate");
 	}
 
 	static private boolean isUserColumn(String column) {
@@ -197,6 +204,24 @@ public class ReportDownloadController extends  SAbstractController {
 					columns = new String[] {ReportModule.USER_ID, ReportModule.BINDER_TITLE, ReportModule.SIZE};
 					break;
 				}
+			} else if ("activityByUser".equals(reportType)) {
+				hasUsers = true;
+				String type = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, ReportModule.REPORT_TYPE_SUMMARY);
+				report = getReportModule().generateActivityReportByUser(memberIds, startDate, endDate, type);
+				if (type.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
+					columns = new String[] {ReportModule.USER_ID, 
+							AuditTrail.AuditType.view.name(), 
+							AuditTrail.AuditType.add.name(),
+							AuditTrail.AuditType.modify.name(), 
+							AuditTrail.AuditType.delete.name()};
+				} else {
+					columns = new String[] {ReportModule.USER_ID, 
+							ReportModule.ACTIVITY_TYPE, 
+							ReportModule.ACTIVITY_DATE, 
+							ReportModule.FOLDER, 
+							ReportModule.ENTRY_TITLE,
+							ReportModule.ENTITY};
+				}
 			}
 			printReport(response.getOutputStream(), report, columns, hasUsers);
 			response.getOutputStream().flush();
@@ -208,12 +233,16 @@ public class ReportDownloadController extends  SAbstractController {
 	{
 		HashMap<Long,Principal> userMap = new HashMap<Long,Principal>();
 		HashMap<String,Definition> definitionMap = new HashMap<String, Definition>();
+		HashMap<Long,Binder> binderMap = new HashMap<Long, Binder>();
+		HashMap<Long,FolderEntry> entryMap = new HashMap<Long, FolderEntry>();
         User requestor = RequestContextHolder.getRequestContext().getUser();
         DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM, requestor.getLocale());
         dateFormat.setTimeZone(requestor.getTimeZone());
         
 		HashSet userIds = new HashSet();
 		HashSet<String> definitionIds = new HashSet<String>();
+		HashSet<Long> binderIds = new HashSet<Long>();
+		HashSet<Long> entryIds = new HashSet<Long>();
 		for(Map<String, Object> row : report) {
 			if(row.containsKey(ReportModule.USER_ID)) {
 				userIds.add(row.get(ReportModule.USER_ID));
@@ -221,11 +250,30 @@ public class ReportDownloadController extends  SAbstractController {
 			if(row.containsKey(ReportModule.DEFINITION_ID)) {
 				definitionIds.add((String) row.get(ReportModule.DEFINITION_ID));
 			}
+			if(row.containsKey(ReportModule.BINDER_ID)) {
+				binderIds.add((Long)row.get(ReportModule.BINDER_ID));
+			}
+			if(row.containsKey(ReportModule.ENTRY_ID) && row.containsKey(ReportModule.ENTITY)) {
+				if (row.get(ReportModule.ENTITY).equals("folderEntry")) 
+					entryIds.add((Long)row.get(ReportModule.ENTRY_ID));
+			}
 		}
 		if(userIds.size() > 0) {
 			SortedSet<Principal> principals = getProfileModule().getPrincipals(userIds);
 			for(Principal p : principals) {
 				userMap.put(p.getId(), p);
+			}
+		}
+		if(binderIds.size() > 0) {
+			SortedSet<Binder> binders = getBinderModule().getBinders(binderIds);
+			for(Binder b : binders) {
+				binderMap.put(b.getId(), b);
+			}
+		}
+		if(entryIds.size() > 0) {
+			SortedSet<FolderEntry> entries = getFolderModule().getEntries(entryIds);
+			for(FolderEntry fe : entries) {
+				entryMap.put(fe.getId(), fe);
 			}
 		}
 		if(definitionIds.size() > 0) {
@@ -248,21 +296,37 @@ public class ReportDownloadController extends  SAbstractController {
 
 		Definition definition;
 		for(Map<String, Object> row : report) {
-			if(row.containsKey(ReportModule.DEFINITION_ID)) {
+			if (row.containsKey(ReportModule.DEFINITION_ID)) {
 				definition = definitionMap.get(row.get(ReportModule.DEFINITION_ID));
 				row.put(ReportModule.DEFINITION_ID, definition.getTitle());
 				if(row.containsKey(ReportModule.STATE)) {
 					row.put(ReportModule.STATE, WorkflowUtils.getStateCaption(definition, (String) row.get(ReportModule.STATE)));
 				}
 			}
+			Binder binder;
+			if (row.containsKey(ReportModule.BINDER_ID)) {
+				binder = binderMap.get(row.get(ReportModule.BINDER_ID));
+				try {
+					if (binder != null) row.put(ReportModule.FOLDER, binder.getPathName());
+				} catch(Exception e) {}
+			}
+			FolderEntry entry;
+			if (row.containsKey(ReportModule.ENTRY_ID) && 
+					row.containsKey(ReportModule.ENTITY) && 
+					row.get(ReportModule.ENTITY).equals("folderEntry")) {
+				entry = entryMap.get(row.get(ReportModule.ENTRY_ID));
+				try {
+					if (entry != null) row.put(ReportModule.ENTRY_TITLE, entry.getTitle());
+				} catch(Exception e) {}
+			}
 			for(int i = 0; i < columns.length; i++) {
 				String name = columns[i];
-				if(!isUserColumn(name) || hasUsers) {
+				if (!isUserColumn(name) || hasUsers) {
 					if(i > 0) {
 						out.write(",".getBytes());
 					}
 				}
-				if(! isUserColumn(name)) {
+				if (! isUserColumn(name)) {
 					if(row.containsKey(name)) {
 						if(row.get(name) instanceof Date) {
 							out.write(("\"" + Validator.replaceDelimiter(dateFormat.format((Date) row.get(name))) +"\"").getBytes());
@@ -270,9 +334,10 @@ public class ReportDownloadController extends  SAbstractController {
 							out.write(row.get(name).toString().getBytes());
 						}
 					}
-				} else if(hasUsers) {
+				} else if (hasUsers && row.containsKey(name)) {
 					Long userId = (Long) row.get(name);
-					Principal user = userMap.get(userId);
+					Principal user = null;
+					if (userId != null) user = userMap.get(userId);
 					if(user != null) {
 						out.write((Validator.replaceDelimiter(user.getTitle()) + " (" 
 								+ Validator.replaceDelimiter(user.getName()) + ")").getBytes());
