@@ -245,6 +245,7 @@ public class WebKeys {
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
     public static final String ADMIN_ACTION_GET_LOG_FILES = "get_log_files";
 	public static final String ACTION_ACTIVITY_REPORT="activity_report";
+	public static final String ACTION_ACTIVITY_REPORT_BY_USER="activity_report_by_user"; 
     public static final String ACTION_ADD_FOLDER_ENTRY = "add_folder_entry";
     public static final String ACTION_ADD_PROFILE_ENTRY="add_profile_entry";
     public static final String ACTION_ADD_BINDER = "add_binder";
@@ -1233,6 +1234,7 @@ public class WebKeys {
     public static final String VIEW_RELEVANCE_DASHBOARD = "relevance_dashboard/view";
     public static final String VIEW_RELEVANCE_DASHBOARD_EDIT = "relevance_dashboard/edit";
     public static final String VIEW_REPORT="administration/report";
+    public static final String VIEW_REPORT_BY_USER="administration/report_by_user";
     public static final String VIEW_SCHEDULE_SYNCHRONIZATION="administration/schedule_synchronization";
     public static final String VIEW_SEARCH="search/view";
     public static final String VIEW_SEARCH_EDIT="search/edit";

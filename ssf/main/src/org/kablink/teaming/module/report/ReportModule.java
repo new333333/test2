@@ -55,8 +55,11 @@ public interface ReportModule {
 	public static final String BINDER_PARENT = "binder_parent";
 	public static final String DATE = "date";
 	public static final String DESCRIPTION = "description";
+	public static final String ENTRY_ID = "entry_id";
+	public static final String ENTRY_TITLE = "entry_title";
 	public static final String ENTITY = "entity";
 	public static final String FILE_ID = "file_id";
+	public static final String FOLDER = "folder";
 	public static final String USER = "user";
 	public static final String USER_ID = "user_id";
 	public static final String USER_TITLE = "user_title";
@@ -70,11 +73,23 @@ public interface ReportModule {
 	public static final String COUNT = "count";
 	public static final String SIZE = "size";
 	public static final String TYPE = "type";
+	public static final String ACTIVITY_DATE = "activity_date";
+	public static final String ACTIVITY_TYPE = "activity_type";
+	public static final String ACTIVITY_ENTRY_ID = "activity_entry_id";
+	public static final String ACTIVITY_ENTITY_TYPE = "activity_entity_type";
 	
 	public static final Integer USER_ID_INDEX = 0;
 	public static final Integer LAST_LOGIN_INDEX = 1;
 	public static final Integer LOGIN_COUNT_INDEX = 2;
 	public static final Integer LOGIN_DATE_INDEX = 1;
+	public static final Integer ACTIVITY_DATE_INDEX = 1;
+	public static final Integer ACTIVITY_TYPE_INDEX = 2;
+	public static final Integer ACTIVITY_COUNT_INDEX = 3;
+	public static final Integer ACTIVITY_BINDER_ID_INDEX = 4;
+	public static final Integer ACTIVITY_ENTRY_ID_INDEX = 5;
+	public static final Integer ACTIVITY_ENTITY_TYPE_INDEX = 6;
+	
+	public static final String REPORT_TYPE_SUMMARY = "summary";
 
 	public static final String NONE_SORT = "none_sort";
 	public static final String USER_SORT = "user_sort";
@@ -113,6 +128,7 @@ public interface ReportModule {
 	
 	public List<Map<String, Object>> generateReport(Collection ids, boolean byUser, Date startDate, Date endDate);
 	public List<Map<String, Object>> generateActivityReport(final Long binderId, final Long entryId);
+	public List<Map<String, Object>> generateActivityReportByUser(final Set<Long> userIds, final Date startDate, final Date endDate, final String reportType);
 	public List<Map<String,Object>> generateLoginReport(Date startDate, Date endDate, String optionType, String sortType, String sortType2, Set memberIds);
 	public List<Map<String,Object>> generateWorkflowStateReport(Collection ids, Date startDate, Date endDate);
 	public List<Map<String,Object>> generateWorkflowStateCountReport(Collection ids);
