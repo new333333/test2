@@ -125,6 +125,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	protected ZoneService getZoneService() {
 		return (ZoneService) SpringContextUtil.getBean("zoneService");
 	}
+	
+	/// Binder Service
+	
 	public long binder_addBinder(String accessToken, Binder binder) {
 		return getBinderService().binder_addBinder(accessToken, binder);
 	}
@@ -215,13 +218,8 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		getBinderService().binder_setTag(accessToken, tag);
 	}
 		
-	public String definition_getDefinitionAsXML(String accessToken, String definitionId) {
-		return getDefinitionService().definition_getDefinitionAsXML(accessToken, definitionId);
-	}
-	/*
-	public String definition_getDefinitionsAsXML(String accessToken) {
-		return getDefinitionService().definition_getDefinitionsAsXML(accessToken);
-	}*/
+	/// Folder Service
+	
 	public FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments) {
 		return getFolderService().folder_getEntry(accessToken, entryId, includeAttachments);
 	}
@@ -310,15 +308,35 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void folder_setRating(String accessToken, long entryId, long value) {
 		getFolderService().folder_setRating(accessToken, entryId, value);
 	}
+	public long folder_addEntry(String accessToken, FolderEntry entry, String attachedFileName) {
+		return getFolderService().folder_addEntry(accessToken, entry, attachedFileName);
+	}
+	
+	public long folder_addReply(String accessToken, long parentEntryId, FolderEntry reply, String attachedFileName) {
+		return getFolderService().folder_addReply(accessToken, parentEntryId, reply, attachedFileName);
+	}
+
+	public void folder_modifyEntry(String accessToken, FolderEntry entry) {
+		getFolderService().folder_modifyEntry(accessToken, entry);
+	}
+
+	/// Ical Service
+	
 	public void ical_uploadCalendarEntriesWithXML(String accessToken, long folderId, String iCalDataAsXML) {
 		getIcalService().ical_uploadCalendarEntriesWithXML(accessToken, folderId, iCalDataAsXML);
 	}
+	
+	/// LDAP Service
+	
 	public void ldap_syncAll(String accessToken) {
 		getLdapService().ldap_syncAll(accessToken);
 	}
 	public void ldap_syncUser(String accessToken, Long userId) {
 		getLdapService().ldap_syncUser(accessToken, userId);
 	}
+	
+	/// License Service
+	
 	public long license_getExternalUsers(String accessToken) {
 		return getLicenseService().license_getExternalUsers(accessToken);
 	}
@@ -328,6 +346,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void license_updateLicense(String accessToken) {
 		getLicenseService().license_updateLicense(accessToken);
 	}
+	
+	/// Migration Service
+	
 	public long migration_addBinderWithXML(String accessToken, long parentId, String definitionId, String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
 		return getMigrationService().migration_addBinderWithXML(accessToken, parentId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
 	}
@@ -346,6 +367,20 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void migration_uploadFolderFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath, String modifier, Calendar modificationDate) {
 		getMigrationService().migration_uploadFolderFileStaged(accessToken, binderId, entryId, fileUploadDataItemName, fileName, stagedFileRelativePath, modifier, modificationDate);
 	}
+	public long migration_addBinder(String accessToken, Binder binder) {
+		return getMigrationService().migration_addBinder(accessToken, binder);
+	}
+	
+	public long migration_addFolderEntry(String accessToken, FolderEntry entry, boolean subscribe) {
+		return getMigrationService().migration_addFolderEntry(accessToken, entry, subscribe);
+	}
+	
+	public long migration_addReply(String accessToken, long parentEntryId, FolderEntry reply) {
+		return getMigrationService().migration_addReply(accessToken, parentEntryId, reply);
+	}
+	
+	/// Profile Service
+	
 	public void profile_addGroupMember(String accessToken, String groupName, String userName) {
 		getProfileService().profile_addGroupMember(accessToken, groupName, userName);
 	}
@@ -380,36 +415,6 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getProfileService().profile_getPrincipalAsXML(accessToken, binderId, principalId);
 	}
 	*/
-	public String search_getHotContent(String accessToken, String limitType, Long binderId) {
-		return getSearchService().search_getHotContent(accessToken, limitType, binderId);
-	}
-	/*
-	public String search_getTeamsAsXML(String accessToken) {
-		return getSearchService().search_getTeamsAsXML(accessToken);
-	}*/
-	public String search_getWorkspaceTreeAsXML(String accessToken, long binderId, int levels, String page) {
-		return getSearchService().search_getWorkspaceTreeAsXML(accessToken, binderId, levels, page);
-	}
-	public String search_search(String accessToken, String query, int offset, int maxResults) {
-		return getSearchService().search_search(accessToken, query, offset, maxResults);
-	}
-	public long template_addBinder(String accessToken, long parentBinderId, long binderConfigId, String title) {
-		return getTemplateService().template_addBinder(accessToken, parentBinderId, binderConfigId, title);
-	}
-	/*
-	public String template_getTemplatesAsXML(String accessToken) {
-		return getTemplateService().template_getTemplatesAsXML(accessToken);
-	}*/
-	public Long zone_addZone(String accessToken, String zoneName, String virtualHost, String mailDomain) {
-		return getZoneService().zone_addZone(accessToken, zoneName, virtualHost, mailDomain);
-	}
-	public void zone_deleteZone(String accessToken, String zoneName) {
-		getZoneService().zone_deleteZone(accessToken, zoneName);
-	}
-	public void zone_modifyZone(String accessToken, String zoneName, String virtualHost, String mailDomain) {
-		getZoneService().zone_modifyZone(accessToken, zoneName, virtualHost, mailDomain);
-	}
-
 	public PrincipalCollection profile_getPrincipals(String accessToken, int firstRecord, int maxRecords) {
 		return getProfileService().profile_getPrincipals(accessToken, firstRecord, maxRecords);
 	}
@@ -427,52 +432,6 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public Group profile_getGroupByName(String accessToken, String groupName, boolean includeAttachments) {
 		return getProfileService().profile_getGroupByName(accessToken, groupName, includeAttachments);
 	}
-
-	public DefinitionCollection definition_getDefinitions(String accessToken) {
-		return getDefinitionService().definition_getDefinitions(accessToken);
-	}
-	public DefinitionCollection definition_getLocalDefinitions(String accessToken, long binderId, boolean includeAncestors) {
-		return getDefinitionService().definition_getLocalDefinitions(accessToken, binderId, includeAncestors);
-	}
-	public DefinitionBrief definition_getDefinitionByName(String accessToken, String name) {
-		return getDefinitionService().definition_getDefinitionByName(accessToken, name);
-	}
-	public DefinitionBrief definition_getLocalDefinitionByName(String accessToken, long binderId, String name, boolean includeAncestors) {
-		return getDefinitionService().definition_getLocalDefinitionByName(accessToken, binderId, name, includeAncestors);
-	}
-
-	public TeamCollection search_getTeams(String accessToken) {
-		return getSearchService().search_getTeams(accessToken);
-	}
-
-	public TemplateCollection template_getTemplates(String accessToken) {
-		return getTemplateService().template_getTemplates(accessToken);
-	}
-	
-	public long folder_addEntry(String accessToken, FolderEntry entry, String attachedFileName) {
-		return getFolderService().folder_addEntry(accessToken, entry, attachedFileName);
-	}
-	
-	public long folder_addReply(String accessToken, long parentEntryId, FolderEntry reply, String attachedFileName) {
-		return getFolderService().folder_addReply(accessToken, parentEntryId, reply, attachedFileName);
-	}
-
-	public void folder_modifyEntry(String accessToken, FolderEntry entry) {
-		getFolderService().folder_modifyEntry(accessToken, entry);
-	}
-
-	public long migration_addBinder(String accessToken, Binder binder) {
-		return getMigrationService().migration_addBinder(accessToken, binder);
-	}
-	
-	public long migration_addFolderEntry(String accessToken, FolderEntry entry, boolean subscribe) {
-		return getMigrationService().migration_addFolderEntry(accessToken, entry, subscribe);
-	}
-	
-	public long migration_addReply(String accessToken, long parentEntryId, FolderEntry reply) {
-		return getMigrationService().migration_addReply(accessToken, parentEntryId, reply);
-	}
-
 	public long profile_addUser(String accessToken, User user) {
 		return getProfileService().profile_addUser(accessToken, user);
 	}
@@ -488,6 +447,71 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void profile_modifyGroup(String accessToken, Group group) {
 		getProfileService().profile_modifyGroup(accessToken, group);
 	}
+
+	// Search Service
 	
+	public String search_getHotContent(String accessToken, String limitType, Long binderId) {
+		return getSearchService().search_getHotContent(accessToken, limitType, binderId);
+	}
+	/*
+	public String search_getTeamsAsXML(String accessToken) {
+		return getSearchService().search_getTeamsAsXML(accessToken);
+	}*/
+	public String search_getWorkspaceTreeAsXML(String accessToken, long binderId, int levels, String page) {
+		return getSearchService().search_getWorkspaceTreeAsXML(accessToken, binderId, levels, page);
+	}
+	public String search_search(String accessToken, String query, int offset, int maxResults) {
+		return getSearchService().search_search(accessToken, query, offset, maxResults);
+	}
+	public TeamCollection search_getTeams(String accessToken) {
+		return getSearchService().search_getTeams(accessToken);
+	}
+	
+	/// Template Service
+	
+	public long template_addBinder(String accessToken, long parentBinderId, long binderConfigId, String title) {
+		return getTemplateService().template_addBinder(accessToken, parentBinderId, binderConfigId, title);
+	}
+	/*
+	public String template_getTemplatesAsXML(String accessToken) {
+		return getTemplateService().template_getTemplatesAsXML(accessToken);
+	}*/
+	public TemplateCollection template_getTemplates(String accessToken) {
+		return getTemplateService().template_getTemplates(accessToken);
+	}
+		
+	/// Zone Service
+	
+	public Long zone_addZone(String accessToken, String zoneName, String virtualHost, String mailDomain) {
+		return getZoneService().zone_addZone(accessToken, zoneName, virtualHost, mailDomain);
+	}
+	public void zone_deleteZone(String accessToken, String zoneName) {
+		getZoneService().zone_deleteZone(accessToken, zoneName);
+	}
+	public void zone_modifyZone(String accessToken, String zoneName, String virtualHost, String mailDomain) {
+		getZoneService().zone_modifyZone(accessToken, zoneName, virtualHost, mailDomain);
+	}
+
+	/// Definition Service
+	
+	public String definition_getDefinitionAsXML(String accessToken, String definitionId) {
+		return getDefinitionService().definition_getDefinitionAsXML(accessToken, definitionId);
+	}
+	/*
+	public String definition_getDefinitionsAsXML(String accessToken) {
+		return getDefinitionService().definition_getDefinitionsAsXML(accessToken);
+	}*/
+	public DefinitionCollection definition_getDefinitions(String accessToken) {
+		return getDefinitionService().definition_getDefinitions(accessToken);
+	}
+	public DefinitionCollection definition_getLocalDefinitions(String accessToken, long binderId, boolean includeAncestors) {
+		return getDefinitionService().definition_getLocalDefinitions(accessToken, binderId, includeAncestors);
+	}
+	public DefinitionBrief definition_getDefinitionByName(String accessToken, String name) {
+		return getDefinitionService().definition_getDefinitionByName(accessToken, name);
+	}
+	public DefinitionBrief definition_getLocalDefinitionByName(String accessToken, long binderId, String name, boolean includeAncestors) {
+		return getDefinitionService().definition_getLocalDefinitionByName(accessToken, binderId, name, includeAncestors);
+	}	
 
 }
