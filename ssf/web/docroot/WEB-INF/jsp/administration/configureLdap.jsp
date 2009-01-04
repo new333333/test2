@@ -67,7 +67,10 @@
 		<input type="checkbox" id="allowLocalLogin" name="allowLocalLogin" <c:if test="${ssAuthenticationConfig.allowLocalLogin}">checked</c:if>/>
 			<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowLocalLogin"/></span><br/>
 		<input type="checkbox" id="allowSelfRegistration" name="allowSelfRegistration" <c:if test="${ssAuthenticationConfig.allowSelfRegistration}">checked</c:if>/>
-			<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowSelfRegistration"/></span><br/>
+			<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowSelfRegistration"/></span>
+		<br/>
+		<br/>
+		<br/>
     </div>
 	<div id="funkyDiv" style="width:500px">
 		<ul>
@@ -185,6 +188,7 @@
     float: left;
     margin: 0 0 0 2px;
     font-weight: bold;
+	list-style:none !important;
 }
 .ui-tabs-nav a, .ui-tabs-nav a span {
     float: left; /* fixes dir=ltr problem and other quirks IE */
@@ -481,16 +485,41 @@ jQuery(document).ready(function() {
 	<fieldset class="ldapConfig ss_fieldset">
 		<legend class="ldapTitle ss_legend"><ssf:nlt tag="ldap.connection.title" /> <span class="ldapTitle"></span></legend>
 		<div>
-			<button class="ldapDelete ss_submit"><ssf:nlt tag="ldap.connection.delete" /></button><br/>
-			<ssf:nlt tag="ldap.user.url" /><input class="ldapUrl" type="text" value=""/>
-			<div>
-				<ssf:nlt tag="ldap.user.principal" /><input class="ldapPrincipal" type="text" value=""/><br/>
-				<ssf:nlt tag="ldap.user.credential" /><input class="ldapCredentials" type="password" value=""/>
-			</div>
+			<button class="ldapDelete ss_submit"><ssf:nlt tag="ldap.connection.delete" /></button><br/><br/>
+			<table>
+			<tr>
+			  <td valign="top">
+			    <ssf:nlt tag="ldap.user.url" />
+			  </td>
+			  <td valign="top">
+			    <input class="ldapUrl" type="text" value="" size="140"/>
+			  </td>
+			</tr>
+			<tr>
+			  <td valign="top">
+				<ssf:nlt tag="ldap.user.principal" />
+			  </td>
+			  <td valign="top">
+				<input class="ldapPrincipal" type="text" value="" size="140"/>
+			  </td>
+			</tr>
+			<tr>
+			  <td valign="top">
+				<ssf:nlt tag="ldap.user.credential" />
+			  </td>
+			  <td valign="top">
+			    <input class="ldapCredentials" type="password" value="" size="140"/>
+			  </td>
+			</tr>
+			</table>
+			
 			<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt tag="ldap.users" /></legend>
-				<ssf:nlt tag="ldap.user.idmapping" /><input class="ldapUserIdAttribute" type="text" value=""/><br/>
+				<ssf:nlt tag="ldap.user.idmapping" />&nbsp;&nbsp;<input 
+				  class="ldapUserIdAttribute" type="text" value="" size="40"/><br/><br/>
 				<ssf:nlt tag="ldap.user.mappings" />
-				<textarea class="ldapMappings" style="height: 100px; width: 400px" wrap="hard"></textarea>
+				<br/>
+				<textarea class="ldapMappings" style="height: 150px; width: 400px" wrap="hard"></textarea>
+				<br/><br/>
 				<div class="ldapUserSearches">
 					<div class="ldapSearchList">
 					</div>
@@ -509,16 +538,50 @@ jQuery(document).ready(function() {
 </div>
 
 <div id="ldapSearchTemplate" style="display:none">
-	<div class="ldapSearch">
+	<div class="ldapSearch" style="padding:6px; border:1px solid #cecece;">
 		<div>
-			<div class="errorMessage"><ssf:nlt tag="ldap.error.invalid"><ssf:param name="value" value='<%=NLT.get("ldap.error.baseDn")%>'/></ssf:nlt></div>
-			<label><ssf:nlt tag="ldap.search.baseDn" /></label><input class="ldapBaseDn" value=""/>
+			<table>
+			  <tr>
+			    <td colspan="2">
+				  <div class="errorMessage">
+				    <ssf:nlt tag="ldap.error.invalid">
+				      <ssf:param name="value" value='<%=NLT.get("ldap.error.baseDn")%>'/>
+				    </ssf:nlt>
+				  </div>
+			    </td>
+			  </tr>
+			  <tr>
+			    <td>
+			      <label><ssf:nlt tag="ldap.search.baseDn" /></label>
+			    </td>
+			    <td>
+			      <input class="ldapBaseDn" value="" size="120"/>
+			    </td>
+			  </tr>
+			  
+			  <tr>
+			    <td colspan="2">
+					<div class="errorMessage">
+					  <ssf:nlt tag="ldap.error.invalid">
+					    <ssf:param name="value" value='<%=NLT.get("ldap.error.filter")%>'/>
+					  </ssf:nlt>
+					</div>
+				</td>
+			  </tr>
+			  <tr>
+			    <td>
+					<label><ssf:nlt tag="ldap.search.filter" /></label>
+				</td>
+				<td>
+				  <input class="ldapFilter" value="" size="120"/>
+				</td>
+			  </tr>
+			</table>
 		</div>
-		<div>
-			<div class="errorMessage"><ssf:nlt tag="ldap.error.invalid"><ssf:param name="value" value='<%=NLT.get("ldap.error.filter")%>'/></ssf:nlt></div>
-			<label><ssf:nlt tag="ldap.search.filter" /></label><input class="ldapFilter" value=""/>
-		</div>
-		<input type="checkbox" class="ldapSearchSubtree" value="true"/><span><ssf:nlt tag="ldap.search.searchSubtree" /></span>
+		<br/>
+		<input type="checkbox" class="ldapSearchSubtree" value="true"/>
+		<span style="padding-left:4px;"><ssf:nlt tag="ldap.search.searchSubtree" /></span>
+		<br/>
 		<button class="deleteSearch ss_submit"><ssf:nlt tag="ldap.search.delete" /></button>
 	</div>
 </div>
