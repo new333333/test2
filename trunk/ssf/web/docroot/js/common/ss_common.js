@@ -1954,7 +1954,12 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
     ss_ShowHideDivXY(divId, x, y);
     if (openStyle != "popup") ss_HideDivOnSecondClick(divId);
     ssf_onLayoutChange();
-	document.getElementById(divId).tabIndex=document.getElementById(parentDivId).tabIndex;
+	if (parentDivId != "") {
+		var parentDivObj = document.getElementById(parentDivId);
+		if (parentDivObj != null) {
+			document.getElementById(divId).tabIndex=document.getElementById(parentDivId).tabIndex;
+		}
+	}
 }
 
 // activate_menulayer tests this flag to make sure the page is

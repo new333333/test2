@@ -541,16 +541,26 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
   background-repeat: repeat-x;
 	}	
 button, input[type="reset"], input[type="button"], input[type="submit"] {	
-  	border: 1px solid #333;
-  	padding: 0px 6px 0px 6px;
+    text-align: center !important;
+    font-size: 12px !important;
+    font-family: Arial, sans-serif !important;
+    white-space: nowrap !important;
+    text-decoration: none !important;
+  	border: 1px solid #333 !important;
+  	padding: 0px 6px 0px 6px !important
 	<c:if test="<%= isIE %>">
   		margin-left: 1px; 
   		margin-right: 1px;
 	</c:if>
 	}
 button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {	
-  	border: 1px dotted #333;
-  	padding: 0px 6px 0px 6px;
+    text-align: center !important;
+    font-size: 12px !important;
+    font-family: Arial, sans-serif !important;
+    white-space: nowrap !important;
+    text-decoration: none !important;
+  	border: 1px dotted #333 !important;
+  	padding: 0px 6px 0px 6px !important;
   	<c:if test="<%= isIE %>">
   		padding: 0px;
   		padding-top: -2px;
@@ -1074,13 +1084,13 @@ table.ss_mouseOverInfo {
 	width:100%;
 	}	
 #ss_fixed_table{
-	border-bottom: solid .1em #CCC;
+	border-bottom: solid 1px #CCC;
 	font-family: Arial, Helvetica, sans serif;
 	font-size: 10px;
 	color: #333;
 	}
 .ss_fixed_TD{
-	border-bottom: solid .1em #72AEB6;
+	border-bottom: solid 1px #72AEB6;
 	font-size: 12px !important;
 	padding: 12px 2px 12px 2px;
 	}
@@ -1088,7 +1098,7 @@ table.ss_mouseOverInfo {
 	padding-left: 4px;
 	}
 .ss_fixed_TH{
-	border: solid .1em #CCC;
+	border: solid 1px #CCC;
 	padding:4px 2px 5px 5px;
 	}
 .ss_fixed_TH a:hover {

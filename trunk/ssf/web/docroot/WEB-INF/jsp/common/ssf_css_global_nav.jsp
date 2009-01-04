@@ -112,7 +112,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_combobox_autocomplete {
 	background-color: ${ss_form_element_color};
 	background-image: none;
-	border: 0.1em solid #777777;
+	border: 1px solid #777777;
 	color: ${ss_form_element_text_color};
 	padding: 1px;
 	font-size: ${ss_style_font_normalprint};

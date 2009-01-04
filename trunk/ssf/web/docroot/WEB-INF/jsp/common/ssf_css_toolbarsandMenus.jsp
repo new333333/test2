@@ -227,7 +227,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar1 {
   	background-color: #CCFFFF;
   	background-image: none !important;
   	opacity: 0.95;
-  	border:	0.1em dotted #333;
+  	border:	1px dotted #333;
   	padding: 0px !important;
  <c:if test="<%= isIE %>">
   	filter: alpha(opacity=95);
