@@ -49,17 +49,28 @@
   </td>
   <td valign="top" align="right">
 	<div style="text-align: right; margin: 5px; ">
-		<c:if test="${!empty ssDashboard.beans[componentId].ssBinder && !empty ssDashboard.beans[componentId].ssBinder.entryDefinitions[0]}">
-		<a class="ss_linkButton" href="<ssf:url adapter="true" portletName="ss_forum" 
-				    action="add_folder_entry"
-				    binderId="${ssDashboard.beans[componentId].ssBinder.id}">
-				    <ssf:param name="entryType" value="${ssDashboard.beans[componentId].ssBinder.entryDefinitions[0].id}" />
-		    	    <ssf:param name="newTab" value="1"/>
-		    	    <ssf:param name="addEntryFromIFrame" value="1"/>
-		    	    <ssf:param name="namespace" value="${ss_namespace}"/>    	        	    
-					</ssf:url>" onClick="ss_signGuestbook('${ss_namespace}', this);return false;">
-		<span class="ss_bold"><ssf:nlt tag="guestbook.addEntry"/></span>
-		</a>
+		<c:if test="${!empty ssDashboard.beans[componentId].ssBinder}">
+			<c:set var="entryDefs" value="${ssDashboard.beans[componentId].ssBinder.entryDefinitions}"/>
+			<c:forEach var="entryDefsScan" items="${entryDefs}">
+				<c:if test="${entryDefsScan.name == '_guestbookEntry'}">
+					<c:set var="entryDef" value="${entryDefsScan}"/>
+				</c:if>
+			</c:forEach>
+			<c:if test="${empty entryDef}">
+				<c:set var="entryDef" value="${ssDashboard.beans[componentId].ssBinder.entryDefinitions[0]}"/>
+			</c:if>
+			<c:if test="${!empty entryDef}">
+				<a class="ss_linkButton" href="<ssf:url adapter="true" portletName="ss_forum" 
+						    action="add_folder_entry"
+						    binderId="${ssDashboard.beans[componentId].ssBinder.id}">
+						    <ssf:param name="entryType" value="${entryDef.id}" />
+				    	    <ssf:param name="newTab" value="1"/>
+				    	    <ssf:param name="addEntryFromIFrame" value="1"/>
+				    	    <ssf:param name="namespace" value="${ss_namespace}"/>    	        	    
+							</ssf:url>" onClick="ss_signGuestbook('${ss_namespace}', this);return false;">
+				<span class="ss_bold"><ssf:nlt tag="guestbook.addEntry"/></span>
+				</a>
+			</c:if>
 		</c:if>
 	</div>
   </td>
