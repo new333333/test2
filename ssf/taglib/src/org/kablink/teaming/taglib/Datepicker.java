@@ -198,10 +198,10 @@ public class Datepicker extends TagSupport {
 			sb.append(varname).append(".setCancelText('"+ NLT.get("button.cancel").replaceAll("'", "\\\\'") +"');\n");
 			sb.append(varname).append(".offsetX = -75;\n");
 			if (!this.calendarDivId.equals("")) {
-				sb.append(varname).append(".noAutoHide();\n");
 				sb.append(varname).append(".alwaysShowCalendar();\n");
 				sb.append(varname).append(".noShowCancelButton();\n");
 			}
+			sb.append(varname).append(".noAutoHide();\n");
 			sb.append(varname).append(".setMonthNames(");
 			for (int i = 0; i <= 11; i++) {
 				sb.append("'" + monthnames[i] + "'");
