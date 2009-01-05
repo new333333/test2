@@ -240,10 +240,15 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
        
     //***********************************************************************************************************	
     protected void modifyEntry_setCtx(Entry entry, Map ctx) {
+    	super.modifyEntry_setCtx(entry, ctx);
     	if (entry instanceof GroupPrincipal) {
     		ctx.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, new HashSet(((GroupPrincipal)entry).getMembers()));
     	}
-    	super.modifyEntry_setCtx(entry, ctx);
+       	//save search title
+    	if (entry instanceof User) {
+    		ctx.put(ObjectKeys.FIELD_USER_WS_SEARCHTITLE, ((User)entry).getSearchTitle());
+    		ctx.put(ObjectKeys.FIELD_USER_WS_TITLE, ((User)entry).getWSTitle());
+    	}
     }
     //inside write transaction
    protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
@@ -284,17 +289,18 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 */
    }
    protected void checkUserTitle(User user, Map ctx) {
-	   String originalTitle = (String)ctx.get(ObjectKeys.FIELD_ENTITY_TITLE);
-	   if (!user.getTitle().equals(originalTitle)) {
-		   //need to update user workspace
-		   List excludeIds=null;
+	   String originalWSTitle = (String)ctx.get(ObjectKeys.FIELD_USER_WS_TITLE);
+	   String originalSearchTitle = (String)ctx.get(ObjectKeys.FIELD_USER_WS_SEARCHTITLE);
+	   List excludeIds=null;
+	   if (!user.getWSTitle().equals(originalWSTitle) || !user.getSearchTitle().equals(originalSearchTitle)) {
+		   //need to update user workspace titles and index
 		   if (user.getWorkspaceId() != null) {
 			   Workspace ws = (Workspace)getCoreDao().load(Workspace.class, user.getWorkspaceId());
 			   if (ws != null) {
 				   BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(ws, ws.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 				   Map updates = new HashMap();
-				   updates.put(ObjectKeys.FIELD_ENTITY_TITLE, user.getTitle());
-				   updates.put(ObjectKeys.FIELD_BINDER_SEARCHTITLE, user.getSearchTitle());
+				   updates.put(ObjectKeys.FIELD_ENTITY_TITLE, user.getWSTitle());
+				   updates.put(ObjectKeys.FIELD_WS_SEARCHTITLE, user.getSearchTitle());
 				   try {
 					   processor.modifyBinder(ws, new MapInputData(updates), null, null, null);
 					   excludeIds = new ArrayList();
@@ -308,6 +314,9 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 				   
 			   }
 		   }
+	   }
+	   //index by title only, need to update those entries
+	   if (!user.getTitle().equals((String)ctx.get(ObjectKeys.FIELD_ENTITY_TITLE))) {
 		   List entryIds = getCoreDao().loadObjects("select id from org.kablink.teaming.domain.FolderEntry where creation.principal=" +
 				   user.getId() + " or modification.principal=" + user.getId(), null);
 		   List binderIds = getCoreDao().loadObjects("select id from org.kablink.teaming.domain.Binder where creation.principal=" +
@@ -439,16 +448,16 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     		entryData.put(ObjectKeys.FIELD_PRINCIPAL_NAME, inputData.getSingleValue(ObjectKeys.FIELD_PRINCIPAL_NAME));
     	}
        	String name = (String)entryData.get(ObjectKeys.FIELD_PRINCIPAL_NAME);
-       	String foreignName = (String)entryData.get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME);
        	if (Validator.isNotNull(name)) {
        		//remove blanks
           	name = name.trim();
-          	entryData.put(ObjectKeys.FIELD_PRINCIPAL_NAME, name.toLowerCase());
-          	//setting the name - see if new entry and force foreign name to be same
-       		if (Validator.isNull(((Principal)entry).getName())) {
-       			//preserve case on foreign name
-       			if (Validator.isNull(foreignName)) entryData.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, name); 
-       		}
+          	if (!name.equals(((Principal)entry).getName())) {
+          		entryData.put(ObjectKeys.FIELD_PRINCIPAL_NAME, name.toLowerCase());
+          		//setting the name -  force foreign name to be same if not supplied
+          		//preserve case on foreign name
+               	String foreignName = (String)entryData.get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME);
+          		if (Validator.isNull(foreignName)) entryData.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, name); 
+          	}
        	}
        	
     }

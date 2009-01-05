@@ -702,7 +702,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         	} catch (Exception ex) {};
         }
 		Workspace ws = null;
-		String wsTitle = entry.getTitle() + " ("+ entry.getName()+")";
+		String wsTitle = entry.getWSTitle();
         RequestContext oldCtx = RequestContextHolder.getRequestContext();
         //want the user to be the creator
         RequestContextUtil.setThreadContext(entry).resolve();
