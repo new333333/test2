@@ -54,6 +54,8 @@
 		  </c:if>
 		</script>
 
+		<label for="ss_status_textarea${renderResponse.namespace}"></label>
+
 		<textarea cols="22" rows="2" id="ss_status_textarea${renderResponse.namespace}"
 			wrap="virtual" class="ss_input_myStatus" 
   			onFocus="ss_setStatusBackground(this, 'focus');"
