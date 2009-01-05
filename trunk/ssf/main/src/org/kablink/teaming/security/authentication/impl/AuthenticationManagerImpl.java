@@ -132,6 +132,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		catch (UserDoesNotExistException nu) {
  			if (createUser) {
  				user=getProfileModule().addUserFromPortal(userName, password, updates, null);
+ 				if(user == null) throw nu;
  				if(authenticatorName != null)
  					getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
  			} 
