@@ -55,10 +55,12 @@
 				<span class="ss_labelAbove"><ssf:nlt tag="filter.filterName" text="Filter name"/></span>
 				<input type="text" class="ss_text" style="width:400px;" name="filterName" 
 					value="<c:out value="${ss_selectedFilter}"/>">
+				<input type="hidden" name="filterNameOriginal" value="<c:out value="${ss_selectedFilter}"/>">
 				<br/>
 				<input type="checkbox" name="global"
 				<c:if test="${!empty ss_searchFilterIsGlobal}"> checked="checked" </c:if>
 				>
+				<input type="hidden" name="globalOriginal" value="${ss_searchFilterIsGlobal}">
 				<span class="ss_labelLeft"><ssf:nlt tag="filter.global"/></span>
 			</fieldset>
 
