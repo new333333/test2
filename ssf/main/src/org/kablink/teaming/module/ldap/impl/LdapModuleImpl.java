@@ -397,6 +397,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						if (!foundNames.containsKey(ssName)) { //if haven't just added it
 							if (logger.isDebugEnabled()) logger.debug("id changed: " + row[0] + "->" + ssName);
 							userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME, ssName);
+							userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
 							row[0] = ssName;							
 						} //otherwise update the other fields, just leave old name
 					} else if (row == null && row2 != null) {

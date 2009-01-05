@@ -372,11 +372,12 @@ public interface ObjectKeys {
     public static final String FIELD_BINDER_LIBRARY="library";
     public static final String FIELD_BINDER_NAME="name";
     public static final String FIELD_BINDER_UNIQUETITLES="uniqueTitles";
-    public static final String FIELD_BINDER_SEARCHTITLE="searchTitle";
 	public static final String FIELD_BINDER_MIRRORED = "mirrored"; 
 	public static final String FIELD_BINDER_INHERITTEAMMEMBERS = "teamMembershipInherited"; 
 	public static final String FIELD_BINDER_RESOURCE_DRIVER_NAME = "resourceDriverName";
-	public static final String FIELD_BINDER_RESOURCE_PATH = "resourcePath";
+	public static final String FIELD_BINDER_RESOURCE_PATH = "resourcePath"; 
+	public static final String FIELD_WS_SEARCHTITLE="searchTitle";
+
     public static final String FIELD_USER_FIRSTNAME="firstName";
     public static final String FIELD_USER_MIDDLENAME="middleName";
     public static final String FIELD_USER_LASTNAME="lastName";
@@ -391,6 +392,8 @@ public interface ObjectKeys {
     public static final String FIELD_USER_STATUS="status";
     public static final String FIELD_USER_TIMEZONE="timeZone";
     public static final String FIELD_USER_PASSWORD="password";
+    public static final String FIELD_USER_WS_SEARCHTITLE="wsSearchTitle";
+    public static final String FIELD_USER_WS_TITLE="wsTitle";
     public static final String FIELD_PRINCIPAL_FOREIGNNAME="foreignName";
     public static final String FIELD_PRINCIPAL_NAME="name";
     public static final String FIELD_PRINCIPAL_DISABLED="disabled";

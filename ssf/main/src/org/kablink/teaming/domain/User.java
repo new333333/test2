@@ -108,6 +108,14 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 		//allow title to be changed when a user is deleted.
 		super.setTitle(title);
 	}
+	public String getWSTitle() {
+		String val = super.getTitle();
+    	if (Validator.isNotNull(val)) return val + " (" + getName() + ")";
+    	val = setupTitle();
+    	if (Validator.isNotNull(val)) return val + " (" + getName() + ")";
+    	return getName()+ " (" + getName() + ")";
+ 
+	}
     private String setupTitle() {
     	String val;
     	StringBuffer tBuf = new StringBuffer();

@@ -63,8 +63,8 @@ public class DefaultWorkspaceCoreProcessor extends AbstractBinderProcessor {
     		if (!entryData.containsKey(ObjectKeys.FIELD_ENTITY_TITLE) && inputData.exists(ObjectKeys.FIELD_ENTITY_TITLE)) {
     			binder.setTitle(inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_TITLE));    			
     		}
-    		if (!entryData.containsKey(ObjectKeys.FIELD_BINDER_SEARCHTITLE) && inputData.exists(ObjectKeys.FIELD_BINDER_SEARCHTITLE)) {
-    			((Workspace)binder).setSearchTitle(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_SEARCHTITLE));    			
+    		if (!entryData.containsKey(ObjectKeys.FIELD_WS_SEARCHTITLE) && inputData.exists(ObjectKeys.FIELD_WS_SEARCHTITLE)) {
+    			((Workspace)binder).setSearchTitle(inputData.getSingleValue(ObjectKeys.FIELD_WS_SEARCHTITLE));    			
     		}
 
     	}
