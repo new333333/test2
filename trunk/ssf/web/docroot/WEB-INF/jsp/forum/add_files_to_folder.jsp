@@ -40,7 +40,8 @@
 		</div>
 		<iframe frameborder="0" scrolling="no" 
 		    id="ss_iframe_folder_dropbox${ssFolder.id}${renderResponse.namespace}" 
-		    name="ss_iframe_folder_dropbox${ssFolder.id}${renderResponse.namespace}" 
+		    name="ss_iframe_folder_dropbox${ssFolder.id}${renderResponse.namespace}"
+		    title="Add Files to Folder" 
 		    src="<html:rootPath/>js/forum/null.html" 
 		    height="80%" width="100%">xxx</iframe>
 	</div>
