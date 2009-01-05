@@ -151,6 +151,8 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	public synchronized void deleteRssFeed(Binder binder) {
+		File indexPath = getRssIndexPath(binder);		
+		if (!indexPath.exists()) return;
 		LockFile rfl = new LockFile(getRssIndexLockFile(binder));
 		try {
 			if (!rfl.getLock()) {

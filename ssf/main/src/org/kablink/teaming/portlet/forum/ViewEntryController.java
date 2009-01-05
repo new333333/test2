@@ -702,7 +702,7 @@ public class ViewEntryController extends  SAbstractController {
 		Map qualifiers = new HashMap();
 		qualifiers.put("popup", new Boolean(true));
 		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.shareThis");
-		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
 		adapterUrl.setParameter(WebKeys.ACTION, "__ajax_relevance");
 		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SHARE_THIS_BINDER);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);

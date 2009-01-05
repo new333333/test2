@@ -48,7 +48,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
-import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.WorkAreaHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.util.Validator;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
@@ -154,7 +154,7 @@ public class ConfigureRolesController extends  SAbstractController {
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 		
 		//Set up the role beans
-		BinderHelper.buildAccessControlRoleBeans(this, model);
+		WorkAreaHelper.buildAccessControlRoleBeans(this, model, false);
 		
 		return new ModelAndView("administration/configureRoles", model);
 		

@@ -57,7 +57,7 @@ function ss_accessSetOwner${renderResponse.namespace}(id, obj) {
 	if (fc != null) selectionObj.innerHTML = fc.nodeValue;
 	ss_accessSelectedOwnerId${renderResponse.namespace} = id;
 }
-var ${renderResponse.namespace}accessObj = new ssAccessControl('${renderResponse.namespace}', '${ssBinder.id}');
+var ${renderResponse.namespace}accessObj = new ssAccessControl('${renderResponse.namespace}', '${ssWorkArea.workAreaId}', '${ssWorkArea.workAreaType}');
 var ss_operationSucceeded = "<ssf:nlt tag="general.request.succeeded" text="Request succeeded"/>"
 var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request failed"/>"
 </script>
@@ -76,26 +76,33 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 <span class="ss_bold ss_largerprint"><ssf:nlt tag="access.configure"/></span> <ssf:inlineHelp jsp="workspaces_folders/menus_toolbars/access_control"/>
 <br/>
 <br/>
-<c:if test="${ssBinder.entityType == 'folder'}">
+<c:choose>
+<c:when test="${ssWorkArea.workAreaType == 'folder'}">
   <span><ssf:nlt tag="access.currentFolder"/></span>
-</c:if>
-<c:if test="${ssBinder.entityType != 'folder'}">
+<span class="ss_bold"><ssf:nlt tag="${ssWorkArea.title}" checkIfTag="true"/></span>
+</c:when>
+<c:when test="${ssWorkArea.workAreaType == 'zone'}">
+  <span><ssf:nlt tag="access.zone"/></span>
+</c:when>
+<c:otherwise>
   <span><ssf:nlt tag="access.currentWorkspace"/></span>
-</c:if>
-<% //need to check tags for templates %>
-<span class="ss_bold"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
+	<% //need to check tags for templates %>
+	<span class="ss_bold"><ssf:nlt tag="${ssWorkArea.title}" checkIfTag="true"/></span>
+</c:otherwise>
+</c:choose>
 <br/>
+<c:if test="${ssWorkArea.workAreaType != 'zone'}">
 <form name="${renderResponse.namespace}changeOwnerForm" id="${renderResponse.namespace}changeOwnerForm" 
   class="ss_form" method="post" style="display:inline;" action="" >
-<c:if test="${ssBinder.entityType == 'folder'}">
+<c:if test="${ssWorkArea.workAreaType == 'folder'}">
   <span><ssf:nlt tag="access.folderOwner"/></span>
 </c:if>
-<c:if test="${ssBinder.entityType != 'folder'}">
+<c:if test="${ssWorkArea.workAreaType != 'folder'}">
   <span><ssf:nlt tag="access.workspaceOwner"/></span>
 </c:if>
 <span id="ss_accessControlOwner${renderResponse.namespace}"
-  class="ss_bold">${ssBinder.owner.title} 
-  <span class="ss_normal ss_smallprint ss_italic">(${ssBinder.owner.name})</span></span>&nbsp;&nbsp;
+  class="ss_bold">${ssWorkArea.owner.title} 
+  <span class="ss_normal ss_smallprint ss_italic">(${ssWorkArea.owner.name})</span></span>&nbsp;&nbsp;
 <span class="ss_fineprint"><a href="javascript: ;" 
   onClick="${renderResponse.namespace}accessObj.showChangeOwnerMenu(this, 'ss_changeOwnerMenu${renderResponse.namespace}');return false;"
   >[<ssf:nlt tag="edit"/>]</a></span>
@@ -105,14 +112,15 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
     class="ss_bold"><ssf:nlt tag="general.request.succeeded"/></span>
 </div>
 </form>
+</c:if>
 </td>
 <td align="right" valign="top">
 <form class="ss_form" method="post" style="display:inline;" 
 	action="<ssf:url ><ssf:param 
 	name="action" value="configure_access_control"/><ssf:param 
 	name="actionUrl" value="true"/><ssf:param 
-	name="binderId" value="${ssBinder.id}"/><ssf:param 
-	name="binderType" value="${ssBinder.entityType}"/></ssf:url>">
+	name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
+	name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
   <input type="submit" class="ss_submit" name="closeBtn" 
     value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
@@ -125,16 +133,16 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   scope="request" />
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 
-<c:if test="${ssBinder.functionMembershipInheritanceSupported}">
+<c:if test="${ssWorkArea.functionMembershipInheritanceSupported}">
   <ssf:box style="rounded">
   <div style="padding:4px 8px;">
   <c:set var="yes_checked" value=""/>
   <c:set var="no_checked" value=""/>
-  <c:if test="${ssBinder.functionMembershipInherited}">
+  <c:if test="${ssWorkArea.functionMembershipInherited}">
     <span class="ss_bold"><ssf:nlt tag="binder.configure.access_control.inheriting"/></span>
     <c:set var="yes_checked" value="checked"/>
   </c:if>
-  <c:if test="${!ssBinder.functionMembershipInherited}">
+  <c:if test="${!ssWorkArea.functionMembershipInherited}">
     <span class="ss_bold"><ssf:nlt tag="binder.configure.access_control.notInheriting" 
     text="This folder is not inheriting its access control settings from its parent folder."/></span>
     <c:set var="no_checked" value="checked"/>
@@ -145,8 +153,8 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
     action="<ssf:url ><ssf:param 
   		name="action" value="configure_access_control"/><ssf:param 
   		name="actionUrl" value="true"/><ssf:param 
-  		name="binderType" value="${ssBinder.entityType}"/><ssf:param 
-  		name="binderId" value="${ssBinder.id}"/></ssf:url>">
+  		name="workAreaType" value="${ssWorkArea.workAreaType}"/><ssf:param 
+  		name="workAreaId" value="${ssWorkArea.workAreaId}"/></ssf:url>">
   <ssf:nlt tag="binder.configure.access_control.inherit"/> <ssf:inlineHelp tag="ihelp.other.inherit_roles"/>
   <br/>
   &nbsp;&nbsp;&nbsp;<input type="radio" name="inherit" value="yes" ${yes_checked}>
@@ -176,19 +184,19 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   action="<ssf:url><ssf:param 
   		name="action" value="configure_access_control"/><ssf:param 
   		name="actionUrl" value="true"/><ssf:param 
-  		name="binderId" value="${ssBinder.id}"/><ssf:param 
-  		name="binderType" value="${ssBinder.entityType}"/></ssf:url>">
+  		name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
+  		name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
 
 <input type="hidden" name="btnClicked"/>
 <input type="hidden" name="roleIdToAdd"/>
-<c:if test="${!ssBinder.functionMembershipInherited && !empty ss_accessParent.ssBinder}">
+<c:if test="${!ssWorkArea.functionMembershipInherited && !empty ss_accessParent.ssWorkArea}">
 <div>
 <img src="<html:imagesPath/>pics/sym_s_checkmark.gif" <ssf:alt tag="alt.checkmark"/>/>&nbsp;
 <span class="ss_italic">
-<c:if test="${ss_accessParent.ssBinder.entityType == 'folder'}">
+<c:if test="${ss_accessParent.ssWorkArea.workAreaType == 'folder'}">
   <ssf:nlt tag="access.designatesFolder"/>
 </c:if>
-<c:if test="${ss_accessParent.ssBinder.entityType != 'folder'}">
+<c:if test="${ss_accessParent.ssWorkArea.workAreaType != 'folder'}">
   <ssf:nlt tag="access.designatesWorkspace"/>
 </c:if>
 </span>
@@ -207,10 +215,10 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
     </a>
   </div>
   <div style="padding:0px 10px 10px 10px;">
-  <c:if test="${ssBinder.entityType == 'folder'}">
+  <c:if test="${ssWorkArea.workAreaType == 'folder'}">
     <span class="ss_bold"><ssf:nlt tag="access.changeFolderOwner"/></span>
   </c:if>
-  <c:if test="${ssBinder.entityType != 'folder'}">
+  <c:if test="${ssWorkArea.workAreaType != 'folder'}">
     <span class="ss_bold"><ssf:nlt tag="access.changeWorkspaceOwner"/></span>
   </c:if>
   <br/>
@@ -235,7 +243,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   onClick="ss_accessSelectOwner${renderResponse.namespace}(this);return false;"/>
   </div>
 </div>
-<c:if test="${!ssBinder.functionMembershipInherited}">
+<c:if test="${!ssWorkArea.functionMembershipInherited}">
 
 <div id="ss_addGroupsMenu${renderResponse.namespace}" 
   style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
@@ -348,7 +356,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 <%@ include file="/WEB-INF/jsp/binder/access_control_table.jsp" %>
 
 <br/>
-<c:if test="${!ssBinder.functionMembershipInherited}">
+<c:if test="${!ssWorkArea.functionMembershipInherited}">
 <br/>
 <input type="submit" class="ss_submit" name="okBtn" 
  onClick="ss_startSpinner();"
@@ -375,8 +383,8 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	action="<ssf:url ><ssf:param 
 	name="action" value="configure_access_control"/><ssf:param 
 	name="actionUrl" value="true"/><ssf:param 
-	name="binderId" value="${ssBinder.id}"/><ssf:param 
-	name="binderType" value="${ssBinder.entityType}"/></ssf:url>">
+	name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
+	name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
   <input type="submit" class="ss_submit" name="closeBtn" 
     value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>

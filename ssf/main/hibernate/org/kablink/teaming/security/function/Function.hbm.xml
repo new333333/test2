@@ -10,6 +10,8 @@
     <version unsaved-value="undefined" name="lockVersion" type="long"/>
     <property name="zoneId" not-null="true"/>
     <property name="name" length="128" not-null="true"/>
+    <property name="internalId" length="32"/>
+	<property name="zoneWide"/>
 <properties name="functionNameKey" unique="true" update="false" insert="false">
 <property name="zoneId" update="false" insert="false"/>
 <property name="name" update="false" insert="false"/>

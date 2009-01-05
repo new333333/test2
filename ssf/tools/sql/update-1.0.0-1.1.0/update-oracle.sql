@@ -32,6 +32,8 @@ alter table SS_FolderEntries add zoneId number(19,0);
 alter table SS_FolderEntries add subscribed number(1,0);
 alter table SS_Forums add branding clob;
 alter table SS_Forums add postingEnabled number(1,0);
+alter table SS_Functions add internalId varchar2(32 char);
+alter table SS_Functions add zoneWide number(1,0);
 create table SS_IndexNode (id char(32) not null, nodeName varchar2(128 char), indexName varchar2(160 char), zoneId number(19,0), accessMode varchar2(16 char), inSynch number(1,0), primary key (id), unique (nodeName, indexName));
 create table SS_IndexingJournal (id number(19,0) not null, zoneId number(19,0), nodeName varchar2(128 char), indexName varchar2(160 char), operationName varchar2(32 char), operationArgs blob, primary key (id));
 create table SS_LdapConnectionConfig (id char(32) not null, zoneId number(19,0), url varchar2(255 char), userIdAttribute varchar2(255 char), mappings clob, userSearches clob, groupSearches clob, principal varchar2(255 char), credentials varchar2(255 char), position number(10,0), primary key (id));

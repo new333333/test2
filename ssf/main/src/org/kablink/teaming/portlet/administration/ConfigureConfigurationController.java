@@ -504,8 +504,8 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		//Access control
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
-		url.setParameter(WebKeys.URL_BINDER_ID, configId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, config.getEntityType().name());
+		url.setParameter(WebKeys.URL_WORKAREA_ID, config.getWorkAreaId().toString());
+		url.setParameter(WebKeys.URL_WORKAREA_TYPE, config.getWorkAreaType());
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.accessControl"), url, qualifiersBlock);
 		//Configuration
 		url = response.createRenderURL();

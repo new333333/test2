@@ -196,6 +196,8 @@ public class WebKeys {
 	public static final String URL_VERSION_ID = "versionId";
 	public static final String URL_UNSEEN = "unseen";
 	public static final String URL_UPLOAD_FILE_ID = "ss_upload_file_id";
+	public static final String URL_WORKAREA_ID="workAreaId";
+	public static final String URL_WORKAREA_TYPE="workAreaType";
 	public static final String URL_WORKFLOW_TYPE = "workflowType";
 	public static final String URL_WHATS_NEW = "whatsNew";
 	public static final String URL_WHATS_NEW_TRACKED = "whatsNewTracked";
@@ -1099,6 +1101,7 @@ public class WebKeys {
     public static final String WIKI_HOMEPAGE_ENTRY_ID="ss_wikiHomepageEntryId";
     public static final String WINDOW_STATE="ss_windowState";
     public static final String WINDOW_HEIGHT="ss_windowHeight";
+    public static final String WORKAREA="ssWorkArea";
     public static final String WORKAREA_OPERATIONS="ssWorkAreaOperations";
     public static final String WORKFLOW_CAPTIONS="ssWorkflowCaptions";
     public static final String WORKFLOW_DEFINITION="ssWorkflowDefinition";

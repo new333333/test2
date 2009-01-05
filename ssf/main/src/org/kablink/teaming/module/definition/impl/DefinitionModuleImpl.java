@@ -153,7 +153,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    		if (type.equals(Definition.FOLDER_ENTRY) || type.equals(Definition.FOLDER_VIEW) || type.equals(Definition.WORKSPACE_VIEW)) {
    			if (binder == null) {
    				if (getAccessControlManager().testOperation(top, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS)) return;
-   				getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+   				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    			} else {
   				if (getAccessControlManager().testOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS)) return;
   				getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
@@ -161,13 +161,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    		} else if (type.equals(Definition.WORKFLOW)) {
    			if (binder ==  null) {
    				if (getAccessControlManager().testOperation(top, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS)) return;
-   				getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+   				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    			} else {
   				if (getAccessControlManager().testOperation(binder, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS)) return;
    				getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
    			}
    		} else {
-   			accessControlManager.checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+   			accessControlManager.checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    		}
 
    	}

@@ -182,7 +182,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  			} else {
         		for (int i=0; i<companies.size(); ++i) {
         			final Workspace zone = (Workspace)companies.get(i);
-        			if (zone.getName().equals(zoneName)) {
+ //       			if (zone.getName().equals(zoneName)) {
         				getTransactionTemplate().execute(new TransactionCallback() {
         					public Object doInTransaction(TransactionStatus status) {
         						upgradeZoneTx(zone);
@@ -190,7 +190,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
         					}
         				});
         			}
-        		}
+//        		}
 				//make sure zone is setup correctly
 				getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
@@ -242,55 +242,56 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getCoreDao().save(zoneConfig);
 		return zoneConfig;
 	}
- 	protected void upgradeZoneTx(Workspace zone) {
-		Workspace top = getCoreDao().findTopWorkspace(zone.getName());
-		String superName = SZoneConfig.getAdminUserName(zone.getName());
+ 	protected void upgradeZoneTx(Workspace top) {
+		String superName = SZoneConfig.getAdminUserName(top.getName());
  		//	get super user from config file - must exist or throws and error
- 		User superU = getProfileDao().findUserByName(superName, zone.getName());
+ 		User superU = getProfileDao().findUserByName(superName, top.getName());
  		RequestContextUtil.setThreadContext(superU).resolve();
  		
  		ZoneConfig zoneConfig;
  		Integer version=0;  //used to mimic pre-boulder upgradeVersion on ws
  		try {
- 			zoneConfig = getZoneConfig(zone.getId());
+ 			zoneConfig = getZoneConfig(top.getId());
  			version = zoneConfig.getUpgradeVersion();
  		} catch (NoObjectByTheIdException zx) {
 			// Make sure there is a ZoneConfig; new for v2
- 			zoneConfig = addZoneConfigTx(zone);
+ 			zoneConfig = addZoneConfigTx(top);
  		}
  		if ((version == null) || version.intValue() <= 1) {
  			//TODO: setZoneId as non=null, only do based on version
-			getCoreDao().executeUpdate("update org.kablink.teaming.domain.AuditTrail set zoneId=" + zone.getId() + 
+			getCoreDao().executeUpdate("update org.kablink.teaming.security.Function set zoneWide=false where zoneWide is null"); 
+			
+			getCoreDao().executeUpdate("update org.kablink.teaming.domain.AuditTrail set zoneId=" + top.getId() + 
 				" where zoneId is null");
-			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Tag set zoneId=" + zone.getId() + 
+			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Tag set zoneId=" + top.getId() + 
 				" where zoneId is null");
-			getCoreDao().executeUpdate("update org.kablink.teaming.domain.WorkflowState set zoneId=" + zone.getId() + 
+			getCoreDao().executeUpdate("update org.kablink.teaming.domain.WorkflowState set zoneId=" + top.getId() + 
 				" where zoneId is null");
-			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Event set zoneId=" + zone.getId() + 
+			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Event set zoneId=" + top.getId() + 
 				" where zoneId is null");
-			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Visits set zoneId=" + zone.getId() + 
+			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Visits set zoneId=" + top.getId() + 
 				" where zoneId is null");
-			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Subscription set zoneId=" + zone.getId() + 
+			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Subscription set zoneId=" + top.getId() + 
 				" where zoneId is null");
-			getCoreDao().executeUpdate("update org.kablink.teaming.domain.LibraryEntry set zoneId=" + zone.getId() + 
+			getCoreDao().executeUpdate("update org.kablink.teaming.domain.LibraryEntry set zoneId=" + top.getId() + 
 				" where zoneId is null");
-			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Dashboard set zoneId=" + zone.getId() + 
+			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Dashboard set zoneId=" + top.getId() + 
 				" where zoneId is null");
-			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Attachment set zoneId=" + zone.getId() + 
+			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Attachment set zoneId=" + top.getId() + 
 				" where zoneId is null");
-			getCoreDao().executeUpdate("update org.kablink.teaming.domain.SeenMap set zoneId=" + zone.getId() + 
+			getCoreDao().executeUpdate("update org.kablink.teaming.domain.SeenMap set zoneId=" + top.getId() + 
 				" where zoneId is null");
-			getCoreDao().executeUpdate("update org.kablink.teaming.domain.WorkflowResponse set zoneId=" + zone.getId() + 
+			getCoreDao().executeUpdate("update org.kablink.teaming.domain.WorkflowResponse set zoneId=" + top.getId() + 
 				" where zoneId is null");
-			getCoreDao().executeUpdate("update org.kablink.teaming.domain.UserProperties set zoneId=" + zone.getId() + 
+			getCoreDao().executeUpdate("update org.kablink.teaming.domain.UserProperties set zoneId=" + top.getId() + 
 				" where zoneId is null");
-			getCoreDao().executeUpdate("update org.kablink.teaming.domain.FolderEntry set zoneId=" + zone.getId() + 
+			getCoreDao().executeUpdate("update org.kablink.teaming.domain.FolderEntry set zoneId=" + top.getId() + 
 				" where zoneId is null");
-			getCoreDao().executeUpdate("update org.kablink.teaming.domain.CustomAttribute set zoneId=" + zone.getId() + 
+			getCoreDao().executeUpdate("update org.kablink.teaming.domain.CustomAttribute set zoneId=" + top.getId() + 
 				" where zoneId is null");
-			getCoreDao().executeUpdate("update org.kablink.teaming.domain.PostingDef set zoneId=" + zone.getId() + 
+			getCoreDao().executeUpdate("update org.kablink.teaming.domain.PostingDef set zoneId=" + top.getId() + 
 				" where zoneId is null");
-			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Rating set zoneId=" + zone.getId() + 
+			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Rating set zoneId=" + top.getId() + 
 				" where zoneId is null");
 			getCoreDao().executeUpdate("update org.kablink.teaming.domain.TemplateBinder set name=templateTitle where parentBinder is null and (name is null or name='')");
 			getCoreDao().executeUpdate("update org.kablink.teaming.domain.FolderEntry set subscribed=false where subscribed is null");
@@ -304,6 +305,24 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				"where className='com.sitescape.teaming.module.workflow.TimerAction'"); 
 			getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.Notify' " +
 				"where className='com.sitescape.teaming.module.workflow.Notify'"); 
+			//add new reserved functions
+			List ids = new ArrayList();
+			//add users who currently have siteAdmin to the new functions
+			WorkAreaOperation siteAdmin = WorkAreaOperation.getInstance("siteAdministration");
+			List<WorkAreaFunctionMembership>wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(top.getId(), top, siteAdmin);
+			for (WorkAreaFunctionMembership wfm:wfms) {
+				ids.addAll(wfm.getMemberIds());				
+			}
+			addGlobalFunctions(zoneConfig, ids);
+			//Remove old site_admin right
+			//now remove the old right
+			List<Function>fns = getFunctionManager().findFunctions(top.getId(), siteAdmin);
+			for (Function fn:fns) {
+				fn.removeOperation(siteAdmin);
+			}
+			//remove from system
+			WorkAreaOperation.deleteInstance(siteAdmin.getName());
+			//get
 			//fixup user emails
 	 		SFQuery query=null;
 	 		List batch = new ArrayList();
@@ -312,7 +331,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	 			Class processorClass = ReflectHelper.classForName(Principal.class.getName());
 	 			Field fld = processorClass.getDeclaredField("emailAddress");
 	 			fld.setAccessible(true);
-	 			query = getProfileDao().queryAllPrincipals(new FilterControls(), zone.getId());
+	 			query = getProfileDao().queryAllPrincipals(new FilterControls(), top.getId());
 	      		while (query.hasNext()) {
 	       			int count=0;
 	       			batch.clear();
@@ -365,7 +384,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				Field fld = processorClass.getDeclaredField("style");
 				fld.setAccessible(true);
 				String [] styles = new String[] {Principal.PRIMARY_EMAIL};
-	 			query = getCoreDao().queryObjects(new ObjectControls(Subscription.class), null, zone.getId());
+	 			query = getCoreDao().queryObjects(new ObjectControls(Subscription.class), null, top.getId());
 	      		while (query.hasNext()) {
 	       			int count=0;
 	       			batch.clear();
@@ -412,7 +431,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	 		}
 			//move old workflowStateHistory rows to new table
 	 		try {
-	 			query = getCoreDao().queryObjects(new ObjectControls(WorkflowStateHistory.class), null, zone.getId());
+	 			query = getCoreDao().queryObjects(new ObjectControls(WorkflowStateHistory.class), null, top.getId());
 	      		while (query.hasNext()) {
 	       			int count=0;
 	       			batch.clear();
@@ -442,7 +461,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	 			query=null;
 	 		}
 			//remove the old history
-			getCoreDao().executeUpdate("delete org.kablink.teaming.domain.WorkflowStateHistory where zoneId=" + zone.getId());
+			getCoreDao().executeUpdate("delete org.kablink.teaming.domain.WorkflowStateHistory where zoneId=" + top.getId());
 
 			//create schedule first time through
 			ScheduleInfo notify = getAdminModule().getNotificationSchedule();
@@ -454,7 +473,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getAdminModule().setMailConfigAndSchedules(zoneConfig.getMailConfig(), notify, null);
 			
 			//If not configured yet,  check old config
-			if (getCoreDao().loadObjects(LdapConnectionConfig.class, null, zone.getId()).isEmpty()) {				
+			if (getCoreDao().loadObjects(LdapConnectionConfig.class, null, top.getId()).isEmpty()) {				
 				LdapSchedule schedule = getLdapModule().getLdapSchedule();
 				LdapSchedule.LegacyLdapConfig oldConfig = new LdapSchedule.LegacyLdapConfig(schedule.getScheduleInfo().getDetails());
 				//make sure was configured already
@@ -479,7 +498,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 					LdapConnectionConfig connection = new LdapConnectionConfig(url, userId, 
 							oldConfig.getUserMappings(), userSearch, groupSearch, oldConfig.getUserPrincipal(), oldConfig.getUserCredential());
 					connection.setPosition(0);
-					connection.setZoneId(zone.getId());
+					connection.setZoneId(top.getId());
 					getCoreDao().save(connection);
 				}
 			}
@@ -500,15 +519,26 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  			definitions.add(def.getId());
 			getBinderModule().setDefinitions(top.getId(), definitions, workflowAssociations);
    		}
-		//update jbpm --remove before ship
-		getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.EnterExitEvent' " +
-				"where className='com.sitescape.team.module.workflow.EnterExitEvent'"); 
-		getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.DecisionAction' " +
-			"where className='com.sitescape.team.module.workflow.DecisionAction'"); 
-		getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.TimerAction' " +
-			"where className='com.sitescape.team.module.workflow.TimerAction'"); 
-		getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.Notify' " +
-			"where className='com.sitescape.team.module.workflow.Notify'"); 
+		//temp for inhouse; remove zonenamecheck in call to upgradeTX
+		if (getFunctionManager().findFunctions(top.getId(), WorkAreaOperation.ZONE_ADMINISTRATION).isEmpty()) {
+			//	add new reserved functions
+			List ids = new ArrayList();
+			//add users who currently have siteAdmin to the new functions
+			WorkAreaOperation siteAdmin = WorkAreaOperation.getInstance("siteAdministration");
+			List<WorkAreaFunctionMembership>wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(top.getId(), top, siteAdmin);
+			for (WorkAreaFunctionMembership wfm:wfms) {
+				ids.addAll(wfm.getMemberIds());				
+			}
+			addGlobalFunctions(zoneConfig, ids);
+			//Remove old site_admin right
+			//now remove the old right
+			List<Function>fns = getFunctionManager().findFunctions(top.getId(), siteAdmin);
+			for (Function fn:fns) {
+				fn.removeOperation(siteAdmin);
+			}
+			//remove from system
+			WorkAreaOperation.deleteInstance(siteAdmin.getName());
+		}
 
   	}
  	// Must be running inside a transaction set up by the caller 
@@ -662,7 +692,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		Function guestParticipantRole = addGuestParticipantRole(top);
     		Function teamMemberRole = addTeamMemberRole(top);
     		Function binderRole = 	addBinderRole(top);
-    		Function adminRole = addAdminRole(top);
     		Function teamWsRole = addTeamWorkspaceRole(top);
     		//make sure allusers group and roles are defined, may be referenced by templates
     		getAdminModule().updateDefaultDefinitions(top.getId(), false);
@@ -726,7 +755,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	
     		members.clear();
     		members.add(user.getId());
-    		addMembership(top, adminRole, top, members);
+    		addGlobalFunctions(zoneConfig, members);
     		//use module instead of processor directly so index synchronziation works correctly
     		//index flushes entries from session - don't make changes without reload
        		getBinderModule().indexTree(top.getId());
@@ -993,13 +1022,14 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			function.addOperation((WorkAreaOperation)iter.next());			
 		}
 //		function.removeOperation(WorkAreaOperation.USER_SEE_COMMUNITY);
-		function.removeOperation(WorkAreaOperation.SITE_ADMINISTRATION);
 		
 		//generate functionId
 		getFunctionManager().addFunction(function);
 		return function;
 	}
-	private Function addAdminRole(Workspace top) {
+/**No longer used, since the SITE_ADMIN right only made sense on top workspace.
+ * For V2, this is no longer visible.	
+  private Function addAdminRole(Workspace top) {
 		Function function = new Function();
 		function.setZoneId(top.getId());
 		function.setName(ObjectKeys.ROLE_TITLE_SITE_ADMIN);
@@ -1011,6 +1041,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getFunctionManager().addFunction(function);
 		return function;
 	}
+	**/
 	private Function addTeamWorkspaceRole(Workspace top) {
 		Function function = new Function();
 		function.setZoneId(top.getId());
@@ -1027,6 +1058,44 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		ms.setZoneId(top.getId());
 		ms.setFunctionId(function.getId());
 		Set members = new HashSet(ids);
+		ms.setMemberIds(members);
+		getCoreDao().save(ms);
+		
+	}
+	private void addGlobalFunctions(ZoneConfig zoneConfig, List ids) {
+		Set members = new HashSet(ids);
+
+		Function function = new Function();
+		function.setZoneId(zoneConfig.getZoneId());
+		function.setName(ObjectKeys.ROLE_ZONE_ADMINISTRATION);
+		function.setInternalId(ObjectKeys.FUNCTION_SITE_ADMIN_INTERNALID);
+		function.addOperation(WorkAreaOperation.ZONE_ADMINISTRATION);
+		function.setZoneWide(true);
+		//generate functionId
+		getFunctionManager().addFunction(function);
+
+		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
+		ms.setWorkAreaId(zoneConfig.getWorkAreaId());
+		ms.setWorkAreaType(zoneConfig.getWorkAreaType());
+		ms.setZoneId(zoneConfig.getZoneId());
+		ms.setFunctionId(function.getId());
+		ms.setMemberIds(members);
+		getCoreDao().save(ms);
+		
+		function = new Function();
+		function.setZoneId(zoneConfig.getZoneId());
+		function.setName(ObjectKeys.ROLE_ADD_GUEST_ACCESS);
+		function.setInternalId(ObjectKeys.FUNCTION_ADD_GUEST_ACCESS_INTERNALID);
+		function.addOperation(WorkAreaOperation.ADD_GUEST_ACCESS);
+		function.setZoneWide(true);
+		//generate functionId
+		getFunctionManager().addFunction(function);
+
+		ms = new WorkAreaFunctionMembership();
+		ms.setWorkAreaId(zoneConfig.getWorkAreaId());
+		ms.setWorkAreaType(zoneConfig.getWorkAreaType());
+		ms.setZoneId(zoneConfig.getZoneId());
+		ms.setFunctionId(function.getId());
 		ms.setMemberIds(members);
 		getCoreDao().save(ms);
 		

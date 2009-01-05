@@ -637,8 +637,8 @@ public class WorkspaceTreeHelper {
 			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.accessControlMenu");
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
+			url.setParameter(WebKeys.URL_WORKAREA_ID, workspace.getWorkAreaId().toString());
+			url.setParameter(WebKeys.URL_WORKAREA_TYPE, workspace.getWorkAreaType());
 			toolbar.addToolbarMenuItem("1_administration", "", 
 					NLT.get("toolbar.menu.accessControl"), url, qualifiers);
 		}

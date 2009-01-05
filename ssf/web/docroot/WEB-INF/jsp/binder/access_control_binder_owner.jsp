@@ -40,8 +40,8 @@
 	<taconite-replace contextNodeID="ss_accessControlOwner${ss_namespace}" 
 	parseInBrowser="true">
 	<span id="ss_accessControlOwner${ss_namespace}"
-	  class="ss_bold">${ssBinder.owner.title} 
-	  <span class="ss_normal ss_smallprint ss_italic">(${ssBinder.owner.name})</span></span>
+	  class="ss_bold">${ssWorkArea.owner.title} 
+	  <span class="ss_normal ss_smallprint ss_italic">(${ssWorkArea.owner.name})</span></span>
 	</taconite-replace>
 
 </c:if>

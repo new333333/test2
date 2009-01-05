@@ -153,7 +153,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 	}
 	protected void checkAccess(LdapOperation operation) {
-		getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
+		getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
 	}
 	protected String getLdapProperty(String zoneName, String name) {
 		String val = SZoneConfig.getString(zoneName, "ldapConfiguration/property[@name='" + name + "']");

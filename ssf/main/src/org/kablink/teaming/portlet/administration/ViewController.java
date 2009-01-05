@@ -54,6 +54,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionModule.DefinitionOperation;
@@ -446,6 +447,23 @@ public class ViewController extends  SAbstractController {
 			element.addAttribute("id", String.valueOf(nextId++));
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_ZONES);
+			url.setWindowState(WindowState.MAXIMIZED);
+			url.setPortletMode(PortletMode.VIEW);
+			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
+		}
+		//Zone admin
+		ZoneConfig zoneConfig = getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+		if (getAdminModule().testAccess(AdminOperation.manageFunctionMembership)) {
+			
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+			element.addAttribute("title", NLT.get("administration.manage.accessControl"));
+			element.addAttribute("image", "bullet");
+			element.addAttribute("id", String.valueOf(nextId++));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
+			url.setParameter(WebKeys.URL_WORKAREA_ID, zoneConfig.getWorkAreaId().toString());
+			url.setParameter(WebKeys.URL_WORKAREA_TYPE, zoneConfig.getWorkAreaType());
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());

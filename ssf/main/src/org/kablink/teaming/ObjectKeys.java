@@ -103,13 +103,16 @@ public interface ObjectKeys {
 	public static final String GUEST_USER_INTERNALID="402883b90d0de1f3010d0df5582b0013";
 	//reserverd internalids for allapplication group
 	public static final String ALL_APPLICATIONS_GROUP_INTERNALID="402883b90d0de1f3010d0df5582b0014";
+	//reserved internaId for _zoneAdministration pseudo role 
+	public static final String FUNCTION_SITE_ADMIN_INTERNALID="402883b90d0de1f3010d0df5582b0015";
+	//reserved id for _enableGuestAccess pseudo role  
+	public static final String FUNCTION_ADD_GUEST_ACCESS_INTERNALID="402883b90d0de1f3010d0df5582b0017";
 	//reserved id put in acls/membership to indicate owner of object has access
 	//search engine stores the ownerId of the entity in place of this
 	public static final Long OWNER_USER_ID = Long.valueOf(-1);
 	//reserved id put in acls/membership to indicate team members have access
 	//search engine stores the actual members of the team in place of this
 	public static final Long TEAM_MEMBER_ID = Long.valueOf(-2);
-
     //custom property prefix from ssf.properties
 	public static final String CUSTOM_PROPERTY_PREFIX="custom.";
 
@@ -151,8 +154,12 @@ public interface ObjectKeys {
     public static final String ROLE_TITLE_TEAM_MEMBER="__role.teamMember";
     public static final String ROLE_TITLE_BINDER_ADMIN="__role.binderAdmin";
     public static final String ROLE_TITLE_WORKSPACE_CREATOR="__role.workspaceCreator";
-    public static final String ROLE_TITLE_SITE_ADMIN="__role.siteAdmin";
-
+    public static final String ROLE_TITLE_SITE_ADMIN="__role.siteAdmin"; //deprecated
+    //reserved pseudo roles. Only have 1 right each and cannot be editted by user.
+    //Used to similate a group of users without actually using the group facility.
+    //Allows access checking to work consistantly
+    public static final String ROLE_ZONE_ADMINISTRATION="__role.zoneAdministration";
+    public static final String ROLE_ADD_GUEST_ACCESS="__role.addGuestAccess";
     //map keys from admin/sendMail
     public static final String SENDMAIL_ERRORS="errors";
     public static final String SENDMAIL_DISTRIBUTION="distributionList";

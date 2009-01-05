@@ -1481,8 +1481,8 @@ public class ListFolderHelper {
 			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.accessControlMenu");
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
+			url.setParameter(WebKeys.URL_WORKAREA_ID, folder.getWorkAreaId().toString());
+			url.setParameter(WebKeys.URL_WORKAREA_TYPE, folder.getWorkAreaType());
 			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.accessControl"), url, qualifiers);
 		}
 

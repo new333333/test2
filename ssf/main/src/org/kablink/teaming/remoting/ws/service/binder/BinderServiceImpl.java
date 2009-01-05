@@ -160,6 +160,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			 String functionName = XmlUtils.getProperty(wfmElement, ObjectKeys.XTAG_WA_FUNCTION_NAME);
 			 Function func = null;
 			 for (Function f:functions) {
+				 if (f.isZoneWide()) continue;
 				 if (f.getName().equals(functionName)) {
 					 func = f;
 					 break;
@@ -293,6 +294,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			functionMembership = functionMemberships[i];
 			 Function func = null;
 			 for (Function f:functions) {
+				 if (f.isZoneWide()) continue;
 				 if (f.getName().equals(functionMembership.getFunctionName())) {
 					 func = f;
 					 break;

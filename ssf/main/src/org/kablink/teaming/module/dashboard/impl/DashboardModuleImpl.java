@@ -208,7 +208,7 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
     		//must be a binder 
     		Binder binder = getCoreDao().loadBinder(id.getEntityId(), user.getZoneId());
     		if (binder instanceof TemplateBinder) {
-       			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
+       			getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(user.getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
     		} else {
        			getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
     		}

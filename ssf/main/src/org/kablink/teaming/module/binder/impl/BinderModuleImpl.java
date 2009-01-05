@@ -154,7 +154,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 */	
 	public void checkAccess(Binder binder, BinderOperation operation) throws AccessControlException {
 		if (binder instanceof TemplateBinder) {
-  			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
+  			getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
   		} else {
   			switch (operation) {
   				case addFolder:
@@ -173,6 +173,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	  			case setProperty:
 	  			case manageConfiguration:
 	  			case manageTeamMembers:
+				case manageSimpleName:
+				case changeEntryTimestamps:
 		 			getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION); 	 	
 		 			break;	
 	 			case manageTag:
@@ -181,12 +183,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 			case report:
 	 				 getAccessControlManager().checkOperation(binder, WorkAreaOperation.GENERATE_REPORTS);
 	 				 break;
-				case changeEntryTimestamps:
-					getAccessControlManager().checkOperation(binder, WorkAreaOperation.SITE_ADMINISTRATION);
-					break;
-				case manageSimpleName:
-	 				 getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
-	 				 break;			
 	  			default:
 	   				throw new NotSupportedException(operation.toString(), "checkAccess");
 
