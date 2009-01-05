@@ -143,11 +143,13 @@ public class Function extends ZonedObject {
     
     public void addOperation(WorkAreaOperation operation) {
         getOperations().add(operation);
+        computeOperationNames();
     }
     
     public void removeOperation(WorkAreaOperation operation) {
         getOperations().remove(operation);
-    }
+        computeOperationNames();
+   }
     
     /**
      * @hibernate.set lazy="false" table="SS_FunctionOperations" cascade="all"
