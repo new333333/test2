@@ -80,7 +80,7 @@
   name="<%= elementName %>" <%= multiple %> <%= size %>
   <c:if test="${formType == 'task'}">
   	onchange="ss_tasks.adjustFormAttributes(this.name);"
-  </c:if>>
+  </c:if>
   >
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
