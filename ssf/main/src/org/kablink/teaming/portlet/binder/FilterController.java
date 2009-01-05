@@ -65,7 +65,10 @@ public class FilterController extends AbstractBinderController {
 		Map formData = request.getParameterMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));	
 		String binderType = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_BINDER_TYPE);	
+		String filterNameOriginal = PortletRequestUtils.getStringParameter(request, "filterNameOriginal", "");
+		String globalOriginal = PortletRequestUtils.getStringParameter(request, "globalOriginal", "---");
 		User user = RequestContextHolder.getRequestContext().getUser();
+		Binder binder = getBinderModule().getBinder(binderId);
 			
 		//See if the form was submitted
 		if (formData.containsKey("okBtn")) {
@@ -74,21 +77,58 @@ public class FilterController extends AbstractBinderController {
 			Document searchFilter = requestParser.getSearchQuery();
 			if (searchFilter != null) {
 				if (SearchFilter.checkIfFilterGlobal(searchFilter)) {
-					Binder binder = getBinderModule().getBinder(binderId);
-					Map searchFilters = (Map)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
-					if (searchFilters == null) searchFilters = new HashMap();
-					searchFilters.put(SearchFilter.getFilterName(searchFilter), searchFilter.asXML());
+					Map searchFiltersG = (Map)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
+					if (searchFiltersG == null) searchFiltersG = new HashMap();
+					searchFiltersG.put(SearchFilter.getFilterName(searchFilter), searchFilter.asXML());
 					if (getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
-						getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FILTERS, searchFilters);
+						getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FILTERS, searchFiltersG);
+					}
+					if (globalOriginal != null && !globalOriginal.equals("true")) {
+						//This was a change from personal to global, delete the old one
+						UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), binderId);
+						Map searchFiltersP = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+						if (searchFiltersP == null) searchFiltersP = new HashMap();
+						if (searchFiltersP.containsKey(filterNameOriginal)) {
+							searchFiltersP.remove(filterNameOriginal);
+							//Save the updated search filters
+							getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFiltersP);
+						}
+					}
+					if (!filterNameOriginal.equals(SearchFilter.getFilterName(searchFilter))) {
+						//The name was modified, delete the old filter
+						if (searchFiltersG.containsKey(filterNameOriginal)) {
+							searchFiltersG.remove(filterNameOriginal);
+							if (getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
+								getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FILTERS, searchFiltersG);
+							}
+						}
 					}
 				} else {
 					UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-					Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
-					if (searchFilters == null) searchFilters = new HashMap();
-					searchFilters.put(SearchFilter.getFilterName(searchFilter), searchFilter.asXML());
-					
+					Map searchFiltersP = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+					if (searchFiltersP == null) searchFiltersP = new HashMap();
+					searchFiltersP.put(SearchFilter.getFilterName(searchFilter), searchFilter.asXML());
 					//Save the updated search filters
-					getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
+					getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFiltersP);
+
+					//See if the filter was changed to global or if the name was changed
+					if (globalOriginal != null && globalOriginal.equals("true")) {
+						//This was a change from global to personal, delete the old one
+						Map searchFiltersG = (Map)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
+						if (searchFiltersG != null && searchFiltersG.containsKey(filterNameOriginal)) {
+							searchFiltersG.remove(filterNameOriginal);
+							if (getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
+								getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FILTERS, searchFiltersG);
+							}
+						}
+					}
+					if (!filterNameOriginal.equals(SearchFilter.getFilterName(searchFilter))) {
+						//The name was modified, delete the old filter
+						if (searchFiltersP.containsKey(filterNameOriginal)) {
+							searchFiltersP.remove(filterNameOriginal);
+							getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFiltersP);
+						}
+					}
 				}
 			}
 			setupViewBinder(response, binderId, binderType);
@@ -112,7 +152,6 @@ public class FilterController extends AbstractBinderController {
 			//This is a request to delete a global filter
 			String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilterGlobal", "");
 			if (!selectedSearchFilter.equals("")) {
-				Binder binder = getBinderModule().getBinder(binderId);
 				Map searchFilters = (Map)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
 				if (searchFilters == null) searchFilters = new HashMap();
 				if (searchFilters.containsKey(selectedSearchFilter)) {
