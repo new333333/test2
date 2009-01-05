@@ -1159,8 +1159,8 @@ text/calendar											  ics
 			<list>
 				<!-- Extension hot-deploy listener -->
 				<bean class="org.springframework.scheduling.timer.ScheduledTimerTask">	
-					<!-- period between invocations (ms) -->
-					<property name="period" value="30000" />
+					<!-- period between invocations (ms) 5mins -->
+					<property name="period" value="300000" />
 					<property name="timerTask">
 						<bean class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean">
 							<property name="targetObject" ref="extDeployer" />

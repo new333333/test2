@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-function ssAccessControl(namespace, binderId) {
+function ssAccessControl(namespace, workAreaId, workAreaType) {
 	var rolesFormName = namespace + 'rolesForm';
 	
 	this.selectPrincipals = function (ids) {
@@ -57,7 +57,7 @@ function ssAccessControl(namespace, binderId) {
 	}
 	function selectPrincipalAjax() {
 		ss_setupStatusMessageDiv()
-	 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_access_control_table", namespace:namespace, binderId:binderId});
+	 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_access_control_table", namespace:namespace, workAreaId:workAreaId, workAreaType:workAreaType});
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 		ajaxRequest.addFormElements(rolesFormName);
 		//ajaxRequest.setEchoDebugInfo();
@@ -89,7 +89,7 @@ function ssAccessControl(namespace, binderId) {
 	this.selectOwner = function (ownerId, propagate) {
 		ss_setupStatusMessageDiv()
 		self.document.getElementById("ss_status_message").innerHTML = ss_operationFailed;
-	 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"set_binder_owner_id", namespace:namespace, ownerId:ownerId, binderId:binderId, propagate:propagate});
+	 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"set_binder_owner_id", namespace:namespace, ownerId:ownerId, workAreaId:workAreaId, workAreaType:workAreaType, propagate:propagate});
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 		ajaxRequest.setPostRequest(ss_selectOwnerCallBack);
 		ajaxRequest.sendRequest();  //Send the request

@@ -54,7 +54,8 @@ public class EntityIdentifier {
 		folderEntry (6),
 		dashboard (7),
 		application (8),
-		applicationGroup (9);
+		applicationGroup (9),
+		zone(10);
 		int dbValue;
 		EntityType(int dbValue) {
 			this.dbValue = dbValue;
@@ -83,6 +84,7 @@ public class EntityIdentifier {
 			case 7: return EntityType.dashboard;
 			case 8: return EntityType.application;
 			case 9: return EntityType.applicationGroup;
+			case 10: return EntityType.zone;
 			default: return EntityType.none;
 			}
 		}

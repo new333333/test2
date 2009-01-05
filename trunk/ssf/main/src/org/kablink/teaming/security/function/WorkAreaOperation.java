@@ -48,7 +48,6 @@ public class WorkAreaOperation {
     // It is critically important to have this map instantiated here
     // BEFORE pre-defined WorkAreOperation instances are created. 
     private static final Map Instances = new HashMap();
-
     //Workarea operations
     //  Important: do not create operations that control the viewing of an entry of folder.
     //  Such "view" operations should be controlled by the ACL. (not implemented)
@@ -58,7 +57,6 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation READ_ENTRIES = new WorkAreaOperation("readEntries");
     public final static WorkAreaOperation ADD_REPLIES = new WorkAreaOperation("addReplies");
     public final static WorkAreaOperation GENERATE_REPORTS = new WorkAreaOperation("generateReports");
-    public final static WorkAreaOperation SITE_ADMINISTRATION = new WorkAreaOperation("siteAdministration");
     public final static WorkAreaOperation BINDER_ADMINISTRATION = new WorkAreaOperation("binderAdministration");
     public final static WorkAreaOperation CHANGE_ACCESS_CONTROL = new WorkAreaOperation("changeAccessControl");
     public final static WorkAreaOperation CREATE_WORKSPACES = new WorkAreaOperation("createWorkspaces");
@@ -70,24 +68,42 @@ public class WorkAreaOperation {
 //    public final static WorkAreaOperation USER_SEE_COMMUNITY = new WorkAreaOperation("userSeeCommunity");
 //    public final static WorkAreaOperation USER_SEE_ALL = new WorkAreaOperation("userSeeAll");
     public final static WorkAreaOperation ADD_COMMUNITY_TAGS = new WorkAreaOperation("addTags");
+    //The following rights should not be used in access management of workareas.  Used to give access to zone-wide functions to a
+    //group of users
+    public final static WorkAreaOperation ZONE_ADMINISTRATION = new WorkAreaOperation("zoneAdministration", true);
+    public final static WorkAreaOperation ADD_GUEST_ACCESS = new WorkAreaOperation("addGuestAccess", true);
+
     private String name;
-    
+    private boolean zoneWide=false;
     private WorkAreaOperation(String name) {
         this.name = name;
-        
         Instances.put(name, this);
     }
     
+    private WorkAreaOperation(String name, boolean zoneWide) {
+        this.name = name;
+        this.zoneWide = zoneWide;
+        Instances.put(name, this);
+    }
     public String getName() {
         return name;
     }
-    
+    public boolean isZoneWide() {
+    	return zoneWide;
+    }
+    public void setZoneWide(boolean zoneWide) {
+    	this.zoneWide = zoneWide;
+    }
     public static WorkAreaOperation getInstance(String name) {
         WorkAreaOperation op = (WorkAreaOperation) Instances.get(name);
         if(op == null) {
             op = new WorkAreaOperation(name);
         }
         return op;
+    }
+    //used to removed old operations from system
+    public static void deleteInstance(String name) {
+    	Instances.remove(name);
     }
     
     /*

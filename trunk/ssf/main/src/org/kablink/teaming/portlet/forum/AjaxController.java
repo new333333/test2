@@ -115,6 +115,7 @@ import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.filter.SearchFiltersBuilder;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlException;
+import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.survey.Question;
 import org.kablink.teaming.survey.Survey;
@@ -1296,15 +1297,21 @@ public class AjaxController  extends SAbstractControllerRetry {
 	
 	private void ajaxSetBinderOwnerId(ActionRequest request, 
 			ActionResponse response) throws Exception {
-		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		String ownerId = PortletRequestUtils.getStringParameter(request, "ownerId", "");
-		String sPropagate = PortletRequestUtils.getStringParameter(request, "propagate", "");
-		if (!ownerId.equals("")) {
-			Binder binder = getBinderModule().getBinder(binderId);
-			boolean bPropagate = false;
-			if (sPropagate.equals("on") || sPropagate.equals("true")) bPropagate = true;
-			getAdminModule().setWorkAreaOwner(binder, Long.valueOf(ownerId), bPropagate);
+		if (Validator.isNull(ownerId)) return;
+		WorkArea workArea = null;
+		Long workAreaId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_WORKAREA_ID));				
+		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKAREA_TYPE);	
+		if (EntityIdentifier.EntityType.valueOf(type).isBinder()) {
+			workArea = getBinderModule().getBinder(workAreaId);
+		} else {
+			workArea = getZoneModule().getZoneConfig(workAreaId);
+
 		}
+		String sPropagate = PortletRequestUtils.getStringParameter(request, "propagate", "");
+		boolean bPropagate = false;
+		if (sPropagate.equals("on") || sPropagate.equals("true")) bPropagate = true;
+		getAdminModule().setWorkAreaOwner(workArea, Long.valueOf(ownerId), bPropagate);
 	}
 	
 	private void ajaxModifyGroup(ActionRequest request, 
@@ -1476,10 +1483,17 @@ public class AjaxController  extends SAbstractControllerRetry {
 	
 	private ModelAndView ajaxGetAccessControlTable(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		Binder binder = getBinderModule().getBinder(binderId);
+		WorkArea workArea = null;
+		Long workAreaId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_WORKAREA_ID));				
+		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKAREA_TYPE);	
+		if (EntityIdentifier.EntityType.valueOf(type).isBinder()) {
+			workArea = getBinderModule().getBinder(workAreaId);
+		} else {
+			workArea = getZoneModule().getZoneConfig(workAreaId);
+
+		}
 		Map model = new HashMap();
-		AccessControlController.setupAccess(this, request, response, binder, model);
+		AccessControlController.setupAccess(this, request, response, workArea, model);
 		
 		// User context
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -1695,11 +1709,16 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 		model.put(WebKeys.NAMESPACE, namespace);
-		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-		if (binderId != null) {
-			Binder binder = getBinderModule().getBinder(binderId);
-			model.put(WebKeys.BINDER, binder);
-			}
+		WorkArea workArea = null;
+		Long workAreaId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_WORKAREA_ID));				
+		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKAREA_TYPE);	
+		if (EntityIdentifier.EntityType.valueOf(type).isBinder()) {
+			workArea = getBinderModule().getBinder(workAreaId);
+		} else {
+			workArea = getZoneModule().getZoneConfig(workAreaId);
+
+		}
+		model.put(WebKeys.WORKAREA, workArea);
 			
 		response.setContentType("text/xml");
 		return new ModelAndView("binder/access_control_binder_owner", model);

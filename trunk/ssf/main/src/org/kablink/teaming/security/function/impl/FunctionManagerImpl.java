@@ -56,7 +56,12 @@ public class FunctionManagerImpl implements FunctionManager {
     public void addFunction(Function function) {
         getSecurityDao().save(function);
     }
-
+    public void deleteFunctions(Long zoneId) {
+    	List functions = findFunctions(zoneId);
+    	for (int i=0; i<functions.size(); ++i) {
+    		deleteFunction((Function)functions.get(i));
+    	}
+    }
     public List deleteFunction(Function function) {
     	List result = getSecurityDao().findWorkAreaFunctionMemberships(function.getZoneId(), function.getId());
     	if (result.isEmpty()) {

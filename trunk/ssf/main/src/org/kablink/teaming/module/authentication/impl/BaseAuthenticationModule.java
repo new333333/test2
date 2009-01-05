@@ -61,8 +61,9 @@ public class BaseAuthenticationModule extends CommonDependencyInjection
 
 	protected void checkAccess(AuthenticationOperation operation) {
 		getAccessControlManager().checkOperation(
-				RequestContextHolder.getRequestContext().getZone(),
-				WorkAreaOperation.SITE_ADMINISTRATION);
+				getZoneModule().getZoneConfig(RequestContextHolder
+						.getRequestContext().getZoneId()),
+				WorkAreaOperation.ZONE_ADMINISTRATION);
 	}
 
 	public List<LdapConnectionConfig> getLdapConnectionConfigs() {

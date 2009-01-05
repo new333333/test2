@@ -42,8 +42,9 @@ import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.TemplateBinder;
-import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -51,6 +52,7 @@ import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WorkAreaHelper;
 import org.springframework.web.portlet.ModelAndView;
 
 
@@ -64,28 +66,36 @@ public class AccessControlController extends AbstractBinderController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		Binder binder = getBinderModule().getBinder(binderId);
+		//navigation links still use binderId
+		Long workAreaId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		if (workAreaId == null) workAreaId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_WORKAREA_ID));				
+		WorkArea workArea = null;
 		request.setAttribute("roleId", "");
-		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		
+		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKAREA_TYPE, "");	
+		if (EntityIdentifier.EntityType.zone.name().equals(type)) {
+			workArea = getZoneModule().getZoneConfig(workAreaId);
+		} else {
+			workArea = getBinderModule().getBinder(workAreaId);
+		}
+		response.setRenderParameter(WebKeys.URL_WORKAREA_ID, workArea.getWorkAreaId().toString());
+		response.setRenderParameter(WebKeys.URL_WORKAREA_TYPE, workArea.getWorkAreaType());
 		//See if the form was submitted
 		if (formData.containsKey("okBtn")) {
 			SimpleProfiler.setProfiler(new SimpleProfiler("lucene"));
 			Map functionMemberships = new HashMap();
 			getAccessResults(request, functionMemberships);
-			getAdminModule().setWorkAreaFunctionMemberships((WorkArea) binder, functionMemberships);
+			getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
 			if(logger.isDebugEnabled())
 				logger.debug(SimpleProfiler.toStr());
 			SimpleProfiler.clearProfiler();
 		} else if (formData.containsKey("inheritanceBtn")) {
 			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", false);
-			getAdminModule().setWorkAreaFunctionMembershipInherited(binder,inherit);			
+			getAdminModule().setWorkAreaFunctionMembershipInherited(workArea,inherit);			
 		
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			if (binder instanceof TemplateBinder) {
+			if (workArea instanceof TemplateBinder) {
 				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
-				response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+				response.setRenderParameter(WebKeys.URL_BINDER_ID, workAreaId.toString());
 			} else {
 				setupCloseWindow(response);
 			}
@@ -96,17 +106,26 @@ public class AccessControlController extends AbstractBinderController {
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		Binder binder = getBinderModule().getBinder(binderId);
-		
+		//navigation links still use binderId
+		Long workAreaId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		if (workAreaId == null) workAreaId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_WORKAREA_ID));				
+		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKAREA_TYPE);	
+		WorkArea wArea=null;
 		Map model = new HashMap();
-		setupAccess(this, request, response, binder, model);
-		//Build the navigation beans
-		BinderHelper.buildNavigationLinkBeans(this, binder, model);
-		model.put(WebKeys.DEFINITION_ENTRY, binder);
-		model.put(WebKeys.ENTRY, binder);
-		User superUser = AccessUtils.getZoneSuperUser(binder.getZoneId());
-		model.put(WebKeys.ACCESS_SUPER_USER, superUser);
+		if (EntityIdentifier.EntityType.zone.name().equals(type)) {
+			ZoneConfig zone = getZoneModule().getZoneConfig(workAreaId);
+			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(zone.getZoneId()));
+			wArea = zone;
+		} else {
+			Binder binder = getBinderModule().getBinder(workAreaId);			
+			//Build the navigation beans
+			BinderHelper.buildNavigationLinkBeans(this, binder, model);
+			wArea = binder;
+			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(binder.getZoneId()));
+			model.put(WebKeys.DEFINITION_ENTRY, binder);
+		}
+		
+		setupAccess(this, request, response, wArea, model);
 
 		return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);
 	}
@@ -150,37 +169,37 @@ public class AccessControlController extends AbstractBinderController {
 
 	}
 	//used by ajax controller
-	public static void setupAccess(AllModulesInjected bs, RenderRequest request, RenderResponse response, Binder binder, Map model) {
+	public static void setupAccess(AllModulesInjected bs, RenderRequest request, RenderResponse response, WorkArea wArea, Map model) {
 		List functions = bs.getAdminModule().getFunctions();
 		List membership;
-		
-		if (binder.isFunctionMembershipInherited()) {
-			membership = bs.getAdminModule().getWorkAreaFunctionMembershipsInherited(binder);
+		boolean zoneWide = wArea.getWorkAreaType().equals(EntityIdentifier.EntityType.zone.name());
+		if (wArea.isFunctionMembershipInherited()) {
+			membership = bs.getAdminModule().getWorkAreaFunctionMembershipsInherited(wArea);
 		} else {
-			membership = bs.getAdminModule().getWorkAreaFunctionMemberships(binder);
+			membership = bs.getAdminModule().getWorkAreaFunctionMemberships(wArea);
 		}
-		BinderHelper.buildAccessControlTableBeans(request, response, binder, functions, 
+		WorkAreaHelper.buildAccessControlTableBeans(request, response, wArea, functions, 
 				membership, model, false);
 
-		if (!binder.isFunctionMembershipInherited()) {
-			Binder parentBinder = binder.getParentBinder();
-			if (parentBinder != null) {
+		if (!wArea.isFunctionMembershipInherited()) {
+			WorkArea parentArea = wArea.getParentWorkArea();
+			if (parentArea != null) {
 				List parentMembership;
-				if (parentBinder.isFunctionMembershipInherited()) {
-					parentMembership = bs.getAdminModule().getWorkAreaFunctionMembershipsInherited(parentBinder);
+				if (parentArea.isFunctionMembershipInherited()) {
+					parentMembership = bs.getAdminModule().getWorkAreaFunctionMembershipsInherited(parentArea);
 				} else {
-					parentMembership = bs.getAdminModule().getWorkAreaFunctionMemberships(parentBinder);
+					parentMembership = bs.getAdminModule().getWorkAreaFunctionMemberships(parentArea);
 				}
 				Map modelParent = new HashMap();
-				BinderHelper.buildAccessControlTableBeans(request, response, parentBinder, 
+				WorkAreaHelper.buildAccessControlTableBeans(request, response, parentArea, 
 						functions, parentMembership, modelParent, true);
 				model.put(WebKeys.ACCESS_PARENT, modelParent);
-				BinderHelper.mergeAccessControlTableBeans(model);
+				WorkAreaHelper.mergeAccessControlTableBeans(model);
 			}
 		}
 		
 		//Set up the role beans
-		BinderHelper.buildAccessControlRoleBeans(bs, model);
+		WorkAreaHelper.buildAccessControlRoleBeans(bs, model, zoneWide);
 	}
 
 }

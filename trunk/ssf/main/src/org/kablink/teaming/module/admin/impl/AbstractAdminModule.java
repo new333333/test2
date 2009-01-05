@@ -46,8 +46,8 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
-import org.kablink.teaming.ObjectExistsException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
@@ -55,7 +55,6 @@ import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.DefinitionInvalidException;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
@@ -194,7 +193,9 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    	}
    	public void checkAccess(WorkArea workArea, AdminOperation operation) {
    		if (workArea instanceof TemplateBinder) {
-			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
+			getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
+   		} else if (workArea instanceof ZoneConfig) {
+			getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    		} else {
    			switch (operation) {
    			case manageFunctionMembership:
@@ -230,11 +231,12 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			case manageMail:
 			case manageTemplate:
 			case manageErrorLogs:
-  				getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+  			case manageFunctionMembership:
+  				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    				break;
 			case report:
    				if (getAccessControlManager().testOperation(top, WorkAreaOperation.GENERATE_REPORTS)) break;
- 				getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+ 				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    				break;
 			default:
    				throw new NotSupportedException(operation.toString(), "checkAccess");
@@ -433,6 +435,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     public void modifyFunction(Long id, Map updates) {
 		checkAccess(AdminOperation.manageFunction);
 		Function function = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), id);
+		if (function.isReserved()) throw new NotSupportedException("errorcode.role.reserved", new Object[]{function.getName()});       	
 		if (updates.containsKey("name") && function.getName() != updates.get("name")) {
 			List zoneFunctions = functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
 			//make sure unqiue - do after find or hibernate will update
@@ -450,6 +453,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     public List deleteFunction(Long id) {
 		checkAccess(AdminOperation.manageFunction);
 		Function f = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), id);
+		if (f.isReserved()) throw new NotSupportedException("errorcode.role.reserved", new Object[]{f.getName()});       	
+
 		List result = functionManager.deleteFunction(f);
 		if(result != null) {
 			result.add(f);
@@ -460,12 +465,13 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     }
     public List<Function> getFunctions() {
 		//let anyone read them			
-        return  functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
+    	return functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
     }
 	//no transaction
     public void setWorkAreaFunctionMemberships(final WorkArea workArea, final Map<Long, Set<Long>> functionMemberships) {
 		checkAccess(workArea, AdminOperation.manageFunctionMembership);
 		final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		
 		//get list of current readers to compare for indexing
 		List<WorkAreaFunctionMembership>wfms = 
 	       		getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, WorkAreaOperation.READ_ENTRIES);
@@ -476,9 +482,13 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         //first remove any that are not in the new list
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
+        		User guest = null;
+       			try {
+       				guest = getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zoneId);
+       			} catch (NoObjectByTheIdException noexist) {};
         		//get list of current memberships
         		List<WorkAreaFunctionMembership>wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(zoneId, workArea);
-                		for( WorkAreaFunctionMembership wfm:wfms) {
+        		for( WorkAreaFunctionMembership wfm:wfms) {
         			if (!functionMemberships.containsKey(wfm.getFunctionId()))
         				getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(wfm);       	
         		}
@@ -494,7 +504,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         			}
         			Set members = fm.getValue();
         			if (membership == null) { 
-        				membership = new WorkAreaFunctionMembership();
+            			if (guest != null && members.contains(guest.getId())) {
+            				//check user can add guest access
+            				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(zoneId), WorkAreaOperation.ADD_GUEST_ACCESS);
+            			}
+            			membership = new WorkAreaFunctionMembership();
         				membership.setZoneId(zoneId);
         				membership.setWorkAreaId(workArea.getWorkAreaId());
         				membership.setWorkAreaType(workArea.getWorkAreaType());
@@ -506,6 +520,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         			} else {
         				Set mems = membership.getMemberIds();
         				if (!mems.equals(members)) {
+                   			if (guest != null && members.contains(guest.getId()) && !mems.contains(guest.getId())) {
+                				//check user can add guest access
+                				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(zoneId), WorkAreaOperation.ADD_GUEST_ACCESS);
+                			}
+
         					mems.clear();
         					mems.addAll(members);
         					membership.setMemberIds(mems);
@@ -680,6 +699,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
 		Set emailSet = getEmail(userIds, errors);
 		if (emailAddresses != null) {
+			if (emailSet == null) emailSet = new HashSet();
 			for (String e: emailAddresses) {
 				if (!Validator.isNull(e)) {
 					try {

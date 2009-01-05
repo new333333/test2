@@ -171,8 +171,7 @@ implements LicenseModule, ZoneSchedule {
 	{
 		switch (operation) {
 		case manageLicense:
-			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(),
-					WorkAreaOperation.SITE_ADMINISTRATION);
+			getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
 			break;
 		default:
 			throw new NotSupportedException(operation.toString(), "checkAccess");

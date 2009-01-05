@@ -42,6 +42,7 @@ public interface FunctionManager {
     
     public void addFunction(Function function);
     
+    public void deleteFunctions(Long zoneId);
     public List deleteFunction(Function function);
     
     public void updateFunction(Function function);

@@ -33,6 +33,8 @@ alter table SS_FolderEntries add column zoneId bigint;
 alter table SS_FolderEntries add column subscribed bit;
 alter table SS_Forums add column branding mediumtext;
 alter table SS_Forums add column postingEnabled bit;
+alter table SS_Functions add column internalId varchar(32);
+alter table SS_Functions add column zoneWide bit;
 create table SS_IndexNode (id char(32) not null, nodeName varchar(128), indexName varchar(160), zoneId bigint, accessMode varchar(16), inSynch bit, primary key (id), unique (nodeName, indexName)) ENGINE=InnoDB;
 create table SS_IndexingJournal (id bigint not null auto_increment, zoneId bigint, nodeName varchar(128), indexName varchar(160), operationName varchar(32), operationArgs longblob, primary key (id)) ENGINE=InnoDB;
 create table SS_LdapConnectionConfig (id char(32) not null, zoneId bigint, url varchar(255), userIdAttribute varchar(255), mappings text, userSearches text, groupSearches text, principal varchar(255), credentials varchar(255), position integer, primary key (id)) ENGINE=InnoDB;

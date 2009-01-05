@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.Collections;
 import org.apache.lucene.index.Term;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -637,8 +637,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		//force a lock so contention on the sortKey is reduced
 		ctx.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
 		final Binder top = addBinderInternal(cfg, parent, title, name, ctx);
-		//commit index, binder commited
-		IndexSynchronizationManager.applyChanges();
+		ctx.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE); //don't bother indexing, until copyBinderAttributes done
 		//now that we have registered the sortKey in the parent binder, we use a longer transaction to complete 
 		//it - there shouldn't be any contention here since the binder is new and doesn't need to reference its parent
 		getTransactionTemplate().execute(new TransactionCallback() {
@@ -665,10 +664,6 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
  			}
  			return null;
 	     }});
-	 	//need to reindex binder tree, cause copy Attributes after original index
-		IndexSynchronizationManager.discardChanges();
-		IndexSynchronizationManager.deleteDocuments(new Term(Constants.ENTRY_ANCESTRY, top.getId().toString()));
-	 	loadBinderProcessor(top).indexTree(top, null, StatusTicket.NULL_TICKET);
 		IndexSynchronizationManager.applyChanges(); //get them commited, binders are
 		return top.getId();
 
@@ -679,11 +674,15 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		   copyBinderAttributes(cfg, binder);
 		   //first flush updates, addBinder might do a refresh which overwrites changes
 		   getCoreDao().flush();
-		   List<TemplateBinder> children = cfg.getBinders();    
+		   List<TemplateBinder> children = cfg.getBinders();   
+		   Map ctx = new HashMap();
+		   ctx.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE); //don't bother indexing, until copyBinderAttributes done
 		   for (TemplateBinder child: children) {
 			   Binder childBinder = addBinderInternal(child, binder, NLT.getDef(child.getTitle()), null, null);	
 			   addBinderFinish(child, childBinder);
 		   }
+		   //finally index binder
+		   loadBinderProcessor(binder).indexBinder(binder, false, false, Collections.EMPTY_LIST);
 
 	}
 
@@ -741,8 +740,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
    	public void checkAccess(TemplateOperation operation) {
    		switch (operation) {
    		case manageTemplate:
-   	   		Binder top = RequestContextHolder.getRequestContext().getZone();
-   			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+   			getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    			break;
    		default:
    			throw new NotSupportedException(operation.toString(), "checkAccess");

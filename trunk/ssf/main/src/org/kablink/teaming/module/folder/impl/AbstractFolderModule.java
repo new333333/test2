@@ -215,11 +215,9 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);
 				break;
 			case scheduleSynchronization:
+			case changeEntryTimestamps:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.BINDER_ADMINISTRATION);
 				break;				
-			case changeEntryTimestamps:
-				getAccessControlManager().checkOperation(folder, WorkAreaOperation.SITE_ADMINISTRATION);
-				break;
 			default:
 				throw new NotSupportedException(operation.toString(), "checkAccess");
 				
@@ -797,7 +795,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 		if (visit == null) {
 			visit = new Visits(user.getId(), id);
 			try {
-				getCoreDao().saveNewSession(visit);
+				visit = (Visits)getCoreDao().saveNewSession(visit);
 			} catch (Exception ex) {
 				//probably hit button 2X
 				visit = getProfileDao().loadVisit(user.getId(), id);

@@ -35,6 +35,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.kablink.teaming.domain.ZonedObject;
 import org.kablink.teaming.util.CollectionUtil;
+import org.kablink.util.Validator;
 
 
 /**
@@ -54,7 +55,8 @@ public class Function extends ZonedObject {
     private Set operations; // A set of WorkSpaceOperation - this is not persistent
     private Set operationNames; // Used for persistence only
     private long lockVersion; // Used for optimistic locking support
-    
+    private String internalId;
+    private boolean zoneWide=false;
 	/**
 	 * @hibernate.id generator-class="native" type="long"  unsaved-value="null"
 	 */    
@@ -64,7 +66,29 @@ public class Function extends ZonedObject {
     public void setId(Long id) {
         this.id = id;
     }
-
+    /**
+     * Internal id used to identify reserved functions.  
+     * @hibernate.property length="32"
+     */
+    public String getInternalId() {
+    	return this.internalId;
+    }
+    public void setInternalId(String internalId) {
+    	this.internalId = internalId;
+    }
+    /**
+     * Return true if the function is a 'system function'
+     * @return
+     */
+    public boolean isReserved() {
+    	return Validator.isNotNull(internalId);
+    }
+    public boolean isZoneWide() {
+    	return zoneWide;
+    }
+    public void setZoneWide(boolean zoneWide) {
+    	this.zoneWide = zoneWide;
+    }
 	/**
 	 * @hibernate.property not-null="true"
 	 */    

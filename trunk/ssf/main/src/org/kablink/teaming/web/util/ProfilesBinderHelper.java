@@ -310,8 +310,8 @@ public class ProfilesBinderHelper {
 			qualifiers.put("popup", new Boolean(true));
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
+			adapterUrl.setParameter(WebKeys.URL_WORKAREA_ID, binder.getWorkAreaId().toString());
+			adapterUrl.setParameter(WebKeys.URL_WORKAREA_TYPE, binder.getWorkAreaType());
 			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.accessControl"), adapterUrl.toString(), qualifiers);
 		}
 

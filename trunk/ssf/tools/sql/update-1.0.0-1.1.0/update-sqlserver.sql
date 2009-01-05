@@ -33,6 +33,8 @@ alter table SS_FolderEntries add zoneId numeric(19,0);
 alter table SS_FolderEntries add subscribed tinyint;
 alter table SS_Forums add branding text;
 alter table SS_Forums add postingEnabled tinyint;
+alter table SS_Functions add internalId varchar(32);
+alter table SS_Functions add zoneWide tinyint;
 create table SS_IndexNode (id char(32) not null, nodeName varchar(128) null, indexName varchar(160) null, zoneId numeric(19,0) null, accessMode varchar(16) null, inSynch tinyint null, primary key (id), unique (nodeName, indexName));
 create table SS_IndexingJournal (id numeric(19,0) identity not null, zoneId numeric(19,0) null, nodeName varchar(128) null, indexName varchar(160) null, operationName varchar(32) null, operationArgs image null, primary key (id));
 create table SS_LdapConnectionConfig (id char(32) not null, zoneId numeric(19,0) null, url nvarchar(255) null, userIdAttribute nvarchar(255) null, mappings ntext null, userSearches ntext null, groupSearches ntext null, principal nvarchar(255) null, credentials nvarchar(255) null, position int null, primary key (id));
