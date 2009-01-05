@@ -84,23 +84,36 @@
 </span><br/>
 <br/>
 <span class="ss_bold"><ssf:nlt tag="license.current"/></span><br/>
-<ssf:nlt tag="license.product.title"/> ${ssLicenseProductTitle} (${ssLicenseProductVersion})<br/>
-<ssf:nlt tag="license.key.uid"/> ${ssLicenseKey}<br/>
-<ssf:nlt tag="license.key.issued"/> ${ssLicenseIssued}<br/>
-<ssf:nlt tag="license.effective"/> ${ssLicenseEffective}<br/>
+<table cellspacing="6" cellpadding="2">
+<tr>
+<td><ssf:nlt tag="license.product.title"/></td><td>${ssLicenseProductTitle} (${ssLicenseProductVersion})</td>
+</tr>
+<tr>
+<td><ssf:nlt tag="license.key.uid"/></td><td>${ssLicenseKey}</td>
+</tr>
+<tr>
+<td><ssf:nlt tag="license.key.issued"/></td><td>${ssLicenseIssued}</td>
+</tr>
+<tr>
+<td><ssf:nlt tag="license.effective"/></td><td>${ssLicenseEffective}</td>
+</tr>
+<tr>
 <c:if test="${ssLicenseUsers < 0}">
-<ssf:nlt tag="license.users.registered.unlimited"/>
+<td valign="top"><ssf:nlt tag="license.users.registered"/></td><td><ssf:nlt tag="license.users.registered.unlimited"/></td>
 </c:if>
 <c:if test="${ssLicenseUsers >= 0}">
-<ssf:nlt tag="license.users.registered"/> ${ssLicenseUsers}
+<td><ssf:nlt tag="license.users.registered"/></td><td>${ssLicenseUsers}</td>
 </c:if>
-<br/>
+</tr>
+<tr>
 <c:if test="${ssLicenseExternalUsers < 0}">
-<ssf:nlt tag="license.users.external.unlimited"/>
+<td valign="top"><ssf:nlt tag="license.users.external"/></td><td><ssf:nlt tag="license.users.external.unlimited"/></td>
 </c:if>
 <c:if test="${ssLicenseExternalUsers >= 0}">
-<ssf:nlt tag="license.users.external"/> ${ssLicenseExternalUsers}
+<td><ssf:nlt tag="license.users.external"/></td><td>${ssLicenseExternalUsers}</td>
 </c:if>
+</tr>
+</table>
 <br/>
 <br/>
 <span class="ss_bold"><ssf:nlt tag="administration.report.dates"/></span>&nbsp;<fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd HH:mm:ss z" timeZone="${ssUser.timeZone.ID}"/>
@@ -117,10 +130,16 @@
 	--%><c:set var="currentUser" value="${datum.internalUserCount}"/><%--
 --%></c:forEach>
 
-<ssf:nlt tag="license.users.highwater"/> ${highWater} (${highWaterDate})<br/>
-<ssf:nlt tag="license.current.users"/> ${currentUser}<br/>
+<table cellspacing="6" cellpadding="2">
+<tr>
+<td><ssf:nlt tag="license.users.highwater"/></td><td>${highWater} (${highWaterDate})</td>
+</tr>
+<tr>
+<td><ssf:nlt tag="license.current.users"/></td><td>${currentUser}</td>
+</tr>
+</table>
 <br/>
-<table syle="border-spacing: 2px;"><tbody>
+<table cellspacing="6" cellpadding="2" syle="border-spacing: 2px;"><tbody>
 <tr>
 <th><ssf:nlt tag="license.table.date"/></th><th><ssf:nlt tag="license.table.registered"/></th><th><ssf:nlt tag="license.table.external"/></th><th><ssf:nlt tag="license.table.check"/></th>
 </tr>
