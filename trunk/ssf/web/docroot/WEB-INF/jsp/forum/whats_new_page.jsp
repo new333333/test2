@@ -76,11 +76,13 @@
 		  name="namespace" value="${ss_namespace}"/></ssf:url>" 
 	  	  onClick="ss_showWhatsNewPage(this, '${ssBinder.id}', '${ss_type}', '${ss_pageNumber}', 'previous', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
 		>
-		  <img src="<html:imagesPath/>pics/sym_arrow_left_.gif" title="<ssf:nlt tag="general.previousPage"/>"/>
+		  <img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
+	  	  	  <ssf:alt tag=""/> title="<ssf:nlt tag="general.previousPage"/>"/>
 		</a>
 	</c:if>
 	<c:if test="${empty ss_pageNumber || ss_pageNumber <= '0'}">
-	  <img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
+	  <img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"
+	  	  <ssf:alt tag=""/>/>
 	</c:if>
 	<c:if test="${!empty ss_whatsNewBinder}">
 	  <a href="<ssf:url 
@@ -90,11 +92,13 @@
 		name="namespace" value="${ss_namespace}"/></ssf:url>" 
 		onClick="ss_showWhatsNewPage(this, '${ssBinder.id}', '${ss_type}', '${ss_pageNumber}', 'next', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
 	  >
-		<img src="<html:imagesPath/>pics/sym_arrow_right_.gif" title="<ssf:nlt tag="general.nextPage"/>"/>
+		<img src="<html:imagesPath/>pics/sym_arrow_right_.gif" 
+  	  		<ssf:alt tag=""/> title="<ssf:nlt tag="general.nextPage"/>"/>
 	  </a>
 	</c:if>
 	<c:if test="${empty ss_whatsNewBinder}">
-		<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+		<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"
+	  	  <ssf:alt tag=""/>/>
 	</c:if>
 	<a style="margin-left:15px;"
    	  onClick="ss_hideDivNone('ss_whatsNewDiv${ss_namespace}'); return false;"><img 
@@ -168,6 +172,7 @@
 			</c:if>
 	  	  </span>
 	  	  &nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" 
+	  	  	<ssf:alt tag=""/>
 	  	   width="11" height="10" hspace="2" border="0" align="absmiddle" />
 	  	  <c:if test="${!empty entryWn._desc}">
 	    	<br/>
