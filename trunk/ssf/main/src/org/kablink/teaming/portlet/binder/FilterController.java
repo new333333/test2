@@ -79,7 +79,7 @@ public class FilterController extends AbstractBinderController {
 					if (searchFilters == null) searchFilters = new HashMap();
 					searchFilters.put(SearchFilter.getFilterName(searchFilter), searchFilter.asXML());
 					if (getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
-						binder.setProperty(ObjectKeys.BINDER_PROPERTY_FILTERS, searchFilters);
+						getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FILTERS, searchFilters);
 					}
 				} else {
 					UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), binderId);

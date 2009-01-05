@@ -120,7 +120,7 @@ public class ListFolderController extends  SAbstractController {
 				if (formData.containsKey("setFolderDefaultColumns")) {
 					Binder binder = getBinderModule().getBinder(binderId);
 					if (getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
-						binder.setProperty(ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS, columns);
+						getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS, columns);
 					}
 				}
 				
