@@ -28,9 +28,14 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.credits") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
+
+<ssf:form titleTag="administration.credits">
 
 <style>
 .ss_credits_title {
@@ -3293,6 +3298,7 @@ LGPL - http://jboss.com/opensource/lgpl/faq
   </div>
 </div>
 
+</ssf:form>
 </div>
 </body>
 </html>

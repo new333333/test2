@@ -28,12 +28,28 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.import.profiles") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 
 <div class="ss_style ss_portlet">
-<form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
+<ssf:form titleTag="administration.import.profiles">
+<script type="text/javascript">
+function ss_checkForFileSelected() {
+	var formObj = document.forms['form1']
+	if (formObj.profiles.value == '') {
+		alert("<ssf:nlt tag="administration.import.profiles.selectFile"/>")
+		return false;
+	}
+	return true;
+}
+
+</script>
+
+<form name="form1" class="ss_style ss_form" method="post" enctype="multipart/form-data" 
 		  action="<ssf:url adapter="true" 
 			portletName="ss_administration" 
 			action="import_profiles" 
@@ -57,7 +73,9 @@
 
 <div class="ss_buttonBarLeft">
 
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"/>
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"
+  onclick="return ss_checkForFileSelected();"
+/>
 
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
 onClick="window.close();return false;"/>
@@ -65,6 +83,7 @@ onClick="window.close();return false;"/>
 </div>
 </div>
 </form>
+</ssf:form>
 </div>
 </div>
 </body>

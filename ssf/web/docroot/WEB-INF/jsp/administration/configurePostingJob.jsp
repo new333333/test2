@@ -29,11 +29,14 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
-
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_mail") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
+<ssf:form titleTag="administration.configure_mail">
+<br/>
 
 <script type="text/javascript">
 var ${renderResponse.namespace}_savedIndex;
@@ -160,6 +163,7 @@ ${alias.binder.title}&nbsp;&nbsp<span  class="ss_smallprint ss_light">(${alias.b
 </div>
 </form>
 </div>
+</ssf:form>
 </div>
 
 </div>

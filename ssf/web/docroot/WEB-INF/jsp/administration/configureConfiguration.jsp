@@ -29,10 +29,13 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_configurations") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
+<ssf:form titleTag="administration.configure_configurations" >
 <%
 String cTreeName = renderResponse.getNamespace() + "_cTree";
 %>
@@ -49,8 +52,6 @@ function <%=cTreeName%>_showId(id, obj, action) {
 } 
 </script>
 
-<span class="ss_titlebold"><ssf:nlt tag="administration.configure_configurations" /></span>
-<br/>
 <br/>
 <ssf:toolbar toolbar="${ss_toolbar}" style="ss_actions_bar5 ss_actions_bar" />
 <br/>
@@ -244,6 +245,7 @@ ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initSho
 
 
 </c:if>
+</ssf:form>
 </div>
 </div>
 </body>

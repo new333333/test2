@@ -28,12 +28,14 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.reload.definitions") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
-<span class="ss_titlebold"><ssf:nlt tag="administration.reload.definitions" /></span>
-<br/>
+<ssf:form titleTag="administration.reload.definitions">
 <br/>
 
 <form class="ss_style ss_form" method="post" 
@@ -63,10 +65,11 @@ document.${renderResponse.namespace}fm.onsubmit=function() { return ss_selectAll
 <ssf:nlt tag="administration.reload.definitions.warning"/>
 </span>
 <br/>
-<br/>
+<br/> 
 
 </form>
 
+</ssf:form>
 </div>
 </div>
 </body>

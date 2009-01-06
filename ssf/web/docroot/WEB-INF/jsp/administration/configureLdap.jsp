@@ -28,121 +28,123 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
-
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_ldap") %>' scope="request"/>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
+<ssf:form titleTag="ldap.title">
 
-<span class="ss_titlebold"><ssf:nlt tag="ldap.title"/></span><br/><br/>
-<c:if test="${!empty ssException}">
-<span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
-</c:if>
+	<c:if test="${!empty ssException}">
+	<span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
+	</c:if>
 
-<form class="ss_style ss_form" name="${renderResponse.namespace}fm" method="post" 
-  action="<ssf:url action="configure_ldap" actionUrl="true"/>">
-<div class="ss_buttonBarRight">
-<br/>
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
-	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="self.window.close();return false;"/>
-</div>
-  <div>
-    <div>
-    	<c:set var="showGuestOption" value="<%= Boolean.FALSE %>"/>
-    	<c:set var="openEdition" value="<%= !org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>"/>
-    	<c:if test="${openEdition}">
-    		<c:set var="showGuestOption" value="<%= Boolean.TRUE %>"/>
-    	</c:if>
-    	<c:if test="${!openEdition}">
-	    	<ssf:ifAuthorizedByLicense featureName="com.novell.teaming.GuestAccess">
+	<form class="ss_style ss_form" name="${renderResponse.namespace}fm" method="post" 
+	  action="<ssf:url action="configure_ldap" actionUrl="true"/>">
+		<div class="ss_buttonBarRight">
+		<br/>
+		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
+			<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+				  onClick="self.window.close();return false;"/>
+		</div>
+	  <div>
+	    <div>
+	    	<c:set var="showGuestOption" value="<%= Boolean.FALSE %>"/>
+	    	<c:set var="openEdition" value="<%= !org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>"/>
+	    	<c:if test="${openEdition}">
 	    		<c:set var="showGuestOption" value="<%= Boolean.TRUE %>"/>
-	    	</ssf:ifAuthorizedByLicense>
-    	</c:if>
-    	<c:if test="${showGuestOption}">
-			<input type="checkbox" id="allowAnonymous" name="allowAnonymous" <c:if test="${ssAuthenticationConfig.allowAnonymousAccess}">checked</c:if>/>
-				<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowAnonymous"/></span><br/>
-		</c:if>
-		<input type="checkbox" id="allowLocalLogin" name="allowLocalLogin" <c:if test="${ssAuthenticationConfig.allowLocalLogin}">checked</c:if>/>
-			<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowLocalLogin"/></span><br/>
-		<input type="checkbox" id="allowSelfRegistration" name="allowSelfRegistration" <c:if test="${ssAuthenticationConfig.allowSelfRegistration}">checked</c:if>/>
-			<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowSelfRegistration"/></span>
-		<br/>
-		<br/>
-		<br/>
-    </div>
-	<div id="funkyDiv" style="width:500px">
-		<ul>
-			<li><a href='#wah'>Wah</a></li>
-		</ul>
-		<div id='wah'></div>
-    </div>
-    <button id="ldapAddConnection" class="ss_submit"><ssf:nlt tag="ldap.connection.add" /></button>
-  </div>
-<div class="ss_divider"></div>
-<br/>
+	    	</c:if>
+	    	<c:if test="${!openEdition}">
+		    	<ssf:ifAuthorizedByLicense featureName="com.novell.teaming.GuestAccess">
+		    		<c:set var="showGuestOption" value="<%= Boolean.TRUE %>"/>
+		    	</ssf:ifAuthorizedByLicense>
+	    	</c:if>
+	    	<c:if test="${showGuestOption}">
+				<input type="checkbox" id="allowAnonymous" name="allowAnonymous" <c:if test="${ssAuthenticationConfig.allowAnonymousAccess}">checked</c:if>/>
+					<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowAnonymous"/></span><br/>
+			</c:if>
+			<input type="checkbox" id="allowLocalLogin" name="allowLocalLogin" <c:if test="${ssAuthenticationConfig.allowLocalLogin}">checked</c:if>/>
+				<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowLocalLogin"/></span><br/>
+			<input type="checkbox" id="allowSelfRegistration" name="allowSelfRegistration" <c:if test="${ssAuthenticationConfig.allowSelfRegistration}">checked</c:if>/>
+				<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowSelfRegistration"/></span>
+			<br/>
+			<br/>
+			<br/>
+	    </div>
+		<div id="funkyDiv" style="width:500px">
+			<ul>
+				<li><a href='#wah'>Wah</a></li>
+			</ul>
+			<div id='wah'></div>
+	    </div>
+	    <button id="ldapAddConnection" class="ss_submit"><ssf:nlt tag="ldap.connection.add" /></button>
+	  </div>
+	<div class="ss_divider"></div>
+	<br/>
 
-<table class="ss_style" border ="0" cellspacing="0" cellpadding="3">
-<tr><td> 
-<input type="checkbox" id="enabled" name="enabled" <c:if test="${ssLdapConfig.enabled}">checked</c:if>/>
-<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.enable"/></span><br/>
-</td></tr>
-<tr><td>
-<input type="checkbox" id="runnow" name="runnow" <c:if test="${runnow}"> checked="checked" </c:if>/>
-<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.now"/></span><br/>
-</td></tr></table>
-
-<br/>
-<ssf:expandableArea title='<%= NLT.get("ldap.schedule") %>'>
-<c:set var="schedule" value="${ssLdapConfig.schedule}"/>
-<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
-<div class="ss_divider"></div>
-</ssf:expandableArea>
-<br/>
-
-<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt tag="ldap.users" /></legend>
-<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3">
-		<tr><td><input type="checkbox" name="userSync" <c:if test="${ssLdapConfig.userSync}">checked</c:if>>
-	   	<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.user.sync"/></span></input>
-	   	</td></tr>
-	   	<tr><td><input type="checkbox" name="userRegister" <c:if test="${ssLdapConfig.userRegister}">checked</c:if>>
-	   	<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.user.register"/></span></input>
-	   	</td></tr>
-	   	<tr><td><input type="checkbox" name="userDelete" <c:if test="${ssLdapConfig.userDelete}">checked</c:if>>
-	   	<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.user.delete"/></span></input>
-	   	</td></tr>
-	   	<tr><td><input type="checkbox" name="userWorkspaceDelete" <c:if test="${ssLdapConfig.userWorkspaceDelete}">checked</c:if>>
-	   	<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.user.workspace.delete"/></span></input>
-	   	</td></tr>
-	 	</td></tr>
-</table>
-</fieldset>
-
-<br/>
-<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt tag="ldap.groups" /></legend>
-<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3">
-	   <tr>
-	   <td><input type="checkbox" name="groupRegister" <c:if test="${ssLdapConfig.groupRegister}">checked</c:if>>
-	   <span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.group.register"/></span></input></td>
-	   </tr><tr>
-	   <td><input type="checkbox" name="membershipSync" <c:if test="${ssLdapConfig.membershipSync}">checked</c:if>>
-	   <span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.membership.sync"/></span></input></td>
-	   </tr><tr>
-	   <td><input type="checkbox" name="groupDelete" <c:if test="${ssLdapConfig.groupDelete}">checked</c:if>>
-	   <span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.group.delete"/></span></input></td>
-	   </tr>
-</table>
-</fieldset>
-
-<br/>
-<div class="ss_buttonBarLeft">
-	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
-	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="self.window.close();return false;"/>
-</div>
-<input type="hidden" name="ldapConfigDoc" id="ldapConfigDoc" value=""/>
-</form>
+	<table class="ss_style" border ="0" cellspacing="0" cellpadding="3">
+	<tr><td> 
+	<input type="checkbox" id="enabled" name="enabled" <c:if test="${ssLdapConfig.enabled}">checked</c:if>/>
+	<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.enable"/></span><br/>
+	</td></tr>
+	<tr><td>
+	<input type="checkbox" id="runnow" name="runnow" <c:if test="${runnow}"> checked="checked" </c:if>/>
+	<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.now"/></span><br/>
+	</td></tr></table>
+	
+	<br/>
+	<ssf:expandableArea title='<%= NLT.get("ldap.schedule") %>'>
+	<c:set var="schedule" value="${ssLdapConfig.schedule}"/>
+	<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
+	<div class="ss_divider"></div>
+	</ssf:expandableArea>
+	<br/>
+	
+	<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt tag="ldap.users" /></legend>
+	<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3">
+			<tr><td><input type="checkbox" name="userSync" <c:if test="${ssLdapConfig.userSync}">checked</c:if>>
+		   	<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.user.sync"/></span></input>
+		   	</td></tr>
+		   	<tr><td><input type="checkbox" name="userRegister" <c:if test="${ssLdapConfig.userRegister}">checked</c:if>>
+		   	<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.user.register"/></span></input>
+		   	</td></tr>
+		   	<tr><td><input type="checkbox" name="userDelete" <c:if test="${ssLdapConfig.userDelete}">checked</c:if>>
+		   	<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.user.delete"/></span></input>
+		   	</td></tr>
+		   	<tr><td><input type="checkbox" name="userWorkspaceDelete" <c:if test="${ssLdapConfig.userWorkspaceDelete}">checked</c:if>>
+		   	<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.user.workspace.delete"/></span></input>
+		   	</td></tr>
+		 	</td></tr>
+	</table>
+	</fieldset>
+	
+	<br/>
+	<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt tag="ldap.groups" /></legend>
+	<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3">
+		   <tr>
+		   <td><input type="checkbox" name="groupRegister" <c:if test="${ssLdapConfig.groupRegister}">checked</c:if>>
+		   <span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.group.register"/></span></input></td>
+		   </tr><tr>
+		   <td><input type="checkbox" name="membershipSync" <c:if test="${ssLdapConfig.membershipSync}">checked</c:if>>
+		   <span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.membership.sync"/></span></input></td>
+		   </tr><tr>
+		   <td><input type="checkbox" name="groupDelete" <c:if test="${ssLdapConfig.groupDelete}">checked</c:if>>
+		   <span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.group.delete"/></span></input></td>
+		   </tr>
+	</table>
+	</fieldset>
+	
+	<br/>
+	<div class="ss_buttonBarLeft">
+		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
+		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+			  onClick="self.window.close();return false;"/>
+	</div>
+	<input type="hidden" name="ldapConfigDoc" id="ldapConfigDoc" value=""/>
+	</form>
+</ssf:form>
 </div>
 <script type="text/javascript" src="<html:rootPath/>js/jquery/jquery.js"></script>
 <script type="text/javascript">

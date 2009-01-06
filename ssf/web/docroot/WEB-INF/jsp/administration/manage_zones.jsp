@@ -29,9 +29,12 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.manage.zones") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
+<ssf:form titleTag="administration.manage.zones">
 
 <script type="text/javascript">
 
@@ -56,8 +59,6 @@ function ss_confirmDeleteZone() {
 
 <div class="ss_style ss_portlet">
 <div style="padding:10px;" id="ss_manageZones">
-<span class="ss_titlebold"><ssf:nlt tag="administration.manage.zones" /></span>
-<br>
 <br>
 <ssf:expandableArea title='<%= NLT.get("administration.add.zone") %>'>
 <form class="ss_style ss_form" method="post" 
@@ -74,7 +75,7 @@ function ss_confirmDeleteZone() {
 </form>
 </ssf:expandableArea>
 <br/>
-<br/>
+<br/> 
 
 <table>
 <tr>
@@ -129,6 +130,7 @@ function ss_confirmDeleteZone() {
 </div>
 </div>
 
+</ssf:form>
 </div>
 </body>
 </html>

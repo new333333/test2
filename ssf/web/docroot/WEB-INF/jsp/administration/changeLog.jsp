@@ -29,11 +29,16 @@
  */
 %>
 
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.view_change_log") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
+
+<ssf:form titleTag="administration.view_change_log">
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 <script type="text/javascript">
 function ss_saveChangeLogBinderId(id) {
@@ -59,7 +64,6 @@ function ss_saveChangeLogEntryId(id) {
   name="ss_changeLogForm" method="post" 
   action="<ssf:url action="view_change_log" actionUrl="true"/>">
 
-<span class="ss_largerprint ss_bold"><ssf:nlt tag="administration.view_change_log"/></span>
 <br/>
 <br/>
 <table style="background-color: #eeeeee;" border="1">
@@ -175,6 +179,7 @@ function ${ssNamespace}_getChanges() {
 }
 </script>
 
+</ssf:form>
 </div>
 </div>
 </body>

@@ -29,8 +29,11 @@
  */
 %>
 
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("access.configure") %>' scope="request"/>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body tundra">
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript" src="<html:rootPath />js/binder/ss_access.js"></script>
 <script type="text/javascript">
@@ -68,6 +71,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 %>
 <c:set var="roleId" value="<%= roleId %>" />
 <div class="ss_portlet">
+<ssf:form titleTag="access.configure">
 <div class="ss_style ss_form" style="margin:0px; padding:10px 16px 10px 10px;">
 <div style="margin:6px; width:100%;">
 <table cellpadding="0" cellspacing="0" width="100%">
@@ -230,7 +234,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
     clickRoutine="ss_accessSetOwner${renderResponse.namespace}"
     leaveResultsVisible="false"
     width="100px" singleItem="true"/> 
-  </td><td valign="top"
+  </td><td valign="top">
   <span class="ss_bold" id="ss_accessSelectionSpan${renderResponse.namespace}"></span>
   </td></tr>
   </table>
@@ -415,5 +419,8 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 </div>
 </c:forEach>
 
+</ssf:form>
 </div>
 
+</body>
+</html>

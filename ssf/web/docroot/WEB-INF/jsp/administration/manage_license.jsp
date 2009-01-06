@@ -28,11 +28,16 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.manage.license") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 
 <div class="ss_style ss_portlet">
+<ssf:form titleTag="administration.manage.license">
+
   <c:if test='${! empty ssLicenseException}'>
     <div class="error"><span class="error">${ssLicenseException}</span></div>
   </c:if>
@@ -122,6 +127,7 @@
 		  onClick="self.window.close();return false;"/>
 	</form>
   </div>
+</ssf:form>
 </div>
 
 </div>

@@ -28,7 +28,11 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("toolbar.menu.definition_builder") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body tundra">
 
 <%@ page import="org.dom4j.Document" %>
 <%@ page import="org.dom4j.DocumentHelper" %>
@@ -582,7 +586,8 @@ function ss_saveUserGroupResults(s) {
 </script>
 <div class="ss_style ss_portlet">
 <div>
-
+<ssf:form titleTag="toolbar.menu.definition_builder">
+<br/>
 <c:if test="${!empty ss_configErrorMessage}">
 <div class="ss_labelLeftError">
 <span><c:out value="${ss_configErrorMessage}"/></span>
@@ -670,6 +675,7 @@ function ss_saveUserGroupResults(s) {
 		</td>
 	</tr>
 </table>
+</ssf:form>
 
 </div>
 

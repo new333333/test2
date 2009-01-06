@@ -28,9 +28,13 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.import.definitions") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
+<ssf:form titleTag="administration.import.definitions">
 
 <div class="ss_style ss_portlet">
 <c:if test="${!empty ssErrorList}">
@@ -92,6 +96,7 @@
 </form>
 </div>
 
+</ssf:form>
 </div>
 </body>
 </html>
