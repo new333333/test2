@@ -50,5 +50,6 @@
 
 <div style="margin:0px 0px 0px 0px; text-align:left;">
 <table cellpadding="2" cellspacing="0" width="100%" 
-  class="ss_style ${ss_slidingTableStyle}">
+  class="ss_style ${ss_slidingTableStyle}"
+  summary="Folder List">
 
