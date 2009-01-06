@@ -105,9 +105,9 @@
 							action="__ajax_mobile" actionUrl="true" 
 							operation="mobile_find_people" />">
 		    
-	    	    <label for="searchText"><ssf:nlt tag="navigation.findUser"/></label>
+	    	    <label for="userSearchText"><ssf:nlt tag="navigation.findUser"/></label>
 	    	    <br/>
-			    <input type="text" size="15" name="searchText" />&nbsp;<input 
+			    <input type="text" size="15" name="searchText" id="userSearchText"/>&nbsp;<input 
 		  	      type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" />
 		      </form><br/>
 	        </c:if>
@@ -118,7 +118,7 @@
 							operation="mobile_show_search_results" />">
 	    	  <label for="searchText"><ssf:nlt tag="searchForm.button.label"/></label>
 	    	  <br/>
-		      <input name="searchText" type="text" size="15"/>&nbsp;<input type="submit" 
+		      <input name="searchText" id="searchText" type="text" size="15"/>&nbsp;<input type="submit" 
 		        name="searchBtn" value="<ssf:nlt tag="button.ok"/>" />
 		      <input type="hidden" name="quickSearch" value="true"/>
 		    </form>
