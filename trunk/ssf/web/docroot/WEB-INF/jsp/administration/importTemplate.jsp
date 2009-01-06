@@ -29,10 +29,13 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_cfg.import") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
+<ssf:form titleTag="administration.configure_cfg.import">
 
 <c:if test="${!empty ssErrorList}">
 <span class="ss_bold"><ssf:nlt tag="administration.errors"/></span>
@@ -104,6 +107,7 @@
 
 </form>
 </c:if>
+</ssf:form>
 </div>
 </div>
 </body>

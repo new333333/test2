@@ -30,11 +30,15 @@
 %>
 <%@ page import="java.util.ArrayList" %>
 
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.report.title.login") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
+<ssf:form titleTag="administration.report.title.login">
 
 <c:set var="formName" value="${renderResponse.namespace}fm"/>
 <script type="text/javascript">
@@ -61,7 +65,7 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
    <br/>
    <br/>
    <ssf:nlt tag="administration.report.dates"/>
-   <div class="ss_toolbar_color" style="display:inline;"><ssf:datepicker formName="${formName}" showSelectors="true" 
+   <div style="display:inline;"><ssf:datepicker formName="${formName}" showSelectors="true" 
 				 popupDivId="ss_startPopup" id="ss_startDate" initDate="${startDate}"
 				 immediateMode="false" 
 				 altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
@@ -69,7 +73,7 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
    </div>
    <div id="ss_startPopup" class="ss_calPopupDiv"></div>
    <ssf:nlt tag="smallWords.and"/>
-   <div class="ss_toolbar_color" style="display:inline;"><ssf:datepicker formName="${formName}" showSelectors="true" 
+   <div style="display:inline;"><ssf:datepicker formName="${formName}" showSelectors="true" 
 				 popupDivId="ss_endPopup" id="ss_endDate" initDate="${endDate}"
 				 immediateMode="false" 
 				 altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
@@ -150,6 +154,7 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
 </form>
 <br>
 </td></tr></table>
+</ssf:form>
 </div>
 </div>
 </body>

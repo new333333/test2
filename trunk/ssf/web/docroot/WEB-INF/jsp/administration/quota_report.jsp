@@ -30,6 +30,9 @@
 %>
 <%@ page import="java.util.ArrayList" %>
 
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.report.title.quota") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
@@ -51,6 +54,7 @@ var ssReportURL="<ssf:url action="quota_report" actionUrl="true"><ssf:param
 	name="binderType" value="${ssBinder.entityType}"/></ssf:url>";
 </script>
 
+<ssf:form titleTag="administration.report.title.quota">
 <table class="ss_style" width="100%"><tr><td>
 <form class="ss_style ss_form" 
 	action="<ssf:url webPath="reportDownload"/>" 
@@ -85,6 +89,7 @@ var ssReportURL="<ssf:url action="quota_report" actionUrl="true"><ssf:param
 </form>
 <br>
 </td></tr></table>
+</ssf:form>
 </div>
 </div>
 </body>

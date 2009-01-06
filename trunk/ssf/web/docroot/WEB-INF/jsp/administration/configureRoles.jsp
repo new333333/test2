@@ -29,10 +29,16 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_roles") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
+<ssf:form titleTag="administration.configure_roles">
+<br/>
+<br/>
+
 <script type="text/javascript">
 </script>
 
@@ -115,6 +121,7 @@
 	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
 		  onClick="self.window.close();return false;"/>
 </form>
+</ssf:form>
 </div>
 
 </div>

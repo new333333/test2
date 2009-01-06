@@ -29,6 +29,8 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.manage.application.groups") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
@@ -45,6 +47,8 @@ function ${renderResponse.namespace}_onsub(obj) {
 }
 </script>
 <div class="ss_style ss_portlet">
+<ssf:form titleTag="administration.manage.application.groups">
+
 <div style="padding:10px;" id="ss_manageApplicationGroups">
 <span class="ss_titlebold"><ssf:nlt tag="administration.manage.application.groups" /></span>
 <br>
@@ -164,6 +168,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 </div>
 
 </div>
+</ssf:form>
 </div>
 
 </div>

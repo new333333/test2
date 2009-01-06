@@ -28,12 +28,15 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.returnToAdminMenu") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 
 <div class="ss_style ss_portlet">
   <div class="ss_style">
-  
+   <ssf:form titleTag="administration.returnToAdminMenu">
 	<div style="padding:100px;">
 	<span class="ss_bold"><ssf:nlt tag="administration.returnToAdminMenu"/></span><br/><br/><br/>
 	<form>
@@ -41,7 +44,7 @@
 		  onClick="history.go(-1);return false;"/>
 	</form>
 	</div>
-	
+   </ssf:form>
   </div>
 </div>
 </body>

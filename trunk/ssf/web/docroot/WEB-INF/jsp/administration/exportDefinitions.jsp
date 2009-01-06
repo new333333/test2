@@ -30,10 +30,16 @@
 %>
 <%@ page import="java.util.ArrayList" %>
 
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.export.definitions") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
+<ssf:form titleTag="administration.export.definitions">
+<br/>
+<br/>
 <span class="ss_titlebold"><ssf:nlt tag="administration.export.definitions.select"/></span>
 <table class="ss_style" width="100%"><tr><td>
 
@@ -51,6 +57,7 @@ document.${renderResponse.namespace}fm.onsubmit=function() { return ss_selectAll
 </form>
 <br>
 </td></tr></table>
+</ssf:form>
 </div>
 </div>
 </body>

@@ -29,11 +29,15 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("toolbar.menu.definition_builder") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
-
+<ssf:form titleTag="toolbar.menu.definition_builder">
+<br/>
+<br/>
 <c:if test="${!empty ss_configErrorMessage}">
 <div class="ss_labelLeftError">
 <span><c:out value="${ss_configErrorMessage}"/></span>
@@ -211,6 +215,7 @@ function ${renderResponse.namespace}_showId(forum, obj) {
 </td></tr></table>
 
 </c:if>
+</ssf:form>
 </div>
 </div>
 </body>
