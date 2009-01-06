@@ -31,11 +31,15 @@
 <%@ page import="java.util.ArrayList" %>
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("window.title.manageSearchIndex") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
 
+<ssf:form titleTag="window.title.manageSearchIndex">
 <%
 String wsTreeName = "" + renderResponse.getNamespace();
 %>
@@ -56,7 +60,9 @@ String wsTreeName = "" + renderResponse.getNamespace();
 		  onClick="self.window.close();return false;"/>
 </div>
 <br>
-<span class="ss_bold"><ssf:nlt tag="administration.configure.index.select" text="Select the forums to be re-indexed:"/></span>
+<span class="ss_largeprint ss_bold"><ssf:nlt tag="administration.configure.index.select"/></span>
+<br>
+<span class="ss_smallprint" style="padding-left:10px;"><ssf:nlt tag="administration.configure_search_index_hint"/></span>
 <br>
 <br>
 
@@ -146,6 +152,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <div id="ss_indexing_done_div${renderResponse.namespace}" style="position:absolute;display:none;">
 <span><ssf:nlt tag="index.finished"/></span>
 </div>
+</ssf:form>
 </div>
 </div>
 </body>

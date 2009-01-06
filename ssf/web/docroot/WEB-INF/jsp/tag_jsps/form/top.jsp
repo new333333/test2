@@ -36,7 +36,14 @@
 --%>
 <c:if test="${empty ss_formTagTopApplied}">
 <div class="${ss_formClass}">
-    <div class="ss_form_header"><ssf:nlt tag="${ss_title}" checkIfTag="true"/></div>
+    <div class="ss_form_header">
+      <c:if test="${!empty ss_title_tag}">
+    	<ssf:nlt tag="${ss_title_tag}"/>
+      </c:if>
+      <c:if test="${!empty ss_title}">
+    	<ssf:nlt tag="${ss_title}" checkIfTag="true"/>
+      </c:if>
+    </div>
 </c:if>
 <c:set var="ss_formTagTopApplied" value="1"/>
 
