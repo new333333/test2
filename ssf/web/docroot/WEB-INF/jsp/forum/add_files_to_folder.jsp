@@ -44,5 +44,9 @@
 		    title="Add Files to Folder" 
 		    src="<html:rootPath/>js/forum/null.html" 
 		    height="80%" width="100%">xxx</iframe>
+	    <div align="right">
+		  <span class="ss_fineprint"><ssf:nlt tag="file.upload.having_trouble"/></span>
+		  <ssf:inlineHelp jsp="workspaces_folders/misc_tools/fileUploadHints"/>
+	    </div>
 	</div>
 </c:if>

@@ -3615,9 +3615,7 @@ function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 	}
 	
 	divObj.style.width = "300px";
-	divObj.style.height = "100px";
 
-	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
 	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
 }
 

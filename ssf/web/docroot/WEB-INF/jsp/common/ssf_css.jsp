@@ -577,8 +577,9 @@ input.ss_submit:hover, input.ss_linkButton:hover, a.ss_linkButton:hover {
 input.ss_tinyButton, a.ss_tinyButton:link, a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
  	font-size: ${ss_style_font_fineprint};
- 	background-color: ${ss_linkbutton_background_color};
-  	border: 1px solid ${ss_linkbutton_outline_color};
+    border: 1px solid #5A9A98;
+    background-image: url(<html:imagesPath/>pics/background_inline_button_blue.gif);
+    background-repeat: repeat-x;
   	padding: 0px 3px 0px 3px;
   	cursor: pointer;
   	white-space: nowrap;

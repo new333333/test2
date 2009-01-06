@@ -65,9 +65,11 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	
 		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 			<% if (isAppletSupported) { %>
-				<a class="ss_fineprint ss_nowrap" id="ss_dropbox_div_position${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+				<a class="ss_tinyButton ss_fineprint ss_nowrap" 
+				id="ss_dropbox_div_position${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 				href="javascript: ;" 
-				onClick="ss_showAddAttachmentDropbox('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
+				onClick="ss_showAddAttachmentDropbox('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); 
+				  return false;"
 				title="<ssf:nlt tag="entry.AttachFilesByApplet"/>">
 				  <ssf:nlt tag="entry.AttachFilesByApplet"/>
 				</a>&nbsp;&nbsp;
@@ -79,7 +81,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	<% if (org.kablink.teaming.web.util.BinderHelper.isWebdavSupported(request)) { %>
 	<c:if test="${ss_folderViewStyle == 'blog' && !empty ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}">
 		<c:set var="ss_entryIDForWebDAV" value="${ssDefinitionEntry.id}" />
-		<a class="ss_fineprint ss_nowrap" title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
+		<a class="ss_tinyButton ss_fineprint ss_nowrap" title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
 		  style="behavior: url(#default#AnchorClick);" 
 		  folder="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
 		  href="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
@@ -96,7 +98,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	
 	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 
-		<a class="ss_fineprint ss_nowrap" title="<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>" href="javascript: ;" 
+		<a class="ss_tinyButton ss_fineprint ss_nowrap" title="<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>" href="javascript: ;" 
 		  onClick="ss_showAddAttachmentBrowse('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
 		  ><ssf:nlt tag="entry.AttachFilesByWebBrowse"/></a>&nbsp;&nbsp;
 	
@@ -104,7 +106,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	
 	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 	  <% /* TODO: Add test if IC Broker is enabled (ICBrokerModule.isEnabled()) and	if user has zone name defined */ %>
-	  <a class="ss_fineprint ss_nowrap" title="<ssf:nlt tag="attachMeeting.attachResults"/>" 
+	  <a class="ss_tinyButton ss_fineprint ss_nowrap" title="<ssf:nlt tag="attachMeeting.attachResults"/>" 
 	    href="javascript: ;" 
 	    onClick="ss_showAttachMeetingRecords('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
 	    ><ssf:nlt tag="attachMeeting.attachResults"/></a>&nbsp;&nbsp;
@@ -135,8 +137,12 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 						  id="ss_iframe_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 						  name="ss_iframe_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 						  src="<html:rootPath/>js/forum/null.html" 
-						  height="70%" width="100%" 
+						  height="100" width="100%" 
 						  onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;">xxx</iframe>
+					    <div align="right" style="padding:10px;">
+						  <span class="ss_fineprint"><ssf:nlt tag="file.upload.having_trouble"/></span>
+						  <ssf:inlineHelp jsp="workspaces_folders/misc_tools/fileUploadHints"/>
+					    </div>
 					</div>
 
 					<div id="ss_div_browse${ssDefinitionEntry.id}${ss_attachments_namespace}" 

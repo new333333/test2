@@ -320,7 +320,9 @@ public class PostFiles extends Thread {
         	//once we are ready to put message strings into messages.properties file, we can put the error message
         	//into the messages.properties file and use it from there. Until then, we will use the hardcoded
         	//error messages mentioned below.
-        	String strErrorMessage = "There is a problem with the file being uploaded. \nPlease check to see if file size is large.";
+        	String strErrorMessage = "There is a problem with the file being uploaded. \nIt is likely that the file size is too large.";
+        	String translatedString = new String(topFrame.getParameter("uploadErrorFileTooLarge"));
+        	if (translatedString != null && !translatedString.equals("")) strErrorMessage = translatedString;
         	System.out.println("Error Uploading File: Out of Memory Error: "+ oome + "\n" + strErrorMessage);
         	reportErrorMessage(topFrame, conn, strErrorMessage);
         } catch (Exception e) {
