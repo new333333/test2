@@ -140,6 +140,23 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 			  <span class="ss_fineprint"><ssf:nlt tag="entry.lockedBy">
 	    		<ssf:param name="value" value="${selection.fileLock.owner.title}"/>
 			  </ssf:nlt></span>
+			  <c:if test="${ss_canForceFileUnlock}">
+			    <div>
+			      <a href="<ssf:url     
+				    adapter="true" 
+				    portletName="ss_forum" 
+				    binderId="${ssDefinitionEntry.parentBinder.id}" 
+				    action="view_folder_entry" 
+				    entryId="${ssDefinitionEntry.id}" actionUrl="true">
+				    <ssf:param name="operation" value="force_unlock_file"/>
+				    <ssf:param name="fileId" value="${selection.id}"/></ssf:url>"
+				    onclick='if(confirm("<ssf:escapeJavaScript><ssf:nlt tag="entry.forceUnlockFileConfirm"/></ssf:escapeJavaScript>")){return true}else{return false};'
+				    style="padding-left:10px;"
+				    >
+			        <span class="ss_fineprint"><ssf:nlt tag="entry.forceUnlockFile"/></span>
+			      </a>
+			    </div>
+			  </c:if>
 			</c:if>
 		</td>
 <%
@@ -172,6 +189,23 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 			  <span class="ss_fineprint"><ssf:nlt tag="entry.lockedBy">
 	    		<ssf:param name="value" value="${selection.fileLock.owner.title}"/>
 			  </ssf:nlt></span>
+			  <c:if test="${ss_canForceFileUnlock}">
+			    <div>
+			      <a href="<ssf:url     
+				    adapter="true" 
+				    portletName="ss_forum" 
+				    binderId="${ssDefinitionEntry.parentBinder.id}" 
+				    action="view_folder_entry" 
+				    entryId="${ssDefinitionEntry.id}" actionUrl="true">
+				    <ssf:param name="operation" value="force_unlock_file"/>
+				    <ssf:param name="fileId" value="${selection.id}"/></ssf:url>"
+				    onclick='if(confirm("<ssf:escapeJavaScript><ssf:nlt tag="entry.forceUnlockFileConfirm"/></ssf:escapeJavaScript>")){return true}else{return false};'
+				    style="padding-left:10px;"
+			        >
+			        <span class="ss_fineprint"><ssf:nlt tag="entry.forceUnlockFile"/></span>
+			      </a>
+			    </div>
+			  </c:if>
 			</c:if>
 		</td>
 <%

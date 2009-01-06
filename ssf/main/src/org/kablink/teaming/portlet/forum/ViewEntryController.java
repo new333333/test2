@@ -47,6 +47,7 @@ import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
 import org.dom4j.Document;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -55,6 +56,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
@@ -77,7 +79,6 @@ import org.kablink.teaming.security.function.OperationAccessControlExceptionNoNa
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.TagUtil;
-import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -139,6 +140,14 @@ public class ViewEntryController extends  SAbstractController {
 					response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
 					response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 					response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
+				}
+			} else if (op.equals(WebKeys.OPERATION_FORCE_UNLOCK_FILE)) {
+				Binder binder = getBinderModule().getBinder(folderId);
+				FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
+				String fileId = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_FILE_ID);
+				FileAttachment fa = (FileAttachment)entry.getAttachment(fileId);
+				if (getBinderModule().testAccess(binder, BinderOperation.deleteBinder)) {
+					getFileModule().forceUnlock(binder, entry, fa);
 				}
 			} 
 		} else if (op.equals(WebKeys.OPERATION_GO_TO_ENTRY)) {
@@ -367,15 +376,20 @@ public class ViewEntryController extends  SAbstractController {
 			}
 			
 			//Build the navigation beans
-			BinderHelper.buildNavigationLinkBeans(this, fe.getParentBinder(), model);
-			Binder workspaceBinder = null;
 			Folder folder = (Folder)fe.getParentBinder();
+			BinderHelper.buildNavigationLinkBeans(this, folder, model);
+			Binder workspaceBinder = null;
 			if (folder.isTop()) {
 				workspaceBinder = folder.getParentBinder();
 			} else {
 				workspaceBinder = folder.getTopFolder().getParentBinder();
 			}
 			BinderHelper.buildWorkspaceTreeBean(this, workspaceBinder, model, null);
+			
+			//Get access rights for the parent folder. Used to put forceUnlock link on page
+			if (getBinderModule().testAccess(folder, BinderOperation.deleteBinder)) {
+				model.put(WebKeys.CAN_FORCE_FILE_UNLOCK, true);
+			}
 				
 			//only want to update visits when first enter.  Don't want cancels on modifies
 			//to increment count
