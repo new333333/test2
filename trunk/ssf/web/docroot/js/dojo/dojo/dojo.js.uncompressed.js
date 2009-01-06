@@ -4713,6 +4713,7 @@ if(dojo.isIE || dojo.isOpera){
 	
 	dojo._isBodyLtr = function(){
 		//FIXME: could check html and body tags directly instead of computed style?  need to ignore case, accept empty values
+		if(d==null || gcs(d.body())==null) return false;
 		return !("_bodyLtr" in d) ? 
 			d._bodyLtr = gcs(d.body()).direction == "ltr" :
 			d._bodyLtr; // Boolean 
