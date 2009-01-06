@@ -45,6 +45,7 @@ import org.kablink.util.servlet.StringServletResponse;
  */
 public class FormTag extends BodyTagSupport implements ParamAncestorTag {
 	private String title = "";
+	private String titleTag = "";
 	private String formClass = "";
 	private String _bodyContent;
 	private Map _params;
@@ -79,6 +80,7 @@ public class FormTag extends BodyTagSupport implements ParamAncestorTag {
 			}
 			StringServletResponse res = new StringServletResponse(httpRes);
 			req.setAttribute("ss_title", this.title);
+			req.setAttribute("ss_title_tag", this.titleTag);
 			req.setAttribute("ss_formClass", this.formClass);
 			rd.include(req, res);
 
@@ -104,8 +106,13 @@ public class FormTag extends BodyTagSupport implements ParamAncestorTag {
 				_params.clear();
 			}
 			this.title = "";
+			this.titleTag = "";
 			this.formClass = "";
 		}
+	}
+
+	public void setTitleTag(String titleTag) {
+		this.titleTag = titleTag;
 	}
 
 	public void setTitle(String title) {
