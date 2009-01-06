@@ -143,7 +143,7 @@ public class WebKeys {
     public static final String URL_ENTRY_VIEW_STYLE_FULL_CHECK="full_check";
     public static final String URL_ENTRY_VIEW_TYPE="entryViewType";
 	public static final String URL_FILE = "file";
-	public static final String URL_FILE_ID = "fileId";
+	public static final String URL_FILE_ID = "fileId"; 
 	public static final String URL_FILE_NAME = "fileName";
 	public static final String URL_FILE_TIME = "fileTime";
 	public static final String URL_FILE_TITLE = "fileTitle";
@@ -373,6 +373,7 @@ public class WebKeys {
 	public static final String OPERATION_FIND_ENTRY_TYPES_SEARCH = "find_entry_types_search";
 	public static final String OPERATION_FIND_ENTRY_FIELDS_SEARCH = "find_entry_fields_search";
 	public static final String OPERATION_FIND_USER_SEARCH = "find_user_search";	
+	public static final String OPERATION_FORCE_UNLOCK_FILE = "force_unlock_file";	
 	public static final String OPERATION_GET_ACCESS_CONTROL_TABLE = "get_access_control_table";
 	public static final String OPERATION_ADD_ATTACHMENT_OPTIONS = "add_attachment_options";
 	public static final String OPERATION_ADD_FOLDER_ATTACHMENT_OPTIONS = "add_folder_attachment_options";
@@ -577,6 +578,7 @@ public class WebKeys {
 	public static final String IN_IFRAME_ADD_ENTRY="ssInIFrameAddEntry";
 	public static final String BLOG_REPLY_COUNT="ssBlogReplyCount"; 
     public static final String CALENDAR_IMPORT_TOOLBAR="ssCalendarImportToolbar";
+	public static final String CAN_FORCE_FILE_UNLOCK="ss_canForceFileUnlock";
 	public static final String CAN_VIEW_USER_PROFILES="ss_canViewUserProfiles";
 	public static final String CHANGE_LOGS="ss_changeLogs";
 	public static final String CHANGE_LOG_LIST="ss_changeLogList";
