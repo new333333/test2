@@ -176,6 +176,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 				ajaxSaveFavorites(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_USER_APPCONFIG)) {
 				ajaxSaveUserAppConfig(request, response);
+			} else if ( op.equals( WebKeys.OPERATION_SAVE_USER_TUTORIAL_PANEL_STATE ) )
+			{
+				// Save the state of the tutorial panel.  It is either collapsed, expanded or hidden.
+				ajaxSaveUserTutorialPanelState( request, response );
 			} else if (op.equals(WebKeys.OPERATION_SAVE_RATING)) {
 				ajaxSaveRating(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SHOW_HELP_CPANEL) || 
@@ -275,7 +279,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 					op.equals(WebKeys.OPERATION_ADD_FAVORITES_CATEGORY) || 
 					op.equals(WebKeys.OPERATION_GET_FAVORITES_TREE) ||
 					op.equals(WebKeys.OPERATION_SAVE_FAVORITES) ||
-					op.equals(WebKeys.OPERATION_SAVE_USER_APPCONFIG)) {
+					op.equals(WebKeys.OPERATION_SAVE_USER_APPCONFIG) ||
+					op.equals( WebKeys.OPERATION_SAVE_USER_TUTORIAL_PANEL_STATE ) ) {
 				model.put(WebKeys.AJAX_ERROR_MESSAGE, "general.notLoggedIn");	
 				response.setContentType("text/json");
 				return new ModelAndView("common/json_ajax_return", model);
@@ -459,6 +464,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_GET_WORKFLOW_APPLET)) {
 			return ajaxGetWorkflowApplet(request, response);
 		}
+		else if ( op.equals( WebKeys.OPERATION_SAVE_USER_TUTORIAL_PANEL_STATE ) )
+		{
+			// There is no data that needs to be passed back.
+			response.setContentType( "text/json" );
+			return new ModelAndView( "common/json_ajax_return", model );
+		}
 
 		return ajaxReturn(request, response);
 	} 
@@ -562,6 +573,27 @@ public class AjaxController  extends SAbstractControllerRetry {
 		UserAppConfig uac = UserAppConfig.createFromBrowserData(appConfigs);
 		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_APPCONFIGS, uac.toString());
 	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	private void ajaxSaveUserTutorialPanelState( ActionRequest request, ActionResponse response ) throws Exception
+	{
+		String tutorialState;
+		
+		// Get the state of the tutorial panel from the request.
+		tutorialState = PortletRequestUtils.getStringParameter( request, "tutorialPanelState", "" );
+
+		// Save the state of the tutorial panel to the db.
+		if ( tutorialState != null && tutorialState.length() > 0 )
+		{
+			getProfileModule().setUserProperty( null, ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE, tutorialState );
+		}
+	}// end ajaxSaveUserTutorialPanelState()
+	
 	
 	private void ajaxSaveRating(ActionRequest request, ActionResponse response) throws Exception {
 		//Save the order of the favorites list
