@@ -130,7 +130,8 @@
 				</c:if>
 				<c:set var="isDashboard" value="yes"/>
 				<c:if test="${!empty path}">
-			  	    <img src="<html:rootPath/>images/icons/folder_cyan_sm.png" 
+			  	    <img src="<html:rootPath/>images/icons/folder_cyan_sm.png"
+			  	      <ssf:alt tag=""/> 
 			  	      width="11" height="10" hspace="2" border="0" align="absmiddle" />
 	     			<a href="<ssf:url adapter="true" portletName="ss_forum" 
 						folderId="${entryWn._binderId}" 
