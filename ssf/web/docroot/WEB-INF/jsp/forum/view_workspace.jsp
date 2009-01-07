@@ -121,6 +121,13 @@ if (typeof ss_workarea_showId == "undefined")
 			// Yes
 			// Get the initial state of the tutorial panel.
 			initialState = '${ss_tutorial_panel_state}';
+
+			// Do we have a tutorial panel state?
+			if ( initialState == null || initialState.length == 0 )
+			{
+				// No
+				initialState = window.TUTORIAL_PANEL_EXPANDED;
+			}
 		}
 		else
 		{
@@ -128,13 +135,6 @@ if (typeof ss_workarea_showId == "undefined")
 			initialState = window.TUTORIAL_PANEL_CLOSED;
 		}
 		
-		// Do we have a tutorial panel state?
-		if ( initialState == null || initialState.length == 0 )
-		{
-			// No
-			initialState = window.TUTORIAL_PANEL_EXPANDED;
-		}
-
 		// Is the tutorial panel state valid?
 		if ( initialState < window.TUTORIAL_PANEL_CLOSED || initialState > window.TUTORIAL_PANEL_COLLAPSED )
 		{
