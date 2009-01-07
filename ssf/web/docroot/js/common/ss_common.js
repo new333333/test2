@@ -1907,6 +1907,7 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
 	if (!openStyle || openStyle == null || openStyle == 'undefined') {openStyle=""}
 
     // don't do anything if the divs aren't loaded yet
+	var parentDivObj = document.getElementById(parentDivId);
     var menuObj = self.document.getElementById(divId);
     if (menuObj == null) {return}
 
@@ -1927,15 +1928,18 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
 	    y = parseInt(parseInt(y) + parseInt(offsetTop));
 	}
 
+	var savedDivDisplay = menuObj.style.display;
+	menuObj.style.display = "block";
     var maxWidth = 0;
-    var divWidth = 0;
+    var divWidth = ss_getObjectWidth(menuObj);
+	menuObj.style.display = savedDivDisplay;
 
     if (ss_isNSN6 || ss_isMoz5) {
         // need to bump layer an extra bit to the right to avoid horiz scrollbar
-        divWidth = parseInt(document.getElementById(divId).offsetWidth) + 20;
+        divWidth = parseInt(divWidth) + 20;
         maxWidth = parseInt(window.innerWidth);
     } else {
-        divWidth = parseInt(document.all[divId].clientWidth) + 20;
+        divWidth = parseInt(divWidth) + 20;
         maxWidth = parseInt(document.body.scrollWidth);
     }
 
@@ -1955,7 +1959,6 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
     if (openStyle != "popup") ss_HideDivOnSecondClick(divId);
     ssf_onLayoutChange();
 	if (parentDivId != "") {
-		var parentDivObj = document.getElementById(parentDivId);
 		if (parentDivObj != null) {
 			document.getElementById(divId).tabIndex=document.getElementById(parentDivId).tabIndex;
 		}
