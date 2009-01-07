@@ -64,10 +64,12 @@
 			  name="pageNumber" value="${ss_pageNumber - 1}"/><ssf:param
 			  name="namespace" value="${ss_namespace}"/></ssf:url>" 
 			><img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_.gif" 
-			    title="<ssf:nlt tag="general.previousPage"/>"/></a>
+			    title="<ssf:nlt tag="general.previousPage"/>"
+			    <ssf:alt tag=""/> /></a>
 		</c:if>
 		<c:if test="${empty ss_pageNumber || ss_pageNumber <= '0'}">
-		  <img src="<html:rootPath/>images/pics/sym_arrow_left_g.gif"/>
+		  <img src="<html:rootPath/>images/pics/sym_arrow_left_g.gif"
+		  	<ssf:alt tag=""/> />
 		</c:if>
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<c:if test="${!empty ss_whatsNewBinder}">
@@ -79,10 +81,12 @@
 			name="pageNumber" value="${ss_pageNumber + 1}"/><ssf:param
 			name="namespace" value="${ss_namespace}"/></ssf:url>" 
 		  ><img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_.gif" 
-			  title="<ssf:nlt tag="general.nextPage"/>"/></a>
+			  title="<ssf:nlt tag="general.nextPage"/>"
+			  <ssf:alt tag=""/> /></a>
 		</c:if>
 		<c:if test="${empty ss_whatsNewBinder}">
-			<img src="<html:rootPath/>images/pics/sym_arrow_right_g.gif"/>
+			<img src="<html:rootPath/>images/pics/sym_arrow_right_g.gif"
+			<ssf:alt tag=""/> />
 		</c:if>
 	  </div>
   
@@ -164,10 +168,12 @@
 			  name="pageNumber" value="${ss_pageNumber - 1}"/><ssf:param
 			  name="namespace" value="${ss_namespace}"/></ssf:url>" 
 			><img border="0" src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-			    title="<ssf:nlt tag="general.previousPage"/>"/></a>
+			    title="<ssf:nlt tag="general.previousPage"/>"
+			    <ssf:alt tag=""/> /></a>
 		</c:if>
 		<c:if test="${empty ss_pageNumber || ss_pageNumber <= '0'}">
-		  <img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
+		  <img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"
+		  	<ssf:alt tag=""/> />
 		</c:if>
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<c:if test="${!empty ss_whatsNewBinder}">
@@ -179,10 +185,12 @@
 			name="pageNumber" value="${ss_pageNumber + 1}"/><ssf:param
 			name="namespace" value="${ss_namespace}"/></ssf:url>" 
 		  ><img border="0" src="<html:imagesPath/>pics/sym_arrow_right_.gif" 
-			  title="<ssf:nlt tag="general.nextPage"/>"/></a>
+			  title="<ssf:nlt tag="general.nextPage"/>"
+			  <ssf:alt tag=""/> /></a>
 		</c:if>
 		<c:if test="${empty ss_whatsNewBinder}">
-			<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+			<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"
+				<ssf:alt tag=""/> />
 		</c:if>
 	  </div>
   </div>
