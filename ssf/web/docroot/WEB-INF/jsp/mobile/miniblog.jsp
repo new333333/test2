@@ -41,7 +41,10 @@
 			action="__ajax_mobile" 
 			operation="mobile_show_front_page" 
 			actionUrl="true" />">
-		  <textarea rows="2" style="width:150px;" name="miniblogText" id="miniblogText"></textarea>
+			
+		  <!-- necessary cols attribute is set to 1 and is overridden by CSS -->
+			
+		  <textarea rows="2" cols="1" style="width:150px;" name="miniblogText" id="miniblogText"></textarea>
 		  <input type="submit" name="miniblogBtn" value="<ssf:nlt tag="button.ok"/>"/>
   		  <label for="miniblogText">&nbsp</label>
 		  <c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">
