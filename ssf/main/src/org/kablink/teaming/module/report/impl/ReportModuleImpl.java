@@ -234,7 +234,6 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	public List<Map<String,Object>> getEntriesViewed(final Long ownerId, 
 			final Date startDate, final Date endDate, Integer returnCount) {
 		
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		List data = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
@@ -257,21 +256,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				return crit.list();
 				
 			}});
-		List<DefinableEntity> list = new LinkedList<DefinableEntity>();
 		List entriesSeen = new ArrayList();
 		List filesSeen = new ArrayList();
-		for(Object o : data) {
-			Object[] col = (Object []) o;
-			DefinableEntity entity = null;
-			try {
-				entity = getFolderModule().getEntry((Long) col[0], (Long) col[1]);
-			} catch(Exception skipThis) {
-				continue;
-			}
-			if (entity == null) continue;
-			if (!list.contains(entity)) list.add(entity);
-			if (list.size() >= returnCount.intValue()) break;
-		}
 		for(Object o : data) {
 			Object[] cols = (Object[]) o;
 			DefinableEntity entity = null;
@@ -367,20 +353,20 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return report;
 	}
 	
-	public Collection<ActivityInfo> culaEsCaliente(final AuditType limitType, 
+	public Collection<ActivityInfo> getActivity(final AuditType limitType, 
 			final Date startDate, final Date endDate, final Binder binder) {
 		Object[] entityTypes = new Object[] {EntityType.folder.name(), EntityType.workspace.name(),
 				 EntityType.folderEntry.name()};
-		return culaEsCaliente(limitType, startDate, endDate, entityTypes,
+		return getActivity(limitType, startDate, endDate, entityTypes,
 				Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBoxMax")), binder);
 		
 	}
-	public Collection<ActivityInfo> culaEsCaliente(final AuditType limitType, 
+	public Collection<ActivityInfo> getActivity(final AuditType limitType, 
 			final Date startDate, final Date endDate, final Object[] entityTypes, final Integer returnCount) {
-		return culaEsCaliente(limitType, startDate, endDate, entityTypes, returnCount, null);
+		return getActivity(limitType, startDate, endDate, entityTypes, returnCount, null);
 	}
 	
-	public Collection<ActivityInfo> culaEsCaliente(final AuditType limitType, 
+	public Collection<ActivityInfo> getActivity(final AuditType limitType, 
 			final Date startDate, final Date endDate, final Object[] entityTypes, final Integer returnCount, final Binder binder) {
 		List data = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {

@@ -137,8 +137,8 @@ public interface ReportModule {
 	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate);
 	public List<User> getUsersActivity(DefinableEntity entity, AuditTrail.AuditType type, Date startDate, Date endDate);
 	public List<Map<String,Object>> getEntriesViewed(Long ownerId, Date startDate, Date endDate, Integer returnCount);
-	public Collection<ActivityInfo> culaEsCaliente(AuditType limitType, Date startDate, Date endDate, Binder binder);
-	public Collection<ActivityInfo> culaEsCaliente(AuditType limitType, Date startDate, Date endDate, Object[] entityTypes, Integer returnCount);
-	public Collection<ActivityInfo> culaEsCaliente(AuditType limitType, Date startDate, Date endDate, Object[] entityTypes, Integer returnCount, Binder binder);
+	public Collection<ActivityInfo> getActivity(AuditType limitType, Date startDate, Date endDate, Binder binder);
+	public Collection<ActivityInfo> getActivity(AuditType limitType, Date startDate, Date endDate, Object[] entityTypes, Integer returnCount);
+	public Collection<ActivityInfo> getActivity(AuditType limitType, Date startDate, Date endDate, Object[] entityTypes, Integer returnCount, Binder binder);
 	public List<Map<String,Object>> getUsersStatuses(Long[] userIds, Date startDate, Date endDate, Integer returnCount);
 }

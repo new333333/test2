@@ -31,23 +31,23 @@ package org.kablink.teaming.module.mail.impl;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.mail.Address;
 import javax.mail.AuthenticationFailedException;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Transport;
@@ -56,7 +56,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.search.OrTerm;
 import javax.mail.search.RecipientStringTerm;
 import javax.mail.search.SearchTerm;
-import javax.mail.SendFailedException;
+
 import org.dom4j.Element;
 import org.hibernate.StaleObjectStateException;
 import org.kablink.teaming.ConfigurationException;
@@ -98,9 +98,9 @@ import org.kablink.util.Validator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jndi.JndiAccessor;
 import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailException;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.MailSendException;
-import org.springframework.mail.MailException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -197,18 +197,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			}		
 		}
 
-		//get mail posting accounts - possible alternative to storing passwords in database
-/*		List<Element>accounts = SZoneConfig.getAllElements("//mailConfiguration//account");
-		for (Element sEle:accounts) {
-			String account = sEle.attributeValue("name");
-			if (Validator.isNotNull(account)) {
-				String pwd = sEle.getText();
-				if ((pwd != null) && (pwd.length() != 0)) { //don't know if blanks allowed??
-					mailAccounts.put(account, pwd);
-				}
-			}			
-		}
-*/	
 
 	}
 
@@ -321,20 +309,17 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		String prefix, auth;
 		List<String> posters = getMailPosters(RequestContextHolder.getRequestContext().getZoneName());
 		List<PostingDef> allPostings = getCoreDao().loadPostings(RequestContextHolder.getRequestContext().getZoneId());
-		/* There are 3 types of posting
+		/* There are 2 types of posting
 		 * 1. Using aliases, where mail is sent to different address which are aliases for the address configured in ssf.xml
 		 * 	  This works as long as the mail server doesn't convert the alias to the real email address, as does GroupWise!
 		 * 2. Each posting definition defines a userName/password that is used to connect to the store as configured in ssf.xml
-		 * 3. There is one connect as configured in ssf.xml that has the rights to read the folders of different users.
 		 */
 		List<PostingDef>aliases = new ArrayList();
 		List<PostingDef>useUserNamePwd = new ArrayList();
-		List<PostingDef>useUserName = new ArrayList();
 		for (PostingDef p:allPostings) {
 			if (!p.isEnabled()) continue;
 			if (p.getBinder() == null) continue;
 			if (useAliases) aliases.add(p);
-			else if (Validator.isNull(p.getPassword())) useUserName.add(p); //not tested
 			else useUserNamePwd.add(p);
 		}
 		
@@ -374,59 +359,31 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				continue;
 			}
 			try {				
-				if (!aliases.isEmpty() || !useUserName.isEmpty()) {
+				if (!aliases.isEmpty()) {
 					if (Validator.isNotNull(password)) {
 						//rest of defaults from jndi setting
 						store.connect(null, null, password);
 					} else {
 						store.connect();
 					}
-					if (!aliases.isEmpty()) {
-						mFolder = store.getFolder(folderName);				
-						mFolder.open(javax.mail.Folder.READ_WRITE);
+					mFolder = store.getFolder(folderName);				
+					mFolder.open(javax.mail.Folder.READ_WRITE);
 					
-						//	determine which alias a message belongs to and post it
-						for (PostingDef postingDef: aliases) {
-							try {
-								aliasSearch[0] = new RecipientStringTerm(Message.RecipientType.TO,postingDef.getEmailAddress());
-								aliasSearch[1] = new RecipientStringTerm(Message.RecipientType.CC,postingDef.getEmailAddress());
-								Message aliasMsgs[]=mFolder.search(new OrTerm(aliasSearch));
-								if (aliasMsgs.length == 0) continue;
-								Folder folder = (Folder)postingDef.getBinder();
-								EmailPoster processor = (EmailPoster)processorManager.getProcessor(folder,EmailPoster.PROCESSOR_KEY);
-								sendErrors(folder, postingDef, sender, processor.postMessages(folder,postingDef.getEmailAddress(), aliasMsgs, session));
-							} catch (Exception ex) {
-								logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress(), ex);
-							}
-						}				
-						try {mFolder.close(true);} catch (Exception ex) {};
-					}
-					//now see if we have a privledged account
-					//don't even know if this works
-					for (PostingDef postingDef: useUserName) {
+					//	determine which alias a message belongs to and post it
+					for (PostingDef postingDef: aliases) {
 						try {
-							javax.mail.Folder[] mailFolders = store.getUserNamespaces(postingDef.getEmailAddress());
-							if (mailFolders.length == 0) {
-								logger.info("Cannot read mail box for " + postingDef.getEmailAddress());
-								continue;
-							}
+							aliasSearch[0] = new RecipientStringTerm(Message.RecipientType.TO,postingDef.getEmailAddress());
+							aliasSearch[1] = new RecipientStringTerm(Message.RecipientType.CC,postingDef.getEmailAddress());
+							Message aliasMsgs[]=mFolder.search(new OrTerm(aliasSearch));
+							if (aliasMsgs.length == 0) continue;
 							Folder folder = (Folder)postingDef.getBinder();
 							EmailPoster processor = (EmailPoster)processorManager.getProcessor(folder,EmailPoster.PROCESSOR_KEY);
-							for (int j=0; j<mailFolders.length; ++j) {
-								mFolder = mailFolders[j];
-								if (folderName.equals(mFolder.getFullName())) {
-									try {
-										mFolder.open(javax.mail.Folder.READ_WRITE);
-										sendErrors(folder, postingDef,  sender, processor.postMessages(folder, postingDef.getEmailAddress(), mFolder.getMessages(), session));							
-									} finally {
-										mFolder.close(true);
-									}
-								}						
-							}
+							sendErrors(folder, postingDef, sender, processor.postMessages(folder,postingDef.getEmailAddress(), aliasMsgs, session));
 						} catch (Exception ex) {
 							logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress(), ex);
 						}
-					}	
+					}				
+					try {mFolder.close(true);} catch (Exception ex) {};
 				}
 					
 			} catch (AuthenticationFailedException ax) {
@@ -441,7 +398,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				//Close folder and expunge
 				if (mFolder != null && mFolder.isOpen()) try {mFolder.close(true);} catch (Exception ex1) {};
 				//Close connection 
-				if (store != null) try {store.close();} catch (Exception ex) {};
+				try {store.close();} catch (Exception ex) {};
 			}
 			//Now try connecting by user/password
 			for (PostingDef postingDef: useUserNamePwd) {
@@ -452,7 +409,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					store.connect(null, postingDef.getEmailAddress(), postingDef.getPassword());
 					mFolder = store.getFolder(folderName);				
 					mFolder.open(javax.mail.Folder.READ_WRITE);
-//testing - send to embedded smtp server					sendMail(new com.sun.mail.smtp.SMTPMessage((MimeMessage)mFolder.getMessages()[0]));
 					sendErrors(folder, postingDef, sender, processor.postMessages(folder, postingDef.getEmailAddress(), mFolder.getMessages(), session));							
 				} catch (AuthenticationFailedException ax) {
 					logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress() + " " + getMessage(ax));
@@ -480,7 +436,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		if (!errors.isEmpty()) {
 			try	{
 				JavaMailSender sender;
-				if (!useAliases && !Validator.isNull(postingDef.getPassword()))  {
+				if (!useAliases)  {
 					//need our own sender, so we can change the username/password
 					 sender = (JavaMailSender)mailSender.getClass().newInstance();				
 					 SpringContextUtil.applyDependencies(sender, "mailSender");	
