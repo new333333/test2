@@ -50,7 +50,7 @@
 <div style="padding:10px;" width="100%">
   <c:if test="${!empty mashupBinder}">
 	<c:if test="${ssConfigJspStyle == 'form' || !empty mashup_attributes['showTitle']}">
-	  <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
+	  <div style="border:1px solid #aeaeae; background-color:#cccccc; padding:6px;">
 		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
 		  action="view_folder_listing" 
 		  folderId="${mashupBinder.id}">
@@ -98,7 +98,7 @@
 			</div>
 			<c:if test="${!empty entry._desc}">
 			  <div style="border:1px solid #cecece;padding:6px;">
-			    <ssf:markup>${entry._desc}</ssf:markup>
+			    <ssf:markup search="${entry}">${entry._desc}</ssf:markup>
 			  </div>
 			</c:if>
 		  </div>
