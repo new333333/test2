@@ -221,5 +221,7 @@
 </div>
 <%@ include file="/WEB-INF/jsp/mobile/footer.jsp" %>
 
+</div>
+
 </body>
 </html>
