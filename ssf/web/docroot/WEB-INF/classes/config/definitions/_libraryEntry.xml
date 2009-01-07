@@ -8,17 +8,15 @@
         <property name="name" value="form1"/>  
         <property name="type" value="form"/> 
       </properties>  
-      <item name="title" caption="__title" type="data" id="3"> 
-        <properties> 
-          <property name="name" value="title"/>  
-          <property name="caption" value="__title"/>  
-          <property name="width" value="60"/>  
-          <property name="inline" caption="__inline" type="boolean" value="false"> 
-            <help>ihelp.designers.mark_as_inline</help> 
-          </property>  
-          <property name="generated" value="true"/>  
-          <property name="itemSource" value="upload"/> 
-        </properties> 
+      <item name="title" caption="__title" type="data" id="3" display="form"> 
+        <properties>
+          <property name="caption" value="__title"/>
+          <property name="name" value="title"/>
+          <property name="width" value="60"/>
+          <property name="generated" value="true"/>
+          <property name="itemSource" value="upload"/>
+          <property name="required" value="true"/>
+        </properties>
       </item>
       <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="31">
         <properties>
@@ -28,19 +26,14 @@
           <property name="required" value="false"/>
         </properties>
       </item>  
-      <item name="file" caption="__file_upload" type="data" id="22"> 
-        <properties> 
-          <property name="name" value="upload"/>  
-          <property name="caption" value="__file_upload"/>  
-          <property name="width" value=""/>  
-          <property name="storage" value=""/>  
-          <property name="inline" caption="__inline" type="boolean" value="false"> 
-            <help>ihelp.designers.mark_as_inline</help> 
-          </property>  
-          <property name="required" caption="__required" type="boolean" default="false" value="false"> 
-            <help>ihelp.designers.required</help> 
-          </property> 
-        </properties> 
+      <item name="file" caption="__file_upload" type="data" id="22" category="commonEntryData" display="form"> 
+        <properties>
+          <property name="caption" value="__file_upload"/>
+          <property name="name" value="upload"/>
+          <property name="width" value=""/>
+          <property name="storage" value="simpleFileRepository"/>
+          <property name="required" value="true"/>
+        </properties>
       </item>  
       <item name="description" caption="__description" type="data" id="4"> 
         <properties> 
