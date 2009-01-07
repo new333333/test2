@@ -183,6 +183,23 @@ public class WorkspaceTreeHelper {
 		UserProperties userProperties = (UserProperties)model.get(WebKeys.USER_PROPERTIES_OBJ);
 		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 
+		// Get the state of the tutorial panel (closed, expanded or collapsed)
+		{
+			String	tutorialPanelState;
+			
+			tutorialPanelState = (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE );
+			
+			// Do we have a tutorial panel state?
+			if ( tutorialPanelState == null || tutorialPanelState.length() == 0 )
+			{
+				// No, default to expanded.
+				tutorialPanelState = "2";
+			}
+			
+			// Add the tutorial panel state to the response.
+			model.put( WebKeys.TUTORIAL_PANEL_STATE, tutorialPanelState );
+		}
+		
  		//Remember the last binder viewed
 		String namespace = response.getNamespace();
         if (PortletAdapterUtil.isRunByAdapter(request)) {

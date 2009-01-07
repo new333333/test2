@@ -36,7 +36,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="showWorkspacePage" value="true"/>
 
-<body class="ss_style_body tundra">
+<body class="ss_style_body tundra" onload="bodyOnloadHandler()">
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
 <ssf:ifLoggedIn><c:if test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
   <a class="ss_skiplink" href="${ss_accessibleUrl}"><img border="0"
@@ -101,10 +101,89 @@ if (typeof ss_workarea_showId == "undefined")
 
 <% /* The following javascript is used by the 'Tutorial' ui. */ %>
 <script type="text/javascript">
+	// Global variables.
+	window.TUTORIAL_PANEL_CLOSED	= 1;
+	window.TUTORIAL_PANEL_EXPANDED	= 2;
+	window.TUTORIAL_PANEL_COLLAPSED	= 3;
+
+	/**
+	 * This function is the onload event handler for the <body> tag.
+	 * This code will display the tutorial panel in its correct initial state, hidden, expanded or collapsed.
+	 */
+	function bodyOnloadHandler()
+	{
+		var	initialState;
+		var	table;
+
+		// Is the user looking at his own workspace?
+		if ( isOwnWorkspace() )
+		{
+			// Yes
+			// Get the initial state of the tutorial panel.
+			initialState = '${ss_tutorial_panel_state}';
+		}
+		else
+		{
+			// No, the user is looking at someone elses workspace.  Don't show the tutorial panel.
+			initialState = window.TUTORIAL_PANEL_CLOSED;
+		}
+		
+		// Do we have a tutorial panel state?
+		if ( initialState == null || initialState.length == 0 )
+		{
+			// No
+			initialState = window.TUTORIAL_PANEL_EXPANDED;
+		}
+
+		// Is the tutorial panel state valid?
+		if ( initialState < window.TUTORIAL_PANEL_CLOSED || initialState > window.TUTORIAL_PANEL_COLLAPSED )
+		{
+			// No
+			initialState = window.TUTORIAL_PANEL_EXPANDED;
+		}
+
+		// Is the tutorial panel supposed to be closed?
+		if ( initialState == window.TUTORIAL_PANEL_CLOSED )
+		{
+			// Yes
+			// Hide the expanded tutorial table.
+			table = document.getElementById( 'expandedTutorialTable' );
+			table.style.display = 'none';
+
+			// Hide the collapsed tutorial table.
+			table = document.getElementById( 'collapsedTutorialTable' );
+			table.style.display = 'none';
+		}
+		// Is the tutorial panel collapsed?
+		else if ( initialState == window.TUTORIAL_PANEL_COLLAPSED )
+		{
+			// Yes
+			// Hide the expanded tutorial table.
+			table = document.getElementById( 'expandedTutorialTable' );
+			table.style.display = 'none';
+
+			// Show the collapsed tutorial table.
+			table = document.getElementById( 'collapsedTutorialTable' );
+			table.style.display = '';
+		}
+		else
+		{
+			// The tutorial panel is expanded.
+			// Show the expanded tutorial table.
+			table = document.getElementById( 'expandedTutorialTable' );
+			table.style.display = '';
+
+			// Hide the collapsed tutorial table.
+			table = document.getElementById( 'collapsedTutorialTable' );
+			table.style.display = 'none';
+		}
+	}// end bodyOnloadHandler()
+
+	
 	/**
 	 * This function will collapse the tutorial ui.
 	 */
-	function collapseTutorial()
+	function collapseTutorialPanel()
 	{
 		var	table;
 
@@ -115,7 +194,10 @@ if (typeof ss_workarea_showId == "undefined")
 		// Show the collapsed tutorial table.
 		table = document.getElementById( 'collapsedTutorialTable' );
 		table.style.display = '';
-	}// end collapseTutorial()
+
+		// Issue an ajax request to remember that the tutorial panel is collapsed.
+		saveTutorialPanelState( window.TUTORIAL_PANEL_COLLAPSED );
+	}// end collapseTutorialPanel()
 
 
 	/**
@@ -135,6 +217,7 @@ if (typeof ss_workarea_showId == "undefined")
 			hideTutorialPanels();
 			
 			// Issue an ajax request to remember that the tutorial panel should not be displayed again.
+			saveTutorialPanelState( window.TUTORIAL_PANEL_CLOSED );
 		}
 	}// end configCloseTutorialPanel()
 
@@ -142,7 +225,7 @@ if (typeof ss_workarea_showId == "undefined")
 	/**
 	 * This function will expand the tutorial ui.
 	 */
-	function expandTutorial()
+	function expandTutorialPanel()
 	{
 		var	table;
 
@@ -153,9 +236,21 @@ if (typeof ss_workarea_showId == "undefined")
 		// Show the expanded tutorial table.
 		table = document.getElementById( 'expandedTutorialTable' );
 		table.style.display = '';
-	}// end expandTutorial()
+
+		// Issue an ajax request to remember that the tutorial panel is expanded.
+		saveTutorialPanelState( window.TUTORIAL_PANEL_EXPANDED );
+	}// end expandTutorialPanel()
 
 
+	/**
+	 * This function gets called when we get the response to the ajax request to save the tutorial panel state.
+	 */
+	function handleSaveTutorialPanelStateAjaxResults( responseData )
+	{
+		// Nothing to do.
+	}// end handleSaveTutorialPanelStateAjaxResults()
+
+	
 	/**
 	 * There are two tables that make up the tutorial ui, an expanded panel and a collapsed panel.
 	 * Hide both of them.
@@ -172,6 +267,45 @@ if (typeof ss_workarea_showId == "undefined")
 		table = document.getElementById( 'expandedTutorialTable' );
 		table.style.display = 'none';
 	}// end hideTutorialPanels()
+
+
+	/**
+	 * This function will return true if the logged in user is looking at their own workspace.
+	 */
+	function isOwnWorkspace()
+	{
+		// Is the id of the workspace we are looking at the same as the id of the user's workspace?
+		if ( ${ssBinder.id} == ${ssUser.workspaceId} )
+		{
+			// Yes
+			return true;
+		}
+
+		// The user is looking at someone elses workspace.
+		return false; 
+	}// end isOwnWorkspace()
+
+
+	/**
+	 * Issue an ajax request to save the state of the tutorial panel.
+	 */
+	function saveTutorialPanelState( panelState )
+	{
+		var	url;
+		var	obj;
+
+		// Set up the object that will be used in the ajax request.
+		obj = new Object();
+		obj.operation = 'save_user_tutorial_panel_state';
+		obj.tutorialPanelState = panelState;
+
+		// Build the url used in the ajax request.
+		url = ss_buildAdapterUrl( ss_AjaxBaseUrl, obj );
+		
+		// Issue the ajax request.  The function handleSaveTutorialPanelStateAjaxResults() will be called
+		// when we get the response to the request.
+		ss_get_url( url, handleSaveTutorialPanelStateAjaxResults );
+	}// end saveTutorialPanelState()
 
 
 	/**
@@ -261,7 +395,7 @@ if (typeof ss_workarea_showId == "undefined")
 									alt="<ssf:nlt tag="tutorial.alt.closeTutorial"/>" />
 						</a>
 						<a 	href="#"
-							onClick="expandTutorial()">
+							onClick="expandTutorialPanel()">
 							<img	border="0"
 									src="<html:imagesPath/>pics/sym_s_expand.gif"
 									title="<ssf:nlt tag="tutorial.alt.expandTutorial"/>"
@@ -272,7 +406,7 @@ if (typeof ss_workarea_showId == "undefined")
 			</table>
 
 			<% /* This table is displayed when the video tutorial is not collapsed. */ %>
-			<table id="expandedTutorialTable" width="100%" style="padding: 4px;">
+			<table id="expandedTutorialTable" width="100%" style="padding: 4px; display: none;">
 				<tr>
 					<td style="padding-left: 15px;">
 						<span style="font-size: 1.25em; font-weight: bold; color: #906040;"><ssf:nlt tag="tutorial.heading" /></span>
@@ -341,7 +475,7 @@ if (typeof ss_workarea_showId == "undefined")
 									alt="<ssf:nlt tag="tutorial.alt.closeTutorial"/>" />
 						</a>
 						<a 	href="#"
-							onClick="collapseTutorial()">
+							onClick="collapseTutorialPanel()">
 							<img	border="0"
 									src="<html:imagesPath/>pics/sym_s_collapse.gif"
 									title="<ssf:nlt tag="tutorial.alt.collapseTutorial"/>"
