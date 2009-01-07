@@ -61,7 +61,7 @@
 		 <c:if test="${!empty ssDefinitionEntry.title}">
 		   value="<c:out value="${ssDefinitionEntry.title}"/>"
 		 </c:if>
-		 >
+		 />
 		</div>
 <script type="text/javascript">
 function ss_focusOnTitle() {
