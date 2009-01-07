@@ -74,7 +74,8 @@
 				><img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_.gif"/></a>
 			</c:if>
 			<c:if test="${empty ss_prevPage}">
-			  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_g.gif"/>
+			  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_left_g.gif"
+			  	<ssf:alt tag=""/> />
 			</c:if>
 		  </td>
 		  <td style="padding-left:20px;">
@@ -88,7 +89,8 @@
 				><img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_.gif"/></a>
 			</c:if>
 			<c:if test="${empty ss_nextPage}">
-			  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_g.gif"/>
+			  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_g.gif"
+			 	<ssf:alt tag=""/> />
 			</c:if>
 		  </td>
 		 </tr>
