@@ -56,8 +56,12 @@
   <c:set var="textValue" value="${ssDefinitionEntry.description}"/>
 </c:if>
 <div class="ss_entryContent">
-<span class="ss_labelAbove"><%= caption %><%= required %></span>
-<textarea name="<%= elementName %>" wrap="virtual"
+<span class="ss_labelAbove">
+	<label for="<%= elementName %>">
+		<%= caption %><%= required %>
+	</label>
+</span>
+<textarea name="<%= elementName %>" id="<%= elementName %>" wrap="virtual"
   rows="<%= rows %>" cols="40"
 ><c:out value="${textValue}"/></textarea>
 </div>
