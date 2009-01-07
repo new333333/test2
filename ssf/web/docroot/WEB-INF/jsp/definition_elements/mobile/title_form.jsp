@@ -43,7 +43,11 @@
 			if (caption == null) {caption = "";}
 		%>
 		<div class="ss_entryContent">
-		<div class="ss_labelAbove" id="${property_name}_label">${property_caption}</div>
+		<div class="ss_labelAbove" id="${property_name}_label">
+			<label for="title">
+				${property_caption}
+			</label>
+		</div>
 		<input type="text" class="ss_text" name="title" id="title" size="40"
 		 <c:if test="${empty ssDefinitionEntry.title}">
 		   <c:if test="${empty ssEntryTitle && !empty ssEntry && empty ssDefinitionEntry}">
