@@ -58,8 +58,8 @@ public class TeamingServiceClientWithStub {
 	
 	public static void main(String[] args) throws Exception {
 		FolderEntry entry;
-		//checkUsers();
-		checkGroups();
+		checkUsers();
+		//checkGroups();
 		//checkBinder();
 		//checkEntry();
 		//getFolderEntryWSSecurity(47, true);
@@ -564,9 +564,10 @@ public class TeamingServiceClientWithStub {
 		testUser.setLastName("Tester");
 		testUser.setEmailAddress("boulder@foo.bar");
 		long testUserId = stub.profile_addUser(null, testUser);
-		stub.profile_addUserWorkspace(null, testUserId);
+		Long wsId = stub.profile_addUserWorkspace(null, testUserId);
 		testUser = stub.profile_getUser(null, testUserId, false);
 		if (!"Jodi Anne Tester".equals(testUser.getTitle())) System.out.println("Title not set");
+		if (!wsId.equals(testUser.getWorkspaceId())) System.out.println("Workspace Id not set correctly");
 		testUser.setZonName("jodi");
 		stub.profile_modifyUser(null, testUser);
 		testUser = stub.profile_getUser(null, testUserId, false);

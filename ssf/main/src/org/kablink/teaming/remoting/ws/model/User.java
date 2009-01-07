@@ -44,6 +44,7 @@ public class User extends Principal implements Serializable {
 	private String skypeId;
 	private String twitterId;
 	private Long miniBlogId;
+	private Long workspaceId;
 	
 	public String getFirstName() {
 		return firstName;
@@ -116,6 +117,12 @@ public class User extends Principal implements Serializable {
 	}
 	public void setMiniBlogId(Long miniBlogId) {
 		this.miniBlogId = miniBlogId;
+	}
+	public void setWorkspaceId(Long workspaceId) {
+		this.workspaceId = workspaceId;
+	}
+	public Long getWorkspaceId() {
+		return workspaceId;
 	}
 	
 }
