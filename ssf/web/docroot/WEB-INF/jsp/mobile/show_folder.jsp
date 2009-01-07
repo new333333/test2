@@ -126,7 +126,8 @@
 	  <table>
 	  <tr>
 	  <td valign="top">
-	  <select name="url" size="1">
+	  <label for="url">&nbsp;</label>
+	  <select name="url" id="url" size="1">
 	    <c:if test="${fn:length(ss_mobileBinderDefUrlList) == 1}">
 		  <c:forEach var="def" items="${ss_mobileBinderDefUrlList}">
 		    <option value="${def.url}"><ssf:nlt tag="button.add"/>: ${def.title}</option>
@@ -141,7 +142,7 @@
 	  </select>
 	  </td>
 	  <td valign="top">
-	  <input type="submit" name="goBtn" value="<ssf:nlt tag="button.ok"/>">
+	  <input type="submit" name="goBtn" value="<ssf:nlt tag="button.ok"/>"/>
 	  </td>
 	  </tr>
 	  </table>  
