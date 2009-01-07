@@ -504,6 +504,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_USER_APPCONFIG = "get_user_appconfig";
 	public static final String OPERATION_SAVE_USER_APPCONFIG = "save_user_appconfig";
 	public static final String OPERATION_SAVE_UESR_STATUS = "save_user_status";
+	public static final String OPERATION_SAVE_USER_TUTORIAL_PANEL_STATE = "save_user_tutorial_panel_state";
 	public static final String OPERATION_SET_SIDEBAR_VISIBILITY = "set_sidebar_visibility";
 	public static final String OPERATION_SET_SUNBURST_VISIBILITY = "set_sunburst_visibility";
 	public static final String OPERATION_GET_UPLOAD_PROGRESS_STATUS = "get_upload_progress_status";
@@ -965,6 +966,7 @@ public class WebKeys {
     public static final String TOOLBAR_MEETING_URL="ss_toolbar_meeting_url";
     public static final String TOOLBAR_SUBSCRIBE_EMAIL="ss_toolbar_subscribe_email";
     public static final String TOOLBAR_SUBSCRIBE_RSS="ss_toolbar_subscribe_rss";
+    public static final String TUTORIAL_PANEL_STATE = "ss_tutorial_panel_state";
     public static final String TRACKED_PLACES_PAGE="ss_trackedPlacesPage";
     public static final String TRACKED_TEAMS_PAGE="ss_trackedTeamsPage";
     public static final String TRACKED_SITE_PAGE="ss_trackedSitePage";
