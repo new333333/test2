@@ -62,7 +62,6 @@ import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.ApplicationPrincipal;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Dashboard;
 import org.kablink.teaming.domain.EmailAddress;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Group;
@@ -317,8 +316,11 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
        	   				try {if (s != null) s.close();} catch (Exception ex) {};
        	   			}
         			//need to use ownerId, cause versionattachments/customattributeList sets not indexed by principal
-		   			getCoreDao().deleteEntityAssociations("ownerId in (" + inList.toString() + ") and (ownerType='" +
-		   					EntityType.user.name() + "' or ownerType='" + EntityType.group.name() + "')");
+		   			getCoreDao().deleteEntityAssociations("ownerId in (" + inList.toString() + ") and ownerType in  ('" +
+		   					EntityType.user.name() + "','" + 
+		   					EntityType.group.name() + "','" +
+		   					EntityType.application.name() +"','" + 
+		   					EntityType.applicationGroup.name() + "')");
  		   			session.createQuery("Delete org.kablink.teaming.domain.SeenMap where principalId in (:pList)")
 		   				.setParameterList("pList", ids)
        	   				.executeUpdate();
@@ -352,6 +354,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
  		   			List types = new ArrayList();
 	       			types.add(EntityIdentifier.EntityType.user.name());
 	       			types.add(EntityIdentifier.EntityType.group.name());
+	       			types.add(EntityIdentifier.EntityType.application.name());
+	       			types.add(EntityIdentifier.EntityType.applicationGroup.name());
       	   			//delete workflow history
 		   			session.createQuery("Delete org.kablink.teaming.domain.WorkflowHistory where entityId in (:pList) and entityType in (:tList)")
  	   					.setParameterList("pList", ids)
@@ -360,6 +364,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		   			types.clear();
 	       			types.add(EntityIdentifier.EntityType.user.getValue());
 	       			types.add(EntityIdentifier.EntityType.group.getValue());
+	       			types.add(EntityIdentifier.EntityType.application.getValue());
+	       			types.add(EntityIdentifier.EntityType.applicationGroup.getValue());
 	       			//delete subscriptions to these principals - not likely to exist
  		   			session.createQuery("Delete org.kablink.teaming.domain.Subscription where entityId in (:pList) and entityType in (:tList)")
  	   					.setParameterList("pList", ids)
@@ -387,21 +393,21 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
    						.setParameterList("pList", ids)
    						.setParameterList("tList", types)
    						.executeUpdate();
- 		   			//only delete groups; leave users around
- 		   			session.createQuery("Delete org.kablink.teaming.domain.Principal where id in (:pList) and type='group'")
+		   			
+
+ 		   			//only delete groups,applications; leave users around
+ 		   			types.clear();
+	       			types.add(EntityIdentifier.EntityType.group.name());
+	       			types.add(EntityIdentifier.EntityType.application.name());
+	       			types.add(EntityIdentifier.EntityType.applicationGroup.name());
+		   			session.createQuery("Delete org.kablink.teaming.domain.Principal where id in (:pList) and type in (:tList)")
             			.setParameterList("pList", ids)
-       	   				.executeUpdate();
+   						.setParameterList("tList", types)
+      	   				.executeUpdate();
+		   			
  		   			//leave users around; just mark deleted
  		   			session.createQuery("update org.kablink.teaming.domain.Principal set deleted=:deleted where id in (:pList) and type='user'")
             			.setBoolean("deleted", Boolean.TRUE)
-            			.setParameterList("pList", ids)
-       	   				.executeUpdate();
- 		   			//delete applications
- 		   			session.createQuery("Delete org.kablink.teaming.domain.Principal where id in (:pList) and type='application'")
-            			.setParameterList("pList", ids)
-       	   				.executeUpdate();
- 		   			//delete application groups
- 		   			session.createQuery("Delete org.kablink.teaming.domain.Principal where id in (:pList) and type='applicationGroup'")
             			.setParameterList("pList", ids)
        	   				.executeUpdate();
 		   			//this flushes secondary cache

@@ -544,6 +544,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
   						return null;
   					}
   				});
+  				//get updates commited, this is needed if their is another transaction wrapping the call to delete binder
+  				//This is the case with delete user workspace !!
+  				getCoreDao().flush(); 
+  							
   				getCoreDao().evict(child); //update commited
 
 			} catch (NoObjectByTheIdException musthavebeendeleted) {continue;}

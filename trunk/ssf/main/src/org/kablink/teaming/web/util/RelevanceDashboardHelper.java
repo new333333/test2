@@ -776,7 +776,7 @@ public class RelevanceDashboardHelper {
 		//get users over last 2 weeks
 		start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
 		Object[] entityTypes = new Object[] {EntityType.folderEntry.name()};
-		Collection<ActivityInfo> results = bs.getReportModule().culaEsCaliente(AuditType.view, 
+		Collection<ActivityInfo> results = bs.getReportModule().getActivity(AuditType.view, 
 				start.getTime(), new java.util.Date(), entityTypes, 
 				pageStart + Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
 		for(ActivityInfo info : results) {

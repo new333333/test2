@@ -401,7 +401,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							row[0] = ssName;							
 						} //otherwise update the other fields, just leave old name
 					} else if (row == null && row2 != null) {
-						//name exists, DN will be updated
+						//name exists, DN will be updated.  Either moved or we are going to end up with a conflict
 						if (logger.isDebugEnabled()) logger.debug("dn changed: " + row2[4] + "->" + dn);
 						userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
 						row = row2;

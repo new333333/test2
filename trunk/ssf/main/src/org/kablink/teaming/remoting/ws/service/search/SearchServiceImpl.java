@@ -182,7 +182,7 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 		if(binderId != null) {
 			binder = getBinderModule().getBinder(new Long(binderId));
 		}
-		Collection<ActivityInfo> results = getReportModule().culaEsCaliente(type, start.getTime(), new java.util.Date(), binder);
+		Collection<ActivityInfo> results = getReportModule().getActivity(type, start.getTime(), new java.util.Date(), binder);
 		for(ActivityInfo info : results) {
 			Element resultElem = null;
 			if(info.getWhoOrWhat().getEntityType().equals(EntityType.folderEntry)) {
