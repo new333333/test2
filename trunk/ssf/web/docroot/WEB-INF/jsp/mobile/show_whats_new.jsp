@@ -110,7 +110,8 @@
 		  	  <br/>
 		  	  <div style="padding-left:14px;">
 			  	  <img src="<html:rootPath/>images/pics/sym_s_gray_dude.gif" 
-			  	    width="11" height="10" hspace="2" border="0" align="absmiddle" />
+			  	    width="11" height="10" hspace="2" border="0" align="absmiddle" 
+			  	    <ssf:alt tag=""/> />
 				  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				    action="__ajax_mobile"
 				    operation="mobile_show_workspace"
