@@ -53,7 +53,6 @@
 	
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
-	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
 	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
 }
 function ss_tagHide(namespace, divNumber) {
