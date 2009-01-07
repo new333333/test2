@@ -285,6 +285,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		userModel.setOrganization(user.getOrganization());
 		userModel.setPhone(user.getPhone());
 		userModel.setZonName(user.getZonName());
+		userModel.setWorkspaceId(user.getWorkspaceId());
 		Locale locale = user.getLocale();
 		if(locale != null) {
 			userModel.setLocaleLanguage(locale.getLanguage());
