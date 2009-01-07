@@ -195,7 +195,7 @@
 	  <img border="0" src="<html:rootPath/>images/pics/sym_arrow_right_g.gif"
 	  	<ssf:alt tag=""/> />
 	</c:if>
-	</td></tr></table>
+
 	</td></tr>
 	</table>
 
