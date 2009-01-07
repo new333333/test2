@@ -103,9 +103,9 @@
 <form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
 					action="__ajax_mobile" actionUrl="true" 
 					operation="mobile_find_people" />">
-<span class="ss_bold"><ssf:nlt tag="navigation.findUser"/></span>
+<label for="searchText"><span class="ss_bold"><ssf:nlt tag="navigation.findUser"/></span></label>
 <br/>
-<input type="text" size="15" name="searchText" value="${ss_searchText}"/><input 
+<input type="text" size="15" name="searchText" id="searchText" value="${ss_searchText}"/><input 
   type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
 </form>
 </div>
