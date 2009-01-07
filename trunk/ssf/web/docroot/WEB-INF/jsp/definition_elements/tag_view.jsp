@@ -51,9 +51,34 @@
 
   <table class="ss_style" cellspacing="0" cellpadding="0">
    <tbody>
+    <c:if test="${!empty ssPersonalTags || !empty ssCommunityTags}">
+	    <tr>
+		 <td valign="top" style="padding-right:4px;">
+			<div style="padding-left: 19px; padding-top: 10px; padding-bottom: 10px;">
+				<span>
+					<ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="-3" offsetY="6" 
+			    		 		  title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
+				  	</ssHelpSpot>
+					<ssf:nlt tag="tags.tags"/>:
+				</span>
+			</div>
+		 </td>
+		 <td width="100%">
+			<ssf:ifaccessible>
+				<c:set var="ssCloseScript" value="ss_hideAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;" scope="request"/>
+			</ssf:ifaccessible>
+			<ssf:ifnotaccessible>
+				<c:set var="ssCloseScript" value="ss_tagHide('${ss_tagViewNamespace}', '${ss_tagDivNumber}');return false;" scope="request"/>
+			</ssf:ifnotaccessible>
+			
+			<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
+		 </td>
+	    </tr>
+	</c:if>
     <tr>
-	 <td valign="top" style="padding-right:2px;">
-		  <a href="javascript:;" 
+	 <td valign="top" style="padding-right:4px;">
+		<div style="padding-left: 19px; padding-top: 10px; padding-bottom: 10px;">
+		  <a class="ss_tinyButton ss_fineprint ss_nowrap" href="javascript:;" 
 			<ssf:ifaccessible>
 		  		onClick="ss_showAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;"
 			</ssf:ifaccessible>
@@ -64,25 +89,31 @@
 
 			<!-- The help spot is positioned relative to the position of its parent. -->
 			<!-- That's why I put the <ssHelpSpot...> in a <span> -->
-			<div style="padding-left: 19px; padding-top: 10px; padding-bottom: 10px;">
+			<span>
+			  <c:if test="${empty ssPersonalTags && empty ssCommunityTags}">
 				<ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="-3" offsetY="6" 
 		    		 		  title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
 			  	</ssHelpSpot>
-				<ssf:nlt tag="tags.tags"/>:
-			</div>
+			  </c:if>
+			  <ssf:nlt tag="tags.addTag"/>
+			</span>
 		  </a>
 		  <div id="ss_tags_anchor${ss_tagViewNamespace}_${ss_tagDivNumber}"></div>
+		</div>
 	 </td>
 	 <td width="100%">
+	   <c:if test="${empty ssPersonalTags && empty ssCommunityTags}">
 		<ssf:ifaccessible>
 			<c:set var="ssCloseScript" value="ss_hideAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;" scope="request"/>
 		</ssf:ifaccessible>
 		<ssf:ifnotaccessible>
 			<c:set var="ssCloseScript" value="ss_tagHide('${ss_tagViewNamespace}', '${ss_tagDivNumber}');return false;" scope="request"/>
 		</ssf:ifnotaccessible>
-		
 		<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
-	 </td></tr></tbody>
+	  </c:if>
+	 </td>
+    </tr>
+  </tbody>
   </table>
 
  <div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane" 
