@@ -390,7 +390,20 @@ if (typeof ss_workarea_showId == "undefined")
 		    <jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
 		  </c:if>
 		  <c:if test="${ss_mashupHideToolbar && ss_mashupShowAlternateToolbar}">
-		    <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
+			<div class="ss_actions_bar1_pane ss_sidebarImage">
+			<table cellspacing="0" cellpadding="0">
+			<tbody>
+			<tr>
+			<td valign="middle">
+				<ssf:toolbar style="ss_actions_bar1 ss_actions_bar">			
+				<% // Workspace toolbar %>
+				<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
+				</ssf:toolbar>
+			</td>
+			</tr>
+			</tbody>
+			</table>
+			</div>
 		  </c:if>
 			
 		</div>
