@@ -34,7 +34,7 @@
 <jsp:useBean id="ss_box_color" type="String" scope="request" />
 <jsp:useBean id="ss_box_canvas_color" type="String" scope="request" />
 <%
-boolean brWrapContent = ParamUtil.get(request, "box_br_wrap_content", true);
+boolean brWrapContent = ParamUtil.get(request, "box_br_wrap_content", false);
 %>
 <c:set var="boxColor" value='<%= ParamUtil.get(request, "box_color", ss_box_color) %>' />
 <c:set var="boxBgColor" value='<%= ParamUtil.get(request, "box_canvas_color", ss_box_canvas_color) %>' />
