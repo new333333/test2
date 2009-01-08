@@ -5,8 +5,8 @@ from the command line.
 2. Edit <icecore installation>/webapps/ssf/WEB-INF/server-config.wsdd 
 (for WS-Security authentication) and <icecore installation>/webapps/ssr/WEB-INF/server-config.wsdd 
 (for Basic Authentication) and replace 
-com.sitescape.team.remoting.ws.TeamingServiceEndpoint with 
-com.sitescape.team.samples.extendedws.server.ExtendedTeamingServiceEndpoint.
+org.kablink.teaming.remoting.ws.TeamingServiceEndpoint with 
+org.kablink.teaming.samples.extendedws.server.ExtendedTeamingServiceEndpoint.
 
 3. Edit <icecore installation>/webapps/ssf/WEB-INF/context/applicationContext-ext.xml
 and add the following bean definition. This bean definition overrides the factory-shipped
@@ -14,11 +14,11 @@ default definition of the bean with the same name in applicationContext.xml.
 
 	<bean id="folderService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.samples.extendedws.server.ExtendedFolderServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="org.kablink.teaming.samples.extendedws.server.ExtendedFolderServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.samples.extendedws.server.ExtendedFolderService</value>
+			<value>org.kablink.teaming.samples.extendedws.server.ExtendedFolderService</value>
 		</property>
 	</bean>
 
