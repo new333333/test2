@@ -138,4 +138,19 @@ public class NullReportModule implements ReportModule {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public Collection<ActivityInfo> getActivity(AuditType limitType, Date startDate, Date endDate, Binder binder) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Collection<ActivityInfo> getActivity(AuditType limitType, Date startDate, Date endDate, Object[] entityTypes, Integer returnCount) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Collection<ActivityInfo> getActivity(AuditType limitType, Date startDate, Date endDate, Object[] entityTypes, Integer returnCount, Binder binder) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
