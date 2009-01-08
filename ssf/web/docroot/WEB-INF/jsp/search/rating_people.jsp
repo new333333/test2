@@ -38,7 +38,7 @@
 	  <c:forEach var="user" items="${ssFolderEntryPeople}">
 		<tr>
 		<td class="ss_star"><img class="${user.searchResultsRatingCSS}" 
-		  <ssf:alt/> src="<html:imagesPath/>pics/sym_m_star.gif"/></td>
+		  <ssf:alt/> src="<html:imagesPath/>pics/sym_m_star.gif" <ssf:alt tag=""/> /></td>
 		<td><ssf:showUser user="${user.ssUser}" /></td>
 		</tr>
 	  </c:forEach>
