@@ -38,7 +38,7 @@
 		  <ul>
 			<li>
 			  <a href="javascript:;"
-			    onClick="ss_muster.showForm('ss_muster_users', [${ss_toolbar_clipboard_ids_as_js_string}], '${ssBinder.id}');return false;"
+			    onclick="ss_muster.showForm('ss_muster_users', [${ss_toolbar_clipboard_ids_as_js_string}], '${ssBinder.id}');return false;"
 			  >
 			    <ssf:nlt tag="sidebar.clipboard"/>
 			  </a>
