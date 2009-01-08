@@ -47,7 +47,7 @@
 		  <ul>
 			<li>
 				<a href="${ss_toolbar_subscribe_rss}" 
-				  onClick="ss_showPermalink(this);return false;"><ssf:nlt tag="sidebar.rss"/></a>
+				  onclick="ss_showPermalink(this);return false;"><ssf:nlt tag="sidebar.rss"/></a>
 			</li>
 		  </ul>
 		</div>
