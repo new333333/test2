@@ -35,7 +35,7 @@
 			<li>
 			  <c:if test="${!ss_toolbar_meeting_post}">
 				  <a href="${ss_toolbar_meeting_url}"
-				    onClick="ss_toolbarPopupUrl(this.href);return false;"
+				    onclick="ss_toolbarPopupUrl(this.href);return false;"
 				  >
 				    <span><ssf:nlt tag="toolbar.menu.addMeeting"/></span>
 				  </a>
