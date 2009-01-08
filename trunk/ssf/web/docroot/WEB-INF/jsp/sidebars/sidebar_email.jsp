@@ -40,7 +40,7 @@
 			<li>
 			<c:if test="${!ss_toolbar_sendmail_post}">
 				  <a href="${ss_toolbar_sendmail_url}"
-				    onClick="ss_toolbarPopupUrl(this.href);return false;"
+				    onclick="ss_toolbarPopupUrl(this.href);return false;"
 				  >
 				    <span><ssf:nlt tag="profile.abv.element.emailAddress"/></span>
 				  </a>
