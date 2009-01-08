@@ -1463,7 +1463,6 @@ a.ss_tree_highlight_not:active, a.ss_tree_highlight_not:hover {
 /* Box styles */
 
 div.ss_box_top_rounded {
-	background-color: ${ss_style_background_color_opaque};
 }
 
 .ss_box_rounded {
@@ -1872,7 +1871,7 @@ div.ss_sidebar_panel_featured {
 	background-image: url(<html:imagesPath/>roundcorners3/background_dc_bar.jpg);
 	color: #333333;
 	margin:0px;
-	padding-bottom: 3px;
+	padding-bottom: 4px;
 	}
 .ss_title_bar * {
 	background-color: transparent;
