@@ -91,6 +91,6 @@
 	%>
 </script>
 
-<a class="ss_sideLink" href="javascript: ;" onClick="ss_editAppConfig(); return false;">
+<a class="ss_sideLink" href="javascript: ;" onclick="ss_editAppConfig(); return false;">
 	<ssf:nlt tag="sidebar.appConfig.Caption"/>
 </a>
