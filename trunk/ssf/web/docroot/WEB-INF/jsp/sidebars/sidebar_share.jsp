@@ -43,7 +43,7 @@
 							  <ssf:param name="entryId" value="${ssEntry.id}" />
 							</c:if>
 						</ssf:url>" 
-	  					onClick="ss_openUrlInWindow(this, '_blank', '450px', '600px');return false;"
+	  					onclick="ss_openUrlInWindow(this, '_blank', '450px', '600px');return false;"
 						
 							<c:if test="${ssBinder.entityType == 'workspace'}"> 
 								title="<ssf:nlt tag="relevance.shareThisWorkspace"/>" >
