@@ -25,7 +25,7 @@ access to the Enterprise edition of the source tree.
 1. Stop ICEcore server.
 
 2. Build and deploy the sample by running "ant deploy" from the command line.
-This builds ssf-sample-portlet.jar and copies it into 
+This builds teaming-sample-portlet.jar and copies it into 
 <icecore installation>/webapps/ssf/WEB-INF/lib directory. It also copies
 a jsp file and some required configuration files into respective sub-directories
 under <icecore installation>/webapps/ssf/WEB-INF.
@@ -85,7 +85,7 @@ IF YOU ONLY HAVE BINARY INSTALLATION
 1. Stop ICEcore server.
 
 2. Build and deploy the sample by running "ant deploy" from the command line.
-This builds ssf-sample-portlet.jar and copies it into 
+This builds teaming-sample-portlet.jar and copies it into 
 <icecore installation>/webapps/ssf/WEB-INF/lib directory. It also copies
 a jsp file and some required configuration files into respective sub-directories
 under <icecore installation>/webapps/ssf/WEB-INF.
