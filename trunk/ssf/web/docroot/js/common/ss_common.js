@@ -562,6 +562,8 @@ function ss_showPermalink(obj) {
 	}
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
+	if (parent.ss_positionEntryDiv) setTimeout("parent.ss_positionEntryDiv();", 100);
+	if (parent.ss_setWikiIframeSize) setTimeout("parent.ss_setWikiIframeSize('"+namespace+"');", 100);
 	
 }
 //Routine to go to a binder when it is clicked
@@ -3563,6 +3565,9 @@ function ss_hideAddAttachmentBrowse(entryId, namespace) {
 	var divObj = document.getElementById(divId);
 	divObj.style.display = "none";
 	ss_hideDiv(divId);
+
+	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
 }
 
 function ss_hideAddAttachmentBrowseAndAJAXCall(binderId, entryId, namespace, strErrorMessage) {
@@ -3590,6 +3595,9 @@ function ss_hideAddAttachmentDropbox(entryId, namespace) {
 	var divObj = document.getElementById(divId);
 	divObj.style.display = "none";
 	ss_hideDiv(divId);
+
+	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
 }
 
 function ss_hideAddAttachmentDropboxAndAJAXCall(binderId, entryId, namespace) {
@@ -3619,6 +3627,7 @@ function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 	
 	divObj.style.width = "300px";
 
+	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
 	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
 }
 
@@ -3655,6 +3664,9 @@ function ss_hideAddAttachmentMeetingRecords(entryId, namespace) {
 	var divObj = document.getElementById(divId);
 	divObj.style.display = "none";
 	ss_hideDiv(divId);
+
+	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
 }
 
 function ss_attacheMeetingRecords(formId, binderId, entryId, namespace) {

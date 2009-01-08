@@ -149,14 +149,12 @@ function ss_positionEntryDiv() {
     ss_setObjectLeft(wObj1, ss_entryWindowLeft);
     ss_setObjectWidth(wObj1, ss_entryWindowWidth);
     ss_setObjectWidth(wObj2, ss_entryWindowWidth);
-    //ss_setObjectWidth(wObj3, ss_entryWindowWidth);
     
     //Trying to set the property to "inherit" or something that is not a actual color values
     //causes JS to fail on IE so we are setting the background to a empty value, for the 
     //parent property to be inherited by the child.
     //wObj1.style.background = ss_entryBackgroundColor;
     wObj1.style.background = "";
-    wObj1.style.visibility = "visible";
     
     //Allow the entry section to grow to as large as needed to show the entry
 	try {
@@ -175,24 +173,16 @@ function ss_positionEntryDiv() {
 			    	//Start by resetting the window to a size big enough to not turn off scrolling
 			    	//This makes the entry div smaller, but not enough to jump around.
 			    	ss_entryHeightHighWaterMark = parseInt(ss_getWindowHeight());
-					ss_setObjectHeight(wObj1, parseInt(ss_getWindowHeight()));
-					ss_setObjectHeight(wObj2, parseInt(ss_getWindowHeight()));
 					ss_setObjectHeight(wObj3, parseInt(ss_getWindowHeight()));
 				}
 				
-				ss_setObjectHeight(wObj1, entryHeight);
-				ss_setObjectHeight(wObj2, entryHeight);
 				ss_setObjectHeight(wObj3, entryHeight);
 			} else if (ss_entryHeightHighWaterMark >= parseInt(ss_getWindowHeight())) {
 				ss_entryHeightHighWaterMark = parseInt(ss_getWindowHeight());
-				ss_setObjectHeight(wObj1, parseInt(ss_getWindowHeight()));
-				ss_setObjectHeight(wObj2, parseInt(ss_getWindowHeight()));
 				ss_setObjectHeight(wObj3, parseInt(ss_getWindowHeight()));
 			} else {
 				if (entryHeight < parseInt(ss_getWindowHeight()) && 
 						ss_entryHeightHighWaterMark < parseInt(ss_getWindowHeight())) {
-					ss_setObjectHeight(wObj1, entryHeight);
-					ss_setObjectHeight(wObj2, entryHeight);
 					ss_setObjectHeight(wObj3, entryHeight);
 				}
 			}
@@ -232,8 +222,6 @@ function ss_hideEntryDiv() {
     		var iframeObj = self.document.getElementById('ss_showentryframe')
     		if (iframeObj != null) iframeObj.parentNode.removeChild(iframeObj);
     		ss_setObjectHeight(wObj3, "200px");
-    		ss_setObjectHeight(wObj2, "200px");
-    		ss_setObjectHeight(wObj1, "200px");
     	}
     }
     ss_showSpannedAreas();

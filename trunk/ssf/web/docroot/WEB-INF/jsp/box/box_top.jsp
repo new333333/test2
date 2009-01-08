@@ -150,4 +150,4 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 <c:if test="<%= brWrapContent %>">
   <br>
 </c:if>
-<div style="margin:0px 5px 0px 0px; padding:0px; position:relative; left:5px;">
+<div>

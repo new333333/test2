@@ -95,7 +95,7 @@
 		    		 		  title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
 			  	</ssHelpSpot>
 			  </c:if>
-			  <ssf:nlt tag="tags.addTag"/>
+			  <ssf:nlt tag="tags.addtag"/>
 			</span>
 		  </a>
 		  <div id="ss_tags_anchor${ss_tagViewNamespace}_${ss_tagDivNumber}"></div>
