@@ -39,7 +39,7 @@
 		<c:forEach var="place" items="${ssFolderEntryPlaces}">
 			<tr>
 			<td class="ss_star"><img <ssf:alt/> class="${place.searchResultsRatingCSS}" 
-				  src="<html:imagesPath/>pics/sym_m_star.gif"/></td>
+				  src="<html:imagesPath/>pics/sym_m_star.gif" <ssf:alt tag=""/> /></td>
 			<td>
 	
 			<c:choose>
