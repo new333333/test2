@@ -588,6 +588,8 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	//Routine called when item is clicked
 	this.selectItem = function(obj, entityType) {
 		if (!obj || !obj.id ||obj.id == undefined) return false;
+		that._inputObj.value = "";
+		that._inputObj.focus();
 		var id = ss_replaceSubStr(obj.id, 'ss_find_id_', "");
 		if (that._singleClickRoutine != "") {
 			that._callRoutineSingle(id, obj, entityType);
