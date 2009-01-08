@@ -42,7 +42,7 @@
 			<ssf:param name="operation" value="configure_folder_columns" />
 			<ssf:param name="binderId" value="${ssBinder.id}" />
 			<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-			</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
+			</ssf:url>" onclick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
 		    <span><ssf:nlt tag="misc.configureColumns"/></span>
 		</a> 
 	</div>
