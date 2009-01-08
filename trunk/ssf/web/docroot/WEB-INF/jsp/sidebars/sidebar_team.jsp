@@ -47,7 +47,7 @@
 	            <tr>
 	              <td>
 	              	<a class="ss_sideLink" href="${ss_toolbar_team_add_url}"
-	                  onClick="ss_openUrlInWindow(this, '_blank', 500, 600);return false;"
+	                  onclick="ss_openUrlInWindow(this, '_blank', 500, 600);return false;"
 	                 ><ssf:nlt tag="team.manageTeam"/></a>
 	              </td>
 	            </tr>
@@ -56,7 +56,7 @@
 				<tr>
 	              <td>
 	              	<a class="ss_sideLink" href="${ss_toolbar_team_sendmail_url}"
-	                  onClick="ss_openUrlInWindow(this, '_blank', 600, 800);return false;"
+	                  onclick="ss_openUrlInWindow(this, '_blank', 600, 800);return false;"
 	                ><ssf:nlt tag="team.sendMail"/></a>
 	              </td>
 	            </tr>
@@ -65,7 +65,7 @@
 	            <tr>
 	              <td>
 	              	<a class="ss_sideLink" href="${ss_toolbar_team_meet_url}"
-	                  onClick="ss_openUrlInWindow(this, '_blank', 500, 600);return false;"
+	                  onclick="ss_openUrlInWindow(this, '_blank', 500, 600);return false;"
 	                  ><ssf:nlt tag="team.startTeamMeeting"/></a>
 	              </td>
 	            </tr>
