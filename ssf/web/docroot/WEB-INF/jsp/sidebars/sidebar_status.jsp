@@ -79,7 +79,7 @@
     </table>
     <br/>
     <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"
-    onClick="ss_setReturnUrl();return true;"
+    onclick="ss_setReturnUrl();return true;"
     />
     <input type="hidden" name="spring-security-redirect" value=""/>
   </form>
