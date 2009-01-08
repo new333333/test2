@@ -53,11 +53,17 @@
 	
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
+	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
 	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
 }
 function ss_tagHide(namespace, divNumber) {
 	var divId = 'ss_tags' + namespace + '_' + parseInt(divNumber) + '_pane';
 	ss_hideDivNone(divId);
+	
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
 }
 function ss_tagAdd(namespace, divNumber, binderId, entityType, entryId) {
 	ss_tagModify('add', namespace, '', divNumber, binderId, entityType, entryId);	

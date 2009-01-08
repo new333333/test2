@@ -1871,7 +1871,6 @@ div.ss_sidebar_panel_featured {
 .ss_title_bar {
 	background-image: url(<html:imagesPath/>roundcorners3/background_dc_bar.jpg);
 	color: #333333;
-	height:14px;
 	margin:0px;
 	padding-bottom: 3px;
 	}

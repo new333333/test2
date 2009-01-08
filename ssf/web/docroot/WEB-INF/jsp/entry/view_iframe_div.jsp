@@ -59,15 +59,15 @@
 
 <div id="ss_showentrydiv${renderResponse.namespace}" 
   onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
-  style="position:absolute; visibility:hidden;
-  width:600px; height:80%; display:none;">
+  style="position:absolute; visibility:hidden; 
+  width:600px; display:none;">
   <ssf:box>
     <ssf:param name="box_id" value="ss_iframe_box_div${renderResponse.namespace}" />
     <ssf:param name="box_width" value="400" />
     <ssf:param name="box_color" value="${ss_entry_border_color}" />
     <ssf:param name="box_canvas_color" value="${ss_style_background_color_opaque}" />
     <ssf:param name="box_title" useBody="true">
-      <div style="position:relative;">
+      <div >
       <c:set var="ss_history_bar_table_class" value="ss_title_bar_history_bar" scope="request"/>
       <jsp:include page="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" />
       </div>
@@ -79,13 +79,12 @@
     <ssf:param name="box_show_move_routine" value="ss_startDragDiv('move')" />
     <ssf:param name="box_show_close_icon" value="true" />
     <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
-  <div id="ss_iframe_holder_div${renderResponse.namespace}">
+  <div id="ss_iframe_holder_div${renderResponse.namespace}" style="padding:4px;">
   <iframe id="ss_showentryframe${renderResponse.namespace}"
   	title="<ssf:nlt tag = "iframe.entry"/>" 
-    name="ss_showentryframe${renderResponse.namespace}" style="width:99%; 
-    display:block; position:relative; left:5px;"
+    name="ss_showentryframe${renderResponse.namespace}" style="width:100%; 
+    display:block; padding:0px 4px;"
     src="<html:rootPath/>js/forum/null.html" 
-    height="99%" width="99%" 
     onLoad="if (self.ss_setEntryDivHeight && self.document.getElementById('ss_showentrydiv') && self.document.getElementById('ss_showentrydiv').style.display != 'none') ss_setEntryDivHeight();" 
     frameBorder="0" >xxx</iframe>
   </div>
@@ -99,8 +98,8 @@
 	<input type="hidden" name="entry_left">
 </form>
 <script type="text/javascript">
-ss_createOnLoadObj("${renderResponse.namespace}_showEntryDivInitialization", ss_showEntryDivInitialization${renderResponse.namespace});
 function ss_showEntryDivInitialization${renderResponse.namespace}() {
 	ss_showEntryDivInitialization('${renderResponse.namespace}');
 }
+ss_createOnLoadObj("${renderResponse.namespace}_showEntryDivInitialization", ss_showEntryDivInitialization${renderResponse.namespace});
 </script>
