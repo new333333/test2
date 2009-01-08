@@ -37,7 +37,7 @@
 			  <ul>
 				<li>
 				   <a href="javascript: ;"   
-	  				onClick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;"
+	  				onclick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;"
 				 	<c:if test="${ssBinder.entityType == 'workspace'}">
 	  			 		<c:if test="${ssBinder.definitionType != 12}">
 	  						title="<%= NLT.get("relevance.trackedItems").replaceAll("\"", "&QUOT;") %>" >
