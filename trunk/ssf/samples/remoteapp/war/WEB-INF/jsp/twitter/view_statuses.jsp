@@ -19,10 +19,21 @@
 <c:forEach var="user" items="${ss_users}">
   <jsp:useBean id="user" type="java.util.Map" />
   <%
+    String[] ca;
+    String createdAt;
+    java.util.Date createdAtDate;
+    
   	java.util.Map status = (java.util.Map) user.get("status");
-  	String[] ca = ((String)status.get("created_at")).split(" ");
-  	String createdAt = ca[1] + " " + ca[2] + " " + ca[5] + " " + ca[3];
-  	java.util.Date createdAtDate = new java.util.Date(createdAt);
+    if (null == status) {
+    	ca = new String[0];
+    	createdAt = "";
+    	createdAtDate = null;
+    }
+    else {
+	  	ca = ((String)status.get("created_at")).split(" ");
+	  	createdAt = ca[1] + " " + ca[2] + " " + ca[5] + " " + ca[3];
+	  	createdAtDate = new java.util.Date(createdAt);
+    }
   %>
   <tr>
   <td valign="top" nowrap>
@@ -33,8 +44,8 @@
     </c:if>
   </td>
   <td valign="top" nowrap><a href="/remoteapp/twitter/id/${user['id']}" target="_blank" >${user['name']}</a></td>
-  <td valign="top" nowrap><fmt:formatDate value="<%= createdAtDate %>" pattern="EEE, hh:mm a"/><br/>
-    <fmt:formatDate value="<%= createdAtDate %>" dateStyle="long"/></td>
+  <td valign="top" nowrap><% if (null == createdAtDate) { %>&lt;No Tweets&gt;<% } else { %><fmt:formatDate value="<%= createdAtDate %>" pattern="EEE, hh:mm a"/><% } %><br/>
+    <% if (null != createdAtDate) { %><fmt:formatDate value="<%= createdAtDate %>" dateStyle="long"/><% } %></td>
   <td valign="top">${user.status.text}</td>
   </tr>
 </c:forEach>
