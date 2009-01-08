@@ -7,7 +7,7 @@
 
 	<import file="${project.dir}/deploy-support.xml" />
 		
-	<property name="jar.file" value="ssf-sample-extendedws.jar" />
+	<property name="jar.file" value="teaming-sample-extendedws.jar" />
 	
 	<target name="deploy" depends="jar">
 		<antcall target="deploy-jar">
