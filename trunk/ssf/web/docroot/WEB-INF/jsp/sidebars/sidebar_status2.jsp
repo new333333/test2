@@ -42,7 +42,7 @@
         value="${ssUser.statusDate}" type="both" 
 	    timeStyle="short" dateStyle="short" /></span>
 	</c:if>
-	<a href="javascript: ;" onClick="ss_viewMiniBlog('${ssUser.id}', '0', true);return false;"
+	<a href="javascript: ;" onclick="ss_viewMiniBlog('${ssUser.id}', '0', true);return false;"
 	   title="<ssf:nlt tag="miniblog.title"/>">
 	   <span class="ss_status_header"><ssf:nlt tag="relevance.userStatus"/></span>
 	</a>
@@ -70,11 +70,11 @@
 	  		  <tr>
 	  		    <td>
 		  		  <input type="button" value="<ssf:nlt tag="button.ok"/>" class="ss_inlineButton"
-		  		    onClick="ss_updateStatusNowId('ss_status_textarea${renderResponse.namespace}');return false;"/>
+		  		    onclick="ss_updateStatusNowId('ss_status_textarea${renderResponse.namespace}');return false;"/>
 	  		    </td>
 		  		<td align="right">
 		  		  <input type="button" value="<ssf:nlt tag="button.clear"/>" class="ss_inlineButton"
-		  		    onClick="ss_clearStatus('ss_status_textarea${renderResponse.namespace}');return false;"/>
+		  		    onclick="ss_clearStatus('ss_status_textarea${renderResponse.namespace}');return false;"/>
 		  		</td>
 	  		  </tr>
 	  		</table>
