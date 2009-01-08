@@ -59,7 +59,9 @@
 		</script>
 		<li>
 			<a href="javascript: ;" 
-					onclick="ss_removeSavedSearchQuery('<ssf:escapeJavaScript value="${query}"/>','ss_saveQueryErrMsg', this.parentNode)"><img src="<html:imagesPath/>pics/delete.gif"/></a>
+					onclick="ss_removeSavedSearchQuery('<ssf:escapeJavaScript value="${query}"/>','ss_saveQueryErrMsg', this.parentNode)">
+					<img src="<html:imagesPath/>pics/delete.gif" <ssf:alt tag=""/> />
+			</a>
 			<a href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 						name="tabTitle" value="${query}"/><ssf:param 
 						name="newTab" value="1"/><ssf:param 
