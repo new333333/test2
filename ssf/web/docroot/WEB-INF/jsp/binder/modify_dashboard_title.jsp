@@ -91,16 +91,19 @@
 	  <form method="post" action="<ssf:url action="modify_dashboard" actionUrl="true"><ssf:param 
 	  	name="binderId" value="${ssBinder.id}"/></ssf:url>">
 		<input type="text" name="title" size="80"/><br/>
-		<input type="checkbox" name="includeBinderTitle"/>
-		<span><ssf:nlt tag="dashboard.includeBinderTitle"/></span>
+		<input type="checkbox" name="includeBinderTitle" id="includeBinderTitle"/>
+		<label for="includeBinderTitle"><span><ssf:nlt tag="dashboard.includeBinderTitle"/></span></label>
 		<br/>
 		<br/>
 	
 	    <span class="ss_bold"><ssf:nlt tag="dashboard.titleScope"/></span><br>
-	    <input type="radio" name="_scope" value="local" checked="checked" /><ssf:nlt tag="dashboard.titleScope.local"/><br>
-	    <input type="radio" name="_scope" value="global"/><ssf:nlt tag="dashboard.titleScope.global"/><br>
+	    <input type="radio" name="_scope" value="local" id="local" checked="checked" />
+	    	<label for="local"><ssf:nlt tag="dashboard.titleScope.local"/><br></label>
+	    <input type="radio" name="_scope" value="global" id="global"/>
+	    	<label for="global"><ssf:nlt tag="dashboard.titleScope.global"/><br></label>
 	    <c:if test="${ssDashboard.sharedModificationAllowed}">
-	      <input type="radio" name="_scope" value="binder"/><ssf:nlt tag="dashboard.titleScope.binder"/><br>
+	      <input type="radio" name="_scope" value="binder" id="binder"/>
+	      	<label for="binder"><ssf:nlt tag="dashboard.titleScope.binder"/><br></label>
 	    </c:if>
 		<br/>
 		<br/>
