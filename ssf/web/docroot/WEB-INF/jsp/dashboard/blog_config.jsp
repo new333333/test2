@@ -47,14 +47,14 @@ function ${treeName}_showId(forum, obj) {
 <c:if test="${empty summaryWordCount}"><c:set var="summaryWordCount" value="20"/></c:if>
 <table>
 <tr>
-<td><span><ssf:nlt tag="dashboard.search.resultsCount"/></span></td>
-<td style="padding-left:10px;"><input type="text" name="data_resultsCount" size="5"
-  value="${resultsCount}"/></td>
+<td><label for="data_resultsCount"><span><ssf:nlt tag="dashboard.search.resultsCount"/></span></label></td>
+<td style="padding-left:10px;"><input type="text" name="data_resultsCount" 
+  id="data_resultsCount" size="5" value="${resultsCount}"/></td>
 </tr>
 <tr>
-<td><span><ssf:nlt tag="dashboard.search.summardWordCount"/></span></td>
-<td style="padding-left:10px;"><input type="text" name="data_summaryWordCount" size="5" 
-  value="${summaryWordCount}"/></td>
+<td><label for="data_summaryWordCount"><span><ssf:nlt tag="dashboard.search.summardWordCount"/></span></label></td>
+<td style="padding-left:10px;"><input type="text" name="data_summaryWordCount" 
+  id="data_summaryWordCount" size="5" value="${summaryWordCount}"/></td>
 </tr>
 </table>
 <br/>
@@ -87,9 +87,9 @@ function ${treeName}_showId(forum, obj) {
 
 <div class="ss_indent_large">
 <c:if test="${ssDashboard.scope == 'binder' || ssDashboard.scope == 'local' }">
-<table><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="chooseFolder" 
+<table><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="chooseFolder" id="chooseFolder"
 	<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.chooseViewType}">checked="checked"</c:if>><span>
-  <ssf:nlt tag="dashboard.blog.selectFolderRelative"/>
+  <label for="chooseFolder"><ssf:nlt tag="dashboard.blog.selectFolderRelative"/></label>
 </span></td></tr></table>
 </c:if>
 <ssf:tree 
