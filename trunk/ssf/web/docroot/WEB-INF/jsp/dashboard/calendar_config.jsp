@@ -48,11 +48,13 @@
 <c:forEach var="folder" items="${ssDashboard.beans[ssComponentId].ssFolderList}">
 <tr>
   <td>
-    <input type="checkbox" name="del_${folder.id}"/>
+    <input type="checkbox" name="del_${folder.id}" id="del_${folder.id}"/>
+    <label for="del_${folder.id}">
     <c:if test="${!empty folder.parentBinder}">
     	${folder.parentBinder.title} // 
     </c:if>
     ${folder.title}
+    </label>
   </td>
 </tr>
 </c:forEach>
@@ -78,9 +80,9 @@
 			
 			<div class="ss_indent_large">
 				<c:if test="${ssDashboard.scope == 'binder' || ssDashboard.scope == 'local' }">
-					<table><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="chooseFolder" 
+					<table><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="chooseFolder" id="chooseFolder"
 						<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.chooseViewType}">checked="checked"</c:if>>
-						<span><ssf:nlt tag="dashboard.calendar.selectFolderRelative"/></span></td></tr>
+						<label for="chooseFolder"><span><ssf:nlt tag="dashboard.calendar.selectFolderRelative"/></span></label></td></tr>
 					</table>
 				</c:if>
 				
