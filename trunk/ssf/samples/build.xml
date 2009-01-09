@@ -7,6 +7,7 @@
 		<ant dir="remoteapp" target="clean" />
 		<ant dir="wsclient" target="clean" />
 		<ant dir="backgroundjob" target="clean" />
+		<ant dir="module-event-listeners" target="clean" />
 	</target>
 
 	<target name="compile">
@@ -15,5 +16,6 @@
 		<ant dir="remoteapp" target="compile" />
 		<ant dir="wsclient" target="compile" />
 		<ant dir="backgroundjob" target="compile" />
+		<ant dir="module-event-listeners" target="compile" />
 	</target>
 </project>
