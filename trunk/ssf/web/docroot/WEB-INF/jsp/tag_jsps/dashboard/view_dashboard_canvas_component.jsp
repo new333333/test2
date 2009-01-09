@@ -79,35 +79,35 @@
 	  <input type="hidden" name="_returnView" value="${ss_dashboard_returnView}"/>
 			<ul class="ss_title_bar_icons">
 				<li><a href="javascript:;"
-				  onClick="ss_submitDashboardChange(this, '_moveUp');return false;"
+				  onclick="ss_submitDashboardChange(this, '_moveUp');return false;"
 				><img border="0" src="<html:imagesPath/>icons/accessory_move_up.gif" 
 				  alt="<ssf:nlt tag="button.moveUp"/>" /></a></li>
 				<li><a href="javascript:;"
-				  onClick="ss_submitDashboardChange(this, '_moveDown');return false;"
+				  onclick="ss_submitDashboardChange(this, '_moveDown');return false;"
 				><img border="0" src="<html:imagesPath/>icons/accessory_move_down.gif" 
 				  alt="<ssf:nlt tag="button.moveDown"/>" /></a></li>
 			  
 			  <c:if test="${ss_dashboard_componentScope == 'local' || ss_dashboard_componentScope == 'global' || ssDashboard.sharedModificationAllowed}">
 				<li><a href="javascript:;" 
-				    onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}');ss_submitDashboardChange(this, '_modifyComponentData');return false;"
+				    onclick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}');ss_submitDashboardChange(this, '_modifyComponentData');return false;"
 				  ><img border="0" class="ss_accessory_modify" src="<html:imagesPath/>pics/1pix.gif" 
-				    title="<ssf:nlt tag="button.modify"/>" /></a></li>
+				    title="<ssf:nlt tag="button.modify"/>" <ssf:alt/> /></a></li>
 				<li><a href="javascript:;"
-				  onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); ss_confirmDeleteComponent(this, '${ss_dashboard_id}', '${renderResponse.namespace}_component_${ss_component_count}', '${renderResponse.namespace}_component2_${ss_component_count}', '${myId}', '${renderResponse.namespace}', '${ss_dashboard_scope}'); return false;"
+				  onclick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); ss_confirmDeleteComponent(this, '${ss_dashboard_id}', '${renderResponse.namespace}_component_${ss_component_count}', '${renderResponse.namespace}_component2_${ss_component_count}', '${myId}', '${renderResponse.namespace}', '${ss_dashboard_scope}'); return false;"
 				><img border="0" class="ss_accessory_delete" src="<html:imagesPath/>pics/1pix.gif" 
-				  title="<ssf:nlt tag="button.delete"/>" /></a></li>
+				  title="<ssf:nlt tag="button.delete"/>" <ssf:alt/> /></a></li>
 			  </c:if>
 			  <c:if test="${ss_dashboard_visible}">
 				<li><a href="javascript:;"
-				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '${renderResponse.namespace}_dashboard_component_${ss_component_count}', '${myId}', '${renderResponse.namespace}', '${ss_dashboard_scope}');return false;"
+				  onclick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '${renderResponse.namespace}_dashboard_component_${ss_component_count}', '${myId}', '${renderResponse.namespace}', '${ss_dashboard_scope}');return false;"
 				><img border="0" src="<html:imagesPath/>icons/accessory_hide.gif" 
-				  title="<ssf:nlt tag="button.hide"/>" /></a></li>
+				  title="<ssf:nlt tag="button.hide"/>" <ssf:alt/> /></a></li>
 			  </c:if>
 			  <c:if test="${!ss_dashboard_visible}">
 				<li><a href="javascript:;"
-				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '${renderResponse.namespace}_dashboard_component_${ss_component_count}', '${myId}', '${renderResponse.namespace}', '${ss_dashboard_scope}');return false;"
+				  onclick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '${renderResponse.namespace}_dashboard_component_${ss_component_count}', '${myId}', '${renderResponse.namespace}', '${ss_dashboard_scope}');return false;"
 				><img border="0" src="<html:imagesPath/>icons/accessory_show.gif" 
-				  title="<ssf:nlt tag="button.show"/>" /></a></li>
+				  title="<ssf:nlt tag="button.show"/>" <ssf:alt/> /></a></li>
 			  </c:if>
 			</ul>
 	</form>
