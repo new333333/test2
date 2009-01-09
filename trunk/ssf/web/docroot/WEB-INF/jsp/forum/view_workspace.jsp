@@ -36,7 +36,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="showWorkspacePage" value="true"/>
 
-<body class="ss_style_body tundra" onload="bodyOnloadHandler()">
+<body class="ss_style_body tundra">
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
 <ssf:ifLoggedIn><c:if test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
   <a class="ss_skiplink" href="${ss_accessibleUrl}"><img border="0"
@@ -106,80 +106,9 @@ if (typeof ss_workarea_showId == "undefined")
 	window.TUTORIAL_PANEL_EXPANDED	= 2;
 	window.TUTORIAL_PANEL_COLLAPSED	= 3;
 
-	/**
-	 * This function is the onload event handler for the <body> tag.
-	 * This code will display the tutorial panel in its correct initial state, hidden, expanded or collapsed.
-	 */
-	function bodyOnloadHandler()
-	{
-		var	initialState;
-		var	table;
+	// The m_playTutorialWnd variable holds a handle to the Play Tutorial window.
+	var	m_playTutorialWnd	= null;
 
-		// Is the user looking at his own workspace?
-		if ( isOwnWorkspace() )
-		{
-			// Yes
-			// Get the initial state of the tutorial panel.
-			initialState = '${ss_tutorial_panel_state}';
-
-			// Do we have a tutorial panel state?
-			if ( initialState == null || initialState.length == 0 )
-			{
-				// No
-				initialState = window.TUTORIAL_PANEL_EXPANDED;
-			}
-		}
-		else
-		{
-			// No, the user is looking at someone elses workspace.  Don't show the tutorial panel.
-			initialState = window.TUTORIAL_PANEL_CLOSED;
-		}
-		
-		// Is the tutorial panel state valid?
-		if ( initialState < window.TUTORIAL_PANEL_CLOSED || initialState > window.TUTORIAL_PANEL_COLLAPSED )
-		{
-			// No
-			initialState = window.TUTORIAL_PANEL_EXPANDED;
-		}
-
-		// Is the tutorial panel supposed to be closed?
-		if ( initialState == window.TUTORIAL_PANEL_CLOSED )
-		{
-			// Yes
-			// Hide the expanded tutorial table.
-			table = document.getElementById( 'expandedTutorialTable' );
-			table.style.display = 'none';
-
-			// Hide the collapsed tutorial table.
-			table = document.getElementById( 'collapsedTutorialTable' );
-			table.style.display = 'none';
-		}
-		// Is the tutorial panel collapsed?
-		else if ( initialState == window.TUTORIAL_PANEL_COLLAPSED )
-		{
-			// Yes
-			// Hide the expanded tutorial table.
-			table = document.getElementById( 'expandedTutorialTable' );
-			table.style.display = 'none';
-
-			// Show the collapsed tutorial table.
-			table = document.getElementById( 'collapsedTutorialTable' );
-			table.style.display = '';
-		}
-		else
-		{
-			// The tutorial panel is expanded.
-			// Show the expanded tutorial table.
-			table = document.getElementById( 'expandedTutorialTable' );
-			table.style.display = '';
-
-			// Hide the collapsed tutorial table.
-			table = document.getElementById( 'collapsedTutorialTable' );
-			table.style.display = 'none';
-		}
-	}// end bodyOnloadHandler()
-
-	
 	/**
 	 * This function will collapse the tutorial ui.
 	 */
@@ -270,6 +199,80 @@ if (typeof ss_workarea_showId == "undefined")
 
 
 	/**
+	 * This function gets called after the page is loaded.
+	 * This code will display the tutorial panel in its correct initial state, hidden, expanded or collapsed.
+	 */
+	function initTutorial()
+	{
+		var	initialState;
+		var	table;
+
+		// Is the user looking at his own workspace?
+		if ( isOwnWorkspace() )
+		{
+			// Yes
+			// Get the initial state of the tutorial panel.
+			initialState = '${ss_tutorial_panel_state}';
+
+			// Do we have a tutorial panel state?
+			if ( initialState == null || initialState.length == 0 )
+			{
+				// No
+				initialState = window.TUTORIAL_PANEL_EXPANDED;
+			}
+		}
+		else
+		{
+			// No, the user is looking at someone elses workspace.  Don't show the tutorial panel.
+			initialState = window.TUTORIAL_PANEL_CLOSED;
+		}
+		
+		// Is the tutorial panel state valid?
+		if ( initialState < window.TUTORIAL_PANEL_CLOSED || initialState > window.TUTORIAL_PANEL_COLLAPSED )
+		{
+			// No
+			initialState = window.TUTORIAL_PANEL_EXPANDED;
+		}
+
+		// Is the tutorial panel supposed to be closed?
+		if ( initialState == window.TUTORIAL_PANEL_CLOSED )
+		{
+			// Yes
+			// Hide the expanded tutorial table.
+			table = document.getElementById( 'expandedTutorialTable' );
+			table.style.display = 'none';
+
+			// Hide the collapsed tutorial table.
+			table = document.getElementById( 'collapsedTutorialTable' );
+			table.style.display = 'none';
+		}
+		// Is the tutorial panel collapsed?
+		else if ( initialState == window.TUTORIAL_PANEL_COLLAPSED )
+		{
+			// Yes
+			// Hide the expanded tutorial table.
+			table = document.getElementById( 'expandedTutorialTable' );
+			table.style.display = 'none';
+
+			// Show the collapsed tutorial table.
+			table = document.getElementById( 'collapsedTutorialTable' );
+			table.style.display = '';
+		}
+		else
+		{
+			// The tutorial panel is expanded.
+			// Show the expanded tutorial table.
+			table = document.getElementById( 'expandedTutorialTable' );
+			table.style.display = '';
+
+			// Hide the collapsed tutorial table.
+			table = document.getElementById( 'collapsedTutorialTable' );
+			table.style.display = 'none';
+		}
+	}// end initTutorial()
+
+	
+	/**
 	 * This function will return true if the logged in user is looking at their own workspace.
 	 */
 	function isOwnWorkspace()
@@ -313,7 +316,36 @@ if (typeof ss_workarea_showId == "undefined")
 	 */
 	function startTutorial( tutorialName )
 	{
-		alert( 'Not yet implemented' );
+		var	url
+		var	winHeight;
+		var	winWidth;
+
+		// See if the 'Play Tutorial Window' is already open.  If it is call its playTutorial() function.
+		// Is the "Play Tutorial" window already open?
+		if ( m_playTutorialWnd != null && ((typeof m_playTutorialWnd) != 'undefined' ) )
+		{
+			// Yes.
+			// Does the 'Play Tutorial' window have a playTutorial() function?
+			if ( m_playTutorialWnd.playTutorial )
+			{
+				// Yes, bring the window to the front and call it.
+				if ( m_playTutorialWnd.focus )
+					m_playTutorialWnd.focus();
+				m_playTutorialWnd.playTutorial( tutorialName );
+
+				// Nothing else to do.
+				return;
+			}
+		}
+			
+		url = '<ssf:escapeJavaScript>${ss_play_tutorial_base_url}</ssf:escapeJavaScript>';
+		url += '&tutorial=' + encodeURIComponent( tutorialName );
+		winHeight = 500;
+		winWidth = 500; 
+		m_playTutorialWnd = window.open(
+									url,
+									'PlayTutorialWindow',
+									'height=' + winHeight + ',resizable,scrollbars,width=' + winWidth );
 	}// end startTutorial()
 </script>
 
@@ -552,7 +584,10 @@ if (typeof ss_workarea_showId == "undefined")
 </ssf:ifaccessible>
   </div>
 <script type="text/javascript">
-ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));
+	ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));
+
+	// Add initTutorial() as a function to be called when the page is loaded.
+	ss_createOnLoadObj( 'initTutorial', initTutorial );
 </script>
 </c:if>
 	

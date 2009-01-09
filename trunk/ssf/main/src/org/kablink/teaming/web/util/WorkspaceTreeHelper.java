@@ -185,7 +185,8 @@ public class WorkspaceTreeHelper {
 
 		// Get the state of the tutorial panel (closed, expanded or collapsed)
 		{
-			String	tutorialPanelState;
+			String		tutorialPanelState;
+			PortletURL	url;
 			
 			tutorialPanelState = (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE );
 			
@@ -198,6 +199,11 @@ public class WorkspaceTreeHelper {
 			
 			// Add the tutorial panel state to the response.
 			model.put( WebKeys.TUTORIAL_PANEL_STATE, tutorialPanelState );
+			
+			// Construct the url needed to invoke the "Play tutorial" page and add the url to the response.
+			url = response.createRenderURL();
+			url.setParameter( WebKeys.ACTION, WebKeys.ACTION_PLAY_TUTORIAL );
+			model.put( WebKeys.PLAY_TUTORIAL_BASE_URL, url.toString() );
 		}
 		
  		//Remember the last binder viewed

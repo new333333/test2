@@ -84,6 +84,8 @@
 	<bean id="adminConfigureConfigurationController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureConfigurationController" />
 	<bean id="definitionBuilderXmlController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.definitionBuilder.ViewDefinitionXmlController" />
 
+	<bean id="playTutorialController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.PlayTutorialController" />
+
 	<bean id="loginController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.LoginController" />
  	<!-- Handlers -->
 
@@ -137,6 +139,7 @@
 						<entry key="view_workflow_history"><ref bean="entryWorkflowHistoryController"/></entry>						
 						<entry key="view_credits"><ref bean="creditsController"/></entry>
 						<entry key="schedule_synchronization"><ref bean="mirroredFolderSynchronizationController"/></entry>
+						<entry key="play_tutorial"><ref bean="playTutorialController"/></entry>
 
 						<!-- Keys starting with "__" can handle the user not being logged in -->
 						<entry key="__view_presence"><ref bean="updatePresenceController"/></entry>
