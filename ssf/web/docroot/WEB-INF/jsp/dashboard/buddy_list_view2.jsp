@@ -39,7 +39,7 @@
   <tr>
   <td style="padding-bottom:10px;">
   <a class="ss_linkButton ss_bold ss_smallprint" href=""
-    onClick="if (${ss_namespace}_${componentId}_presence) {${ss_namespace}_${componentId}_presence.getPresence()};return false;"
+    onclick="if (${ss_namespace}_${componentId}_presence) {${ss_namespace}_${componentId}_presence.getPresence()};return false;"
   ><ssf:nlt tag="general.Refresh"/></a>
   </td>
   <td align="right" style="padding-left:20px;">
@@ -70,7 +70,7 @@
 					  <td style="padding-left:10px;">
 					  <ssf:ifadapter>
 					  <a href="<ssf:permalink entity="${u1}"/>"
-					  	onClick="ss_openUrlInWorkarea(this.href, '${u1.workspaceId}', 'view_ws_listing');return false;"
+					  	onclick="ss_openUrlInWorkarea(this.href, '${u1.workspaceId}', 'view_ws_listing');return false;"
 					  ><c:out value="${u1.title}"/></a>
 					  </ssf:ifadapter>
 					  <ssf:ifnotadapter>
@@ -81,7 +81,7 @@
 				<c:if test="${ssConfigJspStyle != 'template'}">
 					  <a href="<ssf:url action="view_ws_listing"><ssf:param 
 					  	name="binderId" value="${u1.workspaceId}"/></ssf:url>"
-					  	onClick="ss_openUrlInWorkarea(this.href, '${u1.workspaceId}', 'view_ws_listing');return false;"
+					  	onclick="ss_openUrlInWorkarea(this.href, '${u1.workspaceId}', 'view_ws_listing');return false;"
 					  ><c:out value="${u1.title}"/></a>
 				</c:if>
 					  </ssf:ifnotadapter>
