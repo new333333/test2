@@ -143,7 +143,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	protected Log logger = LogFactory.getLog(getClass());
 
 	private TransactionTemplate transactionTemplate;
-	private ContentFilter contentFilter; // may be null
+	private ContentFilter[] contentFilters; // may be null
 	private String failedFilterFile;
 	private String failedFilterTransaction;
 	private int lockExpirationAllowance; // number of seconds
@@ -213,17 +213,18 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 		
-	protected ContentFilter getContentFilter() {
-		return contentFilter;
+	protected ContentFilter[] getContentFilters() {
+		return contentFilters;
 	}
 	
 	protected void initContentFilter() throws Exception {
-		String contentFilterClassName = SPropsUtil.getString("file.content.filter.class", "");
-		if(Validator.isNotNull(contentFilterClassName)) {
-			Class contentFilterClass = ReflectHelper.classForName(contentFilterClassName);
-			contentFilter = (ContentFilter) contentFilterClass.newInstance();
-		}
-		
+		String[] contentFilterClassNames = SPropsUtil.getStringArray("file.content.filter.classes", ",");
+		if(contentFilterClassNames != null && contentFilterClassNames.length > 0) {
+			contentFilters = new ContentFilter[contentFilterClassNames.length];
+			for(int i = 0; i < contentFilterClassNames.length; i++) {
+				contentFilters[i] = (ContentFilter) ReflectHelper.getInstance(contentFilterClassNames[i]);
+			}
+		}		
 		initFailedFilterFile();
 		
 		initFailedFilterTransaction();		
@@ -401,10 +402,17 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return errors;
     }
     
+    protected void executeContentFilters(String fileName, InputStream content)
+    throws FilterException, UncheckedIOException {
+    	for(int i = 0; i < contentFilters.length; i++) {
+    		contentFilters[i].filter(fileName, content);
+    	}
+    }
+    
 	public FilesErrors filterFiles(Binder binder, List fileUploadItems) 
 		throws FilterException {
-		if(contentFilter == null)
-			return new FilesErrors(); // Nothing to filter with
+		if(contentFilters == null)
+			return new FilesErrors(); // Nothing to filter with. Return empty error.
 		
 		FilesErrors errors = null;
 		// Note that we do not have to use String comparison in the expression
@@ -423,7 +431,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         		is = fui.getInputStream();
         		
         		try {
-        			contentFilter.filter(fui.getOriginalFilename(), is);
+        			executeContentFilters(fui.getOriginalFilename(), is);
         		}
         		finally {
         			try {
