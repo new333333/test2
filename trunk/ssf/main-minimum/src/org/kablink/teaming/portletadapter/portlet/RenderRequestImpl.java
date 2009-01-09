@@ -29,7 +29,6 @@
 package org.kablink.teaming.portletadapter.portlet;
 
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
@@ -40,8 +39,6 @@ import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.kablink.teaming.portletadapter.support.PortletInfo;
-import org.kablink.teaming.web.WebKeys;
-
 
 public class RenderRequestImpl extends PortletRequestImpl implements RenderRequest {
 
@@ -98,8 +95,8 @@ public class RenderRequestImpl extends PortletRequestImpl implements RenderReque
 	}
 	
 	public void defineObjects(PortletConfig portletConfig, RenderResponse res) {
-		setAttribute(WebKeys.JAVAX_PORTLET_CONFIG, portletConfig);
-		setAttribute(WebKeys.JAVAX_PORTLET_REQUEST, this);
-		setAttribute(WebKeys.JAVAX_PORTLET_RESPONSE, res);
+		setAttribute(JAVAX_PORTLET_CONFIG, portletConfig);
+		setAttribute(JAVAX_PORTLET_REQUEST, this);
+		setAttribute(JAVAX_PORTLET_RESPONSE, res);
 	}
 }
