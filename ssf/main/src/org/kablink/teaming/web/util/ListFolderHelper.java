@@ -1282,6 +1282,11 @@ public class ListFolderHelper {
         User user = RequestContextHolder.getRequestContext().getUser();
         String userDisplayStyle = user.getDisplayStyle();
         if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
+		
+        String topFolderId = folder.getId().toString();
+		if (!folder.isTop()) {
+			topFolderId = folder.getTopFolder().getId().toString();
+		}
         
 		//Build the toolbar arrays
 		Toolbar folderToolbar = new Toolbar();
@@ -1487,35 +1492,33 @@ public class ListFolderHelper {
 		}
 
 		//The "Subsrciptions" menu
-		if (folder.isTop() ) {
-			if (!user.isShared()) {
-				qualifiers = new HashMap();
-				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageSubscriptionsMenu");
-			
-				Subscription sub = bs.getBinderModule().getSubscription(folder);
-				qualifiers = new HashMap();
-				adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SUBSCRIBE);			
-				adapterUrl.setParameter("rn", "ss_randomNumberPlaceholder");			
-				qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_menu');return false;");
-				if (sub == null) {
-					emailSubscriptionToolbar.addToolbarMenu("1_email", NLT.get("toolbar.menu.subscribeToFolder"), adapterUrl.toString(), qualifiers);	
-					model.put(WebKeys.TOOLBAR_SUBSCRIBE_EMAIL, adapterUrl.toString());
-				} else {
-					emailSubscriptionToolbar.addToolbarMenu("1_email", NLT.get("toolbar.menu.subscriptionToFolder"), adapterUrl.toString(), qualifiers);
-					model.put(WebKeys.TOOLBAR_SUBSCRIBE_EMAIL, adapterUrl.toString());
-				}
-			}
-			//RSS link 
+		if (!user.isShared()) {
 			qualifiers = new HashMap();
-			qualifiers.put("onClick", "ss_showPermalink(this);return false;");
-			String rssUrl = UrlUtil.getFeedURL(request, forumId);
-			if (rssUrl != null && !rssUrl.equals("")) {
-				//folderToolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.rss"), rssUrl, qualifiers);
-				model.put(WebKeys.TOOLBAR_SUBSCRIBE_RSS, rssUrl.toString());
+			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageSubscriptionsMenu");
+		
+			Subscription sub = bs.getBinderModule().getSubscription(folder);
+			qualifiers = new HashMap();
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, topFolderId);
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SUBSCRIBE);			
+			adapterUrl.setParameter("rn", "ss_randomNumberPlaceholder");			
+			qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_menu');return false;");
+			if (sub == null) {
+				emailSubscriptionToolbar.addToolbarMenu("1_email", NLT.get("toolbar.menu.subscribeToFolder"), adapterUrl.toString(), qualifiers);	
+				model.put(WebKeys.TOOLBAR_SUBSCRIBE_EMAIL, adapterUrl.toString());
+			} else {
+				emailSubscriptionToolbar.addToolbarMenu("1_email", NLT.get("toolbar.menu.subscriptionToFolder"), adapterUrl.toString(), qualifiers);
+				model.put(WebKeys.TOOLBAR_SUBSCRIBE_EMAIL, adapterUrl.toString());
 			}
+		}
+		//RSS link 
+		qualifiers = new HashMap();
+		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
+		String rssUrl = UrlUtil.getFeedURL(request, topFolderId);
+		if (rssUrl != null && !rssUrl.equals("")) {
+			//folderToolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.rss"), rssUrl, qualifiers);
+			model.put(WebKeys.TOOLBAR_SUBSCRIBE_RSS, rssUrl.toString());
 		}
 		
 		// list team members
