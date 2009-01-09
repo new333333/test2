@@ -175,7 +175,7 @@ public class ViewFileController extends SAbstractController {
 				 */
 				try {
 					response.setContentType("text/html");
-					getFileModule().readCacheHtmlFile(request.getRequestURI(), parent, entity, fa, response.getOutputStream());
+					getConvertedFileModule().readCacheHtmlFile(request.getRequestURI(), parent, entity, fa, response.getOutputStream());
 					getReportModule().addFileInfo(AuditType.download, fa);
 					return null;
 				}
@@ -203,12 +203,12 @@ public class ViewFileController extends SAbstractController {
 					if (viewType.equals("url"))
 					{
 						response.setContentType("text/html");
-						getFileModule().readCacheUrlReferenceFile(parent, entity, fa, response.getOutputStream(), fileName);
+						getConvertedFileModule().readCacheUrlReferenceFile(parent, entity, fa, response.getOutputStream(), fileName);
 					}
 					else
 					{
 						response.setContentType("image/jpeg");
-						getFileModule().readCacheImageReferenceFile(parent, entity, fa, response.getOutputStream(), fileName);
+						getConvertedFileModule().readCacheImageReferenceFile(parent, entity, fa, response.getOutputStream(), fileName);
 					}
 				}
 				catch(Exception e) {
@@ -242,7 +242,7 @@ public class ViewFileController extends SAbstractController {
 				if (viewType.equals(WebKeys.FILE_VIEW_TYPE_SCALED)) {
 					try {
 						response.setContentType("image/jpeg");
-						getFileModule().readScaledFile(parent, entity, fa, response.getOutputStream());
+						getConvertedFileModule().readScaledFile(parent, entity, fa, response.getOutputStream());
 					}
 					catch(Exception e) {
 						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
@@ -250,7 +250,7 @@ public class ViewFileController extends SAbstractController {
 				} else if (viewType.equals("thumbnail")) {
 					try {
 						response.setContentType("image/jpeg");
-						getFileModule().readThumbnailFile(parent, entity, fa, response.getOutputStream());
+						getConvertedFileModule().readThumbnailFile(parent, entity, fa, response.getOutputStream());
 					}
 					catch(Exception e) {
 						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());

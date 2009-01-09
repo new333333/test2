@@ -58,14 +58,10 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.docconverter.IHtmlConverterManager;
-import org.kablink.teaming.docconverter.IImageConverterManager;
-import org.kablink.teaming.docconverter.ImageConverter;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.HistoryStamp;
@@ -105,7 +101,6 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SimpleProfiler;
-import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.KeyValuePair;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -153,8 +148,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private String failedFilterTransaction;
 	private int lockExpirationAllowance; // number of seconds
 	private FileStore cacheFileStore;
-	private IHtmlConverterManager htmlConverterManager;
-	private IImageConverterManager imageConverterManager;
 		
 	protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
@@ -194,22 +187,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 					+ FAILED_FILTER_FILE_DEFAULT);
 			this.failedFilterFile = FAILED_FILTER_FILE_DEFAULT;
 		}
-	}
-	
-	public void setHtmlConverterManager(IHtmlConverterManager htmlConverterManager) {
-		this.htmlConverterManager = htmlConverterManager;
-	}
-	
-	protected IHtmlConverterManager getHtmlConverterManager() {
-		return htmlConverterManager;
-	}
-	
-	public void setImageConverterManager(IImageConverterManager imageConverterManager) {
-		this.imageConverterManager = imageConverterManager;
-	}
-	
-	protected IImageConverterManager getImageConverterManager() {
-		return imageConverterManager;
 	}
 	
 	protected String getFailedFilterTransaction() {
@@ -377,156 +354,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		return RepositoryUtil.readVersioned(fa.getRepositoryName(), binder, entry, 
 				fa.getFileItem().getName(), versionName, latestVersionName);
-	}
-	
-	public void readScaledFile(Binder binder, DefinableEntity entry, 
-			FileAttachment fa, OutputStream out)
-	{
-		ImageConverter converter = null;
-		
-		try
-		{
-			converter = this.imageConverterManager.getConverter();
-			FileCopyUtils.copy(converter.convertToScaledImage(binder, entry, fa,
-									new ImageConverter.Parameters(IImageConverterManager.IMAGEWIDTH, IImageConverterManager.IMAGEHEIGHT)),
-							   out);
-		}
-		catch (IOException e)
-		{
-			try {
-				readFile(binder, entry, fa, out);				
-			}
-			catch(Exception ex) {
-				// out.print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
-				throw new UncheckedIOException(e);
-			}
-		}
-	}
-	
-	public void readThumbnailFile(
-			Binder binder, DefinableEntity entry, FileAttachment fa, 
-			OutputStream out)
-	{
-		ImageConverter converter = null;
-		
-		try
-		{
-			converter = this.imageConverterManager.getConverter();
-			FileCopyUtils.copy(converter.convertToThumbnail(binder, entry, fa,
-									new ImageConverter.Parameters(IImageConverterManager.IMAGEWIDTH, 0)),
-							   out);
-		}
-		catch (IOException e)
-		{
-			throw new UncheckedIOException(e);
-		}
-	}
-
-	/**
-	 * Read cached HTML conversion file. If this file does not exist we must create it by going into the file
-	 * respository fetching the non-HTML file an running conversion program to generate HTML file.
-	 * 
-	 *	@param	url		If images or URL tags exist we need the url to insert a valid HTML reference to items
-	 *	@param	binder	File location information
-	 *	@param	entry	File location information
-	 *	@param	fa		File attachment information
-	 *	@param	out		Output Stream that we will feed HTML file too
-	 *
-	 */
-	public void readCacheHtmlFile(String url, Binder binder, DefinableEntity entry, FileAttachment fa, OutputStream out) 
-	{
-		InputStream is = null;
-
-		try
-		{
-			is = htmlConverterManager.getConverter().convert(url, binder, entry, fa);
-			FileCopyUtils.copy(is, out);
-		}
-		catch(IOException e) {
-			throw new UncheckedIOException(e);
-		}	
-		finally {
-			if (is != null)
-			{
-				try
-				{
-					is.close();
-				} catch (Exception e) {}
-			}
-		}
-	}
-	
-	/**
-	 * Read cached URL referenced file from cache repository.
-	 * 
-	 *	@param	binder			File location information
-	 *	@param	entry			File location information
-	 *	@param	fa				File attachment information
-	 *	@param	out				Output Stream that we will feed HTML file too
-	 *	@param	urlFileName		Name of url file we will process
-	 *
-	 */
-	public void readCacheUrlReferenceFile(
-			Binder binder, DefinableEntity entry, FileAttachment fa, 
-			OutputStream out, String urlFileName)
-	{
-		InputStream is = null;
-		
-		try
-		{
-			urlFileName = (new File(urlFileName)).getName();  // Prevent ../ filename hacks
-			is = htmlConverterManager.getConverter().getCachedFile(binder, entry, fa, urlFileName);
-			FileCopyUtils.copy(is, out);
-		}
-		catch(IOException e) {
-			throw new UncheckedIOException(e);
-		}	
-		finally {
-			if (is != null)
-			{
-				try
-				{
-					is.close();
-				}
-				catch (IOException io) {}
-			}
-		}
-	}
-	
-	/**
-	 * Read cached image file from cache repository.
-	 * 
-	 *	@param	binder			File location information
-	 *	@param	entry			File location information
-	 *	@param	fa				File attachment information
-	 *	@param	out				Output Stream that we will feed HTML file too
-	 *	@param	imageFileName	Name of image file we will process
-	 *
-	 */
-	public void readCacheImageReferenceFile(
-			Binder binder, DefinableEntity entry, FileAttachment fa, 
-			OutputStream out, String imageFileName)
-	{
-		InputStream is = null;
-		
-		try
-		{
-			is = htmlConverterManager.getConverter().getCachedFile(binder, entry, fa, imageFileName);
-			FileCopyUtils.copy(is, out);
-		}
-		catch(IOException e) {
-			throw new UncheckedIOException(e);
-		}	
-		finally {
-			if (is != null)
-			{
-				try
-				{
-					is.close();
-				}
-				catch (IOException io) {}
-			}
-		}		
 	}
 	
     public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 

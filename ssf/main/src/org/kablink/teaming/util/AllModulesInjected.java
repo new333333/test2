@@ -33,6 +33,7 @@ import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.dashboard.DashboardModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ic.ICBrokerModule;
@@ -101,6 +102,10 @@ public interface AllModulesInjected {
 	void setFileModule(FileModule fileModule);
 
 	FileModule getFileModule();
+
+	void setConvertedFileModule(ConvertedFileModule convertedFileModule);
+
+	ConvertedFileModule getConvertedFileModule();
 
 	void setReportModule(ReportModule reportModule);
 

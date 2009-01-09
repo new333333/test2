@@ -15,22 +15,29 @@
 	</bean>
 
 	<!--  Initialize the zone and checks dependencies -->
-	<bean id="zoneModule"  parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.zone.impl.BaseZoneModule" depends-on="nlt, zoneConfig, binderAccessUtils" >
-		<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
-		<property name="templateModule"><ref bean="templateModule"/></property>
-		<property name="adminModule"><ref bean="adminModule"/></property>
-		<property name="definitionModule"><ref bean="definitionModule"/></property>
-		<property name="profileModule"><ref bean="profileModule"/></property>
-		<property name="binderModule"><ref bean="binderModule"/></property>
-		<property name="ldapModule"><ref bean="ldapModule"/></property>
-		<property name="zoneClassManager"><ref bean="zoneClassManager"/></property>
-		<property name="scheduleModules">
-			<list>
-			<ref bean="folderModule"/>
-			<ref bean="licenseModule"/>
-			<ref bean="mailModule"/>
-			</list>
+	<bean id="zoneModule" parent="moduleNonTransactionProxy">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.zone.impl.BaseZoneModule" depends-on="nlt, zoneConfig, binderAccessUtils" >
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+				<property name="templateModule"><ref bean="templateModule"/></property>
+				<property name="adminModule"><ref bean="adminModule"/></property>
+				<property name="definitionModule"><ref bean="definitionModule"/></property>
+				<property name="profileModule"><ref bean="profileModule"/></property>
+				<property name="binderModule"><ref bean="binderModule"/></property>
+				<property name="ldapModule"><ref bean="ldapModule"/></property>
+				<property name="zoneClassManager"><ref bean="zoneClassManager"/></property>
+				<property name="scheduleModules">
+					<list>
+					<ref bean="folderModule"/>
+					<ref bean="licenseModule"/>
+					<ref bean="mailModule"/>
+					</list>
+				</property>
+			</bean>
 		</property>
+		<!--<property name="proxyInterfaces">
+			<value>org.kablink.teaming.module.zone.ZoneModule</value>
+		</property>-->
 	</bean>
 	
 	<bean id="adminModuleTarget" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.admin.impl.BaseAdminModule">

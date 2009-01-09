@@ -41,6 +41,7 @@ import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.dashboard.DashboardModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ic.ICBrokerModule;
@@ -77,6 +78,7 @@ implements AllModulesInjected {
 	private LdapModule ldapModule;
 	private ReportModule reportModule;
 	private FileModule fileModule;
+	private ConvertedFileModule convertedFileModule;
 	private DashboardModule dashboardModule;
 	private ICBrokerModule icBrokerModule;
 	private IcalModule icalModule;
@@ -171,6 +173,14 @@ implements AllModulesInjected {
 		return fileModule;
 	}
 	
+	public ConvertedFileModule getConvertedFileModule() {
+		return convertedFileModule;
+	}
+
+	public void setConvertedFileModule(ConvertedFileModule convertedFileModule) {
+		this.convertedFileModule = convertedFileModule;
+	}
+
 	public void setDashboardModule(DashboardModule dashboardModule) {
 		this.dashboardModule = dashboardModule;
 	}
