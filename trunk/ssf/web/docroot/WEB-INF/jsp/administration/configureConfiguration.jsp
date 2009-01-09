@@ -177,7 +177,7 @@ function ss_confirmDeleteConfig() {
 
 	<% // Folder toolbar %>
 	<div class="ss_content_inner">
-	<ssf:toolbar toolbar="${ssForumToolbar}" style="ss_actions_bar5"/>
+	<ssf:toolbar toolbar="${ssForumToolbar}" style="ss_actions_bar5 ss_actions_bar"/>
 	</div>
 	
 	<div class="ss_content_inner">
