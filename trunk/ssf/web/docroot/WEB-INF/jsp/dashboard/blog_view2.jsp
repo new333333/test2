@@ -47,7 +47,7 @@
   <tr>
   <td valign="top"><span class="ss_blog_summary_title_text">
     <a href="<ssf:permalink search="${fileEntry}"/>"
-			onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '', 'yes');">
+			onclick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '', 'yes');">
 
      <c:if test="${empty fileEntry.title}">
     <span class="ss_fineprint"><i>(<ssf:nlt tag="entry.noTitle" />)</i></span>
@@ -77,7 +77,7 @@
 						    binderId="${fileEntry._binderId}">
 						    <ssf:param name="entityType" value="folder" />
 							</ssf:url>" 
-							onClick="return ss_gotoPermalink('${fileEntry._binderId}', '${fileEntry._binderId}', 'folder', '', 'yes');">					
+							onclick="return ss_gotoPermalink('${fileEntry._binderId}', '${fileEntry._binderId}', 'folder', '', 'yes');">					
 						  ${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}
 						</a>
 					</li>
@@ -90,7 +90,7 @@
 				    binderId="${fileEntry._binderId}">
 				    <ssf:param name="entityType" value="folder" />
 					</ssf:url>" 
-					onClick="return ss_gotoPermalink('${fileEntry._binderId}', '${fileEntry._binderId}', 'folder', '', 'yes');">					
+					onclick="return ss_gotoPermalink('${fileEntry._binderId}', '${fileEntry._binderId}', 'folder', '', 'yes');">					
 				  ${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}
 				</a>
 			</ssf:ifaccessible>
@@ -150,13 +150,13 @@
 	<td align="right">
 	  <c:if test="${ss_pageNumber > 0}">
 	    <span>
-	      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'blog'); return false;"
+	      <a onclick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'blog'); return false;"
 	        href="javascript:;" >&lt;&lt;&lt;&nbsp;<ssf:nlt tag="general.previousPage"/></a>&nbsp;&nbsp;&nbsp;
 	    </span>
 	  </c:if>
 	  <c:if test="${(ss_pageNumber * ss_pageSize + hitCount) < ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
 	    <span>&nbsp;&nbsp;
-	      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'blog'); return false;"
+	      <a onclick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'blog'); return false;"
 	        href="javascript:;" ><ssf:nlt tag="general.nextPage"/>&nbsp;&gt;&gt;&gt;</a>
 	    </span>
 	  </c:if>
