@@ -306,6 +306,7 @@ public class WebKeys {
 	public static final String ACTION_MANAGE_ZONES="manage_zones";
 	public static final String ACTION_MANAGE_APPLICATIONS="manage_applications";
 	public static final String ACTION_MANAGE_APPLICATION_GROUPS="manage_application_groups";
+	public static final String ACTION_PLAY_TUTORIAL = "play_tutorial";
 	public static final String ACTION_PROFILES_IMPORT="import_profiles";
 	public static final String ACTION_QUOTA_REPORT="quota_report";
 	public static final String ACTION_SEND_EMAIL="send_email";
@@ -855,6 +856,7 @@ public class WebKeys {
     public static final String PERMALINK="ssPermalink";
     public static final String PERSONAL_TAGS="ssPersonalTags";
     public static final String PINNED_ENTRIES="ssPinnedEntries";
+    public static final String PLAY_TUTORIAL_BASE_URL = "ss_play_tutorial_base_url";
 	public static final String PORTAL_URL = "ss_portalUrl";
 	public static final String PORTLET_TYPE = "ss_portletType";
 	public static final String PORTLET_TYPE_ADMIN = "ss_portletTypeAdmin";
@@ -1233,6 +1235,7 @@ public class WebKeys {
     public static final String VIEW_NO_USER_WORKSPACE="entry/view_no_user_workspace";
     public static final String VIEW_NOT_CONFIGURED="common/notconfigured"; 
     public static final String VIEW_PHOTO="entry/view_photo";
+    public static final String VIEW_PLAY_TUTORIAL = "forum/play_tutorial";
     public static final String VIEW_PRESENCE="presence/view";
     public static final String VIEW_PRESENCE_AJAX="presence/view_ajax";
     public static final String VIEW_PRESENCE_EDIT="presence/edit";
