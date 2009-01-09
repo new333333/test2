@@ -98,20 +98,24 @@ var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
 	  <div class="ss_style" style="margin:10px;">
         <span class="ss_bold"><ssf:nlt tag="dashboard.componentScope"/></span><br>
  		<c:if test="${!ssUser.shared}">
-        <input type="radio" name="_scope" value="local" checked="checked" /><ssf:nlt tag="dashboard.componentScope.local"/><br>
-        <input type="radio" name="_scope" value="global"/><ssf:nlt tag="dashboard.componentScope.global"/> <ssf:inlineHelp tag="ihelp.other.global_accessories"/><br>
+        <input type="radio" name="_scope" value="local" id="local" checked="checked" />
+        	<label for="local"><ssf:nlt tag="dashboard.componentScope.local"/><br></label>
+        <input type="radio" name="_scope" value="global" id="global"/>
+        	<label for="global"><ssf:nlt tag="dashboard.componentScope.global"/> <ssf:inlineHelp tag="ihelp.other.global_accessories"/><br></label>
         <c:if test="${ssDashboard.sharedModificationAllowed}">
-          <input type="radio" name="_scope" value="binder"/><ssf:nlt tag="dashboard.componentScope.binder"/> <ssf:inlineHelp tag="ihelp.other.community_accessories"/><br>
+          <input type="radio" name="_scope" value="binder" id="binder"/>
+          	<label for="binder"><ssf:nlt tag="dashboard.componentScope.binder"/> <ssf:inlineHelp tag="ihelp.other.community_accessories"/><br></label>
         </c:if>
 		</c:if>
  		<c:if test="${ssUser.shared}">
-          <input type="radio" name="_scope" value="binder" checked/><ssf:nlt tag="dashboard.componentScope.binder"/> <ssf:inlineHelp tag="ihelp.other.community_accessories"/><br>
+          <input type="radio" name="_scope" value="binder" id="binder" checked/>
+          	<label for="binder"><ssf:nlt tag="dashboard.componentScope.binder"/> <ssf:inlineHelp tag="ihelp.other.community_accessories"/><br></label>
 		</c:if>
         <br/>
         <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
         <c:forEach var="component" items="${ssDashboard.components_list}">
-           <input type="radio" name="componentName" value="${component}">
-             <ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/>
+           <input type="radio" name="componentName" id="componentName" value="${component}">
+             <label for="componentName"><ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/></label>
            <br>
         </c:forEach>
         <br>
@@ -119,7 +123,7 @@ var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
 	      value="<ssf:nlt tag="button.ok"/>">&nbsp;&nbsp;
 	    <input class="ss_submit" type="submit" name="cancel" 
 	      value="<ssf:nlt tag="button.cancel"/>" 
-	      onClick="ss_hideDashboardMenu(this);return false;">
+	      onclick="ss_hideDashboardMenu(this);return false;">
 	    <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
 	    <input type="hidden" name="_componentId" value="">
 	    <input type="hidden" name="_returnView" value="binder"/>
@@ -135,8 +139,8 @@ var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
  	  <div class="ss_style" style="margin:10px;">
         <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
         <c:forEach var="component" items="${ssDashboard.components_list}">
-           <input type="radio" name="componentName" value="${component}">
-             <ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/>
+           <input type="radio" name="componentName" id="componentName" value="${component}">
+             <label for="componentName"><ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/></label>
            <br>
         </c:forEach>
         <br>
@@ -144,7 +148,7 @@ var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
 	      value="<ssf:nlt tag="button.ok"/>">&nbsp;&nbsp;
 	    <input class="ss_submit" type="submit" name="cancel" 
 	      value="<ssf:nlt tag="button.cancel"/>" 
-	      onClick="ss_hideDashboardMenu(this);return false;">
+	      onclick="ss_hideDashboardMenu(this);return false;">
 	    <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
 	    <input type="hidden" name="_componentId" value="">
 	    <input type="hidden" name="_returnView" value="binder"/>
