@@ -93,6 +93,7 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.rss.util.UrlUtil;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.shared.SearchUtils;
@@ -1163,6 +1164,82 @@ public class ListFolderHelper {
 		}
 		
 	}
+
+	/**
+	 * Returns the index of the entry definition to use as the default
+	 * for a folder.
+	 *
+	 * @param		userId - The ID of the user we running as.
+	 * @param		profileModule - The user's ProfileModule.
+	 * @param		folder - The Binder whose default entry definition is being queried.
+	 * @return		Index in the folder's entry definitions for the entry type that most closely matches the folder's default view.
+	 */
+	public static int getDefaultFolderEntryDefinitionIndex(Long userId, ProfileModule profileModule, Binder folder) {
+		return getDefaultFolderEntryDefinitionIndex(userId, profileModule, folder, folder.getEntryDefinitions());
+	}
+
+	/**
+	 * Returns the index of the entry definition to use as the default
+	 * for a folder.
+	 * 
+	 * @param		userId - The ID of the user we running as.
+	 * @param		profileModule - The user's ProfileModule.
+	 * @param		folder - The Binder whose default entry definition is being queried.
+	 * @param		folderEntryDefinitions - Entry definitions for folder.
+	 * @return		Index in the folder's entry definitions for the entry type that most closely matches the folder's default view.
+	 */
+	public static int getDefaultFolderEntryDefinitionIndex(Long userId, ProfileModule profileModule, Binder folder, List folderEntryDefinitions) {
+   		// Does the user have properties defined for the folder?
+		int	reply = 0;
+		UserProperties userFolderProperties = profileModule.getUserProperties(userId, folder.getId());
+		if (null != userFolderProperties) {
+			// Yes!  Do the folder properties contain a display
+			// definition for the folder?
+			String folderDisplayDefId = ((String) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
+			if (Validator.isNotNull(folderDisplayDefId)) {
+				// Yes!  Scan the views defined on the folder.
+				String folderViewName = null;
+				List folderViewDefinitions = folder.getViewDefinitions();
+				int folderViewDefs = ((null == folderViewDefinitions) ? 0 : folderViewDefinitions.size());
+				for (int i = 0; i < folderViewDefs; i += 1) {
+					// Is this the view the user's got selected to
+					// display this folder with?
+					Definition folderViewDefinition = ((Definition) folderViewDefinitions.get(i));
+					if (folderDisplayDefId.equals(folderViewDefinition.getId())) {
+						// Yes!  Save its name and quit looking.
+						folderViewName = folderViewDefinition.getName();
+						break;
+					}
+				}
+				
+				// Do we have the name of a view the user has selected
+				// for this folder?
+				if (Validator.isNotNull(folderViewName)) {
+					// Yes!  Does it end with 'Folder'?
+		   			int	folderPart = folderViewName.indexOf("Folder");
+		   			if (0 < folderPart) {
+		   				// Yes!  Scan the folder's entry definitions.
+		   				folderViewName = folderViewName.substring(0, folderPart);
+						int folderEntryDefs = folderEntryDefinitions.size();
+						for (int i = 0; i < folderEntryDefs; i += 1) {
+			   				// Does this entry definition's name start the
+							// same as the view's name?
+							Definition folderEntryDefinition = ((Definition) folderEntryDefinitions.get(i));
+							String	folderEntryDefName = folderEntryDefinition.getName();
+							if (folderEntryDefName.startsWith(folderViewName)) {
+								// Yes!  That's the default that we're
+								// looking for.  Return its index.
+								reply = i;
+								break;
+							}
+						}
+		   			}
+				}
+			}
+		}
+
+		return reply;
+	}
 	
 	protected static void addEntryToolbar(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Binder folder, Toolbar entryToolbar, Map model, String viewType) {
@@ -1171,6 +1248,11 @@ public class ListFolderHelper {
 		model.put(WebKeys.URL_BINDER_ENTRY_DEFS, String.valueOf( defaultEntryDefs ));
 		if (defaultEntryDefs > 1) {
 			int count = 1;
+			int	defaultEntryDefIndex = getDefaultFolderEntryDefinitionIndex(
+				RequestContextHolder.getRequestContext().getUser().getId(),
+				bs.getProfileModule(),
+				folder,
+				defaultEntryDefinitions);
 			Map dropdownQualifiers = new HashMap();
 			dropdownQualifiers.put("highlight", new Boolean(true));
 			String	entryAdd = NLT.get("toolbar.new");
@@ -1191,7 +1273,7 @@ public class ListFolderHelper {
 					title = title + " (" + String.valueOf(count++) + ")";
 				}
 				entryToolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
-				if (i == 0) {
+				if (i == defaultEntryDefIndex) {
 					adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
 					adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
 					model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());

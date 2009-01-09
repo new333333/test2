@@ -81,6 +81,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.Tabs;
@@ -804,6 +805,11 @@ public class ViewEntryController extends  SAbstractController {
 		if (getFolderModule().testAccess(folder, FolderOperation.addEntry)) {				
 			accessControlFolderMap.put("addEntry", new Boolean(true));
 			if (!defaultEntryDefinitions.isEmpty()) {
+				int	defaultEntryDefIndex = ListFolderHelper.getDefaultFolderEntryDefinitionIndex(
+					RequestContextHolder.getRequestContext().getUser().getId(),
+					getProfileModule(),
+					folder,
+					defaultEntryDefinitions);
 				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
 					Definition def = (Definition) defaultEntryDefinitions.get(i);
 					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
@@ -812,7 +818,7 @@ public class ViewEntryController extends  SAbstractController {
 					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
 					urls.put(def.getId(), adapterUrl.toString());
 					titles.put(NLT.getDef(def.getTitle()), def.getId());
-					if (i == 0) {
+					if (i == defaultEntryDefIndex) {
 						adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
 						adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
 						model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
