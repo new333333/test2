@@ -31,7 +31,6 @@ package org.kablink.teaming.portletadapter.portlet;
 import java.security.Principal;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Vector;
 import java.util.Locale;
 import java.util.Map;
 
@@ -56,6 +55,10 @@ public class PortletRequestImpl implements PortletRequest, MultipartFileSupport 
 
 	public static final WindowState ADAPTED = new WindowState("adapted");
 	
+	protected static final String JAVAX_PORTLET_CONFIG = "javax.portlet.config";
+	protected static final String JAVAX_PORTLET_REQUEST = "javax.portlet.request";
+	protected static final String JAVAX_PORTLET_RESPONSE = "javax.portlet.response";
+
 	protected HttpServletRequest req;
 	protected PortletInfo portletInfo;
 	protected PortletContext portletContext;
