@@ -147,7 +147,7 @@
 			</c:if>
 		</span>&nbsp;<img src="<html:rootPath/>images/icons/folder_green_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
 		</div>
-	</li><br/>
+	</li>
 							
   </c:forEach>
   <c:if test="${empty ss_myTasks && ss_pageNumber > '0'}">

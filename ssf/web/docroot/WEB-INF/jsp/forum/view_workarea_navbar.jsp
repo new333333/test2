@@ -644,18 +644,18 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 
 	  <c:if test="${ssBinder != null && ssEntry.entityType != 'folderEntry'}">
 	  	<div class="ss_style_trans">
-	  	<img <ssf:alt tag="favorites.addCurrentPage"/>
-	  	  src="<html:brandedImagesPath/>icons/button_new_bookmark.gif" border="0" />
-			<a href="javascript: ;" 
+	  	  <img <ssf:alt tag="favorites.addCurrentPage"/>
+	  	    src="<html:brandedImagesPath/>icons/button_new_bookmark.gif" border="0" />
+		  <a href="javascript: ;" 
 			 onclick="ssMyFavorites${renderResponse.namespace}.addBinderToFavorites('<ssf:url 
 			    adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true" >
 				<ssf:param name="operation" value="add_favorite_binder" />
 				<ssf:param name="binderId" value="${ssBinder.id}" />
 				<ssf:param name="viewAction" value="${action}" /></ssf:url>');return false;"
-			>
+		  >
 			<span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.addCurrentPage" 
 				text="Add the current page to the favorites list..."/></span></a>
-	  	</div>
+	    </div>
 	  </c:if>
   	  <div class="ss_style_trans">
   		<img <ssf:alt tag="favorites.edit"/> 
@@ -665,45 +665,46 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		><span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.edit" text="Edit Favorites"/></span></a>
   	  </div>
 	  <hr style="width: 90%" class="ss_att_divider"/>
-		  <div style="float: right;" id="ss_favorites_loading${renderResponse.namespace}"><ssf:nlt tag="Loading"/></div>
-		  <br /><div id="ss_favorites_list${renderResponse.namespace}">&nbsp;</div>
+	  <div style="float: right;" id="ss_favorites_loading${renderResponse.namespace}">
+	    <ssf:nlt tag="Loading"/>
 	  </div>
-      <div class="ss_style_trans" style="display: none;" id="ss_favorites_editor${renderResponse.namespace}">
+	  <br />
+	  <div id="ss_favorites_list${renderResponse.namespace}">
+	    &nbsp;
+	  </div>
+	</div>
+    <div class="ss_style_trans" style="display: none;" id="ss_favorites_editor${renderResponse.namespace}">
         <div style="padding: 10px 0px 7px 0px;">
-
-		<table cellspacing="0" cellpadding="0" border="0">
-		<tbody>
-		<tr>
-		  <td>
-			<a class="ss_inlineButton" onclick="ssMyFavorites${renderResponse.namespace}.moveSelectedFavorites('down')"
-			><img <ssf:alt tag="favorites.movedown"/> src="<html:imagesPath/>icons/button_move_down.gif" 
-			/><span><ssf:nlt tag="favorites.movedown"/></span></a>
-	  	  </td>	
-		  <td>		
-			<a class="ss_inlineButton" onclick="ssMyFavorites${renderResponse.namespace}.moveSelectedFavorites('up')"
-			><img <ssf:alt tag="favorites.moveup"/> src="<html:imagesPath/>icons/button_move_up.gif" 
-			/><span><ssf:nlt tag="favorites.moveup"/></span></a>
-	  	  </td>
-		  <td>
-			
-			<a class="ss_inlineButton" onclick="ssMyFavorites${renderResponse.namespace}.deleteSelectedFavorites()"
-			><img <ssf:alt tag="favorites.delete"/> src="<html:imagesPath/>icons/button_delete.gif" 
-			/><span><ssf:nlt tag="favorites.delete"/></span></a>
-		  </td>
-		 </tr>
-		</tbody>
-		</table>	
+			<table cellspacing="0" cellpadding="0" border="0">
+			<tbody>
+			<tr>
+			  <td>
+				<a class="ss_inlineButton" onclick="ssMyFavorites${renderResponse.namespace}.moveSelectedFavorites('down')"
+				><img <ssf:alt tag="favorites.movedown"/> src="<html:imagesPath/>icons/button_move_down.gif" 
+				/><span><ssf:nlt tag="favorites.movedown"/></span></a>
+		  	  </td>	
+			  <td>		
+				<a class="ss_inlineButton" onclick="ssMyFavorites${renderResponse.namespace}.moveSelectedFavorites('up')"
+				><img <ssf:alt tag="favorites.moveup"/> src="<html:imagesPath/>icons/button_move_up.gif" 
+				/><span><ssf:nlt tag="favorites.moveup"/></span></a>
+		  	  </td>
+			  <td>
+				
+				<a class="ss_inlineButton" onclick="ssMyFavorites${renderResponse.namespace}.deleteSelectedFavorites()"
+				><img <ssf:alt tag="favorites.delete"/> src="<html:imagesPath/>icons/button_delete.gif" 
+				/><span><ssf:nlt tag="favorites.delete"/></span></a>
+			  </td>
+			 </tr>
+			</tbody>
+			</table>	
         </div>
 	    <div style="padding: 3px 0px 0px 135px; width: 40px;">
 			<a class="ss_inlineButton" href="javascript: ;" 
 			 onclick="ssMyFavorites${renderResponse.namespace}.saveFavorites()"
 			><span><ssf:nlt tag="button.ok"/></span></a>
 	    </div>
-
-    </div>
-  </div>
+	</div>
   </ssf:popupPane>
-
 </div>
 </ssf:ifLoggedIn>
 <!-- End of favorites pane -->
