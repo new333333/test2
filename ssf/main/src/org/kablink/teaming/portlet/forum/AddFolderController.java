@@ -78,7 +78,7 @@ public class AddFolderController extends SAbstractController {
 			//The form was submitted. Go process it
 			Long cfgType = PortletRequestUtils.getRequiredLongParameter(request, "binderConfigId");
 			Long newId = getTemplateModule().addBinder(cfgType, binderId, 
-						PortletRequestUtils.getStringParameter(request, "title", ""), null);
+						PortletRequestUtils.getStringParameter(request, "title", ""), null).getId();
 			Binder newBinder = getBinderModule().getBinder(newId);
 			
 			//Now process the rest of the form
@@ -135,7 +135,7 @@ public class AddFolderController extends SAbstractController {
 			Long newBinderId = null;
 			if (binderTemplate != null) {
 				newBinderId = getTemplateModule().addBinder(binderTemplate.getId(), 
-						binderId, title, null);
+						binderId, title, null).getId();
 				Binder newBinder = null;
 				if (newBinderId != null) newBinder = getBinderModule().getBinder(newBinderId);
 				

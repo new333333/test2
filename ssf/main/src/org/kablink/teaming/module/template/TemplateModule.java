@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.security.AccessControlException;
@@ -34,7 +35,7 @@ public interface TemplateModule {
    	 * @throws WriteFilesException
    	 */
 
-    public Long addBinder(Long templateId, Long parentBinderId, String title, String name) throws AccessControlException, WriteFilesException;
+    public Binder addBinder(Long templateId, Long parentBinderId, String title, String name) throws AccessControlException, WriteFilesException;
     /**
      * Create default template.  Should already exist
      * @param type
@@ -49,8 +50,8 @@ public interface TemplateModule {
      * @param replace
      * @return
      */
-	public Long addTemplate(Document document, boolean replace) throws AccessControlException;
-	public Long addTemplate(InputStream stream, boolean replace) throws AccessControlException, DocumentException;
+	public TemplateBinder addTemplate(Document document, boolean replace) throws AccessControlException;
+	public TemplateBinder addTemplate(InputStream stream, boolean replace) throws AccessControlException, DocumentException;
 	/**
 	 * Create a template
 	 * @param type
@@ -58,7 +59,7 @@ public interface TemplateModule {
 	 * @return
    	 * @throws AccessControlException
 	 */
-	public Long addTemplate(int type, Map updates) throws AccessControlException;
+	public TemplateBinder addTemplate(int type, Map updates) throws AccessControlException;
 	/**
 	 * Create a new template from an existing template
 	 * @param parentId
@@ -67,7 +68,7 @@ public interface TemplateModule {
    	 * @throws AccessControlException
    	 * @throws WriteFilesException
 	 */
-	public Long addTemplate(Long parentId, Long srcTemplateId) throws AccessControlException, WriteFilesException;
+	public TemplateBinder addTemplate(Long parentId, Long srcTemplateId) throws AccessControlException, WriteFilesException;
 	/**
 	 * Create a template using an existing binder as the source.  Recurses through sub-binders
 	 * @param binderId
@@ -75,7 +76,7 @@ public interface TemplateModule {
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	public Long addTemplateFromBinder(Long binderId) throws AccessControlException, WriteFilesException;
+	public TemplateBinder addTemplateFromBinder(Long binderId) throws AccessControlException, WriteFilesException;
 	public void modifyTemplate(Long id, Map updates) throws AccessControlException;
     /**
      * Get a template

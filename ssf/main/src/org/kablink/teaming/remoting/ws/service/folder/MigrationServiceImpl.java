@@ -107,12 +107,11 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 			getTimestamps(options, creator, creationDate, modifier, modificationDate);
 			Document doc = getDocument(inputDataAsXML);
 			DomInputData inputData = new DomInputData(doc, getIcalModule());
-			Long binderId = getBinderModule().addBinder(parentId, definitionId, inputData, null, options).longValue();
-			Binder binder = getBinderModule().getBinder(binderId);
+			Binder binder = getBinderModule().addBinder(parentId, definitionId, inputData, null, options);
 			//sub-folders should inherit
 			if (binder instanceof Folder && binder.getParentBinder() instanceof Folder)
-				getBinderModule().setDefinitionsInherited(binderId, true);
-			return binderId;
+				getBinderModule().setDefinitionsInherited(binder.getId(), true);
+			return binder.getId().longValue();
 		} catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}
@@ -150,13 +149,12 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 			Map options = new HashMap();
 			//let binder be indexed, so it can be found
 			getTimestamps(options, modelBinder);
-			Long binderId = getBinderModule().addBinder(modelBinder.getParentBinderId(), 
-					modelBinder.getDefinitionId(), new ModelInputData(modelBinder), null, options).longValue();
-			Binder binder = getBinderModule().getBinder(binderId);
+			Binder binder = getBinderModule().addBinder(modelBinder.getParentBinderId(), 
+					modelBinder.getDefinitionId(), new ModelInputData(modelBinder), null, options);
 			//sub-folders should inherit
 			if (binder instanceof Folder && binder.getParentBinder() instanceof Folder)
-				getBinderModule().setDefinitionsInherited(binderId, true);
-			return binderId;
+				getBinderModule().setDefinitionsInherited(binder.getId(), true);
+			return binder.getId().longValue();
 		} catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}

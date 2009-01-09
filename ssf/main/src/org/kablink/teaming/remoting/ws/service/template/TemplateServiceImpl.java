@@ -51,7 +51,7 @@ public class TemplateServiceImpl extends BaseService implements TemplateService,
 	{
 		title = StringCheckUtil.check(title);
 		try {
-			return getTemplateModule().addBinder(binderConfigId, parentBinderId, title, null);
+			return getTemplateModule().addBinder(binderConfigId, parentBinderId, title, null).getId().longValue();
 		} catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}

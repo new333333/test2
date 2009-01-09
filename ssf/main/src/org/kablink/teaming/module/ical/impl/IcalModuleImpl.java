@@ -1793,7 +1793,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 						folderModule.modifyEntry(folder.getId(), entity.getId(), inputData, null, null, null, null);
 						attendedEntries.modified.add(entity.getId());
 					} else {
-						Long entryId = folderModule.addEntry(folder.getId(), entryType, inputData, null, null);
+						Long entryId = folderModule.addEntry(folder.getId(), entryType, inputData, null, null).getId();
 						attendedEntries.added.add(entryId);
 					}
 				} catch (AccessControlException e) {

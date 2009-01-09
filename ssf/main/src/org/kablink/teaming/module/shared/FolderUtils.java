@@ -86,7 +86,7 @@ public class FolderUtils {
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	public static Long createLibraryEntry(Folder folder, String fileName,
+	public static FolderEntry createLibraryEntry(Folder folder, String fileName,
 			InputStream content, Date modDate, boolean synchToSourceIfMirrored) 
 	throws ConfigurationException, AccessControlException, WriteFilesException {
 		if(folder.isLibrary()) {
@@ -144,7 +144,7 @@ public class FolderUtils {
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	public static Long createMirroredFolder(Binder parentBinder, String folderName, 
+	public static Binder createMirroredFolder(Binder parentBinder, String folderName, 
 			String resourceDriverName, String resourcePath, boolean synchToSource)
 	throws ConfigurationException, AccessControlException, WriteFilesException {
 		Definition def = getFolderDefinition(parentBinder);
@@ -175,7 +175,7 @@ public class FolderUtils {
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	public static Long createLibraryFolder(Binder parentBinder, String folderName)
+	public static Binder createLibraryFolder(Binder parentBinder, String folderName)
 	throws ConfigurationException, AccessControlException, WriteFilesException {
 		Definition def = getFolderDefinition(parentBinder);
 		if(def == null)
@@ -233,7 +233,7 @@ public class FolderUtils {
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	private static Long createNonMirroredEntry(Folder folder, String fileName, InputStream content, Date modDate)
+	private static FolderEntry createNonMirroredEntry(Folder folder, String fileName, InputStream content, Date modDate)
 	throws ConfigurationException, AccessControlException, WriteFilesException {
 		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
@@ -257,7 +257,7 @@ public class FolderUtils {
 		return getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems, null);
 	}
 	
-	private static Long createMirroredEntry(Folder folder, String fileName, 
+	private static FolderEntry createMirroredEntry(Folder folder, String fileName, 
 			InputStream content, Date modDate, boolean synchToSource)
 	throws ConfigurationException, AccessControlException, WriteFilesException {
 		Definition def = getFolderEntryDefinition(folder);

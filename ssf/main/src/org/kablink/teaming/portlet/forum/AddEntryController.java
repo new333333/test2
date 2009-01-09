@@ -111,7 +111,7 @@ public class AddEntryController extends SAbstractController {
 			if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
 				MapInputData inputData = new MapInputData(formData);
 				
-				entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap, null);
+				entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap, null).getId();
 				setupReloadOpener(response, folderId, null);
 				if (!addEntryFromIFrame.equals("")) {
 					response.setRenderParameter(WebKeys.NAMESPACE, namespace);
@@ -121,7 +121,7 @@ public class AddEntryController extends SAbstractController {
 			} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_REPLY)) {
 				MapInputData inputData = new MapInputData(formData);
 				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-				entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap, null);
+				entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap, null).getId();
 				//Show the parent entry when this operation finishes
 				setupReloadOpener(response, folderId, id);
 				if (!blogReply.equals("")) {
@@ -233,7 +233,7 @@ public class AddEntryController extends SAbstractController {
 			        	    	
 			        	    	//Create a sub folder, if it does not exist
 			        	    	if (!doesFolderExist) {
-			        	    		lngFolderIdToUse = FolderUtils.createLibraryFolder(folderObj, strFolderName);
+			        	    		lngFolderIdToUse = FolderUtils.createLibraryFolder(folderObj, strFolderName).getId();
 			        	    	}
 	        	    		}
 	        	    	}
@@ -279,7 +279,7 @@ public class AddEntryController extends SAbstractController {
 	        	    	oneFileMap.put(nameValue+"1", mf);
 	        	    	entryNameOnly.put(ObjectKeys.FIELD_ENTITY_TITLE, utf8DecodedFileName);
 	        	    	MapInputData inputData = new MapInputData(entryNameOnly);
-	        	    	entryId= getFolderModule().addEntry(folderId, null, inputData, oneFileMap, null);
+	        	    	entryId= getFolderModule().addEntry(folderId, null, inputData, oneFileMap, null).getId();
 	        		} else {
 	        			blnCheckForAppletFile = false;
 	        		}

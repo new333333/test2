@@ -205,7 +205,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
 			Map fileMap = new HashMap();
 			MapInputData inputData = new MapInputData(formData);
-			entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap, null);
+			entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap, null).getId();
 			response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 			
 			//See if the user wants to subscribe to this entry
@@ -258,7 +258,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			Map fileMap = new HashMap();
 			MapInputData inputData = new MapInputData(formData);
 			Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-			entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap, null);
+			entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap, null).getId();
 
 			//See if the user wants to subscribe to this entry
 			BinderHelper.subscribeToThisEntry(this, request, folderId, entryId);

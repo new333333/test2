@@ -158,7 +158,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		SimpleProfiler.setProfiler(profiler);
 		try {
 			return getFolderModule().addEntry(new Long(binderId), definitionId, 
-				new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), options).longValue();
+				new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), options).getId().longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -192,7 +192,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		
 		try {
 			return getFolderModule().addReply(new Long(binderId), new Long(parentId), 
-				definitionId, new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), options).longValue();
+				definitionId, new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), options).getId().longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -323,7 +323,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		SimpleProfiler.setProfiler(profiler);
 		try {
 			return getFolderModule().addEntry(entry.getParentBinderId(), entry.getDefinitionId(), 
-				new ModelInputData(entry), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), options).longValue();
+				new ModelInputData(entry), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), options).getId().longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -342,7 +342,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	protected long addReply(String accessToken, long parentEntryId, org.kablink.teaming.remoting.ws.model.FolderEntry reply, String attachedFileName, Map options) {
 		try {
 			return getFolderModule().addReply(reply.getParentBinderId(), new Long(parentEntryId), 
-				reply.getDefinitionId(), new ModelInputData(reply), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), options).longValue();
+				reply.getDefinitionId(), new ModelInputData(reply), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), options).getId().longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -363,7 +363,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		getFolderModule().deleteEntry(null, entryId);
 	}
     public long folder_copyEntry(String accessToken, long entryId, long destinationId) {
-    	return getFolderModule().copyEntry(null, entryId, destinationId, null);
+    	return getFolderModule().copyEntry(null, entryId, destinationId, null).getId().longValue();
     }
     public void folder_moveEntry(String accessToken, long entryId, long destinationId) {
     	getFolderModule().moveEntry(null, entryId, destinationId, null);
