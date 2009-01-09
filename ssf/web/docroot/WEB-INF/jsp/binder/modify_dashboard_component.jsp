@@ -82,8 +82,8 @@
 	<div class="ss_dashboard_config">
 		<p class="ss_bold"><ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[id].name]}"/></p>
 		<div style="margin:5px;">
-			<span class="ss_bold"><ssf:nlt tag="dashboard.componentTitle"/></span><br/>
-			<input type="text" name="title" size="80" value="${ssDashboard.dashboard.components[id].title}"/><br/>
+			<label for="title"><span class="ss_bold"><ssf:nlt tag="dashboard.componentTitle"/></span><br/></label>
+			<input type="text" name="title" id="title" size="80" value="${ssDashboard.dashboard.components[id].title}"/><br/>
 			<span class="ss_bold"><ssf:nlt tag="dashboard.componentStyle"/></span><br/>
 			<div class="ss_indent_medium">
 				<c:set var="checked" value=""/>
@@ -91,15 +91,15 @@
 				              ssDashboard.dashboard.components[id].displayStyle != 'none'}">
 				  <c:set var="checked" value="checked=\"checked\""/>
 				</c:if>
-				<input type="radio" name="displayStyle" value="border" ${checked}>
-				<span><ssf:nlt tag="dashboard.componentStyle.border"/></span>
+				<input type="radio" name="displayStyle" value="border" id="border" ${checked}>
+				<label for="border"><span><ssf:nlt tag="dashboard.componentStyle.border"/></span></label>
 				<br>
 				<c:set var="checked" value=""/>
 				<c:if test="${ssDashboard.dashboard.components[id].displayStyle == 'none'}">
 				  <c:set var="checked" value="checked=\"checked\""/>
 				</c:if>
-				<input type="radio" name="displayStyle" value="none" ${checked}>
-				<span><ssf:nlt tag="dashboard.componentStyle.noBorder"/></span>
+				<input type="radio" name="displayStyle" value="none" id="none" ${checked}>
+				<label for="none"><span><ssf:nlt tag="dashboard.componentStyle.noBorder"/></span></label>
 			</div>
 			<!-- BEFORE DASHBOARD TAG -->
 			<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
