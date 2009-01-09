@@ -70,7 +70,7 @@
 				<br/>
 		    	<span class="ss_italic">${activity.description}</span>
 
-	    </li><br/>
+	    </li>
 	    
 
 	  </c:forEach>

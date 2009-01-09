@@ -30,7 +30,7 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div id="ss_para" "ss_link_5">
+<div id="ss_para" class="ss_link_5">
 <div id="ss_hints"><em><ssf:nlt tag="relevance.peopleBeingTracked"/></em></div>
 <c:forEach var="user" items="${ss_trackedPeople}">
 

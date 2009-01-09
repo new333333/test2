@@ -108,7 +108,7 @@
 	      textMaxWords="10"><ssf:markup search="${entry}">${entry._desc}</ssf:markup></ssf:textFormat></span>
 	  </c:if>
 	
-    </li><br/>
+    </li>
   </c:forEach>
   <c:if test="${empty ss_whatsNewTrackedPlaces && ss_pageNumber > '0'}">
     <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>

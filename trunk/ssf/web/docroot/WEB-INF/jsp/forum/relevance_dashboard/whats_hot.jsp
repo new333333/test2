@@ -95,7 +95,7 @@
 	      textMaxWords="10"><ssf:markup  entity="${entry}" type="view">${entry.description}</ssf:markup></ssf:textFormat></span>
 	  </c:if>
 	
-    </li><br/>
+    </li>
   </c:forEach>
   <c:if test="${empty ss_whatsHot && ss_pageNumber > '0'}">
     <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
