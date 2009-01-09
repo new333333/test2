@@ -1044,9 +1044,12 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			accumulateValue(distributedSizes, mapKey, size);
 			if(option != QuotaOption.UsersOnly) {
 				HKey key = new HKey(binderKey);
-				for(String k : key.getAncestorKeys()) {
-					mapKey = new QKey(k, userId);
-					accumulateValue(distributedSizes, mapKey, size);
+				String[] ancestors = key.getAncestorKeys();
+				if (ancestors != null) {
+					for(String k : ancestors) {
+						mapKey = new QKey(k, userId);
+						accumulateValue(distributedSizes, mapKey, size);
+					}
 				}
 			}
 		}
