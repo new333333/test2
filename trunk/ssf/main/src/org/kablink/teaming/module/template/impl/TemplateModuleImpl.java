@@ -164,7 +164,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				try {
 					in = new ClassPathResource(file).getInputStream();
 					Document doc = reader.read(in);
-					Long templateId = addTemplate(doc,true);
+					Long templateId = addTemplate(doc,true).getId();
 					if (templateId == null) result = false;
 					getCoreDao().flush();
 				} catch (Exception ex) {
@@ -254,7 +254,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		return config;
 	 }
 	//add top level template
-	 public Long addTemplate(int type, Map updates) {
+	 public TemplateBinder addTemplate(int type, Map updates) {
 	    checkAccess(TemplateOperation.manageTemplate);
 		TemplateBinder template = new TemplateBinder();
 		String name = (String)updates.get(ObjectKeys.FIELD_BINDER_NAME);
@@ -278,16 +278,16 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
        	String icon = DefinitionUtils.getPropertyValue(entryDef.getDefinition().getRootElement(), "icon");
        	if (Validator.isNotNull(icon)) template.setIconName(icon);
 		doAddTemplate(template, type, updates);
-	    return template.getId();
+	    return template;
 	 }
-	 public Long addTemplate(InputStream indoc, boolean replace) 
+	 public TemplateBinder addTemplate(InputStream indoc, boolean replace) 
 	 	throws AccessControlException, DocumentException {
 		 SAXReader xIn = new SAXReader(false);
 		 Document doc = xIn.read(indoc);
 		 return addTemplate(doc, replace);
 	 }
 		//add top level template
-	 public Long addTemplate(Document doc, boolean replace) {
+	 public TemplateBinder addTemplate(Document doc, boolean replace) {
 		 checkAccess(TemplateOperation.manageTemplate);
 		 Element config = doc.getRootElement();
 		 //check name
@@ -336,7 +336,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 //need to flush, if multiple loaded in 1 transaction the binderKey may not have been
 		 //flushed which could result in duplicates on the next save when loading multiple nfor updatetTemplates
 		 getCoreDao().flush();
-		 return template.getId();
+		 return template;
 	 }
 	 protected void doTemplate(TemplateBinder template, Element config) {
 		 Integer type = Integer.valueOf(config.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_TYPE));
@@ -379,7 +379,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	 }
 
 	 //clone a top level template as a child of another template
-	 public Long addTemplate(Long parentId, Long srcConfigId) {
+	 public TemplateBinder addTemplate(Long parentId, Long srcConfigId) {
 		 checkAccess(TemplateOperation.manageTemplate);
 	    TemplateBinder parentConfig = (TemplateBinder)getCoreDao().loadBinder(parentId, RequestContextHolder.getRequestContext().getZoneId());
 	    TemplateBinder srcConfig = (TemplateBinder)getCoreDao().loadBinder(srcConfigId, RequestContextHolder.getRequestContext().getZoneId());
@@ -397,7 +397,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 EntryBuilder.copyAttributes(source, destination);
 		 return destination;		
 	}
-	 protected Long addTemplate(TemplateBinder parentConfig, TemplateBinder srcConfig) {
+	 protected TemplateBinder addTemplate(TemplateBinder parentConfig, TemplateBinder srcConfig) {
 		 TemplateBinder config = new TemplateBinder(srcConfig);
 		 config.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
 		 config.setModification(config.getCreation());
@@ -419,7 +419,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 for (TemplateBinder c:children) {
 			 addTemplate(config, c);
 		 }
-		 return config.getId();
+		 return config;
 	 }
 	 protected boolean validateTemplateName(Long binderId, String name) {
 		 if (Validator.isNull(name)) return false;
@@ -431,12 +431,12 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			} catch (Exception ex) {};
 		 return false;
 	 }
-	   public Long addTemplateFromBinder(Long binderId) throws AccessControlException, WriteFilesException {
+	   public TemplateBinder addTemplateFromBinder(Long binderId) throws AccessControlException, WriteFilesException {
 		   checkAccess(TemplateOperation.manageTemplate);
 		   Long zoneId =  RequestContextHolder.getRequestContext().getZoneId();
 		   Binder binder = (Binder)getCoreDao().loadBinder(binderId, zoneId);
 		   TemplateBinder config = templateFromBinder(null, binder);
-		   return config.getId();
+		   return config;
 		}
 		protected TemplateBinder templateFromBinder(TemplateBinder parent, Binder binder) {
 			//get binder setup
@@ -627,7 +627,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	}
 	//no transaction - Adding the top binder can lead to optimisitic lock exceptions.
 	//In order to reduce the risk, we try to shorten the transaction time by managing it ourselves
-	public Long addBinder(final Long configId, final Long parentBinderId, final String title, final String name) throws AccessControlException {
+	public Binder addBinder(final Long configId, final Long parentBinderId, final String title, final String name) throws AccessControlException {
 		//The first add is independent of the others.  In this case the transaction is short 
 		//and managed by processors.  
 		
@@ -665,7 +665,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
  			return null;
 	     }});
 		IndexSynchronizationManager.applyChanges(); //get them commited, binders are
-		return top.getId();
+		return top;
 
 	}
 	protected void addBinderFinish(TemplateBinder cfg, Binder binder) throws AccessControlException {
@@ -717,7 +717,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	   }	    	
 	   //get binder created
 	   try {
-			   binder = getCoreDao().loadBinder(getBinderModule().addBinder(parentBinder.getId(), def.getId(), inputData, fileItems, ctx), zoneId);
+			   binder = getCoreDao().loadBinder(getBinderModule().addBinder(parentBinder.getId(), def.getId(), inputData, fileItems, ctx).getId(), zoneId);
 	   } catch (WriteFilesException wf) {
 		   //don't fail, but log it
   			logger.error("Error creating binder from template: ", wf);

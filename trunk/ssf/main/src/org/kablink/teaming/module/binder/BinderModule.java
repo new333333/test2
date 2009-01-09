@@ -85,7 +85,7 @@ public interface BinderModule {
      * @throws AccessControlException
      * @throws WriteFilesException
      */
-    public Long addBinder(Long parentId, String definitionId, InputDataAccessor inputData,
+    public Binder addBinder(Long parentId, String definitionId, InputDataAccessor inputData,
        		Map fileItems, Map options)
     	throws AccessControlException, WriteFilesException;
 	/**
@@ -112,7 +112,7 @@ public interface BinderModule {
      * @param options - processing options or null 
 	 * @return
 	 */
-	public Long copyBinder(Long sourceId, Long destinationId, boolean cascade, Map options)
+	public Binder copyBinder(Long sourceId, Long destinationId, boolean cascade, Map options)
 		throws AccessControlException;
 	/**
 	 * Delete a binder including any sub-binders and entries.

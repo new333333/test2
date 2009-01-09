@@ -228,7 +228,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 	
 	public long profile_addGroup(String accessToken, org.kablink.teaming.remoting.ws.model.Group group) {
 		try {
-			return getProfileModule().addGroup(group.getDefinitionId(), new ModelInputData(group), null, null).longValue();
+			return getProfileModule().addGroup(group.getDefinitionId(), new ModelInputData(group), null, null).getId().longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -237,7 +237,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 	
 	public long profile_addUser(String accessToken, org.kablink.teaming.remoting.ws.model.User user) {
 		try {
-			return getProfileModule().addUser(user.getDefinitionId(), new ModelInputData(user), null, null).longValue();
+			return getProfileModule().addUser(user.getDefinitionId(), new ModelInputData(user), null, null).getId().longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);

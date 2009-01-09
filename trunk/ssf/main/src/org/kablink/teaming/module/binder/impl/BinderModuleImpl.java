@@ -261,7 +261,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 
 	//no transaction by default
-	public Long addBinder(Long parentBinderId, String definitionId, InputDataAccessor inputData, 
+	public Binder addBinder(Long parentBinderId, String definitionId, InputDataAccessor inputData, 
 			Map fileItems, Map options) throws AccessControlException, WriteFilesException {
 		Binder parentBinder = loadBinder(parentBinderId);
 		Definition def = null;
@@ -279,7 +279,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			Binder binder = loadBinderProcessor(parentBinder).addBinder(parentBinder, def, Folder.class, inputData, fileItems, options);
 			if(parentBinder instanceof Folder && parentBinder.isMirrored() && binder.isMirrored())
 				setDefinitionsInherited(binder.getId(), true);
-			return binder.getId();
+			return binder;
 		} else {
 			if (!(parentBinder instanceof Workspace)) throw new NotSupportedException("errorcode.notsupported.addbinder");
 		  	//allow users workspaces to be created for all users
@@ -290,7 +290,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		   	} else {
 		   		checkAccess(parentBinder, BinderOperation.addWorkspace);
 	        }
-	    	return loadBinderProcessor(parentBinder).addBinder(parentBinder, def, Workspace.class, inputData, fileItems, options).getId();
+	    	return loadBinderProcessor(parentBinder).addBinder(parentBinder, def, Workspace.class, inputData, fileItems, options);
 		}
 	}
 	public Set<Long> indexTree(Long binderId) {
@@ -576,7 +576,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
            	
     }
      //no transaction    
-     public Long copyBinder(Long fromId, Long toId, boolean cascade, Map options) {
+     public Binder copyBinder(Long fromId, Long toId, boolean cascade, Map options) {
        	Binder source = loadBinder(fromId);
 		checkAccess(source, BinderOperation.copyBinder);
        	Binder destinationParent = loadBinder(toId);
@@ -592,7 +592,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
        	//lock top level
    		Binder binder = loadBinderProcessor(source).copyBinder(source, destinationParent, params);
        	if (cascade) doCopyChildren(source, binder);
-       	return binder.getId();
+       	return binder;
      }
      private void doCopyChildren(Binder source, Binder destinationParent) {
     	 Map params = new HashMap();

@@ -847,7 +847,7 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 	private Long createLibraryFolder(Binder parentBinder, String folderName)
 	throws NoAccessException {
 		try {
-			return FolderUtils.createLibraryFolder(parentBinder, folderName);
+			return FolderUtils.createLibraryFolder(parentBinder, folderName).getId();
 		}
 		catch(ConfigurationException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());

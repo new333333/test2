@@ -97,7 +97,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				if (type == null)  return;
 				if (type == -1) {
 					Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-					Long configId = getTemplateModule().addTemplateFromBinder(binderId);
+					Long configId = getTemplateModule().addTemplateFromBinder(binderId).getId();
 					response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
 				} else {
 					Map updates = new HashMap();
@@ -107,7 +107,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					updates.put(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION, new Description(sVal));
 					sVal = PortletRequestUtils.getStringParameter(request, "templateName", null);
 					if (sVal != null) updates.put(ObjectKeys.FIELD_BINDER_NAME, sVal);
-					Long configId = getTemplateModule().addTemplate(type, updates);
+					Long configId = getTemplateModule().addTemplate(type, updates).getId();
 					TemplateBinder config = getTemplateModule().getTemplate(configId);
 					//	redirect to modify binder
 					response.setRenderParameter(WebKeys.URL_BINDER_ID, config.getId().toString());
@@ -187,7 +187,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 				//Get the function id from the form
 				Long srcConfigId = PortletRequestUtils.getRequiredLongParameter(request, "binderConfigId");
-				Long newId = getTemplateModule().addTemplate(configId, srcConfigId);
+				Long newId = getTemplateModule().addTemplate(configId, srcConfigId).getId();
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, newId.toString());
 				
 			} else if (WebKeys.OPERATION_SAVE_FOLDER_COLUMNS.equals(operation)) {
@@ -262,7 +262,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		try {
 			SAXReader xIn = new SAXReader();
 			Document doc = xIn.read(fIn);  
-			return getTemplateModule().addTemplate(doc, replace);
+			return getTemplateModule().addTemplate(doc, replace).getId();
 		} catch (Exception fe) {
 			errors.add((fileName==null ? "" : fileName) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
 		}

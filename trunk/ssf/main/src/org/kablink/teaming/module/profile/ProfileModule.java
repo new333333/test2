@@ -86,7 +86,7 @@ public interface ProfileModule {
 	  * @throws AccessControlException
 	  * @throws WriteFilesException
 	  */
-	 public Long addGroup(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
+	 public Group addGroup(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
 		throws AccessControlException, WriteFilesException;
 	 /**
 	  * Add a new user
@@ -98,7 +98,7 @@ public interface ProfileModule {
 	  * @throws AccessControlException
 	  * @throws WriteFilesException
 	  */
-	 public Long addUser(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
+	 public User addUser(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
 		throws AccessControlException, WriteFilesException;
 	 
 	 /**
@@ -437,7 +437,7 @@ public interface ProfileModule {
 	  * @throws AccessControlException
 	  * @throws WriteFilesException
 	  */
-	 public Long addApplicationGroup(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
+	 public ApplicationGroup addApplicationGroup(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
 		throws AccessControlException, WriteFilesException;
 	 
 	 /**
@@ -450,7 +450,7 @@ public interface ProfileModule {
 	  * @throws AccessControlException
 	  * @throws WriteFilesException
 	  */
-	 public Long addApplication(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
+	 public Application addApplication(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
 		throws AccessControlException, WriteFilesException;
 
 	/**

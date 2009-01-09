@@ -313,7 +313,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	}
  
     //no transaction by default
-    public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
+    public FolderEntry addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems, Map options) throws AccessControlException, WriteFilesException {
     	aeCount.incrementAndGet();
 
@@ -333,11 +333,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         	def = folder.getDefaultEntryDef();
         }
         
-        Entry entry = processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options);
-        return entry.getId();
+        FolderEntry entry = (FolderEntry) processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options);
+        return entry;
     }
     //no transaction    
-	public Long addReply(Long folderId, Long parentId, String definitionId, 
+	public FolderEntry addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems, Map options) throws AccessControlException, WriteFilesException {
     	arCount.incrementAndGet();
         //load parent entry
@@ -360,7 +360,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 
         Definition def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
         FolderEntry reply = processor.addReply(entry, def, inputData, fileItems, options);
-        return reply.getId();
+        return reply;
     }
     //no transaction    
 	public void addVote(Long folderId, Long entryId, InputDataAccessor inputData, Map options) throws AccessControlException {
@@ -660,7 +660,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         processor.moveEntry(folder, entry, destination, options);
     }
     //inside write transaction    
-    public Long copyEntry(Long folderId, Long entryId, Long destinationId, Map options) {
+    public FolderEntry copyEntry(Long folderId, Long entryId, Long destinationId, Map options) {
         FolderEntry entry = loadEntry(folderId, entryId);   	
         checkAccess(entry, FolderOperation.copyEntry);
         Folder folder = entry.getParentFolder();
@@ -668,7 +668,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
                
         Folder destination =  loadFolder(destinationId);
         checkAccess(destination, FolderOperation.addEntry);
-        return processor.copyEntry(folder, entry, destination, options).getId();
+        return (FolderEntry) processor.copyEntry(folder, entry, destination, options);
     }
     //inside write transaction    
     public void setSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles) {

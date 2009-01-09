@@ -714,7 +714,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   				if (!templates.isEmpty()) {
   					//	pick the first
   					TemplateBinder template = (TemplateBinder)templates.get(0);
-  					Long wsId = getTemplateModule().addBinder(template.getId(), entry.getParentBinder().getId(), wsTitle, entry.getName());
+  					Long wsId = getTemplateModule().addBinder(template.getId(), entry.getParentBinder().getId(), wsTitle, entry.getName()).getId();
   					ws = (Workspace)getCoreDao().loadBinder(wsId, entry.getZoneId());
   				}
   			}
@@ -772,7 +772,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 				    if (null == miniBlogId) {
 				    	// No!  Create one.
 						miniBlogId = getTemplateModule().addBinder(miniblogTemplate.getId(), 
-								entry.getWorkspaceId(), null, null);
+								entry.getWorkspaceId(), null, null).getId();
 				    }
   					entry.setMiniBlogId(miniBlogId);
 					if (miniBlogId != null) 
@@ -1065,30 +1065,30 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	
 	//NO transaction
-	public Long addUser(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
+	public User addUser(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
 	throws AccessControlException, WriteFilesException {
-		return addIndividualPrincipal(definitionId, inputData, fileItems, options, User.class);
+		return (User) addIndividualPrincipal(definitionId, inputData, fileItems, options, User.class);
 	}
 	//NO transaction
-	public Long addApplication(String definitionId, 
+	public Application addApplication(String definitionId, 
 			InputDataAccessor inputData, Map fileItems, Map options) 
 	throws AccessControlException, WriteFilesException {
-    	return addIndividualPrincipal(definitionId, inputData, fileItems, options, Application.class);
+    	return (Application) addIndividualPrincipal(definitionId, inputData, fileItems, options, Application.class);
 	}
     //NO transaction
-    public Long addGroup(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
+    public Group addGroup(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException {
-    	return addGroupPrincipal(definitionId, inputData, fileItems, options, Group.class);
+    	return (Group) addGroupPrincipal(definitionId, inputData, fileItems, options, Group.class);
     }
 	
     //NO transaction
-	public Long addApplicationGroup(String definitionId, 
+	public ApplicationGroup addApplicationGroup(String definitionId, 
 			InputDataAccessor inputData, Map fileItems, Map options) 
 	throws AccessControlException, WriteFilesException {
-    	return addGroupPrincipal(definitionId, inputData, fileItems, options, ApplicationGroup.class);
+    	return (ApplicationGroup) addGroupPrincipal(definitionId, inputData, fileItems, options, ApplicationGroup.class);
 	}
 	
-	protected Long addIndividualPrincipal(String definitionId, 
+	protected Entry addIndividualPrincipal(String definitionId, 
 			InputDataAccessor inputData, Map fileItems, Map options, Class clazz) 
 	throws AccessControlException, WriteFilesException {
         ProfileBinder binder = loadProfileBinder();
@@ -1104,7 +1104,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
            		definition = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_APPLICATION_VIEW);
         }
         try {
-        	return loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options).getId();
+        	return loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options);
         } catch (DataIntegrityViolationException de) {
         	if(clazz.equals(User.class))
         		throw new ObjectExistsException("errorcode.user.exists", (Object[])null, de);
@@ -1113,7 +1113,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         }
 	}
 
-	protected Long addGroupPrincipal(String definitionId, 
+	protected Entry addGroupPrincipal(String definitionId, 
 			InputDataAccessor inputData, Map fileItems, Map options, Class clazz) 
 	throws AccessControlException, WriteFilesException {
         ProfileBinder binder = loadProfileBinder();
@@ -1129,7 +1129,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         		definition = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_APPLICATION_GROUP_VIEW);        		
         }
         try {
-        	return loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options).getId();
+        	return loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options);
         } catch (DataIntegrityViolationException de) {
         	if(clazz.equals(Group.class))
         		throw new ObjectExistsException("errorcode.group.exists", (Object[])null, de);

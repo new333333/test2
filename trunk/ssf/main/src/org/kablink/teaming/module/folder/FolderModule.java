@@ -96,7 +96,7 @@ public interface FolderModule {
     * @throws AccessControlException
     * @throws WriteFilesException
     */
-     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
+     public FolderEntry addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException;
      /**
@@ -121,7 +121,7 @@ public interface FolderModule {
      * @throws AccessControlException
      * @throws WriteFilesException
      */
-    public Long addReply(Long folderId, Long parentId, String definitionId, 
+    public FolderEntry addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException;
     /**
@@ -173,7 +173,7 @@ public interface FolderModule {
      * @param options additional processing options or null
      * @throws AccessControlException
      */
-    public Long copyEntry(Long folderId, Long entryId, Long destinationId, Map options)
+    public FolderEntry copyEntry(Long folderId, Long entryId, Long destinationId, Map options)
     	throws AccessControlException;
    /**
      * Delete a <code>FolderEntry</code> and all of its replies.  Deleted mirrored resources also.

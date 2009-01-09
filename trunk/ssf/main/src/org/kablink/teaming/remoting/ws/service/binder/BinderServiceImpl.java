@@ -95,7 +95,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		try {
 			Document doc = getDocument(inputDataAsXML);
 			return getBinderModule().addBinder(new Long(parentId), definitionId, 
-					new DomInputData(doc, getIcalModule()), new HashMap(), null).longValue();
+					new DomInputData(doc, getIcalModule()), new HashMap(), null).getId().longValue();
 		} catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}
@@ -220,14 +220,14 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 	public long binder_addBinder(String accessToken, org.kablink.teaming.remoting.ws.model.Binder binder) {
 		try {
 			return getBinderModule().addBinder(binder.getParentBinderId(), binder.getDefinitionId(), 
-					new ModelInputData(binder), new HashMap(), null).longValue();
+					new ModelInputData(binder), new HashMap(), null).getId().longValue();
 		} catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}
 	}
 	
 	public long binder_copyBinder(String accessToken, long sourceId, long destinationId, boolean cascade) {
-		return getBinderModule().copyBinder(sourceId, destinationId, cascade, null);
+		return getBinderModule().copyBinder(sourceId, destinationId, cascade, null).getId().longValue();
 	}
 	public void binder_deleteBinder(String accessToken, long binderId, boolean deleteMirroredSource) {
 		getBinderModule().deleteBinder(binderId, deleteMirroredSource, null);

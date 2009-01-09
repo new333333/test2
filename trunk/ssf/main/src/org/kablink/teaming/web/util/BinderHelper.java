@@ -2662,7 +2662,7 @@ public class BinderHelper {
 					
 					miniBlogId = miniBlog.getId();
 					try {
-						entryId = folderModule.addEntry(miniBlogId, def.getId(), new MapInputData(data), null, null);
+						entryId = folderModule.addEntry(miniBlogId, def.getId(), new MapInputData(data), null, null).getId();
 					} catch (Exception ex) {}
 					if (null != entryId) {
 						// Mark the entry as read
