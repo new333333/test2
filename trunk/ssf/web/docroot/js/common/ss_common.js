@@ -4039,18 +4039,20 @@ function ss_showForumEntryInIframe_Popup(url) {
     //ss_debug('popup height = ' + ss_viewEntryPopupHeight)
     var wObj = self.document.getElementById('ss_showfolder')
 
-	if (!wObj) {
+	if (wObj == null) {
 		if (self.parent) {
 			wObj = self.parent.document.getElementById('ss_showfolder')
 		}
 	}
 	
-	if (!wObj) {
+	if (wObj == null) {
 		ss_viewEntryPopupWidth = 700;
 		ss_viewEntryPopupHeight = 350;
 	} else {
-		if (ss_viewEntryPopupWidth == "0px") ss_viewEntryPopupWidth = ss_getObjectWidth(wObj);
-		if (ss_viewEntryPopupHeight == "0px") ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
+		if (typeof ss_viewEntryPopupWidth == 'undefined' || ss_viewEntryPopupWidth == "0px") 
+				ss_viewEntryPopupWidth = ss_getObjectWidth(wObj);
+		if (typeof ss_viewEntryPopupHeight == 'undefined' || ss_viewEntryPopupHeight == "0px") 
+				ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
 	}
 	
     self.window.open(url, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars');
