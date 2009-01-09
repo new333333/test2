@@ -89,6 +89,7 @@
 		<property name="workflowModule"><ref bean="workflowModule"/></property>
 		<property name="workspaceModule"><ref bean="workspaceModule"/></property>
 		<property name="fileModule"><ref bean="fileModule"/></property>	
+		<property name="convertedFileModule"><ref bean="convertedFileModule"/></property>	
 		<property name="dashboardModule"><ref bean="dashboardModule"/></property>	
 		<property name="reportModule"><ref bean="reportModule"/></property>
 		<property name="icBrokerModule"><ref bean="icBrokerModule"/></property>			
@@ -148,6 +149,9 @@
 	<bean id="performanceMonitorInterceptor" class="org.springframework.aop.interceptor.PerformanceMonitorInterceptor">
 	</bean>
 	
+	<bean id="moduleEventListenerManagerInterceptor" class="org.kablink.teaming.module.interceptor.EventListenerManagerInterceptor">
+	</bean>
+	
 	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="dataSource"><ref local="dataSource"/></property>
 		<property name="autoStartup"><value>true</value></property>
@@ -204,6 +208,24 @@
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
 				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException</prop>
 			</props>
+		</property>
+	</bean>
+
+	<bean id="moduleTransactionProxy" parent="baseTransactionWithoutInterceptorsProxy" abstract="true">
+		<property name="preInterceptors">
+			<list>
+				<ref bean="performanceMonitorInterceptor"/>
+				<ref bean="indexSynchronizationManagerInterceptor"/>
+				<ref bean="moduleEventListenerManagerInterceptor"/>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="moduleNonTransactionProxy" class="org.springframework.aop.framework.ProxyFactoryBean" depends-on="sPropsUtil" abstract="true">
+		<property name="interceptorNames">
+			<list>
+				<value>moduleEventListenerManagerInterceptor</value>
+			</list>
 		</property>
 	</bean>
 
@@ -385,16 +407,30 @@
 
     <!-- ============================== RSS Generator ============================ -->
 	
-    <bean id="rssModule" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.rss.impl.RssModuleImpl">
-    	<property name="rssRootDir"><value>${data.root.dir}/rss</value></property>
-    </bean>
+	<bean id="rssModule" parent="moduleNonTransactionProxy">
+		<property name="target">
+		    <bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.rss.impl.RssModuleImpl">
+		    	<property name="rssRootDir"><value>${data.root.dir}/rss</value></property>
+		    </bean>
+		</property>
+		<!--<property name="proxyInterfaces">
+			<value>org.kablink.teaming.module.rss.RssModule</value>
+		</property>-->
+	</bean>
 	
     <!-- ============================== ical Converter ============================ -->
 	
-    <bean id="icalModule" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.ical.impl.IcalModuleImpl">	
-    	<property name="binderModule"><ref local="binderModule"/></property>
-    	<property name="folderModule"><ref local="folderModule"/></property>
-    </bean>
+	<bean id="icalModule" parent="moduleNonTransactionProxy">
+		<property name="target">
+		    <bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.ical.impl.IcalModuleImpl">	
+		    	<property name="binderModule"><ref local="binderModule"/></property>
+		    	<property name="folderModule"><ref local="folderModule"/></property>
+		    </bean>
+		</property>
+		<!--<property name="proxyInterfaces">
+			<value>org.kablink.teaming.module.ical.IcalModule</value>
+		</property>-->
+	</bean>
 	
 	<!-- ================================ Security Service =============================== -->
 	
@@ -490,7 +526,7 @@
 		<property name="textConverterManager"><ref bean="textConverterManager"/></property>
 	</bean>
 	
-	<bean id="workspaceModule" parent="baseTransactionProxy">
+	<bean id="workspaceModule" parent="moduleTransactionProxy">
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.workspace.impl.WorkspaceModuleImpl">
 				<property name="definitionModule"><ref local="definitionModule"/></property>
@@ -498,7 +534,7 @@
 		</property>
 	</bean>
 
-	<bean id="adminModule" parent="baseTransactionProxy">
+	<bean id="adminModule" parent="moduleTransactionProxy">
 		<property name="target"><ref bean="adminModuleTarget"/></property>
 		<!-- setWorkAreaFunctionMemberships, setWorkAreaFunctionMembershipInherited, setWorkAreaOwner provide transaction semantics at a finer
 		granularity then the method. Handled by processor through transactionTemplate-->
@@ -518,7 +554,7 @@
 		</property>
 	</bean>
 
-	<bean id="templateModule" parent="baseTransactionProxy">
+	<bean id="templateModule" parent="moduleTransactionProxy">
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.template.impl.TemplateModuleImpl">
 				<property name="adminModule"><ref local="adminModule"/></property>
@@ -546,7 +582,7 @@
 		</property>
 	</bean>
 
-	<bean id="folderModule" parent="baseTransactionProxy" depends-on="zoneConfig" >
+	<bean id="folderModule" parent="moduleTransactionProxy" depends-on="zoneConfig" >
 		<property name="target"><ref bean="folderModuleTarget"/></property>
 		<!-- addEntry, addReply,addVote, modifyEntry, deleteEntry provide transaction semantics at a finer
 		granularity then the method. Handled by processor through transactionTemplate-->
@@ -567,7 +603,7 @@
 		</property>
 	</bean>
 
-	<bean id="profileModule" parent="baseTransactionProxy">
+	<bean id="profileModule" parent="moduleTransactionProxy">
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.profile.impl.ProfileModuleImpl">
 				<property name="definitionModule"><ref bean="definitionModule"/></property>
@@ -598,7 +634,7 @@
 
 	<bean id="defaultTemplateCoreProcessor" parent="processorDependencyTemplate" class="org.kablink.teaming.module.template.impl.DefaultTemplateCoreProcessor"/>
 	
-	<bean id="binderModule" parent="baseTransactionProxy">
+	<bean id="binderModule" parent="moduleTransactionProxy">
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.binder.impl.BinderModuleImpl">
 				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
@@ -642,7 +678,7 @@
 		<property name="validating"><value>true</value></property>
 	</bean>
 
-	<bean id="definitionModule" parent="baseTransactionProxy" depends-on="sPropsUtil" >
+	<bean id="definitionModule" parent="moduleTransactionProxy" depends-on="sPropsUtil" >
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.definition.impl.DefinitionModuleImpl">
 				<property name="workflowModule"><ref bean="workflowModule"/></property>
@@ -655,7 +691,7 @@
 		<property name="hibernateSessionFactory"><ref bean="sessionFactory"/></property>
 	</bean> 
 	
-	<bean id="workflowModule" parent="baseTransactionProxy" depends-on="zoneConfig, workflowFactory" >
+	<bean id="workflowModule" parent="moduleTransactionProxy" depends-on="zoneConfig, workflowFactory" >
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.workflow.impl.WorkflowModuleImpl">
 				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
@@ -667,7 +703,7 @@
 		<property name="zoneClassManager"><ref bean="zoneClassManager"/></property>
 	</bean>
 
-	<bean id="dashboardModule" parent="baseTransactionProxy">
+	<bean id="dashboardModule" parent="moduleTransactionProxy">
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.dashboard.impl.DashboardModuleImpl">
 				<property name="binderModule"><ref local="binderModule"/></property>
@@ -705,13 +741,31 @@
 		<property name="icalModule"><ref local="icalModule"/></property>
 	</bean>
 
-	<bean id="fileModule" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.file.impl.FileModuleImpl" depends-on="sPropsUtil">
-		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
-		<property name="htmlConverterManager"><ref bean="htmlConverterManager"/></property>
-		<property name="imageConverterManager"><ref bean="imageConverterManager"/></property>
+	<bean id="fileModule" parent="moduleNonTransactionProxy">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.file.impl.FileModuleImpl" depends-on="sPropsUtil">
+				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
+			</bean>
+		</property>
+		<!--<property name="proxyInterfaces">
+			<value>org.kablink.teaming.module.file.FileModule</value>
+		</property>-->
 	</bean>
 	
-	<bean id="reportModule"  parent="baseTransactionProxy">
+	<bean id="convertedFileModule" parent="moduleNonTransactionProxy">
+		<property name="target">
+			<bean class="org.kablink.teaming.module.file.impl.ConvertedFileModuleImpl" depends-on="sPropsUtil">
+				<property name="fileModule"><ref local="fileModule"/></property>
+				<property name="htmlConverterManager"><ref bean="htmlConverterManager"/></property>
+				<property name="imageConverterManager"><ref bean="imageConverterManager"/></property>
+			</bean>
+		</property>
+		<!--<property name="proxyInterfaces">
+			<value>org.kablink.teaming.module.file.ConvertedFileModule</value>
+		</property>-->
+	</bean>
+	
+	<bean id="reportModule"  parent="moduleTransactionProxy">
 		<!--  dependences prevent inheriting from dependOnCommonServicesTemplate -->
 		<property name="target">
 			<bean class="org.kablink.teaming.module.report.impl.ReportModuleImpl" depends-on="sPropsUtil">
@@ -725,7 +779,7 @@
 		</property>
 	</bean>			
 
-	<bean id="licenseModule"  parent="baseTransactionProxy">
+	<bean id="licenseModule"  parent="moduleTransactionProxy">
 		<property name="target"><ref bean="licenseModuleTarget"/></property>
 	</bean>			
 	<bean id="licenseChecker" class="org.kablink.teaming.module.license.LicenseChecker">
@@ -867,13 +921,20 @@ text/calendar											  ics
 	</bean>
 	
 	<!-- ================================ Instant Collaboration Support==================== -->
-	<bean id="icBrokerModule" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.ic.impl.ICBrokerModuleImpl">	
-		<property name="adminId"><value>${presence.broker.admin.id}</value></property>
-		<property name="adminPasswd"><value>${presence.broker.admin.passwd}</value></property>
-		<property name="zonUrl"><value>${presence.broker.zon.url}</value></property>
-		<property name="jabberDomain"><value>${presence.broker.jabber.domain}</value></property>
-		<property name="defaultCommunityId"><value>${presence.broker.default.community.id}</value></property>
-		<property name="enabled"><value>${presence.service.enable}</value></property>
+	<bean id="icBrokerModule" parent="moduleNonTransactionProxy">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.ic.impl.ICBrokerModuleImpl">	
+				<property name="adminId"><value>${presence.broker.admin.id}</value></property>
+				<property name="adminPasswd"><value>${presence.broker.admin.passwd}</value></property>
+				<property name="zonUrl"><value>${presence.broker.zon.url}</value></property>
+				<property name="jabberDomain"><value>${presence.broker.jabber.domain}</value></property>
+				<property name="defaultCommunityId"><value>${presence.broker.default.community.id}</value></property>
+				<property name="enabled"><value>${presence.service.enable}</value></property>
+			</bean>
+		</property>
+		<!--<property name="proxyInterfaces">
+			<value>org.kablink.teaming.module.ic.ICBrokerModule</value>
+		</property>-->
 	</bean>
 	
 	<!-- ================================  Mail Support =============================== -->
@@ -884,15 +945,21 @@ text/calendar											  ics
 		<property name="defaultFileTypeMap"><ref local="mimeTypes"/></property>
 	</bean>
 
-
-	<bean id="mailModule" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.mail.impl.MailModuleImpl" 
-			depends-on="zoneConfig, springContextUtil">
-		<property name="mailSender"><ref local="mailSender"/></property>
-		<property name="jndiAccessor"><ref local="mailJndiAccessor"/></property>
-		<property name="mailRootDir"><value>${data.root.dir}/mail</value></property>
-		<property name="icalModule"><ref local="icalModule"/></property>
-		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
-	</bean>	
+	<bean id="mailModule" parent="moduleNonTransactionProxy">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.mail.impl.MailModuleImpl" 
+					depends-on="zoneConfig, springContextUtil">
+				<property name="mailSender"><ref local="mailSender"/></property>
+				<property name="jndiAccessor"><ref local="mailJndiAccessor"/></property>
+				<property name="mailRootDir"><value>${data.root.dir}/mail</value></property>
+				<property name="icalModule"><ref local="icalModule"/></property>
+				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
+			</bean>	
+		</property>
+		<!--<property name="proxyInterfaces">
+			<value>org.kablink.teaming.module.mail.MailModule</value>
+		</property>-->
+	</bean>
 
 	<bean id="smtpService" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.smtp.impl.SMTPManagerImpl"
 			depends-on="zoneConfig, springContextUtil">
@@ -1132,7 +1199,7 @@ text/calendar											  ics
 	</bean>
 	
 	<!-- ============================== LDAP Support ============================ -->
-	<bean id="ldapModule"  parent="baseTransactionProxy">
+	<bean id="ldapModule"  parent="moduleTransactionProxy">
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.ldap.impl.LdapModuleImpl">
 				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>

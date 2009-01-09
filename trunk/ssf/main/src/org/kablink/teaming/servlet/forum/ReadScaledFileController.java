@@ -80,7 +80,7 @@ public class ReadScaledFileController extends AbstractReadFileController {
 				response.setHeader("Last-Modified", formatDate(fa.getModification().getDate()));
 				try {
 					response.setContentType("image/jpeg");
-					getFileModule().readScaledFile(getBinder(entity), entity, fa, response.getOutputStream());
+					getConvertedFileModule().readScaledFile(getBinder(entity), entity, fa, response.getOutputStream());
 				}
 				catch(Exception e) {
 					response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());

@@ -33,7 +33,6 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
@@ -148,50 +147,6 @@ public interface FileModule {
 			FileAttachment fa) throws UncheckedIOException, 
 			RepositoryServiceException;
 	    
-    /**
-     * Reads the specified scaled file into the output stream.
-     * 
-     * @param fa
-     * @param binder
-     * @param entity
-     * @param out
-	 * @throws UncheckedIOException
-	 * @throws RepositoryServiceException
-     */
-	public void readScaledFile(Binder binder, DefinableEntity entity, 
-			FileAttachment fa, OutputStream out) throws  
-			UncheckedIOException, RepositoryServiceException;
-	    
-    /**
-     * Reads the specified scaled file into the output stream.
-     * If the thumbnail was originally stored as "directly accessible" file
-     * in a directory visible to the web client without requiring any access
-     * control or assistance from the server-side service, the caller must not 
-     * use this method (In other words, it is the caller's responsibility to 
-     * keep track of whether a thumbnail file is directly accessible or not. 
-     * The file module does not maintain that information.).
-     * 
-     * @param fa
-     * @param binder
-     * @param entity
-     * @param out
-     */
-	public void readThumbnailFile(
-			Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out) 
-		throws UncheckedIOException, RepositoryServiceException;
-	
-	public void readCacheHtmlFile(
-			String url, Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out) 
-		throws UncheckedIOException, RepositoryServiceException;
-	
-	public void readCacheImageReferenceFile(
-			Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out, String imageFileName) 
-		throws UncheckedIOException, RepositoryServiceException;
-	
-	public void readCacheUrlReferenceFile(
-			Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out, String urlFileName) 
-		throws UncheckedIOException, RepositoryServiceException;
-
 	/**
 	 * Write multiple files for the specified entity. If the entity is
 	 * currently reserved by another user, it throws 
