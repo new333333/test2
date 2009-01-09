@@ -40,8 +40,6 @@ import javax.portlet.PortletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.kablink.teaming.portletadapter.support.PortletInfo;
-import org.kablink.teaming.web.WebKeys;
-
 
 public class ActionRequestImpl extends PortletRequestImpl implements ActionRequest {
 
@@ -82,8 +80,8 @@ public class ActionRequestImpl extends PortletRequestImpl implements ActionReque
 	}
 	
 	public void defineObjects(PortletConfig portletConfig, ActionResponse res) {
-		setAttribute(WebKeys.JAVAX_PORTLET_CONFIG, portletConfig);
-		setAttribute(WebKeys.JAVAX_PORTLET_REQUEST, this);
-		setAttribute(WebKeys.JAVAX_PORTLET_RESPONSE, res);
+		setAttribute(JAVAX_PORTLET_CONFIG, portletConfig);
+		setAttribute(JAVAX_PORTLET_REQUEST, this);
+		setAttribute(JAVAX_PORTLET_RESPONSE, res);
 	}
 }
