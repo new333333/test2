@@ -588,8 +588,6 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	//Routine called when item is clicked
 	this.selectItem = function(obj, entityType) {
 		if (!obj || !obj.id ||obj.id == undefined) return false;
-		that._inputObj.value = "";
-		that._inputObj.focus();
 		var id = ss_replaceSubStr(obj.id, 'ss_find_id_', "");
 		if (that._singleClickRoutine != "") {
 			that._callRoutineSingle(id, obj, entityType);
@@ -735,6 +733,8 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	
 	this.addValueByElement = function(id, obj) {
 		if (that._itemAlreadyAddedMultiple(id)) {
+			that._inputObj.value = "";
+			that._inputObj.focus();
 			return;
 		}
 		var spanObj = obj.getElementsByTagName("span").item(0);
@@ -758,6 +758,8 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		that.addValue(id);
 		that._callRoutineMultiple(id, spanObj.innerHTML, onAddCallbacks);
 		that._highlight(newLiObj);
+		that._inputObj.value = "";
+		that._inputObj.focus();
 	}
 	
 	this.addGroupValueByElement = function(id, obj) {
@@ -790,6 +792,8 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		that.addValue(id);
 		that._callRoutineMultiple(id, spanObj.innerHTML, onAddCallbacks);
 		that._highlight(newLiObj);
+		that._inputObj.value = "";
+		that._inputObj.focus();
 	}
 	
 	this._callRoutineMultiple = function(id, txt, callbacks) {
