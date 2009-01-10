@@ -28,48 +28,92 @@
  */
 package org.kablink.teaming.samples.moduleeventlisteners;
 
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
+import org.kablink.teaming.module.shared.InputDataAccessor;
 
 public class FolderModuleListener {
 
-	public void preGetEntry(Long parentFolderId, Long entryId) {
-		System.out.println("I'm here");
-	}
-	public void postGetEntry(Long parentFolderId, Long entryId, FolderEntry entry) {
-		System.out.println("I'm here");
+	protected Log logger = LogFactory.getLog(getClass());
 	
+	
+	/****************** Listener for AddEntry method ********************/
+	
+	public void preAddEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
+    		Map fileItems, Map options) {
+		logger.info("preAddEntry: About to add an entry to the folder " + folderId + " with definition " + definitionId);
 	}
-	public void afterCompletionGetEntry(Long parentFolderId, Long entryId, Throwable ex) {
-		System.out.println("I'm here");
+	
+	public void postAddEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
+    		Map fileItems, Map options, FolderEntry entry) {
+		// This method illustrates accepting the result of the module event 
+		// as an object (FolderEntry). 
 		
+		logger.info("postAddEntry: A new entry is created with ID " + entry.getId());
+		
+		// Figure out who added this entry.
+		String userName = RequestContextHolder.getRequestContext().getUserName();
+		
+		// Given the user name and the newly added entry, we can do something useful
+		// here. For example, making a web services call to a remote system to 
+		// synchronize the data, or posting this data to another web site, etc. 
+	}
+	public void afterCompletionAddEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
+    		Map fileItems, Map options, Throwable ex) {
+		logger.info("afterCompletionAddEntry: " + ((ex==null)? "Successful" : ex.toString()));
 	}
 	
-	public void preReserveEntry(Long folderId, Long entryId) {
-		System.out.println("I'm here");
-
+	
+	/****************** Listener for ReserveEntry method ********************/
+	
+	public boolean preReserveEntry(Long folderId, Long entryId) {
+		// Get the name of the user who is requesting to reserve this entry.
+		String userName = RequestContextHolder.getRequestContext().getUserName();
+		
+		// If the requestor is not me (ie, admin) and the ID of the entry that 
+		// the user is trying to reserve is 12, then keep the request from
+		// proceeding by returning false from here. The entry 12 means so much
+		// to me that I do not want anyone but me to be able to reserve it!
+		if(!userName.equals("admin") && entryId.longValue() == 12) {
+			logger.info("preReserveEntry: No, you can't do this");
+			return false;
+		}
+		else {
+			logger.info("preReserveEntry: OK, that's fine");
+			return true;
+		}
 	}
 	public void postReserveEntry(Long folderId, Long entryId) {
-		System.out.println("I'm here");
-
+		// This method does not append an extra argument because the corresponding 
+		// module method (reserveEntry) does not return anything (ie, void type). 
+		
+		logger.info("postReserveEntry");
 	}
 	public void afterCompletionReserveEntry(Long folderId, Long entryId, Throwable ex) {
-		System.out.println("I'm here");
-
+		logger.info("afterCompletionReserveEntry");
 	}
 
+	
+	/****************** Listener for TestAccess method ********************/
+	
 	public void preTestAccess(Folder folder, FolderOperation operation) {
-		System.out.println("I'm here");
+		logger.info("preTestAccess");
 
 	}
 	public void postTestAccess(Folder folder, FolderOperation operation, boolean testResult) {
-		System.out.println("I'm here");
-
+		// This method illustrates accepting the result of the module event 
+		// as a primitive type (boolean).
+	
+		logger.info("postTestAccess");
 	}
 	public void afterCompletionTestAccess(Folder folder, FolderOperation operation, Throwable ex) {
-		System.out.println("I'm here");
-
+		logger.info("afterCompletionTestAccess");
 	}
 
 }
