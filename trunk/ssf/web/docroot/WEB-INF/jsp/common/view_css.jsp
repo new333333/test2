@@ -150,11 +150,11 @@ var ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
 <link href="<html:rootPath/>css/slider_swing.css" rel="stylesheet" type="text/css" />
 <link href="<ssf:url webPath="viewCss"> <ssf:param name="theme" value="${ssUser.theme}"/>
 	    </ssf:url>" rel="stylesheet" type="text/css" />
-<c:if test="${!empty ss_toolbar_subscribe_rss}">
+<c:if test="${!empty ss_toolbar_url_subscribe_rss}">
 <link rel="alternate" type="application/rss+xml" id="ss_rssLink"
   <c:if test="${empty ss_windowTitle}"> title="RSS: ${ssBinder.title}" </c:if>
   <c:if test="${!empty ss_windowTitle}"> title="RSS: ${ss_windowTitle}" </c:if>
-  href="${ss_toolbar_subscribe_rss}" />
+  href="${ss_toolbar_url_subscribe_rss}" />
 </c:if>
 <script type="text/javascript">
 

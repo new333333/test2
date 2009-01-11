@@ -28,29 +28,64 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //View a workspace %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<div>
+  <div style="padding-bottom:10px;">
+    <span><ssf:nlt tag="permalink.hint"/></span>
+    <c:if test="${ssBinder.entityType == 'folder'}">
+      <div style="padding-top:10px;">
+        <span><ssf:nlt tag="permalink.hint.folder"/></span>
+      </div>
+    </c:if>
+  </div>
+<table cellspacing="2" cellpadding="6">
+  <tr>
+    <td valign="top" nowrap>
+      <span><ssf:nlt tag="permalink"/></span>
+    </td>
+    <td valign="top" nowrap>
+      <span>${ssPermalink}</span><br/>
+      <c:if test="${!empty ssSimpleUrlNames}">
+        <c:forEach var="name" items="${ssSimpleUrlNames}">
+          <span>${ssSimpleUrlPrefix}${name.name}</span><br/>
+        </c:forEach>
+      </c:if>
+    </td>
+  </tr>
 
-<c:set var="ss_discussionWorkspaceView" value="true" scope="request"/>
-<c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
-<div align="center">
-	<div id="ss_diss_inset" class="discussionView">
-	  <div id="ss_diss_top" align="center">
-	
-	   <div id="ss_topic_box">
-	    <div id="ss_topic_box_h1">${ssDefinitionEntry.title}</div>
-		<span><ssf:markup entity="${ssDefinitionEntry}">${ssDefinitionEntry.description.text}</ssf:markup></span>
-	   </div><!-- end of box -->
-	
-	  </div><!-- end of top -->
-	
-	
-	
-		<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-		  configElement="${item}" 
-		  configJspStyle="${ssConfigJspStyle}"
-		  entry="${ssDefinitionEntry}" />
-	  
-	
-	</div><!-- end of div inset -->
+  <c:if test="${!empty ssSimpleUrlNames}">
+    <tr>
+    <td valign="top" nowrap>
+        <span><ssf:nlt tag="permalink.emailAddresses"/></span>
+      </td>
+      <td valign="top" nowrap>
+	    <c:forEach var="name" items="${ssSimpleUrlNames}">
+		  <span>${name.emailAddress}@${ssSimpleEmailHostname}</span>
+		  <br/>
+	    </c:forEach>
+      </td>
+    </tr>
+  </c:if>
+
+  <c:if test="${!empty ss_toolbar_url_subscribe_rss}">
+    <tr>
+      <td valign="top" nowrap>
+       <span><ssf:nlt tag="permalink.rssUrl"/></span>
+      </td>
+      <td valign="top" nowrap>
+        <span>${ss_toolbar_url_subscribe_rss}</span>
+      </td>
+    </tr>
+  </c:if>
+
+  <c:if test="${!empty ss_toolbar_url_webdav}">
+    <tr>
+      <td valign="top" nowrap>
+        <span><ssf:nlt tag="permalink.webdavUrl"/></span>
+      </td>
+      <td valign="top" nowrap>
+        <span>${ss_toolbar_url_webdav}</span>
+      </td>
+    </tr>
+  </c:if>
+</table>
 </div>

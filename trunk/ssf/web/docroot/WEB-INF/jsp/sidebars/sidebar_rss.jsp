@@ -30,7 +30,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!ss_searchResultsPage}">
-	<c:if test="${!empty ss_toolbar_subscribe_rss}">
+	<c:if test="${!empty ss_toolbar_url_subscribe_rss}">
 	  <script type="text/javascript">
 		//Add the rss feed info
 		if (self.document.getElementById("ss_rssLink") == null) {
@@ -39,14 +39,14 @@
 			ss_linkEle.setAttribute("rel", "alternate");
 			ss_linkEle.setAttribute("type", "application/rss+xml");
 			ss_linkEle.setAttribute("title", "RSS<c:if test="${!empty ssBinder.title}"> - ${ssBinder.title}</c:if>");
-			ss_linkEle.setAttribute("href", "${ss_toolbar_subscribe_rss}");
+			ss_linkEle.setAttribute("href", "${ss_toolbar_url_subscribe_rss}");
 			document.getElementsByTagName("head")[0].appendChild(ss_linkEle);
 		}
 	  </script>
 		<div class="ss_leftNav ss_sidePlus">
 		  <ul>
 			<li>
-				<a href="${ss_toolbar_subscribe_rss}" 
+				<a href="${ss_toolbar_url_subscribe_rss}" 
 				  onclick="ss_showPermalink(this);return false;"><ssf:nlt tag="sidebar.rss"/></a>
 			</li>
 		  </ul>

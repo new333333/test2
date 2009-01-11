@@ -1594,14 +1594,6 @@ public class ListFolderHelper {
 				model.put(WebKeys.TOOLBAR_SUBSCRIBE_EMAIL, adapterUrl.toString());
 			}
 		}
-		//RSS link 
-		qualifiers = new HashMap();
-		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
-		String rssUrl = UrlUtil.getFeedURL(request, topFolderId);
-		if (rssUrl != null && !rssUrl.equals("")) {
-			//folderToolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.rss"), rssUrl, qualifiers);
-			model.put(WebKeys.TOOLBAR_SUBSCRIBE_RSS, rssUrl.toString());
-		}
 		
 		// list team members
 		qualifiers = new HashMap();			
@@ -1796,16 +1788,7 @@ public class ListFolderHelper {
 			qualifiers = new HashMap();
 			qualifiers.put("webdavUrl", webdavUrl);
 			qualifiers.put("folder", webdavUrl);
-			folderViewsToolbar.addToolbarMenuItem("3_display_styles", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
-		}
-		
-		//WebDav Permalink
-		if (!webdavUrl.equals("")) {
-			qualifiers = new HashMap();
-			qualifiers.put("webdavUrl", webdavUrl);
-			qualifiers.put("onClick", "ss_showPermalink(this);return false;");
-			footerToolbar.addToolbarMenu("webdavpermalink", NLT.get("toolbar.menu.webdavPermalink"), 
-					webdavUrl, qualifiers);
+			footerToolbar.addToolbarMenuItem("viewaswebdav", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
 		}
 		
 		//Folder action menu
@@ -1865,8 +1848,6 @@ public class ListFolderHelper {
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.folderPermalink"), 
 				permaLink, qualifiers);
 		
-		model.put(WebKeys.PERMALINK, permaLink);
-
 		String[] contributorIds = collectContributorIds((List)model.get(WebKeys.FOLDER_ENTRIES));
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 
@@ -1942,6 +1923,20 @@ public class ListFolderHelper {
 			qualifiers.put("folder", webdavUrl);
 			footerToolbar.addToolbarMenu("webdavUrl", NLT.get("toolbar.menu.webdavUrl"), webdavUrl, qualifiers);
 		}
+		
+		//Permalink urls, rss url, webdav url, email addresses
+		model.put(WebKeys.PERMALINK, permaLink);
+		//WebDav Permalink
+		if (!webdavUrl.equals("")) {
+			model.put(WebKeys.TOOLBAR_URL_WEBDAV, webdavUrl);
+		}
+		//RSS link 
+		String rssUrl = UrlUtil.getFeedURL(request, topFolderId);
+		if (rssUrl != null && !rssUrl.equals("")) {
+			model.put(WebKeys.TOOLBAR_URL_SUBSCRIBE_RSS, rssUrl);
+		}
+		//Build the simple URL beans
+		BinderHelper.buildSimpleUrlBeans(bs,  request, folder, model);
 		
 		//Set up the whatsNewToolbar links
 		//What's new
