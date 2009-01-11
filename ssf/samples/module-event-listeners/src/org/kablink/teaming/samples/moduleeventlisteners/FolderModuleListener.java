@@ -33,9 +33,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 
 public class FolderModuleListener {
@@ -43,15 +41,67 @@ public class FolderModuleListener {
 	protected Log logger = LogFactory.getLog(getClass());
 	
 	
-	/****************** Listener for AddEntry method ********************/
+	/******************* Listener for AddEntry method ********************/
 	
+	/**
+	 * Pre-event method for FolderModule.AddEntry.
+	 * <p>
+	 * Intercept the execution of a module method. Called before the system invokes
+	 * the module method.
+	 * <p>
+	 * Pre-event method takes exactly the same set of arguments and in the same 
+	 * order as the module method. The return type for pre-event method is typially 
+	 * <code>void</code>. But it can optionally define a return type of 
+	 * <code>boolean</code> and make a decision at runtime as to whether the chain
+	 * of execution should proceed or stop by returning <code>true</code> or
+	 * <code>false</code> respectively. The way in which the system handles aborted
+	 * execution depends on the nature and the return type of the corresponding
+	 * module method. For example, if the module method is designed to return
+	 * nothing, stopped processing of the chain may not be immediately noticeable.
+	 * However, if the module method is designed to return non-null object all the
+	 * time, then aborted execution of the pipeline may result in an exception 
+	 * (eg. NullPointerException) because the pipeline is not returning the value
+	 * that the application layer is expecting. It is up to the descretion of the
+	 * person who develops or plugs in the listener to decide what makes or does
+	 * not make sense on a per case basis.
+	 * 
+	 * @return nothing in this case
+	 * @throws Exception in case of errors
+	 */
 	public void preAddEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems, Map options) {
+    		Map fileItems, Map options) throws Exception {
 		logger.info("preAddEntry: About to add an entry to the folder " + folderId + " with definition " + definitionId);
 	}
 	
+	/**
+	 * Post-event method for FolderModule.AddEntry.
+	 * <p>
+	 * Intercept the execution of a module method. Called after the system successfully
+	 * invoked the module method.
+	 * <p>
+	 * With this post-event method, each listener can post-process an execution, 
+	 * getting applied in inverse order of the execution chain. The post-event 
+	 * method is invoked ONLY IF the earlier execution of the module method 
+	 * returned successfully.
+	 * <p>
+	 * Post-event method takes exactly the same set of arguments and in the same
+	 * order as the module method. However, if the return type of the module method
+	 * is anything but <code>void</code>, an extra argument with the same type as
+	 * the return type of the module method MUST be appended to the argument list
+	 * (eg. see the last argument of type <code>FolderEntry</code> in the argument
+	 * list below). At runtime, the system takes the return value from the successful
+	 * execution of the module method, and passes it to the post-event method so
+	 * that the listener can make use of the value if needed. This mechanism works
+	 * for return values of both object (eg. FolderEntry) and primitive types 
+	 * (eg. boolean). However, if the return type of the module method is 
+	 * <code>void</code>, this extra argument MUST NOT be specified in the signature
+	 * of the post-event method.
+	 * 
+	 * @param entry newly created entry returned from module method execution
+	 * @throws Exception in case of errors
+	 */
 	public void postAddEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems, Map options, FolderEntry entry) {
+    		Map fileItems, Map options, FolderEntry entry) throws Exception {
 		// This method illustrates accepting the result of the module event 
 		// as an object (FolderEntry). 
 		
@@ -64,15 +114,52 @@ public class FolderModuleListener {
 		// here. For example, making a web services call to a remote system to 
 		// synchronize the data, or posting this data to another web site, etc. 
 	}
+	
+	/**
+	 * After-completion method for FolderModule.AddEntry.
+	 * 
+	 * Callback after completion of request processing, that is, after executing
+	 * pre-event method, module method, and post-event method. Unlike post-event
+	 * method, after-completion method will be called on any outcome of module
+	 * method execution, thus allows for proper resource cleanup.
+	 * <p>
+	 * Will only be called if this listener's pre-event method (that is,
+	 * <code>preAddEntry</code> method) has successfully completed and has not 
+	 * returned <code>false</code>.
+	 * <p>
+	 * After-completion method takes exactly the same set of arguments and in the 
+	 * same order as the module method. In addition, an argument of <code>Throwable</code>
+	 * type is appended to the argument list. At runtime, if the module method
+	 * throws an exception, the system takes the exception object and passes it
+	 * to the after-completion method so that the listener can examine the error.
+	 * 
+	 * @param ex exception thrown on module method execution, if any
+	 * @throws Exception in case of errors
+	 */
 	public void afterCompletionAddEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems, Map options, Throwable ex) {
+    		Map fileItems, Map options, Throwable ex) throws Exception {
 		logger.info("afterCompletionAddEntry: " + ((ex==null)? "Successful" : ex.toString()));
 	}
 	
 	
-	/****************** Listener for ReserveEntry method ********************/
+	/******************* Listener for ReserveEntry method ********************/
 	
-	public boolean preReserveEntry(Long folderId, Long entryId) {
+	/**
+	 * Pre-event method for FolderModule.ReserveEntry.
+	 * <p>
+	 * For general idea, see the method description of <code>preAddEntry</code> method.
+	 * The only major difference from <code>preAddEntry</code> is that this method
+	 * returns a boolean value indicating whether the system should continue with the
+	 * normal execution of the pipeline or not. The value of <code>true</code> means
+	 * normal continuation while <code>false</code> indicates that the execution
+	 * pipeline must stop. Any other return value or type or no return value 
+	 * (<code>void</code> type) means the same thing as returning <code>true</code>.
+	 * 
+	 * @return <code>true</code> if the execution chain should proceed with the next
+	 * listener or the module method itself.
+	 * @throws Exception in case of errors
+	 */
+	public boolean preReserveEntry(Long folderId, Long entryId) throws Exception {
 		// Get the name of the user who is requesting to reserve this entry.
 		String userName = RequestContextHolder.getRequestContext().getUserName();
 		
@@ -89,31 +176,36 @@ public class FolderModuleListener {
 			return true;
 		}
 	}
-	public void postReserveEntry(Long folderId, Long entryId) {
+	
+	/**
+	 * Post-event method for FolderModule.ReserveEntry.
+	 * <p>
+	 * For general idea, see the method description of <code>postAddEntry</code> method.
+	 * The only major difference from <code>postAddEntry</code> is that this method
+	 * does not append an extra argument to the argument list. This is because the 
+	 * module method this listens on (ie, <code>reserveEntry</code>) returns no value
+	 * (ie, <code>void</code> type). It is illegal to append an argument of type 
+	 * <code>void</code> or <code>Void</code> in this case.
+	 * 
+	 * @throws Exception in case of errors
+	 */
+	public void postReserveEntry(Long folderId, Long entryId) throws Exception {
 		// This method does not append an extra argument because the corresponding 
 		// module method (reserveEntry) does not return anything (ie, void type). 
 		
 		logger.info("postReserveEntry");
 	}
+	
+	/**
+	 * After-completion method for FolderModule.ReserveEntry.
+	 * <p>
+	 * For general idea, see the method description of <code>afterCompletionAddEntry</code>
+	 * method.
+	 * 
+	 * @throws Exception in case of errors
+	 */
 	public void afterCompletionReserveEntry(Long folderId, Long entryId, Throwable ex) {
 		logger.info("afterCompletionReserveEntry");
-	}
-
-	
-	/****************** Listener for TestAccess method ********************/
-	
-	public void preTestAccess(Folder folder, FolderOperation operation) {
-		logger.info("preTestAccess");
-
-	}
-	public void postTestAccess(Folder folder, FolderOperation operation, boolean testResult) {
-		// This method illustrates accepting the result of the module event 
-		// as a primitive type (boolean).
-	
-		logger.info("postTestAccess");
-	}
-	public void afterCompletionTestAccess(Folder folder, FolderOperation operation, Throwable ex) {
-		logger.info("afterCompletionTestAccess");
 	}
 
 }
