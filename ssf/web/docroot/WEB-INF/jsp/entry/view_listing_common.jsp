@@ -172,8 +172,39 @@ ss_createOnLayoutChangeObj("ss_setCurrentIframeHeight", ss_setCurrentIframeHeigh
 <c:set var="ss_entryViewStyle2" value="${ss_folderViewStyle}" scope="request"/>
 
 <c:if test="${ss_viewEntryNavbar}">
+<c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}" scope="request"/>
+<c:if test="${empty ss_sidebarVisibility}"><c:set var="ss_sidebarVisibility" value="block" scope="request"/></c:if>
+<c:if test="${ss_sidebarVisibility == 'none'}">
+  <c:set var="ss_sidebarVisibilityShow" value="block"/>
+  <c:set var="ss_sidebarVisibilityHide" value="none"/>
+  <c:set var="ss_sidebarTdStyle" value=""/>
+</c:if>
+<c:if test="${ss_sidebarVisibility != 'none'}">
+  <c:set var="ss_sidebarVisibilityShow" value="none"/>
+  <c:set var="ss_sidebarVisibilityHide" value="block"/>
+  <c:set var="ss_sidebarTdStyle" value="ss_view_sidebar"/>
+</c:if>
 <div id="ss_portlet_content" class="ss_style ss_portlet">
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
+<div class="ss_actions_bar1_pane ss_sidebarImage">
+<table cellspacing="0" cellpadding="0">
+<tr>
+<ssf:ifnotaccessible>
+<td valign="middle">
+<a href="javascript: ;" 
+  onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
+><span style="padding-left:12px; display:${ss_sidebarVisibilityShow};"
+  id="ss_sidebarHide${renderResponse.namespace}" 
+  class="ss_fineprint ss_sidebarSlidesm ss_sidebarSlidetext"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
+  style="padding-left:12px; display:${ss_sidebarVisibilityHide};"
+  id="ss_sidebarShow${renderResponse.namespace}" 
+  class="ss_fineprint ss_sidebarSlide ss_sidebarSlidetext"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
+</td>
+</ssf:ifnotaccessible>
+<td valign="middle">
+</td></tr>
+</table>
+</div>
 
 <% // BEGIN SIDEBAR LAYOUT  %>
 <ssf:ifnotaccessible>
@@ -181,7 +212,7 @@ ss_createOnLayoutChangeObj("ss_setCurrentIframeHeight", ss_setCurrentIframeHeigh
     <tbody>
     <tr>
     <c:if test="${!ss_mashupHideSidebar}">
-    <td valign="top" class="ss_view_sidebar"> <% // old class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}"> %>
+    <td valign="top" class="ss_view_sidebar" id="ss_sidebarTd${renderResponse.namespace}">
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
 	</c:if>
