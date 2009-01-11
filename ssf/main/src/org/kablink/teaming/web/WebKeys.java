@@ -967,7 +967,10 @@ public class WebKeys {
     public static final String TOOLBAR_MEETING_POST="ss_toolbar_meeting_post";
     public static final String TOOLBAR_MEETING_URL="ss_toolbar_meeting_url";
     public static final String TOOLBAR_SUBSCRIBE_EMAIL="ss_toolbar_subscribe_email";
-    public static final String TOOLBAR_SUBSCRIBE_RSS="ss_toolbar_subscribe_rss";
+    public static final String TOOLBAR_URL_SUBSCRIBE_RSS="ss_toolbar_url_subscribe_rss";
+    public static final String TOOLBAR_URL_EMAIL_ADDRESSES="ss_toolbar_url_email_addresses";
+    public static final String TOOLBAR_URL_SIMPLE_URLS="ss_toolbar_url_simple_urls";
+    public static final String TOOLBAR_URL_WEBDAV="ss_toolbar_url_webdav";
     public static final String TUTORIAL_PANEL_STATE = "ss_tutorial_panel_state";
     public static final String TRACKED_PLACES_PAGE="ss_trackedPlacesPage";
     public static final String TRACKED_TEAMS_PAGE="ss_trackedTeamsPage";

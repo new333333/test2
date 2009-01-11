@@ -510,61 +510,9 @@ function ss_openUrlInWindow(obj, windowName, width, height) {
 }
 
 //Routine to show the permalink url so it can by cut/pasted
-function ss_showPermalink(obj) {
-	//See if the div exists already
+function ss_showPermalink(obj, namespace) {
 	var divObj = document.getElementById('ss_permalink_display_div');
-	var inputObj = document.getElementById('ss_permalink_display_input');
-	if (divObj == null) {
-		//Create the div
-	    divObj = document.createElement("div");
-	    divObj.setAttribute("id", "ss_permalink_display_div");
-	    divObj.style.zIndex = ssPopupZ;
-	    divObj.className = "ss_style ss_popupMenu ss_permalink";
-	    divObj2 = document.createElement("div");
-	    inputObj = document.createElement("input");
-	    inputObj.setAttribute("id", "ss_permalink_display_input");
-		inputObj.setAttribute("type", "text");
-		inputObj.setAttribute("style", "margin: 2px;");
-		dojo.connect(inputObj, "onclick", function(evt) {
-			inputObj.select();
-			return false;
-	    });		
-	    divObj2.setAttribute("align", "right");
-	    divObj2.className = "ss_popupMenuClose";
-	    aObj = document.createElement("a");
-	    aObj.setAttribute("href", "javascript: ss_hideDivNone('ss_permalink_display_div');");
-	    imgObj = document.createElement("img");
-	    imgObj.setAttribute("border", "0");
-	    imgObj.setAttribute("src", ss_imagesPath + "pics/sym_s_delete.gif");
-	    aObj.appendChild(imgObj);
-	    divObj2.appendChild(aObj);
-	    divObj.appendChild(divObj2)
-	    divObj.appendChild(inputObj)
-		document.getElementsByTagName( "body" ).item(0).appendChild(divObj);
-	}
-	var size = obj.href.length + obj.href.length / 15;
-	inputObj.setAttribute("size", size);
-	inputObj.setAttribute("maxlength", size);
-	inputObj.value = ss_replaceSubStrAll(obj.href, "%20", " ");
-	//ss_debug(parseInt(ss_getObjAbsY(obj) + 10) + "px")
-	if (divObj.style && divObj.style.visibility && divObj.style.visibility == 'visible') {
-		divObj.style.display = 'none';
-		divObj.style.visibility = 'hidden';
-	} else {
-		divObj.style.display = 'block';
-		divObj.style.visibility = 'visible';
-		divObj.style.top = parseInt(ss_getClickPositionY() + 10) + "px";
-		var x = parseInt(ss_getClickPositionX());
-		x = x - parseInt((ss_getObjectWidth(divObj) / 3) * 2);
-		if (x < 0) x = 0;
-		divObj.style.left = x + "px";	
-		divObj.focus();	
-	}
-	//Signal that the layout changed
-	if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
-	if (parent.ss_positionEntryDiv) setTimeout("parent.ss_positionEntryDiv();", 100);
-	if (parent.ss_setWikiIframeSize) setTimeout("parent.ss_setWikiIframeSize('"+namespace+"');", 100);
-	
+	ss_toggleShowDiv('ss_permalink_display_div', namespace)	;
 }
 //Routine to go to a binder when it is clicked
 // id can be a number or a string ending in "_1234" where 1234 is the id
@@ -1113,20 +1061,21 @@ function ss_showHideObj(objName, visibility, displayStyle) {
 		//ss_debug('Div "'+objName+'" does not exist. (ss_showHideObj)')
 	}
 }
-function ss_toggleShowDiv(divName) {
-   var obj = self.document.getElementById(divName);
+function ss_toggleShowDiv(divName, namespace) {
+	if (typeof namespace == 'undefined') namespace = "";
+    var obj = self.document.getElementById(divName);
     if (obj && obj.style) {
 	    if (!obj.style.display || obj.style.display != "none") {
 		    obj.style.display = "none";
 		} else {
+			obj.style.visibility = "visible";
 			obj.style.display = "block";
 			obj.focus();
 		}
 		//Signal that the layout changed
-		if (!obj.style.position || obj.style.position != "absolute") {
-			ssf_onLayoutChange();
-			//ss_debug("ss_showHideObj: " + objName + " = " + visibility)
-		}
+		if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
+		if (parent.ss_positionEntryDiv) setTimeout("parent.ss_positionEntryDiv();", 100);
+		if (parent.ss_setWikiIframeSize) setTimeout("parent.ss_setWikiIframeSize('"+namespace+"');", 100);
 	} else {
 		//ss_debug('Div "'+objName+'" does not exist. (ss_showHideObj)')
 	}
@@ -3953,6 +3902,20 @@ function ss_setIframeHeight(divId, iframeId, hoverOverId) {
 		}
 	}
 	if (hoverOverId != "") ss_hideHoverOver(hoverOverId);
+}
+
+function ss_setCurrentIframeHeight() {
+	if (self == self.parent) return;
+	var iframeId = window.name;
+	var iframeHeight = parseInt(document.body.scrollHeight);
+	if (iframeHeight > 0) {
+		var parentIframeObj = parent.document.getElementById(iframeId);
+		if (parentIframeObj != null) {
+			parentIframeObj.style.height = parseInt(iframeHeight + ss_entryInPlaceIframeOffset) + "px"
+			//Signal that the layout changed
+			if (parent.ssf_onLayoutChange) parent.ssf_onLayoutChange();
+		}
+	}
 }
 
 function ss_showForumEntry(url, isDashboard) {	

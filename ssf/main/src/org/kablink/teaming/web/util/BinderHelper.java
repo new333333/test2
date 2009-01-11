@@ -29,7 +29,9 @@
 package org.kablink.teaming.web.util;
 
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.portlet.ActionRequest;
@@ -69,8 +70,6 @@ import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.Application;
-import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DashboardPortlet;
@@ -79,18 +78,19 @@ import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
+import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
@@ -101,21 +101,15 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.portlet.forum.ViewController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
-import org.kablink.teaming.portletadapter.portlet.RenderRequestImpl;
 import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
 import org.kablink.teaming.search.filter.SearchFilterToMapConverter;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.Function;
-import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
-import org.kablink.teaming.security.function.WorkArea;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
-import org.kablink.teaming.util.ResolveIds;
 import org.kablink.util.search.Restrictions;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -595,11 +589,6 @@ public class BinderHelper {
 	public static String getDisplayType(PortletRequest request) {
 		PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
 		String pName = pConfig.getPortletName();
-		boolean isWap = false;
-		if (request instanceof RenderRequestImpl) {
-			HttpServletRequest httpReq = ((RenderRequestImpl)request).getHttpServletRequest();
-			isWap = BrowserSniffer.is_wap_xhtml(httpReq);
-		}
 		//For liferay we use instances and the name will be changed slightly
 		//That is why we check for the name with contains
 		if (pName.contains(ViewController.FORUM_PORTLET))
@@ -898,6 +887,36 @@ public class BinderHelper {
 			parentConfig = (TemplateBinder)parentConfig.getParentBinder();
 		}
 	}
+	
+	static public void buildSimpleUrlBeans(AllModulesInjected bs,  PortletRequest request, Binder binder, Map model) {
+		//Build the simple URL beans
+		String[] s = SPropsUtil.getStringArray("simpleUrl.globalKeywords", ",");
+		model.put(WebKeys.SIMPLE_URL_GLOBAL_KEYWORDS, s);
+		model.put(WebKeys.SIMPLE_URL_PREFIX, WebUrlUtil.getSimpleURLContextRootURL(request));
+		List<SimpleName> simpleNames = bs.getBinderModule().getSimpleNames(binder.getId());
+		model.put(WebKeys.SIMPLE_URL_NAMES, simpleNames);
+		model.put(WebKeys.SIMPLE_URL_CHANGE_ACCESS, 
+				bs.getBinderModule().testAccess(binder,BinderOperation.manageSimpleName));
+		if (bs.getAdminModule().testAccess(AdminOperation.manageFunction)) 
+			model.put(WebKeys.IS_SITE_ADMIN, true);
+		model.put(WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, 
+				PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, ""));	
+		model.put(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, 
+				PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, ""));	
+
+		String hostname = bs.getZoneModule().getVirtualHost(RequestContextHolder.getRequestContext().getZoneName());
+		if(hostname == null) {
+			try {
+		        InetAddress addr = InetAddress.getLocalHost();
+		        // Get hostname
+		        hostname = addr.getHostName();
+		    } catch (UnknownHostException e) {
+				hostname = "localhost";
+		    }
+		}
+		model.put(WebKeys.SIMPLE_EMAIL_HOSTNAME, hostname);		
+	}
+	
 	//trees should not be deep - do entire thing
 	static public Document buildTemplateTreeRoot(AllModulesInjected bs, TemplateBinder config, DomTreeHelper helper) {
        	Document tree = DocumentHelper.createDocument();
@@ -2450,7 +2469,6 @@ public class BinderHelper {
         String userDisplayStyle = user.getDisplayStyle();
         if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
         
-		AdaptedPortletURL adapterUrl;
 		Map qualifiers;
 		PortletURL url;
 

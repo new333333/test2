@@ -163,6 +163,7 @@ if (self.parent && self.parent.ss_highlightLineById) {
 var ss_reloadUrl = "${ss_reloadUrl}";
 var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 
+ss_createOnLayoutChangeObj("ss_setCurrentIframeHeight", ss_setCurrentIframeHeight);
 </script>
 <c:set var="ss_viewEntryNavbar" value="false"/>
 <ssf:ifnotadapter><c:set var="ss_viewEntryNavbar" value="true"/></ssf:ifnotadapter>

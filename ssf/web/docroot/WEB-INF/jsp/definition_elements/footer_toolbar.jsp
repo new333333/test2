@@ -212,5 +212,12 @@ Boolean webdavSupportedFooter = new Boolean(org.kablink.teaming.web.util.BinderH
 var iFrameFolderAttachmentInvokedOnce${ssFolder.id}${renderResponse.namespace} = "false"
 
 </script>
-<ssf:ifnotadapter><div align="right" style="padding-top:20px;"><a target="_blank" 
-  href="http://www.icecore.org"><span class="ss_smallprint ss_light">Powered by ICEcore</span></a></div></ssf:ifnotadapter>
+<div id="ss_permalink_display_div" style="display:none; border:1px solid #cecece;">
+  <div align="right">
+	<a style="margin-left:15px;"
+   	  onClick="ss_hideDivNone('ss_permalink_display_div'); return false;"><img 
+  	  <ssf:alt tag="alt.hide"/> border="0" src="<html:imagesPath/>icons/close_off.gif"/>
+  	</a>
+  </div>
+<%@ include file="/WEB-INF/jsp/forum/permalinks.jsp" %>
+</div>

@@ -40,6 +40,7 @@ import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -54,6 +55,7 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.smtp.SMTPManager;
+import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -207,31 +209,8 @@ public class ConfigureController extends AbstractBinderController {
 			BinderHelper.buildNavigationLinkBeans(this, binder, model);
 			
 			//Build the simple URL beans
-			String[] s = SPropsUtil.getStringArray("simpleUrl.globalKeywords", ",");
-			model.put(WebKeys.SIMPLE_URL_GLOBAL_KEYWORDS, s);
-			model.put(WebKeys.SIMPLE_URL_PREFIX, WebUrlUtil.getSimpleURLContextRootURL(request));
-			List<SimpleName> simpleNames = getBinderModule().getSimpleNames(binderId);
-			model.put(WebKeys.SIMPLE_URL_NAMES, simpleNames);
-			model.put(WebKeys.SIMPLE_URL_CHANGE_ACCESS, 
-					getBinderModule().testAccess(binder,BinderOperation.manageSimpleName));
-			if (getAdminModule().testAccess(AdminOperation.manageFunction)) 
-				model.put(WebKeys.IS_SITE_ADMIN, true);
-			model.put(WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, 
-					PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, ""));	
-			model.put(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, 
-					PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, ""));	
-
-			String hostname = getZoneModule().getVirtualHost(RequestContextHolder.getRequestContext().getZoneName());
-			if(hostname == null) {
-				try {
-			        InetAddress addr = InetAddress.getLocalHost();
-			        // Get hostname
-			        hostname = addr.getHostName();
-			    } catch (UnknownHostException e) {
-					hostname = "localhost";
-			    }
-			}
-			model.put(WebKeys.SIMPLE_EMAIL_HOSTNAME, hostname);
+			BinderHelper.buildSimpleUrlBeans(this,  request, binder, model);
+			List<SimpleName> simpleNames = (List)model.get(WebKeys.SIMPLE_URL_NAMES);
 			model.put(WebKeys.SIMPLE_EMAIL_ENABLED,
 					  getSmtpService().isEnabled() &&
 					  	binder.getEntityType().equals(EntityType.folder) &&
