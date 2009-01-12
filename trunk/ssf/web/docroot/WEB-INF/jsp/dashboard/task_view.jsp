@@ -41,7 +41,7 @@
 	<c:if test="${!empty ssDashboard.beans[componentId].ssFolderList}">
 		<table>
 			<tr>
-				<td><img border="0" src="<html:imagesPath/><c:choose><c:when test="${hitCount > 0}">pics/flip_up16H.gif</c:when><c:otherwise>pics/flip_down16H.gif</c:otherwise></c:choose>" onclick="ss_showHideTaskList('${prefix}_ss_dashboard_folder_list', this, true, 'ss_navigator_box');"/></td><td></td>
+				<td><img border="0" src="<html:imagesPath/><c:choose><c:when test="${hitCount > 0}">pics/flip_up16H.gif</c:when><c:otherwise>pics/flip_down16H.gif</c:otherwise></c:choose>" onclick="ss_showHideTaskList('${prefix}_ss_dashboard_folder_list', this, true, 'ss_navigator_box');" <ssf:alt/> /></td><td></td>
 			</tr>
 			<tr><td></td>
 				<td><table class="ss_style" cellspacing="0" cellpadding="0" id="${prefix}_ss_dashboard_folder_list" style="<c:choose><c:when test="${hitCount > 0}">display: none; visibility: hidden; </c:when><c:otherwise>display: table; visibility: visible; </c:otherwise></c:choose>">
@@ -49,10 +49,10 @@
 							<tr>
 							  <td>
 							    <a href="javascript: ;"
-									onClick="return ss_gotoPermalink('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}', '${ss_namespace}', 'yes');"
+									onclick="return ss_gotoPermalink('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}', '${ss_namespace}', 'yes');"
 									>${folder.parentBinder.title}</a> // 
 							    <a href="javascript: ;"
-									onClick="return ss_gotoPermalink('${folder.id}', '${folder.id}', 'folder', '${ss_namespace}', 'yes');"><span class="ss_bold">${folder.title}</span></a></td>
+									onclick="return ss_gotoPermalink('${folder.id}', '${folder.id}', 'folder', '${ss_namespace}', 'yes');"><span class="ss_bold">${folder.title}</span></a></td>
 							</tr>
 						</c:forEach>
 					</table></td>
