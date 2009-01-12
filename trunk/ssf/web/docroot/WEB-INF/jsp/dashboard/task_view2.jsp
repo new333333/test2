@@ -43,7 +43,7 @@
 		</c:if>
 		  <c:if test="${ss_pageNumber > 0}">
 		    <span>
-		      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'task'); return false;"
+		      <a onclick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'task'); return false;"
 		        href="javascript:;" ><img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif" /></a>&nbsp;&nbsp;&nbsp;
 		    </span>
 		  </c:if>
@@ -52,7 +52,7 @@
 		  </c:if>
 		  <c:if test="${(ss_pageNumber * ss_pageSize + hitCount) < ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
 		    <span>&nbsp;&nbsp;
-		      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'task'); return false;"
+		      <a onclick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'task'); return false;"
 		        href="javascript:;" ><img <ssf:alt tag="general.nextPage"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
 		    </span>
 		  </c:if>
@@ -190,7 +190,7 @@
 
 			<c:if test="${!empty path}">
 	    		<a href="javascript: ;"
-					onClick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
+					onclick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
 					title="${path}"
 					><span class="ss_bold">${title}</span></a>
 			</c:if>
