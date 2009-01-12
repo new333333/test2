@@ -53,6 +53,13 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 		if (formData.containsKey("okBtn")) {
 			ScheduleInfo config = getAdminModule().getPostingSchedule();
 			config.setSchedule(ScheduleHelper.getSchedule(request));
+			if (config.getSchedule().isRepeatMinutes()) {
+				String repeat = config.getSchedule().getMinutesRepeat();
+				//stagger to avoid timing issues with notifications which start on the '0' minute
+				config.getSchedule().setMinutes("5/"+repeat);
+			} else if (config.getSchedule().isRepeatHours()) {				
+				config.getSchedule().setMinutes("5");				
+			}
 			config.setEnabled(PortletRequestUtils.getBooleanParameter(request, "enabled", false));
 			getAdminModule().setPostingSchedule(config);
 			
