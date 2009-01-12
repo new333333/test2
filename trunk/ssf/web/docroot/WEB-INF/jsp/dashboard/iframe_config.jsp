@@ -35,17 +35,17 @@
 
 <tr>
 <td valign="top">
-<span class="ss_bold"><ssf:nlt tag="dashboard.url"/></span>
+<label for="data_url"><span class="ss_bold"><ssf:nlt tag="dashboard.url"/></span></label>
 <br/>
-<input type="text" name="data_url" size="60" 
+<input type="text" name="data_url" id="data_url" size="60" 
   value="${ssDashboard.dashboard.components[ssComponentId].data.url}"/>
 </td>
 </tr>
 
 <tr> 
 <td valign="top">
-<span class="ss_bold"><ssf:nlt tag="dashboard.height"/></span><br/>
-<input type="text" name="data_height" size="6" 
+<label for="data_height"><span class="ss_bold"><ssf:nlt tag="dashboard.height"/></span><br/></label>
+<input type="text" name="data_height" id="data_height" size="6" 
   value="${ssDashboard.dashboard.components[ssComponentId].data.height}"/>
 </td>
 </tr>
