@@ -36,8 +36,8 @@
 <c:if test="${empty resultsCount}"><c:set var="resultsCount" value="10"/></c:if>
 <table>
 <tr>
-<td><span><ssf:nlt tag="dashboard.search.resultsCount"/></span></td>
-<td style="padding-left:10px;"><input type="text" name="data_resultsCount" size="5"
-  value="${resultsCount}"/></td>
+<td><label for="data_resultsCount"><span><ssf:nlt tag="dashboard.search.resultsCount"/></span></label></td>
+<td style="padding-left:10px;"><input type="text" name="data_resultsCount" 
+  id="data_resultsCount" size="5" value="${resultsCount}"/></td>
 </tr>
 </table>
