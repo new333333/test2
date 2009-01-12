@@ -86,7 +86,7 @@
 				onClick="ss_tagShow('${ss_tagViewNamespace}','${ss_tagDivNumber}'); return false;"
 			</ssf:ifnotaccessible>
 			<ssf:title tag="title.open.tag.menu" />
-
+		  >
 			<!-- The help spot is positioned relative to the position of its parent. -->
 			<!-- That's why I put the <ssHelpSpot...> in a <span> -->
 			<span>
@@ -137,7 +137,7 @@
 		
 			  <jsp:include page="/WEB-INF/jsp/definition_elements/tag_table_view.jsp" />
   			  
-  			  <table class="ss_tag_pane_color" colspan="2">
+  			  <table class="ss_tag_pane_color">
   			   <tbody><tr><td>
     				<a class="ss_linkButton" href="javascript:;" title="<ssf:nlt tag="title.closeMenu" />"
       			  	  onClick="ss_hideAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;"
