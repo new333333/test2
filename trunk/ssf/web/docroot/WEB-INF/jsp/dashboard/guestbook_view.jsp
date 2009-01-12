@@ -41,10 +41,10 @@
 <tr>
   <td>
     <a href="javascript: ;"
-		onClick="return ss_gotoPermalink('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}', '${ss_namespace}', 'yes');"
+		onclick="return ss_gotoPermalink('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}', '${ss_namespace}', 'yes');"
 		>${folder.parentBinder.title}</a> // 
     <a href="javascript: ;"
-		onClick="return ss_gotoPermalink('${folder.id}', '${folder.id}', 'folder', '${ss_namespace}', 'yes');"
+		onclick="return ss_gotoPermalink('${folder.id}', '${folder.id}', 'folder', '${ss_namespace}', 'yes');"
 		><span class="ss_bold">${folder.title}</span></a>
   </td>
   <td valign="top" align="right">
@@ -67,7 +67,7 @@
 				    	    <ssf:param name="newTab" value="1"/>
 				    	    <ssf:param name="addEntryFromIFrame" value="1"/>
 				    	    <ssf:param name="namespace" value="${ss_namespace}"/>    	        	    
-							</ssf:url>" onClick="ss_signGuestbook('${ss_namespace}', this);return false;">
+							</ssf:url>" onclick="ss_signGuestbook('${ss_namespace}', this);return false;">
 				<span class="ss_bold"><ssf:nlt tag="guestbook.addEntry"/></span>
 				</a>
 			</c:if>
