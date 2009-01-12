@@ -49,15 +49,15 @@ function ${treeName}_showId(forum, obj) {
     ssDashboard.dashboard.components[ssComponentId].data.start== 'this'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
-<input type="radio" name="data_start" value="this" 
-  <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="dashboard.startingPoint.current"/><br/>
+<input type="radio" name="data_start" id="this" value="this" 
+  <c:out value="${checked}"/> /><label for="this">&nbsp;<ssf:nlt tag="dashboard.startingPoint.current"/><br/></label>
 
 <c:set var="checked" value=""/>
 <c:if test="${ssDashboard.dashboard.components[ssComponentId].data.start == 'select'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
-<input type="radio" name="data_start" value="select" 
-  <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="dashboard.startingPoint.select"/><br/>
+<input type="radio" name="data_start" id="select" value="select" 
+  <c:out value="${checked}"/> /><label for="select">&nbsp;<ssf:nlt tag="dashboard.startingPoint.select"/><br/></label>
 </div>
 </td>
 </tr>
@@ -84,15 +84,15 @@ function ${treeName}_showId(forum, obj) {
     ssDashboard.dashboard.components[ssComponentId].data.rootOpen== 'true'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
-<input type="radio" name="data_rootOpen" value="true" 
-  <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="general.yes"/><br/>
+<input type="radio" name="data_rootOpen" id="true" value="true" 
+  <c:out value="${checked}"/> /><label for="true">&nbsp;<ssf:nlt tag="general.yes"/><br/></label>
 
 <c:set var="checked" value=""/>
 <c:if test="${ssDashboard.dashboard.components[ssComponentId].data.rootOpen == 'false'}">
   <c:set var="checked" value="checked=\"checked\""/>
 </c:if>
-<input type="radio" name="data_rootOpen" value="false" 
-  <c:out value="${checked}"/> />&nbsp;<ssf:nlt tag="general.no"/><br/>
+<input type="radio" name="data_rootOpen" id="false" value="false" 
+  <c:out value="${checked}"/> /><label for="false">&nbsp;<ssf:nlt tag="general.no"/><br/></label>
 </div>
 </td>
 </tr>
