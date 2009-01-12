@@ -111,27 +111,27 @@ function ss_saveWindowHeight_${renderResponse.namespace}() {
 
 function ss_setParentWorkareaIframeSize${renderResponse.namespace}() {
 	ss_debug('In routine: ss_setParentWorkareaIframeSize${renderResponse.namespace}')
-	if (typeof self.parent != "undefined") {
-		var resizeRoutineName = "ss_setWorkareaIframeSize" + ss_parentWorkareaNamespace${renderResponse.namespace};
-		var resizeRoutineExists = "undefined";
+	var resizeRoutineName = "ss_setWorkareaIframeSize" + ss_parentWorkareaNamespace${renderResponse.namespace};
+	var resizeRoutineExists = "undefined";
+	try {
+		eval("var resizeRoutineExists = typeof(self.parent."+resizeRoutineName+")");
+	} catch(e) {}
+	ss_debug('resizeRoutineExists = '+resizeRoutineExists)
+	if (resizeRoutineExists != "undefined") {
+		ss_debug('namespace = ${renderResponse.namespace}')
+		try {eval("self.parent."+resizeRoutineName+"()");} catch(e) {
+			//If all else fails, use the slower method of passing the height through the server
+			ss_saveWindowHeight_${renderResponse.namespace}();
+		}
+	} else {
+		//See if there is a common routine to call in case the namespaces don't match
 		try {
-			eval("var resizeRoutineExists = typeof(self.parent."+resizeRoutineName+")");
-		} catch(e) {}
-		ss_debug('resizeRoutineExists = '+resizeRoutineExists)
-		if (resizeRoutineExists != "undefined") {
-			ss_debug('namespace = ${renderResponse.namespace}')
-			eval("ss_debug(self.parent."+resizeRoutineName+")");
-			eval("self.parent."+resizeRoutineName+"()");
-		} else {
-			//See if there is a common routine to call in case the namespaces don't match
-			try {
-				if (typeof self.parent.ss_setWorkareaIframeSize != "undefined") {
-					self.parent.ss_setWorkareaIframeSize();
-				}
-			} catch(e) {
-				//If all else fails, use the slower method of passing the height through the server
-				ss_saveWindowHeight_${renderResponse.namespace}();
+			if (typeof self.parent.ss_setWorkareaIframeSize != "undefined") {
+				self.parent.ss_setWorkareaIframeSize();
 			}
+		} catch(e) {
+			//If all else fails, use the slower method of passing the height through the server
+			ss_saveWindowHeight_${renderResponse.namespace}();
 		}
 	}
 }
