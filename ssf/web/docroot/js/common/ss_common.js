@@ -394,19 +394,27 @@ function ss_openUrlInWorkarea(url, id, action) {
 }
 
 function ss_openUrlInParentWorkarea(url, id, action) {
-	if (typeof self.parent.ss_workarea_showId != "undefined") {
-		self.parent.ss_workarea_showId(id, action);
-	} else {
+	try {
+		if (typeof self.parent.ss_workarea_showId != "undefined") {
+			self.parent.ss_workarea_showId(id, action);
+		} else {
+			self.parent.location.href = url;
+		}
+	catch(e) {
 		self.parent.location.href = url;
 	}
 }
 
 //Routine to navigate to a point on the navigation list
 function ss_navigation_goto(url) {
-	if (self.window != self.top) {
-		parent.location.reload(true);
-		return false;
-	} else {
+	try {
+		if (self.window != self.top) {
+			parent.location.reload(true);
+			return false;
+		} else {
+			return(ss_openUrlInPortlet(url));
+		}
+	catch(e) {
 		return(ss_openUrlInPortlet(url));
 	}
 }
@@ -429,29 +437,33 @@ function ss_openUrlInPortlet(url, popup, width, height) {
 		return false;
 	}
 	//Are we at the top window?
-	if (self.window != self.top) {
-		ss_debug('Not at top window')
-		//See if we are in an iframe inside a portlet 
-		var windowName = self.window.name    
-		if (windowName.indexOf("ss_workareaIframe") == 0) {
-			//This is inside the workarea iframe, just let the url be called
-			return true;
+	try {
+		if (self.window != self.top) {
+			ss_debug('Not at top window')
+			//See if we are in an iframe inside a portlet 
+			var windowName = self.window.name    
+			if (windowName.indexOf("ss_workareaIframe") == 0) {
+				//This is inside the workarea iframe, just let the url be called
+				return true;
+			} else {
+				//We are running inside a portlet iframe
+				parent.location.href = url;
+			}
+			return false
+		} else if (self.opener && self.opener != self.window) {
+			try {
+				self.opener.location.href = url
+				setTimeout('self.window.close();', 200)
+				return false;
+			} catch (e) {
+				ss_debug('opener is not addressable anymore, it must have been deleted.')
+				return true;
+			}
 		} else {
-			//We are running inside a portlet iframe
-			parent.location.href = url;
-		}
-		return false
-	} else if (self.opener && self.opener != self.window) {
-		try {
-			self.opener.location.href = url
-			setTimeout('self.window.close();', 200)
-			return false;
-		} catch (e) {
-			ss_debug('opener is not addressable anymore, it must have been deleted.')
+			ss_debug('return true')
 			return true;
 		}
-	} else {
-		ss_debug('return true')
+	} catch(e) {
 		return true;
 	}
 }
@@ -460,13 +472,18 @@ function ss_openUrlInPortlet(url, popup, width, height) {
 //Routine to open a page by following a "title" markup link
 function ss_openTitleUrl(obj, showInParent) {
 	if (showInParent != null && showInParent) {
-		//This is a request to just open the url in the parent (if it exists)
-		if (self != self.parent) {
-			self.parent.location.href = obj.href;
-		} else {
+		try {
+			//This is a request to just open the url in the parent (if it exists)
+			if (self != self.parent) {
+				self.parent.location.href = obj.href;
+			} else {
+				self.location.href = obj.href;
+			}
+			return false;
+		} catch(e) {
 			self.location.href = obj.href;
+			return false;
 		}
-		return false;
 	}
 	//Get the title text
 	var spanObj = obj.getElementsByTagName('span').item(0);
@@ -1094,8 +1111,10 @@ function ss_toggleShowDiv(divName, namespace) {
 		}
 		//Signal that the layout changed
 		if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
-		if (parent.ss_positionEntryDiv) setTimeout("parent.ss_positionEntryDiv();", 100);
-		if (parent.ss_setWikiIframeSize) setTimeout("parent.ss_setWikiIframeSize('"+namespace+"');", 100);
+		try {
+			if (parent.ss_positionEntryDiv) setTimeout("parent.ss_positionEntryDiv();", 100);
+			if (parent.ss_setWikiIframeSize) setTimeout("parent.ss_setWikiIframeSize('"+namespace+"');", 100);
+		} catch(e) {}
 	} else {
 		//ss_debug('Div "'+objName+'" does not exist. (ss_showHideObj)')
 	}
@@ -3525,8 +3544,10 @@ function ss_showAddAttachmentBrowse(binderId, entryId, namespace) {
 	divObj.style.width = "360px";
 	divObj.style.height = "150px";
 	
-	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
-	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
+	try {
+		if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+		if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
+	} catch(e) {}
 }
 
 function ss_hideAddAttachmentBrowse(entryId, namespace) {
@@ -3535,8 +3556,10 @@ function ss_hideAddAttachmentBrowse(entryId, namespace) {
 	divObj.style.display = "none";
 	ss_hideDiv(divId);
 
-	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
-	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
+	try {
+		if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+		if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
+	} catch(e) {}
 }
 
 function ss_hideAddAttachmentBrowseAndAJAXCall(binderId, entryId, namespace, strErrorMessage) {
@@ -3565,8 +3588,10 @@ function ss_hideAddAttachmentDropbox(entryId, namespace) {
 	divObj.style.display = "none";
 	ss_hideDiv(divId);
 
-	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
-	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
+	try {
+		if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+		if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
+	} catch(e) {}
 }
 
 function ss_hideAddAttachmentDropboxAndAJAXCall(binderId, entryId, namespace) {
@@ -3596,8 +3621,10 @@ function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 	
 	divObj.style.width = "300px";
 
-	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
-	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
+	try {
+		if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+		if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
+	} catch(e) {}
 }
 
 function ss_showAttachMeetingRecords(binderId, entryId, namespace, held) {
@@ -3624,8 +3651,10 @@ function ss_showAttachMeetingRecords(binderId, entryId, namespace, held) {
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.sendRequest();  //Send the request
 	
-	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
-	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
+	try {
+		if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+		if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
+	} catch(e) {}
 }
 
 function ss_hideAddAttachmentMeetingRecords(entryId, namespace) {
@@ -3634,8 +3663,10 @@ function ss_hideAddAttachmentMeetingRecords(entryId, namespace) {
 	divObj.style.display = "none";
 	ss_hideDiv(divId);
 
-	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
-	if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
+	try {
+		if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+		if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
+	} catch(e) {}
 }
 
 function ss_attacheMeetingRecords(formId, binderId, entryId, namespace) {
@@ -3929,12 +3960,14 @@ function ss_setCurrentIframeHeight() {
 	var iframeId = window.name;
 	var iframeHeight = parseInt(document.body.scrollHeight);
 	if (iframeHeight > 0) {
-		var parentIframeObj = parent.document.getElementById(iframeId);
-		if (parentIframeObj != null) {
-			parentIframeObj.style.height = parseInt(iframeHeight + ss_entryInPlaceIframeOffset) + "px"
-			//Signal that the layout changed
-			if (parent.ssf_onLayoutChange) parent.ssf_onLayoutChange();
-		}
+		try {
+			var parentIframeObj = parent.document.getElementById(iframeId);
+			if (parentIframeObj != null) {
+				parentIframeObj.style.height = parseInt(iframeHeight + ss_entryInPlaceIframeOffset) + "px"
+				//Signal that the layout changed
+				if (parent.ssf_onLayoutChange) parent.ssf_onLayoutChange();
+			}
+		} catch(e) {}
 	}
 }
 
@@ -3963,9 +3996,14 @@ function ss_showForumEntry(url, isDashboard) {
 }
 
 function ss_showForumEntryInIframe_Overlay(url) {
-	if (self.parent && self != self.parent && typeof self.parent.ss_showForumEntryInIframe != "undefined") {
-		self.parent.ss_showForumEntryInIframe(url);
-		return
+	try {
+		if (self.parent && self != self.parent && typeof self.parent.ss_showForumEntryInIframe != "undefined") {
+			self.parent.ss_showForumEntryInIframe(url);
+			return
+		}
+	} catch(e) {
+		//Most likely permission denied. Just return
+		return;
 	}
     var wObj = self.document.getElementById('ss_showentryframe')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
@@ -4024,7 +4062,9 @@ function ss_showForumEntryInIframe_Popup(url) {
 
 	if (wObj == null) {
 		if (self.parent) {
-			wObj = self.parent.document.getElementById('ss_showfolder')
+			try {
+				wObj = self.parent.document.getElementById('ss_showfolder');
+			} catch(e) {}
 		}
 	}
 	
@@ -6959,9 +6999,13 @@ function ss_checkTypeOfLink(linkObj) {
 	
 	if (targetValue == '_blank') return true;
 	else {
-		if (self.window != self.top) {
-			parent.location.href = url;
-		} else {
+		try {
+			if (self.window != self.top) {
+				parent.location.href = url;
+			} else {
+				return true;
+			}
+		} catch(e) {
 			return true;
 		}
 	}
