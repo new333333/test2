@@ -45,7 +45,7 @@ href="http://www.google.com/ig/directory?synd=open"
 <br/>
 <br/>
 <span class="ss_bold">Step 3)</span>
-<span>Paste the widget code below</span>
+<label for="data_google_widget"><span>Paste the widget code below</span></label>
 <br/>
 <br/>
 <textarea id="data_google_widget" name="data_google_widget" rows="3" cols="100"><c:out 
@@ -57,8 +57,8 @@ value="${ssDashboard.dashboard.components[ssComponentId].data.google_widget}"/><
 <span>Specify the height (in pixels) of the widget container</span>
 <br>
 <br>
-<span class="ss_bold"><ssf:nlt tag="dashboard.height"/></span><br/>
-<input type="text" name="data_height" size="6" 
+<label for="data_height"><span class="ss_bold"><ssf:nlt tag="dashboard.height"/></span><br/></label>
+<input type="text" name="data_height" id="data_height" size="6" 
   value="${ssDashboard.dashboard.components[ssComponentId].data.height}"/>
 <br/>
 
