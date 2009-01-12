@@ -43,9 +43,9 @@ function ${treeName}_showId(forum, obj) {
 <c:if test="${empty resultsCount}"><c:set var="resultsCount" value="5"/></c:if>
 <table>
 <tr>
-<td><span><ssf:nlt tag="dashboard.gallery.photoCount"/></span></td>
-<td style="padding-left:10px;"><input type="text" name="data_resultsCount" size="5"
-  value="${resultsCount}"/></td>
+<td><label for="data_resultsCount"><span><ssf:nlt tag="dashboard.gallery.photoCount"/></span></label></td>
+<td style="padding-left:10px;"><input type="text" name="data_resultsCount" 
+  id="data_resultsCount" size="5" value="${resultsCount}"/></td>
 </tr>
 <tr>
 <td><span><ssf:nlt tag="dashboard.gallery.imageSize"/></span></td>
@@ -63,11 +63,13 @@ function ${treeName}_showId(forum, obj) {
 <c:forEach var="folder" items="${ssDashboard.beans[ssComponentId].ssFolderList}">
 <tr>
   <td>
-    <input type="checkbox" name="del_${folder.id}"/>
-    <c:if test="${!empty folder.parentBinder}">
-    	${folder.parentBinder.title} // 
-    </c:if>
-    ${folder.title}
+    <input type="checkbox" name="del_${folder.id}" id="del_${folder.id}"/>
+    <label for="del_${folder.id}">
+	    <c:if test="${!empty folder.parentBinder}">
+	    	${folder.parentBinder.title} // 
+	    </c:if>
+	    ${folder.title}
+	</label>
   </td>
 </tr>
 </c:forEach>
@@ -84,10 +86,11 @@ function ${treeName}_showId(forum, obj) {
 <br>
 <div class="ss_indent_large">
 <c:if test="${ssDashboard.scope == 'binder' || ssDashboard.scope == 'local' }">
-<table><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="chooseFolder" 
-	<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.chooseViewType}">checked="checked"</c:if>><span>
+<table><tr><td>&nbsp;&nbsp;&nbsp;<input type="checkbox" name="chooseFolder" id="chooseFolder"
+	<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.chooseViewType}">checked="checked"</c:if>>
+	<label for="chooseFolder"><span>
   <ssf:nlt tag="dashboard.gallery.selectFolderRelative"/>
-</span></td></tr></table>
+</span></label></td></tr></table>
 </c:if>
 <ssf:tree 
   treeName="${treeName}" 
