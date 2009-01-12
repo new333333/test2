@@ -54,6 +54,15 @@
 		--%></c:if></ssf:ifLoggedIn>
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
 </ssf:ifadapter>
+<script type="text/javascript">
+function ss_resizeTopDiv() {
+	var divObj = document.getElementById('ss_pseudoPortalDiv${renderResponse.namespace}');
+	var pseudoPortalMargin = 30;
+	divObj.style.width = parseInt(document.body.scrollWidth) - pseudoPortalMargin + "px";
+}
+ss_createOnResizeObj("ss_resizeTopDiv", ss_resizeTopDiv);
+ss_createOnLayoutChangeObj("ss_resizeTopDiv", ss_resizeTopDiv);
+</script>
 <c:if test="${!empty ssReloadUrl}">
 <script type="text/javascript">
 	//Open the current url in the opener window

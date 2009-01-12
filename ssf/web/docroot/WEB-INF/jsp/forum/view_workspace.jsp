@@ -38,6 +38,18 @@
 
 <body class="ss_style_body tundra">
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
+<script type="text/javascript">
+function ss_resizeTopDiv() {
+	var divObj = document.getElementById('ss_pseudoPortalDiv${renderResponse.namespace}');
+	var pseudoPortalMargin = 30;
+	divObj.style.width = parseInt(document.body.scrollWidth) - pseudoPortalMargin + "px";
+}
+ss_createOnResizeObj("ss_resizeTopDiv", ss_resizeTopDiv);
+ss_createOnLayoutChangeObj("ss_resizeTopDiv", ss_resizeTopDiv);
+</script>
+<table width="100%">
+<tr>
+<td>
 <ssf:ifLoggedIn><c:if test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
   <a class="ss_skiplink" href="${ss_accessibleUrl}"><img border="0"
     <ssf:alt tag="accessible.enableAccessibleMode"/> 
@@ -356,6 +368,7 @@ if (typeof ss_workarea_showId == "undefined")
 		var ss_reloadUrl = "${ss_reloadUrl}";
 		var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 	</script>
+
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}" scope="request"/>
@@ -593,8 +606,9 @@ if (typeof ss_workarea_showId == "undefined")
 	
 </c:if>
 
-<ssf:ifadapter>
+</td>
+</tr>
+</table>
 </div>
-	</body>
+</body>
 </html>
-</ssf:ifadapter>

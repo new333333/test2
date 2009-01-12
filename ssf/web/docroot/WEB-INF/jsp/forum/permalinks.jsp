@@ -28,8 +28,8 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<div>
-  <div style="padding-bottom:10px;">
+<div style="padding:10px;">
+  <div style="padding-bottom:6px;">
     <span><ssf:nlt tag="permalink.hint"/></span>
     <c:if test="${ssBinder.entityType == 'folder'}">
       <div style="padding-top:10px;">

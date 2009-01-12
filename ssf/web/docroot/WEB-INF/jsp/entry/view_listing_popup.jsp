@@ -49,6 +49,15 @@
 <body class="ss_style_body tundra">
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
 </ssf:ifadapter>
+<script type="text/javascript">
+function ss_resizeTopDiv() {
+	var divObj = document.getElementById('ss_pseudoPortalDiv${renderResponse.namespace}');
+	var pseudoPortalMargin = 30;
+	divObj.style.width = parseInt(document.body.scrollWidth) - pseudoPortalMargin + "px";
+}
+ss_createOnResizeObj("ss_resizeTopDiv", ss_resizeTopDiv);
+ss_createOnLayoutChangeObj("ss_resizeTopDiv", ss_resizeTopDiv);
+</script>
 <ssf:ifLoggedIn><c:if test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
   <a class="ss_skiplink" href="${ss_accessibleUrl}"><img border="0"
     <ssf:alt tag="accessible.enableAccessibleMode"/> 
@@ -73,11 +82,16 @@
 
   <c:if test="<%= !reloadCaller %>">
     <c:if test="<%= !isViewEntry %>">
-
-<div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer" style="margin:0px; padding:0px;">
-<%@ include file="/WEB-INF/jsp/entry/view_popup.jsp" %>
-</div>
-     </c:if>
+	 <table width="100%">
+	 <tr>
+	 <td>
+	 <div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer" style="margin:0px; padding:0px;">
+	 <%@ include file="/WEB-INF/jsp/entry/view_popup.jsp" %>
+	 </div>
+	 </td>
+	 </tr>
+	 </table>
+    </c:if>
   </c:if>
   <c:if test="<%= reloadCaller %>">
 <script type="text/javascript">
