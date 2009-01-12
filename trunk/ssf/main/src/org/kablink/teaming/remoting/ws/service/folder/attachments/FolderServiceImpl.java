@@ -64,7 +64,7 @@ public class FolderServiceImpl extends org.kablink.teaming.remoting.ws.service.f
 
 		org.kablink.teaming.remoting.ws.model.FolderEntry entryModel = super.folder_getEntryByFileName(accessToken, binderId, fileName, includeAttachments); 
 
-		CalendarHelper.handleEvents(this, getFolderModule().getEntry(null, entryModel.getId()));
+		if (includeAttachments) CalendarHelper.handleEvents(this, getFolderModule().getEntry(null, entryModel.getId()));
 		
 		return entryModel;
 		
@@ -74,7 +74,7 @@ public class FolderServiceImpl extends org.kablink.teaming.remoting.ws.service.f
 		
 		org.kablink.teaming.remoting.ws.model.FolderEntry entryModel = super.folder_getEntry(accessToken, entryId, includeAttachments);
 
-		CalendarHelper.handleEvents(this, getFolderModule().getEntry(null, entryId));
+		if (includeAttachments) CalendarHelper.handleEvents(this, getFolderModule().getEntry(null, entryId));
 		return entryModel;
 	}
 

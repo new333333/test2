@@ -39,14 +39,14 @@ public class ProfileServiceImpl extends org.kablink.teaming.remoting.ws.service.
 		handleAttachments(includeAttachments);
 
 		org.kablink.teaming.remoting.ws.model.Group groupModel = super.profile_getGroup(accessToken, groupId, includeAttachments);
-		CalendarHelper.handleEvents(this, getProfileModule().getEntry(groupId));
+		if (includeAttachments) CalendarHelper.handleEvents(this, getProfileModule().getEntry(groupId));
 		return groupModel;
 	}
 	public org.kablink.teaming.remoting.ws.model.User profile_getUser(String accessToken, long userId, boolean includeAttachments) {
 		handleAttachments(includeAttachments);
 
 		org.kablink.teaming.remoting.ws.model.User userModel = super.profile_getUser(accessToken, userId, includeAttachments);
-		CalendarHelper.handleEvents(this, getProfileModule().getEntry(userId));
+		if (includeAttachments) CalendarHelper.handleEvents(this, getProfileModule().getEntry(userId));
 		return userModel;
 	}
 	protected void handleAttachments(boolean includeAttachments) {

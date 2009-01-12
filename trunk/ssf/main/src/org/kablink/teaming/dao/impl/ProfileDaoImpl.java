@@ -28,6 +28,7 @@
  */
 package org.kablink.teaming.dao.impl;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -817,7 +818,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
  		} catch (HibernateSystemException se) {
     		//old dom trees cause errors with the new dom4j.  These properties should be stored as strings, and
     		//this problem was fixed before ship
-			if (se.getRootCause() instanceof java.io.InvalidClassException) {
+    		if (se.getRootCause() instanceof java.io.InvalidClassException || 
+    				se.getRootCause() instanceof ClassNotFoundException) {
 				//bad serialized data - get rid of it
     			executePropertiesDelete(id);
 			} else throw se;
@@ -842,7 +844,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	} catch (HibernateSystemException se) {
     		//old dom trees cause errors with the new dom4j.  These properties should be stored as strings, and
     		//	this problem was fixed before ship
-    		if (se.getRootCause() instanceof java.io.InvalidClassException) {
+    		if (se.getRootCause() instanceof java.io.InvalidClassException || 
+    				se.getRootCause() instanceof ClassNotFoundException) {
     			//	bad serialized data - get rid of it
     			executePropertiesDelete(id);
     		} else throw se;
@@ -874,12 +877,12 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     		statement = session.connection().createStatement();
     		statement.executeUpdate("delete from " + schema + "SS_UserProperties where principalId=" + id.getPrincipalId() + 
     				" and binderId=" + id.getBinderId());;
-   	} catch (SQLException sq) {
-    		throw new HibernateException(sq);
-    	} finally {
-    		try {if (statement != null) statement.close();} catch (Exception ex) {};
-    		session.close();
-    	}
+	   	} catch (SQLException sq) {
+	    		throw new HibernateException(sq);
+	   	} finally {
+	   		try {if (statement != null) statement.close();} catch (Exception ex) {};
+	   		session.close();
+	   	}
 
 	}
     public Group getReservedGroup(String internalId, Long zoneId) {

@@ -261,7 +261,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  		}
  		//this is being phased out
  		if (posting != null) {
- 			posting.setEnabled(mailConfig.isPostingEnabled());
+ 			posting.setEnabled(posting.isEnabled());
  			getPostingObject().setScheduleInfo(posting);
  		} else if (wasPostingEnabled && !zoneConfig.getMailConfig().isPostingEnabled()) {
  			//remove it

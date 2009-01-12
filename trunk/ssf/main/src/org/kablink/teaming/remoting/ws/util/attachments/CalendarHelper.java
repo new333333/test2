@@ -18,7 +18,10 @@ public class CalendarHelper {
 			DataHandler dh = new DataHandler(new CalendarDataSource(eventCalendar));
 			MessageContext messageContext = MessageContext.getCurrentContext();
 			Message responseMessage = messageContext.getResponseMessage();
-			responseMessage.addAttachmentPart(new AttachmentPart(dh));
+			AttachmentPart part = new AttachmentPart(dh);
+			part.setMimeHeader("Content-Disposition",
+					"attachment;filename=\"entry-" + entity.getId() + ".ics\"");
+			responseMessage.addAttachmentPart(part);
 		}
 	}
 }

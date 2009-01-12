@@ -28,8 +28,12 @@
  */
 package org.kablink.teaming.samples.wsclient;
 
-import java.io.File;
+import static org.kablink.util.search.Restrictions.between;
+import static org.kablink.util.search.Restrictions.eq;
+import static org.kablink.util.search.Restrictions.in;
 
+import java.io.File;
+import java.util.List;
 import org.apache.axis.EngineConfiguration;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -40,6 +44,8 @@ import org.kablink.teaming.client.ws.WebServiceClientUtil;
 import org.kablink.teaming.client.ws.TeamingServiceSoapBindingStub;
 import org.kablink.teaming.client.ws.TeamingServiceSoapServiceLocator;
 import org.kablink.teaming.client.ws.model.*;
+import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
 
 /**
  * This WS client program uses JAX-RPC compliant client binding classes 
@@ -58,7 +64,8 @@ public class TeamingServiceClientWithStub {
 	
 	public static void main(String[] args) throws Exception {
 		FolderEntry entry;
-		checkUsers();
+		calendarSync();
+		//checkUsers();
 		//checkGroups();
 		//checkBinder();
 		//checkEntry();
@@ -85,7 +92,7 @@ public class TeamingServiceClientWithStub {
 		
 		//getPrincipals(2, 5);
 		
-		try {
+/*		try {
 			getEntryFileVersions(9, "debug.doc");
 		}
 		catch(Exception e) {
@@ -103,6 +110,49 @@ public class TeamingServiceClientWithStub {
 		catch(Exception e) {
 			e.printStackTrace();
 		}
+*/
+	}
+	public static void calendarSync() throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		User testUser = stub.profile_getUserByName(null, "kelly", false);
+		Long wsId = testUser.getWorkspaceId();
+		
+		//search for calendar folder
+    	Criteria crit = new Criteria()
+			.add(eq(Constants.BINDERS_PARENT_ID_FIELD, wsId.toString())) //child 
+			.add(eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_CALENDAR))
+			.add(eq(Constants.ENTITY_FIELD, "folder"));
+    	
+    	Document xmlResults = DocumentHelper.parseText(stub.search_search(null, crit.toQuery().asXML(), 0, -1));
+    	//grab the first calendar
+    	List<Element> binders = xmlResults.getRootElement().selectNodes("/searchResults/binder");
+    	if (binders == null || binders.isEmpty()) {
+    		System.out.println("User calendar not found");
+    		return;
+    	}
+    	Element calEle =  binders.get(0);
+    	Long calId = Long.valueOf(calEle.attributeValue("id"));
+    	
+    	crit = new Criteria()
+    		.add(eq(Constants.BINDER_ID_FIELD, calId.toString()))
+    		.add(eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY));//no replies
+    	
+    	//now search for calendar entries
+    	xmlResults = DocumentHelper.parseText(stub.search_search(null, crit.toQuery().asXML(), 0, 100));
+    	List<Element> entries = xmlResults.getRootElement().selectNodes("/searchResults/entry");
+    	if (entries == null || entries.isEmpty()) {
+    		System.out.println("Calendar empty");
+    		return;
+    	}
+    	for (Element eEle:entries) {
+    		Long id = Long.valueOf(eEle.attributeValue("id"));
+    		FolderEntry entry = stub.folder_getEntry(null, id, true);
+    		WebServiceClientUtil.extractFiles(stub, new File("icals"));
+    		System.out.println(entry.getTitle());
+    	}
 	}
 	public static void checkTags(long binderId) throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
