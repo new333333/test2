@@ -40,7 +40,7 @@
 	
 	<c:if test="${!empty ss_filterMap}">
 	
-	   <label for="${ss_namespace}searchQueryName">&nbsp</label>
+	   <label for="${ss_namespace}searchQueryName">&nbsp;</label>
 	
 	   <input class="ss_saveQueryNameUnactive" type="text" name="searchQueryName" id="${ss_namespace}searchQueryName" 
 			  value="<ssf:nlt tag="searchResult.savedSearch.input.legend"/>" 
