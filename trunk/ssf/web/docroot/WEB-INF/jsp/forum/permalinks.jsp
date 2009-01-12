@@ -37,10 +37,13 @@
       </div>
     </c:if>
   </div>
-<table cellspacing="2" cellpadding="6">
+<table cellspacing="2" cellpadding="6" border="1" style="background:#cecece;">
   <tr>
     <td valign="top" nowrap>
-      <span><ssf:nlt tag="permalink"/></span>
+      <span>
+        <c:if test="${empty ssSimpleUrlNames}"><ssf:nlt tag="permalink"/></c:if>
+        <c:if test="${!empty ssSimpleUrlNames}"><ssf:nlt tag="permalinks"/></c:if>
+      </span>
     </td>
     <td valign="top" nowrap>
       <span>${ssPermalink}</span><br/>
@@ -88,4 +91,11 @@
     </tr>
   </c:if>
 </table>
+
+<c:if test="${ssBinder.entityType == 'folder'}">
+  <div style="padding-top:10px;">
+    <span><ssf:nlt tag="permalink.caution.rss"/></span>
+  </div>
+</c:if>
+
 </div>
