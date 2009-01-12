@@ -213,7 +213,7 @@ function ss_hideEntryDiv() {
     var wObj1 = self.document.getElementById('ss_showentrydiv')
     if (wObj1 != null) {
     	wObj1.style.visibility = "hidden";
-    	//wObj1.style.display = "none";
+    	wObj1.style.display = "none";
     	var wObj2 = self.document.getElementById(ss_iframe_box_div_name)
     	var wObj3 = self.document.getElementById('ss_iframe_holder_div')
     	if (0 == 1 && wObj3 != null) {
