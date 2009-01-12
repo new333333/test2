@@ -88,7 +88,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 		  target="_blank"><ssf:nlt tag="entry.AttachFilesByWebDav"/></a>		
 	</c:if>
 	<c:if test="${ss_folderViewStyle != 'blog' && !empty ssWebDavURL}">
-		<a class="ss_fineprint"  title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
+		<a class="ss_tinyButton ss_fineprint ss_nowrap"  title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
 		  style="behavior: url(#default#AnchorClick);" 
 		  folder="${ssWebDavURL}" href="${ssWebDavURL}" 
 		  target="_blank"
