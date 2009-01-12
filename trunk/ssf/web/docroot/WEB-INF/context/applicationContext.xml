@@ -727,8 +727,11 @@
 	<bean id="defaultEmailFormatter" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.mail.impl.DefaultEmailFormatter" depends-on="notifyBuilderUtil">
 		<property name="definitionModule"><ref local="definitionModule"/></property>
 		<property name="mailModule"><ref local="mailModule"/></property>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
 		<property name="icalModule"><ref local="icalModule"/></property>
+		<property name="smtpService"><ref local="smtpService"/></property>
 		<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
+
 	</bean>
 	<bean id="notifyBuilderUtil" class="org.kablink.teaming.module.definition.notify.NotifyBuilderUtil">
 		<property name="velocityEngine"><ref local="velocityEmailEngine"/></property>

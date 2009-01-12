@@ -48,10 +48,10 @@
 	(${ssVisitor.getNLT(${ssElement.attributeValue("notifyType")})} , $esc.html(${ssElement.attributeValue("notifyBy")}))
 #end
 
-#if ($ssVisitor.Entity.ParentBinder.Posting.EmailAddress)
+#if ($ssVisitor.getParam('ssReplyTo'))
 </td><td align="right">
 
-&nbsp;&nbsp;<a href="mailto:${ssVisitor.Entity.ParentBinder.Posting.EmailAddress}?subject=RE: DocId:${ssVisitor.Entity.ParentBinder.Id}:${ssVisitor.Entity.Id}"
+&nbsp;&nbsp;<a href="mailto:${ssVisitor.getParam('ssReplyTo')}?subject=RE: DocId:${ssVisitor.Entity.ParentBinder.Id}:${ssVisitor.Entity.Id}"
 		style="font-size: 11px; color: #3366cc; font-weight:bold;
 border-top: 1px solid #d5d5d5; border-left:
   1px solid #d5d5d5;

@@ -172,9 +172,6 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	protected boolean isReply(Folder folder, String title, Message msg) {
 		//see if for this folder
 		if (!title.startsWith(MailModule.REPLY_SUBJECT+folder.getId().toString()+":")) return false;
-		if (PostingDef.REPLY_RETURN_TO_SENDER.equals(folder.getPosting().getReplyPostingOption()))
-			throw new NotSupportedException("errorcode.notsupported.postingReplies");
-		if (PostingDef.REPLY_POST_AS_A_NEW_TOPIC.equals(folder.getPosting().getReplyPostingOption())) return false;
 		return true;
 	}
 	//override to provide alternate processing 
@@ -193,12 +190,9 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	}
 	//override to provide alternate processing 
 	protected Definition getEntryDefinition(Folder folder) {
-		if(folder.getPosting() == null) return null;
-		Definition definition = folder.getPosting().getDefinition();
 		//if not defined, let folderModule figure it out
-		if (definition == null) return null;
-		return definition;
-
+		if(folder.getPosting() == null) return null;
+		return  folder.getPosting().getDefinition();
 	}
 	protected User setUser(Folder folder, InternetAddress from) {
 		//try to map email address to a user
