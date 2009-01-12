@@ -51,14 +51,14 @@
 			<c:if test="${empty isDashboard || isDashboard == 'no'}">
 				<c:if test="${ss_pageNumber > 1}">
 					<img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-					  onClick="ss_goToSearchResultPage(${ss_pageNumber-1});" />
+					  onclick="ss_goToSearchResultPage(${ss_pageNumber-1});" />
 				</c:if>
 				<c:if test="${ss_pageNumber > 1}">
 					<span class="ss_pageNumber">${ss_pageNumber}</span>
 				</c:if>
 				<c:if test="${ssPageEndIndex < ssResultTotalRecords}">
 					<img <ssf:alt tag="general.nextPage"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif" 
-					  onClick="ss_goToSearchResultPage(${ss_pageNumber+1});" />
+					  onclick="ss_goToSearchResultPage(${ss_pageNumber+1});" />
 				</c:if>
 			</c:if>
 			<c:if test="${isDashboard == 'yes'}">
@@ -70,7 +70,7 @@
 				</c:if>
 				<c:if test="${ss_pageNumber > 0}">
 					<a href="javascript: ;"
-						onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
+						onclick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
 					><img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif" /></a>
 				</c:if>
 				<c:if test="${ss_pageNumber > 1 || ssPageEndIndex < ssResultTotalRecords}">
@@ -78,7 +78,7 @@
 				</c:if>
 				<c:if test="${ssPageEndIndex < ssResultTotalRecords}">
 					<a href="javascript: ;"
-						onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
+						onclick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
 					><img <ssf:alt tag="general.nextPage"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
 				</c:if>
 			</c:if>
@@ -110,14 +110,14 @@
 			<c:if test="${empty isDashboard || isDashboard == 'no'}">
 				<c:if test="${ss_pageNumber > 1}">
 					<img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-					  onClick="ss_goToSearchResultPage(${ss_pageNumber-1});" />
+					  onclick="ss_goToSearchResultPage(${ss_pageNumber-1});" />
 				</c:if>
 				<c:if test="${ss_pageNumber > 1}">
 					<span class="ss_pageNumber">${ss_pageNumber}</span>
 				</c:if>
 				<c:if test="${ssPageEndIndex < ssResultTotalRecords}">
 					<img <ssf:alt tag="general.nextPage"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif" 
-					  onClick="ss_goToSearchResultPage(${ss_pageNumber+1});" />
+					  onclick="ss_goToSearchResultPage(${ss_pageNumber+1});" />
 				</c:if>
 			</c:if>
 			<c:if test="${isDashboard == 'yes'}">
@@ -129,7 +129,7 @@
 				</c:if>
 				<c:if test="${ss_pageNumber > 0}">
 					<a href="javascript: ;"
-						onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
+						onclick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
 					><img <ssf:alt tag="general.previousPage"/> src="<html:imagesPath/>pics/sym_arrow_left_.gif" /></a>
 				</c:if>
 				<c:if test="${ss_pageNumber > 1 || ssPageEndIndex < ssResultTotalRecords}">
@@ -137,7 +137,7 @@
 				</c:if>
 				<c:if test="${ssPageEndIndex < ssResultTotalRecords}">
 					<a href="javascript: ;"
-						onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
+						onclick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}',  '${ss_namespace}', '${ss_divId}', '${componentId}', 'search');"
 					><img <ssf:alt tag="general.nextPage"/> src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
 				</c:if>
 			</c:if>
