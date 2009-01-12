@@ -52,9 +52,9 @@
 
 			<fieldset class="ss_fieldset">
 				<legend class="ss_legend"><ssf:nlt tag="filter.filterName"/></legend>
-				<span class="ss_labelAbove"><ssf:nlt tag="filter.filterName" text="Filter name"/></span>
+				<label for="filterName"><span class="ss_labelAbove"><ssf:nlt tag="filter.filterName" text="Filter name"/></span></label>
 				<input type="text" class="ss_text" style="width:400px;" name="filterName" 
-					value="<c:out value="${ss_selectedFilter}"/>">
+					id="filterName" value="<c:out value="${ss_selectedFilter}"/>">
 				<input type="hidden" name="filterNameOriginal" value="<c:out value="${ss_selectedFilter}"/>">
 				<br/>
 				<input type="checkbox" name="global"
