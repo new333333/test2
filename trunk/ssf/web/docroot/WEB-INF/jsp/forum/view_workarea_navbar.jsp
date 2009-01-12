@@ -249,7 +249,6 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			<table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
 			<td valign="middle" style="height: 22px; white-space: nowrap;">
 			<a href="javascript: window.print();"><img border="0" 
-    		class="ss_print_button"
     		alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
     		src="<html:rootPath/>images/pics/masthead/masthead_printer.png" width="23" height="21" align="right" /></a></td>
 			<td><a href="javascript: ss_helpSystem.run();"><img border="0" style="margin-left: 10px; margin-right: 10px;" title="<ssf:nlt tag="navigation.help"/>"
