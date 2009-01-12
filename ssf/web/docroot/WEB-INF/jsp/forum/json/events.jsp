@@ -31,7 +31,15 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // This is JSON type AJAX response  %>
-/*
+<% /*
+    * *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING ***
+    *
+    * This jsp is <jsp:include>'ed into ../relevance_dashboard/my_calendars.jsp
+    * within an embedded <script> tag.  Because of that, it CANNOT have the
+    * JSON object commented out.  If it is, a JavaScript error is generated.
+    *
+    * *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING ***
+    */%>
 {<c:if test="${!empty ssCalendarViewBean.eventType}"><%--
 	--%>eventType: "<ssf:escapeJavaScript value="${ssCalendarViewBean.eventType}"/>", <%--
 --%></c:if><%--
@@ -111,4 +119,3 @@
 			--%>viewOnClick: "ss_loadEntry(this, '${evim.entry._docId}', '${evim.entry._binderId}', '${evim.entry._entityType}', '${ss_namespace}'<c:if test="${ssDashboardRequest}">, 'yes'</c:if>);"}<c:if test="${!status.last}">,</c:if><%--
 	--%></c:forEach>]<%--
 --%>}
-*/
