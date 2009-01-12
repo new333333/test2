@@ -30,6 +30,8 @@
 package org.kablink.teaming.module.mail.impl;
 
 import java.io.StringWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -55,6 +57,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NotificationDef;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WorkflowControlledEntry;
@@ -70,6 +73,8 @@ import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.mail.EmailFormatter;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.shared.AccessUtils;
+import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.smtp.SMTPManager;
 import org.kablink.teaming.util.NLT;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
@@ -104,7 +109,22 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
     public void setDefinitionBuilderConfig(DefinitionConfigurationBuilder definitionBuilderConfig) {
         this.definitionBuilderConfig = definitionBuilderConfig;
     }
- 
+    private ZoneModule zoneModule;
+    public ZoneModule getZoneModule() {
+    	return zoneModule;
+    }
+    public void setZoneModule(ZoneModule zoneModule) {
+    	this.zoneModule = zoneModule;
+    }
+	private SMTPManager smtpService;
+	public void setSmtpService(SMTPManager smtpService) {
+		this.smtpService = smtpService;
+	}
+	public SMTPManager getSmtpService()
+	{
+		return smtpService;
+	}
+
    /**
 	 * Determine which users have access to the entry.
 	 * Return a map from locale to a collection of email Addresses
@@ -452,7 +472,31 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		element.addAttribute("docLevel", String.valueOf(entry.getDocLevel()));
 
 	}
-
+	public String getReplyTo(Binder binder) {
+		if (binder.getPostingEnabled() && 
+				getCoreDao().loadZoneConfig(binder.getZoneId()).getMailConfig().isSimpleUrlPostingEnabled() &&
+				getSmtpService().isEnabled()) {
+			List<SimpleName> names = getCoreDao().loadSimpleNames(binder.getId(), binder.getZoneId());
+			for (SimpleName name:names) {
+				if (Validator.isNotNull(name.getEmailAddress())) {
+					String hostname = getZoneModule().getVirtualHost(RequestContextHolder.getRequestContext().getZoneName());
+					if(Validator.isNull(hostname)) {
+						try {
+					        InetAddress addr = InetAddress.getLocalHost();
+					        // Get hostname
+					        hostname = addr.getHostName();
+					    } catch (UnknownHostException e) {
+							hostname = "localhost";
+					    }
+					}
+					return name.getEmailAddress()+ "@" + hostname;
+				}
+			}
+		}
+		//check old posting
+		if (binder.getPosting() != null && binder.getPosting().isEnabled()) return binder.getPosting().getEmailAddress();
+		return null;
+	}
 	public Map buildMessage(Binder binder, Collection entries,  Notify notify) {
 	    Map result = new HashMap();
 	    if (notify.getStartDate() == null) return result;
@@ -470,6 +514,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		final StringWriter tocWriter = new StringWriter();
 		final StringWriter entryWriterText = new StringWriter();
 		final StringWriter tocWriterText = new StringWriter();
+		Map params = new HashMap();
 		for (Iterator i=entries.iterator();i.hasNext();) {
 			parentChain.clear();
 			FolderEntry entry = (FolderEntry)i.next();	
@@ -479,6 +524,8 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				doFolderDigest(entry.getParentFolder(), entryWriter, NotifyVisitor.WriterType.HTML, notify);
 				doFolderDigest(entry.getParentFolder(), entryWriterText, NotifyVisitor.WriterType.TEXT, notify);
 				lastFolder = entry.getParentFolder();
+				params.put("ssReplyTo", getReplyTo(lastFolder));
+				
 			}
 			//make sure change of entries exist from topentry down to changed entry
 			//since entries are sorted by sortKey, we should have processed an changed parents
@@ -492,16 +539,18 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				element = fElement.addElement("folderEntry");
 				parent = (FolderEntry)parentChain.get(pos);
 				doEntry(element, parent, notify, false);
-				doDigestEntry(parent, notify, entryWriter, NotifyVisitor.WriterType.HTML, element);
-				doDigestEntry(parent, notify, entryWriterText, NotifyVisitor.WriterType.TEXT, element);
+				params.put("ssElement", element);
+				doDigestEntry(parent, notify, entryWriter, NotifyVisitor.WriterType.HTML, params);
+				doDigestEntry(parent, notify, entryWriterText, NotifyVisitor.WriterType.TEXT, params);
 				seenIds.add(parent.getId());
 			}
 					
 			seenIds.add(entry.getId());
 			element = fElement.addElement("folderEntry");
 			doEntry(element, entry, notify, true);
-			doDigestEntry(entry, notify, entryWriter, NotifyVisitor.WriterType.HTML, element);
-			doDigestEntry(entry, notify, entryWriterText, NotifyVisitor.WriterType.TEXT, element);
+			params.put("ssElement", element);
+			doDigestEntry(entry, notify, entryWriter, NotifyVisitor.WriterType.HTML, params);
+			doDigestEntry(entry, notify, entryWriterText, NotifyVisitor.WriterType.TEXT, params);
 		}
 		
 			
@@ -512,9 +561,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		
 		return result;
 	}
-	protected void doDigestEntry(FolderEntry entry, Notify notify, StringWriter writer, NotifyVisitor.WriterType type, Element element) {
-		Map params = new HashMap();
-		params.put("ssElement", element);
+	protected void doDigestEntry(FolderEntry entry, Notify notify, StringWriter writer, NotifyVisitor.WriterType type, Map params) {
 		NotifyBuilderUtil.buildElements(entry, notify, writer, type, params);
 	}
 	protected void doTOC(Folder folder, Document document, Notify notifyDef, StringWriter writer, NotifyVisitor.WriterType type) {
@@ -544,9 +591,11 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		Map result = new HashMap();
 	    if (notify.getStartDate() == null) return result;
 		StringWriter writer = new StringWriter();
+		Map params = new HashMap();
+		params.put("ssReplyTo", getReplyTo(entry.getParentBinder()));
 		if (Notify.NotifyType.interactive.equals(notify.getType())) {
-			Map params = new HashMap();
 			params.put("org.kablink.teaming.notify.params.replies",getFolderDao().loadEntryDescendants((FolderEntry)entry));
+
 			NotifyBuilderUtil.buildElements(entry, notify, writer, NotifyVisitor.WriterType.HTML, params);
 			result.put(EmailFormatter.HTML, writer.toString());
 			writer = new StringWriter();
@@ -554,10 +603,10 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			result.put(EmailFormatter.TEXT, writer.toString());
 			
 		} else {
-			doEntry((FolderEntry)entry, notify, writer, NotifyVisitor.WriterType.HTML);
+			doEntry((FolderEntry)entry, notify, writer, NotifyVisitor.WriterType.HTML, params);
 			result.put(EmailFormatter.HTML, writer.toString());
 			writer = new StringWriter();
-			doEntry((FolderEntry)entry, notify, writer, NotifyVisitor.WriterType.TEXT);
+			doEntry((FolderEntry)entry, notify, writer, NotifyVisitor.WriterType.TEXT, params);
 			result.put(EmailFormatter.TEXT, writer.toString());
 		}
 
@@ -566,11 +615,11 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 
 	}
 	
-	private void doEntry(FolderEntry entry, Notify notify, StringWriter writer, NotifyVisitor.WriterType type) {
+	private void doEntry(FolderEntry entry, Notify notify, StringWriter writer, NotifyVisitor.WriterType type, Map params) {
 		if (entry == null) return;
 		//handle direct ancestors of the changed entry first
-		doEntry(entry.getParentEntry(), notify, writer, type); 
-		NotifyBuilderUtil.buildElements(entry, notify, writer, type, new HashMap());
+		doEntry(entry.getParentEntry(), notify, writer, type, params); 
+		NotifyBuilderUtil.buildElements(entry, notify, writer, type, params);
 	}
 	/**
 	 * Build a message for and entry and replies you can see.

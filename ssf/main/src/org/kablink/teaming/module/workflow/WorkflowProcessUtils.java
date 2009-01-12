@@ -700,9 +700,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 			if (!currentCal.getTime().before(c)) return true;
 			updateMinimum(minDate,c);
 			return false;
-		} else if (currentVal instanceof Event) {
-			
-		}
+		} 
 		return false;
 	}
 	private static boolean beforeDate(Element condition, Object currentVal, Calendar currentCal, Date minDate) {
@@ -713,9 +711,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 			if (currentCal.getTime().after(cDate)) return true;
 			updateMinimum(minDate,cDate);
 			return false;
-		} else if (currentVal instanceof Event) {
-			
-		}
+		} 
 		return false;
 	}
 	private static boolean afterDate(Element condition, Object currentVal, Calendar currentCal, Date minDate) {
@@ -726,9 +722,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 			if (currentCal.getTime().after(cDate)) return true;
 			updateMinimum(minDate,cDate);
 			return false;
-		} else if (currentVal instanceof Event) {
-			
-		}
+		} 
 		return false;
 	}
 	private static Date adjustDate(Element condition, Date current, boolean forward) {
