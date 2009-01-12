@@ -1,7 +1,7 @@
 
 <portlet-app xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd">  
   <portlet> 
-    <description xml:lang="en">ICEcore Workspace Tree Portlet</description>  
+    <description xml:lang="en">Kablink Workspace Tree Portlet</description>  
     <portlet-name>ss_workspacetree</portlet-name>  
     <display-name xml:lang="en">Workspace Tree</display-name>  
     <portlet-class>org.kablink.teaming.spring.web.portlet.DispatcherPortlet</portlet-class>  
@@ -38,7 +38,7 @@
     <resource-bundle>content.workspacetree</resource-bundle>
   </portlet>  
   <portlet> 
-    <description xml:lang="en">ICEcore Bookmarks Portlet</description>  
+    <description xml:lang="en">Kablink Bookmarks Portlet</description>  
     <portlet-name>ss_forum</portlet-name>  
     <display-name xml:lang="en">Bookmarks</display-name>  
     <portlet-class>org.kablink.teaming.spring.web.portlet.DispatcherPortlet</portlet-class>  
@@ -75,7 +75,7 @@
     <resource-bundle>content.forum</resource-bundle>
   </portlet>  
   <portlet> 
-    <description xml:lang="en">ICEcore Administration</description>  
+    <description xml:lang="en">Kablink Administration</description>  
     <portlet-name>ss_administration</portlet-name>  
     <display-name xml:lang="en">Administration</display-name>  
     <portlet-class>org.kablink.teaming.spring.web.portlet.DispatcherPortlet</portlet-class>  
@@ -111,7 +111,7 @@
     <resource-bundle>content.administration</resource-bundle>
   </portlet>  
   <portlet> 
-    <description xml:lang="en">ICEcore Presence</description>  
+    <description xml:lang="en">Kablink Presence</description>  
     <portlet-name>ss_presence</portlet-name>  
     <display-name xml:lang="en">Presence</display-name>  
     <portlet-class>org.kablink.teaming.spring.web.portlet.DispatcherPortlet</portlet-class>  
@@ -148,7 +148,7 @@
     <resource-bundle>content.presence</resource-bundle>
   </portlet>  
   <portlet> 
-    <description xml:lang="en">ICEcore Toolbar</description>  
+    <description xml:lang="en">Kablink Toolbar</description>  
     <portlet-name>ss_toolbar</portlet-name>  
     <display-name xml:lang="en">Toolbar</display-name>  
     <portlet-class>org.kablink.teaming.spring.web.portlet.DispatcherPortlet</portlet-class>  
@@ -184,7 +184,7 @@
     <resource-bundle>content.toolbar</resource-bundle>
   </portlet>  
   <portlet> 
-    <description xml:lang="en">ICEcore Blog Summary</description>  
+    <description xml:lang="en">Kablink Blog Summary</description>  
     <portlet-name>ss_blog</portlet-name>  
     <display-name xml:lang="en">Blog Summary</display-name>  
     <portlet-class>org.kablink.teaming.spring.web.portlet.DispatcherPortlet</portlet-class>  
@@ -221,7 +221,7 @@
     <resource-bundle>content.blog</resource-bundle>
   </portlet>  
   <portlet> 
-    <description xml:lang="en">ICEcore Task Summary</description>  
+    <description xml:lang="en">Kablink Task Summary</description>  
     <portlet-name>ss_task</portlet-name>  
     <display-name xml:lang="en">Task Summary</display-name>  
     <portlet-class>org.kablink.teaming.spring.web.portlet.DispatcherPortlet</portlet-class>  
@@ -258,7 +258,7 @@
     <resource-bundle>content.task</resource-bundle>
   </portlet>  
   <portlet> 
-    <description xml:lang="en">ICEcore Guestbook</description>  
+    <description xml:lang="en">Kablink Guestbook</description>  
     <portlet-name>ss_guestbook</portlet-name>  
     <display-name xml:lang="en">Guestbook</display-name>  
     <portlet-class>org.kablink.teaming.spring.web.portlet.DispatcherPortlet</portlet-class>  
@@ -295,7 +295,7 @@
     <resource-bundle>content.guestbook</resource-bundle>
   </portlet>  
   <portlet> 
-    <description xml:lang="en">ICEcore Wiki</description>  
+    <description xml:lang="en">Kablink Wiki</description>  
     <portlet-name>ss_wiki</portlet-name>  
     <display-name xml:lang="en">Wiki</display-name>  
     <portlet-class>org.kablink.teaming.spring.web.portlet.DispatcherPortlet</portlet-class>  
@@ -332,7 +332,7 @@
     <resource-bundle>content.wiki</resource-bundle>
   </portlet>  
   <portlet> 
-    <description xml:lang="en">ICEcore Search</description>  
+    <description xml:lang="en">Kablink Search</description>  
     <portlet-name>ss_search</portlet-name>  
     <display-name xml:lang="en">Search</display-name>  
     <portlet-class>org.kablink.teaming.spring.web.portlet.DispatcherPortlet</portlet-class>  
@@ -369,7 +369,7 @@
     <resource-bundle>content.search</resource-bundle>
   </portlet>  
   <portlet> 
-    <description xml:lang="en">ICEcore Photo Gallery</description>  
+    <description xml:lang="en">Kablink Photo Gallery</description>  
     <portlet-name>ss_gallery</portlet-name>  
     <display-name xml:lang="en">Gallery</display-name>  
     <portlet-class>org.kablink.teaming.spring.web.portlet.DispatcherPortlet</portlet-class>  
@@ -406,9 +406,9 @@
     <resource-bundle>content.gallery</resource-bundle>
   </portlet>  
   <portlet> 
-    <description xml:lang="en">ICEcore Welcome</description>  
+    <description xml:lang="en">Kablink Welcome</description>  
     <portlet-name>ss_welcome</portlet-name>  
-    <display-name xml:lang="en">ICEcore Welcome</display-name>  
+    <display-name xml:lang="en">Kablink Welcome</display-name>  
     <portlet-class>org.kablink.teaming.spring.web.portlet.DispatcherPortlet</portlet-class>  
     <init-param> 
       <name>contextConfigLocation</name>  
