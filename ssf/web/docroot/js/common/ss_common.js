@@ -400,7 +400,7 @@ function ss_openUrlInParentWorkarea(url, id, action) {
 		} else {
 			self.parent.location.href = url;
 		}
-	catch(e) {
+	} catch(e) {
 		self.parent.location.href = url;
 	}
 }
@@ -414,7 +414,7 @@ function ss_navigation_goto(url) {
 		} else {
 			return(ss_openUrlInPortlet(url));
 		}
-	catch(e) {
+	} catch(e) {
 		return(ss_openUrlInPortlet(url));
 	}
 }
