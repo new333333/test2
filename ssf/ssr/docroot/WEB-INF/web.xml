@@ -48,7 +48,7 @@
 	</security-constraint>
 	<login-config>
 		<auth-method>BASIC</auth-method>
-		<realm-name>ICEcore Remoting Services</realm-name>
+		<realm-name>Kablink Remoting Services</realm-name>
 	</login-config>
 	<security-role>
 		<role-name>users</role-name>

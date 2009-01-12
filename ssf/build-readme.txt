@@ -1,7 +1,7 @@
-Building and Deploying ICEcore Within Development Environment
+Building and Deploying Kablink Within Development Environment
 =============================================================
 
-1. INSTALLING ICEcore BINARY AND SOURCE DISTRIBUTIONS
+1. INSTALLING Kablink BINARY AND SOURCE DISTRIBUTIONS
 
 (0.1) Download and install a Java development kit
 
@@ -36,19 +36,19 @@ Building and Deploying ICEcore Within Development Environment
   ${ant.home}/bin in its list.  This makes the "ant" command line script
   available, which will be used to actually perform the build.
 
-(1) Download and install ICEcore Liferay/Tomcat bundle kit.
+(1) Download and install Kablink Liferay/Tomcat bundle kit.
 
-* Refer to the ICEcore Installation and Configuration Guide for detailed
+* Refer to the Kablink Installation and Configuration Guide for detailed
   instructions. For the purpose of the remainder of this document, it is
-  assumed that the bundled binary distribution is installed into C:/icecore
+  assumed that the bundled binary distribution is installed into C:/kablink
   directory.
   
-(2) Download and install ICEcore source distribution.
+(2) Download and install Kablink source distribution.
 
 * For the purpose of the remainder of this document, it is assumed that 
-  the source package is unpacked into C:/icecore-1.0-src directory.
+  the source package is unpacked into C:/kablink-2.0-src directory.
   
-2. BUILDING ICEcore SOURCE AND/OR RE-DEPLOYING IT INTO BINARY INSTALLATION USING ANT
+2. BUILDING Kablink SOURCE AND/OR RE-DEPLOYING IT INTO BINARY INSTALLATION USING ANT
 
   Note: You can not use the source distribution alone to build or re-package a
         full bundled binary distribution from scratch. You must first install 
@@ -56,27 +56,27 @@ Building and Deploying ICEcore Within Development Environment
         tree to the binary installation.
 
   Note: If you installed the bundle kit in a directory different from
-        C:/icecore, modify the value of the app.server.liferay.tomcat.dir
-        property in C:/icecore-1.0-src/app.server.properties file to reflect the
+        C:/kablink, modify the value of the app.server.liferay.tomcat.dir
+        property in C:/kablink-2.0-src/app.server.properties file to reflect the
         new location.
         
-(1) Building ICEcore artifacts
+(1) Building Kablink artifacts
 
-* For clean rebuild of ICEcore:
+* For clean rebuild of Kablink:
 
-  cd C:/icecore-1.0-src
+  cd C:/kablink-2.0-src
   ant clean-build
   
   Note: The above command does not deploy the updated files. You can locate
   the updated files (eg. .jar file) from individual sub-project directories.
 
-(2) Building and deploying ICEcore
+(2) Building and deploying Kablink
 
-* For clean rebuild of ICEcore and deployment into the binary installation:
+* For clean rebuild of Kablink and deployment into the binary installation:
 
-  Note: Shutdown ICEcore server before executing the following command.
+  Note: Shutdown Kablink server before executing the following command.
   
-  cd C:/icecore-1.0-src
+  cd C:/kablink-2.0-src
   ant clean-build-and-full-deploy
 
   Note: You can use build-and-full-deploy instead of clean-build-and-full-deploy
@@ -90,11 +90,11 @@ Building and Deploying ICEcore Within Development Environment
   changes being made, this may provide a faster way to deploy and test your
   changes. When this smaller control is not effective, you must use the full
   build command described above. Re-deploying modified jar files or configuration
-  files almost always requires a restart of the ICEcore server.
+  files almost always requires a restart of the Kablink server.
   
 * The web subproject contains an additional Ant target called deploy-light 
   which could be handy when all you need to re-deploy to the installation area
   are the common web-tier artifacts such as .jsp, .html, .js, .css, and image
   files, etc. The main difference is that you can deploy these artifacts
-  using deploy-light without having to stop and restart the ICEcore server.
+  using deploy-light without having to stop and restart the Kablink server.
   

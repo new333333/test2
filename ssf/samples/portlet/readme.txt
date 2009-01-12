@@ -22,15 +22,15 @@ work properly. For example, if your binary installation contains Enterprise
 edition of the product, you must NOT use this technique unless you also have 
 access to the Enterprise edition of the source tree.
 
-1. Stop ICEcore server.
+1. Stop Kablink server.
 
 2. Build and deploy the sample by running "ant deploy" from the command line.
 This builds teaming-sample-portlet.jar and copies it into 
-<icecore installation>/webapps/ssf/WEB-INF/lib directory. It also copies
+<kablink installation>/webapps/ssf/WEB-INF/lib directory. It also copies
 a jsp file and some required configuration files into respective sub-directories
-under <icecore installation>/webapps/ssf/WEB-INF.
+under <kablink installation>/webapps/ssf/WEB-INF.
 
-3. Edit <icecore source>/web/docroot/WEB-INF/portlet.xml and add the following:
+3. Edit <kablink source>/web/docroot/WEB-INF/portlet.xml and add the following:
 
     <portlet>
         <description xml:lang="en">Sample Portlet</description>
@@ -50,7 +50,7 @@ under <icecore installation>/webapps/ssf/WEB-INF.
         <resource-bundle>content.sample</resource-bundle>
     </portlet>
 
-4. Edit <icecore source>/web/docroot/WEB-INF/liferay-portlet.xml and add the following:
+4. Edit <kablink source>/web/docroot/WEB-INF/liferay-portlet.xml and add the following:
 
 	<portlet>
 		<portlet-name>ss_sample</portlet-name>
@@ -59,38 +59,38 @@ under <icecore installation>/webapps/ssf/WEB-INF.
 		<instanceable>true</instanceable>
 	</portlet>
 
-5. Edit <icecore source>/web/docroot/WEB-INF/liferay-display.xml and add the following:
+5. Edit <kablink source>/web/docroot/WEB-INF/liferay-display.xml and add the following:
 
 	<portlet id="ss_sample" />
 
-6. (Optional) Edit <icecore source>/web/docroot/WEB-INF/context/adapter-servlet.xml
+6. (Optional) Edit <kablink source>/web/docroot/WEB-INF/context/adapter-servlet.xml
 and add the following line to the <list> element of the "adaptedPortlets" bean
 definition. This step is necessary ONLY IF the new portlet is to plug into the
-ICEcore's proprietary adapter environment. In other words, any ICEcore portlet 
+Kablink's proprietary adapter environment. In other words, any Kablink portlet 
 designed to serve URLs of format http://<host>:<port>/ssf/a belongs to this category.
 
 	<value>ss_sample</value>
 
-7. Execute clean-build-and-full-deploy Ant target in <icecore source>/build.xml
+7. Execute clean-build-and-full-deploy Ant target in <kablink source>/build.xml
 appropriate for the edition of the product you're working with.
 
-8. Start ICEcore server.
+8. Start Kablink server.
 
-9. Log into ICEcore using browser, select Add Content, add Sample Portlet from
-under ICEcore category.
+9. Log into Kablink using browser, select Add Content, add Sample Portlet from
+under Kablink category.
 
 IF YOU ONLY HAVE BINARY INSTALLATION
 ====================================
 
-1. Stop ICEcore server.
+1. Stop Kablink server.
 
 2. Build and deploy the sample by running "ant deploy" from the command line.
 This builds teaming-sample-portlet.jar and copies it into 
-<icecore installation>/webapps/ssf/WEB-INF/lib directory. It also copies
+<kablink installation>/webapps/ssf/WEB-INF/lib directory. It also copies
 a jsp file and some required configuration files into respective sub-directories
-under <icecore installation>/webapps/ssf/WEB-INF.
+under <kablink installation>/webapps/ssf/WEB-INF.
 
-3. Edit <icecore installation>/webapps/ssf/WEB-INF/portlet.xml and add the 
+3. Edit <kablink installation>/webapps/ssf/WEB-INF/portlet.xml and add the 
 following. If you prefer making this changes in the source tree and deploy
 the changes from there
 
@@ -113,7 +113,7 @@ the changes from there
     </portlet>
 
 
-4. Edit <icecore installation>/webapps/ssf/WEB-INF/liferay-portlet.xml and 
+4. Edit <kablink installation>/webapps/ssf/WEB-INF/liferay-portlet.xml and 
 add the following:
 
 	<portlet>
@@ -123,19 +123,19 @@ add the following:
 		<instanceable>true</instanceable>
 	</portlet>
 
-5. Edit <icecore installation>/webapps/ssf/WEB-INF/liferay-display.xml and
+5. Edit <kablink installation>/webapps/ssf/WEB-INF/liferay-display.xml and
 add the following:
 
 	<portlet id="ss_sample" />
 
-6. (Optional) Edit <icecore installation>/webapps/ssf/WEB-INF/context/adapter-servlet.xml
+6. (Optional) Edit <kablink installation>/webapps/ssf/WEB-INF/context/adapter-servlet.xml
 and add the following line to the <list> element of the "adaptedPortlets" bean
 definition. This step is necessary ONLY IF the new portlet is to plug into the
-ICEcore's proprietary adapter environment.
+Kablink's proprietary adapter environment.
 
 	<value>ss_sample</value>
 
-7. Edit <icecore installation>/webapps/ssf/WEB-INF/web.xml and add the 
+7. Edit <kablink installation>/webapps/ssf/WEB-INF/web.xml and add the 
 following two sections in appropriate places in the file:
 
 	<servlet>
@@ -153,7 +153,7 @@ following two sections in appropriate places in the file:
 		<url-pattern>/ss_sample/*</url-pattern>
 	</servlet-mapping>
 
-8. Start ICEcore server.
+8. Start Kablink server.
 
-9. Log into ICEcore using browser, select Add Content, add Sample Portlet from
-under ICEcore category.
+9. Log into Kablink using browser, select Add Content, add Sample Portlet from
+under Kablink category.
