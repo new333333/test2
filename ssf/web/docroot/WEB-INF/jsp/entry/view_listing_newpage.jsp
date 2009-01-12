@@ -50,13 +50,11 @@
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
 </ssf:ifadapter>
 <script type="text/javascript">
-function ss_resizeTopDiv() {
-	var divObj = document.getElementById('ss_pseudoPortalDiv${renderResponse.namespace}');
-	var pseudoPortalMargin = 30;
-	divObj.style.width = parseInt(document.body.scrollWidth) - pseudoPortalMargin + "px";
+function ss_resizeTopDiv_${renderResponse.namespace}() {
+	ss_resizeTopDiv('${renderResponse.namespace}');
 }
-ss_createOnResizeObj("ss_resizeTopDiv", ss_resizeTopDiv);
-ss_createOnLayoutChangeObj("ss_resizeTopDiv", ss_resizeTopDiv);
+ss_createOnResizeObj("ss_resizeTopDiv", ss_resizeTopDiv_${renderResponse.namespace});
+ss_createOnLayoutChangeObj("ss_resizeTopDiv", ss_resizeTopDiv_${renderResponse.namespace});
 </script>
  <table width="100%">
  <tr>

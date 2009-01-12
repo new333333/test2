@@ -688,6 +688,26 @@ function ss_moveObjectToBody(obj) {
     }
 }
 
+//Function to resize the top div of the folder pages to get the data to display in sight
+var ss_topDivMarginOffset = 32; //This is the margin offset of the top div style (ss_pseudoPortal)
+var ss_origianalTopDivSize = 0;
+var ss_origianalWindowSize = parseInt(ss_getWindowWidth());
+function ss_resizeTopDiv(namespace) {
+	var divObj = document.getElementById('ss_pseudoPortalDiv'+namespace);
+	if (divObj.style.width) {
+		if (Math.abs(parseInt(document.body.scrollWidth) - ss_origianalTopDivSize) > ss_topDivMarginOffset ||
+				parseInt(ss_getWindowWidth()) != ss_origianalWindowSize) {
+			divObj.style.width = parseInt(ss_getWindowWidth()) - ss_topDivMarginOffset + "px";
+			setTimeout('document.getElementById("ss_pseudoPortalDiv'+namespace+'").style.width = parseInt(document.body.scrollWidth) - ss_topDivMarginOffset + "px";',100);
+		}
+	} else {
+		divObj.style.width = parseInt(document.body.scrollWidth) - ss_topDivMarginOffset + "px";
+	}
+	ss_origianalTopDivSize = parseInt(document.body.scrollWidth) - ss_topDivMarginOffset;
+	ss_origianalWindowSize = parseInt(ss_getWindowWidth());
+}
+
+
 //Functions to save the user status
 function ss_updateStatusSoon(obj, evt, maxLength) {
 	if ((typeof evt == "undefined" || typeof evt.which == "undefined" || !evt.which) && typeof event == "undefined") return;

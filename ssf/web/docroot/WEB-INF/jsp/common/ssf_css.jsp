@@ -1778,7 +1778,6 @@ a:hover img.ss_generic_close {
     background-position:  left -9px;
 }
 img.ss_print_button {
-	position:relative;
     background:url(<html:imagesPath/>icons/printer.gif) no-repeat left -16px;
     width:16px;
     height: 16px;

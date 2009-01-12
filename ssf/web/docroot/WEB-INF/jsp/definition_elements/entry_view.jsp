@@ -42,9 +42,8 @@
 <td valign="top" nowrap style="padding-top:5px">
   <ssf:ifadapter>
   	<a href="javascript: window.print();"><img border="0" 
-      class="ss_print_button"
       alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
-      src="<html:imagesPath/>pics/1pix.gif" /></a>&nbsp;&nbsp;
+      src="<html:rootPath/>images/pics/masthead/masthead_printer.png" width="23" height="21"/></a>&nbsp;&nbsp;
   </ssf:ifadapter>
     <a
       href="javascript: ss_helpSystem.run();"><img border="0"
