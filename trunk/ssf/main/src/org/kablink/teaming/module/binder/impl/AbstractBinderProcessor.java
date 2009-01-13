@@ -419,7 +419,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  					binder.setResourcePath(getResourceDriverManager().normalizedResourcePath(parent.getResourceDriverName(), parent.getResourcePath(), binder.getTitle()));
  				}
  				else {
- 					throw new IllegalArgumentException("Resource path must be specified for new binder");
+ 					binder.setResourcePath("");
  				}
  			}
  		}
