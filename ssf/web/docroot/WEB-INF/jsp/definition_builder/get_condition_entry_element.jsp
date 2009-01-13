@@ -53,6 +53,7 @@
 	                     element.value.type == 'radio' || 
 	                     element.value.type == 'checkbox' || 
 	       				 element.value.type == 'date'  || 
+	       				 element.value.type == 'date_time' ||
 	       				 element.value.type == 'user_list'}">
 	         <option value="<c:out value="${element.key}"/>"><c:out value="${element.value.caption}"/></option>
 	       </c:if>
