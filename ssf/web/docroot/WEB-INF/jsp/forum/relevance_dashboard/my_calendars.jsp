@@ -43,7 +43,7 @@
 					containerId: "ss_cal_para", 
 					calendarDataProvider: new function() {
 							this.loadEventsByDate = function(reqParams, date, calendarObj) {
-								calendarObj.addEvents(<jsp:include page="/WEB-INF/jsp/forum/json/events.jsp" />, date);
+								calendarObj.addEvents(<jsp:include page="/WEB-INF/jsp/forum/json/events_uncommented.jsp" />, date);
 							}
 							this.stickyCalendarDisplaySettings = function(){}
 							this.loadEntryEvents = function(options) {}
