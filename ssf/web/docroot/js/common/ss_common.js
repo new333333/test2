@@ -3827,7 +3827,7 @@ function ss_loadEntry(obj, id, binderId, entityType, namespace, isDashboard) {
 function ss_fadeOutTableRow(rowId, divId) {
 	var rowObj = self.document.getElementById(rowId);
 	var divObj = self.document.getElementById(divId);
-	if (typeof rowObj == 'undefined' || typeof divObj == 'undefined') return;
+	if (rowObj == null || divObj == null || typeof rowObj == 'undefined' || typeof divObj == 'undefined') return;
 	if (divObj.visibility != 'hidden') {
 		dojo.fadeOut({node:divId, delay:400, onEnd: function() {
 			var divObj = self.document.getElementById(divId);
