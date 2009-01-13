@@ -321,7 +321,6 @@ public class Datepicker extends TagSupport {
 				      .append(" value=\"").append(cal.get(Calendar.MONTH)+1).append("\" />\n");
 				  } else {
 					sb.append("<label for=\"").append(prefix).append("_month\">&nbsp;</label>\n");
-				    
 					sb.append("<select name=\"").append(prefix).append("_month\" id=\"").append(prefix).append("_month\">\n");
 				    if (!initDateProvided) {
 				      selected = "selected=\"selected\"";
@@ -354,7 +353,8 @@ public class Datepicker extends TagSupport {
 				      .append(" id=\"").append(prefix).append("_date\"")
 				      .append(" value=\"").append(cal.get(Calendar.DAY_OF_MONTH)).append("\" />\n");
 				  } else {
-				    sb.append("<select name=\"").append(prefix).append("_date\" id=\"").append(prefix).append("_date\">\n");
+					  sb.append("<label for=\"").append(prefix).append("_date\">&nbsp;</label>\n");
+					sb.append("<select name=\"").append(prefix).append("_date\" id=\"").append(prefix).append("_date\">\n");
 				    if (!initDateProvided) {
 				      selected = "selected=\"selected\"";
 				    }
