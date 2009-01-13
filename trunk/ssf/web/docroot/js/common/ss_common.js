@@ -579,7 +579,8 @@ function ss_treeShowIdNoWS(id, obj, action, namespace) {
 function ss_fetchUrlInIframe(url, anchorDivName, width, height) {
     var iframeDivObj = self.document.getElementById("ss_reusableIframeDiv");
     var iframeObj = self.document.getElementById("ss_reusableIframe");
-    var anchorDivObj = self.parent.document.getElementById(anchorDivName);
+    var anchorDivObj = null;
+    try { self.parent.document.getElementById(anchorDivName); } catch(e) {}
     if (iframeDivObj == null) {
 	    iframeDivObj = self.document.createElement("div");
         iframeDivObj.setAttribute("id", "ss_reusableIframeDiv");
@@ -605,10 +606,12 @@ function ss_fetchUrlInIframe(url, anchorDivName, width, height) {
     iframeObj.style.width = parseInt(width) + "px"
     iframeObj.style.height = parseInt(height) + "px"
 	ss_showDiv("ss_reusableIframeDiv");
-	var x = dojo.coords(anchorDivObj, true).x
-	var y = dojo.coords(anchorDivObj, true).y
-    ss_setObjectTop(iframeDivObj, y);
-    ss_setObjectLeft(iframeDivObj, x);
+	if (anchorDivObj != null) {
+		var x = dojo.coords(anchorDivObj, true).x
+		var y = dojo.coords(anchorDivObj, true).y
+	    ss_setObjectTop(iframeDivObj, y);
+	    ss_setObjectLeft(iframeDivObj, x);
+	}
 	iframeObj.src = url;
 }
 
