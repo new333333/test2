@@ -129,7 +129,7 @@ Boolean webdavSupportedFooter = new Boolean(org.kablink.teaming.web.util.BinderH
 	
 						--%></div><%--
 					
-						--%><c:set var="delimiter" value="<span class=\"ss_bottomlinks\">&nbsp;|&nbsp;</span>" /><%--
+						--%><c:set var="delimiter" value="<span class=\"ss_bottomlinks\">&nbsp;&nbsp;|&nbsp;&nbsp;</span>" /><%--
 					--%></c:if><%--
 					
 				--%></c:when><%--
@@ -168,7 +168,7 @@ Boolean webdavSupportedFooter = new Boolean(org.kablink.teaming.web.util.BinderH
 							--%></a><%--
 						--%></div><%--
 						--%><%--
-						--%><c:set var="delimiter" value="<span class=\"ss_bottomlinks\">&nbsp;|&nbsp;</span>" /><%--
+						--%><c:set var="delimiter" value="<span class=\"ss_bottomlinks\">&nbsp;&nbsp;|&nbsp;&nbsp;</span>" /><%--
 					--%></c:if><%--
 				--%></c:when><%--
 				
@@ -182,7 +182,7 @@ Boolean webdavSupportedFooter = new Boolean(org.kablink.teaming.web.util.BinderH
 							--%>><c:out value="${toolbarMenu.value.title}" /><%--
 						--%></a><%--
 					--%></div><%--
-					--%><c:set var="delimiter" value="<span class=\"ss_bottomlinks\">&nbsp;|&nbsp;</span>" /><%--
+					--%><c:set var="delimiter" value="<span class=\"ss_bottomlinks\">&nbsp;&nbsp;|&nbsp;&nbsp;</span>" /><%--
 				--%></c:otherwise><%--
 				
 			--%></c:choose><%--

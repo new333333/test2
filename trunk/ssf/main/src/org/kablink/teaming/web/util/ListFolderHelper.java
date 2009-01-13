@@ -1595,6 +1595,20 @@ public class ListFolderHelper {
 			}
 		}
 		
+		//The "Who has access" menu
+		qualifiers = new HashMap();
+		qualifiers.put("popup", Boolean.TRUE);
+		qualifiers.put("popupWidth", "400");
+		qualifiers.put("popupHeight", "500");
+		adminMenuCreated = true;
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
+		adapterUrl.setParameter(WebKeys.URL_WORKAREA_ID, folder.getWorkAreaId().toString());
+		adapterUrl.setParameter(WebKeys.URL_WORKAREA_TYPE, folder.getWorkAreaType());
+		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ACCESS);
+		folderToolbar.addToolbarMenu("2_whoHasAccess", 
+				NLT.get("toolbar.whoHasAccess"), adapterUrl.toString(), qualifiers);
+		
 		// list team members
 		qualifiers = new HashMap();			
 			
@@ -1851,7 +1865,7 @@ public class ListFolderHelper {
 		String[] contributorIds = collectContributorIds((List)model.get(WebKeys.FOLDER_ENTRIES));
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 
-		// iCalendar
+		//   iCalendar
 		if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
 				viewType.equals(Definition.VIEW_STYLE_TASK)) {
 			qualifiers = new HashMap();
@@ -1926,17 +1940,23 @@ public class ListFolderHelper {
 		
 		//Permalink urls, rss url, webdav url, email addresses
 		model.put(WebKeys.PERMALINK, permaLink);
-		//WebDav Permalink
+		//  WebDav Permalink
 		if (!webdavUrl.equals("")) {
 			model.put(WebKeys.TOOLBAR_URL_WEBDAV, webdavUrl);
 		}
-		//RSS link 
+		//  RSS link 
 		String rssUrl = UrlUtil.getFeedURL(request, topFolderId);
 		if (rssUrl != null && !rssUrl.equals("")) {
 			model.put(WebKeys.TOOLBAR_URL_SUBSCRIBE_RSS, rssUrl);
 		}
-		//Build the simple URL beans
+		//  Build the simple URL beans
 		BinderHelper.buildSimpleUrlBeans(bs,  request, folder, model);
+		//   iCalendar
+		if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
+				viewType.equals(Definition.VIEW_STYLE_TASK)) {
+			model.put(WebKeys.TOOLBAR_URL_ICAL, org.kablink.teaming.ical.util.UrlUtil.getICalURL(request, forumId, null));
+		}
+
 		
 		//Set up the whatsNewToolbar links
 		//What's new

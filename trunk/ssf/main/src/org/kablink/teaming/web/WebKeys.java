@@ -317,6 +317,7 @@ public class WebKeys {
 	public static final String ACTION_STOP_WORKFLOW="stop_workflow";
 	public static final String ACTION_VIEW_UPLOAD_FILE="view_upload_file";
 	public static final String ACTION_ADD_MEETING="add_meeting";
+	public static final String ACTION_VIEW_BINDER_ACCESS="view_binder_access";
 	public static final String ACTION_VIEW_BINDER_IN_PARENT="view_binder_in_parent";
 	public static final String ACTION_VIEW_CREDITS="view_credits";
 	public static final String ACTION_VIEW_EDITABLE_HISTORY="view_editable_history";
@@ -479,6 +480,7 @@ public class WebKeys {
 	public static final String OPERATION_HIDE_BUSINESS_CARD = "hide_business_card";
 	public static final String OPERATION_SET_UI_THEME = "set_ui_theme";
 	public static final String OPERATION_FIND_PLACE_FORM = "find_place_form";
+    public static final String OPERATION_VIEW_ACCESS = "view_access";
 	public static final String OPERATION_WIKILINK_FORM = "wikilink_form";
 	
 	public static final String OPERATION_SAVE_SEARCH_SORT_INFO="save_search_sort_info";
@@ -967,6 +969,7 @@ public class WebKeys {
     public static final String TOOLBAR_MEETING_POST="ss_toolbar_meeting_post";
     public static final String TOOLBAR_MEETING_URL="ss_toolbar_meeting_url";
     public static final String TOOLBAR_SUBSCRIBE_EMAIL="ss_toolbar_subscribe_email";
+    public static final String TOOLBAR_URL_ICAL="ss_toolbar_url_ical";
     public static final String TOOLBAR_URL_SUBSCRIBE_RSS="ss_toolbar_url_subscribe_rss";
     public static final String TOOLBAR_URL_EMAIL_ADDRESSES="ss_toolbar_url_email_addresses";
     public static final String TOOLBAR_URL_SIMPLE_URLS="ss_toolbar_url_simple_urls";
@@ -1154,6 +1157,7 @@ public class WebKeys {
 	public static final String PAGE_MENU_CONTROL_TITLE = "ssPageMenuControlTitle";
     
     //View names
+    public static final String VIEW_ACCESS_TO_BINDER = "binder/view_access";
     public static final String VIEW_ACCESS_CONTROL = "binder/access_control";
     public static final String VIEW_ACCESS_DENIED = "forum/access_not_allowed";
     public static final String VIEW_ADD_ENTRY = "entry/add_entry";
