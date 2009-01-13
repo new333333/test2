@@ -119,7 +119,9 @@
   <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
     disabled="disabled"
   </c:if>
-  name="role_id${function.id}_owner" />
+  name="role_id${function.id}_owner"
+  id="role_id${function.id}_owner" />
+<label for="role_id${function.id}_owner">&nbsp;</label>
 </c:if>
 </TD>
 </c:forEach>
@@ -158,7 +160,9 @@
   <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
     disabled="disabled"
   </c:if>
-  name="role_id${function.id}_teamMember" />
+  name="role_id${function.id}_teamMember"
+  id="role_id${function.id}_teamMember" />
+<label for="role_id${function.id}_teamMember">&nbsp;</label>
 </c:if>
 </TD>
 </c:forEach>
