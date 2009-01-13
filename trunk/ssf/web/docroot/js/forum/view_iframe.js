@@ -45,10 +45,12 @@ function ss_setEntryDivHeight() {
 	setTimeout("ss_positionEntryDiv();", 100);
 }
 function ss_showForumEntryInIframe(url) {
-	if (self.parent && self != self.parent && typeof self.parent.ss_showForumEntryInIframe != "undefined") {
-		self.parent.ss_showForumEntryInIframe(url);
-		return
-	}
+	try {
+		if (self.parent && self != self.parent && typeof self.parent.ss_showForumEntryInIframe != "undefined") {
+			self.parent.ss_showForumEntryInIframe(url);
+			return false;
+		}
+	} catch(e) {}
 		
 	//ss_debug('show url in frame = '+url)
 	ss_positionEntryDiv();
