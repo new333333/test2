@@ -156,9 +156,12 @@ function ss_loadEntryUrl(url,id) {
 <jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 <script type="text/javascript">
 
-if (self.parent && self.parent.ss_highlightLineById) {
-	self.parent.ss_highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
-}
+try {
+	if (self.parent && self.parent.ss_highlightLineById) {
+		self.parent.ss_highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
+	}
+} catch(e) {}
+
 //Define the url of this page in case the entry needs to reload this page
 var ss_reloadUrl = "${ss_reloadUrl}";
 var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
