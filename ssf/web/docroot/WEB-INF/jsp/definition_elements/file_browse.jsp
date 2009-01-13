@@ -95,6 +95,7 @@ var ${eName}_ok = 1;
   <input type="hidden" name="ss_upload_request_uid" />
  </c:if>
  <c:if test='${empty ssFolder}'>
+  <label for="${eName}">&nbsp;</label>
   <input type="file" class="ss_text" name="${eName}" id="${eName}" ${width}/><br/>
  </c:if>
 	<script type="text/javascript">	
