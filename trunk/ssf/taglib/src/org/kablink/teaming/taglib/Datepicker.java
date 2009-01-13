@@ -385,6 +385,7 @@ public class Datepicker extends TagSupport {
 				      .append(" id=\"").append(prefix).append("_year\"")
 				      .append(" value=\"").append(cal.get(Calendar.YEAR)).append("\" />\n");
 				  } else {
+					  sb.append("<label for=\"").append(prefix).append("_year\">&nbsp;</label>\n");
 				    sb.append("<INPUT TYPE=\"text\" CLASS=\"ss_text\" NAME=\"").append(prefix)
 				      .append("_year\" id=\"").append(prefix).append("_year\" VALUE=\"");
 				    if (initDateProvided) {
