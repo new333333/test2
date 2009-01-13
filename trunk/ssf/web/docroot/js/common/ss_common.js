@@ -3862,13 +3862,14 @@ function ss_setWindowHighWaterMark(height) {
 
 var ss_loadEntryInPlaceLastRowObj = null;
 var ss_loadEntryInPlaceLastId = null;
+var ss_loadEntryInPlaceNextId = 0;
 //Note: this routine can be called (below) with obj = null
 function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType, isDashboard, hoverOverId) {
 	if (ss_userDisplayStyle == "accessible") {
 		if (obj != null) self.location.href = obj.href;
 		return false;
 	}
-	var random = ++ss_random;
+	var random = ++ss_loadEntryInPlaceNextId;
 	if (typeof hoverOverId != "undefined" && hoverOverId != "") ss_hideHoverOver(hoverOverId);
 	
 	if (ss_loadEntryInPlaceLastRowObj != null) {
