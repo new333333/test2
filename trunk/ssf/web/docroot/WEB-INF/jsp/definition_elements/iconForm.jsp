@@ -55,8 +55,9 @@
 		}
 
 %>
-<li><input type="radio" class="ss_text" name="${property_name}" 
-  value="<%= iconListValue %>" <%= checked %>
+<li><label for="<%= iconListValue %>">&nbsp;</label>
+  <input type="radio" class="ss_text" name="${property_name}" 
+  value="<%= iconListValue %>" id="<%= iconListValue %>" <%= checked %>
 /><img <ssf:alt text="<%= iconListValue %>"/> border="0" src="<html:brandedImagesPath/>.<%= iconListValue %>" /></li>
 <%
 	}
