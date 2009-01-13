@@ -110,6 +110,7 @@ public class AccessControlController extends AbstractBinderController {
 		Long workAreaId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		if (workAreaId == null) workAreaId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_WORKAREA_ID));				
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKAREA_TYPE);	
+		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");	
 		WorkArea wArea=null;
 		Map model = new HashMap();
 		if (EntityIdentifier.EntityType.zone.name().equals(type)) {
@@ -127,7 +128,11 @@ public class AccessControlController extends AbstractBinderController {
 		
 		setupAccess(this, request, response, wArea, model);
 
-		return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);
+		if (operation.equals(WebKeys.OPERATION_VIEW_ACCESS)) {
+			return new ModelAndView(WebKeys.VIEW_ACCESS_TO_BINDER, model);
+		} else {
+			return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);
+		}
 	}
 	//shared with binderconfig 
 	public static void getAccessResults(ActionRequest request, Map functionMemberships) {
