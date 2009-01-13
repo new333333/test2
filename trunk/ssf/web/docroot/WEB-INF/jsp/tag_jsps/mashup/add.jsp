@@ -207,8 +207,11 @@ function ss_mashupSubmit${ss_mashupItemId}() {
 		    />
           <br/>
           <input type="checkbox" name="${ss_mashupPropertyName}__showTitle"
+          	id="${ss_mashupPropertyName}__showTitle_1"
             onChange="ss_mashupAttr_showTitle${ss_mashupItemId} = this.value;"/> 
-          <span><ssf:nlt tag="mashup.showTitle"/></span>
+          <label for="${ss_mashupPropertyName}__showTitle_1">
+          	<span><ssf:nlt tag="mashup.showTitle"/></span>
+          </label>
 		  <br/>
 		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
 		    onClick="ss_mashupSubmit${ss_mashupItemId}();return true;"
@@ -234,20 +237,32 @@ function ss_mashupSubmit${ss_mashupItemId}() {
 		    />
           <br/>
           <input type="checkbox" name="${ss_mashupPropertyName}__showTitle"
+          	id="${ss_mashupPropertyName}__showTitle_2"
             onChange="ss_mashupAttr_showTitle${ss_mashupItemId} = this.value;"/> 
-          <span><ssf:nlt tag="mashup.showTitle"/></span>
+          <label for="${ss_mashupPropertyName}__showTitle_2">
+          	<span><ssf:nlt tag="mashup.showTitle"/></span>
+          </label>
           <br/>
           <input type="checkbox" name="${ss_mashupPropertyName}__showFolderDescription"
+          	id="${ss_mashupPropertyName}__showFolderDescription"
             onChange="ss_mashupAttr_showFolderDescription${ss_mashupItemId} = this.value;"/> 
-          <span><ssf:nlt tag="mashup.showFolderDescription"/></span>
+          <label for="${ss_mashupPropertyName}__showFolderDescription">
+          	<span><ssf:nlt tag="mashup.showFolderDescription"/></span>
+          </label>
           <br/>
           <input type="checkbox" name="${ss_mashupPropertyName}__showEntriesOpened"
+          	id="${ss_mashupPropertyName}__showEntriesOpened"
             onChange="ss_mashupAttr_showEntriesOpened${ss_mashupItemId} = this.value;"/> 
-          <span><ssf:nlt tag="mashup.showEntriesOpened"/></span>
+          <label for="${ss_mashupPropertyName}__showEntriesOpened">
+          	<span><ssf:nlt tag="mashup.showEntriesOpened"/></span>
+          </label>
           <br/>
           <input type="text" name="${ss_mashupPropertyName}__numberOfLines"
+          	id="${ss_mashupPropertyName}__numberOfLines"
             onChange="if (ss_isInteger(this.value)) {ss_mashupAttr_numberOfLines${ss_mashupItemId} = this.value;}"/> 
-          <span><ssf:nlt tag="mashup.numberOfLines"/></span>
+          <label for="${ss_mashupPropertyName}__numberOfLines">
+          	<span><ssf:nlt tag="mashup.numberOfLines"/></span>
+          </label>
           <br/>
 		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
 		    onClick="ss_mashupSubmit${ss_mashupItemId}();return true;"
@@ -264,17 +279,26 @@ function ss_mashupSubmit${ss_mashupItemId}() {
   		<div style="padding-bottom:16px;"><ssf:nlt tag="mashup.addTable"/></div>
   		<div>
           <input type="checkbox" name="${ss_mashupPropertyName}__showBorder"
+          	id="${ss_mashupPropertyName}__showBorder"
             onChange="ss_mashupAttr_showBorder${ss_mashupItemId} = this.value;"/> 
-          <span class="ss_labelRight"><ssf:nlt tag="mashup.showBorder"/></span>
+          <label for="${ss_mashupPropertyName}__showBorder">
+          	<span class="ss_labelRight"><ssf:nlt tag="mashup.showBorder"/></span>
+          </label>
           <br/>
           <br/>
-          <span class="ss_labelAbove"><ssf:nlt tag="mashup.numberOfCols"/></span>
+          <label for="${ss_mashupPropertyName}__numberOfCols">
+          	<span class="ss_labelAbove"><ssf:nlt tag="mashup.numberOfCols"/></span>
+          </label>
           <input type="text" name="${ss_mashupPropertyName}__numberOfCols"
+          	id="${ss_mashupPropertyName}__numberOfCols"
             onChange="if (ss_isInteger(this.value)) {ss_mashupAttr_numberOfCols${ss_mashupItemId} = this.value;}"/> 
           <br/>
           <br/>
-          <span class="ss_labelAbove"><ssf:nlt tag="mashup.columnWidths"/></span>
+          <label for="${ss_mashupPropertyName}__columnWidths">
+          	<span class="ss_labelAbove"><ssf:nlt tag="mashup.columnWidths"/></span>
+          </label>
           <input type="text" name="${ss_mashupPropertyName}__columnWidths"
+          	id="${ss_mashupPropertyName}__columnWidths"
             onChange="ss_mashupAttr_columnWidths${ss_mashupItemId} = this.value;"/> 
           <br/>
           <br/>
