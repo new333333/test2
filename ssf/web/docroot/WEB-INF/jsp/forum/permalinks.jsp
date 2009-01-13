@@ -90,6 +90,18 @@
       </td>
     </tr>
   </c:if>
+
+  <c:if test="${!empty ss_toolbar_url_ical}">
+    <tr>
+      <td valign="top" nowrap>
+        <span><ssf:nlt tag="permalink.icalUrl"/></span>
+      </td>
+      <td valign="top" nowrap>
+        <span>${ss_toolbar_url_ical}</span>
+      </td>
+    </tr>
+  </c:if>
+  
 </table>
 
 <c:if test="${ssBinder.entityType == 'folder'}">
