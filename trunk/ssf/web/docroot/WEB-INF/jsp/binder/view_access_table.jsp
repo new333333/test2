@@ -35,42 +35,10 @@
 <TR>
   <TH rowSpan="2" colSpan="3"></TH>
   <TH class="ss_table_paragraph_bld" noWrap="noWrap" colSpan="${ss_accessFunctionsCount}">
-<c:if test="${ssWorkArea.functionMembershipInherited}">
   <ssf:nlt tag="access.roles"/>
-</c:if>
-<c:if test="${!ssWorkArea.functionMembershipInherited}">
-  <ssf:ifnotaccessible>
-  <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addRolesMenu${ss_namespace}',40, 40);return false;"
-  ><ssf:nlt tag="access.addRole"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
-  src="<html:imagesPath/>pics/menudown.gif"/></a>
-  </ssf:ifnotaccessible>
-  
-  <ssf:ifaccessible>
-  <select name="roleIds" onChange="${ss_namespace}accessObj.selectRole();">
-    <option value=""><ssf:nlt tag="binder.configure.access_control.selectRole" /></option>
-    <c:forEach var="function" items="${ssFunctions}">
-      <c:set var="includeRole" value="1"/>
-      <c:forEach var="sortedFunction" items="${ss_accessSortedFunctions}">
-        <c:if test="${sortedFunction.id == function.id}">
-          <c:set var="includeRole" value="0"/>
-        </c:if>
-      </c:forEach>
-      <c:if test="${includeRole == '1'}">
-        <option value="${function.id}"><ssf:nlt tag="${function.name}" checkIfTag="true"/></option>
-      </c:if>
-    </c:forEach>
-  </select>
-    <input type="submit" class="ss_submit" name="addRoleBtn"
-      value="<ssf:nlt tag="button.add" />">
-  </ssf:ifaccessible>
-</c:if>
   </TH>
 </TR>
-<c:forEach var="function" items="${ss_accessSortedFunctions}">
-<input type="hidden" name="roleIds" value="${function.id}"/>
-</c:forEach>
 
-<c:if test="${ssWorkArea.workAreaType != 'zone'}">
 <TR>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <TH class="ss_table_smheaders"><a href="javascript:;" 
@@ -79,11 +47,8 @@
 </span></a></TH>
 </c:forEach>
 </TR>
-</c:if>
 </THEAD>
 
-<input type="hidden" name="principalIds" value="-1"/>
-<c:if test="${ssWorkArea.workAreaType != 'zone'}">
 <TBODY>
 
 <TR>
@@ -92,31 +57,11 @@
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <TD class="ss_table_paragraph" align="center" noWrap="noWrap">
 
-<c:if test="${!ssWorkArea.functionMembershipInherited}">
-  <img height="13" width="13" <ssf:alt tag="alt.selectedByParent"/>
-  <c:if test="${!empty ss_accessParent.ssFunctionMap[function].ssOwner}">
-    src="<html:imagesPath/>pics/sym_s_checkmark.gif"
-  </c:if>
-  <c:if test="${empty ss_accessParent.ssFunctionMap[function].ssOwner}">
-    src="<html:imagesPath/>pics/1pix.gif"
-  </c:if>
-  style="padding-right:10px;"/>
-</c:if>
-
 <c:if test="${!empty ssFunctionMap[function].ssOwner}">
-<input type="checkbox" 
-  <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
-    disabled="disabled"
-  </c:if>
-  name="role_id${function.id}_owner" 
-  checked="checked" />
+<input type="checkbox" disabled="disabled" checked="checked" />
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssOwner}">
-<input type="checkbox" 
-  <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
-    disabled="disabled"
-  </c:if>
-  name="role_id${function.id}_owner" />
+<input type="checkbox" disabled="disabled" />
 </c:if>
 </TD>
 </c:forEach>
@@ -129,31 +74,11 @@
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <TD class="ss_table_paragraph" align="center" noWrap="noWrap">
 
-<c:if test="${!ssWorkArea.functionMembershipInherited}">
-  <img height="13" width="13" <ssf:alt tag="alt.selectedByParent"/>
-  <c:if test="${!empty ss_accessParent.ssFunctionMap[function].ssTeamMember}">
-    src="<html:imagesPath/>pics/sym_s_checkmark.gif"
-  </c:if>
-  <c:if test="${empty ss_accessParent.ssFunctionMap[function].ssTeamMember}">
-    src="<html:imagesPath/>pics/1pix.gif"
-  </c:if>
-  style="padding-right:10px;"/>
-</c:if>
-
 <c:if test="${!empty ssFunctionMap[function].ssTeamMember}">
-<input type="checkbox" 
-  <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
-    disabled="disabled"
-  </c:if>
-  name="role_id${function.id}_teamMember" 
-  checked="checked" />
+<input type="checkbox" disabled="disabled" checked="checked" />
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssTeamMember}">
-<input type="checkbox" 
-  <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
-    disabled="disabled"
-  </c:if>
-  name="role_id${function.id}_teamMember" />
+<input type="checkbox" disabled="disabled" />
 </c:if>
 </TD>
 </c:forEach>
@@ -161,25 +86,11 @@
 </TR>
 
 </TBODY>
-</c:if>
+
 <THEAD>
 <TR>
   <TH class="ss_table_paragraph_bld">
-	<c:if test="${ssWorkArea.functionMembershipInherited}">
 	  <ssf:nlt tag="access.groups"/>
-	</c:if>
-	<c:if test="${!ssWorkArea.functionMembershipInherited}">
-	  <ssf:ifnotaccessible>
-	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addGroupsMenu${ss_namespace}', 40, 40);return false;">
-	      <ssf:nlt tag="access.addGroup"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
-	        src="<html:imagesPath/>pics/menudown.gif"/>
-	    </a>
-	  </ssf:ifnotaccessible>
-  
-      <ssf:ifaccessible>
-        <ssf:nlt tag="access.groups"/>
-      </ssf:ifaccessible>
-    </c:if>
   </TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.groupTitle"/></TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.groupName"/></TH>
@@ -223,32 +134,14 @@
 		name="operation" value="get_group_list"/><ssf:param 
 		name="groupId" value="${group.id}"/></ssf:url>"
 	onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">${group.name}</a></TD>
+
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <TD class="ss_table_paragraph" align="center" noWrap="noWrap">
-<c:if test="${!ssWorkArea.functionMembershipInherited}">
-  <img height="13" width="13" <ssf:alt tag="alt.selectedByParent"/>
-  <c:if test="${!empty ss_accessParent.ssFunctionMap[function].ssGroups[group.id]}">
-    src="<html:imagesPath/>pics/sym_s_checkmark.gif"
-  </c:if>
-  <c:if test="${empty ss_accessParent.ssFunctionMap[function].ssGroups[group.id]}">
-    src="<html:imagesPath/>pics/1pix.gif"
-  </c:if>
-  style="padding-right:10px;"/>
-</c:if>
 <c:if test="${!empty ssFunctionMap[function].ssGroups[group.id]}">
-    <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
-      disabled="disabled"
-    </c:if>
-    name="role_id${function.id}_${group.id}" 
-   checked="checked" />
+    <input type="checkbox" disabled="disabled" checked="checked" />
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssGroups[group.id]}">
-    <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
-      disabled="disabled"
-    </c:if>
-    name="role_id${function.id}_${group.id}" />
+    <input type="checkbox" disabled="disabled" />
 </c:if>
 </TD>
 </c:forEach>
@@ -260,20 +153,7 @@
 <THEAD>
 <TR>
   <TH class="ss_table_paragraph_bld">
-	<c:if test="${ssWorkArea.functionMembershipInherited}">
 	  <ssf:nlt tag="access.users"/>
-	</c:if>
-	<c:if test="${!ssWorkArea.functionMembershipInherited}">
-	  <ssf:ifnotaccessible>
-	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addUsersMenu${ss_namespace}', 40, 40);return false;">
-	      <ssf:nlt tag="access.addUser"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
-	      src="<html:imagesPath/>pics/menudown.gif"/></a>
-	  </ssf:ifnotaccessible>
-  
-      <ssf:ifaccessible>
-        <ssf:nlt tag="access.users"/>
-      </ssf:ifaccessible>
-    </c:if>
   </TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.userTitle"/></TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.userName"/></TH>
@@ -300,32 +180,14 @@
   <TD class="ss_table_paragraph"></TD>
   <TD class="ss_table_paragraph">${user.title}</TD>
   <TD class="ss_table_paragraph">${user.name}</TD>
+
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <TD class="ss_table_paragraph" align="center" noWrap="noWrap">
-<c:if test="${!ssWorkArea.functionMembershipInherited}">
-  <img height="13" width="13" <ssf:alt tag="alt.selectedByParent"/> 
-  <c:if test="${!empty ss_accessParent.ssFunctionMap[function].ssUsers[user.id]}">
-    src="<html:imagesPath/>pics/sym_s_checkmark.gif"
-  </c:if>
-  <c:if test="${empty ss_accessParent.ssFunctionMap[function].ssUsers[user.id]}">
-    src="<html:imagesPath/>pics/1pix.gif"
-  </c:if>
-    style="padding-right:10px;"/>
-</c:if>
 <c:if test="${!empty ssFunctionMap[function].ssUsers[user.id]}">
-    <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
-      disabled="disabled"
-    </c:if>
-    name="role_id${function.id}_${user.id}" 
-    checked="checked" />
+    <input type="checkbox" disabled="disabled" checked="checked" />
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssUsers[user.id]}">
-    <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
-      disabled="disabled"
-    </c:if>
-    name="role_id${function.id}_${user.id}" />
+    <input type="checkbox" disabled="disabled" />
 </c:if>
 </TD>
 </c:forEach>
@@ -335,24 +197,11 @@
 
 </TBODY>
 
+<c:if test="${!empty ss_accessSortedApplicationGroups}">
 <THEAD>
 <TR>
   <TH class="ss_table_paragraph_bld">
-	<c:if test="${ssWorkArea.functionMembershipInherited}">
 	  <ssf:nlt tag="access.application.groups"/>
-	</c:if>
-	<c:if test="${!ssWorkArea.functionMembershipInherited}">
-	  <ssf:ifnotaccessible>
-	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addApplicationGroupsMenu${ss_namespace}', 40, 40);return false;">
-	      <ssf:nlt tag="access.addApplicationGroup"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
-	        src="<html:imagesPath/>pics/menudown.gif"/>
-	    </a>
-	  </ssf:ifnotaccessible>
-  
-      <ssf:ifaccessible>
-        <ssf:nlt tag="access.application.groups"/>
-      </ssf:ifaccessible>
-    </c:if>
   </TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.application.groupTitle"/></TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.application.groupName"/></TH>
@@ -367,7 +216,6 @@
 </c:forEach>
 </TR>
 </THEAD>
-
 <TBODY>
 <c:set var="counter" value="0"/>
 <c:forEach var="group" items="${ss_accessSortedApplicationGroups}">
@@ -396,32 +244,14 @@
 		name="operation" value="get_group_list"/><ssf:param 
 		name="applicationGroupName" value="${group.name}"/></ssf:url>"
 	onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">${group.name}</a></TD>
+
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <TD class="ss_table_paragraph" align="center" noWrap="noWrap">
-<c:if test="${!ssWorkArea.functionMembershipInherited}">
-  <img height="13" width="13" <ssf:alt tag="alt.selectedByParent"/>
-  <c:if test="${!empty ss_accessParent.ssFunctionMap[function].ssApplicationGroups[group.id]}">
-    src="<html:imagesPath/>pics/sym_s_checkmark.gif"
-  </c:if>
-  <c:if test="${empty ss_accessParent.ssFunctionMap[function].ssApplicationGroups[group.id]}">
-    src="<html:imagesPath/>pics/1pix.gif"
-  </c:if>
-  style="padding-right:10px;"/>
-</c:if>
 <c:if test="${!empty ssFunctionMap[function].ssApplicationGroups[group.id]}">
-    <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
-      disabled="disabled"
-    </c:if>
-    name="role_id${function.id}_${group.id}" 
-   checked="checked" />
+    <input type="checkbox" disabled="disabled" checked="checked" />
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssApplicationGroups[group.id]}">
-    <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
-      disabled="disabled"
-    </c:if>
-    name="role_id${function.id}_${group.id}" />
+    <input type="checkbox" disabled="disabled" />
 </c:if>
 </TD>
 </c:forEach>
@@ -429,24 +259,13 @@
 </TR>
 </c:forEach>
 </TBODY>
+</c:if>
 
+<c:if test="${!empty ss_accessSortedApplications}">
 <THEAD>
 <TR>
   <TH class="ss_table_paragraph_bld">
-	<c:if test="${ssWorkArea.functionMembershipInherited}">
 	  <ssf:nlt tag="access.applications"/>
-	</c:if>
-	<c:if test="${!ssWorkArea.functionMembershipInherited}">
-	  <ssf:ifnotaccessible>
-	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addApplicationsMenu${ss_namespace}', 40, 40);return false;">
-	      <ssf:nlt tag="access.addApplication"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
-	      src="<html:imagesPath/>pics/menudown.gif"/></a>
-	  </ssf:ifnotaccessible>
-  
-      <ssf:ifaccessible>
-        <ssf:nlt tag="access.applications"/>
-      </ssf:ifaccessible>
-    </c:if>
   </TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.applicationTitle"/></TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.applicationName"/></TH>
@@ -461,7 +280,6 @@
 </c:forEach>
 </TR>
 </THEAD>
-
 <TBODY>
 <c:set var="counter" value="0"/>
 <c:forEach var="application" items="${ss_accessSortedApplications}">
@@ -475,38 +293,18 @@
   <TD class="ss_table_paragraph">${application.name}</TD>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <TD class="ss_table_paragraph" align="center" noWrap="noWrap">
-<c:if test="${!ssWorkArea.functionMembershipInherited}">
-  <img height="13" width="13" <ssf:alt tag="alt.selectedByParent"/> 
-  <c:if test="${!empty ss_accessParent.ssFunctionMap[function].ssApplications[application.id]}">
-    src="<html:imagesPath/>pics/sym_s_checkmark.gif"
-  </c:if>
-  <c:if test="${empty ss_accessParent.ssFunctionMap[function].ssApplications[application.id]}">
-    src="<html:imagesPath/>pics/1pix.gif"
-  </c:if>
-    style="padding-right:10px;"/>
-</c:if>
 <c:if test="${!empty ssFunctionMap[function].ssApplications[application.id]}">
-    <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
-      disabled="disabled"
-    </c:if>
-    name="role_id${function.id}_${application.id}" 
-    checked="checked" />
+    <input type="checkbox" disabled="disabled" checked="checked" />
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssApplications[application.id]}">
-    <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
-      disabled="disabled"
-    </c:if>
-    name="role_id${function.id}_${application.id}" />
+    <input type="checkbox" disabled="disabled" />
 </c:if>
 </TD>
 </c:forEach>
-  
 </TR>
 </c:forEach>
-
 </TBODY>
+</c:if>
 
 </TABLE>
 </div>

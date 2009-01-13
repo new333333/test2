@@ -325,6 +325,20 @@ public class ProfilesBinderHelper {
 					NLT.get("toolbar.menu.siteAdministration"), url);
 		}
 
+		//The "Who has access" menu
+		qualifiers = new HashMap();
+		qualifiers.put("popup", Boolean.TRUE);
+		qualifiers.put("popupWidth", "400");
+		qualifiers.put("popupHeight", "500");
+		adminMenuCreated = true;
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
+		adapterUrl.setParameter(WebKeys.URL_WORKAREA_ID, binder.getWorkAreaId().toString());
+		adapterUrl.setParameter(WebKeys.URL_WORKAREA_TYPE, binder.getWorkAreaType());
+		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ACCESS);
+		folderToolbar.addToolbarMenu("2_whoHasAccess", 
+				NLT.get("toolbar.whoHasAccess"), adapterUrl.toString(), qualifiers);
+		
 		//Folder action menu
 		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 			//Folder action menu

@@ -666,6 +666,20 @@ public class WorkspaceTreeHelper {
 					NLT.get("toolbar.menu.accessControl"), url, qualifiers);
 		}
 
+		//The "Who has access" menu
+		qualifiers = new HashMap();
+		qualifiers.put("popup", Boolean.TRUE);
+		qualifiers.put("popupWidth", "400");
+		qualifiers.put("popupHeight", "500");
+		adminMenuCreated = true;
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
+		adapterUrl.setParameter(WebKeys.URL_WORKAREA_ID, workspace.getWorkAreaId().toString());
+		adapterUrl.setParameter(WebKeys.URL_WORKAREA_TYPE, workspace.getWorkAreaType());
+		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ACCESS);
+		toolbar.addToolbarMenu("2_whoHasAccess", 
+				NLT.get("toolbar.whoHasAccess"), adapterUrl.toString(), qualifiers);
+		
 		//If this is a user workspace, add the "Manage this profile" menu
 		if ((workspace.getDefinitionType() != null) && 
 				(workspace.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
