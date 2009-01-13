@@ -279,9 +279,9 @@ function ss_mashupSubmit${ss_mashupItemId}() {
   		<div style="padding-bottom:16px;"><ssf:nlt tag="mashup.addTable"/></div>
   		<div>
           <input type="checkbox" name="${ss_mashupPropertyName}__showBorder"
-          	id="${ss_mashupPropertyName}__showBorder"
+          	id="${ss_mashupPropertyName}__showBorder_1"
             onChange="ss_mashupAttr_showBorder${ss_mashupItemId} = this.value;"/> 
-          <label for="${ss_mashupPropertyName}__showBorder">
+          <label for="${ss_mashupPropertyName}__showBorder_1">
           	<span class="ss_labelRight"><ssf:nlt tag="mashup.showBorder"/></span>
           </label>
           <br/>
@@ -317,12 +317,18 @@ function ss_mashupSubmit${ss_mashupItemId}() {
   		<div style="padding-bottom:16px;"><ssf:nlt tag="mashup.addGraphic"/></div>
   		<div>
           <input type="checkbox" name="${ss_mashupPropertyName}__showBorder"
+          	id="${ss_mashupPropertyName}__showBorder_2"
             onChange="ss_mashupAttr_showBorder${ss_mashupItemId} = this.value;"/> 
-          <span class="ss_labelRight"><ssf:nlt tag="mashup.showBorder"/></span>
+          <label for="${ss_mashupPropertyName}__showBorder_2">
+          	<span class="ss_labelRight"><ssf:nlt tag="mashup.showBorder"/></span>
+          </label>
           <br/>
           <br/>
-          <span class="ss_labelAbove"><ssf:nlt tag="mashup.graphic"/></span>
+          <label for="${ss_mashupPropertyName}__graphic">
+          	<span class="ss_labelAbove"><ssf:nlt tag="mashup.graphic"/></span>
+          </label>
           <select name="${ss_mashupPropertyName}__graphic"
+          	id="${ss_mashupPropertyName}__graphic"
             onChange="ss_mashupAttr_graphic${ss_mashupItemId} = this.value;"> 
             <option value=""><ssf:nlt tag="general.please_select"/></option>
             <c:forEach var="selection" items="${ssBinder.fileAttachments}" >
@@ -345,8 +351,11 @@ function ss_mashupSubmit${ss_mashupItemId}() {
   >
   		<div><ssf:nlt tag="mashup.addUtility"/></div>
   		<div>
-          <span class="ss_labelAbove"><ssf:nlt tag="mashup.addUtilityElement"/></span>
+          <label for="${ss_mashupPropertyName}__utility">
+          	<span class="ss_labelAbove"><ssf:nlt tag="mashup.addUtilityElement"/></span>
+          </label>
           <select name="${ss_mashupPropertyName}__utility"
+          	id="${ss_mashupPropertyName}__utility"
             onChange="ss_mashupAttr_utilityElement${ss_mashupItemId} = this.value;"> 
             <option value=""><ssf:nlt tag="general.please_select"/></option>
             <option value="gettingStarted"><ssf:nlt tag="mashup.gettingStarted"/></option>
@@ -370,8 +379,11 @@ function ss_mashupSubmit${ss_mashupItemId}() {
   >
   		<div><ssf:nlt tag="mashup.addCustomJsp"/></div>
   		<div>
-          <span class="ss_labelBefore"><ssf:nlt tag="mashup.customJspName"/></span>
+          <label for="${ss_mashupPropertyName}__customJsp">
+          	<span class="ss_labelBefore"><ssf:nlt tag="mashup.customJspName"/></span>
+          </label>
           <input type="text" name="${ss_mashupPropertyName}__customJsp" size="20"
+          	id="${ss_mashupPropertyName}__customJsp"
             onChange="ss_mashupAttr_customJsp${ss_mashupItemId} = this.value;"/> 
           <br/>
 		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
