@@ -69,14 +69,14 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
   <br/>				 
   <div id="ss_report_panel_forum">
    <br/>
-   <input type="radio" class="ss_radio" name="reportFlavor" value="activity" checked="checked" onclick="showOptions(this);return true;"/><label class="ss_radio_label"><ssf:nlt tag="administration.report.label.activity"/></label>
+   <input type="radio" class="ss_radio" name="reportFlavor" value="activity" id="activity" checked="checked" onclick="showOptions(this);return true;"/><label class="ss_radio_label" for="activity"><ssf:nlt tag="administration.report.label.activity"/></label>
    <div id="ss_report_activityFlavorOptions" style="margin-left:20px;">
-   <input type="checkbox" class="ss_check" name="ss_byUser" id="ss_byUser"/><label class="ss_checkbox_label"><ssf:nlt tag="administration.report.label.breakDown"/></label>
+   <input type="checkbox" class="ss_check" name="ss_byUser" id="ss_byUser"/><label class="ss_checkbox_label" for="ss_byUser"><ssf:nlt tag="administration.report.label.breakDown"/></label>
    </div>
-   <input type="radio" class="ss_radio" name="reportFlavor" value="workflow" onclick="showOptions(this);return true;"/><label class="ss_radio_label"><ssf:nlt tag="administration.report.label.workflow"/></label>
+   <input type="radio" class="ss_radio" name="reportFlavor" value="workflow" id="workflow" onclick="showOptions(this);return true;"/><label class="ss_radio_label" for="workflow"><ssf:nlt tag="administration.report.label.workflow"/></label>
    <div id="ss_report_workflowFlavorOptions" style="margin-left:20px;">
-     <input type="radio" class="ss_radio" name="ss_reportFlavor" value="averages" checked="checked"/><label class="ss_radio_label"><ssf:nlt tag="administration.report.label.averages"/></label><br/>
-     <input type="radio" class="ss_radio" name="ss_reportFlavor" value="current"/><label class="ss_radio_label"><ssf:nlt tag="administration.report.label.current"/></label><br/>   <br/>
+     <input type="radio" class="ss_radio" name="ss_reportFlavor" value="averages" id="averages" checked="checked"/><label class="ss_radio_label" for="averages"><ssf:nlt tag="administration.report.label.averages"/></label><br/>
+     <input type="radio" class="ss_radio" name="ss_reportFlavor" value="current" id="current"/><label class="ss_radio_label" for="current"><ssf:nlt tag="administration.report.label.current"/></label><br/>   <br/>
    </div>
    <br/>
    <br/>
