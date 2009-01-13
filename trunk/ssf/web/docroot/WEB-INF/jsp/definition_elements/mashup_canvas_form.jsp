@@ -49,24 +49,39 @@
     <div><span class="ss_bold">${property_caption}</span></div>
     <div>
       <input type="checkbox" name="${ss_mashupPropertyName}__hideMasthead"
+      	id="${ss_mashupPropertyName}__hideMasthead"
         <c:if test="${ss_mashupHideMasthead}">checked</c:if> >
-      <span class="ss_labelRight"><ssf:nlt tag="mashup.hideMasthead"/></span>
+      <label for="${ss_mashupPropertyName}__hideMasthead">
+      	<span class="ss_labelRight"><ssf:nlt tag="mashup.hideMasthead"/></span>
+      </label>
       <br/>
       <input type="checkbox" name="${ss_mashupPropertyName}__hideSidebar"
+      	id="${ss_mashupPropertyName}__hideSidebar"
         <c:if test="${ss_mashupHideSidebar}">checked</c:if> >
-      <span class="ss_labelRight"><ssf:nlt tag="mashup.hideSidebar"/></span>
+      <label for="${ss_mashupPropertyName}__hideSidebar">
+      	<span class="ss_labelRight"><ssf:nlt tag="mashup.hideSidebar"/></span>
+      </label>
       <br/>
       <input type="checkbox" name="${ss_mashupPropertyName}__hideToolbar"
+      	id="${ss_mashupPropertyName}__hideToolbar"
         <c:if test="${ss_mashupHideToolbar}">checked</c:if> >
-      <span class="ss_labelRight"><ssf:nlt tag="mashup.hideToolbar"/></span>
+      <label for="${ss_mashupPropertyName}__hideToolbar">
+      	<span class="ss_labelRight"><ssf:nlt tag="mashup.hideToolbar"/></span>
+      </label>
       <br/>
       <input type="checkbox" name="${ss_mashupPropertyName}__hideFooter"
+      	id="${ss_mashupPropertyName}__hideFooter"
         <c:if test="${ss_mashupHideFooter}">checked</c:if> >
-      <span class="ss_labelRight"><ssf:nlt tag="mashup.hideFooter"/></span>
+      <label for="${ss_mashupPropertyName}__hideFooter">
+      	<span class="ss_labelRight"><ssf:nlt tag="mashup.hideFooter"/></span>
+      </label>
       <br/>
       <input type="checkbox" name="${ss_mashupPropertyName}__showBranding"
+      	id="${ss_mashupPropertyName}__showBranding"
         <c:if test="${ss_mashupShowBranding}">checked</c:if> >
-      <span class="ss_labelRight"><ssf:nlt tag="mashup.showBranding"/></span>
+      <label for="${ss_mashupPropertyName}__showBranding">
+      	<span class="ss_labelRight"><ssf:nlt tag="mashup.showBranding"/></span>
+      </label>
       <br/>
     </div>
 </c:if>
