@@ -168,7 +168,7 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
                     --%></c:if><%--
 
                     --%><c:if test="${empty toolbarMenuCategoryItem.value.qualifiers.onClick}"><%--
-                        --%> onclick="${spin} return(ss_openUrlInPortlet(this.href, ${popup}, '${popupWidth}', '${popupHeight}'));"><%--
+                        --%> onclick="${spin} return ss_openUrlInPortlet(this.href, ${popup}, '${popupWidth}', '${popupHeight}');"><%--
                    --%></c:if><%--
 
                     --%><c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.onClick}"><%--

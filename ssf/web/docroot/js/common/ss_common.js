@@ -412,10 +412,10 @@ function ss_navigation_goto(url) {
 			parent.location.reload(true);
 			return false;
 		} else {
-			return(ss_openUrlInPortlet(url));
+			return ss_openUrlInPortlet(url);
 		}
 	} catch(e) {
-		return(ss_openUrlInPortlet(url));
+		return ss_openUrlInPortlet(url);
 	}
 }
 
