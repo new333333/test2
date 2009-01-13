@@ -46,7 +46,7 @@
   </ssf:ifnotaccessible>
   
   <ssf:ifaccessible>
-  <select name="roleIds" onChange="${ss_namespace}accessObj.selectRole();">
+  <select name="roleIds" id="roleIds" onChange="${ss_namespace}accessObj.selectRole();">
     <option value=""><ssf:nlt tag="binder.configure.access_control.selectRole" /></option>
     <c:forEach var="function" items="${ssFunctions}">
       <c:set var="includeRole" value="1"/>
@@ -62,6 +62,7 @@
   </select>
     <input type="submit" class="ss_submit" name="addRoleBtn"
       value="<ssf:nlt tag="button.add" />">
+  <label for="roleIds">&nbsp;</label>
   </ssf:ifaccessible>
 </c:if>
   </TH>
@@ -108,8 +109,10 @@
   <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
     disabled="disabled"
   </c:if>
-  name="role_id${function.id}_owner" 
+  name="role_id${function.id}_owner"
+  id="role_id${function.id}_owner" 
   checked="checked" />
+<label for="role_id${function.id}_owner">&nbsp;</label>
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssOwner}">
 <input type="checkbox" 
@@ -146,7 +149,9 @@
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_teamMember" 
+  id="name="role_id${function.id}_teamMember"
   checked="checked" />
+<label for="role_id${function.id}_teamMember">&nbsp;</label>
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssTeamMember}">
 <input type="checkbox" 
@@ -241,14 +246,18 @@
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${group.id}" 
+    id="role_id${function.id}_${group.id}" 
    checked="checked" />
+<label for="role_id${function.id}_${group.id}">&nbsp;</label> 
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssGroups[group.id]}">
     <input type="checkbox" 
     <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
     </c:if>
-    name="role_id${function.id}_${group.id}" />
+    name="role_id${function.id}_${group.id}"
+    id="role_id${function.id}_${group.id}" />
+<label for="role_id${function.id}_${group.id}">&nbsp;</label>
 </c:if>
 </TD>
 </c:forEach>
@@ -317,15 +326,19 @@
     <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
     </c:if>
-    name="role_id${function.id}_${user.id}" 
+    name="role_id${function.id}_${user.id}"
+    id="role_id${function.id}_${user.id}" 
     checked="checked" />
+<label for="role_id${function.id}_${user.id}">&nbsp;</label>
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssUsers[user.id]}">
     <input type="checkbox" 
     <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
     </c:if>
-    name="role_id${function.id}_${user.id}" />
+    name="role_id${function.id}_${user.id}"
+    id="role_id${function.id}_${user.id}" />
+<label for="role_id${function.id}_${user.id}">&nbsp</label>
 </c:if>
 </TD>
 </c:forEach>
@@ -414,14 +427,18 @@
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${group.id}" 
+    id="role_id${function.id}_${group.id}"
    checked="checked" />
+<label for="role_id${function.id}_${group.id}">&nbsp;</label>
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssApplicationGroups[group.id]}">
     <input type="checkbox" 
     <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
     </c:if>
-    name="role_id${function.id}_${group.id}" />
+    name="role_id${function.id}_${group.id}"
+    id="role_id${function.id}_${group.id}" />
+<label for="role_id${function.id}_${group.id}">&nbsp;</label>
 </c:if>
 </TD>
 </c:forEach>
