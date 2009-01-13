@@ -239,10 +239,10 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   </td></tr>
   </table>
   <input type="checkbox" name="propagate" 
-    id="ss_accessPropagate${renderResponse.namespace}"/><span style="padding-left:4px;"
+    id="ss_accessPropagate${renderResponse.namespace}"/><label for="ss_accessPropagate${renderResponse.namespace}"><span style="padding-left:4px;"
   ><ssf:nlt tag="access.propagateChangeOwner" 
     text="Propagate this change to all folders beneath this one?"/></span>
-  <br/>
+  <br/></label>
   <input type="submit" value="<ssf:nlt tag="button.ok"/>"
   onClick="ss_accessSelectOwner${renderResponse.namespace}(this);return false;"/>
   </div>
