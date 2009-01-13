@@ -149,7 +149,7 @@
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_teamMember" 
-  id="name="role_id${function.id}_teamMember"
+  id="role_id${function.id}_teamMember"
   checked="checked" />
 <label for="role_id${function.id}_teamMember">&nbsp;</label>
 </c:if>
