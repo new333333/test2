@@ -43,6 +43,7 @@
                      ssEntryDefinitionElementData[conditionElementName].type == 'selectbox' || 
                      ssEntryDefinitionElementData[conditionElementName].type == 'radio' || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'date'  || 
+       				 ssEntryDefinitionElementData[conditionElementName].type == 'date_time'  || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
 		   
 		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'event'}">
@@ -67,7 +68,7 @@
 		     </c:if>
 		   </c:if>
 		   
-		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'date'}">
+		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'date_time'}">
 		     <c:if test="${conditionElementOperation == 'beforeDate' || 
 		                   conditionElementOperation == 'afterDate'}">
 		       <table>
@@ -79,6 +80,23 @@
 		           <td valign="top">
 		             <input type="radio" name="operationDurationType" value="minutes" /><ssf:nlt tag="minutes" text="minutes"/><br/>
 		             <input type="radio" name="operationDurationType" value="hours" /><ssf:nlt tag="hours" text="hours"/><br/>
+		             <input type="radio" name="operationDurationType" value="days" checked="checked" /><ssf:nlt tag="days" text="days"/>
+		           </td>
+		         </tr>
+		        </tbody>
+		       </table>
+		     </c:if>
+		   </c:if>
+		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'date'}">
+		     <c:if test="${conditionElementOperation == 'beforeDate' || 
+		                   conditionElementOperation == 'afterDate'}">
+		       <table>
+		        <tbody>
+		         <tr>
+		           <td valign="top">
+		             <input type="text" size="3" name="operationDuration"/>
+		           </td>
+		           <td valign="top">
 		             <input type="radio" name="operationDurationType" value="days" checked="checked" /><ssf:nlt tag="days" text="days"/>
 		           </td>
 		         </tr>

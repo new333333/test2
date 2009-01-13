@@ -43,6 +43,7 @@
                      ssEntryDefinitionElementData[conditionElementName].type == 'radio' || 
                      ssEntryDefinitionElementData[conditionElementName].type == 'checkbox' || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'date'  || 
+       				 ssEntryDefinitionElementData[conditionElementName].type == 'date_time'  || 
        				 ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
 	   <span class="ss_bold"><ssf:nlt tag="definition.selectEntryOperation"/></span><br/>
 	   <select
@@ -65,6 +66,11 @@
 		       <option value="afterEnd"><ssf:nlt tag="definition.operation_afterEnd" text="After the end date"/></option>
 		     </c:if>
 		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'date'}">
+		       <option value="datePassed"><ssf:nlt tag="definition.operation_datePassed" text="Date passed"/></option>
+		       <option value="beforeDate"><ssf:nlt tag="definition.operation_beforeDate" text="Before the date"/></option>
+		       <option value="afterDate"><ssf:nlt tag="definition.operation_afterDate" text="After the date"/></option>
+		     </c:if>
+		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'date_time'}">
 		       <option value="datePassed"><ssf:nlt tag="definition.operation_datePassed" text="Date passed"/></option>
 		       <option value="beforeDate"><ssf:nlt tag="definition.operation_beforeDate" text="Before the date"/></option>
 		       <option value="afterDate"><ssf:nlt tag="definition.operation_afterDate" text="After the date"/></option>
