@@ -122,7 +122,7 @@
 					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.rootpath.label"/></span>
 					<input type="text" class="ss_text" size="80" name="rootPath" value="${resourceRootPath}" disabled/><br/>
 					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.path.label"/></span>
-					<input type="text" class="ss_text" size="80" name="resourcePath" value="${ssDefinitionEntry.resourcePath}" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if>/><br/>
+					<input type="text" class="ss_text" size="80" name="resourcePath" value="${ssDefinitionEntry.resourcePath}"/><br/>
 				</c:if>
 				<br/>
 			</c:if>
