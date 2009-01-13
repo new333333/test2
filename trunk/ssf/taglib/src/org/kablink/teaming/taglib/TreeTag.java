@@ -465,6 +465,10 @@ public class TreeTag extends TagSupport {
 						jspOut.print(" onclick=\"ss_saveTreeId(this, '" + treeName + "', '" + s_id + "', '" + getIdChoicesInputId() + "');");
 						jspOut.print("\"");
 						jspOut.print("/>");
+						
+						jspOut.print("<label for=\"");
+						jspOut.print("ss_tree_checkbox" + treeName + mPrefix + s_id + "\" >");
+						jspOut.print("&nbsp;</label>");
 					}
 				} else if (this.singleSelectName != null) {
 					//can only select one item from tree, but probably other things going on
