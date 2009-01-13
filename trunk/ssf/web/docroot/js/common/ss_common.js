@@ -4005,11 +4005,11 @@ function ss_showForumEntryInIframe_Overlay(url) {
 	try {
 		if (self.parent && self != self.parent && typeof self.parent.ss_showForumEntryInIframe != "undefined") {
 			self.parent.ss_showForumEntryInIframe(url);
-			return
+			return false;
 		}
 	} catch(e) {
-		//Most likely permission denied. Just return
-		return;
+		//Most likely permission denied. Just return and let the url be shown
+		return true;
 	}
     var wObj = self.document.getElementById('ss_showentryframe')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
