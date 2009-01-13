@@ -109,7 +109,7 @@
 <c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
 
 <c:set var="ss_accessControlTableDivId" value="ss_accessControlDiv${renderResponse.namespace}" scope="request"/>
-<%@ include file="/WEB-INF/jsp/binder/access_control_table.jsp" %>
+<%@ include file="/WEB-INF/jsp/binder/view_access_table.jsp" %>
 
 <br/>
 
@@ -138,6 +138,30 @@
 </form>
 </div>
 </div>
+
+<c:forEach var="function" items="${ssFunctions}">
+<jsp:useBean id="function" type="org.kablink.teaming.security.function.Function" />
+<div id="${renderResponse.namespace}ss_operations${function.id}" class="ss_style ss_portlet"
+  style="position:absolute; display:none; width:300px; border:1px solid #000000; 
+  margin-bottom:10px; padding:4px; background-color:#ffffff;">
+  <div align="right">
+    <a href="javascript:;" onClick="ss_hideDiv('${renderResponse.namespace}ss_operations${function.id}');return false;">
+      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
+    </a>
+  </div>
+  <div>
+	<span class="ss_bold"><%= NLT.getDef(function.getName()) %></span><br/>
+	<c:forEach var="operation" items="${ssWorkAreaOperations}">
+		<c:set var="checked" value=""/>
+		<c:forEach var="roleOperation" items="${function.operations}">
+			<c:if test="${roleOperation.name == operation.value}">
+				<c:out value="${operation.key}"/><br>
+			</c:if>
+		</c:forEach>
+	</c:forEach>	
+  </div>	
+</div>
+</c:forEach>
 
 </ssf:form>
 </div>
