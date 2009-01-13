@@ -121,7 +121,8 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
       <span class="ss_bold">${ssSimpleUrlPrefix}&nbsp;</span>
     </td>
     <td valign="top">
-      <select name="prefix">
+      <label for="prefix">&nbsp;</label>
+      <select name="prefix" id="prefix">
         <c:if test="${ss_isSiteAdmin}">
           <option value="" selected>--<ssf:nlt tag="simpleUrl.leaveBlank"/>--</option>
         </c:if>
@@ -138,7 +139,8 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
       <span class="ss_bold">&nbsp;/&nbsp;</span>
     </td>
     <td valign="top">
-      <input type="text" name="name" size="60"/>
+      <input type="text" name="name" id="name" size="60"/>
+      <label for="name">&nbsp;</label>
     </td>
     </tr>
     </table>
@@ -237,8 +239,9 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 
       <c:forEach var="item" items="${ssAllBinderDefinitions}" >
       <c:if test="${empty item.value.binderId}">
-          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" <c:if test="${ssBinder.entryDef.id== item.value.id}"> checked </c:if> <c:out value="${disabled}"/>>
+          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" id="<c:out value="${item.value.id}"/>" <c:if test="${ssBinder.entryDef.id== item.value.id}"> checked </c:if> <c:out value="${disabled}"/>>
           <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
+          <label for="<c:out value="${item.value.id}"/>">&nbsp;</label>
          </c:if>
      </c:forEach>
       <br>
