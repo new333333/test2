@@ -1885,7 +1885,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		}
 		
 		response.setContentType("text/json");
-		return new ModelAndView("forum/json/events", model);
+		return new ModelAndView("forum/json/events_commented", model);
 	}
 	
 	private ModelAndView ajaxGetCalendarFreeInfo(RenderRequest request, RenderResponse response) throws PortletRequestBindingException {
