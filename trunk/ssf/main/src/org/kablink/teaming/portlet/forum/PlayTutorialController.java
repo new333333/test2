@@ -58,6 +58,8 @@ import org.springframework.web.portlet.ModelAndView;
  */
 public class PlayTutorialController extends SAbstractController
 {
+	private String m_tutorialName;		// Name of the tutorial passed in the request to invoke the Play Tutorial page.
+	
 	/**
 	 * 
 	 */
@@ -65,6 +67,7 @@ public class PlayTutorialController extends SAbstractController
 			ActionRequest	request,
 			ActionResponse	response ) throws Exception
 	{
+		m_tutorialName = PortletRequestUtils.getStringParameter( request, WebKeys.TUTORIAL_NAME, "" );
 	}// end handleActionRequestAfterValidation()
 	
 	
@@ -76,10 +79,16 @@ public class PlayTutorialController extends SAbstractController
 			RenderResponse	response ) throws Exception
 	{
 		String				jspName;
+		String				tutorialName;
  		Map<String,Object>	model;
  		
  		model = new HashMap<String,Object>();
- 		jspName = WebKeys.VIEW_PLAY_TUTORIAL;
+		
+ 		// Add the name of the tutorial to play to the response.
+ 		if ( m_tutorialName != null )
+ 			model.put( WebKeys.TUTORIAL_NAME, m_tutorialName );
+ 		
+		jspName = WebKeys.VIEW_PLAY_TUTORIAL;
 
  		return new ModelAndView( jspName, model );
 	}// end handleRenderRequestInternal()

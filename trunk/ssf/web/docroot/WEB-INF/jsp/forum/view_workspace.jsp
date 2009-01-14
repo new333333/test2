@@ -332,15 +332,13 @@ if (typeof ss_workarea_showId == "undefined")
 
 		// See if the 'Play Tutorial Window' is already open.  If it is call its playTutorial() function.
 		// Is the "Play Tutorial" window already open?
-		if ( m_playTutorialWnd != null && ((typeof m_playTutorialWnd) != 'undefined' ) )
+		if ( m_playTutorialWnd != null && ((typeof m_playTutorialWnd) != 'undefined' ) && !m_playTutorialWnd.closed )
 		{
 			// Yes.
 			// Does the 'Play Tutorial' window have a playTutorial() function?
 			if ( m_playTutorialWnd.playTutorial )
 			{
-				// Yes, bring the window to the front and call it.
-				if ( m_playTutorialWnd.focus )
-					m_playTutorialWnd.focus();
+				// Yes, call it.
 				m_playTutorialWnd.playTutorial( tutorialName );
 
 				// Nothing else to do.
@@ -349,9 +347,9 @@ if (typeof ss_workarea_showId == "undefined")
 		}
 			
 		url = '<ssf:escapeJavaScript>${ss_play_tutorial_base_url}</ssf:escapeJavaScript>';
-		url += '&tutorial=' + encodeURIComponent( tutorialName );
-		winHeight = 500;
-		winWidth = 500; 
+		url += '&ss_tutorial_name=' + encodeURIComponent( tutorialName );
+		winHeight = 520;
+		winWidth = 720; 
 		m_playTutorialWnd = window.open(
 									url,
 									'PlayTutorialWindow',
