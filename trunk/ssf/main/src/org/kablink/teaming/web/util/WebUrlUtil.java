@@ -33,6 +33,7 @@ import java.util.Date;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -374,8 +375,9 @@ public class WebUrlUtil {
 		webUrl.append(Constants.SLASH + entityType);
 		webUrl.append(Constants.SLASH + entityId);
 		webUrl.append(Constants.SLASH + attDate); //for browser caching
-		webUrl.append(Constants.SLASH + version);					
-		webUrl.append(Constants.SLASH + fileName);  //not urlencoded cause not queryparameter
+		webUrl.append(Constants.SLASH + version);
+		///encodeUrl replaces spaces with '+' which readFileController doesn't handle
+		webUrl.append(Constants.SLASH + StringUtils.replace(Http.encodeURL(fileName), "+", "%20"));  
 		return webUrl.toString();
 	}
 
