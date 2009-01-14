@@ -850,6 +850,7 @@ public class WebKeys {
     public static final String NEXT_PAGE="ss_nextPage";
     public static final String NLT_VALUE="value";
     public static final String OPERATION="ssOperation";
+    public static final String OPERATION_MAP="ssOperationMap";
     public static final String OWNER="ssOwner";
     public static final String PAGE_NUMBER="ss_pageNumber";
     public static final String PAGE_SIZE="ss_pageSize";

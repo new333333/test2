@@ -123,6 +123,7 @@ public class AccessControlController extends AbstractBinderController {
 			BinderHelper.buildNavigationLinkBeans(this, binder, model);
 			wArea = binder;
 			model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(binder.getZoneId()));
+			model.put(WebKeys.BINDER, binder);
 			model.put(WebKeys.DEFINITION_ENTRY, binder);
 		}
 		
