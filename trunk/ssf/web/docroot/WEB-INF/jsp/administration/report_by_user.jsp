@@ -79,11 +79,11 @@
   <ssf:find formName="${formName}" formElement="users" 
     type="user" />
    <br/>
-   <input type="radio" class="ss_radio" name="ss_reportFlavor" value="summary" checked="checked" />
-   <label class="ss_radio_label"><ssf:nlt tag="administration.report.label.activitySummary"/></label>
+   <input type="radio" class="ss_radio" name="ss_reportFlavor" value="summary" id="summary" checked="checked" />
+   <label class="ss_radio_label" for="summary"><ssf:nlt tag="administration.report.label.activitySummary"/></label>
    <br/>
-   <input type="radio" class="ss_radio" name="ss_reportFlavor" value="activity" />
-   <label class="ss_radio_label"><ssf:nlt tag="administration.report.label.activity"/></label>
+   <input type="radio" class="ss_radio" name="ss_reportFlavor" value="activity" id="activity" />
+   <label class="ss_radio_label" for="activity"><ssf:nlt tag="administration.report.label.activity"/></label>
    <br/>
   </div>
    <br/>
