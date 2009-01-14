@@ -33,278 +33,76 @@
 <TABLE class="ss_table">
 <THEAD>
 <TR>
-  <TH rowSpan="2" colSpan="3"></TH>
-  <TH class="ss_table_paragraph_bld" noWrap="noWrap" colSpan="${ss_accessFunctionsCount}">
-  <ssf:nlt tag="access.roles"/>
-  </TH>
-</TR>
-
-<TR>
-<c:forEach var="function" items="${ss_accessSortedFunctions}">
-<TH class="ss_table_smheaders"><a href="javascript:;" 
-  onClick="ss_showDivAtXY('${ss_namespace}ss_operations${function.id}');return false;"
-  ><span class="ss_table_smalltext"><ssf:nlt tag="${function.name}" checkIfTag="true"/>
-</span></a></TH>
-</c:forEach>
-</TR>
-</THEAD>
-
-<TBODY>
-
-<TR>
-  <TD class="ss_table_paragraph"></TD>
-  <TD colSpan="2" class="ss_table_paragraph"><ssf:nlt tag="access.ownerOfBinder"/></TD>
-<c:forEach var="function" items="${ss_accessSortedFunctions}">
-<TD class="ss_table_paragraph" align="center" noWrap="noWrap">
-
-<c:if test="${!empty ssFunctionMap[function].ssOwner}">
-<input type="checkbox" disabled="disabled" checked="checked" />
-</c:if>
-<c:if test="${empty ssFunctionMap[function].ssOwner}">
-<input type="checkbox" disabled="disabled" />
-</c:if>
-</TD>
-</c:forEach>
-  
-</TR>
-
-<TR>
-  <TD class="ss_table_paragraph"></TD>
-  <TD colSpan="2" class="ss_table_paragraph"><ssf:nlt tag="access.teamMembers"/></TD>
-<c:forEach var="function" items="${ss_accessSortedFunctions}">
-<TD class="ss_table_paragraph" align="center" noWrap="noWrap">
-
-<c:if test="${!empty ssFunctionMap[function].ssTeamMember}">
-<input type="checkbox" disabled="disabled" checked="checked" />
-</c:if>
-<c:if test="${empty ssFunctionMap[function].ssTeamMember}">
-<input type="checkbox" disabled="disabled" />
-</c:if>
-</TD>
-</c:forEach>
-  
-</TR>
-
-</TBODY>
-
-<THEAD>
-<TR>
-  <TH class="ss_table_paragraph_bld">
-	  <ssf:nlt tag="access.groups"/>
-  </TH>
-  <TH class="ss_table_smheaders"><ssf:nlt tag="access.groupTitle"/></TH>
-  <TH class="ss_table_smheaders"><ssf:nlt tag="access.groupName"/></TH>
-<c:forEach var="function" items="${ss_accessSortedFunctions}">
-  <TH class="ss_table_smheaders"><a href="javascript:;" 
-  onClick="ss_showDivAtXY('${ss_namespace}ss_operations${function.id}');return false;"
-  ><span class="ss_table_smalltext"><ssf:nlt tag="${function.name}" checkIfTag="true"/>
-  <c:if test="${empty ssFunctionsAllowed[function.id]}">
-  *
-  </c:if>
-  </span></a></TH>
-</c:forEach>
-</TR>
-</THEAD>
-
-<TBODY>
-<c:set var="counter" value="0"/>
-<c:forEach var="group" items="${ss_accessSortedGroups}">
-<c:set var="rowClass" value="ss_table_tr_even"/>
-<c:if test="${counter%2 != 0}"><c:set var="rowClass" value="ss_table_tr_odd"/></c:if>
-<c:set var="counter" value="${counter + 1}"/>
-<input type="hidden" name="principalIds" value="${group.id}"/>
-<TR class="${rowClass}">
-  <TD class="ss_table_paragraph"></TD>
-  <TD class="ss_table_paragraph"><a 
-    href="<ssf:url
-		adapter="true" 
-		crawlable="true"
-		portletName="ss_forum" 
-		action="__ajax_request"
-		actionUrl="false"><ssf:param 
-		name="operation" value="get_group_list"/><ssf:param 
-		name="groupId" value="${group.id}"/></ssf:url>"
-    onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">${group.title}</a></TD>
-  <TD class="ss_table_paragraph"><a href="<ssf:url
-		adapter="true" 
-		crawlable="true"
-		portletName="ss_forum" 
-		action="__ajax_request"
-		actionUrl="false"><ssf:param 
-		name="operation" value="get_group_list"/><ssf:param 
-		name="groupId" value="${group.id}"/></ssf:url>"
-	onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">${group.name}</a></TD>
-
-<c:forEach var="function" items="${ss_accessSortedFunctions}">
-<TD class="ss_table_paragraph" align="center" noWrap="noWrap">
-<c:if test="${!empty ssFunctionMap[function].ssGroups[group.id]}">
-    <input type="checkbox" disabled="disabled" checked="checked" />
-</c:if>
-<c:if test="${empty ssFunctionMap[function].ssGroups[group.id]}">
-    <input type="checkbox" disabled="disabled" />
-</c:if>
-</TD>
-</c:forEach>
-  
-</TR>
-</c:forEach>
-</TBODY>
-
-<THEAD>
-<TR>
-  <TH class="ss_table_paragraph_bld">
-	  <ssf:nlt tag="access.users"/>
-  </TH>
-  <TH class="ss_table_smheaders"><ssf:nlt tag="access.userTitle"/></TH>
-  <TH class="ss_table_smheaders"><ssf:nlt tag="access.userName"/></TH>
-<c:forEach var="function" items="${ss_accessSortedFunctions}">
-  <TH class="ss_table_smheaders"><a href="javascript:;" 
-  onClick="ss_showDivAtXY('${ss_namespace}ss_operations${function.id}');return false;"
-  ><span class="ss_table_smalltext"><ssf:nlt tag="${function.name}" checkIfTag="true"/>
-  <c:if test="${empty ssFunctionsAllowed[function.id]}">
-  *
-  </c:if>
-  </span></a></TH>
-</c:forEach>
-</TR>
-</THEAD>
-
-<TBODY>
-<c:set var="counter" value="0"/>
-<c:forEach var="user" items="${ss_accessSortedUsers}">
-<c:set var="rowClass" value="ss_table_tr_even"/>
-<c:if test="${counter%2 != 0}"><c:set var="rowClass" value="ss_table_tr_odd"/></c:if>
-<c:set var="counter" value="${counter + 1}"/>
-<input type="hidden" name="principalIds" value="${user.id}"/>
-<TR class="${rowClass}">
-  <TD class="ss_table_paragraph"></TD>
-  <TD class="ss_table_paragraph">${user.title}</TD>
-  <TD class="ss_table_paragraph">${user.name}</TD>
-
-<c:forEach var="function" items="${ss_accessSortedFunctions}">
-<TD class="ss_table_paragraph" align="center" noWrap="noWrap">
-<c:if test="${!empty ssFunctionMap[function].ssUsers[user.id]}">
-    <input type="checkbox" disabled="disabled" checked="checked" />
-</c:if>
-<c:if test="${empty ssFunctionMap[function].ssUsers[user.id]}">
-    <input type="checkbox" disabled="disabled" />
-</c:if>
-</TD>
-</c:forEach>
-  
-</TR>
-</c:forEach>
-
-</TBODY>
-
-<c:if test="${!empty ss_accessSortedApplicationGroups}">
-<THEAD>
-<TR>
-  <TH class="ss_table_paragraph_bld">
-	  <ssf:nlt tag="access.application.groups"/>
-  </TH>
-  <TH class="ss_table_smheaders"><ssf:nlt tag="access.application.groupTitle"/></TH>
-  <TH class="ss_table_smheaders"><ssf:nlt tag="access.application.groupName"/></TH>
-<c:forEach var="function" items="${ss_accessSortedFunctions}">
-  <TH class="ss_table_smheaders"><a href="javascript:;" 
-  onClick="ss_showDivAtXY('${ss_namespace}ss_operations${function.id}');return false;"
-  ><span class="ss_table_smalltext"><ssf:nlt tag="${function.name}" checkIfTag="true"/>
-  <c:if test="${empty ssFunctionsAllowed[function.id]}">
-  *
-  </c:if>
-  </span></a></TH>
-</c:forEach>
+  <TH class="ss_table_paragraph_bld" noWrap="noWrap"><ssf:nlt tag="access.operation"/></TH>
+  <TH class="ss_table_paragraph_bld" noWrap="noWrap"><ssf:nlt tag="access.users"/></TH>
+  <TH class="ss_table_paragraph_bld" noWrap="noWrap"><ssf:nlt tag="access.groups"/></TH>
 </TR>
 </THEAD>
 <TBODY>
-<c:set var="counter" value="0"/>
-<c:forEach var="group" items="${ss_accessSortedApplicationGroups}">
-<c:set var="rowClass" value="ss_table_tr_even"/>
-<c:if test="${counter%2 != 0}"><c:set var="rowClass" value="ss_table_tr_odd"/></c:if>
-<c:set var="counter" value="${counter + 1}"/>
-<input type="hidden" name="principalIds" value="${group.id}"/>
-<TR class="${rowClass}">
-  <TD class="ss_table_paragraph"></TD>
-  <TD class="ss_table_paragraph"><a 
-    href="<ssf:url
-		adapter="true" 
-		crawlable="true"
-		portletName="ss_forum" 
-		action="__ajax_request"
-		actionUrl="false"><ssf:param 
-		name="operation" value="get_group_list"/><ssf:param 
-		name="applicationGroupName" value="${group.name}"/></ssf:url>"
-    onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">${group.title}</a></TD>
-  <TD class="ss_table_paragraph"><a href="<ssf:url
-		adapter="true" 
-		crawlable="true"
-		portletName="ss_forum" 
-		action="__ajax_request"
-		actionUrl="false"><ssf:param 
-		name="operation" value="get_group_list"/><ssf:param 
-		name="applicationGroupName" value="${group.name}"/></ssf:url>"
-	onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">${group.name}</a></TD>
-
-<c:forEach var="function" items="${ss_accessSortedFunctions}">
-<TD class="ss_table_paragraph" align="center" noWrap="noWrap">
-<c:if test="${!empty ssFunctionMap[function].ssApplicationGroups[group.id]}">
-    <input type="checkbox" disabled="disabled" checked="checked" />
-</c:if>
-<c:if test="${empty ssFunctionMap[function].ssApplicationGroups[group.id]}">
-    <input type="checkbox" disabled="disabled" />
-</c:if>
-</TD>
-</c:forEach>
-  
-</TR>
-</c:forEach>
-</TBODY>
-</c:if>
-
-<c:if test="${!empty ss_accessSortedApplications}">
-<THEAD>
 <TR>
-  <TH class="ss_table_paragraph_bld">
-	  <ssf:nlt tag="access.applications"/>
-  </TH>
-  <TH class="ss_table_smheaders"><ssf:nlt tag="access.applicationTitle"/></TH>
-  <TH class="ss_table_smheaders"><ssf:nlt tag="access.applicationName"/></TH>
-<c:forEach var="function" items="${ss_accessSortedFunctions}">
-  <TH class="ss_table_smheaders"><a href="javascript:;" 
-  onClick="ss_showDivAtXY('${ss_namespace}ss_operations${function.id}');return false;"
-  ><span class="ss_table_smalltext"><ssf:nlt tag="${function.name}" checkIfTag="true"/>
-  <c:if test="${empty ssFunctionsAllowed[function.id]}">
-  *
-  </c:if>
-  </span></a></TH>
-</c:forEach>
+  <TD valign="top">
+    <c:if test="${ssBinder.entityType == 'folder'}"><ssf:nlt tag="access.operation.viewFolder"/></c:if>
+    <c:if test="${ssBinder.entityType == 'profiles'}"><ssf:nlt tag="access.operation.viewProfiles"/></c:if>
+    <c:if test="${ssBinder.entityType != 'folder' && ssBinder.entityType != 'profiles'}"><ssf:nlt tag="access.operation.viewWorkspace"/></c:if>
+  </TD>
+  <TD valign="top" nowrap>
+    <c:forEach var="user" items="${ss_accessSortedUsers}">
+      <c:if test="${!empty ssOperationMap['readEntries'].ssUsers[user.id]}">
+        <span>${user.title}</span> <span class="ss_smallprint ss_italic">(${user.name})</span><br/>
+      </c:if>
+    </c:forEach>
+  </TD>
+  <TD valign="top">
+     <c:forEach var="group" items="${ss_accessSortedGroups}">
+      <c:if test="${!empty ssOperationMap['readEntries'].ssGroups[group.id]}">
+        <span>${group.title}</span> <span class="ss_smallprint ss_italic">(${group.name})</span><br/>
+      </c:if>
+    </c:forEach>
+  </TD>
 </TR>
-</THEAD>
-<TBODY>
-<c:set var="counter" value="0"/>
-<c:forEach var="application" items="${ss_accessSortedApplications}">
-<c:set var="rowClass" value="ss_table_tr_even"/>
-<c:if test="${counter%2 != 0}"><c:set var="rowClass" value="ss_table_tr_odd"/></c:if>
-<c:set var="counter" value="${counter + 1}"/>
-<input type="hidden" name="principalIds" value="${application.id}"/>
-<TR class="${rowClass}">
-  <TD class="ss_table_paragraph"></TD>
-  <TD class="ss_table_paragraph">${application.title}</TD>
-  <TD class="ss_table_paragraph">${application.name}</TD>
-<c:forEach var="function" items="${ss_accessSortedFunctions}">
-<TD class="ss_table_paragraph" align="center" noWrap="noWrap">
-<c:if test="${!empty ssFunctionMap[function].ssApplications[application.id]}">
-    <input type="checkbox" disabled="disabled" checked="checked" />
-</c:if>
-<c:if test="${empty ssFunctionMap[function].ssApplications[application.id]}">
-    <input type="checkbox" disabled="disabled" />
-</c:if>
-</TD>
-</c:forEach>
+
+<c:if test="${ssBinder.entityType == 'folder'}">
+<TR>
+  <TD valign="top"><ssf:nlt tag="access.operation.create"/></TD>
+  <TD valign="top" nowrap>
+    <c:forEach var="user" items="${ss_accessSortedUsers}">
+      <c:if test="${!empty ssOperationMap['createEntries'].ssUsers[user.id]}">
+        <span>${user.title}</span> <span class="ss_smallprint ss_italic">(${user.name})</span><br/>
+      </c:if>
+    </c:forEach>
+  </TD>
+  <TD valign="top">
+     <c:forEach var="group" items="${ss_accessSortedGroups}">
+      <c:if test="${!empty ssOperationMap['createEntries'].ssGroups[group.id]}">
+        <span>${group.title}</span> <span class="ss_smallprint ss_italic">(${group.name})</span><br/>
+      </c:if>
+    </c:forEach>
+  </TD>
 </TR>
-</c:forEach>
-</TBODY>
 </c:if>
 
+<TR>
+  <TD valign="top">
+    <c:if test="${ssBinder.entityType == 'folder'}"><ssf:nlt tag="access.operation.manageFolder"/></c:if>
+    <c:if test="${ssBinder.entityType == 'profiles'}"><ssf:nlt tag="access.operation.manageProfiles"/></c:if>
+    <c:if test="${ssBinder.entityType != 'folder' && ssBinder.entityType != 'profiles'}"><ssf:nlt tag="access.operation.manageWorkspace"/></c:if>
+  </TD>
+  <TD valign="top" nowrap>
+    <c:forEach var="user" items="${ss_accessSortedUsers}">
+      <c:if test="${!empty ssOperationMap['binderAdministration'].ssUsers[user.id]}">
+        <span>${user.title}</span> <span class="ss_smallprint ss_italic">(${user.name})</span><br/>
+      </c:if>
+    </c:forEach>
+  </TD>
+  <TD valign="top">
+     <c:forEach var="group" items="${ss_accessSortedGroups}">
+      <c:if test="${!empty ssOperationMap['binderAdministration'].ssGroups[group.id]}">
+        <span>${group.title}</span> <span class="ss_smallprint ss_italic">(${group.name})</span><br/>
+      </c:if>
+    </c:forEach>
+  </TD>
+</TR>
+
+</TBODY>
 </TABLE>
 </div>

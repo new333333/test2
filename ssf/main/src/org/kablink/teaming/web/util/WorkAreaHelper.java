@@ -40,6 +40,7 @@ public class WorkAreaHelper {
 		String[] principalId = new String[0];
 		
 		Map functionMap = new HashMap();
+		Map operationMap = new HashMap();
 		Map allowedFunctions = new HashMap();
 		Map sortedGroupsMap = new TreeMap();
 		Map sortedUsersMap = new TreeMap();
@@ -182,8 +183,8 @@ public class WorkAreaHelper {
 				if (f.isZoneWide() != zoneWide) continue;
 				Map pMap = new HashMap();
 				functionMap.put(f, pMap);
-				Map groups = new HashMap();
-				Map users = new HashMap();
+				Map<Long,Principal> groups = new HashMap();
+				Map<Long,Principal> users = new HashMap();
 				Map applicationGroups = new HashMap();
 				Map applications = new HashMap();
 				pMap.put(WebKeys.USERS, users);
@@ -219,6 +220,19 @@ public class WorkAreaHelper {
 						}
 						break;
 					}
+				}
+				for (Object wo : f.getOperations()) {
+					if (!operationMap.containsKey(((WorkAreaOperation)wo).getName())) 
+						operationMap.put(((WorkAreaOperation)wo).getName(), new HashMap());
+					Map operationMemberships = (Map)operationMap.get(((WorkAreaOperation)wo).getName());
+					if (!operationMemberships.containsKey(WebKeys.USERS)) operationMemberships.put(WebKeys.USERS, new HashMap());
+					Map operationUsers = (Map)operationMemberships.get(WebKeys.USERS);
+					for (Map.Entry me : users.entrySet()) operationUsers.put(me.getKey(), me.getValue());
+					if (!operationMemberships.containsKey(WebKeys.GROUPS)) operationMemberships.put(WebKeys.GROUPS, new HashMap());
+					Map operationGroups = (Map)operationMemberships.get(WebKeys.GROUPS);
+					for (Map.Entry me : groups.entrySet()) operationGroups.put(me.getKey(), me.getValue());
+					if (pMap.containsKey(WebKeys.OWNER)) operationMemberships.put(WebKeys.OWNER, pMap.get(WebKeys.OWNER));
+					if (pMap.containsKey(WebKeys.TEAM_MEMBER)) operationMemberships.put(WebKeys.TEAM_MEMBER, pMap.get(WebKeys.OWNER));
 				}
 			}
 		}
@@ -264,6 +278,7 @@ public class WorkAreaHelper {
 		
 		model.put(WebKeys.WORKAREA, wArea);
 		model.put(WebKeys.FUNCTION_MAP, functionMap);
+		model.put(WebKeys.OPERATION_MAP, operationMap);
 		model.put(WebKeys.FUNCTIONS_ALLOWED, allowedFunctions);
 		model.put(WebKeys.ACCESS_SORTED_FUNCTIONS, sortedFunctions);
 		model.put(WebKeys.ACCESS_SORTED_FUNCTIONS_MAP, sortedFunctionsMap);

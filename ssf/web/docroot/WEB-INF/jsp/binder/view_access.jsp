@@ -28,7 +28,6 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("toolbar.whoHasAccess") %>' scope="request"/>
@@ -40,7 +39,10 @@
 <c:if test="${ssBinder.entityType == 'folder'}">
   <c:set var="title_tag" value="access.whoHasAccess.folder"/>
 </c:if>
-<ssf:form titleTag="access.whoHasAccess.folder">
+<c:if test="${ssBinder.entityType == 'profiles'}">
+  <c:set var="title_tag" value="access.whoHasAccess.profiles"/>
+</c:if>
+<ssf:form titleTag="${title_tag}">
 <div class="ss_style ss_form" style="margin:0px; padding:10px 16px 10px 10px;">
 <div style="margin:6px; width:100%;">
 <table cellpadding="0" cellspacing="0" width="100%">
@@ -86,11 +88,20 @@
   <td colspan="2">
   <br/>
   <c:if test="${ssWorkArea.functionMembershipInherited}">
-    <span class="ss_bold"><ssf:nlt tag="binder.configure.access_control.inheriting"/></span>
-    <c:set var="yes_checked" value="checked"/>
+	<c:if test="${ssWorkArea.workAreaType == 'folder'}">
+      <span class="ss_bold"><ssf:nlt tag="binder.configure.access_control.inheriting"/></span>
+    </c:if>
+	<c:if test="${ssWorkArea.workAreaType != 'folder'}">
+      <span class="ss_bold"><ssf:nlt tag="binder.configure.access_control.inheritingWorkspace"/></span>
+    </c:if>
   </c:if>
   <c:if test="${!ssWorkArea.functionMembershipInherited}">
-    <span class="ss_bold"><ssf:nlt tag="binder.configure.access_control.notInheriting" /></span>
+	<c:if test="${ssWorkArea.workAreaType == 'folder'}">
+      <span class="ss_bold"><ssf:nlt tag="binder.configure.access_control.notInheriting" /></span>
+    </c:if>
+	<c:if test="${ssWorkArea.workAreaType != 'folder'}">
+      <span class="ss_bold"><ssf:nlt tag="binder.configure.access_control.notInheritingWorkspace" /></span>
+    </c:if>
   </c:if>
   </td>
   </tr>
