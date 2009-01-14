@@ -117,35 +117,39 @@ try
 				// Create a tutorial object for "what is teaming".
 				tutorialObj = new Object();
 				m_tutorialObjs['whatIsTeaming'] = tutorialObj;
-				tutorialObj.div = document.getElementById( 'whatIsTeamingDiv' );
+				tutorialObj.td = document.getElementById( 'whatIsTeamingTD' );
 				tutorialObj.span = document.getElementById( 'whatIsTeamingSpan' );
 				tutorialObj.img = document.getElementById( 'whatIsTeamingSelectedImg' );
 				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-1.wmv';
 
+				// Create a tutorial object for "getting around"
 				tutorialObj = new Object();
 				m_tutorialObjs['gettingAround'] = tutorialObj;
-				tutorialObj.div = document.getElementById( 'gettingAroundDiv' );
+				tutorialObj.td = document.getElementById( 'gettingAroundTD' );
 				tutorialObj.span = document.getElementById( 'gettingAroundSpan' );
 				tutorialObj.img = document.getElementById( 'gettingAroundSelectedImg' );
 				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-2.wmv';
 
+				// Create a tutorial object for "importing files"
 				tutorialObj = new Object();
 				m_tutorialObjs['importingFiles'] = tutorialObj;
-				tutorialObj.div = document.getElementById( 'importingFilesDiv' );
+				tutorialObj.td = document.getElementById( 'importingFilesTD' );
 				tutorialObj.span = document.getElementById( 'importingFilesSpan' );
 				tutorialObj.img = document.getElementById( 'importingFilesSelectedImg' );
 				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-3.wmv';
 
+				// Create a tutorial object for "customization"
 				tutorialObj = new Object();
 				m_tutorialObjs['customization'] = tutorialObj;
-				tutorialObj.div = document.getElementById( 'customizationDiv' );
+				tutorialObj.td = document.getElementById( 'customizationTD' );
 				tutorialObj.span = document.getElementById( 'customizationSpan' );
 				tutorialObj.img = document.getElementById( 'customizationSelectedImg' );
 				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-4.wmv';
 
+				// Create a tutorial object for "best practices"
 				tutorialObj = new Object();
 				m_tutorialObjs['bestPractices'] = tutorialObj;
-				tutorialObj.div = document.getElementById( 'bestPracticesDiv' );
+				tutorialObj.td = document.getElementById( 'bestPracticesTD' );
 				tutorialObj.span = document.getElementById( 'bestPracticesSpan' );
 				tutorialObj.img = document.getElementById( 'bestPracticesSelectedImg' );
 				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-5.wmv';
@@ -163,8 +167,8 @@ try
 			function highlightTutorial( tutorialObj )
 			{
 				// Change the background image of the tutorial text.
-				tutorialObj.div.style.backgroundImage = "url('<html:imagesPath/>pics/tutorial/bgSelectedVideo.gif')";
-				tutorialObj.div.style.backgroundRepeat = 'repeat-x';
+				tutorialObj.td.style.backgroundImage = "url('<html:imagesPath/>pics/tutorial/bgSelectedVideo.gif')";
+				tutorialObj.td.style.backgroundRepeat = 'repeat-x';
 
 				tutorialObj.span.className = 'tutorialHighlightedText';
 
@@ -235,8 +239,8 @@ try
 			function unhighlightTutorial( tutorialObj )
 			{
 				// Set the background image of the tutorial text to nothing.
-				tutorialObj.div.style.backgroundImage = '';
-				tutorialObj.div.style.backgroundRepeat = '';
+				tutorialObj.td.style.backgroundImage = '';
+				tutorialObj.td.style.backgroundRepeat = '';
 
 				tutorialObj.span.className = 'tutorialUnhighlightedText';
 
@@ -258,7 +262,7 @@ try
 				<td nowrap width="1%" valign="top">
 					<table width="100%" cellpadding="0" cellspacing="0">
 						<tr>
-							<td nowrap width="1%">
+							<td nowrap width="1%" id="whatIsTeamingTD">
 								<div id="whatIsTeamingDiv" class="tutorialItem">
 									<a 	href="#"
 										onclick="playTutorial( 'whatIsTeaming' )"
@@ -276,11 +280,11 @@ try
 								</div>
 							</td>
 							<td nowrap width="1%">
-								<img id="whatIsTeamingSelectedImg" border="0" height="36" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
+								<img id="whatIsTeamingSelectedImg" border="0" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
 							</td>
 						</tr>
 						<tr>
-							<td nowrap width="1%">
+							<td nowrap width="1%" id="gettingAroundTD">
 								<div id="gettingAroundDiv" class="tutorialItem">
 									<a	href="#"
 										onclick="playTutorial( 'gettingAround' )"
@@ -298,11 +302,11 @@ try
 								</div>
 							</td>
 							<td nowrap width="1%">
-								<img id="gettingAroundSelectedImg" border="0" height="36" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
+								<img id="gettingAroundSelectedImg" border="0" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
 							</td>
 						</tr>
 						<tr>
-							<td nowrap width="1%">
+							<td nowrap width="1%" id="importingFilesTD">
 								<div id="importingFilesDiv" class="tutorialItem">
 									<a	href="#"
 										onclick="playTutorial( 'importingFiles' )"
@@ -320,11 +324,11 @@ try
 								</div>
 							</td>
 							<td nowrap width="1%">
-								<img id="importingFilesSelectedImg" border="0" height="36" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
+								<img id="importingFilesSelectedImg" border="0" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
 							</td>
 						</tr>
 						<tr>
-							<td nowrap width="1%">
+							<td nowrap width="1%" id="customizationTD">
 								<div id="customizationDiv" class="tutorialItem">
 									<a	href="#"
 										onclick="playTutorial( 'customization' )"
@@ -342,11 +346,11 @@ try
 								</div>
 							</td>
 							<td nowrap width="1%">
-								<img id="customizationSelectedImg" border="0" height="36" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
+								<img id="customizationSelectedImg" border="0" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
 							</td>
 						</tr>
 						<tr>
-							<td nowrap width="1%">
+							<td nowrap width="1%" id="bestPracticesTD">
 								<div id="bestPracticesDiv" class="tutorialItem">
 									<a	href="#"
 										onclick="playTutorial( 'bestPractices' )"
@@ -364,7 +368,7 @@ try
 								</div>
 							</td>
 							<td nowrap width="1%">
-								<img id="bestPracticesSelectedImg" border="0" height="36" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
+								<img id="bestPracticesSelectedImg" border="0" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
 							</td>
 						</tr>
 					</table>
