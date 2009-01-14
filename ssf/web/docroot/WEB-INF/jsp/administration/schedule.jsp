@@ -74,11 +74,11 @@
    <tr>
    <td >
    <hr shade=noshade size=1/>
-   <input type="radio"  name="${schedPrefix}schedType" id="${schedPrefix}schedType" value="daily" <c:if test="${schedule.daily}">checked</c:if>/> 
-   <span class="ss_labelRight"><ssf:nlt tag="schedule.everyday"/></span>
+   <input type="radio"  name="${schedPrefix}schedType" id="daily" value="daily" <c:if test="${schedule.daily}">checked</c:if>/> 
+   <label for="daily"><span class="ss_labelRight"><ssf:nlt tag="schedule.everyday"/></span></label>
    <br/>
-   <input type="radio"  name="${schedPrefix}schedType" id="${schedPrefix}schedType" value="weekly" <c:if test="${!schedule.daily}">checked</c:if>/> 
-   <span class="ss_labelRight"><ssf:nlt tag="schedule.weekly"/>&nbsp;<ssf:nlt tag="schedule.weeklyWhen"/></span>
+   <input type="radio"  name="${schedPrefix}schedType" id="weekly" value="weekly" <c:if test="${!schedule.daily}">checked</c:if>/> 
+   <label for="weekly"><span class="ss_labelRight"><ssf:nlt tag="schedule.weekly"/>&nbsp;<ssf:nlt tag="schedule.weeklyWhen"/></span></label>
    <br/>
    <table class="ss_style" border="0" cellpadding="0" style="border-spacing: 2px;">
 	  <tr><td >&nbsp;&nbsp;&nbsp;&nbsp;</td>
@@ -114,11 +114,12 @@
 	</table>
 <hr shade=noshade size=1/>
 
-<input type="radio"  name="${schedPrefix}hourType" id="${schedPrefix}hourType" value="absolute"   <c:if test="${!schedule.repeatHours}">checked</c:if>>
+<input type="radio"  name="${schedPrefix}hourType" id="absolute" value="absolute"   <c:if test="${!schedule.repeatHours}">checked</c:if>>
 	</input>
    
-	<span class="ss_labelRight"><ssf:nlt tag="schedule.attime"/></span>
+	<label for="absolute"><span class="ss_labelRight"><ssf:nlt tag="schedule.attime"/></span></label>
    
+   <label for="${schedPrefix}schedHours">&nbsp;</label>
 	<select name="${schedPrefix}schedHours" id="${schedPrefix}schedHours" <c:if test="${!schedule.repeatHours}">value="${schedule.hours}"</c:if>>
 		<option <c:if test="${schedule.hours == '0'}">selected="selected"</c:if> value="00">00
 		<option <c:if test="${schedule.hours == '1'}">selected="selected"</c:if> value="01">01
@@ -160,6 +161,7 @@
 		<option <c:if test="${schedule.minutes == '50'}">selected="selected"</c:if> value="50">50
 		<option <c:if test="${schedule.minutes == '55'}">selected="selected"</c:if> value="55">55
 	</select>
+	<label for="${schedPrefix}schedMinutes">&nbsp;</label>
 &nbsp;<span class="ss_bold"><%= TimeZone.getDefault().getID() %></span>
 	<c:set var="defaultTimeZoneId" value="<%= TimeZone.getDefault().getID() %>" />
 	
@@ -195,10 +197,11 @@
 <br/>
 
 
-<input type="radio"  name="${schedPrefix}hourType" id="${schedPrefix}hourType" value="repeat"   
+<input type="radio"  name="${schedPrefix}hourType" id="repeat" value="repeat"   
   <c:if test="${schedule.repeatHours || schedule.repeatMinutes}">checked</c:if>>
 </input>
    
+  <label for="repeat">
 	<span class="ss_labelRight">
 	<ssf:nlt tag="schedule.repeathours">
    	<ssf:param name="value" useBody="true">
@@ -224,6 +227,7 @@
 	</ssf:param>
 	</ssf:nlt>
 	</span>
+  </label>
 
 <br/>
 <hr shade=noshade size=1/>
