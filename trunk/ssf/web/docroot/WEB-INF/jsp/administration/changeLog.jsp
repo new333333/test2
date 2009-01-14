@@ -98,10 +98,10 @@ function ss_saveChangeLogEntryId(id) {
 </table>
 <table>
 <tr>
-  <td valign="top" width="250" align="center" nowrap>BinderId: <input type="text" name="binderId" size="8"/></td>
-  <td valign="top" width="250" align="center" nowrap>EntityId: <input type="text" name="entityId" size="8"><br/>
-  EntityType: 
-<select name="entityType">
+  <td valign="top" width="250" align="center" nowrap><label for="binderId">BinderId: </label><input type="text" name="binderId" id="binderId" size="8"/></td>
+  <td valign="top" width="250" align="center" nowrap><label for="entityId">EntityId: </label><input type="text" name="entityId" id="entityId" size="8"><br/>
+  <label for="entityType">EntityType: </label>
+<select name="entityType" id="entityType">
   <option value="">----</option>
     <option value="folderEntry">folderEntry</option>
     <option value="user">user</option>
@@ -115,8 +115,8 @@ function ss_saveChangeLogEntryId(id) {
 <br/>
 <table>
 <tr>
-  <td><ssf:nlt tag="changeLogs.filterByOperation"/>
-	<select name="operation">
+  <td><label for="operation"><ssf:nlt tag="changeLogs.filterByOperation"/></label>
+	<select name="operation" id="operation">
 	  <option value=""><ssf:nlt tag="changeLog.showAllChanges"/></option>
 	    <option value="addEntry">addEntry</option>
 	    <option value="modifyEntry">modifyEntry</option>
