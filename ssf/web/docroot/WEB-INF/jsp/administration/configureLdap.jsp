@@ -116,7 +116,6 @@
 		   	<tr><td><input type="checkbox" name="userWorkspaceDelete" id="userWorkspaceDelete" <c:if test="${ssLdapConfig.userWorkspaceDelete}">checked</c:if>>
 		   	<label for="userWorkspaceDelete"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.user.workspace.delete"/></span></label></input>
 		   	</td></tr>
-		 	</td></tr>
 	</table>
 	</fieldset>
 	
