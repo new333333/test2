@@ -121,7 +121,7 @@
 				<c:if test="${ssDefinitionEntry.mirrored || !empty resourceDrivers}" >
 					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.rootpath.label"/></span>
 					<input type="text" class="ss_text" size="80" name="rootPath" value="${resourceRootPath}" disabled/><br/>
-					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.path.label"/></span>
+					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.path.label"/></span><br>
 					<input type="text" class="ss_text" size="80" name="resourcePath" value="${ssDefinitionEntry.resourcePath}"/><br/>
 				</c:if>
 				<br/>
