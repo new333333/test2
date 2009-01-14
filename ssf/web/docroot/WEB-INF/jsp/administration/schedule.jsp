@@ -206,6 +206,7 @@
 	<ssf:nlt tag="schedule.repeathours">
    	<ssf:param name="value" useBody="true">
 
+	<label for="${schedPrefix}hoursRepeat">&nbsp;</label>
 	<select name="${schedPrefix}hoursRepeat" id="${schedPrefix}hoursRepeat" 
 	  <c:if test="${schedule.minutesRepeat && schedule.minutesRepeat == '15'}">value="0.25"</c:if>
 	  <c:if test="${schedule.minutesRepeat && schedule.minutesRepeat == '30'}">value="0.5"</c:if>
