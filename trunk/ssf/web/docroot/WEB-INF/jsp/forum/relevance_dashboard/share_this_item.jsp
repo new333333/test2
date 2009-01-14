@@ -73,6 +73,11 @@
 
 <br/>
 
+<span class="ss_labelAbove"><ssf:nlt tag="relevance.shareThisWithComment"/></span>
+<div>
+<%@ include file="/WEB-INF/jsp/binder/sendMail_htmlTextarea.jsp" %> 
+</div>
+
 <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" />
 <input type="button" value="<ssf:nlt tag="button.cancel"/>" onClick="self.window.close();return false;"/>
 
