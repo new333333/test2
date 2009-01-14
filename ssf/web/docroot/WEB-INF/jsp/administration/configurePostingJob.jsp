@@ -150,7 +150,7 @@ ${alias.binder.title}&nbsp;&nbsp<span  class="ss_smallprint ss_light">(${alias.b
   id="${renderResponse.namespace}_modifyAliasFm"
   onSubmit="${renderResponse.namespace}_modifyAlias(); ss_cancelPopupDiv('${renderResponse.namespace}_modifyAliasDiv'); return false;">
 <br/><br/>
-<span class="ss_labelRight"><ssf:nlt tag="incoming.modifyAlias"/></span>
+<label for="alias"><span class="ss_labelRight"><ssf:nlt tag="incoming.modifyAlias"/></span></label>
  <input type="text" name="alias" id="alias" value="" size="32"/> 
 <c:if test="${mail_posting_use_aliases == 'false'}">
 <br/>
