@@ -63,7 +63,7 @@
 
 <span class="ss_bold"><ssf:nlt tag="relevance.selectTeams"/></span>
 <br/>
-<ul>
+<ul class="ss_nobullet">
   <c:forEach var="team" items="${ss_myTeams}">
 	<li><input type="checkbox" name="cb_${team._docId}"/>
 	    <span style="padding-left:6px;">${team.title}</span>
