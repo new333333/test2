@@ -28,6 +28,7 @@
  */
 package org.kablink.teaming.portlet.binder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,7 +45,13 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.mail.MailSentStatus;
+import org.kablink.teaming.module.shared.AccessUtils;
+import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
+import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
@@ -84,11 +91,34 @@ public class SendMailController extends SAbstractController {
 			if (formData.containsKey("bccusers")) bccIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("bccusers")));
 			if (formData.containsKey("bccgroups")) bccIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("bccgroups")));
 
+			List<String> noAccessPrincipals = new ArrayList();
+			String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
+			if (!binderId.equals("")) {
+				Binder binder = getBinderModule().getBinder(Long.valueOf(binderId));
+				Set totalIds = new HashSet();
+				totalIds.addAll(memberIds);
+				totalIds.addAll(ccIds);
+				totalIds.addAll(bccIds);
+				Set<Principal> totalUsers = getProfileModule().getPrincipals(totalIds);
+				for (Principal p : totalUsers) {
+					if (p instanceof User) {
+						try {
+							AccessUtils.readCheck((User)p, (WorkArea)binder);
+						} catch(AccessControlException e) {
+							noAccessPrincipals.add(p.getTitle() + " (" + p.getName() + ")");
+						}
+					}
+				}
+			}
+
 			Map status = getAdminModule().sendMail(memberIds, null, emailAddress, ccIds, bccIds, subject, new Description(body, Description.FORMAT_HTML));
 			MailSentStatus result = (MailSentStatus)status.get(ObjectKeys.SENDMAIL_STATUS);
-			response.setRenderParameter(WebKeys.EMAIL_SENT_ADDRESSES, getStringEmail(result.getSentTo()));
-			response.setRenderParameter(WebKeys.EMAIL_QUEUED_ADDRESSES,  getStringEmail(result.getQueuedToSend()));
-			response.setRenderParameter(WebKeys.EMAIL_FAILED_ADDRESSES,  getStringEmail(result.getFailedToSend()));
+			if (result != null) {
+				response.setRenderParameter(WebKeys.EMAIL_SENT_ADDRESSES, getStringEmail(result.getSentTo()));
+				response.setRenderParameter(WebKeys.EMAIL_QUEUED_ADDRESSES,  getStringEmail(result.getQueuedToSend()));
+				response.setRenderParameter(WebKeys.EMAIL_FAILED_ADDRESSES,  getStringEmail(result.getFailedToSend()));
+			}
+			response.setRenderParameter(WebKeys.EMAIL_FAILED_ACCESS, noAccessPrincipals.toArray(new String[noAccessPrincipals.size()]));
 			List errors = (List)status.get(ObjectKeys.SENDMAIL_ERRORS);
 			response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
@@ -113,6 +143,7 @@ public class SendMailController extends SAbstractController {
 			model.put(WebKeys.EMAIL_SENT_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_SENT_ADDRESSES));
 			model.put(WebKeys.EMAIL_QUEUED_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_QUEUED_ADDRESSES));
 			model.put(WebKeys.EMAIL_FAILED_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_FAILED_ADDRESSES));
+			model.put(WebKeys.EMAIL_FAILED_ACCESS, request.getParameterValues(WebKeys.EMAIL_FAILED_ACCESS));
 			return new ModelAndView(WebKeys.VIEW_SENDMAIL_RESULT, model);
 		}
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);

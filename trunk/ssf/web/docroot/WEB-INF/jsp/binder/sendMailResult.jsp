@@ -36,41 +36,58 @@
 
 <div class="ss_style ss_portlet" style="padding:10px;">
 
+<ssf:form titleTag="sendMail.status">
 <form class="ss_style ss_form" method="post">
 <br/>
+
 <c:if test="${!empty ssErrorList}">
-<ul>
+<span class="ss_titlebold"><ssf:nlt tag="sendMail.mailErrors"/></span><br/>
+<ul class="ss_nobullet">
 <c:forEach var="item" items="${ssErrorList}">
 	<li>${item}</li>
 </c:forEach>
 </ul>
+<br/>
 </c:if>
+
 <c:if test="${!empty ssFailedEmailAddresses}">
 <span class="ss_titlebold"><ssf:nlt tag="sendMail.mailFailed"/></span><br/>
-<br/>
-<ul>
+<ul class="ss_nobullet">
 <c:forEach var="item" items="${ssFailedEmailAddresses}">
 	<li>${item}</li>
 </c:forEach>
 </ul>
+<br/>
 </c:if>
+
+<c:if test="${!empty ssFailedEmailAccess}">
+<span class="ss_titlebold"><ssf:nlt tag="sendMail.mailFailedAccessEntry"/></span><br/>
+<ul class="ss_nobullet">
+<c:forEach var="item" items="${ssFailedEmailAccess}">
+	<li>${item}</li>
+</c:forEach>
+</ul>
+<br/>
+</c:if>
+
 <c:if test="${!empty ssQueuedEmailAddresses}">
 <span class="ss_titlebold"><ssf:nlt tag="sendMail.mailQueued"/></span><br/>
-<br/>
-<ul>
+<ul class="ss_nobullet">
 <c:forEach var="item" items="${ssQueuedEmailAddresses}">
 	<li>${item}</li>
 </c:forEach>
 </ul>
+<br/>
 </c:if>
+
 <c:if test="${!empty ssSentEmailAddresses}">
 <span class="ss_titlebold"><ssf:nlt tag="sendMail.mailSent"/></span><br/>
-<br/>
-<ul>
+<ul class="ss_nobullet">
 <c:forEach var="item" items="${ssSentEmailAddresses}">
 	<li>${item}</li>
 </c:forEach>
 </ul>
+<br/>
 </c:if>
 
 
@@ -78,6 +95,7 @@
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;">
 </div>
 </form>
+</ssf:form>
 
 </div>
 <ssf:ifadapter>

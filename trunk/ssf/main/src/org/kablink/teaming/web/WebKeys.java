@@ -658,6 +658,7 @@ public class WebKeys {
     public static final String EMAIL_SENT_ADDRESSES="ssSentEmailAddresses";
     public static final String EMAIL_QUEUED_ADDRESSES="ssQueuedEmailAddresses";
     public static final String EMAIL_FAILED_ADDRESSES="ssFailedEmailAddresses";
+    public static final String EMAIL_FAILED_ACCESS="ssFailedEmailAccess";
     public static final String EMAIL_ALIASES="ssEmailAliases";
 	public static final String ENTITY_ID = "ss_entityId";
 	public static final String ENTITY_TYPE="_entityType";

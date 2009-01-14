@@ -206,6 +206,9 @@ public class AccessUtils  {
         return getInstance().getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.READ_ENTRIES);     	 
 	}     	
 	
+	public static void readCheck(User user, WorkArea binder) throws AccessControlException {
+		getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
+	}
 	public static void readCheck(Entry entry) throws AccessControlException {
 		readCheck(RequestContextHolder.getRequestContext().getUser(), entry);
 	}
