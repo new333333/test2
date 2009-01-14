@@ -51,6 +51,7 @@
         <span>${user.title}</span> <span class="ss_smallprint ss_italic">(${user.name})</span><br/>
       </c:if>
     </c:forEach>
+    <c:if test="${empty ssOperationMap['readEntries'].ssUsers}">&nbsp;</c:if>
   </TD>
   <TD valign="top">
      <c:forEach var="group" items="${ss_accessSortedGroups}">
@@ -69,6 +70,7 @@
 		</a><br/>
       </c:if>
     </c:forEach>
+    <c:if test="${empty ssOperationMap['readEntries'].ssGroups}">&nbsp;</c:if>
   </TD>
 </TR>
 
@@ -81,6 +83,7 @@
         <span>${user.title}</span> <span class="ss_smallprint ss_italic">(${user.name})</span><br/>
       </c:if>
     </c:forEach>
+    <c:if test="${empty ssOperationMap['createEntries'].ssUsers}">&nbsp;</c:if>
   </TD>
   <TD valign="top">
      <c:forEach var="group" items="${ss_accessSortedGroups}">
@@ -99,6 +102,7 @@
 		</a><br/>
       </c:if>
     </c:forEach>
+    <c:if test="${empty ssOperationMap['createEntries'].ssGroups}">&nbsp;</c:if>
   </TD>
 </TR>
 </c:if>
@@ -115,6 +119,7 @@
         <span>${user.title}</span> <span class="ss_smallprint ss_italic">(${user.name})</span><br/>
       </c:if>
     </c:forEach>
+    <c:if test="${empty ssOperationMap['binderAdministration'].ssUsers}">&nbsp;</c:if>
   </TD>
   <TD valign="top">
      <c:forEach var="group" items="${ss_accessSortedGroups}">
@@ -133,6 +138,7 @@
 		</a><br/>
       </c:if>
     </c:forEach>
+    <c:if test="${empty ssOperationMap['binderAdministration'].ssGroups}">&nbsp;</c:if>
   </TD>
 </TR>
 
