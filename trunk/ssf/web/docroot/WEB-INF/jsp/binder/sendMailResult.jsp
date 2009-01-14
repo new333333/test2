@@ -61,7 +61,7 @@
 </c:if>
 
 <c:if test="${!empty ssFailedEmailAccess}">
-<span class="ss_titlebold"><ssf:nlt tag="sendMail.mailFailedAccessEntry"/></span><br/>
+<span class="ss_titlebold"><ssf:nlt tag="sendMail.mailFailedAccess"/></span><br/>
 <ul class="ss_nobullet">
 <c:forEach var="item" items="${ssFailedEmailAccess}">
 	<li>${item}</li>
