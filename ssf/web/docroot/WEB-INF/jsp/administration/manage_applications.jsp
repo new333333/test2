@@ -67,23 +67,23 @@ function ${renderResponse.namespace}_onsub(obj) {
 		<ssf:param name="binderId" value="${ssBinder.id}"/>
 		</ssf:url>" onSubmit="return(${renderResponse.namespace}_onsub(this))">
 		
-	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationTitle"/></span><br/>
-	<input type="text" class="ss_text" size="70" name="title"><br/><br/>
+	<label for="title"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationTitle"/></span><br/></label>
+	<input type="text" class="ss_text" size="70" name="title" id="title"><br/><br/>
 		
-	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationName"/></span><ssf:inlineHelp 
-	  tag="ihelp.designers.data_name"/><br/>
-	<input type="text" class="ss_text" size="70" name="name"><br/><br/>
+	<label for="name"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationName"/></span><ssf:inlineHelp 
+	  tag="ihelp.designers.data_name"/><br/></label>
+	<input type="text" class="ss_text" size="70" name="name" id="name"><br/><br/>
 		
-	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationPostUrl"/></span><br/>
-	<input type="text" class="ss_text" size="70" name="postUrl"><br/><br/>
+	<label for="postUrl"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationPostUrl"/></span><br/></label>
+	<input type="text" class="ss_text" size="70" name="postUrl" id="postUrl"><br/><br/>
 		
-	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationDescription"/></span><br/>
-	<textarea name="description" wrap="virtual" rows="4" cols="70"></textarea><br/><br/>
+	<label for="description"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationDescription"/></span><br/></label>
+	<textarea name="description" id="description" wrap="virtual" rows="4" cols="70"></textarea><br/><br/>
 	
-	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationTimeout"/></span><br/>
-	<input type="text" class="ss_text" size="15" name="timeout" value='<%=org.kablink.teaming.util.SPropsUtil.getString("remoteapp.timeout")%>'><br/><br/>
+	<label for="timeout"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationTimeout"/></span><br/></label>
+	<input type="text" class="ss_text" size="15" name="timeout" id="timeout" value='<%=org.kablink.teaming.util.SPropsUtil.getString("remoteapp.timeout")%>'><br/><br/>
 		
-	<input type="checkbox" name="trusted" value="true"> <span class="ss_bold"><ssf:nlt tag="administration.add.applicationTrusted"/></span></input><br/><br/>
+	<input type="checkbox" name="trusted" id="trusted" value="true"/> <label for="trusted"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationTrusted"/></span><br/><br/></label>
 	
 	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
@@ -119,19 +119,19 @@ function ${renderResponse.namespace}_onsub(obj) {
   onSubmit="return ss_onSubmit(this);">
 		
 <ssf:expandableArea title='<%= NLT.get("administration.modify.application") %>'>
-	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationTitle"/></span><br/>
-	<input type="text" class="ss_text" size="50" name="title" value="${ssApplication.title}"><br/><br/>
+	<label for="title"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationTitle"/></span><br/></label>
+	<input type="text" class="ss_text" size="50" name="title" id="title" value="${ssApplication.title}"><br/><br/>
 		
-	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationPostUrl"/></span><br/>
-	<input type="text" class="ss_text" size="50" name="postUrl" value="${ssApplication.postUrl}"><br/><br/>		
+	<label for="postUrl"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationPostUrl"/></span><br/></label>
+	<input type="text" class="ss_text" size="50" name="postUrl" id="postUrl" value="${ssApplication.postUrl}"><br/><br/>		
 		
-	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationDescription"/></span><br/>
-	<textarea name="description" wrap="virtual" rows="4" cols="50">${ssApplication.description}</textarea><br/><br/>
+	<label for="description"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationDescription"/></span><br/></label>
+	<textarea name="description" id="description" wrap="virtual" rows="4" cols="50">${ssApplication.description}</textarea><br/><br/>
 	
-	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationTimeout"/></span><br/>
-	<input type="text" class="ss_text" size="15" name="timeout" value="${ssApplication.timeout}"><br/><br/>		
+	<label for="timeout"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationTimeout"/></span><br/></label>
+	<input type="text" class="ss_text" size="15" name="timeout" id="timeout" value="${ssApplication.timeout}"><br/><br/>		
 		
-	<input type="checkbox" name="trusted" value="true" <c:if test="${ssApplication.trusted}">checked</c:if>> <span class="ss_bold"><ssf:nlt tag="administration.add.applicationTrusted"/></span></input><br/><br/>
+	<input type="checkbox" name="trusted" id="trusted" value="true" <c:if test="${ssApplication.trusted}">checked</c:if>/> <label for="trusted"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationTrusted"/></span><br/><br/></label>
 </ssf:expandableArea>
 
 <br/>
