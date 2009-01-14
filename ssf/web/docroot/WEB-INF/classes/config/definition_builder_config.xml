@@ -1665,6 +1665,7 @@
 		</options>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/relevance_dashboard.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/relevance_dashboard.jsp" />
 		</jsps>
 	</item>
 			
