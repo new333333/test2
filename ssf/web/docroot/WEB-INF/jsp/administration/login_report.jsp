@@ -111,10 +111,10 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
    <label for="ss_reportSortType"><ssf:nlt tag="administration.report.sort"/></label>
    
    <select name="ss_reportSortType" id="ss_reportSortType">
-   <option value = "none_sort"><span class="ss_labelRight"><ssf:nlt tag="common.select.none"/></option>
-   <option value = "user_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.user"/></option>
-   <option value = "last_login_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.last_login"/></option>
-   <option value = "login_count_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.login_count"/></option>   
+   <option value = "none_sort"><span class="ss_labelRight"><ssf:nlt tag="common.select.none"/></span></option>
+   <option value = "user_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.user"/></span></option>
+   <option value = "last_login_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.last_login"/></span></option>
+   <option value = "login_count_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.login_count"/></span></option>   
    </select>
    
    </div>
@@ -136,8 +136,8 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
    <label for="ss_reportSortType_2"><ssf:nlt tag="administration.report.sort"/></label>
    
    <select name="ss_reportSortType_2" id="ss_reportSortType_2">
-   <option value = "login_date_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.login_date"/></option>   
-   <option value = "user_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.user"/></option>
+   <option value = "login_date_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.login_date"/></span></option>   
+   <option value = "user_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.user"/></span></option>
    </select>
    
    </div>
