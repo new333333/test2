@@ -776,10 +776,12 @@ public class ViewEntryController extends  SAbstractController {
 			footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
 		}
 		
+		//   iCalendar
 		if (entry.getEvents() != null && !entry.getEvents().isEmpty()) {
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 			footerToolbar.addToolbarMenu("iCalendar", NLT.get("toolbar.menu.iCalendar"), UrlUtil.getICalURL(request, folderId, entryId), qualifiers);
+			model.put(WebKeys.TOOLBAR_URL_ICAL, UrlUtil.getICalURL(request, folderId, entryId));
 		}
 		
 		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR,  toolbar.getToolbar());
