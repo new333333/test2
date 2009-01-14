@@ -55,7 +55,18 @@
   <TD valign="top">
      <c:forEach var="group" items="${ss_accessSortedGroups}">
       <c:if test="${!empty ssOperationMap['readEntries'].ssGroups[group.id]}">
-        <span>${group.title}</span> <span class="ss_smallprint ss_italic">(${group.name})</span><br/>
+        <a href="<ssf:url
+				adapter="true" 
+				crawlable="true"
+				portletName="ss_forum" 
+				action="__ajax_request"
+				actionUrl="false"><ssf:param 
+				name="operation" value="get_group_list"/><ssf:param 
+				name="groupId" value="${group.id}"/></ssf:url>"
+		     onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">
+		  <span>${group.title}</span> 
+		  <span class="ss_smallprint ss_italic">(${group.name})</span>
+		</a><br/>
       </c:if>
     </c:forEach>
   </TD>
@@ -74,7 +85,18 @@
   <TD valign="top">
      <c:forEach var="group" items="${ss_accessSortedGroups}">
       <c:if test="${!empty ssOperationMap['createEntries'].ssGroups[group.id]}">
-        <span>${group.title}</span> <span class="ss_smallprint ss_italic">(${group.name})</span><br/>
+        <a href="<ssf:url
+				adapter="true" 
+				crawlable="true"
+				portletName="ss_forum" 
+				action="__ajax_request"
+				actionUrl="false"><ssf:param 
+				name="operation" value="get_group_list"/><ssf:param 
+				name="groupId" value="${group.id}"/></ssf:url>"
+		     onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">
+		  <span>${group.title}</span> 
+		  <span class="ss_smallprint ss_italic">(${group.name})</span>
+		</a><br/>
       </c:if>
     </c:forEach>
   </TD>
@@ -97,7 +119,18 @@
   <TD valign="top">
      <c:forEach var="group" items="${ss_accessSortedGroups}">
       <c:if test="${!empty ssOperationMap['binderAdministration'].ssGroups[group.id]}">
-        <span>${group.title}</span> <span class="ss_smallprint ss_italic">(${group.name})</span><br/>
+        <a href="<ssf:url
+				adapter="true" 
+				crawlable="true"
+				portletName="ss_forum" 
+				action="__ajax_request"
+				actionUrl="false"><ssf:param 
+				name="operation" value="get_group_list"/><ssf:param 
+				name="groupId" value="${group.id}"/></ssf:url>"
+		     onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">
+		  <span>${group.title}</span> 
+		  <span class="ss_smallprint ss_italic">(${group.name})</span>
+		</a><br/>
       </c:if>
     </c:forEach>
   </TD>

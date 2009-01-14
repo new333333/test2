@@ -669,8 +669,8 @@ public class WorkspaceTreeHelper {
 		//The "Who has access" menu
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
-		qualifiers.put("popupWidth", "400");
-		qualifiers.put("popupHeight", "500");
+		qualifiers.put("popupWidth", "600");
+		qualifiers.put("popupHeight", "700");
 		adminMenuCreated = true;
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);

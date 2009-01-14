@@ -30,9 +30,12 @@ import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.web.WebKeys;
 
 public class WorkAreaHelper {
-	public static void buildAccessControlTableBeans(RenderRequest request, RenderResponse response, 
+	public static void buildAccessControlTableBeans(AllModulesInjected bs, RenderRequest request, RenderResponse response, 
 			WorkArea wArea, List functions, List membership, Map model, boolean ignoreFormData) {
 		Map formData = request.getParameterMap();
+		
+		Principal binderOwner = wArea.getOwner();
+		Set teamMembers = bs.getProfileModule().getUsersFromPrincipals(wArea.getTeamMemberIds());
 
 		Set newRoleIds = new HashSet();
 		String[] roleIds = new String[0];
@@ -221,18 +224,38 @@ public class WorkAreaHelper {
 						break;
 					}
 				}
+				//Build a map of users and groups per operation (e.g., operationMap.operation.ss_Users.userId)
 				for (Object wo : f.getOperations()) {
 					if (!operationMap.containsKey(((WorkAreaOperation)wo).getName())) 
 						operationMap.put(((WorkAreaOperation)wo).getName(), new HashMap());
 					Map operationMemberships = (Map)operationMap.get(((WorkAreaOperation)wo).getName());
+					
 					if (!operationMemberships.containsKey(WebKeys.USERS)) operationMemberships.put(WebKeys.USERS, new HashMap());
 					Map operationUsers = (Map)operationMemberships.get(WebKeys.USERS);
 					for (Map.Entry me : users.entrySet()) operationUsers.put(me.getKey(), me.getValue());
+					if (pMap.containsKey(WebKeys.OWNER)) {
+						operationUsers.put(binderOwner.getId(), binderOwner);
+						sortedUsersMap.put(binderOwner.getTitle().toLowerCase() + binderOwner.getName().toString(), binderOwner);
+					}
+					
 					if (!operationMemberships.containsKey(WebKeys.GROUPS)) operationMemberships.put(WebKeys.GROUPS, new HashMap());
 					Map operationGroups = (Map)operationMemberships.get(WebKeys.GROUPS);
 					for (Map.Entry me : groups.entrySet()) operationGroups.put(me.getKey(), me.getValue());
-					if (pMap.containsKey(WebKeys.OWNER)) operationMemberships.put(WebKeys.OWNER, pMap.get(WebKeys.OWNER));
-					if (pMap.containsKey(WebKeys.TEAM_MEMBER)) operationMemberships.put(WebKeys.TEAM_MEMBER, pMap.get(WebKeys.OWNER));
+					
+					if (pMap.containsKey(WebKeys.TEAM_MEMBER)) {
+						Iterator itTeamMembers = teamMembers.iterator();
+						while (itTeamMembers.hasNext()) {
+							Principal p = (Principal)itTeamMembers.next();
+							if(p == null) continue;
+							if (p instanceof Group) {
+								sortedGroupsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+								operationGroups.put(p.getId(), p);
+							} else if (p instanceof User) {
+								sortedUsersMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+								operationUsers.put(p.getId(), p);
+							}
+						}
+					}
 				}
 			}
 		}
