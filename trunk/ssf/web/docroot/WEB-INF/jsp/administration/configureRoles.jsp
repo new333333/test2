@@ -43,7 +43,7 @@
 </script>
 
 
-<spam class="ss_titlebold"><ssf:nlt tag="administration.configure_roles.configure" text="Configure SiteScape Forum Roles"/></span>
+<span class="ss_titlebold"><ssf:nlt tag="administration.configure_roles.configure" text="Configure SiteScape Forum Roles"/></span>
 <c:if test="${!empty ssException}">
 <font color="red">
 
