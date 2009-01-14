@@ -68,14 +68,14 @@ function ${renderResponse.namespace}_onsub(obj) {
 	name="binderId" value="${ssBinder.id}"/></ssf:url>" 
 	onSubmit="return(${renderResponse.namespace}_onsub(this))">
 		
-	<span class="ss_bold"><ssf:nlt tag="administration.add.groupName"/></span><ssf:inlineHelp tag="ihelp.groups.data_name"/><br/>
-	<input type="text" class="ss_text" size="70" name="name"><br/><br/>
+	<label for="name"><span class="ss_bold"><ssf:nlt tag="administration.add.groupName"/></span><ssf:inlineHelp tag="ihelp.groups.data_name"/><br/></label>
+	<input type="text" class="ss_text" size="70" name="name" id="name"><br/><br/>
 		
-	<span class="ss_bold"><ssf:nlt tag="administration.add.groupTitle"/></span><br/>
-	<input type="text" class="ss_text" size="70" name="title"><br/><br/>
+	<label for="title"><span class="ss_bold"><ssf:nlt tag="administration.add.groupTitle"/></span><br/></label>
+	<input type="text" class="ss_text" size="70" name="title" id="title"><br/><br/>
 		
-	<span class="ss_bold"><ssf:nlt tag="administration.add.groupDescription"/></span><br/>
-	<textarea name="description" wrap="virtual" rows="4" cols="80"></textarea><br/><br/>
+	<label for="description"><span class="ss_bold"><ssf:nlt tag="administration.add.groupDescription"/></span><br/></label>
+	<textarea name="description" id="description" wrap="virtual" rows="4" cols="80"></textarea><br/><br/>
 		
 	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
@@ -111,8 +111,8 @@ function ${renderResponse.namespace}_onsub(obj) {
   onSubmit="return ss_onSubmit(this);">
 		
 <ssf:expandableArea title='<%= NLT.get("administration.modify.groupTitle") %>'>
-	<span class="ss_bold"><ssf:nlt tag="administration.add.groupTitle"/></span><br/>
-	<input type="text" class="ss_text" size="40" name="title" value="${ssGroup.title}"><br/><br/>
+	<label for="title"><span class="ss_bold"><ssf:nlt tag="administration.add.groupTitle"/></span><br/></label>
+	<input type="text" class="ss_text" size="40" name="title" id="title" value="${ssGroup.title}"><br/><br/>
 		
 	<span class="ss_bold"><ssf:nlt tag="administration.add.groupDescription"/></span><br/>
 	<textarea name="description" wrap="virtual" rows="4" cols="40">${ssGroup.description}</textarea><br/><br/>
