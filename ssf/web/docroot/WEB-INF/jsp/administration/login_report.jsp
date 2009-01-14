@@ -100,7 +100,8 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
    
    <div>
    
-   <input type="radio" name="ss_reportOptionType" value="shortReport" checked/> <ssf:nlt tag="administration.report.option.short"/>
+   <input type="radio" name="ss_reportOptionType" value="shortReport" id="shortReport" checked/> 
+   <label for="shortReport"><ssf:nlt tag="administration.report.option.short"/></label>
    
    </div>
    
@@ -108,9 +109,9 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
    
    <div style="margin-left:35px;">
    
-   <ssf:nlt tag="administration.report.sort"/>
+   <label for="ss_reportSortType"><ssf:nlt tag="administration.report.sort"/></label>
    
-   <select name="ss_reportSortType">
+   <select name="ss_reportSortType" id="ss_reportSortType">
    <option value = "none_sort"><span class="ss_labelRight"><ssf:nlt tag="common.select.none"/></option>
    <option value = "user_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.user"/></option>
    <option value = "last_login_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.last_login"/></option>
@@ -123,7 +124,8 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
 
    <div>
 
-   <input type="radio" name="ss_reportOptionType" value="longReport"/> <ssf:nlt tag="administration.report.option.long"/>
+   <input type="radio" name="ss_reportOptionType" value="longReport" id="longReport"/> 
+   <label for="longReport"><ssf:nlt tag="administration.report.option.long"/></label>
    <br/>
    
    </div>
@@ -132,9 +134,9 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
 
    <div style="margin-left:35px;">
    
-   <ssf:nlt tag="administration.report.sort"/>
+   <label for="ss_reportSortType_2"><ssf:nlt tag="administration.report.sort"/></label>
    
-   <select name="ss_reportSortType_2">
+   <select name="ss_reportSortType_2" id="ss_reportSortType_2">
    <option value = "login_date_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.login_date"/></option>   
    <option value = "user_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.user"/></option>
    </select>
