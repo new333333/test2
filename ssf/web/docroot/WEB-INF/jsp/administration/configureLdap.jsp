@@ -491,36 +491,36 @@ jQuery(document).ready(function() {
 			<table>
 			<tr>
 			  <td valign="top">
-			    <ssf:nlt tag="ldap.user.url" />
+			    <label for="ldapUrl"><ssf:nlt tag="ldap.user.url" /></label>
 			  </td>
 			  <td valign="top">
-			    <input class="ldapUrl" type="text" value="" size="140"/>
-			  </td>
-			</tr>
-			<tr>
-			  <td valign="top">
-				<ssf:nlt tag="ldap.user.principal" />
-			  </td>
-			  <td valign="top">
-				<input class="ldapPrincipal" type="text" value="" size="140"/>
+			    <input class="ldapUrl" id="ldapUrl" type="text" value="" size="140"/>
 			  </td>
 			</tr>
 			<tr>
 			  <td valign="top">
-				<ssf:nlt tag="ldap.user.credential" />
+				<label for="ldapPrincipal"><ssf:nlt tag="ldap.user.principal" /></label>
 			  </td>
 			  <td valign="top">
-			    <input class="ldapCredentials" type="password" value="" size="140"/>
+				<input class="ldapPrincipal" id="ldapPrincipal" type="text" value="" size="140"/>
+			  </td>
+			</tr>
+			<tr>
+			  <td valign="top">
+				<label for="ldapCredentials"><ssf:nlt tag="ldap.user.credential" /></label>
+			  </td>
+			  <td valign="top">
+			    <input class="ldapCredentials" id="ldapCredentials" type="password" value="" size="140"/>
 			  </td>
 			</tr>
 			</table>
 			
 			<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt tag="ldap.users" /></legend>
-				<ssf:nlt tag="ldap.user.idmapping" />&nbsp;&nbsp;<input 
-				  class="ldapUserIdAttribute" type="text" value="" size="40"/><br/><br/>
-				<ssf:nlt tag="ldap.user.mappings" />
+				<label for="ldapUserIdAttribute"><ssf:nlt tag="ldap.user.idmapping" />&nbsp;&nbsp;</label><input 
+				  class="ldapUserIdAttribute" id="ldapUserIdAttribute" type="text" value="" size="40"/><br/><br/>
+				<label for="ldapMappings"><ssf:nlt tag="ldap.user.mappings" /></label>
 				<br/>
-				<textarea class="ldapMappings" style="height: 150px; width: 400px" wrap="hard"></textarea>
+				<textarea class="ldapMappings" id="ldapMappings" style="height: 150px; width: 400px" wrap="hard"></textarea>
 				<br/><br/>
 				<div class="ldapUserSearches">
 					<div class="ldapSearchList">
@@ -554,10 +554,10 @@ jQuery(document).ready(function() {
 			  </tr>
 			  <tr>
 			    <td>
-			      <label><ssf:nlt tag="ldap.search.baseDn" /></label>
+			      <label for="ldapBaseDn"><ssf:nlt tag="ldap.search.baseDn" /></label>
 			    </td>
 			    <td>
-			      <input class="ldapBaseDn" value="" size="120"/>
+			      <input class="ldapBaseDn" id="ldapBaseDn" value="" size="120"/>
 			    </td>
 			  </tr>
 			  
@@ -572,17 +572,17 @@ jQuery(document).ready(function() {
 			  </tr>
 			  <tr>
 			    <td>
-					<label><ssf:nlt tag="ldap.search.filter" /></label>
+					<label for="ldapFilter"><ssf:nlt tag="ldap.search.filter" /></label>
 				</td>
 				<td>
-				  <input class="ldapFilter" value="" size="120"/>
+				  <input class="ldapFilter" id="ldapFilter" value="" size="120"/>
 				</td>
 			  </tr>
 			</table>
 		</div>
 		<br/>
-		<input type="checkbox" class="ldapSearchSubtree" value="true"/>
-		<span style="padding-left:4px;"><ssf:nlt tag="ldap.search.searchSubtree" /></span>
+		<input type="checkbox" class="ldapSearchSubtree" id="ldapSearchSubtree" value="true"/>
+		<label for="ldapSearchSubtree"><span style="padding-left:4px;"><ssf:nlt tag="ldap.search.searchSubtree" /></span></label>
 		<br/>
 		<button class="deleteSearch ss_submit"><ssf:nlt tag="ldap.search.delete" /></button>
 	</div>
