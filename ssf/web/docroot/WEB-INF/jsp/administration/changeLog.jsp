@@ -84,7 +84,7 @@ function ss_saveChangeLogEntryId(id) {
   <td valign="top" width="250">
     <span><ssf:nlt tag="changeLog.findEntry"/></span>
     <div id="ss_changeLogEntryForm">
-      <iframe id="ss_changeLogIframe" frameborder="0" style="height:230px; width:200px;"
+      <iframe id="ss_changeLogIframe" title="<ssf:nlt tag="changeLog.findEntry"/>" frameborder="0" style="height:230px; width:200px;"
       src="<ssf:url 
 		adapter="true" 
 		portletName="ss_forum" 
@@ -152,7 +152,7 @@ function ss_saveChangeLogEntryId(id) {
 </form>
 <br/>
 <iframe id="${ssNamespace}_display" name="${ssNamespace}_display" style="width:98%; height:350px; 
-    display:block; position:relative; left:5px;"
+    display:block; position:relative; left:5px;" title="<ssf:nlt tag="administration.view_change_log"/>"
     src="<html:rootPath/>js/forum/null.html" 
     >xxx</iframe>
 </div>
