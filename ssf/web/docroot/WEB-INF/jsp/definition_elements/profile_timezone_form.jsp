@@ -32,10 +32,12 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <div class="ss_entryContent">
 <c:if test="${!empty property_caption}">
-<span class="ss_labelAbove"><c:out value="${property_caption}"/></span>
+<label for="${property_name}">
+	<span class="ss_labelAbove"><c:out value="${property_caption}"/></span>
+</label>
 </c:if>
 <c:if test="${empty ssReadOnlyFields[property_name]}">
-<select name="${property_name}">
+<select name="${property_name}" id="${property_name}">
 <%
 	java.util.Set<String> tzones = org.kablink.teaming.calendar.TimeZoneHelper.getTimeZoneIds();
 	org.kablink.teaming.domain.User user = (org.kablink.teaming.domain.User)request.getAttribute("ssDefinitionEntry");
