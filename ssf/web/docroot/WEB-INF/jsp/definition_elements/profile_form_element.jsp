@@ -69,10 +69,13 @@
 %>
 <div class="ss_entryContent">
 <c:if test="${!empty property_caption}">
-<span class="ss_labelAbove"><c:out value="${property_caption}"/></span>
+<label for="<%= property_name %>">
+	<span class="ss_labelAbove"><c:out value="${property_caption}"/></span>
+</label>
 </c:if>
 <c:if test="${empty ssReadOnlyFields[property_name]}">
-<input type="text" class="ss_text" name="<%= property_name %>" value="<%= value %>">
+<input type="text" class="ss_text" name="<%= property_name %>" 
+	id="<%= property_name %>" value="<%= value %>">
 </c:if>
 <c:if test="${!empty ssReadOnlyFields[property_name]}"><%= value %></c:if>
 
