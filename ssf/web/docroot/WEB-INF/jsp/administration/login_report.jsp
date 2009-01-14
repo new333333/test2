@@ -86,7 +86,6 @@ var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param
    
    <div>	
   
-	</br>
 	<br>
 	<!-- Find people -->
 		<div class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton${renderResponse.namespace}"
