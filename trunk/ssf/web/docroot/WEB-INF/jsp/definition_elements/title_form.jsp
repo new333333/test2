@@ -69,9 +69,11 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 		%>
 		<div class="ss_entryContent">
 		<div class="ss_labelAbove" id="${property_name}_label">
+		<label for="title">
 		  ${property_caption}<c:if test="${property_required}"><span 
 			  id="ss_required_${property_name}" title="<ssf:escapeJavaScript 
 			  value="<%= caption2 %>"/>" class="ss_required">*</span></c:if>
+		</label>
 		</div>
 <c:if test='${ssBinderMarker}'>
   <div class="needed-because-of-ie-bug"><div id="ss_titleCheck" style="display:none; visibility:hidden;" ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
