@@ -42,6 +42,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Element;
+import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
@@ -119,6 +120,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_SHARE_THIS_BINDER)) {
 			if (formData.containsKey("okBtn")) {
 				Map model = new HashMap();
+				model.put(WebKeys.ERROR_MESSAGE, PortletRequestUtils.getStringParameter(request, WebKeys.ERROR_MESSAGE, ""));
 				return new ModelAndView("forum/close_window", model);
 			} else {
 				return ajaxShareThisBinder(this, request, response);
@@ -227,7 +229,11 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		if (entity.getParentBinder() != null) title = entity.getParentBinder().getPathName() + "/" + title;
 		Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalink(request, entity) +
 				"\">" + title + "</a>");
-		getAdminModule().sendMail(ids, teams, null, null, null, NLT.get("relevance.mailShared", new Object[]{RequestContextHolder.getRequestContext().getUser().getTitle()}), body);
+		try {
+			getAdminModule().sendMail(ids, teams, null, null, null, NLT.get("relevance.mailShared", new Object[]{RequestContextHolder.getRequestContext().getUser().getTitle()}), body);
+		} catch(ConfigurationException e) {
+			response.setRenderParameter(WebKeys.ERROR_MESSAGE, e.getLocalizedMessage());
+		}
 	}
 	
 	private void ajaxClearUnseenBinder(ActionRequest request, 
