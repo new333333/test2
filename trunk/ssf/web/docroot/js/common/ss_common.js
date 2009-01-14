@@ -2392,11 +2392,15 @@ function ss_showSpannedAreas() {
 }
 
 //Routine to pop up a window with a url (used in common toolbar code)
-function ss_toolbarPopupUrl(url, windowName) {
-	var width = ss_getWindowWidth();
-	if (width < 600) width=600;
-	var height = ss_getWindowHeight();
-	if (height < 600) height=600;
+function ss_toolbarPopupUrl(url, windowName, width, height) {
+	if (typeof width == "undefined") {
+		width = ss_getWindowWidth();
+		if (width < 600) width=600;
+	}
+	if (typeof height == "undefined") {
+		var height = ss_getWindowHeight();
+		if (height < 600) height=600;
+	}
 	self.window.open(url?url:"", windowName?windowName:"_blank", "resizable=yes,scrollbars=yes,width="+width+",height="+height);
 }
 

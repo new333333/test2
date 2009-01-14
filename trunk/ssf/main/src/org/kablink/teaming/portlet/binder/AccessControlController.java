@@ -184,7 +184,7 @@ public class AccessControlController extends AbstractBinderController {
 		} else {
 			membership = bs.getAdminModule().getWorkAreaFunctionMemberships(wArea);
 		}
-		WorkAreaHelper.buildAccessControlTableBeans(request, response, wArea, functions, 
+		WorkAreaHelper.buildAccessControlTableBeans(bs, request, response, wArea, functions, 
 				membership, model, false);
 
 		if (!wArea.isFunctionMembershipInherited()) {
@@ -197,7 +197,7 @@ public class AccessControlController extends AbstractBinderController {
 					parentMembership = bs.getAdminModule().getWorkAreaFunctionMemberships(parentArea);
 				}
 				Map modelParent = new HashMap();
-				WorkAreaHelper.buildAccessControlTableBeans(request, response, parentArea, 
+				WorkAreaHelper.buildAccessControlTableBeans(bs, request, response, parentArea, 
 						functions, parentMembership, modelParent, true);
 				model.put(WebKeys.ACCESS_PARENT, modelParent);
 				WorkAreaHelper.mergeAccessControlTableBeans(model);
