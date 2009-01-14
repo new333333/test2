@@ -114,8 +114,7 @@
 	</table>
 <hr shade=noshade size=1/>
 
-<input type="radio"  name="${schedPrefix}hourType" id="absolute" value="absolute"   <c:if test="${!schedule.repeatHours}">checked</c:if>>
-	</input>
+<input type="radio"  name="${schedPrefix}hourType" id="absolute" value="absolute"   <c:if test="${!schedule.repeatHours}">checked</c:if>/>
    
 	<label for="absolute"><span class="ss_labelRight"><ssf:nlt tag="schedule.attime"/></span></label>
    
@@ -198,8 +197,7 @@
 
 
 <input type="radio"  name="${schedPrefix}hourType" id="repeat" value="repeat"   
-  <c:if test="${schedule.repeatHours || schedule.repeatMinutes}">checked</c:if>>
-</input>
+  <c:if test="${schedule.repeatHours || schedule.repeatMinutes}">checked</c:if>/>
    
   <label for="repeat">
 	<span class="ss_labelRight">
