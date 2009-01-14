@@ -67,12 +67,15 @@
 <form class="ss_style ss_form" method="post" 
 	action="<ssf:url action="configure_roles" actionUrl="true"/>">
 		
-	<span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span>
-	<input type="text" class="ss_text" size="70" name="roleName" maxlength="64"><br>
+	<label for="roleName"><span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span></label>
+	<input type="text" class="ss_text" size="70" name="roleName" id="roleName" maxlength="64"><br>
 		
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">
-		<input type="checkbox" name="<c:out value="${operation.value}"/>">
-		<c:out value="${operation.key}"/><br>
+		<input type="checkbox" name="<c:out value="${operation.value}"/>"
+			id="<c:out value="${operation.value}"/>">
+		<label for="<c:out value="${operation.value}"/>">
+			<c:out value="${operation.key}"/><br>
+		</label>
 	</c:forEach>		
 
 	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
@@ -89,8 +92,9 @@
 <ssf:expandableArea title='<%= NLT.getDef(function.getName()) %>'>
 <form class="ss_style ss_form" method="post" 
 	action="<ssf:url action="configure_roles" actionUrl="true"/>">
-	<span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span>
-	<input type="text" class="ss_text" size="70" name="roleName" value="${function.name}"><br>
+	<label for="${function.name}"><span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span></label>
+	<input type="text" class="ss_text" size="70" name="roleName" 
+		id="${function.name}" value="${function.name}"><br>
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">
 		<c:set var="checked" value=""/>
 		<c:forEach var="roleOperation" items="${function.operations}">
@@ -98,8 +102,9 @@
 				<c:set var="checked" value="checked"/>
 			</c:if>
 		</c:forEach>
-		<input type="checkbox" name="<c:out value="${operation.value}"/>" <c:out value="${checked}"/>>
-		<c:out value="${operation.key}"/><br>
+		<input type="checkbox" name="<c:out value="${operation.value}"/>"
+			id="<c:out value="${function.name}_${operation.value}"/>" <c:out value="${checked}"/>>
+		<label for="<c:out value="${function.name}_${operation.value}"/>"><c:out value="${operation.key}"/><br></label>
 	</c:forEach>		
 	<input type="hidden" name="roleId" value="${function.id}">
 <div class="ss_buttonBarLeft">
