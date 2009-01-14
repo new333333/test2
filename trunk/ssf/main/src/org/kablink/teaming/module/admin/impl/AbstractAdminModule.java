@@ -682,7 +682,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     public Map<String, Object> sendMail(Entry entry, Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, Collection<Long> ccIds, 
     		Collection<Long> bccIds, String subject, Description body, boolean sendAttachments) throws Exception {
 		if (!getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled()) {
-			throw new ConfigurationException(NLT.getDef("errorcode.sendmail.disabled"));
+			throw new ConfigurationException(NLT.get("errorcode.sendmail.disabled"));
 		}
     	User user = RequestContextHolder.getRequestContext().getUser();
 		List errors = new ArrayList();

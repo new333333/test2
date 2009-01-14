@@ -28,19 +28,8 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:if test="${!empty ss_errorMessage}">
-<ssf:form titleTag="general.error.anErrorOccurred">
-<span class="ss_largestprint">${ss_errorMessage}</span>
-<br/>
-<br/>
-<input type="button" onClick="self.window.close()" value="<ssf:nlt tag="button.close"/>">
-</ssf:form>
-</c:if>
-<c:if test="${empty ss_errorMessage}">
-<script type="text/javascript">
-  self.window.close();
-</script>
-</c:if>
-
-<%@ include file="/WEB-INF/jsp/common/include_end.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<ssf:ifadapter><c:if test="${empty ssf_snippet}">
+</body>
+</html>
+</c:if></ssf:ifadapter>
