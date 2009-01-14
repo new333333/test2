@@ -80,7 +80,9 @@ var ${eName}_ok = 1;
  </script>
 </c:if>
 
-<span class="ss_labelAbove" id="${elementName}_label">${caption}${required}</span>
+<label for="${eName}">
+	<span class="ss_labelAbove" id="${elementName}_label">${caption}${required}</span>
+</label>
 <c:forEach var="i" begin="1" end="${count}">
  <c:if test='${! empty property_number}'>
 	<c:set var="eName" value="${elementName}${i}"/>
