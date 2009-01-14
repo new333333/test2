@@ -63,12 +63,12 @@
 	    	</c:if>
 	    	<c:if test="${showGuestOption}">
 				<input type="checkbox" id="allowAnonymous" name="allowAnonymous" <c:if test="${ssAuthenticationConfig.allowAnonymousAccess}">checked</c:if>/>
-					<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowAnonymous"/></span><br/>
+					<label for="allowAnonymous"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowAnonymous"/></span><br/></label>
 			</c:if>
 			<input type="checkbox" id="allowLocalLogin" name="allowLocalLogin" <c:if test="${ssAuthenticationConfig.allowLocalLogin}">checked</c:if>/>
-				<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowLocalLogin"/></span><br/>
+				<label for="allowLocalLogin"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowLocalLogin"/></span><br/></label>
 			<input type="checkbox" id="allowSelfRegistration" name="allowSelfRegistration" <c:if test="${ssAuthenticationConfig.allowSelfRegistration}">checked</c:if>/>
-				<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowSelfRegistration"/></span>
+				<label for="allowSelfRegistration"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowSelfRegistration"/></span></label>
 			<br/>
 			<br/>
 			<br/>
@@ -87,11 +87,11 @@
 	<table class="ss_style" border ="0" cellspacing="0" cellpadding="3">
 	<tr><td> 
 	<input type="checkbox" id="enabled" name="enabled" <c:if test="${ssLdapConfig.enabled}">checked</c:if>/>
-	<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.enable"/></span><br/>
+	<label for="enabled"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.enable"/></span><br/></label>
 	</td></tr>
 	<tr><td>
 	<input type="checkbox" id="runnow" name="runnow" <c:if test="${runnow}"> checked="checked" </c:if>/>
-	<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.now"/></span><br/>
+	<label for="runnow"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.now"/></span><br/></label>
 	</td></tr></table>
 	
 	<br/>
@@ -104,17 +104,17 @@
 	
 	<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt tag="ldap.users" /></legend>
 	<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3">
-			<tr><td><input type="checkbox" name="userSync" <c:if test="${ssLdapConfig.userSync}">checked</c:if>>
-		   	<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.user.sync"/></span></input>
+			<tr><td><input type="checkbox" name="userSync" id="userSync" <c:if test="${ssLdapConfig.userSync}">checked</c:if>>
+		   	<label for="userSync"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.user.sync"/></span></label></input>
 		   	</td></tr>
-		   	<tr><td><input type="checkbox" name="userRegister" <c:if test="${ssLdapConfig.userRegister}">checked</c:if>>
-		   	<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.user.register"/></span></input>
+		   	<tr><td><input type="checkbox" name="userRegister" id="userRegister" <c:if test="${ssLdapConfig.userRegister}">checked</c:if>>
+		   	<label for="userRegister"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.user.register"/></span></label></input>
 		   	</td></tr>
-		   	<tr><td><input type="checkbox" name="userDelete" <c:if test="${ssLdapConfig.userDelete}">checked</c:if>>
-		   	<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.user.delete"/></span></input>
+		   	<tr><td><input type="checkbox" name="userDelete" id="userDelete" <c:if test="${ssLdapConfig.userDelete}">checked</c:if>>
+		   	<label for="userDelete"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.user.delete"/></span></label></input>
 		   	</td></tr>
-		   	<tr><td><input type="checkbox" name="userWorkspaceDelete" <c:if test="${ssLdapConfig.userWorkspaceDelete}">checked</c:if>>
-		   	<span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.user.workspace.delete"/></span></input>
+		   	<tr><td><input type="checkbox" name="userWorkspaceDelete" id="userWorkspaceDelete" <c:if test="${ssLdapConfig.userWorkspaceDelete}">checked</c:if>>
+		   	<label for="userWorkspaceDelete"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.user.workspace.delete"/></span></label></input>
 		   	</td></tr>
 		 	</td></tr>
 	</table>
@@ -124,14 +124,14 @@
 	<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt tag="ldap.groups" /></legend>
 	<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3">
 		   <tr>
-		   <td><input type="checkbox" name="groupRegister" <c:if test="${ssLdapConfig.groupRegister}">checked</c:if>>
-		   <span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.group.register"/></span></input></td>
+		   <td><input type="checkbox" name="groupRegister" id="groupRegister" <c:if test="${ssLdapConfig.groupRegister}">checked</c:if>>
+		   <label for="groupRegister"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.group.register"/></span></label></input></td>
 		   </tr><tr>
-		   <td><input type="checkbox" name="membershipSync" <c:if test="${ssLdapConfig.membershipSync}">checked</c:if>>
-		   <span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.membership.sync"/></span></input></td>
+		   <td><input type="checkbox" name="membershipSync" id="membershipSync" <c:if test="${ssLdapConfig.membershipSync}">checked</c:if>>
+		   <label for="membershipSync"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.membership.sync"/></span></label></input></td>
 		   </tr><tr>
-		   <td><input type="checkbox" name="groupDelete" <c:if test="${ssLdapConfig.groupDelete}">checked</c:if>>
-		   <span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.group.delete"/></span></input></td>
+		   <td><input type="checkbox" name="groupDelete" id="groupDelete" <c:if test="${ssLdapConfig.groupDelete}">checked</c:if>>
+		   <label for="groupDelete"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.group.delete"/></span></label></input></td>
 		   </tr>
 	</table>
 	</fieldset>
