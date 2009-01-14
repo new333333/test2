@@ -106,7 +106,8 @@ public class MarkupUtil {
         	if (m3.find()) {
         		String fileName = WebHelper.getFileName(fileHandle);
         		try {
-        			URI uri = new URI(null, null, fileName, null); //encode as editor does 
+        			//re-encode the file name
+        			URI uri = new URI(null, null, fileName, null); //encode as editor does after a modify, so always looks the same
         			fileName = uri.getRawPath();
         		} catch (Exception ex) {};
         		img = m3.replaceFirst("src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
@@ -329,6 +330,7 @@ public class MarkupUtil {
 			//do first, before add hrefs
 			if (type.equals(WebKeys.MARKUP_EXPORT)) {
 				//tinymce stores relative urls.  If this isn't going to be used by tinymce, need to change the urls
+				//This isn't true anymore, but doesn't hurt
 				matcher = hrefPattern.matcher(outputBuf);
 				if (matcher.find()) {
 					loopDetector = 0;
@@ -371,10 +373,10 @@ public class MarkupUtil {
 					}
 					if (matcher.groupCount() >= 2) {
 						String fileName = matcher.group(2);
-						//remove escaping that timyMce adds
+						//remove escaping that timyMce for html escaping - get here if someone typed {{att.. }}themselves
 						fileName = StringEscapeUtils.unescapeHtml(fileName);
 		           		try {
-							//remove escaping for urls
+							//remove escaping for urls which are left in the text after modify or add file
 		        			URI uri = new URI(fileName);
 		        			fileName = uri.getPath();
 		        		} catch (Exception ex) {};
