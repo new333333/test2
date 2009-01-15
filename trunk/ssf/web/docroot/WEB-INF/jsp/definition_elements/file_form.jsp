@@ -31,14 +31,19 @@
 <% //File form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <div class="ss_entryContent">
+
+<c:set var="count" value="0"/>
+<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
+<c:set var="selections" value="${ssDefinitionEntry.customAttributes[property_name].value}" />
+<c:forEach var="selection" items="${selections}">
+  <c:set var="count" value="${count + 1}"/>
+</c:forEach>
+</c:if>
+<c:if test="${count > 0}"><c:set var="property_required" value="" scope="request"/></c:if>
 <%@ include file="/WEB-INF/jsp/definition_elements/file_browse.jsp" %>
 
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
 <c:set var="selections" value="${ssDefinitionEntry.customAttributes[property_name].value}" />
-<c:set var="count" value="0"/>
-<c:forEach var="selection" items="${selections}">
-  <c:set var="count" value="${count + 1}"/>
-</c:forEach>
 <span class="ss_bold"><ssf:nlt tag="form.file.currentFiles"><ssf:param name="value" value="${property_caption}"/></ssf:nlt></span>
 <br/>
 <table cellspacing="0" cellpadding="0" border="0"><tbody>

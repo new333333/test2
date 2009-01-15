@@ -48,9 +48,9 @@
 <c:set var="required" value="<span id=\"ss_required_${property_name}\" title=\"${caption3}\" class=\"ss_required\">*</span>"/>
 </c:if>
 
-<c:set var="count" value="1"/>
+<c:set var="countFb" value="1"/>
 <c:if test='${! empty property_number}'>
-<c:set var="count" value="${property_number}"/>
+<c:set var="countFb" value="${property_number}"/>
 </c:if>
 
 <c:set var="eName" value="${elementName}"/>
@@ -70,7 +70,7 @@ var ss_findEntryForFileUrl = "<ssf:url
 	<ssf:param name="folderId" value="${ssFolder.id}" />
 	<ssf:param name="entryId" value="${entryId}" />
 	</ssf:url>";
-  <c:forEach var="i" begin="1" end="${count}">
+  <c:forEach var="i" begin="1" end="${countFb}">
    <c:if test='${! empty property_number}'>
 	<c:set var="eName" value="${elementName}${i}"/>
    </c:if>
@@ -83,7 +83,7 @@ var ${eName}_ok = 1;
 <label for="${eName}">
 	<span class="ss_labelAbove" id="${elementName}_label">${caption}${required}</span>
 </label>
-<c:forEach var="i" begin="1" end="${count}">
+<c:forEach var="i" begin="1" end="${countFb}">
  <c:if test='${! empty property_number}'>
 	<c:set var="eName" value="${elementName}${i}"/>
  </c:if>
