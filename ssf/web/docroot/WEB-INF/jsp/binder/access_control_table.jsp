@@ -88,9 +88,8 @@
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_owner"
-  id="role_id${function.id}_owner" 
+  title="<ssf:nlt tag="access.select"/>" 
   checked="checked" />
-<label for="role_id${function.id}_owner"> </label>
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssOwner}">
 <input type="checkbox" 
@@ -98,8 +97,7 @@
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_owner"
-  id="role_id${function.id}_owner" />
-<label for="role_id${function.id}_owner"> </label>
+  title="<ssf:nlt tag="access.select"/>" />
 </c:if>
 </TD>
 </c:forEach>
@@ -129,9 +127,8 @@
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_teamMember" 
-  id="role_id${function.id}_teamMember"
+  title="<ssf:nlt tag="access.select"/>" 
   checked="checked" />
-<label for="role_id${function.id}_teamMember"> </label>
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssTeamMember}">
 <input type="checkbox" 
@@ -139,8 +136,7 @@
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_teamMember"
-  id="role_id${function.id}_teamMember" />
-<label for="role_id${function.id}_teamMember"> </label>
+  title="<ssf:nlt tag="access.select"/>"  />
 </c:if>
 </TD>
 </c:forEach>
@@ -222,9 +218,8 @@
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${group.id}" 
-    id="role_id${function.id}_${group.id}" 
-   checked="checked" />
-<label for="role_id${function.id}_${group.id}"> </label> 
+    title="<ssf:nlt tag="access.select"/>" 
+   checked="checked" /> 
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssGroups[group.id]}">
     <input type="checkbox" 
@@ -232,8 +227,7 @@
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${group.id}"
-    id="role_id${function.id}_${group.id}" />
-<label for="role_id${function.id}_${group.id}"> </label>
+    title="<ssf:nlt tag="access.select"/>"  />
 </c:if>
 </TD>
 </c:forEach>
@@ -297,9 +291,8 @@
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${user.id}"
-    id="role_id${function.id}_${user.id}" 
+    title="<ssf:nlt tag="access.select"/>" 
     checked="checked" />
-<label for="role_id${function.id}_${user.id}"> </label>
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssUsers[user.id]}">
     <input type="checkbox" 
@@ -307,8 +300,7 @@
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${user.id}"
-    id="role_id${function.id}_${user.id}" />
-<label for="role_id${function.id}_${user.id}"> </label>
+    title="<ssf:nlt tag="access.select"/>"  />
 </c:if>
 </TD>
 </c:forEach>
@@ -391,9 +383,8 @@
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${group.id}" 
-    id="role_id${function.id}_${group.id}"
+    title="<ssf:nlt tag="access.select"/>" 
    checked="checked" />
-<label for="role_id${function.id}_${group.id}"> </label>
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssApplicationGroups[group.id]}">
     <input type="checkbox" 
@@ -401,8 +392,7 @@
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${group.id}"
-    id="role_id${function.id}_${group.id}" />
-<label for="role_id${function.id}_${group.id}"> </label>
+    title="<ssf:nlt tag="access.select"/>"  />
 </c:if>
 </TD>
 </c:forEach>
