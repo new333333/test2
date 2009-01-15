@@ -46,7 +46,9 @@ public class WorkAreaHelper {
 		Map operationMap = new HashMap();
 		Map allowedFunctions = new HashMap();
 		Map sortedGroupsMap = new TreeMap();
+		Map sortedGroupsMapAll = new TreeMap();
 		Map sortedUsersMap = new TreeMap();
+		Map sortedUsersMapAll = new TreeMap();
 		Map sortedApplicationsMap = new TreeMap();
 		Map sortedApplicationGroupsMap = new TreeMap();
 		boolean zoneWide = wArea.getWorkAreaType().equals(EntityIdentifier.EntityType.zone.name());
@@ -171,8 +173,10 @@ public class WorkAreaHelper {
 				if(p == null) continue;
 				if (p instanceof Group) {
 					sortedGroupsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+					sortedGroupsMapAll.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
 				} else if (p instanceof User) {
 					sortedUsersMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+					sortedUsersMapAll.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
 				} else if (p instanceof Application) {
 					sortedApplicationsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
 				} else if (p instanceof ApplicationGroup) {
@@ -210,9 +214,11 @@ public class WorkAreaHelper {
 							if (p instanceof Group) {
 								groups.put(p.getId(), p);
 								sortedGroupsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+								sortedGroupsMapAll.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
 							} else if (p instanceof User) {
 								users.put(p.getId(), p);
 								sortedUsersMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+								sortedUsersMapAll.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
 							} else if (p instanceof Application) {
 								applications.put(p.getId(), p);
 								sortedApplicationsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
@@ -235,7 +241,7 @@ public class WorkAreaHelper {
 					for (Map.Entry me : users.entrySet()) operationUsers.put(me.getKey(), me.getValue());
 					if (pMap.containsKey(WebKeys.OWNER)) {
 						operationUsers.put(binderOwner.getId(), binderOwner);
-						sortedUsersMap.put(binderOwner.getTitle().toLowerCase() + binderOwner.getName().toString(), binderOwner);
+						sortedUsersMapAll.put(binderOwner.getTitle().toLowerCase() + binderOwner.getName().toString(), binderOwner);
 					}
 					
 					if (!operationMemberships.containsKey(WebKeys.GROUPS)) operationMemberships.put(WebKeys.GROUPS, new HashMap());
@@ -248,10 +254,10 @@ public class WorkAreaHelper {
 							Principal p = (Principal)itTeamMembers.next();
 							if(p == null) continue;
 							if (p instanceof Group) {
-								sortedGroupsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+								sortedGroupsMapAll.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
 								operationGroups.put(p.getId(), p);
 							} else if (p instanceof User) {
-								sortedUsersMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+								sortedUsersMapAll.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
 								operationUsers.put(p.getId(), p);
 							}
 						}
@@ -286,8 +292,10 @@ public class WorkAreaHelper {
 
 		//Build the sorted lists of users and groups
 		List sortedGroups = new ArrayList(sortedGroupsMap.values());
+		List sortedGroupsAll = new ArrayList(sortedGroupsMapAll.values());
 
 		List sortedUsers = new ArrayList(sortedUsersMap.values());
+		List sortedUsersAll = new ArrayList(sortedUsersMapAll.values());
 		
 		List sortedApplicationGroups = new ArrayList(sortedApplicationGroupsMap.values());
 
@@ -307,10 +315,14 @@ public class WorkAreaHelper {
 		model.put(WebKeys.ACCESS_SORTED_FUNCTIONS_MAP, sortedFunctionsMap);
 		model.put(WebKeys.ACCESS_FUNCTIONS_COUNT, Integer.valueOf(functionMap.size()));
 		model.put(WebKeys.ACCESS_SORTED_USERS_MAP, sortedUsersMap);
+		model.put(WebKeys.ACCESS_SORTED_USERS_MAP_ALL, sortedUsersMapAll);
 		model.put(WebKeys.ACCESS_SORTED_USERS, sortedUsers);
+		model.put(WebKeys.ACCESS_SORTED_USERS_ALL, sortedUsersAll);
 		model.put(WebKeys.ACCESS_USERS_COUNT, Integer.valueOf(sortedUsers.size()));
 		model.put(WebKeys.ACCESS_SORTED_GROUPS_MAP, sortedGroupsMap);
+		model.put(WebKeys.ACCESS_SORTED_GROUPS_MAP_ALL, sortedGroupsMapAll);
 		model.put(WebKeys.ACCESS_SORTED_GROUPS, sortedGroups);
+		model.put(WebKeys.ACCESS_SORTED_GROUPS_ALL, sortedGroupsAll);
 		model.put(WebKeys.ACCESS_GROUPS_COUNT, Integer.valueOf(sortedGroups.size()));
 
 		model.put(WebKeys.ACCESS_SORTED_APPLICATIONS_MAP, sortedApplicationsMap);

@@ -525,9 +525,13 @@ public class WebKeys {
 	public static final String ACCESS_SORTED_FUNCTIONS = "ss_accessSortedFunctions";
 	public static final String ACCESS_SORTED_FUNCTIONS_MAP = "ss_accessSortedFunctionsMap";
 	public static final String ACCESS_SORTED_GROUPS = "ss_accessSortedGroups";
+	public static final String ACCESS_SORTED_GROUPS_ALL = "ss_accessSortedGroupsAll";
 	public static final String ACCESS_SORTED_GROUPS_MAP = "ss_accessSortedGroupsMap";
+	public static final String ACCESS_SORTED_GROUPS_MAP_ALL = "ss_accessSortedGroupsMapAll";
 	public static final String ACCESS_SORTED_USERS = "ss_accessSortedUsers";
+	public static final String ACCESS_SORTED_USERS_ALL = "ss_accessSortedUsersAll";
 	public static final String ACCESS_SORTED_USERS_MAP = "ss_accessSortedUsersMap";
+	public static final String ACCESS_SORTED_USERS_MAP_ALL = "ss_accessSortedUsersMapAll";
 	public static final String ACCESS_SORTED_APPLICATION_GROUPS = "ss_accessSortedApplicationGroups";
 	public static final String ACCESS_SORTED_APPLICATION_GROUPS_MAP = "ss_accessSortedApplicationGroupsMap";
 	public static final String ACCESS_SORTED_APPLICATIONS = "ss_accessSortedApplications";
