@@ -122,7 +122,7 @@ name="value" value="${ssBinder.title}"/></ssf:nlt></span>
 
 <form class="ss_style ss_form" >
 
-	<input type="submit" class="ss_submit" name="closeBtn" onClick="self.window.close();return false;" value="<ssf:nlt tag="button.close" text="Close"/>">
+	<input type="submit" class="ss_submit" name="closeBtn" onclick="self.window.close();return false;" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
 
 </c:if>
