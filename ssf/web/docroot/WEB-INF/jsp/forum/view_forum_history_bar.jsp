@@ -128,4 +128,7 @@ var ss_history_bar_loaded = 1;
          
   </tr>
 </table>
-
+<div id="ss_historyNoMoreEntries" style="position:absolute; display:none; visibility:hidden;
+  border:1px solid black; background-color:#fff; x-index:1000;">
+  <span><ssf:nlt tag="nav.noEntries"/></span>
+</div>

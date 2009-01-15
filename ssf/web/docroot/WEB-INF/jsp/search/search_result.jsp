@@ -33,9 +33,27 @@
 <jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 <div class="ss_style ss_portlet_style">
 	
+<script type="text/javascript" src="<html:rootPath/>js/forum/ss_folder.js"></script>
+<jsp:include page="/WEB-INF/jsp/search/search_js.jsp" />
 
-	<jsp:include page="/WEB-INF/jsp/search/search_js.jsp" />
-
+<script type="text/javascript">
+var ss_entriesSeen = new Array();
+var ss_entryList = new Array();
+var ss_entryCount = 0;
+<c:forEach var="entry" items="${ssFolderEntries}" >
+  <c:if test="${entry._entityType != 'folder' && entry._entityType != 'workspace' && entry._entityType != 'group'}">
+    if (typeof ss_entriesSeen['docId${entry._docId}'] == "undefined") {
+    	ss_entryList[ss_entryCount++] = { 
+    		index : '${entry._docId}',
+    		entryId : '${entry._docId}',
+    		binderId : '${entry._binderId}',
+    		entityType : '${entry._entityType}'
+		};
+    	ss_entriesSeen['docId${entry._docId}'] = 1;
+    }
+  </c:if>
+</c:forEach>
+</script>
 
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}" scope="request"/>
