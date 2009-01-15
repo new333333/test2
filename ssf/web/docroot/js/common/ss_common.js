@@ -5640,7 +5640,7 @@ function ss_validate(obj) {
 //Check for required fields
 //Return false if there is a field left blank (after giving a alert)
 function ss_checkForRequiredFields(obj) {
-	if (tinyMCE && tinyMCE.triggerSave) tinyMCE.triggerSave();
+	if (typeof tinyMCE != "undefined" && tinyMCE.triggerSave) tinyMCE.triggerSave();
 	var objs = ss_getElementsByClass("ss_required", obj, "span")
 	for (var i = 0; i < objs.length; i++) {
 		var id = objs[i].id.substring(12);
