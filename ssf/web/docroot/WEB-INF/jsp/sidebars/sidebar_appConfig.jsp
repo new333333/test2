@@ -31,25 +31,6 @@
 <%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil, org.kablink.util.BrowserSniffer" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<style type="text/css">
-	<% /* Object List - Table styles. */ %>
-	.ss_objlist_table_columnhead	{color: black; font-weight: bold; font-size: 0.75em; background-color: #edeeec; border-bottom: 1px solid black}
-	.ss_objlist_table_footer		{background-color: #efeeec; margin-top: 1em; padding: 0.5em; border-top: 1px solid #babdb6;}
-	.ss_objlist_table_instructions	{color: #4d6d8b; font-size: 0.8em}
-	.ss_objlist_table_mediumtext	{color: black; font-size: 0.85em; line-height: 1.1em}
-	.ss_objlist_table_smalltext		{color: black; font-size: 0.75em; line-height: 1em}
-	.ss_objlist_table_tablehead		{color: white; font-weight: bold; font-size: 0.95em; background-color: #458ab9; text-align: left; text-indent: 0.2em; padding: 0.2em}
-	.ss_objlist_table_top			{}
-	
-	<% /* Object List - Menu styles. */ %>
-	.ss_objlist_menu_bottomDIV	{margin-bottom: 0px; padding-bottom: 0px; border-bottom: 5px solid #458ab9}
-	.ss_objlist_menu_itemDIV	{text-decoration: none; white-space: nowrap}
-	.ss_objlist_menu_margin		{margin-left: 5px}
-	.ss_objlist_menu_popupDIV	{line-height: 1.5em; background-color: #ffffff; border: solid 1px #000; position: absolute; z-index: 4; top: 0px; left: 0px} 
-	.ss_objlist_menu_titleDIV	{background-color: #E0E1DF; font-weight: bold; margin-bottom: 0.5em; padding: 0.5em}
-	.ss_objlist_menu_titleIMG	{position: absolute; right: 5px}
-</style>
-
 <script type="text/javascript">
 	<% /* Load the localized strings from the resource file. */ %>
 	var	g_appConfigStrings = new Array();
