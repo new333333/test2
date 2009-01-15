@@ -58,11 +58,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			    <ssf:title tag="title.open.folderEntrySimple" />
 			    
 			    <ssf:ifnotaccessible>
-			    	onClick="ss_loadWikiEntry(this, '${ss_wikiHomepageEntryId}');return false;" 
+			    	onclick="ss_loadWikiEntry(this, '${ss_wikiHomepageEntryId}');return false;" 
 			    </ssf:ifnotaccessible>
 			    
 			    <ssf:ifaccessible>
-			    	onClick="ss_loadWikiEntryInParent(this, '${ss_wikiHomepageEntryId}');return false;" 		    	
+			    	onclick="ss_loadWikiEntryInParent(this, '${ss_wikiHomepageEntryId}');return false;" 		    	
 			    </ssf:ifaccessible>
 			    
 			><ssf:nlt tag="wiki.homePage"/></a>
