@@ -69,16 +69,56 @@
 <th><ssf:nlt tag="administration.selectFiles"/></th>
 </thead>
 <tbody>
-<tr><td><input type="checkbox" name="definition1ck"></td>
-<td><input type="file" size="80" class="ss_text" name="definition1" ></td></tr>
-<tr><td><input type="checkbox" name="definition2ck"></td>
-<td><input type="file" size="80" class="ss_text" name="definition2" ></td></tr>
-<tr><td><input type="checkbox" name="definition3ck"></td>
-<td><input type="file" size="80" class="ss_text" name="definition3" ></td></tr>
-<tr><td><input type="checkbox" name="definition4ck"></td>
-<td><input type="file" size="80" class="ss_text" name="definition4" ></td></tr>
-<tr><td><input type="checkbox" name="definition5ck"></td>
-<td><input type="file" size="80" class="ss_text" name="definition5" ></td></tr>
+<tr>
+	<td>
+		<input type="checkbox" name="definition1ck" id="definition1ck">
+		<label for="definition1ck">&nbsp;</label>
+	</td>
+	<td>
+		<input type="file" size="80" class="ss_text" name="definition1" id="definition1">
+		<label for="definition1">&nbsp;</label>
+	</td>
+</tr>
+<tr>
+	<td>
+		<input type="checkbox" name="definition2ck" id="definition2ck">
+		<label for="definition2ck">&nbsp;</label>
+	</td>
+	<td>
+		<input type="file" size="80" class="ss_text" name="definition2" id="definition2">
+		<label for="definition2">&nbsp;</label>
+	</td>
+</tr>
+<tr>
+	<td>
+		<input type="checkbox" name="definition3ck" id="definition3ck">
+		<label for="definition3ck">&nbsp;</label>
+	</td>
+	<td>
+		<input type="file" size="80" class="ss_text" name="definition3" id="definition3">
+		<label for="definition3">&nbsp;</label>
+	</td>
+</tr>
+<tr>
+	<td>
+		<input type="checkbox" name="definition4ck" id="definition4ck">
+		<label for="definition4ck">&nbsp;</label>
+	</td>
+	<td>
+		<input type="file" size="80" class="ss_text" name="definition4" id="definition4">
+		<label for="definition4">&nbsp;</label>
+	</td>
+</tr>
+<tr>
+	<td>
+		<input type="checkbox" name="definition5ck" id="definition5ck">
+		<label for="definition5ck">&nbsp;</label>
+	</td>
+	<td>
+		<input type="file" size="80" class="ss_text" name="definition5" id="definition5">
+		<label for="definition5">&nbsp;</label>
+	</td>
+</tr>
 </tr></tbody></table>
 <div class="ss_divider"></div>
 
