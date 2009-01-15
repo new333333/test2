@@ -53,13 +53,6 @@
 			<% // "It" Bars %>
 			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_action_dispatch.jsp" />
 		
-			<% // RSS Feed %>
-			<div class="ss_leftNav">
-				<ul>
-					<li><jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" /></li>
-				</ul>
- 			</div>
-	
 			<% // Recent Places %>
 			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_recent_places.jsp" />
 

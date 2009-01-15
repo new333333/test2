@@ -100,9 +100,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		<% // Clipboard %>
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_clipboard.jsp" />
 			
-		<% // RSS Feed %>
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar_rss.jsp" />
-	
 		<%--
 		* The following line is used to call customer supplied customizations.
 		* Jsp files added to the custom_jsps directory will not be overwritten during upgrades
