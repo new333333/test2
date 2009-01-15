@@ -4460,6 +4460,7 @@ function ssTeams(namespace) {
 		ss_hideDiv("ss_myteams_loading" + namespace);
 		var d = dojo.byId("ss_myteams_list" + namespace);
 		d.innerHTML = data;
+		d.focus();
 	}
 	this.hide = function() {
 		var fObj = self.document.getElementById("ss_myteams_pane" + namespace);

@@ -668,6 +668,7 @@ public class WorkspaceTreeHelper {
 
 		//The "Who has access" menu
 		qualifiers = new HashMap();
+		qualifiers.put("title", NLT.get("toolbar.menu.title.whoHasAccessWorkspace"));
 		qualifiers.put("popup", Boolean.TRUE);
 		qualifiers.put("popupWidth", "600");
 		qualifiers.put("popupHeight", "700");
@@ -875,6 +876,7 @@ public class WorkspaceTreeHelper {
 		adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
 		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
 		qualifiers = new HashMap();
+		qualifiers.put("title", NLT.get("toolbar.menu.title.whatsNewInWorkspace"));
 		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'whatsNew', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
 		whatsNewToolbar.addToolbarMenu("whatsnew", NLT.get("toolbar.menu.whatsNew"), 
 				adapterUrl.toString(), qualifiers);
@@ -887,6 +889,7 @@ public class WorkspaceTreeHelper {
 		adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
 		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
 		qualifiers = new HashMap();
+		qualifiers.put("title", NLT.get("toolbar.menu.title.whatsUnreadInWorkspace"));
 		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'unseen', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
 		whatsNewToolbar.addToolbarMenu("unseen", NLT.get("toolbar.menu.whatsUnseen"), 
 				adapterUrl.toString(), qualifiers);

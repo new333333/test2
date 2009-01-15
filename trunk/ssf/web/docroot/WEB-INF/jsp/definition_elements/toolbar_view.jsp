@@ -84,6 +84,9 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
                 --%><c:if test="${!empty toolbarMenu.value.qualifiers.linkclass}"><%--
                 	--%> class="${toolbarMenu.value.qualifiers.linkclass}"<%--
                 --%></c:if><%--                
+                --%><c:if test="${!empty toolbarMenu.value.qualifiers.title}"><%--
+                	--%> title="${toolbarMenu.value.qualifiers.title}"<%--
+                --%></c:if><%--                
                 --%> onclick="${spin} ss_activateMenuLayerClone('<%= menuTagDivId %>${renderResponse.namespace}', 'parent_<%= menuTagDivId %>${renderResponse.namespace}');"> <%--
 
                 --%><c:if test="${!empty toolbarMenu.value.qualifiers.icon}"><%--
@@ -234,6 +237,9 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
 --%><%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view_helpspots.jsp" %><%--
 
                     --%><a href="${toolbarMenu.value.url}"<%--
+	                --%><c:if test="${!empty toolbarMenu.value.qualifiers.title}"><%--
+	                	--%> title="${toolbarMenu.value.qualifiers.title}"<%--
+	                --%></c:if><%--                
                     --%><c:if test="${!empty toolbarMenu.value.qualifiers.folder}"><%--
                         --%><%
 							if (BrowserSniffer.is_ie(request)) {
@@ -315,6 +321,9 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
                        --%> folder="<c:out value="${toolbarMenu.value.qualifiers.folder}" />"<%--
                        --%> target="_blank"<%--
                    --%></c:if><%--
+	                --%><c:if test="${!empty toolbarMenu.value.qualifiers.title}"><%--
+	                	--%> title="${toolbarMenu.value.qualifiers.title}"<%--
+	                --%></c:if><%--                
                    --%><c:if test="${empty toolbarMenu.value.qualifiers.onClick}"><%--
                        --%><c:if test="${!empty toolbarMenu.value.qualifiers.popup}"><%--
                            --%><c:set var="popupWidth" value="${toolbarMenu.value.qualifiers.popupWidth}"/><%--

@@ -141,6 +141,7 @@ function ssAccessControl(namespace, workAreaId, workAreaType) {
 			ss_hideDiv(divName)
 		} else {
 			ss_showDiv(divName)
+			divObj.focus();
 		}
 	}
 	this.addClipboardUsers = function () {
