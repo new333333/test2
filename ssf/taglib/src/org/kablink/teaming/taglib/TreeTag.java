@@ -484,6 +484,10 @@ public class TreeTag extends TagSupport {
 						jspOut.print(" id=\"");
 						jspOut.print("ss_tree_radio" + treeName + this.singleSelectName + s_id + "\" ");
 						jspOut.print(" onclick=\"ss_saveTreeId(this, '" + treeName + "', '" + s_id + "', '" + getIdChoicesInputId() + "'); \"/>");
+						
+						jspOut.print("<label for=\"");
+						jspOut.print("ss_tree_radio" + treeName + this.singleSelectName + s_id + "\" >");
+						jspOut.print("&nbsp;</label>");
 					}
 					
 				}
