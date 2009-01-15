@@ -39,31 +39,9 @@
   <ssf:nlt tag="access.roles"/>
 </c:if>
 <c:if test="${!ssWorkArea.functionMembershipInherited}">
-  <ssf:ifnotaccessible>
   <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addRolesMenu${ss_namespace}',40, 40);return false;"
   ><ssf:nlt tag="access.addRole"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
   src="<html:imagesPath/>pics/menudown.gif"/></a>
-  </ssf:ifnotaccessible>
-  
-  <ssf:ifaccessible>
-  <select name="roleIds" id="roleIds" onChange="${ss_namespace}accessObj.selectRole();">
-    <option value=""><ssf:nlt tag="binder.configure.access_control.selectRole" /></option>
-    <c:forEach var="function" items="${ssFunctions}">
-      <c:set var="includeRole" value="1"/>
-      <c:forEach var="sortedFunction" items="${ss_accessSortedFunctions}">
-        <c:if test="${sortedFunction.id == function.id}">
-          <c:set var="includeRole" value="0"/>
-        </c:if>
-      </c:forEach>
-      <c:if test="${includeRole == '1'}">
-        <option value="${function.id}"><ssf:nlt tag="${function.name}" checkIfTag="true"/></option>
-      </c:if>
-    </c:forEach>
-  </select>
-    <input type="submit" class="ss_submit" name="addRoleBtn"
-      value="<ssf:nlt tag="button.add" />">
-  <label for="roleIds">&nbsp;</label>
-  </ssf:ifaccessible>
 </c:if>
   </TH>
 </TR>
@@ -112,7 +90,7 @@
   name="role_id${function.id}_owner"
   id="role_id${function.id}_owner" 
   checked="checked" />
-<label for="role_id${function.id}_owner">&nbsp;</label>
+<label for="role_id${function.id}_owner"> </label>
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssOwner}">
 <input type="checkbox" 
@@ -121,7 +99,7 @@
   </c:if>
   name="role_id${function.id}_owner"
   id="role_id${function.id}_owner" />
-<label for="role_id${function.id}_owner">&nbsp;</label>
+<label for="role_id${function.id}_owner"> </label>
 </c:if>
 </TD>
 </c:forEach>
@@ -153,7 +131,7 @@
   name="role_id${function.id}_teamMember" 
   id="role_id${function.id}_teamMember"
   checked="checked" />
-<label for="role_id${function.id}_teamMember">&nbsp;</label>
+<label for="role_id${function.id}_teamMember"> </label>
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssTeamMember}">
 <input type="checkbox" 
@@ -162,7 +140,7 @@
   </c:if>
   name="role_id${function.id}_teamMember"
   id="role_id${function.id}_teamMember" />
-<label for="role_id${function.id}_teamMember">&nbsp;</label>
+<label for="role_id${function.id}_teamMember"> </label>
 </c:if>
 </TD>
 </c:forEach>
@@ -178,16 +156,10 @@
 	  <ssf:nlt tag="access.groups"/>
 	</c:if>
 	<c:if test="${!ssWorkArea.functionMembershipInherited}">
-	  <ssf:ifnotaccessible>
 	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addGroupsMenu${ss_namespace}', 40, 40);return false;">
 	      <ssf:nlt tag="access.addGroup"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	        src="<html:imagesPath/>pics/menudown.gif"/>
 	    </a>
-	  </ssf:ifnotaccessible>
-  
-      <ssf:ifaccessible>
-        <ssf:nlt tag="access.groups"/>
-      </ssf:ifaccessible>
     </c:if>
   </TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.groupTitle"/></TH>
@@ -252,7 +224,7 @@
     name="role_id${function.id}_${group.id}" 
     id="role_id${function.id}_${group.id}" 
    checked="checked" />
-<label for="role_id${function.id}_${group.id}">&nbsp;</label> 
+<label for="role_id${function.id}_${group.id}"> </label> 
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssGroups[group.id]}">
     <input type="checkbox" 
@@ -261,7 +233,7 @@
     </c:if>
     name="role_id${function.id}_${group.id}"
     id="role_id${function.id}_${group.id}" />
-<label for="role_id${function.id}_${group.id}">&nbsp;</label>
+<label for="role_id${function.id}_${group.id}"> </label>
 </c:if>
 </TD>
 </c:forEach>
@@ -277,15 +249,9 @@
 	  <ssf:nlt tag="access.users"/>
 	</c:if>
 	<c:if test="${!ssWorkArea.functionMembershipInherited}">
-	  <ssf:ifnotaccessible>
 	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addUsersMenu${ss_namespace}', 40, 40);return false;">
 	      <ssf:nlt tag="access.addUser"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	      src="<html:imagesPath/>pics/menudown.gif"/></a>
-	  </ssf:ifnotaccessible>
-  
-      <ssf:ifaccessible>
-        <ssf:nlt tag="access.users"/>
-      </ssf:ifaccessible>
     </c:if>
   </TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.userTitle"/></TH>
@@ -333,7 +299,7 @@
     name="role_id${function.id}_${user.id}"
     id="role_id${function.id}_${user.id}" 
     checked="checked" />
-<label for="role_id${function.id}_${user.id}">&nbsp;</label>
+<label for="role_id${function.id}_${user.id}"> </label>
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssUsers[user.id]}">
     <input type="checkbox" 
@@ -342,7 +308,7 @@
     </c:if>
     name="role_id${function.id}_${user.id}"
     id="role_id${function.id}_${user.id}" />
-<label for="role_id${function.id}_${user.id}">&nbsp</label>
+<label for="role_id${function.id}_${user.id}"> </label>
 </c:if>
 </TD>
 </c:forEach>
@@ -359,16 +325,10 @@
 	  <ssf:nlt tag="access.application.groups"/>
 	</c:if>
 	<c:if test="${!ssWorkArea.functionMembershipInherited}">
-	  <ssf:ifnotaccessible>
 	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addApplicationGroupsMenu${ss_namespace}', 40, 40);return false;">
 	      <ssf:nlt tag="access.addApplicationGroup"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	        src="<html:imagesPath/>pics/menudown.gif"/>
 	    </a>
-	  </ssf:ifnotaccessible>
-  
-      <ssf:ifaccessible>
-        <ssf:nlt tag="access.application.groups"/>
-      </ssf:ifaccessible>
     </c:if>
   </TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.application.groupTitle"/></TH>
@@ -433,7 +393,7 @@
     name="role_id${function.id}_${group.id}" 
     id="role_id${function.id}_${group.id}"
    checked="checked" />
-<label for="role_id${function.id}_${group.id}">&nbsp;</label>
+<label for="role_id${function.id}_${group.id}"> </label>
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssApplicationGroups[group.id]}">
     <input type="checkbox" 
@@ -442,7 +402,7 @@
     </c:if>
     name="role_id${function.id}_${group.id}"
     id="role_id${function.id}_${group.id}" />
-<label for="role_id${function.id}_${group.id}">&nbsp;</label>
+<label for="role_id${function.id}_${group.id}"> </label>
 </c:if>
 </TD>
 </c:forEach>
@@ -458,15 +418,9 @@
 	  <ssf:nlt tag="access.applications"/>
 	</c:if>
 	<c:if test="${!ssWorkArea.functionMembershipInherited}">
-	  <ssf:ifnotaccessible>
 	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addApplicationsMenu${ss_namespace}', 40, 40);return false;">
 	      <ssf:nlt tag="access.addApplication"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	      src="<html:imagesPath/>pics/menudown.gif"/></a>
-	  </ssf:ifnotaccessible>
-  
-      <ssf:ifaccessible>
-        <ssf:nlt tag="access.applications"/>
-      </ssf:ifaccessible>
     </c:if>
   </TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.applicationTitle"/></TH>
