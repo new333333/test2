@@ -161,10 +161,10 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   		name="workAreaId" value="${ssWorkArea.workAreaId}"/></ssf:url>">
   <ssf:nlt tag="binder.configure.access_control.inherit"/> <ssf:inlineHelp tag="ihelp.other.inherit_roles"/>
   <br/>
-  &nbsp;&nbsp;&nbsp;<input type="radio" name="inherit" value="yes" ${yes_checked}>
-  <ssf:nlt tag="general.yes"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <input type="radio" name="inherit" value="no" ${no_checked}>
-  <ssf:nlt tag="general.no"/>&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;<input type="radio" name="inherit" value="yes" id="yes" ${yes_checked}>
+  <label for="yes"><ssf:nlt tag="general.yes"/></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="radio" name="inherit" value="no" id="no" ${no_checked}>
+  <label for="no"><ssf:nlt tag="general.no"/></label>&nbsp;&nbsp;&nbsp;
   <input type="submit" class="ss_submit" name="inheritanceBtn"
    value="<ssf:nlt tag="button.apply" text="Apply"/>">
   </form>
