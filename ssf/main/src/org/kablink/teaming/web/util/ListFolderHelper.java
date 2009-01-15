@@ -1576,6 +1576,7 @@ public class ListFolderHelper {
 		//The "Subsrciptions" menu
 		if (!user.isShared()) {
 			qualifiers = new HashMap();
+			qualifiers.put("title", NLT.get("toolbar.menu.title.emailSubscriptions"));
 			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageSubscriptionsMenu");
 		
 			Subscription sub = bs.getBinderModule().getSubscription(folder);
@@ -1597,6 +1598,7 @@ public class ListFolderHelper {
 		
 		//The "Who has access" menu
 		qualifiers = new HashMap();
+		qualifiers.put("title", NLT.get("toolbar.menu.title.whoHasAccessFolder"));
 		qualifiers.put("popup", Boolean.TRUE);
 		qualifiers.put("popupWidth", "600");
 		qualifiers.put("popupHeight", "700");
@@ -1967,6 +1969,7 @@ public class ListFolderHelper {
 		adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
 		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
 		qualifiers = new HashMap();
+		qualifiers.put("title", NLT.get("toolbar.menu.title.whatsNewInFolder"));
 		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'whatsNew', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
 		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.whatsNew");
 		whatsNewToolbar.addToolbarMenu("whatsnew", NLT.get("toolbar.menu.whatsNew"), 
@@ -1980,6 +1983,7 @@ public class ListFolderHelper {
 		adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
 		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
 		qualifiers = new HashMap();
+		qualifiers.put("title", NLT.get("toolbar.menu.title.whatsUnreadInFolder"));
 		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'unseen', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
 		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.whatsUnread");
 		whatsNewToolbar.addToolbarMenu("unseen", NLT.get("toolbar.menu.whatsUnseen"), 

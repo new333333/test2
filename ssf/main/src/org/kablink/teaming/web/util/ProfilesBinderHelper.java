@@ -327,6 +327,7 @@ public class ProfilesBinderHelper {
 
 		//The "Who has access" menu
 		qualifiers = new HashMap();
+		qualifiers.put("title", NLT.get("toolbar.menu.title.whoHasAccessFolder"));
 		qualifiers.put("popup", Boolean.TRUE);
 		qualifiers.put("popupWidth", "600");
 		qualifiers.put("popupHeight", "700");
