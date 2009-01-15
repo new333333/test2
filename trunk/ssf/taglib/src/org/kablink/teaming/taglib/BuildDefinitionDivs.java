@@ -834,12 +834,14 @@ public class BuildDefinitionDivs extends TagSupport {
 						}
 					
 					} else if (type.equals("replyStyle")) {
-						sb.append(propertyConfigCaption);
+						sb.append("<label for=\"propertyId_" + 
+								propertyId + "\">" + propertyConfigCaption + "</label>");
 
 						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(binderId, Definition.FOLDER_ENTRY);
 						int size = defs.size();
 						if (size <= 0) size = 1;
 						sb.append("<select multiple=\"multiple\" name=\"propertyId_" + 
+								propertyId + "\" id=\"propertyId_" + 
 								propertyId + "\" size=\"" + String.valueOf(size+1) + "\">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_reply_styles")).append("</option>\n");
 						List<Element> replyStyles = sourceRoot.selectNodes("properties/property[@name='replyStyle']");
