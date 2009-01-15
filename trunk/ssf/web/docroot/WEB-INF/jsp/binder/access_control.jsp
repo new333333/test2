@@ -323,8 +323,6 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 
 <span class="ss_bold"><a href="javascript: ${renderResponse.namespace}accessObj.addClipboardUsers();"><ssf:nlt tag="access.addClipboardUsers"/></a></span><br/>
 
-  <ssf:ifnotaccessible>
-  
 	<div id="ss_addRolesMenu${renderResponse.namespace}" class="ss_actions_bar5 ss_actions_bar_submenu" >
 		<ul class="ss_actions_bar5 ss_actions_bar_submenu" style="width:250px;">
 		  <div align="right">
@@ -350,7 +348,6 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	    </c:forEach>
 		</ul>
 	</div>
-  </ssf:ifnotaccessible>
   
 </c:if>
 

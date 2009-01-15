@@ -29,14 +29,6 @@
  */
 %>
 <div style="padding:10px;">
-  <div style="padding-bottom:6px;">
-    <span><ssf:nlt tag="permalink.hint"/></span>
-    <c:if test="${ssBinder.entityType == 'folder'}">
-      <div style="padding-top:10px;">
-        <span><ssf:nlt tag="permalink.hint.folder"/></span>
-      </div>
-    </c:if>
-  </div>
 <table cellspacing="2" cellpadding="6" border="1" style="background:#cecece;">
   <tr>
     <td valign="top" nowrap>
@@ -103,6 +95,15 @@
   </c:if>
   
 </table>
+
+  <div style="padding:10px 10px 0px 10px;">
+    <span><ssf:nlt tag="permalink.hint"/></span>
+    <c:if test="${ssBinder.entityType == 'folder'}">
+      <div style="padding-top:10px;">
+        <span><ssf:nlt tag="permalink.hint.folder"/></span>
+      </div>
+    </c:if>
+  </div>
 
 <c:if test="${ssBinder.entityType == 'folder'}">
   <div style="padding-top:10px;">
