@@ -171,8 +171,11 @@ function ss_getNextEntryId(imageId) {
 			ss_swapPrevFirst(imageId);
 		} 
 	} else {
-		//alert("There are no more entries to view.")
-		ss_swapPrevFirst(imageId);
+		//alert("There are no more entries to view next.")
+		var noMoreDiv = document.getElementById('ss_historyNoMoreEntries');
+		ss_showDiv('ss_historyNoMoreEntries');
+		setTimeout("ss_hideDiv('ss_historyNoMoreEntries');", 1000);
+   		ss_swapPrevFirst(imageId);
 	}
 	return false;
 }
@@ -219,7 +222,10 @@ function ss_getPreviousEntryId(imageId) {
 			ss_swapNextLast(imageId);
 		}
 	} else {
-		//alert("There are no more entries to view.")
+		//alert("There are no more entries to view previous.")
+		var noMoreDiv = document.getElementById('ss_historyNoMoreEntries');
+		ss_showDiv('ss_historyNoMoreEntries');
+		setTimeout("ss_hideDiv('ss_historyNoMoreEntries');", 1000);
 		ss_swapNextLast(imageId)
 	}
 	return false;
