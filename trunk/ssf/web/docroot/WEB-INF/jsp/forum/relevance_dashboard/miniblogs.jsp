@@ -34,23 +34,23 @@
 	<div align="right">
 		<c:if test="${ss_activitiesPage > '0'}">
 			<a href="javascript: ;" 
-		  		onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'miniblogs', '${ss_activitiesPage}', 'previous', 'ss_dashboardActivities', '${ss_relevanceDashboardNamespace}');return false;">
+		  		onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'miniblogs', '${ss_activitiesPage}', 'previous', 'ss_dashboardActivities', '${ss_relevanceDashboardNamespace}');return false;">
 				<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-		  		title="<ssf:nlt tag="general.previousPage"/>"/>
+		  		title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
 			</a>
 		</c:if>
 		<c:if test="${empty ss_activitiesPage || ss_activitiesPage <= '0'}">
-			<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
+			<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif" <ssf:alt/>/>
 		</c:if>
 		<c:if test="${!empty ss_activities}">
 			<a href="javascript: ;" 
-		  		onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'miniblogs', '${ss_activitiesPage}', 'next', 'ss_dashboardActivities', '${ss_relevanceDashboardNamespace}');return false;">
+		  		onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'miniblogs', '${ss_activitiesPage}', 'next', 'ss_dashboardActivities', '${ss_relevanceDashboardNamespace}');return false;">
 				<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-		  		title="<ssf:nlt tag="general.nextPage"/>"/>
+		  		title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
 			</a>
 		</c:if>
 		<c:if test="${empty ss_activities}">
-			<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+			<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif" <ssf:alt/>/>
 		</c:if>
 	</div>
 
