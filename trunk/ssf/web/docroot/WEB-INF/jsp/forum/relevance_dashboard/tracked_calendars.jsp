@@ -37,12 +37,13 @@
 	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
 	    <a class="ss_link_5"
 	      href="<ssf:permalink entity="${binder}"/>"
-		  onClick="return ss_gotoPermalink('${binder.id}', '${binder.id}', 'folder', '${ss_namespace}', 'yes');"
+		  onclick="return ss_gotoPermalink('${binder.id}', '${binder.id}', 'folder', '${ss_namespace}', 'yes');"
 	    ><span>${binder.title} (${binder.parentBinder.title})</span> </a>
 	    &nbsp;<img src="<html:rootPath/>images/icons/folder_green_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
 	    <img style="padding:4px 0px 0px 2px;" align="texttop"
           src="<html:rootPath/>images/pics/delete.gif"
-          onClick="ss_trackedItemsDelete(this, '${binder.id}');"/>
+          onclick="ss_trackedItemsDelete(this, '${binder.id}');"
+          <ssf:alt/>/>
 	    </td></tr></tbody></table>
 </c:forEach>
 </div> <!-- end of ss_para -->
