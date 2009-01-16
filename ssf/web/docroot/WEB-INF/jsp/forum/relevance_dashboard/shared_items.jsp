@@ -36,23 +36,23 @@
  <div align="right">
 	<c:if test="${ss_sharedEntitiesPage > '0'}">
 		<a href="javascript: ;" 
-  			onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'shared', '${ss_sharedEntitiesPage}', 'previous', 'ss_dashboardShared', '${ss_relevanceDashboardNamespace}');return false;">
+  			onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'shared', '${ss_sharedEntitiesPage}', 'previous', 'ss_dashboardShared', '${ss_relevanceDashboardNamespace}');return false;">
 			<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-  			title="<ssf:nlt tag="general.previousPage"/>"/>
+  			title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
 		</a>
 	</c:if>
 	<c:if test="${empty ss_sharedEntitiesPage || ss_sharedEntitiesPage <= '0'}">
-		<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
+		<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif" <ssf:alt/>/>
 	</c:if>
 	<c:if test="${!empty ss_sharedEntities}">
 		<a href="javascript: ;" 
-  			onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'shared', '${ss_sharedEntitiesPage}', 'next', 'ss_dashboardShared', '${ss_relevanceDashboardNamespace}');return false;">
+  			onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'shared', '${ss_sharedEntitiesPage}', 'next', 'ss_dashboardShared', '${ss_relevanceDashboardNamespace}');return false;">
 			<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-  			title="<ssf:nlt tag="general.nextPage"/>"/>
+  			title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
 		</a>
 	</c:if>
 	<c:if test="${empty ss_sharedEntities}">
-		<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+		<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif" <ssf:alt/>/>
 	</c:if>
  </div><!-- end of ss_nextPage -->
 <div id="ss_today">
@@ -75,7 +75,7 @@
 	   <span class="ss_link_2">
     	<c:if test="${sharedItem.entity.entityType == 'workspace' || sharedItem.entity.entityType == 'folder'}">
     	  <a href="javascript: ;"
-			onClick="return ss_gotoPermalink('${sharedItem.entity.id}', '${sharedItem.entity.id}', '${sharedItem.entity.entityType}', '${ss_namespace}', 'yes');"
+			onclick="return ss_gotoPermalink('${sharedItem.entity.id}', '${sharedItem.entity.id}', '${sharedItem.entity.entityType}', '${ss_namespace}', 'yes');"
 			>
 			<span>${sharedItem.entity.title}</span>
 		  </a>
