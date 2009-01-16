@@ -389,8 +389,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  		// requires some fixup in the higher up. 
  		if(binder.isMirrored())
  			binder.setLibrary(true);
- 		
- 		checkConstraintMirrored(parent, binder, binder.isLibrary(), inputData);
     }
 
     protected void checkConstraintMirrored(Binder parent, Binder binder, boolean library, InputDataAccessor inputData) {
@@ -435,27 +433,29 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			// First, make sure that the resource path we store is normalized.
 	    	normalizeResourcePath(binder, inputData);
 						
-			// Second, perform outward synchronization, if requested.
-			Boolean synchToSource = Boolean.TRUE;
-			if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE))
-				synchToSource = Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.PI_SYNCH_TO_SOURCE));
-			if(Boolean.TRUE.equals(synchToSource)) {
-				ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
-				
-				if(driver.isReadonly()) {
-					throw new NotSupportedException("errorcode.notsupported.addMirroredBinder.readonly", 
-							new String[] {binder.getPathName(), driver.getTitle()});
-				}
-				else {
-					ResourceSession session = driver.openSession().setPath(binder.getResourcePath());
-					try {
-						session.createDirectory();
+			// Second, perform outward synchronization, if requested and possible.
+	    	if(binder.getResourceDriverName() != null) {
+				Boolean synchToSource = Boolean.TRUE;
+				if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE))
+					synchToSource = Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.PI_SYNCH_TO_SOURCE));
+				if(Boolean.TRUE.equals(synchToSource)) {
+					ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
+					
+					if(driver.isReadonly()) {
+						throw new NotSupportedException("errorcode.notsupported.addMirroredBinder.readonly", 
+								new String[] {binder.getPathName(), driver.getTitle()});
 					}
-					finally {
-						session.close();
-					}	
+					else {
+						ResourceSession session = driver.openSession().setPath(binder.getResourcePath());
+						try {
+							session.createDirectory();
+						}
+						finally {
+							session.close();
+						}	
+					}
 				}
-			}
+	    	}
 		}
     }
 
@@ -1153,9 +1153,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        parent.addBinder(binder);
 		if(binder.isMirrored())
  			binder.setLibrary(true);
- 		
- 		checkConstraintMirrored(parent, binder, binder.isLibrary(), null);
-       
    }
    protected void copyBinder_preSave(Binder source, Binder parent, Binder binder, Map ctx) {  
    }

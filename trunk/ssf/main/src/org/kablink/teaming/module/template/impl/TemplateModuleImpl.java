@@ -341,6 +341,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	 protected void doTemplate(TemplateBinder template, Element config) {
 		 Integer type = Integer.valueOf(config.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_TYPE));
 		 template.setLibrary(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_LIBRARY), false));
+		 template.setMirrored(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_MIRRORED), false));
 		 template.setUniqueTitles(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_UNIQUETITLES), false));
 		 template.setDefinitionsInherited(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS), false));
 		 template.setFunctionMembershipInherited(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP), true));
@@ -529,6 +530,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		if (binder.isRoot()) XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_BINDER_NAME, ObjectKeys.XTAG_TYPE_STRING, binder.getName());
 
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_LIBRARY, binder.isLibrary());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_MIRRORED, binder.isMirrored());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_UNIQUETITLES, binder.isUniqueTitles());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP, binder.isFunctionMembershipInherited());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
@@ -703,6 +705,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	   if (cfg.getDescription() != null) description = NLT.getDef(cfg.getDescription().getText());
 	   if (Validator.isNotNull(description)) entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 	   entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.toString(cfg.isLibrary()));
+	   entryData.put(ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.toString(cfg.isMirrored()));
 	   entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.toString(cfg.isUniqueTitles()));
 	   entryData.put(ObjectKeys.FIELD_BINDER_INHERITTEAMMEMBERS, Boolean.toString(cfg.isTeamMembershipInherited()));
 	   //if not null, use icon from template.  Otherwise try icon from definition when binder is created.

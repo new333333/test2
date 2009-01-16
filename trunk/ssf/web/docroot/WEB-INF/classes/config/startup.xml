@@ -35,6 +35,8 @@
 	<definitionFile>config/definitions/_team_workspace.xml</definitionFile>
 	<definitionFile>config/definitions/_team_root.xml</definitionFile>
 	<definitionFile>config/definitions/_welcomeWorkspace.xml</definitionFile>
+	<definitionFile>config/definitions/_mirroredFileEntry.xml</definitionFile>
+	<definitionFile>config/definitions/_mirroredFileFolder.xml</definitionFile>
 	<templateFile>config/templates/_folder_blog.xml</templateFile>
 	<templateFile>config/templates/_folder_calendar.xml</templateFile>
 	<templateFile>config/templates/_folder.xml</templateFile>
@@ -46,6 +48,7 @@
 	<templateFile>config/templates/_folder_wiki.xml</templateFile>
 	<templateFile>config/templates/_folder_task.xml</templateFile>
 	<templateFile>config/templates/_folder_survey.xml</templateFile>
+	<templateFile>config/templates/_folder_mirrored_file.xml</templateFile>
 	<templateFile>config/templates/_workspace.xml</templateFile>
 	<templateFile>config/templates/_workspace_team.xml</templateFile>
 	<templateFile>config/templates/_workspace_user.xml</templateFile>
