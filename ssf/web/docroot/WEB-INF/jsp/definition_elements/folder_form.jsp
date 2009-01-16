@@ -101,24 +101,27 @@
 				<input type="hidden" name="mirrored" value="${ssDefinitionEntry.mirrored}"/>
 				<br/>
 	
-				<c:if test="${ssDefinitionEntry.mirrored}" >
+				<c:if test="${ssDefinitionEntry.mirrored && !empty ssDefinitionEntry.resourceDriver}" >
 					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
 					<input type="text" class="ss_text" size="30" name="resourceDriver" value="${ssDefinitionEntry.resourceDriver.titleAndMode}" disabled/>
 					<c:set var="resourceRootPath" value="${ssDefinitionEntry.resourceDriver.rootPath}"/>
 				</c:if>
-				<c:if test="${!ssDefinitionEntry.mirrored && !empty resourceDrivers}" >
-					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
-					<c:set var="resourceRootPath" value="${resourceDrivers[0].rootPath}"/>
-					<select name="resourceDriverName" onchange="updateResourceRootPath();" <c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if>>
-						<c:forEach var="driver" items="${resourceDrivers}">
-							<option value="${driver.name}" id="${driver.rootPath}" <c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}">selected</c:if>>${driver.titleAndMode}</option>
-							<c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}"><c:set var="resourceRootPath" value="${driver.rootPath}"/></c:if>
-						</c:forEach>
-					</select>
-				</c:if>
+
+				<c:if test="${!ssDefinitionEntry.mirrored || empty ssDefinitionEntry.resourceDriver}" >
+					<c:if test="${!empty resourceDrivers}" >
+						<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
+						<c:set var="resourceRootPath" value="${resourceDrivers[0].rootPath}"/>
+						<select name="resourceDriverName" onchange="updateResourceRootPath();">
+							<c:forEach var="driver" items="${resourceDrivers}">
+								<option value="${driver.name}" id="${driver.rootPath}" <c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}">selected</c:if>>${driver.titleAndMode}</option>
+								<c:if test="${driver.name == ssDefinitionEntry.resourceDriverName}"><c:set var="resourceRootPath" value="${driver.rootPath}"/></c:if>
+							</c:forEach>
+						</select>
+					</c:if>
+				</c:if>				
 				<br/>
 	
-				<c:if test="${ssDefinitionEntry.mirrored || !empty resourceDrivers}" >
+				<c:if test="${!empty resourceDrivers}" >
 					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.rootpath.label"/></span>
 					<input type="text" class="ss_text" size="80" name="rootPath" value="${resourceRootPath}" disabled/><br/>
 					<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.path.label"/></span><br>

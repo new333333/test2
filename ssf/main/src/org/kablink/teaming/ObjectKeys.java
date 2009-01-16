@@ -76,6 +76,7 @@ public interface ObjectKeys {
 	public static final String DEFAULT_FOLDER_GUESTBOOK_CONFIG="402883b90d0de1f3010d0df5582b000f";
 	public static final String DEFAULT_FOLDER_PHOTO_CONFIG="402883b90d0de1f3010d0df5582b0010";
 	public static final String DEFAULT_FOLDER_LIBRARY_CONFIG="402883b90d0de1f3010d0df5582b0011";
+	public static final String DEFAULT_FOLDER_MIRRORED_FILE_CONFIG="402883b90d0de1f3010d0df5582b0018";
 	public static final String DEFAULT_FOLDER_TASK_CONFIG="402883b90cc53079010cc539bf260009";
 	public static final String DEFAULT_FOLDER_MILESTONE_CONFIG="402883b90cc53079010cc539bf260011";
 	public static final String DEFAULT_FOLDER_SURVEY_CONFIG="402883b90cc53079010cc539bf260010";
@@ -533,6 +534,7 @@ public interface ObjectKeys {
    //value of name= attribue on XTAG_ELEMENT_TYPE_PROPERTY for binders
     public static final String XTAG_BINDER_UNIQUETITLES="uniqueTitle";
     public static final String XTAG_BINDER_LIBRARY="library";
+    public static final String XTAG_BINDER_MIRRORED="mirrored";
     public static final String XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP="inheritFunctionMembership";
     public static final String XTAG_BINDER_INHERITDEFINITIONS="inheritDefinitions";
     public static final String XTAG_BINDER_INHERITTEAMMEMBERS="inheritTeamMembers";
