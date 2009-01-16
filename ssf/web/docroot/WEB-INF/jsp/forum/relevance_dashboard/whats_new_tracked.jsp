@@ -35,23 +35,23 @@
 <div align="right">
 <c:if test="${ss_trackedPlacesPage > '0'}">
 <a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'newTracked', '${ss_trackedPlacesPage}', 'previous', 'ss_dashboardWhatsNewTracked', '${ss_relevanceDashboardNamespace}');return false;">
+  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'newTracked', '${ss_trackedPlacesPage}', 'previous', 'ss_dashboardWhatsNewTracked', '${ss_relevanceDashboardNamespace}');return false;">
 <img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-  title="<ssf:nlt tag="general.previousPage"/>"/>
+  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
 </a>
 </c:if>
 <c:if test="${empty ss_trackedPlacesPage || ss_trackedPlacesPage <= '0'}">
-<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
+<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif" <ssf:alt/>/>
 </c:if>
 <c:if test="${!empty ss_whatsNewTrackedPlaces}">
 <a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'newTracked', '${ss_trackedPlacesPage}', 'next', 'ss_dashboardWhatsNewTracked', '${ss_relevanceDashboardNamespace}');return false;">
+  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'newTracked', '${ss_trackedPlacesPage}', 'next', 'ss_dashboardWhatsNewTracked', '${ss_relevanceDashboardNamespace}');return false;">
 <img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-  title="<ssf:nlt tag="general.nextPage"/>"/>
+  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
 </a>
 </c:if>
 <c:if test="${empty ss_whatsNewTrackedPlaces}">
-<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif" <ssf:alt/>/>
 </c:if>
 </div><!--end of arrow division-->
 <div id="ss_hints"><em><ssf:nlt tag="relevance.hint.newTrackedFolders"/></em></div>
@@ -94,13 +94,13 @@
 		<c:set var="isDashboard" value="yes"/>
 		<c:if test="${!empty path}">
     		<br/><a href="javascript: ;"
-				onClick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
+				onclick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
 				title="${path}"
 				><span>${title}</span></a>
 		</c:if>
 	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" 
 	    title="<ssf:nlt tag="general.type.folder"/>" width="11" height="10" 
-	    hspace="2" border="0" align="absmiddle" />
+	    hspace="2" border="0" align="absmiddle" <ssf:alt/>/>
 	  <c:if test="${!empty entry._desc}">
 	    <br/>
 	    <span class="ss_summary"><ssf:textFormat 
