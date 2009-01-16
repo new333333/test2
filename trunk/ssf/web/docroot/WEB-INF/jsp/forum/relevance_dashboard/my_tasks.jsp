@@ -34,23 +34,23 @@
 <div align="right">
 <c:if test="${ss_myTasksPage > '0'}">
 <a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'tasks', '${ss_myTasksPage}', 'previous', 'ss_dashboardTasks', '${ss_relevanceDashboardNamespace}');return false;">
+  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'tasks', '${ss_myTasksPage}', 'previous', 'ss_dashboardTasks', '${ss_relevanceDashboardNamespace}');return false;">
 <img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-  title="<ssf:nlt tag="general.previousPage"/>"/>
+  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
 </a>
 </c:if>
 <c:if test="${empty ss_myTasksPage || ss_myTasksPage <= '0'}">
-<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
+<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif" <ssf:alt/>/>
 </c:if>
 <c:if test="${!empty ss_myTasks}">
 <a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'tasks', '${ss_myTasksPage}', 'next', 'ss_dashboardTasks', '${ss_relevanceDashboardNamespace}');return false;">
+  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'tasks', '${ss_myTasksPage}', 'next', 'ss_dashboardTasks', '${ss_relevanceDashboardNamespace}');return false;">
 <img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-  title="<ssf:nlt tag="general.nextPage"/>"/>
+  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
 </a>
 </c:if>
 <c:if test="${empty ss_myTasks}">
-<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif" <ssf:alt/>/>
 </c:if>
 </div>
 <div id="ss_today">
@@ -141,7 +141,7 @@
 
 			<c:if test="${!empty path}">
 	    		<a href="javascript: ;"
-					onClick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
+					onclick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
 					title="${path}"
 					><span class="ss_prioValue"">${title}</span></a>
 			</c:if>
