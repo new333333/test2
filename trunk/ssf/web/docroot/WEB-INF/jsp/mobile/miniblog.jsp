@@ -42,9 +42,9 @@
 			operation="mobile_show_front_page" 
 			actionUrl="true" />">
 			
-		  <!-- necessary cols attribute is set to 1 and is overridden by CSS -->
+		  <!-- necessary cols attribute is set to 20 for Blackberry and is overridden by CSS -->
 			
-		  <textarea rows="2" cols="1" style="width:150px;" name="miniblogText" id="miniblogText"></textarea>
+		  <textarea rows="2" cols="20" style="width:150px !important;" name="miniblogText" id="miniblogText"></textarea>
 		  <input type="submit" name="miniblogBtn" value="<ssf:nlt tag="button.ok"/>"/>
   		  <label for="miniblogText">&nbsp;</label>
 		  <c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">
