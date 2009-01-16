@@ -35,23 +35,23 @@
 <div align="right">
 <c:if test="${ss_whatsHotPage > '0'}">
 <a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'hot', '${ss_whatsHotPage}', 'previous', 'ss_dashboardWhatsHot', '${ss_relevanceDashboardNamespace}');return false;">
+  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'hot', '${ss_whatsHotPage}', 'previous', 'ss_dashboardWhatsHot', '${ss_relevanceDashboardNamespace}');return false;">
 <img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-  title="<ssf:nlt tag="general.previousPage"/>"/>
+  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
 </a>
 </c:if>
 <c:if test="${empty ss_whatsHotPage || ss_whatsHotPage <= '0'}">
-<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
+<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif" <ssf:alt/>/>
 </c:if>
 <c:if test="${!empty ss_whatsHot}">
 <a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'hot', '${ss_whatsHotPage}', 'next', 'ss_dashboardWhatsHot', '${ss_relevanceDashboardNamespace}');return false;">
+  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'hot', '${ss_whatsHotPage}', 'next', 'ss_dashboardWhatsHot', '${ss_relevanceDashboardNamespace}');return false;">
 <img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-  title="<ssf:nlt tag="general.nextPage"/>"/>
+  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
 </a>
 </c:if>
 <c:if test="${empty ss_whatsHot}">
-<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif" <ssf:alt/>/>
 </c:if>
 </div>
 <div id="ss_hints"><em><ssf:nlt tag="relevance.hint.hotItems"/></em></div>
@@ -85,7 +85,7 @@
 	  <br/>
 	  <span class="ss_link_2">
     	<a href="javascript: ;"
-			onClick="return ss_gotoPermalink('${entry.parentBinder.id}', '${entry.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
+			onclick="return ss_gotoPermalink('${entry.parentBinder.id}', '${entry.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
 			><span>${entry.parentBinder.title} (${entry.parentBinder.parentBinder.title})</span></a>
 	  </span>&nbsp;<images/icons/folder_cyan_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
 	  <c:if test="${!empty entry.description}">
