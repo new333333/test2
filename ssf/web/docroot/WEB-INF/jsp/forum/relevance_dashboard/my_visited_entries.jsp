@@ -36,23 +36,23 @@
 <div align="right">
 <c:if test="${ssEntriesViewedPage > '0'}">
 <a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'entriesViewed', '${ssEntriesViewedPage}', 'previous', 'ss_dashboardEntriesViewed', '${ss_relevanceDashboardNamespace}');return false;">
+  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'entriesViewed', '${ssEntriesViewedPage}', 'previous', 'ss_dashboardEntriesViewed', '${ss_relevanceDashboardNamespace}');return false;">
 <img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-  title="<ssf:nlt tag="general.previousPage"/>"/>
+  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
 </a>
 </c:if>
 <c:if test="${empty ssEntriesViewedPage || ssEntriesViewedPage <= '0'}">
-<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
+<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif" <ssf:alt/>/>
 </c:if>
 <c:if test="${!empty ssEntriesViewed}">
 <a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'entriesViewed', '${ssEntriesViewedPage}', 'next', 'ss_dashboardEntriesViewed', '${ss_relevanceDashboardNamespace}');return false;">
+  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'entriesViewed', '${ssEntriesViewedPage}', 'next', 'ss_dashboardEntriesViewed', '${ss_relevanceDashboardNamespace}');return false;">
 <img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-  title="<ssf:nlt tag="general.nextPage"/>"/>
+  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
 </a>
 </c:if>
 <c:if test="${empty ssEntriesViewed}">
-<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif" <ssf:alt/>/>
 </c:if>
 </div>
 <c:set var="count" value="0"/>
@@ -90,7 +90,7 @@
 	  <br/>
 	  <span class="ss_link_2">
     	<a href="javascript: ;"
-			onClick="return ss_gotoPermalink('${entry.parentBinder.id}', '${entry.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
+			onclick="return ss_gotoPermalink('${entry.parentBinder.id}', '${entry.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
 			><span>${entry.parentBinder.title} (${entry.parentBinder.parentBinder.title})</span></a>
 	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" /> 
 	  <c:if test="${!empty entry.description}">
@@ -146,7 +146,7 @@
 	  <br/>
 	  <span class="ss_link_2">
     	<a href="javascript: ;"
-			onClick="return ss_gotoPermalink('${entry2.parentBinder.id}', '${entry2.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
+			onclick="return ss_gotoPermalink('${entry2.parentBinder.id}', '${entry2.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
 			><span>${entry2.parentBinder.title} (${entry2.parentBinder.parentBinder.title})</span></a>
 	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" /> 
 	  <c:if test="${!empty entry2.description}">
