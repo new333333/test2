@@ -91,7 +91,7 @@ a:hover {
 	border-right: none;
 	border-top-width: thin;
 	border-left-width: thin;
-	border-bottom: thin dotted #DBE9E8;
+	border-bottom: thin solid #DBE9E8;
 	list-style-position: outside;
 	}
 /* Linearize menu */
@@ -131,12 +131,13 @@ a:hover {
 .maincontent	{
 	float: none;
 	padding: 1% 0% 1% 4%;
+	margin:0px 2px 2px 2px;
 	width: auto;
 	max-width: 597px;
 	font-size: .93em;
 	background-color:#DBE9E8;
 	color: #666666;
-	border: thin #777 dotted;
+	border: thin #ccc solid;
 	/*rounded corners for firefox and safari*/
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -146,7 +147,7 @@ td, th{
 	}
 	
 .bottom_rule {
-	border-bottom: thin #9EC8CD dotted;
+	border-bottom: thin #9EC8CD solid;
 	}
 	
 /* Reduce horizontal margins/padding; percentages scale well */
@@ -293,16 +294,16 @@ a:link, a:visited {
 	
 }
 #saved_searches, #search_people_global, #favorites, #miniblog, #whatsnew {
-	border: #777 thin dotted;
+	border: #777 thin solid;
 	text-indent: 3%;
 	background: #9A9A98;
 	color: #FFF;
 	-webkit-text-stroke: #000;
 	}
 .pagebody_border{
-	border-bottom: #777 thin dotted;
-	border-left: #777 thin dotted;
-	border-right: #777 thin dotted;
+	border-bottom: #777 1px solid;
+	border-left: #777 1px solid;
+	border-right: #777 1px solid;
 	margin-bottom: 1em;
 		
 	-webkit-box-shadow: 2px 2px 4px #CCC;
@@ -340,12 +341,20 @@ h6 {
 	margin-top:0px;
 	padding-top:13px;
 	}
-.pagebody li {
+.pagebody ul li {
 	border-bottom: 1px dotted #5A9A98;
 	padding-bottom: .60em;
 	padding-top: .60em;
 	list-style-position: inside;
 	list-style-type: square;
+	margin-right: 2.6em;
+	}	
+.pagebody ol li {
+	border-bottom: 1px dotted #5A9A98;
+	padding-bottom: .60em;
+	padding-top: .60em;
+	list-style-position: inside;
+	list-style-type: decimal;
 	margin-right: 2.6em;
 	}	
 #outdated	{
@@ -383,7 +392,7 @@ input, textarea, select {
 	font-size: 0.83em;
 	margin: 0.83em 0 0.4em 0;
 	border: 0;
-	border-bottom: 1px dotted #ccc;
+	border-bottom: 1px solid #ccc;
 	border-top: 1px solid #f3f3f3
 	}
 
@@ -458,7 +467,7 @@ input, textarea, select {
 /********* LOGIN TEXT BOX ************/
 .ss_text_login{
 	text-align: left;
-	border: dotted 1px #5A9A98;
+	border: solid 1px #5A9A98;
 	background-image: url(images/mobile/login_bk.png);
 	padding-top: 3px;
 	padding-right: 25px;
@@ -490,10 +499,10 @@ input, textarea, select {
   	margin-top: 12px;
 	}
 #fieldset a{
-	border: dotted 1px #000;
+	border: solid 1px #000;
 	}
 #fieldset a:hover{
-	border: dotted 1px #000;
+	border: solid 1px #000;
 	}
 .ss_legend {
   	font-size:12px !important;
@@ -520,7 +529,7 @@ input, textarea, select {
 	background-color: #DBE9E8!important;
 	}	
 .linewrap {
-	border-bottom: thin dotted #5A9A98;
+	border-bottom: thin solid #5A9A98;
 	margin-bottom: 6px;
 	}
 .floatleft	{
