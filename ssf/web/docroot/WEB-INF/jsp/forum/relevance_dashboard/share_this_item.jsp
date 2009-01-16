@@ -65,8 +65,8 @@
 <br/>
 <ul class="ss_nobullet">
   <c:forEach var="team" items="${ss_myTeams}">
-	<li><input type="checkbox" name="cb_${team._docId}"/>
-	    <span style="padding-left:6px;">${team.title}</span>
+	<li><input type="checkbox" name="cb_${team._docId}" id="cb_${team._docId}"/>
+	    <label for="cb_${team._docId}"><span style="padding-left:6px;">${team.title}</span></label>
 	</li>
   </c:forEach>
 </ul>
@@ -79,7 +79,7 @@
 </div>
 
 <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" />
-<input type="button" value="<ssf:nlt tag="button.cancel"/>" onClick="self.window.close();return false;"/>
+<input type="button" value="<ssf:nlt tag="button.cancel"/>" onclick="self.window.close();return false;"/>
 
 </form>
 <br/>
