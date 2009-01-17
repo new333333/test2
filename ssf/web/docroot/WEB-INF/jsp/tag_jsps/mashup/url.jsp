@@ -28,7 +28,42 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<% //Mashup URL view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%  
+	Long ss_mashupTableNumber = (Long) request.getAttribute("ss_mashupTableNumber");
+	Long ss_mashupTableDepth = (Long) request.getAttribute("ss_mashupTableDepth");
+	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
+	ss_mashupTableItemCount.put(ss_mashupTableNumber, "url");  
+	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
+%>
+<c:if test="${ssConfigJspStyle != 'form'}">
 <div>
-  [Workspace tree goes here (not implemented yet)]
+  <c:if test="${!empty mashup_attributes['title']}">
+    <a href="${mashup_attributes['href']}">${mashup_attributes['title']}</a>
+  </c:if>
 </div>
+</c:if>
+
+<c:if test="${ssConfigJspStyle == 'form'}">
+	<script type="text/javascript">
+	//Routine called when "Delete url" is clicked
+	function ss_mashup_deleteUrl${ss_mashupItemId}_${renderResponse.namespace}() {
+		var formObj = self.document.forms['${ss_form_form_formName}'];
+		formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "";
+	}
+	</script>
+
+   <div style="padding:10px;" width="100%">
+	 <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
+	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.url"/>: </span>
+	    <span>${mashup_attributes['title']}</span>
+	    <span class="ss_italic ss_smallprint">(${mashup_attributes['href']})</span>
+	    <br/>
+	    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
+	      class="ss_linkButton ss_fineprint"
+	      onClick="ss_mashup_deleteUrl${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
+	 </div>
+   </div>
+</c:if>
+

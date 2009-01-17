@@ -36,7 +36,6 @@
      <span class="ss_getting_started"><ssf:nlt tag="help.viewBooks.title"/></span>
    </a>
 </p>
-<img src="<html:brandedImagesPath/>pics/getting_started.gif">
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 
 </div>

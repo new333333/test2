@@ -45,7 +45,7 @@
 		    folderId="${ssBinder.id}"
 		    entityType="${ssBinder.entityType}" >
 	    	<ssf:param name="fileId" value="${mashup_attributes['graphic']}"/>
-	    	</ssf:url>">
+	    	</ssf:url>" alt="${mashup_attributes['title']}">
   </c:if>
 </div>
 </c:if>
@@ -61,7 +61,8 @@
 
    <div style="padding:10px;" width="100%">
 	 <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
-	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.graphic"/></span>
+	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.graphic"/>: </span>
+	    <span>${mashup_attributes['title']}</span>
 	    <br/>
 	    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
 	      class="ss_linkButton ss_fineprint"

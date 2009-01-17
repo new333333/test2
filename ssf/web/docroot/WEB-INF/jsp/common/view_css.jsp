@@ -147,6 +147,9 @@ var ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
 </script>
 
 <link href="<html:rootPath/>css/forum.css" rel="stylesheet" type="text/css" />
+<c:if test="${!empty ss_mashupCss}">
+  <link href="<html:rootPath/>${ss_mashupCss}" rel="stylesheet" type="text/css" />
+</c:if>
 <link href="<html:rootPath/>css/slider_swing.css" rel="stylesheet" type="text/css" />
 <link href="<ssf:url webPath="viewCss"> <ssf:param name="theme" value="${ssUser.theme}"/>
 	    </ssf:url>" rel="stylesheet" type="text/css" />

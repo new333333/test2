@@ -821,6 +821,7 @@ public class WebKeys {
     public static final String MARKUP_EXPORT="export";
     public static final String MASHUP_BINDERS="ss_mashupBinders"; 
     public static final String MASHUP_BINDER_ENTRIES="ss_mashupBinderEntries"; 
+    public static final String MASHUP_CSS="ss_mashupCss"; 
     public static final String MASHUP_ENTRIES="ss_mashupEntries"; 
     public static final String MASHUP_HIDE_MASTHEAD="ss_mashupHideMasthead"; 
     public static final String MASHUP_HIDE_SIDEBAR="ss_mashupHideSidebar"; 

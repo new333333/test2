@@ -47,9 +47,8 @@
 	</script>
 
    <div style="padding:10px;" width="100%">
-	 <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
-	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.customJsp"/></span>
-	    <br/>
+	 <div class="ss_mashup_form_element_header">
+	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.customJsp"/>: </span>
 	    <span>${mashup_attributes['customJsp']}</span>
 	    <br/>
 	    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
