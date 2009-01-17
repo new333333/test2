@@ -46,7 +46,7 @@
 	request.setAttribute("ss_mashupTableNumber", ss_mashupTableNumber);
 %>
 <c:set var="ss_mashupColStarted" value="false" scope="request"/>
-<table 
+<table class="ss_mashup"
   <c:if test="${!empty mashup_attributes['showBorder'] || ssConfigJspStyle == 'form'}">border="1"</c:if>
   width="100%">
 <tr>

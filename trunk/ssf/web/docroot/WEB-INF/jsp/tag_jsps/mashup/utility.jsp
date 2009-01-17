@@ -51,9 +51,6 @@
   <c:if test="${mashup_attributes['element'] == 'myWorkspace'}">
     <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/utility/my_workspace.jsp" />
   </c:if>
-  <c:if test="${mashup_attributes['element'] == 'workspaceTree'}">
-    <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/utility/workspace_tree.jsp" />
-  </c:if>
 </div>
 </c:if>
 
@@ -68,8 +65,7 @@
 
    <div style="padding:10px;" width="100%">
 	 <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
-	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.utility"/></span>
-		  &nbsp;-&nbsp;
+	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.utility"/>: </span>
 		  <c:if test="${mashup_attributes['element'] == 'gettingStarted'}">
 		    <span><ssf:nlt tag="mashup.gettingStarted"/></span>
 		  </c:if>
@@ -81,9 +77,6 @@
 		  </c:if>
 		  <c:if test="${mashup_attributes['element'] == 'myWorkspace'}">
 		    <span><ssf:nlt tag="mashup.myWorkspace"/></span>
-		  </c:if>
-		  <c:if test="${mashup_attributes['element'] == 'workspaceTree'}">
-		    <span><ssf:nlt tag="mashup.workspaceTree"/></span>
 		  </c:if>
 	    <br/>
 	    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 

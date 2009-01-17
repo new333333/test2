@@ -792,6 +792,7 @@ public class DefinitionHelper {
     	model.put(WebKeys.MASHUP_BINDERS, mashupBinders);
     	model.put(WebKeys.MASHUP_BINDER_ENTRIES, mashupBinderEntries);
     	model.put(WebKeys.MASHUP_ENTRIES, mashupEntries);
+    	model.put(WebKeys.MASHUP_CSS, "css/mashup.css");
 	}
 
 	public static Document getDefinitionTree(AllModulesInjected bs, Long binderId) {
