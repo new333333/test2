@@ -51,13 +51,18 @@
   <c:if test="${!empty mashupBinder}">
 	<c:if test="${ssConfigJspStyle == 'form' || !empty mashup_attributes['showTitle']}">
 	  <div class="ss_mashup_folder_header">
-		<span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.folder"/>: </span>
-		<span><a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+		<c:if test="${ssConfigJspStyle == 'form'}">
+		  <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.folder"/>: </span>
+		</c:if>
+		<c:set var="spanClass" value="" />
+		<c:if test="${ssConfigJspStyle != 'form'}">
+		  <c:set var="spanClass" value="ss_largeprint ss_bold" />
+		</c:if>
+		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
 		  action="view_folder_listing" 
 		  folderId="${mashupBinder.id}">
 		  <ssf:param name="newTab" value="1"/>
-		  </ssf:url>"><span>${mashupBinder.title}</span></a>
-		</span>
+		  </ssf:url>"><span class="${spanClass}" >${mashupBinder.title}</span></a>
 	  </div>
 	</c:if>
 	<c:if test="${ssConfigJspStyle != 'form' && !empty mashup_attributes['showFolderDescription']}">
