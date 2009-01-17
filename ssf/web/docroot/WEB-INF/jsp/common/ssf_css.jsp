@@ -112,10 +112,14 @@ body.ss_style_body {
 .ss_style img {
   border:0px none;
 }
-.ss_style ul li, .ss_style li {
+.ss_style ul li {
   list-style-type: square;
   list-style-image: none;
   list-style-position: inside;
+}
+.ss_style ol li {
+    list-style-position: outside;
+    list-style-type: decimal;
 }
 
 /* LINKS */
