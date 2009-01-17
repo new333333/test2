@@ -52,16 +52,23 @@
   <div style="padding:10px;" width="100%">
 	<c:if test="${ssConfigJspStyle == 'form' || !empty mashup_attributes['showTitle']}">
 	  <div class="ss_mashup_entry_header">
-		<span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.entry"/>: </span>
-		<span><a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+		<c:if test="${ssConfigJspStyle == 'form'}">
+		  <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.entry"/>: </span>
+		</c:if>
+		<c:set var="spanClass" value="" />
+		<c:if test="${ssConfigJspStyle != 'form'}">
+		  <c:set var="spanClass" value="ss_largeprint ss_bold" />
+		</c:if>
+		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
 		  action="view_folder_entry" 
 		  folderId="${mashupEntry.parentBinder.id}"
 		  entryId="${mashupEntry.id}">
 		  <ssf:param name="entryViewStyle" value="full"/>
 		  <ssf:param name="newTab" value="1"/>
-		  </ssf:url>"><span>${mashupEntry.title}</span></a>
-		  <span class="ss_italic ss_smallprint">(${mashupEntry.parentBinder.title})</span>
-		</span>
+		  </ssf:url>"><span class="${spanClass}">${mashupEntry.title}</span></a>
+		  <c:if test="${ssConfigJspStyle == 'form'}">
+		    <span class="ss_italic ss_smallprint">(${mashupEntry.parentBinder.title})</span>
+		  </c:if>
 	  </div>
 	</c:if>
 	<c:if test="${ssConfigJspStyle != 'form'}">
