@@ -575,7 +575,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	this.showResultList = function() {
 		ss_setObjectTop(that._listContainer, parseInt(ss_getDivTop(that._inputObj) + ss_getObjectHeight(that._inputObj) + divTopOffset));
 		ss_setObjectLeft(that._listContainer, parseInt(ss_getDivLeft(that._inputObj)))
-		ss_showDivActivate(that._listContainer.id);
+		ss_showDivActivate(that._listContainer.id, true);
 	}
 	
 	this.selectItem0 = function () {

@@ -1952,6 +1952,17 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
     }
 
     ss_ShowHideDivXY(divId, x, y);
+    var scrollTop = parseInt(dojo.coords(menuObj, true).y - dojo.coords(menuObj, false).y);
+    var menuBottom = parseInt(y + parseInt(ss_getObjectHeight(menuObj)));
+    var screenBottom = parseInt(scrollTop + ss_getWindowHeight())
+    if (menuBottom > screenBottom) {
+    	//The menu is off the bottom of the screen, scroll until it is in view
+    	var scrollAmount = parseInt(menuBottom - screenBottom + 10)
+    	if (scrollAmount > parseInt(ss_getWindowHeight())) scrollAmount = parseInt(ss_getWindowHeight());
+    	if (scrollAmount < 0) scrollAmount = 0;
+    	window.scrollBy(0, scrollAmount);
+    }
+    
     if (openStyle != "popup") ss_HideDivOnSecondClick(divId);
     ssf_onLayoutChange();
 	if (parentDivId != "") {
@@ -2070,13 +2081,21 @@ function ss_hideBackgroundIFrame(frmId) {
 	ss_showBackgroundIframeDivId = null;
 }
 
-function ss_showDivActivate(divName) {
+function ss_showDivActivate(divName, nofocus) {
+	if (typeof nofocus == "undefined") nofocus = false;
     if (ss_divBeingShown != null) {
         ss_hideDiv(ss_divBeingShown);
     }
     ss_divBeingShown = divName;
     ss_lastDivBeingShown = divName;
-    ss_showDiv(divName);
+    if (nofocus) {
+    	//Show the div by hand and don't set focus to it.
+    	var divObj = document.getElementById(divName);
+    	divObj.style.display = "block";
+    	divObj.style.visibility = "visible";
+    } else {
+    	ss_showDiv(divName);
+    }
 	ss_HideDivOnSecondClick(divName);
 }
 
