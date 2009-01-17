@@ -33,11 +33,14 @@
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
-body {
-  font-family: Lucida Sans Unicode,Arial,sans-serif;
+body, td, pre, .mceContentBody {
+  font-family: Arial, sans-serif;
   font-size: 13px;
+  color:#000;
+  margin:8px;
+  background:#FFF;
 }
- 
+
 table tr td { border: 1px solid #BBBBBB; }
 
 ul li {
@@ -52,9 +55,6 @@ ol li {
     list-style-position: outside;
     list-style-type: decimal;
 }
-
-
-
 
 .ss_largestprint {
 font-size:15px !important;
