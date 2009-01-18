@@ -28,32 +28,53 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //table start %>
+<% //list end %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%
 	Long ss_mashupTableDepth = (Long) request.getAttribute("ss_mashupTableDepth");
 	Long ss_mashupTableNumber = (Long) request.getAttribute("ss_mashupTableNumber");
 	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
 	Map ss_mashupTableItemCount2 = (Map) request.getAttribute("ss_mashupTableItemCount2");
-	ss_mashupTableItemCount.put(ss_mashupTableNumber, "table");  
-	ss_mashupTableDepth = ss_mashupTableDepth + 1;
-	ss_mashupTableNumber = ss_mashupTableNumber + 1;
-	ss_mashupTableItemCount.put(ss_mashupTableNumber, "");  
-	ss_mashupTableItemCount2.put(ss_mashupTableDepth, ss_mashupTableNumber);  
-	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
-	request.setAttribute("ss_mashupTableItemCount2", ss_mashupTableItemCount2);
-	request.setAttribute("ss_mashupTableDepth", ss_mashupTableDepth);
-	request.setAttribute("ss_mashupTableNumber", ss_mashupTableNumber);
+	Long mashupTableNumber = (Long) ss_mashupTableItemCount2.get(ss_mashupTableDepth);
+	String mashupTableValue = "";
+	mashupTableValue = (String) ss_mashupTableItemCount.get(mashupTableNumber);
+	if (mashupTableValue == null) mashupTableValue = "";
 
 	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
 %>
-<% if (ss_mashupListDepth > 0) { %>
-<li>
-<% } %>
+<c:if test="${ssConfigJspStyle == 'form'}">
+	<script type="text/javascript">
+	//Routine called when "Delete list" is clicked
+	function ss_mashup_deleteList${ss_mashupItemId}_${renderResponse.namespace}() {
+		if ('<%= mashupTableValue %>' != '') {
+			alert('<ssf:nlt tag="mashup.listNotEmpty"/>');
+			return false;
+		}
+		var formObj = self.document.forms['${ss_form_form_formName}'];
+		formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "listEnd_delete";
+		return true;
+	}
+	</script>
+</c:if>
 
-<c:set var="ss_mashupColStarted" value="false" scope="request"/>
-<table class="ss_mashup"
-  <c:if test="${!empty mashup_attributes['showBorder'] || ssConfigJspStyle == 'form'}">border="1"</c:if>
-  width="100%">
-<tr>
-<c:set var="ss_mashupColStarted" value="false" scope="request"/>
+</ul>
+</div>
+</div>
+
+<c:if test="${ssConfigJspStyle == 'form'}">
+  <div style="padding-bottom:10px;">
+  <input type="submit" name="applyBtn" value="<ssf:nlt tag="mashup.deleteList"/>" 
+    class="ss_linkButton ss_fineprint"
+    onClick="return ss_mashup_deleteList${ss_mashupItemId}_${renderResponse.namespace}();"/>
+  </div>
+</c:if>
+<%
+	ss_mashupTableDepth = ss_mashupTableDepth - 1;
+	request.setAttribute("ss_mashupTableDepth", ss_mashupTableDepth);
+	
+	ss_mashupListDepth = ss_mashupListDepth - 1;
+	request.setAttribute("ss_mashupListDepth", ss_mashupListDepth);
+%>
+<% if (ss_mashupListDepth > 0) { %>
+</li>
+<% } %>

@@ -36,7 +36,12 @@
 	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
 	ss_mashupTableItemCount.put(ss_mashupTableNumber, "entry");  
 	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
+
+	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
 %>
+<% if (ss_mashupListDepth > 0) { %>
+<li>
+<% } %>
 
 <c:if test="${ssConfigJspStyle == 'form'}">
 	<script type="text/javascript">
@@ -97,3 +102,7 @@
    </div>
   </c:if>
 </c:if>
+
+<% if (ss_mashupListDepth > 0) { %>
+</li>
+<% } %>

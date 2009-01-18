@@ -45,6 +45,10 @@ function ss_mashup_addTable${ss_mashupItemId}_${renderResponse.namespace}() {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
 	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "table";
 }
+function ss_mashup_addList${ss_mashupItemId}_${renderResponse.namespace}() {
+	var formObj = self.document.forms['${ss_form_form_formName}'];
+	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "list";
+}
 function ss_mashup_addGraphic${ss_mashupItemId}_${renderResponse.namespace}() {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
 	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value = "graphic";
@@ -102,6 +106,7 @@ var ss_mashupAttr_numberOfCols${ss_mashupItemId} = "";
 var ss_mashupAttr_columnWidths${ss_mashupItemId} = "";
 var ss_mashupAttr_graphic${ss_mashupItemId} = "";
 var ss_mashupAttr_graphicTitle${ss_mashupItemId} = "";
+var ss_mashupAttr_listTitle${ss_mashupItemId} = "";
 var ss_mashupAttr_customJsp${ss_mashupItemId} = "";
 var ss_mashupAttr_urlTitle${ss_mashupItemId} = "";
 var ss_mashupAttr_urlHref${ss_mashupItemId} = "";
@@ -117,6 +122,7 @@ function ss_mashupClearAttrs${ss_mashupItemId}() {
 	ss_mashupAttr_columnWidths${ss_mashupItemId} = "";
 	ss_mashupAttr_graphic${ss_mashupItemId} = "";
 	ss_mashupAttr_graphicTitle${ss_mashupItemId} = "";
+	ss_mashupAttr_listTitle${ss_mashupItemId} = "";
 	ss_mashupAttr_customJsp${ss_mashupItemId} = "";
 	ss_mashupAttr_urlTitle${ss_mashupItemId} = "";
 	ss_mashupAttr_urlHref${ss_mashupItemId} = "";
@@ -147,6 +153,9 @@ function ss_mashupBuildAttrs${ss_mashupItemId}() {
 	if (ss_mashupAttr_utilityElement${ss_mashupItemId} != "") {
 		attr += ",element=" + ss_mashupAttr_utilityElement${ss_mashupItemId}
 	}
+	if (ss_mashupAttr_listTitle${ss_mashupItemId} != "") {
+		attr += ",title=" + ss_mashupAttr_listTitle${ss_mashupItemId}
+	}
 	if (ss_mashupAttr_customJsp${ss_mashupItemId} != "") {
 		attr += ",customJsp=" + ss_mashupAttr_customJsp${ss_mashupItemId}
 	}
@@ -157,13 +166,13 @@ function ss_mashupBuildAttrs${ss_mashupItemId}() {
 		attr += ",href=" + ss_mashupAttr_urlHref${ss_mashupItemId}
 	}
 	
-	alert(attr)
+	//alert(attr)
 	return attr;
 }
 function ss_mashupSubmit${ss_mashupItemId}() {
 	var formObj = self.document.forms['${ss_form_form_formName}'];
 	formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value += ss_mashupBuildAttrs${ss_mashupItemId}();
-	alert(formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value)
+	//alert(formObj['${ss_mashupPropertyName}__${ss_mashupItemId}'].value)
 }
 
 </script>
@@ -180,6 +189,11 @@ function ss_mashupSubmit${ss_mashupItemId}() {
 		<a href="javascript: ;" 
 		  onClick="ss_mashupShowAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}(this, 'Table');return false;"
 		><ssf:nlt tag="mashup.addTable"/></a>
+		<br/>
+		
+		<a href="javascript: ;" 
+		  onClick="ss_mashupShowAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}(this, 'List');return false;"
+		><ssf:nlt tag="mashup.addList"/></a>
 		<br/>
 		
 		<a href="javascript: ;" 
@@ -338,6 +352,35 @@ function ss_mashupSubmit${ss_mashupItemId}() {
 		</div>
   </div>
 
+  <div id="ss_mashupAddListDiv_${ss_mashupItemId}_${renderResponse.namespace}"
+	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:401;
+	  	padding:10px;" 
+  >
+  		<div style="padding-bottom:16px;"><ssf:nlt tag="mashup.addList"/></div>
+  		<div>
+          <label for="${ss_mashupPropertyName}__listTitle">
+          	<span class="ss_labelAbove"><ssf:nlt tag="mashup.listTitle"/></span>
+          </label>
+          <input type="text" name="${ss_mashupPropertyName}__listTitle" size="40"
+          	id="${ss_mashupPropertyName}__listTitle"
+            onChange="ss_mashupAttr_listTitle${ss_mashupItemId} = this.value;"/> 
+          <br/>
+          <input type="checkbox" name="${ss_mashupPropertyName}__showBorder"
+          	id="${ss_mashupPropertyName}__showBorder_2"
+            onChange="ss_mashupAttr_showBorder${ss_mashupItemId} = this.value;"/> 
+          <label for="${ss_mashupPropertyName}__showBorder_2">
+          	<span class="ss_labelRight"><ssf:nlt tag="mashup.showBorder"/></span>
+          </label>
+          <br/>
+          <br/>
+		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
+		    class="ss_linkButton ss_fineprint"
+			onClick="ss_mashup_addList${ss_mashupItemId}_${renderResponse.namespace}();ss_mashupSubmit${ss_mashupItemId}();return true;" />
+		  <input type="button" value="<ssf:nlt tag="button.cancel"/>" class="ss_linkButton ss_fineprint" 
+		    onClick="ss_mashupHideAddTypeDiv${ss_mashupItemId}_${renderResponse.namespace}();return false"/>
+		</div>
+  </div>
+
   <div id="ss_mashupAddGraphicDiv_${ss_mashupItemId}_${renderResponse.namespace}"
 	  style="display:none; position:absolute; border:1px solid black; background-color:#fff; z-index:401;
 	  	padding:10px;" 
@@ -345,9 +388,9 @@ function ss_mashupSubmit${ss_mashupItemId}() {
   		<div style="padding-bottom:16px;"><ssf:nlt tag="mashup.addGraphic"/></div>
   		<div>
           <input type="checkbox" name="${ss_mashupPropertyName}__showBorder"
-          	id="${ss_mashupPropertyName}__showBorder_2"
+          	id="${ss_mashupPropertyName}__showBorder_3"
             onChange="ss_mashupAttr_showBorder${ss_mashupItemId} = this.value;"/> 
-          <label for="${ss_mashupPropertyName}__showBorder_2">
+          <label for="${ss_mashupPropertyName}__showBorder_3">
           	<span class="ss_labelRight"><ssf:nlt tag="mashup.showBorder"/></span>
           </label>
           <br/>

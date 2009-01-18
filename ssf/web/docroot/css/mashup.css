@@ -12,6 +12,29 @@ div.ss_mashup_form_element_header {
   padding:6px;
   }
   
+div.ss_mashup_list_header {
+  border-top:1px solid #aeaeae; 
+  border-right:1px solid #aeaeae; 
+  border-left:1px solid #aeaeae; 
+  background-color:#cccccc; 
+  padding:6px 6px 0px 6px;
+  }
+
+div.ss_mashup_list {
+  border:1px solid #aeaeae; 
+  padding:0px 6px 6px 6px;
+  }
+
+div.ss_mashup_list ul {
+  padding:0px 0px 0px 16px;
+  }
+div.ss_mashup_list ul li {
+  list-style-type: square;
+  list-style-image: none;
+  list-style-position: outside;
+  }
+  
+  
 div.ss_mashup_folder_header {
   border:1px solid #aeaeae; 
   background-color:#cccccc; 

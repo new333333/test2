@@ -212,6 +212,10 @@ public interface ObjectKeys {
     public static final String MASHUP_TYPE_TABLE_END = "tableEnd";
     public static final String MASHUP_TYPE_TABLE_END_DELETE = "tableEnd_delete";
     public static final String MASHUP_TYPE_TABLE_COL = "tableCol";
+    public static final String MASHUP_TYPE_LIST = "list";
+    public static final String MASHUP_TYPE_LIST_START = "listStart";
+    public static final String MASHUP_TYPE_LIST_END = "listEnd";
+    public static final String MASHUP_TYPE_LIST_END_DELETE = "listEnd_delete";
     
     public static final String RELEVANCE_DASHBOARD_PROFILE = "profile";
     public static final String RELEVANCE_DASHBOARD_TRACKED_ITEMS = "trackedItems";
