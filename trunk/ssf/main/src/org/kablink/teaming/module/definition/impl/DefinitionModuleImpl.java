@@ -2088,6 +2088,22 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 											value="";
 										}
 										nextValue = "";
+									} else if (type.equals(ObjectKeys.MASHUP_TYPE_LIST)) {
+										nextValue = ObjectKeys.MASHUP_TYPE_LIST_START + attrs + ";";
+										nextValue += ObjectKeys.MASHUP_TYPE_LIST_END;
+									} else if (type.equals(ObjectKeys.MASHUP_TYPE_LIST_END_DELETE)) {
+										//This is a request to delete a list
+										// Delete all the way back to the "listStart"
+										// Only delete empty lists
+										int j = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_LIST_START + ",");
+										int j2 = value.lastIndexOf(ObjectKeys.MASHUP_TYPE_LIST_START + ";");
+										if (j2 > j) j = j2;
+										if (j >= 0) {
+											value = value.substring(0, j);
+										} else {
+											value="";
+										}
+										nextValue = "";
 									}
 									value = value + nextValue;
 								}

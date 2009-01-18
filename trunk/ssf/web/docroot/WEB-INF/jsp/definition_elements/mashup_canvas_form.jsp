@@ -42,6 +42,9 @@
 	request.setAttribute("ss_mashupTableNumber", ss_mashupTableNumber);
 	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
 	request.setAttribute("ss_mashupTableItemCount2", ss_mashupTableItemCount2);
+
+	Long ss_mashupListDepth = Long.valueOf(0);
+	request.setAttribute("ss_mashupListDepth", ss_mashupListDepth);
 %>
 <c:set var="ss_mashupPropertyName" value="${property_name}" scope="request"/>
 <c:if test="${ssConfigJspStyle == 'form'}">

@@ -36,7 +36,13 @@
 	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
 	ss_mashupTableItemCount.put(ss_mashupTableNumber, "folder");  
 	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
+
+	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
 %>
+<% if (ss_mashupListDepth > 0) { %>
+<li>
+<% } %>
+
 <c:if test="${ssConfigJspStyle == 'form'}">
 	<script type="text/javascript">
 	//Routine called when "Delete entry" is clicked
@@ -134,3 +140,6 @@
     </c:if>
   </c:if>
 </div>
+<% if (ss_mashupListDepth > 0) { %>
+</li>
+<% } %>

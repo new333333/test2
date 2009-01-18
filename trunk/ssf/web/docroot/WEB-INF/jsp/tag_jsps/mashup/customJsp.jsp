@@ -36,7 +36,13 @@
 	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
 	ss_mashupTableItemCount.put(ss_mashupTableNumber, "customJsp");  
 	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
+
+	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
 %>
+<% if (ss_mashupListDepth > 0) { %>
+<li>
+<% } %>
+
 <c:if test="${ssConfigJspStyle == 'form'}">
 	<script type="text/javascript">
 	//Routine called when "Delete customJsp" is clicked
@@ -57,4 +63,7 @@
 	 </div>
    </div>
 </c:if>
+<% if (ss_mashupListDepth > 0) { %>
+</li>
+<% } %>
 

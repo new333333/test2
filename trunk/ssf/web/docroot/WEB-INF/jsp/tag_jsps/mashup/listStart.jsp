@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //table start %>
+<% //list start %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%
 	Long ss_mashupTableDepth = (Long) request.getAttribute("ss_mashupTableDepth");
@@ -46,14 +46,26 @@
 	request.setAttribute("ss_mashupTableNumber", ss_mashupTableNumber);
 
 	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
+	ss_mashupListDepth = ss_mashupListDepth + 1;
+	request.setAttribute("ss_mashupListDepth", ss_mashupListDepth);
 %>
-<% if (ss_mashupListDepth > 0) { %>
+<% if (ss_mashupListDepth > 1) { %>
 <li>
 <% } %>
 
-<c:set var="ss_mashupColStarted" value="false" scope="request"/>
-<table class="ss_mashup"
-  <c:if test="${!empty mashup_attributes['showBorder'] || ssConfigJspStyle == 'form'}">border="1"</c:if>
-  width="100%">
-<tr>
-<c:set var="ss_mashupColStarted" value="false" scope="request"/>
+  <div style="padding:10px;" width="100%">
+	<c:if test="${ssConfigJspStyle == 'form' || !empty mashup_attributes['title']}">
+	  <div class="ss_mashup_list_header">
+		<c:if test="${ssConfigJspStyle == 'form'}">
+		  <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.list"/>: </span>
+		</c:if>
+		<c:set var="spanClass" value="" />
+		<c:if test="${ssConfigJspStyle != 'form'}">
+		  <c:set var="spanClass" value="ss_largeprint ss_bold" />
+		</c:if>
+		<span class="${spanClass}">${mashup_attributes['title']}</span>
+	  </div>
+	</c:if>
+  
+	<div class="ss_mashup_list">
+	<ul>

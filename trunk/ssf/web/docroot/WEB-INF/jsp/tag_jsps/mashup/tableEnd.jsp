@@ -39,6 +39,8 @@
 	String mashupTableValue = "";
 	mashupTableValue = (String) ss_mashupTableItemCount.get(mashupTableNumber);
 	if (mashupTableValue == null) mashupTableValue = "";
+
+	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
 %>
 <c:if test="${ssConfigJspStyle == 'form'}">
 	<script type="text/javascript">
@@ -69,3 +71,6 @@
 	ss_mashupTableDepth = ss_mashupTableDepth - 1;
 	request.setAttribute("ss_mashupTableDepth", ss_mashupTableDepth);
 %>
+<% if (ss_mashupListDepth > 0) { %>
+</li>
+<% } %>
