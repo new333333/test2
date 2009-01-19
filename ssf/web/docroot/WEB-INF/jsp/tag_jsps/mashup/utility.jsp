@@ -69,7 +69,7 @@
 	}
 	</script>
 
-   <div style="padding:10px;" width="100%">
+   <div class="ss_mashup_element">
 	 <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
 	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.utility"/>: </span>
 		  <c:if test="${mashup_attributes['element'] == 'gettingStarted'}">

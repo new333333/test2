@@ -52,7 +52,8 @@
 	}
 	</script>
 
-   <div style="padding:10px;" width="100%">
+   <div class="ss_mashup_element">
+    <div class="ss_mashup_round_top"><div></div></div>
 	 <div class="ss_mashup_form_element_header">
 	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.customJsp"/>: </span>
 	    <span>${mashup_attributes['customJsp']}</span>
@@ -61,6 +62,7 @@
 	      class="ss_linkButton ss_fineprint"
 	      onClick="ss_mashup_deleteCustomJsp${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
 	 </div>
+    <div class="ss_mashup_round_bottom"><div></div></div>
    </div>
 </c:if>
 <% if (ss_mashupListDepth > 0) { %>

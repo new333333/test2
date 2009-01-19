@@ -88,7 +88,10 @@
       <br/>
     </div>
 </c:if>
-<div <c:if test="${ssConfigJspStyle == 'form'}"> style="border: 1px silver solid; padding: 30px;" </c:if> >
+<div 
+  <c:if test="${ssConfigJspStyle == 'form'}"> class="ss_mashup_canvas_form" </c:if>
+  <c:if test="${ssConfigJspStyle != 'form'}"> class="ss_mashup_canvas_view" </c:if>
+>
   <c:if test="${ssConfigJspStyle == 'form'}">
     <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/add.jsp" />
     <c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
