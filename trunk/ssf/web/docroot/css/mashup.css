@@ -4,6 +4,7 @@
 }
 
 table.ss_mashup {
+  padding: 0px;
 }
 
 .ss_mashup_canvas_view {
@@ -59,11 +60,33 @@ div.ss_mashup_list_content ul li {
   }
   
   
-div.ss_mashup_folder_header {
+div.ss_mashup_folder_header_form {
   border:1px solid #aeaeae; 
   background-color:#cccccc; 
   padding:6px;
   }
+div.ss_mashup_folder_header_form span {
+  font-size: 12px;
+  font-weight: bold;
+}
+div.ss_mashup_folder_header_form a span {
+  font-size: 12px;
+  font-weight: normal;
+}
+  
+div.ss_mashup_folder_header_view {
+  border:1px solid #aeaeae; 
+  background-color:#cccccc; 
+  padding:6px;
+  }
+div.ss_mashup_folder_header_view span {
+  font-size: 16px;
+  font-weight: bold;
+}
+div.ss_mashup_folder_header_view a span {
+  font-size: 16px;
+  font-weight: bold;
+}
   
 div.ss_mashup_folder_description {
   border:1px solid #cecece;
@@ -76,7 +99,7 @@ div.ss_mashup_folder_list_closed {
   }
 
 div.ss_mashup_folder_list_open {
-  padding: 0px 6px;
+  padding: 0px;
   }
 div.ss_mashup_folder_list_open_title {
   border:1px solid #cecece; 

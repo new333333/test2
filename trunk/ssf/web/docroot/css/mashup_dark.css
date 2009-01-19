@@ -74,12 +74,34 @@ div.ss_mashup_list_content ul li {
   }
   
   
-div.ss_mashup_folder_header {
-  background: #FFFFFF;
+div.ss_mashup_folder_header_form {
   border-bottom:1px solid #cecece; 
+  background-color:#FFFFFF; 
   padding:6px;
   }
+div.ss_mashup_folder_header_form span {
+  font-size: 12px;
+  font-weight: bold;
+}
+div.ss_mashup_folder_header_form a span {
+  font-size: 12px;
+  font-weight: normal;
+}
   
+div.ss_mashup_folder_header_view {
+  border-bottom:1px solid #cecece; 
+  background-color:#FFFFFF; 
+  padding:6px;
+  }
+div.ss_mashup_folder_header_view span {
+  font-size: 16px;
+  font-weight: bold;
+}
+div.ss_mashup_folder_header_view a span {
+  font-size: 16px;
+  font-weight: bold;
+}
+    
 div.ss_mashup_folder_description {
   background: #FFFFFF;
   border-bottom:1px solid #cecece;
