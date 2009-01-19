@@ -4,6 +4,7 @@
 }
 
 table.ss_mashup {
+  padding: 0px;
 }
 
 .ss_mashup_canvas_view {
@@ -39,7 +40,7 @@ table.ss_mashup {
   }
 
 div.ss_mashup_element {
-  padding:10px;
+  padding:6px;
 }
 
 div.ss_mashup_element_content {
