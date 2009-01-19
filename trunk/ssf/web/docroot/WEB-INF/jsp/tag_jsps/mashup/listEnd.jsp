@@ -57,8 +57,9 @@
 	</script>
 </c:if>
 
-</ul>
-</div>
+  </ul>
+  </div>
+  <div class="ss_mashup_round_bottom"><div></div></div>
 </div>
 
 <c:if test="${ssConfigJspStyle == 'form'}">

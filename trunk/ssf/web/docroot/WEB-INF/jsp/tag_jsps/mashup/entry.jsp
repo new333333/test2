@@ -54,7 +54,8 @@
 </c:if>
 <c:set var="mashupEntry" value="${ss_mashupEntries[mashup_attributes['entryId']]}"/>
 <c:if test="${!empty mashupEntry}">
-  <div style="padding:10px;" width="100%">
+  <div class="ss_mashup_element">
+  <div class="ss_mashup_round_top"><div></div></div>
 	<c:if test="${ssConfigJspStyle == 'form' || !empty mashup_attributes['showTitle']}">
 	  <div class="ss_mashup_entry_header">
 		<c:if test="${ssConfigJspStyle == 'form'}">
@@ -81,6 +82,7 @@
 	    <ssf:markup entity="${mashupEntry}">${mashupEntry.description.text}</ssf:markup>
 	  </div>
 	</c:if>
+  <div class="ss_mashup_round_bottom"><div></div></div>
 	<c:if test="${ssConfigJspStyle == 'form'}">
 	  <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
 	    class="ss_linkButton ss_fineprint"
@@ -91,7 +93,7 @@
 
 <c:if test="${empty mashupEntry}">
   <c:if test="${ssConfigJspStyle == 'form'}">
-   <div style="padding:10px;" width="100%">
+   <div class="ss_mashup_element">
 	<div class="ss_mashup_entry_header">
 	  <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.entry"/></span>
 	    <br/>

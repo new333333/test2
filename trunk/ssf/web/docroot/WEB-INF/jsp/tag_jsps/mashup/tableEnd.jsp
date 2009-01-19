@@ -60,6 +60,7 @@
 </td>
 </tr>
 </table>
+</div>
 <c:if test="${ssConfigJspStyle == 'form'}">
   <div style="padding-bottom:10px;">
   <input type="submit" name="applyBtn" value="<ssf:nlt tag="mashup.deleteTable"/>" 

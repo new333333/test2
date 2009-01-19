@@ -44,7 +44,9 @@
 <% } %>
 
 <c:if test="${ssConfigJspStyle != 'form'}">
-<div>
+<div class="ss_mashup_element">
+ <div class="ss_mashup_round_top"><div></div></div>
+ <div class="ss_mashup_graphic_content">
   <c:if test="${!empty mashup_attributes['graphic']}">
     <img src="<ssf:url 
 		    webPath="viewFile"
@@ -53,6 +55,8 @@
 	    	<ssf:param name="fileId" value="${mashup_attributes['graphic']}"/>
 	    	</ssf:url>" alt="${mashup_attributes['title']}">
   </c:if>
+ </div>
+ <div class="ss_mashup_round_bottom"><div></div></div>
 </div>
 </c:if>
 
@@ -65,8 +69,9 @@
 	}
 	</script>
 
-   <div style="padding:10px;" width="100%">
-	 <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
+   <div class="ss_mashup_element">
+    <div class="ss_mashup_round_top"><div></div></div>
+	 <div class="ss_mashup_graphic_header">
 	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.graphic"/>: </span>
 	    <span>${mashup_attributes['title']}</span>
 	    <br/>
@@ -74,6 +79,7 @@
 	      class="ss_linkButton ss_fineprint"
 	      onClick="ss_mashup_deleteGraphic${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
 	 </div>
+    <div class="ss_mashup_round_bottom"><div></div></div>
    </div>
 </c:if>
 <% if (ss_mashupListDepth > 0) { %>

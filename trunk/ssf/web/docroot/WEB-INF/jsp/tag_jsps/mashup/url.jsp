@@ -44,7 +44,7 @@
 <% } %>
 
 <c:if test="${ssConfigJspStyle != 'form'}">
-<div>
+<div class="ss_mashup_url_content">
   <c:if test="${!empty mashup_attributes['title']}">
     <a href="${mashup_attributes['href']}">${mashup_attributes['title']}</a>
   </c:if>
@@ -60,8 +60,8 @@
 	}
 	</script>
 
-   <div style="padding:10px;" width="100%">
-	 <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
+   <div class="ss_mashup_element">
+     <div class="ss_mashup_round_top"><div></div></div>
 	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.url"/>: </span>
 	    <span>${mashup_attributes['title']}</span>
 	    <span class="ss_italic ss_smallprint">(${mashup_attributes['href']})</span>

@@ -53,7 +53,8 @@
 <li>
 <% } %>
 
-  <div style="padding:10px;" width="100%">
+  <div class="ss_mashup_element">
+    <div class="ss_mashup_round_top"><div></div></div>
 	<c:if test="${ssConfigJspStyle == 'form' || !empty mashup_attributes['title']}">
 	  <div class="ss_mashup_list_header">
 		<c:if test="${ssConfigJspStyle == 'form'}">
@@ -67,5 +68,5 @@
 	  </div>
 	</c:if>
   
-	<div class="ss_mashup_list">
+	<div class="ss_mashup_list_content">
 	<ul>

@@ -53,7 +53,8 @@
 	</script>
 </c:if>
 <c:set var="mashupBinder" value="${ss_mashupBinders[mashup_attributes['folderId']]}"/>
-<div style="padding:10px;" width="100%">
+<div class="ss_mashup_element">
+  <div class="ss_mashup_round_top"><div></div></div>
   <c:if test="${!empty mashupBinder}">
 	<c:if test="${ssConfigJspStyle == 'form' || !empty mashup_attributes['showTitle']}">
 	  <div class="ss_mashup_folder_header">
@@ -97,7 +98,7 @@
 	<c:if test="${ssConfigJspStyle != 'form' && !empty mashup_attributes['showEntriesOpened']}">
 	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashup_attributes['folderId']]}" varStatus="status">
 	    <c:if test="${empty mashup_attributes['entriesToShow'] || status.count <= mashup_attributes['entriesToShow']}">
-	      <div style="padding:10px 0px;">
+	      <div class="ss_mashup_folder_list_open">
 			<div class="ss_mashup_folder_list_open_title">
 			  <a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
 			      action="view_folder_entry" 
@@ -139,6 +140,7 @@
 	  </div>
     </c:if>
   </c:if>
+  <div class="ss_mashup_round_bottom"><div></div></div>
 </div>
 <% if (ss_mashupListDepth > 0) { %>
 </li>
