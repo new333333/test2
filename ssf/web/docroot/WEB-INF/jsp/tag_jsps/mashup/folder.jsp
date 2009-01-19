@@ -57,13 +57,13 @@
   <div class="ss_mashup_round_top"><div></div></div>
   <c:if test="${!empty mashupBinder}">
 	<c:if test="${ssConfigJspStyle == 'form' || !empty mashup_attributes['showTitle']}">
-	  <div class="ss_mashup_folder_header">
+	  <c:set var="divClass" value="ss_mashup_folder_header_form" />
+	  <c:if test="${ssConfigJspStyle != 'form'}">
+		<c:set var="divClass" value="ss_mashup_folder_header_view" />
+	  </c:if>
+	  <div class="${divClass}">
 		<c:if test="${ssConfigJspStyle == 'form'}">
-		  <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.folder"/>: </span>
-		</c:if>
-		<c:set var="spanClass" value="" />
-		<c:if test="${ssConfigJspStyle != 'form'}">
-		  <c:set var="spanClass" value="ss_largeprint ss_bold" />
+		  <span><ssf:nlt tag="mashup.type.folder"/>: </span>
 		</c:if>
 		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
 		  action="view_folder_listing" 

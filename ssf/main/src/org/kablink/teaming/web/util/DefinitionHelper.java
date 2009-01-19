@@ -779,6 +779,13 @@ public class DefinitionHelper {
     		if (attr != null) model.put(WebKeys.MASHUP_HIDE_TOOLBAR, attr.getValue());
     		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_FOOTER);
     		if (attr != null) model.put(WebKeys.MASHUP_HIDE_FOOTER, attr.getValue());
+
+        	attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_STYLE);
+    		if (attr == null || attr.equals("")) {
+    			model.put(WebKeys.MASHUP_STYLE, "mashup_dark.css");
+    		} else {
+    			model.put(WebKeys.MASHUP_STYLE, attr.getValue());
+    		}
     	}
     	if (entity instanceof Binder && 
     			bs.getBinderModule().testAccess((Binder)entity, BinderOperation.manageConfiguration)) {
@@ -792,7 +799,12 @@ public class DefinitionHelper {
     	model.put(WebKeys.MASHUP_BINDERS, mashupBinders);
     	model.put(WebKeys.MASHUP_BINDER_ENTRIES, mashupBinderEntries);
     	model.put(WebKeys.MASHUP_ENTRIES, mashupEntries);
-    	model.put(WebKeys.MASHUP_CSS, "css/mashup_dark.css");
+    	String style = (String) model.get(WebKeys.MASHUP_STYLE);
+    	if (style.equals("")) {
+    		model.put(WebKeys.MASHUP_CSS, "css/mashup_dark.css");
+    	} else {
+    		model.put(WebKeys.MASHUP_CSS, "css/" + style);
+    	}
 	}
 
 	public static Document getDefinitionTree(AllModulesInjected bs, Long binderId) {

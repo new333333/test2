@@ -86,6 +86,20 @@
       	<span class="ss_labelRight"><ssf:nlt tag="mashup.showBranding"/></span>
       </label>
       <br/>
+      <span class="ss_labelAbove"><ssf:nlt tag="mashup.style"/></span>
+      <input type="radio" name="${ss_mashupPropertyName}__style" value="mashup.css"
+      	id="${ss_mashupPropertyName}__style"
+        <c:if test="${ss_mashupStyle == 'mashup.css'}">checked</c:if> >
+      <label for="${ss_mashupPropertyName}__style">
+      	<span class="ss_labelRight"><ssf:nlt tag="mashup.style_light"/></span>
+      </label>
+      <input type="radio" name="${ss_mashupPropertyName}__style" value="mashup_dark.css"
+      	id="${ss_mashupPropertyName}__style_dark"
+        <c:if test="${ss_mashupStyle == 'mashup_dark.css'}">checked</c:if> >
+      <label for="${ss_mashupPropertyName}__style_dark">
+      	<span class="ss_labelRight"><ssf:nlt tag="mashup.style"/></span>
+      </label>
+      <br/>
     </div>
 </c:if>
 <div 

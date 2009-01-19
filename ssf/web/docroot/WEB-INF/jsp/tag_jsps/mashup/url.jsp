@@ -60,16 +60,15 @@
 	}
 	</script>
 
-   <div class="ss_mashup_element">
-     <div class="ss_mashup_round_top"><div></div></div>
-	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.url"/>: </span>
-	    <span>${mashup_attributes['title']}</span>
-	    <span class="ss_italic ss_smallprint">(${mashup_attributes['href']})</span>
-	    <br/>
-	    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
-	      class="ss_linkButton ss_fineprint"
-	      onClick="ss_mashup_deleteUrl${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
-	 </div>
+  <div class="ss_mashup_element">
+    <div class="ss_mashup_round_top"><div></div></div>
+    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.url"/>: </span>
+    <span>${mashup_attributes['title']}</span>
+    <span class="ss_italic ss_smallprint">(${mashup_attributes['href']})</span>
+    <br/>
+    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
+      class="ss_linkButton ss_fineprint"
+      onClick="ss_mashup_deleteUrl${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
    </div>
 </c:if>
 <% if (ss_mashupListDepth > 0) { %>
