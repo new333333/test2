@@ -120,9 +120,11 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	</ssf:ifnotaccessible>
 
 <ssf:ifaccessible>
+  <c:if test="${!ss_mashupHideSidebar}">
   <div>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
   </div>
+  </c:if>
 </ssf:ifaccessible>
 </div>
 <script type="text/javascript">
