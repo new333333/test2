@@ -247,9 +247,11 @@ ss_createOnLayoutChangeObj("ss_setCurrentIframeHeight", ss_setCurrentIframeHeigh
   </ssf:ifnotaccessible>
 
 <ssf:ifaccessible>
+  <c:if test="${!ss_mashupHideSidebar}">
   <div>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
   </div>
+  </c:if>
 </ssf:ifaccessible>
 
 </div>

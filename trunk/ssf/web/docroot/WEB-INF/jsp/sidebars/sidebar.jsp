@@ -34,7 +34,8 @@
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <% // BEGIN SIDEBAR LAYOUT  %>
-<div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
+<c:if test="${!ss_mashupHideSidebar}">
+  <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
 	<div id="ss_sideNav_wrap"> 
 
 		<% // Status %>
@@ -107,4 +108,5 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		<jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_sidebar_bottom.jsp" />
 
 	</div> <% // end of sidebar format %>
-</div> <% // end of ss_sidebarDiv %>
+  </div> <% // end of ss_sidebarDiv %>
+</c:if>

@@ -1210,6 +1210,7 @@ public class WebKeys {
     public static final String VIEW_FORUM_EDIT="forum/edit";
     public static final String VIEW_ENTERPRISE_ONLY="enterpriseOnly";
     public static final String VIEW_ENTRY="entry/view_entry";
+    public static final String VIEW_ERROR_RETURN="forum/error_return";
     public static final String VIEW_FORUM="forum/view";
     public static final String VIEW_FORUM_IMPORT = "forum/forum_import";
     public static final String VIEW_GALLERY="gallery/view";

@@ -937,9 +937,15 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     //this is for wiki links where normalize title is used
     public Set<FolderEntry> getFolderEntryByNormalizedTitle(Long folderId, String title)
 	throws AccessControlException {
-    	Folder folder = getFolder(folderId);
-    	List<FolderEntry> results = getFolderDao().loadEntries(folder, new FilterControls(ObjectKeys.FIELD_ENTITY_NORMALIZED_TITLE, title));
    		Set views = new HashSet();
+   		Folder folder = null;
+   		try {
+    		folder = getFolder(folderId);
+    	} catch(NoFolderByTheIdException e) {
+    		return views;
+    	}
+    	if (folder == null) return views;
+    	List<FolderEntry> results = getFolderDao().loadEntries(folder, new FilterControls(ObjectKeys.FIELD_ENTITY_NORMALIZED_TITLE, title));
    		for (FolderEntry entry: results) {
    			try {
    				AccessUtils.readCheck(entry);

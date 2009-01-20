@@ -41,12 +41,14 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -89,7 +91,10 @@ public class ViewPermalinkController  extends SAbstractController {
 			response.setRenderParameters(request.getParameterMap());
 			response.setRenderParameter("accessException", "true");
 			return;
-		} 
+		} catch (NoBinderByTheIdException nb) {
+			response.setRenderParameters(request.getParameterMap());
+			response.setRenderParameter("noBinderByIdException", "true");
+		}
 	}
 	protected String processRequest(ActionRequest request) {
 		//binderId is not longer required on all entries
@@ -234,6 +239,10 @@ public class ViewPermalinkController  extends SAbstractController {
 		if (Validator.isNotNull(fileId)) url.setParameter(WebKeys.URL_FILE_ID, fileId);
 		if (Validator.isNotNull(fileName)) url.setParameter(WebKeys.URL_FILE_NAME, fileName);
 		model.put(WebKeys.URL, url.toString());
+		if (!"true".equals(PortletRequestUtils.getStringParameter(request, "noBinderByIdException"))) {
+			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {binderId}));
+			return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+		}
 		if (!"true".equals(PortletRequestUtils.getStringParameter(request, "accessException"))) {
 			return new ModelAndView(WebKeys.VIEW_LOGIN_RETURN, model);
 		}
