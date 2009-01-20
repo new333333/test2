@@ -55,6 +55,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.definition.DefinitionModule.DefinitionOperation;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
@@ -404,9 +405,10 @@ public class ManageDefinitionsController extends  SAbstractController {
 		model.put("ss_tree_select_type", "0");
 			
 			
+		boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String view = "tag_jsps/tree/get_tree_div";
-		if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle())) {
+		if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle()) && accessible_simple_ui) {
 			view = "tag_jsps/tree/get_tree_div_accessible";
 		} else {
 			response.setContentType("text/xml");

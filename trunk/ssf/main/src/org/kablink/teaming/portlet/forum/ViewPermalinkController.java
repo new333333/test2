@@ -49,6 +49,7 @@ import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -123,10 +124,11 @@ public class ViewPermalinkController  extends SAbstractController {
 				url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
 				url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
 			}
+			boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
 			User user = RequestContextHolder.getRequestContext().getUser();
 			String displayStyle = user.getDisplayStyle();
 			if (ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE.equals(displayStyle) || 
-					(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle))) {
+					(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) && accessible_simple_ui)) {
 				url.setParameter(WebKeys.URL_ACTION, "view_folder_entry");
 			} else {
 				url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");

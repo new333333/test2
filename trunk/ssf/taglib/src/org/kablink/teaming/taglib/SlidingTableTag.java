@@ -46,6 +46,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.servlet.DynamicServletRequest;
 import org.kablink.util.servlet.StringServletResponse;
 
@@ -82,6 +83,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 		HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 		User user = RequestContextHolder.getRequestContext().getUser();
 		displayStyle = user.getDisplayStyle();
+		boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
 		
 		if (_id == null || _id.equals("")) _id = "ss_sTable";
 		if (_parentId == null || _parentId.equals("")) _parentId = _id;
@@ -104,7 +106,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				pageContext.getOut().print(res.getString());
 				
 			} else if (_type == null || _type.equals("") || _type.equals("fixed") || 
-					(displayStyle != null && 
+					(displayStyle != null && accessible_simple_ui &&
 					displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE))) {
 				String jspStart = "/WEB-INF/jsp/tag_jsps/sliding_table/table_start.jsp";
 				String jspEnd = "/WEB-INF/jsp/tag_jsps/sliding_table/table_end.jsp";

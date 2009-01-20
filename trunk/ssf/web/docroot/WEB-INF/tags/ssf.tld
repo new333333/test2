@@ -686,12 +686,24 @@
 		<name>ifaccessible</name>
 		<tag-class>org.kablink.teaming.taglib.IfAccessibleTag</tag-class>
 		<body-content>JSP</body-content>
+		<attribute>
+			<name>simple_ui</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
 	</tag>
 	
 	<tag>
 		<name>ifnotaccessible</name>
 		<tag-class>org.kablink.teaming.taglib.IfNotAccessibleTag</tag-class>
 		<body-content>JSP</body-content>
+		<attribute>
+			<name>simple_ui</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
 	</tag>
 	
 	<tag>

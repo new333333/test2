@@ -67,12 +67,12 @@
       offsetY="-4" title="<ssf:nlt tag="helpSpot.accessibleMode"/>">
 	  </ssHelpSpot>
 	   <div class="ss_sub_sidebarMenu">
-		 <ssf:ifaccessible>
+		 <ssf:ifaccessible simple_ui="true">
 		  <a href="${ss_accessibleUrl}">
 		    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.disableAccessibleMode"/></span>
 		  </a>
 		 </ssf:ifaccessible>
-		 <ssf:ifnotaccessible>
+		 <ssf:ifnotaccessible simple_ui="true">
 		  <a href="${ss_accessibleUrl}"
 		  onclick='return (confirm("<ssf:nlt tag="accessible.confirm" quoteDoubleQuote="true"/>"));'>
 		    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.enableAccessibleMode"/></span>

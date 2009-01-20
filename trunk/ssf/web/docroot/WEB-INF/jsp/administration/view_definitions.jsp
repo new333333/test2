@@ -97,21 +97,11 @@ name="value" value="${ssBinder.title}"/></ssf:nlt></span>
 			<tr>
 				<td>
 					<div>
-						<ssf:ifnotaccessible>
-						  <ssf:tree treeName="${adminTreeName}" 
-						    treeDocument="${ssAdminDomTree}" 
-						    callbackUrl="${callbackUrl}"
-		 					showIdRoutine="${adminTreeName}_showId"
-						    rootOpen="true" />
-						</ssf:ifnotaccessible>
-						<ssf:ifaccessible>
-						<ssf:tree treeName="${adminTreeName}" 
-						  treeDocument="${ssAdminDomTree}" 
-						  flat="true"
-						  callbackUrl="${callbackUrl}"
-		 				  showIdRoutine="${adminTreeName}_showId"
-						  rootOpen="true" />
-						</ssf:ifaccessible>
+					  <ssf:tree treeName="${adminTreeName}" 
+					    treeDocument="${ssAdminDomTree}" 
+					    callbackUrl="${callbackUrl}"
+	 					showIdRoutine="${adminTreeName}_showId"
+					    rootOpen="true" />
 					</div>
 				</td>
 			</tr>

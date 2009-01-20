@@ -48,6 +48,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.GetterUtil;
@@ -99,6 +100,7 @@ public class DefinitionUtils {
 		Element viewItem = (Element)root.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
 		if (viewItem == null) return null;
 		
+		boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
 		String viewType = DefinitionUtils.getPropertyValue(viewItem, "type");
 		
 		//Check if accessible mode
@@ -106,7 +108,7 @@ public class DefinitionUtils {
 		String strUserDisplayStyle = user.getDisplayStyle();
 		if (strUserDisplayStyle == null) { strUserDisplayStyle = ""; }
 		
-		if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
+		if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle) && accessible_simple_ui) {
 			//In accessible mode, force the view type to accessible mode (but only for folders)
 			if (root.attributeValue("type").equals(String.valueOf(Definition.FOLDER_VIEW)))
 				viewType = Definition.VIEW_STYLE_ACCESSIBLE;

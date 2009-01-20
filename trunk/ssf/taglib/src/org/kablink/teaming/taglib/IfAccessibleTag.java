@@ -28,7 +28,6 @@
  */
 package org.kablink.teaming.taglib;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
@@ -36,28 +35,35 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
-
+import org.kablink.teaming.util.SPropsUtil;
 
 public class IfAccessibleTag extends TagSupport {
+	private Boolean simple_ui;
 
 	public int doStartTag() throws JspException {
+		if (this.simple_ui == null) this.simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		User user = null;
 		boolean isAccessible = false;
-		if (rc != null) user = rc.getUser();
+		if (rc != null)
+			user = rc.getUser();
 		if (user != null && user.getDisplayStyle() != null) {
-			if (user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+			if (user.getDisplayStyle().equals(
+					ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 				isAccessible = true;
 			}
 		}
-		if (isAccessible) {
+		if (this.simple_ui && isAccessible) {
 			// Indicates that the user is in accessible mode.
+			this.simple_ui = false;
 			return EVAL_BODY_INCLUDE;
-		}
-		else {
+		} else {
 			// Indicates that the user is not in accessible mode.
+			this.simple_ui = false;
 			return SKIP_BODY;
 		}
+	}
+	public void setSimple_ui(Boolean simple_ui) {
+	    this.simple_ui = simple_ui;
 	}
 }

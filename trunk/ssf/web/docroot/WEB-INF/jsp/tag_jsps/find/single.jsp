@@ -37,7 +37,7 @@
 <c:set var="prefix" value="${renderResponse.namespace}_${ssFindInstanceCode}_${ssFindInstanceCount}" />
 <c:set var="label" value="<%= label %>" />
 
-<ssf:ifaccessible>
+<ssf:ifaccessible simple_ui="true">
 	<label for="ss_combobox_autocomplete_${prefix}"><ssf:nlt tag="${accessibilityText}" />&nbsp;</label>
 </ssf:ifaccessible>
 
