@@ -51,7 +51,8 @@ div.ss_mashup_list_content {
   }
 
 div.ss_mashup_list_content ul {
-  padding:0px 0px 0px 16px;
+  padding:2px 0px 0px 16px;
+  margin:0px;
   }
 div.ss_mashup_list_content ul li {
   list-style-type: square;

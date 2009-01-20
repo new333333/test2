@@ -29,6 +29,19 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%  
+	Long ss_mashupTableNumber = (Long) request.getAttribute("ss_mashupTableNumber");
+	Long ss_mashupTableDepth = (Long) request.getAttribute("ss_mashupTableDepth");
+	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
+	ss_mashupTableItemCount.put(ss_mashupTableNumber, "utility");  
+	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
+
+	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
+%>
+<% if (ss_mashupListDepth > 0) { %>
+<li>
+<% } %>
+
 <div>
 <p>
   <a href="javascript:;" 
@@ -39,3 +52,6 @@
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 
 </div>
+<% if (ss_mashupListDepth > 0) { %>
+</li>
+<% } %>

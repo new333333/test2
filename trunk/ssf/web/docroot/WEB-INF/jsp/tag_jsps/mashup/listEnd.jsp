@@ -60,8 +60,6 @@
   </ul>
   </div>
   <div class="ss_mashup_round_bottom"><div></div></div>
-</div>
-
 <c:if test="${ssConfigJspStyle == 'form'}">
   <div style="padding-bottom:10px;">
   <input type="submit" name="applyBtn" value="<ssf:nlt tag="mashup.deleteList"/>" 
@@ -69,6 +67,8 @@
     onClick="return ss_mashup_deleteList${ss_mashupItemId}_${renderResponse.namespace}();"/>
   </div>
 </c:if>
+</div>
+
 <%
 	ss_mashupTableDepth = ss_mashupTableDepth - 1;
 	request.setAttribute("ss_mashupTableDepth", ss_mashupTableDepth);

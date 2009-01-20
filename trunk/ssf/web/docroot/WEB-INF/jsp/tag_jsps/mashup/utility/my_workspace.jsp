@@ -29,6 +29,19 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%  
+	Long ss_mashupTableNumber = (Long) request.getAttribute("ss_mashupTableNumber");
+	Long ss_mashupTableDepth = (Long) request.getAttribute("ss_mashupTableDepth");
+	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
+	ss_mashupTableItemCount.put(ss_mashupTableNumber, "utility");  
+	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
+
+	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
+%>
+<% if (ss_mashupListDepth > 0) { %>
+<li>
+<% } %>
+
 <div>
 	<ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="15" offsetX="0" 
       title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
@@ -41,3 +54,6 @@
   	&nbsp;-&nbsp;
   	<ssf:showUser user="${ssUser}"/>
 </div>
+<% if (ss_mashupListDepth > 0) { %>
+</li>
+<% } %>

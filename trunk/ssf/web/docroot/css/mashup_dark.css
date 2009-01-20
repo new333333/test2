@@ -5,6 +5,7 @@
 
 table.ss_mashup {
   padding: 0px;
+  background: #E3E3E3;
 }
 
 .ss_mashup_canvas_view {
@@ -65,7 +66,8 @@ div.ss_mashup_list_content {
   }
 
 div.ss_mashup_list_content ul {
-  padding:0px 0px 0px 16px;
+  padding:2px 0px 0px 16px;
+  margin:0px;
   }
 div.ss_mashup_list_content ul li {
   list-style-type: square;
