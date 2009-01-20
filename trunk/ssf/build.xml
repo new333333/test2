@@ -95,7 +95,12 @@
 		<ant dir="indexer-lucene" target="clean" />
 		<ant dir="as-module" target="clean" />
 
-		<ant dir="applets" target="clean" />
+		<if>
+			<equals arg1="${build.applets}" arg2="true" />
+			<then>				
+				<ant dir="applets" target="clean" />
+			</then>
+		</if>
 
 		<ant dir="main-minimum" target="clean" />
 		<ant dir="main" target="clean" />
@@ -131,7 +136,12 @@
 
 		<ant dir="main" target="compile-common" inheritall="false"/>
 
-		<ant dir="applets" target="compile" inheritall="false"/>
+		<if>
+			<equals arg1="${build.applets}" arg2="true" />
+			<then>				
+				<ant dir="applets" target="compile" inheritall="false"/>
+			</then>
+		</if>
 
 		<ant dir="main-minimum" target="compile" inheritall="false"/>
 		<ant dir="main" target="compile" inheritall="false"/>
@@ -160,7 +170,12 @@
 		<ant dir="indexer-lucene" target="jar" inheritall="false"/>
 		<ant dir="as-module" target="jar" inheritall="false"/>
 
-		<ant dir="applets" target="jar" inheritall="false"/>
+		<if>
+			<equals arg1="${build.applets}" arg2="true" />
+			<then>				
+				<ant dir="applets" target="jar" inheritall="false"/>
+			</then>
+		</if>
 
 		<ant dir="main" target="compile-common" inheritall="false"/>
 		<ant dir="main-minimum" target="jar" inheritall="false"/>
@@ -195,7 +210,12 @@
 		<ant dir="indexer-lucene" target="deploy" />
 		<ant dir="as-module" target="deploy" />
 
-		<ant dir="applets" target="deploy" />
+		<if>
+			<equals arg1="${build.applets}" arg2="true" />
+			<then>				
+				<ant dir="applets" target="deploy" />
+			</then>
+		</if>
 
 		<ant dir="main-minimum" target="deploy" />
 		<ant dir="main" target="deploy" />
@@ -229,7 +249,12 @@
 		<ant dir="indexer-lucene" target="java2html" />
 		<ant dir="as-module" target="java2html" />
 
-		<ant dir="applets" target="java2html" />
+		<if>
+			<equals arg1="${build.applets}" arg2="true" />
+			<then>				
+				<ant dir="applets" target="java2html" />
+			</then>
+		</if>
 
 		<ant dir="main-minimum" target="java2html" />
 		<ant dir="main" target="java2html" />
@@ -254,7 +279,12 @@
 		<ant dir="indexer-lucene" target="javadoc" />
 		<ant dir="as-module" target="javadoc" />
 		
-		<ant dir="applets" target="javadoc" />
+		<if>
+			<equals arg1="${build.applets}" arg2="true" />
+			<then>				
+				<ant dir="applets" target="javadoc" />
+			</then>
+		</if>
 
 		<ant dir="main-minimum" target="javadoc" />
 		<ant dir="main" target="javadoc" />
