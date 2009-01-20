@@ -667,6 +667,7 @@ public class BinderHelper {
 			displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
 		}
 		String viewListingJspName;
+		boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
 		if (displayDefinition != null && displayDefinition.equalsIgnoreCase(ObjectKeys.SEARCH_RESULTS_DISPLAY)) {
 			if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_IFRAME;
@@ -674,7 +675,7 @@ public class BinderHelper {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_NEWPAGE;
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_POPUP;
-			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && accessible_simple_ui) {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_ACCESSIBLE;
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 				/** Vertical mode has been removed
@@ -696,7 +697,7 @@ public class BinderHelper {
 			viewListingJspName = WebKeys.VIEW_LISTING_NEWPAGE;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 			viewListingJspName = WebKeys.VIEW_LISTING_POPUP;
-		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && accessible_simple_ui) {
 			viewListingJspName = WebKeys.VIEW_LISTING_ACCESSIBLE;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 			/** Vertical mode has been removed
@@ -2473,7 +2474,8 @@ public class BinderHelper {
 		PortletURL url;
 
         //Folder action menu
-		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+		boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
+		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) || !accessible_simple_ui) {
 			//Only show these options if not in accessible mode
 			folderActionsToolbar.addToolbarMenu("4_display_styles", NLT.get("toolbar.folder_actions"));
 			

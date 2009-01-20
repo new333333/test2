@@ -332,7 +332,6 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			        <div class="ss_search_title" align="right" style=""><ssf:nlt tag="navigation.search"/></div>
 			    </td>
 				<td>
-					<ssf:ifnotaccessible>
 						<div class="ss_searchtext">		  
 						<a 
 							href="<ssf:url windowState="maximized" actionUrl="true"><ssf:param 
@@ -343,20 +342,6 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 							><ssf:nlt tag="navigation.search.advanced"/>
 						</a>
 					</div>
-					</ssf:ifnotaccessible>
-				
-					<ssf:ifaccessible>
-						<div class="ss_searchtext">
-						
-							<a class="ss_advanced ss_fineprint" 
-								href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
-							  	name="binderId" value="${ssBinder.id}"/><ssf:param 
-							  	name="tabTitle" value="SEARCH FORM"/><ssf:param 
-							  	name="newTab" value="0"/></ssf:url>"
-								><ssf:nlt tag="navigation.search.advanced"/>
-							</a>
-						</div>
-					</ssf:ifaccessible>
 				</td>
 				<td>
 					&nbsp;
@@ -368,18 +353,13 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			  <tr>
 				<td colspan="3">
 					<div class="ss_nowrap">
-				
-					<ssf:ifnotaccessible>
-				
 					  <div class="ss_global_toolbar_search" id="ss_navbarSearchButton${renderResponse.namespace}" 
 						  		onMouseOver="this.style.cursor = 'pointer';">
-				
 						  <form class="ss_form" method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
 							  	name="ss_simpleSearchForm${renderResponse.namespace}" 
 							  	style="display:inline;"
 							  	action="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 							  	name="newTab" value="1"/></ssf:url>">
-
 							<!-- The help spot is positioned relative to the position of its parent. -->
 							<!-- That's why I put the <ssHelpSpot...> in a <span> -->
 							<label for="searchText">
@@ -391,9 +371,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 							</span>
 							</label>
 							<input name="searchText" id="searchText" class="ss_combobox_search" type="text" /> 
-										
 							<a href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" >
-								
 								<img title="<ssf:nlt tag="alt.search"/>"
 								<ssf:alt tag="alt.search"/> src="<html:rootPath/>images/pics/masthead/search.png" width="19" height="20" border="0" align="absmiddle" />
 							</a><!-- kablink: sarch_ka.png -->
@@ -410,39 +388,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 									 <ssf:alt tag="alt.showMenu"/>/>
 							</a>
 						  <div id="ss_navbarPopupPane${renderResponse.namespace}" class="ss_navbarPopupPane"></div>
-									
 						  </form>
 					  </div>
-				  </ssf:ifnotaccessible>
-						
-				  <ssf:ifaccessible>
-							
-					<div class="ss_global_toolbar_search"  id="div_ss_simpleSearchForm${renderResponse.namespace}" >
-						  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="0" 
-				                offsetX="0" 
-						    	title="<ssf:nlt tag="helpSpot.searchButton"/>">
-						  </ssHelpSpot>
-				     	
-				     	<form class="ss_form" method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
-						  		name="ss_simpleSearchForm${renderResponse.namespace}" 
-						  		style="display:inline;"
-						  		action="<ssf:url windowState="maximized" actionUrl="true"><ssf:param 
-						  		name="action" value="advanced_search"/><ssf:param 
-						  		name="newTab" value="1"/></ssf:url>">
-								
-								<label for="ss_searchSearchText${renderResponse.namespace}">&nbsp;</label>
-									
-								<input name="searchText" style="width: 100px;" type="text" id="ss_searchSearchText${renderResponse.namespace}" /> 
-								<a href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" >
-									<img src="<html:rootPath/>images/pics/masthead/search.png" width="19" height="20" border="0" 
-									style="vertical-align:middle;"
-									title="<ssf:nlt tag="alt.search"/>"<ssf:alt tag="alt.search"/> /></a>
-									<input type="hidden" name="searchBtn" value="searchBtn"/>
-									<input type="hidden" name="quickSearch" value="true"/>					
-									<input type="hidden" name="operation" value="ss_searchResults"/>
-						</form><!-- kablink: search_ka.png -->
-				     </div>    
-				  </ssf:ifaccessible>
 				  </div>
 				</td>
 			  </tr>

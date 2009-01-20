@@ -42,6 +42,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.servlet.DynamicServletRequest;
 import org.kablink.util.servlet.StringServletResponse;
 
@@ -80,12 +81,13 @@ public class MenuTag extends BodyTagSupport implements ParamAncestorTag {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
+			boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
 			RequestContext rc = RequestContextHolder.getRequestContext();
 			User user = null;
 			Boolean isAccessible = Boolean.FALSE;
 			if (rc != null) user = rc.getUser();
 			if (user != null) {
-				if (user.getDisplayStyle() != null && 
+				if (user.getDisplayStyle() != null && accessible_simple_ui &&
 						user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 					isAccessible = Boolean.TRUE;
 				}

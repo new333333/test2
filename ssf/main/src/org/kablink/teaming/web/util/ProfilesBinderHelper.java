@@ -341,7 +341,8 @@ public class ProfilesBinderHelper {
 				NLT.get("toolbar.whoHasAccess"), adapterUrl.toString(), qualifiers);
 		
 		//Folder action menu
-		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+		boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
+		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) || !accessible_simple_ui) {
 			//Folder action menu
 			//Build the standard toolbar
 			BinderHelper.buildFolderActionsToolbar(bs, request, response, folderActionsToolbar, binderId);

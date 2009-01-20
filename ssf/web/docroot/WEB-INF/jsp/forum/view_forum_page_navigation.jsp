@@ -169,14 +169,7 @@
 			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable" width="99%">
 				<tbody><tr>
 				<td class="ss_page_IE2" valign="middle">
-			
-				<ssf:ifnotaccessible>
-			    	<ssf:nlt tag="folder.GoToPage"/>
-			    </ssf:ifnotaccessible>
-			    
-			    <ssf:ifaccessible>
-			    	<span><label for="ssGoToPage${renderResponse.namespace}"><ssf:nlt tag="folder.GoToPage"/></label></span>
-			    </ssf:ifaccessible>
+			      <span><label for="ssGoToPage${renderResponse.namespace}"><ssf:nlt tag="folder.GoToPage"/></label></span>
 			    </td>
 			    <td valign="middle"  class="ss_paginationGo ss_page_IE">
 			    <form name="ss_goToPageForm_${renderResponse.namespace}" 

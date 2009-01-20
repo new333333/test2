@@ -78,6 +78,7 @@ import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.DefinitionHelper;
@@ -358,7 +359,8 @@ public class ViewEntryController extends  SAbstractController {
 			Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
 			DefinitionHelper.buildMashupBeans(this, fe.getParentBinder(), configDocument, model);
 
-			if (!displayType.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+			boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
+			if (!displayType.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) || !accessible_simple_ui) {
 				//Folder action menu
 				//Build the standard toolbar
 				Toolbar folderActionsToolbar = new Toolbar();

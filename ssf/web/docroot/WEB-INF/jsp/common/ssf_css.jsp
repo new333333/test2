@@ -136,7 +136,7 @@ body.ss_style_body {
 .ss_style a:hover {
   	color: ${ss_style_link_hover_color};
   	text-decoration: none;
-	<ssf:ifaccessible>
+	<ssf:ifaccessible simple_ui="true">
   		outline: dotted 1px gray;
 	</ssf:ifaccessible>
 	<ssf:ifnotaccessible>
@@ -3444,7 +3444,7 @@ a.ss_searchButton {
 
 a.ss_searchButton:hover img {
     background-position:  left -16px; 
-<ssf:ifaccessible>
+<ssf:ifaccessible simple_ui="true">
   outline: dotted 1px gray;
 </ssf:ifaccessible>  
 <ssf:ifnotaccessible>
@@ -3467,7 +3467,7 @@ a.ss_searchButton2 img, a.ss_searchButton:link img , a.ss_searchButton:focus img
 
 a.ss_searchButton2:hover img {
     background-position:  left -16px; 
-<ssf:ifaccessible>
+<ssf:ifaccessible simple_ui="true">
   outline: dotted 1px gray;
 </ssf:ifaccessible>  
 <ssf:ifnotaccessible>
@@ -3484,7 +3484,7 @@ a.ss_parentPointer:hover, a.ss_parentPointer:link, a.ss_parentPointer:hover, a.s
 	color: #333333;
 	text-decoration:underline;
 	margin:0px 0px 0px 0px;
-<ssf:ifaccessible>
+<ssf:ifaccessible simple_ui="true">
   outline: dotted 1px gray;
 </ssf:ifaccessible>  
 <ssf:ifnotaccessible>
@@ -3494,7 +3494,7 @@ a.ss_parentPointer:hover, a.ss_parentPointer:link, a.ss_parentPointer:hover, a.s
 a.ss_parentPointer:hover {
 	color: #0000ff;
 	text-decoration:underline;
-<ssf:ifaccessible>
+<ssf:ifaccessible simple_ui="true">
   outline: dotted 1px gray;
 </ssf:ifaccessible>  
 <ssf:ifnotaccessible>

@@ -78,8 +78,8 @@ tinyMCE.init(
   document_base_url : "<ssf:fileUrl entity="${ssDefinitionEntry}" baseUrl="true"/>",
   width: "100%",
   accessibility_warnings: true,
-<ssf:ifnotaccessible>  accessibility_focus: false,</ssf:ifnotaccessible>
-<ssf:ifaccessible>  accessibility_focus: true,</ssf:ifaccessible>
+<ssf:ifnotaccessible simple_ui="true">  accessibility_focus: false,</ssf:ifnotaccessible>
+<ssf:ifaccessible simple_ui="true">  accessibility_focus: true,</ssf:ifaccessible>
   entities:  "39,#39,34,quot,38,amp,60,lt,62,gt",
   gecko_spellcheck : true,
   plugins: "compat2x,table,<%--

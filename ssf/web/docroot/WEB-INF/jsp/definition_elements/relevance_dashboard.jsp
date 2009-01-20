@@ -32,7 +32,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <ssf:ifLoggedIn>
 <script type="text/javascript">
-<ssf:ifnotaccessible>
+<ssf:ifnotaccessible simple_ui="true">
   var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url 
   		adapter="true" portletName="ss_forum" 
 		action="__ajax_relevance" actionUrl="false"><ssf:param 
@@ -50,7 +50,7 @@
 		name="type" value="profile" /><ssf:param 
 		name="page" value="0" /></ssf:url>";
 </ssf:ifnotaccessible>
-<ssf:ifaccessible>
+<ssf:ifaccessible simple_ui="true">
   <c:if test="${ssBinder.entityType == 'workspace'}">
     var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url 
         action="view_ws_listing" ><ssf:param 
