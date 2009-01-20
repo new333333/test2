@@ -84,7 +84,7 @@
 	
 	<target name="build-and-full-deploy" depends="build,full-deploy-internal"/>
 	
-	<target name="clean">
+	<target name="clean" depends="init">
 		<delete dir="${temp.dir}" />
 		<delete dir="${docs.api.dir}" />
 		
@@ -126,7 +126,7 @@
 		<ant dir="mobile" target="clean" />		
 	</target>
 
-	<target name="compile">
+	<target name="compile" depends="init">
 		<ant dir="util" target="compile" inheritall="false"/>
 		<ant dir="util-search" target="compile" inheritall="false"/>
 		<ant dir="commons-httpclient-contrib" target="compile" inheritall="false"/>
@@ -162,7 +162,7 @@
 		<ant dir="samples" target="compile" inheritall="false"/>
 	</target>
 
-	<target name="jar">
+	<target name="jar" depends="init">
 		<ant dir="util" target="jar" inheritall="false"/>
 		<ant dir="util-search" target="jar" inheritall="false"/>
 		<ant dir="commons-httpclient-contrib" target="jar" inheritall="false"/>
@@ -202,7 +202,7 @@
 		<ant dir="mobile" target="war" inheritall="false"/>
 	</target>
 
-	<target name="deploy">
+	<target name="deploy" depends="init">
 		<ant dir="util" target="deploy" />
 		<ant dir="util-search" target="deploy" />
 		<ant dir="commons-httpclient-contrib" target="deploy" />
@@ -239,7 +239,7 @@
 		<ant dir="mobile" target="deploy" />
 	</target>
 
-	<target name="java2html">
+	<target name="java2html" depends="init">
 		<delete dir="${docs.api.dir}" />
 
 		<ant dir="util" target="java2html" />
@@ -269,7 +269,7 @@
 		<ant dir="mobile" target="java2html" />
 	</target>
 
-	<target name="javadoc">
+	<target name="javadoc" depends="init">
 		<delete dir="${javadoc.combined.dir}" />
 
 		<ant dir="util" target="javadoc" />
