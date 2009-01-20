@@ -74,12 +74,11 @@
 	 <div class="ss_mashup_graphic_header">
 	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.graphic"/>: </span>
 	    <span>${mashup_attributes['title']}</span>
-	    <br/>
-	    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
-	      class="ss_linkButton ss_fineprint"
-	      onClick="ss_mashup_deleteGraphic${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
 	 </div>
     <div class="ss_mashup_round_bottom"><div></div></div>
+    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
+      class="ss_linkButton ss_fineprint"
+      onClick="ss_mashup_deleteGraphic${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
    </div>
 </c:if>
 <% if (ss_mashupListDepth > 0) { %>

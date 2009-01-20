@@ -805,6 +805,10 @@ public class DefinitionHelper {
     	} else {
     		model.put(WebKeys.MASHUP_CSS, "css/" + style);
     	}
+    	if ("form".equals(model.get(WebKeys.CONFIG_JSP_STYLE))) {
+    		//Force the css style to "light" for displaying the form so we only have one style for viewing the form
+    		model.put(WebKeys.MASHUP_CSS, "css/mashup.css");
+    	}
 	}
 
 	public static Document getDefinitionTree(AllModulesInjected bs, Long binderId) {

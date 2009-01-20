@@ -39,8 +39,11 @@
 
 	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
 %>
+<c:set var="mashupBinder" value="${ss_mashupBinders[mashup_attributes['folderId']]}"/>
 <% if (ss_mashupListDepth > 0) { %>
+<c:if test="${!empty mashupBinder}">
 <li>
+</c:if>
 <% } %>
 
 <c:if test="${ssConfigJspStyle == 'form'}">
@@ -52,10 +55,9 @@
 	}
 	</script>
 </c:if>
-<c:set var="mashupBinder" value="${ss_mashupBinders[mashup_attributes['folderId']]}"/>
 <div class="ss_mashup_element">
-  <div class="ss_mashup_round_top"><div></div></div>
   <c:if test="${!empty mashupBinder}">
+  <div class="ss_mashup_round_top"><div></div></div>
 	<c:if test="${ssConfigJspStyle == 'form' || !empty mashup_attributes['showTitle']}">
 	  <c:set var="divClass" value="ss_mashup_folder_header_form" />
 	  <c:if test="${ssConfigJspStyle != 'form'}">
@@ -126,22 +128,32 @@
 	      onClick="ss_mashup_deleteFolder${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
 	  </div>
     </c:if>
+  <div class="ss_mashup_round_bottom"><div></div></div>
   </c:if>
 
   <c:if test="${empty mashupBinder}">
-	<div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
-	  <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.folder"/></span>
-	</div>
 	<c:if test="${ssConfigJspStyle == 'form'}">
+	   <% if (ss_mashupListDepth > 0) { %>
+	    <li>
+	   <% } %>
+      <div class="ss_mashup_round_top"><div></div></div>
+	  <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
+	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.folder"/></span>
+	  </div>
+      <div class="ss_mashup_round_bottom"><div></div></div>
 	  <div>
 	    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
 	      class="ss_linkButton ss_fineprint"
 	      onClick="ss_mashup_deleteFolder${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
 	  </div>
+	   <% if (ss_mashupListDepth > 0) { %>
+	    </li>
+	   <% } %>
     </c:if>
   </c:if>
-  <div class="ss_mashup_round_bottom"><div></div></div>
 </div>
 <% if (ss_mashupListDepth > 0) { %>
+<c:if test="${!empty mashupBinder}">
 </li>
+</c:if>
 <% } %>

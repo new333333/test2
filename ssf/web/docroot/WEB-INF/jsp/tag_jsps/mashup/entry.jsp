@@ -39,8 +39,11 @@
 
 	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
 %>
+<c:set var="mashupEntry" value="${ss_mashupEntries[mashup_attributes['entryId']]}"/>
 <% if (ss_mashupListDepth > 0) { %>
+<c:if test="${!empty mashupEntry}">
 <li>
+</c:if>
 <% } %>
 
 <c:if test="${ssConfigJspStyle == 'form'}">
@@ -52,7 +55,6 @@
 	}
 	</script>
 </c:if>
-<c:set var="mashupEntry" value="${ss_mashupEntries[mashup_attributes['entryId']]}"/>
 <c:if test="${!empty mashupEntry}">
   <div class="ss_mashup_element">
   <div class="ss_mashup_round_top"><div></div></div>
@@ -91,20 +93,26 @@
   </div>
 </c:if>
 
-<c:if test="${empty mashupEntry}">
-  <c:if test="${ssConfigJspStyle == 'form'}">
+<c:if test="${ssConfigJspStyle == 'form' && empty mashupEntry}">
+   <% if (ss_mashupListDepth > 0) { %>
+    <li>
+   <% } %>
    <div class="ss_mashup_element">
-	<div class="ss_mashup_entry_header">
-	  <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.entry"/></span>
+	 <div class="ss_mashup_entry_header">
+	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.entry"/></span>
 	    <br/>
 	    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
 	      class="ss_linkButton ss_fineprint"
 	      onClick="ss_mashup_deleteEntry${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
-	</div>
+	 </div>
    </div>
-  </c:if>
+   <% if (ss_mashupListDepth > 0) { %>
+    </li>
+   <% } %>
 </c:if>
 
 <% if (ss_mashupListDepth > 0) { %>
+<c:if test="${!empty mashupEntry}">
 </li>
+</c:if>
 <% } %>

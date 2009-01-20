@@ -39,12 +39,8 @@
 
 	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
 %>
-<% if (ss_mashupListDepth > 0) { %>
-<li>
-<% } %>
 
 <c:if test="${ssConfigJspStyle != 'form'}">
-<div>
   <c:if test="${mashup_attributes['element'] == 'gettingStarted'}">
     <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/utility/getting_started.jsp" />
   </c:if>
@@ -57,10 +53,12 @@
   <c:if test="${mashup_attributes['element'] == 'myWorkspace'}">
     <jsp:include page="/WEB-INF/jsp/tag_jsps/mashup/utility/my_workspace.jsp" />
   </c:if>
-</div>
 </c:if>
 
 <c:if test="${ssConfigJspStyle == 'form'}">
+	<% if (ss_mashupListDepth > 0) { %>
+	<li>
+	<% } %>
 	<script type="text/javascript">
 	//Routine called when "Delete utility" is clicked
 	function ss_mashup_deleteUtility${ss_mashupItemId}_${renderResponse.namespace}() {
@@ -69,8 +67,8 @@
 	}
 	</script>
 
-   <div class="ss_mashup_element">
-	 <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
+	<div class="ss_mashup_element">
+	  <div class="ss_mashup_form_element_header">
 	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.utility"/>: </span>
 		  <c:if test="${mashup_attributes['element'] == 'gettingStarted'}">
 		    <span><ssf:nlt tag="mashup.gettingStarted"/></span>
@@ -84,13 +82,12 @@
 		  <c:if test="${mashup_attributes['element'] == 'myWorkspace'}">
 		    <span><ssf:nlt tag="mashup.myWorkspace"/></span>
 		  </c:if>
-	    <br/>
-	    <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
+	  </div>
+	  <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
 	      class="ss_linkButton ss_fineprint"
 	      onClick="ss_mashup_deleteUtility${ss_mashupItemId}_${renderResponse.namespace}();return true;"/>
-	 </div>
    </div>
+	<% if (ss_mashupListDepth > 0) { %>
+	</li>
+	<% } %>
 </c:if>
-<% if (ss_mashupListDepth > 0) { %>
-</li>
-<% } %>
