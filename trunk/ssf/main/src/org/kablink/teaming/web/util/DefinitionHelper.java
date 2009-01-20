@@ -800,7 +800,7 @@ public class DefinitionHelper {
     	model.put(WebKeys.MASHUP_BINDER_ENTRIES, mashupBinderEntries);
     	model.put(WebKeys.MASHUP_ENTRIES, mashupEntries);
     	String style = (String) model.get(WebKeys.MASHUP_STYLE);
-    	if (style.equals("")) {
+    	if (style == null || style.equals("")) {
     		model.put(WebKeys.MASHUP_CSS, "css/mashup_dark.css");
     	} else {
     		model.put(WebKeys.MASHUP_CSS, "css/" + style);
