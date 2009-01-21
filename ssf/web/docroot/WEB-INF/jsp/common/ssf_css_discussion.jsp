@@ -55,16 +55,15 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}	
 .ss_dblcolleft{		
 /* right column width */
-	right:49%;		
+	right:48%;		
 	}
 .ss_dblcol1{
-	width:49%;						
+	width:48%;						
 /* left column content width (column width minus left and right padding) */
 	background-color:#fff;			
 /* left column background color */
-	position:relative;
 	float:left;
-	margin-right:2%;
+	margin-right:4px;
 	overflow: hidden;
 	}	
 .ss_dblcol2{

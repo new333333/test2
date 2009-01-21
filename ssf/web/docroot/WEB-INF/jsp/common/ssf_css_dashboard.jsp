@@ -38,26 +38,20 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 	/* COLUMN CONTAINER */
 #ss_dashboard_content {
-/*	position:relative;  Needed at one time, but breaks view in IE6 
-	clear:both;
-	float:left;	*/
 	vertical-align:top;
-    /* width:100%;	 width of whole page */
-	overflow:hidden; /* This chops off any overhanging divs */
+ 	overflow:hidden; /* This chops off any overhanging divs */
 	}
 
 /* COMMON COLUMN SETTINGS */
-.ss_colright,.ss_colmid,.ss_colleft{
+.ss_colright, .ss_colmid, .ss_colleft{
 	float:left;
 	width:100%;  /* width of page */
-	position:relative;
 	}
-.ss_col1,.ss_col2,.ss_col3 {
-	float:left;
-	position:relative;
-	padding:0 0 1em 0; /* no left and right padding on columns, we just make them narrower instead 
-	only padding top and bottom is included here, make it whatever value you need */
-	overflow:hidden;
+.ss_col1, .ss_col2, .ss_col3 {
+	float: left;
+	padding: 0 0 1em 0; 
+	margin: 0px 2px 0px 2px;
+	overflow: hidden;
 	}	
 /* 3 COLUMN PAGE STYLE SETTINGS */
 .ss_tricolumn{	/* 3 Column page style */
@@ -73,14 +67,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	right:20%;				/* placement from right of the middle column */
 	}
 .ss_tricolumn .ss_col1 {
-	width:38%;				/* width of center column content (column width minus padding on either side) */
+	width:37%;				/* width of center column content (column width minus padding on either side) */
 	left:42%;				/* 100% plus left padding of center column */
 	<c:if test="<%= isIE %>">
- 		width:37%;
+ 		width:35%;
  	</c:if>	
 	}
 .ss_tricolumn .ss_col2 {
-	width:38%;				/* Width of left column content (column width minus padding on either side) */
+	width:37%;				/* Width of left column content (column width minus padding on either side) */
 	left:43%;				/* width of (right column) plus (center column left and right padding) plus (left column left padding) */
 	}
 .ss_tricolumn .ss_col3 {
@@ -101,7 +95,6 @@ div.ss_canvas {
 #ss_wrap{
 	margin: auto;
 	min-height:100%;
-/*	position:relative;		 Needed at one time, but breaks view in IE6 */
 	clear:both;
     width:100%;			/* width of whole page */
 	overflow:hidden;	/* This chops off any overhanging divs */
@@ -179,6 +172,15 @@ div.ss_canvas {
 	padding-bottom:3px;
 	border-bottom:1px dotted #666666;	
 	}
+	/*MINIBLOG*/
+#ss_blogs{
+	margin: 0% 0 5% 0;
+	<c:if test="<%= isIE %>">
+ 	margin: 3px 0 5% 0;
+ 	</c:if>	
+	color:#444444;
+	line-height:1.6em;
+	}
  	/*TASKS*/
 #ss_tasks{
 	margin: 1% 0 5% 0;
@@ -227,11 +229,9 @@ div.ss_canvas {
 	}			
 	/*TRACKED ITEMS*/	
 #ss_trackedItems{
-	margin: 0% 0 2% 0;
+	margin: 1% 0 5% 0;
+	padding: 0% 0 1% 0;
 	color:#555;
-	<c:if test="<%= isIE %>">
- 		margin: 0.5% 0 2% 0;
- 	</c:if>	
 	}
 #ss_trackedPeople{
 	color:#555;
@@ -246,7 +246,6 @@ div.ss_canvas {
 	border: 1px dotted #555;
 	color:#555;
 	background: #FFF;
-	margin-bottom: 1.4em;
 	}
 .ss_im_status_active{
 	font-weight: bold;
@@ -420,7 +419,7 @@ div.ss_canvas {
 	}
 	/* WHATS NEW */
 #ss_whatsnew{
-	margin: 2% 0 5% 0;
+	margin: 1% 0 5% 0;
 	color:#555;
 	}
 	/* PERSONAL TRACKER */
@@ -436,6 +435,11 @@ div.ss_canvas {
 	font-family:  Arial, sans serif;
 	line-height: 1.5em;
 	padding: 0;
+	}
+	/* PEOPLE */
+#ss_people{
+	margin: 1% 0 5% 0;
+	color:#555;
 	}
 	/* DOCUMENTS */
 #ss_documents{
@@ -557,7 +561,7 @@ div.ss_canvas {
 	padding-left: 15px;
 	padding-bottom: 15px;
 	color: #555555;
-	margin-top: 1%;
+	margin-top: 2px;
 	line-height: 1.2em;
 	}
 
@@ -685,7 +689,6 @@ div.ss_canvas {
 /* - MENU TABS FOR RELEVANCE--------------------------- */
 
 #ss_tabsC {
-    position:relative;
     top:-1px;
     float:left;
     width:100%;
@@ -712,7 +715,6 @@ div.ss_canvas {
    	padding:0px !important;
       }
  #ss_tabsC a {
-    position:relative;
     top:1px;
     float:left;
     background:url("<html:rootPath/>images/pics/tableftF.gif") no-repeat left top;
@@ -761,7 +763,6 @@ div.ss_canvas {
 	float:left;
 	overflow:hidden;
 	background: #fff;
-	position: relative;
 	padding-bottom: 5px;
 	width: 100%;
 	margin: 10px auto auto auto;

@@ -50,7 +50,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 
 <table width="90%" border="0" valign="top" cellpadding="1" cellspacing="0">
 <tr>
-	<td valign="bottom" style="padding-left: 19px;">
+	<td valign="top" style="padding-left: 19px;">
 		<!-- We need the following image so the help spot has an initial position. -->
 		<span id="ss_browse_div_position${ssDefinitionEntry.id}${ss_attachments_namespace}" class="ss_style ss_bold ss_smallprint">
 		  	<ssHelpSpot helpId="workspaces_folders/entries/attachments" offsetX="-20" offsetY="-5"
@@ -61,10 +61,12 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	</td>
 
 	<td valign="top" width="100%" align="left">
+	<ul class="ss_nobullet">
 	<ssf:ifnotaccessible>
 	
 		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 			<% if (isAppletSupported) { %>
+				<li style="float:left; padding:1px 10px 4px 0px;">
 				<a class="ss_tinyButton ss_fineprint ss_nowrap" 
 				id="ss_dropbox_div_position${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 				href="javascript: ;" 
@@ -72,7 +74,8 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 				  return false;"
 				title="<ssf:nlt tag="entry.AttachFilesByApplet"/>">
 				  <ssf:nlt tag="entry.AttachFilesByApplet"/>
-				</a>&nbsp;&nbsp;
+				</a>
+				</li>
 			<% } %>
 		</c:if>
 	
@@ -81,35 +84,43 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	<% if (org.kablink.teaming.web.util.BinderHelper.isWebdavSupported(request)) { %>
 	<c:if test="${ss_folderViewStyle == 'blog' && !empty ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}">
 		<c:set var="ss_entryIDForWebDAV" value="${ssDefinitionEntry.id}" />
+		<li style="float:left; padding:1px 10px 4px 0px;">
 		<a class="ss_tinyButton ss_fineprint ss_nowrap" title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
 		  style="behavior: url(#default#AnchorClick);" 
 		  folder="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
 		  href="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
-		  target="_blank"><ssf:nlt tag="entry.AttachFilesByWebDav"/></a>		
+		  target="_blank"><ssf:nlt tag="entry.AttachFilesByWebDav"/></a>
+		</li>
 	</c:if>
 	<c:if test="${ss_folderViewStyle != 'blog' && !empty ssWebDavURL}">
-		<a class="ss_tinyButton ss_fineprint ss_nowrap"  title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
+		<li style="float:left; padding:1px 10px 4px 0px;">
+		<a class="ss_tinyButton ss_fineprint ss_nowrap"  
+		  title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
 		  style="behavior: url(#default#AnchorClick);" 
 		  folder="${ssWebDavURL}" href="${ssWebDavURL}" 
 		  target="_blank"
-		  ><ssf:nlt tag="entry.AttachFilesByWebDav"/></a>&nbsp;&nbsp;		
+		  ><ssf:nlt tag="entry.AttachFilesByWebDav"/></a>
+		</li>	
 	</c:if>
 	<% } %>
 	
 	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-
-		<a class="ss_tinyButton ss_fineprint ss_nowrap" title="<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>" href="javascript: ;" 
+	  <li style="float:left; padding:1px 10px 4px 0px;">
+		<a class="ss_tinyButton ss_fineprint ss_nowrap" 
+		  title="<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>" href="javascript: ;" 
 		  onClick="ss_showAddAttachmentBrowse('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
-		  ><ssf:nlt tag="entry.AttachFilesByWebBrowse"/></a>&nbsp;&nbsp;
-	
+		  ><ssf:nlt tag="entry.AttachFilesByWebBrowse"/></a>
+	  </li>
 	</c:if>
 	
 	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 	  <% /* TODO: Add test if IC Broker is enabled (ICBrokerModule.isEnabled()) and	if user has zone name defined */ %>
-	  <a class="ss_tinyButton ss_fineprint ss_nowrap" title="<ssf:nlt tag="attachMeeting.attachResults"/>" 
+	  <li style="float:left; padding:1px 10px 4px 0px;">
+	  <a class="ss_tinyButton ss_fineprint ss_nowrap" 
+	    title="<ssf:nlt tag="attachMeeting.attachResults"/>" 
 	    href="javascript: ;" 
 	    onClick="ss_showAttachMeetingRecords('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
-	    ><ssf:nlt tag="attachMeeting.attachResults"/></a>&nbsp;&nbsp;
+	    ><ssf:nlt tag="attachMeeting.attachResults"/></a>
 	
 	  <div id="ss_div_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 	    name="ss_div_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
@@ -122,7 +133,9 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 			  height="1" width="1">xxx</iframe>
 		</div>
 	  </div>
+	  </li>
 	</c:if>		
+	</ul>
 	</td>
 </tr>
 <tr>
