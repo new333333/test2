@@ -77,10 +77,10 @@
 		    <span><ssf:nlt tag="mashup.signInForm"/></span>
 		  </c:if>
 		  <c:if test="${mashup_attributes['element'] == 'siteAdmin'}">
-		    <span><ssf:nlt tag="mashup.siteAdmin"/></span>
+		    <span><ssf:nlt tag="mashup.siteAdmin.form"/></span>
 		  </c:if>
 		  <c:if test="${mashup_attributes['element'] == 'myWorkspace'}">
-		    <span><ssf:nlt tag="mashup.myWorkspace"/></span>
+		    <span><ssf:nlt tag="mashup.myWorkspace.form"/></span>
 		  </c:if>
 	  </div>
 	  <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 

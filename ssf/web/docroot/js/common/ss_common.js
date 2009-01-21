@@ -2424,7 +2424,10 @@ function ss_toolbarPopupUrl(url, windowName, width, height) {
 		var height = ss_getWindowHeight();
 		if (height < 600) height=600;
 	}
-	self.window.open(url?url:"", windowName?windowName:"_blank", "resizable=yes,scrollbars=yes,width="+width+",height="+height);
+	var hw = "";
+	if (width != "") hw += ",width="+parseInt(width) + "px";
+	if (height != "") hw += ",height="+parseInt(height) + "px";
+	self.window.open(url?url:"", windowName?windowName:"_blank", "resizable=yes,scrollbars=yes"+hw);
 }
 
 //Routine to show a div at the bottom of the highest size attained by the window

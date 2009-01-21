@@ -50,7 +50,7 @@
 	  href="<ssf:url 
       	action="view_ws_listing"
       	binderId="${ssUser.workspaceId}"/>"
-  	><ssf:nlt tag="navigation.myWorkspace"/></a>
+  	><ssf:nlt tag="mashup.myWorkspace.view"/></a>
   	&nbsp;-&nbsp;
   	<ssf:showUser user="${ssUser}"/>
 </div>

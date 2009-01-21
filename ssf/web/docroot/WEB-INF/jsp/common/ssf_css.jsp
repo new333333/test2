@@ -82,6 +82,9 @@ boolean isIE6 = BrowserSniffer.is_ie_6(request);
 html { filter: expression(document.execCommand("BackgroundImageCache", false, true)); } 
 </c:if>
 
+p {
+  margin:6px 0px 6px 0px;
+}
 
 body.ss_style_body {
 	margin: 0px 0px 0px 0px;

@@ -44,9 +44,15 @@
 <li>
 <% } %>
 
-<div class="ss_style">
-  <c:set var="ss_loginFormStyle" value="mashup" scope="request"/>
-  <jsp:include page="/WEB-INF/jsp/forum/login_form.jsp" />
+<div class="ss_mashup_element">
+ <div class="ss_mashup_round_top"><div></div></div>
+ <div class="ss_mashup_element_content">
+	<div class="ss_style" style="padding-left:10px;">
+	  <c:set var="ss_loginFormStyle" value="mashup" scope="request"/>
+	  <jsp:include page="/WEB-INF/jsp/forum/login_form.jsp" />
+	</div>
+ </div>
+ <div class="ss_mashup_round_bottom"><div></div></div>
 </div>
 <% if (ss_mashupListDepth > 0) { %>
 </li>

@@ -30,7 +30,7 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-  <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
+  <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}" style="display:inline;">
    <fieldset class="ss_fieldset_${ss_loginFormStyle}">
     <div class="ss_legend_${ss_loginFormStyle}"><ssf:nlt tag="login.please"/></div>
      <table>
