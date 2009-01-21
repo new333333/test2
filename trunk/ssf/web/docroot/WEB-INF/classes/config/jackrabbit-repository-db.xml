@@ -69,7 +69,7 @@
 	<!--<Cluster id="node1">
   		<Journal class="org.apache.jackrabbit.core.journal.FileJournal">
     		<param name="revision" value="${rep.home}/revision" />
-    		<param name="directory" value="/cluster-shared-drive/icecoredata/jackrabbit/journal" />
+    		<param name="directory" value="/cluster-shared-drive/teamingdata/jackrabbit/journal" />
   		</Journal>
 	</Cluster>-->
 	<!-- Using a database based journal implementation, where the journal files are created
