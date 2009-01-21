@@ -33,6 +33,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.docconverter.IHtmlConverterManager;
 import org.kablink.teaming.docconverter.IImageConverterManager;
@@ -42,12 +44,19 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.util.FileUtil;
 import org.springframework.util.FileCopyUtils;
 
 public class ConvertedFileModuleImpl implements ConvertedFileModule {
 	private FileModule fileModule;
 	private IHtmlConverterManager htmlConverterManager;
 	private IImageConverterManager imageConverterManager;
+
+	protected Log logger = LogFactory.getLog(getClass());
+	
+	private static final String NOVELL_REWRITER_OFF = "<!--NOVELL_REWRITER_OFF-->";
+	private static final String NOVELL_REWRITER_ON = "<!--NOVELL_REWRITER_ON-->";
 
 	public void setHtmlConverterManager(IHtmlConverterManager htmlConverterManager) {
 		this.htmlConverterManager = htmlConverterManager;
@@ -133,8 +142,29 @@ public class ConvertedFileModuleImpl implements ConvertedFileModule {
 
 		try
 		{
+			boolean injectNovellTag = SPropsUtil.getBoolean("file.html.view.inject.novell.tag", true);
+			
+			if(injectNovellTag) {
+				out.write(NOVELL_REWRITER_OFF.getBytes());
+			}
+			
 			is = htmlConverterManager.getConverter().convert(url, binder, entry, fa);
-			FileCopyUtils.copy(is, out);
+			
+			try {
+				FileUtil.copy(is, out);
+			}
+			finally {
+				try {
+					is.close();
+				}
+				catch(IOException ex) {
+					logger.warn("Could not close InputStream", ex);
+				}
+			}
+			
+			if(injectNovellTag) {
+				out.write(NOVELL_REWRITER_ON.getBytes());				
+			}
 		}
 		catch(IOException e) {
 			throw new UncheckedIOException(e);
