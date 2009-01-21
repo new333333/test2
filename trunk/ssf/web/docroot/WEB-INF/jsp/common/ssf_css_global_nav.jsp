@@ -43,7 +43,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding-bottom:0px;	
 	}
 	/*BRANDING*/
-#ss_branding{
+#ss_branding {
 	width:100%;
 	margin-top: 0px !important;
 	padding: 0px !important;
@@ -154,7 +154,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	float: none;
 	height: 54px;
 	width: 92px;
-	position: relative;
 	}
 .ss_mastheadName {
 	font-family: ${ss_style_font_family};

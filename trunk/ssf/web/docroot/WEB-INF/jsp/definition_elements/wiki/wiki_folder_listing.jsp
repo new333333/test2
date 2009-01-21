@@ -33,7 +33,7 @@
         <div id="ss_wikiEntryDiv${renderResponse.namespace}">
           <iframe id="ss_wikiIframe${renderResponse.namespace}" 
             name="ss_wikiIframe${renderResponse.namespace}" 
-            style="width:99%; display:inline; position:relative;"
+            style="width:99%;"
     		<c:if test="${empty ss_wikiHomepageEntryId && empty ssEntryIdToBeShown}">
     		  src="<ssf:url     
 		    		adapter="true" 

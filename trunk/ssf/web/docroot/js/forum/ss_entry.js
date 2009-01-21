@@ -72,6 +72,7 @@ function ss_showRating(rating, id, namespace) {
 	if (infoDiv == null || infoSpan == null) return;
 	infoSpan.innerHTML = ss_ratings_info[rating];
     infoDiv.style.display = "block";
+    infoDiv.style.whiteSpace = "nowrap";
     var infoDivWidth = parseInt(ss_getObjectWidth(infoDiv));
     infoDiv.style.left = parseInt(parseInt(ss_getImageLeft(imgId)) + 20 - infoDivWidth) + "px";
     infoDiv.style.top = parseInt(parseInt(ss_getImageTop(imgId)) + 20) + "px";
