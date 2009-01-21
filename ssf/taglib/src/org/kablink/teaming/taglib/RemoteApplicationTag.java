@@ -42,6 +42,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.remoteapplication.RemoteApplicationManager;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.WebHelper;
 
@@ -85,7 +86,9 @@ public class RemoteApplicationTag extends BodyTagSupport implements ParamAncesto
 					logger.error(e.toString());
 				}
 				try {
-					pageContext.getOut().print(e.getLocalizedMessage());
+					String errorMessage = e.getLocalizedMessage();
+					if (errorMessage == null) errorMessage = NLT.get("error.remoteApplicationFailure", new String[] {e.toString()});
+					pageContext.getOut().print(errorMessage);
 				} catch (IOException e2) {
 					throw new JspTagException(e2.getMessage());
 				}

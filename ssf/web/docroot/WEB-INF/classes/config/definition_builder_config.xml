@@ -1638,7 +1638,6 @@
 			<option name="userWorkspaceBusinessCard"/>
 			<option name="descriptionView"/>
 			<option name="relevanceDashboard" initial="true" />
-			<option name="dashboardCanvas"/>
 			<option name="workspaceDataItem" caption="__workspace_data_item" 
 				definitionType="12" />
 			<option name="workspaceBinderList" />
@@ -1657,7 +1656,6 @@
 		<options optionCaption="__standard_entry_options">
 			<option name="userWorkspaceBusinessCard" initial="true"/>
 			<option name="descriptionView" initial="true" />
-			<option name="dashboardCanvas" initial="true" />
 			<option name="workspaceDataItem" caption="__workspace_data_item" 
 				definitionType="12" />
 			<option name="workspaceBinderList" />
@@ -2226,7 +2224,6 @@
 			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
 			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
 			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
 			<option_select path="//item[@category='commonEntryViewData']" />
 			<option_select definitionType="1" path="//item[@category='entryViewData']" />
 			<option_select definitionType="5" path="//item[@category='folderViewData']" />
@@ -2288,7 +2285,6 @@
 			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
 			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
 			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
 			<option_select path="//item[@category='commonEntryViewData']" />
 			<option_select definitionType="1" path="//item[@category='entryViewData']" />
 			<option_select definitionType="5" path="//item[@category='folderViewData']" />
@@ -2342,7 +2338,6 @@
 			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
 			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
 			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
 			<option_select path="//item[@category='commonEntryViewData']" />
 			<option_select definitionType="1" path="//item[@category='entryViewData']" />
 			<option_select definitionType="5" path="//item[@category='folderViewData']" />
@@ -2410,7 +2405,6 @@
 			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
 			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
 			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
 			<option_select path="//item[@category='commonEntryViewData']" />
 			<option_select definitionType="1" path="//item[@category='entryViewData']" />
 			<option_select definitionType="5" path="//item[@category='folderViewData']" />
@@ -2464,7 +2458,6 @@
 			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
 			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
 			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
 			<option_select path="//item[@category='commonEntryViewData']" />
 			<option_select definitionType="1" path="//item[@category='entryViewData']" />
 			<option_select definitionType="5" path="//item[@category='folderViewData']" />
@@ -2534,7 +2527,6 @@
 			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
 			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
 			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
 			<option_select path="//item[@category='commonEntryViewData']" />
 			<option_select definitionType="1" path="//item[@category='entryViewData']" />
 			<option_select definitionType="5" path="//item[@category='folderViewData']" />
@@ -2593,7 +2585,6 @@
 			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
 			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
 			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
 			<option_select path="//item[@category='commonEntryViewData']" />
 			<option_select definitionType="1" path="//item[@category='entryViewData']" />
 			<option_select definitionType="5" path="//item[@category='folderViewData']" />
