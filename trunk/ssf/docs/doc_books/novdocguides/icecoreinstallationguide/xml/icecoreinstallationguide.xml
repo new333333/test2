@@ -1768,7 +1768,7 @@ tail -f /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/logs/catalina.out
       <para>Make a backup of the file repositories that are in use, for example:</para>
 
 <screen>
-/home/icecoredata/filerepository
+/home/teamingdata/filerepository
 </screen>
 
      </step>
@@ -2364,7 +2364,7 @@ tail -f /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/logs/catalina.out
 
 
 <screen>
-        &lt;RootDirectory path="/home/icecoredata"  /&gt;
+        &lt;RootDirectory path="/home/teamingdata"  /&gt;
 </screen>
 
 
@@ -2399,7 +2399,7 @@ tail -f /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/logs/catalina.out
 
 
 <screen>
-      &lt;!-- &lt;SimpleFileRepository path="/share/icecoredata" /&gt;  --&gt;
+      &lt;!-- &lt;SimpleFileRepository path="/share/teamingdata" /&gt;  --&gt;
 </screen>
 
 
@@ -2429,7 +2429,7 @@ tail -f /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/logs/catalina.out
 
 
 <screen>
-        &lt;RootDirectory path="/home/icecoredata"  /&gt;
+        &lt;RootDirectory path="/home/teamingdata"  /&gt;
 </screen>
 
 
@@ -2574,7 +2574,7 @@ tail -f /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/logs/catalina.out
 
 
 <screen>
-		  &lt;RootDirectory path="/home/icecoredata/liferay"  /&gt;
+		  &lt;RootDirectory path="/home/teamingdata/liferay"  /&gt;
 </screen>
 
 
