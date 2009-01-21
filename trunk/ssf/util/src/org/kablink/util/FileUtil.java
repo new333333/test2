@@ -32,6 +32,8 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 
 import java.nio.channels.FileChannel;
@@ -49,6 +51,8 @@ import java.util.Properties;
  *
  */
 public class FileUtil {
+
+	private static final int BUFFER_SIZE = 4096;
 
 	public static void copyDirectory(
 		String sourceDirName, String destinationDirName) {
@@ -387,4 +391,15 @@ public class FileUtil {
 		write(new File(pathName, fileName), s);
 	}
 
+	public static int copy(InputStream in, OutputStream out) throws IOException {
+		int byteCount = 0;
+		byte[] buffer = new byte[BUFFER_SIZE];
+		int bytesRead = -1;
+		while ((bytesRead = in.read(buffer)) != -1) {
+			out.write(buffer, 0, bytesRead);
+			byteCount += bytesRead;
+		}
+		out.flush();
+		return byteCount;
+	}
 }
