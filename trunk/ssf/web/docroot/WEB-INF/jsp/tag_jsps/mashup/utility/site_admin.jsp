@@ -45,7 +45,7 @@
 
 <div>
   <a href="<ssf:url actionUrl="false" action="site_administration" binderId="${ssBinder.id}"/>" >
-     <span><ssf:nlt tag="toolbar.menu.siteAdministration"/></span>
+     <span><ssf:nlt tag="mashup.siteAdmin.view"/></span>
    </a>
 </div>
 <% if (ss_mashupListDepth > 0) { %>

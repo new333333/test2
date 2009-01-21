@@ -96,11 +96,11 @@ div.ss_mashup_folder_header_view {
   padding:6px;
   }
 div.ss_mashup_folder_header_view span {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: bold;
 }
 div.ss_mashup_folder_header_view a span {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: bold;
 }
     
@@ -122,6 +122,11 @@ div.ss_mashup_folder_list_open {
 div.ss_mashup_folder_list_open_title {
   background: #FFFFFF;
   padding:6px;
+  font-size: 16px;
+  font-weight: bold;
+  }
+.ss_mashup_folder_list_open_title {
+  font-size: 16px;
   }
 
 div.ss_mashup_folder_list_open_entry {

@@ -71,7 +71,7 @@
 		  action="view_folder_listing" 
 		  folderId="${mashupBinder.id}">
 		  <ssf:param name="newTab" value="1"/>
-		  </ssf:url>"><span class="${spanClass}" >${mashupBinder.title}</span></a>
+		  </ssf:url>"><span>${mashupBinder.title}</span></a>
 	  </div>
 	</c:if>
 	<c:if test="${ssConfigJspStyle != 'form' && !empty mashup_attributes['showFolderDescription']}">
@@ -109,7 +109,7 @@
 				  <ssf:param name="entryViewStyle" value="full"/>
 				  <ssf:param name="newTab" value="1"/>
 				  </ssf:url>">
-		  	    <span class="ss_largeprint ss_bold">${entry.title}</span>
+		  	    <span>${entry.title}</span>
 		  	  </a>
 			</div>
 			<c:if test="${!empty entry._desc}">
@@ -137,7 +137,7 @@
 	    <li>
 	   <% } %>
       <div class="ss_mashup_round_top"><div></div></div>
-	  <div style="border:1px solid #cecece; background-color:#e5e5e5; padding:6px;">
+	  <div class="ss_mashup_element">
 	    <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.folder"/></span>
 	  </div>
       <div class="ss_mashup_round_bottom"><div></div></div>
