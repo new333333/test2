@@ -3073,7 +3073,9 @@ var ss_helpSystem = {
 		var pObj = self.document.getElementById(panelId);
 		pObj.setAttribute("helpId", data.id);
 		pObj.style.display = "block"
-		pObj.focus();
+		try {
+			pObj.focus();
+		} catch(e) {}
 		var width = parseInt(dojo.marginBox(pObj).w);
 		var height = parseInt(dojo.marginBox(pObj).h);
 		var x = data.x;

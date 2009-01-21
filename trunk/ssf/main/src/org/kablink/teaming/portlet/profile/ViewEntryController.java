@@ -125,22 +125,26 @@ public class ViewEntryController extends SAbstractController {
 		PortletURL url;
 		if (getProfileModule().testAccess(entry, ProfileOperation.modifyEntry)) {
 			//	The "Modify" menu
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
-			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
+			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url, qualifiers);
 		}
 	
     
 		//	The "Delete" menu
 		if (getProfileModule().testAccess(entry, ProfileOperation.deleteEntry)) {
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
-			toolbar.addToolbarMenu("3_delete", NLT.get("toolbar.delete"), url);
+			toolbar.addToolbarMenu("3_delete", NLT.get("toolbar.delete"), url, qualifiers);
 		}
     
 		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR, toolbar.getToolbar());
