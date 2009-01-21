@@ -258,6 +258,15 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.NAMESPACE_RELEVANCE_DASHBOARD, namespace);
 		setupDashboardBeans(this, type, request, response, model);
+		
+		if ( type.equalsIgnoreCase( ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW ) )
+		{
+			// Right now when the user clicks on the Overview tab an ajax request is not issued.
+			// So we will never get here.  If we ever change and issue an ajax request when
+			// the Overview tab is selected we would need to add code here to gather up
+			// the necessary beans.
+		}
+		
 		return new ModelAndView("forum/relevance_dashboard/ajax", model);
 	}
 	

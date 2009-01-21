@@ -31,7 +31,8 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_dashboard_content">
-	This is the new Overview page
+	<jsp:include page="/WEB-INF/jsp/definition_elements/view_dashboard_canvas.jsp" />
 </div><!-- end of dashboard content -->
+
 <div class="ss_clear_float"></div>
 
