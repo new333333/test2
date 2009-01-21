@@ -724,11 +724,11 @@ public class ListFolderHelper {
 			if (strUserDisplayStyle == null) { strUserDisplayStyle = ""; }
 			
 			boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
-			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && (!accessible_simple_ui) ||
-					!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
+			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && (!accessible_simple_ui ||
+					!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle))) {
 				// do it with ajax
-			} else if (viewType.equals(Definition.VIEW_STYLE_TASK) && (!accessible_simple_ui) ||
-					!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
+			} else if (viewType.equals(Definition.VIEW_STYLE_TASK) && (!accessible_simple_ui ||
+					!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle))) {
 				folderEntries = findTaskEntries(bs, req, response, (Binder) folder, model, options);
 			} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && accessible_simple_ui &&
 					ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
