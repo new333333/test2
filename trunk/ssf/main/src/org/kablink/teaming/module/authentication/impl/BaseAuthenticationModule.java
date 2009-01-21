@@ -83,7 +83,7 @@ public class BaseAuthenticationModule extends CommonDependencyInjection
 			config.setZoneId(zoneId);
 			config.setPosition(nextPosition);
 			if (config.getId() != null) {
-				getCoreDao().update(config);
+				getCoreDao().merge(config);
 			} else {
 				getCoreDao().save(config);
 			}
