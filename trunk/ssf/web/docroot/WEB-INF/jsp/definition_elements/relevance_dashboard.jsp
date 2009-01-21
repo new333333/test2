@@ -49,6 +49,11 @@
       	name="binderId" value="ss_binderIdPlaceHolder"/><ssf:param 
 		name="type" value="profile" /><ssf:param 
 		name="page" value="0" /></ssf:url>";
+  var ss_relevanceOverviewUrl${renderResponse.namespace} = "<ssf:url 
+        action="view_ws_listing" ><ssf:param 
+      	name="binderId" value="ss_binderIdPlaceHolder"/><ssf:param 
+		name="type" value="overview" /><ssf:param 
+		name="page" value="0" /></ssf:url>";
 </ssf:ifnotaccessible>
 <ssf:ifaccessible simple_ui="true">
   <c:if test="${ssBinder.entityType == 'workspace'}">

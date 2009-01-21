@@ -143,6 +143,9 @@ public class RelevanceDashboardHelper {
 			setupSharedItemsBeans(bs, userWorkspace, model);
 			setupMiniblogsBean(bs, userWorkspace, model);
 		}
+		else if ( ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW.equalsIgnoreCase( type ) )
+		{
+		}
 	}
 	
 	public static void setupRelevanceDashboardPageBeans(AllModulesInjected bs, Long binderId, 

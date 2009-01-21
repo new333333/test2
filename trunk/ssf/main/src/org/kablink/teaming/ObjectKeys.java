@@ -217,6 +217,7 @@ public interface ObjectKeys {
     public static final String MASHUP_TYPE_LIST_END = "listEnd";
     public static final String MASHUP_TYPE_LIST_END_DELETE = "listEnd_delete";
     
+    public static final String RELEVANCE_DASHBOARD_OVERVIEW = "overview";
     public static final String RELEVANCE_DASHBOARD_PROFILE = "profile";
     public static final String RELEVANCE_DASHBOARD_TRACKED_ITEMS = "trackedItems";
     public static final String RELEVANCE_DASHBOARD_WHATS_NEW = "whats_new";

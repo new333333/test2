@@ -890,9 +890,13 @@ function ss_selectRelevanceTab(obj, type, type3, binderId, namespace) {
 		//If in accessible mode, just jump to the url directly
 		self.location.href = url;
 	} else {
-		if (type == 'profile') {
-			//Special case for the profile tab; always refresh the whole page
-			url = window["ss_relevanceProfileUrl"+namespace];
+		if (type == 'profile' || type == 'overview') {
+			//Special case for the profile and overview tabs; always refresh the whole page
+			if ( type == 'profile' )
+				url = window["ss_relevanceProfileUrl"+namespace];
+			else
+				url = window["ss_relevanceOverviewUrl"+namespace];
+				
 			url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
 			url = ss_replaceSubStr(url, "ss_type3PlaceHolder", type3);
 			url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
