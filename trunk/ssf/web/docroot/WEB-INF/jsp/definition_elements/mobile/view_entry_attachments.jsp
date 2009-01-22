@@ -55,7 +55,7 @@ if (isIECheck) strBrowserType = "ie";
 					    <ssf:param name="value" value="${selection.fileItem.name}" />
 				    </ssf:title>
 					><c:out value="${selection.fileItem.name} "/></a>
-					<c:if test="${!empty selection.fileLock}">
+					<c:if test="${selection.currentlyLocked}">
 					  <br/>
 					  <img <ssf:alt tag="alt.locked"/> src="<html:imagesPath/>pics/sym_s_caution.gif"/>
 					  <span class="ss_mobile_small"><ssf:nlt tag="entry.lockedBy">
