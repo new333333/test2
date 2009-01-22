@@ -874,7 +874,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     //inside write transaction    
    protected void deleteBinder_mirrored(Binder binder, boolean deleteMirroredSource, Map ctx) {
-    	if(deleteMirroredSource && binder.isMirrored()) {
+    	if(deleteMirroredSource && binder.isMirrored() && binder.getResourceDriverName() != null) {
     		try {
 				ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
 
