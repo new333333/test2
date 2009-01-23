@@ -1475,14 +1475,14 @@ public class BinderHelper {
 		//See if the dashboard is being shown in the definition
 		PortletURL url;
 		boolean sharedUser = RequestContextHolder.getRequestContext().getUser().isShared();
-		Long	binderId;
-		Long	workspaceId;
+		Integer	binderType;
 		
 		// We want to build a dashboard toolbar if the binder has the dashboard canvas in its definition
-		// or the user is looking at their own workspace.
-		binderId = binder.getId();
-		workspaceId = RequestContextHolder.getRequestContext().getUser().getWorkspaceId();
-		if (DefinitionHelper.checkIfBinderShowingDashboard(binder) || (binderId.longValue() == workspaceId.longValue()) ) {
+		// or the user is looking at a user workspace.
+		binderType = binder.getDefinitionType();
+		if (DefinitionHelper.checkIfBinderShowingDashboard(binder) ||
+			(binderType != null && binderType.intValue() == Definition.USER_WORKSPACE_VIEW) )
+		{
 			Map ssDashboard = (Map)model.get(WebKeys.DASHBOARD);
 			boolean dashboardContentExists = DashboardHelper.checkIfAnyContentExists(ssDashboard);
 			
