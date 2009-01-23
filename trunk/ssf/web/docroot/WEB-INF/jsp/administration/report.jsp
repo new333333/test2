@@ -30,14 +30,19 @@
 %>
 <%@ page import="java.util.ArrayList" %>
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
-
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("administration.report.title.activityByFolder") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
+<body class="ss_style_body tundra">
+
 <%
 String wsTreeName = "search_" + renderResponse.getNamespace();
 %>
 <c:set var="formName">${renderResponse.namespace}fm</c:set>
 
-
+<ssf:form title='<%= NLT.get("administration.report.title.activityByFolder") %>'>
 <table class="ss_style" width="100%"><tr><td>
 <form class="ss_style ss_form" 
 	action="<ssf:url webPath="reportDownload"/>" 
@@ -126,3 +131,8 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	return ss_checkTree(obj, "ss_tree_checkbox<%= wsTreeName %>id" + id);	
 }
 </script>
+
+</ssf:form>
+
+</body>
+</html>

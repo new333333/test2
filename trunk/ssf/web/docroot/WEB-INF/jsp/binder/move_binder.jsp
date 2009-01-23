@@ -28,7 +28,27 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="tag" value="move.folder"/>
+<c:if test="${ssOperation == 'move'}">
+<c:if test="${ssBinder.entityType != 'folder'}">
+  <c:set var="tag" value="move.workspace"/>
+</c:if>
+</c:if>
+<c:if test="${ssOperation != 'move'}">
+<c:if test="${ssBinder.entityType == 'folder'}">
+  <c:set var="tag" value="copy.folder"/>
+</c:if>
+<c:if test="${ssBinder.entityType != 'folder'}">
+  <c:set var="tag" value="copy.workspace"/>
+</c:if>
+</c:if>
+<jsp:useBean id="tag" type="String" />
+<c:set var="ss_windowTitle" value='<%= NLT.get(tag) %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
+<body class="ss_style_body tundra">
 <c:set var="wsTreeName" value="${renderResponse.namespace}_wsTree"/>
 <script type="text/javascript">
 function ${wsTreeName}_showId(forum, obj, action) {
@@ -38,24 +58,8 @@ function ${wsTreeName}_showId(forum, obj, action) {
 </script>
 
 <div class="ss_style ss_portlet">
-<div style="padding:4px;">
-<c:if test="${ssOperation == 'move'}">
-<c:if test="${ssBinder.entityType == 'folder'}">
-  <span class="ss_bold ss_largerprint"><ssf:nlt tag="move.folder"/></span>
-</c:if>
-<c:if test="${ssBinder.entityType != 'folder'}">
-  <span class="ss_bold ss_largerprint"><ssf:nlt tag="move.workspace"/></span>
-</c:if>
-</c:if>
-<c:if test="${ssOperation != 'move'}">
-<c:if test="${ssBinder.entityType == 'folder'}">
-  <span class="ss_bold ss_largerprint"><ssf:nlt tag="copy.folder"/></span>
-</c:if>
-<c:if test="${ssBinder.entityType != 'folder'}">
-  <span class="ss_bold ss_largerprint"><ssf:nlt tag="copy.workspace"/></span>
-</c:if>
-</c:if>
-<br/>
+<ssf:form titleTag="${tag}">
+
 <br/>
 <c:if test="${ssBinder.entityType == 'folder'}">
   <span><ssf:nlt tag="move.currentFolder"/>: </span>
@@ -85,5 +89,8 @@ function ${wsTreeName}_showId(forum, obj, action) {
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 </form>
+</ssf:form>
 </div>
-</div>
+
+</body>
+</html>

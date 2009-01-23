@@ -28,9 +28,19 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("toolbar.delete") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
+<body class="ss_style_body tundra">
+
 <div class="ss_portlet">
+<c:set var="tag" value="toolbar.menu.delete_folder"/>
+<c:if test="${ssBinder.entityType != 'folder'}">
+  <c:set var="tag" value="toolbar.menu.delete_workspace"/>
+</c:if>
+<ssf:form titleTag="${tag}">
 <br/>
 
 <form class="ss_style ss_form" 
@@ -74,5 +84,8 @@
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 
 </form>
+</ssf:form>
 </div>
 
+</body>
+</html>

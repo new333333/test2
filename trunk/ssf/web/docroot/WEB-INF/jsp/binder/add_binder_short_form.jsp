@@ -69,7 +69,7 @@ function ss_checkForm(obj) {
 </script>
 
 <div class="ss_portlet">
-<br/>
+<ssf:form titleTag="toolbar.menu.addFolder">
 
 <form class="ss_style ss_form" 
   action="<ssf:url action="add_binder" actionUrl="true"><ssf:param 
@@ -78,9 +78,6 @@ function ss_checkForm(obj) {
   name="${renderResponse.namespace}fm" 
   id="${renderResponse.namespace}fm" 
   method="post" onSubmit="return ss_checkForm(this);">
-<span class="ss_bold">
-<ssf:nlt tag="toolbar.menu.addFolder"><ssf:param name="value" value="${ssBinder.pathName}"/></ssf:nlt>
-</span></br></br>
   
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="general.title" /></legend>
@@ -103,4 +100,5 @@ function ss_checkForm(obj) {
 </fieldset>
 
 </form>
+</ssf:form>
 </div>
