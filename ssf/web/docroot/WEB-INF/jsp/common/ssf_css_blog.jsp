@@ -65,7 +65,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
  
 }
 div.ss_blog_content {
-	background-color:#f8f8f8;
+	background-color:#f6f6f6;
 	margin-bottom: 30px;
 }
 div.ss_blog_content2 {
