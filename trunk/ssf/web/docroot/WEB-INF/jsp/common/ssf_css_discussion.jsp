@@ -87,9 +87,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color: #777;
 	}	
 #ss_topic_box { 
-	margin: 1% 0 2% 0;
+	margin: 8px 0 8px 0;
 	border: 1px #CCCCCC solid; 
-	padding: 0% 5% 3% 3%;
+	padding: 2px 5% 4px 3%;
 	font-size: 12px;
 	font-style: italic;
 	font-family: 'Lucida Sans', 'Lucida Grande', sans-serif;

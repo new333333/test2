@@ -53,20 +53,25 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 .ss_blogLeftCol {
 	width: 500px !important;
+	padding-top:8px;
     }
 .ss_blogRightCol {
 	width: 198px !important;
 	padding-left: 20px;
+	padding-top:8px;
     }
     
 .ss_blog {
  
 }
 div.ss_blog_content {
-	padding-bottom: 30px;
+	background-color:#f8f8f8;
+	margin-bottom: 30px;
+}
+div.ss_blog_content2 {
+	padding: 0px 8px;
 }
 div.ss_blog_sidebar {
-    margin-top: 5%;
     padding-left:5px;
  	padding-right: 5px;
     padding-top: 10px;
@@ -128,7 +133,9 @@ div.ss_header_bar_timestamp {
 	background-color:${ss_blog_footer_color};
 	padding-bottom: 5px; 
 	padding-top: 4px;
-	padding-left: 22px
+	padding-left: 22px;
+	padding-right: 10px;
+	margin: 0px -8px;
 }
 	
 div.ss_header_bar_timestamp a, div.ss_header_bar_timestamp a:visited {

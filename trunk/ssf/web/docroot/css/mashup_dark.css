@@ -55,7 +55,7 @@ div.ss_mashup_form_element_header {
   }
   
 div.ss_mashup_list_header {
-  border-bottom:1px solid #aeaeae; 
+  border-bottom:1px solid #cecece; 
   background-color:#ffffff; 
   padding:6px;
   }
@@ -131,7 +131,7 @@ div.ss_mashup_folder_list_open_title {
 
 div.ss_mashup_folder_list_open_entry {
   background: #FFFFFF;
-  border-bottom:1px solid #cecece;
+  border-bottom:3px solid #cecece;
   padding:0px 6px 6px 6px;
   }
     

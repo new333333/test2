@@ -83,7 +83,7 @@ html { filter: expression(document.execCommand("BackgroundImageCache", false, tr
 </c:if>
 
 p {
-  margin:6px 0px 6px 0px;
+  margin:8px 0px 8px 0px;
 }
 
 body.ss_style_body {

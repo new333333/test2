@@ -69,11 +69,11 @@
 	  		<table cellspacing="0" cellpadding="0" width="164">
 	  		  <tr>
 	  		    <td>
-		  		  <input type="button" value="<ssf:nlt tag="button.ok"/>" class="ss_inlineButton"
+		  		  <input type="button" value="<ssf:nlt tag="button.ok"/>" class="ss_inlineButtonSmall"
 		  		    onclick="ss_updateStatusNowId('ss_status_textarea${renderResponse.namespace}');return false;"/>
 	  		    </td>
 		  		<td align="right">
-		  		  <input type="button" value="<ssf:nlt tag="button.clear"/>" class="ss_inlineButton"
+		  		  <input type="button" value="<ssf:nlt tag="button.clear"/>" class="ss_inlineButtonSmall"
 		  		    onclick="ss_clearStatus('ss_status_textarea${renderResponse.namespace}');return false;"/>
 		  		</td>
 	  		  </tr>

@@ -32,7 +32,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <div id="ss_dashboard_content" class="ss_doublecolumn">
-<div align="center">
+<div align="center" style="padding-top:6px;">
  <div id="ss_folder_inset">
   <div id="ss_column_L" class="ss_dblcolleft">
       <div class="ss_dblcol1">
