@@ -265,7 +265,7 @@ fieldset a:hover {
 
 /* Text styled as buttons */
 
-.ss_inlineButton {
+.ss_inlineButton, input[type="reset"].ss_inlineButton, input[type="button"].ss_inlineButton, input[type="submit"].ss_inlineButton, button.ss_inlineButton {
   cursor: pointer;
   text-align: center;
   padding: 0px 6px 0px 6px;
@@ -287,7 +287,7 @@ fieldset a:hover {
 	white-space:nowrap;
 	margin:2px 0 0 0;
 	}
-.ss_inlineButton:hover {
+.ss_inlineButton:hover, input[type="reset"].ss_inlineButton:hover, input[type="button"].ss_inlineButton:hover, input[type="submit"].ss_inlineButton:hover, button.ss_inlineButton:hover {
   border: 1px dotted #333;
   color: #999;
 }
@@ -296,5 +296,39 @@ fieldset a:hover {
   text-align: center;
 }
 .ss_inlineButton img {
+  margin: 0px 0px 0px 0px;
+}
+
+.ss_inlineButtonSmall, input[type="reset"].ss_inlineButtonSmall, input[type="button"].ss_inlineButtonSmall, input[type="submit"].ss_inlineButtonSmall, button.ss_inlineButtonSmall {
+  cursor: pointer;
+  text-align: center;
+  padding: 0px 4px 0px 4px;
+ <c:if test="<%= isIE %>">
+  	height: 16px;
+  	padding: 0px 1px 0px 1px;
+ </c:if>  
+  font-size: 9px !important;
+  font-family: Arial, sans-serif;
+  white-space: nowrap;
+  text-decoration: none !important;
+  border: 1px solid #5A9A98;
+  background-image: url(<html:imagesPath/>pics/background_inline_button_blue.gif);
+  background-repeat: repeat-x;
+}
+.ss_inlineButtonSmall ss_reset {
+	position:relative;
+	display:block;
+	white-space:nowrap;
+	margin:2px 0 0 0;
+	}
+.ss_inlineButtonSmall:hover, input[type="reset"].ss_inlineButtonSmall:hover, input[type="button"].ss_inlineButtonSmall:hover, input[type="submit"].ss_inlineButtonSmall:hover, button.ss_inlineButtonSmall:hover {
+  border: 1px dotted #333;
+  color: #999;
+}
+.ss_inlineButtonSmall span {
+  padding: 0px 4px 0px 4px;
+  text-align: center;
+}
+.ss_inlineButtonSmall img {
   margin: 0px 0px 0px 0px;
 }

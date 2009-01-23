@@ -2225,7 +2225,7 @@ function captureXY(e) {
 	            if (ss_divToBeDelayHidden[ss_divToBeHidden[i]]) {
 	                ss_divToBeDelayHidden[ss_divToBeHidden[i]] = null
 	            } else {
-	                ss_hideDiv(ss_divToBeHidden[i])
+	                setTimeout("ss_hideDiv('"+ss_divToBeHidden[i]+"');",100);
 	    			if (ss_divToBeHidden[i] == ss_divBeingShown) ss_divBeingShown = null;
 	                ss_divToBeHidden[i] = '';
 	            }

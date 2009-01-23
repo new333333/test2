@@ -54,7 +54,7 @@ function ss_setImgSize(obj) {
 	}
 }
 </script>
-<div id="ss_imageDiv">
+<div id="ss_imageDiv" align="center">
 </div>
 <script type="text/javascript">
 	var divObj = document.getElementById("ss_imageDiv");
@@ -140,7 +140,7 @@ function ss_setImgSize(obj) {
     </a>
   </div>
 
-<div id="ss_imageDiv">
+<div id="ss_imageDiv" align="center">
 </div>
 <script type="text/javascript">
 	var divObj = document.getElementById("ss_imageDiv");

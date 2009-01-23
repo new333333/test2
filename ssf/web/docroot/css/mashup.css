@@ -32,7 +32,7 @@ div.ss_mashup_element_content {
 }
 
 div.ss_mashup_form_element_header {
-  border:1px solid #cecece; 
+  border:1px solid #aeaeae; 
   background-color:#e5e5e5; 
   padding:6px;
   }
@@ -90,12 +90,12 @@ div.ss_mashup_folder_header_view a span {
 }
   
 div.ss_mashup_folder_description {
-  border:1px solid #cecece;
+  border:1px solid #aeaeae;
   padding:6px;
   }
 
 div.ss_mashup_folder_list_closed {
-  border:1px solid #cecece;
+  border:1px solid #aeaeae;
   padding:6px;
   }
 
@@ -103,7 +103,7 @@ div.ss_mashup_folder_list_open {
   padding: 0px;
   }
 div.ss_mashup_folder_list_open_title {
-  border:1px solid #cecece; 
+  border:1px solid #aeaeae; 
   background-color:#e5e5e5; 
   padding:6px;
   font-size: 16px;
@@ -111,29 +111,29 @@ div.ss_mashup_folder_list_open_title {
   }
 
 div.ss_mashup_folder_list_open_entry {
-  border:1px solid #cecece;
+  border:1px solid #aeaeae;
   padding:0px 6px 6px 6px;
   }
     
 div.ss_mashup_entry_header {
-  border:1px solid #cecece; 
+  border:1px solid #aeaeae; 
   background-color:#e5e5e5; 
   padding:6px;
   }
   
 div.ss_mashup_entry_content {
-  border:1px solid #cecece;
+  border:1px solid #aeaeae;
   padding:6px;
   }
   
 div.ss_mashup_graphic_header {
-  border:1px solid #cecece; 
+  border:1px solid #aeaeae; 
   background-color:#e5e5e5; 
   padding:6px;
   }
   
 div.ss_mashup_graphic_content {
-  border:1px solid #cecece;
+  border:1px solid #aeaeae;
   padding:6px;
   }
   

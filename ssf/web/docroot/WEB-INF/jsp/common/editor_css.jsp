@@ -41,6 +41,7 @@ body, td, pre, .mceContentBody {
   background:#FFF;
 }
 
+p { margin:8px 0px 8px 0px; }
 table tr td { border: 1px solid #BBBBBB; }
 
 ul li {
