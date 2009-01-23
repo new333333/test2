@@ -28,10 +28,22 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="tag" value="toolbar.menu.addWorkspace"/>
+<c:if test="${ssOperation == 'add_folder' || ssOperation == 'add_subFolder'}">
+  <c:set var="tag" value="toolbar.menu.addFolder"/>
+</c:if>
+<c:if test="${ssOperation == 'add_team_workspace'}">
+  <c:set var="tag" value="team.addTeam"/>
+</c:if>
+<jsp:useBean id="tag" type="String" />
+<c:set var="ss_windowTitle" value='<%= NLT.get(tag) %>' scope="request"/>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+
+<body class="ss_style_body tundra">
 <c:if test="${!empty ssBinderTemplateName}">
   <%@ include file="/WEB-INF/jsp/binder/add_binder_short_form.jsp" %>
 </c:if>
@@ -169,7 +181,8 @@ function ss_checkForm(obj) {
 </script>
 
 <div class="ss_portlet">
-<br/>
+
+<ssf:form titleTag="${tag}">
 
 <form class="ss_style ss_form" 
   action="<ssf:url action="add_binder" actionUrl="true"><ssf:param 
@@ -178,19 +191,6 @@ function ss_checkForm(obj) {
   name="${renderResponse.namespace}fm" 
   id="${renderResponse.namespace}fm" 
   method="post" onSubmit="return ss_checkForm(this);">
-<span class="ss_bold">
-  <c:if test="${ssOperation == 'add_workspace'}">
-<ssf:nlt tag="toolbar.menu.addWorkspace"/>
-</c:if>
-<c:if test="${ssOperation == 'add_folder' || ssOperation == 'add_subFolder'}">
-<ssf:nlt tag="toolbar.menu.addFolder"><ssf:param name="value" value="${ssBinder.pathName}"/>
-</ssf:nlt>
-</c:if>
-<c:if test="${ssOperation == 'add_team_workspace'}">
-<ssf:nlt tag="team.addTeam"/>
-</c:if>
-
-</span></br></br>
   
 <table class="ss_style"  border="0" cellspacing="0" cellpadding="0" width="95%">
 <c:if test="${ssOperation != 'add_folder' && ssOperation != 'add_subFolder'}">
@@ -469,9 +469,13 @@ function ss_checkForm(obj) {
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">
 
 </form>
+</ssf:form>
 </div>
 
 <script type="text/javascript">
 ss_createOnLoadObj("ss_showAddBinderOptions", ss_showAddBinderOptions);
 </script>
 </c:if>
+
+</body>
+</html>

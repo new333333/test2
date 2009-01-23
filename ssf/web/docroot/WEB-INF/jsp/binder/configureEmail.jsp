@@ -28,12 +28,18 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("toolbar.menu.configure_folder_email") %>' scope="request"/>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
+<body class="ss_style_body tundra">
+
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 
 <div class="ss_style ss_portlet">
-
+<ssf:form titleTag="toolbar.menu.configure_folder_email">
+<br/>
 	<c:if test="${!empty ssException}">
 		<span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
 	</c:if>
@@ -173,4 +179,8 @@
 		</div>
 	
 	</form>
+</ssf:form>
 </div>
+
+</body>
+</html>
