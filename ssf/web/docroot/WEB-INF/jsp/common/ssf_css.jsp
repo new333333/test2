@@ -528,7 +528,6 @@ table.ss_guestbook {
  	font-family: sans-serif;
   	padding: 3px 15px 3px 15px !important;
   	margin: 1px 2px 1px 2px !important;
-  	line-height: 100% !important;
 	}
 input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visited {
  cursor: pointer;
@@ -1794,11 +1793,9 @@ a:hover img.ss_print_button {
 }
 
 img.ss_accessory_modify {
-	position:relative;
     background:url(<html:imagesPath/>icons/accessory_modify.gif) no-repeat left 0px;
     width:16px;
     height: 16px;
-    top: -1px;
 }
 
 a:hover img.ss_accessory_modify {
@@ -1806,11 +1803,9 @@ a:hover img.ss_accessory_modify {
 }
 
 img.ss_accessory_delete {
-	position:relative;
     background:url(<html:imagesPath/>icons/accessory_delete.gif) no-repeat left 0px;
     width:12px;
     height: 12px;
-    top: 1px;
 }
 
 a:hover img.ss_accessory_delete {
@@ -2632,9 +2627,6 @@ div.ss_cal_monthGridDayBadgeCurrent, div.ss_cal_monthGridDayBadge {
 }
 
 div.ss_cal_monthGridDayBadgeCurrent a, div.ss_cal_monthGridDayBadge a {
-  position: relative;
-  right: 3px;
-  top: -2px;
 }
 
 div.ss_cal_monthGridDayBadgeOverHighlight {
@@ -2674,8 +2666,6 @@ a.ss_calDaySelectButton img, a.ss_calDaySelectButtonActive img,
 	padding: 0 5px 0 0;
 	border: 0px;
 	vertical-align: bottom;
-	position: relative;
-	top: -4px;
 }
 
 a.ss_calDaySelectButton img, a.ss_calDaySelectButton:link img , a.ss_calDaySelectButton:focus img, a.ss_calDaySelectButton:visited img { 
@@ -3060,7 +3050,7 @@ ul.ss_calendarNaviBar {
 	border: 1px solid #CCCCCC;
 	background-color: #AFC8E3;
 	list-style-type: none;
-	height: 30px;
+	height: 34px;
 	padding: 0px;
 	margin: 0px 0px 5px 0px;
 	width: 100%;
@@ -3074,7 +3064,6 @@ ul.ss_calendarNaviBar li {
 }
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOption, ul.ss_calendarNaviBar .ss_calendarNaviBarSeparator {
-	position:relative;
 	vertical-align: middle;
 	float: left;
 	height: 30px;
@@ -3108,11 +3097,10 @@ ul.ss_calendarNaviBar li.ss_calHoursSelectorMenu {
 }
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOptionMiddleImg {
-	padding-top: 3px;
 }
 
-ul.ss_calendarNaviBar li.ss_calendarNaviBarOption > a > img.ss_fullHeight {
-	margin: 1px 0px 1px 0px;
+ul.ss_calendarNaviBar li.ss_calendarNaviBarOption  {
+	margin: 0px;
 }
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOption div.ss_toolbar_color {

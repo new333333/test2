@@ -2748,11 +2748,14 @@ public class BinderHelper {
 	
 	public static Long getNextPrevEntry(AllModulesInjected bs, Folder folder, Long entryId, boolean next) {
 		if (folder == null) {
-			return null;
+			return null; 
 		} 
 		Map options = new HashMap();		
       	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(ObjectKeys.SEARCH_MAX_HITS_FOLDER_ENTRIES));
       	options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(0));
+		User user = RequestContextHolder.getRequestContext().getUser();
+		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folder.getId());
+      	BinderHelper.initSortOrder(bs, userFolderProperties, options, BinderHelper.getViewType(bs, folder.getId()));
 
       	Map searchResults = bs.getFolderModule().getEntries(folder.getId(), options);
 		List folderEntries = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
@@ -2776,5 +2779,33 @@ public class BinderHelper {
 		}
 		return null;
 	}
-	
+
+	public static void initSortOrder(AllModulesInjected bs, 
+			UserProperties userFolderProperties, Map options, String viewType) {
+		//Start - Determine the Sort Order
+		//since one one tab/folder, no use in saving info in tabs
+		//Trying to get Sort Information from the User Folder Properties
+		String	searchSortBy = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY);
+		String	searchSortDescend = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_DESCEND);
+		
+		//Setting the Sort properties if it is available in the Tab or User Folder Properties Level. 
+		//If not, go with the Default Sort Properties 
+		if (Validator.isNotNull(searchSortBy)) {
+			options.put(ObjectKeys.SEARCH_SORT_BY, searchSortBy);
+			if (("true").equalsIgnoreCase(searchSortDescend)) {
+				options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
+			} else {
+				options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
+			}
+		}
+		if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) { 
+			options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORTNUMBER_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
+		} else if (!options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) {
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
+		}
+		//End - Determine the Sort Order
+		
+	}
+
 }

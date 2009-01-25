@@ -203,7 +203,7 @@ public class ViewEntryController extends  SAbstractController {
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String operation2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		if (!operation.equals("")) {
-			model.put(WebKeys.URL_OPERATION, operation);
+			model.put(WebKeys.URL_OPERATION, operation); 
 		}
 
 		try {
@@ -230,6 +230,7 @@ public class ViewEntryController extends  SAbstractController {
 
 		//Set up the standard beans
 		BinderHelper.setupStandardBeans(this, request, response, model);
+		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 		
@@ -293,7 +294,6 @@ public class ViewEntryController extends  SAbstractController {
 					try {
 						Binder folder = getBinderModule().getBinder(folderId);
 						BinderHelper.setupStandardBeans(this, request, response, model, folderId);
-						UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 						DefinitionHelper.getDefinitions(folder, model, 
 								(String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
 					} catch(Exception e) {}
