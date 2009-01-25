@@ -826,7 +826,7 @@ function ss_clearStatus(textareaId) {
 	var obj = document.getElementById(textareaId);
 	if (obj && typeof obj.value != "undefined") {
 		obj.value = "";
-		obj.focus();
+		try {obj.focus();} catch(e){}
     	ss_updateStatusNow(obj);
 	}
 }
@@ -1097,7 +1097,9 @@ function ss_showHideObj(objName, visibility, displayStyle) {
 	    if (obj.style.visibility != visibility) {
 		    obj.style.visibility = visibility;
 		    obj.style.display = displayStyle;
-		    if (displayStyle == "block" || displayStyle == "inline") obj.focus();
+		    if (displayStyle == "block" || displayStyle == "inline") {
+		    	try{obj.focus()} catch(e){}
+		    }
 		}
 		//Signal that the layout changed
 		if (!obj.style.position || obj.style.position != "absolute") {
@@ -2064,7 +2066,7 @@ function ss_showBackgroundIFrame(divId, frmId) {
 	
 	frm.style.position = "absolute";
 	frm.style.display = "block";
-	frm.focus();
+	try {frm.focus();} catch(e){}
 }
 
 /* IE6 workaround - divs under selectboxes */
@@ -2533,7 +2535,6 @@ function ss_showLightbox(id, zIndex, opacity, className) {
     lightBox.style.visibility = "hidden";
     lightBox.className = className;
     lightBox.style.display = "block";
-    lightBox.focus();
     lightBox.style.top = "0px";
     lightBox.style.left = "0px";
     ss_setOpacity(lightBox, 0);
@@ -2541,6 +2542,7 @@ function ss_showLightbox(id, zIndex, opacity, className) {
     lightBox.style.height = ss_getBodyHeight() + "px";
     lightBox.style.zIndex = zIndex;
     lightBox.style.visibility = "visible";
+    lightBox.focus();
     dojo.fadeIn({node:lightBox, end:opacity, delay:150}).play();
     return lightBox;
 }
@@ -2678,7 +2680,7 @@ var ss_helpSystem = {
 	        helpSpotNode.className = "ss_helpSpot";
 	        helpSpotNode.style.zIndex = ssHelpSpotZ;
 	        helpSpotNode.style.display = "block";
-	        helpSpotNode.focus();
+	        try {helpSpotNode.focus()} catch(e){};
 			
 			var helpSpotA = document.createElement("a");
 			var helpSpotTable = document.createElement("table");
@@ -4085,7 +4087,7 @@ function ss_showForumEntryInIframe_Overlay(url) {
     } else {
     	wObj.src = url
     }
-    wObj.focus();
+    try {wObj.focus();} catch(e){}
 
 	if (self.ss_positionEntryDiv) ss_positionEntryDiv();
     
@@ -4488,7 +4490,7 @@ function ssTeams(namespace) {
 		ss_hideDiv("ss_myteams_loading" + namespace);
 		var d = dojo.byId("ss_myteams_list" + namespace);
 		d.innerHTML = data;
-		d.focus();
+		try {d.focus();} catch(e){}
 	}
 	this.hide = function() {
 		var fObj = self.document.getElementById("ss_myteams_pane" + namespace);
@@ -4502,7 +4504,7 @@ function ssTeams(namespace) {
 	    dojo.style(dObj, "visibility", "visible");
 	    dObj.style.zIndex = parseInt(ssMenuZ);
 	    fObj.src = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_my_teams", namespace:namespace});
-	    fObj.focus();
+	    try {fObj.focus();} catch(e){}
 	}
 	this.hideAccessible = function() {
 		var dObj = self.document.getElementById("ss_navbar_myteams" + namespace);
@@ -4545,7 +4547,7 @@ function ss_showPopupDivCentered(divId, focusId, cancelable) {
 	divObj.style.zIndex = parseInt(ssLightboxZ + 1);
 	ss_setupPopupDiv(divObj);
 	if (focusId && (focusId != '')) {
-		document.getElementById(focusId).focus();
+		try {document.getElementById(focusId).focus();} catch(e){}
 	}
 }
 
@@ -4967,7 +4969,7 @@ function ss_launchUrlInNewWindow(obj, fileName) {
 		}
 	}
 	var w = window.open(obj.href, "_blank")
-	w.focus();
+	try {w.focus();} catch(e){}
 	return false;
 }
 
@@ -4984,7 +4986,7 @@ function ss_showSubmenu(obj) {
 			ulElements[i].style.display = 'block'
 		}
 	}
-	obj.focus();
+	try {obj.focus();} catch(e){}
 }
 
 function ss_hideSubmenu(obj) {
@@ -5858,7 +5860,7 @@ function ss_placeOnScreen(divId, rel, offsetTop, offsetLeft) {
 	ss_moveDivToBody(divId);
 	var divObj = document.getElementById(divId);
 	dijit.placeOnScreen(divObj, {x: (box.x + offsetLeft), y: (box.y + offsetTop)}, "TL", false);
-	divObj.focus();
+	try {divObj.focus();} catch(e){}
 }
 
 
@@ -6614,7 +6616,7 @@ function ssEditAppConfig(menuDIV) {
 
 		// ...and put the input focus in its extension SELECT widget.		
 		var	eTR = this.dataTABLE.rows[this.dataTABLE.rows.length - 1];
-		document.getElementById("extensionSELECT_" + String(eTR.n_id)).focus();
+		try {document.getElementById("extensionSELECT_" + String(eTR.n_id)).focus();} catch(e){}
 	}	
 	
 	
