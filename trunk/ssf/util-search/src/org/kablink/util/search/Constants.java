@@ -26,6 +26,7 @@ public class Constants {
 	public static final String INCLUSIVE_TRUE = "TRUE";
 	public static final String EXACT_PHRASE_TRUE = "TRUE";
 	public static final String TAG_ELEMENT = "TAG";
+	public static final String SORT_FIELD_PREFIX = "_sort_";
 	public static final String UID_FIELD = "_uid";
 	public static final String DOC_TYPE_FIELD = "_docType";
 	public static final String ATTACHMENT_TYPE_FIELD = "_attType";
