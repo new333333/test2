@@ -388,8 +388,8 @@ public class BinderHelper {
 				model.put(WebKeys.USER_FOLDER_PROPERTIES_OBJ, userFolderProperties);
 				
 				Boolean brandingAccess = true;
-				Binder binder = bs.getBinderModule().getBinder(binderId);
 				try {
+					Binder binder = bs.getBinderModule().getBinder(binderId);
 					brandingAccess = bs.getBinderModule().checkAccess(binder.getBrandingSource().getId(), user);
 				} catch(AccessControlException e) {
 					brandingAccess = false;
