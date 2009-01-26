@@ -238,7 +238,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
       <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default folder view"/> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/views_workspaces" /> </legend>
 
       <c:forEach var="item" items="${ssAllBinderDefinitions}" >
-      <c:if test="${empty item.value.binderId}">
+      <c:if test="${item.value.binderId == -1}">
           <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" id="<c:out value="${item.value.id}"/>" <c:if test="${ssBinder.entryDef.id== item.value.id}"> checked </c:if> <c:out value="${disabled}"/>>
           <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
           <label for="<c:out value="${item.value.id}"/>">&nbsp;</label>
@@ -247,7 +247,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
       <br>
     <c:set var="headerOut" value=""/>
      <c:forEach var="item" items="${ssAllBinderDefinitions}">
-   	   <c:if test="${!empty item.value.binderId}">
+   	   <c:if test="${item.value.binderId != -1}">
   	    <c:if test="${empty headerOut}"><c:set var="headerOut" value="1"/><hr/><span class="ss_bold"><ssf:nlt tag="definition.local"/></span><br/></c:if>
 	    <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" <c:if test="${ssBinder.entryDef.id== item.value.id}"> checked </c:if><c:out value="${disabled}"/>>
 	     <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
@@ -268,7 +268,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 
     <c:set var="folderViewCount" value=""/>
     <c:forEach var="item" items="${ssAllBinderDefinitions}">
-       <c:if test="${empty item.value.binderId}">
+       <c:if test="${item.value.binderId == -1}">
  	      <input type="checkbox" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" 
 	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked <c:set var="folderViewCount" value="1"/></c:if>
 	      <c:out value="${disabled}"/>><c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
@@ -277,7 +277,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
     <br>
     <c:set var="headerOut" value="0"/>
       <c:forEach var="item" items="${ssAllBinderDefinitions}">
-   	   <c:if test="${!empty item.value.binderId}">
+   	   <c:if test="${item.value.binderId != -1}">
   	    <c:if test="${headerOut == '0'}"><c:set var="headerOut" value="1"/><hr/><span class="ss_bold"><ssf:nlt tag="definition.local"/></span><br/></c:if>
 	      <input type="checkbox" name="binderDefinition" value="<c:out value="${item.value.id}"/>" 
 	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked <c:set var="folderViewCount" value="1"/></c:if>
@@ -314,7 +314,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultEntryTypes" text="Default entry types"/> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/defaultEntryTypes" /> </legend>
 
     <c:forEach var="item" items="${ssAllEntryDefinitions}">
-   	   <c:if test="${empty item.value.binderId}">
+   	   <c:if test="${item.value.binderId == -1}">
 	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" 
 	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
 		      <c:out value="${disabled}"/>> <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
@@ -323,7 +323,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
     <br>
     <c:set var="headerOut" value=""/>
      <c:forEach var="item" items="${ssAllEntryDefinitions}">
-   	   <c:if test="${!empty item.value.binderId}">
+   	   <c:if test="${item.value.binderId != -1}">
   	    <c:if test="${empty headerOut}"><c:set var="headerOut" value="1"/><hr/><span class="ss_bold"><ssf:nlt tag="definition.local"/></span><br/></c:if>
 	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" 
 	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
@@ -404,7 +404,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedWorkflows" text="Allowed workflows"/>  <ssf:inlineHelp jsp="workspaces_folders/misc_tools/allowedWorkflows"/> </legend>
 
     <c:forEach var="item" items="${ssAllWorkflowDefinitions}">
-   	   <c:if test="${empty item.value.binderId}">
+   	   <c:if test="${item.value.binderId == -1}">
 	      <input type="checkbox" name="workflowDefinition" value="<c:out value="${item.value.id}"/>" 
 	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
 	      <c:out value="${disabled}"/>>
@@ -414,7 +414,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
     <br>
    <c:set var="headerOut" value=""/>
     <c:forEach var="item" items="${ssAllWorkflowDefinitions}">
-   	   <c:if test="${!empty item.value.binderId}">
+   	   <c:if test="${item.value.binderId != -1}">
 		<c:if test="${empty headerOut}"><c:set var="headerOut" value="1"/><hr/><span class="ss_bold"><ssf:nlt tag="definition.local"/></span><br/></c:if>		
 	      <input type="checkbox" name="workflowDefinition" value="<c:out value="${item.value.id}"/>" 
 	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>

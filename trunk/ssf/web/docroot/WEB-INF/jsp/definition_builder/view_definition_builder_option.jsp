@@ -59,13 +59,13 @@
 		<tr><td><a href="<ssf:url webPath="definitionDownload"><ssf:param
 				name="id_${ssDefinition.id}" value="on"/></ssf:url>"><ssf:nlt tag="definition.exportDefinition"/></a></td></tr>
 		<c:set var="defBinderId" value=""/>
-		<c:if test="${!empty ssDefinition.binderId}">
+		<c:if test="${ssDefinition.binderId != -1}">
 			<c:set var="defBinderId" value="${ssDefinition.binderId}"/>
 		</c:if>
-		<c:if test="${!empty ssDefinition.binderId}">
+		<c:if test="${ssDefinition.binderId != -1}">
 		<tr><td><a href="javascript: ;" onClick="return moveDefinition();"><ssf:nlt tag="definition.moveDefinition"/></a></td></tr>
 		</c:if>
-		<c:if test="${!empty ssDefinition.binderId  && ssIsAdmin}">
+		<c:if test="${ssDefinition.binderId != -1  && ssIsAdmin}">
 		<tr><td><a href="javascript: ;" onClick="return setVisibility(${ssDefinition.visibility}, '');"><ssf:nlt tag="definition.setGlobal"/></a></td></tr>
 		</c:if>
 		<c:if test="${ssDefinition.visibility == 1}">
@@ -77,7 +77,7 @@
 		</tbody></table>
 	  </c:when>
 	  <c:otherwise>
-	  <c:if test="${empty ssDefinition.binderId}">
+	  <c:if test="${ssDefinition.binderId == -1}">
 		<ssf:buildDefinitionDivs title='<%= NLT.get("definition.select_item") %>'
 		  sourceDocument="${data.sourceDefinition}" 
 		  configDocument="${ssConfigDefinition}"
@@ -87,7 +87,7 @@
 		  refItemId="${data.refItemId}" 
 		/>
 		</c:if>
-	  <c:if test="${!empty ssDefinition.binderId}">
+	  <c:if test="${ssDefinition.binderId != -1}">
 		<ssf:buildDefinitionDivs title='<%= NLT.get("definition.select_item") %>'
 		  sourceDocument="${data.sourceDefinition}" 
 		  configDocument="${ssConfigDefinition}"

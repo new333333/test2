@@ -172,7 +172,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
    	}
    	protected void checkAccess(Definition def, DefinitionOperation operation) throws AccessControlException {
-   		if (def.getBinderId() == null) checkAccess(null, def.getType(), operation);
+   		if (ObjectKeys.RESERVED_BINDER_ID.equals(def.getBinderId())) checkAccess(null, def.getType(), operation);
    		else checkAccess(getCoreDao().loadBinder(def.getBinderId(), def.getZoneId()), def.getType(), operation);
    	}
 
@@ -268,7 +268,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				def = getCoreDao().loadDefinition(id, null);
 				//see if belong to this binder and zone
 				if (def.getZoneId().equals(zoneId) &&
-						((binder == null && def.getBinderId() == null) ||
+						((binder == null && ObjectKeys.RESERVED_BINDER_ID.equals(def.getBinderId())) ||
 								(binder != null && binder.getId().equals(def.getBinderId())))) {
 						if (!type.equals(def.getType())) 
 							throw new DefinitionInvalidException("definition.error.idAlreadyExists", new Object[] {id});
@@ -309,6 +309,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		def.setType(type);
 		def.setInternalId(internalId);
 		if (binder != null) def.setBinderId(binder.getId());
+		else def.setBinderId(ObjectKeys.RESERVED_BINDER_ID);
 		if (Validator.isNull(id))
 			getCoreDao().save(def);
 		else {
@@ -345,7 +346,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	Definition def = getCoreDao().loadDefinition(defId, zoneId);
     	Binder binder = null;
-    	if (def.getBinderId() != null) binder = getCoreDao().loadBinder(def.getBinderId(), zoneId);
+    	if (!ObjectKeys.RESERVED_BINDER_ID.equals(def.getBinderId())) binder = getCoreDao().loadBinder(def.getBinderId(), zoneId);
     	Document doc = def.getDefinition();
     	if (doc == null) return;
     	Map<Long, Principal> principalMap = new HashMap();
@@ -514,17 +515,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	public Definition getDefinitionByName(Binder binder, Boolean includeAncestors, String name) {
 		List<Definition> defs;
 		if (binder == null) {
-  	    	Map params = new HashMap();
-   	    	params.put("name", name);
-   	    	params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());  //need zone without binder
-  	    	defs = coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId is null and zoneId=:zoneId and name=:name", params);
-
+  	    	FilterControls filter = new FilterControls();
+  	 		filter.add("binderId", ObjectKeys.RESERVED_BINDER_ID);
+ 	 		filter.add("name", name);
+  	 		defs =  coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
 		} else if (includeAncestors.equals(Boolean.TRUE)) {
    	    	Map params = new HashMap();
-   	    	params.put("binderId", getAncestorIds(binder));
+   	    	List ids = getAncestorIds(binder);
+   	    	ids.add(ObjectKeys.RESERVED_BINDER_ID);
+   	    	params.put("binderId", ids);
    	    	params.put("name", name);
   	    	params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());  //need zone without binder
-  	    	defs = coreDao.loadObjects("from org.kablink.teaming.domain.Definition where (binderId in (:binderId) or binderId is null) and zoneId=:zoneId and name=:name", params);
+  	    	defs = coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId in (:binderId) and zoneId=:zoneId and name=:name", params);
   	 	} else {
   	    	FilterControls filter = new FilterControls();
   	 		filter.add("binderId", binder.getId());
@@ -559,8 +561,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Definition def = getDefinition(id);
    		checkAccess(def, DefinitionOperation.manageDefinition);
 
-   		if (binderId == null) {
-   			if (def.getBinderId() == null) 	{
+   		if (binderId == null || ObjectKeys.RESERVED_BINDER_ID.equals(binderId)) {
+   			if (ObjectKeys.RESERVED_BINDER_ID.equals(def.getBinderId())) 	{
 	   			//already global
    				def.setVisibility(visibility);
    			} else {
@@ -573,7 +575,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    		   			throw new ObjectExistsException("errorcode.name.exists");
    		   		} catch (NoDefinitionByTheIdException nd) {
    		   			def.setVisibility(visibility);
-   					def.setBinderId(null);
+   		   			def.setBinderId(ObjectKeys.RESERVED_BINDER_ID);
 	   			}
    			}
 	   	} else {
@@ -2143,16 +2145,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		// Controllers need access to definitions.  Allow world read
        	if (binderId == null) {
         	FilterControls filter = new FilterControls()
-        		.add(Restrictions.isNull("binderId"));
+        		.add(Restrictions.eq("binderId", ObjectKeys.RESERVED_BINDER_ID));
         	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
     	}
     	try {
     		Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
    	 		if (includeAncestors.equals(Boolean.TRUE)) {
    	 			Map params = new HashMap();
-   	 			params.put("binderId", getAncestorIds(binder));
+   	 			List ids = getAncestorIds(binder);
+   	 			ids.add(ObjectKeys.RESERVED_BINDER_ID);
+   	 			params.put("binderId", ids);
    	 			params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());
-   	 			return coreDao.loadObjects("from org.kablink.teaming.domain.Definition where (binderId is null and zoneId=:zoneId) or binderId in (:binderId)", params);
+   	 			return coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId in (:binderId) and zoneId=:zoneId", params);
    	 		} else {
    	 			FilterControls filter = new FilterControls()
    	 			.add(Restrictions.eq("binderId", binder.getId()));
@@ -2173,17 +2177,19 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	if (binderId == null) {
         	FilterControls filter = new FilterControls()
          		.add(Restrictions.eq("type", type))
-        		.add(Restrictions.isNull("binderId"));
-        	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
+         		.add(Restrictions.eq("binderId", ObjectKeys.RESERVED_BINDER_ID));
+       	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
     	}
     	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
    	 	if (includeAncestors.equals(Boolean.TRUE)) {
   	       	Map params = new HashMap();
   	    	params.put("type", type);
-   	 		params.put("binderId", getAncestorIds(binder));
+  	    	List ids = getAncestorIds(binder);
+  	    	ids.add(ObjectKeys.RESERVED_BINDER_ID);
+  	    	params.put("binderId", ids);
    	 		params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());
 
-   	    	return coreDao.loadObjects("from org.kablink.teaming.domain.Definition where ((binderId is null and zoneId=:zoneId) or binderId in (:binderId)) and type=:type", params);
+   	    	return coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId in (:binderId) and zoneId=:zoneId  and type=:type", params);
   	 	} else {
   	      	FilterControls filter = new FilterControls()
   	      		.add(Restrictions.eq("type", type))

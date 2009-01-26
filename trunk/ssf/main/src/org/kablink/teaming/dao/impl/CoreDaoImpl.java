@@ -912,7 +912,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                  		.add(Expression.eq("zoneId", zoneId))
                  		.add(Expression.eq("name", name));
                  		if (binder != null) crit.add(Expression.eq("binderId", binder.getId()));
-                 		else crit.add(Expression.isNull("binderId"));
+                 		else crit.add(Expression.eq("binderId", ObjectKeys.RESERVED_BINDER_ID));
                 		Definition def = (Definition)crit.uniqueResult();
 	                    if (def == null) {throw new NoDefinitionByTheIdException(name);}
 	                    return def;
