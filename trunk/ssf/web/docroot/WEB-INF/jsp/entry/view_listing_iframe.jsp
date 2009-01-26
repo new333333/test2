@@ -84,7 +84,8 @@ ss_createOnLayoutChangeObj("ss_resizeTopDiv", ss_resizeTopDiv_${renderResponse.n
 
   <c:if test="<%= !reloadCaller %>">
     <c:if test="<%= !isViewEntry %>">
- <div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer" style="margin:0px 15px 0px 0px; padding:0px; width:99%;">
+ <div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer" 
+   style="margin:0px 15px 0px 0px; padding:0px;">
  <%@ include file="/WEB-INF/jsp/entry/view_iframe.jsp" %>
  </div>
      </c:if>

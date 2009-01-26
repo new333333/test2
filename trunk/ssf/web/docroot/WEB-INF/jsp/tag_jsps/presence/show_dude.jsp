@@ -81,7 +81,7 @@
 <c:set var="current" value="current"/>
 </c:if>
 <a href="javascript: ;"
- style="padding-right:2px; text-decoration:none;"
+ class="ss_presence_dude"
  onClick="ss_popupPresenceMenu(this, 
     '${ss_presence_user.id}', 
     '<%= presenceUserTitle %>', 
