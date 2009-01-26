@@ -353,11 +353,12 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  <c:set var="eleType" value="<%= eleType %>"/>
 	  <c:set var="eleSortName" value="${eleName}"/>
 	  <c:if test="${eleType == 'selectbox' || eleType == 'radio'}"><c:set var="eleSortName" value="_caption_${eleName}"/></c:if>
+	  <c:if test="${eleType == 'text' || eleType == 'hidden'}"><c:set var="eleSortName" value="_sort_${eleName}"/></c:if>
 	  <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="20%">
-	    <c:if test="${eleType != 'selectbox' && eleType != 'radio' && eleType != 'text' && eleType != 'checkbox' && eleType != 'date' && eleType != 'datetime'}">
+	    <c:if test="${eleType != 'selectbox' && eleType != 'radio' && eleType != 'text' && eleType != 'hidden' && eleType != 'checkbox' && eleType != 'date' && eleType != 'datetime'}">
 	      <div class="ss_title_menu">${eleCaption}</div>
 	    </c:if>
-	    <c:if test="${eleType == 'selectbox' || eleType == 'radio' || eleType == 'text' || eleType == 'checkbox' || eleType == 'date' || eleType == 'datetime'}">
+	    <c:if test="${eleType == 'selectbox' || eleType == 'radio' || eleType == 'text' || eleType == 'hidden' || eleType == 'checkbox' || eleType == 'date' || eleType == 'datetime'}">
 		    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 		    	name="operation" value="save_folder_sort_info"/><ssf:param 
 		    	name="binderId" value="${ssBinder.id}"/><ssf:param 

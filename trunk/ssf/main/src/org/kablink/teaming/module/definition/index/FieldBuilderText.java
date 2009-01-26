@@ -33,6 +33,7 @@ import java.util.Set;
 
 import org.apache.lucene.document.Field;
 import org.kablink.teaming.search.BasicIndexUtils;
+import org.kablink.util.search.Constants;
 
 
 /**
@@ -72,12 +73,13 @@ public class FieldBuilderText extends AbstractFieldBuilder {
             return new Field[0];
         }
         else {
+           	Field sortTextField = new Field(makeFieldName(Constants.SORT_FIELD_PREFIX + dataElemName), val.toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED); 
            	Field textField = new Field(makeFieldName(dataElemName), val, Field.Store.YES, Field.Index.TOKENIZED); 
            	if (!fieldsOnly) {
                	Field allTextField = BasicIndexUtils.allTextField(val);
-               	return new Field[] {allTextField, textField};
+               	return new Field[] {allTextField, textField, sortTextField};
            	} else {
-               	return new Field[] {textField};
+               	return new Field[] {textField, sortTextField};
            	}
         }
     }
