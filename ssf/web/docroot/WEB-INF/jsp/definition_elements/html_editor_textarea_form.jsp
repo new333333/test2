@@ -93,7 +93,7 @@
   		<c:if test="${!empty ss_html_editor_textarea_form_helpicon_prefix}">
   			<em><ssf:nlt tag="${ss_html_editor_textarea_form_helpicon_prefix}"/> </em>
   		</c:if>	
-  		<ssf:inlineHelp tag="${ss_html_editor_textarea_form_helpicon}"/>
+  		<ssf:inlineHelp jsp="${ss_html_editor_textarea_form_helpicon}"/>
   	</c:if>
   	</div>
 
