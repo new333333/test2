@@ -232,7 +232,7 @@ public abstract class WSClientBase {
 
 	protected void setupTypeMapping(Call call) {
 		for(int i = 0; i < modelClasses.length; i++) {
-			QName qname = new QName("http://model.ws.remoting.team.sitescape.com", modelClasses[i].getSimpleName());
+			QName qname = new QName("http://model.ws.remoting.teaming.kablink.org", modelClasses[i].getSimpleName());
 			call.registerTypeMapping(modelClasses[i], 
 					qname, 
 					new BeanSerializerFactory(modelClasses[i], qname), 
