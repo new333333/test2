@@ -70,7 +70,6 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.IndividualPrincipal;
 import org.kablink.teaming.domain.NoApplicationByTheNameException;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
@@ -79,7 +78,6 @@ import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.TemplateBinder;
-import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.UserPropertiesPK;
@@ -87,7 +85,6 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
-import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -103,7 +100,6 @@ import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.EventHelper;
-import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -1043,16 +1039,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			return true;
 		}
     }
-	public class GuestProperties extends UserProperties implements java.io.Serializable {
-		static final long serialVersionUID = 12345;
-	    protected GuestProperties(UserProperties uProps) {
-	    	setId(uProps.getId());
-	    	//session access may be concurrent, so use synchronzied map
-	    	Map props = java.util.Collections.synchronizedMap(new HashMap());
-	    	props.putAll(uProps.getProperties());
-	    	setProperties(props);	    	
-	    }
-	}
 
     //RW transaction
 	public void deleteUserByName(String userName,  Map options) {
