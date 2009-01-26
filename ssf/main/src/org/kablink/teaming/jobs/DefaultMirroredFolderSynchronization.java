@@ -83,7 +83,7 @@ public class DefaultMirroredFolderSynchronization extends SSCronTriggerJob
 	public class SyncJobDescription extends CronJobDescription {
 		private Long folderId;
 		public SyncJobDescription(Long zoneId, Long folderId) {
-			super(zoneId, folderId.toString(), SYNCHRONIZATION_GROUP, SYNCHRONIZATION_DESCRIPTION + folderId);
+			super(zoneId, folderId.toString(), SYNCHRONIZATION_GROUP, SYNCHRONIZATION_DESCRIPTION + folderId, false);
 			this.folderId = folderId;
 		}
 		public Long getFolderId() {
