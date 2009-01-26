@@ -117,41 +117,46 @@ try
 				// Create a tutorial object for "what is teaming".
 				tutorialObj = new Object();
 				m_tutorialObjs['whatIsTeaming'] = tutorialObj;
-				tutorialObj.td = document.getElementById( 'whatIsTeamingTD' );
-				tutorialObj.span = document.getElementById( 'whatIsTeamingSpan' );
-				tutorialObj.img = document.getElementById( 'whatIsTeamingSelectedImg' );
-				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-1.wmv';
+				tutorialObj.td = document.getElementById( 'tutorial1TD' );
+				tutorialObj.span = document.getElementById( 'tutorial1Span' );
+				tutorialObj.img = document.getElementById( 'tutorial1SelectedImg' );
+				tutorialObj.type = 'application/x-shockwave-flash';
+				tutorialObj.url = 'http://www.youtube.com/v/8YqsFwmgMms&hl=en&fs=1';
 
-				// Create a tutorial object for "getting around"
+				// Create a tutorial object for "Getting Started"
 				tutorialObj = new Object();
-				m_tutorialObjs['gettingAround'] = tutorialObj;
-				tutorialObj.td = document.getElementById( 'gettingAroundTD' );
-				tutorialObj.span = document.getElementById( 'gettingAroundSpan' );
-				tutorialObj.img = document.getElementById( 'gettingAroundSelectedImg' );
-				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-2.wmv';
+				m_tutorialObjs['gettingStarted'] = tutorialObj;
+				tutorialObj.td = document.getElementById( 'tutorial2TD' );
+				tutorialObj.span = document.getElementById( 'tutorial2Span' );
+				tutorialObj.img = document.getElementById( 'tutorial2SelectedImg' );
+				tutorialObj.type = 'application/x-shockwave-flash';
+				tutorialObj.url = 'http://www.youtube.com/v/yuI6XfKoDiA&hl=en&fs=1';
 
-				// Create a tutorial object for "importing files"
+				// Create a tutorial object for "Getting Informed"
 				tutorialObj = new Object();
-				m_tutorialObjs['importingFiles'] = tutorialObj;
-				tutorialObj.td = document.getElementById( 'importingFilesTD' );
-				tutorialObj.span = document.getElementById( 'importingFilesSpan' );
-				tutorialObj.img = document.getElementById( 'importingFilesSelectedImg' );
-				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-3.wmv';
+				m_tutorialObjs['gettingInformed'] = tutorialObj;
+				tutorialObj.td = document.getElementById( 'tutorial3TD' );
+				tutorialObj.span = document.getElementById( 'tutorial3Span' );
+				tutorialObj.img = document.getElementById( 'tutorial3SelectedImg' );
+				tutorialObj.type = 'application/x-shockwave-flash';
+				tutorialObj.url = 'http://www.youtube.com/v/VJTQr4BPurc&hl=en&fs=1';
 
-				// Create a tutorial object for "customization"
+				// Create a tutorial object for "Navigation"
 				tutorialObj = new Object();
-				m_tutorialObjs['customization'] = tutorialObj;
-				tutorialObj.td = document.getElementById( 'customizationTD' );
-				tutorialObj.span = document.getElementById( 'customizationSpan' );
-				tutorialObj.img = document.getElementById( 'customizationSelectedImg' );
+				m_tutorialObjs['navigation'] = tutorialObj;
+				tutorialObj.td = document.getElementById( 'tutorial4TD' );
+				tutorialObj.span = document.getElementById( 'tutorial4Span' );
+				tutorialObj.img = document.getElementById( 'tutorial4SelectedImg' );
+				tutorialObj.type = '';
 				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-4.wmv';
 
-				// Create a tutorial object for "best practices"
+				// Create a tutorial object for "Customizing Teaming to Solve Business Problems"
 				tutorialObj = new Object();
-				m_tutorialObjs['bestPractices'] = tutorialObj;
-				tutorialObj.td = document.getElementById( 'bestPracticesTD' );
-				tutorialObj.span = document.getElementById( 'bestPracticesSpan' );
-				tutorialObj.img = document.getElementById( 'bestPracticesSelectedImg' );
+				m_tutorialObjs['customizingTeaming'] = tutorialObj;
+				tutorialObj.td = document.getElementById( 'tutorial5TD' );
+				tutorialObj.span = document.getElementById( 'tutorial5Span' );
+				tutorialObj.img = document.getElementById( 'tutorial5SelectedImg' );
+				tutorialObj.type = '';
 				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-5.wmv';
 
 				// Get the name of the tutorial we should start playing.
@@ -226,7 +231,7 @@ try
 				embed.name = 'medialPlayer';
 				embed.width = '480';
 				embed.height = '385';
-//!!!				embed.type = 'application/x-shockwave-flash';
+				embed.type = tutorialObj.type;
 				embed.src = tutorialObj.url;
 
 				td.appendChild( embed );
@@ -262,113 +267,113 @@ try
 				<td nowrap width="1%" valign="top">
 					<table width="100%" cellpadding="0" cellspacing="0">
 						<tr>
-							<td nowrap width="1%" id="whatIsTeamingTD">
-								<div id="whatIsTeamingDiv" class="tutorialItem">
+							<td nowrap width="1%" id="tutorial1TD">
+								<div id="tutorial1Div" class="tutorialItem">
 									<a 	href="#"
 										onclick="playTutorial( 'whatIsTeaming' )"
 										style="text-decoration: none;"
-										title="<ssf:nlt tag="tutorial.alt.viewWhatIsTeaming" />" >
+										title="<ssf:nlt tag="tutorial.alt.viewTutorial1" />" >
 										<img	border="0"
 												align="absmiddle"
 												src="<html:imagesPath/>pics/tutorial/iconWhatIsTeaming.png"
-												title="<ssf:nlt tag="tutorial.alt.viewWhatIsTeaming" />"
-												alt="<ssf:nlt tag="tutorial.alt.viewWhatIsTeaming" />" />
+												title="<ssf:nlt tag="tutorial.alt.viewTutorial1" />"
+												alt="<ssf:nlt tag="tutorial.alt.viewTutorial1" />" />
 										<!-- We want the text in this column to line up.  That's why we have an image here. -->
 										<img	border="0" width="5" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
-										<span class="tutorialUnhighlightedText" id="whatIsTeamingSpan"><ssf:nlt tag="tutorial.whatsTeaming" /></span>
+										<span class="tutorialUnhighlightedText" id="tutorial1Span"><ssf:nlt tag="tutorial.tutorial1" /></span>
 									</a>
 								</div>
 							</td>
 							<td nowrap width="1%">
-								<img id="whatIsTeamingSelectedImg" border="0" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
+								<img id="tutorial1SelectedImg" border="0" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
 							</td>
 						</tr>
 						<tr>
-							<td nowrap width="1%" id="gettingAroundTD">
-								<div id="gettingAroundDiv" class="tutorialItem">
+							<td nowrap width="1%" id="tutorial2TD">
+								<div id="tutorial2Div" class="tutorialItem">
 									<a	href="#"
-										onclick="playTutorial( 'gettingAround' )"
+										onclick="playTutorial( 'gettingStarted' )"
 										style="text-decoration: none;"
-										title="<ssf:nlt tag="tutorial.alt.viewGettingAround" />" >
+										title="<ssf:nlt tag="tutorial.alt.viewTutorial2" />" >
 										<img	border="0"
 												align="absmiddle"
 												src="<html:imagesPath/>pics/tutorial/iconGettingAround.png"
-												title="<ssf:nlt tag="tutorial.alt.viewGettingAround" />"
-												alt="<ssf:nlt tag="tutorial.alt.viewGettingAround" />" />
+												title="<ssf:nlt tag="tutorial.alt.viewTutorial2" />"
+												alt="<ssf:nlt tag="tutorial.alt.viewTutorial2" />" />
 										<!-- We want the text in this column to line up.  That's why we have an image here. -->
 										<img	border="0" width="4" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
-										<span class="tutorialUnhighlightedText" id="gettingAroundSpan"><ssf:nlt tag="tutorial.gettingAround" /></span>
+										<span class="tutorialUnhighlightedText" id="tutorial2Span"><ssf:nlt tag="tutorial.tutorial2" /></span>
 									</a>
 								</div>
 							</td>
 							<td nowrap width="1%">
-								<img id="gettingAroundSelectedImg" border="0" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
+								<img id="tutorial2SelectedImg" border="0" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
 							</td>
 						</tr>
 						<tr>
-							<td nowrap width="1%" id="importingFilesTD">
-								<div id="importingFilesDiv" class="tutorialItem">
+							<td nowrap width="1%" id="tutorial3TD">
+								<div id="tutorial3Div" class="tutorialItem">
 									<a	href="#"
-										onclick="playTutorial( 'importingFiles' )"
+										onclick="playTutorial( 'gettingInformed' )"
 										style="text-decoration: none;"
-										title="<ssf:nlt tag="tutorial.alt.viewImportingFiles" />" >
+										title="<ssf:nlt tag="tutorial.alt.viewTutorial3" />" >
 										<img	border="0"
 												align="absmiddle"
 												src="<html:imagesPath/>pics/tutorial/iconImportingFiles.png"
-												title="<ssf:nlt tag="tutorial.alt.viewImportingFiles" />"
-												alt="<ssf:nlt tag="tutorial.alt.viewImportingFiles" />" />
+												title="<ssf:nlt tag="tutorial.alt.viewTutorial3" />"
+												alt="<ssf:nlt tag="tutorial.alt.viewTutorial3" />" />
 										<!-- We want the text in this column to line up.  That's why we have an image here. -->
 										<img	border="0" width="12" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
-										<span class="tutorialUnhighlightedText" id="importingFilesSpan"><ssf:nlt tag="tutorial.importingFiles" /></span>
+										<span class="tutorialUnhighlightedText" id="tutorial3Span"><ssf:nlt tag="tutorial.tutorial3" /></span>
 									</a>
 								</div>
 							</td>
 							<td nowrap width="1%">
-								<img id="importingFilesSelectedImg" border="0" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
+								<img id="tutorial3SelectedImg" border="0" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
 							</td>
 						</tr>
 						<tr>
-							<td nowrap width="1%" id="customizationTD">
-								<div id="customizationDiv" class="tutorialItem">
+							<td nowrap width="1%" id="tutorial4TD">
+								<div id="tutorial4Div" class="tutorialItem">
 									<a	href="#"
-										onclick="playTutorial( 'customization' )"
+										onclick="playTutorial( 'navigation' )"
 										style="text-decoration: none;"
-										title="<ssf:nlt tag="tutorial.alt.viewCustomization" />" >
+										title="<ssf:nlt tag="tutorial.alt.viewTutorial4" />" >
 										<img	border="0"
 												align="absmiddle"
 												src="<html:imagesPath/>pics/tutorial/iconCustomization.png"
-												title="<ssf:nlt tag="tutorial.alt.viewCustomization" />"
-												alt="<ssf:nlt tag="tutorial.alt.viewCustomization" />" />
+												title="<ssf:nlt tag="tutorial.alt.viewTutorial4" />"
+												alt="<ssf:nlt tag="tutorial.alt.viewTutorial4" />" />
 										<!-- We want the text in this column to line up.  That's why we have an image here. -->
 										<img	border="0" width="8" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
-										<span class="tutorialUnhighlightedText" id="customizationSpan"><ssf:nlt tag="tutorial.customization" /></span>
+										<span class="tutorialUnhighlightedText" id="tutorial4Span"><ssf:nlt tag="tutorial.tutorial4" /></span>
 									</a>
 								</div>
 							</td>
 							<td nowrap width="1%">
-								<img id="customizationSelectedImg" border="0" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
+								<img id="tutorial4SelectedImg" border="0" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
 							</td>
 						</tr>
 						<tr>
-							<td nowrap width="1%" id="bestPracticesTD">
-								<div id="bestPracticesDiv" class="tutorialItem">
+							<td nowrap width="1%" id="tutorial5TD">
+								<div id="tutorial5Div" class="tutorialItem">
 									<a	href="#"
-										onclick="playTutorial( 'bestPractices' )"
+										onclick="playTutorial( 'customizingTeaming' )"
 										style="text-decoration: none;"
-										title="<ssf:nlt tag="tutorial.alt.viewBestPractices" />" >
+										title="<ssf:nlt tag="tutorial.alt.viewTutorial5" />" >
 										<img	border="0"
 												align="absmiddle"
 												src="<html:imagesPath/>pics/tutorial/iconBestPractices.png"
-												title="<ssf:nlt tag="tutorial.alt.viewBestPractices" />"
-												alt="<ssf:nlt tag="tutorial.alt.viewBestPractices" />" />
+												title="<ssf:nlt tag="tutorial.alt.viewTutorial5" />"
+												alt="<ssf:nlt tag="tutorial.alt.viewTutorial5" />" />
 										<!-- We want the text in this column to line up.  That's why we have an image here. -->
 										<img	border="0" width="8" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
-										<span class="tutorialUnhighlightedText" id="bestPracticesSpan"><ssf:nlt tag="tutorial.bestPractices" /></span>
+										<span class="tutorialUnhighlightedText" id="tutorial5Span"><ssf:nlt tag="tutorial.tutorial5" /></span>
 									</a>
 								</div>
 							</td>
 							<td nowrap width="1%">
-								<img id="bestPracticesSelectedImg" border="0" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
+								<img id="tutorial5SelectedImg" border="0" align="absmiddle" style="" src="<html:imagesPath/>pics/1pix.gif" title="" alt="" />
 							</td>
 						</tr>
 					</table>
