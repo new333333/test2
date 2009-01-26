@@ -435,7 +435,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 		hMsg.append("\">");
 		hMsg.append(entry.getTitle());
 		hMsg.append("</a>");
-		hMsg.append("<br/><br/>");
+		hMsg.append("<br /><br />");
 		hMsg.append(notify.getBody());
 		if (notify.isAppendBody()) {
 			hMsg.append("<p>");
