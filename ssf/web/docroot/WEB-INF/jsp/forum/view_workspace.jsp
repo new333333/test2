@@ -454,57 +454,57 @@ if (typeof ss_workarea_showId == "undefined")
 					</td>
 					<td align="center">
 						<a 	href="#"
-							title="<ssf:nlt tag="tutorial.alt.viewWhatIsTeaming" />"
+							title="<ssf:nlt tag="tutorial.alt.viewTutorial1" />"
 							onClick="startTutorial( 'whatIsTeaming' )">
 							<img	border="0"
 									src="<html:imagesPath/>pics/tutorial/iconVideoWhatIsTeaming.png"
 									title=""
 									alt="" />
-							<br /><span style="text-decoration: underline"><ssf:nlt tag="tutorial.whatsTeaming" /></span> 
+							<br /><span style="text-decoration: underline"><ssf:nlt tag="tutorial.tutorial1" /></span> 
 						</a>
 					</td>
 					<td align="center">
 						<a 	href="#"
-							title="<ssf:nlt tag="tutorial.alt.viewGettingAround" />"
-							onClick="startTutorial( 'gettingAround' )">
+							title="<ssf:nlt tag="tutorial.alt.viewTutorial2" />"
+							onClick="startTutorial( 'gettingStarted' )">
 							<img	border="0"
 									src="<html:imagesPath/>pics/tutorial/iconVideoGettingAround.png"
 									title=""
 									alt="" />
-							<br/><span style="text-decoration: underline"><ssf:nlt tag="tutorial.gettingAround" /></span> 
+							<br/><span style="text-decoration: underline"><ssf:nlt tag="tutorial.tutorial2" /></span> 
 						</a>
 					</td>
 					<td align="center">
 						<a 	href="#"
-							title="<ssf:nlt tag="tutorial.alt.viewImportingFiles" />"
-							onClick="startTutorial( 'importingFiles' )">
+							title="<ssf:nlt tag="tutorial.alt.viewTutorial3" />"
+							onClick="startTutorial( 'gettingInformed' )">
 							<img	border="0"
 									src="<html:imagesPath/>pics/tutorial/iconVideoImportingFiles.png"
 									title=""
 									alt="" />
-							<br/><span style="text-decoration: underline"><ssf:nlt tag="tutorial.importingFiles" /></span> 
+							<br/><span style="text-decoration: underline"><ssf:nlt tag="tutorial.tutorial3" /></span> 
 						</a>
 					</td>
 					<td align="center">
 						<a 	href="#"
-							title="<ssf:nlt tag="tutorial.alt.viewCustomization" />"
-							onClick="startTutorial( 'customization' )">
+							title="<ssf:nlt tag="tutorial.alt.viewTutorial4" />"
+							onClick="startTutorial( 'navigation' )">
 							<img	border="0"
 									src="<html:imagesPath/>pics/tutorial/iconVideoCustomization.png"
 									title=""
 									alt="" />
-							<br/><span style="text-decoration: underline"><ssf:nlt tag="tutorial.customization" /></span> 
+							<br/><span style="text-decoration: underline"><ssf:nlt tag="tutorial.tutorial4" /></span> 
 						</a>
 					</td>
 					<td align="center">
 						<a 	href="#"
-							title="<ssf:nlt tag="tutorial.alt.viewBestPractices" />"
-							onClick="startTutorial( 'bestPractices' )">
+							title="<ssf:nlt tag="tutorial.alt.viewTutorial5" />"
+							onClick="startTutorial( 'customizingTeaming' )">
 							<img	border="0"
 									src="<html:imagesPath/>pics/tutorial/iconVideoBestPractices.png"
 									title=""
 									alt="" />
-							<br/><span style="text-decoration: underline"><ssf:nlt tag="tutorial.bestPractices" /></span> 
+							<br/><span style="text-decoration: underline"><ssf:nlt tag="tutorial.tutorial5" /></span> 
 						</a>
 					</td>
 					<td width="5%" align="right" valign="top">
