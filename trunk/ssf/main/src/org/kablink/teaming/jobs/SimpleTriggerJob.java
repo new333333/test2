@@ -18,7 +18,7 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 			JobDetail jobDetail=scheduler.getJobDetail(job.getJobName(), job.getJobGroup());
 			if (jobDetail == null) {
 				jobDetail = new JobDetail(job.getJobName(), job.getJobGroup(), 
-						Class.forName(this.getClass().getName()),false, false, false);
+						Class.forName(this.getClass().getName()),false, job.getDurability(), false);
 				jobDetail.setDescription(job.getJobDescription());
 				jobDetail.setJobDataMap(job.getData());
 				jobDetail.addJobListener(getDefaultCleanupListener());
@@ -56,6 +56,7 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 		protected Long zoneId;
 		protected String jobName, jobGroup, jobDescription;
 		int seconds;
+		boolean durability = false;
 		SimpleJobDescription(Long zoneId) {
 			this.zoneId = zoneId;
 		}
@@ -66,6 +67,10 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 			this.jobDescription = trimDescription(jobDescription);
 
 			this.seconds = seconds;
+		}
+		SimpleJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, int seconds, boolean durability) {
+			this(zoneId, jobName, jobGroup, jobDescription, seconds);
+			this.durability = durability;
 		}
 		protected String getJobName() {
 			return jobName;
@@ -106,6 +111,9 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 		}
 		protected int getMisfireInstruction() {
 			return SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT;
+		}
+		protected boolean getDurability() {
+			return durability;
 		}
 	}
 }
