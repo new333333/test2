@@ -153,6 +153,9 @@ public class QueryBuilder {
 						qString += resString;
 						if (j < (elemCount - 1) && (resString != "")) {
 							qString += " " + operator + " ";
+						} else {
+							if (!so.getLanguage().equalsIgnoreCase(LanguageTaster.DEFAULT))
+								qString = this.fixQStringforLang(qString, operator);
 						}
 					} else {
 						System.out
@@ -406,6 +409,14 @@ public class QueryBuilder {
 		}
 		return buf.toString();
 		
+	}
+	
+	private String fixQStringforLang(String qstring, String operator) {
+		String suffix = " " + operator + " ";
+		if (qstring.endsWith(suffix)) {
+			qstring = qstring.substring(0, qstring.length() - suffix.length());
+		}
+		return qstring;
 	}
 	public void test() {
 		Document document = null;

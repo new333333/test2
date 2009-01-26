@@ -37,6 +37,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.util.FileCharsetDetectorUtil;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FilePathUtil;
 import org.kablink.teaming.util.FileStore;
@@ -48,6 +49,7 @@ public abstract class Converter<T>
 {
 	protected FileStore cacheFileStore;
 	private FileModule fileModule;
+	private static final String TEXT_FILE_SUFFIX = ".txt";
 	
 	public Converter() {
 		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
@@ -124,6 +126,10 @@ public abstract class Converter<T>
 			("s" + timestamp, getSuffix(new File(filePath)), cacheFileStore.getFile(filePath).getParentFile(), true, is);
 
 			tempConvertedFile = TempFileUtil.createTempFile("t" + timestamp, getSuffix(convertedFile), convertedFile.getParentFile(), false);
+			// correct encoding here
+			if (filePath.endsWith(TEXT_FILE_SUFFIX)) {
+				checkAndConvertEncoding(copyOfOriginalFile);
+			}
 			
 			convert(relativeFilePath, copyOfOriginalFile.getAbsolutePath(), tempConvertedFile.getAbsolutePath(), 30000, parameters);
 			
@@ -170,6 +176,18 @@ public abstract class Converter<T>
 		String filePath = FilePathUtil.getFilePath(binder, entry, fa, subdir, fileName);
 		File imageFile = cacheFileStore.getFile(filePath);
 		return new FileInputStream(imageFile);
+	}
+	
+	protected String checkAndConvertEncoding(File origFile) throws IOException {
+
+		String encoding = "";
+		// Get the encoding of the inputstream
+		encoding = FileCharsetDetectorUtil.charDetect(origFile);
+		String timestamp = getTimestamp();
+		File tempEncodedFile = TempFileUtil.createTempFile("e" + timestamp, getSuffix(origFile), origFile.getParentFile(), true);
+		FileCharsetDetectorUtil.convertEncoding(origFile, tempEncodedFile, encoding, "Unicode");
+		FileHelper.move(tempEncodedFile, origFile);
+		return encoding;
 	}
 
 }
