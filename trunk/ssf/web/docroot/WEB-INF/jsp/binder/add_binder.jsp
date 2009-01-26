@@ -63,6 +63,7 @@
 <c:set var="ss_stdConfigId_guest" value="<%= ObjectKeys.DEFAULT_FOLDER_GUESTBOOK_CONFIG %>"/>
 <c:set var="ss_stdConfigId_photo" value="<%= ObjectKeys.DEFAULT_FOLDER_PHOTO_CONFIG %>"/>
 <c:set var="ss_stdConfigId_file" value="<%= ObjectKeys.DEFAULT_FOLDER_LIBRARY_CONFIG %>"/>
+<c:set var="ss_stdConfigId_mirrored_file" value="<%= ObjectKeys.DEFAULT_FOLDER_MIRRORED_FILE_CONFIG %>"/>
 <c:set var="ss_stdConfigId_task" value="<%= ObjectKeys.DEFAULT_FOLDER_TASK_CONFIG %>"/>
 <c:set var="ss_stdConfigId_mile" value="<%= ObjectKeys.DEFAULT_FOLDER_MILESTONE_CONFIG %>"/>
 <c:set var="ss_stdConfigId_survey" value="<%= ObjectKeys.DEFAULT_FOLDER_SURVEY_CONFIG %>"/>
@@ -245,7 +246,7 @@ function ss_checkForm(obj) {
       <c:if test="${(ssOperation == 'add_folder' || ssOperation == 'add_subFolder') && config.internalId == ss_stdConfigId_desc}">
         <c:set var="checkedConfig" value="${config.id}"/>
       </c:if>
-      <c:if test="${(ssOperation == 'add_folder' || ssOperation == 'add_subFolder') && ssBinder.mirrored && config.internalId == ss_stdConfigId_file}">
+      <c:if test="${(ssOperation == 'add_folder' || ssOperation == 'add_subFolder') && ssBinder.mirrored && config.internalId == ss_stdConfigId_mirrored_file}">
         <c:set var="checkedConfig" value="${config.id}"/>
       </c:if>
   </c:forEach>
@@ -379,6 +380,7 @@ function ss_checkForm(obj) {
                  config.internalId == ss_stdConfigId_guest ||  
                  config.internalId == ss_stdConfigId_photo ||  
                  config.internalId == ss_stdConfigId_file ||  
+                 config.internalId == ss_stdConfigId_mirrored_file ||  
                  config.internalId == ss_stdConfigId_task ||  
                  config.internalId == ss_stdConfigId_mile ||  
                  config.internalId == ss_stdConfigId_survey}">
@@ -409,6 +411,7 @@ function ss_checkForm(obj) {
                  config.internalId != ss_stdConfigId_guest &&  
                  config.internalId != ss_stdConfigId_photo &&  
                  config.internalId != ss_stdConfigId_file &&  
+                 config.internalId != ss_stdConfigId_mirrored_file &&  
                  config.internalId != ss_stdConfigId_task &&  
                  config.internalId != ss_stdConfigId_mile &&  
                  config.internalId != ss_stdConfigId_survey}">
