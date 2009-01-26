@@ -30,7 +30,7 @@
 %>
 <% //Branding form %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:set var="ss_html_editor_textarea_form_helpicon" value="ihelp.other.branding.info" scope="request"/>
+<c:set var="ss_html_editor_textarea_form_helpicon" value="workspaces_folders/menus_toolbars/modifyws_brandingtips" scope="request"/>
 <c:set var="ss_html_editor_textarea_form_helpicon_prefix" value="branding.tips" scope="request"/>
 <%@ include file="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" %>
 
