@@ -116,6 +116,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 			logger.info("Could not get the deploy lock");
 			return;  //try again later
 		}
+		//web-inf
 		String localExtensionDir = DirPath.getExtensionBasePath() + File.separator + Utils.getZoneKey();
 		File localDir = new File(localExtensionDir);
 		if (!localDir.exists()) localDir.mkdirs();

@@ -2,6 +2,9 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping auto-import="false">
+    <typedef name="encrypted" class="org.jasypt.hibernate.type.EncryptedStringType">
+      <param name="encryptorRegisteredName">hibernateStringEncryptor</param>
+    </typedef>
   <class dynamic-update="true" table="SS_Postings" name="org.kablink.teaming.domain.PostingDef">
     <id unsaved-value="null" name="id" node="@id">
       <column name="id" sql-type="char(32)"/>
@@ -12,6 +15,7 @@
     <property name="enabled"/>
     <property name="emailAddress" length="256"/>
 	<property name="password" access="field" length="64"/>
+	<property name="credentials" access="field" length="64" type="encrypted"/>
     <many-to-one name="binder"/>
     <many-to-one name="definition">
         <column name="definition" sql-type="char(32)"/>

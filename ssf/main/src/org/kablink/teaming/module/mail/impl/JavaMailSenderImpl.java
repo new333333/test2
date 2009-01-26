@@ -37,6 +37,7 @@ import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 
 import org.kablink.teaming.module.mail.ConnectionCallback;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.Validator;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailException;
@@ -56,7 +57,7 @@ import org.springframework.mail.javamail.MimeMessagePreparator;
 public class JavaMailSenderImpl extends
 		org.springframework.mail.javamail.JavaMailSenderImpl
 		implements org.kablink.teaming.module.mail.JavaMailSender {
-	private String name;
+	private String name="";
 
 	public void setSession(Session session) {
 		//using either bean properties or jndi properties for host, port, userName
@@ -67,12 +68,17 @@ public class JavaMailSenderImpl extends
 		//if password not set in bean, see if in session properties
 		if (Validator.isNull(getPassword())) {
 			String auth = session.getProperty(prefix + "auth");
+			
 			if (Validator.isNull(auth)) 
 				auth = session.getProperty("mail.auth");
 			if ("true".equals(auth)) {
 				String password = session.getProperty(prefix + "password");
 				if (Validator.isNull(password)) 
 					password = session.getProperty("mail.password");
+				if (Validator.isNull(password)) {//see if moved to properties file
+					String [] pieces = name.split("/");
+					password = SPropsUtil.getString("mail." + pieces[pieces.length-1].trim() + ".out.password", "");
+				}
 				setPassword(password);
 			}
 		}

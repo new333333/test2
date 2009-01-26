@@ -39,6 +39,7 @@ create table SS_IndexingJournal (id number(19,0) not null, zoneId number(19,0), 
 create table SS_LdapConnectionConfig (id char(32) not null, zoneId number(19,0), url varchar2(255 char), userIdAttribute varchar2(255 char), mappings clob, userSearches clob, groupSearches clob, principal varchar2(255 char), credentials varchar2(255 char), position number(10,0), primary key (id));
 alter table SS_LibraryEntries add zoneId number(19,0);
 create table SS_NotifyStatus (ownerId number(19,0) not null, zoneId number(19,0), ownerType varchar2(16 char), owningBinderKey varchar2(255 char), owningBinderId number(19,0), lastModified timestamp, lastDigestSent timestamp, lastFullSent timestamp, primary key (ownerId));
+alter table SS_Postings add credentials varchar2(64 char);
 alter table SS_Principals add skypeId varchar2(64 char);
 alter table SS_Principals add twitterId varchar2(64 char);
 alter table SS_Principals add status varchar2(256 char);

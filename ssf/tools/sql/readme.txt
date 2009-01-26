@@ -1,12 +1,16 @@
 Teaming create and update database scripts are generated here. 
 For create scripts we use hibernate to generate the tables it controls then we append the fixed scripts (from quartz).
 
-To update a database from 1 version to the Boulder, use the v1 create scripts to create fresh (old) tables. These are checked in under
-tools/sql/create1.0.  Then use hibernate to generate update scripts which add new tables and new constraints.  These are generated 
-under tools/sql/update. This is a temporary area, so the files should be copied into tools/sql/update-1.0.0-1.1.0/update-{database}.sql
-The hibernate schemaUpdate task does not handle dropped tables, columns or constraints, nor does 
-it handle new or changed indecies. So you need to add them by hand.  Manually add drops to tools/sql/update-1.0.0-1.1.0/update-{database}-pre.sql. 
-Manually add create index to tools/sql/update-1.0.0-1.1.0/update-{database}-post.sql  The build will add these to the resulting tools/sql/update/update-{database}.sql
+To update a database from one version to the next you have 2 options to create the scripts which the installer must run.  A combination of both
+will probably be best.
+1. 	You can generate the create scripts for the new version, manually compare to the previous version scripts and create the sql by hand.
+
+2. 	Use the previous version create scripts to create fresh (old) tables. For v1 these are checked in under
+	tools/sql/create1.0.  Then use hibernate to generate update scripts which add new tables and new constraints.  These are generated 
+	under tools/sql/update. This is a temporary area, so the files should be copied into tools/sql/update-1.0.0-1.1.0/update-{database}.sql
+	The hibernate schemaUpdate task does not handle dropped tables, columns or constraints, nor does 
+	it handle new or changed indecies. So you need to add them by hand.  Manually add drops to tools/sql/update-1.0.0-1.1.0/update-{database}-pre.sql. 
+	Manually add create index to tools/sql/update-1.0.0-1.1.0/update-{database}-post.sql  The build will add these to the resulting tools/sql/update/update-{database}.sql
 
 Hibernate does not know about nvarchar,ntext... fields.  For databases that can be created with utf-8 or 
 unicode as the default character set this doesn't matter.  For databases like mssql(sqlserver), we must change the 

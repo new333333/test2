@@ -128,7 +128,7 @@ public class ClassPathConfigFiles {
     	return resources.toArray(new Resource[resources.size()]);
     }
     
-    private Resource toResource(String filePath) {
+    protected Resource toResource(String filePath) {
         return new ClassPathResource(filePath);
     }
 }

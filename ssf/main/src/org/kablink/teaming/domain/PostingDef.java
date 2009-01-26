@@ -29,7 +29,7 @@
 package org.kablink.teaming.domain;
 
 import org.kablink.teaming.web.WebKeys;
-
+import org.kablink.util.Validator;
 
 /**
  * @hibernate.class table="SS_Postings" dynamic-update="true"
@@ -44,7 +44,8 @@ public class PostingDef extends PersistentObject {
     public static final Integer REPLY_POST_AS_A_REPLY = 1;
     private Integer replyPostingOption = REPLY_POST_AS_A_REPLY;
     private boolean enabled=true;
-    private String password=null;
+    private String password=null;//old unencrypted password, null out on upgrade; access=field
+    private String credentials=null; //access = field
     private Binder binder;
     private String emailAddress="";
     private Definition definition;
@@ -101,13 +102,20 @@ public class PostingDef extends PersistentObject {
     /**
      * @hibernate.property
      */
-    public String getPassword() {
-    	return password;
+    public String getCredentials() {
+    	return credentials;
     }
-    public void setPassword(String password) {
+    public void setCredentials(String credentials) {
     	//Only store the password if it isn't the dummy password
-    	if (password == null || !password.equals(WebKeys.MAIL_POSTING_DUMMY_PASSWORD)) 
-    		this.password = password;
+    	if (credentials == null || !credentials.equals(WebKeys.MAIL_POSTING_DUMMY_PASSWORD)) 
+    		this.credentials = credentials;
+    }
+    //this is used to move the old unencrypted password to the encrypted field 
+    public void updateCredentials() {
+    	if (Validator.isNull(this.credentials)) {
+    		this.credentials = this.password;
+    	}
+    	this.password = null;
     }
      /**
      * @hibernate.property
