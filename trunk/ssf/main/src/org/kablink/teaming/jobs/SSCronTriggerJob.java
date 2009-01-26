@@ -27,7 +27,7 @@ public abstract class SSCronTriggerJob extends SSStatefulJob {
 		 	if (jobDetail == null) {
  				//volitility(not stored in db),durablilty(remains after trigger removed),recover(after recover or fail-over)
 		 		jobDetail = new JobDetail(job.getJobName(), job.getJobGroup(),
-		 				this.getClass(),false, true, false);
+		 				this.getClass(),false, job.getDurability(), false);
 				jobDetail.setDescription(job.getJobDescription());
 				jobDetail.setJobDataMap((JobDataMap)info.getDetails());
 				jobDetail.addJobListener(getDefaultCleanupListener());
@@ -123,6 +123,7 @@ public abstract class SSCronTriggerJob extends SSStatefulJob {
  	public class CronJobDescription {
 		protected Long zoneId;
 		protected String jobName, jobGroup, jobDescription;
+		boolean durability = true;
 		CronJobDescription(Long zoneId) {
 			this.zoneId = zoneId;
 		}
@@ -131,6 +132,10 @@ public abstract class SSCronTriggerJob extends SSStatefulJob {
 			this.jobName = jobName;
 			this.jobGroup = jobGroup;
 			this.jobDescription = trimDescription(jobDescription);
+		}
+		CronJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, boolean durability) {
+			this(zoneId, jobName, jobGroup, jobDescription);
+			this.durability = durability;
 		}
 		protected Long getZoneId() {
 			return zoneId;
@@ -169,6 +174,8 @@ public abstract class SSCronTriggerJob extends SSStatefulJob {
 		protected ScheduleInfo getDefaultScheduleInfo() {
 	   		return new ScheduleInfo(zoneId);   	 
 		}
-
+		protected boolean getDurability() {
+			return durability;
+		}
 	}
 }
