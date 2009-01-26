@@ -81,6 +81,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/slide-jaas.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/slide-kernel.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ehcache.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jasypt.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/java_uno_accessbridge.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/java_uno.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/juh.jar"/>
