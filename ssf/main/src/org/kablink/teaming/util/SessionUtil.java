@@ -28,6 +28,7 @@
  */
 package org.kablink.teaming.util;
 
+import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Interceptor;
@@ -54,6 +55,7 @@ public class SessionUtil {
 	public static void sessionStartup() {
 		//open shared session
 		Session session = SessionFactoryUtils.getSession(getSessionFactory(), true);
+		session.setFlushMode(FlushMode.NEVER);
 		TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));		
 	}
 	public static void sessionStartup(Interceptor interceptor) {
