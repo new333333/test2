@@ -386,6 +386,15 @@ public class BinderHelper {
 				UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
 				model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties.getProperties());
 				model.put(WebKeys.USER_FOLDER_PROPERTIES_OBJ, userFolderProperties);
+				
+				Boolean brandingAccess = true;
+				Binder binder = bs.getBinderModule().getBinder(binderId);
+				try {
+					brandingAccess = bs.getBinderModule().checkAccess(binder.getBrandingSource().getId(), user);
+				} catch(AccessControlException e) {
+					brandingAccess = false;
+				}
+				model.put(WebKeys.ACCESS_BRANDING, brandingAccess);
 			}
 		}
 		if ("standalone".equals(SPropsUtil.getString("deployment.portal"))) {
