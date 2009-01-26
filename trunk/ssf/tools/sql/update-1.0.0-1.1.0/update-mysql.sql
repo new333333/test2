@@ -40,6 +40,7 @@ create table SS_IndexingJournal (id bigint not null auto_increment, zoneId bigin
 create table SS_LdapConnectionConfig (id char(32) not null, zoneId bigint, url varchar(255), userIdAttribute varchar(255), mappings text, userSearches text, groupSearches text, principal varchar(255), credentials varchar(255), position integer, primary key (id)) ENGINE=InnoDB;
 alter table SS_LibraryEntries add column zoneId bigint;
 create table SS_NotifyStatus (ownerId bigint not null, zoneId bigint, ownerType varchar(16), owningBinderKey varchar(255), owningBinderId bigint, lastModified datetime, lastDigestSent datetime, lastFullSent datetime, primary key (ownerId)) ENGINE=InnoDB;
+alter table SS_Postings add column credentials varchar(64);
 alter table SS_Principals add column skypeId varchar(64);
 alter table SS_Principals add column twitterId varchar(64);
 alter table SS_Principals add column status varchar(256);

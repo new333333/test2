@@ -322,6 +322,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
 			//remove from system
 			WorkAreaOperation.deleteInstance(siteAdmin.getName());
+			List<PostingDef> postings = getCoreDao().loadObjects(org.kablink.teaming.domain.PostingDef.class , null, top.getId());
+			for (PostingDef post:postings) {
+				post.updateCredentials();
+			}
+
 			//get
 			//fixup user emails
 	 		SFQuery query=null;
@@ -539,7 +544,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			//remove from system
 			WorkAreaOperation.deleteInstance(siteAdmin.getName());
 		}
-
+		//remove after inhouse updates
+		List<PostingDef> postings = getCoreDao().loadObjects(org.kablink.teaming.domain.PostingDef.class , null, top.getId());
+		for (PostingDef post:postings) {
+			post.updateCredentials();
+		}
   	}
  	// Must be running inside a transaction set up by the caller 
  	protected void validateZoneTx(Workspace zone) {

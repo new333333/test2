@@ -257,9 +257,25 @@
 		<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
 	</bean>
 	
-	<bean id="sPropsUtil" class="org.kablink.teaming.util.SPropsUtil">
+	<bean id="encryptor" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
+    	<property name="algorithm">
+      	  <value>PBEWithMD5AndDES</value>
+    	</property>
+  	</bean>
+	<bean id="hibernateStringEncryptor"
+ 	   class="org.jasypt.hibernate.encryptor.HibernatePBEStringEncryptor">
+ 	   <property name="registeredName">
+ 	       <value>hibernateStringEncryptor</value>
+ 	   </property>
+ 	   <property name="encryptor">
+  	      <ref bean="encryptor" />
+  	  </property>
+ 	 </bean>
+
+	<!-- sets password for encryptor -->
+	<bean id="sPropsUtil" class="org.kablink.teaming.util.SPropsUtil" depends-on="encryptor">
 		<property name="config">
-			<bean class="org.kablink.teaming.util.PropertiesClassPathConfigFiles">
+			<bean class="org.kablink.teaming.util.EncryptedClassPathConfigFiles">
 				<property name="configFiles">
 					<list>
 						<value>config/ssf.properties</value>
@@ -267,6 +283,8 @@
 						<value>optional:config/ssf-ext.properties</value>
 					</list>		
 				</property>
+				<property name="encryptConfigFile"><value>optional:config/ssf-ext.properties</value></property>
+				<property name="encryptor"><ref bean="encryptor"/></property>
 			</bean>
 		</property>
 	</bean>

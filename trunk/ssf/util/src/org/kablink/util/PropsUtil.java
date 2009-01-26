@@ -140,7 +140,8 @@ public class PropsUtil {
 	}
 	
 	private static String get(String key) {
-		return (String) getInstance().getProps().get(key);			
+		//use getProperty for encryption overload of properties
+		return (String) getInstance().getProps().getProperty(key);			
 	}
     
 	private static String getRequired(String key) {

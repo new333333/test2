@@ -187,8 +187,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					//System.out.println(ClassLoaderUtils.showClassLoaderHierarchy(jndiObj, "jndi")); // $$$ TODO
 					//System.out.println(ClassLoaderUtils.showClassLoaderHierarchy(javax.mail.Session.class.getClassLoader()));
 					
+					sender.setName(jndiName); //set the name first so session properties can be found		
 					sender.setSession((javax.mail.Session) jndiObj);
-					sender.setName(jndiName);		
 					mailSenders.put(jndiName, sender);
 				
 				} catch (Exception ex) {
@@ -344,6 +344,10 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				password = session.getProperty(prefix + "password");
 				if (Validator.isNull(password)) 
 					password = session.getProperty("mail.password");
+				if (Validator.isNull(password)) {//see if moved to properties file
+					String [] pieces = sender.getName().split("/");
+					password = SPropsUtil.getString("mail." + pieces[pieces.length-1].trim() + ".in.password", "");
+				}
 			}
 			String hostName = session.getProperty(prefix + "host");
 			if (Validator.isNull(hostName)) {
@@ -406,7 +410,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				Folder folder = (Folder)postingDef.getBinder();
 				EmailPoster processor = (EmailPoster)processorManager.getProcessor(folder,EmailPoster.PROCESSOR_KEY);
 				try {
-					store.connect(null, postingDef.getEmailAddress(), postingDef.getPassword());
+					store.connect(null, postingDef.getEmailAddress(), postingDef.getCredentials());
 					mFolder = store.getFolder(folderName);				
 					mFolder.open(javax.mail.Folder.READ_WRITE);
 					sendErrors(folder, postingDef, sender, processor.postMessages(folder, postingDef.getEmailAddress(), mFolder.getMessages(), session));							
@@ -440,7 +444,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					//need our own sender, so we can change the username/password
 					 sender = (JavaMailSender)mailSender.getClass().newInstance();				
 					 SpringContextUtil.applyDependencies(sender, "mailSender");	
-					 sender.setSession(srcSender.getSession(), postingDef.getEmailAddress(), postingDef.getPassword());
+					 sender.setSession(srcSender.getSession(), postingDef.getEmailAddress(), postingDef.getCredentials());
 				} else {
 					sender = srcSender;
 				}
@@ -453,8 +457,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					logger.error("Error sending posting reject:" + getMessage(ms));						
 					SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
 					for (int i=0; i<errors.size(); ++i) {
-						if (!useAliases && !Validator.isNull(postingDef.getPassword()))  {
-							job.schedule(srcSender, postingDef.getEmailAddress(), postingDef.getPassword(), (MimeMessage)errors.get(i), binder.getTitle(), getMailDirPath(binder), false);
+						if (!useAliases && !Validator.isNull(postingDef.getCredentials()))  {
+							job.schedule(srcSender, postingDef.getEmailAddress(), postingDef.getCredentials(), (MimeMessage)errors.get(i), binder.getTitle(), getMailDirPath(binder), false);
 						} else {
 							job.schedule(srcSender, (MimeMessage)errors.get(i), binder.getTitle(), getMailDirPath(binder), false);							
 						}
@@ -732,7 +736,12 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     			//need to get our own sender, so the account/password can be changed
 				//need our own sender, so we can change the username/password
     	   		Session session = mailSender.getSession();
-    	   		mailSender = (JavaMailSender)mailSender.getClass().newInstance();				
+    	   		try {
+    	   			mailSender = (JavaMailSender)mailSender.getClass().newInstance();				
+    	   		} catch (Exception ia) {
+    	   			logger.error("Cannot create sender");
+    	   			return;
+    	   		}
     	   		SpringContextUtil.applyDependencies(mailSender, "mailSender");	
     	   		mailSender.setSession(session, account, password);
     		}
@@ -740,8 +749,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			mailSender.send(mailMsg);
  		} catch (MessagingException mx) {
 			throw new MailPreparationException(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
-		} catch (Exception ex) {
-			logger.error("Error on mail retry:" + getMessage(ex));
 		}
     }
    //prepare mail and send it - caller must retry if desired

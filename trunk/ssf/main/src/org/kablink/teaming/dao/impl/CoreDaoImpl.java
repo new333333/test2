@@ -173,7 +173,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		} else getHibernateTemplate().save(obj);
     }
 
-	//re-attach object
+	//re-attach object, this does not force a sql update
 	public void update(Object obj) {
 	    getHibernateTemplate().update(obj);
 	}

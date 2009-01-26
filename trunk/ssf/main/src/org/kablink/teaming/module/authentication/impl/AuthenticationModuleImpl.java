@@ -130,7 +130,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 				}
 				if (Validator.isNotNull(config.getPrincipal())) {
 					contextSource.setUserDn(config.getPrincipal());
-					contextSource.setPassword(config.getCredentials());
+					contextSource.setPassword(config.getCredentials()==null?"":config.getCredentials());
 				} else {
 					contextSource.setAnonymousReadOnly(true);
 				}
