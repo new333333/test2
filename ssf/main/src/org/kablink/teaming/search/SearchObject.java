@@ -110,7 +110,7 @@ public class SearchObject {
 		this.language = lang;
 	}
 	
-	private String getLanguage() {
+	public String getLanguage() {
 		return this.language;
 	}
 
