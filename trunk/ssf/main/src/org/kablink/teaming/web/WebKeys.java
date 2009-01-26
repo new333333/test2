@@ -515,6 +515,7 @@ public class WebKeys {
 	public static final String OPERATION_VIEW_MINIBLOG = "view_miniblog";
 	
 	// MODEL TAGS & Attributes
+	public static final String ACCESS_BRANDING = "ss_accessBranding";
 	public static final String ACCESS_CONTROL_MAP = "ss_accessControlMap";
 	public static final String ACCESS_FUNCTIONS_COUNT = "ss_accessFunctionsCount";
 	public static final String ACCESS_GROUPS_COUNT = "ss_accessGroupsCount";
