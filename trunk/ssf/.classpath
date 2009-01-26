@@ -85,6 +85,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/java_uno_accessbridge.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/java_uno.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/juh.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/juniversalchardet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jurt.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jut.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ridl.jar"/>
