@@ -86,7 +86,6 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
-import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.util.Validator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
@@ -305,6 +304,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				"where className='com.sitescape.teaming.module.workflow.TimerAction'"); 
 			getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.Notify' " +
 				"where className='com.sitescape.teaming.module.workflow.Notify'"); 
+			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Definition set binderId=-1 where binderId is null");
 			//add new reserved functions
 			List ids = new ArrayList();
 			//add users who currently have siteAdmin to the new functions

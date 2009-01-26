@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.util.Validator;
 
 /**
@@ -97,7 +98,7 @@ public class Definition extends PersistentTimestampObject  {
 	public static final String JSP_STYLE_DEFAULT="default"; //used only in definition_config file
 
 	protected static final Log logger = LogFactory.getLog(Definition.class);
-	protected Long binderId;
+	protected Long binderId=ObjectKeys.RESERVED_BINDER_ID;
 	public Definition() {
 		
 	}    

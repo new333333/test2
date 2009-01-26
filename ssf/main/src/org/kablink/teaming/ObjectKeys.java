@@ -114,6 +114,9 @@ public interface ObjectKeys {
 	//reserved id put in acls/membership to indicate team members have access
 	//search engine stores the actual members of the team in place of this
 	public static final Long TEAM_MEMBER_ID = Long.valueOf(-2);
+	//Use -1 to reserve binderId field.  Shouldn't be generated as real binderId. Used for global definitions cause mysql won't enforce the namekey unique
+	//constraint if field is null.  Also used for global userProperties, cause null cannot be used in key field.
+	public static final Long RESERVED_BINDER_ID=Long.valueOf(-1);
     //custom property prefix from ssf.properties
 	public static final String CUSTOM_PROPERTY_PREFIX="custom.";
 

@@ -28,7 +28,7 @@
  */
 package org.kablink.teaming.domain;
 import java.io.Serializable;
-
+import org.kablink.teaming.ObjectKeys;
 
 
 /**
@@ -43,7 +43,7 @@ public class UserPropertiesPK implements Serializable {
 	}
 	public UserPropertiesPK(Long principalId) {
 		this.principalId = principalId;
-		binderId = new Long(-1);
+		binderId = ObjectKeys.RESERVED_BINDER_ID;
 	}
 	public UserPropertiesPK(Long principalId, Long binderId) {
 		this.principalId = principalId;
