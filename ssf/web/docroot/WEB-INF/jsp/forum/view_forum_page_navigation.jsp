@@ -37,14 +37,11 @@
 <ssf:skipLink tag='<%= NLT.get("skip.paging.links") %>' id="navigationLinks_${renderResponse.namespace}">
 
 <c:if test="${ssConfigJspStyle != 'template'}">
-	<span>
-		<img border="0" src="<html:imagesPath/>pics/1pix.gif" <ssf:alt tag=""/> />
+<div class="ss_pagination ss_style">
 		<ssHelpSpot helpId="workspaces_folders/menus_toolbars/more_folder_navigation" offsetX="0" offsetY="18" 
 	    			title="<ssf:nlt tag="helpSpot.moreFolderNavigation"/>">
 		</ssHelpSpot>
-	</span>
-<div class="ss_pagination ss_style">
-<table border="0" cellspacing="0" cellpadding="0" width="99%">
+<table border="0" cellspacing="0" cellpadding="0" width="100%">
 		<tbody>
 		<tr>
 			<td valign="middle" align="right" width="25%">
@@ -57,7 +54,7 @@
 			      </span>
 			    </td>
 			    <td valign="middle"  class="ss_paginationGo ss_page_IE">
-			      <form name="ss_goToEntryForm_${renderResponse.namespace}" 
+			      <form name="ss_goToEntryForm_${renderResponse.namespace}" style="display:inline;"
 			        id="ss_goToEntryForm_${renderResponse.namespace}" method="post" 
 				    action="<ssf:url action="view_folder_entry" 
 				    actionUrl="true"><ssf:param 

@@ -2014,6 +2014,13 @@ function ss_ShowHideDivXY(divName, x, y) {
     }
 }
 
+function ss_hideDivToBeHidden(i) {
+	if (ss_divToBeHidden[i] != '') {
+		if (ss_divToBeHidden[i] != ss_divBeingShown) ss_hideDiv(ss_divToBeHidden[i]);
+	    ss_divToBeHidden[i] = '';
+	}
+}
+
 /* IE6 workaround - divs under selectboxes */
 var ss_showBackgroundIframeDivId = null;
 function ss_showBackgroundIFrame(divId, frmId) {
@@ -2227,13 +2234,13 @@ function captureXY(e) {
 	            if (ss_divToBeDelayHidden[ss_divToBeHidden[i]]) {
 	                ss_divToBeDelayHidden[ss_divToBeHidden[i]] = null
 	            } else {
-	                setTimeout("ss_hideDiv('"+ss_divToBeHidden[i]+"');",100);
-	    			if (ss_divToBeHidden[i] == ss_divBeingShown) ss_divBeingShown = null;
-	                ss_divToBeHidden[i] = '';
+	                if (ss_divBeingShown == ss_divToBeHidden[i]) {
+	                	ss_divBeingShown = '';
+	                }
+	                setTimeout("ss_hideDivToBeHidden('"+i+"');",100);
 	            }
 	        }
 	    }
-	    ss_divToBeHidden = new Array();
     }
     if (ss_isNSN6 || ss_isMoz5) {
         ss_mousePosX = e.pageX

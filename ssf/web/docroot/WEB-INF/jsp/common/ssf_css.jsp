@@ -976,6 +976,9 @@ div.ss_sliding_table_column0 {
   	border-bottom: ${ss_sliding_table_border_color} 1px solid;
   	border-top:${ss_sliding_table_border_color} 1px solid;
   	margin: 0px;
+ <c:if test="<%= isIE %>">
+  	padding-bottom: 1px;
+ </c:if>
 	}
 .ss_sliding_table_column0 * {
   	color: ${ss_sliding_table_text_color};
@@ -990,6 +993,7 @@ div.ss_sliding_table_column1 {
  	border-left: #cccccc solid 1px;
   	font-size: ${ss_style_font_normalprint} !important;
   	margin: 0px;
+  	padding-left:1px;
   	background-color: inherit;
 	}
 .ss_sliding_table_column1 * {
@@ -2144,6 +2148,9 @@ div.ss_thumbnail_small_no_text img,  div.ss_thumbnail_standalone_small img {
     height: 70px;
     margin-top: 12px;
 	}
+div.ss_miniblog_list {
+	margin-top:12px;
+	}
 div.ss_thumbnail_small_buddies_list, div.ss_thumbnail_small_buddies_list img {
     width: 35px;
     height: 35px;
@@ -2241,6 +2248,13 @@ div.ss_end_thumbnail_gallery {
 }
 
 /* Presence styles */
+a.ss_presence_dude {
+    padding-right:2px;
+	text-decoration:none;
+  <c:if test="<%= isIE %>">
+	padding-top:2px;
+  </c:if>
+}
 .ss_presence_green_dude {
     background:url(<html:imagesPath/>pics/sym_s_green_dude.gif) no-repeat left;
 }
@@ -3121,8 +3135,7 @@ ul.ss_calendarNaviBar li.ss_calSelectDate {
 
 ul.ss_calendarNaviBar li.ss_taskViewOptions {
 	border: 1px solid white; 
-	height: 24px; 
-	margin: 2px 0px 2px 0px;
+	margin: 1px 0px 0px 1px;
 }
 
 .ss_hoursSelectorList li  {
@@ -3924,7 +3937,7 @@ div.ss_content_outer table.ss_tasks_list {
 }
 
 table.ss_tasks_list {
-	margin:6px 0px 4px 10px;
+	margin:6px 0px 4px 8px;
 	padding: 0px;
 	border-top: 1px solid #afc8e3;
 	border-left: 1px solid #afc8e3;
