@@ -258,7 +258,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  		}
  		if ((version == null) || version.intValue() <= 1) {
  			//TODO: setZoneId as non=null, only do based on version
-			getCoreDao().executeUpdate("update org.kablink.teaming.security.Function set zoneWide=false where zoneWide is null"); 
+			getCoreDao().executeUpdate("update org.kablink.teaming.security.function.Function set zoneWide=false where zoneWide is null"); 
 			
 			getCoreDao().executeUpdate("update org.kablink.teaming.domain.AuditTrail set zoneId=" + top.getId() + 
 				" where zoneId is null");

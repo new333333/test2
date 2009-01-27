@@ -1,8 +1,6 @@
 alter table SSQRTZ_TRIGGERS add PRIORITY integer null;
-update SSQRTZ_TRIGGERS set PRIORITY=5 where PRIORITY is null;
 alter table SSQRTZ_TRIGGERS add JOB_DATA image null;
 alter table SSQRTZ_FIRED_TRIGGERS add PRIORITY integer null;
-update SSQRTZ_FIRED_TRIGGERS set PRIORITY=5 where PRIORITY is null;
 alter table SSQRTZ_SCHEDULER_STATE drop column RECOVERER;
 alter table SS_Events alter column timeZone varchar(80);
 create index owningBinder_audit on SS_AuditTrail (owningBinderId);
@@ -22,3 +20,6 @@ create index owningBinder_wfhistory on SS_WorkflowHistory (owningBinderId);
 create index entityTransaction_wfhistory on SS_WorkflowHistory (startDate, entityId, entityType);
 create index entityOwner_wfhistory on SS_WorkflowHistory (entityId, entityType);
 create unique index definition_name on SS_Definitions (zoneId, name, binderId);
+go
+update SSQRTZ_TRIGGERS set PRIORITY=5 where PRIORITY is null;
+update SSQRTZ_FIRED_TRIGGERS set PRIORITY=5 where PRIORITY is null;
