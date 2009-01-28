@@ -106,6 +106,8 @@ public class BuildDefinitionDivs extends TagSupport {
 	private String rootElementName;
 	private Element rootConfigElement;
 	private String contextPath;
+	private String imagesPath;
+	private String brandingPrefix;
 	private DefinitionConfigurationBuilder configBuilder=DefinitionHelper.getDefinitionBuilderConfig();
 	private Long binderId;
     private ProfileModule profileModule;
@@ -117,8 +119,15 @@ public class BuildDefinitionDivs extends TagSupport {
 	    
 		try {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
+		    User user = RequestContextHolder.getRequestContext().getUser();
 			contextPath = req.getContextPath();
 			if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
+			
+			String color_theme = user.getTheme();
+			if (color_theme.equals("")) color_theme = "icib";
+			imagesPath = contextPath + "/i/" + color_theme;
+			brandingPrefix = SPropsUtil.getString("branding.prefix", "");
+			if (brandingPrefix.equals("")) brandingPrefix = "icecore"; //This default value should match ss_brand_prefix in brandedImagesPath.tag
 
 			JspWriter jspOut = pageContext.getOut();
 			StringBuffer sb = new StringBuffer();
@@ -880,7 +889,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 							sb.append(iconListValue);
 							sb.append("\"").append(checked).append("/>");
-							sb.append("<img alt=\"\" border=\"0\" src=\"").append(contextPath + "/images").append(iconListValue).append("\"/>");
+							sb.append("<img alt=\"\" border=\"0\" src=\"").append(imagesPath + "/" + brandingPrefix).append(iconListValue).append("\"/>");
 							sb.append("<br/><br/>\n");
 						}
 					
