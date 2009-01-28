@@ -14,6 +14,5 @@
   <property name="inheritDefinitions">false</property>
   <property name="inheritTeamMembers">true</property>
   <definition name="_mirroredFileFolder" databaseId="402883a41edab1d5011edac394df0032"/>
-  <definition name="_calendarFolder" databaseId="402883c6115753d8011157619e35000c"/>
   <definition name="_mirroredFileEntry" databaseId="402883a41edab1d5011edabc90aa0031"/>
 </template>

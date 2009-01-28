@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_mirroredFileFolder" caption="__definition_default_folder_mirrored_file" type="5" nextId="13" definitionType="5" databaseId="402883a41edab1d5011edac394df0032">
+<definition name="_mirroredFileFolder" caption="__definition_default_folder_mirrored_file" type="5" nextId="13" definitionType="5" databaseId="402883a41edab1d5011edac394df0032" internalId="402883a41edab1d5011edac394df0032">
   <item name="folderForm" caption="__folder_form" type="form" id="1" display="form">
     <properties/>
     <item name="title" caption="__title" type="data" id="2">

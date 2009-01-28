@@ -13,6 +13,5 @@
   <property name="inheritDefinitions">false</property>
   <property name="inheritTeamMembers">true</property>
   <definition name="_libraryFolder" databaseId="402883c6115753d8011157619e350009"/>
-  <definition name="_calendarFolder" databaseId="402883c6115753d8011157619e35000c"/>
   <definition name="_libraryEntry" databaseId="402883c6115753d8011157829367000f"/>
 </template>

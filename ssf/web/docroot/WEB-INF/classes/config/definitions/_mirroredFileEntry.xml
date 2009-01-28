@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_mirroredFileEntry" caption="__definition_default_mirrored_file_entry" type="1" nextId="26" definitionType="1" databaseId="402883a41edab1d5011edabc90aa0031">
+<definition name="_mirroredFileEntry" caption="__definition_default_mirrored_file_entry" type="1" nextId="26" definitionType="1" databaseId="402883a41edab1d5011edabc90aa0031" internalId="402883a41edab1d5011edabc90aa0031">
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1" display="form">
     <properties/>
     <item name="entryFormForm" caption="__form" id="2">
