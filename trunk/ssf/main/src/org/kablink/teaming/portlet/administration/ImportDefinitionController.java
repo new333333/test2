@@ -76,7 +76,7 @@ public class ImportDefinitionController extends  SAbstractController {
 		} catch (Exception ex) {};
 		if (formData.containsKey("okBtn") && WebKeys.OPERATION_RELOAD.equals(operation)) {
 			java.util.Collection<String> ids = TreeHelper.getSelectedStringIds(formData, "id");
-			getAdminModule().updateDefaultDefinitions(RequestContextHolder.getRequestContext().getZoneId(), false, ids);
+			getAdminModule().updateDefaultDefinitions(this, RequestContextHolder.getRequestContext().getZoneId(), false, ids);
 			response.setRenderParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
 		} else if (formData.containsKey("okBtn") && request instanceof MultipartFileSupport) {
 			int i=0;
@@ -156,7 +156,7 @@ public class ImportDefinitionController extends  SAbstractController {
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
 		if (WebKeys.OPERATION_RELOAD_CONFIRM.equals(operation)) {
 			List currentDefinitions = new ArrayList();
-			currentDefinitions = getDefaultDefinitions(this);
+			currentDefinitions = DefinitionHelper.getDefaultDefinitions(this);
 			model.put(WebKeys.DOM_TREE, DefinitionHelper.getDefinitionTree(this, null, currentDefinitions));
 			return new ModelAndView(WebKeys.VIEW_ADMIN_IMPORT_ALL_DEFINITIONS_CONFIRM, model);
 		}
@@ -164,38 +164,5 @@ public class ImportDefinitionController extends  SAbstractController {
 
 		return new ModelAndView(WebKeys.VIEW_ADMIN_IMPORT_DEFINITIONS, model);
 	}
-
-	public List getDefaultDefinitions(AllModulesInjected bs) {
-		List definitions = new ArrayList();
-		Workspace top = (Workspace)bs.getWorkspaceModule().getTopWorkspace();
-		
-		//default definitions stored in separate config file
-		String startupConfig = SZoneConfig.getString(top.getName(), "property[@name='startupConfig']", "config/startup.xml");
-		SAXReader reader = new SAXReader(false);  
-		InputStream in=null;
-		try {
-			in = new ClassPathResource(startupConfig).getInputStream();
-			Document cfg = reader.read(in);
-			in.close();
-			List<Element> elements = cfg.getRootElement().selectNodes("definitionFile");
-			for (Element element:elements) {
-				String file = element.getTextTrim();
-				//Get the definition name from the file name
-				Pattern nameP = Pattern.compile("/([^/\\.]*)\\.xml$");
-				Matcher m = nameP.matcher(file);
-				if (m.find()) {
-					String name = m.group(1);
-					if (name != null && !name.equals("")) {
-						Definition def = bs.getDefinitionModule().getDefinitionByName(null, false, name);
-						if (def != null) definitions.add(def);
-					}
-				}
-			}
-
-		} catch (Exception ex) {
-			logger.error("Cannot read startup configuration:", ex);
-		}
-		return definitions;
-	}	
 
 }
