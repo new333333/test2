@@ -657,6 +657,9 @@ public class WebKeys {
     public static final String DIV_ID="ss_divId";
     public static final String DOM_TREE="ssDomTree";
     public static final String DOWNLOAD_URL="ssDownloadURL";
+    public static final String ERROR_INDEXING_COUNT="ssErrorIndexingCount";
+    public static final String ERROR_INDEXING_BINDERS="ssErrorIndexingBinders";
+    public static final String ERROR_INDEXING_ENTRIES="ssErrorIndexingEntries";
     public static final String ERROR_LIST="ssErrorList";
     public static final String EXCEPTION="ssException";
     public static final String ELEMENT_NAME="ssElementName";
@@ -1280,6 +1283,7 @@ public class WebKeys {
     //servlet paths
     public static final String SERVLET_LOGIN="portalLogin";
     public static final String SERVLET_LOGOUT="portalLogout";
+    public static final String SERVLET_READ_FILE="readFile";
     public static final String SERVLET_VIEW_FILE="viewFile";
     public static final String SERVLET_VIEW_CSS="viewCss";
     public static final String SERVLET_DOWNLOAD_REPORT="reportDownload";
