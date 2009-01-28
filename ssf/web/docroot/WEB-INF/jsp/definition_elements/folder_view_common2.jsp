@@ -801,7 +801,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  <div id="ss_folderEntryTitle_${entry2._docId}" class="ss_hover_over" 
 	    style="visibility:hidden; display:none;">
 	      <span class="ss_style" >
-			  <ssf:textFormat formatAction="limitedDescription" textMaxWords="50">
+			  <ssf:textFormat formatAction="limitedDescription" textMaxWords="folder.preview.wordCount">
 			    <ssf:markup search="${entry2}">${entry2._desc}</ssf:markup>
 			    </ssf:textFormat>
 	      </span>

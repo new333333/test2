@@ -34,6 +34,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.Html;
 
 
@@ -78,7 +79,13 @@ public class TextFormat extends BodyTagSupport {
 				if (textMaxWords == null) throw new JspException("TextFormat: Text Max Words not specified");
 				
 				try {
-					intMaxAllowedWords = Integer.parseInt(textMaxWords); 
+					//See if this is a constant read in from the properties file
+					String max = SPropsUtil.getString(textMaxWords, "");
+					if (max.equals("")) {
+						intMaxAllowedWords = Integer.parseInt(textMaxWords); 
+					} else {
+						intMaxAllowedWords = Integer.parseInt(max); 
+					}
 				} catch (NumberFormatException nfe) {
 					throw new JspException("TextFormat: Text Max Words not a numeric value");
 				}
