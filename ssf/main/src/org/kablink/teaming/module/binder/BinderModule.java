@@ -45,6 +45,7 @@ import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
@@ -276,13 +277,13 @@ public interface BinderModule {
 	 * Index only the binder and its attachments.  Do not include entries or sub-binders
 	 * @param binderId
 	 */
-	public void indexBinder(Long binderId) throws AccessControlException;
+	public IndexErrors indexBinder(Long binderId) throws AccessControlException;
 	/**
 	 * Index the binder and its attachments and optionally its entries.  Do not index sub-binders
 	 * @param binderId
 	 * @param includeEntries
 	 */
-    public void indexBinder(Long binderId, boolean includeEntries) throws AccessControlException;
+    public IndexErrors indexBinder(Long binderId, boolean includeEntries) throws AccessControlException;
     /**
      * Index a binder and its child binders, including all entries
      * @param binderId
@@ -296,6 +297,14 @@ public interface BinderModule {
      * @return Set of binderIds indexed
      */
      public Set<Long> indexTree(Collection<Long> binderId, StatusTicket statusTicket, String[] nodeNames) throws AccessControlException;
+     /**
+      * Same as {@link #indexTree(Long) indexTree} except handles a collection of binders.  Use this as a
+      * performance optimzation for multiple binders- it handles the index cleanup better
+      * Also passes along an error count to track the number of failures that occurred during indexing
+      * @param binderId
+      * @return Set of binderIds indexed
+      */
+      public Set<Long> indexTree(Collection<Long> binderId, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors) throws AccessControlException;
    
     /**
      * Modify a binder.  Optionally include files to add and attachments to delete 

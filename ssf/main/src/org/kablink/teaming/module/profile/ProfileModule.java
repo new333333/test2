@@ -59,6 +59,7 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.security.AccessControlException;
 
 
@@ -300,7 +301,7 @@ public interface ProfileModule {
      * Update index.  Should be handled by all other operations automatically
      * @param entry
      */
-	public void indexEntry(Principal entry);
+	public IndexErrors indexEntry(Principal entry);
 	/**
 	 * Modify existing principal
 	 * @param entryId

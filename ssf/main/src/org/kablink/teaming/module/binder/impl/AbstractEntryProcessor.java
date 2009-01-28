@@ -72,6 +72,7 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
+import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.QueryBuilder;
@@ -893,14 +894,17 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     /**
      * Index binder and its entries
      */
-    public void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
-    	super.indexBinder(binder, includeEntries, deleteIndex, tags);
-    	if (includeEntries == false) return;
-    	indexEntries(binder, deleteIndex);
+    public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
+    	IndexErrors errors = super.indexBinder(binder, includeEntries, deleteIndex, tags);
+    	if (includeEntries == false) return errors;
+    	IndexErrors entryErrors = indexEntries(binder, deleteIndex);
+    	errors.add(entryErrors);
+    	return errors;
     }
     //If called from write transaction, make sure session is flushed cause this bypasses
     //hibernate loading of collections and goes to database directly.
-    protected void indexEntries(Binder binder, boolean deleteIndex) {
+    protected IndexErrors indexEntries(Binder binder, boolean deleteIndex) {
+    	IndexErrors errors = new IndexErrors();
     	SimpleProfiler.startProfiler("indexEntries");
     	//may already have been handled with an optimized query
     	if (deleteIndex) {
@@ -947,7 +951,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        					// 	Create an index document from the entry object. 
        					// Entry already deleted from index, so pretend we are new
        	       			SimpleProfiler.startProfiler("indexEntries_indexEntryWithAttachments");
-       				   	indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), null, true, entryTags);
+       				   	try {
+       				   		IndexErrors entryErrors = indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), null, true, entryTags);
+       				   		errors.add(entryErrors);
+       				   	} catch(Exception e) {
+       				   		logger.error("Error indexing entry: (" + entry.getId().toString() + ") " + entry.getTitle());
+       				   		logger.error("   Error: " + e.toString());
+       				   		errors.addError(entry);
+       				   	}
        	       			SimpleProfiler.stopProfiler("indexEntries_indexEntryWithAttachments");
        				   	indexEntries_postIndex(binder, entry);
        				}
@@ -969,7 +980,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	query.close();
         	SimpleProfiler.stopProfiler("indexEntries");
         }
- 
+        return errors;
     }
     protected void indexEntries_preIndex(Binder binder) {
     	indexDeleteEntries(binder); 
@@ -994,11 +1005,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	}
  
     //***********************************************************************************************************
-   	public void indexEntries(Collection entries) {
+   	public IndexErrors indexEntries(Collection entries) {
+   		IndexErrors errors = new IndexErrors();
    		for (Iterator iter=entries.iterator(); iter.hasNext();) {
    			Entry entry = (Entry)iter.next();
-   			indexEntry(entry);
+   			IndexErrors entryErrors = indexEntry(entry);
+   			errors.add(entryErrors);
    		}
+   		return errors;
    	}
    	protected void moveFiles(Binder binder, Collection entries, Binder destination) {
    		for (Iterator iter=entries.iterator(); iter.hasNext();) {
@@ -1113,8 +1127,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
 
 
-    public void indexEntry(Entry entry) {
-    	indexEntry(entry.getParentBinder(), entry, null, null, false, null);
+    public IndexErrors indexEntry(Entry entry) {
+    	return indexEntry(entry.getParentBinder(), entry, null, null, false, null);
     }
     /**
      * Index entry and optionally its attached files.
@@ -1127,7 +1141,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * At minimum, those files in the list must be indexed. 
      * @param newEntry
      */
-    protected void indexEntry(Binder binder, Entry entry, List fileUploadItems, 
+    protected IndexErrors indexEntry(Binder binder, Entry entry, List fileUploadItems, 
     		Collection<FileAttachment> filesToIndex, boolean newEntry, Collection tags) {
     	// Logically speaking, the only files we need to index are the ones
     	// that have been uploaded (fileUploadItems) and the ones explicitly
@@ -1143,7 +1157,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	// Consequently we obtain and pass "all" the attachments to the 
     	// following method and ignore the filesToIndex list (for now).
     	
-    	indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), fileUploadItems, newEntry, tags);
+    	return indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), fileUploadItems, newEntry, tags);
     }
     
     /**
@@ -1161,8 +1175,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * correspond to the elements in fileAttachments list. 
      * @param newEntry
      */
-	protected void indexEntryWithAttachments(Binder binder, Entry entry,
+	protected IndexErrors indexEntryWithAttachments(Binder binder, Entry entry,
 			Collection<FileAttachment> fileAttachments, List fileUploadItems, boolean newEntry, Collection tags) {
+		IndexErrors errors = new IndexErrors();
 		if(SPropsUtil.getBoolean("indexing.escalate.add.to.update", true))
 			newEntry = false;
 		
@@ -1187,8 +1202,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	        } catch (Exception ex) {
 		       		//log error but continue
 		       		logger.error("Error indexing file for entry " + entry.getId() + " attachment " + fa, ex);
+		       		errors.addError(entry);
         	}
          }
+        return errors;
  	}
 
     public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {

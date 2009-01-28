@@ -48,6 +48,7 @@ import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.StatusTicket;
 
@@ -365,7 +366,7 @@ public interface FolderModule {
 	 * @param entry
 	 * @param includeReplies
 	 */
-	public void indexEntry(FolderEntry entry, boolean includeReplies);
+	public IndexErrors indexEntry(FolderEntry entry, boolean includeReplies);
 	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags);
 	/**
 	 * Return the parent Folder of the entry.  Useful if an entry has moved.

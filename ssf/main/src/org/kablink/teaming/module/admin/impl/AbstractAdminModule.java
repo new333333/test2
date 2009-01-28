@@ -88,9 +88,11 @@ import org.kablink.teaming.security.function.FunctionExistsException;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.springframework.core.io.ClassPathResource;
@@ -368,8 +370,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			logger.error("Cannot read startup configuration:", ex);
 		}
 	}	
-	public void updateDefaultDefinitions(Long topId, Boolean newDefinitionsOnly, Collection ids) {
+	public void updateDefaultDefinitions(AllModulesInjected bs, Long topId, Boolean newDefinitionsOnly, Collection ids) {
 		Workspace top = (Workspace)getCoreDao().loadBinder(topId, topId);
+		List currentDefinitions = new ArrayList();
+		currentDefinitions = DefinitionHelper.getDefaultDefinitions(bs);
 		
 		//default definitions stored in separate config file
 		String startupConfig = SZoneConfig.getString(top.getName(), "property[@name='startupConfig']", "config/startup.xml");

@@ -38,6 +38,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.StatusTicket;
 
@@ -61,10 +62,11 @@ public interface BinderProcessor {
     public void indexFunctionMembership(Binder binder, boolean cascade);
     public void indexTeamMembership(Binder binder, boolean cascade);
     public void indexOwner(Collection<Binder>binders, Long ownerId);
-	public void indexBinder(Binder binder, boolean includeEntries);	
-	public void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags);
+	public IndexErrors indexBinder(Binder binder, boolean includeEntries);	
+	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags);
 	public Collection indexTree(Binder binder, Collection exclusions);
     public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket);
+    public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors);
       
  	public void modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments, Map options) 
 		throws AccessControlException, WriteFilesException;

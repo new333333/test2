@@ -42,6 +42,7 @@ import org.kablink.teaming.module.binder.impl.AbstractBinderProcessor;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.StatusTicket;
 
@@ -78,14 +79,18 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
 		throw new NotSupportedException("Move", "TemplateBinder");
 	
 	}
-    public void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
+    public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
    		//nothing to do    	    	
+    	return new IndexErrors();
     }
 	//nothing to index
 	public Collection indexTree(Binder binder, Collection exclusions) {
 		return indexTree(binder, exclusions, StatusTicket.NULL_TICKET);
 	}
 	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
+		return new ArrayList();
+	}
+	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors) {
 		return new ArrayList();
 	}
 	//nothing to log

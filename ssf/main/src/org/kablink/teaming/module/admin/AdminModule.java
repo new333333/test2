@@ -47,6 +47,7 @@ import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.util.AllModulesInjected;
 
 /**
  * @author Janet McCann
@@ -180,7 +181,7 @@ public interface AdminModule {
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;
     public void setWorkAreaOwner(WorkArea workArea, Long userId, boolean propagate) throws AccessControlException;
 	public void updateDefaultDefinitions(Long topId, Boolean newDefinitionsOnly);
-	public void updateDefaultDefinitions(Long topId, Boolean newDefinitionsOnly, Collection ids);
+	public void updateDefaultDefinitions(AllModulesInjected bs, Long topId, Boolean newDefinitionsOnly, Collection ids);
 	
 	/**
 	 * Get a list of <code>IndexNode</code>. Each IndexNode represents the state

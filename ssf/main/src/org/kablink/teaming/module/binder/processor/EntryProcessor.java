@@ -40,6 +40,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.security.AccessControlException;
 
 
@@ -65,8 +66,8 @@ public interface EntryProcessor extends BinderProcessor {
     	throws WriteFilesException;
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState);
     public void setWorkflowResponse(Binder binder, Entry entry, Long tokenId, InputDataAccessor inputData);
-  	public void indexEntries(Collection entries);
-  	public void indexEntry(Entry entry);
+  	public IndexErrors indexEntries(Collection entries);
+  	public IndexErrors indexEntry(Entry entry);
   	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags);
     public void moveEntry(Binder binder, Entry entry, Binder destination, Map options);
 	public ChangeLog processChangeLog(DefinableEntity entity, String operation);
