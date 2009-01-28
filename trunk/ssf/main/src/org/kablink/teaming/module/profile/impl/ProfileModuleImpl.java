@@ -93,6 +93,7 @@ import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
+import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -462,10 +463,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
     
     //***********************************************************************************************************	
-	public void indexEntry(Principal entry) {
+	public IndexErrors indexEntry(Principal entry) {
         ProfileCoreProcessor processor=loadProcessor((ProfileBinder)entry.getParentBinder());
-        processor.indexEntry(entry);
-
+        return processor.indexEntry(entry);
 	}
 
 

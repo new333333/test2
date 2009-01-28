@@ -28,6 +28,7 @@
  */
 package org.kablink.teaming.web.util;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,6 +39,8 @@ import java.util.Map;
 import java.util.Collection;
 import java.util.TreeMap;
 import java.util.SortedMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderResponse;
@@ -46,6 +49,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.dom4j.io.SAXReader;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.comparator.StringComparator;
@@ -58,6 +62,7 @@ import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
@@ -68,10 +73,12 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+import org.springframework.core.io.ClassPathResource;
 
 
 public class DefinitionHelper {
@@ -868,6 +875,39 @@ public class DefinitionHelper {
 		return definitionTree;
 
 	}
+
+	public static List getDefaultDefinitions(AllModulesInjected bs) {
+		List definitions = new ArrayList();
+		Workspace top = (Workspace)bs.getWorkspaceModule().getTopWorkspace();
+		
+		//default definitions stored in separate config file
+		String startupConfig = SZoneConfig.getString(top.getName(), "property[@name='startupConfig']", "config/startup.xml");
+		SAXReader reader = new SAXReader(false);  
+		InputStream in=null;
+		try {
+			in = new ClassPathResource(startupConfig).getInputStream();
+			Document cfg = reader.read(in);
+			in.close();
+			List<Element> elements = cfg.getRootElement().selectNodes("definitionFile");
+			for (Element element:elements) {
+				String file = element.getTextTrim();
+				//Get the definition name from the file name
+				Pattern nameP = Pattern.compile("/([^/\\.]*)\\.xml$");
+				Matcher m = nameP.matcher(file);
+				if (m.find()) {
+					String name = m.group(1);
+					if (name != null && !name.equals("")) {
+						Definition def = bs.getDefinitionModule().getDefinitionByName(null, false, name);
+						if (def != null) definitions.add(def);
+					}
+				}
+			}
+
+		} catch (Exception ex) {
+			//logger.error("Cannot read startup configuration:", ex);
+		}
+		return definitions;
+	}	
 
 }
 

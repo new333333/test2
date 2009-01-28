@@ -103,6 +103,7 @@ import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
+import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
@@ -1104,9 +1105,9 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	}
 
 
-    public void indexEntry(FolderEntry entry, boolean includeReplies) {
-		FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
-		processor.indexEntry(entry);
+    public IndexErrors indexEntry(FolderEntry entry, boolean includeReplies) {
+    	FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
+    	IndexErrors errors = processor.indexEntry(entry);
 		if (includeReplies) {
 			List<FolderEntry> replies = new ArrayList();
 			replies.addAll(entry.getReplies());
@@ -1114,10 +1115,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 				FolderEntry reply = replies.get(0);
 				replies.remove(0);
 				replies.addAll(reply.getReplies());
-				processor.indexEntry(reply);
+				IndexErrors replyErrors = processor.indexEntry(reply);
+				errors.add(replyErrors);
 			}
 		}
-   	
+		return errors;
     }
     public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
 		FolderCoreProcessor processor = loadProcessor((Folder)binder);

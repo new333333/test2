@@ -98,6 +98,7 @@ import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.search.BasicIndexUtils;
+import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.LuceneWriteSession;
@@ -1527,23 +1528,30 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      }
 
     //***********************************************************************************************************
-    public void indexBinder(Binder binder, boolean includeEntries) {
+    public IndexErrors indexBinder(Binder binder, boolean includeEntries) {
     	//call overloaded methods
-   		indexBinder(binder, includeEntries, true, null);    	
+    	IndexErrors errors = indexBinder(binder, includeEntries, true, null);   
+   		return errors;
     }
-   public void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
-   		indexBinder(binder, null, null, !deleteIndex, tags);    	
+    public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
+    	IndexErrors errors = indexBinder(binder, null, null, !deleteIndex, tags);    	
+   		return errors;
     	
     }
     //***********************************************************************************************************
     //It is assumed that the index has been deleted for each binder to be index
     public Collection indexTree(Binder binder, Collection exclusions) {
-    	return loadIndexTree(binder, exclusions, StatusTicket.NULL_TICKET);
+   		IndexErrors errors = new IndexErrors();
+    	return loadIndexTree(binder, exclusions, StatusTicket.NULL_TICKET, errors);
     }
    	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
-   		return loadIndexTree(binder, exclusions, statusTicket);
+   		IndexErrors errors = new IndexErrors();
+   		return indexTree(binder, exclusions, statusTicket, errors);
    	}
-   	private Collection loadIndexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
+   	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors) {
+   		return loadIndexTree(binder, exclusions, statusTicket, errors);
+   	}
+   	private Collection loadIndexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors) {
    		//get all the ids of child binders. order for statusTicket to make some sense
    		List<Long> ids = getCoreDao().loadObjects("select x.id from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '" +
 				binder.getBinderKey().getSortKey() + "%' order by x.binderKey.sortKey", null);
@@ -1568,7 +1576,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   	    	Collection tags = (Collection)tagMap.get(b.getEntityIdentifier());
 	   	    	statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {b.getPathName()}));
 	   	   		
-	   	    	processor.indexBinder(b, true, false, tags);
+	   	    	IndexErrors binderErrors = processor.indexBinder(b, true, false, tags);
+	   	    	errors.add(binderErrors);
 	   	    	getCoreDao().evict(tags);
 	   	    	getCoreDao().evict(b);
 			}
@@ -1598,7 +1607,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * At minimum, those files in the list must be indexed. 
      * @param newEntry
      */
-    protected void indexBinder(Binder binder, List fileUploadItems, 
+    protected IndexErrors indexBinder(Binder binder, List fileUploadItems, 
     		Collection<FileAttachment> filesToIndex, boolean newEntry, Collection tags) {
     	// Logically speaking, the only files we need to index are the ones
     	// that have been uploaded (fileUploadItems) and the ones explicitly
@@ -1614,7 +1623,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	// Consequently we obtain and pass "all" the attachments to the 
     	// following method and ignore the filesToIndex list (for now).
 
-    	indexBinderWithAttachments(binder, binder.getFileAttachments(), fileUploadItems, newEntry, tags);
+    	return indexBinderWithAttachments(binder, binder.getFileAttachments(), fileUploadItems, newEntry, tags);
     }
     protected void indexDeleteBinder(Binder binder) {
 		// Since all matches will be deleted, this will also delete the attachments 
@@ -1633,8 +1642,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * correspond to the elements in fileAttachments list. 
      * @param newEntry
      */
-	protected void indexBinderWithAttachments(Binder binder,
+	protected IndexErrors indexBinderWithAttachments(Binder binder,
 			Collection<FileAttachment> fileAttachments, List fileUploadItems, boolean newEntry, Collection tags) {
+		IndexErrors errors = new IndexErrors();
 		if(SPropsUtil.getBoolean("indexing.escalate.add.to.update", true))
 			newEntry = false;
 		
@@ -1646,7 +1656,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // Create an index document from the entry object.
 		org.apache.lucene.document.Document indexDoc;
 		if (tags == null) tags = getCoreDao().loadAllTagsByEntity(binder.getEntityIdentifier());
-		indexDoc = buildIndexDocumentFromBinder(binder, tags);
+		try {
+			indexDoc = buildIndexDocumentFromBinder(binder, tags);
+		} catch(Exception e) {
+			//An error occurred, increment the error count and return. No more can be done.
+			errors.addError(binder);
+			return errors;
+		}
 
         // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
@@ -1660,8 +1676,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
            		IndexSynchronizationManager.addDocument(buildIndexDocumentFromBinderFile(binder, fa, fui, tags));
            	} catch (Exception ex) {
         		logger.error("Error index file for binder " + binder + " attachment" + fa + " " + ex.getLocalizedMessage());
+        		errors.addError(binder);
         	}
         }
+        return errors;
 	}
 
     protected org.apache.lucene.document.Document buildIndexDocumentFromBinder(Binder binder, Collection tags) {

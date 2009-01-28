@@ -27,6 +27,7 @@
  * are trademarks of SiteScape, Inc.
  */
 package org.kablink.teaming.portlet.administration;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +42,11 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.ProfileBinder;
+import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
@@ -87,19 +91,38 @@ public class ManageSearchIndexController extends  SAbstractController {
 				profiler = new SimpleProfiler("manageSearchIndex");
 				SimpleProfiler.setProfiler(profiler);
 			}
-			Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket, nodeNames);
+			IndexErrors errors = new IndexErrors();
+			Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket, nodeNames, errors);
 			//if people selected and not yet index; index content only, not the whole ws tree
 			String idChoices = TreeHelper.getSelectedIdsAsString(formData);
 			if (idChoices.contains(usersAndGroups)) {
 				ProfileBinder pf = getProfileModule().getProfileBinder();
-				if (!idsIndexed.contains(pf.getId()))
-					getBinderModule().indexBinder(pf.getId(), true);
+				if (!idsIndexed.contains(pf.getId())) {
+					errors.add(getBinderModule().indexBinder(pf.getId(), true)); 
+				}
 			}
 			if (logger.isDebugEnabled()) {
 				logger.debug(SimpleProfiler.toStr());
 				SimpleProfiler.clearProfiler();
 			}
 			response.setRenderParameters(formData);
+			response.setRenderParameter(WebKeys.ERROR_INDEXING_COUNT, errors.getErrorCount().toString());
+			if (errors.getErrorCount() > 0) {
+				List binderIds = new ArrayList();
+				for (Binder b : errors.getBinders()) {
+					binderIds.add(b.getId().toString());
+					logger.error(NLT.get("error.indexing.binders", new String[] {b.getId().toString(), b.getTitle()}));
+				}
+				List entryIds = new ArrayList();
+				for (Entry e : errors.getEntries()) {
+					entryIds.add(e.getId().toString());
+					logger.error(NLT.get("error.indexing.entries", new String[] {e.getId().toString(), e.getTitle()}));
+				}
+				if (binderIds.size() > 0)
+					response.setRenderParameter(WebKeys.ERROR_INDEXING_BINDERS, (String[])binderIds.toArray(new String[binderIds.size()]));
+				if (entryIds.size() > 0)
+					response.setRenderParameter(WebKeys.ERROR_INDEXING_ENTRIES, (String[])entryIds.toArray(new String[entryIds.size()]));
+			}
 		} else
 			response.setRenderParameters(formData);
 	}
@@ -111,7 +134,10 @@ public class ManageSearchIndexController extends  SAbstractController {
 		String btnClicked = PortletRequestUtils.getStringParameter(request, "btnClicked", "");
 		if (formData.containsKey("okBtn") || btnClicked.equals("okBtn")) {
 			response.setContentType("text/xml");
-			return new ModelAndView("forum/ajax_return", model);
+			model.put(WebKeys.ERROR_INDEXING_COUNT, request.getParameter(WebKeys.ERROR_INDEXING_COUNT));
+			model.put(WebKeys.ERROR_INDEXING_BINDERS, request.getParameter(WebKeys.ERROR_INDEXING_BINDERS));
+			model.put(WebKeys.ERROR_INDEXING_ENTRIES, request.getParameter(WebKeys.ERROR_INDEXING_ENTRIES));
+			return new ModelAndView("administration/indexing_errors", model);
 		}
 
 		Document pTree = DocumentHelper.createDocument();

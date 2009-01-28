@@ -105,8 +105,7 @@ function ss_submitIndexingForm() {
 function ss_indexingDone() {
 	if(ss_indexTimeout) { clearTimeout(ss_indexTimeout); }
 	ss_stopSpinner();
-	ss_showPopupDivCentered('ss_indexing_done_div${renderResponse.namespace}');
-	setTimeout("self.window.close();", 4000)
+	ss_showPopupDivCentered('ss_indexing_done_div');
 }
 
 
@@ -149,8 +148,11 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <br>
 </td></tr></table>
 
-<div id="ss_indexing_done_div${renderResponse.namespace}" style="position:absolute;display:none;">
+<div id="ss_indexing_done_div" style="position:absolute;display:none;background-color:#fff;">
 <span><ssf:nlt tag="index.finished"/></span>
+<br/>
+<br/>
+<input type="button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;" />
 </div>
 </ssf:form>
 </div>

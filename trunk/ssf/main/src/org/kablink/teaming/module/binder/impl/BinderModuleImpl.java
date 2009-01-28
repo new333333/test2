@@ -90,6 +90,7 @@ import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.shared.SearchUtils;
+import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.LuceneWriteSession;
@@ -300,6 +301,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     }
     //optimization so we can manage the deletion to the searchEngine
     public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket, String[] nodeNames) {
+    	IndexErrors errors = new IndexErrors();
+    	return indexTree(binderIds, statusTicket, nodeNames, errors);
+    }
+    public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors) {
     	getCoreDao().flush(); //just incase
     	try {
     		//make list of binders we have access to first
@@ -312,7 +317,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	    			if (binder.isDeleted()) continue;
 	    			if (binder.isZone()) clearAll = true;
 	    			checked.add(binder);
-	    		} catch (Exception ex) {};
+	    		} catch (AccessControlException ex) {
+	    			//Skip the ones we cannot access
+	    		} catch (Exception ex) {
+	    			errors.addError(binder);
+	    		}
 	    		
 	    	}
 	    	Set<Long> done = new HashSet();
@@ -338,7 +347,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 					}
 				}
 			   	for (Binder binder:checked) {
-			   		done.addAll(loadBinderProcessor(binder).indexTree(binder, done, statusTicket));
+			   		done.addAll(loadBinderProcessor(binder).indexTree(binder, done, statusTicket, errors));
 			   	}
 			   	// Normally, all updates to the index are managed by the framework so that
 			   	// the index update won't be made until after the related database transaction
@@ -363,13 +372,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 				statusTicket.done();
 		}
 	} 
-    public void indexBinder(Long binderId) {
-    	indexBinder(binderId, false);
+    public IndexErrors indexBinder(Long binderId) {
+    	return indexBinder(binderId, false);
     }
-    public void indexBinder(Long binderId, boolean includeEntries) {
+    public IndexErrors indexBinder(Long binderId, boolean includeEntries) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.indexBinder);
- 	    loadBinderProcessor(binder).indexBinder(binder, includeEntries);
+ 	    return loadBinderProcessor(binder).indexBinder(binder, includeEntries);
     }
 
     //no transaction    
