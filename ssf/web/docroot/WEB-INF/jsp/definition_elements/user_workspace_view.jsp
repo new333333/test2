@@ -33,6 +33,10 @@
 
 <div class="ss_style ss_portlet">
 
+  <div id="ss_topic_box">
+	<div id="ss_topic_box_h1">${ssBinder.title}</div>
+  </div><!-- end of box -->
+
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
   configJspStyle="${ssConfigJspStyle}"
