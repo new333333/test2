@@ -284,7 +284,8 @@ public class MarkupUtil {
 				return WebUrlUtil.getAdapterRootUrl();
 			}
 			public String getFileUrlByName(String fileName) {
-				if (!WebKeys.MARKUP_EXPORT.equals(type)) return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, entity, fileName);
+				if (!WebKeys.MARKUP_EXPORT.equals(type)) 
+					return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, entity, fileName);
 				//need permalink
 				return PermaLinkUtil.getFilePermalink(entity, fileName);
 			}

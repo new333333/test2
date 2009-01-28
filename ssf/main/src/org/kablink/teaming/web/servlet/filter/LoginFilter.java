@@ -217,6 +217,7 @@ public class LoginFilter  implements Filter {
 		return (path != null && 
 				(path.equals("/"+WebKeys.SERVLET_PORTAL_LOGIN) || 
 						path.equals("/"+WebKeys.SERVLET_PORTAL_LOGOUT) || 
+						path.startsWith("/"+WebKeys.SERVLET_READ_FILE+"/") || 
 						path.equals("/"+WebKeys.SERVLET_VIEW_CSS)));
 	}
 	
