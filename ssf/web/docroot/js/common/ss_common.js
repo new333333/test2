@@ -4605,6 +4605,7 @@ function ss_cancelPopupDiv(divId) {
 }
 
 function ss_dashboardInitialization(divId) {
+    return;
 	//Turn off ie's 3d table look
 	var dashboardTable = document.getElementById(divId);
 	dashboardTable.setAttribute('borderColorDark', ss_style_background_color);
@@ -4636,6 +4637,7 @@ function ss_clearDashboardSlider() {
 }
 
 function ss_enableDashboardDropTargets() {
+	return;
 	//ss_debug('enable drop targets')
 	var dashboardTable = document.getElementById('ss_dashboardTable');
 	ss_dashboardTableBorderColor = dashboardTable.style.borderColor;

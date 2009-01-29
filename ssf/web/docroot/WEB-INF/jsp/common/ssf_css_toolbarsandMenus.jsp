@@ -320,7 +320,6 @@ div.ss_actions_bar_submenu ul.ss_actions_bar4 {
 	}
 /* utils bar (dashboard)  */
 div.ss_dashboardContainer {
-	border-bottom: 1px solid ${ss_generic_border_color};
 	width: 100%;
 	margin: 0px;
 	padding: 0px 0px 0px 0px;

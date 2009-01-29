@@ -78,11 +78,11 @@
 	  <input type="hidden" name="_operation" value=""/>
 	  <input type="hidden" name="_returnView" value="${ss_dashboard_returnView}"/>
 			<ul class="ss_title_bar_icons">
-				<li><a href="javascript:;"
+				<li><a href="javascript:;" title="<ssf:nlt tag="button.moveUp"/>"
 				  onclick="ss_submitDashboardChange(this, '_moveUp');return false;"
 				><img border="0" src="<html:imagesPath/>icons/accessory_move_up.gif" 
 				  alt="<ssf:nlt tag="button.moveUp"/>" /></a></li>
-				<li><a href="javascript:;"
+				<li><a href="javascript:;" title="<ssf:nlt tag="button.moveDown"/>"
 				  onclick="ss_submitDashboardChange(this, '_moveDown');return false;"
 				><img border="0" src="<html:imagesPath/>icons/accessory_move_down.gif" 
 				  alt="<ssf:nlt tag="button.moveDown"/>" /></a></li>
@@ -149,7 +149,6 @@
 </tr>
 </table>
 </div>
-<div style="margin:3px; padding:0px;"><img <ssf:alt/> border="0"
-  src="<html:imagesPath/>pics/1pix.gif"></div>
+<div class="ss_dashboard_spacer"></div>
 <!-- End of component -->
 
