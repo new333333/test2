@@ -524,31 +524,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  			definitions.add(def.getId());
 			getBinderModule().setDefinitions(top.getId(), definitions, workflowAssociations);
    		}
-		//temp for inhouse; remove zonenamecheck in call to upgradeTX
-		if (getFunctionManager().findFunctions(top.getId(), WorkAreaOperation.ZONE_ADMINISTRATION).isEmpty()) {
-			//	add new reserved functions
-			List ids = new ArrayList();
-			//add users who currently have siteAdmin to the new functions
-			WorkAreaOperation siteAdmin = WorkAreaOperation.getInstance("siteAdministration");
-			List<WorkAreaFunctionMembership>wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(top.getId(), top, siteAdmin);
-			for (WorkAreaFunctionMembership wfm:wfms) {
-				ids.addAll(wfm.getMemberIds());				
-			}
-			addGlobalFunctions(zoneConfig, ids);
-			//Remove old site_admin right
-			//now remove the old right
-			List<Function>fns = getFunctionManager().findFunctions(top.getId(), siteAdmin);
-			for (Function fn:fns) {
-				fn.removeOperation(siteAdmin);
-			}
-			//remove from system
-			WorkAreaOperation.deleteInstance(siteAdmin.getName());
-		}
-		//remove after inhouse updates
-		List<PostingDef> postings = getCoreDao().loadObjects(org.kablink.teaming.domain.PostingDef.class , null, top.getId());
-		for (PostingDef post:postings) {
-			post.updateCredentials();
-		}
   	}
  	// Must be running inside a transaction set up by the caller 
  	protected void validateZoneTx(Workspace zone) {
