@@ -41,7 +41,7 @@
 </c:if>
 
 
-		<ul class="ss_searchResult">
+		<ul class="ss_searchResult ss_nobullet">
 		<c:forEach var="entry" items="${ssFolderEntries}" varStatus="status">
 		    <c:set var="entryBinderTitle" value="${entry.binderTitle}"/>
 		    <c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[entry._binderId].title}">
