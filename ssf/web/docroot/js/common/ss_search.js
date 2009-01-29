@@ -130,6 +130,7 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
     div.appendChild(stepsLabel);
 	var stepsContainer = document.createElement('ul');
 	stepsContainer.id = "workflowSteps"+orderNo;
+	stepsContainer.className = "ss_nobullet";
 	stepsContainer.setAttribute("style", "display:inline; float: left; padding-left: 5px; margin-top: 0px;");
 	div.appendChild(stepsContainer);
 	
