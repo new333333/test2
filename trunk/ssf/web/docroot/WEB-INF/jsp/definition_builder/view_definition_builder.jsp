@@ -684,10 +684,11 @@ function ss_saveUserGroupResults(s) {
 		//See if this is an entry definition
 		Element configElementEntry = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='entryForm']");
 		Element configElementProfile = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='profileEntryForm']");
+		Element configElementProfiles = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='profileForm']");
 		Element configElementFolder = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='folderForm']");
 		Element configElementWorkspace = (Element) ((Document) data.get("sourceDefinition")).getRootElement().selectSingleNode("//item[@name='workspaceForm']");
 		Element configElement = null;
-		if (configElementEntry != null || configElementProfile != null || 
+		if (configElementEntry != null || configElementProfile != null || configElementProfiles != null || 
 				configElementFolder != null || configElementWorkspace != null) {
 			//This definition has a form definition; so show the form preview
 			if (configElementEntry != null) {
@@ -695,6 +696,9 @@ function ss_saveUserGroupResults(s) {
 				request.setAttribute("definitionEntry", new FolderEntry());
 			} else if (configElementProfile != null) {
 				configElement = configElementProfile;
+				request.setAttribute("definitionEntry", new User());
+			} else if (configElementProfiles != null) {
+				configElement = configElementProfiles;
 				request.setAttribute("definitionEntry", new User());
 			} else if (configElementFolder != null) {
 				configElement = configElementFolder;
