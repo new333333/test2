@@ -126,7 +126,7 @@
 	  <table>
 	  <tr>
 	  <td valign="top">
-	  <label for="url">&nbsp;</label>
+	  <label for="url"><span style="display:none;"><ssf:nlt tag="label.selectOption"/></span></label>
 	  <select name="url" id="url" size="1">
 	    <c:if test="${fn:length(ss_mobileBinderDefUrlList) == 1}">
 		  <c:forEach var="def" items="${ss_mobileBinderDefUrlList}">

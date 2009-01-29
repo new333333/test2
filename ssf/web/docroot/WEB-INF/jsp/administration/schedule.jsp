@@ -118,7 +118,7 @@
    
 	<label for="absolute"><span class="ss_labelRight"><ssf:nlt tag="schedule.attime"/></span></label>
    
-   <label for="${schedPrefix}schedHours">&nbsp;</label>
+   <label for="${schedPrefix}schedHours"><span style="display:none;"><ssf:nlt tag="label.selectHours"/></span></label>
 	<select name="${schedPrefix}schedHours" id="${schedPrefix}schedHours" <c:if test="${!schedule.repeatHours}">value="${schedule.hours}"</c:if>>
 		<option <c:if test="${schedule.hours == '0'}">selected="selected"</c:if> value="00">00
 		<option <c:if test="${schedule.hours == '1'}">selected="selected"</c:if> value="01">01
@@ -160,7 +160,7 @@
 		<option <c:if test="${schedule.minutes == '50'}">selected="selected"</c:if> value="50">50
 		<option <c:if test="${schedule.minutes == '55'}">selected="selected"</c:if> value="55">55
 	</select>
-	<label for="${schedPrefix}schedMinutes">&nbsp;</label>
+	<label for="${schedPrefix}schedMinutes"><span style="display:none;"><ssf:nlt tag="label.selectMinutes"/></span></label>
 &nbsp;<span class="ss_bold"><%= TimeZone.getDefault().getID() %></span>
 	<c:set var="defaultTimeZoneId" value="<%= TimeZone.getDefault().getID() %>" />
 	
@@ -204,7 +204,7 @@
 	<ssf:nlt tag="schedule.repeathours">
    	<ssf:param name="value" useBody="true">
 
-	<label for="${schedPrefix}hoursRepeat">&nbsp;</label>
+	<label for="${schedPrefix}hoursRepeat"><span style="display:none;"><ssf:nlt tag="label.selectRepeat"/></span></label>
 	<select name="${schedPrefix}hoursRepeat" id="${schedPrefix}hoursRepeat" 
 	  <c:if test="${schedule.minutesRepeat && schedule.minutesRepeat == '15'}">value="0.25"</c:if>
 	  <c:if test="${schedule.minutesRepeat && schedule.minutesRepeat == '30'}">value="0.5"</c:if>

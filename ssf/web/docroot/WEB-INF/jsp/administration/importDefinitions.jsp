@@ -72,51 +72,51 @@
 <tr>
 	<td>
 		<input type="checkbox" name="definition1ck" id="definition1ck">
-		<label for="definition1ck">&nbsp;</label>
+		<label for="definition1ck"><span style="display:none;"><ssf:nlt tag="label.fileSelect"/></span></label>
 	</td>
 	<td>
 		<input type="file" size="80" class="ss_text" name="definition1" id="definition1">
-		<label for="definition1">&nbsp;</label>
+		<label for="definition1"><span style="display:none;"><ssf:nlt tag="label.fileSelect"/></span></label>
 	</td>
 </tr>
 <tr>
 	<td>
 		<input type="checkbox" name="definition2ck" id="definition2ck">
-		<label for="definition2ck">&nbsp;</label>
+		<label for="definition2ck"><span style="display:none;"><ssf:nlt tag="label.fileSelect"/></span></label>
 	</td>
 	<td>
 		<input type="file" size="80" class="ss_text" name="definition2" id="definition2">
-		<label for="definition2">&nbsp;</label>
+		<label for="definition2"><span style="display:none;"><ssf:nlt tag="label.fileSelect"/></span></label>
 	</td>
 </tr>
 <tr>
 	<td>
 		<input type="checkbox" name="definition3ck" id="definition3ck">
-		<label for="definition3ck">&nbsp;</label>
+		<label for="definition3ck"><span style="display:none;"><ssf:nlt tag="label.fileSelect"/></span></label>
 	</td>
 	<td>
 		<input type="file" size="80" class="ss_text" name="definition3" id="definition3">
-		<label for="definition3">&nbsp;</label>
+		<label for="definition3"><span style="display:none;"><ssf:nlt tag="label.fileSelect"/></span></label>
 	</td>
 </tr>
 <tr>
 	<td>
 		<input type="checkbox" name="definition4ck" id="definition4ck">
-		<label for="definition4ck">&nbsp;</label>
+		<label for="definition4ck"><span style="display:none;"><ssf:nlt tag="label.fileSelect"/></span></label>
 	</td>
 	<td>
 		<input type="file" size="80" class="ss_text" name="definition4" id="definition4">
-		<label for="definition4">&nbsp;</label>
+		<label for="definition4"><span style="display:none;"><ssf:nlt tag="label.fileSelect"/></span></label>
 	</td>
 </tr>
 <tr>
 	<td>
 		<input type="checkbox" name="definition5ck" id="definition5ck">
-		<label for="definition5ck">&nbsp;</label>
+		<label for="definition5ck"><span style="display:none;"><ssf:nlt tag="label.fileSelect"/></span></label>
 	</td>
 	<td>
 		<input type="file" size="80" class="ss_text" name="definition5" id="definition5">
-		<label for="definition5">&nbsp;</label>
+		<label for="definition5"><span style="display:none;"><ssf:nlt tag="label.fileSelect"/></span></label>
 	</td>
 </tr>
 </tr></tbody></table>

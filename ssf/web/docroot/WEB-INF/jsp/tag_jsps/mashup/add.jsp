@@ -435,8 +435,8 @@ function ss_mashupSubmit${ss_mashupItemId}() {
             <option value=""><ssf:nlt tag="general.please_select"/></option>
             <option value="gettingStarted"><ssf:nlt tag="mashup.gettingStarted"/></option>
             <option value="signInForm"><ssf:nlt tag="mashup.signInForm"/></option>
-            <option value="siteAdmin"><ssf:nlt tag="mashup.siteAdmin"/></option>
-            <option value="myWorkspace"><ssf:nlt tag="mashup.myWorkspace"/></option>
+            <option value="siteAdmin"><ssf:nlt tag="mashup.siteAdmin.form"/></option>
+            <option value="myWorkspace"><ssf:nlt tag="mashup.myWorkspace.form"/></option>
             <option value="workspaceTree"><ssf:nlt tag="mashup.workspaceTree"/></option>
           </select>
           <br/>
