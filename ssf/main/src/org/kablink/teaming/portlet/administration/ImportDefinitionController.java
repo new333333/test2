@@ -75,7 +75,12 @@ public class ImportDefinitionController extends  SAbstractController {
 			if (binderId != null) response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		} catch (Exception ex) {};
 		if (formData.containsKey("okBtn") && WebKeys.OPERATION_RELOAD.equals(operation)) {
-			java.util.Collection<String> ids = TreeHelper.getSelectedStringIds(formData, "id");
+			java.util.Collection<String> ids = TreeHelper.getCheckedStringIds(formData, "id");
+			if (ids.isEmpty()) {
+				List currentDefinitions = new ArrayList();
+				currentDefinitions = DefinitionHelper.getDefaultDefinitions(this);
+				for (Definition def : (List<Definition>) currentDefinitions) ids.add(def.getId());
+			}
 			getAdminModule().updateDefaultDefinitions(this, RequestContextHolder.getRequestContext().getZoneId(), false, ids);
 			response.setRenderParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
 		} else if (formData.containsKey("okBtn") && request instanceof MultipartFileSupport) {

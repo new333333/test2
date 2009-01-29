@@ -52,9 +52,6 @@
 <input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick='self.location.href="<ssf:url action="manage_definitions" 
 			actionUrl="false"><ssf:param name="binderId" value="${ssBinderId}"/></ssf:url>";return false;'>
-<script type="text/javascript">
-document.${renderResponse.namespace}fm.onsubmit=function() { return ss_selectAllIfNoneSelected.call(this,"id_");};
-</script>
 <br>
 </td></tr></table>
 

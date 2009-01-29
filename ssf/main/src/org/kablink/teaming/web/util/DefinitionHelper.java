@@ -897,7 +897,10 @@ public class DefinitionHelper {
 				if (m.find()) {
 					String name = m.group(1);
 					if (name != null && !name.equals("")) {
-						Definition def = bs.getDefinitionModule().getDefinitionByName(null, false, name);
+						Definition def = null;
+						try {
+							def = bs.getDefinitionModule().getDefinitionByName(null, false, name);
+						} catch(NoDefinitionByTheIdException e) {}
 						if (def != null) definitions.add(def);
 					}
 				}

@@ -48,7 +48,6 @@ function ss_selectAll(formName, prefix, newState) {
     var totalElements = self.document[formName].elements.length;
     for ( var i=0; i < totalElements; i++) {
         var namestring = self.document.forms[formName].elements[i].name.substring(0,prefix.length)
-        ss_debug("namestring="+namestring)
         if (namestring == prefix) {
             var e = self.document.forms[formName].elements[i];
             e.checked = newState;
@@ -83,5 +82,6 @@ function ss_selectAllIfNoneSelected(prefix) {
 ><ssf:nlt tag="button.clearAll"/></a>
 <br>
 <br>
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>"
+  onClick="ss_selectAllIfNoneSelected('id_');">
 

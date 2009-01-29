@@ -60,6 +60,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.MailConfig;
+import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
@@ -393,7 +394,12 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				if (m.find()) {
 					String name = m.group(1);
 					if (name != null && !name.equals("")) {
-						Definition def = getDefinitionModule().getDefinitionByName(null, false, name);
+						Definition def = null;
+						try {
+							def = getDefinitionModule().getDefinitionByName(null, false, name);
+						} catch(NoDefinitionByTheIdException e) {
+							//This definition doesn't exist yet; always read it in
+						}
 						//If this definition is not on the list, don't read it in
 						if (def != null && !ids.contains(def.getId())) continue;
 					}
