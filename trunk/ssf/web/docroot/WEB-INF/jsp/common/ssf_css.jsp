@@ -1351,12 +1351,12 @@ div.ss_dashboardDropTarget_over {
   background-color:blue;
   height:15px;
 }
+div.ss_dashboard_spacer {
+  padding:3px 0px 3px 0px;
+  margin:0px;
+}
+
 div.ss_dashboardProtoDropTarget {
-  position:relative;
-  visibility:hidden;
-  height:4px;
-  top:-4px;
-  background-color: ${ss_style_background_color}; 
 }
 
 .ss_dashboard_menu {
