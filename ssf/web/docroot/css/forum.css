@@ -306,7 +306,6 @@ div.ss_widgetContent {
   }
 .ss_expandable_area_content {
   display: none;
-  position: relative;
   visibility: hidden;
   margin: 0px;
   }
