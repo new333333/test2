@@ -1,7 +1,9 @@
 package org.kablink.teaming.web.tree;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.web.WebKeys;
@@ -69,6 +71,27 @@ public class TreeHelper {
 				}
 			}
 		}
+		return ids;
+	}	
+	public static Collection<String> getCheckedStringIds(Map params, String prefix) {
+		HashSet<String> ids = new HashSet();
+
+		//Step through the params looking for ids
+		Set elements = params.keySet();
+		Iterator itElements = elements.iterator();
+		while (itElements.hasNext()) {
+			String key = (String) itElements.next();
+			String id = null;
+			if (Validator.isNotNull(prefix)) {
+				if (!key.startsWith(prefix + WebKeys.URL_ID_CHOICES_SEPARATOR)) continue;
+				id = key.replace(prefix + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
+			} else {
+				//just look for separator
+				id = key.substring(key.indexOf(WebKeys.URL_ID_CHOICES_SEPARATOR) + 1);
+			}
+			ids.add(id);
+		}
+
 		return ids;
 	}	
 	public static Long getSelectedId(Map params) {
