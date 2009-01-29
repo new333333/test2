@@ -44,9 +44,9 @@
 			
 		  <!-- necessary cols attribute is set to 20 for Blackberry and is overridden by CSS -->
 			
+  		  <label for="miniblogText"><span style="display:none;"><ssf:nlt tag="miniblog"/></span></label>
 		  <textarea rows="2" cols="20" style="width:150px !important;" name="miniblogText" id="miniblogText"></textarea>
 		  <input type="submit" name="miniblogBtn" value="<ssf:nlt tag="button.ok"/>"/>
-  		  <label for="miniblogText">&nbsp;</label>
 		  <c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">
 		    <div style="padding-left:10px;"><span class="ss_mobile_small"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 		        value="${ssUser.statusDate}" type="both" 

@@ -468,7 +468,7 @@ public class TreeTag extends TagSupport {
 						
 						jspOut.print("<label for=\"");
 						jspOut.print("ss_tree_checkbox" + treeName + mPrefix + s_id + "\" >");
-						jspOut.print("&nbsp;</label>");
+						jspOut.print("<span style='display:none;'>"+ NLT.get("label.selection") +"</span></label>");
 					}
 				} else if (this.singleSelectName != null) {
 					//can only select one item from tree, but probably other things going on
@@ -487,7 +487,7 @@ public class TreeTag extends TagSupport {
 						
 						jspOut.print("<label for=\"");
 						jspOut.print("ss_tree_radio" + treeName + this.singleSelectName + s_id + "\" >");
-						jspOut.print("&nbsp;</label>");
+						jspOut.print("<span style='display:none;'>"+ NLT.get("label.selection") +"</span></label>");
 					}
 					
 				}

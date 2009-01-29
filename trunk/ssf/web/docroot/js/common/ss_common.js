@@ -7607,14 +7607,14 @@ function ss_showAttachmentVersions(prefix, start, end) {
 		if (!rowObj) {
 			return;
 		}
-		rowObj.style.display = 'table-row';
+		rowObj.style.display = 'block';
 		rowObj.style.visibility = 'visible';
 		more = count < end;
 		count++;
 	}
 	var rowObj = document.getElementById(prefix + count + "n");
 	if (rowObj) {
-		rowObj.style.display = 'table-row';
+		rowObj.style.display = 'block';
 		rowObj.style.visibility = 'visible';
 	}	
 }

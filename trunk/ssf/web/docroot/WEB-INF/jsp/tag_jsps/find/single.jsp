@@ -38,7 +38,7 @@
 <c:set var="label" value="<%= label %>" />
 
 <ssf:ifaccessible simple_ui="true">
-	<label for="ss_combobox_autocomplete_${prefix}"><ssf:nlt tag="${accessibilityText}" />&nbsp;</label>
+	<label for="ss_combobox_autocomplete_${prefix}"><span style="display:none;"><ssf:nlt tag="label.selections"/></span></label>
 </ssf:ifaccessible>
 
 <!-- textarea's rows and cols attributes are set to 1. -->

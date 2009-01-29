@@ -273,6 +273,9 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		<tr>
 		  <td class="ss_att_title ss_subhead2" colspan="8">
 		    <c:set var="previousVersionsText" value='<%= NLT.get("entry.PreviousVersions", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>'/>
+		    <c:if test="${ssBinder.isMirrored}">
+		      <c:set var="previousVersionsText" value='<%= NLT.get("entry.PreviousVersionsMirrored", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>'/>
+		    </c:if>
 		    <ssf:expandableArea title="${previousVersionsText}">
 			  <table>
 			  <c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">
