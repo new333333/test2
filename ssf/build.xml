@@ -203,40 +203,40 @@
 	</target>
 
 	<target name="deploy" depends="init">
-		<ant dir="util" target="deploy" />
-		<ant dir="util-search" target="deploy" />
-		<ant dir="commons-httpclient-contrib" target="deploy" />
-		<ant dir="lucene-contrib" target="deploy" />
-		<ant dir="indexer-lucene" target="deploy" />
-		<ant dir="as-module" target="deploy" />
+		<ant dir="util" target="deploy" inheritall="false"/>
+		<ant dir="util-search" target="deploy" inheritall="false"/>
+		<ant dir="commons-httpclient-contrib" target="deploy" inheritall="false"/>
+		<ant dir="lucene-contrib" target="deploy" inheritall="false"/>
+		<ant dir="indexer-lucene" target="deploy" inheritall="false"/>
+		<ant dir="as-module" target="deploy" inheritall="false"/>
 
 		<if>
 			<equals arg1="${build.applets}" arg2="true" />
 			<then>				
-				<ant dir="applets" target="deploy" />
+				<ant dir="applets" target="deploy" inheritall="false"/>
 			</then>
 		</if>
 
-		<ant dir="main-minimum" target="deploy" />
-		<ant dir="main" target="deploy" />
-		<ant dir="slide-webdavclient" target="deploy" />
-		<ant dir="portal-module" target="deploy" />
-		<ant dir="liferay" target="deploy" />
-		<ant dir="jboss-portal" target="deploy" />
-		<ant dir="taglib" target="deploy" />
+		<ant dir="main-minimum" target="deploy" inheritall="false"/>
+		<ant dir="main" target="deploy" inheritall="false"/>
+		<ant dir="slide-webdavclient" target="deploy" inheritall="false"/>
+		<ant dir="portal-module" target="deploy" inheritall="false"/>
+		<ant dir="liferay" target="deploy" inheritall="false"/>
+		<ant dir="jboss-portal" target="deploy" inheritall="false"/>
+		<ant dir="taglib" target="deploy" inheritall="false"/>
 
 		<!-- Do NOT deploy tools archive -->
 		<!--<ant dir="tools" target="deploy" />-->
 		
-		<ant dir="web" target="deploy" />
+		<ant dir="web" target="deploy" inheritall="false"/>
 		
-		<ant dir="ssfs" target="deploy" />
+		<ant dir="ssfs" target="deploy" inheritall="false"/>
 		
-		<ant dir="ssr" target="deploy" />
+		<ant dir="ssr" target="deploy" inheritall="false"/>
 		
-		<ant dir="simple-url" target="deploy" />
+		<ant dir="simple-url" target="deploy" inheritall="false"/>
 		
-		<ant dir="mobile" target="deploy" />
+		<ant dir="mobile" target="deploy" inheritall="false"/>
 	</target>
 
 	<target name="java2html" depends="init">
