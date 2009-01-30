@@ -50,7 +50,6 @@ import org.apache.lucene.store.FSDirectory;
 import org.kablink.teaming.lucene.ChineseAnalyzer;
 import org.kablink.teaming.lucene.LanguageTaster;
 import org.kablink.teaming.lucene.LuceneHelper;
-import org.kablink.teaming.lucene.NullAnalyzer;
 import org.kablink.teaming.lucene.SsfIndexAnalyzer;
 import org.kablink.teaming.search.LuceneException;
 import org.kablink.teaming.search.LuceneWriteSession;
@@ -370,8 +369,8 @@ public class LocalLuceneWriteSession extends LocalLuceneSession implements Lucen
 			retAnalyzer.addAnalyzer(Constants.ENTRY_ACL_FIELD, new SsfIndexAnalyzer());
 			retAnalyzer.addAnalyzer(Constants.BINDER_OWNER_ACL_FIELD, new SsfIndexAnalyzer());
 			retAnalyzer.addAnalyzer(Constants.TEAM_ACL_FIELD, new SsfIndexAnalyzer());
-			retAnalyzer.addAnalyzer(Constants.ACL_TAG_FIELD, new NullAnalyzer());
-			retAnalyzer.addAnalyzer(Constants.TAG_FIELD, new NullAnalyzer());
+			retAnalyzer.addAnalyzer(Constants.ACL_TAG_FIELD, new SsfIndexAnalyzer());
+			retAnalyzer.addAnalyzer(Constants.TAG_FIELD, new SsfIndexAnalyzer());
 			return retAnalyzer;
 		} else if (language.equalsIgnoreCase(LanguageTaster.HEBREW)) {
 			// return new HEBREWAnalyzer;
