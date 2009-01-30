@@ -251,13 +251,32 @@ try
 
 				tutorialObj.img.src = '<html:imagesPath/>pics/1pix.gif';
 			}// end highlightTutorial()
+
+
+			/**
+			 * View the tutorial script in the given format.
+			 */
+			function viewScript( format )
+			{
+				var	url;
+				var	winHeight;
+				var winWidth;
+				
+				url = 'http://www.novell.com/' + '${teamingLang}' + '/documentation/teaming2/script/tutorial.' + format;
+				winHeight = 720;
+				winWidth = 720; 
+				m_playTutorialWnd = window.open(
+											url,
+											'ViewTutorialScriptWindow',
+											'height=' + winHeight + ',resizable,scrollbars,width=' + winWidth );
+			}// end viewScript()
 		</script>
 	</head>
 
 	<body onload="handleOnload()">
 		<table width="100%">
 			<tr>
-				<td valign="middle" colspan="3" nowrap>
+				<td valign="middle" colspan="2" nowrap>
 					<div class="headingDiv">
 						<span class="headingText"><ssf:nlt tag="playtutorial.heading" /></span>
 					</div>
@@ -379,6 +398,26 @@ try
 					</table>
 				</td>
 				<td width="*" id="watchThisTutorialTD">
+				</td>
+			</tr>
+			<tr>
+				<td>
+				</td>
+				<td valign="middle" nowrap>
+					<div style="padding-top: 1em;">
+						<span><ssf:nlt tag="playtutorial.viewscript" />&nbsp;</span>
+						<a	href="#"
+							onclick="viewScript( 'html' )"
+							title="<ssf:nlt tag="playtutorial.alt.viewscripthtml" />">
+							<span><ssf:nlt tag="playtutorial.viewscript.html" /></span>
+						</a>
+						<span>&nbsp;</span>
+						<a	href="#"
+							onclick="viewScript( 'pdf' )"
+							title="<ssf:nlt tag="playtutorial.alt.viewscriptpdf" />">
+							<span><ssf:nlt tag="playtutorial.viewscript.pdf" /></span>
+						</a>
+					</div>
 				</td>
 			</tr>
 		</table>
