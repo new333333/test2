@@ -4270,6 +4270,7 @@ function ssFavorites(namespace) {
 			t += '<li id ="ss_favorite_' + f.id + '">';
 			t += '<span style="white-space:nowrap"><input type="checkbox" style="display: none;"/>';
 			t += '<a href="javascript:;" ';
+			if (typeof f.hover != "undefined") t += 'title="'+f.hover+'" ';
 			t += 'onClick="ss_treeShowIdNoWS(';
 			t += "'" + f.value + "', this";
 			if (typeof f.action == "undefined") {

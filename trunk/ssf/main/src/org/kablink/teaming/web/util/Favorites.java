@@ -73,7 +73,7 @@ public class Favorites {
 	public String toString() {
 		return favorites.asXML();
 	}
-	public Document addFavorite(String name, String type, String value, String action, String categoryId) {
+	public Document addFavorite(String name, String hover, String type, String value, String action, String categoryId) {
 		getFavorites();
 		Element root = this.favorites.getRootElement();
 		
@@ -84,16 +84,15 @@ public class Favorites {
 			
 			List list = root.elements();
 			
-			for(int i = 0; i < list.size(); i++)
-			{
-				if(((Element)list.get(i)).attributeValue("value") != null)
-				if(((Element)list.get(i)).attributeValue("value").equals(value))
-				{
-					return this.favorites;
+			for (int i = 0; i < list.size(); i++) {
+				if (((Element)list.get(i)).attributeValue("value") != null) {
+					if (((Element)list.get(i)).attributeValue("value").equals(value)) {
+						newFavorite = (Element)list.get(i);
+						break;
+					}
 				}
 			}
-			
-			newFavorite = root.addElement("favorite");
+			if (newFavorite == null) newFavorite = root.addElement("favorite");
 		} else {
 			
 			Element category = (Element)root.selectSingleNode("//category[@id='"+categoryId+"']");
@@ -103,6 +102,7 @@ public class Favorites {
 		}
 		newFavorite.addAttribute("id", String.valueOf(id));
 		newFavorite.addAttribute("name", name);
+		newFavorite.addAttribute("hover", hover);
 		newFavorite.addAttribute("type", type);
 		newFavorite.addAttribute("value", value);
 		newFavorite.addAttribute("action", action);
@@ -384,6 +384,21 @@ public class Favorites {
     	return favTreeDelete;
 	}
 	
+	public List<Long> getFavoritesIdList() {
+		getFavorites();
+		List ids = new ArrayList();
+    	Element favRoot = this.favorites.getRootElement();
+    	Iterator itFavorites = favRoot.selectNodes("favorite").iterator();
+       	while (itFavorites.hasNext()) {
+       		Element srcFavorite = (Element) itFavorites.next();
+       		String id = srcFavorite.attributeValue("id");
+       		if (id != null) {
+       			ids.add(Long.valueOf(id));
+       		}
+       	}
+    	return ids;
+	}
+	
 	private void buildFavoritesDomTree(Element srcElement, Element destElement, 
 			DomTreeBuilder treeHelper) {
        	Iterator itFavorites = srcElement.selectNodes("favorite|category").iterator();
@@ -470,6 +485,8 @@ public class Favorites {
        		map.put("eletype", e.getName());
        		map.put("id", e.attributeValue("id"));
        		map.put("name", e.attributeValue("name"));
+       		if (!e.attributeValue("hover", "").equals("")) 
+				map.put("hover", e.attributeValue("hover"));
        		if (!e.attributeValue("type", "").equals("")) 
 				map.put("type", e.attributeValue("type"));
        		if (!e.attributeValue("value", "").equals("")) 
