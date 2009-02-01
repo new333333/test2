@@ -514,7 +514,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			Favorites f = new Favorites((String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES));
 			String title = binder.getTitle();
 			if (binder instanceof Folder) title += " (" + ((Folder)binder).getParentBinder().getTitle() + ")";
-			f.addFavorite(title, Favorites.FAVORITE_BINDER, binderId.toString(), PortletRequestUtils.getStringParameter(request, "viewAction", ""), "");
+			f.addFavorite(title, binder.getPathName(), Favorites.FAVORITE_BINDER, binderId.toString(), PortletRequestUtils.getStringParameter(request, "viewAction", ""), "");
 			getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
 		}
 	}

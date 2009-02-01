@@ -677,4 +677,9 @@ public class EntityIndexUtils {
     	}
     }
 
+    public static void addBinderPath(Document doc, Binder binder, boolean fieldsOnly) {
+		Field path = new Field(ENTITY_PATH, binder.getPathName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+		doc.add(path);
+    }
+
 }

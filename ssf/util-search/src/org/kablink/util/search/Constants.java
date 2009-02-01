@@ -60,6 +60,7 @@ public class Constants {
 	public static final String ENTRY_TYPE_GROUP = "group";
 	public static final String ENTRY_TYPE_APPLICATION = "application";
 	public static final String ENTRY_TYPE_APPLICATION_GROUP = "applicationGroup";
+	public static final String ENTITY_PATH = "_entityPath";
 	public static final String ENTITY_FIELD = "_entityType";
 	public static final String DOCID_FIELD = "_docId";
 	public static final String ENTRY_ANCESTRY = "_entryAncestry";
