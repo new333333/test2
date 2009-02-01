@@ -51,7 +51,8 @@
 					<a href="<ssf:url action="view_folder_listing"><ssf:param 
 							name="binderId" value="${place.ssBinder.id}"/><ssf:param 
 							name="binderType" value="${place.ssBinder.entityType}"/></ssf:url>"
-						>${place.ssBinder.title}</a>
+						title="${place.ssBinder.pathName}"
+					>${place.ssBinder.title}</a>
 				</c:otherwise>
 			</c:choose>
 			</td>
