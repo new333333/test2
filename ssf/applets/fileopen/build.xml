@@ -30,8 +30,8 @@
 			<param name="jar-manifest.jar.file" value="${jar.file}"/>
 		</antcall>
 
-		<signjar jar="${jar.file}" alias="myKey" 
-		keystore="kablink.keystore" storepass="spDJOQ"/>
+		<signjar jar="${jar.file}" alias="KEY" 
+		keystore="KEYSTORE.FILE" storepass="PASSWD"/>
 	</target>
 	
 	<target name="compile" depends="compile_1.4"/>
