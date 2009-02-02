@@ -56,6 +56,15 @@ import org.kablink.util.Validator;
 
 public class WebUrlUtil {
 	
+	public static final int FILE_URL_ACTION = 1;
+	public static final int FILE_URL_ENTITY_TYPE = 2;
+	public static final int FILE_URL_ENTITY_ID = 3;
+	public static final int FILE_URL_FILE_ID = 4;
+	public static final int FILE_URL_DATE = 5;
+	public static final int FILE_URL_VERSION = 6;
+	public static final int FILE_URL_NAME = 7;
+	public static final int FILE_URL_ARG_LENGTH = 8;
+	
 	private static final Log logger = LogFactory.getLog(WebUrlUtil.class);
 
 	private static final int WEB_PROTOCOL_CONTEXT_HTTP	= 1;
@@ -285,11 +294,11 @@ public class WebUrlUtil {
 
 		if (fAtt instanceof VersionAttachment) {
 			VersionAttachment version = (VersionAttachment)fAtt;
-			return getFileUrl(webPath, action, entity.getId().toString(), entity.getEntityType().name(),  
+			return getFileUrl(webPath, action, entity.getId().toString(), entity.getEntityType().name(), String.valueOf(fAtt.getId()),  
 					String.valueOf(version.getModification().getDate().getTime()), String.valueOf(version.getVersionNumber()), 
 					version.getFileItem().getName());
 		}
-		return getFileUrl(webPath, action, entity.getId().toString(), entity.getEntityType().name(),  
+		return getFileUrl(webPath, action, entity.getId().toString(), entity.getEntityType().name(), String.valueOf(fAtt.getId()),  
 				String.valueOf(fAtt.getModification().getDate().getTime()), null, 
 				fAtt.getFileItem().getName());
 	}
@@ -305,10 +314,10 @@ public class WebUrlUtil {
 		if (!fileName.equals("")) entity.getFileAttachment(fileName);
 		if (fAtt != null) {
 			return WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, entity.getId().toString(), 
-				entity.getEntityType().name(), String.valueOf(fAtt.getModification().getDate().getTime()), null, fileName);
+				entity.getEntityType().name(), String.valueOf(fAtt.getId()), String.valueOf(fAtt.getModification().getDate().getTime()), null, fileName);
 		} else {
 			return WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, entity.getId().toString(), 
-					entity.getEntityType().name(), String.valueOf(new Date().getTime()) , null, fileName);
+					entity.getEntityType().name(), null, String.valueOf(new Date().getTime()) , null, fileName);
 			
 		}
 	}
@@ -364,16 +373,18 @@ public class WebUrlUtil {
 		}
 
 		if (fileTime == null) fileTime = "1";  //doesn't matter
-		return getFileUrl(webPath, action, entityId, entityType.name(), fileTime, null, fileName);
+		return getFileUrl(webPath, action, entityId, entityType.name(), fileId, fileTime, null, fileName);
 			
 	}
-	public static String getFileUrl(String webPath, String action, String entityId, String entityType, String attDate, String version, 
+	public static String getFileUrl(String webPath, String action, String entityId, String entityType, String fileId, String attDate, String version, 
 			String fileName) {
+		if (Validator.isNull(fileId)) fileId = "-";
 		if (Validator.isNull(version)) version = "last";
 		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
 		StringBuffer webUrl = new StringBuffer(webPath + action);
 		webUrl.append(Constants.SLASH + entityType);
 		webUrl.append(Constants.SLASH + entityId);
+		webUrl.append(Constants.SLASH + fileId); //for fall back
 		webUrl.append(Constants.SLASH + attDate); //for browser caching
 		webUrl.append(Constants.SLASH + version);
 		///encodeUrl replaces spaces with '+' which readFileController doesn't handle

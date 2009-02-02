@@ -164,7 +164,7 @@ public class MarkupUtil {
 		    	//Now, replace the url with special markup version
 		    	Matcher m1 = urlSrcPattern.matcher(img);
 	        	if (m1.find()) {
-	        		String fileName = args[6];
+	        		String fileName = args[WebUrlUtil.FILE_URL_NAME];
 	 
 	        		img = m1.replaceFirst("src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
 	        		description.setText(m.replaceFirst(img.replace("$", "\\$")));  //remove regex special char

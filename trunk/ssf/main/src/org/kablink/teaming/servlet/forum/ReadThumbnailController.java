@@ -39,6 +39,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.FileUtil;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -57,20 +58,20 @@ public class ReadThumbnailController extends AbstractReadFileController {
 		//fileVersion=last, read latest
 		//fileTime is present for browser cachinge
 		//filename is present for browser handling of relative files
-		if (args.length < 7) return null;
+		if (args.length < WebUrlUtil.FILE_URL_ARG_LENGTH) return null;
 		
 		try {
-			DefinableEntity entity = getEntity(args[2], Long.valueOf(args[3]));
+			DefinableEntity entity = getEntity(args[WebUrlUtil.FILE_URL_ENTITY_TYPE], Long.valueOf(args[WebUrlUtil.FILE_URL_ENTITY_ID]));
 			//Set up the beans needed by the jsps
 			FileAttachment fa = null;
-			if (args.length > 7 && entity instanceof FolderEntry) {
-				fa = getAttachment((FolderEntry)entity, Arrays.asList(args).subList(6, args.length).toArray());
+			if (args.length > WebUrlUtil.FILE_URL_ARG_LENGTH && entity instanceof FolderEntry) {
+				fa = getAttachment((FolderEntry)entity, Arrays.asList(args).subList(WebUrlUtil.FILE_URL_NAME, args.length).toArray());
 				//entity may have changed
 				if (fa != null) {
 					entity = fa.getOwner().getEntity();
 				}
 			} else {
-				fa = getAttachment(entity, args[6], args[5]);
+				fa = getAttachment(entity, args[WebUrlUtil.FILE_URL_NAME], args[WebUrlUtil.FILE_URL_VERSION], args[WebUrlUtil.FILE_URL_FILE_ID]);
 			}
 
 			if (fa != null) {

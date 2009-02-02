@@ -89,11 +89,14 @@ public abstract class AbstractReadFileController extends SAbstractController {
 		if (entity instanceof Binder) return (Binder)entity;
 		return entity.getParentBinder();
 	}
-	protected FileAttachment getAttachment(DefinableEntity entity, String fileName, String fileVersion) {
+	protected FileAttachment getAttachment(DefinableEntity entity, String fileName, String fileVersion, String fileAttachmentId) {
 		FileAttachment fa = null;
 		if (Validator.isNotNull(fileName)) {
 			fa = (FileAttachment)entity.getFileAttachment(fileName);
-			if (!fileVersion.equals("last")) {
+			if (fa == null) {
+				fa = (FileAttachment)entity.getAttachment(fileAttachmentId);
+			}
+			if (fa != null && !fileVersion.equals("last")) {
 				//request for a specific version
 				fa = fa.findFileVersionByNumber(Integer.valueOf(fileVersion));
 			}
