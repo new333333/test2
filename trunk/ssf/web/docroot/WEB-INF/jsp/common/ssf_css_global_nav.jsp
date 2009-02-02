@@ -47,7 +47,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	width:100%;
 	margin-top: 0px !important;
 	padding: 0px !important;
-	height:60px;       /* 60 px for Boulder Need to define specific height for graphics */
+	/*  height:60px;       60 px is suggested. Don't forget to define specific height for graphics */
 	overflow:hidden;	/* This chops off any overhanging divs */
 	}	
 		
@@ -152,7 +152,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_masthead_top div {
 	clear: none;
 	float: none;
-	height: 54px;
 	width: 92px;
 	}
 .ss_mastheadName {
