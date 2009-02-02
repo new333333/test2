@@ -29,7 +29,7 @@ $(JARFILE): clean
 	$(JAVAC) -classpath $(JAWS) -d . *.java
 	$(JAR) cf $(JARFILE) fileedit	
 	$(JAVA) -cp $(CANNERYCLASSPATH) cannery -e "javax/swing" $(JARFILE) fileedit\launcher.class
-	$(JARSIGNER) -keystore sitescape.keystore -storepass spDJOQ $(JARFILE) mykey
+	$(JARSIGNER) -keystore KEYSTORE.FILE -storepass PASSWD $(JARFILE) KEY
 
 clean:
         -del fileedit\*.class
