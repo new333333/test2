@@ -36,6 +36,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.TemplateBinder;
+import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.remoting.RemotingException;
@@ -78,7 +79,8 @@ public class TemplateServiceImpl extends BaseService implements TemplateService,
 
 		List<TemplateBrief> list = new ArrayList<TemplateBrief>();
 		for (TemplateBinder def:defs) {
-			list.add(new TemplateBrief(def.getId(), def.getInternalId(), def.getDefinitionType(), def.getName(), def.getTemplateTitle()));	
+			String family = DefinitionUtils.getFamily(def.getEntryDef().getDefinition());
+			list.add(new TemplateBrief(def.getId(), def.getInternalId(), family, def.getDefinitionType(), def.getName(), def.getTemplateTitle()));	
 		}
 
 		TemplateBrief[] array = new TemplateBrief[list.size()];

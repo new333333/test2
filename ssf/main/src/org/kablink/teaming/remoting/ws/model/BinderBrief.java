@@ -37,17 +37,21 @@ public class BinderBrief implements Serializable {
 	private Timestamp creation;
 	private Timestamp modification;
 	private String permaLink;
-	
+	private String family;
+	private Integer definitionType;
+
 	public BinderBrief() {}
-	
-	public BinderBrief(Long id, String title, Timestamp creation, Timestamp modification, String permaLink) {
+
+	public BinderBrief(Long id, String title, String family, Integer definitionType, Timestamp creation, Timestamp modification, String permaLink) {
 		this.id = id;
 		this.title = title;
+		this.family = family;
+		this.definitionType = definitionType;
 		this.creation = creation;
 		this.modification = modification;
 		this.permaLink = permaLink;
 	}
-	
+
 	public Timestamp getCreation() {
 		return creation;
 	}
@@ -77,6 +81,18 @@ public class BinderBrief implements Serializable {
 	}
 	public void setTitle(String title) {
 		this.title = title;
+	}
+	public String getFamily() {
+		return family;
+	}
+	public void setFamily(String family) {
+		this.family = family;
+	}
+	public Integer getDefinitionType() {
+		return definitionType;
+	}
+	public void setDefinitionType(Integer definitionType) {
+		this.definitionType = definitionType;
 	}
 
 }

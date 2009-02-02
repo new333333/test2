@@ -34,16 +34,18 @@ public class TemplateBrief implements Serializable {
 
 	private Long id;
 	private String internalId;
-	private Integer type;
+	private String family;
+	private Integer definitionType;
 	private String name;
 	private String title;
 	
 	public TemplateBrief() {}
 	
-	public TemplateBrief(Long id, String internalId, Integer type, String name, String title) {
+	public TemplateBrief(Long id, String internalId, String family, Integer definitionType, String name, String title) {
 		setId(id);
 		setInternalId(internalId);
-		setType(type);
+		setFamily(family);
+		setDefinitionType(definitionType);
 		setName(name);
 		setTitle(title);
 	}
@@ -72,11 +74,17 @@ public class TemplateBrief implements Serializable {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public Integer getType() {
-		return type;
+	public String getFamily() {
+		return family;
 	}
-	public void setType(Integer type) {
-		this.type = type;
+	public void setFamily(String family) {
+		this.family = family;
 	}
-	
+	public Integer getDefinitionType() {
+		return definitionType;
+	}
+	public void setDefinitionType(Integer definitionType) {
+		this.definitionType = definitionType;
+	}
+
 }
