@@ -78,6 +78,9 @@ import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.exception.UncheckedCodedException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceSession;
+import org.kablink.teaming.jobs.DefaultMirroredFolderSynchronization;
+import org.kablink.teaming.jobs.MirroredFolderSynchronization;
+import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.definition.DefinitionModule;
@@ -875,6 +878,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     //inside write transaction    
    protected void deleteBinder_mirrored(Binder binder, boolean deleteMirroredSource, Map ctx) {
+	   // Delete associated schedule, if any.
+	   if(binder.isMirrored()) {
+		   MirroredFolderSynchronization sync = new DefaultMirroredFolderSynchronization();
+		   ScheduleInfo si = sync.getScheduleInfo(binder.getZoneId(), binder.getId());
+		   if(si != null && si.isEnabled()) {
+			   si.setEnabled(false);
+			   sync.setScheduleInfo(si, binder.getId());
+		   }
+	   }
+	   
+	   	// Delete the source resource, if so required.
     	if(deleteMirroredSource && binder.isMirrored() && binder.getResourceDriverName() != null) {
     		try {
 				ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
