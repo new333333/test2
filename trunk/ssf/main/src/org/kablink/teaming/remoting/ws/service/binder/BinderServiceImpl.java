@@ -327,7 +327,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		Binder binder = getBinderModule().getBinder(binderId);		
 		Map searchResults = getBinderModule().getBinders(binder, new HashMap());
 		List searchBinders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
-	
+
 		List<FolderBrief> folderList = new ArrayList<FolderBrief>();
 		//get folders
 		Long id;
@@ -338,11 +338,13 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		String webdavUrl;
 		String rssUrl;
 		String icalUrl;
+		String family;
+		Integer definitionType;
 		Folder folder;
 		for (int i=0; i<searchBinders.size(); ++i) {
 			Map search = (Map)searchBinders.get(i);
 			String entityType = (String)search.get(Constants.ENTITY_FIELD);
-			if (!EntityType.folder.name().equals(entityType)) 
+			if (!EntityType.folder.name().equals(entityType))
 				continue;
 			id = Long.valueOf((String)search.get(Constants.DOCID_FIELD));
 			// Unfortunately, the search index does not contain path information for each
@@ -362,19 +364,23 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			title = (String) search.get(Constants.TITLE_FIELD);
 			creation = new Timestamp((String) search.get(Constants.MODIFICATION_NAME_FIELD), (Date) search.get(Constants.MODIFICATION_DATE_FIELD));
 			modification = new Timestamp((String) search.get(Constants.CREATOR_NAME_FIELD), (Date) search.get(Constants.CREATION_DATE_FIELD));
+			family = (String) search.get(Constants.FAMILY_FIELD);
+			definitionType = Integer.valueOf((String)search.get(Constants.DEFINITION_TYPE_FIELD));
 			permaLink = PermaLinkUtil.getPermalink(search);
 			// Construct webdav url regardless of whether this folder is a library binder or not. 
 			webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
 			rssUrl = UrlUtil.getFeedURL(null, id.toString()); // folder only
 			icalUrl = org.kablink.teaming.ical.util.UrlUtil.getICalURL(null, id.toString(), null); // folder only
-			folderList.add(new FolderBrief(id, 
+			folderList.add(new FolderBrief(id,
 					title,
+					family,
+					definitionType,
 					creation,
 					modification,
 					permaLink,
 					webdavUrl,
 					rssUrl,
-					icalUrl));								
+					icalUrl));
 		}
 		FolderBrief[] array = new FolderBrief[folderList.size()];
 		return new FolderCollection(binderId, folderList.toArray(array));

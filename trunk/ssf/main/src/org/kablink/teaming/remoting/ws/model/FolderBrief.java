@@ -43,11 +43,11 @@ public class FolderBrief extends BinderBrief implements Serializable {
 	// "WebDAV URL" button) for even smaller subset of folders called library
 	// folders.
 	private String webdavUrl;
-	
+
 	public FolderBrief() {}
-	
-	public FolderBrief(Long id, String title, Timestamp creation, Timestamp modification, String permalink, String webdavUrl, String rssUrl, String icalUrl) {
-		super(id, title, creation, modification, permalink);
+
+	public FolderBrief(Long id, String title, String family, Integer definitionType, Timestamp creation, Timestamp modification, String permalink, String webdavUrl, String rssUrl, String icalUrl) {
+		super(id, title, family, definitionType, creation, modification, permalink);
 		this.webdavUrl = webdavUrl;
 		this.rssUrl = rssUrl;
 		this.icalUrl = icalUrl;

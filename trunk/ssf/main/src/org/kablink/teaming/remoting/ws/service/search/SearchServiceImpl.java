@@ -216,17 +216,19 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 	public TeamCollection search_getTeams(String accessToken) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());
-		
+
 		List<TeamBrief> teamList = new ArrayList<TeamBrief>();
 		for(Map binder : myTeams) {
 			String binderIdStr = (String) binder.get(Constants.DOCID_FIELD);
 			Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
 			teamList.add(new TeamBrief(binderId, (String) binder.get(Constants.TITLE_FIELD),
-					new Timestamp((String) binder.get(Constants.CREATOR_NAME_FIELD), (Date) binder.get(Constants.CREATION_DATE_FIELD)),
+					(String) binder.get(Constants.FAMILY_FIELD),
+					Integer.valueOf((String)binder.get(Constants.DEFINITION_TYPE_FIELD)),
+					new Timestamp((String) binder.get(Constants.CREATOR_NAME_FIELD),(Date) binder.get(Constants.CREATION_DATE_FIELD)),
 					new Timestamp((String) binder.get(Constants.MODIFICATION_NAME_FIELD), (Date) binder.get(Constants.MODIFICATION_DATE_FIELD)),
 					PermaLinkUtil.getPermalink(binder)));
 		}
-	
+
 		TeamBrief[] array = new TeamBrief[teamList.size()];
 		return new TeamCollection(user.getId(), user.getName(), teamList.toArray(array));
 	}
