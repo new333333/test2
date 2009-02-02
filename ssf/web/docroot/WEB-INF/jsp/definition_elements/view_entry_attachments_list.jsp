@@ -31,6 +31,9 @@
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<c:set var="owningBinder" value="${ssBinder}"/>
+<jsp:useBean id="owningBinder" type="org.kablink.teaming.domain.Binder" />
+
 <c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
 <div id="${ss_viewEntryAttachmentDivId}">
@@ -273,7 +276,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		<tr>
 		  <td class="ss_att_title ss_subhead2" colspan="8">
 		    <c:set var="previousVersionsText" value='<%= NLT.get("entry.PreviousVersions", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>'/>
-		    <c:if test="${ssBinder.isMirrored}">
+		    <c:if test="<%= owningBinder.isMirrored() %>">
 		      <c:set var="previousVersionsText" value='<%= NLT.get("entry.PreviousVersionsMirrored", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>'/>
 		    </c:if>
 		    <ssf:expandableArea title="${previousVersionsText}">
