@@ -44,8 +44,8 @@
 			<fileset dir="${classes.dir}" includes="**/*.gif"/>
 		</delete>
 		
-		<signjar jar="${jar.file}" alias="KEY" 
-		keystore="KEYSTORE.FILE" storepass="PASSWD"/>
+		<signjar jar="${jar.file}" alias="selfsigned" 
+		keystore="kablink.keystore" storepass="password"/>
 	</target>
 	
 	<target name="compile" depends="compile_1.4"/>
