@@ -32,7 +32,7 @@
 
 <div class="pagebody">
   <div id="miniblog">
-    <span><ssf:nlt tag="miniblog"/></span>
+    <span><label for="miniblogText"><ssf:nlt tag="miniblog"/></label></span>
   </div>
   <div class="pagebody_border">
     <div class="maincontent">
@@ -44,8 +44,7 @@
 			
 		  <!-- necessary cols attribute is set to 20 for Blackberry and is overridden by CSS -->
 			
-  		  <label for="miniblogText"><span style="display:none;"><ssf:nlt tag="miniblog"/></span></label>
-		  <textarea rows="2" cols="20" style="width:150px !important;" name="miniblogText" id="miniblogText"></textarea>
+ 		  <textarea rows="2" cols="20" style="width:150px !important;" name="miniblogText" id="miniblogText"></textarea>
 		  <input type="submit" name="miniblogBtn" value="<ssf:nlt tag="button.ok"/>"/>
 		  <c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">
 		    <div style="padding-left:10px;"><span class="ss_mobile_small"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
