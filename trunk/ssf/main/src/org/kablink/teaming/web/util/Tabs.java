@@ -61,6 +61,7 @@ public class Tabs {
 	public static final String TAG_PERSONAL = "pTag";
    	
    	public final static String TITLE = "title";
+   	public final static String PATH = "path";
    	public final static String ICON = "icon";
    	public final static String PAGE = "page";
    	public final static String RECORDS_IN_PAGE = "recordsInPage";
@@ -122,6 +123,7 @@ public class Tabs {
 					tabData.clear();
 					tabData.put(ICON, binder.getIconName());
 					tabData.put(TITLE, binder.getTitle());
+					tabData.put(PATH, binder.getPathName());
 					tabData.put(PAGE, Integer.valueOf(0));
 					binderTab.setData(tabData);
 				}
@@ -144,6 +146,7 @@ public class Tabs {
  	   	binderTab.binderId = binder.getId();
 	   	binderTab.tabData.put(ICON, binder.getIconName());
 	   	binderTab.tabData.put(TITLE, binder.getTitle());
+	   	binderTab.tabData.put(PATH, binder.getPathName());
 	   	binderTab.tabData.put(PAGE, Integer.valueOf(0));
 	   	addTab(binderTab);
 		return binderTab;		
@@ -170,6 +173,7 @@ public class Tabs {
 		tab.query= query.asXML();
 		tab.tabData.put(PAGE, Integer.valueOf(1));
 		tab.tabData.put(TITLE, "");
+		tab.tabData.put(PATH, "");
 		tab.tabData.put(ICON, "pics/sym_s_search.gif");
 		tab.tabData.putAll(options);
 		addTab(tab);

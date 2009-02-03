@@ -47,6 +47,10 @@
 		    <c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[entry._binderId].title}">
 		    	<c:set var="entryBinderTitle" value="${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[entry._binderId].title}"/>
 		    </c:if>
+		    <c:set var="entryBinderPathName" value="${entry.binderPathName}"/>
+		    <c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[entry._binderId].pathName}">
+		    	<c:set var="entryBinderPathName" value="${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[entry._binderId].pathName}"/>
+		    </c:if>
 		
 			<jsp:useBean id="entry" type="java.util.HashMap" />
 			
@@ -168,7 +172,7 @@
 	    	  							</ssf:url>" 
 	    	  						  onClick="ss_openUrlInWorkarea(this.href, '${entry._binderId}', 'view_folder_listing');return false;"
 	    	  						</c:if>
-									class="ss_parentPointer">
+									class="ss_parentPointer" title="${entryBinderPathName}">
 									${entryBinderTitle}
 									</a></p>
 								</c:if>
@@ -240,7 +244,7 @@
 	    	  							</ssf:url>" 
 	    	  						  onClick="ss_openUrlInWorkarea(this.href, '${entry._binderId}', 'view_folder_listing');return false;"
 	    	  						</c:if>
-									class="ss_parentPointer">
+									class="ss_parentPointer" title="${entryBinderPathName}">
 									${entryBinderTitle}
 									</a></p>
 								</c:if>

@@ -571,6 +571,7 @@ public class WebKeys {
 	public static final String BINDERS_SUB_BINDERS="ss_bindersSubBinders";
 	public static final String BINDER_TEMPLATE_NAME="ssBinderTemplateName";
 	public static final String BINDER_TITLE="binderTitle";
+	public static final String BINDER_PATH_NAME="binderPathName";
 	public static final String BINDER_UNSEEN_COUNTS="ss_binderUnseenCounts";
 	public static final String BINDER_WEBDAV_URL="ssWebDavURL";
 	public static final String BLOG_ENTRIES="ssBlogEntries"; 

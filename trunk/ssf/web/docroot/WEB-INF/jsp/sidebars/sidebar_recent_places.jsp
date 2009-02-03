@@ -78,7 +78,7 @@
 			  				<ssf:param name="operation" value="viewPage"/>
 			  				</ssf:url>" 
 					  </c:if>
-					title="${tab.data.title}" >
+					title="${tab.data.path}" >
 					<%
 						// Truncate long tab titles to 30 characters
 						int maxTitle = 30;
