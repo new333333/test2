@@ -182,7 +182,7 @@ public class ResolveIds {
 		Map icons = new HashMap();
 		if ((ids == null) || ids.isEmpty()) return data;
 		CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
-		String query = new String("select x.id,x.title,x.iconName,x.deleted,x.definitionType from x in class org.kablink.teaming.domain.Binder where x.id in (:idList)");
+		String query = new String("select x.id,x.title,x.iconName,x.deleted,x.definitionType,x.pathName from x in class org.kablink.teaming.domain.Binder where x.id in (:idList)");
 		data.put("idList", ids);
 		List<Object[]> result = coreDao.loadObjects(query, data);
 		data.clear();
@@ -193,6 +193,7 @@ public class ResolveIds {
 			data.put("iconName", objs[2]);
 			data.put("deleted", objs[3]);
 			data.put("definitionType", objs[4]);
+			data.put("pathName", objs[5]);
 			results.put(objs[0].toString(), data);
 		}
 		return results;

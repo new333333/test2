@@ -2294,6 +2294,7 @@ public class BinderHelper {
 			if (includeParentBinderTitle && parentBinder != null) 
 				parentBinderTitle = parentBinder.getTitle() + " // ";
 			folderMap.put(binder.getId(), parentBinderTitle + binder.getTitle());
+			folderMap.put("pathname" + binder.getId().toString(), binder.getPathName());
 		}
 		return folderMap;
 	}
@@ -2303,7 +2304,9 @@ public class BinderHelper {
 		while (it.hasNext()) {
 			Map entry = (Map) it.next();
 			if (entry.get(WebKeys.SEARCH_BINDER_ID) != null) {
-				entry.put(WebKeys.BINDER_TITLE, folders.get(Long.parseLong((String)entry.get(WebKeys.SEARCH_BINDER_ID))));
+				String s_binderId = (String)entry.get(WebKeys.SEARCH_BINDER_ID);
+				entry.put(WebKeys.BINDER_TITLE, folders.get(Long.parseLong(s_binderId)));
+				entry.put(WebKeys.BINDER_PATH_NAME, folders.get("pathname"+s_binderId));
 			}
 		}
 	}
