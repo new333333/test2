@@ -73,6 +73,9 @@
 		  <input type="hidden" name="tokenId" value="${workflow.id}">
 		  <input type="hidden" name="replyId" value="${ssDefinitionEntry.id}">
 		  <select name="toState">
+		  <c:if test="${fn:length(ssWorkflowTransitions[workflow.id]) > 1}">
+		    <option value=""><ssf:nlt tag="workflow.selectState"/></option>
+		  </c:if> 
 		  <c:forEach var="transition" items="${ssWorkflowTransitions[workflow.id]}">
 		    <option value="${transition.key}">${transition.value}</option>
 		  </c:forEach>
@@ -138,6 +141,9 @@
 				  <input type="hidden" name="tokenId" value="${workflow2.id}">
 				  <input type="hidden" name="replyId" value="${ssDefinitionEntry.id}">
 				  <select name="toState">
+				  <c:if test="${fn:length(ssWorkflowTransitions[workflow2.id]) > 1}">
+				    <option value=""><ssf:nlt tag="workflow.selectState"/></option>
+				  </c:if>
 				  <c:forEach var="transition" items="${ssWorkflowTransitions[workflow2.id]}">
 				    <option value="${transition.key}">${transition.value}</option>
 				  </c:forEach>
