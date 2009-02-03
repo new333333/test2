@@ -29,7 +29,7 @@ $(JARFILE): clean
 	$(JAVAC) -classpath $(JAWS) -d . *.java
 	$(JAR) cf $(JARFILE) fileedit	
 	$(JAVA) -cp $(CANNERYCLASSPATH) cannery -e "javax/swing" $(JARFILE) fileedit\launcher.class
-	$(JARSIGNER) -keystore KEYSTORE.FILE -storepass PASSWD $(JARFILE) KEY
+        $(JARSIGNER) -keystore kablink.keystore -storepass password $(JARFILE) selfsigned
 
 clean:
         -del fileedit\*.class
