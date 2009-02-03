@@ -29,6 +29,10 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+
+<!-- Include the javascript needed to play a tutorial video. -->
+<jsp:include page="/WEB-INF/jsp/common/tutorial_support.jsp" />
+
 <%  
 	Long ss_mashupTableNumber = (Long) request.getAttribute("ss_mashupTableNumber");
 	Long ss_mashupTableDepth = (Long) request.getAttribute("ss_mashupTableDepth");
@@ -43,12 +47,19 @@
 <% } %>
 
 <div>
-<p>
-  <a href="javascript:;" 
-       onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'print_manuals', '', 200, 230, 'center', 'middle');">
-     <span class="ss_getting_started"><ssf:nlt tag="help.viewBooks.title"/></span>
-   </a>
-</p>
+	<p>
+	  <a href="javascript:;" 
+	       onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'print_manuals', '', 200, 230, 'center', 'middle');">
+	     <span class="ss_getting_started"><ssf:nlt tag="help.viewBooks.title"/></span>
+	   </a>
+	</p>
+	<div>
+		<a 	href="javascript:;"
+			title="<ssf:nlt tag="gettingStarted.alt.viewTutorials" />"
+			onclick="startTutorial( 'whatIsTeaming' );">
+			<span class="ss_getting_started"><ssf:nlt tag="gettingStarted.viewTutorials" /></span>
+		</a>
+	</div>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 
 </div>
