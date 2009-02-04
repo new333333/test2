@@ -320,16 +320,22 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				</c:choose>						
 						
 				<td class="ss_att_title" width="25%" style="padding-left: 5px; font-weight: normal;">
-				<a style="text-decoration: none;"
-				  href="<ssf:fileUrl file="${fileVersion}"/>" 
-					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
-					
-				    <ssf:title tag="title.open.file.version">
-					    <ssf:param name="value" value="${selection.fileItem.name}" />
-					    <ssf:param name="value" value="${fileVersion.versionNumber}" />
-				    </ssf:title>
-					
-				    ><ssf:nlt tag="entry.Version"/> ${fileVersion.versionNumber}</a></td>
+				<c:if test="<%= !owningBinder.isMirrored() %>">
+					<a style="text-decoration: none;"
+					  href="<ssf:fileUrl file="${fileVersion}"/>" 
+						    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
+						
+					    <ssf:title tag="title.open.file.version">
+						    <ssf:param name="value" value="${selection.fileItem.name}" />
+						    <ssf:param name="value" value="${fileVersion.versionNumber}" />
+					    </ssf:title>
+						
+					    ><ssf:nlt tag="entry.Version"/> ${fileVersion.versionNumber}</a>
+				</c:if>
+				<c:if test="<%= owningBinder.isMirrored() %>">
+					<span><ssf:nlt tag="entry.Version"/> ${fileVersion.versionNumber}</span>
+				</c:if>
+				</td>
 				<td class="ss_att_meta" width="10%"></td>
 				<td class="ss_att_meta"></td>
 				<td class="ss_att_meta"></td>    
