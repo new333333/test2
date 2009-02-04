@@ -29,49 +29,113 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<% // Support routines for invoking the page that plays the tutorial videos. %>
 
-<c:if test="${empty ss_tutorial_support_loaded}">
-	<script type="text/javascript">
-		// The m_playTutorialWnd variable holds a handle to the Play Tutorial window.
-		var		m_playTutorialWnd	= null;
+<div style="width: 100%; background-image: url('<html:imagesPath/>pics/tutorial/bgVideoBanner.gif'); background-repeat: repeat-x; ">
+	<% /* This table is displayed when the user collapses the video tutorial. */ %>
+	<table id="collapsedTutorialTable" width="100%" style="padding: 4px; display: none;">
+		<tr>
+			<td width="90%" style="padding-left: 15px;">
+				<span style="font-size: .8em; font-weight: bold; color: #906040;"><ssf:nlt tag="tutorial.heading" /></span>
+			</td>
+			<td width="10%" align="right" valign="top">
+				<a 	href="#"
+					id="closeCollapsedTutorialTableAnchor"
+					onClick="confirmCloseTutorialPanel()">
+					<img	border="0"
+							src="<html:imagesPath/>pics/popup_close_box.gif"
+							title="<ssf:nlt tag="tutorial.alt.closeTutorial"/>"
+							alt="<ssf:nlt tag="tutorial.alt.closeTutorial"/>" />
+				</a>
+				<a 	href="#"
+					onClick="expandTutorialPanel()">
+					<img	border="0"
+							src="<html:imagesPath/>pics/sym_s_expand.gif"
+							title="<ssf:nlt tag="tutorial.alt.expandTutorial"/>"
+							alt="<ssf:nlt tag="tutorial.alt.expandTutorial"/>" />
+				</a>
+			</td>
+		</tr>
+	</table>
 
-		/**
-		 * Open a window and start the given video tutorial.
-		 */
-		function startTutorial( tutorialName )
-		{
-			var		url
-			var		winHeight;
-			var		winWidth;
-	
-			// See if the 'Play Tutorial Window' is already open.  If it is call its playTutorial() function.
-			// Is the "Play Tutorial" window already open?
-			if ( m_playTutorialWnd != null && ((typeof m_playTutorialWnd) != 'undefined' ) && !m_playTutorialWnd.closed )
-			{
-				// Yes.
-				// Does the 'Play Tutorial' window have a playTutorial() function?
-				if ( m_playTutorialWnd.playTutorial )
-				{
-					// Yes, call it.
-					m_playTutorialWnd.playTutorial( tutorialName );
-	
-					// Nothing else to do.
-					return;
-				}
-			}
-				
-			url = '<ssf:escapeJavaScript>${ss_play_tutorial_base_url}</ssf:escapeJavaScript>';
-			url += '&ss_tutorial_name=' + encodeURIComponent( tutorialName );
-			winHeight = 520;
-			winWidth = 720; 
-			m_playTutorialWnd = window.open(
-										url,
-										'PlayTutorialWindow',
-										'height=' + winHeight + ',resizable,scrollbars,width=' + winWidth );
-		}// end startTutorial()
-	</script>
-	
-	<c:set var="ss_tutorial_support_loaded" value="1" scope="request" />
-</c:if>
+	<% /* This table is displayed when the video tutorial is not collapsed. */ %>
+	<table id="expandedTutorialTable" width="100%" style="padding: 4px; display: none;">
+		<tr>
+			<td style="padding-left: 15px;">
+				<span style="font-size: 1.25em; font-weight: bold; color: #906040;"><ssf:nlt tag="tutorial.heading" /></span>
+			</td>
+			<td align="center">
+				<a 	href="#"
+					title="<ssf:nlt tag="tutorial.alt.viewTutorial1" />"
+					onClick="startTutorial( 'whatIsTeaming' )">
+					<img	border="0"
+							src="<html:imagesPath/>pics/tutorial/iconVideoWhatIsTeaming.png"
+							title=""
+							alt="" />
+					<br /><span style="text-decoration: underline"><ssf:nlt tag="tutorial.tutorial1" /></span> 
+				</a>
+			</td>
+			<td align="center">
+				<a 	href="#"
+					title="<ssf:nlt tag="tutorial.alt.viewTutorial2" />"
+					onClick="startTutorial( 'gettingStarted' )">
+					<img	border="0"
+							src="<html:imagesPath/>pics/tutorial/iconVideoGettingAround.png"
+							title=""
+							alt="" />
+					<br/><span style="text-decoration: underline"><ssf:nlt tag="tutorial.tutorial2" /></span> 
+				</a>
+			</td>
+			<td align="center">
+				<a 	href="#"
+					title="<ssf:nlt tag="tutorial.alt.viewTutorial3" />"
+					onClick="startTutorial( 'gettingInformed' )">
+					<img	border="0"
+							src="<html:imagesPath/>pics/tutorial/iconVideoImportingFiles.png"
+							title=""
+							alt="" />
+					<br/><span style="text-decoration: underline"><ssf:nlt tag="tutorial.tutorial3" /></span> 
+				</a>
+			</td>
+			<td align="center">
+				<a 	href="#"
+					title="<ssf:nlt tag="tutorial.alt.viewTutorial4" />"
+					onClick="startTutorial( 'navigation' )">
+					<img	border="0"
+							src="<html:imagesPath/>pics/tutorial/iconVideoCustomization.png"
+							title=""
+							alt="" />
+					<br/><span style="text-decoration: underline"><ssf:nlt tag="tutorial.tutorial4" /></span> 
+				</a>
+			</td>
+			<td align="center">
+				<a 	href="#"
+					title="<ssf:nlt tag="tutorial.alt.viewTutorial5" />"
+					onClick="startTutorial( 'customizingTeaming' )">
+					<img	border="0"
+							src="<html:imagesPath/>pics/tutorial/iconVideoBestPractices.png"
+							title=""
+							alt="" />
+					<br/><span style="text-decoration: underline"><ssf:nlt tag="tutorial.tutorial5" /></span> 
+				</a>
+			</td>
+			<td width="5%" align="right" valign="top">
+				<a 	href="#"
+					id="closeExpandedTutorialTableAnchor"
+					onClick="confirmCloseTutorialPanel()">
+					<img	border="0"
+							src="<html:imagesPath/>pics/popup_close_box.gif"
+							title="<ssf:nlt tag="tutorial.alt.closeTutorial"/>"
+							alt="<ssf:nlt tag="tutorial.alt.closeTutorial"/>" />
+				</a>
+				<a 	href="#"
+					onClick="collapseTutorialPanel()">
+					<img	border="0"
+							src="<html:imagesPath/>pics/sym_s_collapse.gif"
+							title="<ssf:nlt tag="tutorial.alt.collapseTutorial"/>"
+							alt="<ssf:nlt tag="tutorial.alt.collapseTutorial"/>" />
+				</a>
+			</td>
+		</tr>
+	</table>
+</div>
 
