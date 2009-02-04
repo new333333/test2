@@ -53,6 +53,7 @@ import org.xml.sax.SAXException;
  */
 public interface DefinitionModule {
 	public static String INDEX_FIELDS_ONLY="org.kablink.teaming.module.definition.indexFieldsOnly";
+	public static String INDEX_ALL_TEXT="indexAllText";
 	public static String INDEX_CAPTION="indexCaption";
 	public static String INDEX_CAPTION_VALUES="indexCaptionValues";
 	public static String DEFINITION_ELEMENT="definitionElement";

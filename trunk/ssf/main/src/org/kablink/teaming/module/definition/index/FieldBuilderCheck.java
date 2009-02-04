@@ -32,6 +32,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.document.Field;
+import org.dom4j.Element;
+import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.search.BasicIndexUtils;
 /**
  *
  * @author Jong Kim
@@ -43,15 +47,34 @@ public class FieldBuilderCheck extends AbstractFieldBuilder {
     	return dataElemName;
     }
     
-    protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-        // This default checkbox implementation ignores args.  
+    public Field[] buildField(DefinableEntity entity, String dataElemName, Map args) {
+        Set dataElemValue = getEntryElementValue(entity, dataElemName);
+       	fieldsOnly = (Boolean)args.get(DefinitionModule.INDEX_FIELDS_ONLY);
+        if (fieldsOnly == null) fieldsOnly = Boolean.FALSE;
+        
+        Element entryElement = (Element)args.get(DefinitionModule.DEFINITION_ELEMENT);
+        String caption = getEntryElementCaption(entity, dataElemName, entryElement);
+        args.put(DefinitionModule.INDEX_CAPTION, caption);
+        
+        if(dataElemValue != null)
+            return build(dataElemName, dataElemValue, args);
+        else
+            return null;
+    }
 
+    protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
+    	String caption = (String) args.get(DefinitionModule.INDEX_CAPTION);
         Boolean val = (Boolean) getFirstElement(dataElemValue);
-        if(val == null) {
+        if (val == null) {
             return new Field[0];
         }
         Field field = new Field(makeFieldName(dataElemName), val.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-        return new Field[] {field};
+        if (!fieldsOnly) {
+            Field allTextField = BasicIndexUtils.allTextField(caption);
+        	return new Field[] {allTextField, field};
+        } else {
+        	return new Field[] {field};
+        }
     }
 
 }

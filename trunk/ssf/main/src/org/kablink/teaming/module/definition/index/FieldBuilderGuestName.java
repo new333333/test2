@@ -50,17 +50,20 @@ public class FieldBuilderGuestName extends AbstractFieldBuilder {
     protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
         // This default guestName implementation ignores args.
               
-        Field[] fields = new Field[dataElemValue.size()];
+        Field[] fields = new Field[dataElemValue.size() + 1];
         String fieldName = makeFieldName(dataElemName);
        
         String val;
+        String allText = "";
         Field field;
-        int i = 0;
+        int i = 1;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
             val = (String) it.next();
 	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.UN_TOKENIZED);
 	        fields[i] = field;
+	        allText += " " + val;
         }
+        fields[0] = BasicIndexUtils.allTextField(allText);
         
         return fields;
     }

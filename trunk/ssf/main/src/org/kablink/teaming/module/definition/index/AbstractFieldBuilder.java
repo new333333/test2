@@ -129,6 +129,15 @@ public abstract class AbstractFieldBuilder implements FieldBuilder {
 	    return result;
     }
     
+    public String getEntryElementCaption(DefinableEntity entity, String dataElemName, Element entryElement) {
+    	Element captionEle = (Element)entryElement.selectSingleNode("properties/property[@name='caption']");
+    	if (captionEle != null) {
+    		return captionEle.attributeValue("value", "");
+    	} else {
+    		return "";
+    	}
+    }
+    
     public String getNltTagInAllLanguages(String tag) {
 		if (tag != null && tag.startsWith("__")) {
 			Set<Locale> locales = NLT.getLocales();
