@@ -72,12 +72,13 @@ public class FieldBuilderSelect extends AbstractFieldBuilder {
         
     	Set dataElemValueCaptions = (Set) args.get(DefinitionModule.INDEX_CAPTION_VALUES);
     	
-    	Field[] fields = new Field[dataElemValue.size() + dataElemValueCaptions.size()];
+    	Field[] fields = new Field[dataElemValue.size() + dataElemValueCaptions.size() + 1];
         String fieldName = makeFieldName(dataElemName);
        
         String val;
+        String allText = "";
         Field field;
-        int i = 0;
+        int i = 1;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
             val = (String) it.next();
 	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.UN_TOKENIZED);
@@ -89,7 +90,12 @@ public class FieldBuilderSelect extends AbstractFieldBuilder {
             val = (String) it.next();
 	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.UN_TOKENIZED);
 	        fields[i] = field;
+	        allText += " " + getNltTagInAllLanguages(val);
         }
+        
+        //Build the allText field
+        Field allTextField = BasicIndexUtils.allTextField(allText);
+        fields[0] = allTextField;
         
         return fields;
     }
