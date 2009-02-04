@@ -88,42 +88,42 @@
 		<delete dir="${temp.dir}" />
 		<delete dir="${docs.api.dir}" />
 		
-		<ant dir="util" target="clean" />
-		<ant dir="util-search" target="clean" />
-		<ant dir="commons-httpclient-contrib" target="clean" />
-		<ant dir="lucene-contrib" target="clean" />
-		<ant dir="indexer-lucene" target="clean" />
-		<ant dir="as-module" target="clean" />
+		<ant dir="util" target="clean" inheritAll="false"/>
+		<ant dir="util-search" target="clean" inheritAll="false"/>
+		<ant dir="commons-httpclient-contrib" target="clean" inheritAll="false"/>
+		<ant dir="lucene-contrib" target="clean" inheritAll="false"/>
+		<ant dir="indexer-lucene" target="clean" inheritAll="false"/>
+		<ant dir="as-module" target="clean" inheritAll="false"/>
 
 		<if>
 			<equals arg1="${build.applets}" arg2="true" />
 			<then>				
-				<ant dir="applets" target="clean" />
+				<ant dir="applets" target="clean" inheritAll="false"/>
 			</then>
 		</if>
 
-		<ant dir="main-minimum" target="clean" />
-		<ant dir="main" target="clean" />
-		<ant dir="slide-webdavclient" target="clean" />
-		<ant dir="portal-module" target="clean" />
-		<ant dir="liferay" target="clean" />
+		<ant dir="main-minimum" target="clean" inheritAll="false"/>
+		<ant dir="main" target="clean" inheritAll="false"/>
+		<ant dir="slide-webdavclient" target="clean" inheritAll="false"/>
+		<ant dir="portal-module" target="clean" inheritAll="false"/>
+		<ant dir="liferay" target="clean" inheritAll="false"/>
 		<ant dir="liferay-light" target="clean" inheritAll="false" />
-		<ant dir="jboss-portal" target="clean" />
-		<ant dir="taglib" target="clean" />
+		<ant dir="jboss-portal" target="clean" inheritAll="false"/>
+		<ant dir="taglib" target="clean" inheritAll="false"/>
 
-		<ant dir="tools" target="clean" />
+		<ant dir="tools" target="clean" inheritAll="false"/>
 		
-		<ant dir="samples" target="clean" />
+		<ant dir="samples" target="clean" inheritAll="false"/>
 			
-		<ant dir="web" target="clean" />
+		<ant dir="web" target="clean" inheritAll="false"/>
 
-		<ant dir="war" target="clean" />
+		<ant dir="war" target="clean" inheritAll="false"/>
 		
-		<ant dir="ssfs" target="clean" />
+		<ant dir="ssfs" target="clean" inheritAll="false"/>
 		
-		<ant dir="ssr" target="clean" />
-		<ant dir="simple-url" target="clean" />		
-		<ant dir="mobile" target="clean" />		
+		<ant dir="ssr" target="clean" inheritAll="false"/>
+		<ant dir="simple-url" target="clean" inheritAll="false"/>		
+		<ant dir="mobile" target="clean" inheritAll="false"/>		
 	</target>
 
 	<target name="compile" depends="init">
@@ -242,61 +242,61 @@
 	<target name="java2html" depends="init">
 		<delete dir="${docs.api.dir}" />
 
-		<ant dir="util" target="java2html" />
-		<ant dir="util-search" target="java2html" />
-		<ant dir="commons-httpclient-contrib" target="java2html" />
-		<ant dir="lucene-contrib" target="java2html" />
-		<ant dir="indexer-lucene" target="java2html" />
-		<ant dir="as-module" target="java2html" />
+		<ant dir="util" target="java2html" inheritAll="false"/>
+		<ant dir="util-search" target="java2html" inheritAll="false"/>
+		<ant dir="commons-httpclient-contrib" target="java2html" inheritAll="false"/>
+		<ant dir="lucene-contrib" target="java2html" inheritAll="false"/>
+		<ant dir="indexer-lucene" target="java2html" inheritAll="false"/>
+		<ant dir="as-module" target="java2html" inheritAll="false"/>
 
 		<if>
 			<equals arg1="${build.applets}" arg2="true" />
 			<then>				
-				<ant dir="applets" target="java2html" />
+				<ant dir="applets" target="java2html" inheritAll="false"/>
 			</then>
 		</if>
 
-		<ant dir="main-minimum" target="java2html" />
-		<ant dir="main" target="java2html" />
-		<ant dir="slide-webdavclient" target="java2html" />
-		<ant dir="portal-module" target="java2html" />
-		<ant dir="liferay" target="java2html" />
-		<ant dir="liferay-light" target="java2html" />
-		<ant dir="jboss-portal" target="java2html" />
-		<ant dir="taglib" target="java2html" />
-		<ant dir="tools" target="java2html" />
-		<ant dir="simple-url" target="java2html" />
-		<ant dir="mobile" target="java2html" />
+		<ant dir="main-minimum" target="java2html" inheritAll="false"/>
+		<ant dir="main" target="java2html" inheritAll="false"/>
+		<ant dir="slide-webdavclient" target="java2html" inheritAll="false"/>
+		<ant dir="portal-module" target="java2html" inheritAll="false"/>
+		<ant dir="liferay" target="java2html" inheritAll="false"/>
+		<ant dir="liferay-light" target="java2html" inheritAll="false"/>
+		<ant dir="jboss-portal" target="java2html" inheritAll="false"/>
+		<ant dir="taglib" target="java2html" inheritAll="false"/>
+		<ant dir="tools" target="java2html" inheritAll="false"/>
+		<ant dir="simple-url" target="java2html" inheritAll="false"/>
+		<ant dir="mobile" target="java2html" inheritAll="false"/>
 	</target>
 
 	<target name="javadoc" depends="init">
 		<delete dir="${javadoc.combined.dir}" />
 
-		<ant dir="util" target="javadoc" />
-		<ant dir="util-search" target="javadoc" />
-		<ant dir="commons-httpclient-contrib" target="javadoc" />
-		<ant dir="lucene-contrib" target="javadoc" />
-		<ant dir="indexer-lucene" target="javadoc" />
-		<ant dir="as-module" target="javadoc" />
+		<ant dir="util" target="javadoc" inheritAll="false"/>
+		<ant dir="util-search" target="javadoc" inheritAll="false"/>
+		<ant dir="commons-httpclient-contrib" target="javadoc" inheritAll="false"/>
+		<ant dir="lucene-contrib" target="javadoc" inheritAll="false"/>
+		<ant dir="indexer-lucene" target="javadoc" inheritAll="false"/>
+		<ant dir="as-module" target="javadoc" inheritAll="false"/>
 		
 		<if>
 			<equals arg1="${build.applets}" arg2="true" />
 			<then>				
-				<ant dir="applets" target="javadoc" />
+				<ant dir="applets" target="javadoc" inheritAll="false"/>
 			</then>
 		</if>
 
-		<ant dir="main-minimum" target="javadoc" />
-		<ant dir="main" target="javadoc" />
-		<ant dir="slide-webdavclient" target="javadoc" />
-		<ant dir="portal-module" target="javadoc" />
-		<ant dir="liferay" target="javadoc" />
-		<ant dir="liferay-light" target="javadoc" />
-		<ant dir="jboss-portal" target="javadoc" />
-		<ant dir="taglib" target="javadoc" />
-		<ant dir="tools" target="javadoc" />
-		<ant dir="simple-url" target="javadoc" />
-		<ant dir="mobile" target="javadoc" />
+		<ant dir="main-minimum" target="javadoc" inheritAll="false"/>
+		<ant dir="main" target="javadoc" inheritAll="false"/>
+		<ant dir="slide-webdavclient" target="javadoc" inheritAll="false"/>
+		<ant dir="portal-module" target="javadoc" inheritAll="false"/>
+		<ant dir="liferay" target="javadoc" inheritAll="false"/>
+		<ant dir="liferay-light" target="javadoc" inheritAll="false"/>
+		<ant dir="jboss-portal" target="javadoc" inheritAll="false"/>
+		<ant dir="taglib" target="javadoc" inheritAll="false"/>
+		<ant dir="tools" target="javadoc" inheritAll="false"/>
+		<ant dir="simple-url" target="javadoc" inheritAll="false"/>
+		<ant dir="mobile" target="javadoc" inheritAll="false"/>
 	</target>
 
 
