@@ -922,7 +922,9 @@ text/calendar											  ics
 		<property name="archiveStore"><ref bean="archiveStore"/></property>
 	</bean>
 	
-	<!-- Uncomment this to use Slide-based WebDAV server as a repository -->
+	<!-- Uncomment this to use Slide-based WebDAV server as a repository.
+	     Also uncomment related properties in the properties file and set 
+	     their values appropriately. -->
 	<!--<bean id="webdavRepository" class="org.kablink.teaming.repository.webdav.WebdavRepositorySessionFactory"
 		init-method="initialize" destroy-method="shutdown">
 		<property name="hostUrl"><value>${webdav.repository.hosturl}</value></property>
