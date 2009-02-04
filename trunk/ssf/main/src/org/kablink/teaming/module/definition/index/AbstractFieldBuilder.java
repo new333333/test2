@@ -30,6 +30,7 @@ package org.kablink.teaming.module.definition.index;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,6 +40,7 @@ import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.util.InvokeUtil;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
 
 
@@ -125,6 +127,22 @@ public abstract class AbstractFieldBuilder implements FieldBuilder {
 	    }
 	    
 	    return result;
+    }
+    
+    public String getNltTagInAllLanguages(String tag) {
+		if (tag != null && tag.startsWith("__")) {
+			Set<Locale> locales = NLT.getLocales();
+			String result = "";
+			Iterator itLocales = locales.iterator();
+			while (itLocales.hasNext()) {
+				Locale lang = (Locale)itLocales.next();
+				if (!lang.equals("")) {
+					result += " " + NLT.get(tag, "", lang);
+				}
+			}
+			return result;
+		}
+		return tag;
     }
     
     /*
