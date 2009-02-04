@@ -1580,6 +1580,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 
 		Map model = new HashMap();
 		FolderEntry entry = null;
+		Binder binder = getBinderModule().getBinder(folderId);
+		model.put((WebKeys.BINDER), binder);
 
 		// User context
 		User user = RequestContextHolder.getRequestContext().getUser();
