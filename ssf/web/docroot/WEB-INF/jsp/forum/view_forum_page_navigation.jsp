@@ -233,6 +233,18 @@ ss_pageSlider${renderResponse.namespace}.setValue(${ssPageCurrent});
 ss_pageSlider${renderResponse.namespace}.setMinimum(1);
 ss_pageSlider${renderResponse.namespace}.setMaximum(${ssPageLast})
 
+function ss_setSliderPagePosition${renderResponse.namespace}() {
+	var pageDivObj = document.getElementById('ss_pageNavPageDiv${renderResponse.namespace}');
+	if (pageDivObj != null) {
+		var sliderDivObj = document.getElementById('ss_page_slider${renderResponse.namespace}');
+		ss_moveObjectToBody(pageDivObj);
+		pageDivObj.style.display = 'block';
+		ss_setObjectLeft(pageDivObj, parseInt(ss_getObjectLeft(sliderDivObj) + 70) + "px");
+		ss_setObjectTop(pageDivObj, parseInt(ss_getObjectTop(sliderDivObj) - 18) + "px");
+	}
+}
+setTimeout("ss_setSliderPagePosition${renderResponse.namespace}();", 100);
+
 </script>
 </c:if>
 </ssf:ifnotaccessible>
