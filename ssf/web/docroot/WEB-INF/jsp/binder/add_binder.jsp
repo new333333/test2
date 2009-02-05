@@ -163,13 +163,18 @@ function ss_showAddBinderOptions() {
 		}
 		//Turn on/off announce div
 		var ss_teamMembersListEmpty = "${empty ssBinder.teamMemberIds}";
-		if (ss_addBinderOperation == 'add_team_workspace' || 
-				ss_addBinderConfigInternalIds[configId] == ss_teamWorkspaceInternalId || 
-				ss_teamMembersListEmpty == 'false') {
-			document.getElementById('ss_addBinderAnnounceDiv').style.display = "block";
-			document.getElementById('ss_addBinderAnnounceDiv').focus();
-		} else {
-			document.getElementById('ss_addBinderAnnounceDiv').style.display = "none";
+		var announceDivObj = document.getElementById('ss_addBinderAnnounceDiv');
+		if (announceDivObj != null) {
+			if (ss_addBinderOperation == 'add_team_workspace' || 
+					ss_addBinderConfigInternalIds[configId] == ss_teamWorkspaceInternalId || 
+					ss_teamMembersListEmpty == 'false') {
+				announceDivObj.style.display = "block";
+				try {
+					announceDivObj.focus();
+				} catch(e) {};
+			} else {
+				announceDivObj.style.display = "none";
+			}
 		}
 	}
 }
