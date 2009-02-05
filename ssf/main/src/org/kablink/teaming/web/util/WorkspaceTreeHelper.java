@@ -601,8 +601,8 @@ public class WorkspaceTreeHelper {
 		}
 		
 		//Move
-		if (!workspace.isReserved() && (workspace.getDefinitionType() == null) || 
-				(workspace.getDefinitionType().intValue() != Definition.USER_WORKSPACE_VIEW)) {
+		if (!workspace.isReserved() && (workspace.getDefinitionType() == null || 
+				workspace.getDefinitionType().intValue() != Definition.USER_WORKSPACE_VIEW)) {
 			if (bs.getBinderModule().testAccess(workspace, BinderOperation.moveBinder)) {
 				adminMenuCreated=true;
 				qualifiers = new HashMap();
