@@ -339,7 +339,7 @@
 
 <target name="dist-clean" description="Cleans workarea for dist only">
                 <delete includeemptydirs="true">
-                  <fileset dir="kablink-applets" includes="**/*"/>
+                  <fileset dir="kablink-applets"/>
                 </delete>
         </target>
 
