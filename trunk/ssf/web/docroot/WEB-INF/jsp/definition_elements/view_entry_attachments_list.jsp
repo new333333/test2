@@ -260,6 +260,9 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				
 				</ssf:ifSupportsEditInPlace>
 			</c:if>	
+		  	<ssHelpSpot helpId="workspaces_folders/entries/attachments_edit"
+			title="<ssf:nlt tag="helpSpot.attachments.edit"/>" offsetX="30" offsetY="0">
+			</ssHelpSpot>
 			
 		</ssf:ifnotaccessible>
 			
