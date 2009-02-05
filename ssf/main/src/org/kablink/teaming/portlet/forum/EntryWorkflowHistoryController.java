@@ -67,22 +67,7 @@ public class EntryWorkflowHistoryController extends  SAbstractController {
 		EntityIdentifier entityIdentifier = new EntityIdentifier(entityId, EntityIdentifier.EntityType.valueOf(entityType));
 
 		if (entityId != null) {
-			changes = getAdminModule().getWorkflowChanges(entityIdentifier, null);
-			
-			ChangeLog changeLog = (ChangeLog)changes.get(1);
-			changeLog.getXmlString();
-			Document doc = changeLog.getDocument();
-			Element root = doc.getRootElement();
-			List<Element> workflowStates = root.selectNodes("//folderEntry/workflowState");
-			for (Element workflowState : workflowStates) {
-				String stateName = workflowState.attributeValue("name", "???");
-				String stateCaption = workflowState.attributeValue("stateCaption", stateName);
-				String processName = workflowState.attributeValue("process", "???");
-				Element property = (Element)workflowState.selectSingleNode("./property[@name='definition']");
-				String processId = property.getText();
-			}
-			
-			
+			changes = getAdminModule().getWorkflowChanges(entityIdentifier, null);			
 			changeList.addAll(BinderHelper.BuildChangeLogBeans(changes));
 		}
 
