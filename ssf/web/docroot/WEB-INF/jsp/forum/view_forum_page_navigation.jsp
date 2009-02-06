@@ -112,11 +112,12 @@
 					<td class="ss_paginationFont ss_pageActive" bgcolor="#CCDFDE" valign="top" align="center">
 					<ssf:ifnotaccessible>
 					<c:if test="${ssPageLast > 2}">
-					<div class="slider" id="ss_page_slider${renderResponse.namespace}" style="width:150px;">
+					<div class="slider" id="ss_page_slider${renderResponse.namespace}" 
+					  style="width:150px; visibility:hidden;">
 						<input class="slider-input" id="ss_page_slider_input${renderResponse.namespace}"/>
 					</div>
 					<div id="ss_pageNavPageDiv${renderResponse.namespace}" class="ss_style"
-					  style="position:absolute; display:none; border:1px #333 background-color:#fff;"></div>
+					  style="position:absolute; display:none; border:1px solid #333; background-color:#fff;"></div>
 					</c:if>
 					</ssf:ifnotaccessible>
 					<ssf:nlt tag="title.page.n_of_m">
@@ -203,47 +204,57 @@
 <script type="text/javascript">
 
 var ss_currentPageNavPage${renderResponse.namespace} = ${ssPageCurrent};
-var ss_pageSlider${renderResponse.namespace} = new Slider(document.getElementById("ss_page_slider${renderResponse.namespace}"), document.getElementById("ss_page_slider_input${renderResponse.namespace}"));
-ss_pageSlider${renderResponse.namespace}.ondrop = function () {
-	var pageDivObj = document.getElementById('ss_pageNavPageDiv${renderResponse.namespace}');
-	if (pageDivObj != null) {
-		pageDivObj.style.display = 'none';
-		var gotoObj = document.getElementById('ssGoToPage${renderResponse.namespace}');
-		if (gotoObj != null) {
-			gotoObj.value = ss_pageSlider${renderResponse.namespace}.getValue();
-			if (ss_pageSlider${renderResponse.namespace}.getValue() != ss_currentPageNavPage${renderResponse.namespace}) {
-				pageDivObj.parentNode.removeChild(pageDivObj);
-				setTimeout("ss_autoGoToPage${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}', '" + ss_pageSlider${renderResponse.namespace}.getValue() + "')", 100);
-			}
-		}
-	}
-};
-ss_pageSlider${renderResponse.namespace}.ondrag = function () {
-	var pageDivObj = document.getElementById('ss_pageNavPageDiv${renderResponse.namespace}');
-	if (pageDivObj != null) {
-		var sliderDivObj = document.getElementById('ss_page_slider${renderResponse.namespace}');
-		ss_moveObjectToBody(pageDivObj);
-		pageDivObj.style.display = 'block';
-		ss_setObjectLeft(pageDivObj, parseInt(ss_getObjectLeft(sliderDivObj) + 70) + "px");
-		ss_setObjectTop(pageDivObj, parseInt(ss_getObjectTop(sliderDivObj) - 18) + "px");
-		pageDivObj.innerHTML = "<span>"+ss_pageSlider${renderResponse.namespace}.getValue()+"</span>";
-	}
-};
-ss_pageSlider${renderResponse.namespace}.setValue(${ssPageCurrent});
-ss_pageSlider${renderResponse.namespace}.setMinimum(1);
-ss_pageSlider${renderResponse.namespace}.setMaximum(${ssPageLast})
+var ss_pageSlider${renderResponse.namespace};
 
 function ss_setSliderPagePosition${renderResponse.namespace}() {
-	var pageDivObj = document.getElementById('ss_pageNavPageDiv${renderResponse.namespace}');
-	if (pageDivObj != null) {
-		var sliderDivObj = document.getElementById('ss_page_slider${renderResponse.namespace}');
-		ss_moveObjectToBody(pageDivObj);
-		pageDivObj.style.display = 'block';
-		ss_setObjectLeft(pageDivObj, parseInt(ss_getObjectLeft(sliderDivObj) + 70) + "px");
-		ss_setObjectTop(pageDivObj, parseInt(ss_getObjectTop(sliderDivObj) - 18) + "px");
+	var sliderDivObj = document.getElementById('ss_page_slider${renderResponse.namespace}');
+	if (sliderDivObj != null) {
+		sliderDivObj.style.visibility = "visible";
+		var pageDivObj = document.getElementById('ss_pageNavPageDiv${renderResponse.namespace}');
+		if (pageDivObj != null) {
+			ss_moveObjectToBody(pageDivObj);
+			if (pageDivObj.innerHTML != "") {
+				pageDivObj.style.display = 'block';
+				pageDivObj.style.visibility = 'visible';
+			}
+			ss_setObjectLeft(pageDivObj, parseInt(ss_getObjectLeft(sliderDivObj) + 70) + "px");
+			ss_setObjectTop(pageDivObj, parseInt(ss_getObjectTop(sliderDivObj) - 18) + "px");
+		}
 	}
 }
-setTimeout("ss_setSliderPagePosition${renderResponse.namespace}();", 100);
+function ss_setSliderInit${renderResponse.namespace}() {
+	ss_pageSlider${renderResponse.namespace} = new Slider(document.getElementById("ss_page_slider${renderResponse.namespace}"), document.getElementById("ss_page_slider_input${renderResponse.namespace}"));
+	ss_pageSlider${renderResponse.namespace}.ondrop = function () {
+		var pageDivObj = document.getElementById('ss_pageNavPageDiv${renderResponse.namespace}');
+		if (pageDivObj != null) {
+			pageDivObj.style.display = 'none';
+			var gotoObj = document.getElementById('ssGoToPage${renderResponse.namespace}');
+			if (gotoObj != null) {
+				gotoObj.value = ss_pageSlider${renderResponse.namespace}.getValue();
+				if (ss_pageSlider${renderResponse.namespace}.getValue() != ss_currentPageNavPage${renderResponse.namespace}) {
+					pageDivObj.parentNode.removeChild(pageDivObj);
+					setTimeout("ss_autoGoToPage${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}', '" + ss_pageSlider${renderResponse.namespace}.getValue() + "')", 100);
+				}
+			}
+		}
+	};
+	ss_pageSlider${renderResponse.namespace}.ondrag = function () {
+		var pageDivObj = document.getElementById('ss_pageNavPageDiv${renderResponse.namespace}');
+		if (pageDivObj != null) {
+			var sliderDivObj = document.getElementById('ss_page_slider${renderResponse.namespace}');
+			ss_moveObjectToBody(pageDivObj);
+			pageDivObj.style.display = 'block';
+			ss_setObjectLeft(pageDivObj, parseInt(ss_getObjectLeft(sliderDivObj) + 70) + "px");
+			ss_setObjectTop(pageDivObj, parseInt(ss_getObjectTop(sliderDivObj) - 18) + "px");
+			pageDivObj.innerHTML = "<span>"+ss_pageSlider${renderResponse.namespace}.getValue()+"</span>";
+		}
+	};
+	ss_pageSlider${renderResponse.namespace}.setValue(${ssPageCurrent});
+	ss_pageSlider${renderResponse.namespace}.setMinimum(1);
+	ss_pageSlider${renderResponse.namespace}.setMaximum(${ssPageLast})
+	setTimeout("ss_setSliderPagePosition${renderResponse.namespace}();", 100);
+}
+ss_createOnLoadObj("ss_setSliderInit${renderResponse.namespace}", ss_setSliderInit${renderResponse.namespace});
 
 </script>
 </c:if>
