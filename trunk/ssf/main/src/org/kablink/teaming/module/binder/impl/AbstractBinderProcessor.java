@@ -984,7 +984,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     					ResourceDriver driver = getResourceDriverManager().getDriver(source.getResourceDriverName());
     					
     		    		if(driver.isReadonly()) {
-    						throw new NotSupportedException("errorcode.notsupported.renameMirroredBinder.readonly", 
+    						throw new NotSupportedException("errorcode.notsupported.moveMirroredBinder.readonly", 
     								new String[] {source.getPathName(), driver.getTitle()});
     		    		}
     		    		else {

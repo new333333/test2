@@ -643,14 +643,61 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			getCoreDao().registerFileName(destBinder, destEntity, fa.getFileItem().getName());
     		}
 		// Rename the file in the repository
-       	for(FileAttachment fa :atts) {    			
+       	for(FileAttachment fa :atts) {   
+       		if(!ObjectKeys.FI_ADAPTER.equals(fa.getRepositoryName())) { // regular repository
        	 		RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
-				fa.getFileItem().getName(), destBinder, destEntity, 
-				fa.getFileItem().getName());
+       					fa.getFileItem().getName(), destBinder, destEntity, 
+       					fa.getFileItem().getName());       			
+       		}
+       		else { // mirrored repository
+       			moveMirroredFile(binder, entity, destBinder, destEntity, fa);
+       		}
    			ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMOVE);
 			ChangeLogUtils.buildLog(changes, fa);
 			getCoreDao().save(changes);
        	}
+	}
+
+	protected void moveMirroredFile(Binder binder, DefinableEntity entity, 
+			Binder destBinder, DefinableEntity destEntity, FileAttachment fa) {
+		if(binder.getResourceDriverName().equals(destBinder.getResourceDriverName())) {
+			// Both source and destination binders use the same resource
+			// driver. Move is possible.
+   	 		RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
+   					fa.getFileItem().getName(), destBinder, destEntity, 
+   					fa.getFileItem().getName());       								
+		}
+		else {
+			// Source and destination binders do not share the same driver. 
+			// Move is not possible in this case. We have to mimic it by
+			// copy followed by delete. 
+			RepositorySession session = RepositorySessionFactoryUtil.openSession(destBinder, fa.getRepositoryName());
+			try {
+				InputStream is = readFile(binder, entity, fa);
+				try {
+					createVersionedWithInputData(session, destBinder, destEntity, fa.getFileItem().getName(), true, is);
+				}
+				finally {
+					try {
+						is.close();
+					}
+					catch(IOException e) {
+						logger.warn(e);
+					}
+				}
+			}
+			finally {
+				session.close();
+			}
+			
+			session = RepositorySessionFactoryUtil.openSession(binder, fa.getRepositoryName());
+			try {
+				session.delete(binder, entity, fa.getFileItem().getName());
+			}
+			finally {
+				session.close();
+			}
+		}
 	}
 
 	public void copyFiles(Binder binder, DefinableEntity entity, 
