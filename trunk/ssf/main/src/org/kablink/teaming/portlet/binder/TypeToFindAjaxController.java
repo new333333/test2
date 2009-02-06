@@ -1,5 +1,7 @@
 package org.kablink.teaming.portlet.binder;
 
+import static org.kablink.util.search.Constants.COMMAND_DEFINITION_FIELD;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,6 +26,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.User;
@@ -32,6 +35,7 @@ import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.TreeHelper;
@@ -186,7 +190,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 				searchTermFilter.addLoginNameFilter(searchText);
 			}
 		}
-		
+
 		try {
 		
 			//Do a search to find the first few items that match the search text
@@ -230,8 +234,34 @@ public class TypeToFindAjaxController extends SAbstractController {
 				model.put(WebKeys.SEARCH_TOTAL_HITS, Integer.valueOf(tags.size()));
 			} else if (findType.equals(WebKeys.FIND_TYPE_GROUP)) {
 				Map entries = getProfileModule().getGroups(options);
-				model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
-				model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+				
+				// Do we get any search hits?
+		    	List searchEntries = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
+		    	Integer searchHits = (Integer)entries.get(ObjectKeys.SEARCH_COUNT_TOTAL);
+		    	if ((null != searchEntries) && (null != searchHits) && (0 < searchHits)) {
+					// Yes!  Are we sending email and are we supposed
+					// to disallow sending email to the all users
+		    		// group?
+					boolean sendingEmail = PortletRequestUtils.getBooleanParameter(request, WebKeys.SENDING_EMAIL, false);
+					if (sendingEmail && (!(SPropsUtil.getBoolean("mail.allowSendToAllUsers", true)))) {
+						// Yes!  We need to remove the all users group
+						// from the search results.  Scan them.
+						int size = searchEntries.size();
+						for (int i = (size - 1); i >= 0; i -= 1) {
+				    		// Is this entry the all user's group?
+				    		Map entry = (Map)searchEntries.get(i);
+							String id = (String)entry.get(Constants.RESERVEDID_FIELD);
+							if ((null != id) && id.equalsIgnoreCase(ObjectKeys.ALL_USERS_GROUP_INTERNALID)) {
+								// Yes!  Remove it from the results.
+								searchEntries.remove(i);
+								searchHits -= 1;
+							}
+				    	}
+					}
+		    	}
+						
+				model.put(WebKeys.ENTRIES, searchEntries);
+				model.put(WebKeys.SEARCH_TOTAL_HITS, searchHits);
 			} else if (findType.equals(WebKeys.FIND_TYPE_USER)) {
 				Map entries = getProfileModule().getUsers(options);
 				
