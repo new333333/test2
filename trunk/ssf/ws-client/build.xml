@@ -35,12 +35,12 @@
 			<src path="${generated.dir}" />
 		</javac>
 	</target>
-	
+
 	<target name="compileCombined">
 		<antcall target="compileGenerated"/>
 		<antcall target="compile"/>
 	</target>
-	
+
 	<target name="jar" depends="compileCombined">
 		<delete file="${jar.file}"/>
 		<jar
@@ -58,16 +58,16 @@
 		<axis-wsdl2java
 			output="${generated.dir}"
 			verbose="true"
-			url="${client.url}/TeamingService?wsdl" >
+			url="${client.url}/TeamingServiceV1?wsdl" >
 			<mapping
-				namespace="http://ws.remoting.teaming.kablink.org"
+				namespace="http://ws.remoting.teaming.kablink.org/v1"
 				package="org.kablink.teaming.client.ws" />
 			<mapping
-				namespace="http://model.ws.remoting.teaming.kablink.org"
+				namespace="http://model.ws.remoting.teaming.kablink.org/v1"
 				package="org.kablink.teaming.client.ws.model" />
 		</axis-wsdl2java>
 	</target>
-	
+
 	<target name="build" depends="clean" >
 		<antcall target="wsdl2java"/>
 		<antcall target="jar"/>
