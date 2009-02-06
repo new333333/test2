@@ -61,6 +61,7 @@ import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
+import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.module.binder.impl.AbstractEntryProcessor;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilterException;
@@ -415,6 +416,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 			   !(destination instanceof Folder))
      		throw new NotSupportedException("errorcode.notsupported.copyEntryDestination", new String[] {destination.getPathName()});
 	   if (!source.isTop()) throw new NotSupportedException("errorcode.notsupported.copyReply");
+	   
+   	   copyEntryCheckMirrored(binder, source, destination);
 
 	   List<FolderEntry>children = getFolderDao().loadEntryDescendants((FolderEntry)source);
 	   children.add(0, (FolderEntry)source);
@@ -482,6 +485,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	FolderEntry fEntry = (FolderEntry)entry;
     	if (fEntry.getTopEntry() != null)
     		throw new NotSupportedException("errorcode.notsupported.moveReply");
+    	moveEntryCheckMirrored(binder, entry, destination);
     	HKey oldKey = fEntry.getHKey();
     	//get Children
     	List entries = getFolderDao().loadEntryDescendants(fEntry);
@@ -860,4 +864,58 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         	folder.addCustomAttribute(Statistics.ATTRIBUTE_NAME, statistics);
         }
 	}
+    
+    protected void moveEntryCheckMirrored(Binder binder, Entry entry, Binder destination) 
+    throws NotSupportedException {
+ 	   if(binder.isMirrored()) {
+ 			ResourceDriver sourceDriver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
+ 			if(sourceDriver.isReadonly()) {
+ 				throw new NotSupportedException("errorcode.notsupported.moveEntry.mirroredSource.readonly",
+ 						new String[] {sourceDriver.getTitle(), binder.getPathName()});
+ 			}
+ 			else {
+ 				if(destination.isMirrored()) {
+ 					ResourceDriver destDriver = getResourceDriverManager().getDriver(destination.getResourceDriverName());
+ 					if(destDriver.isReadonly()) {
+ 						throw new NotSupportedException("errorcode.notsupported.moveEntry.mirroredDestination.readonly",
+ 								new String[] {destDriver.getTitle(), destination.getPathName()});
+ 					}
+ 				}
+ 				else {
+ 					throw new NotSupportedException("errorcode.notsupported.moveEntry.mirroredSource",
+ 							new String[] {binder.getPathName(), destination.getPathName()});
+ 				}
+ 			}
+ 	   }
+ 	   else {
+ 		   if(destination.isMirrored()) {
+ 				throw new NotSupportedException("errorcode.notsupported.moveEntry.mirroredDestination",
+ 						new String[] {binder.getPathName(), destination.getPathName()});			   
+ 		   }
+ 	   }
+    }
+    
+    protected void copyEntryCheckMirrored(Binder binder, Entry entry, Binder destination) 
+    throws NotSupportedException {
+ 	   if(binder.isMirrored()) {
+			if(destination.isMirrored()) {
+				ResourceDriver destDriver = getResourceDriverManager().getDriver(destination.getResourceDriverName());
+				if(destDriver.isReadonly()) {
+					throw new NotSupportedException("errorcode.notsupported.copyEntry.mirroredDestination.readonly",
+							new String[] {destDriver.getTitle(), destination.getPathName()});
+				}
+			}
+			else {
+				throw new NotSupportedException("errorcode.notsupported.copyEntry.mirroredSource",
+						new String[] {binder.getPathName(), destination.getPathName()});
+			}
+ 	   }
+ 	   else {
+ 		   if(destination.isMirrored()) {
+ 				throw new NotSupportedException("errorcode.notsupported.copyEntry.mirroredDestination",
+ 						new String[] {binder.getPathName(), destination.getPathName()});			   
+ 		   }
+ 	   }
+    }
+
 }
