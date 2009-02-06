@@ -213,7 +213,7 @@ public abstract class WSClientBase {
 		// Invoke web service operation using Axis Call object.
 		Call call = prepareCall(serviceName, operation, args);
 		
-		if(serviceName.equalsIgnoreCase("TeamingService")) {
+		if(serviceName.equalsIgnoreCase("TeamingServiceV1")) {
 			// The old Facade service does not require custom serializers/deserializers
 			// to be set up, because it passes arguments only in primitive types.
 			// The new TeamingService, however, does require it.
@@ -232,7 +232,7 @@ public abstract class WSClientBase {
 
 	protected void setupTypeMapping(Call call) {
 		for(int i = 0; i < modelClasses.length; i++) {
-			QName qname = new QName("http://model.ws.remoting.teaming.kablink.org", modelClasses[i].getSimpleName());
+			QName qname = new QName("http://model.ws.remoting.teaming.kablink.org/v1", modelClasses[i].getSimpleName());
 			call.registerTypeMapping(modelClasses[i], 
 					qname, 
 					new BeanSerializerFactory(modelClasses[i], qname), 
