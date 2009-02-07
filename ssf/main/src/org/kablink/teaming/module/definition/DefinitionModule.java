@@ -29,6 +29,7 @@
 package org.kablink.teaming.module.definition;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -52,6 +53,13 @@ import org.xml.sax.SAXException;
  *
  */
 public interface DefinitionModule {
+	/**
+	 * ReservedItemNames is a list of the reserved names that cannot be used as the 
+	 * name of an element in a definition. This list must preserve the leading and trailing spaces.
+	 * The reserved name check algorithm depends on each word having a leading and trailing space.
+	 */
+	public static String ReservedItemNames = " id type name owner popularity branding deleted ";
+	
 	public static String INDEX_FIELDS_ONLY="org.kablink.teaming.module.definition.indexFieldsOnly";
 	public static String INDEX_ALL_TEXT="indexAllText";
 	public static String INDEX_CAPTION="indexCaption";
