@@ -1050,6 +1050,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								//The value is not well formed, go complain to the user
 								throw new DefinitionInvalidException("definition.error.invalidCharacter", new Object[] {"\""+value+"\""});
 							}
+							if (configEle.attributeValue("type", "").equals("data")) {
+								//For data properties, check that the name isn't a reserved name
+								if (checkIfNameReserved(value)) {
+									throw new DefinitionInvalidException("definition.error.reservedName", new Object[] {"\""+value+"\""});
+								}
+							}
 						}
 
 						Element newPropertyEle = newPropertiesEle.addElement("property");
@@ -1274,6 +1280,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 		}
 
+	}
+	private boolean checkIfNameReserved(String name) {
+		if (ReservedItemNames.contains(" " + name + " ")) return true;
+		else return false;
 	}
 	private boolean checkStateInUse(Definition def, String state) {
 		//This is a workflow state. Make sure no entries are using that state
