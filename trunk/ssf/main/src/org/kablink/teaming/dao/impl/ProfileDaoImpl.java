@@ -1303,8 +1303,10 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
               							.add(Expression.eq("accessType", SharedEntity.ACCESS_TYPE_TEAM))));
                     	} else if (binderIds.isEmpty()) {
                     		//not a member of a team
-                    		crit.add(Expression.in("accessId", ids))
-                  				.add(Expression.eq("accessType", SharedEntity.ACCESS_TYPE_PRINCIPAL));
+                    		crit.add(Expression.disjunction()
+                  				.add(Expression.conjunction()
+                  						.add(Expression.in("accessId", ids))
+                  						.add(Expression.eq("accessType", SharedEntity.ACCESS_TYPE_PRINCIPAL))));
                         		
                     	} else {
                     		//should never happen
