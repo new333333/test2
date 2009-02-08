@@ -102,6 +102,8 @@ public class TreeTag extends TagSupport {
 	private String portletName = "ss_forum";
 	private String namespace = "";
 	private String callbackUrl = null;
+	private String onMouseover = "";
+	private String onMouseout = "";
 	
 	public int doStartTag() throws JspException {
 		//The "flat" option has been turned off. This was for accessibility mode. 
@@ -351,7 +353,8 @@ public class TreeTag extends TagSupport {
 	    	className="";
 	    	callbackUrl=null;
 	    	showFullLineOnHover=false;
-	    }
+	    	onMouseover = "";
+	    	onMouseout = "";}
 	    
 		return SKIP_BODY;
 	}
@@ -608,6 +611,12 @@ public class TreeTag extends TagSupport {
 					if (this.showFullLineOnHover) {
 						jspOut.print(" title='"+s_text+"' ");
 					}
+					if (!this.onMouseover.equals("")) {
+						jspOut.print(" onMouseover=\""+this.onMouseover+"\" ");
+					}
+					if (!this.onMouseout.equals("")) {
+						jspOut.print(" onMouseout=\""+this.onMouseout+"\" ");
+					}
 					jspOut.print(">");
 				}
 				jspOut.print("<span " + titleClass + ">");
@@ -825,6 +834,12 @@ public class TreeTag extends TagSupport {
 				if (this.showFullLineOnHover) {
 					jspOut.print(" title='"+s_text+"' ");
 				}
+				if (!this.onMouseover.equals("")) {
+					jspOut.print(" onMouseover=\""+this.onMouseover+"\" ");
+				}
+				if (!this.onMouseout.equals("")) {
+					jspOut.print(" onMouseout=\""+this.onMouseout+"\" ");
+				}
 				jspOut.print(">");
 			}
 			jspOut.print("<span " + titleClass + ">");
@@ -951,6 +966,14 @@ public class TreeTag extends TagSupport {
 	public void setCallbackUrl(String callbackUrl)
 	{
 		this.callbackUrl = callbackUrl;
+	}
+	public void setOnMouseover(String routine)
+	{
+		this.onMouseover = routine;
+	}
+	public void setOnMouseout(String routine)
+	{
+		this.onMouseout = routine;
 	}
 
 	public void setCommonImg(String commonImg) {
