@@ -36,9 +36,13 @@
 <body class="ss_style_body tundra" onLoad="window.focus();">
 </ssf:ifaccessible>
 
-<div class="ss_indent_medium">
+<div>
+<div class="ss_teamsTitle"><ssf:nlt tag="navigation.myTeams"/></div>
+
+<ul class="ss_myTeamsList">
 <c:forEach var="binder" items="${ss_myTeams}">
 <jsp:useBean id="binder" type="java.util.Map" />
+<li>
 <a href="<ssf:permalink search="${binder}"/>" 
 <c:if test="${!empty binder._entityPath}"> title="<%= ((String)binder.get("_entityPath")).replaceAll("&", "&amp;").replaceAll("\"", "&quot;") %>" </c:if>
 <ssf:ifnotaccessible>
@@ -47,8 +51,10 @@
 <ssf:ifaccessible>
   onClick="return parent.ss_gotoPermalink('${binder._docId}', '${binder._docId}', '${binder._entityType}', '${ss_namespace}', 'yes')"
 </ssf:ifaccessible>
->${binder.title}</a><br/>
+>${binder.title}</a>
+</li>
 </c:forEach>
+</ul>
 
 <c:if test="${empty ss_myTeams}">
 <span class="ss_italic"><ssf:nlt tag="team.noTeams"/></span>

@@ -186,27 +186,43 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_masthead_portals {
 	color: #375E5C !important;		/* boulder: #375E5C; kablink: #374C5D */
 	}
-.ss_masthead_portals a{
-color: #375E5C !important;		/* boulder: #375E5C; kablink: #374C5D */
+.ss_masthead_portals a {
+	color: #375E5C !important;		/* boulder: #375E5C; kablink: #374C5D */
 	}
 .ss_masthead_portals a:hover{
 	color: #F47400 !important;
 	}	
-.ss_masthead_favorites a{
+.ss_masthead_favorites a {
 	color: #444 !important;		/* boulder: #5A9A98; kablink: #449EFF */
 	}
 ss_masthead_favorites a:hover{
 	color: #F47400 !important;
 	}
 	/* LOGO DIVS */		
- .ss_logo1 {   
+.ss_logo1 {   
 	background-position: 0px 0px;
 	background-repeat:no-repeat;
 	margin-left: -43px;
 	margin-right: -20px;
 	padding-top: 0px;
 	padding-bottom: 0px;
-	}			
-	
-		
-	
+	}
+
+ul.ss_favoritesList {
+  list-style: outside;
+  text-align:left;
+  margin: 0px 0px 0px 1px;
+  padding: 0px 10px;
+}
+
+.ss_teamsTitle {
+  font-weight: bold;
+  text-align: center;
+  padding-bottom: 10px;
+}
+ul.ss_myTeamsList {
+  list-style: outside;
+  text-align:left;
+  margin: 0px 0px 0px 1px;
+  padding: 0px 10px;
+}
