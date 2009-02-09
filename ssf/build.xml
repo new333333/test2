@@ -337,37 +337,4 @@
   		<ant dir="main" target="unit-test-report" />
 	</target>
 
-<target name="dist-clean" description="Cleans workarea for dist only">
-                <delete includeemptydirs="true">
-                  <fileset dir="kablink-applets"/>
-                </delete>
-        </target>
-
-
-        <target name="dist" description="Build sources for the OpenSuSE buildservice">
-                <mkdir dir="kablink-applets" />
-                <mkdir dir="kablink-applets/kablink-applets-2.0.0" />
-                <mkdir dir="kablink-applets/kablink-applets-2.0.0/applets" />
-                <mkdir dir="kablink-applets/kablink-applets-2.0.0/lib" />
-                <copy todir="kablink-applets/kablink-applets-2.0.0/applets">
-                   <fileset dir="applets"/>
-                </copy>
-                <copy file="build.xml" todir="kablink-applets/kablink-applets-2.0.0"/>
-                <copy file="build-common.xml" todir="kablink-applets/kablink-applets-2.0.0"/>
-                <copy file="build.properties" todir="kablink-applets/kablink-applets-2.0.0"/>
-                <copy file="deploy-support.xml" todir="kablink-applets/kablink-applets-2.0.0"/>
-                <copy file="app.server.properties" todir="kablink-applets/kablink-applets-2.0.0"/>
-                <copy file="release.properties" todir="kablink-applets/kablink-applets-2.0.0"/>
-                <copy file=".classpath" todir="kablink-applets/kablink-applets-2.0.0"/>
-                <copy file=".project" todir="kablink-applets/kablink-applets-2.0.0"/>
-                <tar destfile="kablink-applets/kablink-applets-2.0.0.tar" basedir="kablink-applets"/>
-                <bzip2 destfile="kablink-applets/kablink-applets-2.0.0.tar.bz2" src="kablink-applets/kablink-applets-2.0.0.tar"/>
-                <delete includeemptydirs="true">
-                  <fileset dir="kablink-applets" includes="**/*" excludes="*.bz2"/>
-                </delete>
-                <copy file="applets/kablink-applets.changes" todir="kablink-applets"/>
-                <copy file="applets/kablink-applets.spec" todir="kablink-applets"/>
-        </target>
-
-	
 </project>
