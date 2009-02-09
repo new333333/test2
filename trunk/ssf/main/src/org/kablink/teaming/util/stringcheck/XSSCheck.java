@@ -28,45 +28,35 @@
  */
 package org.kablink.teaming.util.stringcheck;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.StringPool;
 
 
 public class XSSCheck implements StringCheck {
 
-	private static final String MODE_DISALLOW = "disallow"; // default mode
-	private static final String MODE_GROUPS = "groups";
-	private static final String MODE_STRIP = "strip";
+	private static final String MODE_STRIP = "strip"; // default mode
+	private static final String MODE_DISALLOW = "disallow";
 	
-	private String patternStr;
+	private static final String PATTERN_STR = "(?i)<[\\s]*/?script.*?>|<[\\s]*/?embed.*?>|<[\\s]*/?object.*?>|<[\\s]*a[\\s]*href[^>]*javascript[\\s]*:[^(^)^>]*[(][^)]*[)][^>]*>[^<]*(<[\\s]*/[\\s]*a[^>]*>)*";
+	
 	private Pattern pattern;
 	private boolean enable;
 	private String mode;
-	private String[] groups;
 	
 	public XSSCheck() {
-		patternStr = SPropsUtil.getString("xss.regexp.pattern");
-		pattern = Pattern.compile(patternStr);
+		pattern = Pattern.compile(PATTERN_STR);
 		enable = SPropsUtil.getBoolean("xss.check.enable");
 		mode = SPropsUtil.getString("xss.check.mode");
-		groups = SPropsUtil.getStringArray("xss.groups", ";");
 
 		// We do this not only to validate the input mode but also to enable
 		// simple reference comparison for modes. 
-		if(mode.equals(MODE_GROUPS))
-			mode = MODE_GROUPS;
-		else if(mode.equals(MODE_STRIP))
-			mode = MODE_STRIP;
-		else
+		if(mode.equals(MODE_DISALLOW))
 			mode = MODE_DISALLOW;
+		else
+			mode = MODE_STRIP;
 	}
 	
 	/**
@@ -84,7 +74,8 @@ public class XSSCheck implements StringCheck {
 			return input;
 	}
 	
-	private String doCheck(String input) throws XSSCheckException {
+	// A subclass can override this method to provide custom or enhanced implementation.
+	protected String doCheck(String input) throws XSSCheckException {
 		if(input == null || input.equals(""))
 			return input;
 		
@@ -99,18 +90,6 @@ public class XSSCheck implements StringCheck {
 				throw new XSSCheckException();
 			else
 				return input;
-		}
-		else if(mode == MODE_GROUPS) {
-			User user = RequestContextHolder.getRequestContext().getUser();
-			Set groupNames = user.computeGroupNames();
-			for(int i = 0; i < groups.length; i++) {
-				if(groupNames.contains(groups[i]))
-					return input;
-			}
-			if(matcher.find())
-				throw new XSSCheckException();
-			else
-				return input;			
 		}
 		else { // MODE == MODE_STRIP
 			return matcher.replaceAll(StringPool.BLANK);
