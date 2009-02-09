@@ -1018,6 +1018,7 @@ public class WebKeys {
     public static final String FIND_INSTANCE_COUNT="ssFindInstanceCount";
     public static final String FIND_INSTANCE_CODE="ssFindInstanceCode";
     public static final String FIND_LEAVE_RESULTS_VISIBLE="ssFindLeaveResultsVisible";
+    public static final String FIND_SENDING_EMAIL=SENDING_EMAIL;
     public static final String FIND_SEARCH_SUBFOLDERS="ssFindSearchSubFolders";
     public static final String FIND_SHOW_FOLDER_TITLES="ssShowFolderTitles";
     public static final String FIND_SHOW_USER_TITLE_ONLY="ssShowUserTitleOnly";

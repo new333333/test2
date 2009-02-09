@@ -60,6 +60,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
     private String type;
     private Boolean singleItem;
     private Boolean leaveResultsVisible;
+    private Boolean sendingEmail;
     private String clickRoutine = "";
     private String clickRoutineObj = "";
     private String findMultipleObj = "";
@@ -95,6 +96,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			if (this.type == null) this.type = WebKeys.FIND_TYPE_USER;
 			if (singleItem == null) singleItem = false;
 			if (leaveResultsVisible == null) leaveResultsVisible = false;
+			if (sendingEmail == null) sendingEmail = false;
 			if (searchSubFolders == null) searchSubFolders = false;
 			if (showFolderTitles == null) showFolderTitles = false;
 			if (showUserTitleOnly == null) showUserTitleOnly = false;
@@ -130,6 +132,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			req.setAttribute(WebKeys.FIND_INSTANCE_COUNT, this.instanceCount);
 			req.setAttribute(WebKeys.FIND_INSTANCE_CODE, this.hashCode() + "_" + this.formName + "_" + this.formElement);
 			req.setAttribute(WebKeys.FIND_LEAVE_RESULTS_VISIBLE, this.leaveResultsVisible.toString());
+			req.setAttribute(WebKeys.FIND_SENDING_EMAIL, this.sendingEmail.toString());
 			req.setAttribute(WebKeys.FIND_FOLDERS_ONLY, this.foldersOnly.toString());
 			req.setAttribute(WebKeys.FIND_SEARCH_SUBFOLDERS, this.searchSubFolders.toString());
 			req.setAttribute(WebKeys.FIND_SHOW_FOLDER_TITLES, this.showFolderTitles.toString());
@@ -158,6 +161,7 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			this.clickRoutineObj = "";
 			this.findMultipleObj = "";
 			this.leaveResultsVisible = false;
+			this.sendingEmail = false;
 			this.binderId = "";
 			this.searchSubFolders = false;
 			this.showFolderTitles = false;
@@ -228,6 +232,10 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 
 	public void setLeaveResultsVisible(Boolean leaveResultsVisible) {
 	    this.leaveResultsVisible = leaveResultsVisible;
+	}
+
+	public void setSendingEmail(Boolean sendingEmail) {
+	    this.sendingEmail = sendingEmail;
 	}
 
 	public void setBinderId(String binderId) {
