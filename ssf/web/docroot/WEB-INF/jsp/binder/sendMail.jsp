@@ -67,14 +67,14 @@ self.window.resizeTo(width, height);
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="users" 
-    type="user" userList="${ssUsers}" binderId="${ssBinder.id}"/>
+    type="user" userList="${ssUsers}" binderId="${ssBinder.id}" sendingEmail="true"/>
 </td>
 </tr>
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="groups" 
-    type="group" userList="${ssGroups}"/>
+    type="group" userList="${ssGroups}" sendingEmail="true"/>
 </td>
 </tr>
 </table>
@@ -95,14 +95,14 @@ self.window.resizeTo(width, height);
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="ccusers" 
-    type="user" />
+    type="user" sendingEmail="true" />
 </td>
 </tr>
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="ccgroups" 
-    type="group"/>
+    type="group" sendingEmail="true"/>
 </td>
 </tr>
 </table>
@@ -114,14 +114,14 @@ self.window.resizeTo(width, height);
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="bccusers" 
-    type="user" />
+    type="user" sendingEmail="true" />
 </td>
 </tr>
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="bccgroups" 
-    type="group"/>
+    type="group" sendingEmail="true"/>
 </td>
 </tr>
 </table>

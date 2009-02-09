@@ -77,6 +77,7 @@ onload="dojo.addOnLoad(function(){
 				viewAccesibleUrl: '',
 				searchUrl: '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_find" actionUrl="false">
 					<ssf:param name="operation" value="find_places_search" />
+					<ssf:param name="sendingEmail" value="${sendingEmail}" />
 				</ssf:url>',
 			</c:when>
 			<c:when test="${ssFindListType == 'tags' || ssFindListType == 'personalTags' || ssFindListType == 'communityTags'}">
@@ -98,6 +99,7 @@ onload="dojo.addOnLoad(function(){
 				viewAccesibleUrl: '',
 				searchUrl: '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_find" actionUrl="false">
 					<ssf:param name="operation" value="find_tag_search" />
+					<ssf:param name="sendingEmail" value="${sendingEmail}" />
 				</ssf:url>',
 			</c:when>	
 			<c:when test="${ssFindListType == 'entries'}">
@@ -113,6 +115,7 @@ onload="dojo.addOnLoad(function(){
 				</ssf:url>',
 				searchUrl: '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_find" actionUrl="false">
 					<ssf:param name="operation" value="find_entries_search" />
+					<ssf:param name="sendingEmail" value="${sendingEmail}" />
 				</ssf:url>',					
 			</c:when>
 			<c:otherwise>
@@ -125,10 +128,12 @@ onload="dojo.addOnLoad(function(){
 				searchUrl: '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_find" actionUrl="false">
 					<ssf:param name="operation" value="find_user_search" />
 					<ssf:param name="addCurrentUser" value="${ssFindAddCurrentUser}" />
+					<ssf:param name="sendingEmail" value="${sendingEmail}" />
 			   	</ssf:url>',
 			</c:otherwise>
 		</c:choose>    
-  		leaveResultsVisible: '${ssFindLeaveResultsVisible}', 
+  		leaveResultsVisible: '${ssFindLeaveResultsVisible}',
+  		sendingEmail: '${sendingEmail}',
   		listType: '${ssFindListType}', 
   		renderNamespace: '${renderResponse.namespace}',
   		binderId: '${binderId}',

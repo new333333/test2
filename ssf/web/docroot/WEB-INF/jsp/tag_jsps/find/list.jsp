@@ -64,7 +64,8 @@
 					formName: '${ssFindFormName}',
 					elementName: '${ssFindFormElement}',
 					displayValue: '${ssDisplayValue}',
-					displayValueOnly: '${ssDisplayValueOnly}'
+					displayValueOnly: '${ssDisplayValueOnly}',
+  					sendingEmail: '${sendingEmail}'
 			});
 	<c:forEach var="item" items="${ssFindUserList}" varStatus="status"> window['findMultiple${prefix}'].addValue('<c:out value="${item.id}"/>');</c:forEach>
 	}});" />
@@ -86,6 +87,7 @@
 				    clickRoutineObj="findMultiple${prefix}"
 				    findMultipleObj="findMultiple${prefix}"
 				    leaveResultsVisible="${ssFindLeaveResultsVisible}"
+				    sendingEmail="${sendingEmail}"
 				    singleItem="true"
 				    displayValue="${ssDisplayValue}"
 				    displayValueOnly="${ssDisplayValueOnly}"

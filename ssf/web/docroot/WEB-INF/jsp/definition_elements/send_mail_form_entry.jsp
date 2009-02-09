@@ -38,20 +38,20 @@
 <% /* User selection. */ %>
 <div class="ss_entryContent">
 	<span class="ss_labelAbove"><ssf:nlt tag="entry.sendMail.toList" /></span>
-	<ssf:find formName="${formName}" formElement="_sendMail_toList" type="user" userList="<%= new java.util.HashSet() %>"/>
+	<ssf:find formName="${formName}" formElement="_sendMail_toList" type="user" userList="<%= new java.util.HashSet() %>" sendingEmail="true" />
 	<ssf:clipboard type="user" formElement="_sendMail_toList" />
 </div>
 
 <% /* Group selection. */ %>
 <div class="ss_entryContent">
  	<span class="ss_labelAbove"><ssf:nlt tag="entry.sendMail.toList.groups" /></span>
-	<ssf:find formName="${formName}" formElement="_sendMail_toList_groups" type="group"/>
+	<ssf:find formName="${formName}" formElement="_sendMail_toList_groups" type="group" sendingEmail="true" />
 </div>
 
 <% /* Named team selection. */ %>
 <div class="ss_entryContent">
 	<span class="ss_labelAbove"><ssf:nlt tag="entry.sendMail.toList.teams" /></span>
-	<ssf:find formName="${formName}" formElement="_sendMail_toList_teams" type="teams"/>
+	<ssf:find formName="${formName}" formElement="_sendMail_toList_teams" type="teams" sendingEmail="true" />
 </div>
 
 <% /* Local team selection. */ %>

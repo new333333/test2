@@ -59,11 +59,12 @@ ssFind.configMultiple = function(params) {
 	var clickRoutine = ("clickRoutine" in params) ? params.clickRoutine : null;
 	var displayValue = ("displayValue" in params) ? params.displayValue : null;
 	var displayValueOnly = ("displayValueOnly" in params) ? params.displayValueOnly : null;
+	var sendingEmail = ("sendingEmail" in params) ? (params.sendingEmail != "false" ? true : false) : false;
 	
 	var formName = ("formName" in params) ? params.formName : null;
 	var elementName = ("elementName" in params) ? params.elementName : null;
 		
-	var obj = new ssFind.Find(prefix, clickRoutineObj, clickRoutine, displayValue, displayValueOnly);
+	var obj = new ssFind.Find(prefix, clickRoutineObj, clickRoutine, displayValue, displayValueOnly, sendingEmail);
 	
 	ssFind.addObjectByFormName(formName, elementName, obj);
 	
@@ -104,6 +105,7 @@ ssFind.configSingle = function(params) {
 	var searchUrl = ("searchUrl" in params) ? params.searchUrl : null;
 	var appendToSearchUrlRoutine = ("appendToSearchUrlRoutine" in params) ? params.appendToSearchUrlRoutine : null;
 	var leaveResultsVisible = ("leaveResultsVisible" in params) ? params.leaveResultsVisible : null;
+	var sendingEmail = ("sendingEmail" in params) ? (params.sendingEmail != "false" ? true : false) : false;
 	var listType = ("listType" in params) ? params.listType : null;
 	var renderNamespace = ("renderNamespace" in params) ? params.renderNamespace : null;
 	var binderId = ("binderId" in params) ? params.binderId : null;
@@ -120,7 +122,7 @@ ssFind.configSingle = function(params) {
 	var addCurrentUserToResult = ("addCurrentUserToResult" in params) ? (params.addCurrentUserToResult != "false" ? true : false) : false;
 		
 	findObj.single(inputId, prefix, clickRoutineObj, clickRoutine, viewUrl, viewAccesibleUrl, searchUrl, appendToSearchUrlRoutine, 
-					leaveResultsVisible, listType, renderNamespace, binderId, subFolders, foldersOnly, 
+					leaveResultsVisible, sendingEmail, listType, renderNamespace, binderId, subFolders, foldersOnly, 
 					showFolderTitles, showUserTitleOnly, displayArrow, displayValue, displayValueOnly, 
 					addCurrentUserToResult, searchOnInitialClick, clearSubordinates);
 	
@@ -128,7 +130,7 @@ ssFind.configSingle = function(params) {
 }
 
 
-ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRoutine, displayValue, displayValueOnly) {
+ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRoutine, displayValue, displayValueOnly, sendingEmail) {
 	var that = this;
 	
 	this.inputId = false;
@@ -140,6 +142,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	
 	this._displayValue = displayValue;
 	this._displayValueOnly = displayValueOnly;
+	this._sendingEmail = sendingEmail;
 
 	this._singlePrefix;
 	this._singleClickRoutineObj;
@@ -149,6 +152,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	this._singleSearchUrl;
 	this._appendToSearchUrlRoutine;
 	this._singleLeaveResultsVisible;
+	this._singleSendingEmail;
 	this._singleListType;
 	this._singleRenderNamespace;
 	this._singleBinderId;
@@ -271,7 +275,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 
 	this.single = function(inputId, singlePrefix, singleClickRoutineObj, singleClickRoutine, 
 						   singleViewUrl, singleViewAccesibleUrl, singleSearchUrl, appendToSearchUrlRoutine,
-						   singleLeaveResultsVisible, singleListType, singleRenderNamespace,
+						   singleLeaveResultsVisible, singleSendingEmail, singleListType, singleRenderNamespace,
 						   singleBinderId, singleSubFolders, singleFoldersOnly,
 						   showFolderTitles, showUserTitleOnly, displayArrow, displayValue, displayValueOnly,
 						   addCurrentUserToResult, searchOnInitialClick, clearSubordinates) {
@@ -287,6 +291,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		that._singleSearchUrl = singleSearchUrl;
 		that._appendToSearchUrlRoutine = appendToSearchUrlRoutine;
 		that._singleLeaveResultsVisible = singleLeaveResultsVisible;
+		that._singleSendingEmail = singleSendingEmail;
 		that._singleListType = singleListType;
 		that._singleRenderNamespace = singleRenderNamespace;
 		that._singleBinderId = singleBinderId;
@@ -721,7 +726,8 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		var urlParams = {operation:"find_user_search", searchText:searchText,
 						maxEntries:"10", pageNumber: pageNumber,
 						findType: that._singleListType, listDivId: that._listContainerInnerDiv.id,
-						namespace: that._singlePrefix, findObjectName: objId};
+						namespace: that._singlePrefix, findObjectName: objId,
+						sendingEmail: that._singleSendingEmail};
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_find");
 	    if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
 			self.location.href = url;
