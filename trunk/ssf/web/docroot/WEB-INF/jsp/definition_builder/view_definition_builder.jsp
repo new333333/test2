@@ -626,6 +626,8 @@ function ss_saveUserGroupResults(s) {
 				<ssf:tree treeName="definitionTree" 
 				 treeDocument="<%= definitionTree %>" 
 				 rootOpen="true" 
+				 onMouseover="ss_showTreeHover"
+				 onMouseout="ss_hideTreeHover"
 				 nodeOpen="<%= nodeOpen %>" />
 			</div>
 		</td>
