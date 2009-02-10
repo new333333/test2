@@ -28,35 +28,48 @@
  */
 package org.kablink.teaming.util.stringcheck;
 
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.StringPool;
 
 
 public class XSSCheck implements StringCheck {
 
-	private static final String MODE_STRIP = "strip"; // default mode
-	private static final String MODE_DISALLOW = "disallow";
+	private static final String MODE_DISALLOW = "disallow"; // default mode
+	private static final String MODE_STRIP = "strip";
+	private static final String MODE_TRUSTED_DISALLOW = "trusted.disallow";
+	private static final String MODE_TRUSTED_STRIP = "trusted.strip";
 	
 	private static final String PATTERN_STR = "(?i)<[\\s]*/?script.*?>|<[\\s]*/?embed.*?>|<[\\s]*/?object.*?>|<[\\s]*a[\\s]*href[^>]*javascript[\\s]*:[^(^)^>]*[(][^)]*[)][^>]*>[^<]*(<[\\s]*/[\\s]*a[^>]*>)*";
 	
 	private Pattern pattern;
 	private boolean enable;
 	private String mode;
+	private String[] users;
+	private String[] groups;
 	
 	public XSSCheck() {
 		pattern = Pattern.compile(PATTERN_STR);
 		enable = SPropsUtil.getBoolean("xss.check.enable");
 		mode = SPropsUtil.getString("xss.check.mode");
+		users = SPropsUtil.getStringArray("xss.trusted.users", ";");
+		groups = SPropsUtil.getStringArray("xss.trusted.groups", ";");
 
 		// We do this not only to validate the input mode but also to enable
 		// simple reference comparison for modes. 
-		if(mode.equals(MODE_DISALLOW))
-			mode = MODE_DISALLOW;
-		else
+		if(mode.equals(MODE_TRUSTED_DISALLOW))
+			mode = MODE_TRUSTED_DISALLOW;
+		if(mode.equals(MODE_TRUSTED_STRIP))
+			mode = MODE_TRUSTED_STRIP;
+		else if(mode.equals(MODE_STRIP))
 			mode = MODE_STRIP;
+		else
+			mode = MODE_DISALLOW; // default mode
 	}
 	
 	/**
@@ -79,20 +92,35 @@ public class XSSCheck implements StringCheck {
 		if(input == null || input.equals(""))
 			return input;
 		
+		// We can use much faster reference comparison rather than string 
+		// value equality test due to the way we setup above.
+		
+		if(mode == MODE_TRUSTED_DISALLOW || mode == MODE_TRUSTED_STRIP) {
+			User user = RequestContextHolder.getRequestContext().getUser();
+			String userName = user.getName();
+			for(int i = 0; i < users.length; i++) {
+				if(userName.equals(users[i]))
+					return input; // match found on user list
+			}		
+			Set groupNames = user.computeGroupNames();
+			for(int i = 0; i < groups.length; i++) {
+				if(groupNames.contains(groups[i]))
+					return input; // match found on group list
+			}
+		}
+		
 		CharSequence sequence = input.subSequence(0, input.length());
 
 		Matcher matcher = pattern.matcher(sequence);
 
-		// We can use much faster reference comparison rather than string 
-		// value equality test due to the way we setup above.
-		if(mode == MODE_DISALLOW) {
+		if(mode == MODE_DISALLOW || mode == MODE_TRUSTED_DISALLOW) {
 			if(matcher.find())
 				throw new XSSCheckException();
 			else
-				return input;
+				return input;						
 		}
-		else { // MODE == MODE_STRIP
-			return matcher.replaceAll(StringPool.BLANK);
+		else { // mode == MODE_STRIP || mode == MODE_TRUSTED_STRIP
+			return matcher.replaceAll(StringPool.BLANK);			
 		}
 	}
 }
