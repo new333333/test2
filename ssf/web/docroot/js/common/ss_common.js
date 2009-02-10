@@ -1326,6 +1326,20 @@ function ss_getContainingForm(obj) {
 	return formObj;
 }
 
+//Routines to show and hide the hover over info
+function ss_showTreeHover(obj, id) {
+	var divObj = document.getElementById("info_div_" + id);
+	if (divObj != null) {
+		ss_showHoverOver(obj, "info_div_" + id, null, 100, 4)
+	}
+}
+function ss_hideTreeHover(obj, id) {
+	var divObj = document.getElementById("info_div_" + id);
+	if (divObj != null) {
+		ss_hideHoverOver("info_div_" + id)
+	}
+}
+
 //Routine to create a new "ss_eventObj" object
 //ss_eventObj objects are set up whenever you want to call a routine on an event.
 //   event_name is the event name (e.g., "MOUSEDOWN")

@@ -612,10 +612,10 @@ public class TreeTag extends TagSupport {
 						jspOut.print(" title='"+s_text+"' ");
 					}
 					if (!this.onMouseover.equals("")) {
-						jspOut.print(" onMouseover=\""+this.onMouseover+"\" ");
+						jspOut.print(" onMouseover=\""+this.onMouseover+"(this, '"+s_binderId+"');\" ");
 					}
 					if (!this.onMouseout.equals("")) {
-						jspOut.print(" onMouseout=\""+this.onMouseout+"\" ");
+						jspOut.print(" onMouseout=\""+this.onMouseout+"(this, '"+s_binderId+"');\" ");
 					}
 					jspOut.print(">");
 				}
@@ -835,10 +835,10 @@ public class TreeTag extends TagSupport {
 					jspOut.print(" title='"+s_text+"' ");
 				}
 				if (!this.onMouseover.equals("")) {
-					jspOut.print(" onMouseover=\""+this.onMouseover+"\" ");
+					jspOut.print(" onMouseover=\""+this.onMouseover+"(this, '"+s_binderId+"');\" ");
 				}
 				if (!this.onMouseout.equals("")) {
-					jspOut.print(" onMouseout=\""+this.onMouseout+"\" ");
+					jspOut.print(" onMouseout=\""+this.onMouseout+"(this, '"+s_binderId+"');\" ");
 				}
 				jspOut.print(">");
 			}

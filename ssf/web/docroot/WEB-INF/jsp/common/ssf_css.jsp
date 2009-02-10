@@ -4333,8 +4333,16 @@ ul.placesForm, ul.placesForm li {
 .ss_combobox_autocomplete_list ul li img {
 	border: 0;
 	padding-left: 10px;
-}
-	
+	}
+
+div.ss_infoDiv {
+	position:absolute;
+	display:none;
+	background-color:#ffffff; 
+	border:1px solid #666;
+	color:#666;
+	padding:6px;
+	}	
 
 
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_dashboard.jsp" />

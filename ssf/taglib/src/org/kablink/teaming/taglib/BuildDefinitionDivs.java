@@ -77,6 +77,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
@@ -157,6 +158,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				//Build the divs for each element
 				buildDivs(configRoot, root, sb, hb, "");
 				buildDivs(root, root, sb, hb, "item");
+				buildPropertyInfoDivs(root, sb, hb);
 				buildDefaultDivs(sb, hb);
 			} else {	
 				buildDivs(root, root, sb, hb, "item");
@@ -1504,6 +1506,46 @@ public class BuildDefinitionDivs extends TagSupport {
 				}
 			}
 		}
+	}
+	
+	public void buildPropertyInfoDivs(Element root, StringBuffer sb, StringBuffer hb) {
+		Element configRoot = this.configDocument.getRootElement();
+		Iterator itElements = root.elementIterator();
+		while (itElements.hasNext()) {
+			Element item = (Element) itElements.next();
+			if (item.getName().equals("item")) {
+				String itemName = item.attributeValue("name", "");
+				Element configItem = (Element)configRoot.selectSingleNode("item[@name='"+itemName+"']");
+				String itemId = item.attributeValue("id", "");
+				List propertyNodes = item.selectNodes("./properties/property");
+				if (propertyNodes != null && !propertyNodes.isEmpty()) {
+					ListIterator itProperties = propertyNodes.listIterator();
+					sb.append("\n<div class='ss_infoDiv' id='info_div_" + itemId + "'>");
+					while (itProperties.hasNext()) {
+						Element property = (Element) itProperties.next();
+						String name = property.attributeValue("name", "");
+						String caption = name;
+						if (configItem != null) {
+							//Get the property caption from the config definitions
+							Element configPropertyEle = (Element)configItem.selectSingleNode("./properties/property[@name='"+name+"']");
+							if (configPropertyEle != null) {
+								String configCaption = configPropertyEle.attributeValue("caption", "");
+								if (!configCaption.equals("")) caption = configCaption;
+							}
+						}
+						if (!caption.equals("")) name = NLT.getDef(caption);
+						String value = property.attributeValue("value", "");
+						if (!name.equals("")) {
+							sb.append(name+": " + NLT.getDef(value));
+							sb.append("<br/>");
+						}
+					}
+					sb.append("</div>\n");
+				}
+			}
+		}
+		ListIterator itItems = root.selectNodes("./item").listIterator();
+		while (itItems.hasNext()) buildPropertyInfoDivs((Element)itItems.next(), sb, hb);
 	}
 	public int doEndTag() throws JspException {
 		return EVAL_PAGE;
