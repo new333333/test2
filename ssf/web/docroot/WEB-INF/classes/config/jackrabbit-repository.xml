@@ -10,7 +10,7 @@
 			<param name="anonymousId" value="anonymous" />
 		</LoginModule>
 	</Security>
-	<Workspaces rootPath="${rep.home}/workspaces" defaultWorkspace="sitescape" />
+	<Workspaces rootPath="${rep.home}/workspaces" defaultWorkspace="teaming" />
 	<Workspace name="${wsp.name}">
 		<FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
 			<param name="path" value="${wsp.home}" />
