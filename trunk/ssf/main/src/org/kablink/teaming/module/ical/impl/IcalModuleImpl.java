@@ -56,6 +56,7 @@ import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.Parameter;
 import net.fortuna.ical4j.model.ParameterList;
 import net.fortuna.ical4j.model.Property;
+import net.fortuna.ical4j.model.PropertyList;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
@@ -1900,11 +1901,19 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 
 		ComponentType componentType = getComponentType(entry);
 
+		int attendees = 0;
 		Iterator eventsIt = events.iterator();
 		while (eventsIt.hasNext()) {
 			Event event = (Event) eventsIt.next();
-			addEventToICalendar(calendar, entry, event, defaultTimeZoneId,
+			attendees += addEventToICalendar(calendar, entry, event, defaultTimeZoneId,
 					componentType);
+		}
+		
+		// If there are no attendees to this event...
+		if (0 ==attendees) {
+			// ...we want to issue it as a publish, not a request.
+			calendar.getProperties().remove(Method.REQUEST);
+			calendar.getProperties().add(Method.PUBLISH);
 		}
 	}
 
@@ -1936,7 +1945,10 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		return ComponentType.Calendar;
 	}
 
-	private void addEventToICalendar(Calendar calendar, DefinableEntity entry,
+	/*
+	 * Returns a count of the number of attendees for the event.
+	 */
+	private int addEventToICalendar(Calendar calendar, DefinableEntity entry,
 			Event event, String defaultTimeZoneId, ComponentType componentType) {
 		// there is probably a bug in iCal4j or in Java: for some time zones
 		// the date after setting the time zone is wrong, it means: the other
@@ -1949,11 +1961,32 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			}
 		}
 
+		Component vComponent = null;
 		if (componentType.equals(ComponentType.Task)) {
-			calendar.getComponents().add(createVTodo(entry, event, timeZone));
+			vComponent = createVTodo(entry, event, timeZone);
+			calendar.getComponents().add(vComponent);
 		} else if (componentType.equals(ComponentType.Calendar)) {
-			calendar.getComponents().add(createVEvent(entry, event, timeZone));
+			vComponent = createVEvent(entry, event, timeZone);
+			calendar.getComponents().add(vComponent);
 		}
+		
+		// Did we generate a VTodo or VEvent for the Event?
+		int attendees = 0;
+		if (null != vComponent) {
+			// Yes!  Scan its properties...
+			PropertyList vProperties = vComponent.getProperties();
+			Iterator vIterator = vProperties.iterator();
+			while (vIterator.hasNext()) {
+				// ...and count the Attendee's.
+				if (vIterator.next() instanceof Attendee) {
+					attendees += 1;
+				}
+			}
+		}
+		
+		// If we get here, attendees contains a count of the attendees
+		// for the event.  Return it. 
+		return attendees;
 	}
 
 	private VToDo createVTodo(DefinableEntity entry, Event event,
