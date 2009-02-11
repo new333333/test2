@@ -3,7 +3,7 @@
 <Repository>
 	<FileSystem class="org.apache.jackrabbit.core.fs.db.DbFileSystem">
 	    <param name="driver" value="com.mysql.jdbc.Driver"/>
-	    <param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&amp;characterEncoding=UTF-8" />
+	    <param name="url" value="jdbc:mysql://localhost:3306/teaming_jcr?useUnicode=true&amp;characterEncoding=UTF-8" />
 	    <param name="user" value="root" />
 	    <param name="password" value="root" />
 	    <!-- mysql, oracle, or mssql -->
@@ -16,11 +16,11 @@
 			<param name="anonymousId" value="anonymous" />
 		</LoginModule>
 	</Security>
-	<Workspaces rootPath="${rep.home}/workspaces" defaultWorkspace="sitescape" />
+	<Workspaces rootPath="${rep.home}/workspaces" defaultWorkspace="teaming" />
 	<Workspace name="${wsp.name}">
 		<FileSystem class="org.apache.jackrabbit.core.fs.db.DbFileSystem">
 		    <param name="driver" value="com.mysql.jdbc.Driver"/>
-		    <param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&amp;characterEncoding=UTF-8" />
+		    <param name="url" value="jdbc:mysql://localhost:3306/teaming_jcr?useUnicode=true&amp;characterEncoding=UTF-8" />
 		    <param name="user" value="root" />
 		    <param name="password" value="root" />
 		    <param name="schema" value="mysql"/>
@@ -29,7 +29,7 @@
 
 		<PersistenceManager class="org.apache.jackrabbit.core.persistence.db.SimpleDbPersistenceManager">
 			<param name="driver" value="com.mysql.jdbc.Driver" />
-			<param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&amp;characterEncoding=UTF-8" />
+			<param name="url" value="jdbc:mysql://localhost:3306/teaming_jcr?useUnicode=true&amp;characterEncoding=UTF-8" />
 			<param name="user" value="root" />
 			<param name="password" value="root" />
 			<param name="schema" value="mysql" />
@@ -40,7 +40,7 @@
 	<Versioning rootPath="${rep.home}/version">
 		<FileSystem class="org.apache.jackrabbit.core.fs.db.DbFileSystem">
 		    <param name="driver" value="com.mysql.jdbc.Driver"/>
-		    <param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&amp;characterEncoding=UTF-8" />
+		    <param name="url" value="jdbc:mysql://localhost:3306/teaming_jcr?useUnicode=true&amp;characterEncoding=UTF-8" />
 		    <param name="user" value="root" />
 		    <param name="password" value="root" />
 		    <param name="schema" value="mysql"/>
@@ -49,7 +49,7 @@
 
 		<PersistenceManager class="org.apache.jackrabbit.core.persistence.db.SimpleDbPersistenceManager">
 			<param name="driver" value="com.mysql.jdbc.Driver" />
-			<param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&amp;characterEncoding=UTF-8" />
+			<param name="url" value="jdbc:mysql://localhost:3306/teaming_jcr?useUnicode=true&amp;characterEncoding=UTF-8" />
 			<param name="user" value="root" />
 			<param name="password" value="root" />
 			<param name="schema" value="mysql" />
@@ -80,7 +80,7 @@
 	  	<Journal class="org.apache.jackrabbit.core.journal.DatabaseJournal">
 	    	<param name="revision" value="${rep.home}/revision" />
 	    	<param name="driver" value="com.mysql.jdbc.Driver" />
-	    	<param name="url" value="jdbc:mysql://localhost:3306/sitescape_jcr?useUnicode=true&amp;characterEncoding=UTF-8" />
+	    	<param name="url" value="jdbc:mysql://localhost:3306/teaming_jcr?useUnicode=true&amp;characterEncoding=UTF-8" />
 	    	<param name="user" value="root"/>
 	    	<param name="password" value="root"/>
 	    	<param name="schema" value="mysql"/>
