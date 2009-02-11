@@ -124,7 +124,7 @@ implements JCRRepositorySessionFactoryMBean {
 		super.initialize();
 		
 		repositoryHomeDir = repositoryRootDir + homeSubdirName;
-		workspaceName = SPropsUtil.getString("jcr.workspace.name", "sitescape");
+		workspaceName = SPropsUtil.getString("jcr.workspace.name", "teaming");
 		
 		try {
 			repository = getRepository();
