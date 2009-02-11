@@ -4343,6 +4343,26 @@ div.ss_infoDiv {
 	color:#666;
 	padding:6px;
 	}	
+div.ss_infoDiv ul {
+  margin-left: 0em;
+  padding-left: 0em;
+  margin-top: 0px;
+  margin-bottom: 2px;
+  }
+
+div.ss_infoDiv ul li {
+  list-style-type: none !important;
+  margin-left: 0px;
+  margin-bottom: 0px;
+  padding-left: 0px;
+  }
+
+span.ss_infoDivName {
+	font-weight:bold;
+	}
+span.ss_infoDivValue {
+	font-weight:normal;
+	}
 
 
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_dashboard.jsp" />

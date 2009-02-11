@@ -946,6 +946,25 @@ public class BuildDefinitionDivs extends TagSupport {
 								//Get the entry definition itself
 								Definition def = DefinitionHelper.getDefinition(definitionId);
 								if (def != null) {
+									//Put the previous values into hidden fields in case these are not changed
+									sb.append("<input type=\"hidden\" name=\"previous_conditionDefinitionId\"");
+									sb.append(" value=\""+definitionId+"\" />\n");
+									sb.append("<input type=\"hidden\" name=\"previous_conditionElementName\"");
+									sb.append(" value=\""+elementName+"\" />\n");
+									sb.append("<input type=\"hidden\" name=\"previous_conditionElementOperation\"");
+									sb.append(" value=\""+operation+"\" />\n");
+									if (!duration.equals("") && !durationType.equals("")) {
+										sb.append("<input type=\"hidden\" name=\"previous_operationDuration\"");
+										sb.append(" value=\""+duration+"\" />\n");
+										sb.append("<input type=\"hidden\" name=\"previous_operationDurationType\"");
+										sb.append(" value=\""+durationType+"\" />\n");
+									}
+									//See if there are values
+									Iterator it_workflowConditionValues = workflowConditionEle.elementIterator("value");
+									while (it_workflowConditionValues.hasNext()) {
+										sb.append("<input type=\"hidden\" name=\"previous_conditionElementValue\"");
+										sb.append(" value=\""+((Element)it_workflowConditionValues.next()).getText()+"\" />\n");
+									}
 									
 									sb.append("<span class=\"ss_bold\">");
 									sb.append(NLT.get("definition.workflowCondition"));
@@ -1034,7 +1053,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									}
 									
 									//See if there are values
-									Iterator it_workflowConditionValues = workflowConditionEle.elementIterator("value");
+									it_workflowConditionValues = workflowConditionEle.elementIterator("value");
 									if (it_workflowConditionValues.hasNext()) {
 										sb.append("<tr>");
 										sb.append("<td valign=\"top\">");
@@ -1065,7 +1084,8 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append("<select name=\"conditionDefinitionId\" ");
 						sb.append("onChange=\"getConditionSelectbox(this, 'get_condition_entry_elements')\" ");
 						sb.append(">\n");
-						sb.append("<option value=\"\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
+						sb.append("<option value=\"-\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
+						sb.append("<option value=\"\">").append(NLT.get("common.select.none")).append("</option>\n");
 						
 						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(this.binderId, Definition.FOLDER_ENTRY);
 						for (Map.Entry<String, Definition> me:defs.entrySet()) {
@@ -1093,12 +1113,18 @@ public class BuildDefinitionDivs extends TagSupport {
 									if (definitionId.equals(element.attributeValue("definitionId"))) {
 										String name = element.attributeValue("elementName", "");
 										if (Validator.isNull(name)) continue;
-										elementName.append(", ").append(name);
+										if (elementName.length() > 0) elementName.append(", ");
+										elementName.append(name);
 									}
 								}
 								//Get the entry definition itself
 								Definition def = DefinitionHelper.getDefinition(definitionId);
 								if (def != null && elementName.length()>0) {
+									//Put the previous values into hidden fields in case these are not changed
+									sb.append("<input type=\"hidden\" name=\"previous_conditionDefinitionId\"");
+									sb.append(" value=\""+definitionId+"\" />\n");
+									sb.append("<input type=\"hidden\" name=\"previous_conditionElementName\"");
+									sb.append(" value=\""+elementName+"\" />\n");
 									
 									sb.append("<span class=\"ss_bold\">");
 									sb.append(NLT.get("definition.workflowEntryDataUserList"));
@@ -1123,7 +1149,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("</span>");
 									sb.append("</td>");
 									sb.append("<td valign=\"top\" style=\"padding-left:4px;\">");
-									sb.append(elementName.deleteCharAt(0).toString());
+									sb.append(elementName.toString());
 									sb.append("</td>");
 									sb.append("</tr>");
 																		
@@ -1141,7 +1167,8 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append("<select name=\"conditionDefinitionId\" ");
 						sb.append("onChange=\"getConditionSelectbox(this, 'get_condition_entry_user_list_elements')\" ");
 						sb.append(">\n");
-						sb.append("<option value=\"\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
+						sb.append("<option value=\"-\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
+						sb.append("<option value=\"\">").append(NLT.get("common.select.none")).append("</option>\n");
 						//GET both entry and file Entry definitions
 						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(this.binderId, Definition.FOLDER_ENTRY);
 						for (Map.Entry<String, Definition> me:defs.entrySet()) {
@@ -1520,7 +1547,8 @@ public class BuildDefinitionDivs extends TagSupport {
 				List propertyNodes = item.selectNodes("./properties/property");
 				if (propertyNodes != null && !propertyNodes.isEmpty()) {
 					ListIterator itProperties = propertyNodes.listIterator();
-					sb.append("\n<div class='ss_infoDiv' id='info_div_" + itemId + "'>");
+					String startDivText = "\n<div class='ss_infoDiv' id='info_div_" + itemId + "'>\n<ul>";
+					String endDivText = "";
 					while (itProperties.hasNext()) {
 						Element property = (Element) itProperties.next();
 						String name = property.attributeValue("name", "");
@@ -1535,12 +1563,18 @@ public class BuildDefinitionDivs extends TagSupport {
 						}
 						if (!caption.equals("")) name = NLT.getDef(caption);
 						String value = property.attributeValue("value", "");
-						if (!name.equals("")) {
-							sb.append(name+": " + NLT.getDef(value));
-							sb.append("<br/>");
+						if (!name.equals("") && !value.equals("")) {
+							if (!startDivText.equals("")) {
+								sb.append(startDivText);
+								startDivText = "";
+								endDivText = "</ul>\n</div>\n";
+							}
+							sb.append("<li>");
+							sb.append("<span class='ss_infoDivName'>"+name+":</span> <span class='ss_infoDivValue'>" + NLT.getDef(value) + "</span>");
+							sb.append("</li>");
 						}
 					}
-					sb.append("</div>\n");
+					sb.append(endDivText);
 				}
 			}
 		}

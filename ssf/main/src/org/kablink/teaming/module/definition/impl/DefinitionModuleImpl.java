@@ -1012,11 +1012,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		while (itAttributes.hasNext()) {
 			Attribute attr = (Attribute) itAttributes.next();
 			//If the attribute does not exist in the new item, copy it from the config file
-			if (newItem.attributeValue(attr.getName()) == null)
-			{
-				// (rsordillo) Do not add non-required Attributes to new item
-				if (attr.getName().equals("canBeDeleted")
-				|| attr.getName().equals("multipleAllowed"))
+			if (newItem.attributeValue(attr.getName()) == null) {
+				if (attr.getName().equals("canBeDeleted") || attr.getName().equals("multipleAllowed"))
 					continue;
 				newItem.addAttribute(attr.getName(), attr.getValue());
 			}
@@ -1099,7 +1096,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				} else if (type.equals("workflowCondition")) {
 					//Workflow conditions typically have 4 bits of data to capture:
 					//  the definition id, the element name, the operation, and the operand value
-					if (inputData.exists("conditionDefinitionId") &&
+					if (inputData.exists("conditionDefinitionId") && 
+							!inputData.getSingleValue("conditionDefinitionId").equals("-") &&
 							inputData.exists("conditionElementName") &&
 							inputData.exists("conditionElementOperation")) {
 						Element newPropertyEle = configProperty.createCopy();
@@ -1125,11 +1123,42 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								workflowCondition.addElement("value").setText(conditionValue);
 							}
 						}
+					} else if (inputData.exists("conditionDefinitionId") && 
+							inputData.getSingleValue("conditionDefinitionId").equals("-")) {
+						if (inputData.exists("previous_conditionDefinitionId") && 
+								inputData.exists("previous_conditionElementName") &&
+								inputData.exists("previous_conditionElementOperation")) {
+							//There was a previous value that we should preserve
+							String conditionDefinitionId = inputData.getSingleValue("previous_conditionDefinitionId");
+							String conditionElementName = inputData.getSingleValue("previous_conditionElementName");
+							String conditionElementOperation = inputData.getSingleValue("previous_conditionElementOperation");
+							Element newPropertyEle = configProperty.createCopy();
+							newPropertiesEle.add(newPropertyEle);
+							Element workflowCondition = newPropertyEle.addElement("workflowCondition");
+							workflowCondition.addAttribute("definitionId", conditionDefinitionId);
+							workflowCondition.addAttribute("elementName", conditionElementName);
+							workflowCondition.addAttribute("operation", conditionElementOperation);
+							if (inputData.exists("previous_operationDuration") &&
+									inputData.exists("previous_operationDurationType")) {
+								String operationDuration = inputData.getSingleValue("previous_operationDuration");
+								String operationDurationType = inputData.getSingleValue("previous_operationDurationType");
+								workflowCondition.addAttribute("duration", operationDuration);
+								workflowCondition.addAttribute("durationType", operationDurationType);
+							}
+							if (inputData.exists("previous_conditionElementValue")) {
+								String[] conditionValues = (String[])inputData.getValues("previous_conditionElementValue");
+								for (int j = 0; j < conditionValues.length; j++) {
+									String conditionValue = conditionValues[j];
+									workflowCondition.addElement("value").setText(conditionValue);
+								}
+							}
+						}
 					}
 				} else if (type.equals("workflowEntryDataUserList")) {
 					//Workflow conditions typically have 4 bits of data to capture:
 					//  the definition id, the element name, the operation, and the operand value
 					if (inputData.exists("conditionDefinitionId") &&
+							!inputData.getSingleValue("conditionDefinitionId").equals("-") &&
 							inputData.exists("conditionElementName")) {
 						String conditionDefinitionId = inputData.getSingleValue("conditionDefinitionId");
 						if (Validator.isNotNull(conditionDefinitionId)) {
@@ -1141,6 +1170,23 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								Element workflowCondition = newPropertyEle.addElement("workflowEntryDataUserList");
 								workflowCondition.addAttribute("definitionId", conditionDefinitionId);
 								workflowCondition.addAttribute("elementName", conditionElementNames[i]);
+							}
+						}
+					} else {
+						//See if there was a previous value that we should preserve
+						if (inputData.exists("previous_conditionDefinitionId") &&
+								inputData.exists("previous_conditionElementName")) {
+							String conditionDefinitionId = inputData.getSingleValue("previous_conditionDefinitionId");
+							if (Validator.isNotNull(conditionDefinitionId)) {
+								Element newPropertyEle = configProperty.createCopy();
+								newPropertiesEle.add(newPropertyEle);
+								String[] conditionElementNames = (String[]) inputData.getValues("previous_conditionElementName");
+								for (int i=0; i<conditionElementNames.length; ++i) {
+									if (Validator.isNull(conditionElementNames[i])) continue;
+									Element workflowCondition = newPropertyEle.addElement("workflowEntryDataUserList");
+									workflowCondition.addAttribute("definitionId", conditionDefinitionId);
+									workflowCondition.addAttribute("elementName", conditionElementNames[i]);
+								}
 							}
 						}
 					}
