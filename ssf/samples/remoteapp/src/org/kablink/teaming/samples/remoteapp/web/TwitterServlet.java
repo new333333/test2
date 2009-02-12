@@ -61,7 +61,7 @@ public class TwitterServlet extends HttpServlet {
 	private static final String TWITTER_STATUSES_FRIENDS_URL = "http://twitter.com/statuses/friends/";
 	private static final String TWITTER_TIMELINE_USER_URL = "http://twitter.com/statuses/user_timeline/";
 	
-	private static final String TEAMING_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/TeamingService";
+	private static final String TEAMING_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/TeamingServiceV1";
 	
 	private static final String PARAMETER_NAME_VERSION = "ss_version";
 	private static final String PARAMETER_NAME_APPLICATION_ID = "ss_application_id";

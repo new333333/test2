@@ -54,7 +54,7 @@ public class NameSearchServlet extends HttpServlet {
 
 	private static final String GOOGLE_SEARCH_TEMPLATE = "http://www.google.com/search?hl=en&q=@@@&btnG=Google+Search";
 	
-	private static final String TEAMING_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/TeamingService";
+	private static final String TEAMING_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/TeamingServiceV1";
 	
 
 	private static final String PARAMETER_NAME_VERSION = "ss_version";
