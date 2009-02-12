@@ -1777,17 +1777,29 @@ public class BinderHelper {
 	public static void sendMailOnEntryCreate(AllModulesInjected bs, ActionRequest request, 
 			Long folderId, Long entryId) {
 		MapInputData inputData = new MapInputData(request.getParameterMap());
-		String[] toList       = getInputValues(inputData,"_sendMail_toList");
-		String[] toListGroups = getInputValues(inputData,"_sendMail_toList_groups");
-		String[] toListTeams  = getInputValues(inputData,"_sendMail_toList_teams");
+		Set<Long> idList       = LongIdUtil.getIdsAsLongSet(getInputValues(inputData,"_sendMail_toList"));
+		Set<Long> idListGroups = LongIdUtil.getIdsAsLongSet(getInputValues(inputData,"_sendMail_toList_groups"));
+		Set<Long> idListTeams  = LongIdUtil.getIdsAsLongSet(getInputValues(inputData,"_sendMail_toList_teams"));
+		
+		// If we're supposed to automatically notify attendees...
+		String cBox = notifyAttendeeCBoxes(inputData);
+		if (null != cBox) {
+			// ...merge the attendee ID sets into the email ID sets
+			// ...we just pulled from inputData.
+			String setKey2 = cBox.substring(0, cBox.indexOf(WebKeys.AUTO_NOTIFY_TAIL));
+			idList         = mergeIdSets(inputData, idList,        setKey2);
+			idListGroups   = mergeIdSets(inputData, idListGroups, (setKey2 + WebKeys.AUTO_NOTIFY_GROUPS_TAIL));
+			idListTeams    = mergeIdSets(inputData, idListTeams,  (setKey2 + WebKeys.AUTO_NOTIFY_TEAMS_TAIL));
+		}
+		
 		String toTeam = PortletRequestUtils.getStringParameter(request, "_sendMail_toTeam", "");
-		if ((0 < toList.length) || (0 < toListGroups.length) || (0 < toListTeams.length) || !toTeam.equals("")) {
+		if ((0 < idList.size()) || (0 < idListGroups.size()) || (0 < idListTeams.size()) || !toTeam.equals("")) {
 			FolderEntry entry = bs.getFolderModule().getEntry(folderId, entryId);
 			ArrayList<Long> handledIds = new ArrayList<Long>();
 			Set<Long> recipients = new HashSet<Long>();
-			if (0 < toList.length)       handleEmailRecipients(handledIds, recipients, LongIdUtil.getIdsAsLongSet(toList));
-			if (0 < toListGroups.length) handleEmailRecipients(handledIds, recipients, LongIdUtil.getIdsAsLongSet(toListGroups));
-			if (0 < toListTeams.length)  handleTeamRecipients(handledIds,  recipients, LongIdUtil.getIdsAsLongSet(toListTeams), bs.getBinderModule());
+			if (0 < idList.size())       handleEmailRecipients(handledIds, recipients, idList);
+			if (0 < idListGroups.size()) handleEmailRecipients(handledIds, recipients, idListGroups);
+			if (0 < idListTeams.size())  handleTeamRecipients(handledIds,  recipients, idListTeams, bs.getBinderModule());
 			if (!toTeam.equals(""))      handleEmailRecipients(handledIds, recipients, entry.getParentFolder().getTeamMemberIds());
 			
 			if (!recipients.isEmpty()) {
@@ -1804,6 +1816,72 @@ public class BinderHelper {
 				}
 			}
 		}
+	}
+
+	/*
+	 * Returns a Set<Long> containing the unique members of set1 merged
+	 * with set2.
+	 */
+	private static Set<Long> mergeIdSets(MapInputData inputData, Set<Long> set1, String setKey2) {
+		Set<Long> mergedIdSet = new HashSet<Long>();
+
+		// Track the items in list1...
+		for (Long id: set1) {
+			mergedIdSet.add(id);
+		}
+
+		// ...merge in the items from list2...
+		String[] list2 = getInputValues(inputData, setKey2);
+		Set<Long> set2 = LongIdUtil.getIdsAsLongSet(list2);
+		for (Long id: set2) {
+			if (!(mergedIdSet.contains(id))) {
+				mergedIdSet.add(id);
+			}
+		}
+
+		// ...and return the merged Set<Long>.
+		return mergedIdSet;
+	}
+
+	/*
+	 * Checks inputData for one of the known attendee check boxes being
+	 * checked.  If one is checked, its ID is returned.  Otherwise,
+	 * null is returned.
+	 */
+	private static String notifyAttendeeCBoxes(MapInputData inputData) {
+		final String[] AUTO_NOTIFY_CBOX_IDS = {
+			WebKeys.AUTO_NOTIFY_ATTENDEES,		// For Calendar  entries.
+			WebKeys.AUTO_NOTIFY_ASSIGNEES,		// For Task      entries.
+			WebKeys.AUTO_NOTIFY_RESPONSIBLES,	// For Milestone entries.
+		};
+		
+		String cBox = null;
+		for (int i = 0; i < AUTO_NOTIFY_CBOX_IDS.length; i += 1) {
+			cBox = notifyAttendeeCBox(inputData, AUTO_NOTIFY_CBOX_IDS[i]);
+			if (null != cBox) {
+				break;
+			}
+		}
+
+		return cBox;
+	}
+
+	/*
+	 * Checks to see if the check box cBox has been marked as checked
+	 * in inputData.  If it has, cBox is returned.  Otherwise, null is
+	 * returned.
+	 */
+	private static String notifyAttendeeCBox(MapInputData inputData, String cBox) {
+		String reply;
+		String cBoxData = inputData.getSingleValue(cBox);
+		if ((null != cBoxData) && (cBoxData.equalsIgnoreCase("true") || cBoxData.equalsIgnoreCase(cBox))) {
+			reply = cBox;
+		}
+		else {
+			reply = null;
+		}
+
+		return reply;
 	}
 	
 	private static String[] getInputValues(InputDataAccessor inputData, String parameter) {
