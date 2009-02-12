@@ -513,6 +513,13 @@ public class WebKeys {
 	public static final String OPERATION_GET_UPLOAD_PROGRESS_STATUS = "get_upload_progress_status";
 	public static final String OPERATION_GET_WORKFLOW_APPLET = "get_workflow_applet";
 	public static final String OPERATION_VIEW_MINIBLOG = "view_miniblog";
+
+	public static final String AUTO_NOTIFY_TAIL			= "_notify";
+	public static final String AUTO_NOTIFY_GROUPS_TAIL	= "_groups";
+	public static final String AUTO_NOTIFY_TEAMS_TAIL	= "_teams";
+	public static final String AUTO_NOTIFY_ATTENDEES	= ("attendee"    + AUTO_NOTIFY_TAIL);
+	public static final String AUTO_NOTIFY_ASSIGNEES	= ("assignment"  + AUTO_NOTIFY_TAIL);
+	public static final String AUTO_NOTIFY_RESPONSIBLES	= ("responsible" + AUTO_NOTIFY_TAIL);
 	
 	// MODEL TAGS & Attributes
 	public static final String ACCESS_BRANDING = "ss_accessBranding";
