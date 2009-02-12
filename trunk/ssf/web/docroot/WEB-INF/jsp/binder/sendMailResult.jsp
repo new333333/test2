@@ -40,14 +40,27 @@
 <form class="ss_style ss_form" method="post">
 <br/>
 
-<c:if test="${!empty ssErrorList}">
-<span class="ss_titlebold"><ssf:nlt tag="sendMail.mailErrors"/></span><br/>
-<ul class="ss_nobullet">
-<c:forEach var="item" items="${ssErrorList}">
-	<li>${item}</li>
-</c:forEach>
-</ul>
-<br/>
+<c:if test="${empty ssErrorList && empty ss_errorMessage && empty ssFailedEmailAddresses && empty ssFailedEmailAccess && empty ssQueuedEmailAddresses && empty ssSentEmailAddresses}">
+	<span class="ss_titlebold"><ssf:nlt tag="sendMail.noErrors"/></span>
+	<br/>
+	<br/>
+</c:if>
+
+<c:if test="${!empty ssErrorList || !empty ss_errorMessage}">
+	<span class="ss_titlebold"><ssf:nlt tag="sendMail.mailErrors"/></span><br/>
+	<c:if test="${!empty ss_errorMessage}">
+		<span>${ss_errorMessage}</span>
+		<br/>
+		<br/>
+	</c:if>
+	<c:if test="${!empty ssErrorList}">
+		<ul class="ss_nobullet">
+		<c:forEach var="item" items="${ssErrorList}">
+			<li>${item}</li>
+		</c:forEach>
+		</ul>
+		<br/>
+	</c:if>
 </c:if>
 
 <c:if test="${!empty ssFailedEmailAddresses}">

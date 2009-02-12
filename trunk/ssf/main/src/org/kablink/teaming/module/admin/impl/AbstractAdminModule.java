@@ -730,7 +730,13 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
        	try {
     		message.put(MailModule.FROM, new InternetAddress(user.getEmailAddress()));
     	} catch (Exception ex) {
-			errors.add(0, NLT.get("errorcode.badFromAddress", new Object[] {user.getTitle(), user.getEmailAddress(), ex.getLocalizedMessage()}));	
+			String errorMsg = ex.getLocalizedMessage();
+			String emailAddr = user.getEmailAddress();
+			if (emailAddr == null || emailAddr.equals("")) {
+				emailAddr = "";
+				errorMsg = NLT.get("sendMail.noEmailAddress");
+			}
+			errors.add(0, NLT.get("errorcode.badFromAddress", new Object[] {user.getTitle(), emailAddr, errorMsg})); 
 			//cannot send without valid from address
 			return result;
     	}
@@ -761,7 +767,13 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  				try {
  					addrs.add(new InternetAddress(e.getEmailAddress().trim()));
  				} catch (Exception ex) {
- 					errors.add(NLT.get("errorcode.badToAddress", new Object[] {e.getTitle(), e.getEmailAddress(),ex.getLocalizedMessage()})); 
+ 					String errorMsg = ex.getLocalizedMessage();
+ 					String emailAddr = e.getEmailAddress();
+ 					if (emailAddr == null || emailAddr.equals("")) {
+ 						emailAddr = "";
+ 						errorMsg = NLT.get("sendMail.noEmailAddress");
+ 					}
+ 					errors.add(NLT.get("errorcode.badToAddress", new Object[] {e.getTitle(), emailAddr, errorMsg})); 
  				}
  			}
  		}

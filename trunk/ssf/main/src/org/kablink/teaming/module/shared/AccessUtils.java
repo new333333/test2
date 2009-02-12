@@ -38,7 +38,9 @@ import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WfAcl;
@@ -206,6 +208,15 @@ public class AccessUtils  {
         return getInstance().getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.READ_ENTRIES);     	 
 	}     	
 	
+	public static void readCheck(User user, DefinableEntity entity) throws AccessControlException {
+		if (entity.getEntityType().equals(EntityIdentifier.EntityType.workspace) || 
+				entity.getEntityType().equals(EntityIdentifier.EntityType.folder) || 
+				entity.getEntityType().equals(EntityIdentifier.EntityType.profiles)) {
+			readCheck(user, (WorkArea) entity);
+		} else if (entity.getEntityType().equals(EntityIdentifier.EntityType.folderEntry)) {
+			readCheck(user, (Entry) entity);
+		}
+	}
 	public static void readCheck(User user, WorkArea binder) throws AccessControlException {
 		getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
 	}
