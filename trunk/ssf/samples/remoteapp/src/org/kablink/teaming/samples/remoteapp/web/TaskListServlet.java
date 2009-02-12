@@ -67,7 +67,7 @@ import org.kablink.teaming.client.ws.TeamingServiceSoapServiceLocator;
 
 public class TaskListServlet extends HttpServlet {
 
-	private static final String TEAMING_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/TeamingService";
+	private static final String TEAMING_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/TeamingServiceV1";
 
 	private static final Long PROFILE_BINDER_ID = Long.valueOf(2);
 

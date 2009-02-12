@@ -50,7 +50,7 @@ import org.kablink.teaming.client.ws.model.FolderEntry;
 
 public class WSTesterServlet extends HttpServlet {
 
-	private static final String TEAMING_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/TeamingService";
+	private static final String TEAMING_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/TeamingServiceV1";
 	
 	private static final String PARAMETER_NAME_VERSION = "ss_version";
 	private static final String PARAMETER_NAME_APPLICATION_ID = "ss_application_id";
