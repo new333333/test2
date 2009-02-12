@@ -50,9 +50,13 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.mail.MailSentStatus;
+import org.kablink.teaming.module.shared.AccessUtils;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
@@ -120,8 +124,13 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_SHARE_THIS_BINDER)) {
 			if (formData.containsKey("okBtn")) {
 				Map model = new HashMap();
+				String [] errors = request.getParameterValues(WebKeys.ERROR_LIST);
+				if (errors != null) {
+					model.put(WebKeys.ERROR_LIST, errors);
+					model.put(WebKeys.EMAIL_FAILED_ACCESS, request.getParameterValues(WebKeys.EMAIL_FAILED_ACCESS));
+				}
 				model.put(WebKeys.ERROR_MESSAGE, PortletRequestUtils.getStringParameter(request, WebKeys.ERROR_MESSAGE, ""));
-				return new ModelAndView("forum/close_window", model);
+				return new ModelAndView("binder/sendMailResult", model);
 			} else {
 				return ajaxShareThisBinder(this, request, response);
 			}
@@ -231,7 +240,25 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalink(request, entity) +
 				"\">" + title + "</a><br/><br/>" + addedComments);
 		try {
-			getAdminModule().sendMail(ids, teams, null, null, null, NLT.get("relevance.mailShared", new Object[]{RequestContextHolder.getRequestContext().getUser().getTitle()}), body);
+			Map status = getAdminModule().sendMail(ids, teams, null, null, null, NLT.get("relevance.mailShared", new Object[]{RequestContextHolder.getRequestContext().getUser().getTitle()}), body);
+			Set totalIds = new HashSet();
+			totalIds.addAll(ids);
+			Set<Principal> totalUsers = getProfileModule().getPrincipals(totalIds);
+			List<String> noAccessPrincipals = new ArrayList();
+			for (Principal p : totalUsers) {
+				if (p instanceof User) {
+					try {
+						AccessUtils.readCheck((User)p, (DefinableEntity) entity);
+					} catch(AccessControlException e) {
+						noAccessPrincipals.add(p.getTitle() + " (" + p.getName() + ")");
+					}
+				}
+			}
+			
+			MailSentStatus result = (MailSentStatus)status.get(ObjectKeys.SENDMAIL_STATUS);
+			response.setRenderParameter(WebKeys.EMAIL_FAILED_ACCESS, noAccessPrincipals.toArray(new String[noAccessPrincipals.size()]));
+			List errors = (List)status.get(ObjectKeys.SENDMAIL_ERRORS);
+			response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
 		} catch(ConfigurationException e) {
 			response.setRenderParameter(WebKeys.ERROR_MESSAGE, e.getLocalizedMessage());
 		}
