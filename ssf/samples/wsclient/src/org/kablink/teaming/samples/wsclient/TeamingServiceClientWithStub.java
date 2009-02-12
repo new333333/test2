@@ -56,8 +56,8 @@ import org.kablink.util.search.Criteria;
  */
 public class TeamingServiceClientWithStub {
 
-	private static final String TEAMING_SERVICE_ADDRESS_WSS 	= "http://localhost:8080/ssf/ws/TeamingService";
-	private static final String TEAMING_SERVICE_ADDRESS_BASIC 	= "http://localhost:8080/ssr/secure/ws/TeamingService";
+	private static final String TEAMING_SERVICE_ADDRESS_WSS 	= "http://localhost:8080/ssf/ws/TeamingServiceV1";
+	private static final String TEAMING_SERVICE_ADDRESS_BASIC 	= "http://localhost:8080/ssr/secure/ws/TeamingServiceV1";
 	
 	private static final String USERNAME = "admin";
 	private static final String PASSWORD = "test";
