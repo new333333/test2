@@ -55,7 +55,6 @@ function ss_selectAll(formName, prefix, newState) {
     }
 }
 function ss_selectAllIfNoneSelected(prefix) {
-    alert(this.name)
     var totalElements = this.elements.length;
     for ( var i=0; i < totalElements; i++) {
         var namestring = this.elements[i].name.substring(0,prefix.length)

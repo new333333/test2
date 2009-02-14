@@ -4073,7 +4073,7 @@ function ss_showForumEntryInIframe_Overlay(url) {
 		}
 	} catch(e) {
 		//Most likely permission denied. Just return and let the url be shown
-		alert('overlay1')
+		//alert('overlay1')
 		return true;
 	}
     var wObj = self.document.getElementById('ss_showentryframe')
