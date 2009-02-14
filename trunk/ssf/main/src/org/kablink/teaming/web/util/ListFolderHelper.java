@@ -1941,32 +1941,35 @@ public class ListFolderHelper {
 		
 		//Set up the whatsNewToolbar links
 		//What's new
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.URL_TYPE, "whatsNew");
-		adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
-		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
-		qualifiers = new HashMap();
-		qualifiers.put("title", NLT.get("toolbar.menu.title.whatsNewInFolder"));
-		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'whatsNew', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
-		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.whatsNew");
-		whatsNewToolbar.addToolbarMenu("whatsnew", NLT.get("toolbar.menu.whatsNew"), 
-				adapterUrl.toString(), qualifiers);
-		
-		// What's unseen
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.URL_TYPE, "unseen");
-		adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
-		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
-		qualifiers = new HashMap();
-		qualifiers.put("title", NLT.get("toolbar.menu.title.whatsUnreadInFolder"));
-		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'unseen', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
-		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.whatsUnread");
-		whatsNewToolbar.addToolbarMenu("unseen", NLT.get("toolbar.menu.whatsUnseen"), 
-				adapterUrl.toString(), qualifiers);
+        //What's new is not available to the guest user
+        if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_TYPE, "whatsNew");
+			adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
+			adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+			qualifiers = new HashMap();
+			qualifiers.put("title", NLT.get("toolbar.menu.title.whatsNewInFolder"));
+			qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'whatsNew', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
+			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.whatsNew");
+			whatsNewToolbar.addToolbarMenu("whatsnew", NLT.get("toolbar.menu.whatsNew"), 
+					adapterUrl.toString(), qualifiers);
+			
+			// What's unseen
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_TYPE, "unseen");
+			adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
+			adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+			qualifiers = new HashMap();
+			qualifiers.put("title", NLT.get("toolbar.menu.title.whatsUnreadInFolder"));
+			qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'unseen', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
+			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.whatsUnread");
+			whatsNewToolbar.addToolbarMenu("unseen", NLT.get("toolbar.menu.whatsUnseen"), 
+					adapterUrl.toString(), qualifiers);
+        }
 
 		
 		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
