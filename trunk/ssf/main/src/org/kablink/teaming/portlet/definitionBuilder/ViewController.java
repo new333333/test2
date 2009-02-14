@@ -283,7 +283,13 @@ public class ViewController extends SAbstractController {
 				//Set up the other data items		
 				String itemId = PortletRequestUtils.getStringParameter(request, "itemId", "");		
 				data.put("itemId", itemId);
-			
+				Element itemIdCaptionEle = null;
+				if (!itemId.equals("")) 
+					itemIdCaptionEle = (Element) def.getDefinition().getRootElement().selectSingleNode("//item[@id='"+itemId+"']");
+				String itemIdCaption = "";
+				if (itemIdCaptionEle != null) itemIdCaption = itemIdCaptionEle.attributeValue("caption", "");
+				itemIdCaption = NLT.getDef(itemIdCaption);
+				data.put("itemIdCaption", itemIdCaption);
 				String itemName = PortletRequestUtils.getStringParameter(request, "itemName", "");		
 				data.put("itemName", itemName);
 			
