@@ -466,6 +466,7 @@ function setStateMachine(newState) {
 		showDisplayDiv();
 	} else if (state == "moveItem") {
 		ss_setDivHtml("displaydiv", "")
+		ss_addHtmlToDivFront("displaydiv", "<span class='ss_titlebold'>"+idCaptions[selectedId]+"</span><br/><br/>")
 		//ss_addToDiv("displaydiv", "info_"+selectedId)
 		ss_addToDiv("displaydiv", "move_item")
 		//loadDiv('info', '', 'move_item')

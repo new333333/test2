@@ -1280,6 +1280,14 @@ function ss_addHtmlToDiv(target, text) {
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
+function ss_addHtmlToDivFront(target, text) {
+    var objTarget = self.document.getElementById(target)
+    var targetHtml = ss_getDivHtml(target)
+    ss_setDivHtml(target, text + targetHtml)
+
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+}
 
 //Routines to get and set the html of an area
 function ss_getDivHtml(divId) {
