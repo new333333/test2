@@ -41,6 +41,7 @@ import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.PasswordMismatchException;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -66,6 +67,7 @@ public class ModifyEntryController extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 
+        User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
@@ -80,52 +82,55 @@ public class ModifyEntryController extends SAbstractController {
 			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 			response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 		} else if (formData.containsKey("okBtn") && op.equals("")) {
-			//The modify form was submitted. Go process it
-			Map fileMap=null;
-			if (request instanceof MultipartFileSupport) {
-				fileMap = ((MultipartFileSupport) request).getFileMap();
-			} else {
-				fileMap = new HashMap();
-			}
-			Set deleteAtts = new HashSet();
-			for (Iterator iter=formData.entrySet().iterator(); iter.hasNext();) {
-				Map.Entry e = (Map.Entry)iter.next();
-				String key = (String)e.getKey();
-				if (key.startsWith("_delete_")) {
-					deleteAtts.add(key.substring(8));
+	        //Modifying the profile is not available to the guest user
+	        if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+				//The modify form was submitted. Go process it
+				Map fileMap=null;
+				if (request instanceof MultipartFileSupport) {
+					fileMap = ((MultipartFileSupport) request).getFileMap();
+				} else {
+					fileMap = new HashMap();
 				}
-				
-			}
-			MapInputData inputData = new MapInputData(formData);
-        	String password = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD);
-        	String password2 = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD2);
-        	if (password == null || !password.equals(password2)) {
-        		setupReloadPreviousPage(response, NLT.get("errorcode.password.mismatch"));
-        		return;
-        	}
-            ProfileBinder binder = getProfileModule().getProfileBinder();
-            if (!getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
-            	String passwordOriginal = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD_ORIGINAL);
-            	//Check that the user knows the current password
-            	Principal p = getProfileModule().getEntry(entryId);
-            	if (p instanceof User && !password.equals("") && !passwordOriginal.equals("")) {
-            		if (!EncryptUtil.encryptPassword(passwordOriginal).equals(((User)p).getPassword())) {
-                		setupReloadPreviousPage(response, NLT.get("errorcode.password.invalid"));
-                		return;
-            		}
-            	}
-            }
-            if (inputData.exists(WebKeys.USER_PROFILE_PASSWORD) && 
-            		inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD).equals("")) {
-            	//Don't allow blank password (either on purpose or by accident)
-            	Map writeableFormData = new HashMap(formData);
-            	writeableFormData.remove(WebKeys.USER_PROFILE_PASSWORD);
-            	inputData = new MapInputData(writeableFormData);
-            }
-			getProfileModule().modifyEntry(entryId, inputData, fileMap, deleteAtts, null, null);
-
-			//See if there was a request to reorder the graphic files
-			String graphicFileIds = PortletRequestUtils.getStringParameter(request, "_graphic_id_order", "");
+				Set deleteAtts = new HashSet();
+				for (Iterator iter=formData.entrySet().iterator(); iter.hasNext();) {
+					Map.Entry e = (Map.Entry)iter.next();
+					String key = (String)e.getKey();
+					if (key.startsWith("_delete_")) {
+						deleteAtts.add(key.substring(8));
+					}
+					
+				}
+				MapInputData inputData = new MapInputData(formData);
+	        	String password = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD);
+	        	String password2 = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD2);
+	        	if (password == null || !password.equals(password2)) {
+	        		setupReloadPreviousPage(response, NLT.get("errorcode.password.mismatch"));
+	        		return;
+	        	}
+	            ProfileBinder binder = getProfileModule().getProfileBinder();
+	            if (!getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
+	            	String passwordOriginal = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD_ORIGINAL);
+	            	//Check that the user knows the current password
+	            	Principal p = getProfileModule().getEntry(entryId);
+	            	if (p instanceof User && !password.equals("") && !passwordOriginal.equals("")) {
+	            		if (!EncryptUtil.encryptPassword(passwordOriginal).equals(((User)p).getPassword())) {
+	                		setupReloadPreviousPage(response, NLT.get("errorcode.password.invalid"));
+	                		return;
+	            		}
+	            	}
+	            }
+	            if (inputData.exists(WebKeys.USER_PROFILE_PASSWORD) && 
+	            		inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD).equals("")) {
+	            	//Don't allow blank password (either on purpose or by accident)
+	            	Map writeableFormData = new HashMap(formData);
+	            	writeableFormData.remove(WebKeys.USER_PROFILE_PASSWORD);
+	            	inputData = new MapInputData(writeableFormData);
+	            }
+				getProfileModule().modifyEntry(entryId, inputData, fileMap, deleteAtts, null, null);
+	
+				//See if there was a request to reorder the graphic files
+				String graphicFileIds = PortletRequestUtils.getStringParameter(request, "_graphic_id_order", "");
+	        }
 			
 			setupReloadOpener(response, binderId, entryId);
 			//flag reload of folder listing

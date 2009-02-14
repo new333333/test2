@@ -698,49 +698,52 @@ public class WorkspaceTreeHelper {
 				if (!owner.getId().equals(user.getId())) showDeleteProfileMenu = true;
 			}
 			
-			if (showDeleteProfileMenu && showModifyProfileMenu) {
-				qualifiers = new HashMap();
-				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.modifyProfileButton");
-				toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.manageThisProfile"), new HashMap(), qualifiers);
-				//	The "Modify" menu item
-				qualifiers = new HashMap();
-				qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
-				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
-				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
-				toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
-				//	The "Delete" menu item
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
-				url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
-				url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
-				toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.delete"), url);
-			}
-			if (showModifyProfileMenu && !showDeleteProfileMenu) {
-				//	The "Modify" menu item
-				qualifiers = new HashMap();
-				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.modifyProfileButton");
-				qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
-				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
-				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
-				toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.menu.modify_profile"), adapterUrl.toString(), qualifiers);
-			}
-			if (!showModifyProfileMenu && showDeleteProfileMenu) {
-				//	The "delete" menu item
-				qualifiers = new HashMap();
-				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.modifyProfileButton");
-				qualifiers.put("onClick", "return ss_confirmDeleteProfile();");
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
-				url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
-				url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
-				toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.delete"), url, qualifiers);
-			}
+	        //Modify profile is not available to the guest user
+	        if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+				if (showDeleteProfileMenu && showModifyProfileMenu) {
+					qualifiers = new HashMap();
+					qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.modifyProfileButton");
+					toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.manageThisProfile"), new HashMap(), qualifiers);
+					//	The "Modify" menu item
+					qualifiers = new HashMap();
+					qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
+					adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+					toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
+					//	The "Delete" menu item
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
+					url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+					url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+					toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.delete"), url);
+				}
+				if (showModifyProfileMenu && !showDeleteProfileMenu) {
+					//	The "Modify" menu item
+					qualifiers = new HashMap();
+					qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.modifyProfileButton");
+					qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
+					adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+					toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.menu.modify_profile"), adapterUrl.toString(), qualifiers);
+				}
+				if (!showModifyProfileMenu && showDeleteProfileMenu) {
+					//	The "delete" menu item
+					qualifiers = new HashMap();
+					qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.modifyProfileButton");
+					qualifiers.put("onClick", "return ss_confirmDeleteProfile();");
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
+					url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+					url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+					toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.delete"), url, qualifiers);
+				}
+	        }
 		}
 		
 		// list team members
@@ -870,30 +873,33 @@ public class WorkspaceTreeHelper {
 
 		//Set up the whatsNewToolbar links
 		//What's new
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.URL_TYPE, "whatsNew");
-		adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
-		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
-		qualifiers = new HashMap();
-		qualifiers.put("title", NLT.get("toolbar.menu.title.whatsNewInWorkspace"));
-		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'whatsNew', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
-		whatsNewToolbar.addToolbarMenu("whatsnew", NLT.get("toolbar.menu.whatsNew"), 
-				adapterUrl.toString(), qualifiers);
-		
-		// What's unseen
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.URL_TYPE, "unseen");
-		adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
-		adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
-		qualifiers = new HashMap();
-		qualifiers.put("title", NLT.get("toolbar.menu.title.whatsUnreadInWorkspace"));
-		qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'unseen', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
-		whatsNewToolbar.addToolbarMenu("unseen", NLT.get("toolbar.menu.whatsUnseen"), 
-				adapterUrl.toString(), qualifiers);
+        //What's new is not available to the guest user
+        if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_TYPE, "whatsNew");
+			adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
+			adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+			qualifiers = new HashMap();
+			qualifiers.put("title", NLT.get("toolbar.menu.title.whatsNewInWorkspace"));
+			qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'whatsNew', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
+			whatsNewToolbar.addToolbarMenu("whatsnew", NLT.get("toolbar.menu.whatsNew"), 
+					adapterUrl.toString(), qualifiers);
+			
+			// What's unseen
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_TYPE, "unseen");
+			adapterUrl.setParameter(WebKeys.URL_PAGE, "0");
+			adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+			qualifiers = new HashMap();
+			qualifiers.put("title", NLT.get("toolbar.menu.title.whatsUnreadInWorkspace"));
+			qualifiers.put("onClick", "ss_showWhatsNewPage(this, '"+forumId+"', 'unseen', '0', '', 'ss_whatsNewDiv', '"+response.getNamespace()+"');return false;");
+			whatsNewToolbar.addToolbarMenu("unseen", NLT.get("toolbar.menu.whatsUnseen"), 
+					adapterUrl.toString(), qualifiers);
+        }
 
 		//Build the folder actions toolbar
 		BinderHelper.buildFolderActionsToolbar(bs, request, response, folderActionsToolbar, forumId);

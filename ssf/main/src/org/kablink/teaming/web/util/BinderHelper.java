@@ -1555,7 +1555,11 @@ public class BinderHelper {
 	}
 	public static void setupWhatsNewBinderBeans(AllModulesInjected bs, Binder binder, Map model, String page,
 			String type) {		
-		//Get the documents bean for the documents just created or modified
+        User user = RequestContextHolder.getRequestContext().getUser();
+        //What's new is not available to the guest user
+        if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return;
+
+        //Get the documents bean for the documents just created or modified
 		Map options = new HashMap();
 		if (page == null || page.equals("")) page = "0";
 		Integer pageNumber = Integer.valueOf(page);
@@ -1620,6 +1624,10 @@ public class BinderHelper {
 	
 	public static void setupUnseenBinderBeans(AllModulesInjected bs, Binder binder, Map model, String page) {		
 		//Get a list of unseen entries in this binder tree
+        User user = RequestContextHolder.getRequestContext().getUser();
+        //What's unread is not available to the guest user
+        if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return;
+
 		Map options = new HashMap();
 		if (page == null || page.equals("")) page = "0";
 		Integer pageNumber = Integer.valueOf(page);
