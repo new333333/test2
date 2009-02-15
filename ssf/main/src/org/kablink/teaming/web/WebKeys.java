@@ -1113,6 +1113,7 @@ public class WebKeys {
     public static final String USER_PROFILE_PASSWORD2="password2";
     public static final String USER_PROFILE_PASSWORD_ORIGINAL="password_original";
     public static final String USER_WORKSPACE="ss_userWorkspace";
+    public static final String VIEW_TYPE="ss_viewType";
     public static final String VISITORS="ss_visitors";
     public static final String VISITORS_PAGE="ss_visitorsPage";
     public static final String WHATS_HOT="ss_whatsHot";

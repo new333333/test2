@@ -289,6 +289,7 @@ public class ListFolderHelper {
 			Element configElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
 			String viewType = DefinitionUtils.getViewType(configDocument);
 			if (viewType == null) viewType = "";
+			model.put(WebKeys.VIEW_TYPE, viewType);
 
 			/** Vertical mode has been removed
 			//If the Folder View is anything other than Table and if the Folder Action happens to be  
