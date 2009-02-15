@@ -30,7 +30,7 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-
+<c:if test="${ss_viewType == 'folder' || ss_viewType == 'table' || ss_viewType == 'file'}">
   <div class="ss_sidebarTitle"><ssf:nlt tag="misc.configureColumns"/>
  	<div class="ss_sub_sidebarMenu">
 	 	<a  class="ss_sideLink"
@@ -47,3 +47,4 @@
 		</a> 
 	</div>
   </div>
+</c:if>
