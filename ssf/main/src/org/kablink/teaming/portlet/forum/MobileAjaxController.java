@@ -83,6 +83,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractControllerRetry;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
@@ -538,7 +539,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
       	Integer pageNumber = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER);
       	if (pageNumber == null || pageNumber < 0) pageNumber = 0;
-      	int pageSize = Integer.valueOf(WebKeys.MOBILE_PAGE_SIZE_WHATS_NEW).intValue();
+      	int pageSize = SPropsUtil.getInt("relevance.mobile.whatsNewPageSize");
       	int pageStart = pageNumber.intValue() * pageSize;
       	String nextPage = "";
       	String prevPage = "";

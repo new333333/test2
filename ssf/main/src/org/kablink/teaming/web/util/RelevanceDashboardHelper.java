@@ -238,10 +238,28 @@ public class RelevanceDashboardHelper {
 	
 	protected static void setupTasksBeans(AllModulesInjected bs, Binder binder, Map model) {
 		//Get the tasks bean
+		//See if this is a new "type" setting. If so, remember it
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String type3 = (String) model.get(WebKeys.TYPE3);
+		if (type3 == null) type3 = "";
+		Long binderId = binder.getId();
+		if (binderId != null) {
+			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
+			String savedType3 = (String)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_TAB_TASKS_TYPE);
+			if (savedType3 == null) savedType3 = "";
+			if (!type3.equals("") && !type3.equals(savedType3)) {
+				//Remember the last type of results
+				bs.getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_RELEVANCE_TAB_TASKS_TYPE, type3);
+			} else if (type3.equals("")) {
+				type3 = savedType3;
+			}
+		}
+		if (type3.equals("")) type3 = ObjectKeys.RELEVANCE_DASHBOARD_TASKS_VIEW_DEFAULT;
+		model.put(WebKeys.TYPE3, type3);
+
 		//Prepare for a standard dashboard search operation
 		Map options = new HashMap();
 		String page = "0";
-		User user = RequestContextHolder.getRequestContext().getUser();
 		String displayStyle = user.getDisplayStyle();
 		if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
 				ObjectKeys.RELEVANCE_PAGE_TASKS.equals(model.get(WebKeys.TYPE2))) 
@@ -276,12 +294,16 @@ public class RelevanceDashboardHelper {
 		}
 		
 		DateTime today = (new DateMidnight(DateTimeZone.forTimeZone(user.getTimeZone()))).toDateTime();
-		DateTime future = today.plusWeeks(2).plusDays(1);
+		DateTime future = today.plusWeeks(SPropsUtil.getInt("relevance.tasks2WeeksAhead")).plusDays(1);
+		DateTime fromDate = today.minusMonths(SPropsUtil.getInt("relevance.tasksFromMonthsAgo"));
 		
+		if (model.containsKey(WebKeys.TYPE3) && model.get(WebKeys.TYPE3).equals("all")) {
+			future = today.plusMonths(SPropsUtil.getInt("relevance.tasksAllMonthsAhead"));
+		}
 		Criteria crit = SearchUtils.tasksForUser(binder.getOwnerId(), 
 													(String[])groupsS.toArray(new String[groupsS.size()]), 
 													(String[])teams.toArray(new String[teams.size()]),
-													today.toDate(),
+													fromDate.toDate(),
 													future.toDate());
 		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
