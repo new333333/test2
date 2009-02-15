@@ -852,7 +852,6 @@ public class WebKeys {
     public static final String MOBILE_ENTRY_MODIFY_URL="ss_mobileEntryModifyUrl"; 
     public static final String MOBILE_FAVORITES_LIST="ss_mobileFavoritesList"; 
     public static final String MOBILE_PAGE_SIZE="15"; 
-    public static final String MOBILE_PAGE_SIZE_WHATS_NEW="8"; 
 	public static final String MY_CALENDAR_ENTRIES = "ss_myCalendarEntries";
 	public static final String MY_DOCUMENTS = "ss_myDocs";
 	public static final String MY_DOCUMENTS_FOLDERS = "ss_myDocsFolders";

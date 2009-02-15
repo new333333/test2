@@ -29,16 +29,40 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.SPropsUtil" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_dashboard_content" class="ss_doublecolumn">
   <div id="ss_column_L" class="ss_dblcolleft">
       <div class="ss_dblcol1">
       <!-- Start Left Column -->
       
+	<c:if test="${empty ss_type3}"><c:set var="ss_type3" value="2weeks"/></c:if>
 	<ssf:canvas id="relevanceTasks" type="inline" styleId="ss_tasks">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_green ss_tasks_img"><ssf:nlt tag="relevance.tasks"/></div>
+		<div id="ss_title" class="ss_pt_title ss_green ss_tasks_img">
+		  <ssf:nlt tag="relevance.tasksFewWeeks">
+		    <ssf:param name="value" value='<%= SPropsUtil.getString("relevance.tasks2WeeksAhead") %>'/>
+		  </ssf:nlt>
+		</div>
 	</ssf:param>
+		<div style="padding-bottom:10px;">
+		  <input type="radio" name="tasksType" value="2weeks"
+		    <c:if test="${ss_type3 == '2weeks'}">checked="checked"</c:if>
+		  	onclick="ss_selectRelevanceTab(null, 'tasks_and_calendars', '2weeks', '${ssBinderId}', '${renderResponse.namespace}');return false;"
+		  ><a href="javascript: ;" 
+		  	onclick="ss_selectRelevanceTab(null, 'tasks_and_calendars', '2weeks', '${ssBinderId}', '${renderResponse.namespace}');return false;"
+		  ><span><ssf:nlt tag="relevance.tasksFewWeeks">
+		    <ssf:param name="value" value='<%= SPropsUtil.getString("relevance.tasks2WeeksAhead") %>'/>
+		  </ssf:nlt></span></a>
+			  
+		  <input type="radio" name="tasksType" value="all" style="padding-left:20px;"
+		    <c:if test="${ss_type3 == 'all'}">checked="checked"</c:if>
+		  	onclick="ss_selectRelevanceTab(null, 'tasks_and_calendars', 'all', '${ssBinderId}', '${renderResponse.namespace}');return false;"
+		  ><a href="javascript: ;" 
+		  	onclick="ss_selectRelevanceTab(null, 'tasks_and_calendars', 'all', '${ssBinderId}', '${renderResponse.namespace}');return false;"
+		  ><span><ssf:nlt tag="relevance.tasksAll"/></span></a>
+		  
+		</div>
 		<div id="ss_dashboardTasks${renderResponse.namespace}">
 		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
 		</div>

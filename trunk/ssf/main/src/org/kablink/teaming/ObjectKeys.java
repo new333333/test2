@@ -224,6 +224,7 @@ public interface ObjectKeys {
     public static final String RELEVANCE_DASHBOARD_PROFILE = "profile";
     public static final String RELEVANCE_DASHBOARD_TRACKED_ITEMS = "trackedItems";
     public static final String RELEVANCE_DASHBOARD_WHATS_NEW = "whats_new";
+    public static final String RELEVANCE_DASHBOARD_TASKS_VIEW_DEFAULT = "2weeks";
     public static final String RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_DEFAULT = "teams";
     public static final String RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_TEAMS = "teams";
     public static final String RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_TRACKED = "tracked";
@@ -301,6 +302,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_HELP_CPANEL_SHOW = "help_cpanel_show";
     public static final String USER_PROPERTY_RELEVANCE_MAP = "relevanceMap";
     public static final String USER_PROPERTY_RELEVANCE_TAB = "relevanceTab";
+    public static final String USER_PROPERTY_RELEVANCE_TAB_TASKS_TYPE = "relevanceTabTasksType";
     public static final String USER_PROPERTY_RELEVANCE_TAB_WHATS_NEW_TYPE = "relevanceTabWhatsNewType";
     public static final String USER_PROPERTY_SEARCH_FILTERS_V1 = "searchFilters";//obsolete
     public static final String USER_PROPERTY_SEARCH_FILTERS = "searchFilterMap";
