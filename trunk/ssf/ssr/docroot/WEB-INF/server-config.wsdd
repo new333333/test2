@@ -36,10 +36,10 @@
 	  	<namespace>http://ws.remoting.teaming.kablink.org/v1</namespace>
 		<parameter name="scope" value="application"/>
 		<parameter name="wsdlTargetNamespace" value="http://ws.remoting.teaming.kablink.org/v1"/>
-		<parameter name="wsdlServiceElement" value="TeamingServiceV1SoapService"/>
-		<parameter name="wsdlServicePort" value="TeamingServiceV1"/>
+		<parameter name="wsdlServiceElement" value="TeamingServiceSoapService"/>
+		<parameter name="wsdlServicePort" value="TeamingService"/>
 		<parameter name="className" value="org.kablink.teaming.remoting.ws.TeamingServiceEndpoint"/>
-		<parameter name="wsdlPortType" value="TeamingServiceV1Soap"/>
+		<parameter name="wsdlPortType" value="TeamingServiceSoap"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
 		<beanMapping qname="ns:AttachmentsField" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.AttachmentsField"/>
