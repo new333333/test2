@@ -90,8 +90,5 @@
         </c:if>
         <%
 	} else {
-        %>
-        It's <%= itemType %>, baby!
-        <%
 	}
 %>
