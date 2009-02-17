@@ -39,7 +39,7 @@
 <div style="padding-top:20px;"><span class="ss_bold ss_errorLabel">[<ssf:nlt tag="errorcode.access.denied"/>]</span></div>
 
 <c:if test="${!empty ss_refererUrl}">
-  <input type="button" value="<ssf:nlt tag="button.close"/> 
+  <input type="button" value="<ssf:nlt tag="button.close"/>"
     onClick="self.location.href='${ss_refererUrl}';return false;">
 </c:if>
 
