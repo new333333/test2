@@ -71,9 +71,6 @@
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_user_list.jsp" %><%
 
 	} else {
-        %>
-        It's <%= itemType %>, baby!
-        <%
 	}
 	
 %>
