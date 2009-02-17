@@ -46,31 +46,31 @@ public class TeamingServiceClientWithCall extends WSClientBase
 
 		try {
 			if(args[0].equals("getWorkspaceTree")) {
-				wsClient.fetchAndPrintXML("TeamingService", "search_getWorkspaceTreeAsXML", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), (args.length > 3)?args[3]:""});
+				wsClient.fetchAndPrintXML("TeamingServiceV1", "search_getWorkspaceTreeAsXML", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), (args.length > 3)?args[3]:""});
 			} else if(args[0].equals("getUser")) {
-				wsClient.fetchAndPrintDE("TeamingService", "profile_getUser", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
+				wsClient.fetchAndPrintDE("TeamingServiceV1", "profile_getUser", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("getGroup")) {
-				wsClient.fetchAndPrintDE("TeamingService", "profile_getGroup", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
+				wsClient.fetchAndPrintDE("TeamingServiceV1", "profile_getGroup", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("getPrincipals")) {
-				wsClient.fetch("TeamingService", "profile_getPrincipals", new Object[] {null, Integer.parseInt(args[1]), Integer.parseInt(args[2])});
+				wsClient.fetch("TeamingServiceV1", "profile_getPrincipals", new Object[] {null, Integer.parseInt(args[1]), Integer.parseInt(args[2])});
 			} else if(args[0].equals("getFolderEntries")) {
-				wsClient.fetchAndPrintACK("TeamingService", "folder_getEntries", new Object[] {null, Long.parseLong(args[1])});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_getEntries", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("getTeamMembers")) {
-				wsClient.fetchAndPrintACK("TeamingService", "binder_getTeamMembers", new Object[] {null, Long.parseLong(args[1])});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getTeamMembers", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("getTeams")) {
-				wsClient.fetchAndPrintACK("TeamingService", "search_getTeams", new Object[] {null});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "search_getTeams", new Object[] {null});
 			} else if(args[0].equals("getFolderEntry")) {
-				wsClient.fetchAndPrintDE("TeamingService", "folder_getEntry", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});			
+				wsClient.fetchAndPrintDE("TeamingServiceV1", "folder_getEntry", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});			
 			} else if(args[0].equals("getDefinition")) {
-				wsClient.fetchAndPrintXML("TeamingService", "definition_getDefinitionAsXML", new Object[] {null, args[1]});
+				wsClient.fetchAndPrintXML("TeamingServiceV1", "definition_getDefinitionAsXML", new Object[] {null, args[1]});
 			} else if(args[0].equals("addWorkflow")) {
-				wsClient.fetchAndPrintACK("TeamingService", "folder_addEntryWorkflow", new Object[] {null, Long.parseLong(args[1]), args[2]});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_addEntryWorkflow", new Object[] {null, Long.parseLong(args[1]), args[2]});
 			} else if(args[0].equals("modifyWorkflow")) {
-				wsClient.fetchAndPrintACK("TeamingService", "folder_modifyWorkflowState", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3]});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_modifyWorkflowState", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3]});
 			} else if(args[0].equals("uploadFile")) {
-				wsClient.fetchAndPrintACK("TeamingService", "folder_uploadFile", new Object[] {null, Long.parseLong(args[1]), args[2], args[3]}, args[3]);
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_uploadFile", new Object[] {null, Long.parseLong(args[1]), args[2], args[3]}, args[3]);
 			} else if(args[0].equals("uploadFileStaged")) {
-				wsClient.fetchAndPrintACK("TeamingService", "folder_uploadFileStaged", new Object[] {null, Long.parseLong(args[1]), args[2], args[3], args[4]});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_uploadFileStaged", new Object[] {null, Long.parseLong(args[1]), args[2], args[3], args[4]});
 			} else if(args[0].equals("uploadCalendar")) {
 				String s = readText(args[2]);
 				System.out.println("XML: " + s);
@@ -78,40 +78,40 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				if(args.length > 3) {
 					attachFile = args[3];
 				}
-				wsClient.fetchAndPrintACK("TeamingService", "ical_uploadCalendarEntriesWithXML", new Object[] {null, Long.parseLong(args[1]), s}, attachFile);
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "ical_uploadCalendarEntriesWithXML", new Object[] {null, Long.parseLong(args[1]), s}, attachFile);
 			} else if(args[0].equals("search")) {
 				String s = readText(args[1]);
 				System.out.println("XML: " + s);
-				wsClient.fetchAndPrintXML("TeamingService", "search_search", new Object[] {null, s, Integer.parseInt(args[2]), Integer.parseInt(args[3])});
+				wsClient.fetchAndPrintXML("TeamingServiceV1", "search_search", new Object[] {null, s, Integer.parseInt(args[2]), Integer.parseInt(args[3])});
 			} else if(args[0].equals("addUserToGroup")) {
-				wsClient.fetchAndPrintACK("TeamingService", "profile_addUserToGroup", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2])});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "profile_addUserToGroup", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2])});
 			} else if(args[0].equals("getFolderTitle")) {
-				wsClient.fetchAndPrintString("TeamingService", "folder_getFolderTitle", new Object[] {null, Long.parseLong(args[1])});
+				wsClient.fetchAndPrintString("TeamingServiceV1", "folder_getFolderTitle", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("addZone")) {
 				String mailDomain = null;
 				if(args.length > 3)
 					mailDomain = args[3];
-				wsClient.fetchAndPrintIdentifier("TeamingService", "zone_addZone", new Object[] {null, args[1], args[2], mailDomain});
+				wsClient.fetchAndPrintIdentifier("TeamingServiceV1", "zone_addZone", new Object[] {null, args[1], args[2], mailDomain});
 			} else if(args[0].equals("modifyZone")) {
 				String mailDomain = null;
 				if(args.length > 3)
 					mailDomain = args[3];
-				wsClient.fetchAndPrintACK("TeamingService", "zone_modifyZone", new Object[] {null, args[1], args[2], mailDomain});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "zone_modifyZone", new Object[] {null, args[1], args[2], mailDomain});
 			} else if(args[0].equals("deleteZone")) {
-				wsClient.fetchAndPrintACK("TeamingService", "zone_deleteZone", new Object[] {null, args[1]});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "zone_deleteZone", new Object[] {null, args[1]});
 			} else if(args[0].equals("getHotContent")) {
 				Long binderId = null;
 				if(args.length > 2) {
 					binderId = Long.valueOf(args[2]); 
 				}
-				wsClient.fetchAndPrintXML("TeamingService", "search_getHotContent", new Object[] {null, args[1], binderId});
+				wsClient.fetchAndPrintXML("TeamingServiceV1", "search_getHotContent", new Object[] {null, args[1], binderId});
 			} else if(args[0].equals("getDefinitions")) {
-				wsClient.fetchAndPrintACK("TeamingService", "definition_getDefinitions", new Object[] {null});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "definition_getDefinitions", new Object[] {null});
 			} else if(args[0].equals("getTemplates")) {
-				wsClient.fetchAndPrintACK("TeamingService", "template_getTemplates", new Object[] {null});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "template_getTemplates", new Object[] {null});
 			} else if(args[0].equals("setTeamMembers")) {
 				String names[] = args[2].split(",");
-				wsClient.fetchAndPrintACK("TeamingService", "binder_setTeamMembers", new Object[] {null, Long.parseLong(args[1]), names});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_setTeamMembers", new Object[] {null, Long.parseLong(args[1]), names});
 			} else if(args[0].equals("setDefinitions")) {
 				String ids[] = args[2].split(",");
 				List idsList = new ArrayList();
@@ -125,19 +125,19 @@ public class TeamingServiceClientWithCall extends WSClientBase
 						wfs.add(ids[i] + "," + ids[i+1]);
 					}
 				}
-					wsClient.fetchAndPrintACK("TeamingService", "binder_setDefinitions", new Object[] {null, Long.parseLong(args[1]), idsList, wfs});
+					wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_setDefinitions", new Object[] {null, Long.parseLong(args[1]), idsList, wfs});
 			} else if(args[0].equals("setFunctionMembership")) {
 				String s = readText(args[2]);
 				System.out.println("XML: " + s);
-				wsClient.fetchAndPrintACK("TeamingService", "binder_setFunctionMembership", new Object[] {null, Long.parseLong(args[1]), s});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_setFunctionMembership", new Object[] {null, Long.parseLong(args[1]), s});
 			} else if(args[0].equals("setFunctionMembershipInherited")) {
-				wsClient.fetchAndPrintACK("TeamingService", "binder_setFunctionMembershipInherited", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_setFunctionMembershipInherited", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("setOwner")) {
-				wsClient.fetchAndPrintACK("TeamingService", "binder_setOwner", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2])});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_setOwner", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2])});
 			} else if(args[0].equals("indexBinder")) {
-				wsClient.fetchAndPrintACK("TeamingService", "binder_indexBinder", new Object[] {null, Long.parseLong(args[1])});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_indexBinder", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("synchronize")) {
-				wsClient.fetchAndPrintACK("TeamingService", "folder_synchronizeMirroredFolder", new Object[] {null, Long.parseLong(args[1])});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_synchronizeMirroredFolder", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("migrateEntryWithXML")) {
 				String s = readText(args[3]);
 				System.out.println("XML: " + s);
@@ -146,7 +146,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				Calendar c2 = Calendar.getInstance();
 				c2.setTime(df.parse((String)args[7]));
 				
-				wsClient.fetchAndPrintIdentifier("TeamingService", "migration_addFolderEntryWithXML", new Object[] {null, Long.parseLong(args[1]), args[2], s, args[4], c1,
+				wsClient.fetchAndPrintIdentifier("TeamingServiceV1", "migration_addFolderEntryWithXML", new Object[] {null, Long.parseLong(args[1]), args[2], s, args[4], c1,
 						args[6], c2});
 			} else if(args[0].equals("migrateReplyWithXML")) {
 				String s = readText(args[4]);
@@ -156,12 +156,12 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				Calendar c2 = Calendar.getInstance();
 				c2.setTime(df.parse((String)args[8]));
 				
-				wsClient.fetchAndPrintIdentifier("TeamingService", "migration_addReplyWithXML", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], s, args[5], c1,
+				wsClient.fetchAndPrintIdentifier("TeamingServiceV1", "migration_addReplyWithXML", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], s, args[5], c1,
 						args[7], c2});
 			} else if(args[0].equals("migrateWorkflow")) {
 				Calendar c1 = Calendar.getInstance();
 				c1.setTime(df.parse((String)args[6]));
-				wsClient.fetchAndPrintACK("TeamingService", "migration_addEntryWorkflow", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], c1});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "migration_addEntryWorkflow", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], c1});
 			} else if(args[0].equals("migrateBinderWithXML")) {
 				String s = readText(args[3]);
 				System.out.println("XML: " + s);
@@ -169,17 +169,17 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				c1.setTime(df.parse((String)args[5]));
 				Calendar c2 = Calendar.getInstance();
 				c2.setTime(df.parse((String)args[7]));
-				wsClient.fetchAndPrintIdentifier("TeamingService", "migration_addBinderWithXML", new Object[] {null, Long.parseLong(args[1]), args[2], s, args[4], c1, args[6], c2});
+				wsClient.fetchAndPrintIdentifier("TeamingServiceV1", "migration_addBinderWithXML", new Object[] {null, Long.parseLong(args[1]), args[2], s, args[4], c1, args[6], c2});
 			} else if(args[0].equals("migrateFile")) {
 				Calendar c1 = Calendar.getInstance();
 				c1.setTime(df.parse((String)args[6]));
-				wsClient.fetchAndPrintACK("TeamingService", "migration_uploadFolderFile", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], c1}, args[4]);
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "migration_uploadFolderFile", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], c1}, args[4]);
 			} else if(args[0].equals("migrateFileStaged")) {
 				Calendar c1 = Calendar.getInstance();
 				c1.setTime(df.parse((String)args[7]));
-				wsClient.fetchAndPrintACK("TeamingService", "migration_uploadFolderFileStaged", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], args[6], c1}, null);
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "migration_uploadFolderFileStaged", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], args[6], c1}, null);
 			} else if(args[0].equals("getFolders")) {
-				wsClient.fetchAndPrintACK("TeamingService", "binder_getFolders", new Object[] {null, Long.parseLong(args[1])});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getFolders", new Object[] {null, Long.parseLong(args[1])});
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
