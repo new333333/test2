@@ -54,7 +54,7 @@ public class EncryptedClassPathConfigFiles extends PropertiesClassPathConfigFile
     public void afterPropertiesSet() throws Exception {
     	super.afterPropertiesSet();
     	props = super.getProperties();
-    	String key = props.getProperty("kablink.key"); //this will get the last definition of the key 
+    	String key = props.getProperty("kablink.encryption.key"); //this will get the last definition of the key 
     	if (Validator.isNull(key)) throw new ConfigurationException("Missing encryption key");
     	key = new String(Base64.decodeBase64(key.getBytes()), "UTF-8");
     	//set key for encryption
@@ -63,7 +63,7 @@ public class EncryptedClassPathConfigFiles extends PropertiesClassPathConfigFile
     	   	Properties tempProps = new Properties();
         	tempProps.load(eResource.getInputStream());
         	//encrypt and get key
-        	String  ePropNames = props.getProperty("kablink.key.names");
+        	String  ePropNames = props.getProperty("kablink.encryption.key.names");
         	if (Validator.isNotNull(ePropNames)) {
         		String []eProps = ePropNames.split(",");
         		//see if any properties need to be encrypted
