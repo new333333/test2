@@ -134,7 +134,7 @@ public class PresenceManagerImpl implements PresenceManager, PresenceManagerImpl
 	    	try {
  	            presenceSocket = new Socket(host, port);
 	        } catch (Exception e) {
-	        	logger.error("Can't connect to presence server: host ["+ host + "], port [" + port + "]", e);
+	        	logger.error("Can't connect to presence server: host ["+ host + "], port [" + port + "], error: " + e.getMessage());
          	    return null;
          	}
 	        return presenceSocket;
