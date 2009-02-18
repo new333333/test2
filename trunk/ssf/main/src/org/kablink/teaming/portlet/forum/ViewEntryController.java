@@ -291,13 +291,19 @@ public class ViewEntryController extends  SAbstractController {
 						throw nf;
 					}
 					model.put("entryMoved", newFolder);
+					
 					try {
-						Binder folder = getBinderModule().getBinder(folderId);
-						BinderHelper.setupStandardBeans(this, request, response, model, folderId);
-						DefinitionHelper.getDefinitions(folder, model, 
-								(String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
-					} catch(Exception e) {}
-					throw nf;
+						fe = getShowEntry(entryId, formData, request, response, newFolder.getId(), model, entryViewType);
+						folderId = newFolder.getId();
+					} catch(Exception e) {
+						try {
+							Binder folder = getBinderModule().getBinder(folderId);
+							BinderHelper.setupStandardBeans(this, request, response, model, folderId);
+							DefinitionHelper.getDefinitions(folder, model, 
+									(String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
+						} catch(Exception e2) {}
+						throw nf;
+					}
 				} catch(OperationAccessControlExceptionNoName e) {
 					//Access is not allowed
 					if (WebHelper.isUserLoggedIn(request) && 
