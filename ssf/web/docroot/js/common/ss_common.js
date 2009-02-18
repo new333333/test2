@@ -7920,6 +7920,22 @@ function ss_saveWindowHeightInServer(height, communicationIframeName) {
 	});
 }
 
+//Attributes support
+function ss_deleteAttributeSet(obj, id) {
+	if (obj.tagName != 'input') return false;
+	//Find the form then specify the set to be deleted
+	var formObj = ss_findOwningElement(obj, "form");
+	if (formObj != null) {
+		formObj[id].value = 'on';
+	}
+	return true;
+}
+function ss_deleteAttribute(obj, id) {
+	//Find the row and delete it from the table
+	var rowObj = document.getElementById("row_"+id);
+	if (rowObj != null) rowObj.parentNode.removeChild(rowObj);
+	return true;
+}
 dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
 dojo.require("dojo.io.iframe");

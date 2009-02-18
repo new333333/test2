@@ -40,9 +40,7 @@
 	<ssf:canvas id="relevanceTasks" type="inline" styleId="ss_tasks">
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_green ss_tasks_img">
-		  <ssf:nlt tag="relevance.tasksFewWeeks">
-		    <ssf:param name="value" value='<%= SPropsUtil.getString("relevance.tasks2WeeksAhead") %>'/>
-		  </ssf:nlt>
+		  <ssf:nlt tag="relevance.tasksDue"/>
 		</div>
 	</ssf:param>
 		<div style="padding-bottom:10px;">
