@@ -80,6 +80,7 @@ public class Constants {
 	public static final String MODIFICATION_NAME_FIELD = "_modificationName";
 	public static final String MODIFICATION_TITLE_FIELD = "_modificationTitle";
 	public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
+	public static final String ENTRY_DEFINITIONS_FIELD = "_entryDefs";
 	public static final String TITLE_FIELD = "title";
 	public static final String SORT_TITLE_FIELD = "_sortTitle";
 	public static final String NORM_TITLE = "_normTitle";
