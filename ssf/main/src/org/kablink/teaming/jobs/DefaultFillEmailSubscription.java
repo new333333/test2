@@ -70,6 +70,7 @@ public class DefaultFillEmailSubscription extends SimpleTriggerJob implements Fi
 			MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
 			Date begin = (Date)jobDataMap.get("lastNotification");
 			Date end = mail.fillSubscriptions(begin);
+			if (end == null) return;
 			jobDataMap.put("lastNotification", end);
 		}
     }
