@@ -31,7 +31,8 @@ public class SearchUtils {
 			.add(between(
 					TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME + BasicIndexUtils.DELIMITER + Constants.EVENT_FIELD_END_DATE, 
 					DateTools.dateToString(from, DateTools.Resolution.SECOND), 
-					DateTools.dateToString(to, DateTools.Resolution.SECOND)));;
+					DateTools.dateToString(to, DateTools.Resolution.SECOND)));
+		crit.addOrder(Order.desc(TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME + BasicIndexUtils.DELIMITER + Constants.EVENT_FIELD_END_DATE));
 		
 		Disjunction disjunction = disjunction();
 		disjunction.add(eq(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,userId.toString()));

@@ -121,6 +121,7 @@ public interface DefinitionModule {
 	 */
 	public Map getEntryData(Document def, InputDataAccessor inputData, Map fileItems);
 	public Map getEntryDefinitionElements(String id);
+	public List<Long> getBindersUsingEntryDef(String entryDefId, String sourceName);
 	public Map getWorkflowDefinitionStates(String id);
 
 	public void modifyVisibility(String id, Integer visibility, Long binderId) throws AccessControlException,ObjectExistsException;

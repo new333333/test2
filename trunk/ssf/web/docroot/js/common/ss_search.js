@@ -436,8 +436,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 						var findAttributeFields = ssFind.configSingle({
 							inputId: "elementValue" + orderNo,
 							prefix: "elementValue" + orderNo, 
-							/* searchUrl: ss_AjaxBaseUrl + "&action=__ajax_find&operation=find_entry_fields_search&ss_entry_def_id=" + entryTypeId, */
-							searchUrl: ss_AjaxBaseUrl + "&action=advanced_search&operation=get_entry_attributes_widget&elementName="+currentFieldId+"&binderId=71",
+							searchUrl: ss_AjaxBaseUrl + "&action=advanced_search&operation=get_entry_attributes_widget&elementName="+currentFieldId+"&ss_entry_def_id="+entryTypeId,
 				      		listType: "entry_fields",
 							displayValue: true,
 							displayArrow: true

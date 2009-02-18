@@ -31,10 +31,14 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // This is JSON type AJAX response  %>
+/*
 [
 <c:set var="first" value="1"/>
-<c:forEach var="entryValue" items="${ssBinder.customAttributes[elementName].valueSet}" varStatus="status">
+<c:forEach var="binder" items="${ss_binders}">
+  <c:forEach var="entryValue" items="${binder.customAttributes[elementName].valueSet}" varStatus="status">
 		<c:if test="${first!=1}">,</c:if><c:set var="first" value="0"/>
 		["<ssf:escapeJavaScript value="${elementName},${entryValue}"/>", "<ssf:escapeJavaScript value="${entryValue}"/>", "<ssf:escapeJavaScript value="entryAttributes"/>"]
+  </c:forEach>
 </c:forEach>
 ]
+*/

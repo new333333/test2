@@ -203,12 +203,12 @@
 			</div>
 		</div>
 
-		<div id="ss_searchForm_additionalFilters">
+		<div id="ss_searchForm_additionalFilters" style="padding:4px;">
 			<input type="hidden" id="ssSearchParseAdvancedForm${ssNamespace}" name="ssSearchParseAdvancedForm" value="false" />
 			<table>
 			  <tbody>
 			    <tr>
-			      <td><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Author"/></h4></td>
+			      <td valign="top"><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Author"/></h4></td>
 			      <td>
 	 			    <div id="ss_authors_container" class="ss_options_container">			
 	  				  <div id="ss_authors_options" class="ss_options"></div>
@@ -219,7 +219,7 @@
 				  </td>
 			    </tr>
 			    <tr>
-			      <td><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Tag"/></h4></td>
+			      <td valign="top"><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Tag"/></h4></td>
 			      <td>
 					<div id="ss_tags_container" class="ss_options_container">	
 						<div id="ss_tags_options" class="ss_options"></div>
@@ -230,7 +230,7 @@
 			      </td>
 			    </tr>
 			    <tr>
-			      <td><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Workflow"/></h4></td>
+			      <td valign="top"><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Workflow"/></h4></td>
 			      <td>
 					<div id="ss_workflows_container" class="ss_options_container">	
 						<div id="ss_workflows_options" class="ss_options"></div>
@@ -241,7 +241,7 @@
 			      </td>
 			    </tr>
 				<tr>
-				  <td><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Entry"/></h4></td>
+				  <td valign="top"><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Entry"/></h4></td>
 				  <td>
 					<div id="ss_entries_container" class="ss_options_container">
 						<div id="ss_entries_options" class="ss_options"></div>
@@ -252,7 +252,7 @@
 				  </td>
 				</tr>
 				<tr>
-				  <td><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.LastActivity"/></h4></td>
+				  <td valign="top"><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.LastActivity"/></h4></td>
 				  <td>
 					<div id="ss_lastActivities_container" class="ss_options_container">				
 						<div id="ss_lastActivities_options" class="ss_options"></div>
@@ -260,7 +260,7 @@
 				  </td>
 				</tr>
 				<tr>
-				  <td><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.CreationDate"/></h4></td>
+				  <td valign="top"><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.CreationDate"/></h4></td>
 				  <td>
 					<div id="ss_creationDates_container" class="ss_options_container">				
 						<div id="ss_creationDates_options" class="ss_options"></div>
@@ -271,7 +271,7 @@
 				  </td>
 				</tr>
 				<tr>
-				  <td><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.ModificationDate"/></h4></td>
+				  <td valign="top"><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.ModificationDate"/></h4></td>
 				  <td>
 					<div id="ss_modificationDates_container" class="ss_options_container">
 						<div id="ss_modificationDates_options" class="ss_options"></div>
@@ -283,7 +283,7 @@
 				</tr>
 			<c:if test="${!filterDefinition}">
 				<tr>
-				  <td><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.ItemType"/></h4></td>
+				  <td valign="top"><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.ItemType"/></h4></td>
 				  <td>
 						<div id="ss_itemTypes_container" class="ss_options_container">					
 							<div id="ss_itemType_options" class="ss_options">

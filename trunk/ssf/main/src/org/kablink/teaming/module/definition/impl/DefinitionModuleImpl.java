@@ -1865,12 +1865,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									String[] valuesTrimmed2 = new String[valuesList2.size()];
 									for (int i = 0; i < valuesList2.size(); i++) valuesTrimmed2[i] = valuesList2.get(i);
 									entryData.put(nameValue+ENTRY_ATTRIBUTES_SET+setName, valuesTrimmed2);
-									if (inputData.exists(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName) &&
-											inputData.getSingleValue(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName).equals("on")) {
-										entryData.put(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName, true);
-									} else {
-										entryData.put(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName, false);
-									}
+								} else {
+									//There aren't any attributes for this set. Clear any old values
+									entryData.put(nameValue+ENTRY_ATTRIBUTES_SET+setName, null);
+								}
+								if (inputData.exists(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName) &&
+										inputData.getSingleValue(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName).equals("on")) {
+									entryData.put(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName, true);
+								} else {
+									entryData.put(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName, false);
 								}
 							}
 						}
@@ -2341,6 +2344,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 
     	return dataElements;
+    }
+    
+    public List<Long> getBindersUsingEntryDef(String entryDefId, String sourceName) {
+    	List results = new ArrayList();
+    	Long binderId = Long.valueOf(2267);
+    	results.add(binderId);
+    	return results;
     }
 
 	//Routine to get the data elements for use in search queries

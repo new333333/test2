@@ -28,11 +28,20 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="org.kablink.teaming.util.CalendarHelper" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("window.title.searchForm") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<ssf:ifadapter>
+<body class="ss_style_body tundra">
+</ssf:ifadapter>
 <jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 <%@ include file="/WEB-INF/jsp/search/search_js.jsp" %>
 
+<div id="ss_pseudoPortalDiv${renderResponse.namespace}">
 <div id="ss_portlet_content" class="ss_style ss_portlet_style ss_content_outer">
 
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
@@ -93,4 +102,9 @@
 <script type="text/javascript">
 	<%@ include file="/WEB-INF/jsp/search/advanced_search_form_data_init.jsp" %>
 </script>
-	
+</div>
+
+<ssf:ifadapter>
+</body>
+</html>
+</ssf:ifadapter>

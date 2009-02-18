@@ -56,6 +56,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
@@ -374,6 +375,20 @@ public class EntityIndexUtils {
         	Field cdefField = new Field(COMMAND_DEFINITION_FIELD, entry.getEntryDef().getId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
             doc.add(cdefField);
         }
+    }
+        
+    public static void addEntryDefinitions(Document doc, DefinableEntity folder, boolean fieldsOnly) {
+    	if (folder instanceof Folder) {
+    		Folder f = (Folder)folder;
+    		List folderEntryDefinitions = f.getEntryDefinitions();
+    		String entryDefs = "";
+			for (int i=0; i < folderEntryDefinitions.size(); ++i) {
+				Definition def = (Definition) folderEntryDefinitions.get(i);
+				entryDefs += " " + def.getId();
+			}    		
+        	Field cdefField = new Field(ENTRY_DEFINITIONS_FIELD, entryDefs, Field.Store.NO, Field.Index.UN_TOKENIZED);
+            doc.add(cdefField);
+    	}
     }
         
     public static void addFamily(Document doc, DefinableEntity entry, boolean fieldsOnly) {
