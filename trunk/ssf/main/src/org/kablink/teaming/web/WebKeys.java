@@ -367,6 +367,7 @@ public class WebKeys {
     public static final String OPERATION_DASHBOARD_TEAM_MORE="team_more";
 	public static final String OPERATION_FIND_ENTRIES_SEARCH = "find_entries_search";
 	public static final String OPERATION_FIND_ENTRY_ATTRIBUTES_WIDGET = "get_entry_attributes_widget";	
+	public static final String OPERATION_FIND_ENTRY_ATTRIBUTES_VALUE_WIDGET = "get_entry_attributes_value_widget";	
 	public static final String OPERATION_FIND_ENTRY_FOR_FILE = "find_entry_for_file";	
 	public static final String OPERATION_FIND_PLACES_SEARCH = "find_places_search";
 	public static final String OPERATION_FIND_TAG_SEARCH = "find_tag_search";

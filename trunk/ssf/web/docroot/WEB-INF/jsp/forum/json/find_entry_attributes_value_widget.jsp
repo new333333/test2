@@ -31,8 +31,10 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // This is JSON type AJAX response  %>
+/*
 {
 <c:forEach var="entryValue" items="${elementValueSet}" varStatus="status">
 	"<ssf:escapeJavaScript value="${elementName},${elementValue},${entryValue}"/>":"<ssf:escapeJavaScript value="${entryValue}"/>"<c:if test="${!status.last}">,</c:if>
 </c:forEach>
 }
+*/

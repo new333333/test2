@@ -100,6 +100,9 @@ public class AdvancedSearchController extends AbstractBinderController {
 		if (op.equals(WebKeys.OPERATION_FIND_ENTRY_ATTRIBUTES_WIDGET)) {
 			// TODO: move to TypeToFind...
 			return ajaxGetEntryAttributes(request, response);
+		} else if (op.equals(WebKeys.OPERATION_FIND_ENTRY_ATTRIBUTES_VALUE_WIDGET)) {
+			// TODO: move to TypeToFind...
+			return ajaxGetEntryAttributeValue(request, response);
 		}
 		Map<String,Object> model = new HashMap();
 		//Set up the standard beans
@@ -265,6 +268,56 @@ public class AdvancedSearchController extends AbstractBinderController {
 	}
 	
 	private ModelAndView ajaxGetEntryAttributes(RenderRequest request, RenderResponse response) {
+		String entryTypeId = PortletRequestUtils.getStringParameter(request,WebKeys.FILTER_ENTRY_DEF_ID, "");
+		String entryField = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField, "");
+		String strBinderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
+		
+		Map model = new HashMap();
+		response.setContentType("text/json-comment-filtered");		
+		Long binderId = null;
+		Binder binder = null;
+		if (!strBinderId.equals("")) {
+			binderId = Long.valueOf(strBinderId);
+			binder = getBinderModule().getBinder(binderId);
+			model.put(WebKeys.BINDER, binder);
+		}
+		//See if this request is for the list of attribute sets or the values within a set
+		if (binder == null || entryField.indexOf(",") == -1) {
+			String sourceFieldName = "";
+			Definition def = getDefinitionModule().getDefinition(entryTypeId);
+			Document defDoc = def.getDefinition();
+			Element root = (Element)defDoc.getRootElement();
+			Element entryAttributesEle = (Element)root.selectSingleNode("//item[@name='entryAttributes']/properties/property[@name='name' and @value='"+entryField+"']");
+			if (entryAttributesEle != null) {
+				Element sourceEle = (Element) entryAttributesEle.selectSingleNode("../property[@name='source']");
+				if (sourceEle != null) sourceFieldName = sourceEle.attributeValue("value", "");
+			}
+			List<Long> binderIds = getDefinitionModule().getBindersUsingEntryDef(entryTypeId, sourceFieldName);
+			SortedSet<Binder> binders = getBinderModule().getBinders(binderIds);
+			model.put(WebKeys.BINDERS, binders);
+			
+			//This feature has been disabled until it is made to work
+			model.put(WebKeys.BINDERS, new ArrayList());
+			
+			//Return the list of attribute sets (or an empty set if the binder is not specified)
+			model.put(SearchFilterKeys.FilterElementNameField, sourceFieldName);
+			return new ModelAndView("forum/json/find_entry_attributes_widget", model);
+		}
+		//The field name is "elementName , index of set"
+		String elementName = entryField.substring(0, entryField.indexOf(","));
+		model.put(SearchFilterKeys.FilterElementNameField, elementName);
+		String elementValue = entryField.substring(entryField.indexOf(",")+1);
+		model.put(SearchFilterKeys.FilterElementValueField, elementValue);
+		//Get the list of attributes from the selected attribute set
+		CustomAttribute attr = binder.getCustomAttribute(elementName);
+		if (attr != null) {
+			CustomAttribute attrValues = 
+				binder.getCustomAttribute(elementName+DefinitionModule.ENTRY_ATTRIBUTES_SET+elementValue);
+			model.put(SearchFilterKeys.FilterElementValueSet, attrValues.getValueSet());
+		}
+		return new ModelAndView("forum/json/find_entry_attributes_value_widget", model);
+ 	}
+	private ModelAndView ajaxGetEntryAttributeValue(RenderRequest request, RenderResponse response) {
 		String entryTypeId = PortletRequestUtils.getStringParameter(request,WebKeys.FILTER_ENTRY_DEF_ID, "");
 		String entryField = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField, "");
 		String strBinderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");

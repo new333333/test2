@@ -32,13 +32,36 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // This is JSON type AJAX response  %>
 /*
-[
-<c:set var="first" value="1"/>
+{
+<c:set var="count" value="0"/>
+<c:set var="foundOne" value="0"/>
 <c:forEach var="binder" items="${ss_binders}">
   <c:forEach var="entryValue" items="${binder.customAttributes[elementName].valueSet}" varStatus="status">
-		<c:if test="${first!=1}">,</c:if><c:set var="first" value="0"/>
-		["<ssf:escapeJavaScript value="${elementName},${entryValue}"/>", "<ssf:escapeJavaScript value="${entryValue}"/>", "<ssf:escapeJavaScript value="entryAttributes"/>"]
+		<c:set var="foundOne" value="1"/>
   </c:forEach>
 </c:forEach>
-]
+
+
+		<c:if test="${foundOne == '1'}">
+	      'items': [
+			<c:forEach var="binder" items="${ss_binders}">
+			  <c:forEach var="entryValue" items="${binder.customAttributes[elementName].valueSet}" varStatus="status">
+			  <c:set var="count" value="${count + 1}"/>
+			  {'id': '<ssf:escapeJavaScript value="${elementName},${entryValue}"/>',
+  		        'name': '<ssf:escapeJavaScript value="${entryValue}"/>',
+  		        'type': '<ssf:escapeJavaScript value="${elementName},${entryValue}"/>'
+  		      }<c:if test="${!status.last}">,</c:if>
+			  </c:forEach>			
+			</c:forEach>			
+	      ],
+	      
+	      'pageNumber': 0,
+	      'count': ${count},
+	      'pageSize': ${count},
+	      'totalHits': ${count},
+
+	      'prevLabel': '<ssf:nlt tag="general.Previous"/>',
+	      'nextLabel': '<ssf:nlt tag="general.Next"/>'
+	    </c:if>
+}
 */
