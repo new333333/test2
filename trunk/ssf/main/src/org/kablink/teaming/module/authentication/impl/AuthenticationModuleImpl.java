@@ -211,7 +211,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
      			result = authenticators.get(zone).authenticate(authentication);
     			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
     					(String) result.getName(), (String) result.getCredentials(),
-    					(Map) result.getPrincipal(), LoginInfo.AUTHENTICATOR_PORTAL);
+    					(Map) result.getPrincipal(), LoginInfo.AUTHENTICATOR_WEB);
     			return result;
     		} catch(UsernameNotFoundException e) {
     		}
