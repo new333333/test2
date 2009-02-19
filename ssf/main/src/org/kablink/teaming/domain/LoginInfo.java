@@ -46,8 +46,13 @@ public class LoginInfo extends AuditTrail {
 	public static final String AUTHENTICATOR_UNKNOWN = "unknown";
 	/**
 	 * User logged in through portal
+	 * @deprecated
 	 */
 	public static final String AUTHENTICATOR_PORTAL	= "portal";
+	/**
+	 * 	Web client (standalone)
+	 */
+	public static final String AUTHENTICATOR_WEB	= "web";
 	/**
 	 * WebDAV client
 	 */
