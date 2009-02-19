@@ -288,6 +288,11 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	fieldValue2Div.setAttribute("style", "display:inline;");
 	div.appendChild(fieldValue2Div);
 		
+	var fieldValue3Div = document.createElement('div');
+	fieldValue3Div.id = "entryFieldsValue3"+orderNo;
+	fieldValue3Div.setAttribute("style", "display:inline;");
+	div.appendChild(fieldValue3Div);
+		
 	document.getElementById('ss_entries_options').appendChild(div);
 
 
@@ -315,6 +320,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 			ss_removeAllChildren(fieldsDiv);
 			ss_removeAllChildren(fieldValueDiv);
 			ss_removeAllChildren(fieldValue2Div);
+			ss_removeAllChildren(fieldValue3Div);
 
             fieldsLabelDiv.style.display = "inline";
 			
@@ -348,8 +354,14 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 						fieldValue2Widget.destroy();
 					}
 
+					var fieldValue3Widget = dijit.byId("elementValue" + orderNo + "_selected" + "0");
+					if (fieldValue3Widget && fieldValue3Widget.destroy) {
+						fieldValue3Widget.destroy();
+					}
+
 					ss_removeAllChildren(fieldValueDiv);
 					ss_removeAllChildren(fieldValue2Div);
+					ss_removeAllChildren(fieldValue3Div);
 			
 					var currentFieldId = findEntryFields.getSingleId();
 					var currentFieldName = findEntryFields.getSingleValue();
@@ -417,14 +429,6 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 							preventCache: true
 						});
 					} else if (fieldType == "entryAttributes") {
-						// TODO!
-						/*var idToSet = false;
-						var labelToSet = false;					
-						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
-							idToSet = value;
-							labelToSet= valueLabel;
-						}*/
-						
 						var textAreaAttributesFieldsObj = document.createElement('textArea');
 						textAreaAttributesFieldsObj.className = "ss_combobox_autocomplete";
 					    textAreaAttributesFieldsObj.name = "elementValue" + orderNo;
@@ -439,7 +443,59 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 							searchUrl: ss_AjaxBaseUrl + "&action=advanced_search&operation=get_entry_attributes_widget&elementName="+currentFieldId+"&ss_entry_def_id="+entryTypeId,
 				      		listType: "entry_fields",
 							displayValue: true,
-							displayArrow: true
+							displayArrow: true,
+							searchOnInitialClick: true,
+							clickRoutine: function () {
+							    valueLabelDiv.style.display = "inline";
+								var fieldValueWidget = dijit.byId("elementValue" + orderNo + "_selected");
+								if (fieldValueWidget && fieldValueWidget.destroy) {
+									fieldValueWidget.destroy();
+								}
+								var fieldValue2Widget = dijit.byId("elementValue" + orderNo + "_selected" + "0");
+								if (fieldValue2Widget && fieldValue2Widget.destroy) {
+									fieldValue2Widget.destroy();
+								}
+			
+								var fieldValue3Widget = dijit.byId("elementValue" + orderNo + "_selected" + "0");
+								if (fieldValue3Widget && fieldValue3Widget.destroy) {
+									fieldValue3Widget.destroy();
+								}
+			
+								ss_removeAllChildren(fieldValueDiv);
+								ss_removeAllChildren(fieldValue2Div);
+								ss_removeAllChildren(fieldValue3Div);
+						
+								var currentFieldId = findEntryFields.getSingleId();
+								var currentFieldName = findEntryFields.getSingleValue();
+								var fieldType = findEntryFields.getSingleType();
+					
+								var textAreaAttributesFieldsObj = document.createElement('textArea');
+								textAreaAttributesFieldsObj.className = "ss_combobox_autocomplete";
+							    textAreaAttributesFieldsObj.name = "elementValue" + orderNo;
+							    textAreaAttributesFieldsObj.id = "elementValue" + orderNo;
+							    textAreaAttributesFieldsObj.style.width = "150px";
+								
+								fieldValue3Div.appendChild(textAreaAttributesFieldsObj);
+								
+								dojo.xhrGet({
+							    	url: ss_AjaxBaseUrl + "&action=advanced_search&operation=get_entry_attributes_value_widget&ss_entry_def_id=" + entryTypeId + "&elementName=" + currentFieldId,
+									load: function (data) {
+										var selectObj = document.createElement("select");
+										selectObj.name = "elementValue" + orderNo + "_selected";
+										selectObj.id = "elementValue" + orderNo + "_selected";
+										for (var i in data) {
+											var optionObj = document.createElement("option");
+											optionObj.value = i;
+											optionObj.selected = (idToSet == i);
+											optionObj.innerHTML = data[i];
+											selectObj.appendChild(optionObj);
+										}
+										fieldValue3Div.appendChild(selectObj);
+									},
+									handleAs: "json-comment-filtered",
+									preventCache: true
+								});
+							}
 						});
 							
 					} else {// TODO: entryAttributes field!!
@@ -463,6 +519,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 				clearSubordinates: function() {
 					ss_removeAllChildren(fieldValueDiv);
 					ss_removeAllChildren(fieldValue2Div);
+					ss_removeAllChildren(fieldValue3Div);
 				    valueLabelDiv.style.display = "none";
 				}
 			});
@@ -495,6 +552,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 			ss_removeAllChildren(fieldsDiv);
 			ss_removeAllChildren(fieldValueDiv);
 			ss_removeAllChildren(fieldValue2Div);
+			ss_removeAllChildren(fieldValue3Div);
             fieldsLabelDiv.style.display = "none";
 		    valueLabelDiv.style.display = "none";
 		}		
