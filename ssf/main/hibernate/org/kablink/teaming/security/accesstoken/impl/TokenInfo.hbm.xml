@@ -22,5 +22,12 @@
 	    	<property name="binderId"/>
 	    	<property name="binderAccessConstraints" type="integer" access="field"/>
 	    </subclass>
+    	
+		<subclass name="org.kablink.teaming.security.accesstoken.impl.TokenInfoApplication" discriminator-value="A">
+	    	<property name="applicationId"/>
+	    	<property name="userId"/>
+	    	<property name="binderId"/>
+	    	<property name="binderAccessConstraints" type="integer" access="field"/>
+	    </subclass>
 	</class>
 </hibernate-mapping>
