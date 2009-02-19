@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.teaming.security.accesstoken.impl.TokenInfoApplication;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfoRequest;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfoSession;
 import org.kablink.teaming.security.function.Function;
@@ -93,6 +94,8 @@ public interface SecurityDao {
     public void deleteUserTokenInfoSession(Long userId);
     
     public TokenInfoRequest loadTokenInfoRequest(Long zoneId, String infoId);
+
+    public TokenInfoApplication loadTokenInfoApplication(Long zoneId, String infoId);
 
     public void deleteAll(Class clazz);
     

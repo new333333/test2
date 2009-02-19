@@ -68,8 +68,30 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 				throw new InvalidAccessTokenException(tokenStr);				
 			}
 		}
-		else {
+		else if(token.getScope() == AccessToken.TokenScope.request) {
 			TokenInfoRequest info = getSecurityDao().loadTokenInfoRequest(rc.getZoneId(), token.getInfoId());	
+			if(info != null) {
+				String digest = computeDigest(token.getScope(), info.getApplicationId(), info.getUserId(),
+						info.getBinderId(), info.getBinderAccessConstraints(), info.getSeed());
+				if(digest.equals(token.getDigest())) { // match
+					// Copy the following pieces of information from the tokeninfo into the accesstoken.
+					// This allows the application to access those information without having a direct
+					// access to the lower-level tokeninfo object (ie, just serves as temporary cache).
+					token.setApplicationId(info.getApplicationId());
+					token.setUserId(info.getUserId());
+					token.setBinderId(info.getBinderId());
+					token.setBinderAccessConstraints(info.getBinderAccessConstraints());
+				}
+				else { // invalid
+					throw new InvalidAccessTokenException(tokenStr);
+				}
+			}
+			else {
+				throw new InvalidAccessTokenException(tokenStr);				
+			}
+		}
+		else {
+			TokenInfoApplication info = getSecurityDao().loadTokenInfoApplication(rc.getZoneId(), token.getInfoId());	
 			if(info != null) {
 				String digest = computeDigest(token.getScope(), info.getApplicationId(), info.getUserId(),
 						info.getBinderId(), info.getBinderAccessConstraints(), info.getSeed());
@@ -112,6 +134,10 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 		TokenInfoRequest info = getSecurityDao().loadTokenInfoRequest(rc.getZoneId(), token.getInfoId());
 		if(info != null)
 			getSecurityDao().delete(info);
+	}
+
+	public void destroyAllTokenInfoRequest() {
+		getSecurityDao().deleteAll(TokenInfoRequest.class);
 	}
 
 	public void destroyAllTokenInfoSession() {
@@ -200,10 +226,6 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 		}
 	}
 
-	public void destroyAllTokenInfoRequest() {
-		getSecurityDao().deleteAll(TokenInfoRequest.class);
-	}
-
 	/*
 	private TokenInfo loadOrCreate(TokenType type, Long applicationId, Long userId, Long binderId) {
 		RequestContext rc = RequestContextHolder.getRequestContext();
@@ -224,5 +246,32 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 			return info;
 		}
 	}*/
+
+	public AccessToken getApplicationScopedToken(Long applicationId, Long userId) {
+		return getApplicationScopedToken(applicationId, userId, null, BinderAccessConstraints.NONE);
+	}
+
+	public AccessToken getApplicationScopedToken(Long applicationId, Long userId, Long binderId, 
+			BinderAccessConstraints binderAccessConstraints) {
+		TokenInfoApplication info = new TokenInfoApplication(applicationId, userId, binderId, binderAccessConstraints, getRandomSeed());
+		
+		getSecurityDao().save(info);
+				
+		String digest = computeDigest(TokenScope.application, applicationId, userId, binderId, binderAccessConstraints, info.getSeed());
+		
+		return AccessToken.applicationScopedToken(info.getId(), digest);
+	}
+
+	public void destroyApplicationScopedToken(AccessToken token) {
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		TokenInfoApplication info = getSecurityDao().loadTokenInfoApplication(rc.getZoneId(), token.getInfoId());
+		if(info != null)
+			getSecurityDao().delete(info);
+	}
+
+	public void destroyAllTokenInfoApplication() {
+		getSecurityDao().deleteAll(TokenInfoApplication.class);
+	}
+
 
 }

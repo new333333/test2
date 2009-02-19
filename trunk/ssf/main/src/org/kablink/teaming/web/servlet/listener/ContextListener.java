@@ -42,6 +42,7 @@ public class ContextListener implements ServletContextListener {
 		
 		accessTokenManager.destroyAllTokenInfoSession();
 		accessTokenManager.destroyAllTokenInfoRequest();
+		accessTokenManager.destroyAllTokenInfoApplication();
 	}
 
 	public void contextDestroyed(ServletContextEvent sce) {

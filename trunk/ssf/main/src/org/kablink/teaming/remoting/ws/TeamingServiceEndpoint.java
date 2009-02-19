@@ -49,6 +49,7 @@ import org.kablink.teaming.remoting.ws.model.TeamCollection;
 import org.kablink.teaming.remoting.ws.model.TeamMemberCollection;
 import org.kablink.teaming.remoting.ws.model.TemplateCollection;
 import org.kablink.teaming.remoting.ws.model.User;
+import org.kablink.teaming.remoting.ws.service.admin.AdminService;
 import org.kablink.teaming.remoting.ws.service.binder.BinderService;
 import org.kablink.teaming.remoting.ws.service.definition.DefinitionService;
 import org.kablink.teaming.remoting.ws.service.folder.FolderService;
@@ -74,7 +75,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		ProfileService, 
 		SearchService, 
 		TemplateService,
-		ZoneService {
+		ZoneService,
+		AdminService
+		{
 		
 	public void init(Object context) throws ServiceException {
 	}
@@ -124,6 +127,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 
 	protected ZoneService getZoneService() {
 		return (ZoneService) SpringContextUtil.getBean("zoneService");
+	}
+	
+	protected AdminService getAdminService() {
+		return (AdminService) SpringContextUtil.getBean("adminService");
 	}
 	
 	/// Binder Service
@@ -512,6 +519,13 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	}
 	public DefinitionBrief definition_getLocalDefinitionByName(String accessToken, long binderId, String name, boolean includeAncestors) {
 		return getDefinitionService().definition_getLocalDefinitionByName(accessToken, binderId, name, includeAncestors);
+	}
+
+	public void destroyApplicationScopedToken(String accessToken, String token) {
+		getAdminService().destroyApplicationScopedToken(accessToken, token);
+	}
+	public String getApplicationScopedToken(String accessToken, long applicationId, Long userId) {
+		return getAdminService().getApplicationScopedToken(accessToken, applicationId, userId);
 	}	
 
 }

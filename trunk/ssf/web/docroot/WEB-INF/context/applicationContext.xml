@@ -1168,6 +1168,19 @@ text/calendar											  ics
 		</property>
 	</bean>
 	
+	<bean id="adminService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="org.kablink.teaming.remoting.ws.service.admin.AdminServiceImpl" parent="dependOnAllModulesTemplate">
+				<property name="accessTokenManager"><ref bean="accessTokenManager"/></property>
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<list>
+				<value>org.kablink.teaming.remoting.ws.service.admin.AdminService</value>
+			</list>
+		</property>
+	</bean>
+	
 	<!-- ============================== Remote Application Support ============================ -->
 	<bean id="remoteApplicationManager" class="org.kablink.teaming.remoteapplication.impl.RemoteApplicationManagerImpl">
 		<property name="profileDao"><ref local="profileDao"/></property>

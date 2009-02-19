@@ -34,7 +34,8 @@ public class AccessToken {
 
 	public enum TokenScope {
 		session (1),
-		request (2);
+		request (2),
+		application (3);
 		int number;
 		TokenScope(int number) {
 			this.number = number;
@@ -44,6 +45,7 @@ public class AccessToken {
 			switch (number) {
 			case 1: return TokenScope.session;
 			case 2: return TokenScope.request;
+			case 3: return TokenScope.application;
 			default: throw new IllegalArgumentException(String.valueOf(number));
 			}
 		}
@@ -84,6 +86,10 @@ public class AccessToken {
 	
 	public static AccessToken requestScopedToken(String infoId, String digest) {
 		return new AccessToken(TokenScope.request, infoId, null, null, digest, null, null);
+	}
+	
+	public static AccessToken applicationScopedToken(String infoId, String digest) {
+		return new AccessToken(TokenScope.application, infoId, null, null, digest, null, null);
 	}
 	
 	private AccessToken(TokenScope scope, String infoId, Long applicationId, 
@@ -180,7 +186,7 @@ public class AccessToken {
 		if(TokenScope.session.equals(scope)) {
 			if(s.length != 7)
 				throw new MalformedAccessTokenException(accessTokenStr);
-		} else if(TokenScope.request.equals(scope)) {
+		} else if(TokenScope.request.equals(scope) || TokenScope.application.equals(scope)) {
 			if(s.length != 3)
 				throw new MalformedAccessTokenException(accessTokenStr);
 		} else {
@@ -221,7 +227,7 @@ public class AccessToken {
 				throw new IllegalStateException("application id is missing");
 			if(userId == null)
 				throw new IllegalStateException("user id is missing");
-		} else if(TokenScope.request.equals(scope)) {
+		} else if(TokenScope.request.equals(scope) || TokenScope.application.equals(scope)) {
 			// Do NOT encode applicationId, userId, binderId, and binderAccessConstraints
 			// into the string EVEN IF they are present. This same information is stored
 			// in the corresponding token info object in the database, and therefore,

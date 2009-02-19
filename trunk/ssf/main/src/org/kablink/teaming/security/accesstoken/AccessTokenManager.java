@@ -70,6 +70,11 @@ public interface AccessTokenManager {
 	public void destroyRequestScopedToken(AccessToken token);
 	
 	/**
+	 * Destroy all <code>TokenInfoRequest</code> objects in the system.
+	 */
+	public void destroyAllTokenInfoRequest();
+	
+	/**
 	 * Returns an access token of session scoped.
 	 * 
 	 * @param applicationId
@@ -139,8 +144,37 @@ public interface AccessTokenManager {
 	public void destroyTokenInfoSession(String infoId);
 	
 	/**
-	 * Destroy all <code>TokenInfoRequest</code> objects in the system.
+	 * Returns an access token of application scoped.
+	 * 
+	 * @param applicationId
+	 * @param userId
+	 * @return
 	 */
-	public void destroyAllTokenInfoRequest();
+	public AccessToken getApplicationScopedToken(Long applicationId, Long userId);
 	
+	/**
+	 * Returns an access token of application scoped.
+	 * 
+	 * @param applicationId
+	 * @param userId
+	 * @param binderId optional
+	 * @param binderAccessConstraints
+	 * @return
+	 */
+	public AccessToken getApplicationScopedToken(Long applicationId, Long userId, Long binderId, 
+			BinderAccessConstraints binderAccessConstraints);
+	
+	/**
+	 * Destroy the token of application scoped.
+	 * 
+	 * @param token
+	 */
+	public void destroyApplicationScopedToken(AccessToken token);
+	
+	/**
+	 * Destroy all <code>TokenInfoApplication</code> objects in the system.
+	 */
+	public void destroyAllTokenInfoApplication();
+	
+
 }

@@ -43,6 +43,7 @@ import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.domain.ZoneMismatchException;
+import org.kablink.teaming.security.accesstoken.impl.TokenInfoApplication;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfoRequest;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfoSession;
 import org.kablink.teaming.security.dao.SecurityDao;
@@ -269,6 +270,18 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
 	public TokenInfoRequest loadTokenInfoRequest(Long zoneId, String infoId) {
 		TokenInfoRequest info = (TokenInfoRequest) getHibernateTemplate().get
 		(TokenInfoRequest.class, infoId);
+		
+		if(info != null) {
+			if(!zoneId.equals(info.getZoneId()))
+				throw new ZoneMismatchException(info.getZoneId(), zoneId);
+		}
+
+		return info;
+	}
+
+	public TokenInfoApplication loadTokenInfoApplication(Long zoneId, String infoId) {
+		TokenInfoApplication info = (TokenInfoApplication) getHibernateTemplate().get
+		(TokenInfoApplication.class, infoId);
 		
 		if(info != null) {
 			if(!zoneId.equals(info.getZoneId()))
