@@ -58,13 +58,16 @@ public class TeamingServiceClientWithStub {
 
 	private static final String TEAMING_SERVICE_ADDRESS_WSS 	= "http://localhost:8080/ssf/ws/TeamingServiceV1";
 	private static final String TEAMING_SERVICE_ADDRESS_BASIC 	= "http://localhost:8080/ssr/secure/ws/TeamingServiceV1";
+	private static final String TEAMING_SERVICE_ADDRESS_TOKEN   = "http://localhost:8080/ssr/token/ws/TeamingServiceV1";
+
 	
 	private static final String USERNAME = "admin";
-	private static final String PASSWORD = "test";
+	private static final String PASSWORD = "admin";
 	
 	public static void main(String[] args) throws Exception {
 		FolderEntry entry;
-		calendarSync();
+		testApplicationScopedToken();
+		//calendarSync();
 		//checkUsers();
 		//checkGroups();
 		//checkBinder();
@@ -112,6 +115,42 @@ public class TeamingServiceClientWithStub {
 		}
 */
 	}
+	
+	private static void callGetTeamsUsingToken(String token) throws Exception {
+		System.out.println(token);
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_TOKEN);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		try {
+			stub.search_getTeams(token);
+		}
+		catch(Exception e) {
+			System.out.println(e.toString());
+		}
+	}
+	
+	public static void testApplicationScopedToken() throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		
+		// Non-existing application ID
+		String token = stub.getApplicationScopedToken(null, 12345, new Long(7));
+		callGetTeamsUsingToken(token);
+		stub.destroyApplicationScopedToken(null, token);
+		
+		// Non-existing user ID
+		token = stub.getApplicationScopedToken(null, 8, new Long(777));
+		callGetTeamsUsingToken(token);
+		stub.destroyApplicationScopedToken(null, token);
+		
+		// Existing application ID and user ID
+		token = stub.getApplicationScopedToken(null, 8, new Long(7));
+		callGetTeamsUsingToken(token);
+		stub.destroyApplicationScopedToken(null, token);
+	}
+	
 	public static void calendarSync() throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
