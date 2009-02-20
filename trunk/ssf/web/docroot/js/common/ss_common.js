@@ -3492,6 +3492,7 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 			//Signal that the layout changed
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
+		ss_addDashboardEvent(componentId, "onAfterHide", ss_deleteComponentCallback)
 		ss_callDashboardEvent(componentId, "onBeforeHide");
 	}
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_dashboard");
@@ -3515,6 +3516,9 @@ function ss_showComponentCallback(s, data) {
 function ss_hideComponentCallback(s, data) {
 	// data = {"divId" : divId, "componentId" : componentId}
 	ss_callDashboardEvent(data.componentId, "onAfterHide");
+}
+function ss_deleteComponentCallback() {
+	setTimeout("document.location.reload();", 100);
 }
 function ss_confirmDeleteComponent(obj, componentId, divId, divId2, idStr, namespace, scope) {
 	var formObj = ss_getContainingForm(obj)
