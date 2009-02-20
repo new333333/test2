@@ -1108,7 +1108,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 				}
 		);    		             		 
 	}
-	public Application loadApplication(Long applicationId, Long zoneId) throws NoUserByTheIdException {
+	public Application loadApplication(Long applicationId, Long zoneId) throws NoApplicationByTheIdException {
     	try {
     		Application application = (Application)getHibernateTemplate().get(Application.class, applicationId);
     		if (application == null) {throw new NoApplicationByTheIdException(applicationId);}

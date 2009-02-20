@@ -108,6 +108,8 @@ public interface ObjectKeys {
 	public static final String FUNCTION_SITE_ADMIN_INTERNALID="402883b90d0de1f3010d0df5582b0015";
 	//reserved id for _enableGuestAccess pseudo role  
 	public static final String FUNCTION_ADD_GUEST_ACCESS_INTERNALID="402883b90d0de1f3010d0df5582b0017";
+	//reserved id for _tokenRequester pseudo role  
+	public static final String FUNCTION_TOKEN_REQUESTER_INTERNALID="402883b90d0de1f3010d0df5582b0019";
 	//reserved id put in acls/membership to indicate owner of object has access
 	//search engine stores the ownerId of the entity in place of this
 	public static final Long OWNER_USER_ID = Long.valueOf(-1);
@@ -164,6 +166,7 @@ public interface ObjectKeys {
     //Allows access checking to work consistantly
     public static final String ROLE_ZONE_ADMINISTRATION="__role.zoneAdministration";
     public static final String ROLE_ADD_GUEST_ACCESS="__role.addGuestAccess";
+    public static final String ROLE_TOKEN_REQUESTER="__role.tokenRequester";
     //map keys from admin/sendMail
     public static final String SENDMAIL_ERRORS="errors";
     public static final String SENDMAIL_DISTRIBUTION="distributionList";

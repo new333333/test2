@@ -29,10 +29,7 @@
 
 package org.kablink.teaming.remoting.ws.service.admin;
 
-import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.remoting.ws.BaseService;
-import org.kablink.teaming.security.accesstoken.AccessToken;
-import org.kablink.teaming.security.accesstoken.AccessTokenManager;
 
 /**
  * @author Jong Kim
@@ -40,29 +37,11 @@ import org.kablink.teaming.security.accesstoken.AccessTokenManager;
  */
 public class AdminServiceImpl extends BaseService implements AdminService {
 
-	protected AccessTokenManager accessTokenManager;
-
-	protected AccessTokenManager getAccessTokenManager() {
-		return accessTokenManager;
-	}
-	public void setAccessTokenManager(AccessTokenManager accessTokenManager) {
-		this.accessTokenManager = accessTokenManager;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.remoting.ws.service.admin.AdminService#getApplicationScopedToken(long, java.lang.Long)
-	 */
-	public String getApplicationScopedToken(String accessToken, long applicationId, Long userId) {
-		Long contextUserId = RequestContextHolder.getRequestContext().getUserId();
-
-		if(userId != null && !userId.equals(contextUserId))
-			// check privilege TODO $$$$$
-			;
-		
-		return getAccessTokenManager().getApplicationScopedToken(applicationId, userId).toStringRepresentation();
+	public String getApplicationScopedToken(String accessToken, long applicationId, long userId) {
+		return getAdminModule().getApplicationScopedToken(applicationId, userId);
 	}
 	
 	public void destroyApplicationScopedToken(String accessToken, String token) {
-		getAccessTokenManager().destroyApplicationScopedToken(new AccessToken(token));
+		getAdminModule().destroyApplicationScopedToken(token);
 	}
 }

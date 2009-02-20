@@ -1171,7 +1171,6 @@ text/calendar											  ics
 	<bean id="adminService" parent="wsProxyTemplate">
 		<property name="target">
 			<bean class="org.kablink.teaming.remoting.ws.service.admin.AdminServiceImpl" parent="dependOnAllModulesTemplate">
-				<property name="accessTokenManager"><ref bean="accessTokenManager"/></property>
 			</bean>
 		</property>
 		<property name="proxyInterfaces">

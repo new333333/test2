@@ -116,13 +116,26 @@ public class TeamingServiceClientWithStub {
 */
 	}
 	
-	private static void callGetTeamsUsingToken(String token) throws Exception {
-		System.out.println(token);
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_TOKEN);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+	private static void callGetTeamsUsingToken(TeamingServiceSoapBindingStub regularStub, long applicationId, long userId) throws Exception {
 		try {
-			stub.search_getTeams(token);
+			// Obtain an application-scoped token on behalf of the user. 
+			// This call is made through the regular web services endpoint.
+			String token = regularStub.getApplicationScopedToken(null, applicationId, userId);
+			try {
+				// If you're here, the request was successful.
+				System.out.println(token);
+				
+				// Invoke search_getTeams() web services operation using the token obtained above.
+				// This call must be made through the endpoint set up for token-based web services.
+				TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+				locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_TOKEN);
+				TeamingServiceSoapBindingStub tokenBasedStub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+				tokenBasedStub.search_getTeams(token);
+			}
+			finally {
+				// Destroy the token. Again, this call is made through the regular web services endpoint.
+				regularStub.destroyApplicationScopedToken(null, token);				
+			}
 		}
 		catch(Exception e) {
 			System.out.println(e.toString());
@@ -136,19 +149,13 @@ public class TeamingServiceClientWithStub {
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 		
 		// Non-existing application ID
-		String token = stub.getApplicationScopedToken(null, 12345, new Long(7));
-		callGetTeamsUsingToken(token);
-		stub.destroyApplicationScopedToken(null, token);
+		callGetTeamsUsingToken(stub, 12345, 7);
 		
 		// Non-existing user ID
-		token = stub.getApplicationScopedToken(null, 8, new Long(777));
-		callGetTeamsUsingToken(token);
-		stub.destroyApplicationScopedToken(null, token);
+		callGetTeamsUsingToken(stub, 8, 777);
 		
 		// Existing application ID and user ID
-		token = stub.getApplicationScopedToken(null, 8, new Long(7));
-		callGetTeamsUsingToken(token);
-		stub.destroyApplicationScopedToken(null, token);
+		callGetTeamsUsingToken(stub, 8, 7);
 	}
 	
 	public static void calendarSync() throws Exception {

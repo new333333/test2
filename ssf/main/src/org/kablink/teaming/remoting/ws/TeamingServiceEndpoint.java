@@ -524,7 +524,7 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void destroyApplicationScopedToken(String accessToken, String token) {
 		getAdminService().destroyApplicationScopedToken(accessToken, token);
 	}
-	public String getApplicationScopedToken(String accessToken, long applicationId, Long userId) {
+	public String getApplicationScopedToken(String accessToken, long applicationId, long userId) {
 		return getAdminService().getApplicationScopedToken(accessToken, applicationId, userId);
 	}	
 

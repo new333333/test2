@@ -40,6 +40,8 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.MailConfig;
+import org.kablink.teaming.domain.NoApplicationByTheIdException;
+import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.security.AccessControlException;
@@ -205,4 +207,24 @@ public interface AdminModule {
 	 * @param luceneNodeName
 	 */
 	public void synchronizeIndexOnNode(IndexNode indexNode);
+	
+	/**
+	 * Obtain an application-scoped token on behalf of the specified user.
+	 * The caller must have appropriate right to perform this operation.
+	 * 
+	 * @param applicationId ID of the application
+	 * @param userId ID of the user on whose behalf the token is being requested. 
+	 * @return
+	 */
+	public String getApplicationScopedToken(long applicationId, long userId)
+	throws AccessControlException, NoApplicationByTheIdException, NoUserByTheIdException;
+
+	/**
+	 * Destroy/invalidate the application-scoped token. 
+	 * This call requires the same access right as <code>getApplicationScopedToken</code> method.
+	 * 
+	 * @param token
+	 */
+	public void destroyApplicationScopedToken(String token);
+
  }
