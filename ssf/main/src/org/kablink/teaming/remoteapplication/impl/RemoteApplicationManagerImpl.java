@@ -175,6 +175,7 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 					method.addParameter(entry.getKey(), entry.getValue());
 				}
 			}
+			// A timeout value of zero is interpreted as an infinite timeout.
 			method.getParams().setSoTimeout(application.getTimeout()*1000);
 			int statusCode = client.executeMethod(method);
 			if(statusCode != HttpStatus.SC_OK) {
