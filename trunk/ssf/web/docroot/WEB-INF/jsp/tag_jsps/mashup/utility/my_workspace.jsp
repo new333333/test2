@@ -46,12 +46,14 @@
 	<ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="15" offsetX="0" 
       title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
   	</ssHelpSpot>
-  	<a title="<ssf:nlt tag="navigation.myWorkspace"/>"
-	  href="<ssf:url 
-      	action="view_ws_listing"
-      	binderId="${ssUser.workspaceId}"/>"
-  	><ssf:nlt tag="mashup.myWorkspace.view"/></a>
-  	&nbsp;-&nbsp;
+  	<c:if test="${!empty ssUser.workspaceId}">
+	  	<a title="<ssf:nlt tag="navigation.myWorkspace"/>"
+		  href="<ssf:url 
+	      	action="view_ws_listing"
+	      	binderId="${ssUser.workspaceId}"/>"
+	  	><ssf:nlt tag="mashup.myWorkspace.view"/></a>
+	  	&nbsp;-&nbsp;
+  	</c:if>
   	<ssf:showUser user="${ssUser}"/>
 </div>
 <% if (ss_mashupListDepth > 0) { %>
