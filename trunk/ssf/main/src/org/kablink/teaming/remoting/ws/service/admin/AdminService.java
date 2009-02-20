@@ -35,24 +35,7 @@ package org.kablink.teaming.remoting.ws.service.admin;
  */
 public interface AdminService {
 
-	/**
-	 * Obtain an application-scoped token on behalf of the specified user.
-	 * 
-	 * @param applicationId ID of the application
-	 * @param userId ID of the user on whose behalf the token is being requested. 
-	 * To obtain a token on behalf of someone else, the calling user must have special 
-	 * privilege set up by the Teaming server. If the value is <code>null</code>,
-	 * it means that calling user is obtaining a token for himself/herself, and it
-	 * does not require any special privilege.
-	 * @return
-	 */
-	public String getApplicationScopedToken(String accessToken, long applicationId, Long userId);
+	public String getApplicationScopedToken(String accessToken, long applicationId, long userId);
 
-	/**
-	 * Destroy/invalidate the application-scoped token explicitly. 
-	 * If the token is already invalid, this operation returns silently.
-	 * 
-	 * @param token
-	 */
 	public void destroyApplicationScopedToken(String accessToken, String token);
 }

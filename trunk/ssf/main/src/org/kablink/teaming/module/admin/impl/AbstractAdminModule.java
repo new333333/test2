@@ -49,9 +49,11 @@ import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.OrderBy;
+import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.Definition;
@@ -84,6 +86,7 @@ import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.accesstoken.AccessToken;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.FunctionExistsException;
 import org.kablink.teaming.security.function.WorkArea;
@@ -865,4 +868,27 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	   return result;
 
    }
+   
+	public String getApplicationScopedToken(long applicationId, long userId) {
+		RequestContext rc = RequestContextHolder.getRequestContext();
+
+		// check caller has right
+		getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(rc.getZoneId()), WorkAreaOperation.TOKEN_REQUESTER);
+		
+		// check application exists
+		Application application = getProfileDao().loadApplication(applicationId, rc.getZoneId());
+		
+		// check user exists
+		User user = getProfileDao().loadUser(rc.getUserId(), rc.getZoneId());
+
+		return getAccessTokenManager().getApplicationScopedToken(applicationId, userId).toStringRepresentation();
+	}
+	
+	public void destroyApplicationScopedToken(String token) {
+		// check caller has right
+		getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.TOKEN_REQUESTER);
+		
+		getAccessTokenManager().destroyApplicationScopedToken(new AccessToken(token));
+	}
+
 }

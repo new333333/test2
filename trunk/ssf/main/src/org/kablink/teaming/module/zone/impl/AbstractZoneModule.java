@@ -1083,6 +1083,24 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		ms.setMemberIds(members);
 		getCoreDao().save(ms);
 		
+		function = new Function();
+		function.setZoneId(zoneConfig.getZoneId());
+		function.setName(ObjectKeys.ROLE_TOKEN_REQUESTER);
+		function.setInternalId(ObjectKeys.FUNCTION_TOKEN_REQUESTER_INTERNALID);
+		function.addOperation(WorkAreaOperation.TOKEN_REQUESTER);
+		function.setZoneWide(true);
+		//generate functionId
+		getFunctionManager().addFunction(function);
+
+		ms = new WorkAreaFunctionMembership();
+		ms.setWorkAreaId(zoneConfig.getWorkAreaId());
+		ms.setWorkAreaType(zoneConfig.getWorkAreaType());
+		ms.setZoneId(zoneConfig.getZoneId());
+		ms.setFunctionId(function.getId());
+		// Do not add default members for this.
+		ms.setMemberIds(new HashSet());
+		getCoreDao().save(ms);
+		
 	}
 
 }

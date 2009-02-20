@@ -43,6 +43,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.IndividualPrincipal;
+import org.kablink.teaming.domain.NoApplicationByTheIdException;
 import org.kablink.teaming.domain.NoGroupByTheIdException;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
@@ -156,8 +157,8 @@ public interface ProfileDao {
      
 	public ApplicationGroup getReservedApplicationGroup(String internalId, Long zoneId) throws NoGroupByTheNameException;	   
     public ApplicationGroup loadApplicationGroup(Long groupId, Long zoneId) throws NoGroupByTheIdException;
-    public Application loadApplication(Long applicationId, Long zoneId) throws NoUserByTheIdException;
-    public Application loadApplication(Long applicationId, String zoneName) throws NoUserByTheIdException;
+    public Application loadApplication(Long applicationId, Long zoneId) throws NoApplicationByTheIdException;
+    public Application loadApplication(Long applicationId, String zoneName) throws NoApplicationByTheIdException;
     public List<ApplicationGroup> loadApplicationGroups(Collection<Long> groupsIds, Long zoneId);
     public ApplicationPrincipal loadApplicationPrincipal(Long prinId, Long zoneId, boolean checkActive);
     public List<ApplicationPrincipal> loadApplicationPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive);
