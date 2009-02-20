@@ -297,13 +297,19 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		</td>
         <td height="19" colspan="4" valign="top" align="right" >
         <c:if test="${!ss_mashupHideMasthead || ss_mashupShowBranding}">
-        <span class="ss_mastheadName">
-        <a title="<ssf:nlt tag="navigation.myWorkspace"/>"
-				  href="<ssf:url 
-				    windowState="${ss_urlWindowState}"
-			      	action="view_ws_listing"
-			      	binderId="${ssUser.workspaceId}"/>"
-              	>${ssUser.title}</a></span>
+	        <span class="ss_mastheadName">
+	        <c:if test="${!empty ssUser.workspaceId}">
+		        <a title="<ssf:nlt tag="navigation.myWorkspace"/>"
+						  href="<ssf:url 
+						    windowState="${ss_urlWindowState}"
+					      	action="view_ws_listing"
+					      	binderId="${ssUser.workspaceId}"/>"
+		              	>${ssUser.title}</a>
+		    </c:if>
+		    <c:if test="${empty ssUser.workspaceId}">
+		    	${ssUser.title}
+		    </c:if>
+		    </span>
         </c:if>
         </td>
 	  </tr>
@@ -545,6 +551,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
              </div>
        </td>
        <td width="25%" class="ss_workspace">
+            <c:if test="${!empty ssUser.workspaceId}">
               	<a title="<ssf:nlt tag="navigation.myWorkspace"/>"
 				  href="<ssf:url 
 				    windowState="${ss_urlWindowState}"
@@ -554,6 +561,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
               	  <ssf:alt tag=""/> width="30" height="34" border="0" 
               	  style="vertical-align:middle" 
               	 />&nbsp;&nbsp;<ssf:nlt tag="navigation.myWorkspace"/></a>
+            </c:if>
 
 			<!-- The help spot is positioned relative to the position of its parent. -->
 			<!-- That's why I put the <ssHelpSpot...> in a <span> -->

@@ -52,10 +52,15 @@
 		</c:if>
 		
 		<c:if test="${ssUser.internalId != guestInternalId}">
-			<a href="<ssf:url adapter="true" portletName="ss_forum" 
-			    action="__ajax_mobile"
-			    operation="mobile_show_workspace"
-			    binderId="${ssUser.workspaceId}" />">${ssUser.title}</a>
+			<c:if test="${!empty ssUser.workspaceId}">
+				<a href="<ssf:url adapter="true" portletName="ss_forum" 
+				    action="__ajax_mobile"
+				    operation="mobile_show_workspace"
+				    binderId="${ssUser.workspaceId}" />">${ssUser.title}</a>
+			</c:if>
+			<c:if test="${empty ssUser.workspaceId}">
+				${ssUser.title}
+			</c:if>
 		</c:if>
 	</li>
   </ul>

@@ -35,8 +35,10 @@
 <p>${exception.localizedMessage }<br/></p>
 
 <ssf:ifnotadapter>
-<p style="text-align:center;"><a href="<ssf:url action="view_ws_listing"
-			    		binderId="${ssUser.workspaceId}">
-			    		<ssf:param name="newTab" value="1"/>
-						</ssf:url>">- <spring:message code="button.home"/> -</a></p>
+	<c:if test="${!empty ssUser.workspaceId}">
+		<p style="text-align:center;"><a href="<ssf:url action="view_ws_listing"
+					    		binderId="${ssUser.workspaceId}">
+					    		<ssf:param name="newTab" value="1"/>
+								</ssf:url>">- <spring:message code="button.home"/> -</a></p>
+	</c:if>
 </ssf:ifnotadapter>
