@@ -546,7 +546,10 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		if (d != null) {
 			for (int i = 0; i < ComponentLists.length; i++) {
 			if (getInstance().checkDashboardList(ssDashboard, d.getProperties(), ComponentLists[i])) 
-				getInstance().getDashboardModule().setProperty(d.getId(), ComponentLists[i], d.getProperty(ComponentLists[i]));
+				//Ignore community binders that the user doesn't have access to
+				try {
+					getInstance().getDashboardModule().setProperty(d.getId(), ComponentLists[i], d.getProperty(ComponentLists[i]));
+				} catch(AccessControlException e) {}
 			}
 		}
 
