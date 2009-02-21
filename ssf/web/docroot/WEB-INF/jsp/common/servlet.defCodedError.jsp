@@ -29,8 +29,18 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/servlet.include.jsp" %>
+<body class="tundra">
+
+<div class="ss_style ss_portlet">
 
 <h1><spring:message code="exception.codedError.title"/></h1>
 
-<p>${exception.localizedMessage }<br/></p>
+<p>${exception.localizedMessage }</p>
+<br/>
 
+<input type="button" value="<ssf:nlt tag="button.back"/>" class="ss_submit" 
+ onClick="setTimeout('self.window.history.back();', 2000);">
+</div>
+
+</body>
+</html>

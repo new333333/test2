@@ -29,6 +29,9 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="tundra">
+
+<div class="ss_style ss_portlet">
 
 <h1><spring:message code="exception.codedError.title"/></h1>
 
@@ -42,3 +45,14 @@
 								</ssf:url>">- <spring:message code="button.home"/> -</a></p>
 	</c:if>
 </ssf:ifnotadapter>
+
+<ssf:ifadapter>
+<br/>
+<input type="button" value="<ssf:nlt tag="button.back"/>" class="ss_submit" 
+ onClick="setTimeout('self.window.history.back();', 2000);">
+</ssf:ifadapter>
+
+</div>
+
+</body>
+</html>
