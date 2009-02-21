@@ -50,6 +50,10 @@
 --%></c:if><%--
 --%><script type="text/javascript" src="<html:rootPath/>js/tiny_mce/tiny_mce.js"></script>
 <script type="text/javascript">
+var ss_imageSelections = "<select name='srcUrl'><%--
+--%><c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" ><%--
+--%><option value='<ssf:escapeJavaScript value="${selection.fileItem.name}"/>'>${selection.fileItem.name}</option><%--
+--%></c:forEach></select>";
 tinyMCE.init(
  {mode: "specific_textareas", editor_selector: "mceEditable",
   theme : "advanced", 
@@ -102,7 +106,9 @@ tinyMCE.init(
 tinyMCE.addI18n('en.ss_addimage',{
 srcFile : "<ssf:nlt tag="editor.addimage.srcFile"/>",
 addFile : "<ssf:nlt tag="editor.addimage.addFile"/>",
-addUrl : "<ssf:nlt tag="editor.addimage.addUrl"/>"
+addUrl : "<ssf:nlt tag="editor.addimage.addUrl"/>",
+imageName : "<ssf:nlt tag="editor.addimage.imageName"/>",
+imageSelectBox : ss_imageSelections
 });
 
 tinyMCE.addI18n('en.ss_wikilink',{

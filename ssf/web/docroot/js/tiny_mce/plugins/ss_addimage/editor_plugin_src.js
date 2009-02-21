@@ -18,7 +18,7 @@
 				ed.windowManager.open({
 					file : url + '/image.htm',
 					width : 550 + parseInt(ed.getLang('advimage.delta_width', 0)),
-					height : 420 + parseInt(ed.getLang('advimage.delta_height', 0)),
+					height : 460 + parseInt(ed.getLang('advimage.delta_height', 0)),
 					inline : 1
 				}, {
 					plugin_url : url

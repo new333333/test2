@@ -32,6 +32,7 @@
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
+<c:set var="accessibility_simple_ui" value='<%= org.kablink.teaming.util.SPropsUtil.getBoolean("accessibility.simple_ui", false) %>'/>
 <c:set var="ss_urlWindowState" value="maximized"/>
 <c:set var="ss_urlWindowState" value=""/>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
@@ -679,7 +680,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 </div>
 </ssf:ifLoggedIn>
 <!-- End of myteams pane -->
-<c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == 'iframe' || ssUser.displayStyle == 'vertical' || (!empty ssFolderActionVerticalOverride && ssFolderActionVerticalOverride == 'yes')}" >
+<c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == 'iframe' || ssUser.displayStyle == 'vertical' || (!empty ssFolderActionVerticalOverride && ssFolderActionVerticalOverride == 'yes') || !accessibility_simple_ui}" >
 <!-- iframe div -->
 <%@ include file="/WEB-INF/jsp/entry/view_iframe_div.jsp" %>
 <!-- end of iframe div -->
