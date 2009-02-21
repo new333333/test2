@@ -126,6 +126,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		
 		if(op.equals(WebKeys.OPERATION_FIND_TAG_SEARCH)) {
 		
+			boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
 			boolean result = ajaxCheckCurrentTag(searchText);
 		
 			if(result) {
@@ -134,7 +135,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 				model.put(WebKeys.TAG_LENGTH_WARNING, NLT.get("tags.maxLengthWarning"));
 				model.put(WebKeys.TAGS, thelist);
 				
-				if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle())) {
+				if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle()) && accessible_simple_ui) {
 					view = viewAccessible;
 				} else {
 					response.setContentType("text/json-comment-filtered");
@@ -302,7 +303,8 @@ public class TypeToFindAjaxController extends SAbstractController {
 		model.put("findObjectName", findObjectName);
 		
 		
-		if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle())) {
+		boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
+		if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle()) && accessible_simple_ui) {
 			view = viewAccessible;
 		} else {
 			response.setContentType("text/json-comment-filtered");
