@@ -28,6 +28,12 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<script type="text/javascript">
+function ss_showMoreFiles${property_name}() {
+	document.getElementById('ss_extraFiles_${property_name}').style.display='block';
+	document.getElementById('ss_extraFilesClick_${property_name}').style.display='none';
+}
+</script>
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
 	String caption1 = (String) request.getAttribute("property_caption");
@@ -52,6 +58,8 @@
 <c:if test='${! empty property_number}'>
 <c:set var="countFb" value="${property_number}"/>
 </c:if>
+<c:set var="countFb2" value="5"/>
+<c:if test="${countFb > 1}"><c:set var="countFb2" value="${countFb}"/></c:if>
 
 <c:set var="eName" value="${elementName}"/>
 
@@ -83,10 +91,12 @@ var ${eName}_ok = 1;
 <label for="${eName}">
 	<span class="ss_labelAbove" id="${elementName}_label">${caption}${required}</span>
 </label>
-<c:forEach var="i" begin="1" end="${countFb}">
- <c:if test='${! empty property_number}'>
-	<c:set var="eName" value="${elementName}${i}"/>
- </c:if>
+
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<c:forEach var="i" begin="1" end="${countFb2}">
+ <c:set var="eName" value="${elementName}${i}"/>
  <c:if test='${! empty ssFolder}'>
   <div class="needed-because-of-ie-bug"><div id="ss_duplicateFileCheck_${eName}" style="display:none; visibility:hidden;" ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
   <input type="file" class="ss_text" 
@@ -126,5 +136,26 @@ var ${eName}_ok = 1;
 		ss_createOnSubmitObj('${eName}onsub', '${formName}', ${eName}_onAtatchmentFormSubmit);
 		 
 	</script> 
+
+<c:if test="${i == '1'}">
+<div id="ss_extraFiles_${property_name}" 
+  <c:if test="${countFb == '1'}"> style="display:none;" </c:if>
+>
+</c:if>
 </c:forEach>
+</div>
+</td>
+</tr>
+<c:if test="${countFb == '1'}">
+<tr>
+<td align="right">
+<div id="ss_extraFilesClick_${property_name}">
+<a href="javascript: ;" 
+onClick="ss_showMoreFiles${property_name}();return false;"
+><span class="smallprint"><ssf:nlt tag="entry.attachMore"/></span></a>
+</div>
+</td>
+</tr>
+</c:if>
+</table>
 
