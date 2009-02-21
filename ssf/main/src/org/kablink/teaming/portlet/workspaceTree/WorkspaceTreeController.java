@@ -42,6 +42,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -76,7 +77,9 @@ public class WorkspaceTreeController extends SAbstractController  {
 			RenderResponse response) throws Exception {
 		
         User user = RequestContextHolder.getRequestContext().getUser();
+		boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
         if (user != null && ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()) && 
+        		accessible_simple_ui && 
         		ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle())) {
 			Map<String,Object> updates = new HashMap<String,Object>();
 			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);

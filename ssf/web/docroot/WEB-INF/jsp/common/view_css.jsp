@@ -31,6 +31,9 @@
 %><%--
 
 --%>
+<%
+	boolean accessible_simple_ui = org.kablink.teaming.util.SPropsUtil.getBoolean("accessibility.simple_ui", false);
+%>
 <c:if test="${empty ssf_support_files_loaded}"><%--
 --%><c:set var="ssf_support_files_loaded" value="1" scope="request"/><%--
 --%>
@@ -103,8 +106,11 @@ var ss_baseRootPathUrl = '<html:rootPath/>';
 
 var ss_userDisplayStyle = "${ssUser.displayStyle}";
 <c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == ''}">
-	ss_userDisplayStyle = "iframe";	
+		ss_userDisplayStyle = "iframe";	
 </c:if>
+<% if (!accessible_simple_ui) { %>
+	ss_userDisplayStyle = "iframe";	
+<% } %>
 
 var ss_1pix = ss_imagesPath + "pics/1pix.gif";
 var ss_forumColorsCssUrl = "<ssf:url webPath="viewCss"><ssf:param 

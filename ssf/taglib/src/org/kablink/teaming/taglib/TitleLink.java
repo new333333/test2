@@ -42,6 +42,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.servlet.DynamicServletRequest;
 import org.kablink.util.servlet.StringServletResponse;
 
@@ -108,11 +109,13 @@ public class TitleLink extends BodyTagSupport implements ParamAncestorTag {
 		try {
 			RequestContext rc = RequestContextHolder.getRequestContext();
 			User user = null;
+			boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
 			Boolean isAccessible = Boolean.FALSE;
 			if (rc != null) user = rc.getUser();
 			if (user != null && user.getDisplayStyle() != null) {
 				if (user.getDisplayStyle() != null && 
-						user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+						user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
+						accessible_simple_ui) {
 					isAccessible = Boolean.TRUE;
 				}
 			}

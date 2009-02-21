@@ -1356,11 +1356,12 @@ public class ListFolderHelper {
 		Toolbar whatsNewToolbar = new Toolbar();
 		Toolbar emailSubscriptionToolbar = new Toolbar();
 		
+		boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
 		boolean isAppletSupported = SsfsUtil.supportApplets();
         boolean isAccessible = false;
 		String displayStyle = user.getDisplayStyle();
-		if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
+				accessible_simple_ui && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			isAccessible = true;
 		}
 		
@@ -1788,14 +1789,14 @@ public class ListFolderHelper {
 		}
 		
 		//Folder action menu
-		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) || !accessible_simple_ui) {
 			//Folder action menu
 			//Build the standard toolbar
 			BinderHelper.buildFolderActionsToolbar(bs, request, response, folderActionsToolbar, forumId);
 		}
 		
 		//Calendar import menu
-		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
+		if ((!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) || !accessible_simple_ui) && 
 				(viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
 						viewType.equals(Definition.VIEW_STYLE_TASK)) &&
 				bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {
