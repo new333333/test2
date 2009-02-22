@@ -339,6 +339,8 @@ public class BinderHelper {
 			String displayType = getDisplayType(request);
 			model.put(WebKeys.DISPLAY_TYPE, displayType);
 	 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+			Boolean captive = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_CAPTIVE, false);
+			model.put(WebKeys.CAPTIVE, captive);
 			String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 			if (!namespace.equals("")) {
 				model.put(WebKeys.NAMESPACE, namespace);

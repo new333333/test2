@@ -108,9 +108,11 @@ var ss_userDisplayStyle = "${ssUser.displayStyle}";
 <c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == ''}">
 		ss_userDisplayStyle = "iframe";	
 </c:if>
-<% if (!accessible_simple_ui) { %>
-	ss_userDisplayStyle = "iframe";	
-<% } %>
+<c:if test="${!empty ssUser.displayStyle && ssUser.displayStyle == 'accessible'}">
+	<% if (!accessible_simple_ui) { %>
+		ss_userDisplayStyle = "iframe";	
+	<% } %>
+</c:if>
 
 var ss_1pix = ss_imagesPath + "pics/1pix.gif";
 var ss_forumColorsCssUrl = "<ssf:url webPath="viewCss"><ssf:param 

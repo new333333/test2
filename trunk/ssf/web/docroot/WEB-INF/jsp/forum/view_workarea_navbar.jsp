@@ -177,8 +177,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 	}
 }
 </script>
-
-<c:if test="${!ss_mashupHideMasthead || ss_mashupShowBranding}">
+<c:if test="${(!ss_mashupHideMasthead || ss_mashupShowBranding) && (empty ss_captive || !ss_captive)}">
 <div id="ss_top_nav_wrapper">
 <!-- Begin New Header  -->  
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -322,7 +321,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
     </table>
    </td>
   </tr>
-<c:if test="${!ss_mashupHideMasthead}">
+<c:if test="${!ss_mashupHideMasthead && (empty ss_captive || !ss_captive)}">
   <tr>
     <td class="ss_search_bar"> <!-- Sets background for search area table kablink = #449EFF kablink blue = #6BC5CE -->
     <!-- Start of search area with find boxes -->
@@ -680,19 +679,22 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 </div>
 </ssf:ifLoggedIn>
 <!-- End of myteams pane -->
-<c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == 'iframe' || ssUser.displayStyle == 'vertical' || (!empty ssFolderActionVerticalOverride && ssFolderActionVerticalOverride == 'yes') || !accessibility_simple_ui}" >
-<!-- iframe div -->
-<%@ include file="/WEB-INF/jsp/entry/view_iframe_div.jsp" %>
-<!-- end of iframe div -->
-</c:if>
 
-<c:if test="${!ss_mashupHideMasthead}">
+<c:if test="${!ss_mashupHideMasthead && (empty ss_captive || !ss_captive)}">
 <div style="padding-bottom:0px;"></div>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 <div style="padding-bottom:2px;"></div>
 </c:if>
 <div class="ss_clear_float"></div>
 </div>
+</c:if>
+<c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == 'iframe' || 
+  ssUser.displayStyle == 'vertical' || 
+  (!empty ssFolderActionVerticalOverride && ssFolderActionVerticalOverride == 'yes') || 
+  !accessibility_simple_ui}" >
+<!-- iframe div -->
+<%@ include file="/WEB-INF/jsp/entry/view_iframe_div.jsp" %>
+<!-- end of iframe div -->
 </c:if>
 <script type="text/javascript">
 ss_workarea_showPseudoPortal${renderResponse.namespace}()

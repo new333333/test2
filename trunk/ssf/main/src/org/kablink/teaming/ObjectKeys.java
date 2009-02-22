@@ -226,7 +226,7 @@ public interface ObjectKeys {
     public static final String RELEVANCE_DASHBOARD_OVERVIEW = "overview";
     public static final String RELEVANCE_DASHBOARD_PROFILE = "profile";
     public static final String RELEVANCE_DASHBOARD_TRACKED_ITEMS = "trackedItems";
-    public static final String RELEVANCE_DASHBOARD_WHATS_NEW = "whats_new";
+    public static final String RELEVANCE_DASHBOARD_WHATS_NEW = "whatsNew";
     public static final String RELEVANCE_DASHBOARD_TASKS_VIEW_DEFAULT = "2weeks";
     public static final String RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_DEFAULT = "teams";
     public static final String RELEVANCE_DASHBOARD_WHATS_NEW_VIEW_TEAMS = "teams";

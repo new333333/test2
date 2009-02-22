@@ -138,8 +138,7 @@ if (typeof ss_workarea_showId == "undefined")
 <table cellspacing="0" cellpadding="0">
 <tbody>
 <tr>
-<ssf:ifnotaccessible>
-<c:if test="${!ss_mashupHideSidebar}">
+<c:if test="${!ss_mashupHideSidebar && (empty ss_captive || !ss_captive)}">
 <td valign="middle">
 <a href="javascript: ;" 
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
@@ -151,7 +150,6 @@ if (typeof ss_workarea_showId == "undefined")
   class="ss_fineprint ss_sidebarSlide ss_sidebarSlidetext"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
 </td>
 </c:if>
-</ssf:ifnotaccessible>
 
 <c:if test="${!ss_mashupHideToolbar}">
 <td valign="middle">
@@ -167,13 +165,11 @@ if (typeof ss_workarea_showId == "undefined")
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
-<ssf:ifnotaccessible>
-    <c:if test="${!ss_mashupHideSidebar}">
+    <c:if test="${!ss_mashupHideSidebar && (empty ss_captive || !ss_captive)}">
       <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	  </td>
 	</c:if>
-</ssf:ifnotaccessible>
 	<td valign="top" class="ss_view_info">
 		<!-- Include "Video Tutorials" ui. -->
 		<jsp:include page="/WEB-INF/jsp/common/tutorial_support.jsp" />
@@ -238,13 +234,6 @@ if (typeof ss_workarea_showId == "undefined")
 	</tr>
 	</tbody>
 	</table>
-<ssf:ifaccessible>
-  <c:if test="${!ss_mashupHideSidebar}">
-    <div>
-	  <jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
-    </div>
-  </c:if>
-</ssf:ifaccessible>
   </div>
 <script type="text/javascript">
 	ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));

@@ -130,7 +130,7 @@ public class RelevanceDashboardHelper {
 			setupTrackedCalendarBeans(bs, userWorkspace, model);
 			setupTrackedItemsBeans(bs, userWorkspace, model);
 			
-		} else if (ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW.equals(type)) {
+		} else if (ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW.equals(type)) { 
 			setupWhatsNewDashboardBeans(bs, request, response, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_ACTIVITIES.equals(type)) {

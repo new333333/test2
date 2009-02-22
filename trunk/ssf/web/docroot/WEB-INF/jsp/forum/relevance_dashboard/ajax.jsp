@@ -35,7 +35,7 @@
 <c:if test="${ss_type == 'tasks_and_calendars'}">
   <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tasks_and_calendars_tab.jsp" />
 </c:if>
-<c:if test="${ss_type == 'whats_new'}">
+<c:if test="${ss_type == 'whatsNew'}">
   <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tab.jsp" />
 </c:if>
 <c:if test="${ss_type == 'activities'}">
