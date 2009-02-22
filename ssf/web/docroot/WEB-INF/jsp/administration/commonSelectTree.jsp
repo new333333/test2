@@ -55,6 +55,7 @@ function ss_selectAll(formName, prefix, newState) {
     }
 }
 function ss_selectAllIfNoneSelected(prefix) {
+    if (typeof this.elements == 'undefined') return true;
     var totalElements = this.elements.length;
     for ( var i=0; i < totalElements; i++) {
         var namestring = this.elements[i].name.substring(0,prefix.length)
@@ -83,5 +84,5 @@ function ss_selectAllIfNoneSelected(prefix) {
 <br>
 <br>
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>"
-  onClick="ss_selectAllIfNoneSelected('id_');">
+  onClick="ss_selectAllIfNoneSelected.call(this,'id_');">
 
