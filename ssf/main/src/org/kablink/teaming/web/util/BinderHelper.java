@@ -57,6 +57,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Attribute;
@@ -101,6 +102,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.portlet.forum.ViewController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
 import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
@@ -339,7 +341,12 @@ public class BinderHelper {
 			String displayType = getDisplayType(request);
 			model.put(WebKeys.DISPLAY_TYPE, displayType);
 	 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-			Boolean captive = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_CAPTIVE, false);
+	        HttpSession session = ((PortletRequestImpl) request).getHttpServletRequest().getSession();
+			String s_captive = PortletRequestUtils.getStringParameter(request, WebKeys.URL_CAPTIVE, "");
+			if (!s_captive.equals("")) session.setAttribute(WebKeys.CAPTIVE, Boolean.valueOf(s_captive));
+			Boolean captive = false;
+			if (session.getAttribute(WebKeys.CAPTIVE) != null) 
+				captive = (Boolean)session.getAttribute(WebKeys.CAPTIVE);
 			model.put(WebKeys.CAPTIVE, captive);
 			String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 			if (!namespace.equals("")) {
