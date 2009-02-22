@@ -833,7 +833,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 </div>
 <!-- End of favorites pane -->
 <c:if test="${ss_navbar_style != 'portlet'}">
-<c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == 'iframe' || (!empty ssFolderActionVerticalOverride && ssFolderActionVerticalOverride == 'yes')}" >
+<c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == 'iframe' || 
+  (!empty ssFolderActionVerticalOverride && ssFolderActionVerticalOverride == 'yes')}" >
 <!-- iframe div -->
 <%@ include file="/WEB-INF/jsp/entry/view_iframe_div.jsp" %>
 <!-- end of iframe div -->

@@ -910,6 +910,7 @@ function ss_selectRelevanceTab(obj, type, type3, binderId, namespace) {
 }
 function ss_showRelevanceTab(s, namespace) {
 	var canvasObj = self.document.getElementById("relevanceCanvas_" + namespace);
+	if (canvasObj == null) alert('relevance tab misconfigured on page');
 	canvasObj.innerHTML = s;
 	canvasObj.style.display = 'block'
 	canvasObj.style.visibility = 'visible'

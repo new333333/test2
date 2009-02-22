@@ -214,7 +214,7 @@ ss_createOnLayoutChangeObj("ss_setCurrentIframeHeight", ss_setCurrentIframeHeigh
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
-    <c:if test="${!ss_mashupHideSidebar}">
+    <c:if test="${!ss_mashupHideSidebar && (empty ss_captive || !ss_captive)}">
     <td valign="top" class="ss_view_sidebar" id="ss_sidebarTd${renderResponse.namespace}">
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
@@ -247,7 +247,7 @@ ss_createOnLayoutChangeObj("ss_setCurrentIframeHeight", ss_setCurrentIframeHeigh
   </ssf:ifnotaccessible>
 
 <ssf:ifaccessible>
-  <c:if test="${!ss_mashupHideSidebar}">
+  <c:if test="${!ss_mashupHideSidebar && (empty ss_captive || !ss_captive)}">
   <div>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
   </div>

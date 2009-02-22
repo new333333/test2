@@ -60,7 +60,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 <table cellspacing="0" cellpadding="0">
 <tr>
 <ssf:ifnotaccessible>
-<c:if test="${!ss_mashupHideSidebar}">
+<c:if test="${!ss_mashupHideSidebar && (empty ss_captive || !ss_captive)}">
 <td valign="middle">
 <a href="javascript: ;" 
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
@@ -85,7 +85,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
-   <c:if test="${!ss_mashupHideSidebar}">
+   <c:if test="${!ss_mashupHideSidebar && (empty ss_captive || !ss_captive)}">
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
 		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 	</td>
@@ -141,7 +141,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	</ssf:ifnotaccessible>
 </div>
 <ssf:ifaccessible>
-  <c:if test="${!ss_mashupHideSidebar}">
+  <c:if test="${!ss_mashupHideSidebar && (empty ss_captive || !ss_captive)}">
   <div>
 	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
   </div>

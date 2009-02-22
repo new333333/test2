@@ -110,6 +110,7 @@ public class WebKeys {
     public static final String URL_BLOG_REPLY="blogReply";
     public static final String URL_BLOG_REPLY_COUNT="blogReplyCount";
     public static final String URL_BY_USER="ss_byUser";
+	public static final String URL_CAPTIVE="captive";
 	public static final String URL_CSS_SHEET="sheet";
 	public static final String URL_CSS_THEME="theme";
 	public static final String URL_DASHBOARD_ID="dashboardId";
@@ -598,6 +599,7 @@ public class WebKeys {
     public static final String CALENDAR_IMPORT_TOOLBAR="ssCalendarImportToolbar";
 	public static final String CAN_FORCE_FILE_UNLOCK="ss_canForceFileUnlock";
 	public static final String CAN_VIEW_USER_PROFILES="ss_canViewUserProfiles";
+	public static final String CAPTIVE="ss_captive";
 	public static final String CHANGE_LOGS="ss_changeLogs";
 	public static final String CHANGE_LOG_LIST="ss_changeLogList";
 	public static final String CLIPBOARD="ssClipboard";

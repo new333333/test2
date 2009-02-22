@@ -34,7 +34,7 @@
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <% // BEGIN SIDEBAR LAYOUT  %>
-<c:if test="${!ss_mashupHideSidebar}">
+<c:if test="${!ss_mashupHideSidebar && (empty ss_captive || !ss_captive)}">
   <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
 	<div id="ss_sideNav_wrap"> 
 
