@@ -72,7 +72,7 @@ public class WorkAreaOperation {
     //group of users
     public final static WorkAreaOperation ZONE_ADMINISTRATION = new WorkAreaOperation("zoneAdministration", true);
     public final static WorkAreaOperation ADD_GUEST_ACCESS = new WorkAreaOperation("addGuestAccess", true);
-    public final static WorkAreaOperation TOKEN_REQUESTER = new WorkAreaOperation("tokenRequester", true);
+    public final static WorkAreaOperation TOKEN_REQUEST = new WorkAreaOperation("tokenRequest", true);
 
     private String name;
     private boolean zoneWide=false;

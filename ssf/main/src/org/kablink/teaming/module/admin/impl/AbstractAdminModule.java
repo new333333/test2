@@ -869,24 +869,24 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 
    }
    
-	public String getApplicationScopedToken(long applicationId, long userId) {
+	public String obtainApplicationScopedToken(long applicationId, long userId) {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 
 		// check caller has right
-		getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(rc.getZoneId()), WorkAreaOperation.TOKEN_REQUESTER);
+		getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(rc.getZoneId()), WorkAreaOperation.TOKEN_REQUEST);
 		
 		// check application exists
 		Application application = getProfileDao().loadApplication(applicationId, rc.getZoneId());
 		
 		// check user exists
-		User user = getProfileDao().loadUser(rc.getUserId(), rc.getZoneId());
+		User user = getProfileDao().loadUser(userId, rc.getZoneId());
 
 		return getAccessTokenManager().getApplicationScopedToken(applicationId, userId).toStringRepresentation();
 	}
 	
 	public void destroyApplicationScopedToken(String token) {
 		// check caller has right
-		getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.TOKEN_REQUESTER);
+		getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.TOKEN_REQUEST);
 		
 		getAccessTokenManager().destroyApplicationScopedToken(new AccessToken(token));
 	}

@@ -1087,7 +1087,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.setZoneId(zoneConfig.getZoneId());
 		function.setName(ObjectKeys.ROLE_TOKEN_REQUESTER);
 		function.setInternalId(ObjectKeys.FUNCTION_TOKEN_REQUESTER_INTERNALID);
-		function.addOperation(WorkAreaOperation.TOKEN_REQUESTER);
+		function.addOperation(WorkAreaOperation.TOKEN_REQUEST);
 		function.setZoneWide(true);
 		//generate functionId
 		getFunctionManager().addFunction(function);

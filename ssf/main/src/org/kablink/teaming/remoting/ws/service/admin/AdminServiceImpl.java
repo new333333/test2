@@ -38,7 +38,7 @@ import org.kablink.teaming.remoting.ws.BaseService;
 public class AdminServiceImpl extends BaseService implements AdminService {
 
 	public String getApplicationScopedToken(String accessToken, long applicationId, long userId) {
-		return getAdminModule().getApplicationScopedToken(applicationId, userId);
+		return getAdminModule().obtainApplicationScopedToken(applicationId, userId);
 	}
 	
 	public void destroyApplicationScopedToken(String accessToken, String token) {
