@@ -94,6 +94,7 @@
 		<ant dir="lucene-contrib" target="clean" inheritAll="false"/>
 		<ant dir="indexer-lucene" target="clean" inheritAll="false"/>
 		<ant dir="as-module" target="clean" inheritAll="false"/>
+		<ant dir="tomcat" target="clean" inheritAll="false"/>
 
 		<if>
 			<equals arg1="${build.applets}" arg2="true" />
@@ -133,6 +134,7 @@
 		<ant dir="lucene-contrib" target="compile" inheritall="false"/>
 		<ant dir="indexer-lucene" target="compile" inheritall="false"/>			
 		<ant dir="as-module" target="compile" inheritall="false"/>
+		<ant dir="tomcat" target="compile" inheritall="false"/>
 
 		<ant dir="main" target="compile-common" inheritall="false"/>
 
@@ -169,6 +171,7 @@
 		<ant dir="lucene-contrib" target="jar" inheritall="false"/>
 		<ant dir="indexer-lucene" target="jar" inheritall="false"/>
 		<ant dir="as-module" target="jar" inheritall="false"/>
+		<ant dir="tomcat" target="jar" inheritall="false"/>
 
 		<if>
 			<equals arg1="${build.applets}" arg2="true" />
@@ -209,6 +212,7 @@
 		<ant dir="lucene-contrib" target="deploy" inheritall="false"/>
 		<ant dir="indexer-lucene" target="deploy" inheritall="false"/>
 		<ant dir="as-module" target="deploy" inheritall="false"/>
+		<ant dir="tomcat" target="deploy" inheritall="false"/>
 
 		<if>
 			<equals arg1="${build.applets}" arg2="true" />
@@ -248,6 +252,7 @@
 		<ant dir="lucene-contrib" target="java2html" inheritAll="false"/>
 		<ant dir="indexer-lucene" target="java2html" inheritAll="false"/>
 		<ant dir="as-module" target="java2html" inheritAll="false"/>
+		<ant dir="tomcat" target="java2html" inheritAll="false"/>
 
 		<if>
 			<equals arg1="${build.applets}" arg2="true" />
@@ -278,6 +283,7 @@
 		<ant dir="lucene-contrib" target="javadoc" inheritAll="false"/>
 		<ant dir="indexer-lucene" target="javadoc" inheritAll="false"/>
 		<ant dir="as-module" target="javadoc" inheritAll="false"/>
+		<ant dir="tomcat" target="javadoc" inheritAll="false"/>
 		
 		<if>
 			<equals arg1="${build.applets}" arg2="true" />
