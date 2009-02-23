@@ -8,6 +8,7 @@ Axis 1.4 (removed log4j.properties)
 backport-concurrent.jar 2.1 Concurrent(Backport)
 bcprov-jdk15.jar 1.32 (BouncyCastle library; required by WSS4J)
 bsh 2.0b2
+Catalina 6.0.18 (from Tomcat 6.0.18 distribution)
 Commons Beanutils 1.7 (from spring distribution)
 Commons Codec 1.3 (required by WSS4J)
 Commons Collections 3.2 (from spring distribution)

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
+	<classpathentry kind="src" path="tomcat/src"/>
 	<classpathentry kind="src" path="samples/module-event-listeners/src"/>
 	<classpathentry kind="src" path="main-minimum/src"/>
 	<classpathentry kind="src" path="liferay-light/src"/>
@@ -122,5 +123,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jbpm.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-ldap.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/catalina.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
