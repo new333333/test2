@@ -63,6 +63,8 @@ public class TeamingServiceClientWithStub {
 	
 	private static final String USERNAME = "admin";
 	private static final String PASSWORD = "admin";
+	//private static final String USERNAME = "synchagent";
+	//private static final String PASSWORD = "test";
 	
 	public static void main(String[] args) throws Exception {
 		FolderEntry entry;
@@ -123,7 +125,7 @@ public class TeamingServiceClientWithStub {
 			String token = regularStub.getApplicationScopedToken(null, applicationId, userId);
 			try {
 				// If you're here, the request was successful.
-				System.out.println("Obtained token: " + token);
+				System.out.println("Obtained token=" + token + " for application=" + applicationId + " user=" + userId);
 				
 				// Invoke search_getTeams() web services operation using the token obtained above.
 				// This call must be made through the endpoint set up for token-based web services.
