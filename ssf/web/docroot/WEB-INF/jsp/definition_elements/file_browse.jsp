@@ -55,9 +55,7 @@ function ss_showMoreFiles${property_name}() {
 </c:if>
 
 <c:set var="countFb" value="1"/>
-<c:if test='${! empty property_number}'>
-<c:set var="countFb" value="${property_number}"/>
-</c:if>
+<c:if test='${! empty property_number}'><c:set var="countFb" value="${property_number}"/></c:if>
 <c:set var="countFb2" value="5"/>
 <c:if test="${countFb > 1}"><c:set var="countFb2" value="${countFb}"/></c:if>
 <c:if test="${empty ss_fileBrowseOfferMoreFiles || ss_fileBrowseOfferMoreFiles != 'true'}"><c:set var="countFb2" value="1"/></c:if>
@@ -97,7 +95,9 @@ var ${eName}_ok = 1;
 <tr>
 <td>
 <c:forEach var="i" begin="1" end="${countFb2}">
- <c:set var="eName" value="${elementName}${i}"/>
+ <c:if test='${! empty property_number}'>
+	<c:set var="eName" value="${elementName}${i}"/>
+ </c:if>
  <c:if test='${! empty ssFolder}'>
   <div class="needed-because-of-ie-bug"><div id="ss_duplicateFileCheck_${eName}" style="display:none; visibility:hidden;" ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
   <input type="file" class="ss_text" 
