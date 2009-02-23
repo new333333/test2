@@ -276,6 +276,10 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderIcon" />
 	</item>
 	
+<!--
+  Note: This item was removed. It is a work in progress. See also "folderAttributeList".
+        Everything works except adding these attributes to the advanced search form.
+        
 	<item name="entryAttributes" caption="__attributes" type="data" multipleAllowed="true" 
 		category="entryData" display="form">
 		<properties>
@@ -300,6 +304,7 @@
 			elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderEntryAttributes"/>
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderEntryAttributes" />
 	</item>
+-->
 	
 	<item name="event" caption="__event" type="data" category="entryData" display="form">
 		<properties>
@@ -640,6 +645,10 @@
 		<help>ihelp.designers.branding</help>
 	</item>
 	
+<!--
+  Note: This item was removed. It is a work in progress. See also "entryArrtibutes".
+        Everything works except adding these attributes to the advanced search form.
+        
 	<item name="folderAttributeList" caption="__attributeList" type="data" multipleAllowed="true" 
 			category="folderData" display="form">
 		<properties>
@@ -651,6 +660,7 @@
 		</jsps>
 		<help>ihelp.designers.attributeList</help>
 	</item>
+-->
 	
 <!-- Folder view	-->
 	
@@ -1230,6 +1240,7 @@
 			<property name="caption" caption="__caption" type="text" value="__locale"/>
 			<property name="name" caption="__data_name" type="text" value="locale" 
 			  readonly="true" unique="//item[@type='data']"/>
+			<property name="default" caption="__default_locale" type="locale"/>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_locale_form.jsp" />

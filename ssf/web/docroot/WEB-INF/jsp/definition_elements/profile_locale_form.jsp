@@ -39,6 +39,7 @@
 <c:if test="${empty ssReadOnlyFields[property_name]}">
 <select name="${property_name}" id="${property_name}">
 <%
+	String s_locale = (String) request.getAttribute("property_default");
 	java.util.Set<java.util.Locale> ids = org.kablink.teaming.util.NLT.getLocales();
 	org.kablink.teaming.domain.User user = (org.kablink.teaming.domain.User)request.getAttribute("ssDefinitionEntry");
 	org.kablink.teaming.domain.User currentUser = (org.kablink.teaming.domain.User)request.getAttribute("ssUser");
@@ -52,9 +53,10 @@
 	java.util.Locale userLocale;
 	if (user != null) userLocale = user.getLocale();
 	else userLocale = java.util.Locale.getDefault();
+	if (s_locale != null && !s_locale.equals("")) userLocale = new java.util.Locale(s_locale);
 	for (java.util.Map.Entry<String, java.util.Locale> me: map.entrySet()) {
 		String checked = "";
-		if (me.getValue().equals(userLocale))
+		if (me.getValue().toString().toLowerCase().equals(userLocale.toString().toLowerCase()))
 			checked="selected=\"selected\"";
 		
 %>
