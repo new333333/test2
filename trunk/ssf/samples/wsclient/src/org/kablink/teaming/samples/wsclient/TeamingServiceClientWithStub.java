@@ -123,7 +123,7 @@ public class TeamingServiceClientWithStub {
 			String token = regularStub.getApplicationScopedToken(null, applicationId, userId);
 			try {
 				// If you're here, the request was successful.
-				System.out.println(token);
+				System.out.println("Obtained token: " + token);
 				
 				// Invoke search_getTeams() web services operation using the token obtained above.
 				// This call must be made through the endpoint set up for token-based web services.
@@ -131,10 +131,12 @@ public class TeamingServiceClientWithStub {
 				locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_TOKEN);
 				TeamingServiceSoapBindingStub tokenBasedStub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 				tokenBasedStub.search_getTeams(token);
+				System.out.println("Successfully invoked getTeams() operation");
 			}
 			finally {
 				// Destroy the token. Again, this call is made through the regular web services endpoint.
-				regularStub.destroyApplicationScopedToken(null, token);				
+				regularStub.destroyApplicationScopedToken(null, token);		
+				System.out.println("Destroyed token: " + token);
 			}
 		}
 		catch(Exception e) {
