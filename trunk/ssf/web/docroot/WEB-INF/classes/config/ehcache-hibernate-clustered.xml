@@ -11,7 +11,7 @@
          The directory must be node specific if running within a cluster. 
          In other words, it must be local not shared.
         -->
-    <diskStore path="java.io.tmpdir/icecore/ehcache/hibernate"/>
+    <diskStore path="java.io.tmpdir/teaming/ehcache/hibernate"/>
 
 	<cacheManagerEventListenerFactory class="" properties="" />
 
