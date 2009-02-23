@@ -80,12 +80,138 @@ try
 				padding-top: 5px;
 				padding-bottom: 5px;
 			}
+
+			.sharedMessage 
+			{
+				margin: .25em;
+			}
+			
+			.sharedMessagebox
+			{
+				display:block;
+			}
+			
+			.sharedMessagebox *
+			{
+				display:block;
+				height:1px;
+				overflow:hidden;
+				background:#EBECA5;
+			}
+			
+			.sharedMessagebox1
+			{
+				border-right:1px solid #f6f6d8;
+				padding-right:1px;
+				margin-right:3px;
+				border-left:1px solid #f6f6d8;
+				padding-left:1px;
+				margin-left:3px;
+				background:#f0f0bb;
+			}
+			
+			.sharedMessagebox2
+			{
+				border-right:1px solid #fdfdf6;
+				border-left:1px solid #fdfdf6;
+				padding:0px 1px;
+				background:#eeefb6;
+				margin:0px 1px;
+			}
+			
+			.sharedMessagebox3
+			{
+				border-right:1px solid #eeefb6;
+				border-left:1px solid #eeefb6;
+				margin:0px 1px;
+			}
+			
+			.sharedMessagebox4
+			{
+				border-right:1px solid #f6f6d8;
+				border-left:1px solid #f6f6d8;
+			}
+			
+			.sharedMessagebox5
+			{
+				border-right:1px solid #f0f0bb;
+				border-left:1px solid #f0f0bb;
+			}
+			
+			.sharedMessagebox_content
+			{
+				padding:0 5px;
+				background:#ebeca5;
+			} 
+			
+			.sharedMessagebox_content img
+			{
+				float: left; 
+				padding-right: 0.5em; 
+				padding-bottom: 0.5em; 
+				padding-left: 0.2em;
+			} 
+			
+			.sharedMessagebox_content .sharedMessageType
+			{
+				color: #9a4000;
+				padding-right: 0.3em;
+			}
+			
+			.sharedMessagebox_content .sharedWarnType
+			{
+				color: #9a4000;
+				padding-right: 0.3em;
+			}
+			
+			.sharedMessagebox_content .sharedErrorType
+			{
+				color: #d61e11;
+				text-transform: uppercase;
+				letter-spacing: 0.1em;
+				padding-right: 0.3em;
+			}
+			
+			.sharedMessagebox_content .sharedInfoType
+			{
+				color: #4d6d8b;
+				padding-right: 0.3em;
+			}
+			
+			.sharedMessagebox_content .sharedSuccessType
+			{
+				color: #117f12;
+				padding-right: 0.3em;
+			}
+			
+			.sharedMessagebox_content .sharedMessageText
+			{
+				font-size: 0.8em;
+				font-weight: bold;
+				padding: 0.75em 1.5em
+			} 
+				
+			.sharedMessagebox_content .sharedSubtext
+			{
+				color: #424242; 
+				font-size: 0.7em;
+				background-color: #fff; 
+				margin-top: 0.2em; 
+				padding: 0.5em 1.5em 0.75em;
+			} 	
 		//-->
 		</STYLE>
 
-		<script type="text/javascript">
+		<!-- Include the JavaScript used to interact with the flash plugin. -->
+	    <script type="text/javascript" src="<html:rootPath/>js/swfobject/swfobject.js">
+		</script>
+
+	    <script type="text/javascript">
 			var		m_selectedTutorial	= null;
-			var		m_tutorialObjs	= null;	// Associative array of tutorial objects.
+			var		m_tutorialObjs		= null;	// Associative array of tutorial objects.
+			var		m_swfObj			= null;	// swfobject used to interact with the flash plugin.
+
+			var		REQUIRED_MIN_FLASH_PLUGIN_VERSION	= '9.0.115';
 
 			/**
 			 * Return a tutorial object for the given tutorial name.
@@ -110,6 +236,7 @@ try
 			{
 				var		tutorialObj;
 				var		tutorialName;
+				var		fn;
 
 				// Create an array to hold the tutorial objects.
 				m_tutorialObjs = new Array();
@@ -122,6 +249,7 @@ try
 				tutorialObj.img = document.getElementById( 'tutorial1SelectedImg' );
 				tutorialObj.type = 'application/x-shockwave-flash';
 				tutorialObj.url = 'http://www.youtube.com/v/8YqsFwmgMms&hl=en&fs=1';
+//				tutorialObj.url = 'http://137.65.64.13/teaming-tutorials/Thayne_controller.swf';
 
 				// Create a tutorial object for "Getting Started"
 				tutorialObj = new Object();
@@ -130,7 +258,8 @@ try
 				tutorialObj.span = document.getElementById( 'tutorial2Span' );
 				tutorialObj.img = document.getElementById( 'tutorial2SelectedImg' );
 				tutorialObj.type = 'application/x-shockwave-flash';
-				tutorialObj.url = 'http://www.youtube.com/v/yuI6XfKoDiA&hl=en&fs=1';
+				//tutorialObj.url = 'http://www.youtube.com/v/yuI6XfKoDiA&hl=en&fs=1';
+				tutorialObj.url = 'http://www.novell.com/documentation/teaming2/media/getting-started_controller.swf';
 
 				// Create a tutorial object for "Getting Informed"
 				tutorialObj = new Object();
@@ -139,16 +268,18 @@ try
 				tutorialObj.span = document.getElementById( 'tutorial3Span' );
 				tutorialObj.img = document.getElementById( 'tutorial3SelectedImg' );
 				tutorialObj.type = 'application/x-shockwave-flash';
-				tutorialObj.url = 'http://www.youtube.com/v/VJTQr4BPurc&hl=en&fs=1';
+//				tutorialObj.url = 'http://www.youtube.com/v/VJTQr4BPurc&hl=en&fs=1';
+				tutorialObj.url = 'http://www.novell.com/documentation/teaming2/media/getting-informed_controller.swf';
 
-				// Create a tutorial object for "Navigation"
+				// Create a tutorial object for "Getting Around"
 				tutorialObj = new Object();
 				m_tutorialObjs['navigation'] = tutorialObj;
 				tutorialObj.td = document.getElementById( 'tutorial4TD' );
 				tutorialObj.span = document.getElementById( 'tutorial4Span' );
 				tutorialObj.img = document.getElementById( 'tutorial4SelectedImg' );
 				tutorialObj.type = '';
-				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-4.wmv';
+//				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-4.wmv';
+				tutorialObj.url = 'http://www.novell.com/documentation/teaming2/media/getting-around_controller.swf';
 
 				// Create a tutorial object for "Customizing Teaming to Solve Business Problems"
 				tutorialObj = new Object();
@@ -157,12 +288,35 @@ try
 				tutorialObj.span = document.getElementById( 'tutorial5Span' );
 				tutorialObj.img = document.getElementById( 'tutorial5SelectedImg' );
 				tutorialObj.type = '';
-				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-5.wmv';
+//				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-5.wmv';
+				tutorialObj.url = 'http://www.novell.com/documentation/teaming2/media/customizing_controller.swf';
 
 				// Get the name of the tutorial we should start playing.
 				tutorialName = '<ssf:escapeJavaScript>${ss_tutorial_name}</ssf:escapeJavaScript>';
 
-				playTutorial( tutorialName );
+				// Is the flash plugin installed?
+				if ( !swfobject.hasFlashPlayerVersion( REQUIRED_MIN_FLASH_PLUGIN_VERSION ) )
+				{
+					var		span;
+					var		div;
+
+					// No
+					// Display the text that tells the user how to install the plugin.
+					div = document.getElementById( 'replaceMe' );
+					div.style.width = '65%';
+					span = document.getElementById( 'altContent' );
+					span.style.display = '';
+				}
+				else
+				{
+					// Call the playTutorial() method after the dom is loaded.  We do this because we need to wait for
+					// the dom to be loaded before we create the flash control.
+					fn = function()
+					{
+						playTutorial( tutorialName );
+					}
+			      	swfobject.addDomLoadEvent( fn );
+				}
 			}// end handleOnload()
 
 				 
@@ -188,10 +342,15 @@ try
 			{
 				var		ctrl;
 				var		tutorialObj;
-				var		embed;
-				var		td;
 
 				self.focus();
+
+				// Is the flash plugin installed?
+				if ( !swfobject.hasFlashPlayerVersion( REQUIRED_MIN_FLASH_PLUGIN_VERSION ) )
+				{
+					// Nothing to do.
+					return;
+				}
 
 				// Get the tutorial object for the given tutorial.
 				tutorialObj = getTutorialFromName( tutorialName );
@@ -212,29 +371,20 @@ try
 
 				m_selectedTutorial = tutorialObj;
 
-				// Get the td that will holds the media player.
-				td = document.getElementById( 'watchThisTutorialTD' );
+				// Create a new flash control.  On IE we can just reuse the swfobject we already have but on Firefox we can't.
+				// As a result, we just create a new flash control every time.
+		      	{
+		        	var att;
+		        	var par;
+		        	var id;
 
-				// Delete the current <embed> element if it exists.
-				embed = document.getElementById( 'mediaPlayer' );
-				if ( embed != null )
-					embed.parentNode.removeChild( embed );
+		        	att = { data:m_selectedTutorial.url, width:'640', height:'498' };
+		        	par = { quality:'best', bgcolor:'#000000', allowfullscreen:'true', scale:'showall', allowscriptaccess:'always', flashvars:'autostart=false&thumb=FirstFrame.png&thumbscale=45&color=0x000000,0x000000' };
+		        	id = 'replaceMe';
 
-				// Create a new <embed> element.
-				embed = document.createElement( 'embed' );
-				embed.id = 'mediaPlayer';
-				embed.allowscriptaccess = 'always';
-				embed.allowfullscreen = 'true';
-				embed.autoplay = 'true';
-				embed.quality = 'high';
-				embed.bgcolor = '#000000';
-				embed.name = 'medialPlayer';
-				embed.width = '480';
-				embed.height = '385';
-				embed.type = tutorialObj.type;
-				embed.src = tutorialObj.url;
-
-				td.appendChild( embed );
+		        	// Create an <object> element for the flash control.
+				    m_swfObj = swfobject.createSWF( att, par, id );
+		      	};
 			}// end playTutorial()
 
 
@@ -250,7 +400,7 @@ try
 				tutorialObj.span.className = 'tutorialUnhighlightedText';
 
 				tutorialObj.img.src = '<html:imagesPath/>pics/1pix.gif';
-			}// end highlightTutorial()
+			}// end unhighlightTutorial()
 
 
 			/**
@@ -398,6 +548,44 @@ try
 					</table>
 				</td>
 				<td width="*" id="watchThisTutorialTD">
+					<!-- The following <div> will be replaced with a flash player object if -->
+					<!-- the correct flash player is installed.  Otherwise, the content in the div will be displayed -->
+					<!-- telling the user they need to install/upgrade the flash plugin. -->
+					<div id="replaceMe" >
+						<div class="sharedMessage" id="altContent" style="display: none">
+							<b class="sharedMessagebox">
+								<b class="sharedMessagebox1">
+									<b></b>
+								</b>
+								<b class="sharedMessagebox2">
+									<b></b>
+								</b>
+								<b class="sharedMessagebox3"></b>
+								<b class="sharedMessagebox4"></b>
+								<b class="sharedMessagebox5"></b>
+							</b>
+							<div class="sharedMessagebox_content">
+								<img	border="0"
+										align="absmiddle"
+										src="<html:imagesPath/>pics/warning.gif" />
+								<div class="sharedMessageText">
+									<ssf:nlt tag="playtutorial.pluginrequired" />
+									<a href="http://www.adobe.com/go/getflashplayer">www.adobe.com/go/getflashplayer</a>
+								</div>
+							</div>
+							<b class="sharedMessagebox">
+								<b class="sharedMessagebox5"></b>
+								<b class="sharedMessagebox4"></b>
+								<b class="sharedMessagebox3"></b>
+								<b class="sharedMessagebox2">
+									<b></b>
+								</b>
+								<b class="sharedMessagebox1">
+									<b></b>
+								</b>
+							</b>
+						</div>
+					</div>
 				</td>
 			</tr>
 			<tr>

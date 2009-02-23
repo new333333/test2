@@ -297,8 +297,8 @@
 			
 		url = '<ssf:escapeJavaScript>${ss_play_tutorial_base_url}</ssf:escapeJavaScript>';
 		url += '&ss_tutorial_name=' + encodeURIComponent( tutorialName );
-		winHeight = 520;
-		winWidth = 720; 
+		winHeight = 675;
+		winWidth = 975; 
 		m_playTutorialWnd = window.open(
 									url,
 									'PlayTutorialWindow',
