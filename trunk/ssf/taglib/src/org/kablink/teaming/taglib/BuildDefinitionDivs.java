@@ -43,6 +43,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
@@ -78,6 +79,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
@@ -894,6 +896,34 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append("<img alt=\"\" border=\"0\" src=\"").append(imagesPath + "/" + brandingPrefix).append(iconListValue).append("\"/>");
 							sb.append("<br/><br/>\n");
 						}
+					
+					} else if (type.equals("locale")) {
+						sb.append(propertyConfigCaption);
+						Element localeValueEle = (Element)rootElement.selectSingleNode("properties/property[@name='default']");
+						sb.append("<br/><select name=\"propertyId_" + 
+								propertyId + "\" id=\"propertyId_" + 
+								propertyId + "\" >\n");
+						Set<java.util.Locale> ids = NLT.getLocales();
+						User user = RequestContextHolder.getRequestContext().getUser();
+						TreeMap<String,Locale> map = new TreeMap(new StringComparator(user.getLocale())); //sort
+						for (Locale lc:ids) {
+							map.put(lc.getDisplayName(user.getLocale()), lc);
+						}
+						if (user != null) { //make sure current users locale appears
+							map.put(user.getLocale().getDisplayName(user.getLocale()), user.getLocale());
+						}
+						Locale userLocale;
+						if (user != null) userLocale = user.getLocale();
+						else userLocale = Locale.getDefault();
+						Locale defLocale = new Locale(userLocale.toString());
+						if (localeValueEle != null && !localeValueEle.attributeValue("value", "").equals(""))
+							defLocale = new Locale((String)localeValueEle.attributeValue("value"));
+						for (Map.Entry<String, Locale> me : map.entrySet()) {
+							String checked = "";
+							if (me.getValue().toString().toLowerCase().equals(defLocale.toString().toLowerCase())) checked="selected=\"selected\"";
+							sb.append("<option value=\""+me.getValue().toString()+"\" "+checked+">").append(me.getKey()).append("</option>\n");
+						};
+						sb.append("</select>\n<br/><br/>\n");
 					
 					} else if (type.equals("repositoryList")) {
 						int optionCount = 0;

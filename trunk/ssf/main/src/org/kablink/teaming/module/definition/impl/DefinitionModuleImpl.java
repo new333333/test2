@@ -1071,7 +1071,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						} else if (type.equals("selectbox") || type.equals("itemSelect") ||
 								type.equals("radio") || type.equals("replyStyle") ||
 								type.equals("iconList") || type.equals("repositoryList") ||
-								type.equals("folderSelect")) {
+								type.equals("folderSelect") || type.equals("locale")) {
 							newPropertyEle.addAttribute("value", value);
 						} else if (type.equals("boolean") || type.equals("checkbox")) {
 							if (value == null) {value = "false";}
@@ -2013,6 +2013,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									else if (vals.length == 2) entryData.put(nameValue, new Locale(vals[0], vals[1]));
 									else if (vals.length >= 3) entryData.put(nameValue, new Locale(vals[0], vals[1], vals[2]));
 								}
+							}
+						} else {
+							//See if there is a default specified
+							String defaultValue = DefinitionUtils.getPropertyValue(nextItem, "default");
+							if (!Validator.isNull(defaultValue)) {
+								String[] vals = defaultValue.split("_");
+								if (vals.length == 1) entryData.put(nameValue, new Locale(vals[0]));
+								else if (vals.length == 2) entryData.put(nameValue, new Locale(vals[0], vals[1]));
+								else if (vals.length >= 3) entryData.put(nameValue, new Locale(vals[0], vals[1], vals[2]));
 							}
 						}
 					} else if (itemName.equals("file") || itemName.equals("graphic") ||
