@@ -40,6 +40,7 @@
 </c:forEach>
 </c:if>
 <c:if test="${count > 0}"><c:set var="property_required" value="" scope="request"/></c:if>
+<c:set var="ss_fileBrowseOfferMoreFiles" value="false"/>
 <%@ include file="/WEB-INF/jsp/definition_elements/file_browse.jsp" %>
 
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name]}">

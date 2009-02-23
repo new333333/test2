@@ -60,6 +60,7 @@ function ss_showMoreFiles${property_name}() {
 </c:if>
 <c:set var="countFb2" value="5"/>
 <c:if test="${countFb > 1}"><c:set var="countFb2" value="${countFb}"/></c:if>
+<c:if test="${empty ss_fileBrowseOfferMoreFiles || ss_fileBrowseOfferMoreFiles != 'true'}"><c:set var="countFb2" value="1"/></c:if>
 
 <c:set var="eName" value="${elementName}"/>
 
@@ -146,7 +147,7 @@ var ${eName}_ok = 1;
 </div>
 </td>
 </tr>
-<c:if test="${countFb == '1'}">
+<c:if test="${countFb == '1' && ss_fileBrowseOfferMoreFiles == 'true'}">
 <tr>
 <td align="right">
 <div id="ss_extraFilesClick_${property_name}">
