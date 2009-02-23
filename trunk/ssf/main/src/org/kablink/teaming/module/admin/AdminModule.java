@@ -216,7 +216,7 @@ public interface AdminModule {
 	 * @param userId ID of the user on whose behalf the token is being requested. 
 	 * @return
 	 */
-	public String getApplicationScopedToken(long applicationId, long userId)
+	public String obtainApplicationScopedToken(long applicationId, long userId)
 	throws AccessControlException, NoApplicationByTheIdException, NoUserByTheIdException;
 
 	/**
