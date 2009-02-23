@@ -35,6 +35,7 @@
   <c:set var="property_number" value="1"/>
  </c:if>
 <div class="ss_entryContent">
+<c:set var="ss_fileBrowseOfferMoreFiles" value="true"/>
 <%@ include file="/WEB-INF/jsp/definition_elements/file_browse.jsp" %>
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
 <span class="ss_bold"><ssf:nlt tag="form.attachments.currentFiles" /></span>
