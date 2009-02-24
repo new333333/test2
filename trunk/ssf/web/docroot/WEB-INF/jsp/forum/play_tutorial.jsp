@@ -408,11 +408,17 @@ try
 			 */
 			function viewScript( format )
 			{
-				var	url;
-				var	winHeight;
-				var winWidth;
-				
-				url = 'http://www.novell.com/' + '${teamingLang}' + '/documentation/teaming2/script/tutorial.' + format;
+				var		url;
+				var		winHeight;
+				var		winWidth;
+				var		lang;
+
+				lang = '${teamingLang}';
+				url = 'http://www.novell.com';
+				// If the language is not English we need to add the language code to the url.
+				if ( 'en' != lang )
+					url += '/' + lang;
+				url += '/documentation/teaming2/script/tutorial.' + format;
 				winHeight = 720;
 				winWidth = 720; 
 				m_playTutorialWnd = window.open(
