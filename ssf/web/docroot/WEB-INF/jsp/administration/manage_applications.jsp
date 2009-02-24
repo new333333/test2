@@ -74,16 +74,21 @@ function ${renderResponse.namespace}_onsub(obj) {
 	  tag="ihelp.designers.data_name"/><br/></label>
 	<input type="text" class="ss_text" size="70" name="name" id="name"><br/><br/>
 		
-	<label for="postUrl"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationPostUrl"/></span><br/></label>
-	<input type="text" class="ss_text" size="70" name="postUrl" id="postUrl"><br/><br/>
-		
 	<label for="description"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationDescription"/></span><br/></label>
 	<textarea name="description" id="description" wrap="virtual" rows="4" cols="70"></textarea><br/><br/>
 	
-	<label for="timeout"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationTimeout"/></span><br/></label>
-	<input type="text" class="ss_text" size="15" name="timeout" id="timeout" value='<%=org.kablink.teaming.util.SPropsUtil.getString("remoteapp.timeout")%>'><br/><br/>
-		
 	<input type="checkbox" name="trusted" id="trusted" value="true"/> <label for="trusted"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationTrusted"/></span><br/><br/></label>
+	
+	<label for="postUrl"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationPostUrl"/></span><br/></label>
+	<input type="text" class="ss_text" size="70" name="postUrl" id="postUrl"><br/><br/>
+		
+	<label for="timeout"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationTimeout"/></span><br/></label>
+	<input type="text" class="ss_text" size="15" name="timeout" id="timeout" value='<%=org.kablink.teaming.util.SPropsUtil.getString("remoteapp.timeout","60")%>'><br/><br/>
+		
+	<label for="maxIdleTime"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationMaxIdleTime"/></span><br/></label>
+	<input type="text" class="ss_text" size="15" name="maxIdleTime" id="maxIdleTime" value='<%=org.kablink.teaming.util.SPropsUtil.getString("remoteapp.maxIdleTime","3600")%>'><br/><br/>
+		
+	<input type="checkbox" name="sameHostPolicy" id="sameHostPolicy" value="true" checked/> <label for="sameHostPolicy"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationSameHostPolicy"/></span><br/><br/><br/></label>
 	
 	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
