@@ -121,7 +121,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		} 
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		}
 	}
 	
@@ -141,7 +141,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		} 
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		}
 	}
 
@@ -161,7 +161,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		}
 	}
 
@@ -184,7 +184,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "create");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		} 
 		catch(AlreadyExistsException e) {
 			throw new ObjectAlreadyExistsException(uri);
@@ -213,7 +213,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "create");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		} 
 		catch (AlreadyExistsException e) {
 			throw new ObjectAlreadyExistsException(uri);
@@ -242,7 +242,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "store");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		} 
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(uri);
@@ -270,10 +270,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "create");
 		}
 		catch (CCClientException e) {
-			if(e.isWarning())
-				throw new ServiceAccessException(service, e.getLocalizedMessage(), true);
-			else
-				throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		} 
 		catch (AlreadyExistsException e) {
 			throw new ObjectAlreadyExistsException(uri);
@@ -298,7 +295,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		} 
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		} 
 		catch (NoAccessException e) {
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
@@ -322,7 +319,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		} 
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		} 
 		catch (NoAccessException e) {
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
@@ -360,7 +357,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(folderUri, e.getLocalizedMessage(), "read");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		} 
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(folderUri);
@@ -389,7 +386,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		} 
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(uri);
@@ -416,7 +413,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		} 
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(uri);
@@ -453,7 +450,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "delete");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		} 
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(uri);
@@ -488,7 +485,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "read");
 		} 
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		}	
 	}
 
@@ -534,7 +531,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "lock");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		}
 		catch (NoSuchObjectException e) {
 			// The specified object does not exist. Although WebDAV specification
@@ -577,7 +574,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "lock");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		}
 		catch (NoSuchObjectException e) {
 			// The specified object does not exist. This means nothing to 
@@ -607,7 +604,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(uri, e.getLocalizedMessage(), "lock");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		}
 		catch (NoSuchObjectException e) {
 			// The specified object does not exist. 
@@ -671,7 +668,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(targetUri, e.getLocalizedMessage(), "/actions/write");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		} 
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(sourceUri);
@@ -712,7 +709,7 @@ public class WebdavKablink implements BasicWebdavStore,
 			throw new AccessDeniedException(targetUri, e.getLocalizedMessage(), "/actions/write");
 		}
 		catch (CCClientException e) {
-			throw new ServiceAccessException(service, e.getLocalizedMessage());
+			throw new ServiceAccessException(service, e.getLocalizedMessage(), e.isWarning());
 		} 
 		catch (NoSuchObjectException e) {
 			throw new ObjectNotFoundException(sourceUri);

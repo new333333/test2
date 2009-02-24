@@ -43,6 +43,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.domain.LoginInfo;
+import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
@@ -200,6 +201,12 @@ public class DispatchServer extends GenericServlet {
 					req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);		
 					logger.error(e.getLocalizedMessage(), e);
 				}
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
+				return;
+			}
+			catch(ReservedByAnotherUserException e) {
+				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.WARNING_GENERAL);				
+				logger.warn(e);
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
 			}
