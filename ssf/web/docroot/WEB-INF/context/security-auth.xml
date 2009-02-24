@@ -22,6 +22,8 @@
 	
     <s:http session-fixation-protection="newSession" entry-point-ref="authenticationProcessingFilterEntryPoint">
         <s:intercept-url pattern="/ws/**" filters="none" />
+        <s:intercept-url pattern="/rss/**" filters="none" />
+        <s:intercept-url pattern="/ical/**" filters="none" />
         <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED,ROLE_ANONYMOUS" />
 
         <s:anonymous granted-authority="ROLE_ANONYMOUS" username="guest"  />
