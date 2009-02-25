@@ -62,6 +62,7 @@
   <% } %>
   
   <ssf:ifLoggedIn>
+   <c:if test="${!empty ss_accessibleUrl}">
 	<div class="ss_sidebarTitle"><ssf:nlt tag="accessible.accessibleMode"/>
 	  <ssHelpSpot helpId="workspaces_folders/misc_tools/accessible_mode" offsetX="-22" 
       offsetY="-4" title="<ssf:nlt tag="helpSpot.accessibleMode"/>">
@@ -80,6 +81,7 @@
 		 </ssf:ifnotaccessible>
 	   </div>
 	</div>
+   </c:if>
   </ssf:ifLoggedIn>
 
 </ssf:sidebarPanel>

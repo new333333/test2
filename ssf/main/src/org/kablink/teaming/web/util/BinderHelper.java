@@ -810,20 +810,21 @@ public class BinderHelper {
 		
 		PortletURL url = response.createActionURL();
 		if (binder != null) {
+			url = response.createActionURL();
 			if (binder.getEntityType().equals(EntityType.folder)) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			else if (binder.getEntityType().equals(EntityType.workspace)) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
 			else if (binder.getEntityType().equals(EntityType.profiles)) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
 			if (entryId != null) url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
+			if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) || 
+					ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+				url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
+			} else {
+				url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
+			}
+			model.put(WebKeys.ACCESSIBLE_URL, url.toString());
 		}
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-		if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) || 
-				ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
-		} else {
-			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
-		}
-		model.put(WebKeys.ACCESSIBLE_URL, url.toString());
 	}
 
 	static public Map getAccessControlMapBean(Map model) {
