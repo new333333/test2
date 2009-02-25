@@ -72,26 +72,34 @@ function ss_tagDelete(namespace, tagId, divNumber, binderId, entityType, entryId
 	ss_tagModify('delete', namespace, tagId, divNumber, binderId, entityType, entryId);
 }
 function ss_tagModify(operation2, namespace, tagId, divNumber, binderId, entityType, entryId) {
-	ss_setupStatusMessageDiv();
-	var tagToDelete = "";
-	if (operation2 == 'delete') tagToDelete = tagId;
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"modify_tags", binderId:binderId});
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addKeyValue("operation2", operation2)
-	ajaxRequest.addKeyValue("namespace", namespace)
-	ajaxRequest.addKeyValue("tagToDelete", tagToDelete)
-	ajaxRequest.addKeyValue("tagDivNumber", divNumber)
-	ajaxRequest.addKeyValue("entityId", entryId);
-	ajaxRequest.addKeyValue("entityType", entityType);
-	ajaxRequest.addFormElements("ss_modifyTagsForm" + namespace + "_" + divNumber);
-	ajaxRequest.setData("divNumber", divNumber);
-	ajaxRequest.setData("entityId", entryId);
-	ajaxRequest.setData("entityType", entityType);
-	ajaxRequest.setData("namespace", namespace);
-	//ajaxRequest.setEchoDebugInfo();
-	ajaxRequest.setPostRequest(ss_postModifyTags);
-	ajaxRequest.setUsePOST();
-	ajaxRequest.sendRequest();  //Send the request
+	var formObj = document.getElementById("ss_modifyTagsForm" + namespace + "_" + divNumber);
+	if (formObj != null) {
+		if ((formObj.personalTag && formObj.personalTag.value && formObj.personalTag.value.indexOf(" ") != -1) || 
+			(formObj.communityTag && formObj.communityTag.value && formObj.communityTag.value.indexOf(" ") != -1)) {
+			alert(ss_tagConfirmBadCharacters)
+		}
+		
+		ss_setupStatusMessageDiv();
+		var tagToDelete = "";
+		if (operation2 == 'delete') tagToDelete = tagId;
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"modify_tags", binderId:binderId});
+		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+		ajaxRequest.addKeyValue("operation2", operation2)
+		ajaxRequest.addKeyValue("namespace", namespace)
+		ajaxRequest.addKeyValue("tagToDelete", tagToDelete)
+		ajaxRequest.addKeyValue("tagDivNumber", divNumber)
+		ajaxRequest.addKeyValue("entityId", entryId);
+		ajaxRequest.addKeyValue("entityType", entityType);
+		ajaxRequest.addFormElements("ss_modifyTagsForm" + namespace + "_" + divNumber);
+		ajaxRequest.setData("divNumber", divNumber);
+		ajaxRequest.setData("entityId", entryId);
+		ajaxRequest.setData("entityType", entityType);
+		ajaxRequest.setData("namespace", namespace);
+		//ajaxRequest.setEchoDebugInfo();
+		ajaxRequest.setPostRequest(ss_postModifyTags);
+		ajaxRequest.setUsePOST();
+		ajaxRequest.sendRequest();  //Send the request
+	}
 }
 function ss_postModifyTags(obj) {
 	//See if there was an error
