@@ -39,6 +39,7 @@
 <c:set var="ss_tagDivNumber" value="${ss_tagDivNumber + 1}" scope="request"/>
 <script type="text/javascript">
 var ss_tagConfirmBadCharacters = "<ssf:nlt tag="tags.badChars"/>";
+var ss_tagConfirmTooLong = "<ssf:nlt tag="tags.tooLong"/>";
 </script>
 <c:if test="${empty ss_tags_loaded}">
 <script type="text/javascript">

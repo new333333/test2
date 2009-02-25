@@ -79,6 +79,11 @@ function ss_tagModify(operation2, namespace, tagId, divNumber, binderId, entityT
 			alert(ss_tagConfirmBadCharacters)
 		}
 		
+		if ((formObj.personalTag && formObj.personalTag.value && formObj.personalTag.value.length > 60) || 
+			(formObj.communityTag && formObj.communityTag.value && formObj.communityTag.value.length > 60)) {
+			alert(ss_tagConfirmTooLong)
+		}
+		
 		ss_setupStatusMessageDiv();
 		var tagToDelete = "";
 		if (operation2 == 'delete') tagToDelete = tagId;
