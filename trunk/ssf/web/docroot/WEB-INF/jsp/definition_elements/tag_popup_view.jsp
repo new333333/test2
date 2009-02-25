@@ -37,6 +37,9 @@
   <c:set var="ss_tagDivNumber" value="0" scope="request"/>
 </c:if>
 <c:set var="ss_tagDivNumber" value="${ss_tagDivNumber + 1}" scope="request"/>
+<script type="text/javascript">
+var ss_tagConfirmBadCharacters = "<ssf:nlt tag="tags.badChars"/>";
+</script>
 <c:if test="${empty ss_tags_loaded}">
 <script type="text/javascript">
 	ss_loadJsFile(ss_rootPath, "js/forum/ss_tags.js");
