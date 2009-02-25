@@ -107,7 +107,10 @@ function ss_workarea_showPseudoPortal${renderResponse.namespace}(obj) {
 //This function sends window height to the server to be saved in the session
 
 function ss_saveWindowHeight_${renderResponse.namespace}() {
-	ss_saveWindowHeightInServer(document.body.scrollHeight, 'ss_communicationFrame' + ss_parentWorkareaNamespace${renderResponse.namespace});
+	//Signal through the iframe
+	var iframeObj = document.getElementById('ss_signalingIframe');
+	iframeObj.src="${ss_portalSignalUrl}?"+parseInt(document.body.scrollHeight)+","+ss_parentWorkareaNamespace${renderResponse.namespace}
+	//ss_saveWindowHeightInServer(document.body.scrollHeight, 'ss_communicationFrame' + ss_parentWorkareaNamespace${renderResponse.namespace});
 }
 
 function ss_setParentWorkareaIframeSize${renderResponse.namespace}() {
@@ -121,7 +124,7 @@ function ss_setParentWorkareaIframeSize${renderResponse.namespace}() {
 	if (resizeRoutineExists != "undefined") {
 		ss_debug('namespace = ${renderResponse.namespace}')
 		try {eval("self.parent."+resizeRoutineName+"()");} catch(e) {
-			//If all else fails, use the slower method of passing the height through the server
+			//If all else fails, use the slower method of passing the height through an iframe
 			ss_saveWindowHeight_${renderResponse.namespace}();
 		}
 	} else {
@@ -131,7 +134,7 @@ function ss_setParentWorkareaIframeSize${renderResponse.namespace}() {
 				self.parent.ss_setWorkareaIframeSize();
 			}
 		} catch(e) {
-			//If all else fails, use the slower method of passing the height through the server
+			//If all else fails, use the slower method of passing the height through an iframe
 			ss_saveWindowHeight_${renderResponse.namespace}();
 		}
 	}
@@ -699,3 +702,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <script type="text/javascript">
 ss_workarea_showPseudoPortal${renderResponse.namespace}()
 </script>
+<!-- The signaling iframe for signaling the portal to reset the size -->
+<div style="visibility:hidden;">
+<iframe id="ss_signalingIframe" style="height:0px;">xxx</iframe>
+</div>
