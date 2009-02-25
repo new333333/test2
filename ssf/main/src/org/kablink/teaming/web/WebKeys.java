@@ -162,10 +162,12 @@ public class WebKeys {
     public static final String URL_NORMALIZED_TITLE="title";
     public static final String URL_OPERATION="operation";
     public static final String URL_OPERATION2="operation2";
+    public static final String URL_OPERATION3="operation3";
     public static final String URL_PAGE_NUMBER="pageNumber";
     public static final String URL_SEARCH_QUERY_NAME="ss_queryName";
     public static final String URL_PAGE="page";
     public static final String URL_PAGE_SIZE="pageSize";
+    public static final String URL_PORTAL_SIGNAL="portalSignalUrl";
     public static final String URL_QUOTA_OPTION="ssQuotaOption";
     public static final String URL_QUOTA_THRESHOLD="ssQuotaThreshold";
 	public static final String URL_RANDOM = "random";
@@ -472,6 +474,8 @@ public class WebKeys {
 	public static final String OPERATION_STICKY_CALENDAR_DISPLAY_SETTINGS = "sticky_calendar_display_settings";
 	public static final String OPERATION_GET_CALENDAR_FREE_INFO = "get_calendar_free_info";
 	public static final String OPERATION_UPDATE_TASK = "update_task";
+	public static final String OPERATION_GET_SESSION_DATA = "get_session_data";
+	public static final String OPERATION_SET_SESSION_DATA = "set_session_data";
 	public static final String OPERATION_START_WORKFLOW = "start_workflow";
 	public static final String OPERATION_STOP_WORKFLOW = "stop_workflow";
 	public static final String OPERATION_SHOW_HELP_CPANEL = "show_help_cpanel";
@@ -882,6 +886,7 @@ public class WebKeys {
     public static final String PINNED_ENTRIES="ssPinnedEntries";
     public static final String PLAY_TUTORIAL_BASE_URL = "ss_play_tutorial_base_url";
 	public static final String PORTAL_URL = "ss_portalUrl";
+	public static final String PORTAL_SIGNAL_URL = "ss_portalSignalUrl";
 	public static final String PORTLET_TYPE = "ss_portletType";
 	public static final String PORTLET_TYPE_ADMIN = "ss_portletTypeAdmin";
     public static final String POSTINGS="ssPostings";
@@ -1073,6 +1078,7 @@ public class WebKeys {
     public static final String TYPE2="ss_type2";
     public static final String TYPE3="ss_type3";
     public static final String SEARCH_NODES="ssSearchNodes";
+    public static final String SESSION_DATA="ssSessionData";
     public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
     public static final String SIDEBAR_WORKSPACE_TREE="ssSidebarWsTree";
     public static final String SIDEBAR_CURRENT_WORKSPACE="ssSidebarCurrentWorkspace";
