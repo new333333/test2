@@ -154,7 +154,7 @@ import org.kablink.util.search.Order;
  *
  */
 public class AjaxController  extends SAbstractControllerRetry {
-	
+	protected static final String allowedSessionData = " portalUrl windowHeight ";
 	
 	//caller will retry on OptimisiticLockExceptions
 	public void handleActionRequestWithRetry(ActionRequest request, ActionResponse response) throws Exception {
@@ -240,6 +240,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxSetWindowHeight(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_WINDOW_HEIGHT)) {
 			return ajaxGetWindowHeight(request, response);
+		} else if (op.equals(WebKeys.OPERATION_SET_SESSION_DATA)) {
+			return ajaxSetSessionData(request, response);
 		}
 		if (!WebHelper.isUserLoggedIn(request)) {
 			//Signal that the user is not logged in. 
@@ -679,6 +681,20 @@ public class AjaxController  extends SAbstractControllerRetry {
 		portletSession.setAttribute(WebKeys.WINDOW_HEIGHT, height, PortletSession.APPLICATION_SCOPE);
 		Map model = new HashMap();
 		model.put(WebKeys.WINDOW_HEIGHT, windowHeight);
+		response.setContentType("text/html");
+		return new ModelAndView("forum/blank_return", model);
+	}
+	
+	private ModelAndView ajaxSetSessionData(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String name = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		String value = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION3, "");
+		if (allowedSessionData.contains(" "+name+" ")) {
+			PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+			portletSession.setAttribute(WebKeys.SESSION_DATA + name, value, PortletSession.APPLICATION_SCOPE);
+			model.put(WebKeys.SESSION_DATA + name, value);
+		}
 		response.setContentType("text/html");
 		return new ModelAndView("forum/blank_return", model);
 	}
