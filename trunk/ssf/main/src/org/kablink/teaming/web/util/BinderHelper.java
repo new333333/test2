@@ -342,12 +342,22 @@ public class BinderHelper {
 			model.put(WebKeys.DISPLAY_TYPE, displayType);
 	 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
 	        HttpSession session = ((PortletRequestImpl) request).getHttpServletRequest().getSession();
+			
+	        //Get the url of the signaling code from the portal (if portal being used)
+	        String portalSignalUrl = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PORTAL_SIGNAL, "");
+			if (!portalSignalUrl.equals("")) session.setAttribute(WebKeys.PORTAL_SIGNAL_URL, Boolean.valueOf(portalSignalUrl));
+			portalSignalUrl = (String)session.getAttribute(WebKeys.PORTAL_SIGNAL_URL);
+			if (portalSignalUrl == null) portalSignalUrl = "";
+			model.put(WebKeys.PORTAL_SIGNAL_URL, portalSignalUrl);
+			
+			//See if captive mode is being set
 			String s_captive = PortletRequestUtils.getStringParameter(request, WebKeys.URL_CAPTIVE, "");
 			if (!s_captive.equals("")) session.setAttribute(WebKeys.CAPTIVE, Boolean.valueOf(s_captive));
 			Boolean captive = false;
 			if (session.getAttribute(WebKeys.CAPTIVE) != null) 
 				captive = (Boolean)session.getAttribute(WebKeys.CAPTIVE);
 			model.put(WebKeys.CAPTIVE, captive);
+			
 			String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 			if (!namespace.equals("")) {
 				model.put(WebKeys.NAMESPACE, namespace);
