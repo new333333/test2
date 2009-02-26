@@ -58,7 +58,7 @@ a:hover {
 		  onClick="self.window.close();return false;"/>
 	</form>
   </div>
-	<ssf:expandableArea titleClass="ss_credits_title" title="ICEcore is brought to you by <a href=\"http://sitescape.com\">SiteScape, Inc.</a>">
+	<ssf:expandableArea titleClass="ss_credits_title" title="Kablink is brought to you by <a href=\"http://www.novell.com\">Novell, Inc.</a>">
 		<style>
 		<!--
 		 /* Font Definitions */
