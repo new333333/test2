@@ -88,7 +88,8 @@ tinyMCE.init(
   gecko_spellcheck : true,
   plugins: "compat2x,table,<%--
   --%><c:if test="${empty ssInlineNoImage}">ss_addimage,</c:if><%--
-  --%>preview,paste,ss_wikilink", 
+  --%>preview,paste,ss_wikilink",
+  theme_advanced_buttons3_add : "pastetext,pasteword,selectall",
   theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
   theme_advanced_toolbar_align: "left", theme_advanced_statusbar_location: "bottom", 
   theme_advanced_resizing: true, 

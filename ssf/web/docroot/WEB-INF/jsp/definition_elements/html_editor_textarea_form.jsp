@@ -35,7 +35,7 @@
 
 // TinyMCE options not current used:
 //
-//  plugins: "table,advimage,preview,contextmenu,paste,spellchecker", 
+//  plugins: "table,advimage,preview,contextmenu,spellchecker", 
 //  spellchecker_url: "/foxtrot/zone1/dispatch.cgi/_admin/mceSpellCheck", 
 //  external_image_list_url: "/foxtrot/pics/mce_clipart.js", 
 
