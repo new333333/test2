@@ -7909,7 +7909,7 @@ ss_FileUploadProgressBar.reloadProgressStatus = function(progressBar, url) {
 }
 
 function ss_saveWindowHeightInServer(height, communicationIframeName) {
-	var urlParams = {operation:"save_window_height", operation2:height};
+	var urlParams = {operation:"set_session_data", operation2:windowHeight, operation3:height};
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 
 	dojo.xhrGet({
