@@ -87,8 +87,11 @@ public class DeprecatedController extends AbstractController {
   		//Get the URL of the Teaming site
   		String teamingUrl = "";
   		try {
-  			com.liferay.portal.model.Company company = PortalUtil.getCompany(request);
-  			String liferayCompanyName = company.getWebId();
+  			//TODO - fix the Liferay company name support
+  			// This was commented out until it is made to work
+  			//com.liferay.portal.model.Company company = PortalUtil.getCompany(request);
+  			String liferayCompanyName = "";
+  			//liferayCompanyName = company.getWebId();
   			teamingUrl = SPropsUtil.getString("teaming.url."+liferayCompanyName, "");
   		} catch(Exception e) {};
   		if (teamingUrl.equals("")) teamingUrl = SPropsUtil.getString("teaming.url", "");
