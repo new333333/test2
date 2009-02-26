@@ -37,12 +37,28 @@ import org.apache.catalina.connector.Response;
 import org.apache.catalina.valves.ValveBase;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 
+/**
+ * This class is used to capture some information (eg. server name and client's
+ * IP address) from the calling context that is needed by Teaming later on.
+ * Same can also be done through servlet filter, and and we have two examples
+ * of that in system. However, there are situations where this information 
+ * needs to be obtained well before the filter chain gets even invoked.
+ * A concrete example of that is when executing JAAS login module. Teaming
+ * supplied JAAS login module is used for authentication for ssfs and ssr
+ * web apps, and that's why those two web apps require this valve to be set up
+ * so that it can use this information during authentication before the 
+ * filter chain is executed. 
+ * 
+ * @author Jong Kim
+ *
+ */
 public class ZoneContextValve extends ValveBase {
 
 	@Override
 	public void invoke(Request request, Response response) 
 	throws IOException, ServletException {
 		ZoneContextHolder.setServerName(request.getServerName());
+		ZoneContextHolder.setClientAddr(request.getRemoteAddr());
 		try {
 			getNext().invoke(request, response);
 		}
