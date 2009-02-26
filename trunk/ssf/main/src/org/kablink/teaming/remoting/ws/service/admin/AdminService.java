@@ -35,7 +35,7 @@ package org.kablink.teaming.remoting.ws.service.admin;
  */
 public interface AdminService {
 
-	public String getApplicationScopedToken(String accessToken, long applicationId, long userId);
+	public String admin_getApplicationScopedToken(String accessToken, long applicationId, long userId);
 
-	public void destroyApplicationScopedToken(String accessToken, String token);
+	public void admin_destroyApplicationScopedToken(String accessToken, String token);
 }

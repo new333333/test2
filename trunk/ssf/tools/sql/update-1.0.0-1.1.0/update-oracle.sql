@@ -48,6 +48,8 @@ alter table SS_Principals add miniBlogId number(19,0);
 alter table SS_Principals add postUrl varchar2(256 char);
 alter table SS_Principals add timeout number(10,0);
 alter table SS_Principals add trusted number(1,0);
+alter table SS_Principals add maxIdleTime number(10,0);
+alter table SS_Principals add sameAddrPolicy number(1,0);
 alter table SS_Ratings add zoneId number(19,0);
 alter table SS_SeenMap add zoneId number(19,0);
 create table SS_SharedEntity (id char(32) not null, referer number(19,0), zoneId number(19,0), sharedDate timestamp, accessId number(19,0), accessType number(19,0), entityType varchar2(16 char), entityId number(19,0), primary key (id));
@@ -55,7 +57,7 @@ create table SS_SimpleName (zoneId number(19,0) not null, name varchar2(128 char
 alter table SS_Subscriptions add zoneId number(19,0);
 alter table SS_Subscriptions add encodedStyles varchar2(256 char);
 alter table SS_Tags add zoneId number(19,0);
-create table SS_TokenInfo (id char(32) not null, type char(1 char) not null, zoneId number(19,0), seed varchar2(128 char), userId number(19,0), applicationId number(19,0), binderId number(19,0), binderAccessConstraints number(10,0), primary key (id));
+create table SS_TokenInfo (id char(32) not null, type char(1 char) not null, zoneId number(19,0), seed varchar2(128 char), userId number(19,0), applicationId number(19,0), binderId number(19,0), binderAccessConstraints number(10,0), clientAddr varchar2(128 char), lastAccessTime timestamp, primary key (id));
 alter table SS_UserProperties add zoneId number(19,0);
 create table SS_WorkflowHistory (id char(32) not null, zoneId number(19,0), startBy number(19,0), startDate timestamp, endBy number(19,0), endDate timestamp, entityId number(19,0), entityType varchar2(16 char), owningBinderId number(19,0), owningBinderKey varchar2(255 char), tokenId number(19,0), state varchar2(64 char), threadName varchar2(64 char), definitionId varchar2(32 char), ended number(1,0), primary key (id));
 alter table SS_WorkflowResponses add zoneId number(19,0);

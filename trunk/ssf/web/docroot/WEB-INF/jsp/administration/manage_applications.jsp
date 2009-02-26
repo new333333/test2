@@ -79,18 +79,32 @@ function ${renderResponse.namespace}_onsub(obj) {
 	
 	<input type="checkbox" name="trusted" id="trusted" value="true"/> <label for="trusted"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationTrusted"/></span><br/><br/></label>
 	
-	<label for="postUrl"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationPostUrl"/></span><br/></label>
-	<input type="text" class="ss_text" size="70" name="postUrl" id="postUrl"><br/><br/>
+	<fieldset class="ss_fieldset">
+	  <legend class="ss_legend"><ssf:nlt tag="administration.add.applicationTeamingInitiated"/></legend>	
+	<table class="ss_style" border="0" cellspacing="3" cellpadding="3">
+	<tr><td valign="top">
+		<label for="postUrl"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationPostUrl"/></span><br/></label>
+		<input type="text" class="ss_text" size="70" name="postUrl" id="postUrl"><br/><br/>
+			
+		<label for="timeout"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationTimeout"/></span><br/></label>
+		<input type="text" class="ss_text" size="15" name="timeout" id="timeout" value='<%=org.kablink.teaming.util.SPropsUtil.getString("remoteapp.timeout","60")%>'><br/><br/>
+	</td></tr>
+	</table>
+	</fieldset>
 		
-	<label for="timeout"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationTimeout"/></span><br/></label>
-	<input type="text" class="ss_text" size="15" name="timeout" id="timeout" value='<%=org.kablink.teaming.util.SPropsUtil.getString("remoteapp.timeout","60")%>'><br/><br/>
-		
-	<label for="maxIdleTime"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationMaxIdleTime"/></span><br/></label>
-	<input type="text" class="ss_text" size="15" name="maxIdleTime" id="maxIdleTime" value='<%=org.kablink.teaming.util.SPropsUtil.getString("remoteapp.maxIdleTime","3600")%>'><br/><br/>
-		
-	<input type="checkbox" name="sameHostPolicy" id="sameHostPolicy" value="true" checked/> <label for="sameHostPolicy"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationSameHostPolicy"/></span><br/><br/><br/></label>
+	<fieldset class="ss_fieldset">
+	  <legend class="ss_legend"><ssf:nlt tag="administration.add.applicationApplicationInitiated"/></legend>	
+	<table class="ss_style" border="0" cellspacing="3" cellpadding="3">
+	<tr><td valign="top">
+		<label for="maxIdleTime"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationMaxIdleTime"/></span><br/></label>
+		<input type="text" class="ss_text" size="15" name="maxIdleTime" id="maxIdleTime" value='<%=org.kablink.teaming.util.SPropsUtil.getString("remoteapp.maxIdleTime","3600")%>'><br/><br/>
+			
+		<input type="checkbox" name="sameAddrPolicy" id="sameAddrPolicy" value="true" checked/> <label for="sameAddrPolicy"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationSameAddrPolicy"/></span><br/><br/></label>
+	</td></tr>
+	</table>
+	</fieldset>
 	
-	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
+	<br><input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
 </ssf:expandableArea>
 <br/>
@@ -127,16 +141,24 @@ function ${renderResponse.namespace}_onsub(obj) {
 	<label for="title"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationTitle"/></span><br/></label>
 	<input type="text" class="ss_text" size="50" name="title" id="title" value="${ssApplication.title}"><br/><br/>
 		
+	<label for="description"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationDescription"/></span><br/></label>
+	<textarea name="description" id="description" wrap="virtual" rows="4" cols="50">${ssApplication.description}</textarea><br/><br/>
+		
+	<input type="checkbox" name="trusted" id="trusted" value="true" <c:if test="${ssApplication.trusted}">checked</c:if>/> <label for="trusted"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationTrusted"/></span><br/><br/></label>
+	
 	<label for="postUrl"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationPostUrl"/></span><br/></label>
 	<input type="text" class="ss_text" size="50" name="postUrl" id="postUrl" value="${ssApplication.postUrl}"><br/><br/>		
 		
-	<label for="description"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationDescription"/></span><br/></label>
-	<textarea name="description" id="description" wrap="virtual" rows="4" cols="50">${ssApplication.description}</textarea><br/><br/>
-	
 	<label for="timeout"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationTimeout"/></span><br/></label>
-	<input type="text" class="ss_text" size="15" name="timeout" id="timeout" value="${ssApplication.timeout}"><br/><br/>		
-		
-	<input type="checkbox" name="trusted" id="trusted" value="true" <c:if test="${ssApplication.trusted}">checked</c:if>/> <label for="trusted"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationTrusted"/></span><br/><br/></label>
+	<input type="text" class="ss_text" size="15" name="timeout" id="timeout" value="${ssApplication.timeout}"><br/><br/>
+			
+	<label for="maxIdleTime"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationMaxIdleTime"/></span><br/></label>
+	<input type="text" class="ss_text" size="15" name="maxIdleTime" id="maxIdleTime" value="${ssApplication.maxIdleTime}"><br/><br/>
+			
+	<input type="checkbox" name="sameAddrPolicy" id="sameAddrPolicy" value="true" <c:if test="${ssApplication.sameAddrPolicy}">checked</c:if>/> <label for="sameAddrPolicy"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationSameAddrPolicy"/></span><br/><br/></label>
+
+	<label for="internalId"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationInternalId"/></span><br/></label>
+	<input type="text" class="ss_text" size="20" name="internalId" id="internalId" disabled="disabled" value="${ssApplication.id}"><br/><br/>
 </ssf:expandableArea>
 
 <br/>

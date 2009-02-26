@@ -384,6 +384,8 @@ public interface ObjectKeys {
     public static final String FIELD_APPLICATION_POST_URL="postUrl";
     public static final String FIELD_APPLICATION_TIMEOUT="timeout";
     public static final String FIELD_APPLICATION_TRUSTED="trusted";
+    public static final String FIELD_APPLICATION_MAX_IDLE_TIME="maxIdleTime";
+    public static final String FIELD_APPLICATION_SAME_ADDR_POLICY="sameAddrPolicy";
     public static final String FIELD_BINDER_LIBRARY="library";
     public static final String FIELD_BINDER_NAME="name";
     public static final String FIELD_BINDER_UNIQUETITLES="uniqueTitles";

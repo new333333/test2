@@ -30,17 +30,27 @@ package org.kablink.teaming.asmodule.zonecontext;
 
 public class ZoneContextHolder {
 	
-    private static final ThreadLocal<String> context = new ThreadLocal<String>();
+    private static final ThreadLocal<String> SERVER_NAME = new ThreadLocal<String>();
+    private static final ThreadLocal<String> CLIENT_ADDR = new ThreadLocal<String>();
 
     public static void setServerName(String serverName) {
-    	context.set(serverName);
+    	SERVER_NAME.set(serverName.toLowerCase());
     }
     
     public static String getServerName() {
-    	return context.get();
+    	return SERVER_NAME.get();
+    }
+    
+    public static void setClientAddr(String clientAddr) {
+    	CLIENT_ADDR.set(clientAddr);
+    }
+    
+    public static String getClientAddr() {
+    	return CLIENT_ADDR.get();
     }
     
     public static void clear() {
-    	context.set(null);
+    	SERVER_NAME.set(null);
+    	CLIENT_ADDR.set(null);
     }
 }

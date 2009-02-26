@@ -49,6 +49,8 @@ alter table SS_Principals add miniBlogId numeric(19,0);
 alter table SS_Principals add postUrl nvarchar(256);
 alter table SS_Principals add timeout int;
 alter table SS_Principals add trusted tinyint;
+alter table SS_Principals add maxIdleTime int;
+alter table SS_Principals add sameAddrPolicy tinyint;
 alter table SS_Ratings add zoneId numeric(19,0);
 alter table SS_SeenMap add zoneId numeric(19,0);
 create table SS_SharedEntity (id char(32) not null, referer numeric(19,0) null, zoneId numeric(19,0) null, sharedDate datetime null, accessId numeric(19,0) null, accessType numeric(19,0) null, entityType varchar(16) null, entityId numeric(19,0) null, primary key (id));
@@ -56,7 +58,7 @@ create table SS_SimpleName (zoneId numeric(19,0) not null, name nvarchar(128) no
 alter table SS_Subscriptions add zoneId numeric(19,0);
 alter table SS_Subscriptions add encodedStyles varchar(256);
 alter table SS_Tags add zoneId numeric(19,0);
-create table SS_TokenInfo (id char(32) not null, type char(1) not null, zoneId numeric(19,0) null, seed varchar(128) null, userId numeric(19,0) null, applicationId numeric(19,0) null, binderId numeric(19,0) null, binderAccessConstraints int null, primary key (id));
+create table SS_TokenInfo (id char(32) not null, type char(1) not null, zoneId numeric(19,0) null, seed varchar(128) null, userId numeric(19,0) null, applicationId numeric(19,0) null, binderId numeric(19,0) null, binderAccessConstraints int null, clientAddr varchar(128) null, lastAccessTime datetime null, primary key (id));
 alter table SS_UserProperties add zoneId numeric(19,0);
 create table SS_WorkflowHistory (id char(32) not null, zoneId numeric(19,0) null, startBy numeric(19,0) null, startDate datetime null, endBy numeric(19,0) null, endDate datetime null, entityId numeric(19,0) null, entityType varchar(16) null, owningBinderId numeric(19,0) null, owningBinderKey varchar(255) null, tokenId numeric(19,0) null, state nvarchar(64) null, threadName nvarchar(64) null, definitionId varchar(32) null, ended tinyint null, primary key (id));
 alter table SS_WorkflowResponses add zoneId numeric(19,0);

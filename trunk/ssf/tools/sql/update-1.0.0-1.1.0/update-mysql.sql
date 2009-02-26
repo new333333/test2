@@ -49,6 +49,8 @@ alter table SS_Principals add column miniBlogId bigint;
 alter table SS_Principals add column postUrl varchar(256);
 alter table SS_Principals add column timeout integer;
 alter table SS_Principals add column trusted bit;
+alter table SS_Principals add column maxIdleTime integer;
+alter table SS_Principals add column sameAddrPolicy bit;
 alter table SS_Ratings add column zoneId bigint;
 alter table SS_SeenMap add column zoneId bigint;
 create table SS_SharedEntity (id char(32) not null, referer bigint, zoneId bigint, sharedDate datetime, accessId bigint, accessType bigint, entityType varchar(16), entityId bigint, primary key (id)) ENGINE=InnoDB;
@@ -56,7 +58,7 @@ create table SS_SimpleName (zoneId bigint not null, name varchar(128) not null, 
 alter table SS_Subscriptions add column zoneId bigint;
 alter table SS_Subscriptions add column encodedStyles varchar(256);
 alter table SS_Tags add column zoneId bigint;
-create table SS_TokenInfo (id char(32) not null, type char(1) not null, zoneId bigint, seed varchar(128), userId bigint, applicationId bigint, binderId bigint, binderAccessConstraints integer, primary key (id)) ENGINE=InnoDB;
+create table SS_TokenInfo (id char(32) not null, type char(1) not null, zoneId bigint, seed varchar(128), userId bigint, applicationId bigint, binderId bigint, binderAccessConstraints integer, clientAddr varchar(128), lastAccessTime datetime, primary key (id)) ENGINE=InnoDB;
 alter table SS_UserProperties add column zoneId bigint;
 create table SS_WorkflowHistory (id char(32) not null, zoneId bigint, startBy bigint, startDate datetime, endBy bigint, endDate datetime, entityId bigint, entityType varchar(16), owningBinderId bigint, owningBinderKey varchar(255), tokenId bigint, state varchar(64), threadName varchar(64), definitionId varchar(32), ended bit, primary key (id)) ENGINE=InnoDB;
 alter table SS_WorkflowResponses add column zoneId bigint;
