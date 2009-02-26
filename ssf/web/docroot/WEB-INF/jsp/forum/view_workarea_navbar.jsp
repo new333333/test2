@@ -108,9 +108,12 @@ function ss_workarea_showPseudoPortal${renderResponse.namespace}(obj) {
 
 function ss_saveWindowHeight_${renderResponse.namespace}() {
 	//Signal through the iframe
-	var iframeObj = document.getElementById('ss_signalingIframe');
-	iframeObj.src="${ss_portalSignalUrl}?"+parseInt(document.body.scrollHeight)+","+ss_parentWorkareaNamespace${renderResponse.namespace}
-	//ss_saveWindowHeightInServer(document.body.scrollHeight, 'ss_communicationFrame' + ss_parentWorkareaNamespace${renderResponse.namespace});
+	var portalSignalUrl = "${ss_portalSignalUrl}"
+	if (portalSignalUrl != '') {
+		var iframeObj = document.getElementById('ss_signalingIframe');
+		iframeObj.src=portalSignalUrl+"?"+parseInt(document.body.scrollHeight)+","+ss_parentWorkareaNamespace${renderResponse.namespace}
+		//ss_saveWindowHeightInServer(document.body.scrollHeight, 'ss_communicationFrame' + ss_parentWorkareaNamespace${renderResponse.namespace});
+	}
 }
 
 function ss_setParentWorkareaIframeSize${renderResponse.namespace}() {

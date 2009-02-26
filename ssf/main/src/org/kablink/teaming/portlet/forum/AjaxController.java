@@ -154,7 +154,6 @@ import org.kablink.util.search.Order;
  *
  */
 public class AjaxController  extends SAbstractControllerRetry {
-	protected static final String allowedSessionData = " portalUrl windowHeight ";
 	
 	//caller will retry on OptimisiticLockExceptions
 	public void handleActionRequestWithRetry(ActionRequest request, ActionResponse response) throws Exception {
@@ -240,8 +239,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxSetWindowHeight(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_WINDOW_HEIGHT)) {
 			return ajaxGetWindowHeight(request, response);
-		} else if (op.equals(WebKeys.OPERATION_SET_SESSION_DATA)) {
-			return ajaxSetSessionData(request, response);
+		} else if (op.equals(WebKeys.OPERATION_SET_PORTAL_SIGNAL_URL)) {
+			return ajaxSetPortalUrl(request, response);
 		}
 		if (!WebHelper.isUserLoggedIn(request)) {
 			//Signal that the user is not logged in. 
@@ -685,18 +684,15 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("forum/blank_return", model);
 	}
 	
-	private ModelAndView ajaxSetSessionData(RenderRequest request, 
+	private ModelAndView ajaxSetPortalUrl(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
-		String name = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
-		String value = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION3, "");
-		if (allowedSessionData.contains(" "+name+" ")) {
-			PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
-			portletSession.setAttribute(WebKeys.SESSION_DATA + name, value, PortletSession.APPLICATION_SCOPE);
-			model.put(WebKeys.SESSION_DATA + name, value);
-		}
+		String value = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+		portletSession.setAttribute(WebKeys.PORTAL_SIGNAL_URL, value, PortletSession.APPLICATION_SCOPE);
+		model.put(WebKeys.PORTAL_SIGNAL_URL, value);
 		response.setContentType("text/html");
-		return new ModelAndView("forum/blank_return", model);
+		return new ModelAndView("forum/signal_portal_resize", model);
 	}
 	
 	private ModelAndView ajaxSetLastViewedBinder(RenderRequest request, 
