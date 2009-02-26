@@ -28,6 +28,8 @@
 	    	<property name="userId"/>
 	    	<property name="binderId"/>
 	    	<property name="binderAccessConstraints" type="integer" access="field"/>
+	    	<property name="clientAddr" length="128"/>
+	    	<property name="lastAccessTime" type="timestamp"/>
 	    </subclass>
 	</class>
 </hibernate-mapping>

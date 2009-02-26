@@ -122,6 +122,8 @@
 	      <property name="postUrl" length="256"/>
 		  <property name="timeout" access="field"/>
 		  <property name="trusted" access="field"/>
+		  <property name="maxIdleTime" access="field"/>
+		  <property name="sameAddrPolicy" access="field"/>
 	    </subclass>
   	</subclass>
   </class>

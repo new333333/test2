@@ -521,11 +521,11 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getDefinitionService().definition_getLocalDefinitionByName(accessToken, binderId, name, includeAncestors);
 	}
 
-	public void destroyApplicationScopedToken(String accessToken, String token) {
-		getAdminService().destroyApplicationScopedToken(accessToken, token);
+	public void admin_destroyApplicationScopedToken(String accessToken, String token) {
+		getAdminService().admin_destroyApplicationScopedToken(accessToken, token);
 	}
-	public String getApplicationScopedToken(String accessToken, long applicationId, long userId) {
-		return getAdminService().getApplicationScopedToken(accessToken, applicationId, userId);
+	public String admin_getApplicationScopedToken(String accessToken, long applicationId, long userId) {
+		return getAdminService().admin_getApplicationScopedToken(accessToken, applicationId, userId);
 	}	
 
 }

@@ -61,6 +61,7 @@ import org.kablink.teaming.security.accesstoken.AccessTokenManager;
 import org.kablink.teaming.security.accesstoken.AccessToken.BinderAccessConstraints;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.WebHelper;
+import org.kablink.util.Validator;
 
 
 public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
@@ -119,8 +120,15 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 	public void executeSessionScopedRenderableAction(Map<String,String> params, Long applicationId, 
 			HttpServletRequest request, Writer out) 
 	throws RemoteApplicationException {
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		Application application = getProfileDao().loadApplication(applicationId, rc.getZoneId());
+		if(Validator.isNull(application.getPostUrl())) {
+			if(logger.isDebugEnabled())
+				logger.debug("User " + rc.getUserId() + " invoking application " + applicationId + " with no POST URL");
+			return;
+		}
 		AccessToken accessToken = getAccessTokenManager().getSessionScopedToken
-		(applicationId, RequestContextHolder.getRequestContext().getUserId(), WebHelper.getTokenInfoId(request));
+		(applicationId, rc.getUserId(), WebHelper.getTokenInfoId(request));
 		try {
 			executeAction(params, applicationId, accessToken, out);
 		}
@@ -133,6 +141,13 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 			Long binderId, BinderAccessConstraints binderAccessConstraints, 
 			HttpServletRequest request, Writer out) 
 	throws RemoteApplicationException {
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		Application application = getProfileDao().loadApplication(applicationId, rc.getZoneId());
+		if(Validator.isNull(application.getPostUrl())) {
+			if(logger.isDebugEnabled())
+				logger.debug("User " + rc.getUserId() + " invoking application " + applicationId + " with no POST URL");
+			return;
+		}
 		AccessToken accessToken = getAccessTokenManager().getSessionScopedToken
 		(applicationId, RequestContextHolder.getRequestContext().getUserId(), 
 				WebHelper.getTokenInfoId(request), binderId, binderAccessConstraints);
@@ -244,6 +259,13 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 	}
 
 	public String executeRequestScopedNonRenderableAction(Map<String, String> params, Long applicationId) throws RemoteApplicationException {
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		Application application = getProfileDao().loadApplication(applicationId, rc.getZoneId());
+		if(Validator.isNull(application.getPostUrl())) {
+			if(logger.isDebugEnabled())
+				logger.debug("User " + rc.getUserId() + " invoking application " + applicationId + " with no POST URL");
+			return null;
+		}
 		AccessToken accessToken = getAccessTokenManager().getRequestScopedToken
 		(applicationId, RequestContextHolder.getRequestContext().getUserId());
 		try {
@@ -259,6 +281,13 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 
 	public String executeRequestScopedNonRenderableAction(Map<String, String> params, 
 			Long applicationId, Long binderId, BinderAccessConstraints binderAccessConstraints) throws RemoteApplicationException {
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		Application application = getProfileDao().loadApplication(applicationId, rc.getZoneId());
+		if(Validator.isNull(application.getPostUrl())) {
+			if(logger.isDebugEnabled())
+				logger.debug("User " + rc.getUserId() + " invoking application " + applicationId + " with no POST URL");
+			return null;
+		}
 		AccessToken accessToken = getAccessTokenManager().getRequestScopedToken
 		(applicationId, RequestContextHolder.getRequestContext().getUserId(), binderId, binderAccessConstraints);
 		try {

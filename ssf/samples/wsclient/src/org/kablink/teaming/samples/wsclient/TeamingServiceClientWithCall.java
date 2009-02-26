@@ -61,6 +61,10 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "search_getTeams", new Object[] {null});
 			} else if(args[0].equals("getFolderEntry")) {
 				wsClient.fetchAndPrintDE("TeamingServiceV1", "folder_getEntry", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});			
+			} else if(args[0].equals("getToken")) {
+				wsClient.fetchAndPrintString("TeamingServiceV1", "admin_getApplicationScopedToken", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2])});			
+			} else if(args[0].equals("destroyToken")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "admin_destroyApplicationScopedToken", new Object[] {null, args[1]});			
 			} else if(args[0].equals("getDefinition")) {
 				wsClient.fetchAndPrintXML("TeamingServiceV1", "definition_getDefinitionAsXML", new Object[] {null, args[1]});
 			} else if(args[0].equals("addWorkflow")) {
@@ -204,6 +208,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("getDefinition <definition id>");
 		System.out.println("getDefinitions");
 		System.out.println("getTemplates");
+		System.out.println("getToken <application id> <user id>");
+		System.out.println("destroyToken <token>");
 		System.out.println("setDefinitions <binder id> <comma separated definitionIds> <comma separated definitionId,workflowId>");
 		System.out.println("setTeamMembers <binder id> <comma separated names>");
 		System.out.println("addWorkflow <entry id> <definition id>");

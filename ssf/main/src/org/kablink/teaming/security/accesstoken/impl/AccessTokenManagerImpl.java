@@ -28,10 +28,19 @@
  */
 package org.kablink.teaming.security.accesstoken.impl;
 
+import java.util.Date;
 import java.util.UUID;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.Application;
+import org.kablink.teaming.domain.NoApplicationByTheIdException;
+import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.accesstoken.AccessToken;
 import org.kablink.teaming.security.accesstoken.AccessTokenException;
 import org.kablink.teaming.security.accesstoken.AccessTokenManager;
@@ -40,12 +49,25 @@ import org.kablink.teaming.security.accesstoken.AccessToken.BinderAccessConstrai
 import org.kablink.teaming.security.accesstoken.AccessToken.TokenScope;
 import org.kablink.teaming.security.dao.SecurityDao;
 import org.kablink.teaming.util.EncryptUtil;
-
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class AccessTokenManagerImpl implements AccessTokenManager {
 
+	private ProfileDao profileDao;
 	private SecurityDao securityDao;
+
+	protected Log logger = LogFactory.getLog(getClass());
 	
+	protected ProfileDao getProfileDao() {
+		return profileDao;
+	}
+
+	public void setProfileDao(ProfileDao profileDao) {
+		this.profileDao = profileDao;
+	}
+
 	protected SecurityDao getSecurityDao() {
 		return securityDao;
 	}
@@ -54,6 +76,14 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 		this.securityDao = securityDao;
 	}
 	
+	private TransactionTemplate transactionTemplate;
+    protected TransactionTemplate getTransactionTemplate() {
+		return transactionTemplate;
+	}
+	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+		this.transactionTemplate = transactionTemplate;
+	}
+
 	public void validate(String tokenStr, AccessToken token) throws InvalidAccessTokenException {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		if(token.getScope() == AccessToken.TokenScope.session) {
@@ -90,12 +120,41 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 				throw new InvalidAccessTokenException(tokenStr);				
 			}
 		}
-		else {
-			TokenInfoApplication info = getSecurityDao().loadTokenInfoApplication(rc.getZoneId(), token.getInfoId());	
+		else if(token.getScope() == AccessToken.TokenScope.application) {
+			final TokenInfoApplication info = getSecurityDao().loadTokenInfoApplication(rc.getZoneId(), token.getInfoId());	
 			if(info != null) {
 				String digest = computeDigest(token.getScope(), info.getApplicationId(), info.getUserId(),
 						info.getBinderId(), info.getBinderAccessConstraints(), info.getSeed());
-				if(digest.equals(token.getDigest())) { // match
+				if(digest.equals(token.getDigest())) { // digest match
+					Application application = getApplication(tokenStr, info);
+					if(application.isSameAddrPolicy()) {
+						if(!info.getClientAddr().equalsIgnoreCase(ZoneContextHolder.getClientAddr())) {
+							if(logger.isWarnEnabled())
+								logger.warn(ZoneContextHolder.getClientAddr() + " attempting to use token " + tokenStr + " which was obtained by " + info.getClientAddr());
+							throw new InvalidAccessTokenException(tokenStr);
+						}
+					}
+					Date now = new Date();
+					if(now.getTime() - info.getLastAccessTime().getTime() > application.getMaxIdleTime()*1000) {
+						// The token has expired. Remove the token right here.
+						getTransactionTemplate().execute(
+								new TransactionCallback() {
+									public Object doInTransaction(TransactionStatus status) {
+										getSecurityDao().delete(info);
+										return null;
+									}
+								});
+						throw new InvalidAccessTokenException(tokenStr);
+					}
+					// Everything looks good. Update the last accessed time. 
+					info.setLastAccessTime(now);
+					getTransactionTemplate().execute(
+							new TransactionCallback() {
+								public Object doInTransaction(TransactionStatus status) {
+									getSecurityDao().update(info);
+									return null;
+								}
+							});
 					// Copy the following pieces of information from the tokeninfo into the accesstoken.
 					// This allows the application to access those information without having a direct
 					// access to the lower-level tokeninfo object (ie, just serves as temporary cache).
@@ -111,6 +170,9 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 			else {
 				throw new InvalidAccessTokenException(tokenStr);				
 			}
+		}
+		else {
+			throw new IllegalArgumentException(token.getScope().name());
 		}
 	}
 
@@ -248,12 +310,14 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 	}*/
 
 	public AccessToken getApplicationScopedToken(Long applicationId, Long userId) {
-		return getApplicationScopedToken(applicationId, userId, null, BinderAccessConstraints.NONE);
+		return getApplicationScopedToken(applicationId, userId, null, null);
 	}
 
 	public AccessToken getApplicationScopedToken(Long applicationId, Long userId, Long binderId, 
 			BinderAccessConstraints binderAccessConstraints) {
-		TokenInfoApplication info = new TokenInfoApplication(applicationId, userId, binderId, binderAccessConstraints, getRandomSeed());
+		TokenInfoApplication info = new TokenInfoApplication
+		(applicationId, userId, binderId, binderAccessConstraints, 
+		ZoneContextHolder.getClientAddr(), new Date(), getRandomSeed());
 		
 		getSecurityDao().save(info);
 				
@@ -273,5 +337,13 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 		getSecurityDao().deleteAll(TokenInfoApplication.class);
 	}
 
-
+	private Application getApplication(String tokenStr, TokenInfoApplication info) throws InvalidAccessTokenException {
+		try {
+			return getProfileDao().loadApplication(info.getApplicationId(), RequestContextHolder.getRequestContext().getZoneId());
+		}
+		catch(NoApplicationByTheIdException e) {
+			throw new InvalidAccessTokenException(tokenStr);
+		}
+	}
+	
 }

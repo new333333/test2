@@ -412,6 +412,14 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
         		String trusted = inputData.getSingleValue(ObjectKeys.FIELD_APPLICATION_TRUSTED);
     			entryData.put(ObjectKeys.FIELD_APPLICATION_TRUSTED, Boolean.valueOf(trusted));
         	}
+        	if (inputData.exists(ObjectKeys.FIELD_APPLICATION_MAX_IDLE_TIME) && !entryData.containsKey(ObjectKeys.FIELD_APPLICATION_MAX_IDLE_TIME)) {
+        		String maxIdleTime = inputData.getSingleValue(ObjectKeys.FIELD_APPLICATION_MAX_IDLE_TIME);
+    			entryData.put(ObjectKeys.FIELD_APPLICATION_MAX_IDLE_TIME, Integer.valueOf(maxIdleTime));
+        	}
+        	if (inputData.exists(ObjectKeys.FIELD_APPLICATION_SAME_ADDR_POLICY) && !entryData.containsKey(ObjectKeys.FIELD_APPLICATION_SAME_ADDR_POLICY)) {
+        		String sameAddrPolicy = inputData.getSingleValue(ObjectKeys.FIELD_APPLICATION_SAME_ADDR_POLICY);
+    			entryData.put(ObjectKeys.FIELD_APPLICATION_SAME_ADDR_POLICY, Boolean.valueOf(sameAddrPolicy));
+        	}
     	} else { // Group or ApplicationGroup 
         	if (inputData.exists(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS) && !entryData.containsKey(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS)) {
     			entryData.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, inputData.getSingleObject(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS));

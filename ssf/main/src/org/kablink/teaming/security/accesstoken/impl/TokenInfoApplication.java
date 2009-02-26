@@ -29,6 +29,8 @@
 
 package org.kablink.teaming.security.accesstoken.impl;
 
+import java.util.Date;
+
 import org.kablink.teaming.security.accesstoken.AccessToken;
 
 /**
@@ -42,20 +44,25 @@ public class TokenInfoApplication extends TokenInfo {
 	private Long applicationId; 
 	private Long userId; 
 	private Long binderId; // may be null
-	private int binderAccessConstraints; // access by field; meaningful only when binderId is specified
+	private Integer binderAccessConstraints; // access by field; meaningful and required only when binderId is specified
+	private String clientAddr;
+	private Date lastAccessTime;
 	
 	public TokenInfoApplication(Long applicationId, Long userId, Long binderId, 
-			AccessToken.BinderAccessConstraints binderAccessConstraints, String seed) {
+			AccessToken.BinderAccessConstraints binderAccessConstraints,
+			String clientAddr, Date lastAccessTime,
+			String seed) {
 		this(applicationId, userId);
 		this.binderId = binderId;
-		this.binderAccessConstraints = binderAccessConstraints.getNumber();
+		setBinderAccessConstraints(binderAccessConstraints);
+		this.clientAddr = clientAddr;
+		this.lastAccessTime = lastAccessTime;
 		this.seed = seed;
 	}
 	
 	public TokenInfoApplication(Long applicationId, Long userId) {
 		this.applicationId = applicationId;
 		this.userId = userId;
-		this.binderAccessConstraints = AccessToken.BinderAccessConstraints.NONE.getNumber();
 	}
 	
 	public TokenInfoApplication() {
@@ -89,11 +96,33 @@ public class TokenInfoApplication extends TokenInfo {
 	}
 
 	public AccessToken.BinderAccessConstraints getBinderAccessConstraints() {
-		return AccessToken.BinderAccessConstraints.valueOf(binderAccessConstraints);
+		if(binderAccessConstraints != null)
+			return AccessToken.BinderAccessConstraints.valueOf(binderAccessConstraints.intValue());
+		else
+			return AccessToken.BinderAccessConstraints.NONE;
 	}
 
 	public void setBinderAccessConstraints(AccessToken.BinderAccessConstraints binderAccessConstraints) {
-		this.binderAccessConstraints = binderAccessConstraints.getNumber();
+		if(binderAccessConstraints != null)
+			this.binderAccessConstraints = Integer.valueOf(binderAccessConstraints.getNumber());
+		else
+			this.binderAccessConstraints = null;
+	}
+
+	public String getClientAddr() {
+		return clientAddr;
+	}
+
+	public void setClientAddr(String clientAddr) {
+		this.clientAddr = clientAddr;
+	}
+
+	public Date getLastAccessTime() {
+		return lastAccessTime;
+	}
+
+	public void setLastAccessTime(Date lastAccessTime) {
+		this.lastAccessTime = lastAccessTime;
 	}
 
 

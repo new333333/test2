@@ -37,20 +37,19 @@ public class TokenInfoRequest extends TokenInfo {
 	private Long applicationId; 
 	private Long userId; 
 	private Long binderId; // may be null
-	private int binderAccessConstraints; // access by field; meaningful only when binderId is specified
+	private Integer binderAccessConstraints; // access by field; meaningful and required only when binderId is specified
 	
 	public TokenInfoRequest(Long applicationId, Long userId, Long binderId, 
 			AccessToken.BinderAccessConstraints binderAccessConstraints, String seed) {
 		this(applicationId, userId);
 		this.binderId = binderId;
-		this.binderAccessConstraints = binderAccessConstraints.getNumber();
+		setBinderAccessConstraints(binderAccessConstraints);
 		this.seed = seed;
 	}
 	
 	public TokenInfoRequest(Long applicationId, Long userId) {
 		this.applicationId = applicationId;
 		this.userId = userId;
-		this.binderAccessConstraints = AccessToken.BinderAccessConstraints.NONE.getNumber();
 	}
 	
 	public TokenInfoRequest() {
@@ -84,11 +83,17 @@ public class TokenInfoRequest extends TokenInfo {
 	}
 
 	public AccessToken.BinderAccessConstraints getBinderAccessConstraints() {
-		return AccessToken.BinderAccessConstraints.valueOf(binderAccessConstraints);
+		if(binderAccessConstraints != null)
+			return AccessToken.BinderAccessConstraints.valueOf(binderAccessConstraints.intValue());
+		else
+			return AccessToken.BinderAccessConstraints.NONE;
 	}
 
 	public void setBinderAccessConstraints(AccessToken.BinderAccessConstraints binderAccessConstraints) {
-		this.binderAccessConstraints = binderAccessConstraints.getNumber();
+		if(binderAccessConstraints != null)
+			this.binderAccessConstraints = Integer.valueOf(binderAccessConstraints.getNumber());
+		else
+			this.binderAccessConstraints = null;
 	}
 
 }

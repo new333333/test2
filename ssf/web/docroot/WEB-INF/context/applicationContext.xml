@@ -492,7 +492,9 @@
 	<bean id="accessTokenManager" parent="baseTransactionProxy">
 		<property name="target">
 			<bean class="org.kablink.teaming.security.accesstoken.impl.AccessTokenManagerImpl">
+				<property name="profileDao"><ref local="profileDao"/></property>							
 				<property name="securityDao"><ref local="securityDao"/></property>							
+				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 			</bean>
 		</property>
 		<property name="transactionAttributes">
@@ -501,7 +503,6 @@
 				<prop key="create*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="validate*">PROPAGATION_REQUIRED,readOnly</prop>
 			</props>
 		</property>
 

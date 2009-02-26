@@ -885,7 +885,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	}
 	
 	public void destroyApplicationScopedToken(String token) {
-		// check caller has right
+		// check caller has right - we simply check the same right needed for token request 
+		// (that is, no separate right for destroying it)
 		getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.TOKEN_REQUEST);
 		
 		getAccessTokenManager().destroyApplicationScopedToken(new AccessToken(token));

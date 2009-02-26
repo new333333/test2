@@ -36,8 +36,9 @@ public class Application extends ApplicationPrincipal implements IndividualPrinc
 
     private String postUrl;
     private Boolean trusted; // access="field"
-    private Integer timeout; // access="field"
-    private String runAs;
+    private Integer timeout; // in seconds, access="field"
+    private Integer maxIdleTime; // in seconds, access="field"
+    private Boolean sameAddrPolicy; // access="field"
     
 	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.application;
@@ -81,18 +82,34 @@ public class Application extends ApplicationPrincipal implements IndividualPrinc
 			return SPropsUtil.getInt("remoteapp.timeout");
 	}
 
-	public void setTimeout(int timeout) {
-		if(timeout < 0)
+	public void setTimeout(int value) {
+		if(value < 0)
 			throw new IllegalArgumentException("Timeout value cannot be negative");
-		this.timeout = Integer.valueOf(timeout);
+		this.timeout = Integer.valueOf(value);
 	}
 
-	public String getRunAs() {
-		return runAs;
+	public int getMaxIdleTime() {
+		if(maxIdleTime != null)
+			return maxIdleTime.intValue();
+		else
+			return SPropsUtil.getInt("remoteapp.maxIdleTime");
 	}
 
-	public void setRunAs(String runAs) {
-		this.runAs = runAs;
+	public void setMaxIdleTime(int value) {
+		if(value < 0)
+			throw new IllegalArgumentException("Max idle time cannot be negative");
+		this.maxIdleTime = Integer.valueOf(value);
+	}
+
+	public boolean isSameAddrPolicy() {
+		if(sameAddrPolicy != null)
+			return sameAddrPolicy.booleanValue();
+		else
+			return true;
+	}
+
+	public void setSameAddrPolicy(boolean sameAddrPolicy) {
+		this.sameAddrPolicy = Boolean.valueOf(sameAddrPolicy);
 	}
 
 }

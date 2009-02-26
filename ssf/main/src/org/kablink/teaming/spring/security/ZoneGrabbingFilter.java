@@ -22,6 +22,7 @@ public class ZoneGrabbingFilter extends SpringSecurityFilter {
 			ServletException {
 		
 		ZoneContextHolder.setServerName(request.getServerName());
+		ZoneContextHolder.setClientAddr(request.getRemoteAddr());
 		chain.doFilter(request, response);
 	}
 

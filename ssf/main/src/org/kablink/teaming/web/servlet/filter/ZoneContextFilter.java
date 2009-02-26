@@ -19,7 +19,8 @@ public class ZoneContextFilter  implements Filter {
 
 	public void doFilter(ServletRequest request, ServletResponse response, 
 			FilterChain chain) throws IOException, ServletException {
-		ZoneContextHolder.setServerName(request.getServerName().toLowerCase());
+		ZoneContextHolder.setServerName(request.getServerName());
+		ZoneContextHolder.setClientAddr(request.getRemoteAddr());
 		try {
 			chain.doFilter(request, response);
 		}

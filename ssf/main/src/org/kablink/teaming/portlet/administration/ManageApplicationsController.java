@@ -46,6 +46,7 @@ import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -89,14 +90,18 @@ public class ManageApplicationsController extends  SAbstractController {
 			String title = PortletRequestUtils.getStringParameter(request, "title", "");
 			String description = PortletRequestUtils.getStringParameter(request, "description", "");
 			String postUrl = PortletRequestUtils.getStringParameter(request, "postUrl", "");
-			String timeout = PortletRequestUtils.getStringParameter(request, "timeout");
+			String timeout = PortletRequestUtils.getStringParameter(request, "timeout", SPropsUtil.getString("remoteapp.timeout"));
 			String trusted = PortletRequestUtils.getStringParameter(request, "trusted", "");
+			String maxIdleTime = PortletRequestUtils.getStringParameter(request, "maxIdleTime", SPropsUtil.getString("remoteapp.maxIdleTime"));
+			String sameAddrPolicy = PortletRequestUtils.getStringParameter(request, "sameAddrPolicy", "");
 			Map updates = new HashMap();
 			updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 			updates.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 			updates.put(ObjectKeys.FIELD_APPLICATION_POST_URL, postUrl);
 			updates.put(ObjectKeys.FIELD_APPLICATION_TIMEOUT, timeout);
 			updates.put(ObjectKeys.FIELD_APPLICATION_TRUSTED, trusted);
+			updates.put(ObjectKeys.FIELD_APPLICATION_MAX_IDLE_TIME, maxIdleTime);
+			updates.put(ObjectKeys.FIELD_APPLICATION_SAME_ADDR_POLICY, sameAddrPolicy);
 			getProfileModule().modifyEntry(applicationId, new MapInputData(updates));
 			response.setRenderParameter(WebKeys.URL_ENTRY_ID, applicationId.toString());
 

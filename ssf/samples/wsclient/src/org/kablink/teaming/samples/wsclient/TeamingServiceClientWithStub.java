@@ -122,7 +122,7 @@ public class TeamingServiceClientWithStub {
 		try {
 			// Obtain an application-scoped token on behalf of the user. 
 			// This call is made through the regular web services endpoint.
-			String token = regularStub.getApplicationScopedToken(null, applicationId, userId);
+			String token = regularStub.admin_getApplicationScopedToken(null, applicationId, userId);
 			try {
 				// If you're here, the request was successful.
 				System.out.println("Obtained token=" + token + " for application=" + applicationId + " user=" + userId);
@@ -137,7 +137,7 @@ public class TeamingServiceClientWithStub {
 			}
 			finally {
 				// Destroy the token. Again, this call is made through the regular web services endpoint.
-				regularStub.destroyApplicationScopedToken(null, token);		
+				regularStub.admin_destroyApplicationScopedToken(null, token);		
 				System.out.println("Destroyed token: " + token);
 			}
 		}
@@ -153,13 +153,13 @@ public class TeamingServiceClientWithStub {
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 		
 		// Non-existing application ID
-		callGetTeamsUsingToken(stub, 12345, 7);
+		callGetTeamsUsingToken(stub, 12345, 8);
 		
 		// Non-existing user ID
-		callGetTeamsUsingToken(stub, 8, 777);
+		callGetTeamsUsingToken(stub, 11, 888);
 		
 		// Existing application ID and user ID
-		callGetTeamsUsingToken(stub, 8, 7);
+		callGetTeamsUsingToken(stub, 11, 8);
 	}
 	
 	public static void calendarSync() throws Exception {
