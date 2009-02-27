@@ -111,7 +111,7 @@
   </div>
  </c:if>
  <c:if test="${!empty ssReadOnlyFields[property_name]}">
- <span class="ss_labelLeft"><%= caption %></span>
+ <span class="ss_labelLeft"><%= caption %> &#134;</span>
  <ssf:markup leaveSectionsUnchanged="true"
     entity="${ssDefinitionEntry}">${textValue}</ssf:markup>
   </c:if>

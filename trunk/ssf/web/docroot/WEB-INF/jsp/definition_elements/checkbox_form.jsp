@@ -47,10 +47,10 @@
 </c:if>
 <c:if test="${!empty ssReadOnlyFields[property_name] }">
 	<c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
-	<input type="checkbox" checked DISABLED>
+	<input type="checkbox" checked DISABLED> &#134;
 	</c:if>
 	<c:if test="${!ssDefinitionEntry.customAttributes[property_name].value}" >
-	<input type="checkbox" DISABLED>
+	<input type="checkbox" DISABLED> &#134;
 	</c:if>
 	 <span class="ss_labelRight">${property_caption}</span>
 </c:if>

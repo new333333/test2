@@ -61,5 +61,6 @@
 <c:forEach var="groupItem" items="<%= groupListSet %>">
 	${groupItem.title}<br/>
 </c:forEach>
+&#134;
 </c:if>
 </div>

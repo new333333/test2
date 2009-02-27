@@ -77,7 +77,7 @@
 <input type="text" class="ss_text" name="<%= property_name %>" 
 	id="<%= property_name %>" value="<%= value %>">
 </c:if>
-<c:if test="${!empty ssReadOnlyFields[property_name]}"><%= value %></c:if>
+<c:if test="${!empty ssReadOnlyFields[property_name]}"><%= value %> &#134;</c:if>
 
 </div>
 <%

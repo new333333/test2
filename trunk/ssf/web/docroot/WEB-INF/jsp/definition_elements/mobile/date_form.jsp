@@ -77,7 +77,7 @@ ${property_caption}<c:if test="${property_required}"><span
 <span class="ss_labelAbove">${property_caption}</span>
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
 <fmt:formatDate value="${ssDefinitionEntry.customAttributes[property_name].value}" pattern="yyyy-MM-dd" 
-			timeZone="${ssUser.timeZone.ID}"/>
+			timeZone="${ssUser.timeZone.ID}"/> &#134;
 </c:if>
 </div>
 </c:if>
