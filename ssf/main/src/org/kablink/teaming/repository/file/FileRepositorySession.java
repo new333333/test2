@@ -49,6 +49,7 @@ import org.kablink.teaming.repository.RepositorySession;
 import org.kablink.teaming.repository.RepositorySessionFactory;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FilePathUtil;
+import org.kablink.teaming.util.NLT;
 import org.springframework.util.FileCopyUtils;
 
 
@@ -92,7 +93,13 @@ public class FileRepositorySession implements RepositorySession {
     	}
     	
     	// If still here, bad news.
-    	throw new RepositoryServiceException("Cannot write file " + relativeFilePath + " for entry " + entry.getId());
+    	String[] arguments = new String[3];
+    	arguments[0] = relativeFilePath;
+    	arguments[1] = entry.getTitle() + " ("+entry.getId()+")";
+    	arguments[2] = "";
+    	if (relativeFilePath.length() > 200) arguments[2] = NLT.get("errorcode.cannot.fileNameTooLong");
+    	String errorMsg = NLT.get("errorcode.cannot.writeFile", arguments);
+    	throw new RepositoryServiceException(errorMsg);
 	}
 	
 	public String createVersioned(Binder binder, DefinableEntity entry, 

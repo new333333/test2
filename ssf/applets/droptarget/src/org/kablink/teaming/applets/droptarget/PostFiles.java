@@ -365,7 +365,20 @@ public class PostFiles extends Thread {
             String jsfunc = "";
 
             String du = new String(topFrame.getParameter("displayUrl"));
-            
+
+            while (true) {
+				byte bytes[] = new byte[5000];
+				// Read available data.
+				int nBytes = httpStream.read(bytes);
+				if (nBytes == -1) {
+					break;
+				}
+				if (!writing) {
+					writing = true;
+				}
+				url += new String(bytes).toString().trim();
+            }            
+
             if (!du.equals("1")) {
               topFrame.dataSink.changeIcon(topFrame.dataSink.StaticGif);
               topFrame.dataSink.fileLoadingEnded();
@@ -380,22 +393,8 @@ public class PostFiles extends Thread {
               return;
             }
 
-            while (true) {
-				byte bytes[] = new byte[5000];
-				// Read available data.
-				int nBytes = httpStream.read(bytes);
-				if (nBytes == -1) {
-					break;
-				}
-				if (!writing) {
-					writing = true;
-				}
-				url += new String(bytes).toString().trim();
-				
-				System.out.println("url: "+url);
-				
-            }            
-            
+			System.out.println("url: "+url);
+
             if (writing) {
 				writing = false;
 				if (url == null) {
