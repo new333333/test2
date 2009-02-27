@@ -113,7 +113,12 @@ public class AddEntryController extends SAbstractController {
 			if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
 				MapInputData inputData = new MapInputData(formData);
 				
-				entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap, null).getId();
+				try {
+					entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap, null).getId();
+				} catch(WriteFilesException e) {
+		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
+		    		return;
+				}
 				setupReloadOpener(response, folderId, null);
 				if (!addEntryFromIFrame.equals("")) {
 					response.setRenderParameter(WebKeys.NAMESPACE, namespace);
@@ -123,7 +128,12 @@ public class AddEntryController extends SAbstractController {
 			} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_REPLY)) {
 				MapInputData inputData = new MapInputData(formData);
 				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-				entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap, null).getId();
+				try {
+					entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap, null).getId();
+				} catch(WriteFilesException e) {
+		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
+		    		return;
+				}
 				//Show the parent entry when this operation finishes
 				setupReloadOpener(response, folderId, id);
 				if (!blogReply.equals("")) {
@@ -336,12 +346,17 @@ public class AddEntryController extends SAbstractController {
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		String path = WebKeys.VIEW_ADD_ENTRY;
+		String errorMsg = PortletRequestUtils.getStringParameter(request, WebKeys.FILE_PROCESSING_ERRORS, "");
+		model.put(WebKeys.FILE_PROCESSING_ERRORS, errorMsg);
 		
 		if (action.equals(WebKeys.ACTION_ADD_FOLDER_ATTACHMENT)) {
-			String errorMsg = PortletRequestUtils.getStringParameter(request, WebKeys.FILE_PROCESSING_ERRORS, "");
-			model.put(WebKeys.FILE_PROCESSING_ERRORS, errorMsg);
 			path="forum/applet_response";
 		} else {
+			if (!errorMsg.equals("")) {
+				model.put(WebKeys.ERROR_MESSAGE, errorMsg);
+				path = "forum/reload_opener";
+				return new ModelAndView(path, model);
+			}
 			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));		
 			
 			//See if this is an "add entry" or an "add reply" request
