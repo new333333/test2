@@ -84,6 +84,23 @@ function ss_tagModify(operation2, namespace, tagId, divNumber, binderId, entityT
 			alert(ss_tagConfirmTooLong)
 		}
 		
+        var punct = "([!\"#$%&'()*+,./:;<=>?@[\\\\\\]^`{|}~-]*)";
+		var pattern = new RegExp("[!\"#$%&'()*+,./:;<=>?@[\\\\\\]^`{|}~-]");
+		if (formObj.personalTag && formObj.personalTag.value) {
+			if (pattern.test(formObj.personalTag.value) ) {
+				alert(ss_tagConfirmNoPunct)
+				return
+			}
+		}
+		if (formObj.communityTag && formObj.communityTag.value) {
+			if (pattern.test(formObj.communityTag.value) ) {
+				alert(ss_tagConfirmNoPunct)
+				return
+			}
+		}
+		                
+		
+		
 		ss_setupStatusMessageDiv();
 		var tagToDelete = "";
 		if (operation2 == 'delete') tagToDelete = tagId;
