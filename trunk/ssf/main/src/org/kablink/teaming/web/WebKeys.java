@@ -1116,6 +1116,7 @@ public class WebKeys {
     public static final String USER_PROPERTIES_OBJ="ssUserPropertyObj";
     public static final String USER_FOLDER_PROPERTIES="ssUserFolderProperties";
     public static final String USER_FOLDER_PROPERTIES_OBJ="ssUserFolderPropertyObj";
+    public static final String USER_PROFILE_NAME="name";
     public static final String USER_PROFILE_PASSWORD="password";
     public static final String USER_PROFILE_PASSWORD2="password2";
     public static final String USER_PROFILE_PASSWORD_ORIGINAL="password_original";
