@@ -28,10 +28,12 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("miniblog") %>' scope="request"/>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <ssf:ifadapter>
-<body class="ss_style_body">
+<body class="tundra">
 </ssf:ifadapter>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
@@ -52,14 +54,13 @@ function ss_showMiniblogPage${renderResponse.namespace}(id, currentPage, directi
 <div class="ss_style ss_portlet">
   <ssf:form title='<%= NLT.get("miniblog") %>'>
   <div>
-    <div style="float:right;">
+    <div align="right">
 	      <span class="ss_labelAbove ss_labelminiBlog"><ssf:nlt tag="navigation.findPerson"/></span>
 	      <ssf:find type="user"
 		    clickRoutine="ss_showMiniblog${renderResponse.namespace}"
 		    leaveResultsVisible="false"
 		    width="100px" singleItem="true"/> 
 	</div>
-    <div class="ss_clear_float"></div>
     <div class="ss_form_subhead"><ssf:showUser user="${ss_miniblog_user}"/></div>
     
   </div>
