@@ -66,5 +66,6 @@
 <c:forEach var="teamItem" items="<%= teamListSet %>">
 	${teamItem.title}<br/>
 </c:forEach>
+&#134;
 </c:if>
 </div>

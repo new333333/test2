@@ -62,6 +62,6 @@
  value="<c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/>"/>
  </c:if>
  <c:if test="${!empty ssReadOnlyFields[property_name]}">
- <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
+ <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/> &#134;
  </c:if>
 </div>

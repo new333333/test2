@@ -94,7 +94,7 @@
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
 <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				      value="${ssDefinitionEntry.customAttributes[property_name].value}" 
-				      type="both" dateStyle="medium" timeStyle="short" />
+				      type="both" dateStyle="medium" timeStyle="short" /> &#134;
 </c:if>
 </div>
 </c:if>

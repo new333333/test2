@@ -98,6 +98,7 @@
 	    </c:if>
 	  </c:forEach>
 	</c:forEach>
+	&#134;
 </c:if>
 </c:if>
 </div>
