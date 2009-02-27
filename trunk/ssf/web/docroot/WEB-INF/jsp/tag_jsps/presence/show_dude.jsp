@@ -97,17 +97,21 @@
   <c:if test="${ss_presence_show_title}">
 	<ssf:ifadapter>
 	  <c:if test="${!empty ss_presence_user.workspaceId}">
-	  <a href="<ssf:permalink entity="${ss_presence_user}"/>"
-	  onClick="ss_openUrlInParentWorkarea(this.href, '${ss_presence_user.workspaceId}', 'view_ws_listing');return false;"
+	  <a 
+	  <c:if test="${!empty ss_presence_target}">target="${ss_presence_target}"</c:if>
+	  href="<ssf:permalink entity="${ss_presence_user}"/>"
+	  onClick="ss_openUrlInParentWorkarea(this.href, '${ss_presence_user.workspaceId}', 'view_ws_listing', '${ss_presence_target}', '${ss_showUserClose}');return false;"
 	  ><span id="${ss_presence_user.id}" 
 	    class="${ss_presence_title_style} ss_muster_users">${ss_presence_user.title}</span></a>
 	  </c:if>
 	  <c:if test="${empty ss_presence_user.workspaceId}">
-  	      <a href="<ssf:url     
-		    binderId="${ss_presence_user.parentBinder.id}" 
-		    action="view_profile_entry" 
-		    entryId="${ss_presence_user.id}"><ssf:param 
-	  	    name="newTab" value="1"/><ssf:param name="entryViewStyle" value="full"/></ssf:url>" 
+  	      <a 
+  	        <c:if test="${!empty ss_presence_target}">target="${ss_presence_target}"</c:if>
+  	        href="<ssf:url     
+		      binderId="${ss_presence_user.parentBinder.id}" 
+		      action="view_profile_entry" 
+		      entryId="${ss_presence_user.id}"><ssf:param 
+	  	      name="newTab" value="1"/><ssf:param name="entryViewStyle" value="full"/></ssf:url>" 
 		  >
 		    <span id="${ss_presence_user.id}" 
 		      class="${ss_presence_title_style} ss_muster_users">${ss_presence_user.title}</span>

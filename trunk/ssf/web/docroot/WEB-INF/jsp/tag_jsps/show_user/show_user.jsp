@@ -45,7 +45,8 @@
 	<c:choose>
 		<c:when test="${!ss_showUserIsGroup}">
 			<c:if test="${ss_showUserShowPresence}">
-				<ssf:presenceInfo user="${ss_showUserUser}" showTitle="true" titleStyle="${ss_showUserTitleStyle}" /> 
+				<ssf:presenceInfo user="${ss_showUserUser}" showTitle="true" 
+				  titleStyle="${ss_showUserTitleStyle}" target="${ss_showUserTarget}" /> 
 			</c:if>		
 		</c:when>
 		<c:otherwise>
@@ -60,8 +61,9 @@
 				<c:if test="${!empty ss_showUserUser.workspaceId}">
 				  	<c:if test="${!ss_showUserIsGroup}">
 					  <a 
+					    <c:if test="${!empty ss_showUserTarget}">target="${ss_showUserTarget}"</c:if>
 				  		href="<ssf:permalink entity="${ss_showUserUser}"/>"
-				  		onclick="ss_openUrlInParentWorkarea(this.href, '${ss_showUserUser.workspaceId}', 'view_ws_listing');return false;"
+				  		onclick="ss_openUrlInParentWorkarea(this.href, '${ss_showUserUser.workspaceId}', 'view_ws_listing', '${ss_showUserTarget}', '${ss_showUserClose}');return false;"
 					  >
 			  		</c:if>
 					  <span id="${ss_showUserUser.id}" 

@@ -51,6 +51,8 @@ function ss_showMiniblogPage${renderResponse.namespace}(id, currentPage, directi
 }
 </script>
 
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
+
 <div class="ss_style ss_portlet">
   <ssf:form title='<%= NLT.get("miniblog") %>'>
   <div>
@@ -61,7 +63,7 @@ function ss_showMiniblogPage${renderResponse.namespace}(id, currentPage, directi
 		    leaveResultsVisible="false"
 		    width="100px" singleItem="true"/> 
 	</div>
-    <div class="ss_form_subhead"><ssf:showUser user="${ss_miniblog_user}"/></div>
+    <div class="ss_form_subhead"><ssf:showUser user="${ss_miniblog_user}" target="_blank" close="true" /></div>
     
   </div>
   <div id="ss_nextPage" align="right">

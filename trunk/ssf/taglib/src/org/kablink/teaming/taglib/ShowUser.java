@@ -68,7 +68,9 @@ public class ShowUser extends BodyTagSupport {
 	
 	private UserPrincipal user = null;
 	private String titleStyle = "";
+	private String target = "";
     private Boolean showPresence = Boolean.TRUE;
+    private Boolean close = Boolean.FALSE;
 
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -83,6 +85,7 @@ public class ShowUser extends BodyTagSupport {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 			ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+			if (this.close == null) this.close = false;
 			
 			// Get a user object from the principal
 			if ((user != null) && !(user instanceof User) && !(user instanceof Group)) {
@@ -100,6 +103,8 @@ public class ShowUser extends BodyTagSupport {
 				httpReq.setAttribute(WebKeys.SHOW_USER_INSTANCE_COUNT, UUID.randomUUID().toString());
 				httpReq.setAttribute(WebKeys.SHOW_USER_USER, user);		
 				httpReq.setAttribute(WebKeys.SHOW_USER_TITLE_STYLE, titleStyle);
+				httpReq.setAttribute(WebKeys.SHOW_USER_TARGET, target);
+				httpReq.setAttribute(WebKeys.SHOW_USER_CLOSE, close.toString());
 				httpReq.setAttribute(WebKeys.SHOW_USER_IS_GROUP, user instanceof Group);
 				if (user != null && user.isActive())
 					httpReq.setAttribute(WebKeys.SHOW_USER_SHOW_PRESENCE, showPresence);
@@ -131,6 +136,8 @@ public class ShowUser extends BodyTagSupport {
 			user = null;
 			showPresence = true;
 			titleStyle = "";
+			target = "";
+			close = Boolean.FALSE;
 		}
 
 		return EVAL_PAGE;
@@ -144,6 +151,12 @@ public class ShowUser extends BodyTagSupport {
 	}
 	public void setTitleStyle(String titleStyle) {
 	    this.titleStyle = titleStyle;
+	}
+	public void setTarget(String target) {
+	    this.target = target;
+	}
+	public void setClose(Boolean close) {
+		this.close = close;
 	}
 
 }
