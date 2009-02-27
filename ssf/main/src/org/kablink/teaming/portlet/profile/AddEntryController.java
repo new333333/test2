@@ -36,6 +36,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.kablink.teaming.NameMissingException;
 import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -69,6 +70,8 @@ public class AddEntryController extends SAbstractController {
 				fileMap = new HashMap();
 			}
 			MapInputData inputData = new MapInputData(formData);
+        	String name = inputData.getSingleValue(WebKeys.USER_PROFILE_NAME);
+        	if (name == null || name.equals("")) throw new NameMissingException("errorcode.name.missing");
         	String password = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD);
         	String password2 = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD2);
         	if (password == null || !password.equals(password2)) {
