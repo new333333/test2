@@ -4621,6 +4621,7 @@ function ss_setupPopupDiv(targetDiv) {
 		ss_centerPopupDiv(targetDiv);
 		targetDiv.style.visibility = "visible";
 		targetDiv.focus();
+		ss_showBackgroundIFrame(targetDiv.id, "ss_background_iframe");
 		//Signal that the layout changed
 		if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
