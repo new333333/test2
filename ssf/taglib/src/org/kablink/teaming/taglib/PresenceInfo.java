@@ -57,11 +57,13 @@ public class PresenceInfo extends BodyTagSupport {
     private Principal user = null;
     private Boolean showTitle = false;
 	private String titleStyle = "";
+	private String target = "";
     private String zonName=null;
     private String componentId;
     private int userStatus=-1;
     private Boolean showOptionsInline=false;
     private String optionsDivId="";
+    private Boolean close = false;
     
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -78,6 +80,7 @@ public class PresenceInfo extends BodyTagSupport {
 
 			if (this.componentId == null) this.componentId = "";
 			if (this.showOptionsInline == null) this.showOptionsInline = false;
+			if (this.close == null) this.close = false;
 			
 			//Get a user object from the principal
 			User user1 = null;
@@ -118,6 +121,8 @@ public class PresenceInfo extends BodyTagSupport {
 			httpReq.setAttribute(WebKeys.PRESENCE_USER, user1);
 			httpReq.setAttribute(WebKeys.PRESENCE_SHOW_TITLE, this.showTitle);
 			httpReq.setAttribute(WebKeys.PRESENCE_TITLE_STYLE, this.titleStyle);
+			httpReq.setAttribute(WebKeys.PRESENCE_TARGET, this.target);
+			httpReq.setAttribute(WebKeys.PRESENCE_CLOSE, this.close.toString());
 			httpReq.setAttribute(WebKeys.PRESENCE_STATUS, new Integer(userStatus));
 			// TODO get date in the user's local time zone
 			httpReq.setAttribute(WebKeys.PRESENCE_SWEEP_TIME, new Date());
@@ -143,10 +148,12 @@ public class PresenceInfo extends BodyTagSupport {
 			userStatus = -1;
 			showTitle = false;
 			titleStyle="";
+			target="";
 			componentId = "";
 			user = null;
 			zonName = null;
 			this.optionsDivId = "";
+			close = false;
 		}
 	    
 		return EVAL_PAGE;
@@ -165,6 +172,9 @@ public class PresenceInfo extends BodyTagSupport {
 	public void setTitleStyle(String titleStyle) {
 	    this.titleStyle = titleStyle;
 	}
+	public void setTarget(String target) {
+	    this.target = target;
+	}
 	public void setZonName(String zonName) {
 	    this.zonName = zonName;
 	}
@@ -173,6 +183,9 @@ public class PresenceInfo extends BodyTagSupport {
 	}
 	public void setOptionsDivId(String optionsDivId) {
 		this.optionsDivId = optionsDivId;
+	}
+	public void setClose(Boolean close) {
+		this.close = close;
 	}
 
 }

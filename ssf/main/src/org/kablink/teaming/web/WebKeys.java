@@ -890,12 +890,14 @@ public class WebKeys {
 	public static final String PORTLET_TYPE_ADMIN = "ss_portletTypeAdmin";
     public static final String POSTINGS="ssPostings";
     public static final String PREFIX="ssPrefix";
+    public static final String PRESENCE_CLOSE="ss_presence_close";
     public static final String PRESENCE_COMPONENT_ID="ss_presence_component_id";
     public static final String PRESENCE_DIV_ID="ss_presence_div_id";
     public static final String PRESENCE_DUDE="ss_presence_dude";
     public static final String PRESENCE_STATUS="ss_presence_userStatus";
     public static final String PRESENCE_SHOW_OPTIONS_INLINE="ss_presence_show_options_inline";
     public static final String PRESENCE_SHOW_TITLE="ss_presence_show_title";
+    public static final String PRESENCE_TARGET="ss_presence_target";
     public static final String PRESENCE_TITLE_STYLE="ss_presence_title_style";
     public static final String PRESENCE_SWEEP_TIME="ss_presence_sweep_time";
     public static final String PRESENCE_TEXT="ss_presence_text";
@@ -1048,7 +1050,9 @@ public class WebKeys {
     public static final String SHOW_GROUP_SHOW_PRESENCE="ss_showGroupShowPresence";
     public static final String SHOW_GROUP_GROUP_MEMBERS="ss_showGroupGroupMembers";
     public static final String SHOW_GROUP_INSTANCE_COUNT="ss_showGroupInstanceCount";
+    public static final String SHOW_USER_CLOSE="ss_showUserClose";
     public static final String SHOW_USER_SHOW_PRESENCE="ss_showUserShowPresence";
+    public static final String SHOW_USER_TARGET="ss_showUserTarget";
     public static final String SHOW_USER_TITLE_STYLE="ss_showUserTitleStyle";
     public static final String SHOW_USER_USER="ss_showUserUser";
     public static final String SHOW_USER_IS_GROUP="ss_showUserIsGroup";

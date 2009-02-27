@@ -393,15 +393,27 @@ function ss_openUrlInWorkarea(url, id, action) {
 	}
 }
 
-function ss_openUrlInParentWorkarea(url, id, action) {
+function ss_openUrlInParentWorkarea(url, id, action, target, close) {
 	try {
 		if (typeof self.parent.ss_workarea_showId != "undefined") {
 			self.parent.ss_workarea_showId(id, action);
 		} else {
-			self.parent.location.href = url;
+			if (typeof target != 'undefined' && target != "") {
+				var win = window.open(url, target);
+				win.focus();
+				if (typeof close != 'undefined' && close == 'true') setTimeout("self.window.close()", 100);
+			} else {
+				self.parent.location.href = url;
+			}
 		}
 	} catch(e) {
-		self.parent.location.href = url;
+		if (typeof target != 'undefined' && target != "") {
+			var win = window.open(url, target);
+			win.focus();
+			if (typeof close != 'undefined' && close == 'true') setTimeout("self.window.close()", 100);
+		} else {
+			self.parent.location.href = url;
+		}
 	}
 }
 
