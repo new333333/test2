@@ -141,6 +141,9 @@ function ${renderResponse.namespace}_onsub(obj) {
 	<label for="title"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationTitle"/></span><br/></label>
 	<input type="text" class="ss_text" size="50" name="title" id="title" value="${ssApplication.title}"><br/><br/>
 		
+	<label for="name"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationName"/></span><br/></label>
+	<input type="text" class="ss_text" size="50" name="name" id="name" disabled="disabled" value="${ssApplication.name}"><br/><br/>
+
 	<label for="description"><span class="ss_bold"><ssf:nlt tag="administration.add.applicationDescription"/></span><br/></label>
 	<textarea name="description" id="description" wrap="virtual" rows="4" cols="50">${ssApplication.description}</textarea><br/><br/>
 		
