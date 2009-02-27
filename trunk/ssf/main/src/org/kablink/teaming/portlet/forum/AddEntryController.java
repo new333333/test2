@@ -64,9 +64,11 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
+import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.task.TaskHelper;
@@ -245,12 +247,18 @@ public class AddEntryController extends SAbstractController {
 	        	    	
 	        	    	//If there is not pre-existing entry - we create a new entry
 	        	    	//If there is a pre-existing entry - we modify the entry
-	        	    	if (preExistingEntry == null) {
-	        	    		FolderUtils.createLibraryEntry(entryCreationFolder, strDecodedFileName, myFile.getInputStream(), null, true);
-	        	    	} else {
-	        	    		FolderUtils.modifyLibraryEntry(preExistingEntry, strDecodedFileName, myFile.getInputStream(), null, true);
+	        	    	try {
+	        	    		if (preExistingEntry == null) {
+		        	    		FolderUtils.createLibraryEntry(entryCreationFolder, strDecodedFileName, myFile.getInputStream(), null, true);
+		        	    	} else {
+		        	    		FolderUtils.modifyLibraryEntry(preExistingEntry, strDecodedFileName, myFile.getInputStream(), null, true);
+		        	    	}
+		        	    	intFileCount++;
+	        	    	} catch(WriteFilesException e) {
+	        	    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
+	        	    		blnCheckForAppletFile = false;
+	        	    		break;
 	        	    	}
-	        	    	intFileCount++;
 	        		} else {
 	        			//We will set this boolean value to false to exit from the while loop
 	        			blnCheckForAppletFile = false;
@@ -330,7 +338,9 @@ public class AddEntryController extends SAbstractController {
 		String path = WebKeys.VIEW_ADD_ENTRY;
 		
 		if (action.equals(WebKeys.ACTION_ADD_FOLDER_ATTACHMENT)) {
-			path="definition_elements/applet_dummy_response";
+			String errorMsg = PortletRequestUtils.getStringParameter(request, WebKeys.FILE_PROCESSING_ERRORS, "");
+			model.put(WebKeys.FILE_PROCESSING_ERRORS, errorMsg);
+			path="forum/applet_response";
 		} else {
 			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));		
 			
