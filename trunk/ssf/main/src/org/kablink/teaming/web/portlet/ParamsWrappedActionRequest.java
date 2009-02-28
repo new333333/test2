@@ -56,6 +56,14 @@ public class ParamsWrappedActionRequest implements ActionRequest {
 		this.params = params;
 	}
 	
+	/**
+	 * Return the real ActionRequest object we were created from.
+	 */
+	public ActionRequest getActionRequest()
+	{
+		return req;
+	}// end getActionRequest()
+	
 	public Object getAttribute(String arg0) {
 		return req.getAttribute(arg0);
 	}

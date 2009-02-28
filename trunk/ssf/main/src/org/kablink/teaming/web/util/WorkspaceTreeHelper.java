@@ -72,6 +72,7 @@ import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
+import org.kablink.teaming.module.profile.impl.GuestProperties;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.search.SearchFieldResult;
@@ -87,7 +88,6 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Criteria;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
-
 
 public class WorkspaceTreeHelper {
 	public static ModelAndView setupWorkspaceBeans(AllModulesInjected bs, Long binderId, RenderRequest request, 
@@ -185,10 +185,16 @@ public class WorkspaceTreeHelper {
 
 		// Get the state of the tutorial panel (closed, expanded or collapsed)
 		{
-			String		tutorialPanelState;
+			String		tutorialPanelState	= null;
 			PortletURL	url;
 			
-			tutorialPanelState = (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE );
+			// If we are dealing with the Guest then don't try to get the tutorial state.
+			// Are we dealing with the Guest user?
+			if ( !(userProperties instanceof GuestProperties) )
+			{
+				// No
+				tutorialPanelState = (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE );
+			}
 			
 			// Do we have a tutorial panel state?
 			if ( tutorialPanelState == null || tutorialPanelState.length() == 0 )

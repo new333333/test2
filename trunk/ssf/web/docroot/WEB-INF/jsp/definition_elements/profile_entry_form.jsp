@@ -44,6 +44,27 @@
 		methodName = "post";
 	}
 %>
+<c:if test="${!empty ssDoTextVerification}" >  
+	<!-- The following JavaScript is to support CAPTCHA. -->
+	<script type="text/javascript">
+		/**
+		 * This function gets called when the user clicks on the captcha image.
+		 * We will get a new image.
+		 */
+		function getNewCaptchaImg()
+		{
+			var		img;
+	
+			img = document.getElementById( 'kaptcha-img' );
+			img.width = '200';
+			img.height = '50';
+			img.src = '<html:imagesPath/>pics/1pix.gif';
+			img.src = 'Kaptcha.jpg';
+		}// end getNewCaptchaImg()
+	
+	</script>
+</c:if>
+
 <c:set var="ss_profile_entry_form" value="true" scope="request" />
 <form style="background: transparent;" method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
   id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this);">
@@ -187,6 +208,47 @@
 <c:set var="property_caption" value='<%= NLT.get("__profile_entry_picture") %>' scope="request"/>
 <c:set var="property_storage" value="" scope="request"/>
 <%@ include file="/WEB-INF/jsp/definition_elements/graphic_form.jsp" %>
+
+<!-- Show the Text Verification controls. -->
+<c:if test="${!empty ssDoTextVerification}">
+	<div style="padding-bottom: .4em; padding-top: .25em;">
+		<span class="ss_labelAbove"><label for="kaptcha-response"><ssf:nlt tag="text_verification.label" /></label></span>
+		<div style="padding-left: .5em;">
+			<div><ssf:nlt tag="text_verification.instructions" /></div>
+			<table>
+				<tr>
+					<td>
+						<div style="padding-top: .5em; padding-bottom: .5em;">
+							<img src="Kaptcha.jpg" id="kaptcha-img">
+						</div>
+					</td>
+					<td>
+						<a onclick="getNewCaptchaImg();return false;"
+						   href="#"
+						   title="<ssf:nlt tag="text_verification.alt.getnewimage" />" >
+							<img	border="0"
+									align="absmiddle"
+									src="<html:imagesPath/>pics/sym_s_repeat.gif"
+									title="<ssf:nlt tag="text_verification.alt.getnewimage" />"
+									alt="<ssf:nlt tag="text_verification.alt.getnewimage" />" />
+						</a>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<input id="kaptcha-repsponse" name="kaptcha-response" class="ss_text" type="text" />
+						<input id="kaptcha-exists" name="kaptcha-exists" value="true" type="hidden" />
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<ssf:nlt tag="text_verification.caseinsensitive" />
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</c:if>
 
 <%-- Show the ok and cancel buttons --%>
 <br/>

@@ -63,6 +63,7 @@ jurt.jar (from OpenOffice 2.0)
 jut.jar (from OpenOffice 2.0)
 JUnit 3.8.1
 juniversalchardet  1.0.3
+kaptcha 2.3 (Used to generate the image used with text verification)
 Liferay portal-client.jar 4.3.0
 Liferay portal-impl.jar 4.3.0
 Liferay portal-kernel.jar 4.3.0

@@ -29,6 +29,7 @@
 package org.kablink.teaming.portlet.forum;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
@@ -37,9 +38,14 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpSession;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
+import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -71,6 +77,7 @@ public class LoginController  extends SAbstractControllerRetry {
 	
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		ProfileBinder	profileBinder;
 
 		// This controller is used to display the sign-in form used for login. 
 		// If form-based login is disallowed, this controller shouldn't display
@@ -102,6 +109,41 @@ public class LoginController  extends SAbstractControllerRetry {
     	if(ex != null) {
     		model.put(WebKeys.LOGIN_ERROR, ex.getMessage());
     		session.removeAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    	}
+
+    	// Does the user have rights to add a user?
+    	try
+    	{
+	    	profileBinder = getProfileModule().getProfileBinder();
+			if ( getProfileModule().testAccess( profileBinder, ProfileOperation.addEntry ) )
+			{
+				List	defaultEntryDefinitions;
+
+				// Yes
+				model.put( WebKeys.ADD_USER_ALLOWED, "true" );
+
+				// Build the url to invoke the "Add User" page.
+				defaultEntryDefinitions = profileBinder.getEntryDefinitions();
+				if ( !defaultEntryDefinitions.isEmpty() )
+				{
+					Definition			def;
+					AdaptedPortletURL	adapterUrl;
+
+					// There is only 1 entry definition for a Profile binder.  Get it.
+					def = (Definition) defaultEntryDefinitions.get( 0 );
+					
+					// Create the url needed to invoke the "Add User" page.
+					adapterUrl = new AdaptedPortletURL( request, "ss_forum", true );
+					adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY );
+					adapterUrl.setParameter( WebKeys.URL_BINDER_ID, profileBinder.getId().toString() );
+					adapterUrl.setParameter( WebKeys.URL_ENTRY_TYPE, def.getId() );
+					model.put( WebKeys.ADD_USER_URL, adapterUrl.toString() );
+				}
+			}
+    	}
+    	catch (Exception e)
+    	{
+    		// Nothing to do.  It just means that the Guest user doesn't not have rights to the Profile binder.
     	}
 
 		String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
