@@ -179,6 +179,20 @@ public class ViewController extends  SAbstractController {
 			}
 		}
 		
+		//User access configuration
+		if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+			element.addAttribute("title", NLT.get("administration.configure_userAccess"));
+			element.addAttribute("image", "bullet");
+			element.addAttribute("id", String.valueOf(nextId++));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_USER_ACCESS);
+			url.setWindowState(WindowState.MAXIMIZED);
+			url.setPortletMode(PortletMode.VIEW);
+			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
+		}
+		
 		//Add user
 		ProfileBinder profilesBinder = getProfileModule().getProfileBinder();
 		if (getProfileModule().testAccess(profilesBinder, ProfileOperation.addEntry)) {

@@ -50,29 +50,6 @@
 				  onClick="self.window.close();return false;"/>
 		</div>
 	  <div>
-	    <div>
-	    	<c:set var="showGuestOption" value="<%= Boolean.FALSE %>"/>
-	    	<c:set var="openEdition" value="<%= !org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>"/>
-	    	<c:if test="${openEdition}">
-	    		<c:set var="showGuestOption" value="<%= Boolean.TRUE %>"/>
-	    	</c:if>
-	    	<c:if test="${!openEdition}">
-		    	<ssf:ifAuthorizedByLicense featureName="com.novell.teaming.GuestAccess">
-		    		<c:set var="showGuestOption" value="<%= Boolean.TRUE %>"/>
-		    	</ssf:ifAuthorizedByLicense>
-	    	</c:if>
-	    	<c:if test="${showGuestOption}">
-				<input type="checkbox" id="allowAnonymous" name="allowAnonymous" <c:if test="${ssAuthenticationConfig.allowAnonymousAccess}">checked</c:if>/>
-					<label for="allowAnonymous"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowAnonymous"/></span><br/></label>
-			</c:if>
-			<input type="checkbox" id="allowLocalLogin" name="allowLocalLogin" <c:if test="${ssAuthenticationConfig.allowLocalLogin}">checked</c:if>/>
-				<label for="allowLocalLogin"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowLocalLogin"/></span><br/></label>
-			<input type="checkbox" id="allowSelfRegistration" name="allowSelfRegistration" <c:if test="${ssAuthenticationConfig.allowSelfRegistration}">checked</c:if>/>
-				<label for="allowSelfRegistration"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowSelfRegistration"/></span></label>
-			<br/>
-			<br/>
-			<br/>
-	    </div>
 		<div id="funkyDiv" style="width:500px">
 			<ul>
 				<li><a href='#wah'>Wah</a></li>
@@ -95,7 +72,7 @@
 	</td></tr></table>
 	
 	<br/>
-	<ssf:expandableArea title='<%= NLT.get("ldap.schedule") %>'>
+	<ssf:expandableArea title='<%= NLT.get("ldap.schedule") %>' initOpen="true">
 	<c:set var="schedule" value="${ssLdapConfig.schedule}"/>
 	<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
 	<div class="ss_divider"></div>
