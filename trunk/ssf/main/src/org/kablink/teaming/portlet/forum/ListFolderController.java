@@ -53,6 +53,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -249,6 +250,9 @@ public class ListFolderController extends  SAbstractController {
 					return ProfilesBinderHelper.setupProfilesBinderBeans(this, binderId, request, response);
 				}
 			} catch(NoBinderByTheIdException e) {
+				Map<String,Object> model = new HashMap<String,Object>();
+				model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {binderId.toString()}));
+				return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
 			} catch(AccessControlException e) {
 		 		Map<String,Object> model = new HashMap<String,Object>();
 				BinderHelper.setupStandardBeans(this, request, response, model, binderId);

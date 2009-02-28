@@ -179,7 +179,12 @@ public class WorkspaceTreeHelper {
 			binderId = workspaceId;
 			entryId = null;
 		}
-		BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
+		try {
+			BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
+		} catch(NoBinderByTheIdException e) {
+			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {binderId.toString()}));
+			return WebKeys.VIEW_ERROR_RETURN;
+		}
 		UserProperties userProperties = (UserProperties)model.get(WebKeys.USER_PROPERTIES_OBJ);
 		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
 
@@ -310,6 +315,8 @@ public class WorkspaceTreeHelper {
 				BinderHelper.setupUnseenBinderBeans(bs, binder, model, page);
 			
 		} catch(NoBinderByTheIdException e) {
+			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {binderId.toString()}));
+			return WebKeys.VIEW_ERROR_RETURN;
 		} catch(OperationAccessControlExceptionNoName e) {
 			//Access is not allowed
 			if (WebHelper.isUserLoggedIn(request) && 
