@@ -219,6 +219,8 @@ public class ListFolderHelper {
 			try {
 				binder = bs.getBinderModule().getBinder(binderId);
 			} catch(NoBinderByTheIdException e) {
+				model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {binderId.toString()}));
+				return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
 			} catch(AccessControlException e) {
 				if (WebHelper.isUserLoggedIn(request) && 
 						!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {

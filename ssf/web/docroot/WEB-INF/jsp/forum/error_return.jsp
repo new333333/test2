@@ -36,7 +36,9 @@
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 </ssf:ifadapter>
 
-<div style="padding-top:20px;"><span class="ss_bold ss_errorLabel">[<ssf:nlt tag="errorcode.access.denied"/>]</span></div>
+<div style="padding-top:20px;">
+  <span class="ss_bold ss_errorLabel">[${ss_errorMessage}]</span>
+</div>
 
 <c:if test="${!empty ss_refererUrl}">
   <input type="button" value="<ssf:nlt tag="button.close"/> 
