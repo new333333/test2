@@ -124,5 +124,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/spring-ldap.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/catalina.jar"/>
+	<classpathentry kind="lib" path="lib/kaptcha.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>

@@ -126,6 +126,7 @@ public class WebKeys {
 	public static final String URL_DIRECTION="direction";
 	public static final String URL_DISPLAY_TYPE="displayType";
     public static final String URL_DIV_ID="divId";
+    public static final String URL_DO_TEXT_VERIFICATION = "ssDoTextVerification";
     public static final String URL_DOWNLOAD_FILE="download";
 	public static final String URL_ELEMENT_TO_EDIT = "_element";
 	public static final String URL_END_DATE = "ss_endDate";
@@ -559,6 +560,8 @@ public class WebKeys {
 	public static final String ADD_ENTRY_TITLES="ssAddEntryTitles";
 	public static final String ADD_ENTRY_URLS="ssAddEntryUrls";
 	public static final String ADD_TEAM_WORKSPACE_URL="ssAddTeamWorkspaceUrl";
+	public static final String ADD_USER_ALLOWED = "ssAddUserAllowed";
+	public static final String ADD_USER_URL = "ssAddUserUrl";
 	public static final String ADMIN_TREE="ssAdminDomTree";
 	public static final String AJAX_ERROR_MESSAGE="ssAjaxErrorMessage";
 	public static final String AJAX_ERROR_DETAIL="ssAjaxErrorDetail";
@@ -982,6 +985,7 @@ public class WebKeys {
     public static final String SIMPLE_URL_NAME_NOT_ALLOWED_ERROR="ss_simpleUrlNameNotAllowedError";
     public static final String SMPT_ENABLED="ssSMTPEnabled";
     public static final String SNIPPET="ss_snippet";
+    public static final String TEXT_VERIFICATION_RESPONSE = "kaptcha-response";
     public static final String TOOLBAR_CLIPBOARD_IDS="ss_toolbar_clipboard_ids";
     public static final String TOOLBAR_CLIPBOARD_IDS_AS_JS_STRING="ss_toolbar_clipboard_ids_as_js_string";
     public static final String TOOLBAR_CLIPBOARD_SHOW="ss_toolbar_clipboard_show";

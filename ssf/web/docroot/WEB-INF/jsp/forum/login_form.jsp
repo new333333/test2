@@ -30,6 +30,23 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:if test="${!empty ssAddUserAllowed}">
+	<script type="text/javascript">
+		/**
+		 * This function gets called when the user clicks on the "Create new account" link.
+		 * We will invoke the "Add User" page.
+		 */
+		function invokeCreateNewAccountPage()
+		{
+			var		url;
+
+			url = '<ssf:escapeJavaScript>${ssAddUserUrl}</ssf:escapeJavaScript>';
+			//url = 'http://137.65.67.72:8080/ssf/a/do?p_name=ss_forum&p_action=1&action=add_profile_entry&binderId=2&entryType=402883b90cc53079010cc539bf260007';
+			ss_toolbarPopupUrl( url, '_blank', '', '' );
+		}// end invokeCreateNewAccountPage()
+	</script>
+</c:if>
+
   <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}" style="display:inline;">
    <fieldset class="ss_fieldset_${ss_loginFormStyle}">
     <div class="ss_legend_${ss_loginFormStyle}"><ssf:nlt tag="login.please"/></div>
@@ -65,6 +82,14 @@
     		  <br/>
     		  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
     		  <input type="reset" class="ss_submit" style="margin-left:20px;" value="<ssf:nlt tag="button.reset"/>"/>
+			  <c:if test="${!empty ssAddUserAllowed}">
+				  <a style="margin-left: 2em;"
+					 href="#"
+					 onclick="invokeCreateNewAccountPage();return false;"
+				     title="<ssf:nlt tag="login.createAccount" />" >
+					<span><ssf:nlt tag="login.createAccount" /></span>
+				  </a>
+			  </c:if>
 			  <br/>
 			</td>
 		</tr>		  
