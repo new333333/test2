@@ -268,6 +268,7 @@ public class WebKeys {
 	public static final String ACTION_ACCESS_CONTROL = "configure_access_control";
 	public static final String ACTION_CLOSE_WINDOW="close_window"; 
 	public static final String ACTION_CONFIGURE_DEFINITIONS = "configure_definitions";
+	public static final String ACTION_CONFIGURE_USER_ACCESS="configure_user_access";
 	public static final String ACTION_DEFINITION_BUILDER = "definition_builder";
 	public static final String ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";
 	public static final String ACTION_EDIT_ELEMENT = "edit_element";
@@ -1206,6 +1207,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_CHANGELOG="administration/changeLog";
     public static final String VIEW_ADMIN_UPDATE_CHANGELOG="administration/updateChangeLog";
     public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";
+    public static final String VIEW_ADMIN_CONFIGURE_USER_ACCESS="administration/configureUserAccess";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING_JOB="administration/configurePostingJob";
     public static final String VIEW_ADMIN_CONFIGURE_SEARCH_INDEX="administration/configureSearchIndex";
     public static final String VIEW_ADMIN_CONFIGURE_SEARCH_NODES="administration/configureSearchNodes";
