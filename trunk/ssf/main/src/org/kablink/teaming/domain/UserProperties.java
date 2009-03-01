@@ -89,6 +89,7 @@ public class UserProperties extends ZonedObject {
     }
     
     public Object getProperty(String key) {
+    	if (userProperties == null) return null;
     	return userProperties.get(key);
     }    
     
