@@ -446,7 +446,7 @@ try
 				else
 				{
 					// What is the url to the pdf file?
-					url += '/documentation/teaming_tutorials/data/biuhels.html';
+					url += '/documentation/teaming2/pdfdoc/team20_tutorials/team20_tutorials.pdf#page=1';
 				}
 
 				winHeight = 720;

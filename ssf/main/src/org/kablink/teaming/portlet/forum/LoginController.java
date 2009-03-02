@@ -51,6 +51,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractControllerRetry;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Validator;
@@ -112,38 +113,11 @@ public class LoginController  extends SAbstractControllerRetry {
     	}
 
     	// Does the user have rights to add a user?
-    	try
+    	if ( MiscUtil.canAddUser( this ) )
     	{
-	    	profileBinder = getProfileModule().getProfileBinder();
-			if ( getProfileModule().testAccess( profileBinder, ProfileOperation.addEntry ) )
-			{
-				List	defaultEntryDefinitions;
-
-				// Yes
-				model.put( WebKeys.ADD_USER_ALLOWED, "true" );
-
-				// Build the url to invoke the "Add User" page.
-				defaultEntryDefinitions = profileBinder.getEntryDefinitions();
-				if ( !defaultEntryDefinitions.isEmpty() )
-				{
-					Definition			def;
-					AdaptedPortletURL	adapterUrl;
-
-					// There is only 1 entry definition for a Profile binder.  Get it.
-					def = (Definition) defaultEntryDefinitions.get( 0 );
-					
-					// Create the url needed to invoke the "Add User" page.
-					adapterUrl = new AdaptedPortletURL( request, "ss_forum", true );
-					adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY );
-					adapterUrl.setParameter( WebKeys.URL_BINDER_ID, profileBinder.getId().toString() );
-					adapterUrl.setParameter( WebKeys.URL_ENTRY_TYPE, def.getId() );
-					model.put( WebKeys.ADD_USER_URL, adapterUrl.toString() );
-				}
-			}
-    	}
-    	catch (Exception e)
-    	{
-    		// Nothing to do.  It just means that the Guest user doesn't not have rights to the Profile binder.
+    		// Yes.
+    		// Add the information needed to support the "Create new account" ui to the response.
+    		MiscUtil.addCreateNewAccountDataToResponse( this, request, model );
     	}
 
 		String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
