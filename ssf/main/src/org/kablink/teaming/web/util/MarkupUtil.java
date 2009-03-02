@@ -24,6 +24,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.util.FileUploadItem;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.Html;
 import org.kablink.util.Http;
@@ -60,6 +61,7 @@ public class MarkupUtil {
 	protected final static Pattern hrefPattern = Pattern.compile("((<a[\\s]href[=\\s]\")([^\":]*)\")");
 	protected final static Pattern pageTitleUrlTextPattern = Pattern.compile("(\\[\\[([^\\]]*)\\]\\])");
 	protected final static Pattern sectionPattern =Pattern.compile("(==[=]*)([^=]*)(==[=]*)");
+	protected final static Pattern httpPattern =Pattern.compile("^https*://[^/]*(/[^/]*)/s/readFile/(.*)$");
 	/**
 	 * Parse a description looking for uploaded file references
 	 * 
@@ -191,6 +193,17 @@ public class MarkupUtil {
 	    	Matcher m1 = urlSrcPattern.matcher(img);
         	if (m1.find()) {
         		String fileName = m1.group(1);
+        		
+        		//See if this is a full file spec that needs to be trimmed back to just the file name
+        		String correctedFileName = fileName;
+    			String ctx = SPropsUtil.getString(SPropsUtil.SSF_CTX, "/ssf");
+        		Matcher m3 = httpPattern.matcher(correctedFileName);
+        		if (m3.find() && ctx.equals(m3.group(1))) correctedFileName = m3.group(2);
+        		String[] urlArgs = correctedFileName.split("/");
+        		if (urlArgs.length >= WebUrlUtil.FILE_URL_ARG_LENGTH - 3) {
+        			fileName = "";
+        			for (int i = 5; i < urlArgs.length; i++) fileName += urlArgs[i];
+        		}
  
         		img = m1.replaceFirst("src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
         		description.setText(m.replaceFirst(img.replace("$", "\\$")));  //remove regex special char
