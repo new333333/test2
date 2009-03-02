@@ -237,7 +237,7 @@ try
 				var		tutorialObj;
 				var		tutorialName;
 				var		fn;
-
+					
 				// Create an array to hold the tutorial objects.
 				m_tutorialObjs = new Array();
 
@@ -247,6 +247,7 @@ try
 				tutorialObj.td = document.getElementById( 'tutorial1TD' );
 				tutorialObj.span = document.getElementById( 'tutorial1Span' );
 				tutorialObj.img = document.getElementById( 'tutorial1SelectedImg' );
+				tutorialObj.scriptUrl = 'biuhels.html'; 
 				tutorialObj.type = 'application/x-shockwave-flash';
 				tutorialObj.url = 'http://www.youtube.com/v/8YqsFwmgMms&hl=en&fs=1';
 //				tutorialObj.url = 'http://137.65.64.13/teaming-tutorials/Thayne_controller.swf';
@@ -257,6 +258,7 @@ try
 				tutorialObj.td = document.getElementById( 'tutorial2TD' );
 				tutorialObj.span = document.getElementById( 'tutorial2Span' );
 				tutorialObj.img = document.getElementById( 'tutorial2SelectedImg' );
+				tutorialObj.scriptUrl = 'biux9ad.html'; 
 				tutorialObj.type = 'application/x-shockwave-flash';
 				//tutorialObj.url = 'http://www.youtube.com/v/yuI6XfKoDiA&hl=en&fs=1';
 				tutorialObj.url = 'http://www.novell.com/documentation/teaming2/media/getting-started_controller.swf';
@@ -267,6 +269,7 @@ try
 				tutorialObj.td = document.getElementById( 'tutorial3TD' );
 				tutorialObj.span = document.getElementById( 'tutorial3Span' );
 				tutorialObj.img = document.getElementById( 'tutorial3SelectedImg' );
+				tutorialObj.scriptUrl = 'biuxe3o.html'; 
 				tutorialObj.type = 'application/x-shockwave-flash';
 //				tutorialObj.url = 'http://www.youtube.com/v/VJTQr4BPurc&hl=en&fs=1';
 				tutorialObj.url = 'http://www.novell.com/documentation/teaming2/media/getting-informed_controller.swf';
@@ -277,7 +280,8 @@ try
 				tutorialObj.td = document.getElementById( 'tutorial4TD' );
 				tutorialObj.span = document.getElementById( 'tutorial4Span' );
 				tutorialObj.img = document.getElementById( 'tutorial4SelectedImg' );
-				tutorialObj.type = '';
+				tutorialObj.type = 'application/x-shockwave-flash';
+				tutorialObj.scriptUrl = 'biuxihd.html'; 
 //				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-4.wmv';
 				tutorialObj.url = 'http://www.novell.com/documentation/teaming2/media/getting-around_controller.swf';
 
@@ -288,6 +292,7 @@ try
 				tutorialObj.span = document.getElementById( 'tutorial5Span' );
 				tutorialObj.img = document.getElementById( 'tutorial5SelectedImg' );
 				tutorialObj.type = '';
+				tutorialObj.scriptUrl = 'biuxlb3.html'; 
 //				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-5.wmv';
 				tutorialObj.url = 'http://www.novell.com/documentation/teaming2/media/customizing_controller.swf';
 
@@ -415,10 +420,35 @@ try
 
 				lang = '${teamingLang}';
 				url = 'http://www.novell.com';
+
 				// If the language is not English we need to add the language code to the url.
 				if ( 'en' != lang )
+				{
+					// Convert the language code into the expected format.
+					if ( lang == 'de' || lang == 'fr' || lang == 'it' || lang == 'es' || lang == 'pl' || lang == 'nl' || lang == 'hu' || lang == 'ru' )
+						lang += '-' + lang;
 					url += '/' + lang;
-				url += '/documentation/teaming2/script/tutorial.' + format;
+				}
+
+				if ( format == 'html' )
+				{
+					if ( m_selectedTutorial != null )
+					{
+						// Start the user at the begining of the script for the selected video.
+						url += '/documentation/teaming2/team20_tutorials/data/' + m_selectedTutorial.scriptUrl;
+					}
+					else
+					{
+						// Since a tutorial is not selected open the script and start at the beginning.
+						url += '/documentation/teaming2/team20_tutorials/data/biuhels.html';
+					}
+				}
+				else
+				{
+					// What is the url to the pdf file?
+					url += '/documentation/teaming_tutorials/data/biuhels.html';
+				}
+
 				winHeight = 720;
 				winWidth = 720; 
 				m_playTutorialWnd = window.open(
