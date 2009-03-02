@@ -167,6 +167,15 @@ public class WorkspaceTreeHelper {
 						//Please log in
 						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 						model.put(WebKeys.URL, refererUrl);
+
+				    	// Does the user have rights to add a user?
+				    	if ( MiscUtil.canAddUser( bs ) )
+				    	{
+				    		// Yes.
+				    		// Add the information needed to support the "Create new account" ui to the response.
+				    		MiscUtil.addCreateNewAccountDataToResponse( bs, request, model );
+				    	}
+
 						return WebKeys.VIEW_LOGIN_PLEASE;
 					}
 				}

@@ -82,6 +82,7 @@
     		  <br/>
     		  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
     		  <input type="reset" class="ss_submit" style="margin-left:20px;" value="<ssf:nlt tag="button.reset"/>"/>
+			  <!-- If the user has rights to create a new user, add the "Create new account" link. -->
 			  <c:if test="${!empty ssAddUserAllowed}">
 				  <a style="margin-left: 2em;"
 					 href="#"
