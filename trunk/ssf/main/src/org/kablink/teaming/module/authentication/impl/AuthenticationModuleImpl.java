@@ -94,7 +94,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 				try {
 					rebuildProvidersForZone(zoneConfig);
 				} catch(Exception e) {
-					logger.error("Unable to rebuild providers for zone " + zoneId);
+					logger.error("Unable to rebuild providers for zone " + zoneId + ": " + e.toString());
 				}
 			}
 		}catch (NoObjectByTheIdException no) {
@@ -125,7 +125,8 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 					contextSource = new DefaultSpringSecurityContextSource(
 						config.getUrl());
 				} catch(Exception e) {
-					logger.debug("Unable to create LDAP context for url: " + config.getUrl());
+					if(logger.isDebugEnabled())
+						logger.debug("Unable to create LDAP context for url " + config.getUrl() + ": " + e.toString());
 					continue;
 				}
 				if (Validator.isNotNull(config.getPrincipal())) {
@@ -198,11 +199,32 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	 */
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException
     {
+		try {
+			return doAuthenticate(authentication);
+		}
+		catch(AuthenticationServiceException e) {
+			Throwable t = e.getCause();
+			logger.error(e.getMessage() + ((t != null)? ": " + t.toString() : ""));
+			throw e;
+		}
+		catch(AuthenticationException e) {
+			Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
+			logger.warn("Authentication failure for zone " + zone + ": " + e.toString());
+			throw e;
+		}
+		catch(RuntimeException e) {
+			Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
+			logger.error("Authentication failure for zone " + zone, e);
+			throw e;	
+		}
+    }
+
+	protected Authentication doAuthenticate(Authentication authentication) throws AuthenticationException {
+		AuthenticationException exc = null;
     	Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
     	try {
     		ensureZoneIsConfigured(zone);
     	} catch(Exception e) {
-    		logger.error("Unable to configure authentication for zone " + zone);
     		throw new AuthenticationServiceException("Unable to configure authentication for zone " + zone, e);
     	}
     	if(authenticators.containsKey(zone)) {
@@ -214,14 +236,18 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     					(Map) result.getPrincipal(), LoginInfo.AUTHENTICATOR_WEB);
     			return result;
     		} catch(UsernameNotFoundException e) {
+    			exc = e;
     		}
     		if(SZoneConfig.getAdminUserName(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName())).equals(authentication.getName())) {
     			return localProviders.get(zone).authenticate(authentication);
     		}
     	}
-    	throw new UsernameNotFoundException("No such user");
-    }
-
+    	if(exc != null)
+    		throw exc;
+    	else
+    		throw new UsernameNotFoundException("No such user " + authentication.getName());
+	}
+	
 	/**
 	 * Returns <code>true</code> if this <Code>AuthenticationProvider</code>
 	 * supports the indicated <Code>Authentication</code> object. Delegates
@@ -252,7 +278,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     	try {
     		ensureZoneIsConfigured(zone);
     	} catch(Exception e) {
-    		logger.error("Unable to configure authentication for zone " + zone);
+    		logger.error("Unable to configure authentication for zone " + zone + ": " + e.toString());
     		throw new AuthenticationServiceException("Unable to configure authentication for zone " + zone, e);
     	}
 		if (authenticators.containsKey(zone)) {
