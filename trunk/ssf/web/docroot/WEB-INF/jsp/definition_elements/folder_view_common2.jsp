@@ -627,7 +627,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			    <ssf:param name="fileId" value="${entry1._fileID}"/>
 			    <ssf:param name="fileTime" value="${entry1._fileTime}"/>
 			    <ssf:param name="viewType" value="html"/>
-			    </ssf:url>" <ssf:title tag="title.open.file.in.html.format" /> 
+			    </ssf:url>" title="<ssf:nlt tag="title.open.file.in.html.format" />" 
 			><span <%= seenStyle %>>[<ssf:nlt tag="entry.HTML" />]</span></a>
 		</ssf:ifSupportsViewAsHtml>
     </c:if>&nbsp;

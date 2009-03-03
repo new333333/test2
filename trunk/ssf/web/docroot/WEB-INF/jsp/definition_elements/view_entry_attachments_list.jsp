@@ -218,15 +218,16 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		<td class="ss_att_meta" width="10%"></td>
 		<td class="ss_att_meta">
 		<ssf:ifSupportsViewAsHtml relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
-				<a target="_blank" style="text-decoration: none;" href="<ssf:url 
-				    webPath="viewFile"
-				    folderId="${ssDefinitionEntry.parentBinder.id}"
-			   	 	entryId="${ssDefinitionEntry.id}"
-				    entityType="${ssDefinitionEntry.entityType}" >
-			    	<ssf:param name="fileId" value="${selection.id}"/>
-			    	<ssf:param name="fileTime" value="${selection.modification.date.time}"/>
-			    	<ssf:param name="viewType" value="html"/>
-			    	</ssf:url>" <ssf:title tag="title.open.file.in.html.format" /> ><span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="entry.HTML" />]</span></a>
+			<a target="_blank" style="text-decoration: none;" href="<ssf:url 
+			    webPath="viewFile"
+			    folderId="${ssDefinitionEntry.parentBinder.id}"
+		   	 	entryId="${ssDefinitionEntry.id}"
+			    entityType="${ssDefinitionEntry.entityType}" >
+		    	<ssf:param name="fileId" value="${selection.id}"/>
+		    	<ssf:param name="fileTime" value="${selection.modification.date.time}"/>
+		    	<ssf:param name="viewType" value="html"/>
+		    	</ssf:url>" title="<ssf:nlt tag="title.open.file.in.html.format" />" 
+		     ><span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="entry.HTML" />]</span></a>
 		</ssf:ifSupportsViewAsHtml>
 		</td>
 		<td class="ss_att_meta">
