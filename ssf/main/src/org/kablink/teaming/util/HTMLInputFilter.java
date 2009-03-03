@@ -189,6 +189,11 @@ public class HTMLInputFilter
     div_atts.add( "style" );
     vAllowed.put( "div", div_atts );
     
+    ArrayList<String> span_atts = new ArrayList<String>();
+    span_atts.add( "class" );
+    span_atts.add( "style" );
+    vAllowed.put( "span", span_atts );
+    
     ArrayList<String> img_atts = new ArrayList<String>();
     img_atts.add( "src" );
     img_atts.add( "width" );
@@ -202,7 +207,6 @@ public class HTMLInputFilter
     
     ArrayList<String> no_atts = new ArrayList<String>();
     vAllowed.put( "p", no_atts );
-    vAllowed.put( "span", no_atts );
     vAllowed.put( "b", no_atts );
     vAllowed.put( "strong", no_atts );
     vAllowed.put( "i", no_atts );
