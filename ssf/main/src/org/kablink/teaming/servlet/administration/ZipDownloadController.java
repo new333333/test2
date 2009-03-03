@@ -30,13 +30,13 @@ package org.kablink.teaming.servlet.administration;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.activation.FileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.tools.zip.ZipEntry;
+import org.apache.tools.zip.ZipOutputStream;
 import org.dom4j.Document;
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.web.servlet.SAbstractController;
@@ -65,6 +65,8 @@ public abstract class ZipDownloadController extends  SAbstractController {
 					"Content-Disposition",
 					"attachment; filename=\"" + filename + "\"");
 		ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());
+		//Standard zip encoding is cp437. (needed when chars are outside the ASCII range)
+		zipOut.setEncoding("cp437");
 		Map formData = request.getParameterMap();
 		Iterator itFormData = formData.entrySet().iterator();
 		while (itFormData.hasNext()) {
