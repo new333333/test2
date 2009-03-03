@@ -55,7 +55,7 @@ public class HTMLInputFilter
    * angle brackets (e.g. "<b text </b>" becomes "<b> text </b>").  If set to false,
    * unbalanced angle brackets will be html escaped.
    */
-  protected static final boolean ALWAYS_MAKE_TAGS = true;
+  protected static final boolean ALWAYS_MAKE_TAGS = false;  //true doesn't work
   
   /**
    * flag determing whether comments are allowed in input String.
@@ -69,7 +69,7 @@ public class HTMLInputFilter
   protected Map<String,List<String>> vAllowed;
   
   /** counts of open tags for each (allowable) html element **/
-  protected Map<String,Integer> vTagCounts;
+  //protected Map<String,Integer> vTagCounts;
   
   /** html elements which must always be self-closing (e.g. "<img />") **/
   protected String[] vSelfClosingTags;
@@ -85,11 +85,44 @@ public class HTMLInputFilter
   
   /** tags which should be removed if they contain no content (e.g. "<b></b>" or "<b />") **/
   protected String[] vRemoveBlanks;
+  protected Map<String,Pattern> vRemoveBlanksPatterns1;
+  protected Map<String,Pattern> vRemoveBlanksPatterns2;
   
   /** entities allowed within html markup **/
   protected String[] vDisAllowedEntities;
   
   protected boolean vDebug;
+  
+  //Patterns 
+  private static final String PATTERN_ESCAPE_COMMENTS = "<!--(.*?)-->";
+  private static final String PATTERN_CHECK_TAGS = "<(.*?)>";
+  private static final String PATTERN_REGEXP_REPLACE1 = "<(.*?)>";
+  private static final String PATTERN_REGEXP_REPLACE2 = "<([^>]*?)(?=<|$)";
+  private static final String PATTERN_REGEXP_REPLACE3 = "(^|>)([^<]*?)(?=>)";
+  private static final String PATTERN_PROCESS_TAGS1 = "^/([a-z0-9]+)";
+  private static final String PATTERN_PROCESS_TAGS2 = "^([a-z0-9]+)(.*?)(/?)$";
+  private static final String PATTERN_PROCESS_TAGS3 = "^!--(.*)--$";
+  private static final String PATTERN_PROCESS_PARAM_PROTOCOL = "^([^:]+):";
+  private static final String PATTERN_DECODE_ENTITIES1 = "&#(\\d+);?";
+  private static final String PATTERN_DECODE_ENTITIES2 = "&#x([0-9a-f]+);?";
+  private static final String PATTERN_DECODE_ENTITIES3 = "%([0-9a-f]{2});?";
+  private static final String PATTERN_VALIDATE_ENTITIES1 = "&([^&;]*)(?=(;|&|$))";
+  private static final String PATTERN_VALIDATE_ENTITIES2 = "(>|^)([^<]+?)(<|$)";
+  
+  private Pattern pattern_escape_comments;
+  private Pattern pattern_check_tags;
+  private Pattern pattern_regexp_replace1;
+  private Pattern pattern_regexp_replace2;
+  private Pattern pattern_regexp_replace3;
+  private Pattern pattern_process_tags1;
+  private Pattern pattern_process_tags2;
+  private Pattern pattern_process_tags3;
+  private Pattern pattern_process_param_protocol;
+  private Pattern pattern_decode_entities1;
+  private Pattern pattern_decode_entities2;
+  private Pattern pattern_decode_entities3;
+  private Pattern pattern_validate_entities1;
+  private Pattern pattern_validate_entities2;
   
   public HTMLInputFilter()
   {
@@ -98,10 +131,27 @@ public class HTMLInputFilter
   
   public HTMLInputFilter( boolean debug )
   {
-    vDebug = debug;
+	pattern_escape_comments = Pattern.compile(PATTERN_ESCAPE_COMMENTS, Pattern.DOTALL);
+	pattern_check_tags = Pattern.compile( PATTERN_CHECK_TAGS, Pattern.DOTALL );
+	pattern_regexp_replace1 = Pattern.compile( PATTERN_REGEXP_REPLACE1 );
+	pattern_regexp_replace2 = Pattern.compile( PATTERN_REGEXP_REPLACE2 );
+	pattern_regexp_replace3 = Pattern.compile( PATTERN_REGEXP_REPLACE3 );
+	pattern_process_tags1 = Pattern.compile( PATTERN_PROCESS_TAGS1, REGEX_FLAGS_SI );
+	pattern_process_tags2 = Pattern.compile( PATTERN_PROCESS_TAGS2, REGEX_FLAGS_SI );
+	pattern_process_tags3 = Pattern.compile( PATTERN_PROCESS_TAGS3, REGEX_FLAGS_SI );
+	pattern_process_param_protocol = Pattern.compile( PATTERN_PROCESS_PARAM_PROTOCOL, REGEX_FLAGS_SI );
+	pattern_decode_entities1 = Pattern.compile( PATTERN_DECODE_ENTITIES1 );
+	pattern_decode_entities2 = Pattern.compile( PATTERN_DECODE_ENTITIES2 );
+	pattern_decode_entities3 = Pattern.compile( PATTERN_DECODE_ENTITIES3 );
+	pattern_validate_entities1 = Pattern.compile( PATTERN_VALIDATE_ENTITIES1 );
+	pattern_validate_entities2 = Pattern.compile( PATTERN_VALIDATE_ENTITIES2, Pattern.DOTALL );
+
+
+	
+	
+	vDebug = debug;
     
     vAllowed = new HashMap<String,List<String>>();
-    vTagCounts = new HashMap<String,Integer>();
     
     ArrayList<String> a_atts = new ArrayList<String>();
     a_atts.add( "href" );
@@ -109,6 +159,7 @@ public class HTMLInputFilter
     a_atts.add( "alt" );
     a_atts.add( "title" );
     a_atts.add( "class" );
+    a_atts.add( "style" );
     vAllowed.put( "a", a_atts );
     
     ArrayList<String> table_atts = new ArrayList<String>();
@@ -116,6 +167,7 @@ public class HTMLInputFilter
     table_atts.add( "cellpadding" );
     table_atts.add( "border" );
     table_atts.add( "class" );
+    table_atts.add( "style" );
     vAllowed.put( "table", table_atts );
     
     ArrayList<String> tr_atts = new ArrayList<String>();
@@ -134,6 +186,7 @@ public class HTMLInputFilter
     ArrayList<String> div_atts = new ArrayList<String>();
     div_atts.add( "align" );
     div_atts.add( "class" );
+    div_atts.add( "style" );
     vAllowed.put( "div", div_atts );
     
     ArrayList<String> img_atts = new ArrayList<String>();
@@ -143,6 +196,7 @@ public class HTMLInputFilter
     img_atts.add( "alt" );
     img_atts.add( "title" );
     img_atts.add( "class" );
+    img_atts.add( "style" );
     img_atts.add( "dir" );
     vAllowed.put( "img", img_atts );
     
@@ -154,17 +208,24 @@ public class HTMLInputFilter
     vAllowed.put( "i", no_atts );
     vAllowed.put( "em", no_atts );
     
-    vSelfClosingTags = new String[] { "img" };
+    vSelfClosingTags = new String[] { "img", "br", "hr" };
     vNeedClosingTags = new String[] { "a", "b", "strong", "i", "em", "p", "span", "div", "table", "tr", "td", "th" };
     vAllowedProtocols = new String[] { "http", "https", "mailto" }; // no ftp.
     vProtocolAtts = new String[] { "src", "href" };
     vRemoveBlanks = new String[] { "a", "b", "strong", "i", "em", "p" };
+    vRemoveBlanksPatterns1 = new HashMap<String,Pattern>();
+    vRemoveBlanksPatterns2 = new HashMap<String,Pattern>();
     vDisAllowedEntities = new String[] { };
-  }
-  
-  protected void reset()
-  {
-    vTagCounts = new HashMap<String,Integer>();
+    
+    for( String tag : vRemoveBlanks )
+    {
+      Pattern p1 = Pattern.compile("<" + tag + "(\\s[^>]*)?></" + tag + ">");
+      vRemoveBlanksPatterns1.put(tag, p1);
+
+      Pattern p2 = Pattern.compile("<" + tag + "(\\s[^>]*)?/>");
+      vRemoveBlanksPatterns2.put(tag, p2);
+    }
+    
   }
   
   protected void debug( String msg )
@@ -199,9 +260,10 @@ public class HTMLInputFilter
    * @param input text (i.e. submitted by a user) than may contain html
    * @return "clean" version of input, with only valid, whitelisted html elements allowed
    */
-  public synchronized String filter( String input )
+  public String filter( String input )
   {
-    reset();
+    Map<String,Integer> vTagCounts = new HashMap<String,Integer>();
+    
     String s = input;
     
     debug( "************************************************" );
@@ -213,7 +275,7 @@ public class HTMLInputFilter
     s = balanceHTML(s);
     debug( "        balanceHTML: " + s );
     
-    s = checkTags(s);
+    s = checkTags(s, vTagCounts);
     debug( "          checkTags: " + s );
     
     s = processRemoveBlanks(s);
@@ -228,8 +290,7 @@ public class HTMLInputFilter
   
   protected String escapeComments( String s )
   {
-    Pattern p = Pattern.compile( "<!--(.*?)-->", Pattern.DOTALL );
-    Matcher m = p.matcher( s );
+    Matcher m = pattern_escape_comments.matcher( s );
     StringBuffer buf = new StringBuffer();
     if (m.find()) {
       String match = m.group( 1 ); //(.*?)
@@ -247,9 +308,9 @@ public class HTMLInputFilter
       //
       // try and form html
       //
-      s = regexReplace("^>", "", s);
-      s = regexReplace("<([^>]*?)(?=<|$)", "<$1>", s);
-      s = regexReplace("(^|>)([^<]*?)(?=>)", "$1<$2", s);
+      //s = regexReplace(pattern_regexp_replace1, "", s);
+      s = regexReplace(pattern_regexp_replace2, "<$1>", s);
+      s = regexReplace(pattern_regexp_replace3, "$1<$2", s);
       
     } 
     else
@@ -257,8 +318,8 @@ public class HTMLInputFilter
       //
       // escape stray brackets
       //
-      s = regexReplace("<([^>]*?)(?=<|$)", "&lt;$1", s);
-      s = regexReplace("(^|>)([^<]*?)(?=>)", "$1$2&gt;<", s);
+      s = regexReplace(pattern_regexp_replace2, "&lt;$1", s);
+      s = regexReplace(pattern_regexp_replace3, "$1$2&gt;<", s);
       
       //
       // the last regexp causes '<>' entities to appear
@@ -271,15 +332,14 @@ public class HTMLInputFilter
     return s;
   }
   
-  protected String checkTags( String s )
+  protected String checkTags( String s, Map<String,Integer> vTagCounts )
   {    
-    Pattern p = Pattern.compile( "<(.*?)>", Pattern.DOTALL );
-    Matcher m = p.matcher( s );
+    Matcher m = pattern_check_tags.matcher( s );
     
     StringBuffer buf = new StringBuffer();
     while (m.find()) {
       String replaceStr = m.group( 1 );
-      replaceStr = processTag( replaceStr );
+      replaceStr = processTag( replaceStr, vTagCounts);
       m.appendReplacement(buf, replaceStr);
     }
     m.appendTail(buf);
@@ -302,25 +362,23 @@ public class HTMLInputFilter
   {
     for( String tag : vRemoveBlanks )
     {
-      s = regexReplace( "<" + tag + "(\\s[^>]*)?></" + tag + ">", "", s );
-      s = regexReplace( "<" + tag + "(\\s[^>]*)?/>", "", s );
+      s = regexReplace( vRemoveBlanksPatterns1.get(tag), "", s );
+      s = regexReplace( vRemoveBlanksPatterns2.get(tag), "", s );
     }
     
     return s;
   }
   
-  protected String regexReplace( String regex_pattern, String replacement, String s )
+  protected String regexReplace( Pattern regex_pattern, String replacement, String s )
   {
-    Pattern p = Pattern.compile( regex_pattern );
-    Matcher m = p.matcher( s );
+    Matcher m = regex_pattern.matcher( s );
     return m.replaceAll( replacement );
   }
   
-  protected String processTag( String s )
+  protected String processTag( String s, Map<String,Integer> vTagCounts )
   {    
     // ending tags
-    Pattern p = Pattern.compile( "^/([a-z0-9]+)", REGEX_FLAGS_SI );
-    Matcher m = p.matcher( s );
+    Matcher m = pattern_process_tags1.matcher( s );
     if (m.find()) {
       String name = m.group(1).toLowerCase();
       if (vAllowed.containsKey( name )) {
@@ -334,8 +392,7 @@ public class HTMLInputFilter
     }
     
     // starting tags
-    p = Pattern.compile("^([a-z0-9]+)(.*?)(/?)$", REGEX_FLAGS_SI);
-    m = p.matcher( s );
+    m = pattern_process_tags2.matcher( s );
     if (m.find()) {
       String name = m.group(1).toLowerCase();
       String body = m.group(2);
@@ -401,8 +458,7 @@ public class HTMLInputFilter
     }
     
     // comments
-    p = Pattern.compile( "^!--(.*)--$", REGEX_FLAGS_SI );
-    m = p.matcher( s );
+    m = pattern_process_tags3.matcher( s );
     if (m.find()) {
       String comment = m.group();
       if (STRIP_COMMENTS) {
@@ -418,8 +474,7 @@ public class HTMLInputFilter
   protected String processParamProtocol( String s )
   {
     s = decodeEntities( s );
-    Pattern p = Pattern.compile( "^([^:]+):", REGEX_FLAGS_SI );
-    Matcher m = p.matcher( s );
+    Matcher m = pattern_process_param_protocol.matcher( s );
     if (m.find()) {
       String protocol = m.group(1);
       if (!inArray( protocol, vAllowedProtocols )) {
@@ -436,8 +491,7 @@ public class HTMLInputFilter
   {
     StringBuffer buf = new StringBuffer();
     
-    Pattern p = Pattern.compile( "&#(\\d+);?" );
-    Matcher m = p.matcher( s );
+    Matcher m = pattern_decode_entities1.matcher( s );
     while (m.find()) {
       String match = m.group( 1 );
       int decimal = Integer.decode( match ).intValue();
@@ -447,8 +501,7 @@ public class HTMLInputFilter
     s = buf.toString();
     
     buf = new StringBuffer();
-    p = Pattern.compile( "&#x([0-9a-f]+);?");
-    m = p.matcher( s );
+    m = pattern_decode_entities2.matcher( s );
     while (m.find()) {
       String match = m.group( 1 );
       int decimal = Integer.decode( match ).intValue();
@@ -458,8 +511,7 @@ public class HTMLInputFilter
     s = buf.toString();
     
     buf = new StringBuffer();
-    p = Pattern.compile( "%([0-9a-f]{2});?");
-    m = p.matcher( s );
+    m = pattern_decode_entities3.matcher( s );
     while (m.find()) {
       String match = m.group( 1 );
       int decimal = Integer.decode( match ).intValue();
@@ -476,8 +528,7 @@ public class HTMLInputFilter
   {
     // validate entities throughout the string
 	StringBuffer buf = new StringBuffer();
-    Pattern p = Pattern.compile( "&([^&;]*)(?=(;|&|$))" );
-    Matcher m = p.matcher( s );
+    Matcher m = pattern_validate_entities1.matcher( s );
     while (m.find()) {
       String one = m.group( 1 ); //([^&;]*) 
       String two = m.group( 2 ); //(?=(;|&|$))
@@ -489,8 +540,7 @@ public class HTMLInputFilter
     
     // validate quotes outside of tags
     buf = new StringBuffer();
-    p = Pattern.compile( "(>|^)([^<]+?)(<|$)", Pattern.DOTALL );
-    m = p.matcher( s );
+    m = pattern_validate_entities2.matcher( s );
     while (m.find()) {
       String one = m.group( 1 ); //(>|^) 
       String two = m.group( 2 ); //([^<]+?) 
@@ -506,7 +556,7 @@ public class HTMLInputFilter
   protected String checkEntity( String preamble, String term )
   {
     if (!term.equals(";")) {
-      return "&amp;" + preamble;
+      return "&" + preamble;
     }
     
     if ( isValidEntity( preamble ) ) {
