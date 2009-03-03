@@ -28,6 +28,8 @@
  */
 package org.kablink.teaming.util.stringcheck;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +37,7 @@ import java.util.regex.Pattern;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.HTMLInputFilter;
 import org.kablink.util.StringPool;
 
 
@@ -45,16 +48,25 @@ public class XSSCheck implements StringCheck {
 	private static final String MODE_TRUSTED_DISALLOW = "trusted.disallow";
 	private static final String MODE_TRUSTED_STRIP = "trusted.strip";
 	
-	private static final String PATTERN_STR = "(?i)<[\\s]*/?script.*?>|<[\\s]*/?embed.*?>|<[\\s]*/?object.*?>|<[\\s]*a[\\s]*href[^>]*javascript[\\s]*:[^(^)^>]*[(][^)]*[)][^>]*>[^<]*(<[\\s]*/[\\s]*a[^>]*>)*";
+	private static final String PATTERN_STR1 = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|style|meta|xml|blink|link|iframe|frame|frameset|ilayer|layer|bgsound|title|base)[\\s]*[^>]*>)";
+	private static final String PATTERN_STR2 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|meta|blockquote|del|ins|q)[\\s]*[^>]*(?:href|src|cite|scheme)[\\s]*=[\\s]*(?:\"|')[\\s]*[^\\s]*script[\\s]*:[^>]*>)";
+	private static final String PATTERN_STR3 = "(?i)<[\\s]*[^>]+\\s(style[\\s]*=[\\s]*\"[^\"]*\"|style[\\s]*=[\\s]*'[^']*')[^>]*>";
+	private static final String PATTERN_STR4 = "(?i)(\\s(?:style[\\s]*=[\\s]*\"[^\"]*\"|style[\\s]*=[\\s]*'[^']*'))";
 	
-	private Pattern pattern;
+	private Pattern pattern1;
+	private Pattern pattern2;
+	private Pattern pattern3;
+	private Pattern pattern4;
 	private boolean enable;
 	private String mode;
 	private String[] users;
 	private String[] groups;
 	
 	public XSSCheck() {
-		pattern = Pattern.compile(PATTERN_STR);
+		pattern1 = Pattern.compile(PATTERN_STR1);
+		pattern2 = Pattern.compile(PATTERN_STR2);
+		pattern3 = Pattern.compile(PATTERN_STR3);
+		pattern4 = Pattern.compile(PATTERN_STR4);
 		enable = SPropsUtil.getBoolean("xss.check.enable");
 		mode = SPropsUtil.getString("xss.check.mode");
 		users = SPropsUtil.getStringArray("xss.trusted.users", ";");
@@ -95,7 +107,7 @@ public class XSSCheck implements StringCheck {
 		// We can use much faster reference comparison rather than string 
 		// value equality test due to the way we setup above.
 		
-		if(mode == MODE_TRUSTED_DISALLOW || mode == MODE_TRUSTED_STRIP) {
+		if (mode == MODE_TRUSTED_DISALLOW || mode == MODE_TRUSTED_STRIP) {
 			User user = RequestContextHolder.getRequestContext().getUser();
 			String userName = user.getName();
 			for(int i = 0; i < users.length; i++) {
@@ -109,18 +121,53 @@ public class XSSCheck implements StringCheck {
 			}
 		}
 		
-		CharSequence sequence = input.subSequence(0, input.length());
+		String sequence = new String(input);
+		Map data = new HashMap();
 
-		Matcher matcher = pattern.matcher(sequence);
-
-		if(mode == MODE_DISALLOW || mode == MODE_TRUSTED_DISALLOW) {
-			if(matcher.find())
+		if (mode == MODE_DISALLOW || mode == MODE_TRUSTED_DISALLOW) {
+			data.put("sequence", sequence);
+			if (!checkIfStringValid(data)) {
 				throw new XSSCheckException();
-			else
-				return input;						
+			}
+			return input;
+		} else { // mode == MODE_STRIP || mode == MODE_TRUSTED_STRIP
+			String cleanString = new HTMLInputFilter().filter(sequence.toString());
+			data.put("sequence", sequence);
+			if (!checkIfStringValid(data)) {
+				cleanString = (String)data.get("sequence");
+			}
+			return cleanString;			
 		}
-		else { // mode == MODE_STRIP || mode == MODE_TRUSTED_STRIP
-			return matcher.replaceAll(StringPool.BLANK);			
+	}
+	
+	protected boolean checkIfStringValid(Map data) {
+		boolean result = true;
+		String sequence = (String)data.get("sequence");
+		//Check for scrip, embed, iframe, ...
+		Matcher matcher1 = pattern1.matcher(sequence);
+		if (matcher1.find()) {
+			sequence = matcher1.replaceAll(StringPool.BLANK);
+			result = false;
 		}
+		//Check for href="javascript:..." or any *script as src or href, etc
+		Matcher matcher2 = pattern2.matcher(sequence);
+		if (matcher2.find()) {
+			sequence = matcher2.replaceAll(StringPool.BLANK);
+			result = false;
+		}
+		//Check for style="..." in any tag
+		StringBuffer buf = new StringBuffer();
+		Matcher matcher3 = pattern3.matcher(sequence);
+		while (matcher3.find()) {
+			String tagString = matcher3.group(0);
+			Matcher matcher4 = pattern4.matcher(tagString);
+			tagString = matcher4.replaceAll(StringPool.BLANK);
+			matcher3.appendReplacement( buf, tagString );
+			result = false;
+		}
+		matcher3.appendTail(buf);
+		sequence = buf.toString();
+		data.put("sequence", sequence);
+		return result;
 	}
 }
