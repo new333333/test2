@@ -48,25 +48,29 @@ public class XSSCheck implements StringCheck {
 	private static final String MODE_TRUSTED_DISALLOW = "trusted.disallow";
 	private static final String MODE_TRUSTED_STRIP = "trusted.strip";
 	
-	private static final String PATTERN_STR1 = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|style|meta|xml|blink|link|iframe|frame|frameset|ilayer|layer|bgsound|title|base)[\\s]*[^>]*>)";
+	private static final String PATTERN_STR1 = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|style|html|head|body|meta|xml|blink|link|iframe|frame|frameset|ilayer|layer|bgsound|title|base)[\\s]*[^>]*>)";
 	private static final String PATTERN_STR2 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|meta|blockquote|del|ins|q)[\\s]*[^>]*(?:href|src|cite|scheme)[\\s]*=[\\s]*(?:\"|')[\\s]*[^\\s]*script[\\s]*:[^>]*>)";
 	private static final String PATTERN_STR3 = "(?i)<[\\s]*[^>]+\\s(style[\\s]*=[\\s]*\"[^\"]*\"|style[\\s]*=[\\s]*'[^']*')[^>]*>";
 	private static final String PATTERN_STR4 = "(?i)(\\s(?:style[\\s]*=[\\s]*\"[^\"]*\"|style[\\s]*=[\\s]*'[^']*'))";
+	private static final String PATTERN_STR5 = "(?i)((?:url|expression))";
 	
 	private Pattern pattern1;
 	private Pattern pattern2;
 	private Pattern pattern3;
 	private Pattern pattern4;
+	private Pattern pattern5;
 	private boolean enable;
 	private String mode;
 	private String[] users;
 	private String[] groups;
+	private HTMLInputFilter htmlInputFilter;
 	
 	public XSSCheck() {
 		pattern1 = Pattern.compile(PATTERN_STR1);
 		pattern2 = Pattern.compile(PATTERN_STR2);
 		pattern3 = Pattern.compile(PATTERN_STR3);
 		pattern4 = Pattern.compile(PATTERN_STR4);
+		pattern5 = Pattern.compile(PATTERN_STR5);
 		enable = SPropsUtil.getBoolean("xss.check.enable");
 		mode = SPropsUtil.getString("xss.check.mode");
 		users = SPropsUtil.getStringArray("xss.trusted.users", ";");
@@ -82,6 +86,8 @@ public class XSSCheck implements StringCheck {
 			mode = MODE_STRIP;
 		else
 			mode = MODE_DISALLOW; // default mode
+		
+		htmlInputFilter = new HTMLInputFilter();
 	}
 	
 	/**
@@ -131,8 +137,8 @@ public class XSSCheck implements StringCheck {
 			}
 			return input;
 		} else { // mode == MODE_STRIP || mode == MODE_TRUSTED_STRIP
-			String cleanString = new HTMLInputFilter().filter(sequence.toString());
-			data.put("sequence", sequence);
+			String cleanString = htmlInputFilter.filter(sequence.toString());
+			data.put("sequence", cleanString);
 			if (!checkIfStringValid(data)) {
 				cleanString = (String)data.get("sequence");
 			}
@@ -161,9 +167,15 @@ public class XSSCheck implements StringCheck {
 		while (matcher3.find()) {
 			String tagString = matcher3.group(0);
 			Matcher matcher4 = pattern4.matcher(tagString);
-			tagString = matcher4.replaceAll(StringPool.BLANK);
+			if (matcher4.find()) {
+				String styleString = matcher4.group(0);
+				Matcher matcher5 = pattern5.matcher(styleString);
+				if (matcher5.find()) {
+					tagString = matcher4.replaceAll(StringPool.BLANK);
+					result = false;
+				}
+			}
 			matcher3.appendReplacement( buf, tagString );
-			result = false;
 		}
 		matcher3.appendTail(buf);
 		sequence = buf.toString();
