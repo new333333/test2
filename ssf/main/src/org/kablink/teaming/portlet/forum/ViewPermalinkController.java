@@ -241,10 +241,6 @@ public class ViewPermalinkController  extends SAbstractController {
 		if (Validator.isNotNull(fileId)) url.setParameter(WebKeys.URL_FILE_ID, fileId);
 		if (Validator.isNotNull(fileName)) url.setParameter(WebKeys.URL_FILE_NAME, fileName);
 		model.put(WebKeys.URL, url.toString());
-		if (!"true".equals(PortletRequestUtils.getStringParameter(request, "noBinderByIdException"))) {
-			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {binderId}));
-			return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
-		}
 		if (!"true".equals(PortletRequestUtils.getStringParameter(request, "accessException"))) {
 			return new ModelAndView(WebKeys.VIEW_LOGIN_RETURN, model);
 		}
@@ -262,6 +258,10 @@ public class ViewPermalinkController  extends SAbstractController {
 			if (WebHelper.isUserLoggedIn(request) && 
 						!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 					//Access is not allowed
+				if ("true".equals(PortletRequestUtils.getStringParameter(request, "noBinderByIdException"))) {
+					model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {binderId}));
+					return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+				}
 				return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
 			} else {
 				//Please log in
