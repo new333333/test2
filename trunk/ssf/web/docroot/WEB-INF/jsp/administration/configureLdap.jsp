@@ -111,6 +111,12 @@
 		   </tr>
 	</table>
 	</fieldset>
+
+	<br/>
+	<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt tag="ldap.localLogin" /></legend>
+		<input type="checkbox" id="allowLocalLogin" name="allowLocalLogin" <c:if test="${ssAuthenticationConfig.allowLocalLogin}">checked</c:if>/>
+			<label for="allowLocalLogin"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowLocalLogin"/></span><br/></label>
+	</fieldset>
 	
 	<br/>
 	<div class="ss_buttonBarLeft">
