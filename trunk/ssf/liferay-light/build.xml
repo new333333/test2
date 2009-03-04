@@ -21,11 +21,14 @@
 		<delete dir="${web.dir}/WEB-INF/classes/content"/>
 	</target>
 	
-	<target name="copy-portlet-properties-files">
+	<target name="make-all-generated-files" depends="make-portlet.xml,make-portlet-properties">
+	</target>
+
+	<!--<target name="copy-portlet-properties-files">
 		<copy todir="${web.dir}/WEB-INF/classes/content">
 			<fileset dir="${project.dir}/web/docroot/WEB-INF/classes/content" />
 		</copy>
-	</target>
+	</target>-->
 	
 	<target name="copy-libraries">
 		<copy todir="${web.dir}/WEB-INF/lib" file="${jar.file}"/>
@@ -40,7 +43,7 @@
 	
 	<target name="build" depends="war"/>
 	
-	<target name="war" depends="clean,jar,copy-portlet-properties-files,copy-libraries">
+	<target name="war" depends="clean,jar,make-all-generated-files,copy-libraries">
 		<war
 			basedir="${web.dir}"
 			destfile="${war.file}"
@@ -179,4 +182,32 @@
 		<copy todir="${app.server.dir}/webapps/ssf/images/icons" file="${project.dir}/web/docroot/images/icons/dashboardconfig_2_f.gif" />
 		<copy todir="${app.server.dir}/webapps/ssf/images/pics" file="${project.dir}/web/docroot/images/pics/cool_collaboration.gif" />
 	</target>
+	
+	<target name="make-portlet.xml">
+		<java 	classname="org.kablink.teaming.tools.portlet.GeneratePortletXml"
+				fork="true"
+				newenvironment="true"
+				failonerror="true"
+		>
+			<classpath refid="project.classpath" />
+			<arg value="${web.dir}/WEB-INF" />
+		</java>	 
+	</target>
+	
+	<target name="make-portlet-properties">
+		<mkdir dir="${web.dir}/WEB-INF/classes/content"/>
+		<java 	classname="org.kablink.teaming.tools.portletproperties.GeneratePortletProperties"
+				fork="true"
+				newenvironment="true"
+				failonerror="true"
+		>
+			<classpath refid="project.classpath" />
+			<arg value="${web.dir}/WEB-INF" />
+		</java>	 
+		<native2ascii encoding="UTF-8" 
+			     	  src="${web.dir}/WEB-INF/classes/content"
+			 	      dest="${web.dir}/WEB-INF/classes/content" 
+				      includes="*.native" ext=".properties" />
+	</target>	
+
 </project>
