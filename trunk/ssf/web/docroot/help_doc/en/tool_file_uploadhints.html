@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <!-- saved from url=(0014)about:internet -->
-<html xml:lang="en" lang="en">
+<html>
 
 <head>
 
@@ -9,7 +9,7 @@
 <meta http-equiv="Content-Language" content="en" />
 <meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
 <meta name="Generator" content="Novell Documentation" />
-<meta name="Generation-Date" content="Monday, January 12, 2009" />
+<meta name="Generation-Date" content="Tuesday, March 03, 2009" />
 <meta name="Copyright" content="Copyright Novell, Inc. 2008" />
 
 <link rel="stylesheet" type="text/css" href="css/styles.css" />
@@ -42,7 +42,7 @@
 <li class="step" id="bipuorx">
 <p class="para">In the <span class="guimenu">Java Applet Runtime Settings</span> section, click <span class="guimenu">View</span>.</p></li>
 <li class="step" id="bipup4t">
-<p class="para">For each of your Java Runtime versions, add <span class="command">-Xmx256m</span> as a Java Runtime Parameter.</p></li>
+<p class="para">For each of your Java Runtime Versions, add <span class="command">-Xmx256m</span> as a Java Runtime Parameter.</p></li>
 <li class="step" id="bipupgl">
 <p class="para">Click <span class="guimenu">OK</span>.</p>
 <p class="para">After increasing the default memory size for Java Applets, you must exit completely out of all browsers and restart them before the change can take effect.</p></li></ol>
@@ -59,6 +59,26 @@
 
 <span class="collapsible">
 
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bjchmyk">
+<p class="para">Locate the JRE or JDK being used for the browser plugin.</p>
+<p class="para">The location of the JRE or JDK varies depending on your system.</p></li>
+<li class="step" id="bjchn8n">
+<p class="para">In the <span class="filename">bin</span> directory of the JRE or JDK, run the <span class="filename">ControlPanel</span> file.</p>
+<p class="para">The Control Panel is launched.</p></li>
+<li class="step" id="bjchoed">
+<p class="para">Select the <span class="guimenu">Java</span> tab.</p></li>
+<li class="step" id="bjchokg">
+<p class="para">In the <span class="guimenu">Java Applet Runtime Settings</span> section, click <span class="guimenu">View</span>.</p></li>
+<li class="step" id="bjchor1">
+<p class="para">For each of your Java Runtime Versions, add <span class="command">-Xmx256m</span> as a Java Runtime Parameter.</p></li>
+<li class="step" id="bjchotz">
+<p class="para">Click <span class="guimenu">OK</span>.</p>
+<p class="para">After increasing the default memory size for Java Applets, you must exit completely out of all browsers and restart them before the change can take effect.</p></li></ol>
+</div>
+
+<p class="para">This causes the applet used for uploading files into a Teaming folder to start up with 256m of memory. If the applet still complains that there is not enough memory to run the applet, you might have to reduce this number.</p>
 </span>
 
 </div>
