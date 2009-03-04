@@ -47,6 +47,7 @@
 		<war
 			basedir="${web.dir}"
 			destfile="${war.file}"
+			excludes="WEB-INF/*.tmpl"
 			webxml="${web.dir}/WEB-INF/web.xml"
 		>
 		</war>
