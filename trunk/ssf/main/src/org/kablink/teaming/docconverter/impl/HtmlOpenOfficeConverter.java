@@ -144,18 +144,21 @@ public class HtmlOpenOfficeConverter
 	    
 		try
 		{
-			/**
-			 * If the output file exist an has a modified date equal or greating than incoming file
-			 * do not perform any conversion. 
-			 */
 			ifile = new File(ifp);
 			ofile = new File(ofp);
 			
-			if (!ifile.exists()
-			|| (ofile != null
-			&& ofile.exists()
-			&& ofile.lastModified() >= ifile.lastModified()))
+			/*
+			 * As part of fixing Bugzilla 480931, I removed the check
+			 * here for the output file existing and having a modified
+			 * date greater than the incoming file.  In essence, this
+			 * will now ALWAYS perform the conversion.
+			 * 
+			 * In debugging Bugzilla 480931, there were cases where the
+			 * file existed but the HTML wasn't getting updated.
+			 */
+			if (!ifile.exists()) {
 				return;
+			}
 				
 			/* Bootstraps a component context with the jurt base components
 			 * registered. Component context to be granted to a component for running.
