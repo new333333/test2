@@ -241,7 +241,8 @@ public class ViewPermalinkController  extends SAbstractController {
 		if (Validator.isNotNull(fileId)) url.setParameter(WebKeys.URL_FILE_ID, fileId);
 		if (Validator.isNotNull(fileName)) url.setParameter(WebKeys.URL_FILE_NAME, fileName);
 		model.put(WebKeys.URL, url.toString());
-		if (!"true".equals(PortletRequestUtils.getStringParameter(request, "accessException"))) {
+		if (!"true".equals(PortletRequestUtils.getStringParameter(request, "accessException")) &&
+				!"true".equals(PortletRequestUtils.getStringParameter(request, "noBinderByIdException"))) {
 			return new ModelAndView(WebKeys.VIEW_LOGIN_RETURN, model);
 		}
 		
