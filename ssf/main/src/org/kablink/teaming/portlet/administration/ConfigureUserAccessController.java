@@ -63,9 +63,8 @@ public class ConfigureUserAccessController extends  SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
-			AuthenticationConfig authConfig = new AuthenticationConfig();
+			AuthenticationConfig authConfig = getAuthenticationModule().getAuthenticationConfig();
 			authConfig.setAllowAnonymousAccess(PortletRequestUtils.getBooleanParameter(request, "allowAnonymous", false));
-			authConfig.setAllowLocalLogin(PortletRequestUtils.getBooleanParameter(request, "allowLocalLogin", false));
 			authConfig.setAllowSelfRegistration(PortletRequestUtils.getBooleanParameter(request, "allowSelfRegistration", false));
 			getAuthenticationModule().setAuthenticationConfig(authConfig);
 		} else
