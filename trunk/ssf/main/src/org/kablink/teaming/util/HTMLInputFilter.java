@@ -67,10 +67,10 @@ public class HTMLInputFilter
   
   /** set of allowed html elements, along with allowed attributes for each element **/
   protected Map<String,List<String>> vAllowed;
-  
-  /** counts of open tags for each (allowable) html element **/
-  //protected Map<String,Integer> vTagCounts;
-  
+
+  /** always allowed tags **/
+  protected String vAlwaysAllowed;
+
   /** html elements which must always be self-closing (e.g. "<img />") **/
   protected String[] vSelfClosingTags;
   
@@ -82,6 +82,9 @@ public class HTMLInputFilter
   
   /** allowed protocols **/
   protected String[] vAllowedProtocols;
+  
+  /** always allowed tag attributes **/
+  protected String vAlwaysAllowedAttributes;
   
   /** tags which should be removed if they contain no content (e.g. "<b></b>" or "<b />") **/
   protected String[] vRemoveBlanks;
@@ -154,24 +157,24 @@ public class HTMLInputFilter
 		
 	vDebug = debug;
     
-    vAllowed = new HashMap<String,List<String>>();
+	vAllowed = new HashMap<String,List<String>>();
+
+	vAlwaysAllowed = " abbr acronym address b bdo big blockquote br caption center cite code col colgroup dd del dfn dir dl dt em fieldset font h1 h2 h3 h4 h5 h6 hr i ins kbd label legend li ol optgroup option p pre q s samp select small span strike strong sub sup tt u ul var";
+	vAlwaysAllowedAttributes = " class style title dir lang accesskey tabindex ";
     
     ArrayList<String> a_atts = new ArrayList<String>();
     a_atts.add( "href" );
     a_atts.add( "target" );
-    a_atts.add( "alt" );
-    a_atts.add( "title" );
-    a_atts.add( "class" );
-    a_atts.add( "style" );
     vAllowed.put( "a", a_atts );
     
     ArrayList<String> table_atts = new ArrayList<String>();
     table_atts.add( "cellspacing" );
     table_atts.add( "cellpadding" );
     table_atts.add( "border" );
-    table_atts.add( "class" );
-    table_atts.add( "style" );
     vAllowed.put( "table", table_atts );
+    
+    ArrayList<String> tbody_atts = new ArrayList<String>();
+    vAllowed.put( "tbody", tbody_atts );
     
     ArrayList<String> tr_atts = new ArrayList<String>();
     vAllowed.put( "tr", tr_atts );
@@ -188,24 +191,20 @@ public class HTMLInputFilter
     
     ArrayList<String> div_atts = new ArrayList<String>();
     div_atts.add( "align" );
-    div_atts.add( "class" );
-    div_atts.add( "style" );
     vAllowed.put( "div", div_atts );
     
     ArrayList<String> span_atts = new ArrayList<String>();
-    span_atts.add( "class" );
-    span_atts.add( "style" );
     vAllowed.put( "span", span_atts );
     
     ArrayList<String> img_atts = new ArrayList<String>();
     img_atts.add( "src" );
+    img_atts.add( "align" );
+    img_atts.add( "border" );
     img_atts.add( "width" );
     img_atts.add( "height" );
+    img_atts.add( "hspace" );
+    img_atts.add( "vspace" );
     img_atts.add( "alt" );
-    img_atts.add( "title" );
-    img_atts.add( "class" );
-    img_atts.add( "style" );
-    img_atts.add( "dir" );
     vAllowed.put( "img", img_atts );
     
     ArrayList<String> no_atts = new ArrayList<String>();
@@ -388,7 +387,7 @@ public class HTMLInputFilter
     Matcher m = pattern_process_tags1.matcher( s );
     if (m.find()) {
       String name = m.group(1).toLowerCase();
-      if (vAllowed.containsKey( name )) {
+      if (vAllowed.containsKey( name ) || vAlwaysAllowed.contains(" " + name.toLowerCase() + " ")) {
         if (!inArray(name, vSelfClosingTags)) {
           if (vTagCounts.containsKey( name )) {
             vTagCounts.put(name, vTagCounts.get(name)-1);
@@ -406,7 +405,7 @@ public class HTMLInputFilter
       String ending = m.group(3);
       
       //debug( "in a starting tag, name='" + name + "'; body='" + body + "'; ending='" + ending + "'" );
-      if (vAllowed.containsKey( name )) {
+      if (vAllowed.containsKey( name ) || vAlwaysAllowed.contains(" " + name.toLowerCase() + " ")) {
         String params = "";
         
         Matcher m2 = pattern_process_tags4.matcher( body );
@@ -431,7 +430,8 @@ public class HTMLInputFilter
           //debug( "paramValue='" + paramValue + "'" );
           //debug( "allowed? " + vAllowed.get( name ).contains( paramName ) );
           
-          if (vAllowed.get( name ).contains( paramName )) {
+          if (vAllowed.get( name ).contains( paramName ) || 
+        		  vAlwaysAllowedAttributes.contains(" " + paramName.toLowerCase() + " ")) {
             if (inArray( paramName, vProtocolAtts )) {
               paramValue = processParamProtocol( paramValue );
             }
