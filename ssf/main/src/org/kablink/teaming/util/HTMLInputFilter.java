@@ -102,6 +102,8 @@ public class HTMLInputFilter
   private static final String PATTERN_PROCESS_TAGS1 = "^/([a-z0-9]+)";
   private static final String PATTERN_PROCESS_TAGS2 = "^([a-z0-9]+)(.*?)(/?)$";
   private static final String PATTERN_PROCESS_TAGS3 = "^!--(.*)--$";
+  private static final String PATTERN_PROCESS_TAGS4 = "([a-z0-9]+)=([\"'])(.*?)\\2";
+  private static final String PATTERN_PROCESS_TAGS5 = "([a-z0-9]+)(=)([^\"\\s']+)";
   private static final String PATTERN_PROCESS_PARAM_PROTOCOL = "^([^:]+):";
   private static final String PATTERN_DECODE_ENTITIES1 = "&#(\\d+);?";
   private static final String PATTERN_DECODE_ENTITIES2 = "&#x([0-9a-f]+);?";
@@ -117,6 +119,8 @@ public class HTMLInputFilter
   private Pattern pattern_process_tags1;
   private Pattern pattern_process_tags2;
   private Pattern pattern_process_tags3;
+  private Pattern pattern_process_tags4;
+  private Pattern pattern_process_tags5;
   private Pattern pattern_process_param_protocol;
   private Pattern pattern_decode_entities1;
   private Pattern pattern_decode_entities2;
@@ -139,16 +143,15 @@ public class HTMLInputFilter
 	pattern_process_tags1 = Pattern.compile( PATTERN_PROCESS_TAGS1, REGEX_FLAGS_SI );
 	pattern_process_tags2 = Pattern.compile( PATTERN_PROCESS_TAGS2, REGEX_FLAGS_SI );
 	pattern_process_tags3 = Pattern.compile( PATTERN_PROCESS_TAGS3, REGEX_FLAGS_SI );
+	pattern_process_tags4 = Pattern.compile( PATTERN_PROCESS_TAGS4, REGEX_FLAGS_SI );
+	pattern_process_tags5 = Pattern.compile( PATTERN_PROCESS_TAGS5, REGEX_FLAGS_SI );
 	pattern_process_param_protocol = Pattern.compile( PATTERN_PROCESS_PARAM_PROTOCOL, REGEX_FLAGS_SI );
 	pattern_decode_entities1 = Pattern.compile( PATTERN_DECODE_ENTITIES1 );
 	pattern_decode_entities2 = Pattern.compile( PATTERN_DECODE_ENTITIES2 );
 	pattern_decode_entities3 = Pattern.compile( PATTERN_DECODE_ENTITIES3 );
 	pattern_validate_entities1 = Pattern.compile( PATTERN_VALIDATE_ENTITIES1 );
 	pattern_validate_entities2 = Pattern.compile( PATTERN_VALIDATE_ENTITIES2, Pattern.DOTALL );
-
-
-	
-	
+		
 	vDebug = debug;
     
     vAllowed = new HashMap<String,List<String>>();
@@ -406,10 +409,8 @@ public class HTMLInputFilter
       if (vAllowed.containsKey( name )) {
         String params = "";
         
-        Pattern p2 = Pattern.compile("([a-z0-9]+)=([\"'])(.*?)\\2", REGEX_FLAGS_SI);
-        Pattern p3 = Pattern.compile("([a-z0-9]+)(=)([^\"\\s']+)", REGEX_FLAGS_SI);
-        Matcher m2 = p2.matcher( body );
-        Matcher m3 = p3.matcher( body );
+        Matcher m2 = pattern_process_tags4.matcher( body );
+        Matcher m3 = pattern_process_tags5.matcher( body );
         List<String> paramNames = new ArrayList<String>();
         List<String> paramValues = new ArrayList<String>();
         while (m2.find()) {
