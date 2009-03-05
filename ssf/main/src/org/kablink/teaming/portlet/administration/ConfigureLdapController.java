@@ -93,19 +93,60 @@ public class ConfigureLdapController extends  SAbstractController {
 						List foo = cNode.selectNodes("userSearches/search");
 						for(Object o2 : foo) {
 							Node sNode = (Node) o2;
+							Node someNode;
+							String baseDn;
+							String filter;
+							String ss;
 
-							String baseDn = sNode.selectSingleNode("baseDn").getText();
-							String filter = sNode.selectSingleNode("filter").getText();
-							String ss = sNode.selectSingleNode("searchSubtree").getText();
+							baseDn = "";
+							filter = "";
+							ss = "";
+
+							// Get the <baseDn> element.
+							someNode = sNode.selectSingleNode("baseDn");
+							if ( someNode != null )
+								baseDn = someNode.getText();
+							
+							// Get the <filter> element.
+							someNode = sNode.selectSingleNode("filter");
+							if ( someNode != null )
+								filter = someNode.getText();
+							
+							// Get the <searchSubtree> element.
+							someNode = sNode.selectSingleNode("searchSubtree");
+							if ( someNode != null )
+								ss = someNode.getText();
+
 							userQueries.add(new LdapConnectionConfig.SearchInfo(baseDn, filter, ss.equals("true")));
 						}
 						LinkedList<LdapConnectionConfig.SearchInfo> groupQueries = new LinkedList<LdapConnectionConfig.SearchInfo>();
 						foo = cNode.selectNodes("groupSearches/search");
 						for(Object o2 : foo) {
 							Node sNode = (Node) o2;
-							String baseDn = sNode.selectSingleNode("baseDn").getText();
-							String filter = sNode.selectSingleNode("filter").getText();
-							String ss = sNode.selectSingleNode("searchSubtree").getText();
+							Node someNode;
+							String baseDn;
+							String filter;
+							String ss;
+
+							baseDn = "";
+							filter = "";
+							ss = "";
+							
+							// Get the <baseDn> element.
+							someNode = sNode.selectSingleNode("baseDn");
+							if ( someNode != null )
+								baseDn = someNode.getText();
+							
+							// Get the <filter> element.
+							someNode = sNode.selectSingleNode("filter");
+							if ( someNode != null )
+								filter = someNode.getText();
+							
+							// Get the <searchSubtree> element.
+							someNode = sNode.selectSingleNode("searchSubtree");
+							if ( someNode != null )
+								ss = someNode.getText();
+
 							groupQueries.add(new LdapConnectionConfig.SearchInfo(baseDn, filter, ss.equals("true")));
 						}
 						HashMap<String, String> maps = new HashMap<String, String>();
