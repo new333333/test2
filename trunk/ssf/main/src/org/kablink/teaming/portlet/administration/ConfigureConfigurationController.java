@@ -298,7 +298,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 				reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
 				request.setAttribute("ssReloadUrl", reloadUrl.toString());			
-				return new ModelAndView("administration/reload_opener");
+				return new ModelAndView("administration/reload_current");
 			} else if (WebKeys.OPERATION_MODIFY.equals(operation)) {
 				// just added the template, now configure the target, treat as a modify
 				Binder binder = getBinderModule().getBinder(configId);				
@@ -402,7 +402,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 
 			Toolbar toolbar = new Toolbar();
 			Map qualifiers = new HashMap();
-			qualifiers.put("onClick", "{return true}");
+			qualifiers.put("onClick", "return true;");
 
 			toolbar.addToolbarMenu("1_add", NLT.get("administration.toolbar.add"), "");
 			url = response.createRenderURL();
@@ -458,7 +458,6 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		boolean manager = getBinderModule().testAccess(config, BinderOperation.setProperty);
 		Map qualifiers = new HashMap();
 		Map qualifiersBlock = new HashMap();
-		qualifiersBlock.put("onClick", "{return true}");
 		if (manager) {
 			//Add Folder
 			if (config.getEntityType().equals(EntityType.folder)) {
