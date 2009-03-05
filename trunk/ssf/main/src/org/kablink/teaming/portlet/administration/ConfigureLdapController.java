@@ -94,13 +94,8 @@ public class ConfigureLdapController extends  SAbstractController {
 						for(Object o2 : foo) {
 							Node sNode = (Node) o2;
 
-							// If the base dn has a '&', '<', or '>' in it, the xml will not parse when we read it from the db
-							// and try to create an xml document.  Wrap the base dn with <![CDATA[]]>.
-							String baseDn = wrapWithCDATA( sNode.selectSingleNode("baseDn").getText() );
-
-							// If the filter has a '&', '<', or '>' in it, the xml will not parse when we read it from the db
-							// and try to create an xml document.  Wrap the filter with <![CDATA[]]>.
-							String filter = wrapWithCDATA( sNode.selectSingleNode("filter").getText() );
+							String baseDn = sNode.selectSingleNode("baseDn").getText();
+							String filter = sNode.selectSingleNode("filter").getText();
 							String ss = sNode.selectSingleNode("searchSubtree").getText();
 							userQueries.add(new LdapConnectionConfig.SearchInfo(baseDn, filter, ss.equals("true")));
 						}
@@ -108,13 +103,8 @@ public class ConfigureLdapController extends  SAbstractController {
 						foo = cNode.selectNodes("groupSearches/search");
 						for(Object o2 : foo) {
 							Node sNode = (Node) o2;
-							// If the base dn has a '&', '<', or '>' in it, the xml will not parse when we read it from the db
-							// and try to create an xml document.  Wrap the base dn with <![CDATA[]]>.
-							String baseDn = wrapWithCDATA( sNode.selectSingleNode("baseDn").getText() );
-
-							// If the filter has a '&', '<', or '>' in it, the xml will not parse when we read it from the db
-							// and try to create an xml document.  Wrap the filter with <![CDATA[]]>.
-							String filter = wrapWithCDATA( sNode.selectSingleNode("filter").getText() );
+							String baseDn = sNode.selectSingleNode("baseDn").getText();
+							String filter = sNode.selectSingleNode("filter").getText();
 							String ss = sNode.selectSingleNode("searchSubtree").getText();
 							groupQueries.add(new LdapConnectionConfig.SearchInfo(baseDn, filter, ss.equals("true")));
 						}
@@ -198,20 +188,4 @@ public class ConfigureLdapController extends  SAbstractController {
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_LDAP, model);
 		
 	}
-	
-	/**
-	 * Wrap the given text with <![CDATA[ ]]>
-	 */
-	private String wrapWithCDATA( String str )
-	{
-		StringBuffer	wrappedStr;
-		
-		wrappedStr = new StringBuffer( "<![CDATA[" );
-		if ( str != null && str.length() > 0 )
-			wrappedStr.append( str );
-		
-		wrappedStr.append( "]]>" );
-		
-		return wrappedStr.toString();
-	}// end wrapWithCDATA()
 }
