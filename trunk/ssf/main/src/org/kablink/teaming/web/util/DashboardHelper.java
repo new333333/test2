@@ -887,7 +887,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     	User user = RequestContextHolder.getRequestContext().getUser();
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
-		model.put(WebKeys.SEEN_MAP, getProfileModule().getUserSeenMap(user.getId()));
+		if (!model.containsKey(WebKeys.SEEN_MAP)) 
+			model.put(WebKeys.SEEN_MAP, getProfileModule().getUserSeenMap(user.getId()));
 
 		Map data = (Map)component.get(Dashboard.DATA);
     	if (data == null) data = new HashMap();

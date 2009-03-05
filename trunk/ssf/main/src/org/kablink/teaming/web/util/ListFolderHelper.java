@@ -270,7 +270,8 @@ public class ListFolderHelper {
 			reloadUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
 			model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
 		
-			model.put(WebKeys.SEEN_MAP, bs.getProfileModule().getUserSeenMap(user.getId()));
+			if (!model.containsKey(WebKeys.SEEN_MAP)) 
+				model.put(WebKeys.SEEN_MAP, bs.getProfileModule().getUserSeenMap(user.getId()));
 			if (binder != null) {
 				DashboardHelper.getDashboardMap(binder, userProperties.getProperties(), model);
 				//See if the user has selected a specific view to use
