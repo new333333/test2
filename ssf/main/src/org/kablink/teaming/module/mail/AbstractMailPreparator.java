@@ -54,20 +54,28 @@ public class AbstractMailPreparator implements MimeMessagePreparator {
 		
 	protected void prepareICalendar(Calendar iCal, String fileName, String componentType, boolean addAttachment, boolean addAlternative, MimeMessageHelper helper) throws MessagingException {
 		try {				
-			//always send ICAL attachments, not bound by "file attachment" flag	cause part of entry fields
-			
-			// addAttachment && addAlternative => only alternative with attachment disposition 
-			//		it prevents problem in GW: if there is alternative AND attachment then all event
-			//		reccurances (but not the first one)	occure twice in calendar
-			// addAttachment && !addAlternative => only attachment
-			// !addAttachment && addAlternative => only alternative
-			if (addAttachment && !addAlternative) {
+			// Always send ICAL attachments, not bound by file
+			// attachment flag cause part of entry fields.
+			//
+			// Old logic:
+			//    addAttachment && addAlternative => only alternative with attachment disposition 
+			//		   it prevents problem in GW: if there is alternative AND attachment then all event
+			//		   Recurrences (but not the first one) occurs twice in calendar
+			//    Turns out the GW only had a problem if it went as
+			//    both.  If it goes only as an attachment, all seems ok.
+			//
+			// Current logic:
+			//     addAttachment &&  addAlternative => Only attachment.
+			//     addAttachment && !addAlternative => Only attachment.
+			//    !addAttachment &&  addAlternative => Only alternative.
+			//    !addAttachment && !addAlternative => Neither attachment or alternative.
+			if (addAttachment) {
 				ByteArrayOutputStream icalOutputStream = ICalUtils.toOutputStream(iCal);				
 				String contentType = getCalendarContentType(componentType, ICalUtils.getMethod(iCal));
 				DataSource dataSource = createDataSource(new ByteArrayResource(icalOutputStream.toByteArray()), contentType, fileName);
 				addAttachment(fileName, new DataHandler(dataSource), helper);			
 			}
-			if (addAlternative) {
+			else if (addAlternative) {
 				boolean asAttachmentDisposition = addAttachment;
 				ByteArrayOutputStream icalOutputStream = ICalUtils.toOutputStream(iCal);				
 				String contentType = getCalendarContentType(componentType, ICalUtils.getMethod(iCal));

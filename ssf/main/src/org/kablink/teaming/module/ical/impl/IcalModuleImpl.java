@@ -117,6 +117,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.kablink.util.cal.DayAndPosition;
 
@@ -1910,7 +1911,17 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		}
 		
 		// If there are no attendees to this event...
-		if (0 ==attendees) {
+		//
+		// This fix was backed out to fix bug 474318.  Turns out that
+		// even when sent as an attachment, an iCal request causes GW
+		// to treat the event as an appointment.  For appointments, the
+		// GW display uses the iCal, not the Text/Plain or Text/HTML,
+		// as we hoped it would.  Going back to always publish makes
+		// it so GW displays this as an email with an iCal attachment.
+// --------------------------------------------------------------------
+//		if (0 == attendees)
+// --------------------------------------------------------------------
+		{
 			// ...we want to issue it as a publish, not a request.
 			calendar.getProperties().remove(Method.REQUEST);
 			calendar.getProperties().add(Method.PUBLISH);
@@ -2497,7 +2508,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			String descr) {
 		//grwise was ignore mail without a description
 		if (Validator.isNotNull(descr))
-			component.getProperties().add(new Description(descr));
+			component.getProperties().add(new Description(Html.stripHtml(descr)));
 	}
 
 	private void setComponentUID(CalendarComponent component,
