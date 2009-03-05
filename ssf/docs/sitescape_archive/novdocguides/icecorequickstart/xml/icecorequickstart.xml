@@ -1,0 +1,691 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//Novell//DTD NovDoc XML V1.0//EN" "novdocx.dtd">
+
+<!--========================================================================
+ "ICECore Quick Start Guide"
+
+ Copyright © 2006 Novell, Inc. All rights reserved. No part of this publication
+ may be reproduced, photocopied, stored on a retrieval system, or transmitted
+ without the express written consent of the publisher.
+
+ Novell, Inc.
+ 404 Wyman Street, Suite 500
+ Waltham, MA 02451
+ U.S.A.
+ www.novell.com
+
+
+ ESTIMATED PAGE COUNT (based on 200 words per page): 9
+ ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 3
+
+
+ WORD COUNT
+
+       Count    Doctype    Title
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        1887    chapter    ICECore Quick Start Guide
+
+
+ GRAPHICS REFERENCED IN BOOK
+
+       Count       Filename
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           2       tagsicon.png
+           2       workspacetreeiconminus.png
+           2       toolbar_favorites.png
+           2       search.png
+           6       myworkspace_igloo.png
+           2       workspacetreeicon.png
+           2       presenceicons.png
+           2       toolbar_favorites_big_.png
+           2       backbutton.png
+           2       helpicon-orange.png
+           2       helpicon.png
+
+
+ CROSS-REFERENCES
+
+       Count       Type
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           0       xref
+           0       link
+           0       ulink-xrefext
+           0       ulink-xrefexttext
+           1       ulink
+
+
+ URLS REFERENCED IN ULINKS
+
+       URL
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       http://www.novell.com/company/legal/trademarks/tmlist.html
+
+========================================================================-->
+
+<chapter role="quickstart" conformance="none,doc,no,,56" id="quickstart" revision="05/01/07" lang="en" xml:base="icecorequickstart.xml">
+ <title>ICECore Quick Start Guide</title>
+ <para>Teaming + Conferencing</para>
+ <para>1.0</para>
+ <para>July, 2007</para>
+ <sect1 id="b20g4u4">
+  <title>
+   <productname>ICEcore</productname>
+   <superscript/>
+  </title>
+  <para>Novell Teaming + Conferencing are implemented using 
+   <productname>ICEcore</productname> technology. The term “
+   <productname>ICEcore</productname>” on this sheet applies to all versions of 
+   <productname>ICEcore</productname> unless otherwise noted. For more information about 
+   <productname>ICEcore</productname> features, refer to the 
+   <productname>ICEcore</productname> User Guide and online Help.
+  </para>
+  <sect2 id="b9ygnf7">
+   <title>Explore the Welcome Portlet</title>
+   <para>When you log into 
+    <productname>ICEcore</productname> for the first time, you see a 
+    <guimenu>Welcome</guimenu> portlet that links to the 
+    <productname>ICEcore</productname> manuals and a getting-started web page.
+   </para>
+  </sect2>
+  <sect2 id="b9ygpwl">
+   <title>Find Your Way Using 
+    <productname>ICEcore</productname> Navigator
+   </title>
+   <para>The 
+    <guimenu>Navigator</guimenu> is a set of tools that take you anyplace in 
+    <productname>ICEcore</productname> where you want to go. The following 
+    <guimenu>Navigator</guimenu> tools appear on many 
+    <productname>ICEcore</productname> pages:
+   </para>
+   <formalpara id="b9yh7oz">
+    <title>My Workspace -</title>
+    <para>Click the 
+     <guimenu>My Workspace</guimenu> icon 
+     <inlinemediaobject>
+      <imageobject role="fo"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="PNG"/></imageobject>
+      <imageobject role="html"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="png"/></imageobject>
+     </inlinemediaobject> to open your personal workspace, which contains your 
+     <guimenu>Profile</guimenu>, your folders, your 
+     <guimenu>Guestbook</guimenu>, and other accessories.
+    </para>
+   </formalpara>
+   <formalpara id="b9yh8ci">
+    <title>Favorites -</title>
+    <para>Click the 
+     <guimenu>Favorites</guimenu> icon 
+     <inlinemediaobject>
+      <imageobject role="fo"><imagedata fileref="toolbar_favorites_big_.png" width="12.44pt" format="PNG"/></imageobject>
+      <imageobject role="html"><imagedata fileref="toolbar_favorites_big_.png" width="12.44pt" format="png"/></imageobject>
+     </inlinemediaobject> to open the 
+     <guimenu>Favorites</guimenu> menu, where you can access links to your favorite places and edit your favorites list. To add a favorite place, navigate to the place you want to add, click the 
+     <guimenu>Favorites</guimenu> icon, and select 
+     <guimenu>Add This Place</guimenu>.
+    </para>
+   </formalpara>
+   <formalpara id="b9yh8jx">
+    <title>Quick Search -</title>
+    <para>Enter any type of search term in the 
+     <guimenu>Quick search</guimenu> box and click 
+     <inlinemediaobject>
+      <imageobject role="fo"><imagedata fileref="search.png" width="14.40pt" format="PNG"/></imageobject>
+      <imageobject role="html"><imagedata fileref="search.png" width="14.40pt" format="png"/></imageobject>
+     </inlinemediaobject> to display a 
+     <guimenu>Quick search</guimenu> folder with the search results. For more search options, click 
+     <guimenu>Advanced</guimenu>.
+    </para>
+   </formalpara>
+   <formalpara id="b9yh8t6">
+    <title>Find people, Find Places, Find tags -</title>
+    <para>Use these boxes to search for a user's personal workspace, for a workspaces and folders, or for items with tags. (See Terminology below.)</para>
+   </formalpara>
+   <formalpara id="b9yh90l">
+    <title>Workspace Tree -</title>
+    <para>Click the plus sign to the left of the workspace tree icon 
+     <inlinemediaobject>
+      <imageobject role="fo"><imagedata fileref="workspacetreeicon.png" width="15.71pt" format="PNG"/></imageobject>
+      <imageobject role="html"><imagedata fileref="workspacetreeicon.png" width="15.71pt" format="png"/></imageobject>
+     </inlinemediaobject> to expand the tree. The tree has three main branches: 
+     <guimenu>Global Workspaces</guimenu>, 
+     <guimenu>Personal</guimenu>
+     <guimenu>Workspaces</guimenu> and 
+     <guimenu>Team Workspaces</guimenu>. Expand one of these categories and “drill down” until you get to the workspace you need. To collapse a branch, click the minus sign to the left of the branch: 
+     <inlinemediaobject>
+      <imageobject role="fo"><imagedata fileref="workspacetreeiconminus.png" width="15.71pt" format="PNG"/></imageobject>
+      <imageobject role="html"><imagedata fileref="workspacetreeiconminus.png" width="15.71pt" format="png"/></imageobject>
+     </inlinemediaobject>
+    </para>
+   </formalpara>
+   <formalpara id="b9yh9cf">
+    <title>Help -</title>
+    <para>To read information about a specific section of the page, click the 
+     <guimenu>Help</guimenu> icon 
+     <inlinemediaobject>
+      <imageobject role="fo"><imagedata fileref="helpicon.png" width="8.00pt" format="PNG"/></imageobject>
+      <imageobject role="html"><imagedata fileref="helpicon.png" width="8.00pt" format="png"/></imageobject>
+     </inlinemediaobject> to enter 
+     <guimenu>Help</guimenu> mode, and then click on one of the new information icons 
+     <inlinemediaobject>
+      <imageobject role="fo"><imagedata fileref="helpicon-orange.png" width="8.00pt" format="PNG"/></imageobject>
+      <imageobject role="html"><imagedata fileref="helpicon-orange.png" width="8.00pt" format="png"/></imageobject>
+     </inlinemediaobject> that appear. To exit 
+     <guimenu>Help</guimenu> mode, click anywhere except on another 
+     <guimenu>information</guimenu> icon or panel.
+    </para>
+   </formalpara>
+  </sect2>
+  <sect2 id="b9ygxtu">
+   <title>Set up Your Buddy List</title>
+   <para>Your 
+    <guimenu>Buddy List</guimenu> helps you keep track of people that you need to contact frequently. Add people to your buddy list right away to make it easy to communicate with them.
+   </para>
+   <procedure id="b9ygyei">
+    <step id="b9ygyej" performance="required">
+     <para>Click 
+      <guimenu>Add buddies</guimenu>.
+     </para>
+    </step>
+    <step id="b9ygyf2" performance="required">
+     <para>Start typing a name in either the 
+      <guimenu>Users</guimenu> or the 
+      <guimenu>Groups</guimenu> box. A drop-down list displays matching names. Select a name, and click 
+      <guimenu>Apply</guimenu> to add the name to your list.
+     </para>
+    </step>
+    <step id="b9ygyf4" performance="required">
+     <para>Add as many names as you want, clicking 
+      <guimenu>Apply</guimenu> after each one.
+     </para>
+    </step>
+    <step id="b9ygyf6" performance="required">
+     <para>To remove a name, click the
+      <guimenu> X </guimenu>icon after the name; then click 
+      <guimenu>Apply</guimenu>.
+     </para>
+    </step>
+    <step id="b9ygyfe" performance="required">
+     <para>When you finish, click 
+      <guimenu>Close</guimenu>. The new names are displayed in the buddy list.
+     </para>
+    </step>
+   </procedure>
+   <sect3 id="b9yh0or">
+    <title>Tips for Using Your Buddy List:</title>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>An icon to the left of a buddy name indicates their presence information, which is that person’s online status:</para>
+      <para>
+       <inlinemediaobject>
+        <imageobject role="fo"><imagedata fileref="presenceicons.png" width="50.40pt" format="PNG"/></imageobject>
+        <imageobject role="html"><imagedata fileref="presenceicons.png" width="50.40pt" format="png"/></imageobject>
+       </inlinemediaobject>
+       <guimenu>Online Away Offline Unknown</guimenu>
+      </para>
+     </listitem>
+     <listitem>
+      <para>To communicate with a buddy, click his or her presence icon, and select an option from the menu that appears.</para>
+     </listitem>
+     <listitem>
+      <para>To update presence information, click 
+       <guimenu>Refresh</guimenu>.
+      </para>
+     </listitem>
+     <listitem>
+      <para>To view a buddy's contact information or to navigate to his or her workspace, click the buddy's name.</para>
+     </listitem>
+    </itemizedlist>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yh3r4">
+   <title>Add Info and a Photo to Your Personal Workspace</title>
+   <procedure id="b9yh3y4">
+    <step id="b9yh3y5" performance="required">
+     <para>In the Navigator, click 
+      <inlinemediaobject>
+       <imageobject role="fo"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="png"/></imageobject>
+      </inlinemediaobject>
+      <guimenu>My workspace</guimenu> to go to your personal workspace.
+     </para>
+    </step>
+    <step id="b9yh44k" performance="required">
+     <para>On the menu bar for your workspace, click 
+      <guimenu>Modify Profile</guimenu>.
+     </para>
+    </step>
+    <step id="b9yh44n" performance="required">
+     <para>In the 
+      <guimenu>Modify Profile</guimenu> window, fill in any missing information. This information is visible to others and is also used by 
+      <productname>ICEcore</productname> and Zon to contact you by phone, e-mail, or IM.
+     </para>
+    </step>
+    <step id="b9yh44r" performance="required">
+     <para>Add a picture. Click
+      <guimenu> Browse… </guimenu>to look for a graphics file on your computer; then click 
+      <guimenu>OK</guimenu>. The picture is displayed in the 
+      <guimenu>Photo</guimenu> box of your profile.
+     </para>
+    </step>
+    <step id="b9yh44v" performance="required">
+     <para>Click 
+      <inlinemediaobject>
+       <imageobject role="fo"><imagedata fileref="backbutton.png" width="8.29pt" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="backbutton.png" width="8.29pt" format="png"/></imageobject>
+      </inlinemediaobject> to return to the initial page.
+     </para>
+    </step>
+   </procedure>
+   <sect3 id="b9yh4la">
+    <title>Tips for Adding Photos to Your Profile:</title>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>You can add as many images as you like, but you must add them one at a time.</para>
+     </listitem>
+     <listitem>
+      <para>Thumbnails of all of your images are displayed beneath your contact information. As you move the mouse over a thumbnail, the image is displayed in the Photo box. To replace the original image in the 
+       <guimenu>Photo</guimenu> box with one of your other images, click on the image thumbnail.
+      </para>
+     </listitem>
+     <listitem>
+      <para>To add a picture from the Internet, first save it to your computer.</para>
+     </listitem>
+     <listitem>
+      <para>To remove an image from your personal workspace, click 
+       <guimenu>Modify profile</guimenu>. Select the images to be deleted by clicking their check boxes. Then click 
+       <guimenu>OK</guimenu>.
+      </para>
+     </listitem>
+    </itemizedlist>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yh9yk">
+   <title>To Add Your First Blog Entry:</title>
+   <procedure id="b9yha2w">
+    <step id="b9yha2x" performance="required">
+     <para>Click 
+      <inlinemediaobject>
+       <imageobject role="fo"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="PNG"/></imageobject>
+       <imageobject role="html"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="png"/></imageobject>
+      </inlinemediaobject>
+      <guimenu>My workspace</guimenu> to display your personal workspace.
+     </para>
+     <para>Your workspace already has a default blog named “
+      <guimenu>Blog</guimenu>”
+     </para>
+    </step>
+    <step id="b9yha4m" performance="required">
+     <para>Expand you personal workspace tree at the top of your workspace.</para>
+    </step>
+    <step id="barbs6a" performance="required">
+     <para>Click on 
+      <guimenu>Blog</guimenu>.
+     </para>
+    </step>
+    <step id="b9yhak2" performance="required">
+     <para>On the menu bar above the blog calendar, select the 
+      <guimenu>New</guimenu> &gt; 
+      <guimenu>Blog Entry</guimenu> menu item.
+     </para>
+    </step>
+    <step id="b9yhank" performance="required">
+     <para>In the 
+      <guimenu>Blog Entry</guimenu> form that appears, type in the title of your blog entry in the 
+      <guimenu>Title</guimenu> box.
+     </para>
+    </step>
+    <step id="b9yhann" performance="required">
+     <para>In the 
+      <guimenu>Description</guimenu> box, type in the content of your blog entry (use the formatting tools in the editor to format your entry).
+     </para>
+    </step>
+    <step id="ban5k3d" performance="required">
+     <para>Under 
+      <guimenu>Attachments</guimenu>, you can select a file on your computer to attach to this blog entry. 
+     </para>
+    </step>
+    <step id="b9yhanq" performance="required">
+     <para>Click 
+      <guimenu>OK</guimenu> to add the entry to your blog.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="barc23u">
+   <title>To Comment on Someone Else’s Blog Entry:</title>
+   <procedure id="b9yhb5c">
+    <step id="b9yhb5d" performance="required">
+     <para>Navigate to the Blog in which you want to comment.</para>
+    </step>
+    <step id="barc49f" performance="required">
+     <para>Click 
+      <guimenu>Add Comment</guimenu> beneath the blog entry on which you want to comment.
+     </para>
+    </step>
+    <step id="b9yhb8l" performance="required">
+     <para> In the form that appears, type in the title of your blog comment in the 
+      <guimenu>Title</guimenu> box.
+     </para>
+    </step>
+    <step id="b9yhb8o" performance="required">
+     <para>Type in your comment in the 
+      <guimenu>Description</guimenu> box.
+     </para>
+    </step>
+    <step id="b9yhb8r" performance="required">
+     <para>Click 
+      <guimenu>OK</guimenu>. Your comment appears below the blog entry.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="b9yhbh7">
+   <title>Work with Teams</title>
+   <para>
+    <productname>ICEcore</productname> was designed for teamwork. Create a team workspace; then add folders to the workspace. Once your team is set up, you can communicate easily with your team members.
+   </para>
+   <sect3 id="b9yhc1x">
+    <title>To Create a Team Workspace:</title>
+    <procedure id="b9yhc47">
+     <step id="b9yhc48" performance="required">
+      <para> In the 
+       <guimenu>Navigator</guimenu>, click on the 
+       <guimenu>Team Workspaces</guimenu> link of the workspace tree.
+      </para>
+     </step>
+     <step id="b9yhcrt" performance="required">
+      <para> Under the 
+       <guimenu>Team Workspaces</guimenu> tab, click 
+       <guimenu>Add a Team Workspace</guimenu>.
+      </para>
+     </step>
+     <step id="b9yhcrw" performance="required">
+      <para> In the 
+       <guimenu>Workspace Title</guimenu> field, type in the name for the new workspace.
+      </para>
+     </step>
+     <step id="b9yhd8a" performance="required">
+      <para>Under 
+       <guimenu>Team Members</guimenu>, select any 
+       <guimenu>Users</guimenu> and 
+       <guimenu>Groups</guimenu> you want to add as team members to this workspace. Type a character or two into either field and select the user or group you are want to add from the drop-down list that appears.
+      </para>
+     </step>
+     <step id="ban5was" performance="required">
+      <para>Under 
+       <guimenu>Workspace Folders</guimenu>, select the types of folders you want to include in this workspace.
+      </para>
+     </step>
+     <step id="ban5xsb" performance="required">
+      <para>To e-mail your teammates, select the 
+       <guimenu>Announce the Creation of this Workspace to the Team</guimenu> option and type in the message you want to send.
+      </para>
+     </step>
+     <step id="b9yhcs0" performance="required">
+      <para>Click 
+       <guimenu>OK</guimenu>. The new workspace is added as a sub-workspace.
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+   <sect3 id="b9yhd12">
+    <title>To Add Members to a Team Workspace:</title>
+    <procedure id="b9yhd13">
+     <step id="b9yhd14" performance="required">
+      <para>Navigate to the team workspace.</para>
+     </step>
+     <step id="barc7bf" performance="required">
+      <para>Click 
+       <guimenu>Add or Delete Team Members</guimenu>.
+      </para>
+     </step>
+     <step id="ban6gcy" performance="required">
+      <para>In the 
+       <guimenu>Add or Delete Team Members</guimenu> window, click in the 
+       <guimenu>User</guimenu>s or 
+       <guimenu>Group</guimenu>s fields, begin typing the user or group name and select the name from the drop-down list that appears.
+      </para>
+     </step>
+     <step id="barc9md" performance="required">
+      <para>Repeat for each user or group you want to add.</para>
+     </step>
+     <step id="barc9ek" performance="required">
+      <para>Click 
+       <guimenu>OK</guimenu>.
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+   <sect3 id="b9yhd15">
+    <title>To View Team Members:</title>
+    <procedure id="b9yhd16">
+     <step id="b9yhd17" performance="required">
+      <para>Select the workspace or folder with which the team is associated.</para>
+     </step>
+     <step id="b9yhdtq" performance="required">
+      <para>On the menu bar, click 
+       <guimenu>Team</guimenu>.
+      </para>
+     </step>
+     <step id="b9yhdts" performance="required">
+      <para> Select 
+       <guimenu>Show Team Membership</guimenu>.
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yhe5q">
+   <title>Working with Favorites</title>
+   <para>Use 
+    <guimenu>Favorites</guimenu> for places you visit often.
+   </para>
+   <sect3 id="b9yheeb">
+    <title>To Add a Place to Favorites:</title>
+    <procedure id="b9yhf14">
+     <step id="b9yhf15" performance="required">
+      <para>Navigate to the workspace or folder that you want to add.</para>
+     </step>
+     <step id="b9yhf4f" performance="required">
+      <para>Click 
+       <inlinemediaobject>
+        <imageobject role="fo"><imagedata fileref="toolbar_favorites.png" width="8.51pt" format="PNG"/></imageobject>
+        <imageobject role="html"><imagedata fileref="toolbar_favorites.png" width="8.51pt" format="png"/></imageobject>
+       </inlinemediaobject> to open the 
+       <guimenu>Favorites</guimenu> panel.
+      </para>
+     </step>
+     <step id="b9yhf4i" performance="required">
+      <para>Select 
+       <guimenu>Add This Place</guimenu>. The workspace or folder is added at the end of the 
+       <guimenu>Favorites</guimenu> list.
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yhfng">
+   <title>Take Advantage of Tagging</title>
+   <para>Tagging is a powerful way to discover, evaluate, and retrieve information. Users assign keywords, called tags, to workspaces, folders, and entries. Tags are designated as either community (shared) or personal (private). You can then use tags in searches. The search engine also uses tags to rank search results by relevance.</para>
+   <para>Click the 
+    <guimenu>Tags</guimenu> icon 
+    <inlinemediaobject>
+     <imageobject role="fo"><imagedata fileref="tagsicon.png" width="24.87pt" format="PNG"/></imageobject>
+     <imageobject role="html"><imagedata fileref="tagsicon.png" width="24.87pt" format="png"/></imageobject>
+    </inlinemediaobject> to add both 
+    <guimenu>Personal</guimenu> and 
+    <guimenu>Community</guimenu> tags to an item.
+   </para>
+   <para>For more information on tags, see the 
+    <productname>ICEcore</productname> User Guide.
+   </para>
+  </sect2>
+  <sect2 id="ban6z9s">
+   <title>Advanced Search</title>
+   <para>Use Advanced Search to find the specific information you are looking for without having to navigate through multiple workspaces and folders.</para>
+   <sect3 id="ban748r">
+    <title>To Perform an Advanced Search:</title>
+    <procedure id="ban729o">
+     <step id="ban729p" performance="required">
+      <para>In the Search section, click 
+       <guimenu>Advanced</guimenu>. The 
+       <guimenu>Advanced Search</guimenu> window appears.
+      </para>
+     </step>
+     <step id="ban75mv" performance="required">
+      <para>In the 
+       <guimenu>Text</guimenu> field, type text related to the item for which you are searching.
+      </para>
+     </step>
+     <step id="ban76s5" performance="required">
+      <para>If you know who created (added) the item in 
+       <productname>ICEcore</productname>, type the name into the 
+       <guimenu>Authors</guimenu> field.
+      </para>
+     </step>
+     <step id="ban78ko" performance="required">
+      <para>If you know that the information is tagged, type the relevant tag into the 
+       <guimenu>Tags</guimenu> field.
+      </para>
+     </step>
+     <step id="ban790r" performance="required">
+      <para>Under 
+       <guimenu>Places</guimenu>, select the option you want to use:
+      </para>
+      <itemizedlist mark="bullet" spacing="normal">
+       <listitem>
+        <para>Use the workspace tree options to select the specific areas to search:</para>
+        <orderedlist spacing="normal">
+         <listitem>
+          <para>Click the + arrow next to 
+           <emphasis>Workspace</emphasis>.
+          </para>
+         </listitem>
+         <listitem>
+          <para>Select the areas you want to search (drill further down in any area if you want).</para>
+         </listitem>
+        </orderedlist>
+       </listitem>
+       <listitem>
+        <para>Use the 
+         <guimenu>Search All Sub Places</guimenu> option to search all folders and workspaces
+        </para>
+       </listitem>
+      </itemizedlist>
+     </step>
+     <step id="ban7dim" performance="required">
+      <para>Next to 
+       <guimenu>List Results</guimenu>, use the drop-down lists to select the number of items and the number or words (per item) that you want to retrieve for your search. 
+      </para>
+     </step>
+     <step id="ban7eau" performance="required">
+      <para>Click 
+       <guimenu>Search</guimenu>.
+      </para>
+      <para>The search results appear in a list below the 
+       <guimenu>Advance Search</guimenu> area. To the left 
+       <productname>ICEcore</productname> displays information about the top ranked places, people and tags associated with your search.
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+   <sect3 id="ban7gsc">
+    <title>To Use Additional Advanced Search Options:</title>
+    <procedure id="ban7hhh">
+     <step id="ban7hhi" performance="required">
+      <para>In the Search section, click 
+       <guimenu>Advanced</guimenu>. The 
+       <guimenu>Advanced Search</guimenu> tab appears.
+      </para>
+     </step>
+     <step id="ban7ho8" performance="required">
+      <para>In the top-right corner of the 
+       <guimenu>Advanced Search</guimenu> area, click 
+       <guimenu>More Options</guimenu>.
+      </para>
+     </step>
+     <step id="ban7i1a" performance="required">
+      <para>The following options are available:</para>
+      <itemizedlist mark="bullet" spacing="normal">
+       <listitem>
+        <para>
+         <guimenu>Authors</guimenu>- This option allows you to enter one or more author names.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Tags</guimenu>- This option allows you to enter one or more tag names.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Workflow</guimenu>- This option allows you to enter one or more workflow state names.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Entry Attributes</guimenu>- This option allows you to enter one or more entry types.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Last Activity in Days</guimenu>- This option allows you to limit the search to items that have had activity within a set number of days.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Creation Dates</guimenu>- This option allows you to limit the search to items created within one or more date ranges.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Modification Dates</guimenu>- This option allows you to limit the search to items modified within one or more date ranges.
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+         <guimenu>Item Type</guimenu>- This option allows you to limit the search to one or more item types.
+        </para>
+       </listitem>
+      </itemizedlist>
+      <note>
+       <para>Type in a few characters and most fields generates a drop-down list of choices. Click More Criteria to enter additional search criteria for an option.</para>
+      </note>
+     </step>
+    </procedure>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yhg5l">
+   <title>Terminology</title>
+   <formalpara id="b9yhgfo">
+    <title>buddy list -</title>
+    <para>A list of people that you contact frequently.</para>
+   </formalpara>
+   <formalpara id="b9yhhqt">
+    <title>entry -</title>
+    <para>An item that is contained in a folder.</para>
+   </formalpara>
+   <formalpara id="b9yhhqu">
+    <title>folder -</title>
+    <para>A container for entries and other folders. Each folder has a type, such as 
+     <guimenu>blog</guimenu>, 
+     <guimenu>wiki</guimenu>, or 
+     <guimenu>calendar</guimenu>.
+    </para>
+   </formalpara>
+   <formalpara id="b9yhhqv">
+    <title>presence -</title>
+    <para>The state of being connected to a communications service and available for communication. Presence information is indicated by status icons.</para>
+   </formalpara>
+   <formalpara id="b9yiiuq">
+    <title>workspace -</title>
+    <para>A container for folders and other workspaces.</para>
+   </formalpara>
+  </sect2>
+ </sect1>
+ <sect1 role="legalinfo" id="b20g58r">
+  <title>Legal Notice</title>
+  <para>Copyright © 2007 Novell, Inc. All rights reserved. No part of this publication may be reproduced, photocopied, stored on a retrieval system, or transmitted without the express written consent of the publisher. For Novell trademarks, see 
+   <ulink url="http://www.novell.com/company/legal/trademarks/tmlist.html">the Novell Trademark and Service Mark list</ulink>. All third-party trademarks are the property of their respective owners. A trademark symbol (®, TM, etc.) denotes a Novell trademark; an asterisk (*) denotes a third-party trademark.
+  </para>
+ </sect1>
+</chapter>
