@@ -85,4 +85,8 @@
 	
 	<bean id="portletUrlToStringHelper" class="org.kablink.teaming.portletadapter.NullPortletUrlToStringHelper"/>
 	
+	<bean id="messageUtil" class="org.kablink.teaming.liferaylight.portlet.MessageUtil">
+		<property name="localeResolver"><ref local="localeResolver"/></property>
+	</bean>
+	
 </beans>
