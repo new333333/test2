@@ -294,8 +294,9 @@
 				return;
 			}
 		}
-			
-		url = '<ssf:escapeJavaScript>${ss_play_tutorial_base_url}</ssf:escapeJavaScript>';
+
+		// As the fix for bug 481238, I removed the ssf:escapeJavaScript tag from the following line.
+		url = '${ss_play_tutorial_base_url}';
 		url += '&ss_tutorial_name=' + encodeURIComponent( tutorialName );
 		winHeight = 675;
 		winWidth = 975; 
