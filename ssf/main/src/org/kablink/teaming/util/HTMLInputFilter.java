@@ -550,7 +550,7 @@ public class HTMLInputFilter
       String one = m.group( 1 ); //(>|^) 
       String two = m.group( 2 ); //([^<]+?) 
       String three = m.group( 3 ); //(<|$) 
-      m.appendReplacement( buf, one + two.replaceAll( "\"", "&quot;" ) + three);
+      m.appendReplacement(buf, m.quoteReplacement(one + replaceAllQuotes(two) + three));
     }
     m.appendTail( buf );
     s = buf.toString();
@@ -584,6 +584,15 @@ public class HTMLInputFilter
         return true;
     
     return false;
+  }
+  
+  protected String replaceAllQuotes(String text) {
+	while (text.indexOf("\"") >= 0) {
+		String one = text.substring(0, text.indexOf("\"")-1);
+		String two = text.substring(text.indexOf("\""));
+		text = one + "&quot;" + two;
+	}
+  	return text;
   }
   
   // ============================================ START-UNIT-TEST =========================================
@@ -709,7 +718,6 @@ public class HTMLInputFilter
         t("<!-- a<b --->", "<!-- a&lt;b --->");
       }
     }
-
   }
   // ============================================ END-UNIT-TEST ===========================================
 }  
