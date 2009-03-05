@@ -357,6 +357,22 @@ jQuery(document).ready(function() {
 	jQuery("form").submit(function() {
 		var ldapDoc="<ldapConfigs>";
 		var valid = true;
+		var wrapWithCDATA = function( str )
+		{
+			var		newStr;
+			
+			newStr = '<![CDATA[';
+			if ( str != null && str.length > 0 )
+				newStr += str;
+			newStr += ']]>';
+
+			// The characters, '&', '<' and '>' are not valid xml characters.  Replace all & with &amp; and < with &lt; and > with &gt;
+			//str = str.replace( /&/g, '&amp;' );
+			//str = str.replace( /</g, '&lt;' );
+			//str = str.replace( />/g, '&gt;' );
+
+			return newStr;
+		};
 		var updateError = function($field, fieldValid)
 		{
 			if(fieldValid) {
@@ -377,8 +393,8 @@ jQuery(document).ready(function() {
 				valid = updateError($baseDn, ssPage.validDn(baseDn)) && valid;
 				valid = updateError($filter, ssPage.validQuery(filter)) && valid;
 				ldapDoc += "<search>" +
-					"<baseDn>" + baseDn + "</baseDn>" +
-					"<filter>" +  filter + "</filter>";
+					"<baseDn>" + wrapWithCDATA( baseDn ) + "</baseDn>" +
+					"<filter>" +  wrapWithCDATA( filter ) + "</filter>";
 				ldapDoc += "<searchSubtree>";
 				if(jQuery('.ldapSearchSubtree:checked', $this).length > 0) {
 					ldapDoc += "true";
@@ -397,11 +413,11 @@ jQuery(document).ready(function() {
 			if($id.length > 0) {
 				ldapDoc += "<id>" + $id.text() + "</id>";
 			}
-			ldapDoc += "<url>"+$this.find('.ldapUrl').val()+"</url>" +
-						"<userIdAttribute>"+$this.find('.ldapUserIdAttribute').val()+"</userIdAttribute>" +
-						"<mappings>"+$this.find('.ldapMappings').val()+"</mappings>";
-			ldapDoc += "<principal>"+$this.find('.ldapPrincipal').val()+"</principal><credentials>" +
-						$this.find('.ldapCredentials').val()+"</credentials>";
+			ldapDoc += "<url>" + wrapWithCDATA( $this.find('.ldapUrl').val() ) + "</url>" +
+						"<userIdAttribute>" + wrapWithCDATA( $this.find('.ldapUserIdAttribute').val() ) + "</userIdAttribute>" +
+						"<mappings>" + wrapWithCDATA( $this.find('.ldapMappings').val() ) + "</mappings>";
+			ldapDoc += "<principal>" + wrapWithCDATA( $this.find('.ldapPrincipal').val() ) + "</principal><credentials>" +
+						wrapWithCDATA( $this.find('.ldapCredentials').val() ) + "</credentials>";
 			ldapDoc += "<userSearches>";
 			jQuery('.ldapUserSearches .ldapSearch', $this).each(makeSearch);
 			ldapDoc += "</userSearches>";
