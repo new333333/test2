@@ -165,7 +165,7 @@ public class HTMLInputFilter
 	vAlwaysAllowed = " * abbr acronym address b bdo big blockquote br caption center cite code col colgroup dd del dfn dir dl dt em fieldset font h1 h2 h3 h4 h5 h6 hr i ins kbd label legend li ol optgroup option p pre q s samp select small span strike strong sub sup tt u ul var";
 	vAlwaysAllowedAttributes = " class style title dir lang accesskey tabindex ";
 
-	vAlwaysDisAllowed = " script embed object applet style html head body meta xml blink link iframe frame frameset ilayer layer bgsound title base ";
+	vAlwaysDisAllowed = " script embed object applet style html head body meta xml blink link iframe frame frameset ilayer layer bgsound base ";
 	
     ArrayList<String> a_atts = new ArrayList<String>();
     a_atts.add( "href" );
@@ -484,7 +484,7 @@ public class HTMLInputFilter
       }
     }
     
-    return "";
+    return "<" + s + ">";
   }
   
   protected String processParamProtocol( String s )
