@@ -358,7 +358,7 @@ public class PostFiles extends Thread {
      */
     public void displayResponse( TopFrame topFrame, HttpURLConnection conn) {
         try {
-            InputStream httpStream = conn.getInputStream();
+            InputStreamReader httpStreamReader = new InputStreamReader(conn.getInputStream(),"UTF-8");
            
             boolean writing = false;
             String url = "";
@@ -367,16 +367,16 @@ public class PostFiles extends Thread {
             String du = new String(topFrame.getParameter("displayUrl"));
 
             while (true) {
-				byte bytes[] = new byte[5000];
+				char chars[] = new char[5000];
 				// Read available data.
-				int nBytes = httpStream.read(bytes);
+				int nBytes = httpStreamReader.read(chars);
 				if (nBytes == -1) {
 					break;
 				}
 				if (!writing) {
 					writing = true;
 				}
-				url += new String(bytes).toString().trim();
+				url += new String(chars).toString().trim();
             }            
 
             if (!du.equals("1")) {
