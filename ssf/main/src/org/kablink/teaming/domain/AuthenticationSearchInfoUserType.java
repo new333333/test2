@@ -51,8 +51,14 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
     		StringBuffer xml = new StringBuffer("<searches>");
     		for(LdapConnectionConfig.SearchInfo us : searches) {
     			xml.append("<search searchSubtree=\"" + (us.isSearchSubtree()?"true":"false") + "\">");
-    			xml.append("<baseDn>"+us.getBaseDn()+"</baseDn>");
-    			xml.append("<filter>"+us.getFilter()+"</filter>");
+
+				// If the base dn has a '&', '<', or '>' in it, the xml will not parse when we read it from the db
+				// and try to create an xml document.  Wrap the base dn with <![CDATA[]]>.
+    			xml.append( "<baseDn>" + wrapWithCDATA( us.getBaseDn() ) + "</baseDn>");
+
+				// If the filter has a '&', '<', or '>' in it, the xml will not parse when we read it from the db
+				// and try to create an xml document.  Wrap the filter with <![CDATA[]]>.
+    			xml.append( "<filter>" + wrapWithCDATA( us.getFilter() ) + "</filter>");
     			xml.append("</search>");
     		}
     		xml.append("</searches>");
@@ -80,4 +86,20 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
     public Object replace(Object original, Object target, Object owner) throws HibernateException { 
         return new LinkedList<LdapConnectionConfig.SearchInfo>((List<LdapConnectionConfig.SearchInfo>) original); 
     }
+
+	/**
+	 * Wrap the given text with <![CDATA[ ]]>
+	 */
+	private String wrapWithCDATA( String str )
+	{
+		StringBuffer	wrappedStr;
+		
+		wrappedStr = new StringBuffer( "<![CDATA[" );
+		if ( str != null && str.length() > 0 )
+			wrappedStr.append( str );
+		
+		wrappedStr.append( "]]>" );
+		
+		return wrappedStr.toString();
+	}// end wrapWithCDATA()
 }
