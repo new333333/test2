@@ -71,6 +71,9 @@ public class HTMLInputFilter
   /** always allowed tags **/
   protected String vAlwaysAllowed;
 
+  /** always disallowed tags **/
+  protected String vAlwaysDisAllowed;
+
   /** html elements which must always be self-closing (e.g. "<img />") **/
   protected String[] vSelfClosingTags;
   
@@ -159,9 +162,11 @@ public class HTMLInputFilter
     
 	vAllowed = new HashMap<String,List<String>>();
 
-	vAlwaysAllowed = " abbr acronym address b bdo big blockquote br caption center cite code col colgroup dd del dfn dir dl dt em fieldset font h1 h2 h3 h4 h5 h6 hr i ins kbd label legend li ol optgroup option p pre q s samp select small span strike strong sub sup tt u ul var";
+	vAlwaysAllowed = " * abbr acronym address b bdo big blockquote br caption center cite code col colgroup dd del dfn dir dl dt em fieldset font h1 h2 h3 h4 h5 h6 hr i ins kbd label legend li ol optgroup option p pre q s samp select small span strike strong sub sup tt u ul var";
 	vAlwaysAllowedAttributes = " class style title dir lang accesskey tabindex ";
-    
+
+	vAlwaysDisAllowed = " script embed object applet style html head body meta xml blink link iframe frame frameset ilayer layer bgsound title base ";
+	
     ArrayList<String> a_atts = new ArrayList<String>();
     a_atts.add( "href" );
     a_atts.add( "target" );
@@ -386,11 +391,14 @@ public class HTMLInputFilter
     // ending tags
     Matcher m = pattern_process_tags1.matcher( s );
     if (m.find()) {
-      String name = m.group(1).toLowerCase();
-      if (vAllowed.containsKey( name ) || vAlwaysAllowed.contains(" " + name.toLowerCase() + " ")) {
-        if (!inArray(name, vSelfClosingTags)) {
-          if (vTagCounts.containsKey( name )) {
-            vTagCounts.put(name, vTagCounts.get(name)-1);
+      String name = m.group(1);
+      if ((vAllowed.containsKey( name.toLowerCase() ) || 
+    		  vAlwaysAllowed.contains(" " + name.toLowerCase() + " ") ||
+    		  vAlwaysAllowed.contains(" * ")) &&
+    		  !vAlwaysDisAllowed.contains(" " + name.toLowerCase() + " ")) {
+        if (!inArray(name.toLowerCase(), vSelfClosingTags)) {
+          if (vTagCounts.containsKey( name.toLowerCase() )) {
+            vTagCounts.put(name.toLowerCase(), vTagCounts.get(name.toLowerCase())-1);
             return "</" + name + ">";
           }
         }
@@ -400,12 +408,15 @@ public class HTMLInputFilter
     // starting tags
     m = pattern_process_tags2.matcher( s );
     if (m.find()) {
-      String name = m.group(1).toLowerCase();
+      String name = m.group(1);
       String body = m.group(2);
       String ending = m.group(3);
       
       //debug( "in a starting tag, name='" + name + "'; body='" + body + "'; ending='" + ending + "'" );
-      if (vAllowed.containsKey( name ) || vAlwaysAllowed.contains(" " + name.toLowerCase() + " ")) {
+      if ((vAllowed.containsKey( name.toLowerCase() ) || 
+    		  vAlwaysAllowed.contains(" " + name.toLowerCase() + " ") ||
+    		  vAlwaysAllowed.contains(" * ")) && 
+    		  !vAlwaysDisAllowed.contains(" " + name.toLowerCase() + " ")) {
         String params = "";
         
         Matcher m2 = pattern_process_tags4.matcher( body );
@@ -423,35 +434,35 @@ public class HTMLInputFilter
         
         String paramName, paramValue;
         for( int ii=0; ii<paramNames.size(); ii++ ) {
-          paramName = paramNames.get(ii).toLowerCase();
+          paramName = paramNames.get(ii);
           paramValue = paramValues.get(ii);
           
           //debug( "paramName='" + paramName + "'" );
           //debug( "paramValue='" + paramValue + "'" );
           //debug( "allowed? " + vAllowed.get( name ).contains( paramName ) );
           
-          if (vAllowed.get( name ).contains( paramName ) || 
+          if (vAllowed.get( name.toLowerCase() ).contains( paramName.toLowerCase() ) || 
         		  vAlwaysAllowedAttributes.contains(" " + paramName.toLowerCase() + " ")) {
-            if (inArray( paramName, vProtocolAtts )) {
+            if (inArray( paramName.toLowerCase(), vProtocolAtts )) {
               paramValue = processParamProtocol( paramValue );
             }
             params += " " + paramName + "=\"" + paramValue + "\"";
           }
         }
         
-        if (inArray( name, vSelfClosingTags )) {
+        if (inArray( name.toLowerCase(), vSelfClosingTags )) {
           ending = " /";
         }
         
-        if (inArray( name, vNeedClosingTags )) {
+        if (inArray( name.toLowerCase(), vNeedClosingTags )) {
           ending = "";
         }
         
         if (ending == null || ending.length() < 1) {
-          if (vTagCounts.containsKey( name )) {
-            vTagCounts.put( name, vTagCounts.get(name)+1 );
+          if (vTagCounts.containsKey( name.toLowerCase() )) {
+            vTagCounts.put( name.toLowerCase(), vTagCounts.get(name.toLowerCase())+1 );
           } else {
-            vTagCounts.put( name, 1 );
+            vTagCounts.put( name.toLowerCase(), 1 );
           }
         } else {
           ending = " /";
