@@ -1,0 +1,1908 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html>
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Tuesday, November 27, 2007" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2007" />
+
+<style type="text/css">
+body { 
+		margin-left: .2in;
+		padding:0;
+		font-family:arial, helvetica, sans-serif;
+		font-size: 75%;
+		font-weight: normal;
+		color: #000000;
+		background-color: #ffffff;
+}
+
+/* headings */
+	h1 {font-size: 125%; font-weight: bold; color: #000000;}
+	h2,h3,h4,h5,h6 {font-size: 100%; font-weight: bold; color: #000000; margin-bottom:-6px;}
+
+	/* single file heading adjustments */
+	.singlefile h1 {font-size: 185%; color: #CC0000; margin-top:10px;}
+	.singlefile h2 {font-size: 140%; margin-top:35px;}
+	.singlefile h3 {font-size: 125%; margin-top:25px;}
+
+/* sections */
+	div.sect1 { margin-bottom: 10pt; }
+	div.sect2 { }
+	div.sect3, div.sect4, div.sect5, div.sect6 {margin-left:18px;}
+	
+/* msgset */
+	div.msgexplan {margin: 0px 0px 7px 0px;}
+	div.msgexplan span.title {margin: 0px 7px 0px 0px; font-size: 100%; font-weight: bold; color: #000000;}
+	div.msgtext p.para {margin: 4px 0px 16px 0px; font-size: 100%; font-weight: bold; color: #b00000;}
+
+/* links */
+	a {color:#0000cc;}
+	a:hover {color:#3366ff;}
+	a:visited {color:#993333;}
+	li.listitem a:hover {color:#3366ff;}
+	a.ulink a:hover {text-decoration:none; color:#3366ff;}
+
+	a.nav:link,
+	a.nav:visited,
+	a.nav:active { vertical-align: middle; font-weight: bold; color: gray; text-decoration: none; font-size: 100%;}
+	a.nav:hover { vertical-align: middle; font-weight: bold; color: #999999; text-decoration: none; font-size: 100%;}  
+
+/* paragraphs */	
+	p.para {font-weight: normal; color: #000000;}
+/*	p.title {margin:10px 0 4px 0;} */
+	p.msgtext {font-style: italic; font-weight: normal}
+	p.trademark {font-size: 75%; font-weight: normal; font-style: italic;}
+	/*p.entry {font-size: 95%; font-weight: normal; color: #000000; margin-top: -5px;}
+	p.table {font-weight: bold;}*/
+	pre.screen {font-family: monospace; margin: 10px 5px 10px 0px; padding: 1px 0px 3px 5px;font-size: 110%;color: #000000;}
+	p.glossterm {font-weight: bold;}
+	div.glossdef {margin:-10pt 0 0 0;}
+	
+/* admonitions */	
+	div.note,
+	div.tip,
+	div.warning,
+	div.important {margin: 12px 0px 5px 0px; padding: 0px 15px 0px 15px; border-bottom: 1px solid #999999; border-top: 1px solid #999999;}
+
+	div.note p em.title,
+	div.tip p em.title,
+	div.warning p em.title,
+	div.important p em.title {margin: 0px 7px 0px 0px; font-weight: bold; font-style: normal;font-size:95%;}
+	div.warning em.title {color: #cc0000}
+
+/* figures and images */	
+	img.inline {vertical-align: middle;}
+	img {line-height: normal;}
+	br.img {line-height: normal;}
+	div.figure em.figure {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:5px 5px 0 0;}
+	div.figure em.title {font-family: times, serif; font-size: 95%; font-style: italic; font-weight: normal; color: #000000;}
+	div.figure p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
+	div.figure p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
+	div.informalfigure {margin:15px 0px 10px 0px;}
+	div.formalpara em.title {font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0 0;}
+	div.formalpara p.title {font-style: normal; font-weight: normal; color: #000000;}
+	
+/* tables */
+	div.table p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
+	td {font-size: 95%; font-weight: normal; color: #000000;}
+	div.table p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
+	div.formalpara table.topbot-lines {margin:0px 0 16px 0;}
+	div.informaltable table.topbot-lines {margin:10px 0 7px 0;}
+
+	table.topbot-lines {border-spacing: 0px; border-top:2px solid #000000; border-bottom:1px solid #606060;}
+	table.topbot-lines tr.headerrow th {border-bottom:1px solid #000000; border-top:none; padding: 4px 4px 4px 4px;}
+	table.topbot-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; margin:1px 0 0 0;}
+	table.topbot-lines tr.evenrow {background-color: white}
+	table.topbot-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px;}
+	table.topbot-lines tr.oddrow {background-color: #f8f8f8}
+	table.topbot-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: #f8f8f8}
+
+	table.all-lines {border-spacing: 0px; border-top:2px solid #000000; border-bottom:1px solid #606060;}
+	table.all-lines tr.headerrow th {border-bottom:1px solid #000000; border-top:none; padding: 4px 4px 4px 4px;}
+	table.all-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; margin:1px 0 0 0;}
+	table.all-lines tr.evenrow {background-color: white}
+	table.all-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px;}
+	table.all-lines tr.oddrow {background-color: #f8f8f8}
+	table.all-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: #f8f8f8}
+
+	table.no-lines tr.headerrow {background-color: white }
+	table.no-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; color: #404040; margin:1pt 0 0 0; background-color: white }
+	table.no-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: white }
+	table.no-lines tr.evenrow td {background-color: white}
+	table.no-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: white}
+	table.no-lines tr.oddrow td {background-color: white}
+	
+	table.calloutlist td {margin:0px; padding: 0px 6px 0px 0px;}
+	table.calloutlist p {margin: 5px 0px 5px 0px; padding: 0px;}
+	
+/* variablelists */
+	dt.term {font-style: normal; font-weight: bold; color: #000000;}
+	dd.listitem {margin-left: 22px; font-weight: normal;}
+	dt.refclass .application {font-size: 90%; font-style: normal; font-weight: bold; color: #000000; padding: 0px 20px 2px 0px;}
+	
+/* lists,procedures */
+	div.itemizedlist, div.orderedlist, div.procedure, div.substeps {margin-bottom:15px; font-weight: normal;}
+	ul.listbullet,ul.listcheck,ol {margin-left: 28px; padding-left: 0pt;}
+	ul.listcheck  {list-style-image : url("images/checkbox.gif"); list-style-type: square;}
+	ul.listbullet {list-style-type: disc; list-style-image : none;}
+	ul.simplelist {margin-left: 0px; list-style-type: none; list-style-image : none;padding-left: 0pt;}
+	div.orderedlist div.orderedlist > ol {list-style-type: lower-alpha;}
+	div.orderedlist div.orderedlist div.orderedlist > ol {list-style-type: lower-roman;}
+	div.substeps div.substeps div.substeps > ol {list-style-type:lower-alpha;}
+	div.substeps div.substeps > ol {list-style-type: decimal;}
+	div.substeps > ol {list-style-type: lower-alpha;}
+	li {margin: 5px 0 4px 0;}
+	li.member {margin:3px 0px 0px 10px;text-indent:-10px; font-weight: normal;}
+	li.step {font-weight: bold;color: #000000;}
+	div.procedure h1.title {font-weight: bold; color: #000000; margin-top: 22px; margin-bottom: -4pt;}
+
+/* bold inlines */	
+	em.refclass,em.glossterm,em.option {font-weight: bold; font-style: normal}
+
+/* italic inlines */	
+	em.diskname,em.emphasis,em.variable,em.versionvariable {font-style: italic; font-weight: normal}
+	span.citetitle,span.guimenu,span.replaceable {font-style: italic;}
+	tt,span.command,span.literal,span.filename {font-family: monospace; font-size: 130%;}
+	
+/* other inlines */	
+	em.msgtext {font-weight: bold; font-style: italic}
+	span.emphasis {font-weight: bold;}
+
+/* superscript and subscript */	
+	span.subscript,span.superscript {font-size: 80%;}
+
+/* single file toc elements */
+	div.toc {line-height: 11.5pt; background-color: #EEEEEE;  margin: 20px 0px 24px 0px; padding: 1px 0px 5px 0px}
+	div.toc h2 {margin-left: 5px}
+	div.toc div.toc1 {font-weight: normal; margin: 15px 10px 6px 5px}
+	div.toc div.toc2 {font-weight: normal; margin: 8px 10px 5px 25px}
+	div.toc div.toc3 {font-weight: normal; margin: 5px 10px 2px 50px}
+	div.toc div.toc4 {font-weight: normal; margin: 0px 10px 2px 75px}
+	
+</style>
+
+<title>ICEcore Web Services ***UNREVIEWED DRAFT***</title>
+</head>
+<body>
+
+<div class="book singlefile"  id="bookinfo">
+
+<h1 class="title"> ICEcore Web Services ***UNREVIEWED DRAFT***</h1>
+
+<div class="toc">
+ <div class ="toc1"><span class="number">I</span> <a href="#bck2rlw">Using Web Services</a></div>
+  <div class ="toc2"><span class="number">1.0</span> <a href="#bck3as4">Web Services Overview</a></div>
+   <div class ="toc3"><span class="number">1.1</span> <a href="#bctvpqz">ICEcore Web Services Implementation</a></div>
+   <div class ="toc3"><span class="number">1.2</span> <a href="#bctvse8">Connecting to the Server</a></div>
+   <div class ="toc3"><span class="number">1.3</span> <a href="#bctvsq4">Sending Messages</a></div>
+   <div class ="toc3"><span class="number">1.4</span> <a href="#bctvsun">Notes for Specific Messages</a></div>
+   <div class ="toc3"><span class="number">1.5</span> <a href="#bctxcnz">Extending ICEcore Web Services</a></div>
+ <div class ="toc1"><span class="number">II</span> <a href="#bck2rlw2">Reference Pages</a></div>
+  <div class ="toc2"><span class="number">2.0</span> <a href="#bck33nb">Message Reference</a></div>
+   <div class ="toc3"><a href="#bcqal13">addFolder</a></div>
+   <div class ="toc3"><a href="#bck356s2">addFolderEntry</a></div>
+   <div class ="toc3"><a href="#bcqal1e">getAllPrincipalsAsXML</a></div>
+   <div class ="toc3"><a href="#bcqal1q">getDefinitionConfigAsXML</a></div>
+   <div class ="toc3"><a href="#bcqa5gf">getFolderEntriesAsXML</a></div>
+   <div class ="toc3"><a href="#bcqal22">getFolderEntryAsXML</a></div>
+   <div class ="toc3"><a href="#bcqal2e">getPrincipalAsXML</a></div>
+   <div class ="toc3"><a href="#bcqal2q">getTeamMembersAsXML</a></div>
+   <div class ="toc3"><a href="#bcqal32">getTeamsAsXML</a></div>
+   <div class ="toc3"><a href="#bcmnz71">getWorkspaceTreeAsXML</a></div>
+   <div class ="toc3"><a href="#bcqal3e">modifyFolderEntry</a></div>
+   <div class ="toc3"><a href="#bcqal3q">uploadCalendarEntries</a></div>
+   <div class ="toc3"><a href="#bcqal42">uploadFolderFile</a></div>
+ <div class ="toc1"><span class="number">A.0</span> <a href="#legal">Legal Notices</a></div>
+</div>
+
+<p class="para">This manual provides reference information for programmers who want to access ICEcore from another program (as opposed to the user interface presented in a web browser). To accomplish this task, programmers use the ICEcore Web services.</p>
+<h4 class="bridgehead" id="audience"> Audience</h4>
+
+<p class="para">This guide is intended for programmers.</p>
+<h4 class="bridgehead" id="bbmq9uc"> Software and Documentation Version</h4>
+
+<p class="para">This manual describes features in ICEcore Version 1.0.2. This is Version 1.0 of this manual.</p>
+<h4 class="bridgehead" id="b9yxnfu"> Contents of this Manual</h4>
+
+<p class="para">This manual provides information about the following:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">Overview of ICEcore Web services</p></li>
+<li class="listitem">
+<p class="listitem">Alphabetized list of Web services messages</p></li></ul></div>
+
+<h4 class="bridgehead" id="b9yxnfv"> Conventions</h4>
+
+<p class="para">This manual uses the conventions described in the following paragraphs and table.</p>
+<p class="para">A greater-than symbol (&gt;) is used to separate actions within a step and items in a cross-reference path.</p>
+<p class="para">A trademark symbol (®, ™, etc.) denotes a SiteScape trademark. An asterisk (*) denotes a third-party trademark.</p>
+<p class="para">When a single pathname can be written with a backslash for some platforms or a forward slash for other platforms, the pathname is presented with a backslash. Users of platforms that require a forward slash, such as Linux or UNIX, should use forward slashes as required by your software.</p>
+<div class="informaltable">
+<table class="topbot-lines">
+          
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9yxhs9"></a>
+<p class="para">What you see</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">What it means</p></th>
+</tr>
+        
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yxhsa"></a>
+<p class="para">Click the 
+       <span class="guimenu">Add a team workspace</span> button.
+      </p>
+<p class="para">Click the 
+       <span class="guimenu">Getting Started</span> link.
+      </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Items that are clickable on the page, programming variables, or syntax parameters are presented in 
+       <span class="guimenu">italic</span> font.
+      </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="barr07a"></a>
+<div class="formalpara" id="barqtxf">
+                <p class="title"><em class="title">Blog summary</em>
+                - Provides a....</p>
+              </div>
+
+<div class="formalpara" id="bbj2cdd">
+                <p class="title"><em class="title">Note:</em>
+                Remember that....</p>
+              </div>
+</td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Defined terms in a list, note headers, section headers on a reference page, and list items on a reference page are presented in bold font.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yxhsb"></a>
+<p class="para">Type 
+       <span class="literal">status</span>, then press Enter.
+      </p>
+<p class="para">Open the 
+       <span class="literal">ManagerGuide.pdf</span> file.
+      </p>
+<p class="para">Use the 
+       <span class="command">open_db</span> routine with its 
+       <span class="literal">lock</span> parameter.
+      </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Text that you must type, file names, commands, command options, routines, Web services messages, and parameters are presented in 
+       <span class="filename">Courier</span> font when occurring in a body of text.
+      </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bck6d9u"></a>
+<div class="formalpara" id="bck6e2m">
+                <p class="title"><em class="title">[page]</em>
+                </p>
+              </div>
+</td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Optional syntax parameters are enclosed in brackets ([ ]).</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bck6g0h"></a>
+<p class="para">(V1+)</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The version of ICEcore that supports the Web services operation (“Version 1.0 or later”)</p></td>
+</tr></table>
+</div>
+
+<h4 class="bridgehead" id="ban8e22"> Additional Documentation</h4>
+
+<p class="para">You can find more information in the ICEcore documentation, which is accessible from links within the ICEcore software: </p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">ICEcore Help Mode</p></li>
+<li class="listitem">
+<p class="listitem">ICEcore Quick Start Guide</p></li>
+<li class="listitem">
+<p class="listitem">ICEcore User Guide</p></li>
+<li class="listitem">
+<p class="listitem">ICEcore Installation and Configuration Guide</p></li>
+<li class="listitem">
+<p class="listitem">ICEcore Administration Guide</p></li></ul></div>
+
+<div class="part singlefile"  id="bck2rlw">
+
+<h1 class="title"><span class="number">I</span> Using Web Services</h1>
+<div class="partintro">
+      
+<p class="para">This part of the book explains terminology, concepts, and common tasks involved with using ICEcore Web services.</p>
+    </div>
+<div class="chapter singlefile"  id="bck3as4">
+
+<h1 class="title"><span class="number">1.0</span> Web Services Overview</h1>
+
+<p class="para">SiteScape offers a set of messages that you can use in programs to exchange information with ICEcore. This chapter includes these sections:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+            <a href="#bctvpqz">Section 1.1, ICEcore Web Services Implementation</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#bctvse8">Section 1.2, Connecting to the Server</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#bctvsq4">Section 1.3, Sending Messages</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#bctvsun">Section 1.4, Notes for Specific Messages</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#bctxcnz">Section 1.5, Extending ICEcore Web Services</a>
+          </p></li></ul></div>
+
+<div class="sect1 singlefile"  id="bctvpqz">
+
+<h2 class="title"><span class="number">1.1</span> ICEcore Web Services Implementation</h2>
+
+<p class="para">ICEcore implements Java Web services, which provide a set of messages and parameters that client programs can use to exchange information with ICEcore. The 
+    <a href="#bck33nb">alphabetized reference section of messages</a> in this manual provides syntax and examples. In addition, you can access the ICEcore Web Services Description Language (WSDL) file here:
+   </p><pre class="screen">
+     http://localhost:8080/ssf/ws/Facade?wsdl
+</pre>
+<p class="para">Replace the 
+    <span class="literal">localhost</span> specification with the domain of your ICEcore installation.
+   </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>ICEcore does not currently publish its WSDL file using Universal Description, Discovery, and Integration (UDDI) or the Web Services Inspection Language (WSIL). Use the 
+     <a href="#bck33nb">alphabetized reference section of messages</a> in this manual or the URL-generated WSDL file to understand the ICEcore message interface.
+    </p></div>
+
+<p class="para">To implement lower-level details of its Web service calls, ICEcore uses methods included in the Apache Axis toolkit. As a very brief summary, ICEcore code calls Apache Axis methods. These methods convert the message to Simple Object Access Protocol (SOAP) calls. SOAP calls use Remote Procedure Calls (RPC) to call ICEcore Java methods. Conversion of information to and from EXtensible Markup Language (XML) is a part of this process. </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>When presenting Web service examples, this manual uses Apache Axis methods. If you are not using the Apache Axis toolkit, map the Axis methods to the ones provided by your vendor’s toolkit.</p>
+<p class="para">SiteScape highly recommends using the supporting code for the 
+     <span class="filename">wsclient.bat </span>sample as a template for constructing your own Web service calls. This sample client is described in 
+     <a href="#bctvrdr">an upcoming section in this chapter</a>.
+    </p></div>
+
+<p class="para">When your application sends a message and its parameters, ICEcore returns either a string of XML data or a number. Messages that return a number are often ones that create a new object in ICEcore (for example, a folder or an entry), and the number is a string that uniquely identifies the newly created object.</p>
+<p class="para">The XML returned by ICEcore is free form and does not have a schema. When using ICEcore Web services, you need to read and intuit the XML elements in order to code your application so that it can parse the returned XML.</p>
+<p class="para">Finally, there are some ICEcore Web service parameters that require values that are installation and platform specific. At the time of this writing, some of these values cannot be obtained using Web service calls and can only be obtained in these general ways:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">Using a browser to examine portions of the user interface (UI)</p></li>
+<li class="listitem">
+<p class="listitem">Creating objects in ICEcore and then printing the XML representation of the new objects </p></li></ul></div>
+
+<p class="para">
+    <a href="#bctvsun">A subsequent section of this chapter</a> provides tips for obtaining values needed for various message parameters.
+   </p>
+<p class="para">This section contains the following subsections:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+              <a href="#bctvrdr">Section 1.1.1, Sample Clients</a>
+            </p></li>
+<li class="listitem">
+<p class="listitem">
+              <a href="#bctw7ou">Section 1.1.2, ICEcore-Specific Terminology</a>
+            </p></li></ul></div>
+
+<div class="sect2 singlefile"  id="bctvrdr">
+
+<h3 class="title"><span class="number">1.1.1</span> Sample Clients</h3>
+
+<p class="para">ICEcore provides sample clients that can assist you in learning how to use its Web services. These sample clients are located here in the ICEcore build system:</p><pre class="screen">
+/ssf/samples/remotingclient
+</pre>
+<p class="para">Here is a list of sample clients and the first ICEcore version that includes them:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<div class="formalpara" id="bctxj50">
+                <p class="title"><em class="title">
+        <span class="filename">wsclient.bat</span> (V1):
+       </em>
+                This Windows batch file allows you to specify commands and command parameters that use the ICEcore Web services. The initial pages of 
+        <a href="#bck33nb">the chapter containing the alphabetical reference of ICEcore Web service messages</a> provides a table mapping each of the 
+        <span class="filename">wsclient.bat </span>commands to its corresponding Web services message. Regardless of platform, SiteScape recommends that you use the Java code that implements this batch file as a template for making ICEcore Web service calls. 
+       </p>
+              </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bctxlzq">
+                <p class="title"><em class="title">
+        <span class="filename">wsExport.bat</span> and 
+        <span class="filename">wsImport.bat</span> (V1.1): 
+       </em>
+                These Windows batch files take data from a portion of the workspace and folder hierarchy and reproduce it on another file system. These tools are not a “true” import and export facility, because they do not retain the workflow states, access-control settings, and history of the original objects.</p>
+              </div>
+</li></ul></div>
+
+<p class="para">The following Java file implements the 
+     <span class="filename">wsclient.bat</span> batch file:
+    </p><pre class="screen">
+/ssf/samples/remotingclient/src/com/sitescape/team/samples/remoting/client/ws/axis/WSClient.java
+</pre>
+<p class="para">The following file provides log-in information for 
+     <span class="filename">wsclient.bat</span> (start with the same path as shown in the previous example):
+    </p><pre class="screen">
+.../ws/security/PWCallbackText.java
+</pre>
+<p class="para">This is a second file used by 
+     <span class="filename">wsclient.bat</span> to log in:
+    </p><pre class="screen">
+/ssf/samples/remotingclient/client_deply.wsdd
+</pre>
+<div class="sect3 singlefile"  id="bctw2ca">
+
+<h4 class="title"> Enabling wsclient.bat (Windows systems only)</h4>
+
+<p class="para">Before using wsclient.bat, you need to do some work in your build to enable it. Using the Eclipse build environment, click and drag this file into your Ant window:</p><pre class="screen">
+/ssf/samples/remotingclient/build.xml
+</pre>
+<p class="para">In the Ant window, open the 
+      <span class="guimenu">wsclient</span> build file, and double click 
+      <span class="guimenu">zip</span>.
+     </p>
+<p class="para">ICEcore adds the 
+      <span class="filename">remotingclient-sample.zip</span> file to the 
+      <span class="filename">/ssf/samples</span> directory. 
+     </p>
+<p class="para">To use 
+      <span class="filename">wsclient.bat</span>, do the following:
+     </p>
+<div class="orderedlist">
+<ol class="orderedlist">
+              
+<li class="listitem">
+<p class="listitem">Use a command-line window to 
+        <span class="command">cd</span> to the 
+        <span class="filename">/ssf/samples/remotingclient</span> directory.
+       </p></li>
+              
+<li class="listitem">
+<p class="listitem">Type 
+        <span class="filename">wsclient.bat</span>.
+       </p></li>
+              
+<li class="listitem">
+<p class="listitem">On the same line, type a 
+        <span class="filename">wsclient.bat</span> command name and its parameters.
+       </p>
+<p class="listitem">Command names are listed at the beginning of the chapter containing the 
+        <a href="#bck33nb">alphabetized Web services messages</a>.
+       </p></li>
+              
+<li class="listitem">
+<p class="listitem">Press the Return key.</p></li>
+            </ol></div>
+
+<p class="para">If the command executes successfully, ICEcore displays the return value in the command-line window.</p>
+<p class="para">For example, to see an XML string containing data elements for all workspaces and folders that have defined teams, execute the following command in the 
+      <span class="filename">/ssf/samples/remotingclient</span> directory:
+     </p><pre class="screen">
+&gt; wsclient.bat printTeams
+</pre>
+<p class="para">If you want to execute the 
+      <span class="filename">wsclient.bat</span> file outside of the scope of the build environment’s file system, you can unzip the 
+      <span class="filename">/ssf/samples/remotingclient-sample.zip</span> file elsewhere on a Windows file system, use a command-line window to 
+      <span class="command">cd</span> to the location of that copy of the 
+      <span class="filename">wsclient.bat</span> file, and use the batch file there.
+     </p>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="bctw7ou">
+
+<h3 class="title"><span class="number">1.1.2</span> ICEcore-Specific Terminology</h3>
+
+<p class="para">The following are ICEcore-specific definitions that can assist you when using the ICEcore Web services:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<div class="formalpara" id="bcty2r3">
+                <p class="title"><em class="title">binder:</em>
+                A place, such as a workspace or folder.</p>
+              </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bcty79q">
+                <p class="title"><em class="title">binder configuration ID:</em>
+                A number that maps to the default entry for a folder. You need to specify this hexadecimal number when you create a new folder.</p>
+              </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bcty38p">
+                <p class="title"><em class="title">binder ID:</em>
+                A unique number that identifies a specific workspace or folder. The binder identifier of the top workspace in the ICEcore workspace and folder hierarchy is 
+        <span class="literal">1</span>.
+       </p>
+              </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bcty9wc">
+                <p class="title"><em class="title">data item name:</em>
+                A hidden-tag value that maps an HTML form element with a value stored in the ICEcore database.</p>
+              </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bcty89a">
+                <p class="title"><em class="title">definition ID:</em>
+                A unique identifier that maps to a definition for a specific type of entry. (You modify and create many types of definitions using the designers in the administrative portlet.) You need to specify this value when creating a new entry in a folder.</p>
+              </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bctyaho">
+                <p class="title"><em class="title">page:</em>
+                TBD: something to do with a set of personal workspaces (“Joe Smith &lt;--&gt; Jane Wilson”).</p>
+              </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bcty42e">
+                <p class="title"><em class="title">principal:</em>
+                A registered user or a group.</p>
+              </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bcty4ln">
+                <p class="title"><em class="title">principal ID:</em>
+                A unique number that identifies a specific user or group.</p>
+              </div>
+</li></ul></div>
+
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="bctvse8">
+
+<h2 class="title"><span class="number">1.2</span> Connecting to the Server</h2>
+
+<p class="para">xxx</p>
+</div>
+
+<div class="sect1 singlefile"  id="bctvsq4">
+
+<h2 class="title"><span class="number">1.3</span> Sending Messages</h2>
+
+<p class="para">xxx</p>
+</div>
+
+<div class="sect1 singlefile"  id="bctvsun">
+
+<h2 class="title"><span class="number">1.4</span> Notes for Specific Messages</h2>
+
+<p class="para">xxx</p>
+<div class="sect2 singlefile"  id="bctvt9s">
+
+<h3 class="title"><span class="number">1.4.1</span> Adding Folders and the Binder Configuration Identifier</h3>
+
+<p class="para">xxx</p>
+</div>
+
+<div class="sect2 singlefile"  id="bctvty7">
+
+<h3 class="title"><span class="number">1.4.2</span> Adding Entries and the Definition Identifier</h3>
+
+<p class="para"></p>
+</div>
+
+<div class="sect2 singlefile"  id="bctvu6t">
+
+<h3 class="title"><span class="number">1.4.3</span> Tips for All Messages that Add and Modify</h3>
+
+<p class="para">xxx</p>
+</div>
+
+<div class="sect2 singlefile"  id="bctvuo1">
+
+<h3 class="title"><span class="number">1.4.4</span> Attaching Files</h3>
+
+<p class="para">xxx</p>
+</div>
+
+<div class="sect2 singlefile"  id="bctvuuy">
+
+<h3 class="title"><span class="number">1.4.5</span> Adding Calendar Entries</h3>
+
+<p class="para">xxx</p>
+</div>
+
+<div class="sect2 singlefile"  id="bctvv30">
+
+<h3 class="title"><span class="number">1.4.6</span> Fetching Attachments</h3>
+
+<p class="para">xxx</p>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="bctxcnz">
+
+<h2 class="title"><span class="number">1.5</span> Extending ICEcore Web Services</h2>
+
+<p class="para">xxx</p>
+</div>
+
+</div>
+
+</div>
+
+<div class="part singlefile"  id="bck2rlw2">
+
+<h1 class="title"><span class="number">II</span> Reference Pages</h1>
+<div class="partintro">
+      
+<p class="para">This part of the book provides alphabetized reference pages for messages provided by ICEcore Web services.</p>
+    </div>
+<div class="chapter singlefile"  id="bck33nb">
+
+<h1 class="title"><span class="number">2.0</span> Message Reference</h1>
+
+<p class="para">This chapter provides alphabetized reference pages for messages provided by ICEcore Web services. The following are conventions used in this reference section:</p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9yxhs9ref"></a>
+<p class="para">What you see</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">What it means</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yxhsaref"></a>
+<p class="para">Click the 
+        <span class="guimenu">Add a team workspace</span> button.
+       </p>
+<p class="para">Click the 
+        <span class="guimenu">Getting Started</span> link.
+       </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Items that are clickable on the page, programming variables, or syntax parameters are presented in 
+        <span class="guimenu">italic</span> font.
+       </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="barr07aref"></a>
+<div class="formalpara" id="barqtxfref">
+                  <p class="title"><em class="title">Blog summary</em>
+                  - Provides a....</p>
+                </div>
+
+<div class="formalpara" id="bbj2cddref">
+                  <p class="title"><em class="title">Note:</em>
+                  Remember that....</p>
+                </div>
+</td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Defined terms in a list, note headers, section headers on a reference page, and list items on a reference page are presented in bold font.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yxhsbref"></a>
+<p class="para">Type 
+        <span class="literal">status</span>, then press Enter.
+       </p>
+<p class="para">Open the 
+        <span class="literal">ManagerGuide.pdf</span> file.
+       </p>
+<p class="para">Use the 
+        <span class="command">open_db</span> routine with its 
+        <span class="literal">lock</span> parameter.
+       </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Text that you must type, file names, commands, command options, routines, Web services messages, and parameters are presented in 
+        <span class="filename">Courier</span> font when occurring in a body of text.
+       </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bck6d9uref"></a>
+<div class="formalpara" id="bck6e2mref">
+                  <p class="title"><em class="title">[page]</em>
+                  </p>
+                </div>
+</td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Optional syntax parameters are enclosed in brackets ([ ]).</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bck6g0href"></a>
+<p class="para">(V1+)</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The version of ICEcore that supports the Web services message (“Version 1.0 or later”)</p></td>
+</tr></table>
+</div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>All examples in this reference section use Apache Axis run-time library methods that specify Web service messages and their argument lists. If you are not using Apache Axis, map the Apache methods to those you are using to implement your Web service calls.</p></div>
+
+<p class="para">Web service messages contained in this reference section are used by the Windows based clients provided in the ICEcore sources in the 
+   <span class="filename">/ssf/samples/remotingclient</span> folder. Use the same parameters for the batch-file message that you use for the corresponding Web service message.
+  </p>
+<p class="para">The following table maps the 
+   <span class="filename">wsclient.bat </span>command name to its corresponding Web services message, which is documented in this reference section:
+  </p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="bckkumt"></a>
+<p class="para">wsclient.bat Command</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Web Services Message</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bckkumu"></a>
+<p class="para">
+        <span class="command">addEntry</span>
+       </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">
+        <span class="command">addFolderEntry</span>
+       </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bckkumv"></a>
+<p class="para">
+        <span class="command">addFolder</span>
+       </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">
+        <span class="command">addFolder</span>
+       </p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bckkumx"></a>
+<p class="para">
+        <span class="command">modifyEntry</span>
+       </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">
+        <span class="command">modifyFolderEntry</span>
+       </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bckkumy"></a>
+<p class="para">
+        <span class="command">printAllPrincipals</span>
+       </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">
+        <span class="command">getAllPrincipalsAsXML</span>
+       </p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bckkumz"></a>
+<p class="para">
+        <span class="command">printDefinition</span>
+       </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">
+        <span class="command">getDefinitionAsXML</span>
+       </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bckkun0"></a>
+<p class="para">
+        <span class="command">printDefinitionConfig</span>
+       </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">
+        <span class="command">getDefinitionConfigAsXML</span>
+       </p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bckkun1"></a>
+<p class="para">
+        <span class="command">printFolderEntry</span>
+       </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">
+        <span class="command">getFolderEntryAsXML</span>
+       </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bckkun2"></a>
+<p class="para">
+        <span class="command">printFolderEntries</span>
+       </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">
+        <span class="command">getFolderEntriesAsXML</span>
+       </p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bckkun3"></a>
+<p class="para">
+        <span class="command">printPrincipal</span>
+       </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">
+        <span class="command">getPrincipalAsXML</span>
+       </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bckkun4"></a>
+<p class="para">
+        <span class="command">printTeamMembers</span>
+       </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">
+        <span class="command">getTeamMembersAsXML</span>
+       </p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bckkun5"></a>
+<p class="para">
+        <span class="command">printTeams</span>
+       </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">
+        <span class="command">getTeamsAsXML</span>
+       </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bckkun6"></a>
+<p class="para">
+        <span class="command">printWorkspaceTree</span>
+       </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">
+        <span class="command">getWorkspaceTreeAsXML</span>
+       </p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bckkun7"></a>
+<p class="para">
+        <span class="command">uploadCalendar</span>
+       </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">
+        <span class="command">uploadCalendarEntries</span>
+       </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bckkun8"></a>
+<p class="para">
+        <span class="command">uploadFile</span>
+       </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">
+        <span class="command">uploadFolderFile</span>
+       </p></td>
+</tr></table>
+</div>
+
+<div class="refentry singlefile"  id="bcqal13">
+
+<h1 class="title"> addFolder</h1>
+
+<p class="para">Adds a folder to the workspace-tree hierarchy. (V1+)</p><div class="refsect1" id="bcqal14">
+          
+<h2 class="title"> Syntax</h2>
+
+          
+<p class="para">public long 
+     <span class="command">addFolder</span>( long
+     <span class="replaceable"> parentBinderId</span>, long 
+     <span class="replaceable">binderConfigId</span>, String 
+     <span class="replaceable">title</span> );
+    </p>
+        </div><div class="refsect1" id="bcqal15">
+          
+<h2 class="title"> Description</h2>
+
+          
+<p class="para">The 
+     <span class="command">addFolder</span> message adds a folder to the workspace and folder hierarchy. 
+    </p>
+        </div><div class="refsect1" id="bcqal16">
+          
+<h2 class="title"> Parameters and Return Value</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal17">parentBinderId</dt>
+<dd class="listitem">
+<p class="listitem">The identifier of the workspace or folder that is to contain the new folder.</p></dd>
+
+            
+<dt class="term" id="bcqal18">binderConfigId</dt>
+<dd class="listitem">
+<p class="listitem">The identifier that maps to the default configuration for the folder you want to create.</p></dd>
+
+            
+<dt class="term" id="bcqal19">title</dt>
+<dd class="listitem">
+<p class="listitem">A string providing a title for the new entry.</p></dd>
+
+            
+<dt class="term" id="bcqal1a">return_value</dt>
+<dd class="listitem">
+<p class="listitem">The binder identifier of the newly created folder.</p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal1b">
+          
+<h2 class="title"> Example</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal1c">call.setOperationName(new QName(“addFolder”)); Object result = call.invoke(new Object[], {new Long(21), new String(“My new folder”)});</dt>
+<dd class="listitem">
+<p class="listitem">This code creates a new subfolder to the container whose binder identifier is 
+        <span class="literal">21</span>, and the title of the new folder is “My new folder”. The container whose binder identifier is 
+        <span class="literal">21</span> may be either a workspace or a folder.
+       </p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal1d">
+          
+<h2 class="title"> See Also</h2>
+
+          
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+       <a href="#bck33nb">The message table for the Windows based 
+        <span class="filename">wsclient.bat</span> program
+       </a>
+      </p></li></ul></div>
+
+        </div>
+</div>
+
+<div class="refentry singlefile"  id="bck356s2">
+
+<h1 class="title"> addFolderEntry</h1>
+
+<p class="para">Adds an entry to a folder. (V1+)</p><div class="refsect1" id="bck356t">
+          
+<h2 class="title"> Syntax</h2>
+
+          
+<p class="para">public long 
+     <span class="command">addFolderEntry</span>( long
+     <span class="replaceable"> folderId</span>, String 
+     <span class="replaceable">definitionId</span>, String 
+     <span class="replaceable">inputDataAsXML</span>, [String 
+     <span class="replaceable">attachedFileName</span>] );
+    </p>
+        </div><div class="refsect1" id="bck356u">
+          
+<h2 class="title"> Description</h2>
+
+          
+<p class="para">The 
+     <span class="command">addFolderEntry</span> message adds an entry to a folder. 
+    </p>
+        </div><div class="refsect1" id="bck356v">
+          
+<h2 class="title"> Parameters and Return Value</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bck356x">folderId</dt>
+<dd class="listitem">
+<p class="listitem">The binder identifier of the folder that is to contain the new entry.</p></dd>
+
+            
+<dt class="term" id="bck356y">definitionId</dt>
+<dd class="listitem">
+<p class="listitem">The identifier that maps to the type of entry you wish to create (for example, some default entry types are topic, file, blog, wiki, and calendar).</p></dd>
+
+            
+<dt class="term" id="bck356z">inputDataAsXML</dt>
+<dd class="listitem">
+<p class="listitem">A string of XML containing the values needed to create an entry of your desired type.</p></dd>
+
+            
+<dt class="term" id="bcqa5ge">attachedFileName</dt>
+<dd class="listitem">
+<p class="listitem">The name of the file you wish to attach to the new entry. This is an optional parameter. The file must be located in the directory in which the client code executes.</p></dd>
+
+            
+<dt class="term" id="bcmo8fq">return_value</dt>
+<dd class="listitem">
+<p class="listitem">The entry identifier for the newly created entry.</p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcmodwe">
+          
+<h2 class="title"> Example</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcmodwf">call.setOperationName(new QName(“addFolderEntry”)); Object result = call.invoke(new Object[], {new Long(21), new String(“402883b90cc53079010cc539bf260002“), s, filename}, filename);</dt>
+<dd class="listitem">
+<p class="listitem">This code creates a new entry in the folder whose binder identifier is 
+        <span class="literal">21</span>; on this particular installation, the specified entry-definition identifier maps to a discussion topic. The variable 
+        <span class="literal">s</span> contains XML elements needed by ICEcore to create the entry. The new entry includes the attached file whose filename specified by the value of the 
+        <span class="literal">filename</span> variable. 
+       </p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bck357d">
+          
+<h2 class="title"> See Also</h2>
+
+          
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+       <a href="#bck33nb">The message table for the Windows based 
+        <span class="filename">wsclient.bat</span> program
+       </a>
+      </p></li></ul></div>
+
+        </div>
+</div>
+
+<div class="refentry singlefile"  id="bcqal1e">
+
+<h1 class="title"> getAllPrincipalsAsXML</h1>
+
+<p class="para">Returns information for users and groups. (V1+)</p><div class="refsect1" id="bcqal1f">
+          
+<h2 class="title"> Syntax</h2>
+
+          
+<p class="para">public String 
+     <span class="command">getAllPrincipalsAsXML</span>( int
+     <span class="replaceable"> firstRecord</span>, int 
+     <span class="replaceable">maxRecords</span> );
+    </p>
+        </div><div class="refsect1" id="bcqal1g">
+          
+<h2 class="title"> Description</h2>
+
+          
+<p class="para">The 
+     <span class="command">getAllPrincipalsAsXML</span> message returns XML elements that provide information about registered users and defined groups. You can use this message to identify a particular user by name or other data, obtain an identifier for a particular user, and then use the 
+     <span class="command">getPrincipalAsXML</span> message to gather a finer level of information about that person.
+    </p>
+        </div><div class="refsect1" id="bcqal1h">
+          
+<h2 class="title"> Parameters and Return Value</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal1i">firstRecord</dt>
+<dd class="listitem">
+<p class="listitem">The number of the first record whose user or group information you want to obtain. The record for the first principal in the system is 
+        <span class="literal">1</span>. [***Reviewers, please verify the second sentence.***]
+       </p></dd>
+
+            
+<dt class="term" id="bcqal1j">maxRecords</dt>
+<dd class="listitem">
+<p class="listitem">The maximum number of user and group records whose information should be returned. </p>
+<p class="listitem">You can use the previous parameter and this parameter in subsequent calls to 
+        <span class="command">getAllPrincipalsAsXML</span> to process data for sets of users and groups at a time (say, 50 at a time, or 100 at a time).
+       </p></dd>
+
+            
+<dt class="term" id="bcqal1m">return_value</dt>
+<dd class="listitem">
+<p class="listitem">A string containing the XML elements providing information about the requested set of users and groups.</p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal1n">
+          
+<h2 class="title"> Example</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal1o">call.setOperationName(new QName(“getAllPrincipalsAsXML”)); Object result = call.invoke(new Object[], {new Integer(100), new Integer(50)});</dt>
+<dd class="listitem">
+<p class="listitem">This code requests information for users and groups starting with the record number 100 and including up to 50 records.</p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal1p">
+          
+<h2 class="title"> See Also</h2>
+
+          
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+       <a href="#bck33nb">The message table for the Windows based 
+        <span class="filename">wsclient.bat</span> program
+       </a>
+      </p></li>
+<li class="listitem">
+<p class="listitem">
+                <a href="#bcqal2e">getPrincipalAsXML</a>
+              </p></li></ul></div>
+
+        </div>
+</div>
+
+<div class="refentry singlefile"  id="bcqal1q">
+
+<h1 class="title"> getDefinitionConfigAsXML</h1>
+
+<p class="para">Returns information about all configuration definitions. (V1+)</p><div class="refsect1" id="bcqal1r">
+          
+<h2 class="title"> Syntax</h2>
+
+          
+<p class="para">public String 
+     <span class="command">getDefinitionConfigAsXML</span>( );
+    </p>
+        </div><div class="refsect1" id="bcqal1s">
+          
+<h2 class="title"> Description</h2>
+
+          
+<p class="para">The 
+     <span class="command">getDefinitionConfigAsXML</span> message returns information about all configuration definitions. [***Including workflow definitions? Templates? What would be the practical purpose of using such a call?***] 
+    </p>
+        </div><div class="refsect1" id="bcqal1t">
+          
+<h2 class="title"> Return Value</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal1y">return_value</dt>
+<dd class="listitem">
+<p class="listitem">A string of XML whose elements describe all configuration definitions.</p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal1z">
+          
+<h2 class="title"> Example</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal20">call.setOperationName(new QName(“getDefinitionConfigAsXML”)); Object result = call.invoke();</dt>
+<dd class="listitem">
+<p class="listitem">This code obtains information about all configuration settings. [***Reviewers: if there are no parameters for the message, do we need the second line of the example?***]</p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal21">
+          
+<h2 class="title"> See Also</h2>
+
+          
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+       <a href="#bck33nb">The message table for the Windows based 
+        <span class="filename">wsclient.bat</span> program
+       </a>
+      </p></li></ul></div>
+
+        </div>
+</div>
+
+<div class="refentry singlefile"  id="bcqa5gf">
+
+<h1 class="title"> getFolderEntriesAsXML</h1>
+
+<p class="para">Returns a string containing XML that provides information about all of the entries in a folder. (V1+)</p><div class="refsect1" id="bcqa5gg">
+          
+<h2 class="title"> Syntax</h2>
+
+          
+<p class="para">public String 
+     <span class="command">getFolderEntriesAsXML</span>( long
+     <span class="replaceable"> folderId</span> );
+    </p>
+        </div><div class="refsect1" id="bcqa5gh">
+          
+<h2 class="title"> Description</h2>
+
+          
+<p class="para">The 
+     <span class="command">getFolderEntriesAsXML</span> message returns XML elements containing information about each entry in the specified folder. 
+    </p>
+        </div><div class="refsect1" id="bcqa5gi">
+          
+<h2 class="title"> Parameter and Return Value</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqa5gj">folderId</dt>
+<dd class="listitem">
+<p class="listitem">The binder identifier of the folder containing the entries for which you want information.</p></dd>
+
+            
+<dt class="term" id="bcqa5gk">return_value</dt>
+<dd class="listitem">
+<p class="listitem">A string containing XML elements containing information for each entry in the folder specified by 
+        <span class="literal">folderId</span>.
+       </p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqa5gl">
+          
+<h2 class="title"> Example</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqa5gm">call.setOperationName(new QName(“getFolderEntriesAsXML”)); Object result = call.invoke(new Object[], {new Long(21)});</dt>
+<dd class="listitem">
+<p class="listitem">This code returns a string containing XML information for all of the entries in the folder whose binder identifier is 
+        <span class="literal">21</span>.
+       </p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqa5gn">
+          
+<h2 class="title"> See Also</h2>
+
+          
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+       <a href="#bck33nb">The message table for the Windows based 
+        <span class="filename">wsclient.bat</span> program
+       </a>
+      </p></li></ul></div>
+
+        </div>
+</div>
+
+<div class="refentry singlefile"  id="bcqal22">
+
+<h1 class="title"> getFolderEntryAsXML</h1>
+
+<p class="para">Returns information about one entry in a folder. (V1+)</p><div class="refsect1" id="bcqal23">
+          
+<h2 class="title"> Syntax</h2>
+
+          
+<p class="para">public String 
+     <span class="command">getFolderEntryAsXML</span>( long
+     <span class="replaceable"> folderId</span>, long 
+     <span class="replaceable">entryId</span>, boolean 
+     <span class="replaceable">includeAttachments</span> );
+    </p>
+        </div><div class="refsect1" id="bcqal24">
+          
+<h2 class="title"> Description</h2>
+
+          
+<p class="para">The 
+     <span class="command">getFolderEntryAsXML</span> message returns XML whose elements provide information about one entry in a folder. 
+    </p>
+        </div><div class="refsect1" id="bcqal25">
+          
+<h2 class="title"> Parameters and Return Value</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal26">folderId</dt>
+<dd class="listitem">
+<p class="listitem">The binder identifier of the folder containing the entry whose information you want.</p></dd>
+
+            
+<dt class="term" id="bcqal27">entryId</dt>
+<dd class="listitem">
+<p class="listitem">The identifier of the entry whose information you want.</p></dd>
+
+            
+<dt class="term" id="bcqal28">includeAttachments</dt>
+<dd class="listitem">
+<p class="listitem">A boolean value that indicates whether you want ICEcore to return the entry’s attachments. ICEcore returns attachments in the directory from which you executed your client program.</p></dd>
+
+            
+<dt class="term" id="bcqal2a">return_value</dt>
+<dd class="listitem">
+<p class="listitem">A string containing XML elements for the requested entry.</p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal2b">
+          
+<h2 class="title"> Example</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal2c">call.setOperationName(new QName(“getFolderEntryAsXML”)); Object result = call.invoke(new Object[], {new Long(21), new Long(34), new Boolean(0)});</dt>
+<dd class="listitem">
+<p class="listitem">This code XML for entry number 34 in the folder whose identifier is 21. ICEcore does not place the entry’s file attachments in the client program’s source directory. [***Is a boolean value 0/1, true/false, or “true”/”false”?***]</p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal2d">
+          
+<h2 class="title"> See Also</h2>
+
+          
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+       <a href="#bck33nb">The message table for the Windows based 
+        <span class="filename">wsclient.bat</span> program
+       </a>
+      </p></li></ul></div>
+
+        </div>
+</div>
+
+<div class="refentry singlefile"  id="bcqal2e">
+
+<h1 class="title"> getPrincipalAsXML</h1>
+
+<p class="para">Returns information about one user or group. (V1+)</p><div class="refsect1" id="bcqal2f">
+          
+<h2 class="title"> Syntax</h2>
+
+          
+<p class="para">public String 
+     <span class="command">getPrincipalAsXML</span>( long
+     <span class="replaceable"> binderId</span>, long 
+     <span class="replaceable">principalId</span> );
+    </p>
+        </div><div class="refsect1" id="bcqal2g">
+          
+<h2 class="title"> Description</h2>
+
+          
+<p class="para">The 
+     <span class="command">getPrincipalAsXML</span> message returns XML whose elements provide information about one registered user or defined group. 
+    </p>
+        </div><div class="refsect1" id="bcqal2h">
+          
+<h2 class="title"> Parameters and Return Value</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal2i">binderId</dt>
+<dd class="listitem">
+<p class="listitem">The binder identifier of the principal’s parent workspace. The information returned by 
+        <span class="command">getAllPrincipalsAsXML</span> includes the binder number of this containing workspace.
+       </p></dd>
+
+            
+<dt class="term" id="bcqal2j">principalId</dt>
+<dd class="listitem">
+<p class="listitem">The identifier that maps to the user or group for which you want to gather information.</p></dd>
+
+            
+<dt class="term" id="bcqal2m">return_value</dt>
+<dd class="listitem">
+<p class="listitem">A string containing XML elements whose elements provide information about the specified user or group.</p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal2n">
+          
+<h2 class="title"> Example</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal2o">call.setOperationName(new QName(“getPrincipalAsXML”)); Object result = call.invoke(new Object[], {new Long(2), new Long(25)});</dt>
+<dd class="listitem">
+<p class="listitem">This code returns information about a user or group, whose parent workspace has a binder identifier of 
+        <span class="literal">2</span> and whose principal identifier is 
+        <span class="literal">25</span>. 
+       </p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal2p">
+          
+<h2 class="title"> See Also</h2>
+
+          
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+       <a href="#bck33nb">The message table for the Windows based 
+        <span class="filename">wsclient.bat</span> program
+       </a>
+      </p></li>
+<li class="listitem">
+<p class="listitem">
+       <a href="#bcqal1e"></a><a href="#bcqal1e">getAllPrincipalsAsXML</a>
+      </p></li></ul></div>
+
+        </div>
+</div>
+
+<div class="refentry singlefile"  id="bcqal2q">
+
+<h1 class="title"> getTeamMembersAsXML</h1>
+
+<p class="para">Returns information about all team members assigned within a workspace or folder. (V1+)</p><div class="refsect1" id="bcqal2r">
+          
+<h2 class="title"> Syntax</h2>
+
+          
+<p class="para">public String 
+     <span class="command">getTeamMembersAsXML</span>( long
+     <span class="replaceable"> binderId</span> );
+    </p>
+        </div><div class="refsect1" id="bcqal2s">
+          
+<h2 class="title"> Description</h2>
+
+          
+<p class="para">The 
+     <span class="command">getTeamMembersAsXML</span> message returns XML that names members of a team assigned within the specified workspace or folder. 
+    </p>
+        </div><div class="refsect1" id="bcqal2t">
+          
+<h2 class="title"> Parameter and Return Value</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal2u">binderId</dt>
+<dd class="listitem">
+<p class="listitem">The binder identifier of the workspace or folder for which you want information about team members. The 
+        <span class="command">getTeamsAsXML</span> message returns information about all workspaces and folders that have assigned teams.
+       </p></dd>
+
+            
+<dt class="term" id="bcqal2y">return_value</dt>
+<dd class="listitem">
+<p class="listitem">A string containing XML elements describing team members for the specfiied place.</p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal2z">
+          
+<h2 class="title"> Example</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal30">call.setOperationName(new QName(“getTeamMembersAsXML”)); Object result = call.invoke(new Object[], {new Long(23));</dt>
+<dd class="listitem">
+<p class="listitem">This code returns an XML string whose elements describe all of the team members assigned in the workspace or folder associated with the binder identifier of 
+        <span class="literal">23</span>. 
+       </p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal31">
+          
+<h2 class="title"> See Also</h2>
+
+          
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+       <a href="#bck33nb">The message table for the Windows based 
+        <span class="filename">wsclient.bat</span> program
+       </a>
+      </p></li>
+<li class="listitem">
+<p class="listitem">
+                <a href="#bcqal32">getTeamsAsXML</a>
+              </p></li></ul></div>
+
+        </div>
+</div>
+
+<div class="refentry singlefile"  id="bcqal32">
+
+<h1 class="title"> getTeamsAsXML</h1>
+
+<p class="para">Returns information about all workspaces and folders that have assigned teams. (V1+)</p><div class="refsect1" id="bcqal33">
+          
+<h2 class="title"> Syntax</h2>
+
+          
+<p class="para">public String 
+     <span class="command">getTeamsAsXML</span>( );
+    </p>
+        </div><div class="refsect1" id="bcqal34">
+          
+<h2 class="title"> Description</h2>
+
+          
+<p class="para">The 
+     <span class="command">getTeamsAsXML</span> message returns an XML string providing information about all workspaces and folders that have assigned teams. You can use this message to obtain the list of places that have assigned teams, note a binder number of a particular place, and then use the 
+     <span class="command">getTeamMembersAsXML</span> message to obtain the list of team members for that place. 
+    </p>
+        </div><div class="refsect1" id="bcqal35">
+          
+<h2 class="title"> Return Value</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal3a">return_value</dt>
+<dd class="listitem">
+<p class="listitem">An XML string whose elements describe workspaces and folders that have assigned teams.</p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal3b">
+          
+<h2 class="title"> Example</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal3c">call.setOperationName(new QName(“getTeamsAsXML”)); Object result = call.invoke( );</dt>
+<dd class="listitem">
+<p class="listitem">This code returns information about all places in the 
+        <span class="productname">ICEcore</span> installation that have assigned teams. [***Reviewers: Again, is the second line of the example needed if the message requires no parameters?***]
+       </p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal3d">
+          
+<h2 class="title"> See Also</h2>
+
+          
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+       <a href="#bck33nb">The message table for the Windows based 
+        <span class="filename">wsclient.bat</span> program
+       </a>
+      </p></li>
+<li class="listitem">
+<p class="listitem">
+                <a href="#bcqal2q">getTeamMembersAsXML</a>
+              </p></li></ul></div>
+
+        </div>
+</div>
+
+<div class="refentry singlefile"  id="bcmnz71">
+
+<h1 class="title"> getWorkspaceTreeAsXML</h1>
+
+<p class="para">Returns information needed to construct the ICEcore workspace and folder tree. (V1+)</p><div class="refsect1" id="bcmnz72">
+          
+<h2 class="title"> Syntax</h2>
+
+          
+<p class="para">public String 
+     <span class="command">getWorkspaceTreeAsXML</span>( long
+     <span class="replaceable"> binderId</span>, int 
+     <span class="replaceable">levels</span>, [String 
+     <span class="replaceable">page</span>] );
+    </p>
+        </div><div class="refsect1" id="bcmnz73">
+          
+<h2 class="title"> Description</h2>
+
+          
+<p class="para">The 
+     <span class="command">getWorkspaceTreeAsXML</span> message returns XML elements needed to construct the requested portion of the ICEcore workspace tree. 
+    </p>
+        </div><div class="refsect1" id="bcmnz74">
+          
+<h2 class="title"> Parameters and Return Value</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcmnz75">binderId</dt>
+<dd class="listitem">
+<p class="listitem">The binder identifier of the starting node of the returned portion of the hierarchy. The top workspace in the ICEcore tree has a binder ID of 
+        <span class="literal">1</span>.
+       </p></dd>
+
+            
+<dt class="term" id="bcmnz76">levels</dt>
+<dd class="listitem">
+<p class="listitem">The number of hierarchical levels down from the node specified by 
+        <span class="literal">binderId</span> that you want to include in the returned information. The value 
+        <span class="literal">-1</span> indicates “all subsequent levels.”
+       </p></dd>
+
+            
+<dt class="term" id="bcmnz77">page</dt>
+<dd class="listitem">
+<p class="listitem">An optional parameter that [***Reviewers: Please flesh out. It has something to do with pages returned when there are groups of personal workspaces (“Randall &lt;--&gt; Smith” is a “page”)***]</p></dd>
+
+            
+<dt class="term" id="bcmoerm">return_value</dt>
+<dd class="listitem">
+<p class="listitem">A string containing XML elements needed to construct each node within the requested levels of the workspace hierarchy.</p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcmnz78">
+          
+<h2 class="title"> Example</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcmnz79">call.setOperationName(new QName(“getWorkspaceTreeAsXML”)); Object result = call.invoke(new Object[], {new Long(1), new Integer(3)});</dt>
+<dd class="listitem">
+<p class="listitem">This code returns a string containing XML information for the first three levels of the workspace hierarchy. The following depicts these levels using default workspace titles:</p><pre class="screen">
+Level 1: Workspaces
+</pre><pre class="screen">
+     Level 2: Global, Personal, and Team workspaces
+</pre><pre class="screen">
+          Level 3: Children of Global, Personal, and Team
+</pre>
+<p class="listitem">The childrean of “Global workspaces,” “Personal workspaces,” and “Team workspaces” can be either workspaces or folders. </p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcmnz7a">
+          
+<h2 class="title"> See Also</h2>
+
+          
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+       <a href="#bck33nb">The message table for the Windows based 
+        <span class="filename">wsclient.bat</span> program
+       </a>
+      </p></li></ul></div>
+
+        </div>
+</div>
+
+<div class="refentry singlefile"  id="bcqal3e">
+
+<h1 class="title"> modifyFolderEntry</h1>
+
+<p class="para">Modifies a single entry. (V1+)</p><div class="refsect1" id="bcqal3f">
+          
+<h2 class="title"> Syntax</h2>
+
+          
+<p class="para">public void 
+     <span class="command">modifyFolderEntry</span>( long
+     <span class="replaceable"> folderId</span>, long 
+     <span class="replaceable">entryId</span>, String 
+     <span class="replaceable">inputDataAsXML</span> );
+    </p>
+        </div><div class="refsect1" id="bcqal3g">
+          
+<h2 class="title"> Description</h2>
+
+          
+<p class="para">The 
+     <span class="command">modifyFolderEntry</span> message modifies one entry in a folder. 
+    </p>
+        </div><div class="refsect1" id="bcqal3h">
+          
+<h2 class="title"> Parameters and Return Value</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal3i">folderId</dt>
+<dd class="listitem">
+<p class="listitem">The binder identifier of the folder that contains the entry to be modified.</p></dd>
+
+            
+<dt class="term" id="bcqal3j">entryId</dt>
+<dd class="listitem">
+<p class="listitem">The identifier of the entry to be modified.</p></dd>
+
+            
+<dt class="term" id="bcqal3k">inputDataAsXML</dt>
+<dd class="listitem">
+<p class="listitem">A string of XML containing the values needed to modify the entry.</p></dd>
+
+            
+<dt class="term" id="bcqal3m">return_value</dt>
+<dd class="listitem">
+<p class="listitem">None.</p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal3n">
+          
+<h2 class="title"> Example</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal3o">call.setOperationName(new QName(“modifyFolderEntry”)); Object result = call.invoke(new Object[], {new Long(21), new Long(43), s});</dt>
+<dd class="listitem">
+<p class="listitem">This code modifies entry 43 in the folder whose binder ID is 
+        <span class="literal">21</span>. The variable 
+        <span class="literal">s</span> contains XML elements needed by ICEcore to modify the contents of the entry. 
+       </p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal3p">
+          
+<h2 class="title"> See Also</h2>
+
+          
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+       <a href="#bck33nb">The message table for the Windows based 
+        <span class="filename">wsclient.bat</span> program
+       </a>
+      </p></li></ul></div>
+
+        </div>
+</div>
+
+<div class="refentry singlefile"  id="bcqal3q">
+
+<h1 class="title"> uploadCalendarEntries</h1>
+
+<p class="para">Creates new calendar entries from a file. (V1+)</p><div class="refsect1" id="bcqal3r">
+          
+<h2 class="title"> Syntax</h2>
+
+          
+<p class="para">public void 
+     <span class="command">uploadCalendarEntries</span>( long
+     <span class="replaceable"> folderId</span>, String 
+     <span class="replaceable">dataFileName</span> );
+    </p>
+        </div><div class="refsect1" id="bcqal3s">
+          
+<h2 class="title"> Description</h2>
+
+          
+<p class="para">The 
+     <span class="command">uploadCalendarEntries</span> message uses information in a file to add entries to a calendar folder. 
+    </p>
+        </div><div class="refsect1" id="bcqal3t">
+          
+<h2 class="title"> Parameters and Return Value</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal3u">folderId</dt>
+<dd class="listitem">
+<p class="listitem">The binder identifier of the calendar folder that is to contain the new entries.</p></dd>
+
+            
+<dt class="term" id="bcqal3x">dataFileName</dt>
+<dd class="listitem">
+<p class="listitem">The name of the file containing either XML or iCal formatted information to be used to create new calendar entries. The file must be located in the same directory as the executing client.</p></dd>
+
+            
+<dt class="term" id="bcqal3y">return_value</dt>
+<dd class="listitem">
+<p class="listitem">None.</p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal3z">
+          
+<h2 class="title"> Example</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal40">call.setOperationName(new QName(“uploadCalendarEntries”)); Object result = call.invoke(new Object[], {new Long(21), filename), filename});</dt>
+<dd class="listitem">
+<p class="listitem">This code creates new entries in the calendar folder whose binder ID is 
+        <span class="literal">21</span>. ICEcore uses information contained in the 
+        <span class="literal">filename</span> file to create the new calendar entries. [***Reviewers: This page needs careful review. We aren’t allowing XML passed in as a string, which is the way it’s done for all other messages? How do we know the format of the file (XML or iCal)?***] 
+       </p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal41">
+          
+<h2 class="title"> See Also</h2>
+
+          
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+       <a href="#bck33nb">The message table for the Windows based 
+        <span class="filename">wsclient.bat</span> program
+       </a>
+      </p></li></ul></div>
+
+        </div>
+</div>
+
+<div class="refentry singlefile"  id="bcqal42">
+
+<h1 class="title"> uploadFolderFile</h1>
+
+<p class="para">Attaches a file to an entry to a folder. (V1+)</p><div class="refsect1" id="bcqal43">
+          
+<h2 class="title"> Syntax</h2>
+
+          
+<p class="para">public void 
+     <span class="command">uploadFolderFile</span>( long
+     <span class="replaceable"> folderId</span>, String 
+     <span class="replaceable">entryId</span>, String 
+     <span class="replaceable">fileUploadDataItemName</span>, String 
+     <span class="replaceable">attachedfileName</span> );
+    </p>
+        </div><div class="refsect1" id="bcqal44">
+          
+<h2 class="title"> Description</h2>
+
+          
+<p class="para">The 
+     <span class="command">uploadFolderFile</span> message attaches a file to an entry in a folder. You can attach only one file at a time; call this message multiple times to attach more than one file to the entry. Files to be attached must be located in the same directory as the executing client. 
+    </p>
+        </div><div class="refsect1" id="bcqal45">
+          
+<h2 class="title"> Parameters and Return Value</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal46">folderId</dt>
+<dd class="listitem">
+<p class="listitem">The binder identifier of the folder that contains the entry to which you want to attach a file.</p></dd>
+
+            
+<dt class="term" id="bcqal47">entryId</dt>
+<dd class="listitem">
+<p class="listitem">The identifier of the entry to which you want to attach a file.</p></dd>
+
+            
+<dt class="term" id="bcqal48">fileUploadDataItemName</dt>
+<dd class="listitem">
+<p class="listitem">A string containing the internal identifier for the part of the entry that contains attached files. This value is either 
+        <span class="literal">ss_attachFile</span> or 
+        <span class="literal">ss_attachFile1</span>. [***Reviewers: We need to nail down this identifier in a review.***] (For SiteScape Forum users, this value is analogous to the hidden-tag value used to map information to and from forms and the Forum database.)
+       </p></dd>
+
+            
+<dt class="term" id="bcqal49">attachedFileName</dt>
+<dd class="listitem">
+<p class="listitem">The name of the file you wish to attach to the new entry. This file must be located in the directory containing the executing client code.</p></dd>
+
+            
+<dt class="term" id="bcqal4a">return_value</dt>
+<dd class="listitem">
+<p class="listitem">None.</p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal4b">
+          
+<h2 class="title"> Example</h2>
+
+          <dl class="variablelist">
+            
+<dt class="term" id="bcqal4c">call.setOperationName(new QName(“uploadFolderFile”)); Object result = call.invoke(new Object[], {new Long(21), new Long(43), new String(“ss_attachFile”), filename}, filename);</dt>
+<dd class="listitem">
+<p class="listitem">This code attaches a file to entry 43 in the folder whose binder ID is 
+        <span class="literal">21</span>. The name of the file to be attached to the entry is contained in the variable 
+        <span class="literal">filename</span>. 
+       </p></dd>
+
+          </dl>
+        </div><div class="refsect1" id="bcqal4d">
+          
+<h2 class="title"> See Also</h2>
+
+          
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+       <a href="#bck33nb">The message table for the Windows based 
+        <span class="filename">wsclient.bat</span> program
+       </a>
+      </p></li></ul></div>
+
+        </div>
+</div>
+
+</div>
+
+</div>
+
+<div class="appendix singlefile"  id="legal">
+
+<h1 class="title"><span class="number">A.0</span> Legal Notices</h1>
+<div class="legalnotice" id="legalnotices">
+      
+      
+<p class="para">SiteScape, Inc., makes no representations or warranties with respect to the contents or use of this documentation, and specifically disclaims any express or implied warranties of merchantability or fitness for any particular purpose. Further, SiteScape, Inc., reserves the right to revise this publication and to make changes to its content, at any time, without obligation to notify any person or entity of such revisions or changes.</p>
+      
+<p class="para">Further, SiteScape, Inc., makes no representations or warranties with respect to any software, and specifically disclaims any express or implied warranties of merchantability or fitness for any particular purpose. Further, SiteScape, Inc., reserves the right to make changes to any and all parts of SiteScape software, at any time, without any obligation to notify any person or entity of such changes.</p>
+      
+<p class="para">Any products or technical information provided under this Agreement may be subject to U.S. export controls and the trade laws of other countries. You agree to comply with all export control regulations and to obtain any required licenses or classification to export, re-export or import deliverables. You agree not to export or re-export to entities on the current U.S. export exclusion lists or to any embargoed or terrorist countries as specified in the U.S. export laws. You agree to not use deliverables for prohibited nuclear, missile, or chemical biological weaponry end uses.</p>
+      
+<p class="para">SiteScape, Inc., has intellectual property rights relating to technology embodied in the product that is described in this document.</p>
+      <ul class="simplelist">
+        <li class="member">SiteScape, Inc.</li>
+        <li class="member">12 Clock Tower Place, Suite 210</li>
+        <li class="member">Maynard, MA 021754</li>
+        <li class="member">U.S.A.</li>
+        <li class="member">www.SiteScape.com</li>
+        <li class="member"></li>
+      </ul>
+    </div><div class="legalnotice" id="thirdparty">
+      
+<h1 class="title"> Third-Party Materials</h1>
+
+      <ul class="simplelist">
+        <li class="member">All third-party trademarks are the property of their respective owners.</li>
+        <li class="member">Images of personnel in the screen shots supplied by Copyright ©
+    <a href="http://www.comteche.com" class="ulink">Comtech Enterprises, Inc.</a>.
+   </li>
+      </ul>
+    </div>
+</div>
+
+</div>
+
+</body>
+</html>
