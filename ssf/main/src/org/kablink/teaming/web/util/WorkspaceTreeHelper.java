@@ -286,7 +286,8 @@ public class WorkspaceTreeHelper {
 
 			//Set up more standard beans
 			DashboardHelper.getDashboardMap(binder, userProperties.getProperties(), model);
-//			model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
+			if (!model.containsKey(WebKeys.SEEN_MAP)) 
+				model.put(WebKeys.SEEN_MAP,bs.getProfileModule().getUserSeenMap(user.getId()));
 			//See if the user has selected a specific view to use
 			String userDefaultDef = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 			DefinitionHelper.getDefinitions(binder, model, userDefaultDef);

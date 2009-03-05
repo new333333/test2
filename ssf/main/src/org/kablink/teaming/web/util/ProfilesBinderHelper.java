@@ -106,7 +106,8 @@ public class ProfilesBinderHelper {
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		
 		model.put(WebKeys.ENTRIES, users.get(ObjectKeys.SEARCH_ENTRIES));
-		model.put(WebKeys.SEEN_MAP,bs.getProfileModule().getUserSeenMap(user.getId()));
+		if (!model.containsKey(WebKeys.SEEN_MAP)) 
+			model.put(WebKeys.SEEN_MAP,bs.getProfileModule().getUserSeenMap(user.getId()));
 		
 		model.putAll(getSearchAndPagingModels(users, options));		
 
