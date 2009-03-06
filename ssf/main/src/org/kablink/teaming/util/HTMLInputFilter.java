@@ -53,9 +53,10 @@ public class HTMLInputFilter
   /** 
    * flag determining whether to try to make tags when presented with "unbalanced"
    * angle brackets (e.g. "<b text </b>" becomes "<b> text </b>").  If set to false,
-   * unbalanced angle brackets will be html escaped.
+   * unbalanced angle brackets will be html escaped (unless NEVER_MAKE_TAGS is true).
    */
-  protected static final boolean ALWAYS_MAKE_TAGS = false;  //true doesn't work
+	  protected static final boolean ALWAYS_MAKE_TAGS = false;  //true doesn't work
+	  protected static final boolean NEVER_MAKE_TAGS = true;  //true doesn't work
   
   /**
    * flag determing whether comments are allowed in input String.
@@ -324,7 +325,7 @@ public class HTMLInputFilter
       s = regexReplace(pattern_regexp_replace3, "$1<$2", s);
       
     } 
-    else
+    else if (!NEVER_MAKE_TAGS)
     {
       //
       // escape stray brackets
