@@ -51,7 +51,7 @@ public class IfSupportsEditInPlaceTag extends TagSupport {
 		
 		if(SsfsUtil.supportAttachmentEdit() && 
 				SsfsUtil.supportsEditInPlace(relativeFilePath, browserType) &&
-				!BrowserSniffer.getOSInfo(req).contentEquals("mac"))
+				SsfsUtil.supportApplets(req))
 			return EVAL_BODY_INCLUDE;
 		else
 			return SKIP_BODY;

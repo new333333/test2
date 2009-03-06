@@ -204,7 +204,8 @@ function insertAction() {
 	var elm = inst.getFocusElement();
 	var formObj = document.forms[0];
 	var src = formObj.src.value;
-	var srcUrl = formObj.srcUrl.value;
+	var srcUrl = "";
+	if (typeof formObj.srcUrl != "undefined") srcUrl = formObj.srcUrl.value;
 	var imageClass = " ss_addimage "
 	if (src == '') {
 		src = srcUrl;

@@ -295,11 +295,21 @@ public class SsfsUtil {
 	
 	public static boolean supportApplets(PortletRequest req) {
 		HttpServletRequest httpReq = ((PortletRequestImpl) req).getHttpServletRequest();
-		if (BrowserSniffer.getOSInfo(httpReq).contentEquals("mac")) return false;
-		return SPropsUtil.getBoolean("applet.support.in.application", false);
+		return supportApplets(httpReq);
 	}
 	public static boolean supportApplets(HttpServletRequest req) {
-		if (BrowserSniffer.getOSInfo(req).contentEquals("mac")) return false;
-		return SPropsUtil.getBoolean("applet.support.in.application", false);
+		Boolean allowed = SPropsUtil.getBoolean("applet.support.in.application", false);
+		if (!allowed) return false;
+		//Special check for mac
+		String platform = BrowserSniffer.getOSInfo(req).toString();
+		if (platform.equals("mac")) {
+			String[] browsers = SPropsUtil.getStringArray("applet.support.in.mac.browsers", ",");
+			for (int i = 0; i < browsers.length; i++) {
+				if (browsers[i].equals("firefox") && BrowserSniffer.is_mozilla_5(req)) return true;
+				if (browsers[i].equals("safari") && BrowserSniffer.is_safari(req)) return true;
+			}
+			return false;
+		}
+		return true;
 	}
 }
