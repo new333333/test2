@@ -555,6 +555,8 @@ public class HTMLInputFilter
     m.appendTail( buf );
     s = buf.toString();
     
+/**
+ * 
     // validate quotes outside of tags
     buf = new StringBuffer();
     m = pattern_validate_entities2.matcher( s );
@@ -566,7 +568,8 @@ public class HTMLInputFilter
     }
     m.appendTail( buf );
     s = buf.toString();
-    
+*/
+
     return s;
   }
   
@@ -600,8 +603,8 @@ public class HTMLInputFilter
   
   protected String replaceAllQuotes(String text) {
 	while (text.indexOf("\"") >= 0) {
-		String one = text.substring(0, text.indexOf("\"")-1);
-		String two = text.substring(text.indexOf("\""));
+		String one = text.substring(0, text.indexOf("\""));
+		String two = text.substring(text.indexOf("\"")+1);
 		text = one + "&quot;" + two;
 	}
   	return text;
