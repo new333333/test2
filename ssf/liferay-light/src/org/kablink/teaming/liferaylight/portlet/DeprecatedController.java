@@ -50,8 +50,6 @@ import org.kablink.teaming.web.util.PortletPreferencesUtil;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.mvc.AbstractController;
 
-import com.liferay.portal.util.PortalUtil;
-
 public class DeprecatedController extends AbstractController {
 	public static final String RELEVANCE_DASHBOARD_PORTLET="ss_relevance_dashboard";
 	public static final String BLOG_SUMMARY_PORTLET="ss_blog";
@@ -86,16 +84,12 @@ public class DeprecatedController extends AbstractController {
   		
   		//Get the URL of the Teaming site
   		String teamingUrl = "";
-  		try {
-  			//TODO - fix the Liferay company name support
-  			// This was commented out until it is made to work
-  			//com.liferay.portal.model.Company company = PortalUtil.getCompany(request);
-  			String liferayCompanyName = "";
-  			//liferayCompanyName = company.getWebId();
-  			teamingUrl = SPropsUtil.getString("teaming.url."+liferayCompanyName, "");
-  		} catch(Exception e) {};
-  		if (teamingUrl.equals("")) teamingUrl = SPropsUtil.getString("teaming.url", "");
-  		model.put("ssTeamingUrl", teamingUrl);
+  		Long companyId = (Long) request.getAttribute("COMPANY_ID");
+  		if(companyId != null)
+  			teamingUrl = SPropsUtil.getString("teaming.url." + String.valueOf(companyId.longValue()), "");
+  		if(teamingUrl.equals(""))
+  			teamingUrl = SPropsUtil.getString("teaming.url", "");
+   		model.put("ssTeamingUrl", teamingUrl);
  		
 		String displayType = getDisplayType(request);
 		if (FORUM_PORTLET.equals(displayType)) {
