@@ -110,7 +110,7 @@
 		     <select
 		     name="conditionElementValue">
 		     <option value="" selected="selected"><ssf:nlt 
-		       tag="condition.selectValue" text="--select a value--"/></option>
+		       tag="workflow.condition.selectValue" text="--select a value--"/></option>
 		       <c:forEach var="elementValue" items="${ssEntryDefinitionElementData[conditionElementName].values}">
 		         <option value="<c:out value="${elementValue.key}"/>"><c:out value="${elementValue.value}"/></option>
 		       </c:forEach>
@@ -122,7 +122,7 @@
 		     <select
 		     name="conditionElementValue">
 		     <option value="" selected="selected"><ssf:nlt 
-		       tag="condition.selectValue" text="--select a value--"/></option>
+		       tag="workflow.condition.selectValue" text="--select a value--"/></option>
 		       <c:forEach var="elementValue" items="${ssEntryDefinitionElementData[conditionElementName].values}">
 		         <option value="<c:out value="${elementValue.key}"/>"><c:out value="${elementValue.value}"/></option>
 		       </c:forEach>
