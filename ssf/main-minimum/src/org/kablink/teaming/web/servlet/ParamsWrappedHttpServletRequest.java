@@ -267,4 +267,20 @@ public class ParamsWrappedHttpServletRequest implements HttpServletRequest {
 		req.setCharacterEncoding(env);
 	}
 
+	public String getLocalAddr() {
+		return req.getLocalAddr();
+	}
+
+	public String getLocalName() {
+		return req.getLocalName();
+	}
+
+	public int getLocalPort() {
+		return req.getLocalPort();
+	}
+
+	public int getRemotePort() {
+		return req.getRemotePort();
+	}
+
 }

@@ -320,4 +320,20 @@ public class AttributesAndParamsOnlyServletRequest implements HttpServletRequest
 	public void setContextPath(String contextPath) {
 		this.contextPath = contextPath;
 	}
+
+	public String getLocalAddr() {
+		return null;
+	}
+
+	public String getLocalName() {
+		return null;
+	}
+
+	public int getLocalPort() {
+		return 0;
+	}
+
+	public int getRemotePort() {
+		return 0;
+	}
 }
