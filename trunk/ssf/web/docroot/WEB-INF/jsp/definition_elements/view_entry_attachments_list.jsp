@@ -41,7 +41,7 @@
 boolean isIECheck = BrowserSniffer.is_ie(request);
 String strBrowserType = "nonie";
 if (isIECheck) strBrowserType = "ie";
-boolean isAppletSupportedCheck = SsfsUtil.supportApplets();
+boolean isAppletSupportedCheck = SsfsUtil.supportApplets(request);
 String operatingSystem = BrowserSniffer.getOSInfo(request);
 %>
 

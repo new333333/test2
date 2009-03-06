@@ -40,9 +40,11 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.UserAppConfig;
 import org.kablink.teaming.web.util.WebUrlUtil;
+import org.kablink.util.BrowserSniffer;
 
 
 public class SsfsUtil {
@@ -291,7 +293,13 @@ public class SsfsUtil {
 		return SPropsUtil.getString("edit.in.place.for.nonie");
 	}
 	
-	public static boolean supportApplets() {
+	public static boolean supportApplets(PortletRequest req) {
+		HttpServletRequest httpReq = ((PortletRequestImpl) req).getHttpServletRequest();
+		if (BrowserSniffer.getOSInfo(httpReq).contentEquals("mac")) return false;
+		return SPropsUtil.getBoolean("applet.support.in.application", false);
+	}
+	public static boolean supportApplets(HttpServletRequest req) {
+		if (BrowserSniffer.getOSInfo(req).contentEquals("mac")) return false;
 		return SPropsUtil.getBoolean("applet.support.in.application", false);
 	}
 }

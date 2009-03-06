@@ -38,7 +38,7 @@
 <c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
-boolean isAppletSupported = SsfsUtil.supportApplets();
+boolean isAppletSupported = SsfsUtil.supportApplets(request);
 %>
 <script type="text/javascript">
 var ss_labelButtonOK = "<ssf:nlt tag="button.ok"/>";

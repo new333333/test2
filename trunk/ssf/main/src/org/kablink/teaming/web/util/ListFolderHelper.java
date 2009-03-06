@@ -1360,7 +1360,7 @@ public class ListFolderHelper {
 		Toolbar emailSubscriptionToolbar = new Toolbar();
 		
 		boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
-		boolean isAppletSupported = SsfsUtil.supportApplets();
+		boolean isAppletSupported = SsfsUtil.supportApplets(request);
         boolean isAccessible = false;
 		String displayStyle = user.getDisplayStyle();
 		if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
