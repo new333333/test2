@@ -53,7 +53,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/hibernate3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxen.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/portlet.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/servlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/cglib.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jtds.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bsh.jar"/>
@@ -124,6 +123,8 @@
 	<classpathentry exported="true" kind="lib" path="lib/spring-ldap.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/catalina.jar"/>
-	<classpathentry kind="lib" path="lib/kaptcha.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/kaptcha.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jsp-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/servlet-api.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>

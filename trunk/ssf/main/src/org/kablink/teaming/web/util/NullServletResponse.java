@@ -196,4 +196,12 @@ public class NullServletResponse implements HttpServletResponse {
 
 	}
 
+	public String getContentType() {
+		throw new UnsupportedOperationException();
+	}
+
+	public void setCharacterEncoding(String arg0) {
+		throw new UnsupportedOperationException();
+	}
+
 }
