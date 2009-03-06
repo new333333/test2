@@ -866,7 +866,7 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
 		model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
 		
-		boolean isAppletSupported = SsfsUtil.supportApplets();
+		boolean isAppletSupported = SsfsUtil.supportApplets(req);
 		
 		String strEntryURL = DefinitionHelper.getWebDAVURL(req, folder, entry);
 		//String strEntryURL = SsfsUtil.getEntryUrl(folder, entry, strRepositoryName);
