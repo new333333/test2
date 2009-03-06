@@ -75,7 +75,9 @@
 				</td>
 				
 				<td class="ss_table_data_TD" valign="top">
-				 ${changeLog.operationDate}&nbsp
+				 <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+      				value="${changeLog.operationDate}"  type="both" 
+	  				timeStyle="short" dateStyle="short" />&nbsp
 				</td>
 				
 				<td class="ss_table_data_TD" valign="top">
