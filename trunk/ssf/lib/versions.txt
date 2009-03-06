@@ -83,7 +83,7 @@ Portlet 1.0
 Quartz 1.6.3 (all)
 ridl.jar (from OpenOffice 2.0)
 SAAJ 1.2 DO NOT UPGRADE (V1.2 used the ASL1.1, newer versions are from glassfish project which uses cppl and gpl2.0)
-Servlet 2.3.1/JSP 1.2.1
+Servlet 2.4/JSP 2.0
 Simple Logging Facade for Java (SLF4J) api 1.4.3
 Simple Logging Facade for Java (SLF4J) log4j12 1.4.3
 Slide jaas 2.2pre1
