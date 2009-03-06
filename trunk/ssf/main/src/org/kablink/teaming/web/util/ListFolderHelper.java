@@ -1026,7 +1026,7 @@ public class ListFolderHelper {
 		Binder parentBinder = folder.getParentBinder();
 		Binder topBinder = folder;
 		while (parentBinder != null) {
-			if (!parentBinder.getDefinitionType().equals(Definition.FOLDER_VIEW) || 
+			if (parentBinder.getDefinitionType() != null && !parentBinder.getDefinitionType().equals(Definition.FOLDER_VIEW) || 
 					!viewType.equals(BinderHelper.getViewType(bs, parentBinder))) break;
 			topBinder = parentBinder;
 			parentBinder = parentBinder.getParentBinder();

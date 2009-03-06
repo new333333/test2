@@ -184,6 +184,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 			if (type.equals("add")) {
 				if (!trackedBinders.contains(binderId)) trackedBinders.add(binderId);
 				if (binder.getEntityType().equals(EntityType.workspace) && 
+						binder.getDefinitionType() != null &&
 						binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
 					//This is a user workspace, so also track this user
 					if (!trackedPeople.contains(binder.getOwnerId())) trackedPeople.add(binder.getOwnerId());

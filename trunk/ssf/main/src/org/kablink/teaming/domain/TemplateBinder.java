@@ -109,7 +109,8 @@ public class TemplateBinder extends Binder {
     public boolean isDefinitionInheritanceSupported() {
     	if (definitionType != Definition.FOLDER_VIEW) return false;
     	if (isRoot()) return true;  //may be added under a folder
-    	if (getParentBinder().getDefinitionType() != Definition.FOLDER_VIEW) return false; //topFolder
+    	if (getParentBinder().getDefinitionType() != null && 
+    			getParentBinder().getDefinitionType() != Definition.FOLDER_VIEW) return false; //topFolder
     	return true;
     }
 
