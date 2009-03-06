@@ -67,7 +67,9 @@ public class TemplateServiceImpl extends BaseService implements TemplateService,
 			defElement.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, def.getName());
 			defElement.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, def.getInternalId());
 			defElement.addAttribute("id", def.getId().toString());
-			defElement.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_TYPE, def.getDefinitionType().toString());
+		    Integer defType = def.getDefinitionType();
+		    if (defType == null) defType = 0;
+			defElement.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_TYPE, defType.toString());
 			XmlUtils.addCustomAttribute(defElement, ObjectKeys.XTAG_TEMPLATE_TITLE, ObjectKeys.XTAG_TYPE_STRING, def.getTemplateTitle());
 			
 		}
@@ -80,7 +82,9 @@ public class TemplateServiceImpl extends BaseService implements TemplateService,
 		List<TemplateBrief> list = new ArrayList<TemplateBrief>();
 		for (TemplateBinder def:defs) {
 			String family = DefinitionUtils.getFamily(def.getEntryDef().getDefinition());
-			list.add(new TemplateBrief(def.getId(), def.getInternalId(), family, def.getDefinitionType(), def.getName(), def.getTemplateTitle()));	
+		    Integer defType = def.getDefinitionType();
+		    if (defType == null) defType = 0;
+			list.add(new TemplateBrief(def.getId(), def.getInternalId(), family, defType, def.getName(), def.getTemplateTitle()));	
 		}
 
 		TemplateBrief[] array = new TemplateBrief[list.size()];

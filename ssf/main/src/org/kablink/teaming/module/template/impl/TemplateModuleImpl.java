@@ -519,7 +519,9 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		return doc;
 	}
 	protected void getTemplateAsXml(TemplateBinder binder, Element element) {
-		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_TYPE, binder.getDefinitionType().toString());
+		Integer defType = binder.getDefinitionType();
+		if (defType == null) defType = 0;
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_TYPE, defType.toString());
 		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, binder.getInternalId());
 		
 		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_TEMPLATE_TITLE, ObjectKeys.XTAG_TYPE_STRING, binder.getTemplateTitle());
@@ -693,7 +695,9 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	   Binder binder;
 	   Definition def = cfg.getDefaultViewDef();
 	   if (def == null) {
-		   def = getDefinitionModule().addDefaultDefinition(cfg.getDefinitionType());
+		   Integer cfgType = cfg.getDefinitionType();
+		   if (cfgType == null) cfgType = 0;
+		   def = getDefinitionModule().addDefaultDefinition(cfgType);
 	   }
 	   Map fileItems = new HashMap();
 	   Map entryData = new HashMap();
