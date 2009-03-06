@@ -128,7 +128,13 @@ public class ModifyDashboardController extends AbstractBinderController {
 		Map model = new HashMap();
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.INLINE_NO_IMAGE, "true");
-		
+
+        User user = RequestContextHolder.getRequestContext().getUser();
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		model.put(WebKeys.USER_PROPERTIES, userProperties);
+		if (!model.containsKey(WebKeys.SEEN_MAP)) 
+			model.put(WebKeys.SEEN_MAP, getProfileModule().getUserSeenMap(user.getId()));
+
 		String dashboardList = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
 		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
 		String scope = "";
@@ -152,7 +158,6 @@ public class ModifyDashboardController extends AbstractBinderController {
 			cId = componentId;
 		}
 
-		User user = RequestContextHolder.getRequestContext().getUser();
 		Map ssDashboard = DashboardHelper.getDashboardMap(binder, 
 				getProfileModule().getUserProperties(user.getId()).getProperties(), model, scope, cId, true);
 		
