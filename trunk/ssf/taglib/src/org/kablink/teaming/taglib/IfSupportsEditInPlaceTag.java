@@ -28,10 +28,12 @@
  */
 package org.kablink.teaming.taglib;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.kablink.teaming.ssfs.util.SsfsUtil;
+import org.kablink.util.BrowserSniffer;
 
 
 public class IfSupportsEditInPlaceTag extends TagSupport {
@@ -41,10 +43,15 @@ public class IfSupportsEditInPlaceTag extends TagSupport {
 	
 	public int doStartTag() throws JspException {
 
+		HttpServletRequest req =
+			(HttpServletRequest)pageContext.getRequest();
+		
 		if(relativeFilePath == null)
 			throw new JspException("File path must be specified");
 		
-		if(SsfsUtil.supportAttachmentEdit() && SsfsUtil.supportsEditInPlace(relativeFilePath, browserType))
+		if(SsfsUtil.supportAttachmentEdit() && 
+				SsfsUtil.supportsEditInPlace(relativeFilePath, browserType) &&
+				!BrowserSniffer.getOSInfo(req).contentEquals("mac"))
 			return EVAL_BODY_INCLUDE;
 		else
 			return SKIP_BODY;
