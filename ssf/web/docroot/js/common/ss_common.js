@@ -7753,8 +7753,8 @@ function ss_setClass(selector, className) {
 
 function ss_getTimeZoneDate(date, timeZoneOffset) {
 	var u = date.getTime();
-	var o = date.getTimezoneOffset() * 60 * 1000;
-	var timeZoneTime = u + o + timeZoneOffset;
+	var o = 0 - (date.getTimezoneOffset() * 60 * 1000);
+	var timeZoneTime = u - (o - timeZoneOffset);
 	return new Date(timeZoneTime);
 }
 
@@ -7780,8 +7780,10 @@ function ss_printSchedulerTime(hoursObjId, minutesObjId, paneObjId, timeZoneOffs
 	var minutes = minutesObj.options[minutesObj.selectedIndex].value;
 	
 	var date = new Date();
-	date.setHours(hours);
-	date.setMinutes(minutes);
+	// It is assumed that the hours and minutes obtained from the select controls are in GMT.
+	// That is why we call date.setUTCxxx()
+	date.setUTCHours(hours);
+	date.setUTCMinutes(minutes);
 	date = ss_getTimeZoneDate(date, timeZoneOffset);
 	
 	paneObj.innerHTML = dojo.date.locale.format(date, {formatLength:"short", timePattern:"", selector:"time", locale: locale});

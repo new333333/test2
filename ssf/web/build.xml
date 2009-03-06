@@ -210,6 +210,19 @@
 		</copy>
 	</target>
 	
+	<target name="deploy-js-only">
+		<copy todir="${app.server.ssf.dir}/js">
+			<fileset dir="${web.dir}/js"
+				includes="**/*.js"
+			/>
+		</copy>
+	</target>
+	
+	<target name="deploy-jsp-and-js">
+		<antcall target="deploy-jsp-only" />
+		<antcall target="deploy-js-only" />
+	</target>
+
 	<target name="deploy" depends="make-all-generated-files,deploy-light">
 	</target>
 	
