@@ -30,11 +30,12 @@
  
 %><%--
 
---%>
-<%
+--%><fmt:setLocale value="${ssUser.locale}" scope="request" /><%--
+--%><fmt:setTimeZone value="${ssUser.timeZone.ID}" scope="request"/><%--
+--%><%
 	boolean accessible_simple_ui = org.kablink.teaming.util.SPropsUtil.getBoolean("accessibility.simple_ui", false);
-%>
-<c:if test="${empty ssf_support_files_loaded}"><%--
+%><%--
+--%><c:if test="${empty ssf_support_files_loaded}"><%--
 --%><c:set var="ssf_support_files_loaded" value="1" scope="request"/><%--
 --%>
 <script type="text/javascript">

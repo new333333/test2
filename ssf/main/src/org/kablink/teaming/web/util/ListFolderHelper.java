@@ -956,7 +956,10 @@ public class ListFolderHelper {
 					String year = yearMonth.substring(0, 4);
 					String monthNumber = yearMonth.substring(4, 6);
 					int m = Integer.valueOf(monthNumber).intValue() - 1;
-					monthTitles.put(yearMonth, NLT.get(monthNames[m%12]) + " " + year);
+					String args[] = new String[2];
+					args[0] = NLT.get(monthNames[m%12]);
+					args[1] = year;
+					monthTitles.put(yearMonth,  NLT.get("calendar.monthYear", args));
 					PortletURL url = response.createRenderURL();
 					url.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
