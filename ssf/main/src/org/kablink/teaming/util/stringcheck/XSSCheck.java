@@ -48,17 +48,19 @@ public class XSSCheck implements StringCheck {
 	private static final String MODE_TRUSTED_DISALLOW = "trusted.disallow";
 	private static final String MODE_TRUSTED_STRIP = "trusted.strip";
 	
-	private static final String PATTERN_STR1 = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|style|html|head|body|meta|xml|blink|link|iframe|frame|frameset|ilayer|layer|bgsound|base)[\\s]*[^>]*>)";
+	private static final String PATTERN_STR1 = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|style|html|head|body|meta|xml|blink|link|iframe|frame|frameset|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*>|>))";
 	private static final String PATTERN_STR2 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|meta|blockquote|del|ins|q)[\\s]*[^>]*(?:href|src|cite|scheme)[\\s]*=[\\s]*(?:\"|')[\\s]*[^\\s]*script[\\s]*:[^>]*>)";
 	private static final String PATTERN_STR3 = "(?i)<[\\s]*[^>]+\\s(style[\\s]*=[\\s]*\"[^\"]*\"|style[\\s]*=[\\s]*'[^']*')[^>]*>";
 	private static final String PATTERN_STR4 = "(?i)(\\s(?:style[\\s]*=[\\s]*\"[^\"]*\"|style[\\s]*=[\\s]*'[^']*'))";
 	private static final String PATTERN_STR5 = "(?i)((?:url|expression))";
+	private static final String PATTERN_STR6 = "(?i)(<[\\s]*[^>]*[\\s]+)(on[^>\\s]*[\\s]*=[\\s]*(?:\"[^>]*\"|'[^>]*'))([^>]*>)";
 	
 	private Pattern pattern1;
 	private Pattern pattern2;
 	private Pattern pattern3;
 	private Pattern pattern4;
 	private Pattern pattern5;
+	private Pattern pattern6;
 	private boolean enable;
 	private String mode;
 	private String[] users;
@@ -71,6 +73,7 @@ public class XSSCheck implements StringCheck {
 		pattern3 = Pattern.compile(PATTERN_STR3);
 		pattern4 = Pattern.compile(PATTERN_STR4);
 		pattern5 = Pattern.compile(PATTERN_STR5);
+		pattern6 = Pattern.compile(PATTERN_STR6);
 		enable = SPropsUtil.getBoolean("xss.check.enable");
 		mode = SPropsUtil.getString("xss.check.mode");
 		users = SPropsUtil.getStringArray("xss.trusted.users", ";");
@@ -179,6 +182,20 @@ public class XSSCheck implements StringCheck {
 		}
 		matcher3.appendTail(buf);
 		sequence = buf.toString();
+		
+		//Check for onClick="..." or any on*="..." 
+		Matcher matcher6 = pattern6.matcher(sequence);
+		while (matcher6.find()) {
+			buf = new StringBuffer();
+			String start = matcher6.group(1);
+			String end = matcher6.group(3);
+			matcher6.appendReplacement(buf, matcher6.quoteReplacement(start + StringPool.BLANK + end));
+			result = false;
+			matcher6.appendTail(buf);
+			sequence = buf.toString();
+			matcher6 = pattern6.matcher(sequence);
+		}
+
 		data.put("sequence", sequence);
 		return result;
 	}

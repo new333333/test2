@@ -442,7 +442,8 @@ public class HTMLInputFilter
           //debug( "paramValue='" + paramValue + "'" );
           //debug( "allowed? " + vAllowed.get( name ).contains( paramName ) );
           
-          if (vAllowed.get( name.toLowerCase() ).contains( paramName.toLowerCase() ) || 
+          if ((vAllowed.containsKey( name.toLowerCase() ) && 
+        		  vAllowed.get( name.toLowerCase() ).contains( paramName.toLowerCase() )) || 
         		  vAlwaysAllowedAttributes.contains(" " + paramName.toLowerCase() + " ")) {
             if (inArray( paramName.toLowerCase(), vProtocolAtts )) {
               paramValue = processParamProtocol( paramValue );
