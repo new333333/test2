@@ -110,6 +110,10 @@ function ss_showMiniblogPage${renderResponse.namespace}(id, currentPage, directi
   </td>
   </tr>
   </table>
+  <div align="right">
+    <input type="button" class="ss_submit" value='<ssf:nlt tag="button.close"/>' 
+      onClick="self.window.close();return false;"/>
+  </div>
 </ssf:form>
 </div>
 <ssf:ifadapter>
