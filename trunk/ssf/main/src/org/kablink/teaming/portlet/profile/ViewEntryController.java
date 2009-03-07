@@ -51,6 +51,7 @@ import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.Toolbar;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -71,7 +72,7 @@ public class ViewEntryController extends SAbstractController {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String displayStyle = user.getDisplayStyle();
 		Map model = new HashMap();	
- 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		String entryViewType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_TYPE, "entryView");
@@ -82,6 +83,7 @@ public class ViewEntryController extends SAbstractController {
 			if (ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE.equals(displayStyle) &&
 					!ViewController.WIKI_PORTLET.equals(displayType)) entryViewStyle = WebKeys.URL_ENTRY_VIEW_STYLE_FULL;
 		}
+		BinderHelper.setupStandardBeans(this, request, response, model, binderId);
 		Map formData = request.getParameterMap();
 		String viewType = BinderHelper.getViewType(this, binderId);
 		String viewPath = BinderHelper.getViewListingJsp(this, viewType);
@@ -104,6 +106,8 @@ public class ViewEntryController extends SAbstractController {
 		model.put(WebKeys.BINDER, entry.getParentBinder());
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
+
+ 		model.put(WebKeys.TABS, Tabs.getTabs(request));
 
 		//Let the jsp know what style to show the entry in 
 		//  (popup has no navbar header, inline has no navbar and no script tags, full has a navbar header)
