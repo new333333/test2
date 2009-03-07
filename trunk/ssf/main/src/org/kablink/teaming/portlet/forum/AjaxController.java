@@ -2238,7 +2238,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			//Trim any trailing whitespace
     		status = status.substring(0, m.start(0));
     	}
-		BinderHelper.addMiniBlogEntry(bs, status);
+		BinderHelper.addMiniBlogEntry(bs, status.replaceAll("&quot;", "\""));
 	}
 	
 	private void ajaxSetSidebarVisibility(ActionRequest request, 
