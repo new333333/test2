@@ -183,6 +183,13 @@ public class WorkspaceTreeHelper {
 				User entry = null;
 				entry = (User)bs.getProfileModule().getEntry(entryId);
 				model.put(WebKeys.USER_OBJECT, entry);
+				// Redirect to viewing the profile entry
+				PortletURL reloadUrl = response.createRenderURL();
+				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, bs.getProfileModule().getProfileBinder().getId().toString());
+				reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_ENTRY);
+				reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+				reloadUrl.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, WebKeys.URL_ENTRY_VIEW_STYLE_FULL);
+				model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());
 				return WebKeys.VIEW_NO_USER_WORKSPACE;
 			}
 			binderId = workspaceId;

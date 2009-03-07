@@ -32,6 +32,13 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 
+<c:if test="${!empty ssReloadUrl}">
+<script type="text/javascript">
+	self.location.href = "${ssReloadUrl}";
+</script>
+</c:if>
+
+<c:if test="${empty ssReloadUrl}">
 <div class="ss_style ss_portlet">
 
 <ssf:form title='<%= NLT.get("general.statusReport") %>'>
@@ -47,3 +54,4 @@
 </ssf:form>
 
 </div>
+</c:if>
