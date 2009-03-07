@@ -275,7 +275,8 @@ function dodiff()
   <span style="padding-left:10px;">${change.folderEntry.attributes.logVersion}</span>
 </td>
 <td valign="top" width="90%">
-  <ssf:expandableArea title="${change.folderEntry.attributes.modifiedOn}">
+  <c:set var="modifyDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}" type="both" value="${change.changeLog.operationDate}"/></c:set>
+  <ssf:expandableArea title="${modifyDate}">
   <div><span class="ss_largeprint" id="title${change.folderEntry.attributes.logVersion}">${change.folderEntry.attribute.title.value}</span></div>
   <div><span class="ss_smallprint">${change.folderEntry.attributes.modifiedBy}</span></div>
   <div class="ss_entryContent ss_entryDescription" id="desc${change.folderEntry.attributes.logVersion}">
