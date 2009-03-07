@@ -352,7 +352,7 @@ public class HTMLInputFilter
     while (m.find()) {
       String replaceStr = m.group( 1 );
       replaceStr = processTag( replaceStr, vTagCounts);
-      m.appendReplacement(buf, replaceStr);
+      m.appendReplacement(buf, Matcher.quoteReplacement(replaceStr));
     }
     m.appendTail(buf);
     
@@ -551,7 +551,7 @@ public class HTMLInputFilter
       String one = m.group( 1 ); //([^&;]*) 
       String two = m.group( 2 ); //(?=(;|&|$))
       String s1 = checkEntity( one, two );
-      m.appendReplacement( buf, s1);
+      m.appendReplacement( buf, Matcher.quoteReplacement(s1));
     }
     m.appendTail( buf );
     s = buf.toString();
@@ -565,7 +565,7 @@ public class HTMLInputFilter
       String one = m.group( 1 ); //(>|^) 
       String two = m.group( 2 ); //([^<]+?) 
       String three = m.group( 3 ); //(<|$) 
-      m.appendReplacement(buf, m.quoteReplacement(one + replaceAllQuotes(two) + three));
+      m.appendReplacement(buf, Matcher.quoteReplacement(one + replaceAllQuotes(two) + three));
     }
     m.appendTail( buf );
     s = buf.toString();
