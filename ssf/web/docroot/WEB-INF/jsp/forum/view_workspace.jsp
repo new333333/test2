@@ -178,6 +178,11 @@ if (typeof ss_workarea_showId == "undefined")
 			<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
 				<div class="ss_style_color">				
 					<div class="ss_content_inner">
+						<div id="ss_whatsNewDiv${ss_namespace}">
+						<c:if test="${ss_type == 'whatsNew' || ss_type == 'unseen'}">
+						<jsp:include page="/WEB-INF/jsp/forum/whats_new_page.jsp" />
+						</c:if>
+						</div>
 					  	<c:choose>
 					  		<c:when test="${ss_showTeamMembers}">
 								<% // Navigation links %>
@@ -189,12 +194,6 @@ if (typeof ss_workarea_showId == "undefined")
 								
 							</c:when>
 							<c:otherwise>
-
-								<div id="ss_whatsNewDiv${ss_namespace}">
-								<c:if test="${ss_type == 'whatsNew' || ss_type == 'unseen'}">
-								<jsp:include page="/WEB-INF/jsp/forum/whats_new_page.jsp" />
-								</c:if>
-								</div>
 
 								<% // Show the workspace according to its definition %>
 								<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
