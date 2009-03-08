@@ -33,6 +33,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 <c:set var="accessibility_simple_ui" value='<%= org.kablink.teaming.util.SPropsUtil.getBoolean("accessibility.simple_ui", false) %>'/>
+<c:set var="watermark" value='<%= org.kablink.teaming.util.SPropsUtil.getString("watermark.masthead", "") %>'/>
 <c:set var="ss_urlWindowState" value="maximized"/>
 <c:set var="ss_urlWindowState" value=""/>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
@@ -74,6 +75,16 @@ var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
   </div>
   <br/>
 <!-- End of debug window -->
+</c:if>
+<c:if test="${!empty watermark}">
+<div id="ss_mastheadWatermark${renderResponse.namespace}" style="position:absolute;">
+<span style="color:red;font-size:12px;font-family:impact,arial black;">${watermark}</span>
+</div>
+<script type="text/javascript">
+ss_setOpacity(document.getElementById("ss_mastheadWatermark${renderResponse.namespace}"), 0.5);
+ss_setObjectTop(document.getElementById("ss_mastheadWatermark${renderResponse.namespace}"), "0px");
+ss_setObjectLeft(document.getElementById("ss_mastheadWatermark${renderResponse.namespace}"), parseInt((parseInt(ss_getWindowWidth()) - parseInt(ss_getObjectWidth(document.getElementById("ss_mastheadWatermark${renderResponse.namespace}"))))/2));
+</script>
 </c:if>
 
 <!-- Start of global toolbar -->
@@ -706,6 +717,6 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 ss_workarea_showPseudoPortal${renderResponse.namespace}()
 </script>
 <!-- The signaling iframe for signaling the portal to reset the size -->
-<div style="visibility:hidden;">
+<div style="visibility:hidden;position:absolute;">
 <iframe id="ss_signalingIframe" style="height:0px;" src="<html:rootPath/>js/forum/null.html" >xxx</iframe>
 </div>
