@@ -112,6 +112,11 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	<td valign="top" class="ss_view_info">
 	</ssf:ifnotaccessible>
 	    <div class="ss_style_color" >
+			<div id="ss_whatsNewDiv${ss_namespace}">
+			<c:if test="${ss_type == 'whatsNew' || ss_type == 'unseen'}">
+			<jsp:include page="/WEB-INF/jsp/forum/whats_new_page.jsp" />
+			</c:if>
+			</div>
   	<c:choose>
   		<c:when test="${ss_showTeamMembers}">
 			<c:if test="${!empty ss_reloadUrl}">
