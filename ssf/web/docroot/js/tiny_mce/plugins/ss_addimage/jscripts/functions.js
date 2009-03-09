@@ -3,6 +3,7 @@
 
 var preloadImg = null;
 var orgImageWidth, orgImageHeight;
+tinyMCEPopup.requireLangPack();
 
 function preinit() {
 	// Initialize
@@ -205,7 +206,7 @@ function insertAction() {
 	var formObj = document.forms[0];
 	var src = formObj.src.value;
 	var srcUrl = "";
-	if (typeof formObj.srcUrl != "undefined") srcUrl = formObj.srcUrl.value;
+	srcUrl = formObj.srcUrl.value;
 	var imageClass = " ss_addimage "
 	if (src == '') {
 		src = srcUrl;

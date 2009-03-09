@@ -1,4 +1,4 @@
-tinyMCE.addI18n('pl.advimage_dlg',{
+tinyMCE.addI18n('pl.ss_addimage_dlg',{
 tab_general:"Og\u00F3lny",
 tab_appearance:"Prezentacja",
 tab_advanced:"Zaawansowany",
