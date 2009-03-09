@@ -28,8 +28,16 @@
  */
 package org.kablink.teaming.util;
 
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.Properties;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+
 import org.jasypt.encryption.pbe.PBEStringEncryptor;
 import org.jasypt.properties.EncryptableProperties;
 import org.jasypt.properties.PropertyValueEncryptionUtils;
@@ -78,7 +86,9 @@ public class EncryptedClassPathConfigFiles extends PropertiesClassPathConfigFile
         			}
         		}
         		if (needUpdate) {
-        			tempProps.store(new FileOutputStream(eResource.getFile()), null);
+        			// We call writePropertiesToFile() instead of calling Properties.store()
+        			// because Properties.store() will escape certain characters.  See bug 477366
+        			writePropertiesToFile( tempProps, eResource.getFile() );
         		}
         	}
         	props.putAll(tempProps);
@@ -106,6 +116,45 @@ public class EncryptedClassPathConfigFiles extends PropertiesClassPathConfigFile
    		eResource = resource;
    		
     }
-  
+     
+    /**
+     * Write all of the key/values pairs found in the given Properties object to the given file.
+     * We don't call Properties.store() because that call escapes certain characters found in the value.
+     * See bug 477366
+     */
+    private void writePropertiesToFile(
+    	Properties	properties,
+    	File		file )
+    		throws IOException
+    {
+	    BufferedWriter aWriter;
+	    FileOutputStream outputStream;
+	    Enumeration keys;
+	    
+	    outputStream = new FileOutputStream( file );
+	    aWriter = new BufferedWriter( new OutputStreamWriter( outputStream, "8859_1" ) );
+
+	    // Write the date and time to the file.
+        aWriter.write( "#" + new Date().toString() );
+        aWriter.newLine();
+
+        // Spin through the list of key/value pairs and write them to the file.
+	    for (keys = properties.keys(); keys.hasMoreElements();)
+	    {
+	        String key;
+	        String val;
+	        
+	        // Write the next key/value pair to the file.
+	        key = (String)keys.nextElement();
+	        val = (String)properties.get( key );
+	        aWriter.write( key + "=" );
+	        if ( val != null )
+	        	aWriter.write( val );
+	        aWriter.newLine();
+	    }
+
+	    aWriter.flush();
+	    aWriter.close();
+    }// end writePropertiesToFile()
  
 }
