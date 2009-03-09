@@ -36,6 +36,48 @@
 <c:set var="watermark" value='<%= org.kablink.teaming.util.SPropsUtil.getString("watermark.masthead", "") %>'/>
 <c:set var="ss_urlWindowState" value="maximized"/>
 <c:set var="ss_urlWindowState" value=""/>
+<script type="text/javascript">
+function ss_logoff() {
+	var x = '<%= org.kablink.teaming.util.SPropsUtil.getString("sso.proxy.logoff.url","") %>';
+	if(x == null || x == "") {
+		var y = '<%= org.kablink.teaming.web.util.WebUrlUtil.getServletRootURL(request) + org.kablink.teaming.web.WebKeys.SERVLET_LOGOUT %>';
+		//alert(y);
+		self.location.href=y;
+	} else {
+		//alert (x);
+		var y = '<%= org.kablink.teaming.web.util.WebUrlUtil.getServletRootURL(request) + org.kablink.teaming.web.WebKeys.SERVLET_LOGOUT %>';
+		ss_logoff_from_teaming_then_sso(y);
+	}
+}
+function ss_logoff_from_teaming_then_sso(logoutURL) {
+	callbackRoutine = ss_logoff_from_sso
+	var x;
+
+	if (window.XMLHttpRequest) {
+	x = new XMLHttpRequest();
+	} else if (window.ActiveXObject) {
+	x = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	
+	x.open("GET", logoutURL, true);
+	
+	x.onreadystatechange = function() {
+		if (x.readyState != 4) {
+			return;
+		}
+		if (x.status == 200) {
+			callbackRoutine(x.responseText)        	
+		} else {		
+			callbackRoutine(x.statusText)
+		}
+	}
+	x.send(null);
+	delete x;
+}      
+function ss_logoff_from_sso(s) {
+	self.location.href='<%= org.kablink.teaming.util.SPropsUtil.getString("sso.proxy.logoff.url","") %>';
+}
+</script>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <!-- <script type="text/javascript" src="/ssf/js/tree/tree_widget.js"></script> -->
 <script type="text/javascript">
@@ -50,7 +92,6 @@ var ss_displayType = "${ss_displayType}";
 function ss_turnOffDebugMode() {
 	var url = self.location.href + "&enableDebug=off"
 	self.location.href = url;
-}
 var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
 </script>
 <!-- this needs to be in a style sheet -->
@@ -247,10 +288,9 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 	          title="<ssf:nlt tag="navigation.goToMaximizedView"/>"
               ><ssf:nlt tag="navigation.expandedView"/></a>
 		  </c:if>
-              <c:if test='<%= !org.kablink.teaming.util.SPropsUtil.getBoolean("form.login.auth.disallowed",false) %>' >
               <c:if test="${empty ssStandAlone || !ssStandAlone}"> | </c:if>
                 <ssf:ifLoggedIn>
-  				  	  <a href="${ss_logoutUrl}"><span><ssf:nlt tag="logout"/></span></a>
+  				  	  <a href="javascript: ;" onClick="ss_logoff();return false;"><span><ssf:nlt tag="logout"/></span><br/>
 			    </ssf:ifLoggedIn>
 			    <ssf:ifNotLoggedIn>
 				    <form method="post" id="ss_loginForm${renderResponse.namespace}" 
@@ -258,7 +298,6 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 				      onclick="return(ss_requestLogin(this, '${ssBinder.id}', '${ssUser.workspaceId}', '${ssUser.name}'));"
 				    ><span><ssf:nlt tag="login"/></span></a><input type="hidden" name="url" /></form>
 			    </ssf:ifNotLoggedIn>
-			  </c:if>
 			  </td>
         <td width="6%" height="24" class="ss_workspace">&nbsp;</td>
         <td width="3%" height="24" class="ss_workspace" colspan="2">

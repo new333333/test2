@@ -16,8 +16,9 @@
         <s:intercept-url pattern="/ws/**" filters="none" />
         <s:intercept-url pattern="/rss/**" filters="none" />
         <s:intercept-url pattern="/ical/**" filters="none" />
+        <s:intercept-url pattern="/bitbucket/**" filters="none" />
         <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
-        
+        <s:logout logout-url="/s/portalLogout" logout-success-url="/bitbucket" />
         <s:http-basic/>
     </s:http>
 
