@@ -912,9 +912,17 @@ public class BuildDefinitionDivs extends TagSupport {
 						if (user != null) { //make sure current users locale appears
 							map.put(user.getLocale().getDisplayName(user.getLocale()), user.getLocale());
 						}
-						Locale userLocale;
-						if (user != null) userLocale = user.getLocale();
-						else userLocale = Locale.getDefault();
+						Locale userLocale = null;
+			    		String language = SPropsUtil.getString("i18n.default.locale.language", "");
+			    		String country = SPropsUtil.getString("i18n.default.locale.country", "");
+			    		if (!language.equals("")) {
+			    			if (!country.equals("")) userLocale = new Locale(language, country);
+			    			else userLocale = new Locale(language);
+			    		}
+						if (userLocale == null) {
+							if (user != null) userLocale = user.getLocale();
+							else userLocale = Locale.getDefault();
+						}
 						Locale defLocale = new Locale(userLocale.toString());
 						if (localeValueEle != null && !localeValueEle.attributeValue("value", "").equals(""))
 							defLocale = new Locale((String)localeValueEle.attributeValue("value"));
