@@ -90,7 +90,7 @@ public class DeprecatedController extends AbstractController {
   		if(teamingUrl.equals(""))
   			teamingUrl = SPropsUtil.getString("teaming.url", "");
    		model.put("ssTeamingUrl", teamingUrl);
- 		
+
 		String displayType = getDisplayType(request);
 		if (FORUM_PORTLET.equals(displayType)) {
 			//This is the portlet view; get the configured list of folders to show
@@ -105,13 +105,13 @@ public class DeprecatedController extends AbstractController {
 			try {
 				response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
 			} catch(Exception e) {}
-			return new ModelAndView("bookmarks", model);
+			//return new ModelAndView("bookmarks", model);
 			
 		} else if (WORKSPACE_PORTLET.equals(displayType)) {
-			return new ModelAndView("workspace_tree", model);
+			//return new ModelAndView("workspace_tree", model);
 			
 		} else if (WELCOME_PORTLET.equals(displayType)) {
-			return new ModelAndView("welcome", model);
+			//return new ModelAndView("welcome", model);
 		    
 		} else if (PRESENCE_PORTLET.equals(displayType)) {
  			Set ids = new HashSet();		
@@ -123,34 +123,34 @@ public class DeprecatedController extends AbstractController {
 				response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
 			} catch(Exception e) {}
   			model.put(WebKeys.USER_LIST, LongIdUtil.getIdsAsString(ids));
-  			return new ModelAndView("buddy_list", model);
+  			//return new ModelAndView("buddy_list", model);
 
 		} else if (TOOLBAR_PORTLET.equals(displayType) || WORKAREA_PORTLET.equals(displayType)) {
  			return new ModelAndView("teaming", model);
 
 		} else if (BLOG_SUMMARY_PORTLET.equals(displayType)) {
-			return new ModelAndView("blog", model);
+			//return new ModelAndView("blog", model);
 			
 		} else if (WIKI_PORTLET.equals(displayType)) {
-			return new ModelAndView("wiki", model);
+			//return new ModelAndView("wiki", model);
 			
 		} else if (GUESTBOOK_SUMMARY_PORTLET.equals(displayType)) {
-			return new ModelAndView("guestbook", model);
+			//return new ModelAndView("guestbook", model);
 			
 		} else if (TASK_SUMMARY_PORTLET.equals(displayType)) {
-			return new ModelAndView("tasks", model);
+			//return new ModelAndView("tasks", model);
 			
 		} else if (SEARCH_PORTLET.equals(displayType)) {
-			return new ModelAndView("search", model);
+			//return new ModelAndView("search", model);
 			
 		} else if (GALLERY_PORTLET.equals(displayType)) {
-			return new ModelAndView("photo", model);
+			//return new ModelAndView("photo", model);
 			
 		} else if (ADMINISTRATION_PORTLET.equals(displayType)) {
-			return new ModelAndView("administration", model);
+			//return new ModelAndView("administration", model);
 		}
 
-		return new ModelAndView("deprecated");
+		return new ModelAndView("deprecated", model);
 	}
 
 	public String getDisplayType(PortletRequest request) {

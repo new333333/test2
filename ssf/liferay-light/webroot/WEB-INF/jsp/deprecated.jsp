@@ -1,1 +1,1 @@
-This portlet is deprecated in Teaming 2.0.
+<%= org.kablink.teaming.liferaylight.portlet.MessageUtil.get(request, "portlet.noLongerAvailable") %>
