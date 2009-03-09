@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -660,6 +661,14 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		user.setZoneId(top.getId());
     		user.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
     		user.setParentBinder(profiles);
+    		String language = SPropsUtil.getString("i18n.default.locale.language", "");
+    		String country = SPropsUtil.getString("i18n.default.locale.country", "");
+    		if (!language.equals("")) {
+    			Locale locale = null;
+    			if (!country.equals("")) locale = new Locale(language, country);
+    			else locale = new Locale(language);
+    			user.setLocale(locale);
+    		}
     		getCoreDao().save(user);
     		//indexing and other modules needs the user
     		RequestContextHolder.getRequestContext().setUser(user).resolve();
@@ -852,6 +861,14 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getDefinitionModule().setDefaultEntryDefinition(user);
 		user.setCreation(stamp);
 		user.setModification(stamp);
+		String language = SPropsUtil.getString("i18n.default.locale.language", "");
+		String country = SPropsUtil.getString("i18n.default.locale.country", "");
+		if (!language.equals("")) {
+			Locale locale = null;
+			if (!country.equals("")) locale = new Locale(language, country);
+			else locale = new Locale(language);
+			user.setLocale(locale);
+		}
 		getCoreDao().save(user);
 		return user;
 	}
