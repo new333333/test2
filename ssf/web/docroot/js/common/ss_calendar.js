@@ -151,7 +151,7 @@ function ss_calendarEngine(
 					onCalendarStyleChoose,
 					addEntryURL,
 					stickyId) {
-		
+
 	this.locale = {
 		dayNamesShort: ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],
 		monthNamesShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
@@ -883,12 +883,15 @@ function ss_calendarEngine(
             })();
 			
 		    var url = addEntryURL;
+		    var haveAddEntryURL = ((null != url) && (0 < url.length));
 		    url += "&year=" + date.getFullYear();
 		    url += "&month=" + date.getMonth();
 		    url += "&dayOfMonth=" + date.getDate();
             (function() {
 				dojo.connect(allDayBadge, "onclick", function(evt) {
-				    ss_openUrlInPortlet(url, true);
+					if (haveAddEntryURL) {		
+				    	ss_openUrlInPortlet(url, true);
+					}
 					return false;
        			});
             })();							
