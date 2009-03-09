@@ -1,4 +1,4 @@
-tinyMCE.addI18n('pt.advimage_dlg',{
+tinyMCE.addI18n('pt.ss_addimage_dlg',{
 tab_general:"Geral",
 tab_appearance:"Apar\u00C3\u0083\u00C2\u00AAncia",
 tab_advanced:"Avan\u00C3\u0083\u00C2\u00A7ado",

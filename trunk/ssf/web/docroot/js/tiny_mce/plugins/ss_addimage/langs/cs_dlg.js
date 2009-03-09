@@ -1,4 +1,4 @@
-tinyMCE.addI18n('cs.advimage_dlg',{
+tinyMCE.addI18n('cs.ss_addimage_dlg',{
 tab_general:"Hlavn\u00ED",
 tab_appearance:"Vzhled",
 tab_advanced:"Pokro\u010Dil\u00E9",

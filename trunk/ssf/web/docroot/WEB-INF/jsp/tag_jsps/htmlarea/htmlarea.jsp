@@ -50,7 +50,7 @@
 --%></c:if><%--
 --%><script type="text/javascript" src="<html:rootPath/>js/tiny_mce/tiny_mce.js"></script>
 <script type="text/javascript">
-var ss_imageSelections = "<select name='srcUrl'><%--
+var ss_imageSelections${element_id} = "<select name='srcUrl'><%--
 --%><c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" ><%--
 --%><option value='<ssf:escapeJavaScript value="${selection.fileItem.name}"/>'>${selection.fileItem.name}</option><%--
 --%></c:forEach></select>";
@@ -58,23 +58,22 @@ tinyMCE.init(
  {mode: "specific_textareas", editor_selector: "mceEditable",
   theme : "advanced", 
 <c:choose><%--
-    --%><c:when test="${language == 'da_DK'}">language: 'da',</c:when><%--
-    --%><c:when test="${language == 'de_DE'}">language: 'de',</c:when><%--
-    --%><c:when test="${language == 'es_ES'}">language: 'es',</c:when><%--
-    --%><c:when test="${language == 'fr_FR'}">language: 'fr',</c:when><%--
-    --%><c:when test="${language == 'hu_HU'}">language: 'hu',</c:when><%--
-    --%><c:when test="${language == 'it_IT'}">language: 'it',</c:when><%--
-    --%><c:when test="${language == 'ja_JP'}">language: 'ja_utf-8',</c:when><%--
-    --%><c:when test="${language == 'nl_NL'}">language: 'nl',</c:when><%--
-    --%><c:when test="${language == 'pl_PL'}">language: 'pl',</c:when><%--
-    --%><c:when test="${language == 'pt_BR'}">language: 'pt_br',</c:when><%--
-    --%><c:when test="${language == 'ru_RU'}">language: 'ru',</c:when><%--
-    --%><c:when test="${language == 'uk_UA'}">language: 'uk',</c:when><%--
-    --%><c:when test="${language == 'sv_SE'}">language: 'sv',</c:when><%--
-    --%><c:when test="${language == 'sv_SV'}">language: 'sv',</c:when><%--
-    --%><c:when test="${language == 'zh_CN'}">language: 'zh_cn_utf8',</c:when><%--
-    --%><c:when test="${language == 'zh_TW'}">language: 'zh_tw_utf8',</c:when><%--
-    --%><c:otherwise>locale: 'en',</c:otherwise><%--
+    --%><c:when test="${ssUser.locale.language == 'da'}">language: 'da',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'de'}">language: 'de',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'es'}">language: 'es',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'fr'}">language: 'fr',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'hu'}">language: 'hu',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'it'}">language: 'it',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'ja'}">language: 'ja',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'nl'}">language: 'nl',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'pl'}">language: 'pl',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'pt'}">language: 'pt',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'ru'}">language: 'ru',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'uk'}">language: 'uk',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'sv'}">language: 'sv',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'sv'}">language: 'sv',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'zh'}">language: 'zh',</c:when><%--
+    --%><c:otherwise>language: 'en',</c:otherwise><%--
 --%></c:choose>
   content_css: "<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>",
   relative_urls: false, 
@@ -104,15 +103,15 @@ tinyMCE.init(
   theme_advanced_disable : "image,advimage",
   theme_advanced_resizing_use_cookie : false});
 
-tinyMCE.addI18n('en.ss_addimage',{
+tinyMCE.addI18n('${ssUser.locale.language}.ss_addimage_dlg',{
 srcFile : "<ssf:nlt tag="editor.addimage.srcFile"/>",
 addFile : "<ssf:nlt tag="editor.addimage.addFile"/>",
 addUrl : "<ssf:nlt tag="editor.addimage.addUrl"/>",
 imageName : "<ssf:nlt tag="editor.addimage.imageName"/>",
-imageSelectBox : ss_imageSelections
+imageSelectBox : ss_imageSelections${element_id}
 });
 
-tinyMCE.addI18n('en.ss_wikilink',{
+tinyMCE.addI18n('${ssUser.locale.language}.ss_wikilink',{
 desc : "<ssf:nlt tag="editor.wikilink.title"/>"
 });
 

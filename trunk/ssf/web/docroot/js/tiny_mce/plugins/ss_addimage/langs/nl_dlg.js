@@ -1,4 +1,4 @@
-tinyMCE.addI18n('nl.advimage_dlg',{
+tinyMCE.addI18n('nl.ss_addimage_dlg',{
 tab_general:"Algemeen",
 tab_appearance:"Weergave",
 tab_advanced:"Geavanceerd",
