@@ -31,7 +31,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:if test="${!empty ss_errorMessage}">
 <ssf:form titleTag="general.error.anErrorOccurred">
-<span class="ss_largestprint">${ss_errorMessage}</span>
+<pre>${ss_errorMessage}</pre>
 <br/>
 <br/>
 <input type="button" onClick="self.window.close()" value="<ssf:nlt tag="button.close"/>">
