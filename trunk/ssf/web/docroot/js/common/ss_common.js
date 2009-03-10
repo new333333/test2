@@ -5890,7 +5890,7 @@ function ss_showSavedQueriesList(relObj, divId, resultUrl) {
 				divObj.innerHTML = txt;
 
 				ss_placeOnScreen(divId, relObj, 12, 12);
-				dojo.style(divId, "display", "block");
+				dojo.style(divId, "display", "inline");
 				dojo.style(divId, "visibility", "visible");
 	            ss_setOpacity(divId,0);
 	            dojo.fadeIn({node:divId, delay:50}).play();

@@ -3760,17 +3760,20 @@ table.ss_milestones_list td.ss_overdue, table.ss_milestones_list td.ss_overdue a
 	background-color: ${ss_style_background_color_opaque};
 	border: 1px solid ${ss_form_border_color};
 	padding: 6px;
-	text-align: left;
 	font-size: ${ss_style_font_smallprint};
 	font-family: ${ss_style_title_font_family};
-	color: ${ss_form_element_text_color}
+	color: ${ss_form_element_text_color};
+	white-space: nowrap;
+}
+
+.ss_navbarPopupPane div {
+    width: 100%;
 }
 
 .ss_navbarPopupPane ul, .ss_navbarPopupPane li {
 	margin: 0px;
 	padding: 0px;
 	list-style: none;
-	
 }
 
 .ss_navbarPopupPane h1 {
