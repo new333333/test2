@@ -73,9 +73,16 @@
 				<table>
 					<tr>
 						<label for="searchText_adv">
-							<th><ssf:nlt tag="searchForm.searchText"/>:</th>
+							<td><ssf:nlt tag="searchForm.searchText"/>:</td>
 						</label>
-						<td><input type="text" name="searchText" id="searchText_adv" value="${ss_filterMap.searchText}" <c:if test="${empty disableSearchButton || disableSearchButton == 0}">onkeypress="return ss_submitViaEnter(event)"</c:if>/></td>
+						<td>
+						  <input type="text" name="searchText" 
+						    id="searchText_adv" 
+						    value="${ss_filterMap.searchText}" 
+						    <c:if test="${empty disableSearchButton || disableSearchButton == 0}">
+						      onkeypress="return ss_submitViaEnter(event)"
+						    </c:if>/>
+						</td>
 						<td rowspan="3">
 						    <b><ssf:nlt tag="searchForm.advanced.presentationOptions"/></b><br/>
 							
@@ -106,8 +113,8 @@
 					</tr>
 					<c:if test="${!filterDefinition}">
 						<tr>
-							<th><ssf:nlt tag="searchForm.searchFolders"/>:</th>
-							<td colspan="2">
+							<td><ssf:nlt tag="searchForm.searchFolders"/>:</td>
+							<td >
 								<ul>
 									<c:if test="${empty ssFolderList && not empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssFolderList}">
 										<c:set var="ssFolderList" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssFolderList}" />
@@ -190,7 +197,8 @@
 					
 					<c:if test="${!filterDefinition}">
 						<tr>
-							<td colspan="3" style="text-align: center; padding-bottom: 3px;">
+							<td colspan="2" 
+							  style="text-align: right !important; padding-bottom: 3px;">
 								<c:if test="${empty disableSearchButton || disableSearchButton == 0}">
 								<a class="ss_searchButton" href="javascript: ss_search();" ><img <ssf:alt tag="alt.search"/> 
 					  				src="<html:imagesPath/>pics/1pix.gif" /> <ssf:nlt tag="searchForm.button.label"/></a> 
