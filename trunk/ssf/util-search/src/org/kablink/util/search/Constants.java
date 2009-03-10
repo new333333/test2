@@ -144,6 +144,7 @@ public class Constants {
 	public static final String EMAIL_TXT_FIELD = "_emailTxt";
 	public static final String EMAIL_MOBILE_FIELD = "_emailMobile";
 	public static final String ORGANIZATION_FIELD = "_org";
+	public static final String PHONE_FIELD = "_phone";
 	public static final String STATUS_FIELD = "_status";
 	public static final String STATUS_DATE_FIELD = "_statusDate";
 	public static final String SKYPEID_FIELD = "_skypeId";

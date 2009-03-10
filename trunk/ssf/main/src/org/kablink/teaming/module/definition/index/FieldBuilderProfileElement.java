@@ -62,6 +62,9 @@ public class FieldBuilderProfileElement extends AbstractFieldBuilder {
 	   		} else if ("organization".equals(dataElemName)) {
 	   			Field nameField = new Field(Constants.ORGANIZATION_FIELD, sVal, Field.Store.YES, Field.Index.TOKENIZED);
 	   			return new Field[] {nameField};    			
+	   		} else if ("phone".equals(dataElemName)) {
+	   			Field nameField = new Field(Constants.PHONE_FIELD, sVal, Field.Store.YES, Field.Index.TOKENIZED);
+	   			return new Field[] {nameField};    			
 	   		}
 	   	} 
     	return new Field[0];
