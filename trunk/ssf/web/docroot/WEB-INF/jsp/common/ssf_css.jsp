@@ -434,11 +434,11 @@ div.ss_entryDescription ol li {
 
 div.ss_editableTab {
   float: right; 
-  width:20px;
   background-color: ${ss_style_background_color_opaque};
   margin-left: 0px;
-  margin-top: -4px;
-  padding-bottom: 10px;
+  margin-top: 2px;
+  padding-top: 0px;
+  padding-bottom: 6px;
   padding-right: 5px;
   padding-left: 5px;
 }
