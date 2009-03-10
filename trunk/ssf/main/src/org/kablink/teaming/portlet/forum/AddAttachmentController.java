@@ -122,7 +122,7 @@ public class AddAttachmentController extends SAbstractController {
 			else {
 				String closeDivFunctionName = PortletRequestUtils.getStringParameter(request, WebKeys.ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION, "");
 				if (closeDivFunctionName != null) {
-					closeDivFunctionName = closeDivFunctionName.replaceAll("strErrorMessage", strFilesErrors);
+					closeDivFunctionName = closeDivFunctionName.replaceAll("strErrorMessage", strFilesErrors.replaceAll("\\n", "\\\\\\\\n"));
 				}
 				setupCloseDiv(response, folderId, closeDivFunctionName);
 			}

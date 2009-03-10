@@ -79,7 +79,7 @@ function ss_doReload() {
 
 <c:if test="${!empty ss_errorMessage}">
 <ssf:form titleTag="general.error.anErrorOccurred">
-<span class="ss_largestprint">${ss_errorMessage}</span>
+<span class="ss_largestprint"><pre>${ss_errorMessage}</pre></span>
 <br/>
 <br/>
 <input type="button" onClick="ss_doReload();return false;" value="<ssf:nlt tag="button.close"/>">
