@@ -68,7 +68,19 @@
   		          	--%><c:if test="${ssShowUserTitleOnly != 'true' && !empty entry._loginName}"> (<ssf:escapeJavaScript value="${entry._loginName}"/>)</c:if><%--
   		          	--%><c:if test="${ssShowFolderTitles == 'true' && !empty entry.binderTitle}"> (<ssf:escapeJavaScript value="${entry.binderTitle}"/>)</c:if><%--
   		          --%></c:otherwise></c:choose>',
-  		          'type': '${entry._entityType}'
+  		          'type': '${entry._entityType}',
+  		          'title': '<c:choose><%--
+		          --%><c:when test="${!empty entry._loginName}"><%--
+		      		--%><c:if test="${!empty entry._sortTitle}"><ssf:escapeJavaScript value="${entry._sortTitle}"/></c:if><%--
+		      		--%> (<ssf:escapeJavaScript value="${entry._loginName}"/>)<%--
+		      		--%><c:if test="${!empty entry._email}">, <ssf:escapeJavaScript value="${entry._email}"/></c:if><%--
+		      		--%><c:if test="${!empty entry._phone}">, <ssf:escapeJavaScript value="${entry._phone}"/></c:if><%--
+		      	  --%></c:when><%--
+		          --%><c:when test="${!empty entry._entityPath}"><%--
+		      		--%><ssf:escapeJavaScript value="${entry._entityPath}"/><%--
+		      	  --%></c:when><%--
+  		          --%><c:otherwise><%--
+  		          --%></c:otherwise></c:choose>'
   		    }<c:if test="${!status.last}">,</c:if>
 			</c:forEach>			
 	      ],
