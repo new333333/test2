@@ -743,12 +743,14 @@ public class WorkspaceTreeHelper {
 					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
 					toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
 					//	The "Delete" menu item
+					qualifiers = new HashMap();
+					qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
 					url = response.createActionURL();
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
 					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 					url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
 					url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
-					toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.delete"), url);
+					toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.delete"), url, qualifiers);
 				}
 				if (showModifyProfileMenu && !showDeleteProfileMenu) {
 					//	The "Modify" menu item
@@ -765,7 +767,7 @@ public class WorkspaceTreeHelper {
 					//	The "delete" menu item
 					qualifiers = new HashMap();
 					qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.modifyProfileButton");
-					qualifiers.put("onClick", "return ss_confirmDeleteProfile();");
+					qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
 					url = response.createActionURL();
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
 					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
