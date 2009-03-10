@@ -298,8 +298,8 @@
 		// As the fix for bug 481238, I removed the ssf:escapeJavaScript tag from the following line.
 		url = '${ss_play_tutorial_base_url}';
 		url += '&ss_tutorial_name=' + encodeURIComponent( tutorialName );
-		winHeight = 675;
-		winWidth = 975; 
+		winHeight = 900;
+		winWidth = 1250; 
 		m_playTutorialWnd = window.open(
 									url,
 									'PlayTutorialWindow',

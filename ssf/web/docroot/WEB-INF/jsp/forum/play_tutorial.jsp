@@ -283,7 +283,7 @@ try
 				tutorialObj.type = 'application/x-shockwave-flash';
 				tutorialObj.scriptUrl = 'biuxihd.html'; 
 //				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-4.wmv';
-				tutorialObj.url = 'http://www.novell.com/documentation/teaming2/media/getting-around_controller.swf';
+				tutorialObj.url = 'http://www.novell.com/documentation/teaming2/media/navigation_controller.swf';
 
 				// Create a tutorial object for "Customizing Teaming to Solve Business Problems"
 				tutorialObj = new Object();
@@ -294,7 +294,7 @@ try
 				tutorialObj.type = '';
 				tutorialObj.scriptUrl = 'biuxlb3.html'; 
 //				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-5.wmv';
-				tutorialObj.url = 'http://www.novell.com/documentation/teaming2/media/customizing_controller.swf';
+				tutorialObj.url = 'http://www.novell.com/documentation/teaming2/media/customizations_controller.swf';
 
 				// Get the name of the tutorial we should start playing.
 				tutorialName = '<ssf:escapeJavaScript>${ss_tutorial_name}</ssf:escapeJavaScript>';
@@ -383,7 +383,7 @@ try
 		        	var par;
 		        	var id;
 
-		        	att = { data:m_selectedTutorial.url, width:'640', height:'498' };
+		        	att = { data:m_selectedTutorial.url, width:'1024', height:'768' };
 		        	par = { quality:'best', bgcolor:'#000000', allowfullscreen:'true', scale:'showall', allowscriptaccess:'always', flashvars:'autostart=false&thumb=FirstFrame.png&thumbscale=45&color=0x000000,0x000000' };
 		        	id = 'replaceMe';
 
