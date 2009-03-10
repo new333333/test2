@@ -235,7 +235,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     					(String) result.getName(), (String) result.getCredentials(),
     					(Map) result.getPrincipal(), LoginInfo.AUTHENTICATOR_WEB);
     			return result;
-    		} catch(UsernameNotFoundException e) {
+    		} catch(AuthenticationException e) {
     			exc = e;
     		}
     		if(SZoneConfig.getAdminUserName(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName())).equals(authentication.getName())) {
