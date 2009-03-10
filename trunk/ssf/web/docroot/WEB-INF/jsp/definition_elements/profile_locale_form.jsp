@@ -50,10 +50,14 @@
 	if (user != null) { //make sure current users locale appears
 		map.put(user.getLocale().getDisplayName(currentUser.getLocale()), user.getLocale());
 	}
-	java.util.Locale userLocale;
-	if (user != null) userLocale = user.getLocale();
-	else userLocale = java.util.Locale.getDefault();
-	if (s_locale != null && !s_locale.equals("")) userLocale = new java.util.Locale(s_locale);
+	java.util.Locale userLocale = null;
+	if (user != null) {
+		userLocale = user.getLocale();
+	}
+	if (userLocale == null) {
+		userLocale = java.util.Locale.getDefault();
+		if (s_locale != null && !s_locale.equals("")) userLocale = new java.util.Locale(s_locale);
+	}
 	for (java.util.Map.Entry<String, java.util.Locale> me: map.entrySet()) {
 		String checked = "";
 		if (me.getValue().toString().toLowerCase().equals(userLocale.toString().toLowerCase()))
