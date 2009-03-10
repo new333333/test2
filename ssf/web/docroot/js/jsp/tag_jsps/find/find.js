@@ -480,6 +480,8 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 			}
 			return false;
 	    });
+	    
+	    if (typeof item.title != "undefined") hrefObj.title = item.title;
 		
 		var spanObj = document.createElement("span");
 		spanObj.innerHTML = item.name;
