@@ -85,7 +85,8 @@ public class WebUrlUtil {
 	enum WebApp {
 		SSF,
 		SSFS,
-		SIMPLE_URL
+		SIMPLE_URL,
+		MOBILE
 	}
 
 	public static StringBuffer getSSFSContextRootURL(HttpServletRequest req) {
@@ -116,6 +117,14 @@ public class WebUrlUtil {
 		sb.append(ctx).append("/");
 		
 		return sb.toString();
+	}
+	
+	public static StringBuffer getMobileURLContextRootURL(HttpServletRequest req) {
+		StringBuffer sb = getHostAndPort(WebApp.MOBILE, req, req.isSecure(), getSimpleURLWebProtocol(), false);
+
+		sb.append("/");
+
+		return sb;
 	}
 	
 	public static String getSimpleURLContextRootURL(PortletRequest req) {

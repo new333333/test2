@@ -48,6 +48,7 @@ import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
@@ -361,6 +362,7 @@ public class ProfilesBinderHelper {
 				permaLink, qualifiers);
 		
 		model.put(WebKeys.PERMALINK, permaLink);
+		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
 
 		//Color themes
 		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {

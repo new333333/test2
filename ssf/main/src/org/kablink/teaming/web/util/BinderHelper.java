@@ -108,6 +108,7 @@ import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
 import org.kablink.teaming.search.filter.SearchFilterToMapConverter;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
@@ -949,6 +950,7 @@ public class BinderHelper {
 		    }
 		}
 		model.put(WebKeys.SIMPLE_EMAIL_HOSTNAME, hostname);		
+		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
 	}
 	
 	//trees should not be deep - do entire thing

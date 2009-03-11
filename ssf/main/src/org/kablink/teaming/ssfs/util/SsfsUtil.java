@@ -116,6 +116,16 @@ public class SsfsUtil {
 		append(fa.getFileItem().getName()).toString();
 	}
 	
+	public static String getMobileUrl(PortletRequest req) {
+		HttpServletRequest httpReq = ((PortletRequestImpl) req).getHttpServletRequest();
+		return getMobileUrl(httpReq);
+	}
+	
+	public static String getMobileUrl(HttpServletRequest req) {
+		StringBuffer sb =  WebUrlUtil.getMobileURLContextRootURL(req);
+		return sb.append("mobile").toString();
+	}
+	
 	public static String getLibraryBinderUrl(HttpServletRequest req, Binder binder) {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		

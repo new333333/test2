@@ -1929,6 +1929,7 @@ public class ListFolderHelper {
 		
 		//Permalink urls, rss url, webdav url, email addresses
 		model.put(WebKeys.PERMALINK, permaLink);
+		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
 		//  WebDav Permalink
 		if (!webdavUrl.equals("")) {
 			model.put(WebKeys.TOOLBAR_URL_WEBDAV, webdavUrl);
