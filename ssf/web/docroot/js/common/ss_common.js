@@ -5759,9 +5759,16 @@ function ss_checkForRequiredFields(obj) {
 					//See if this is a date field.
 					var dateId = id + "_fullDate";
 					var timeId = id + "_0_fullTime";
-					var dObj = obj[dateId]
+					var formObj = ss_findOwningElement(eleObj0, "form");
+					var dObj = null;
+					for (var i = 0; i < formObj.elements.length; i++) {
+						if (formObj.elements[i].name == dateId) dObj = formObj.elements[i];
+					}
 					if (typeof(dObj) != 'undefined' && typeof(dObj.length) != 'undefined') dObj = dObj[0];
-					var tObj = obj[timeId]
+					var tObj = null;
+					for (var i = 0; i < formObj.elements.length; i++) {
+						if (formObj.elements[i].name == timeId) tObj = formObj.elements[i];
+					}
 					if (typeof(tObj) != 'undefined' && typeof(tObj.length) != 'undefined') tObj = tObj[0];
 					if ((dObj && dObj.value != '') || (tObj && tObj.value != '')) {
 						//alert('date found: '+dObj.value);
