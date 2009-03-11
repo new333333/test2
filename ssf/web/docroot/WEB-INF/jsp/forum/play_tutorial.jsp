@@ -249,7 +249,7 @@ try
 				tutorialObj.img = document.getElementById( 'tutorial1SelectedImg' );
 				tutorialObj.scriptUrl = 'biuhels.html'; 
 				tutorialObj.type = 'application/x-shockwave-flash';
-				tutorialObj.url = 'http://www.youtube.com/v/8YqsFwmgMms&hl=en&fs=1';
+				tutorialObj.url = 'http://www.novell.com/documentation/teaming2/media/what_is_teaming_controller.swf';
 //				tutorialObj.url = 'http://137.65.64.13/teaming-tutorials/Thayne_controller.swf';
 
 				// Create a tutorial object for "Getting Started"
@@ -260,7 +260,6 @@ try
 				tutorialObj.img = document.getElementById( 'tutorial2SelectedImg' );
 				tutorialObj.scriptUrl = 'biux9ad.html'; 
 				tutorialObj.type = 'application/x-shockwave-flash';
-				//tutorialObj.url = 'http://www.youtube.com/v/yuI6XfKoDiA&hl=en&fs=1';
 				tutorialObj.url = 'http://www.novell.com/documentation/teaming2/media/getting-started_controller.swf';
 
 				// Create a tutorial object for "Getting Informed"
@@ -271,7 +270,6 @@ try
 				tutorialObj.img = document.getElementById( 'tutorial3SelectedImg' );
 				tutorialObj.scriptUrl = 'biuxe3o.html'; 
 				tutorialObj.type = 'application/x-shockwave-flash';
-//				tutorialObj.url = 'http://www.youtube.com/v/VJTQr4BPurc&hl=en&fs=1';
 				tutorialObj.url = 'http://www.novell.com/documentation/teaming2/media/getting-informed_controller.swf';
 
 				// Create a tutorial object for "Getting Around"
@@ -282,7 +280,6 @@ try
 				tutorialObj.img = document.getElementById( 'tutorial4SelectedImg' );
 				tutorialObj.type = 'application/x-shockwave-flash';
 				tutorialObj.scriptUrl = 'biuxihd.html'; 
-//				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-4.wmv';
 				tutorialObj.url = 'http://www.novell.com/documentation/teaming2/media/navigation_controller.swf';
 
 				// Create a tutorial object for "Customizing Teaming to Solve Business Problems"
@@ -291,9 +288,8 @@ try
 				tutorialObj.td = document.getElementById( 'tutorial5TD' );
 				tutorialObj.span = document.getElementById( 'tutorial5Span' );
 				tutorialObj.img = document.getElementById( 'tutorial5SelectedImg' );
-				tutorialObj.type = '';
+				tutorialObj.type = 'application/x-shockwave-flash';
 				tutorialObj.scriptUrl = 'biuxlb3.html'; 
-//				tutorialObj.url = 'http://137.65.64.13/funnies/Lucky-5.wmv';
 				tutorialObj.url = 'http://www.novell.com/documentation/teaming2/media/customizations_controller.swf';
 
 				// Get the name of the tutorial we should start playing.
