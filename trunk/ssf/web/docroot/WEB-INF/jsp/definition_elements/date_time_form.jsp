@@ -44,6 +44,15 @@
         @import "<html:rootPath />js/dojo/dojo/resources/dojo.css"
 </style>
 
+<script type="text/javascript">
+	dojo.addOnLoad(function() {
+			dojo.addClass(document.body, "tundra");
+		}
+	);	
+	dojo.require("dijit.form.DateTextBox");
+	dojo.require("dijit.form.TimeTextBox");
+</script>
+	
 <div class="ss_entryContent tundra">
 	<span class="ss_labelAbove" id='${property_name}_label'>
 	${property_caption}<c:if test="${property_required}"><span 
@@ -93,15 +102,6 @@
 	</table>
 	
 	<input type="hidden" name="${property_name}" value="" />
-	
-	<script type="text/javascript">
-		dojo.addOnLoad(function() {
-				dojo.addClass(document.body, "tundra");
-			}
-		);	
-		dojo.require("dijit.form.DateTextBox");
-		dojo.require("dijit.form.TimeTextBox");
-	</script>
 	
 </div>
 </c:if>
