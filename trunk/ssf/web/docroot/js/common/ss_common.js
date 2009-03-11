@@ -5885,7 +5885,7 @@ function ss_showSavedQueriesList(relObj, divId, resultUrl) {
 				var divObj = document.getElementById(divId);
 			
 				
-				var txt = '<div class="ss_popupMenuClose" align="right">';
+				var txt = '<div class="ss_popupMenuClose" align="right" style="width:250px;">';
 				txt += '<a href="javascript: ;" ';
 				txt += 'onClick="ss_hideDivNone(this.parentNode.parentNode.id);">'
 				txt += '<img src="' + ss_imagesPath + 'pics/sym_s_delete.gif" border="0"/></a></div>'

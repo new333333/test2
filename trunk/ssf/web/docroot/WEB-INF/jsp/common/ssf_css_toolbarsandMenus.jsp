@@ -579,7 +579,6 @@ div.ss_popup_body {
 	</c:if>  	
 	}		
 .ss_popupMenuClose {
-  	width:100%;
   	padding:0px 8px 0px 0px;
   	text-align:right;
 	}
