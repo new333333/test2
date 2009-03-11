@@ -30,6 +30,11 @@
 %>
 <%@ page contentType="text/json-comment-filtered; charset=UTF-8" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%--
+* The following line is used to call customer supplied customizations.
+* This callout can be used to add info to the hover-over text in the type-to-find search results
+* 
+--%><jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_find_search_results.jsp" />
 /*
 {
 <c:choose>
@@ -71,10 +76,15 @@
   		          'type': '${entry._entityType}',
   		          'title': '<c:choose><%--
 		          --%><c:when test="${!empty entry._loginName}"><%--
-		      		--%><c:if test="${!empty entry._sortTitle}"><ssf:escapeJavaScript value="${entry._sortTitle}"/></c:if><%--
+		      		--%><c:if test="${!empty entry.title}"><ssf:escapeJavaScript value="${entry.title}"/></c:if><%--
 		      		--%> (<ssf:escapeJavaScript value="${entry._loginName}"/>)<%--
 		      		--%><c:if test="${!empty entry._email}">, <ssf:escapeJavaScript value="${entry._email}"/></c:if><%--
 		      		--%><c:if test="${!empty entry._phone}">, <ssf:escapeJavaScript value="${entry._phone}"/></c:if><%--
+		      		--%><c:if test="${!empty user_elements}"><%--
+		      			--%><c:forEach var="user_element" items="${user_elements}"><%--
+		      				--%><c:if test="${!empty entry[user_element]}">, <ssf:escapeJavaScript value="${entry[user_element]}"/></c:if><%--
+		      			--%></c:forEach><%--
+		      		--%></c:if><%--
 		      	  --%></c:when><%--
 		          --%><c:when test="${!empty entry._entityPath}"><%--
 		      		--%><ssf:escapeJavaScript value="${entry._entityPath}"/><%--
