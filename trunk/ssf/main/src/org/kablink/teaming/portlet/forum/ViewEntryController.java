@@ -741,6 +741,7 @@ public class ViewEntryController extends  SAbstractController {
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.entryPermalink"), permaLink, qualifiers);
 
 		model.put(WebKeys.PERMALINK, permaLink);
+		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
 
 		if (entry.isTop() && !user.getEmailAddresses().isEmpty() && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {

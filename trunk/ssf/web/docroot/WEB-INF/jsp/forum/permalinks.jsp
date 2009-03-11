@@ -94,6 +94,17 @@
     </tr>
   </c:if>
   
+  <c:if test="${!empty ssMobileUrl}">
+    <tr>
+      <td valign="top" nowrap>
+       <span><ssf:nlt tag="permalink.mobileUrl"/></span>
+      </td>
+      <td valign="top" nowrap>
+        <span>${ssMobileUrl}</span>
+      </td>
+    </tr>
+  </c:if>
+
 </table>
 
   <div style="padding:10px 10px 0px 10px;">
@@ -106,8 +117,14 @@
   </div>
 
 <c:if test="${ssBinder.entityType == 'folder'}">
-  <div style="padding-top:10px;">
+  <div style="padding:10px 10px 0px 10px;">
     <span><ssf:nlt tag="permalink.caution.rss"/></span>
+  </div>
+</c:if>
+
+<c:if test="${!empty ssMobileUrl}">
+  <div style="padding:10px 10px 0px 10px;">
+    <span><ssf:nlt tag="permalink.hint.mobile"/></span>
   </div>
 </c:if>
 

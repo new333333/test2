@@ -79,6 +79,7 @@ import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
+import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.TagUtil;
@@ -848,6 +849,7 @@ public class WorkspaceTreeHelper {
 				permaLink, qualifiers);
 		
 		model.put(WebKeys.PERMALINK, permaLink);
+		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
 
 		// clipboard
 		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
