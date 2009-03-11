@@ -437,7 +437,6 @@ function ss_mashupSubmit${ss_mashupItemId}() {
             <option value="signInForm"><ssf:nlt tag="mashup.signInForm"/></option>
             <option value="siteAdmin"><ssf:nlt tag="mashup.siteAdmin.form"/></option>
             <option value="myWorkspace"><ssf:nlt tag="mashup.myWorkspace.form"/></option>
-            <option value="workspaceTree"><ssf:nlt tag="mashup.workspaceTree"/></option>
           </select>
           <br/>
 		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
