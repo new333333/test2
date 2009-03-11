@@ -35,9 +35,11 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.kablink.teaming.NameMissingException;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 
 public class ManageZonesController extends  SAbstractController {
@@ -46,15 +48,24 @@ public class ManageZonesController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		//response.setRenderParameters(formData);
 		if (formData.containsKey("addBtn")) {
-			String zoneName = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_ZONE_NAME);
-			String virtualHost = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_VIRTUAL_HOST);
+			String zoneName=PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_NAME, null);
+			if(Validator.isNull(zoneName))
+				throw new NameMissingException("errorcode.zonename.missing");
+			String virtualHost = PortletRequestUtils.getStringParameter(request, WebKeys.URL_VIRTUAL_HOST, null);
+			if(Validator.isNull(virtualHost))
+				throw new NameMissingException("errorcode.virtualhost.missing");
 			getZoneModule().addZone(zoneName, virtualHost, null);
 		} else if (formData.containsKey("deleteBtn")) {
-			String zoneName = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_ZONE_NAME);
-			getZoneModule().deleteZone(zoneName);
+			String zoneName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_NAME, null);
+			if(Validator.isNotNull(zoneName))
+				getZoneModule().deleteZone(zoneName);
 		} else if (formData.containsKey("modifyBtn")) {
-			String zoneName = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_ZONE_NAME);
-			String virtualHost = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_VIRTUAL_HOST);
+			String zoneName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_NAME, null);
+			if(Validator.isNull(zoneName))
+				throw new NameMissingException("errorcode.zonename.missing");
+			String virtualHost = PortletRequestUtils.getStringParameter(request, WebKeys.URL_VIRTUAL_HOST, null);
+			if(Validator.isNull(virtualHost))
+				throw new NameMissingException("errorcode.virtualhost.missing");
 			getZoneModule().modifyZone(zoneName, virtualHost, null);
 		} else {
 			response.setRenderParameters(formData);
