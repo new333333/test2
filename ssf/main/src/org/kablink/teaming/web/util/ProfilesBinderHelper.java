@@ -90,7 +90,7 @@ public class ProfilesBinderHelper {
 		Map options = new HashMap();
 		
 		options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(ObjectKeys.LISTING_MAX_PAGE_SIZE));
-		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.TITLE1_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
 
 		//initializing tabs
