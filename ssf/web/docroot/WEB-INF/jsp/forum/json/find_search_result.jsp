@@ -33,7 +33,7 @@
 <%--
 * The following line is used to call customer supplied customizations.
 * This callout can be used to add info to the hover-over text in the type-to-find search results
-* 
+* See /WEB-INF/jsp/custom_jsps/samples/ss_call_out_find_search_results.jsp for an example of how to do this
 --%><jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_find_search_results.jsp" />
 /*
 {
