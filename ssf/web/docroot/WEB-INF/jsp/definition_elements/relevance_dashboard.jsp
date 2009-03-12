@@ -99,9 +99,16 @@ if (ss_userDisplayStyle != "accessible") {
 		<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
 	</c:if>
 
-	<% /* If we don't have a current tab we should select the "Overview" tab as the default tab. */ %>
+	<% /* Do we have a current tab? */ %>
 	<c:if test="${empty ssRDCurrentTab}">
-		<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
+		<% /* No, set the current tab to the "Profile" tab. */ %>
+		<c:set var="ssRDCurrentTab" value="profile" scope="request"/>
+
+		<% /* Is the user looking at their own workspace? */ %>
+		<c:if test="${ssBinder.id == ssUser.workspaceId}">
+			<% /* Yes, set the current tab to the "Overview" tab. */ %>
+			<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
+		</c:if>
 	</c:if>
 
 	<% /* Add the "Overview" tab as the first tab. */ %>
