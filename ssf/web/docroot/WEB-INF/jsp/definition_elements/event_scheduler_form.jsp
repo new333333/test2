@@ -57,7 +57,7 @@ ssEventScheduler.locale.outOfOffice = "<ssf:nlt tag="event.scheduler.outOfOffice
 
 
 <div class="ss_entryContent">
-		<a href="javascript: //" onclick="${prefix}scheduler.display();"><ssf:nlt tag="event.scheduler" /></a>
+		<a href="javascript: //" onclick="${prefix}scheduler.display();">${property_caption}</a>
 	
 		<div id="${prefix}schedule" class="ss_event_scheduler"></div>
 		<br style="clear: both;">

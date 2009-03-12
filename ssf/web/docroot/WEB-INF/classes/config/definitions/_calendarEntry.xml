@@ -76,18 +76,11 @@
           <property name="caption" value="__calendar_attendee_teams"/>  
           <property name="required" value="false"/> 
         </properties> 
-      </item>
-      <item name="checkbox" caption="__checkbox" type="data" category="commonEntryData" display="form" id="42">
-        <properties>
-          <property name="caption" value="__calendar_attendee_notify"/>
-          <property name="name" value="attendee_notify"/>
-        </properties>
       </item>  
-      <item name="eventScheduler" caption="__eventScheduler" type="data" category="commonEntryData" display="form" id="38"> 
+      <item name="checkbox" caption="__checkbox" type="data" category="commonEntryData" display="form" id="42"> 
         <properties> 
-          <property name="caption" value="scheduler"/>  
-          <property name="sourceEventElement" value="event"/>  
-          <property name="sourceUserListElement" value="attendee"/> 
+          <property name="caption" value="__calendar_attendee_notify"/>  
+          <property name="name" value="attendee_notify"/> 
         </properties> 
       </item>  
       <item name="attachFiles" caption="__attach_files" type="data" id="5"> 

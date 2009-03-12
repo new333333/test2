@@ -1798,28 +1798,33 @@
 			elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderUserListSelect"/>
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderPrincipalList" />
 	</item>
-	
-	<item name="eventScheduler" caption="__eventScheduler" type="data" category="entryData" display="form">
-		<properties>
-			<property name="caption" caption="__caption" type="text"/>
-			<property name="sourceEventElement" caption="__event_items_from_the_entry_form_for_scheduler" definitionType="1" type="selectbox">
-				<option name="ss_none" caption="__none"/>
-			    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item[@name='event']" 
-					optionCaption="__event_items_from_the_entry_form_for_scheduler"/>
-				<help>ihelp.designers.source_event</help>					
-			</property>		
-			<property name="sourceUserListElement" caption="__user_list_items_from_the_entry_form_for_scheduler" definitionType="1" type="selectbox">
-				<option name="ss_none" caption="__none"/>
-			    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item[@name='user_list']" 
-					optionCaption="__user_list_items_from_the_entry_form_for_scheduler"/>
-				<help>ihelp.designers.source_user_list</help>					
-			</property>					
-		</properties>	
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/event_scheduler_form.jsp"/>
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/null.jsp"/>
-		</jsps>
-	</item>
+
+<!--
+  Note: This item was removed.  It is a work in progress. It was a unrequested feature
+     added that's seen as too problematic to support in the Teaming 2.0 timeframe.
+      	
+		<item name="eventScheduler" caption="__eventScheduler" type="data" category="entryData" display="form">
+			<properties>
+				<property name="caption" caption="__caption" type="text"/>
+				<property name="sourceEventElement" caption="__event_items_from_the_entry_form_for_scheduler" definitionType="1" type="selectbox">
+					<option name="ss_none" caption="__none"/>
+				    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item[@name='event']" 
+						optionCaption="__event_items_from_the_entry_form_for_scheduler"/>
+					<help>ihelp.designers.source_event</help>					
+				</property>		
+				<property name="sourceUserListElement" caption="__user_list_items_from_the_entry_form_for_scheduler" definitionType="1" type="selectbox">
+					<option name="ss_none" caption="__none"/>
+				    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item[@name='user_list']" 
+						optionCaption="__user_list_items_from_the_entry_form_for_scheduler"/>
+					<help>ihelp.designers.source_user_list</help>					
+				</property>					
+			</properties>	
+			<jsps>
+				<jsp name="default" value="/WEB-INF/jsp/definition_elements/event_scheduler_form.jsp"/>
+				<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/null.jsp"/>
+			</jsps>
+		</item>
+-->
 
 	<item name="radio" caption="__radio_buttons" type="data" category="commonEntryData" display="form">
 		<properties>
