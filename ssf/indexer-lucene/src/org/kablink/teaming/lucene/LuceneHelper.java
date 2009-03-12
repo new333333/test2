@@ -62,12 +62,26 @@ public class LuceneHelper {
 		} catch (Exception e) {};
 	}
 
-	private static int prevState = SEARCH;
+	private static HashMap<String, Object> prevState = new HashMap<String, Object>();
 
 	private static HashMap<String, Object> readers = new HashMap<String, Object>();
 	private static HashMap<String, Object> writers = new HashMap<String, Object>();
 	private static HashMap<String, Object> searchers = new HashMap<String, Object>();
 	
+	
+	private static int getPrevState(String indexPath) {
+		synchronized(prevState) {
+			Object state = (Object) prevState.get(indexPath);
+			if (state == null) return SEARCH;
+			else return ((Integer)state).intValue();
+		}
+	}
+
+	private static void putPrevState(String indexPath, int state) {
+		synchronized(prevState) {
+			prevState.put(indexPath, new Integer(state));
+		}
+	}
 	
 	private static IndexReader getZonedReader(String indexPath) {
 		synchronized(readers) {
@@ -109,7 +123,7 @@ public class LuceneHelper {
 	
 	public static IndexReader getReader(String indexPath) throws IOException {
 		synchronized (LuceneHelper.class) {
-			switch (prevState) {
+			switch (getPrevState(indexPath)) {
 			case (READ):
 				if (getZonedReader(indexPath) != null)
 					return (IndexReader)getZonedReader(indexPath);
@@ -121,7 +135,7 @@ public class LuceneHelper {
 				closeReader(indexPath);
 				putZonedReader(getNewReader(indexPath), indexPath);
 			}
-			prevState = READ;
+			putPrevState(indexPath, READ);
 		}
 		return (IndexReader)getZonedReader(indexPath);
 	}
@@ -129,7 +143,7 @@ public class LuceneHelper {
 	public static IndexSearcher getSearcher(String indexPath)
 			throws IOException {
 		synchronized (LuceneHelper.class) {
-			switch (prevState) {
+			switch (getPrevState(indexPath)) {
 			case (SEARCH):
 				if (getZonedSearcher(indexPath) != null)
 					return getZonedSearcher(indexPath);
@@ -137,7 +151,7 @@ public class LuceneHelper {
 				break;
 			case (READ):
 				closeReader(indexPath);
-				prevState = SEARCH;
+			putPrevState(indexPath, SEARCH);
 				putZonedSearcher(getNewSearcher(indexPath), indexPath);
 				break;
 			case (WRITE):
@@ -154,7 +168,7 @@ public class LuceneHelper {
 	public static IndexWriter getWriter(String indexPath, boolean create,
 			boolean forOptimize) throws IOException {
 		synchronized (LuceneHelper.class) {
-			switch (prevState) {
+			switch (getPrevState(indexPath)) {
 			case (WRITE):
 				if (getZonedWriter(indexPath) != null && !create)
 					break;
@@ -169,9 +183,9 @@ public class LuceneHelper {
 			putZonedWriter(getNewWriter(indexPath, create), indexPath);
 			}
 			if (forOptimize) {
-				prevState = SEARCH;
+				putPrevState(indexPath,SEARCH);
 			} else {
-				prevState = WRITE;
+				putPrevState(indexPath, WRITE);
 			}
 		}
 		return getZonedWriter(indexPath);
@@ -295,7 +309,7 @@ public class LuceneHelper {
 			closeWriter(indexPath);
 			closeReader(indexPath);
 			closeSearcher(indexPath);
-			prevState = WRITE;
+			putPrevState(indexPath, WRITE);
 		}
 	}
 
