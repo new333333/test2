@@ -46,6 +46,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.PortletConfig;
@@ -2930,6 +2932,14 @@ public class BinderHelper {
 		}
 		//End - Determine the Sort Order
 		
+	}
+	
+	public static boolean isBinderNameLegal(String name) {
+		boolean result = true;
+		Pattern pattern = Pattern.compile("[/\\*?\"<>:|]");
+		Matcher m = pattern.matcher( name );
+		if (m.find()) return false;
+		return result;
 	}
 
 }

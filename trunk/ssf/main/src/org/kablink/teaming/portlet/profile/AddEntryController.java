@@ -37,6 +37,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.NameMissingException;
 import org.kablink.teaming.PasswordMismatchException;
@@ -53,6 +54,7 @@ import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
 import org.kablink.teaming.web.portlet.SAbstractController;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.springframework.web.portlet.ModelAndView;
@@ -81,6 +83,7 @@ public class AddEntryController extends SAbstractController {
 			MapInputData inputData = new MapInputData(formData);
         	String name = inputData.getSingleValue(WebKeys.USER_PROFILE_NAME);
         	if (name == null || name.equals("")) throw new NameMissingException("errorcode.name.missing");
+        	if (!BinderHelper.isBinderNameLegal(name)) throw new IllegalCharacterInNameException("errorcode.illegalCharacterInName");
         	String password = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD);
         	String password2 = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD2);
         	if (password == null || !password.equals(password2)) {
