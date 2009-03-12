@@ -28,7 +28,9 @@
  */
 package org.kablink.teaming.taglib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
@@ -38,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.servlet.DynamicServletRequest;
 import org.kablink.util.servlet.StringServletResponse;
 
@@ -47,12 +50,13 @@ import org.kablink.util.servlet.StringServletResponse;
  * @author Peter Hurley
  *
  */
-public class ExpandableAreaTag extends BodyTagSupport {
+public class ExpandableAreaTag extends BodyTagSupport implements ParamAncestorTag {
 	private String _bodyContent;
 	private String title = "";
 	private String titleClass = "ss_bold";
 	private String action = "";
 	private Boolean initOpen = false;
+	private Map _values;
     
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -69,11 +73,15 @@ public class ExpandableAreaTag extends BodyTagSupport {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 			
+			if (_values == null) {
+				_values = new HashMap();
+			}
 			//Output the start of the area
 			RequestDispatcher rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/expandable_area/top.jsp");
 
 			ServletRequest req = new DynamicServletRequest(httpReq);
 			req.setAttribute("title", this.title);
+			if (this._values.containsKey("title")) req.setAttribute("title", this._values.get("title"));
 			req.setAttribute("titleClass", this.titleClass);
 			req.setAttribute("initOpen", this.initOpen);
 			StringServletResponse res = new StringServletResponse(httpRes);
@@ -104,6 +112,7 @@ public class ExpandableAreaTag extends BodyTagSupport {
 			this.titleClass = "ss_bold";
 			this.action = "";
 			this.initOpen = false;
+			this._values = null;
 		}
 	}
 
@@ -121,6 +130,13 @@ public class ExpandableAreaTag extends BodyTagSupport {
 
 	public void setInitOpen(Boolean initOpen) {
 	    this.initOpen = initOpen;
+	}
+
+	public void addParam(String name, String value) {
+		if (_values == null) {
+			_values = new HashMap();
+		}
+		_values.put(name, value);
 	}
 
 }

@@ -67,7 +67,12 @@ a:hover {
    	<% } else { %>
 		<c:set var="creditProduct" value="Novell"/>
 	<% } %>
-	<ssf:expandableArea titleClass="ss_credits_title" title="${creditProduct} Teaming is brought to you by <a href=\"http://www.novell.com\">Novell, Inc.</a>">
+	<ssf:expandableArea titleClass="ss_credits_title">
+	  <ssf:param name="title" useBody="true">
+	    <ssf:nlt tag="credits.broughtBy">
+	      <ssf:param name="value" value="${creditProduct}"/>
+	    </ssf:nlt>
+	  </ssf:param>
 	   	<% if (openEdition) { %>
 			<%@ include file="/WEB-INF/jsp/administration/credits_eula_open.jsp" %>
 	   	<% } else { %>
@@ -78,9 +83,9 @@ a:hover {
 <br/>
 <br/>
 <span class="ss_bold">
-Portions of this software are subject to copyrights and licenses of third parties.
-<br/>
-The following are the licenses which may apply to the third party software:
+  <ssf:nlt tag="credits.subjectTo"/>
+  <br/>
+  <ssf:nlt tag="credits.licenses"/>
 </span>
 <br/>
 <br/>
