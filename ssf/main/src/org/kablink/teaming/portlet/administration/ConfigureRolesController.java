@@ -75,14 +75,16 @@ public class ConfigureRolesController extends  SAbstractController {
 				if (!roleName.equals(""))
 					getAdminModule().addFunction(roleName, operations);
 				else
-					throw new IllegalArgumentException("Role must have a name");
+					throw new IllegalArgumentException(NLT.get("errorcode.role.mustHaveName"));
 			} catch (FunctionExistsException ns) {
-				response.setRenderParameter(WebKeys.EXCEPTION, "Role [" + roleName + "] already exists.");
+				String[] args = new String[1];
+				args[0] = roleName;
+				response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.nameAlreadyExists", args));
 			} catch (IllegalArgumentException iae) {
-				response.setRenderParameter(WebKeys.EXCEPTION, iae.getLocalizedMessage());
+				response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.illegalCharInName"));
 			}
 			catch (PortletRequestBindingException prbe) {
-				response.setRenderParameter(WebKeys.EXCEPTION, "Role must have a name.");
+				response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.mustHaveName"));
 			}
 		
 		} else if (formData.containsKey("modifyBtn") && formData.containsKey("roleId")) {
@@ -103,7 +105,7 @@ public class ConfigureRolesController extends  SAbstractController {
 			try {
 				roleName = PortletRequestUtils.getStringParameter(request, "roleName");
 			} catch (PortletRequestBindingException prbe) {
-				response.setRenderParameter(WebKeys.EXCEPTION, "Role must have a name.");
+				response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.mustHaveName"));
 			}
 			if (!Validator.isNull(roleName)) {
 				updates.put("name", roleName);
@@ -112,10 +114,11 @@ public class ConfigureRolesController extends  SAbstractController {
 			try {
 				getAdminModule().modifyFunction(functionId, updates);
 			} catch (FunctionExistsException ns) {
-				response.setRenderParameter(WebKeys.EXCEPTION, "Role [" + roleName + "] already exists.");
+				String[] args = new String[1];
+				args[0] = roleName;
+				response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.nameAlreadyExists", args));
 			} catch (IllegalArgumentException iae) {
-				response.setRenderParameter(WebKeys.EXCEPTION, "Role must contain only alphanumeric characters." +
-						" They include letters, numbers, spaces, underscores, and periods.");
+				response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.illegalCharInName"));
 			}
 		} else if (formData.containsKey("deleteBtn")) {
 			//Get the function id from the form
