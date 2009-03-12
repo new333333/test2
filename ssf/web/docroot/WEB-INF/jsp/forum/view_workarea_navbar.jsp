@@ -482,6 +482,11 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		                  	
 								<span style="padding-left:5px;"><ssf:nlt tag="navigation.findUser"/></span>
 								<div class="ss_global_toolbar_search" id="ss_navbarFindUserButton${renderResponse.namespace}" onMouseOver="this.style.cursor = 'pointer';">
+							  		<ssHelpSpot helpId="navigation_bar/nav_find"
+												offsetY="-2" 
+						            	    	offsetX="4" 
+									    		title="<ssf:nlt tag="helpSpot.navFind"/>">
+									</ssHelpSpot>
 									
 									<form method="post" id="ss_findUserForm${renderResponse.namespace}" 
 					  					name="ss_findUserForm${renderResponse.namespace}" 
