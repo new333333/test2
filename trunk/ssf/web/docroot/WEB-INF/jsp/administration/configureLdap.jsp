@@ -284,7 +284,7 @@ ssPage = {
 
 	createConnection : function(url, userIdAttribute, mappings, userSearches, groupSearches, principal, credentials)
 	{
-		var label = "New LDAP connection";
+		var label = "<ssf:nlt tag="ldap.connection.newConnection"/>";
 		if(url != "") { label = url; }
 		var id = "ldapConn" + ssPage.nextId++;
 		var $pane = jQuery('#ldapTemplate').children().clone().hide().attr("id", id);
