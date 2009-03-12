@@ -1071,7 +1071,7 @@
 	</item>
 	
 	<item name="profilePassword" caption="__profile_password" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		canBeDeleted="false" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__profile_password"/>
 			<property name="name" caption="__data_name" type="text" value="password" 

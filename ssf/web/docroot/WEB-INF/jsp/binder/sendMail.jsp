@@ -89,7 +89,7 @@ self.window.resizeTo(width, height);
 </td></tr>
 </table>
 
-<ssf:expandableArea title="CC">
+<ssf:expandableArea title='<%= NLT.get("mail.cc") %>'>
 <table class="ss_style" border="0" cellspacing="4" cellpadding="4">
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
@@ -108,7 +108,7 @@ self.window.resizeTo(width, height);
 </table>
 </ssf:expandableArea>
 
-<ssf:expandableArea title="BCC">
+<ssf:expandableArea title='<%= NLT.get("mail.bcc") %>'>
 <table class="ss_style" border="0" cellspacing="4" cellpadding="4">
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
