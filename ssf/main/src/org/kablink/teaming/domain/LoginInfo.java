@@ -107,6 +107,17 @@ public class LoginInfo extends AuditTrail {
 	public void setLoginTime(Date loginTime) {
 		setStartDate(loginTime);
 	}
-
-
+	
+	public void setApplicationID(Long applicationId) {
+		// From semantic point of view, EndBy field was not created to mean this. 
+		// It is currently used only by WorkflowStateHistory to store information
+		// about who ended the particular workflow on the entry. However, since 
+		// LoginInfo never uses the field, I'm reusing the field (instead of creating
+		// a new one) to mean application ID when used within the context of LoginInfo.
+		setEndBy(applicationId);
+	}
+	
+	public Long getApplicationID() {
+		return getEndBy();
+	}
 }

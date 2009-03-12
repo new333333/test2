@@ -58,8 +58,13 @@ public class LoginInfoInterceptor implements MethodInterceptor {
 			// These protocols require authentication to take place for every message
 			// invocation. The fact that you're here means that the authentication has 
 			// already happended and it was successful. So we should report the fact.
-			getReportModule().addLoginInfo(new LoginInfo(authenticator,
-					RequestContextHolder.getRequestContext().getUserId()));		
+			LoginInfo loginInfo = new LoginInfo(authenticator,
+					RequestContextHolder.getRequestContext().getUserId());
+			
+			if(rc.getApplicationId() != null)
+				loginInfo.setApplicationID(rc.getApplicationId());
+			
+			getReportModule().addLoginInfo(loginInfo);		
 		}
 		return invocation.proceed();
 	}
