@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_user" caption="__definition_default_user" type="7" nextId="38" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007"> 
+<definition name="_user" caption="__definition_default_user" type="7" nextId="39" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007"> 
   <item name="profileEntryForm" caption="__profile_entry_form_definition" type="form" id="1"> 
     <properties/>  
     <item name="profileEntryFormForm" caption="__form" id="2"> 
@@ -10,6 +10,13 @@
           <property name="caption" value="__profile_name"/>  
           <property name="width" value=""/> 
         </properties> 
+      </item>
+      <item name="profilePassword" caption="__profile_password" type="data" category="profileEntryData" display="form" id="38">
+        <properties>
+          <property name="caption" value="__profile_password"/>
+          <property name="name" value="password"/>
+          <property name="width" value=""/>
+        </properties>
       </item>  
       <item name="table3" caption="__three_column_table" id="19"> 
         <properties> 
@@ -97,18 +104,18 @@
           <property name="maxHeight" value=""/>  
           <property name="storage" value="simpleFileRepository"/> 
         </properties> 
-      </item>
-      <item name="profileTimeZone" caption="__timeZone" type="data" category="profileEntryData" display="form" id="33">
-        <properties>
-          <property name="caption" value="__timeZone"/>
-          <property name="name" value="timeZone"/>
-        </properties>
-      </item>
-      <item name="profileLocale" caption="__locale" type="data" category="profileEntryData" display="form" id="34">
-        <properties>
-          <property name="caption" value="__locale"/>
-          <property name="name" value="locale"/>
-        </properties>
+      </item>  
+      <item name="profileTimeZone" caption="__timeZone" type="data" category="profileEntryData" display="form" id="33"> 
+        <properties> 
+          <property name="caption" value="__timeZone"/>  
+          <property name="name" value="timeZone"/> 
+        </properties> 
+      </item>  
+      <item name="profileLocale" caption="__locale" type="data" category="profileEntryData" display="form" id="34"> 
+        <properties> 
+          <property name="caption" value="__locale"/>  
+          <property name="name" value="locale"/> 
+        </properties> 
       </item>  
       <properties> 
         <property name="name" value="form1"/>  
@@ -130,7 +137,7 @@
             <property name="onClick" value=""/> 
           </properties> 
         </item> 
-      </item>
+      </item> 
     </item> 
   </item>  
   <item name="profileEntryView" caption="__profile_entry_view_definition" id="13"> 
@@ -184,19 +191,19 @@
         <property name="name" value="picture"/>  
         <property name="caption" value="__profile_entry_picture"/> 
       </properties> 
-    </item>
-    <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" id="36" formItem="profileTimeZone">
-      <properties>
-        <property name="caption" value="__timeZone"/>
-        <property name="name" value="timeZone"/>
-      </properties>
     </item>  
-    <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" id="35" formItem="profileLocale">
-      <properties>
-        <property name="caption" value="__locale"/>
-        <property name="name" value="locale"/>
-      </properties>
-    </item>
+    <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" id="36" formItem="profileTimeZone"> 
+      <properties> 
+        <property name="caption" value="__timeZone"/>  
+        <property name="name" value="timeZone"/> 
+      </properties> 
+    </item>  
+    <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" id="35" formItem="profileLocale"> 
+      <properties> 
+        <property name="caption" value="__locale"/>  
+        <property name="name" value="locale"/> 
+      </properties> 
+    </item> 
   </item>  
   <item name="profileEntryBusinessCard" caption="__profile_entry_business_card_definition" id="15"> 
     <properties/>  

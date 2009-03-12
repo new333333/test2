@@ -33,25 +33,24 @@
 //need to shut off relative links and adding pictures for mail.
 tinyMCE.init(
  {mode: "specific_textareas", editor_selector: "mceEditable",
-<c:choose>
-<c:when test="${language == 'da_DK'}">language: 'da',</c:when>
-<c:when test="${language == 'de_DE'}">language: 'de',</c:when>
-<c:when test="${language == 'es_ES'}">language: 'es',</c:when>
-<c:when test="${language == 'fr_FR'}">language: 'fr',</c:when>
-<c:when test="${language == 'hu_HU'}">language: 'hu',</c:when>
-<c:when test="${language == 'it_IT'}">language: 'it',</c:when>
-<c:when test="${language == 'ja_JP'}">language: 'ja_utf-8',</c:when>
-<c:when test="${language == 'nl_NL'}">language: 'nl',</c:when>
-<c:when test="${language == 'pl_PL'}">language: 'pl',</c:when>
-<c:when test="${language == 'pt_BR'}">language: 'pt_br',</c:when>
-<c:when test="${language == 'ru_RU'}">language: 'ru',</c:when>
-<c:when test="${language == 'uk_UA'}">language: 'uk',</c:when>
-<c:when test="${language == 'sv_SE'}">language: 'sv',</c:when>
-<c:when test="${language == 'sv_SV'}">language: 'sv',</c:when>
-<c:when test="${language == 'zh_CN'}">language: 'zh_cn_utf8',</c:when>
-<c:when test="${language == 'zh_TW'}">language: 'zh_tw_utf8',</c:when>
-<c:otherwise>locale: 'en',</c:otherwise>
-</c:choose>
+<c:choose><%--
+    --%><c:when test="${ssUser.locale.language == 'da'}">language: 'da',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'de'}">language: 'de',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'es'}">language: 'es',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'fr'}">language: 'fr',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'hu'}">language: 'hu',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'it'}">language: 'it',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'ja'}">language: 'ja',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'nl'}">language: 'nl',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'pl'}">language: 'pl',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'pt'}">language: 'pt',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'ru'}">language: 'ru',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'uk'}">language: 'uk',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'sv'}">language: 'sv',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'sv'}">language: 'sv',</c:when><%--
+    --%><c:when test="${ssUser.locale.language == 'zh'}">language: 'zh',</c:when><%--
+    --%><c:otherwise>language: 'en',</c:otherwise><%--
+--%></c:choose>
   content_css: "<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>",
   relative_urls: false, 
   width: "100%",
