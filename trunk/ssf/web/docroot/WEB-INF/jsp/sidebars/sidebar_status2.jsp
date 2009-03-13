@@ -39,7 +39,7 @@
 <c:if test="${ssUser.internalId != guestInternalId}">
  <c:set var="sbMiniblogTitle">
 	<c:if test="${!empty ssUser.statusDate}">
-	  <span style="float:right;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+	  <span style="float:right; font-size:9px !important;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
         value="${ssUser.statusDate}" type="both" 
 	    timeStyle="short" dateStyle="short" /></span>
 	</c:if>
