@@ -123,7 +123,7 @@ public class TimeZoneHelper {
 		cZoneIdConversion.put("IST", "Asia/Calcutta");
 		cZoneIdConversion.put("BST", "Asia/Dhaka");
 		cZoneIdConversion.put("VST", "Asia/Saigon");
-		cZoneIdConversion.put("CTT", "Asia/Beijing");
+		cZoneIdConversion.put("CTT", "Asia/Shanghai");
 		cZoneIdConversion.put("JST", "Asia/Tokyo");
 		cZoneIdConversion.put("ACT", "Australia/Darwin");
 		cZoneIdConversion.put("AET", "Australia/Sydney");
