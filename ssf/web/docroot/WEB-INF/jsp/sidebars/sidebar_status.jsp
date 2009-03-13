@@ -41,7 +41,7 @@
     <c:set var="ss_statusId" value="ss_myStatus${renderResponse.namespace}" scope="request"/>
   </c:if>
 
-  <div class="ss_myStatus" id="${ss_statusId}">
+  <div class="ss_myStatusOuter" id="${ss_statusId}">
     <%@ include file="/WEB-INF/jsp/sidebars/sidebar_status2.jsp" %>
   </div>
 </c:if>

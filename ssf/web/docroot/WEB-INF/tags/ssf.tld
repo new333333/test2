@@ -1259,7 +1259,12 @@
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>title</name>
-			<required>true</required>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>titleHTML</name>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
@@ -1280,6 +1285,12 @@
 		</attribute>
 		<attribute>
 			<name>sticky</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
+			<name>noColorChange</name>
 			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>
 			<type>java.lang.Boolean</type>

@@ -37,6 +37,7 @@
 <c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <c:if test="${ssUser.internalId != guestInternalId}">
+ <c:set var="sbMiniblogTitle">
 	<c:if test="${!empty ssUser.statusDate}">
 	  <span style="float:right;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
         value="${ssUser.statusDate}" type="both" 
@@ -46,6 +47,9 @@
 	   title="<ssf:nlt tag="miniblog.title"/>">
 	   <span class="ss_status_header"><ssf:nlt tag="relevance.userStatus"/></span>
 	</a>
+ </c:set> 
+ <ssf:sidebarPanel titleHTML="${sbMiniblogTitle}" id="ss_miniblog_sidebar" divClass="ss_myStatusInner"
+    initOpen="true" sticky="true" noColorChange="true">
 	<ssf:ifLoggedIn>
 		<script type="text/javascript">
 		  ss_statusCurrent = "";
@@ -54,6 +58,9 @@
 		  </c:if>
 		</script>
 
+	  	<div class="ss_input_myStatus">
+	  	  <span>${ssUser.status}</span>
+	  	</div>
 		<label for="ss_status_textarea${renderResponse.namespace}"></label>
 
 		<textarea cols="22" rows="2" id="ss_status_textarea${renderResponse.namespace}"
@@ -63,10 +70,10 @@
   			onBlur="ss_setStatusBackground(this, 'blur')"
   			onMouseover="ss_setStatusBackground(this, 'mouseOver');"
   			onMouseout="ss_setStatusBackgroundCheck(this);"
-  		><c:out value="${ssUser.status}" escapeXml="true"/></textarea>
+  		></textarea>
   		
-  		<div style="margin-left:4px;">
-	  		<table cellspacing="0" cellpadding="0" width="164">
+  		<div >
+	  		<table cellspacing="0" cellpadding="0" width="154">
 	  		  <tr>
 	  		    <td>
 		  		  <input type="button" value="<ssf:nlt tag="button.ok"/>" class="ss_inlineButtonSmall"
@@ -80,4 +87,5 @@
 	  		</table>
 	  	</div>
 	</ssf:ifLoggedIn> 
+ </ssf:sidebarPanel>
 </c:if>

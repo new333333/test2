@@ -801,8 +801,8 @@ function ss_updateStatusNow(obj) {
 function ss_postUpdateStatusNow(s, id) {
 	var divObj = self.document.getElementById(id);
 	if (divObj != null) {
-		divObj.innerHTML = s;
-		ss_executeJavascript(divObj)
+		//divObj.innerHTML = s;
+		//ss_executeJavascript(divObj)
 		document.location.reload();
 	}
 }
