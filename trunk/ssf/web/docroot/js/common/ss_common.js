@@ -4969,11 +4969,14 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
 }
 
 function ss_viewMiniBlog(userId, page, popup) {
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"view_miniblog", userId:userId, page:page, randomNumber:ss_random++});
+	var now = new Date();
+	var random = now.valueOf()
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"view_miniblog", userId:userId, page:page, randomNumber:random});
 	if (popup) {
 		self.window.open(url, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no,width=500px,height=500px");
 	} else {
-		self.location.href = url;
+		self.window.open(url, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no,width=500px,height=500px");
+		setTimeout("self.window.close();", 100);
 	}
 }
 
