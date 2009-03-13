@@ -264,7 +264,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 
 <c:if test="${ssBinder.entityType == 'folder'}">
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedViews" text="Allowed views"/> <ssf:inlineHelp tag="ihelp.other.view_type" /> </legend>
+    <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedViews" text="Allowed views"/> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/allowed_views" /> </legend>
 
     <c:set var="folderViewCount" value=""/>
     <c:forEach var="item" items="${ssAllBinderDefinitions}">
