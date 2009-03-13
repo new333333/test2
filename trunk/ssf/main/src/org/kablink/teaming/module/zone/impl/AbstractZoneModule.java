@@ -672,6 +672,17 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		getCoreDao().save(user);
     		//indexing and other modules needs the user
     		RequestContextHolder.getRequestContext().setUser(user).resolve();
+    		
+       		//Reset the top folder title to localized title now that the admin user is set up
+    		top.setTitle(NLT.get("administration.initial.workspace.title", new Object[] {zoneName}, zoneName));
+    		top.setPathName("/"+top.getTitle());
+    		getCoreDao().save(top);
+
+    		//Reset the profiles binder title, too
+    		profiles.setTitle(NLT.get("administration.initial.profile.title", "Personal"));
+    		profiles.setPathName(top.getPathName() + "/" + profiles.getTitle());
+    		getCoreDao().save(profiles);
+
     		//set zone info after context is set
 			ZoneConfig zoneConfig = addZoneConfigTx(top);
 			getZoneClassManager().initialize();
