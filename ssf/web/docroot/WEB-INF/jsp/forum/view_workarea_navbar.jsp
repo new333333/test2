@@ -33,7 +33,6 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 <c:set var="accessibility_simple_ui" value='<%= org.kablink.teaming.util.SPropsUtil.getBoolean("accessibility.simple_ui", false) %>'/>
-<c:set var="watermark" value='<%= org.kablink.teaming.util.SPropsUtil.getString("watermark.masthead", "") %>'/>
 <c:set var="ss_urlWindowState" value="maximized"/>
 <c:set var="ss_urlWindowState" value=""/>
 <script type="text/javascript">
@@ -117,9 +116,9 @@ var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
   <br/>
 <!-- End of debug window -->
 </c:if>
-<c:if test="${!empty watermark}">
+<c:if test="${!empty ss_watermark}">
 <div id="ss_mastheadWatermark${renderResponse.namespace}" style="position:absolute;">
-<span style="color:red;font-size:12px;font-family:impact,arial black;">${watermark}</span>
+${ss_watermark}
 </div>
 <script type="text/javascript">
 ss_setOpacity(document.getElementById("ss_mastheadWatermark${renderResponse.namespace}"), 0.5);

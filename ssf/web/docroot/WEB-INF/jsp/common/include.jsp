@@ -40,7 +40,11 @@
     --%><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html <c:if test="${!empty ssUser && !empty ssUser.locale}"> lang="${ssUser.locale}"</c:if>>
 <head>
-<jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_head.jsp" />
+<%-- Variables that can be overridden in the following callout --%><%--
+--%><c:set var="ss_watermark" scope="request"><%--
+--%><span style="color:red;font-size:12px;font-family:impact,arial black;">${ssProductName} Teaming 2.0 Beta</span><%--
+--%></c:set><%--
+--%><jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_head.jsp" />
 <meta http-equiv="Content-Script-Type" content="text/javascript"/>
 <meta http-equiv="Content-Style-Type" content="text/css"/>
 <c:if test="${!empty ss_windowTitle}"><title>${ss_windowTitle}</title></c:if>
