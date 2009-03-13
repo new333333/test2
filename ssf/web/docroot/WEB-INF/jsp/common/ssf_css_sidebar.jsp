@@ -32,6 +32,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
+boolean isIE6 = BrowserSniffer.is_ie_6(request);
 %>
 
 /**********************************/
@@ -108,6 +109,10 @@ textarea.ss_input_myStatus {
 	    width: 180px;
   		margin: 0px 8px 4px -16px;
  	</c:if>
+	<c:if test="<%= isIE6 %>">
+	    width: 180px;
+  		margin: 0px 8px 4px -10px;
+ 	</c:if>
 	padding: 0px 0px 3px 2px;	
 	}
 .ss_setStatusBackground{
@@ -137,7 +142,7 @@ textarea.ss_input_myStatus {
 	margin: 3px 8px 3px 8px;
 	padding: 8px 4px 8px 4px;	
 	<c:if test="<%= isIE %>">
-		padding: 8px 0px 8px 4px
+		padding: 8px 2px 8px 4px
  	</c:if>				
 	}	
 .ss_menuOpen {
