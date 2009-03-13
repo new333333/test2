@@ -51,6 +51,7 @@
 		<property name="fileModule"><ref bean="fileModule"/></property>
 		<property name="icalModule"><ref bean="icalModule"/></property>
 		<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+		<property name="reportModule"><ref bean="reportModule"/></property>
 	</bean>
 	
 	<!-- ============================== Services ============================= -->

@@ -82,6 +82,7 @@ import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.mail.MailSentStatus;
+import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
@@ -184,8 +185,14 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
 		this.transactionTemplate = transactionTemplate;
 	}
-
-   	/**
+	private ReportModule reportModule;
+   	protected ReportModule getReportModule() {
+		return reportModule;
+	}
+	public void setReportModule(ReportModule reportModule) {
+		this.reportModule = reportModule;
+	}
+	/**
    	 * Use operation so we can keep the logic out of application
 	 * and easisly change the required rights
 	 */
@@ -881,7 +888,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// check user exists
 		User user = getProfileDao().loadUser(userId, rc.getZoneId());
 
-		return getAccessTokenManager().getApplicationScopedToken(applicationId, userId).toStringRepresentation();
+		String result = getAccessTokenManager().getApplicationScopedToken(applicationId, userId).toStringRepresentation();
+		
+		getReportModule().addTokenInfo(rc.getUser(), user, applicationId);
+		
+		return result;
 	}
 	
 	public void destroyApplicationScopedToken(String token) {
