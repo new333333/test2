@@ -61,6 +61,7 @@
           <property name="name" value="attendee"/>  
           <property name="caption" value="__calendar_attendee"/>  
           <property name="required" value="false"/> 
+          <property name="includeCreatorOnAdd" value="true"/>
         </properties> 
       </item>  
       <item name="group_list" caption="__group_list" type="data" category="commonEntryData" id="37"> 

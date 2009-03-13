@@ -28,6 +28,9 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.domain.User"     %>
+<%@ page import="org.kablink.teaming.util.ResolveIds" %>
+
 <% // User list %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
@@ -40,12 +43,36 @@
 	java.util.List userList = new java.util.ArrayList();
 	java.util.Set userListSet = new java.util.HashSet();
 %>
+
+<% // If we don't have any entries in the user list... %>
+<c:if test="${empty ssDefinitionEntry}">
+	<%
+		// ...are we adding a new entry to a folder?
+		String operation = (String) request.getAttribute("ssOperation");
+		if ((null != operation) && operation.equalsIgnoreCase("add_folder_entry")) {
+			// Yes!  If we're supposed to include the entry creator
+			// during the add...
+			String	includeCreator = (String) request.getAttribute("property_includeCreatorOnAdd");
+			if ((null != includeCreator) && includeCreator.equalsIgnoreCase("true")) {
+				// ...and we have their userId...
+				User user = (User) request.getAttribute("ssUser");
+				Long userId = ((null == user) ? null : user.getId());
+				if (null != userId) {
+					// ...treat it as though they were added manually.
+					userList = ResolveIds.getPrincipals(String.valueOf(userId.longValue()));
+					userListSet.addAll(userList);
+				}
+			}
+		}
+	%>
+</c:if>
+
 <c:if test="${! empty ssDefinitionEntry}">
   <c:set var="userlist_entry" value="${ssDefinitionEntry}"/>
   <jsp:useBean id="userlist_entry" type="org.kablink.teaming.domain.DefinableEntity" />
 <%
 	if (propertyName != null && !propertyName.equals("")) 
-		userList = org.kablink.teaming.util.ResolveIds.getPrincipals(userlist_entry.getCustomAttribute(propertyName));
+		userList = ResolveIds.getPrincipals(userlist_entry.getCustomAttribute(propertyName));
 	if(userList != null) {
 		userListSet.addAll(userList);
 	}

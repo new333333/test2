@@ -2067,6 +2067,7 @@
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
+			<property name="includeCreatorOnAdd" caption="__includeCreatorOnAdd" type="boolean" default="false"/>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/userlist_form.jsp" />

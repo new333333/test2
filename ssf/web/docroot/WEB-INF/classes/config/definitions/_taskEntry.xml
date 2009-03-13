@@ -86,6 +86,7 @@
           <property name="caption" value="__task_assigned_to"/>  
           <property name="inline" value="false"/>  
           <property name="required" value="false"/> 
+          <property name="includeCreatorOnAdd" value="true"/>
         </properties> 
       </item>  
       <item name="group_list" caption="__group_list" type="data" category="commonEntryData" id="59"> 
