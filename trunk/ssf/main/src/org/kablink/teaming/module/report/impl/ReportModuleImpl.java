@@ -209,6 +209,12 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		
 	}
 
+	public void addTokenInfo(User requester, User requestee, Long applicationId) {
+		AuditTrail audit = new AuditTrail(AuditTrail.AuditType.token, requester, requestee);
+		audit.setApplicationId(applicationId);
+		addAuditTrail(audit);
+	}
+	
 	public void addLicenseStats(LicenseStats stats) {
 		getCoreDao().save(stats);
 	}

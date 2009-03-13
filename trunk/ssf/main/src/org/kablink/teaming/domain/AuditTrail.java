@@ -46,7 +46,8 @@ public class AuditTrail extends ZonedObject {
 		workflow,
 		login,
 		download,
-		userStatus
+		userStatus,
+		token
 	};
 
 	
@@ -61,6 +62,7 @@ public class AuditTrail extends ZonedObject {
     protected String transactionType; // type of transaction/operation
     protected AuditType auditType=AuditType.unknown;
     protected String fileId;
+    protected Long applicationId;
     
     protected AuditTrail() {
 		
@@ -266,4 +268,12 @@ public class AuditTrail extends ZonedObject {
 	public void setFileId(String fileId) {
 		this.fileId = fileId;
 	}
+	
+	public Long getApplicationId() {
+		return applicationId;
+	}
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
+	}
+	
 }

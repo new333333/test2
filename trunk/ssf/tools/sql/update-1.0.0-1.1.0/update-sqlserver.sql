@@ -22,6 +22,7 @@ alter table SS_WorkflowStates drop constraint FK8FA8AA80A3644438;
 alter table SS_Forums drop column upgradeVersion;
 alter table SS_Attachments add zoneId numeric(19,0);
 alter table SS_AuditTrail add zoneId numeric(19,0);
+alter table SS_AuditTrail add applicationId numeric(19,0);
 alter table SS_CustomAttributes add zoneId numeric(19,0);
 alter table SS_Dashboards add zoneId numeric(19,0);
 alter table SS_Definitions add binderId numeric(19,0);

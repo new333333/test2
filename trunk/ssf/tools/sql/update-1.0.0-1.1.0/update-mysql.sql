@@ -22,6 +22,7 @@ alter table SS_WorkflowStates drop foreign key FK8FA8AA80A3644438;
 alter table SS_Forums drop column upgradeVersion;
 alter table SS_Attachments add column zoneId bigint;
 alter table SS_AuditTrail add column zoneId bigint;
+alter table SS_AuditTrail add column applicationId bigint;
 alter table SS_CustomAttributes add column zoneId bigint;
 alter table SS_Dashboards add column zoneId bigint;
 alter table SS_Definitions add column binderId bigint;
