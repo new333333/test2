@@ -76,10 +76,16 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background: transparent;
 	height: auto;
 	margin: 8px;
+	<c:if test="<%= isIE %>">
+		margin-right: 2px !important;
+ 	</c:if>	 	
 	background-color: #9EC8CD;
 	}
 .ss_myStatusInner{
 	padding:0px;
+	<c:if test="<%= isIE %>">
+		margin: 0px !important;
+ 	</c:if>	 	
 	}
 .ss_status_textarea{
 	font-size: 10px;
@@ -88,18 +94,19 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-size: 12px;
 	font-weight: bold;
 	}
-div.ss_input_myStatus{
+div.ss_input_myStatus {
 	border-color: #9EC8CD;
-	width: 150px;
+	width: 160px;
 	padding: 2px 2px 0px 2px;	
 	}
-textarea.ss_input_myStatus{
+textarea.ss_input_myStatus {
 	border-color: #9EC8CD;
-	width: 150px;
-	height: 36px;
+	width: 164px;
+	height: 42px;
 	margin: 0px 0px 8px 1px;
 	<c:if test="<%= isIE %>">
-  		margin: 0px 0px 4px 0px;
+	    width: 180px;
+  		margin: 0px 8px 4px -16px;
  	</c:if>
 	padding: 0px 0px 3px 2px;	
 	}
@@ -130,7 +137,7 @@ textarea.ss_input_myStatus{
 	margin: 3px 8px 3px 8px;
 	padding: 8px 4px 8px 4px;	
 	<c:if test="<%= isIE %>">
-		padding: 8px 2px 8px 4px
+		padding: 8px 0px 8px 4px
  	</c:if>				
 	}	
 .ss_menuOpen {
