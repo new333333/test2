@@ -22,6 +22,7 @@
  	<property name="fileId">
  		<column name="fileId" sql-type="char(32)"/>
  	</property>
+    <property name="applicationId"/>
 <!-- deprecated - moved to WorkflowHistory as own class -->
     <subclass name="org.kablink.teaming.domain.WorkflowStateHistory" discriminator-value="W">
  		<property name="tokenId"/>

@@ -153,4 +153,12 @@ public class NullReportModule implements ReportModule {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.report.ReportModule#addTokenInfo(org.kablink.teaming.domain.User, org.kablink.teaming.domain.User, java.lang.Long)
+	 */
+	public void addTokenInfo(User requester, User requestee, Long applicationId) {
+		// TODO Auto-generated method stub
+		
+	}
 }

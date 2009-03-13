@@ -38,14 +38,10 @@ import java.util.Set;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.LicenseStats;
 import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.WorkflowState;
-import org.kablink.teaming.domain.WorkflowStateHistory;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 
 public interface ReportModule {
@@ -122,6 +118,7 @@ public interface ReportModule {
 	public void addLoginInfo(LoginInfo loginInfo);
 	public void addStatusInfo(User user);
 	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment);
+	public void addTokenInfo(User requester, User requestee, Long applicationId);
 
 	public void addLicenseStats(LicenseStats stats);
 	public LicenseStats getLicenseHighWaterMark(Calendar startDate, Calendar endDate);
