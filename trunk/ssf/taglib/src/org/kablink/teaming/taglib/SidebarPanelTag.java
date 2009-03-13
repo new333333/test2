@@ -65,10 +65,12 @@ import org.kablink.util.servlet.StringServletResponse;
 public class SidebarPanelTag extends BodyTagSupport {
 	private String _bodyContent;
 	private String title = "";
+	private String titleHTML = "";
 	private String id = "";
 	private String divClass = "";
 	private Boolean sticky = false;
 	private Boolean initOpen = false;
+	private Boolean noColorChange = false;
     
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -97,11 +99,13 @@ public class SidebarPanelTag extends BodyTagSupport {
 			}
 			
 			Map _params = new HashMap();
-			_params.put("title", new String[] {NLT.get(this.title)});
+			if (this.title != null && !this.title.equals("")) _params.put("title", new String[] {NLT.get(this.title)});
+			if (this.titleHTML != null && !this.titleHTML.equals("")) _params.put("title", new String[] {this.titleHTML});
 			_params.put("id", new String[] {this.id});
 			_params.put("divClass", new String[] {this.divClass});
 			_params.put("initOpen", new String[] {this.initOpen.toString()});
 			_params.put("sticky", new String[] {this.sticky.toString()});
+			_params.put("noColorChange", new String[] {this.noColorChange.toString()});
 
 						
 			ServletRequest req = null;
@@ -129,15 +133,21 @@ public class SidebarPanelTag extends BodyTagSupport {
 	    }
 		finally {
 			this.title = "";
+			this.titleHTML = "";
 			this.id = "";
 			this.divClass = "";
 			this.sticky = false;
 			this.initOpen = false;
+			this.noColorChange = false;
 		}
 	}
 
 	public void setTitle(String title) {
 	    this.title = title;
+	}
+
+	public void setTitleHTML(String titleHTML) {
+	    this.titleHTML = titleHTML;
 	}
 
 	public void setId(String id) {
@@ -155,6 +165,10 @@ public class SidebarPanelTag extends BodyTagSupport {
 
 	public void setInitOpen(Boolean initOpen) {
 	    this.initOpen = initOpen;
+	}
+
+	public void setNoColorChange(Boolean noColorChange) {
+	    this.noColorChange = noColorChange;
 	}
 
 }

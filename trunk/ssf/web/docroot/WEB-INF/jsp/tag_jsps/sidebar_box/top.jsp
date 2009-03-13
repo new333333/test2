@@ -40,12 +40,16 @@ String id = ParamUtil.get(request, "id", "");
 String divClass = ParamUtil.get(request, "divClass", "");
 Boolean initOpen = ParamUtil.getBoolean(request, "initOpen", true);
 Boolean sticky = ParamUtil.getBoolean(request, "sticky", true);
+Boolean noColorChange = ParamUtil.getBoolean(request, "noColorChange", true);
 %><%--
+--%><c:set var="noColorChange" value="<%= noColorChange %>" /><%--
 --%><c:set var="initOpen" value="<%= initOpen %>" /><%--
 --%><c:set var="sticky" value="<%= sticky %>" /><%--
 --%><c:set var="divId" value="<%= id %>" /><%--
 --%><c:set var="divClass" value="<%= divClass %>" /><%--
---%><div class="ss_sidebarMenu" onmouseover="this.className='ss_mouseOver';" onmouseout="this.className='ss_sidebarMenu';"><%--
+--%><div class="ss_sidebarMenu" <%--
+--%><c:if test="${!noColorChange}">onmouseover="this.className='ss_mouseOver';" onmouseout="this.className='ss_sidebarMenu';"</c:if><%--
+--%>><%--
     --%><a href="javascript: ;" <%--
         --%><c:if test="${initOpen}">class="ss_menuOpen" </c:if><%--
         --%><c:if test="${!initOpen}">class="ss_menuClosed" </c:if><%--
