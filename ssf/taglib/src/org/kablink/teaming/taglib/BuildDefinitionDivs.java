@@ -127,7 +127,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
 			
 			String color_theme = user.getTheme();
-			if (color_theme.equals("")) color_theme = "icib";
+			if (color_theme == null || color_theme.equals("")) color_theme = "icib";
 			imagesPath = contextPath + "/i/" + color_theme;
 			brandingPrefix = SPropsUtil.getString("branding.prefix", "");
 			if (brandingPrefix.equals("")) brandingPrefix = "icecore"; //This default value should match ss_brand_prefix in brandedImagesPath.tag
