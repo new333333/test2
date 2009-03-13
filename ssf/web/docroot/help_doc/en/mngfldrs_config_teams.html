@@ -9,7 +9,7 @@
 <meta http-equiv="Content-Language" content="en" />
 <meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
 <meta name="Generator" content="Novell Documentation" />
-<meta name="Generation-Date" content="Thursday, March 12, 2009" />
+<meta name="Generation-Date" content="Friday, March 13, 2009" />
 <meta name="Copyright" content="Copyright Novell, Inc. 2008" />
 
 <link rel="stylesheet" type="text/css" href="css/styles.css" />
@@ -24,31 +24,80 @@
 <h1 class="title"> Understanding <span class="phrase">Kablink</span> Teaming Teams</h1>
 
 <p class="para">Generally, a team is a group of people working together to achieve a shared goal. Teaming teams provide you with a dedicated area in which to collaborate online, where you can communicate quickly and easily with teammates.</p>
-<p class="para">By default, all people using Teaming can create a team workspace, which provides your team with a dedicated work area. After you create your team workspace, add as many sub-workspaces or folders (discussions, file libraries, wikis, blogs, and so on) as you need for your work.</p>
+<p class="para">By default, all people using Teaming can create a team workspace, which provides your team with a dedicated work area. After you create your team workspace, you can add as many sub-workspaces or folders (discussions, file libraries, wikis, blogs, and so on) as you need for your work.</p>
 <p class="para">Membership in a team can determine who can view or participate in a workspace or folder. Also, membership in a team can increase the speed of configuration and communication. For example, while working in a team area, you can quickly add all members of a team to a buddy list or to the clipboard.</p>
 <p class="para">The following sections provide information on how to manage and work with teams:</p>
-<div class="sect2"  id="bjjkk4s">
+<div class="sect2"  id="bjgkcts">
 
-<h2 class="title"> Creating a Team Inside of a Folder or Workspace</h2>
+<h2 class="title"> Creating a Highly Visible Team Workspace</h2>
 
 <span class="collapsible">
 
-<p class="para">You can also create a team inside of any workspace or folder. This might be useful if you want to quickly allow a group of people to participate in a place. For example, adding people to a team in a personal folder allows those people to author new entries. Another application is to designate a group of people to serve in a special role in that place, such as subject-matter experts or moderators. </p>
-<p class="para">To create teams inside of a folder or workspace:</p>
+<p class="para">If you want your team workspace to be highly visible and easy to find in the workspace tree, create the team workspace in the Team Workspaces directory.</p>
 <div class="procedure">
 <ol class="steps">
-<li class="step" id="bjjkkf1">
-<p class="para">Navigate to and select the folder or workspace where you want to create the new team.</p></li>
-<li class="step" id="bjjkl16">
-<p class="para">Click <span class="guimenu">Team</span> &gt; <span class="guimenu">Manage Team</span>.</p>
-<p class="para">The Add or Delete Team Members page is launched.</p></li>
-<li class="step" id="bjjkkpt">
-<p class="para">Click Yes, then use the <span class="guimenu">Users</span> and <span class="guimenu">Groups</span> fields to specify the desired users or groups that you want to add to the team. You can also click <span class="guimenu">Clipboard User Names</span> to specify users who are already on your clipboard.</p></li>
-<li class="step" id="bjjkn83">
+<li class="step" id="bifyqhv">
+<p class="para">Expand <span class="guimenu">Home Workspace</span> in the Workspace Tree Navigation tool, located near the top of the Teaming interface.</p>
+<p class="para">The Home Workspace directory is the highest-level folder in the workspace tree, and might be named something specific to your organization.</p></li>
+<li class="step" id="bifyqhw">
+<p class="para">Click <span class="guimenu">Team Workspaces</span>.</p>
+<p class="para">If you do not see the option in <a href="./mngfldrs_config_teams.html#bifyqhx">Step 3</a>, your site administrator has not permitted you to create a new workspace at this level. Continue to expand the workspace tree, following the path of your organizational unit, then click the name of the directory where you want to create the new team workspace. Or, follow the steps in <a href="./mngfldrs_config_teams.html#bjgkdb0">Creating a Team Workspace Inside of an Existing Team Workspace</a>.</p></li>
+<li class="step" id="bifyqhx">
+<p class="para">Click <span class="guimenu">Add a team workspace</span>.</p>
+<p class="para">The Add a Team Workspace page is displayed.</p></li>
+<li class="step" id="bifyqhy">
+<p class="para">In the <span class="guimenu">Title</span> section, provide a title for the workspace. </p></li>
+<li class="step" id="biuhxm7">
+<p class="para">In the <span class="guimenu">Team Member</span>s section, specify the team members.</p>
+<p class="para">You can specify individual users, entire groups, or add names that are on your clipboard.</p></li>
+<li class="step" id="biuhxqf">
+<p class="para">In the <span class="guimenu">Workspace Folders</span> section, select the folders that you want the workspace to contain. If you later decide that you want to add additional folders, you can add them at any time.</p></li>
+<li class="step" id="big25bp">
+<p class="para">(Optional) In the <span class="guimenu">Announcement</span> section, select the checkbox, then type a message in the <span class="guimenu">Announcement Text</span> field. </p>
+<p class="para">This message informs team members about the existence of the workspace, and might also explain the value of the workspace.</p></li>
+<li class="step" id="bifyqhz">
 <p class="para">Click <span class="guimenu">OK</span>.</p></li></ol>
 </div>
 
-<p class="para">Use the access control settings to grant team members additional privileges. </p>
+<p class="para">The new workspace has now been created.</p>
+</span>
+
+</div>
+
+<div class="sect2"  id="bjgkdb0">
+
+<h2 class="title"> Creating a Team Workspace Inside of an Existing Team Workspace</h2>
+
+<span class="collapsible">
+
+<p class="para">Teaming enables you to create nested workspaces, which are workspaces inside of other workspaces. You can create a team workspace inside of any existing workspace where you a have appropriate rights. </p>
+<p class="para">You might want to do this if you are not concerned about having high visibility in the workspace tree, and if the team workspace that you want to create consists mostly of members that already belong to a certain workspace.</p>
+<p class="para">To create a team workspace inside of an existing workspace:</p>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bjgo5tj">
+<p class="para">Navigate to the workspace where you want to create the new team workspace.</p></li>
+<li class="step" id="bjgo5yc">
+<p class="para">Click <span class="guimenu">Manage</span> &gt; <span class="guimenu">Add New Workspace</span>.</p>
+<p class="para">The Add New Workspace page is launched.</p></li>
+<li class="step" id="bjgo6ds">
+<p class="para">In the <span class="guimenu">Workspace Title</span> field, specify a title for the workspace. </p></li>
+<li class="step" id="bjgo7ty">
+<p class="para">In the Workspace section, select <span class="guimenu">Team Workspace</span>.</p>
+<p class="para">You can also create a basic workspace, a project management workspace, and a discussions workspace.</p></li>
+<li class="step" id="bjh19ou">
+<p class="para">In the <span class="guimenu">Team Members</span> section, specify the team members.</p>
+<p class="para">You can specify individual users, entire groups, or add names that are on your clipboard. You can also click <span class="guimenu">Team Members</span>. This displays a list of all of the members of the team workspace where you are creating your new team workspace. Select the names of the users that you want to include in your new team workspace.</p></li>
+<li class="step" id="bjh197v">
+<p class="para">In the <span class="guimenu">Workspace Folders</span> section, select the folders that you want the workspace to contain. If you later decide that you want to add additional folders, you can add them at any time.</p></li>
+<li class="step" id="bjh1cy2">
+<p class="para">(Optional) In the <span class="guimenu">Announcement</span> section, select the checkbox, then type a message in the <span class="guimenu">Announcement Text</span> field. </p>
+<p class="para">This message informs team members about the existence of the workspace, and might also explain the value of the workspace.</p></li>
+<li class="step" id="bjh1cs7">
+<p class="para">Click <span class="guimenu">OK</span>.</p></li></ol>
+</div>
+
+<p class="para">The new workspace has now been created.</p>
 </span>
 
 </div>
@@ -77,22 +126,6 @@
 <p class="para">Click <span class="guimenu">Start Meeting Now</span>, or <span class="guimenu">Schedule for Later</span>, depending on when you want to hold your meeting.</p></li></ol>
 </div>
 
-</div>
-
-<div class="sect3"  id="bjjligp">
-
-<h3 class="title"> Instant Messaging Team Members</h3>
-
-<p class="para">To instant message team members and other Teaming users, you must have <span class="phrase">Kablink</span> Conferencing installed. The Conferencing client must be installed on your personal workstation, and the Conferencing server must be interacting with the Teaming server. If you are unable to instant message other Teaming users, contact your system administrator.</p>
-<div class="procedure">
-<ol class="steps">
-<li class="step" id="bjjms5o">
-<p class="para">In the main sidebar, click <span class="guimenu">Instant Message</span>.</p></li>
-<li class="step" id="bjjmte9">
-<p class="para">Select the team members who you want to instant message.</p></li></ol>
-</div>
-
-<p class="para">You can instant message individual Teaming users by clicking on the user’s <span class="guimenu">Presence</span> icon, then clicking <span class="guimenu">Send Instant Message</span>.</p>
 </div>
 
 <div class="sect3"  id="bjjlj40">
@@ -188,7 +221,7 @@
 
 <h3 class="title"> Creating Sub-Workspaces</h3>
 
-<p class="para">Sub-workspaces, in the Team Workspaces directory, can be organized by geography (North America, South America, Europe, Africa), organizational function (Executive, Finance, Marketing, Sales, Human Resources), or any other type of orginization that you choose.</p>
+<p class="para">Sub-workspaces, in the Team Workspaces directory, can be organized by geography (North America, South America, Europe, Africa), organizational function (Executive, Finance, Marketing, Sales, Human Resources), or any other type of organization that you choose.</p>
 <p class="para">To create a sub-workspace:</p>
 <div class="procedure">
 <ol class="steps">
