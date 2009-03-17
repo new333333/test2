@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html>
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Friday, March 13, 2009" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2008" />
+
+<link rel="stylesheet" type="text/css" href="css/styles.css" />
+<link rel="stylesheet" type="text/css" href="css/expandable.css" />
+
+<title>Access Control Overview</title>
+</head>
+<body>
+<script type="text/javascript" src="css/expandable.js"></script>
+<div class="sect1"  id="mngfldrs_accesscontrol_overview">
+
+<h1 class="title"> Access Control Overview</h1>
+
+<p class="para">Access control is the method by which you specify which users have the right to perform which tasks in which places. By default, everyone has the right to participate in every global workspace and folder, visit all personal workspaces (read entries and comment on them), create team workspaces, and participate in any team workspaces in which they are a member. The general steps for altering access control are to visit a place in <span class="phrase">Kablink</span> Teaming, click <span class="guimenu">Manage</span> &gt; <span class="guimenu">Access Control</span>, and use the Configure Access Control page to alter the default settings.</p>
+<p class="para">Teaming uses role-based access control. With this method, by default, Teaming assigns a role name to six sets of tasks. If you want people to be able to perform the associated set of tasks, you assign the role to them.</p>
+<p class="para">By default, places inherit the access settings of their parent. So, by establishing settings for a primary space, all sub-places automatically apply the same settings, saving administration time. To specify settings separate from the parent, visit the place, view the access table, turn off inheritance, click either <span class="guimenu">Add a group</span> or <span class="guimenu">Add a user</span>, and remove and select check boxes as needed.</p>
+<p class="para">To alter access-control settings in multiple places, view and use any Configure Access Control page, and click the title of place in the Workspace tree toward the top of the page. Teaming then displays the access control table for the new place. Repeat as often as needed.</p>
+<div class="sect2"  id="mngfldrs_accesscontrol_users">
+
+<h2 class="title"> Understanding Default Users and Groups</h2>
+
+<span class="collapsible">
+
+<p class="para">There are four default users and groups located in the Configure Access Control tables:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<div class="formalpara" id="bhz40tt">
+                <p class="title"><em class="title">Owner of workspace or folder:</em>
+                The person who created it, or the person assigned to be the owner.</p>
+              </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bhz4129">
+                <p class="title"><em class="title">Team members:</em>
+                The individuals who are designated as team members in a given place, through the <span class="guimenu">Manage Team</span> feature in the main sidebar.</p>
+              </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bhz418j">
+                <p class="title"><em class="title">All users:</em>
+                Every person registered with <span class="phrase">Kablink</span> Teaming.</p>
+              </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bhz41ef">
+                <p class="title"><em class="title">Site administrator:</em>
+                The person who has rights to perform any task in any workspace or folder.</p>
+              </div>
+</li></ul></div>
+
+<p class="para">There are six default roles. The following list does not necessarily describe all of the rights for each role. For a complete list of rights, click the name of the role in the table on the Configure Access Control page.</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<div class="formalpara" id="bhz41pj">
+                <p class="title"><em class="title">Visitor:</em>
+                Has read-only and comment-only access.</p>
+              </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bhz41vp">
+                <p class="title"><em class="title">Participant:</em>
+                Can create and modify entries, plus perform the visitor tasks.</p>
+              </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bjj5yq8">
+                <p class="title"><em class="title">Guest Participant:</em>
+                Can read entries, create entries, and add comments.</p>
+              </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bhz422a">
+                <p class="title"><em class="title">Team Member:</em>
+                A Participant with some additional administrative privileges.</p>
+              </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bhz428x">
+                <p class="title"><em class="title">Workspace and Folder Administration:</em>
+                Can create, modify, or delete workspaces or folders; moderate participation (modify or delete the entries of others); design entries and workflows; and can perform Participant tasks.</p>
+              </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bhz42w5">
+                <p class="title"><em class="title">Workspace Creator:</em>
+                Can create sub-workspaces. In root team workspaces, this role allows users to create their own team workspaces.</p>
+              </div>
+</li></ul></div>
+
+</span>
+
+</div>
+
+<div class="sect2"  id="mngfldrs_accesscontrol_admin">
+
+<h2 class="title"> Delegating Administration</h2>
+
+<span class="collapsible">
+
+<p class="para">As the number of global workspaces and folders grows, it becomes impractical to have the same people manage all places in the workspace hierarchy. For this reason, you can delegate the administration of workspaces or folders.</p>
+<p class="para">To do this, you create a group with the names of the people to whom you want to delegate workspace or folder management. You add a group or individual user to the access control table by using the <span class="guimenu">Add group</span> link (on the left side of the table). <span class="phrase">Kablink</span> Teaming adds a row for the newly added group or user. Finally, select a check box in the <span class="guimenu">Workspace and folder administration</span> column.</p>
+<p class="para">You can limit the privileges that you assign to the administrators of a workspace or folder. (For example, you might not want them to be able to delete the place.) In this case, you might want to create a new role (for example, Moderator), which includes only some of the rights granted to someone in the Workspace and folder administration role.</p>
+</span>
+
+</div>
+
+<div class="sect2"  id="mngfldrs_accesscontrol_roles">
+
+<h2 class="title"> Defining New Roles</h2>
+
+<span class="collapsible">
+
+<p class="para">If you find that the existing roles do not meet the needs of your organization, you can modify existing ones or create new ones. This can be particularly useful if you want to delegate the administration of sub-workspaces and sub-folders, and if you do not want to grant all of the privileges that come with the Workspace and folder administration role.</p>
+<p class="para">To do this, sign in as a site administrator, then click the <span class="guimenu">Configure role definitions</span> link in the administration portlet. On the Configure Roles page, provide a name for the new role, select check boxes next to the tasks you want members of this role to be able to perform, and click <span class="guimenu">Add</span>. Then navigate to the place where you want to apply the new role, click the <span class="guimenu">Access Control</span> button, click the <span class="guimenu">Add a role</span> link at the top of the table, and select the role in the drop-down list that you want to apply to this table. <span class="phrase">Kablink</span> Teaming then adds a new table column for the new role. Remove and add people, groups, and selections of check boxes as needed.</p>
+</span>
+
+</div>
+
+</div>
+
+<p class="trademark"> For trademark and copyright information, see <a href="./legal.html">Legal Notices</a>.</p>
+</body>
+</html>

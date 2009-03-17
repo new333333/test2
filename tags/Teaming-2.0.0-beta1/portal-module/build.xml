@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<project name="portal-module" basedir="." default="compile">
+	<import file="../build-common.xml" />
+	<import file="../deploy-support.xml" />
+	
+	<property name="jar.file" value="kablink-teaming-portalmodule.jar" />
+
+
+	<target name="jar" depends="compile,build-common.jar">
+		<jar 
+			jarfile="${jar.file}"
+			update="true"
+		>
+			<fileset dir="${basedir}/../util/classes"
+				includes="org/kablink/util/servlet/DynamicServletRequest.class"
+			/>
+			<fileset dir="${basedir}/../main/classes">
+	        	<include name="org/kablink/teaming/portal/CrossContextConstants.class"/>
+	        	<include name="org/kablink/teaming/web/util/AttributesAndParamsOnlyServletRequest.class"/>
+	        	<include name="org/kablink/teaming/web/util/NullServletResponse.class"/>
+			</fileset>
+		</jar>
+		<antcall target="jar-manifest">
+			<param name="jar-manifest.jar.file" value="${jar.file}"/>
+		</antcall>
+	</target>
+	
+	<target name="build" depends="jar"/>
+
+	<target name="deploy">
+		<antcall target="deploy-jar-into-portal">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+		</antcall>
+	</target>
+
+</project>
