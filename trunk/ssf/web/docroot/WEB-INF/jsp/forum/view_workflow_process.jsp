@@ -47,12 +47,12 @@
 <c:if test="${ieBrowser == 'false'}">
 <applet CODE = "org.kablink.teaming.applets.workflowviewer.WorkflowViewer" 
   JAVA_CODEBASE = "<html:rootPath/>applets" 
-  ARCHIVE = "workflow-viewer/kablink-teaming-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.6.jar,lib/dom4j.jar,lib/jaxen.jar" 
+  ARCHIVE = "workflow-viewer/kablink-teaming-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections.jar,lib/jung.jar,lib/dom4j.jar,lib/jaxen.jar" 
   WIDTH = "100%" HEIGHT = "600">
 </c:if>
     <PARAM NAME = CODE value = "org.kablink.teaming.applets.workflowviewer.WorkflowViewer" >
     <PARAM NAME = CODEBASE value = "<html:rootPath/>applets" >
-    <PARAM NAME = ARCHIVE value = "workflow-viewer/kablink-teaming-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.6.jar,lib/dom4j.jar,lib/jaxen.jar" >
+    <PARAM NAME = ARCHIVE value = "workflow-viewer/kablink-teaming-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections.jar,lib/jung.jar,lib/dom4j.jar,lib/jaxen.jar" >
     <param name="type" value="application/x-java-applet;version=1.5">
     <param name="scriptable" value="false">
 	<param name="xmlGetUrl" value="<ssf:url 

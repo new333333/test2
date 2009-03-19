@@ -1,14 +1,29 @@
 <?xml version="1.0"?>
 
 <project name="applets" basedir="." default="compile">
-	<target name="clean">
+	<property environment="env" />
+	<property file="../build.${user.name}.properties" />
+	<property file="../build.properties" />
+
+	<target name="clean-library">
+		<delete dir="lib"/>
+	</target>
+	
+	<target name="library">
+		<mkdir dir="lib"/>
+		<copy todir="lib">
+			<fileset dir="../lib" includes="${libraries.applets}" />
+		</copy>
+	</target>
+	
+	<target name="clean" depends="clean-library">
 		<ant dir="workflow-viewer" target="clean" />
 		<ant dir="droptarget" target="clean" />
 		<ant dir="fileedit" target="clean" />
 		<ant dir="fileopen" target="clean" />
 	</target>
 
-	<target name="compile">
+	<target name="compile" depends="library">
 		<ant dir="workflow-viewer" target="compile" />
 		<ant dir="droptarget" target="compile" />
 		<ant dir="fileedit" target="compile" />
