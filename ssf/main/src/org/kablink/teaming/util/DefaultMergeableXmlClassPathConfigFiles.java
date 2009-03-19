@@ -63,9 +63,9 @@ public class DefaultMergeableXmlClassPathConfigFiles extends MergeableXmlClassPa
     	TransformerFactory transFactory = TransformerFactory.newInstance();
     	try {
     		if (size() > 1 && styleSheet != null) {   	
-    			Source xsltSource = new StreamSource(styleSheet.getFile());
+    			Source xsltSource = new StreamSource(styleSheet.getFile().toURI().toASCIIString());
     			Transformer trans = transFactory.newTransformer(xsltSource);
-    			trans.setParameter("merge", getAsFile(1).toURI().toString());
+    			trans.setParameter("merge", getAsFile(1).toURI().toASCIIString());
     			StreamResult result = new StreamResult(new StringWriter());
     			trans.transform(new DocumentSource(getAsDom4jDocument(0)), result);
     			Document document = null;
