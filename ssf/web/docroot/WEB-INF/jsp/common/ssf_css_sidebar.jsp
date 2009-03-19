@@ -116,7 +116,7 @@ textarea.ss_input_myStatus {
 	padding: 0px 0px 3px 2px;	
 	}
 .ss_setStatusBackground{
-	background-color: #9EC8CD;
+	background-color: #9EC8CD !important;
 	}
 	
 /*This is the border for all of the boxes*/
@@ -148,10 +148,7 @@ textarea.ss_input_myStatus {
 .ss_menuOpen {
 	background-image:  url("<html:rootPath/>images/pics/sidebar/backgrounddropdowns.png");
 	background-position: 1px -57px;
-	<c:if test="<%= isIE %>">
-		background-position: 1px -57px;
- 	</c:if>	
-	background-color: transparent;
+	background-color: inherit;
 	background-repeat: no-repeat;
 	padding-left: 27px;
 	cursor: pointer;
@@ -159,10 +156,7 @@ textarea.ss_input_myStatus {
 .ss_menuClosed {
 	background-image: url("<html:rootPath/>images/pics/sidebar/backgrounddropdowns.png");
 	background-position: 1px -31px;
-	<c:if test="<%= isIE %>">
-		background-position: 1px -31px;
- 	</c:if>		
-	background-color: transparent;
+	background-color: inherit;
 	background-repeat: no-repeat;
 	padding-left: 27px;
 	cursor: pointer;
@@ -400,7 +394,12 @@ textarea.ss_input_myStatus {
 	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_lg.png"); 
 	background-position:top left;
 	background-repeat: no-repeat;
-	height:18px;	
+	<c:if test="<%= !isIE6 %>">
+	  height:18px;	
+	</c:if>
+	<c:if test="<%= isIE6 %>">
+	  height:26px;	
+	</c:if>
 	color:#FFF;
 	cursor: pointer;
 	width: 210px;
@@ -413,7 +412,12 @@ textarea.ss_input_myStatus {
 	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_sm.png"); 
 	background-position:top left;
 	background-repeat: no-repeat;
-	height:18px;			
+	<c:if test="<%= !isIE6 %>">
+	  height:18px;	
+	</c:if>
+	<c:if test="<%= isIE6 %>">
+	  height:26px;	
+	</c:if>
 	color:#FFF;
 	cursor: pointer;	
 	width: 120px;

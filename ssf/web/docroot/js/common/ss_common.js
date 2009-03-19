@@ -2182,10 +2182,10 @@ function ss_showDiv(divName, backgroundIframe) {
 	ss_showDivObj(divObj, backgroundIframe)
 }
 function ss_showDivObj(divObj, backgroundIframe) {
-    divObj.style.visibility = "visible";
-    if (!divObj.style.display || divObj.style.display != 'inline') {
+    if (typeof divObj.style.display == 'undefined' || divObj.style.display == '' || divObj.style.display != 'inline') {
     	divObj.style.display = "block";
     }
+    divObj.style.visibility = "visible";
     divObj.focus();
 	if (typeof backgroundIframe == 'undefined' || backgroundIframe != 'no') 
 		ss_showBackgroundIFrame(divObj.id, "ss_background_iframe");
@@ -2217,15 +2217,15 @@ function ss_hideDivObj(divObj) {
 }
 
 function ss_hideDivNone(divName) {
-	if (document.getElementById(divName)) {
-		document.getElementById(divName).style.display = "none";
+	if (document.getElementById(divName) != null) {
 		document.getElementById(divName).style.visibility = "hidden";
+		document.getElementById(divName).style.display = "none";
 	}
     ss_divToBeDelayHidden[divName] = null
     ss_divBeingShown = null;
     
 	//Signal that the layout changed
-	if (!document.getElementById(divName) || 
+	if (document.getElementById(divName) == null || 
 	    	document.getElementById(divName).style.position != "absolute") {
 		ssf_onLayoutChange();
 		//ss_debug("ss_hideDiv: " + divName)

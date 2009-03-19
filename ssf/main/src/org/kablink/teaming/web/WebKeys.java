@@ -777,6 +777,7 @@ public class WebKeys {
     public static final String FOLDER_VIEW_TYPE="ssFolderViewType";
     public static final String FOLDER_ACTION_VERTICAL_OVERRIDE="ssFolderActionVerticalOverride";
     public static final String FOOTER_TOOLBAR="ssFooterToolbar";
+    public static final String FORM_STYLE_COMPACT="ssFormStyleCompact";
     public static final String FORUM_ARCHIVE_MAP="ssForumArchiveMap";
     public static final String FORUM_ARCHIVE_TREE="ssForumArchiveTree";
     public static final String FORUM_ID_LIST = "ssForumIdList";

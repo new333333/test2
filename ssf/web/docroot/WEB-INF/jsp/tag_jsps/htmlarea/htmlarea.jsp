@@ -50,7 +50,7 @@
 --%></c:if><%--
 --%><script type="text/javascript" src="<html:rootPath/>js/tiny_mce/tiny_mce.js"></script>
 <script type="text/javascript">
-var ss_imageSelections${element_id} = "<select name='srcUrl'><%--
+var ss_imageSelections${element_id} = "<select name='srcUrl' id='srcUrl'><%--
 --%><c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" ><%--
 --%><option value='<ssf:escapeJavaScript value="${selection.fileItem.name}"/>'>${selection.fileItem.name}</option><%--
 --%></c:forEach></select>";
@@ -108,7 +108,8 @@ srcFile : "<ssf:nlt tag="editor.addimage.srcFile"/>",
 addFile : "<ssf:nlt tag="editor.addimage.addFile"/>",
 addUrl : "<ssf:nlt tag="editor.addimage.addUrl"/>",
 imageName : "<ssf:nlt tag="editor.addimage.imageName"/>",
-imageSelectBox : ss_imageSelections${element_id}
+imageSelectBox : ss_imageSelections${element_id},
+missing_img : "<ssf:nlt tag="editor.addimage.noImage"/>"
 });
 
 tinyMCE.addI18n('${ssUser.locale.language}.ss_wikilink',{

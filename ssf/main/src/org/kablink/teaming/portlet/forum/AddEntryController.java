@@ -297,7 +297,12 @@ public class AddEntryController extends SAbstractController {
 	        	    	oneFileMap.put(nameValue+"1", mf);
 	        	    	entryNameOnly.put(ObjectKeys.FIELD_ENTITY_TITLE, utf8DecodedFileName);
 	        	    	MapInputData inputData = new MapInputData(entryNameOnly);
-	        	    	entryId= getFolderModule().addEntry(folderId, null, inputData, oneFileMap, null).getId();
+	        	    	try {
+		        	    	entryId= getFolderModule().addEntry(folderId, null, inputData, oneFileMap, null).getId();
+						} catch(WriteFilesException e) {
+				    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
+				    		return;
+						}
 	        		} else {
 	        			blnCheckForAppletFile = false;
 	        		}
@@ -340,6 +345,9 @@ public class AddEntryController extends SAbstractController {
 		String title = PortletRequestUtils.getStringParameter(request, "title", "");
 		model.put(WebKeys.ENTRY_TITLE, title);
 		model.put(WebKeys.OPERATION, action);
+		
+		String blogReply = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BLOG_REPLY, "");
+		if (!blogReply.equals("")) model.put(WebKeys.FORM_STYLE_COMPACT, true);
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
 		

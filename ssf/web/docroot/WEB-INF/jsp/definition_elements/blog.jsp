@@ -119,6 +119,11 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 </div>
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
 <% // Begins blog page %>
+<c:if test="${!empty ssUserFolderProperties.searchFilterMap}">
+   	<% // filter toolbar %>
+    <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
+</c:if>
+       
 <div id="ss_blogContent_wrap" >
 <c:set var="currentPage" value="${ssBinder.id}"/>
 <table>

@@ -99,8 +99,8 @@ public class SidebarPanelTag extends BodyTagSupport {
 			}
 			
 			Map _params = new HashMap();
-			if (this.title != null && !this.title.equals("")) _params.put("title", new String[] {NLT.get(this.title)});
-			if (this.titleHTML != null && !this.titleHTML.equals("")) _params.put("title", new String[] {this.titleHTML});
+			_params.put("title", new String[] {NLT.get(this.title)});
+			_params.put("titleHTML", new String[] {this.titleHTML});
 			_params.put("id", new String[] {this.id});
 			_params.put("divClass", new String[] {this.divClass});
 			_params.put("initOpen", new String[] {this.initOpen.toString()});

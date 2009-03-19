@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,8 +57,13 @@ public class HTMLInputFilter
    * unbalanced angle brackets will be html escaped (unless NEVER_MAKE_TAGS is true).
    */
 	  protected static final boolean ALWAYS_MAKE_TAGS = false;  //true doesn't work
-	  protected static final boolean NEVER_MAKE_TAGS = true;  //true doesn't work
-  
+	  protected static final boolean NEVER_MAKE_TAGS = true;  
+	  
+  /** 
+   * flag determining whether to add missing closing tags.
+   */
+	  protected static final boolean ALWAYS_CLOSE_TAGS = false; 
+		  
   /**
    * flag determing whether comments are allowed in input String.
    */
@@ -89,6 +95,9 @@ public class HTMLInputFilter
   
   /** always allowed tag attributes **/
   protected String vAlwaysAllowedAttributes;
+  
+  /** always disallowed tag attributes **/
+  protected String vAlwaysDisAllowedAttributes;
   
   /** tags which should be removed if they contain no content (e.g. "<b></b>" or "<b />") **/
   protected String[] vRemoveBlanks;
@@ -163,44 +172,16 @@ public class HTMLInputFilter
     
 	vAllowed = new HashMap<String,List<String>>();
 
-	vAlwaysAllowed = " * abbr acronym address b bdo big blockquote br caption center cite code col colgroup dd del dfn dir dl dt em fieldset font h1 h2 h3 h4 h5 h6 hr i ins kbd label legend li ol optgroup option p pre q s samp select small span strike strong sub sup tt u ul var";
-	vAlwaysAllowedAttributes = " class style title dir lang accesskey tabindex ";
-
+	vAlwaysAllowed = " * a abbr acronym address b bdo big blockquote br caption center cite code col colgroup dd del dfn dir div dl dt em fieldset font h1 h2 h3 h4 h5 h6 hr i img ins kbd label legend li ol optgroup option p pre q s samp select small span strike strong sub sup table tbody tr th td tt u ul var";
 	vAlwaysDisAllowed = " script embed object applet style html head body meta xml blink link iframe frame frameset ilayer layer bgsound base ";
 	
-    ArrayList<String> a_atts = new ArrayList<String>();
-    a_atts.add( "href" );
-    a_atts.add( "target" );
-    vAllowed.put( "a", a_atts );
-    
-    ArrayList<String> table_atts = new ArrayList<String>();
-    table_atts.add( "cellspacing" );
-    table_atts.add( "cellpadding" );
-    table_atts.add( "border" );
-    vAllowed.put( "table", table_atts );
-    
-    ArrayList<String> tbody_atts = new ArrayList<String>();
-    vAllowed.put( "tbody", tbody_atts );
-    
-    ArrayList<String> tr_atts = new ArrayList<String>();
-    vAllowed.put( "tr", tr_atts );
-    
-    ArrayList<String> td_atts = new ArrayList<String>();
-    td_atts.add( "align" );
-    td_atts.add( "valign" );
-    vAllowed.put( "td", td_atts );
-    
-    ArrayList<String> th_atts = new ArrayList<String>();
-    th_atts.add( "align" );
-    th_atts.add( "valign" );
-    vAllowed.put( "th", th_atts );
-    
+	vAlwaysAllowedAttributes = " * class style title dir lang accesskey tabindex ";
+	vAlwaysDisAllowedAttributes = " datafld datasrc dynsrc longdesc lowsrc urn ";
+
+    /*
     ArrayList<String> div_atts = new ArrayList<String>();
     div_atts.add( "align" );
     vAllowed.put( "div", div_atts );
-    
-    ArrayList<String> span_atts = new ArrayList<String>();
-    vAllowed.put( "span", span_atts );
     
     ArrayList<String> img_atts = new ArrayList<String>();
     img_atts.add( "src" );
@@ -212,7 +193,8 @@ public class HTMLInputFilter
     img_atts.add( "vspace" );
     img_atts.add( "alt" );
     vAllowed.put( "img", img_atts );
-    
+    */
+	
     ArrayList<String> no_atts = new ArrayList<String>();
     vAllowed.put( "p", no_atts );
     vAllowed.put( "b", no_atts );
@@ -274,8 +256,7 @@ public class HTMLInputFilter
    */
   public String filter( String input )
   {
-    Map<String,Integer> vTagCounts = new HashMap<String,Integer>();
-    
+    Stack<String> vTagStack = new Stack<String>();
     String s = input;
     
     debug( "************************************************" );
@@ -287,7 +268,7 @@ public class HTMLInputFilter
     s = balanceHTML(s);
     debug( "        balanceHTML: " + s );
     
-    s = checkTags(s, vTagCounts);
+    s = checkTags(s, vTagStack);
     debug( "          checkTags: " + s );
     
     s = processRemoveBlanks(s);
@@ -344,14 +325,14 @@ public class HTMLInputFilter
     return s;
   }
   
-  protected String checkTags( String s, Map<String,Integer> vTagCounts )
+  protected String checkTags( String s, Stack<String> vTagStack )
   {    
     Matcher m = pattern_check_tags.matcher( s );
     
     StringBuffer buf = new StringBuffer();
     while (m.find()) {
       String replaceStr = m.group( 1 );
-      replaceStr = processTag( replaceStr, vTagCounts);
+      replaceStr = processTag( replaceStr, vTagStack);
       m.appendReplacement(buf, Matcher.quoteReplacement(replaceStr));
     }
     m.appendTail(buf);
@@ -360,11 +341,10 @@ public class HTMLInputFilter
     
     // these get tallied in processTag
     // (remember to reset before subsequent calls to filter method)
-    for( String key : vTagCounts.keySet())
-    {
-      for(int ii=0; ii<vTagCounts.get(key); ii++) {
-        s += "</" + key + ">";
-      }
+    if (ALWAYS_CLOSE_TAGS) {
+    	while (!vTagStack.empty()) {
+            s += "</" + vTagStack.pop() + ">";
+        }
     }
     
     return s;
@@ -387,7 +367,7 @@ public class HTMLInputFilter
     return m.replaceAll( replacement );
   }
   
-  protected String processTag( String s, Map<String,Integer> vTagCounts )
+  protected String processTag( String s, Stack<String> vTagStack )
   {    
     // ending tags
     Matcher m = pattern_process_tags1.matcher( s );
@@ -398,10 +378,14 @@ public class HTMLInputFilter
     		  vAlwaysAllowed.contains(" * ")) &&
     		  !vAlwaysDisAllowed.contains(" " + name.toLowerCase() + " ")) {
         if (!inArray(name.toLowerCase(), vSelfClosingTags)) {
-          if (vTagCounts.containsKey( name.toLowerCase() )) {
-            vTagCounts.put(name.toLowerCase(), vTagCounts.get(name.toLowerCase())-1);
-            return "</" + name + ">";
-          }
+        	//Pop off tag stack until this one is found
+        	if (vTagStack.search(name.toLowerCase()) != -1) {
+        		while (!vTagStack.empty()) {
+        			if (vTagStack.pop().toLowerCase().equals(name.toLowerCase())) {
+        				return "</" + name + ">";
+        			}
+        		}
+        	}
         }
       }
     }
@@ -444,7 +428,9 @@ public class HTMLInputFilter
           
           if ((vAllowed.containsKey( name.toLowerCase() ) && 
         		  vAllowed.get( name.toLowerCase() ).contains( paramName.toLowerCase() )) || 
-        		  vAlwaysAllowedAttributes.contains(" " + paramName.toLowerCase() + " ")) {
+        		  vAlwaysAllowedAttributes.contains(" " + paramName.toLowerCase() + " ") ||
+        		  vAlwaysAllowedAttributes.contains(" * ") &&
+        		  !vAlwaysDisAllowedAttributes.contains(" " + paramName.toLowerCase() + " ")) {
             if (inArray( paramName.toLowerCase(), vProtocolAtts )) {
               paramValue = processParamProtocol( paramValue );
             }
@@ -461,13 +447,9 @@ public class HTMLInputFilter
         }
         
         if (ending == null || ending.length() < 1) {
-          if (vTagCounts.containsKey( name.toLowerCase() )) {
-            vTagCounts.put( name.toLowerCase(), vTagCounts.get(name.toLowerCase())+1 );
-          } else {
-            vTagCounts.put( name.toLowerCase(), 1 );
-          }
+        	vTagStack.push(name.toLowerCase());
         } else {
-          ending = " /";
+        	ending = " /";
         }
         return "<" + name + params + ending + ">";
       } else {

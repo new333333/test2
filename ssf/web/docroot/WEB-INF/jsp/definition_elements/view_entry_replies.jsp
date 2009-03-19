@@ -35,7 +35,7 @@
 <c:if test="${ssEntry == ssDefinitionEntry}" >
   <c:if test="${!empty ssFolderEntryDescendants}">
 
-<div class="div.ss_entryContent">
+<div class="ss_entryContent">
   <c:if test="${!empty property_caption}">
     <span class="ss_topic_replies"><c:out value="${property_caption}"/></span>
   </c:if>

@@ -36,12 +36,15 @@
 --%><%
 
 String title = ParamUtil.get(request, "title", "");
+String titleHTML = ParamUtil.get(request, "titleHTML", "");
 String id = ParamUtil.get(request, "id", "");
 String divClass = ParamUtil.get(request, "divClass", "");
 Boolean initOpen = ParamUtil.getBoolean(request, "initOpen", true);
 Boolean sticky = ParamUtil.getBoolean(request, "sticky", true);
 Boolean noColorChange = ParamUtil.getBoolean(request, "noColorChange", true);
 %><%--
+--%><c:set var="title" value="<%= title %>" /><%--
+--%><c:set var="titleHTML" value="<%= titleHTML %>" /><%--
 --%><c:set var="noColorChange" value="<%= noColorChange %>" /><%--
 --%><c:set var="initOpen" value="<%= initOpen %>" /><%--
 --%><c:set var="sticky" value="<%= sticky %>" /><%--
@@ -50,11 +53,11 @@ Boolean noColorChange = ParamUtil.getBoolean(request, "noColorChange", true);
 --%><div class="ss_sidebarMenu" <%--
 --%><c:if test="${!noColorChange}">onmouseover="this.className='ss_mouseOver';" onmouseout="this.className='ss_sidebarMenu';"</c:if><%--
 --%>><%--
-    --%><a href="javascript: ;" <%--
+    --%><a href="javascript: ;" <ssf:title tag="sidebar.showHide"/> <%--
         --%><c:if test="${initOpen}">class="ss_menuOpen" </c:if><%--
         --%><c:if test="${!initOpen}">class="ss_menuClosed" </c:if><%--
         --%> onclick="ss_showHideSidebarBox('${renderResponse.namespace}_${divId}', this, ${sticky}, '${divId}');"><%--
-        --%><%= title %><%--
+        --%>${title}${titleHTML}<%--
     --%></a><div><img alt="" src="<html:imagesPath/>pics/1pix.gif" height="1" width="180"/></div><%--
 --%><div id="${renderResponse.namespace}_${divId}" style="overflow: hidden; <%--
 --%><c:if test="${initOpen}">visibility: visible; display: block;</c:if><%--

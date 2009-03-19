@@ -202,11 +202,6 @@ public class BinderHelper {
 		
 		String displayType = getDisplayType(request);
         User user = RequestContextHolder.getRequestContext().getUser();
-		model.put(WebKeys.PRODUCT_NAME, SPropsUtil.getString("product.name", ObjectKeys.PRODUCT_NAME_DEFAULT));
-		model.put(WebKeys.PRODUCT_TITLE, SPropsUtil.getString("product.title", ObjectKeys.PRODUCT_TITLE_DEFAULT));
-		model.put(WebKeys.PRODUCT_CONFERENCING_NAME, SPropsUtil.getString("product.conferencing.name", ObjectKeys.PRODUCT_CONFERENCING_NAME_DEFAULT));
-		model.put(WebKeys.PRODUCT_CONFERENCING_TITLE, SPropsUtil.getString("product.conferencing.title", ObjectKeys.PRODUCT_CONFERENCING_TITLE_DEFAULT));
-		model.put("releaseInfo", ReleaseInfo.getReleaseInfo());
 		
 		if (prefs != null) displayType = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_TYPE, null);
 		if (Validator.isNull(displayType)) {
@@ -429,6 +424,11 @@ public class BinderHelper {
 			model.put((WebKeys.STAND_ALONE), false);
 		}
 
+		model.put(WebKeys.PRODUCT_NAME, SPropsUtil.getString("product.name", ObjectKeys.PRODUCT_NAME_DEFAULT));
+		model.put(WebKeys.PRODUCT_TITLE, SPropsUtil.getString("product.title", ObjectKeys.PRODUCT_TITLE_DEFAULT));
+		model.put(WebKeys.PRODUCT_CONFERENCING_NAME, SPropsUtil.getString("product.conferencing.name", ObjectKeys.PRODUCT_CONFERENCING_NAME_DEFAULT));
+		model.put(WebKeys.PRODUCT_CONFERENCING_TITLE, SPropsUtil.getString("product.conferencing.title", ObjectKeys.PRODUCT_CONFERENCING_TITLE_DEFAULT));
+		model.put("releaseInfo", ReleaseInfo.getReleaseInfo());
 	}
 	public static Document getSearchFilter(AllModulesInjected bs, UserProperties userFolderProperties) {
 		convertV1Filters(bs, userFolderProperties);  //make sure converted

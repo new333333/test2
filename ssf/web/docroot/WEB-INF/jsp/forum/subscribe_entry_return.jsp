@@ -31,12 +31,14 @@
 <%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<div class="ss_style" align="left" style="width: 40%;">
+<div class="ss_style" align="left" style="width: 50%;">
 
-<form method="post" id="${ss_namespace}subscription_entry_form${ssEntry.id}">
+<form method="post" id="${ss_namespace}subscription_entry_form${ssEntry.id}" 
+    style="text-align:center;width: 300px;">
   <span class="ss_bold"><ssf:nlt tag="subscribe.select.type"/></span><br/><br/>
-<%@ include file="/WEB-INF/jsp/entry/subscribe_entry.jsp" %>
+  <%@ include file="/WEB-INF/jsp/entry/subscribe_entry.jsp" %>
 
+  <br/>
   <br/>
   <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"
     onClick="ss_post('<ssf:url adapter="true" action="__ajax_request" actionUrl="true" portletName="ss_forum" binderId="${ssEntry.parentBinder.id}" entryId="${ssEntry.id}">

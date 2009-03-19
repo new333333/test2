@@ -32,12 +32,12 @@
 <div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}" class="ss_muted_tag_cloud"><%--
 --%><c:forEach var="ptag" items="${ssPersonalTags}"><%--
 --%><a href="javascript:;" onClick="ss_tagSearchObj(this);" title="${ptag.name}"><%--
---%><span class="ss_muted_cloud_tag"><c:out value="${ptag.name}"/></span><%--
+--%><span class="ss_muted_cloud_tag" title="${ptag.name}">${ptag.name}</span><%--
 --%></a> <%--
 --%></c:forEach><%--
 --%><c:forEach var="tag" items="${ssCommunityTags}"><%--
 --%><a href="javascript:;" onClick="ss_tagSearchObj(this);" title="${tag.name}"><%--
---%><span class="ss_muted_cloud_tag"><c:out value="${tag.name}"/></span><%--
+--%><span class="ss_muted_cloud_tag" title="${tag.name}">${tag.name}</span><%--
 --%></a> <%--
 --%></c:forEach>
 </div>

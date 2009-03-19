@@ -56,7 +56,7 @@
     
   </td>
   <td>
-    <span class="ss_tags" style="padding-right:10px;"><c:out value="${ptag.name}"/></span>
+    <span class="ss_tags" style="padding-right:10px;" title="${ptag.name}">${ptag.name}</span>
   </td>
 </tr>
 </c:forEach>

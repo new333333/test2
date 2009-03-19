@@ -37,30 +37,43 @@
 <c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <c:if test="${ssUser.internalId != guestInternalId}">
- <c:set var="sbMiniblogTitle">
-	<c:if test="${!empty ssUser.statusDate}">
-	  <span style="float:right; font-size:9px !important;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-        value="${ssUser.statusDate}" type="both" 
-	    timeStyle="short" dateStyle="short" /></span>
-	</c:if>
-	<a href="javascript: ;" onclick="ss_viewMiniBlog('${ssUser.id}', '0', true);return false;"
+	<script type="text/javascript">
+	  ss_statusCurrent = "";
+	  <c:if test="${!empty ssUser.status}">
+	    ss_statusCurrent = "<%= java.net.URLEncoder.encode(ssUser.getStatus()) %>";
+	  </c:if>
+	</script>
+	<table cellspacing="0" cellpadding="0" width="100%" style="padding:0px 4px;">
+	 <tr>
+	  <td valign="top">
+	  <a href="javascript: ;" onclick="ss_viewMiniBlog('${ssUser.id}', '0', true);return false;"
 	   title="<ssf:nlt tag="miniblog.title"/>">
 	   <span class="ss_status_header"><ssf:nlt tag="relevance.userStatus"/></span>
-	</a>
- </c:set> 
- <ssf:sidebarPanel titleHTML="${sbMiniblogTitle}" id="ss_miniblog_sidebar" divClass="ss_myStatusInner"
-    initOpen="true" sticky="true" noColorChange="true">
-	<ssf:ifLoggedIn>
-		<script type="text/javascript">
-		  ss_statusCurrent = "";
-		  <c:if test="${!empty ssUser.status}">
-		    ss_statusCurrent = "<%= java.net.URLEncoder.encode(ssUser.getStatus()) %>";
-		  </c:if>
-		</script>
-
+	  </a>
+	  </td>
+	  <td valign="top" align="right">
+	   <c:if test="${!empty ssUser.statusDate && !empty ssUser.status}">
+	    <span class="ss_fineprint"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+          value="${ssUser.statusDate}" type="both" 
+	      timeStyle="short" dateStyle="short" />
+	    </span>
+	   </c:if>
+	  </td>
+	 </tr>
+	 <tr>
+	  <td colspan="2">
 	  	<div class="ss_input_myStatus">
 	  	  <span>${ssUser.status}</span>
 	  	</div>
+	  </td>
+	 </tr>
+	</table>
+ <c:set var="ss_sidebarStatusTitle" scope="request">
+   <span class="ss_fineprint"><ssf:nlt tag="sidebar.statusPost"/></span>
+ </c:set>
+ <ssf:sidebarPanel titleHTML="${ss_sidebarStatusTitle}" id="ss_miniblog_sidebar" 
+    initOpen="true" sticky="true" noColorChange="true">
+	<ssf:ifLoggedIn>
 		<label for="ss_status_textarea${renderResponse.namespace}"></label>
 
 		<textarea cols="22" rows="2" id="ss_status_textarea${renderResponse.namespace}"
