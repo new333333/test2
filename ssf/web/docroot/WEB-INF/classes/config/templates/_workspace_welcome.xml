@@ -8,10 +8,16 @@
   <attribute name="iconName" type="string">/icons/workspace.gif</attribute>
   <attribute name="name" type="string">_workspace_welcome</attribute>
   <property name="library">false</property>
+  <property name="mirrored">false</property>
   <property name="uniqueTitle">false</property>
   <property name="inheritFunctionMembership">true</property>
   <property name="inheritDefinitions">false</property>
   <property name="inheritTeamMembers">true</property>
-  <attribute name="mashup" type="string">welcome</attribute>
-  <definition name="_welcomeWorkspace" internalId="402883b51cbdbdc2011cbdfe2857000b"/>
+  <attribute name="mashup__hideFooter" type="boolean">false</attribute>
+  <attribute name="mashup__hideMasthead" type="boolean">false</attribute>
+  <attribute name="mashup__showBranding" type="boolean">false</attribute>
+  <attribute name="mashup__hideSidebar" type="boolean">false</attribute>
+  <attribute name="mashup__hideToolbar" type="boolean">false</attribute>
+  <attribute name="mashup__style" type="string">mashup_dark.css</attribute>
+  <definition name="_welcomeWorkspace" internalId="402883b51cbdbdc2011cbdfe2857000b" databaseId="402883b51cbdbdc2011cbdfe2857000b"/>
 </template>
