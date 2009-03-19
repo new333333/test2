@@ -49,9 +49,9 @@
 	offsetX="0" offsetY="8" 
 	title="<ssf:nlt tag="helpSpot.moreBlogTools"/>">
 </ssHelpSpot>
-<table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
+<ul>
 <c:if test="${!empty ss_blog_reply_url}">
-<td valign="top" style="white-space: nowrap;">
+<li>
 <a href="${ss_blog_reply_url}" 
   onClick="ss_addBlogReply(this, '${renderResponse.namespace}', '${ssBinder.id}', '${ssDefinitionEntry._docId}');return false;"
   <ssf:title tag="title.add.comment" />
@@ -59,8 +59,8 @@
 <div class="ss_iconed_label ss_add_comment"><ssf:nlt tag="blog.addComment"/></div>
 </a>
 </c:if>
-</td>
-<td valign="top" style="white-space: nowrap;">
+</li>
+<li>
 <a href="javascript: ;" onClick="ss_showBlogReplies('${renderResponse.namespace}', '${ssBinder.id}','${ssDefinitionEntry._docId}');return false;"
 <ssf:title tag="title.view.comments">
 	<ssf:param name="value" value="${ssDefinitionEntry._totalReplyCount}" />
@@ -70,8 +70,8 @@
 <ssf:nlt tag="blog.viewComments"/> [<span id="${renderResponse.namespace}ss_blog_reply_count_${ssDefinitionEntry._docId}">${ssDefinitionEntry._totalReplyCount}</span>]
 </div>
 </a>
-</td>
-<td valign="top" style="white-space: nowrap;">
+</li>
+<li>
 <a href="<ssf:url adapter="true" 
 		portletName="ss_forum" 
 	    action="send_entry_email"
@@ -80,8 +80,8 @@
   onClick="ss_openUrlInWindow(this, '_blank');return false;"
   <ssf:title tag="title.send.entry.to.friends" />
 ><div class="ss_iconed_label ss_send_friend"><ssf:nlt tag="entry.sendtofriend"/></div></a>
-</td>
-<td valign="top" style="white-space: nowrap;">
+</li>
+<li>
 <a onclick=" ss_createPopupDiv(this, '${renderResponse.namespace}ss_subscription_entry${ssDefinitionEntry._docId}');return false;" 
 	href="<ssf:url
 			adapter="true" 
@@ -96,8 +96,8 @@
 		</ssf:url>" <ssf:title tag="title.subscribe.to.entry"/>>
 		<div class="ss_iconed_label ss_subscribe"><ssf:nlt tag="entry.subscribe"/></div>
 </a>
-</td>	
-</tr></tbody></table>
+</li>	
+</ul>
 </div>
 
 

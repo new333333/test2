@@ -29,6 +29,7 @@
  */
 %>
 <% //Business card elements %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ page import="java.lang.reflect.Method" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
@@ -56,47 +57,46 @@
 </c:if>
 
 <script type="text/javascript">
-<!--
     function toggle_visibility(id) {
-       var one = document.getElementById('show');
-       var two = document.getElementById('hide');
-       
-       if(id == 'show') {
-         one.style.display = 'block';
-         one.focus();
-         two.style.display = 'none';  
-       }
-       else {
-         two.style.display = 'block';
-         two.focus();
-         one.style.display = 'none';
-       }
+       <% if (BrowserSniffer.is_ie_6(request)) { %>
+       		setTimeout("self.location.reload(true);", 200);
+       <% } else { %>
+			var one = document.getElementById('ss_profile_show');
+			var two = document.getElementById('ss_profile_hide');
+	       
+			if (id == 'show') {
+				ss_hideDivNone('ss_profile_hide')  
+				ss_showDivObj(one)
+			} else {
+				ss_hideDivNone('ss_profile_show')
+				ss_showDivObj(two)
+			}
+	   <% } %>
     }
-//-->
 </script>
 
 <div class="ss_content_rule" style="margin-bottom: 10px; margin-top: 5px; padding-right: 5px;" align="right">
 
-<div id='show'
+<div id="ss_profile_show"
   <c:choose>  
-    <c:when test= "${showBusinessCard == 'yes'}">style='display:none'</c:when>
-    <c:otherwise>style='display:block'</c:otherwise>
+    <c:when test= "${showBusinessCard == 'yes'}"> style= "display: none;" </c:when>
+    <c:otherwise> style="display: block;" </c:otherwise>
   </c:choose>
 >
-  <a href="javascript:;" 
-    onClick="ss_showHideBusinessCard('show','${scopeBusinessCard}');toggle_visibility('hide');"
+  <a href="javascript: ;" 
+    onClick="ss_showHideBusinessCard('show','${scopeBusinessCard}');toggle_visibility('hide');return false;"
     title="<ssf:nlt tag="profile.page.toggleStyle"/>"
   ><img border="0" src="<html:imagesPath/>icons/profile_bizcard_full.gif"/></a>
 </div>
 
-<div id='hide'
+<div id="ss_profile_hide"
   <c:choose>
-    <c:when test= "${showBusinessCard == 'no'}">style='display:none'</c:when>
-    <c:otherwise>style='display:block'</c:otherwise>
+    <c:when test= "${showBusinessCard == 'no'}"> style="display: none;" </c:when>
+    <c:otherwise> style="display: block;" </c:otherwise>
   </c:choose>
 >
-  <a href="javascript:;" 
-    onClick="ss_showHideBusinessCard('hide','${scopeBusinessCard}');toggle_visibility('show');"
+  <a href="javascript: ;" 
+    onClick="ss_showHideBusinessCard('hide','${scopeBusinessCard}');toggle_visibility('show');return false;"
     title="<ssf:nlt tag="profile.page.toggleStyle"/>"
   ><img border="0" src="<html:imagesPath/>icons/profile_bizcard_small.gif"/></a>
 </div>

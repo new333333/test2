@@ -133,11 +133,23 @@ div.ss_header_bar_timestamp {
 	background-color:${ss_blog_footer_color};
 	padding-bottom: 5px; 
 	padding-top: 4px;
-	padding-left: 22px;
+	padding-left: 10px;
 	padding-right: 10px;
-	margin: 0px -8px;
+	margin: 0px;
 }
-	
+.ss_blog_footer ul {
+	margin:0px;
+	padding:0px;
+}
+.ss_blog_footer ul li {
+	display: inline;
+	white-space: nowrap;
+	list-style-type: none;
+	padding: 0px;
+}	
+.ss_blog_footer * div {
+	display: inline;
+}
 div.ss_header_bar_timestamp a, div.ss_header_bar_timestamp a:visited {
 	color: ${ss_style_metadata_color};
 	}

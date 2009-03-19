@@ -42,7 +42,7 @@
 <head>
 <%-- Variables that can be overridden in the following callout --%><%--
 --%><c:set var="ss_watermark" scope="request"><%--
---%><span style="color:red;font-size:12px;font-family:impact,arial black;">${ssProductName} Teaming 2.0 Beta</span><%--
+--%><span style="color:red;font-size:12px;font-family:impact,arial black;">${ssProductName} 2.0 Beta</span><%--
 --%></c:set><%--
 --%><jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_head.jsp" />
 <meta http-equiv="Content-Script-Type" content="text/javascript"/>

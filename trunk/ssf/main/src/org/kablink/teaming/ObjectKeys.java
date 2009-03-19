@@ -37,11 +37,11 @@ package org.kablink.teaming;
 public interface ObjectKeys {
 	
     //Default name for the product
-	public static final String PRODUCT_NAME_DEFAULT="ICEcore";
-	public static final String PRODUCT_TITLE_DEFAULT="ICEcore";
+	public static final String PRODUCT_NAME_DEFAULT="Kablink";
+	public static final String PRODUCT_TITLE_DEFAULT="Kablink";
 	public static final String PRODUCT_EDITION_DEFAULT="OpenSource";
 	public static final String PRODUCT_CONFERENCING_NAME_DEFAULT="Conference";
-	public static final String PRODUCT_CONFERENCING_TITLE_DEFAULT="ICEcore Conference";
+	public static final String PRODUCT_CONFERENCING_TITLE_DEFAULT="Kablink Conference";
 	
 	//Original zoneId for V1 zones
 	public static final String DEFAULT_ZONE_ID_FOR_V1="1";

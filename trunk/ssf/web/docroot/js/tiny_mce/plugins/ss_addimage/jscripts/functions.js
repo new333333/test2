@@ -212,10 +212,21 @@ function insertAction() {
 		src = srcUrl;
 		imageClass = " ss_addimage_att "
 	}
+	
+	var fileSelectObj = document.getElementById('srcUrl');
+	var radioBtnObj = document.getElementById('typeSelFile');
+	var prevObj = document.getElementById('prev');
+	if (radioBtnObj.checked && prevObj.innerHTML == "") {
+		alert(tinyMCEPopup.getLang('ss_addimage_dlg.missing_img', '', true))
+		return
+	} else if ((fileSelectObj.value == null || fileSelectObj.value == "") && prevObj.innerHTML == "") {
+		alert(tinyMCEPopup.getLang('ss_addimage_dlg.missing_img', '', true))
+		return
+	}
 
 	if (tinyMCE.getParam("accessibility_warnings")) {
 		if (formObj.alt.value == "") {
-			var answer = confirm(tinyMCEPopup.getLang('ss_addimage.missing_alt', '', true));
+			var answer = confirm(tinyMCEPopup.getLang('ss_addimage_dlg.missing_alt', '', true));
 			if (answer == true) {
 				formObj.alt.value = " ";
 			}

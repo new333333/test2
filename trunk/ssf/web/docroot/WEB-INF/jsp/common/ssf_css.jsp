@@ -1023,13 +1023,15 @@ div.ss_sliding_table_column {
   background-color: transparent;
 }
 .ss_sliding_table_row0 {
+  height:20px;
   background-color: ${ss_sliding_table_row0_background_color}; 
-  line-height:16px;
+  line-height:18px;
   font-family: ${ss_style_folder_view_font_family} !important;
 }
 .ss_sliding_table_row1 {
+  height:20px;
   background-color: ${ss_sliding_table_row1_background_color}; 
-  line-height:16px;
+  line-height:18px;
   font-family: ${ss_style_folder_view_font_family} !important;
 }
 .ss_highlightEntry {

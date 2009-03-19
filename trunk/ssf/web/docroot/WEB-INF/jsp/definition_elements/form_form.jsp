@@ -61,7 +61,9 @@
 	if (formViewTypeEle != null) formViewStyle = formViewTypeEle.attributeValue("value", "form");
 
 %>
-<ssf:form title="<%= defName %>">
+<c:set var="formClass" value=""/>
+<c:if test="${ssFormStyleCompact}"><c:set var="formClass" value="ss_form_wrap_compact"/></c:if>
+<ssf:form title="<%= defName %>" formClass="${formClass}">
 <c:set var="ss_form_form_formName" value="<%= formName %>" scope="request"/>
 <c:set var="ss_formViewStyle" value="<%= formViewStyle %>" scope="request" />
 <jsp:useBean id="ss_formViewStyle" type="String" scope="request" />

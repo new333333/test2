@@ -49,7 +49,8 @@
 	request.setAttribute("currentStyles", currentStyles);
 %>
 </c:if>
-<ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_notifications_explained"/>    <c:if test="${!empty currentStyles}"> <input type="hidden" name="_subscribe_element_present" value="1"/> </c:if>
+<ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_notifications_explained"/>
+<c:if test="${!empty currentStyles}"> <input type="hidden" name="_subscribe_element_present" value="1"/> </c:if>
 	
 <c:set var="nothing" value="${true}"/>
 
@@ -60,6 +61,7 @@
 	</c:if>
 </c:forEach>
 	
+  <br/>
   <span class="ss_labelAbove"><ssf:nlt tag="subscribe.message"/></span> 
   <select multiple="multiple" name="_subscribe2" >
 		<option value="" <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
@@ -79,6 +81,8 @@
 	</c:if>
 </c:forEach>
    
+    <br/>
+	<br/>
 	<span class="ss_labelAbove"><ssf:nlt tag="subscribe.noattachments"/></span>
      <select multiple="multiple" name="_subscribe3">
 		<option value="" <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
@@ -98,6 +102,8 @@
 	</c:if>
 </c:forEach>
    
+ 	<br/>
+ 	<br/>
  	<span class="ss_labelAbove"><ssf:nlt tag="subscribe.text"/></span>
    <select multiple="multiple"  name="_subscribe5">
 		<option value="" <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>

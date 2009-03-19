@@ -68,6 +68,19 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding: 0 25px 25px 25px!important;
 	margin: 25px 25px 25px 25px;
 	}
+.ss_form_wrap_compact {
+	border-top-width: 24px;
+	border-right-width: thin;
+	border-bottom-width: thin;
+	border-left-width: thin;
+	border-style: solid;
+	border-top-color: #5A9A98;
+	border-right-color: #CCCCCC;
+	border-bottom-color: #CCCCCC;
+	border-left-color: #CCCCCC;
+	padding: 0 6px 6px 6px!important;
+	margin: 6px 6px 6px 6px;
+	}
 .ss_form_subhead {
 	 font-weight: bold;
 	 color: #333;
