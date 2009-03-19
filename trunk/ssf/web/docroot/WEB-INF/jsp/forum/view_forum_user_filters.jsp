@@ -104,6 +104,7 @@
 			  name="action" value="build_filter"/><ssf:param 
 			  name="binderId" value="${ssBinder.id}"/><ssf:param 
 			  name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
+			  title="<ssf:nlt tag="sidebar.tags.filterHover"/>"
 			  ><span><ssf:nlt tag="sidebar.tags.filter"/></span></a>
 			</c:if>
 			<c:if test="${ssConfigJspStyle == 'template'}">
