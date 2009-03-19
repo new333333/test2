@@ -40,6 +40,7 @@ import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
@@ -105,6 +106,9 @@ public abstract class SSStatefulJob implements StatefulJob {
           				return;
            			}
            		} catch (NoBinderByTheIdException nb) {
+       	   			removeJob(context);   
+       	   			return;
+           		} catch (NoFolderByTheIdException nb) {
        	   			removeJob(context);   
        	   			return;
            		}
