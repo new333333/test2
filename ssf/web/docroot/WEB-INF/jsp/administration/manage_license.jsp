@@ -32,6 +32,30 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.manage.license") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
+<script type="text/JavaScript">
+
+	// Schedule checkForErrors() to be called after the page loads.
+	ss_createOnLoadObj( 'licence_check_for_errors', checkForErrors );
+	
+	/**
+	 * This function is an onload event handler that will check to see if an error.
+	 * occurred parsing the license files.
+	 */
+	function checkForErrors()
+	{
+		// Was there an error?
+		<c:if test='${! empty ssLicenseException}'>
+			var		msg;
+
+			// Yes, tell the user about the problem.
+			msg = '<ssf:escapeJavaScript>${ssLicenseException}</ssf:escapeJavaScript>';
+			alert( msg );
+		</c:if>
+	}// end checkForErrors()
+	
+</script>
+
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 
@@ -64,21 +88,28 @@
   <span><ssf:nlt tag="license.effective"/> ${ssLicenseEffective}</span>
     <br/>
     <br/>
+
+  <!-- Allowed number of registered users -->
+  <ssf:nlt tag="license.users.registered"/>&nbsp;
   <c:if test="${ssLicenseUsers < 0}">
-  <span><ssf:nlt tag="license.users.registered.unlimited"/></span>
+  	<span><ssf:nlt tag="license.users.registered.unlimited"/></span>
   </c:if>
   <c:if test="${ssLicenseUsers >= 0}">
-  <span><ssf:nlt tag="license.users.registered"/> ${ssLicenseUsers}</span>
+  	${ssLicenseUsers}
   </c:if>
     <br/>
+
+  <!-- Allowed number of external users -->
+  <ssf:nlt tag="license.users.external"/>&nbsp;
   <c:if test="${ssLicenseExternalUsers < 0}">
-  <span><ssf:nlt tag="license.users.external.unlimited"/></span>
+  	<ssf:nlt tag="license.users.external.unlimited"/>
   </c:if>
   <c:if test="${ssLicenseExternalUsers >= 0}">
-  <span><ssf:nlt tag="license.users.external"/> ${ssLicenseExternalUsers}</span>
+  	<ssf:nlt tag="license.users.external"/> ${ssLicenseExternalUsers}
   </c:if>
     <br/>
     <br/>
+
   <c:if test="${!empty ssLicenseOptionsList}">
 	<span><ssf:nlt tag="license.options"/><span>
 	 <br/>

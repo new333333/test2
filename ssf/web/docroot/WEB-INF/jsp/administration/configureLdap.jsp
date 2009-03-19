@@ -248,7 +248,11 @@ ssPage = {
 		});
 		jQuery(".ldapDelete", $container).click(function() {
 			var title = jQuery("#funkyDiv > ul li").eq(ssPage.currentTab).find("span").text();
-			if(ss_confirm("Really delete configuration for", title)) {
+			var prompt;
+
+			prompt = "<ssf:nlt tag="ldap.connection.delete.confirm" quoteDoubleQuote="true" />";
+			prompt = prompt.replace( '{0}', title );
+			if( ss_confirm( prompt, null )) {
 				var id = jQuery(this).parent().parent().attr("id");
 				jQuery("#funkyDiv > ul").tabs("remove", ssPage.currentTab);
 				jQuery(this).parent().parent().remove();
@@ -273,7 +277,10 @@ ssPage = {
 			.find('.ldapFilter').val(filter).end()
 			.find('.ldapSearchSubtree').val([ss]).end();
 		jQuery("button.deleteSearch", $newSearch).click(function() {
-			if(ss_confirm("Really delete this search specification")) {
+			var		msg;
+
+			msg = "<ssf:nlt tag="ldap.search.delete.confirm" quoteDoubleQuote="true" />";
+			if(ss_confirm( msg )) {
 				jQuery(this).parent().remove();
 			}
 			return false;
