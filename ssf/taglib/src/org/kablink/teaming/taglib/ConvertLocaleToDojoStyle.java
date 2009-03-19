@@ -102,21 +102,31 @@ public class ConvertLocaleToDojoStyle extends BodyTagSupport {
 	}
 	
 	private static List<String> supportedDojoLanguages = Arrays.asList(new String[]{
-			"da", "de", "en", "es", "fi", "fr", "hu", "it", "ja", "ko", "nl", "pl", "pt", "sv", "zh" 
+			"ar", "cs", "da", "de", "el", "en", "es", "fi", "fr", "he", "hu", "it", "ja", "ko", "nb", "nl", "pl", "pt", "ru", "sv", "tr", "zh" 
 	});
 	
 	private static Map<String, List<String>> supportedDojoLanguageCoutries = new HashMap<String, List<String>>();
 	static {
+		supportedDojoLanguageCoutries.put("cs", Arrays.asList(new String[]{"CS", "CZ"}));
+		supportedDojoLanguageCoutries.put("da", Arrays.asList(new String[]{"DK"}));
 		supportedDojoLanguageCoutries.put("de", Arrays.asList(new String[]{"DE"}));
+		supportedDojoLanguageCoutries.put("el", Arrays.asList(new String[]{"GR"}));
 		supportedDojoLanguageCoutries.put("en", Arrays.asList(new String[]{"GB", "US"}));
 		supportedDojoLanguageCoutries.put("es", Arrays.asList(new String[]{"ES"}));
 		supportedDojoLanguageCoutries.put("fi", Arrays.asList(new String[]{"FI"}));
 		supportedDojoLanguageCoutries.put("fr", Arrays.asList(new String[]{"FR"}));
+		supportedDojoLanguageCoutries.put("he", Arrays.asList(new String[]{"IL"}));
+		supportedDojoLanguageCoutries.put("hu", Arrays.asList(new String[]{"HU"}));
 		supportedDojoLanguageCoutries.put("it", Arrays.asList(new String[]{"IT"}));
 		supportedDojoLanguageCoutries.put("ja", Arrays.asList(new String[]{"JP"}));
 		supportedDojoLanguageCoutries.put("ko", Arrays.asList(new String[]{"KR"}));
+		supportedDojoLanguageCoutries.put("nb", Arrays.asList(new String[]{"NO"}));
 		supportedDojoLanguageCoutries.put("nl", Arrays.asList(new String[]{"NL"}));
+		supportedDojoLanguageCoutries.put("pl", Arrays.asList(new String[]{"PL"}));
 		supportedDojoLanguageCoutries.put("pt", Arrays.asList(new String[]{"BR"}));
+		supportedDojoLanguageCoutries.put("ru", Arrays.asList(new String[]{"RU"}));
+		supportedDojoLanguageCoutries.put("sv", Arrays.asList(new String[]{"SE"}));
+		supportedDojoLanguageCoutries.put("tr", Arrays.asList(new String[]{"TR"}));
 		supportedDojoLanguageCoutries.put("zh", Arrays.asList(new String[]{"CN", "TW"}));
 	}
 	
