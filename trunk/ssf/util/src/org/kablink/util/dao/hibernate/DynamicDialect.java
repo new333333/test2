@@ -41,6 +41,7 @@ import org.hibernate.LockMode;
 import org.hibernate.MappingException;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.DialectFactory;
+import org.hibernate.dialect.Oracle10gDialect;
 import org.hibernate.exception.SQLExceptionConverter;
 import org.hibernate.exception.ViolatedConstraintNameExtracter;
 import org.hibernate.sql.CaseFragment;
@@ -61,14 +62,16 @@ public class DynamicDialect extends Dialect {
 
 		Connection con = null;
 		String datasource = "jdbc/SiteScapePool";
+		String dbName = null;
+		int dbMajorVersion = 0;
 
 		try {
 			con = DataAccess.getConnection(datasource);
 
 			DatabaseMetaData metaData = con.getMetaData();
 
-			String dbName = metaData.getDatabaseProductName();
-			int dbMajorVersion = metaData.getDatabaseMajorVersion();
+			dbName = metaData.getDatabaseProductName();
+			dbMajorVersion = metaData.getDatabaseMajorVersion();
 			//this needs to be tested??
 			if (dbName.equals("MySQL")) 
 				_dialect = new MySQL5InnoDBDialect();
@@ -80,7 +83,13 @@ public class DynamicDialect extends Dialect {
 				_dialect = DialectFactory.determineDialect(dbName, dbMajorVersion);
 		}
 		catch (Exception e) {
-			_log.error(e);
+			if (dbName != null && dbName.equalsIgnoreCase("Oracle") && dbMajorVersion == 11) {
+				// No dialect support for Oracle 11g in Hibernate yet. Default it to 10g for now.
+				_dialect = new Oracle10gDialect();
+			}
+			else {
+				_log.error(e);
+			}
 		}
 		finally {
 			DataAccess.cleanUp(con);
