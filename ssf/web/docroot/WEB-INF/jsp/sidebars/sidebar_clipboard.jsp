@@ -39,6 +39,7 @@
 			<li>
 			  <a href="javascript:;"
 			    onclick="ss_muster.showForm('ss_muster_users', [${ss_toolbar_clipboard_ids_as_js_string}], '${ssBinder.id}');return false;"
+			    title="<%= NLT.get("sidebar.clipboard.info").replaceAll("\"", "&QUOT;") %>"
 			  >
 			    <ssf:nlt tag="sidebar.clipboard"/>
 			  </a>

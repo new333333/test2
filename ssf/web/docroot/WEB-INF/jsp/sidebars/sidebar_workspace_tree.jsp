@@ -32,8 +32,9 @@
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 
 <c:if test="${!ss_searchResultsPage && !empty ssSidebarWsTree}">
+<c:set var="ss_sidebarStatusTitleInfo"><ssf:nlt tag="sidebar.workspaceTree.info"/></c:set>
     <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
-        initOpen="true" sticky="true">
+        initOpen="true" sticky="true" titleInfo="${ss_sidebarStatusTitleInfo}">
 		<c:if test="${!empty ssSidebarWsTree}">
 			<div 
 			<% if (BrowserSniffer.is_ie_6(request)) { %>

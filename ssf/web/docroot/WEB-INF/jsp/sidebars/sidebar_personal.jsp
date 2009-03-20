@@ -31,8 +31,9 @@
 <% // Personal preferences %>
 <%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ss_sidebarStatusTitleInfo"><ssf:nlt tag="sidebar.personalPref.info"/></c:set>
 <ssf:sidebarPanel title="sidebar.personalPref" id="ss_personal_sidebar" 
-  divClass="ss_place_tags" initOpen="false" sticky="false">
+  divClass="ss_place_tags" initOpen="false" sticky="false" titleInfo="${ss_sidebarStatusTitleInfo}">
 
   <c:if test="${!empty ssFolderActionsToolbar}">
 	  <div class="ss_sidebarTitle"><ssf:nlt tag="sidebar.entryDisplay"/> 

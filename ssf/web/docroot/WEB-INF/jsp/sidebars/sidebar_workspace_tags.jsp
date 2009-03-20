@@ -31,9 +31,11 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:if test="${!ss_searchResultsPage}">
+<c:set var="ss_sidebarStatusTitleInfo"><ssf:nlt tag="sidebar.tags.workspace.info"/></c:set>
 	<c:if test="${ssDefinitionEntry.entityType == 'workspace'}">
 		<ssf:sidebarPanel title="sidebar.tags.workspace" id="ss_workspace_tags_sidebar" 
-		    	divClass="ss_place_tags" initOpen="false" sticky="true">
+		    	divClass="ss_place_tags" initOpen="false" sticky="true"
+		    	titleInfo="${ss_sidebarStatusTitleInfo}">
 		    <c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
 		    <%@ include file="/WEB-INF/jsp/definition_elements/tag_popup_view.jsp" %>
 		</ssf:sidebarPanel>

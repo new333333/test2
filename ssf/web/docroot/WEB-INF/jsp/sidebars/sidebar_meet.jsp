@@ -36,6 +36,7 @@
 			  <c:if test="${!ss_toolbar_meeting_post}">
 				  <a href="${ss_toolbar_meeting_url}"
 				    onclick="ss_toolbarPopupUrl(this.href);return false;"
+				    title="<%= NLT.get("sidebar.addMeeting.info").replaceAll("\"", "&QUOT;") %>"
 				  >
 				    <span><ssf:nlt tag="toolbar.menu.addMeeting"/></span>
 				  </a>

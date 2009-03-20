@@ -66,6 +66,7 @@ public class SidebarPanelTag extends BodyTagSupport {
 	private String _bodyContent;
 	private String title = "";
 	private String titleHTML = "";
+	private String titleInfo = "";
 	private String id = "";
 	private String divClass = "";
 	private Boolean sticky = false;
@@ -101,6 +102,7 @@ public class SidebarPanelTag extends BodyTagSupport {
 			Map _params = new HashMap();
 			_params.put("title", new String[] {NLT.get(this.title)});
 			_params.put("titleHTML", new String[] {this.titleHTML});
+			_params.put("titleInfo", new String[] {this.titleInfo});
 			_params.put("id", new String[] {this.id});
 			_params.put("divClass", new String[] {this.divClass});
 			_params.put("initOpen", new String[] {this.initOpen.toString()});
@@ -134,6 +136,7 @@ public class SidebarPanelTag extends BodyTagSupport {
 		finally {
 			this.title = "";
 			this.titleHTML = "";
+			this.titleInfo = "";
 			this.id = "";
 			this.divClass = "";
 			this.sticky = false;
@@ -148,6 +151,10 @@ public class SidebarPanelTag extends BodyTagSupport {
 
 	public void setTitleHTML(String titleHTML) {
 	    this.titleHTML = titleHTML;
+	}
+
+	public void setTitleInfo(String titleInfo) {
+	    this.titleInfo = titleInfo;
 	}
 
 	public void setId(String id) {
