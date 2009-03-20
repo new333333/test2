@@ -387,6 +387,7 @@ public class BinderHelper {
 			}
 		}
 		User user = null;
+		model.put(WebKeys.USER_PROPERTIES, new HashMap());
 		if (RequestContextHolder.getRequestContext() != null) {
         	user = RequestContextHolder.getRequestContext().getUser();
     		if (user != null) {
@@ -394,8 +395,6 @@ public class BinderHelper {
         		model.put(WebKeys.USER_PRINCIPAL, user);
         		if (userProperties.getProperties() != null) {
         			model.put(WebKeys.USER_PROPERTIES, userProperties.getProperties());
-        		} else {
-        			model.put(WebKeys.USER_PROPERTIES, new HashMap());
         		}
         		model.put(WebKeys.USER_PROPERTIES_OBJ, userProperties);
     		}
