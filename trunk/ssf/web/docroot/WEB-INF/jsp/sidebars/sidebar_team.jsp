@@ -31,8 +31,9 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:if test="${!ss_searchResultsPage && !empty ss_toolbar_team_view_url}">
+<c:set var="ss_sidebarStatusTitleInfo"><ssf:nlt tag="sidebar.teams.info"/></c:set>
 	<ssf:sidebarPanel title="toolbar.teams" id="ss_team_sidebar" 
-	  divClass="ss_place_tags" initOpen="false" sticky="true">
+	  divClass="ss_place_tags" initOpen="false" sticky="true" titleInfo="${ss_sidebarStatusTitleInfo}">
 	
 		<div class="ss_sub_sidebarMenu">
 			<table width="100%" style="margin-left: 7px;"><tbody>

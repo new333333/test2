@@ -71,8 +71,9 @@
  <c:set var="ss_sidebarStatusTitle" scope="request">
    <span class="ss_fineprint"><ssf:nlt tag="sidebar.statusPost"/></span>
  </c:set>
+ <c:set var="ss_sidebarStatusTitleInfo"><ssf:nlt tag="sidebar.statusPostInfo"/></c:set>
  <ssf:sidebarPanel titleHTML="${ss_sidebarStatusTitle}" id="ss_miniblog_sidebar" 
-    initOpen="true" sticky="true" noColorChange="true">
+    initOpen="true" sticky="true" noColorChange="true" titleInfo="${ss_sidebarStatusTitleInfo}">
 	<ssf:ifLoggedIn>
 		<label for="ss_status_textarea${renderResponse.namespace}"></label>
 

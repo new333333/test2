@@ -34,9 +34,9 @@
 	
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${ssDefinitionEntry.entityType == 'folder'}">
-
+<c:set var="ss_sidebarStatusTitleInfo"><ssf:nlt tag="sidebar.configureInfo"/></c:set>
   <ssf:sidebarPanel title="sidebar.configure" id="ss_folderTags_sidebar" divClass="ss_place_tags" 
-    initOpen="false" sticky="false">
+    initOpen="false" sticky="false" titleInfo="${ss_sidebarStatusTitleInfo}">
 
 		<c:if test="${!empty ssFolderViewsToolbar || !empty ssCalendarImportToolbar}">
 		  <div class="ss_sidebarTitle"> 

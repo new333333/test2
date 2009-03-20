@@ -30,8 +30,11 @@
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!ss_searchResultsPage}">
+<c:set var="ss_sidebarStatusTitleInfo"><ssf:nlt tag="sidebar.tags.folder.info"/></c:set>
 	<c:if test="${ssDefinitionEntry.entityType == 'folder'}">
-		<ssf:sidebarPanel title="sidebar.tags.folder" id="ss_placetags_sidebar" divClass="ss_place_tags" initOpen="true" sticky="true">
+		<ssf:sidebarPanel title="sidebar.tags.folder" id="ss_placetags_sidebar" 
+		  divClass="ss_place_tags" initOpen="true" sticky="true"
+		  titleInfo="${ss_sidebarStatusTitleInfo}">
 		
 		  <c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
 		  <%@ include file="/WEB-INF/jsp/definition_elements/tag_popup_view.jsp" %>

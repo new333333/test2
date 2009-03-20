@@ -37,7 +37,9 @@
 <c:set var="ss_urlWindowState" value="maximized"/>
 <c:set var="ss_urlWindowState" value=""/>
 <c:set var="numTabs" value="0"/>
-<ssf:sidebarPanel title="sidebar.history" id="ss_history_box" initOpen="false" sticky="true">
+<c:set var="ss_sidebarStatusTitleInfo"><ssf:nlt tag="sidebar.history.info"/></c:set>
+<ssf:sidebarPanel title="sidebar.history" id="ss_history_box" initOpen="false" sticky="true"
+  titleInfo="${ss_sidebarStatusTitleInfo}">
   <div class="ss_leftNav">
 	<ul style="padding-top: 2px; padding-left: 0px; margin:0px;">
 		<c:forEach var="tab" items="${ss_tabs.tabList}">
