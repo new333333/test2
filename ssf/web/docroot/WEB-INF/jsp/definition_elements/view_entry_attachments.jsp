@@ -31,7 +31,9 @@
 <% // View entry attachments %>
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil" %>
-
+<%
+	boolean presence_service_enabled = org.kablink.teaming.util.SPropsUtil.getBoolean("presence.service.enable", false);
+%>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
@@ -113,8 +115,8 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	  </li>
 	</c:if>
 	
+	<% if (presence_service_enabled) { %>
 	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-	  <% /* TODO: Add test if IC Broker is enabled (ICBrokerModule.isEnabled()) and	if user has zone name defined */ %>
 	  <li style="float:left; padding:1px 10px 4px 0px;">
 	  <a class="ss_tinyButton ss_fineprint ss_nowrap" 
 	    title="<ssf:nlt tag="attachMeeting.attachResults"/>" 
@@ -134,7 +136,9 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 		</div>
 	  </div>
 	  </li>
-	</c:if>		
+	</c:if>	
+	<% } %>
+		
 	</ul>
 	</td>
 </tr>
