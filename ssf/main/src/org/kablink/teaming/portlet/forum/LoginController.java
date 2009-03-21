@@ -29,7 +29,6 @@
 package org.kablink.teaming.portlet.forum;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
@@ -38,22 +37,17 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpSession;
 
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
-import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
+import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractControllerRetry;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
-import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Validator;
 import org.springframework.security.AuthenticationException;
 import org.springframework.security.ui.AbstractProcessingFilter;
@@ -78,7 +72,6 @@ public class LoginController  extends SAbstractControllerRetry {
 	
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		ProfileBinder	profileBinder;
 
 		// This controller is used to display the sign-in form used for login. 
 		// If form-based login is disallowed, this controller shouldn't display
@@ -120,6 +113,7 @@ public class LoginController  extends SAbstractControllerRetry {
     		MiscUtil.addCreateNewAccountDataToResponse( this, request, model );
     	}
 
+		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
 		String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 		if(Validator.isNotNull(refererUrl))
 			model.put(WebKeys.URL, refererUrl);

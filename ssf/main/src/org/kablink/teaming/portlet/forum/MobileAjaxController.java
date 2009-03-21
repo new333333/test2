@@ -148,6 +148,12 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 		
 		//The user is logged in
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		if (!userProperties.containsKey("acceptedMobileDisclaimer")) {
+			Map model = new HashMap();
+			BinderHelper.setupStandardBeans(this, request, response, model, null, "ss_mobile");
+			return new ModelAndView("mobile/show_disclaimer", model);
+		}
 		if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FOLDER)) {
 			return ajaxMobileShowFolder(this, request, response);
 			
@@ -279,6 +285,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			//The miniblog form was submitted. Go process it
 			String text = PortletRequestUtils.getStringParameter(request, "miniblogText", "");
 			BinderHelper.addMiniBlogEntry(bs, text);
+		} else if (formData.containsKey("acceptBtn")) {
+			//User clicked "I Accept"
+			getProfileModule().setUserProperty( null, "acceptedMobileDisclaimer", true );
 		}
 	}
 
@@ -775,7 +784,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 		Map formData = request.getParameterMap();
 		if (entryType.equals("") || formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
-			return ajaxMobileShowEntry(bs, request, response);
+			return ajaxMobileShowFolder(bs, request, response);
 		} else {
 			return new ModelAndView("mobile/add_entry", model);
 		}

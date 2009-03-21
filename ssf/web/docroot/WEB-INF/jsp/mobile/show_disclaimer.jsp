@@ -28,40 +28,50 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //Textarea form element %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
-<%
-	String elementName = (String) request.getAttribute("property_name");
-	String caption = (String) request.getAttribute("property_caption");
-	String caption2 = NLT.get("general.required.caption", new Object[]{caption});
-	String width = (String) request.getAttribute("property_width");
-	String rows = (String) request.getAttribute("property_rows");
-	if (rows == null || rows.equals("")) {rows = "4";}
-	if (caption == null || caption.equals("")) {
-		caption = "";
-	} else {
-		caption = "<b>"+caption+"</b><br/>";
-	}
-	String required = (String) request.getAttribute("property_required");
-	if (required == null) {required = "";}
-	if (required.equals("true")) {
-		required = "<span id=\"ss_required_"+elementName+"\" title=\""+caption2+"\" class=\"ss_required\">*</span>";
-	} else {
-		required = "";
-	}
-%>
-<c:set var="textValue" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
-<c:if test="${property_name == 'description'}">
-  <c:set var="textValue" value="${ssDefinitionEntry.description}"/>
-</c:if>
-<div class="ss_entryContent">
-<span class="ss_labelAbove">
-	<label for="<%= elementName %>">
-		<%= caption %><%= required %>
-	</label>
-</span>
-<textarea name="<%= elementName %>" id="<%= elementName %>" wrap="virtual"
-  rows="<%= rows %>" cols="37"
-><c:out value="${textValue}"/></textarea>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value="Mobile access is not supported" scope="request"/>
+<%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
+
+<div id="wrapper">
+ <div id="pagebody">
+  <div id="header">
+  <ul>
+	<li>
+	  <span>
+	    <ssf:nlt tag="mobile.welcome">
+	      <ssf:param name="value" value="${ssUser.title}"/>
+	    </ssf:nlt>
+	  </span>
+	</li>
+  </ul>
+  </div>
+  <br/>
+  <div class="pagebody">
+	<div class="maincontent">
+	  <form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
+							action="__ajax_mobile" actionUrl="true" 
+							operation="mobile_show_front_page" />">
+		Notice: The Teaming Mobile Interface is not supported in Teaming V2. 
+		It has not undergone the rigorous testing that Novell performs on its supported code.
+		Therefore you may experience problems when using this interface.
+		<br/>
+		<br/>
+		Would you like to continue using this interface under the agreement that it is not supported?
+		<br/>
+		<br/>
+		<input type="submit" name="acceptBtn" value="<ssf:nlt tag="button.accept"/>"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.decline"/>"
+		  onClick="self.location.href='<ssf:url 
+		    	adapter="true" 
+		    	portletName="ss_forum" 
+		    	action="view_ws_listing" 
+		    	actionUrl="false" 
+		    	binderId="${ssUser.workspaceId}"/>';return false;"/>
+	  </form>
+	</div>
+  </div>
+ </div>
 </div>
+</body>
+</html>
