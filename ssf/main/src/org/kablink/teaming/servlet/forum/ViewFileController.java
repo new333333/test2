@@ -175,6 +175,7 @@ public class ViewFileController extends SAbstractController {
 				 */
 				try {
 					response.setContentType("text/html");
+					response.setHeader("Cache-Control", "private");
 					getConvertedFileModule().readCacheHtmlFile(request.getRequestURI(), parent, entity, fa, response.getOutputStream());
 					getReportModule().addFileInfo(AuditType.download, fa);
 					return null;
@@ -203,6 +204,7 @@ public class ViewFileController extends SAbstractController {
 					if (viewType.equals("url"))
 					{
 						response.setContentType("text/html");
+						response.setHeader("Cache-Control", "private");
 						getConvertedFileModule().readCacheUrlReferenceFile(parent, entity, fa, response.getOutputStream(), fileName);
 					}
 					else

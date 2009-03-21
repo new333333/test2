@@ -83,6 +83,7 @@ public class GZIPResponseStream extends ServletOutputStream {
       byte[] compressedBytes = compressedContent.toByteArray();
       // set appropriate HTTP headers
       response.setContentLength(compressedBytes.length); 
+	  response.addHeader("Cache-Control", "private");
       response.addHeader("Content-Encoding", "gzip");
       output.write(compressedBytes);
       output.flush();
@@ -125,6 +126,7 @@ public class GZIPResponseStream extends ServletOutputStream {
       ByteArrayOutputStream baos = (ByteArrayOutputStream)bufferedOutput;
       if (baos.size()+length > bufferSize) {
         // files too large to keep in memory are sent to the client without Content-Length specified
+    	response.addHeader("Cache-Control", "private");
         response.addHeader("Content-Encoding", "gzip");
         // get existing bytes
         byte[] bytes = baos.toByteArray();
