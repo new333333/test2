@@ -5725,15 +5725,15 @@ function ss_validate(obj) {
 function ss_checkForRequiredFields(obj) {
 	if (typeof tinyMCE != "undefined" && tinyMCE.triggerSave) tinyMCE.triggerSave();
 	var objs = ss_getElementsByClass("ss_required", obj, "span")
-	for (var i = 0; i < objs.length; i++) {
-		var id = objs[i].id.substring(12);
-		var title = objs[i].title;
+	for (var i_obj = 0; i_obj < objs.length; i_obj++) {
+		var id = objs[i_obj].id.substring(12);
+		var title = objs[i_obj].title;
 		//See if the form element is empty
 		eleObj = obj[id];
 		eleObj0 = eleObj
-		if (typeof(eleObj) != 'undefined' && typeof(eleObj.length) != 'undefined') eleObj0 = eleObj[0];
+		if (eleObj != null && typeof(eleObj) != 'undefined' && typeof(eleObj.length) != 'undefined') eleObj0 = eleObj[0];
 		try {
-			if (typeof eleObj0 != 'undefined') {
+			if (eleObj0 != null && typeof eleObj0 != 'undefined') {
 				if (eleObj0.tagName.toLowerCase() == 'input' && eleObj0.type.toLowerCase() == 'radio') {
 					for (var j = 0; j < eleObj.length; j++) {
 						var radioClicked = false;
@@ -5764,16 +5764,16 @@ function ss_checkForRequiredFields(obj) {
 					var timeId = id + "_0_fullTime";
 					var formObj = ss_findOwningElement(eleObj0, "form");
 					var dObj = null;
-					for (var i = 0; i < formObj.elements.length; i++) {
-						if (formObj.elements[i].name == dateId) dObj = formObj.elements[i];
+					for (var j = 0; j < formObj.elements.length; j++) {
+						if (formObj.elements[j].name == dateId) dObj = formObj.elements[j];
 					}
-					if (typeof(dObj) != 'undefined' && typeof(dObj.length) != 'undefined') dObj = dObj[0];
+					if (dObj != null && typeof(dObj) != 'undefined' && typeof(dObj.length) != 'undefined') dObj = dObj[0];
 					var tObj = null;
-					for (var i = 0; i < formObj.elements.length; i++) {
-						if (formObj.elements[i].name == timeId) tObj = formObj.elements[i];
+					for (var j = 0; j < formObj.elements.length; j++) {
+						if (formObj.elements[j].name == timeId) tObj = formObj.elements[j];
 					}
-					if (typeof(tObj) != 'undefined' && typeof(tObj.length) != 'undefined') tObj = tObj[0];
-					if ((dObj && dObj.value != '') || (tObj && tObj.value != '')) {
+					if (tObj != null && typeof(tObj) != 'undefined' && typeof(tObj.length) != 'undefined') tObj = tObj[0];
+					if ((dObj != null && dObj.value != '') || (tObj != null && tObj.value != '')) {
 						//alert('date found: '+dObj.value);
 						continue;
 					}
