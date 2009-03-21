@@ -115,14 +115,15 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	  </li>
 	</c:if>
 	
-	<% if (presence_service_enabled) { %>
 	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 	  <li style="float:left; padding:1px 10px 4px 0px;">
+	<% if (presence_service_enabled) { %>
 	  <a class="ss_tinyButton ss_fineprint ss_nowrap" 
 	    title="<ssf:nlt tag="attachMeeting.attachResults"/>" 
 	    href="javascript: ;" 
 	    onClick="ss_showAttachMeetingRecords('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
 	    ><ssf:nlt tag="attachMeeting.attachResults"/></a>
+	<% } %>
 	
 	  <div id="ss_div_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 	    name="ss_div_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
@@ -137,7 +138,6 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	  </div>
 	  </li>
 	</c:if>	
-	<% } %>
 		
 	</ul>
 	</td>
