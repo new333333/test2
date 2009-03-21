@@ -373,6 +373,7 @@ public class BinderHelper {
 				if(AUTHENTICATION_FAILURE_URL_MOBILE != null)
 					loginPostUrl += "?authenticationFailureUrl=" + AUTHENTICATION_FAILURE_URL_MOBILE;
 			}
+			model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
 			model.put(WebKeys.LOGOUT_URL, logoutUrl);
 			model.put(WebKeys.LOGIN_POST_URL, loginPostUrl);
 			if (binderId == null) {
@@ -951,7 +952,6 @@ public class BinderHelper {
 		    }
 		}
 		model.put(WebKeys.SIMPLE_EMAIL_HOSTNAME, hostname);		
-		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
 	}
 	
 	//trees should not be deep - do entire thing

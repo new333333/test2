@@ -30,6 +30,8 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%  boolean isMobile = org.kablink.util.BrowserSniffer.is_mobile(request);  %>
+
 <c:if test="${!empty ssAddUserAllowed}">
 	<script type="text/javascript">
 		/**
@@ -38,9 +40,7 @@
 		 */
 		function invokeCreateNewAccountPage()
 		{
-			var		url;
-
-			url = '<ssf:escapeJavaScript>${ssAddUserUrl}</ssf:escapeJavaScript>';
+			var url = '<ssf:escapeJavaScript>${ssAddUserUrl}</ssf:escapeJavaScript>';
 			//url = 'http://137.65.67.72:8080/ssf/a/do?p_name=ss_forum&p_action=1&action=add_profile_entry&binderId=2&entryType=402883b90cc53079010cc539bf260007';
 			ss_toolbarPopupUrl( url, '_blank', '', '' );
 		}// end invokeCreateNewAccountPage()
@@ -49,6 +49,15 @@
 
   <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}" style="display:inline;">
    <fieldset class="ss_fieldset_${ss_loginFormStyle}">
+	<% if (isMobile) { %>
+	<c:if test="${!empty ssMobileUrl && ss_loginFormStyle == 'login'}">
+	  <div align="left">
+	  <a class="ss_tinyButton" href="${ssMobileUrl}"><span class="ss_fineprint"
+	    title="<ssf:nlt tag="mobile.login.info"/>"
+	    ><ssf:nlt tag="mobile.login"/></span></a>
+	  </div>
+	</c:if>
+	<% } %>
     <div class="ss_legend_${ss_loginFormStyle}"><ssf:nlt tag="login.please"/></div>
      <table>
      <tbody>
