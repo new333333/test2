@@ -3805,8 +3805,10 @@ function ss_openWebDAVFileOld(binderId, entryId, namespace, OSInfo, strURLValue)
 
 	frameObj.src = url;
 	
-	divObj.style.width = "1px";
-	divObj.style.height = "1px";
+	if (divObj != null) {
+		divObj.style.width = "1px";
+		divObj.style.height = "1px";
+	}
 }
 
 function ss_openWebDAVFile(binderId, entryId, namespace, OSInfo, fileId) {
@@ -3822,7 +3824,7 @@ function ss_openWebDAVFile(binderId, entryId, namespace, OSInfo, fileId) {
 	
 	editClicked = "true";
 	
-	divObj.style.visibility = "visible";
+	if (divObj != null) divObj.style.visibility = "visible";
 	frameObj.style.visibility = "visible";
 
 	frameObj.src = url;
