@@ -80,7 +80,7 @@
 		 </ssf:ifaccessible>
 		 <ssf:ifnotaccessible simple_ui="true">
 		  <a href="${ss_accessibleUrl}"
-		  onclick='return (confirm("<ssf:nlt tag="accessible.confirm" quoteDoubleQuote="true"/>"));'>
+		     onclick='return true;'>
 		    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.enableAccessibleMode"/></span>
 		  </a>
 		 </ssf:ifnotaccessible>
