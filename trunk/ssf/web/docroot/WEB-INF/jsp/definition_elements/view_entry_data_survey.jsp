@@ -285,8 +285,8 @@
 				<ssf:nlt tag="survey.vote.notAllowed.empty"/>
 			</c:when>
 			<c:otherwise>
-				<input type="button" value="<ssf:nlt tag="survey.vote"/>" 
-					onclick="ssSurvey.vote('ssSurveyForm_${property_name}', ${ssBinder.id}, ${ssDefinitionEntry.id}, {<c:forEach var="question" items="${surveyModel.questions}" varStatus="status"><c:if test="${question.requiredAnswer}">${question.index}:[<c:if test="${question.type != 'input'}"><c:forEach var="answer" items="${question.answers}" varStatus="aStatus">${answer.index}<c:if test="${!aStatus.last}">,</c:if></c:forEach></c:if>]<c:if test="${!status.last}">,</c:if></c:if></c:forEach>}, '${ss_namespace}_${property_name}');"/>
+				<input type="button" value="<ssf:nlt tag="survey.vote"/>"
+					onclick="ssSurvey.vote('ssSurveyForm_${property_name}', ${ssBinder.id}, ${ssDefinitionEntry.id}, {<% int qraCount = 0; %><c:forEach var="question" items="${surveyModel.questions}"><c:if test="${question.requiredAnswer}"><% qraCount += 1; if (1 < qraCount) { %>,<% } %>${question.index}:[<c:if test="${question.type != 'input'}"><c:forEach var="answer" items="${question.answers}" varStatus="status">${answer.index}<c:if test="${!status.last}">,</c:if></c:forEach></c:if>]</c:if></c:forEach>}, '${ss_namespace}_${property_name}');"/>
 					
 				<c:if test="${showSurveyModifyForm}">
 					<input type="button" value="<ssf:nlt tag="survey.vote.remove"/>" 
