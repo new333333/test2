@@ -162,6 +162,18 @@
 	</tag>	
 
 	<tag>
+		<name>convertLocaleToDojoStyle</name>
+		<tag-class>org.kablink.teaming.taglib.ConvertLocaleToDojoStyle</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>locale</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.Locale</type>
+		</attribute>
+	</tag>
+
+	<tag>
 		<name>dashboard</name>
 		<tag-class>org.kablink.teaming.taglib.DashboardTag</tag-class>
 		<body-content>JSP</body-content>
@@ -301,18 +313,6 @@
 	</tag>
 	
 	<tag>
-		<name>convertLocaleToDojoStyle</name>
-		<tag-class>org.kablink.teaming.taglib.ConvertLocaleToDojoStyle</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>locale</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>java.util.Locale</type>
-		</attribute>
-	</tag>
-
-	<tag>
 		<name>drawChart</name>
 		<tag-class>org.kablink.teaming.taglib.ChartTag</tag-class>
 		<body-content>JSP</body-content>
@@ -392,6 +392,24 @@
 			<name>element</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>editorTypeToUseForEditInPlace</name>
+		<tag-class>org.kablink.teaming.taglib.EditorTypeToUseForEditInPlace</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>browserType</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>		
+		<attribute>
+			<name>editorType</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
 		</attribute>
 	</tag>
 
@@ -501,7 +519,60 @@
 			<type>java.lang.Boolean</type>
 		</attribute>
 	</tag>
+
+	<tag>
+		<name>extensionUrl</name>
+		<tag-class>org.kablink.teaming.taglib.ExtensionUrlTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>attr</name>
+		</attribute>
+		<attribute>
+			<name>url</name>
+			<required>true</required>
+		</attribute>		
+	</tag>
 	
+	<tag>
+		<name>fileUrl</name>
+		<tag-class>org.kablink.teaming.taglib.FileUrlTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>file</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>org.kablink.teaming.domain.FileAttachment</type>
+		</attribute>		
+		<attribute>
+			<name>search</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.Map</type>
+		</attribute>		
+		<attribute>
+			<name>entity</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>org.kablink.teaming.domain.DefinableEntity</type>
+		</attribute>		
+		<attribute>
+			<name>fileId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>webPath</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>baseUrl</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
+		</attribute>		
+	</tag>
+
 	<tag>
 		<name>find</name>
 		<tag-class>org.kablink.teaming.taglib.Find</tag-class>
@@ -810,24 +881,6 @@
 	</tag>
 
 	<tag>
-		<name>editorTypeToUseForEditInPlace</name>
-		<tag-class>org.kablink.teaming.taglib.EditorTypeToUseForEditInPlace</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>browserType</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>java.lang.String</type>
-		</attribute>		
-		<attribute>
-			<name>editorType</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>java.lang.String</type>
-		</attribute>
-	</tag>
-
-	<tag>
 		<name>isFileEditorConfiguredForOS</name>
 		<tag-class>org.kablink.teaming.taglib.IsFileEditorConfiguredForOS</tag-class>
 		<body-content>JSP</body-content>
@@ -1053,6 +1106,23 @@
 		</attribute>
 	</tag>
 
+	<tag>
+		<name>permalink</name>
+		<tag-class>org.kablink.teaming.taglib.PermalinkTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>search</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.Map</type>
+		</attribute>		
+		<attribute>
+			<name>entity</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>org.kablink.teaming.domain.DefinableEntity</type>
+		</attribute>		
+	</tag>
 
 	<tag>
 		<name>popupPane</name>
@@ -1159,6 +1229,17 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.Boolean</type>
+		</attribute>		
+	</tag>
+
+	<tag>
+		<name>remoteApplication</name>
+		<tag-class>org.kablink.teaming.taglib.RemoteApplicationTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>applicationId</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 	</tag>
 	
@@ -1887,6 +1968,11 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 		<attribute>
+			<name>rootPath</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
 			<name>webPath</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -1916,62 +2002,6 @@
 	</tag>
 
 	<tag>
-		<name>fileUrl</name>
-		<tag-class>org.kablink.teaming.taglib.FileUrlTag</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>file</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>org.kablink.teaming.domain.FileAttachment</type>
-		</attribute>		
-		<attribute>
-			<name>search</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>java.util.Map</type>
-		</attribute>		
-		<attribute>
-			<name>entity</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>org.kablink.teaming.domain.DefinableEntity</type>
-		</attribute>		
-		<attribute>
-			<name>fileId</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-		<attribute>
-			<name>webPath</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-		<attribute>
-			<name>baseUrl</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>boolean</type>
-		</attribute>		
-	</tag>
-	<tag>
-		<name>permalink</name>
-		<tag-class>org.kablink.teaming.taglib.PermalinkTag</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>search</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>java.util.Map</type>
-		</attribute>		
-		<attribute>
-			<name>entity</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>org.kablink.teaming.domain.DefinableEntity</type>
-		</attribute>		
-	</tag>
-	<tag>
 		<name>velocity</name>
 		<tag-class>org.kablink.teaming.taglib.VelocityTag</tag-class>
 		<body-content>JSP</body-content>
@@ -1982,26 +2012,4 @@
 		</attribute>		
 	</tag>
 	
-	<tag>
-		<name>remoteApplication</name>
-		<tag-class>org.kablink.teaming.taglib.RemoteApplicationTag</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>applicationId</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-	</tag>
-		<tag>
-		<name>extensionUrl</name>
-		<tag-class>org.kablink.teaming.taglib.ExtensionUrlTag</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>attr</name>
-		</attribute>
-		<attribute>
-			<name>url</name>
-			<required>true</required>
-		</attribute>		
-	</tag>
 </taglib>

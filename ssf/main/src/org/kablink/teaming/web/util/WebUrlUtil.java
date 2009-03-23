@@ -161,7 +161,7 @@ public class WebUrlUtil {
 		return getSSFContextRootURL(secure, hostname.toLowerCase(), port).append("a/").toString();
 	}
 	public static String getAdapterRootUrl() {
-		return getSSFContextRootURL(null) + "a/";
+		return getSSFContextRootURL((HttpServletRequest) null) + "a/";
 	}
 	public static String getServletRootURL() {
 		return getServletRootURL((HttpServletRequest) null, false);
@@ -430,6 +430,11 @@ public class WebUrlUtil {
 		return sb;
 	}
 	
+	public static String getSSFContextRootURL(HttpServletRequest req) {
+		boolean secure = ((req != null)? req.isSecure() : false);
+		return getSSFContextRootURL(req, secure,
+				secure?WEB_PROTOCOL_CONTEXT_HTTPS:WEB_PROTOCOL_CONTEXT_HTTP).toString();
+	}
 	private static StringBuffer getSSFContextRootURL(HttpServletRequest req, Boolean secure, int webProtocol) {
 		StringBuffer sb = getHostAndPort(WebApp.SSF, req, secure, webProtocol, false);
 				

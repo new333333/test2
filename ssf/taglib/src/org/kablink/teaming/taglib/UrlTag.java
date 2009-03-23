@@ -66,6 +66,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
     private String entryId;
     private String entityType;
     private String operation;
+    private String rootPath;
     private String webPath;
     private String windowState;
     private boolean adapter=false;
@@ -94,6 +95,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 		url = null;
 		action = null;
 		operation=null;
+		rootPath = null;
 		webPath = null;
 		adapter=false;
 		crawlable=false;
@@ -160,6 +162,9 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 					}
 				}
 				pageContext.getOut().print(webUrl);
+			
+			} else if (!Validator.isNull(rootPath)) {
+				pageContext.getOut().print(WebUrlUtil.getSSFContextRootURL(req));
 			
 			} else if (this.adapter) {
 				if (!Validator.isNull(action)) {
@@ -259,6 +264,10 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 
 	public void setEntityType(String entityType) {
 	    this.entityType = entityType;
+	}
+
+	public void setRootPath(String rootPath) {
+	    this.rootPath = rootPath;
 	}
 
 	public void setWebPath(String webPath) {
