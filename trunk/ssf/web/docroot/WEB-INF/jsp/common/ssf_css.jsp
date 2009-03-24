@@ -1920,6 +1920,7 @@ div.ss_sidebar_panel_featured {
 .ss_title_bar_history_bar {
 	background:inherit;
 	color:${ss_style_text_color};
+	white-space: nowrap;
 	}		
 .ss_title_bar_inner1 {
 	background:url(<html:imagesPath/>roundcorners3/corner1.gif) no-repeat left;

@@ -109,7 +109,7 @@ var ss_history_bar_loaded = 1;
           alt="<ssf:nlt tag="nav.prevEntry" text="Previous entry"/>" id="ss_prev"
           border="0" src="<html:imagesPath/>pics/sym_s_arrow_down.gif"></a></td>
           
-     <td><span><ssf:nlt tag="nav.view"/></span></td>
+     <td nowrap><span style="padding:0px 6px;"><ssf:nlt tag="nav.view"/></span></td>
      
      <td><a href="<ssf:url
           adapter="true"
@@ -126,7 +126,7 @@ var ss_history_bar_loaded = 1;
 <c:if test="${ssConfigJspStyle == 'template'}">
 
      <td><img alt="" src="<html:imagesPath/>pics/sym_s_arrow_down.gif"/></td>
-    <td><span><ssf:nlt tag="nav.view"/></span></td>
+    <td nowrap><span style="padding:0px 6px;"><ssf:nlt tag="nav.view"/></span></td>
      <td><img alt="" src="<html:imagesPath/>pics/sym_s_arrow_up.gif"/></td>
 </c:if>
          
