@@ -26,6 +26,7 @@
 	<definitionFile>config/definitions/_miniblog_entry.xml</definitionFile>
 	<definitionFile>config/definitions/_miniBlogFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_taskFolder.xml</definitionFile>
+	<definitionFile>config/definitions/_task_workflow.xml</definitionFile>
 	<definitionFile>config/definitions/_surveyFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_photoFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_wikiFolder.xml</definitionFile>

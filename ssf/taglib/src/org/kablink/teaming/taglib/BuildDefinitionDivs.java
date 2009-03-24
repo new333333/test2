@@ -684,7 +684,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						} else if (propertyValue0.equalsIgnoreCase("true")) {
 							checked = "checked=\"checked\"";
 						}
-						sb.append("<input type=\"checkbox\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" "+checked+" "+readonly+"/> ");
+						sb.append("<br/><input type=\"checkbox\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" "+checked+" "+readonly+"/> ");
 						sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "").replaceAll("&", "&amp;")));
 					
 					} else if (type.equals("selectbox") || type.equals("radio")) {
