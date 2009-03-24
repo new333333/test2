@@ -57,7 +57,7 @@
 	  <tr>
 	    <td valign="top" style="padding:0px 0px 4px 30px;">
 	      <c:if test="${workflowTitle != lastWorkflowTitle}">
-	        <c:out value="${workflow.definition.title}"/>
+	        <ssf:nlt tag="${workflow.definition.title}" checkIfTag="true"/>
 	      </c:if>
 	    </td>
 	    <td valign="top" style="padding:0px 0px 4px 30px;">${ssWorkflowCaptions[workflow.id]}</td>
