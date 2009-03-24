@@ -499,26 +499,33 @@ jQuery(document).ready(function() {
 			<button class="ldapDelete ss_submit"><ssf:nlt tag="ldap.connection.delete" /></button><br/><br/>
 			<table>
 			<tr>
-			  <td valign="top">
-			    <label for="ldapUrl"><ssf:nlt tag="ldap.user.url" /></label>
+			  <td nowrap>
 			  </td>
-			  <td valign="top">
+			  <td nowrap>
+			    <span class="ss_fineprint ss_bright"><ssf:nlt tag="ldap.user.url.title" /></span>
+			  </td>
+			</tr>
+			<tr>
+			  <td nowrap>
+			    <label for="ldapUrl"><ssf:nlt tag="ldap.user.url" />&nbsp;</label>
+			  </td>
+			  <td>
 			    <input class="ldapUrl" id="ldapUrl" type="text" value="" size="140"/>
 			  </td>
 			</tr>
 			<tr>
-			  <td valign="top">
+			  <td nowrap>
 				<label for="ldapPrincipal"><ssf:nlt tag="ldap.user.principal" /></label>
 			  </td>
-			  <td valign="top">
+			  <td>
 				<input class="ldapPrincipal" id="ldapPrincipal" type="text" value="" size="140"/>
 			  </td>
 			</tr>
 			<tr>
-			  <td valign="top">
+			  <td nowrap>
 				<label for="ldapCredentials"><ssf:nlt tag="ldap.user.credential" /></label>
 			  </td>
-			  <td valign="top">
+			  <td>
 			    <input class="ldapCredentials" id="ldapCredentials" type="password" value="" size="140"/>
 			  </td>
 			</tr>
@@ -562,7 +569,7 @@ jQuery(document).ready(function() {
 			    </td>
 			  </tr>
 			  <tr>
-			    <td>
+			    <td nowrap>
 			      <label for="ldapBaseDn"><ssf:nlt tag="ldap.search.baseDn" /></label>
 			    </td>
 			    <td>
@@ -580,7 +587,7 @@ jQuery(document).ready(function() {
 				</td>
 			  </tr>
 			  <tr>
-			    <td>
+			    <td nowrap>
 					<label for="ldapFilter"><ssf:nlt tag="ldap.search.filter" /></label>
 				</td>
 				<td>
