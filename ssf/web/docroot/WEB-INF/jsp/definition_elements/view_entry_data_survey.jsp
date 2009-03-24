@@ -53,6 +53,9 @@
 <c:set var="overdue" value="<%= overdue %>" />
 
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_survey.js"></script>
+<script type="text/javascript">
+	var ss_survey_requiredMissingWarning = "<ssf:nlt tag='survey.required.missing.warning'/>";
+</script>
 
 <div class="ss_entryContent">
 <span class="ss_labelLeft"><c:out value="${property_caption}" /></span>

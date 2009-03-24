@@ -438,14 +438,17 @@ ssSurvey.vote = function(formId, binderId, entryId, requiredQuestions, prefix) {
 				hasAnswer = true;
 			}
 		}
+		var questionConteinerObj = dojo.byId(prefix + "_question_" + qId);
 		if (!hasAnswer) {
 			missingAnswers = true;
-			var questionConteinerObj = dojo.byId(prefix + "_question_" + qId);
 			dojo.addClass(questionConteinerObj, "ss_survey_required");
+			break;
 		}
+		dojo.removeClass(questionConteinerObj, "ss_survey_required")
 	}
 	
 	if (missingAnswers) {
+		alert(ss_survey_requiredMissingWarning);
 		return false;
 	}
 
