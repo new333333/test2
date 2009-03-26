@@ -146,13 +146,13 @@ public class ConvertedFileModuleImpl implements ConvertedFileModule {
 
 		try
 		{
+			is = htmlConverterManager.getConverter().convert(url, binder, entry, fa);
+			
 			boolean injectNovellTag = SPropsUtil.getBoolean("file.html.view.inject.novell.tag", true);
 			
 			if(injectNovellTag) {
 				out.write(NOVELL_REWRITER_OFF.getBytes());
 			}
-			
-			is = htmlConverterManager.getConverter().convert(url, binder, entry, fa);
 			
 			try {
 				FileUtil.copy(is, out);
