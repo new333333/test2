@@ -606,7 +606,21 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	if (entry1.containsKey("_fileName")) fn = (String) entry1.get("_fileName");
 	String ext = "";
 	if (fn.lastIndexOf(".") >= 0) ext = fn.substring(fn.lastIndexOf("."));
-	if (!isIECheck || !ext.equals(".ppt")) {
+	
+// - - - - -
+	// In order to fix Bugzilla bug 488283, I removed the check disallowing
+	// downloads of .ppt files from IE.  If there was a problem, it was
+	// only with Powerpoint invoked from IE.  Removing the check now lets
+	// this work if users use OpenOffice or some other application besides
+	// Powerpoint to open these files.  If we get support questions about
+	// why this fails in some installations with Powerpoint, we should
+	// point them to Microsoft for a solution.
+	//
+	// drfoster@novell.com
+// - - - - -
+//	if (!isIECheck || !ext.equals(".ppt"))
+// - - - - -
+	{
 		//Don't show ppt file urls for IE. Powerpoint 2007 doesn't work with these urls
 %>
       <a href="<ssf:fileUrl search="${entry1}"/>" class="ss_download_link"
