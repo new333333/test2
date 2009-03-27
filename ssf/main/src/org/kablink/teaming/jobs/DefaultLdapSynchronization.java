@@ -34,6 +34,7 @@
 package org.kablink.teaming.jobs;
 import java.util.TimeZone;
 
+import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobExecutionContext;
@@ -56,7 +57,10 @@ public class DefaultLdapSynchronization extends SSCronTriggerJob implements Ldap
     	LdapModule ldap = (LdapModule)SpringContextUtil.getBean("ldapModule");
 		try {
 			ldap.syncAll();
-		} catch (NamingException ne) {
+		} catch (LdapSyncException ldapSyncEx) {
+			NamingException	ne;
+			
+			ne = ldapSyncEx.getNamingException();
 			if (ne.getCause() != null)
 				logger.error("Ldap Syncronization error:" + ne.getCause().getLocalizedMessage());
 			else

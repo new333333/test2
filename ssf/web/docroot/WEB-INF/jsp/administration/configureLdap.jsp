@@ -236,6 +236,7 @@
 </style>
   
 <script type="text/javascript">
+var	m_ldapConfigId	= null;
 
 ssPage = {
 	nextId : 1,
@@ -297,6 +298,7 @@ ssPage = {
 	{
 		var label = "<ssf:nlt tag="ldap.connection.newConnection"/>";
 		if(url != "") { label = url; }
+
 		var id = "ldapConn" + ssPage.nextId++;
 		var $pane = jQuery('#ldapTemplate').children().clone().hide().attr("id", id);
 		$pane.find(".ldapTitle span").text(label).end()
@@ -352,6 +354,33 @@ ssPage = {
 		return count == 0;
 	},
 
+	/**
+	 * Select the tab for the ldap config with the id found in m_ldapConfigId.
+	 */
+	showLdapConfig : function()
+	{
+		if ( m_ldapConfigId != null && m_ldapConfigId.length > 0 )
+		{
+			var	span;
+
+			// Get the <span> whose id matches the given ldap config id.
+			span = document.getElementById( m_ldapConfigId );
+			if ( span != null )
+			{
+				var	fldset;
+
+				// Get the <fieldset> that holds the ldap configuration.
+				fldset = span.parentNode;
+				if ( fldset != null && fldset.id != null )
+				{
+					// Select the tab associated with this ldap configuration.
+					jQuery( "#funkyDiv > ul").tabs( "select", '#' + fldset.id );
+				}
+			}
+		}
+	},
+
+	
 	validQuery : function(query) {
 		return (query=="")||ssPage.balanced(query);
 	},
@@ -376,11 +405,6 @@ jQuery(document).ready(function() {
 			if ( str != null && str.length > 0 )
 				newStr += str;
 			newStr += ']]>';
-
-			// The characters, '&', '<' and '>' are not valid xml characters.  Replace all & with &amp; and < with &lt; and > with &gt;
-			//str = str.replace( /&/g, '&amp;' );
-			//str = str.replace( /</g, '&lt;' );
-			//str = str.replace( />/g, '&gt;' );
 
 			return newStr;
 		};
@@ -476,10 +500,11 @@ jQuery(document).ready(function() {
 		<c:forEach var="groupSearch" items="${config.groupSearches}">
 			initialGroupSearches.push({ baseDn: "${groupSearch.baseDn}", filter: "${groupSearch.filter}", searchSubtree: "${groupSearch.searchSubtree}" });
 		</c:forEach>
+
 		var $pane = ssPage.createConnection("${config.url}", "${config.userIdAttribute}",
 										    "<%=mapText.toString()%>", initialUserSearches, initialGroupSearches,
 											"${config.principal}", "${config.credentials}");
-		$pane.append(jQuery('<span style="display:none" class="ldapId">${config.id}</span>'));
+		$pane.append(jQuery('<span id="${config.id}" style="display:none" class="ldapId">${config.id}</span>'));
 	</c:forEach>
 	
 		jQuery('#funkyDiv > ul').bind('tabsshow', function(event, ui) {
@@ -487,6 +512,24 @@ jQuery(document).ready(function() {
 		});
 		jQuery("#funkyDiv > ul").tabs("select", 0);
 		jQuery("#funkyDiv > ul").tabs("remove", 0);
+
+		// Did an error happen while doing an ldap sync?
+		<c:if test="${!empty ssException}">
+			var errMsg;
+
+			// Yes, tell the user about it.
+			errMsg = '<ssf:escapeJavaScript><ssf:nlt tag="administration.errors"/>${ssException}</ssf:escapeJavaScript>';
+			alert( errMsg );
+
+			// Do we have the id of the ldap configuration that had the error?
+			m_ldapConfigId = '${ssErrLdapConfigId}';
+			if ( m_ldapConfigId != null && m_ldapConfigId.length > 0 )
+			{
+				// Yes, Show the ldap configuration that had the error.
+				// We can't call ssPage.showLdapConfig() right now.  Wait for .5 second.
+				setTimeout( ssPage.showLdapConfig, 500 );
+			}
+		</c:if>
 	});
 </script>
 
