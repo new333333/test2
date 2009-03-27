@@ -38,6 +38,7 @@ import java.util.List;
 import javax.naming.NamingException;
 
 import org.kablink.teaming.domain.LdapConnectionConfig;
+import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 
 
@@ -55,6 +56,6 @@ public interface LdapModule {
 	public LdapSchedule getLdapSchedule();
 	public void setLdapSchedule(LdapSchedule schedule);
 
-	public void syncAll() throws NamingException;
+	public void syncAll() throws LdapSyncException;
 	public void syncUser(Long userId) throws NoUserByTheNameException,NamingException;
 }

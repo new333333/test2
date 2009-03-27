@@ -72,6 +72,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.LdapConnectionConfig;
+import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.Membership;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -295,7 +296,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * This routine alters group membership without updateing the local caches.
 	 * Need to flush cache after use
 	 */
-	public void syncAll() throws NamingException {
+	public void syncAll() throws LdapSyncException {
 		Workspace zone = RequestContextHolder.getRequestContext().getZone();
 		LdapSchedule info = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
     		UserCoordinator userCoordinator = new UserCoordinator(zone,info.isUserSync(),info.isUserRegister(),
@@ -306,9 +307,31 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				ctx = getUserContext(zone.getId(), config);
 				logger.info("InitialContext: " + ctx.getNameInNamespace());
 				syncUsers(zone, ctx, config, userCoordinator);
-			} finally {
+			}
+	  		catch (NamingException namingEx)
+	  		{
+	  			LdapSyncException	ldapSyncEx;
+	  			
+	  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+	  			// the LdapConnectionConfig object that was being used when the error happened.
+	  			ldapSyncEx = new LdapSyncException( config, namingEx );
+	  			throw ldapSyncEx;
+	  		}
+	  		finally {
 				if (ctx != null) {
-					ctx.close();			
+					try
+					{
+						ctx.close();
+					}
+					catch (NamingException namingEx)
+			  		{
+			  			LdapSyncException	ldapSyncEx;
+			  			
+			  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+			  			// the LdapConnectionConfig object that was being used when the error happened.
+			  			ldapSyncEx = new LdapSyncException( config, namingEx );
+			  			throw ldapSyncEx;
+			  		}
 				}
 			}
 		}
@@ -321,9 +344,31 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				ctx = getGroupContext(zone.getId(), config);
 				logger.info("InitialContext: " + ctx.getNameInNamespace());
 				syncGroups(zone, ctx, config, groupCoordinator, info.isMembershipSync());
-			} finally {
+			}
+	  		catch (NamingException namingEx)
+	  		{
+	  			LdapSyncException	ldapSyncEx;
+	  			
+	  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+	  			// the LdapConnectionConfig object that was being used when the error happened.
+	  			ldapSyncEx = new LdapSyncException( config, namingEx );
+	  			throw ldapSyncEx;
+	  		}
+	  		finally {
 				if (ctx != null) {
-					ctx.close();			
+					try
+					{
+						ctx.close();
+					}
+					catch (NamingException namingEx)
+			  		{
+			  			LdapSyncException	ldapSyncEx;
+			  			
+			  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+			  			// the LdapConnectionConfig object that was being used when the error happened.
+			  			ldapSyncEx = new LdapSyncException( config, namingEx );
+			  			throw ldapSyncEx;
+			  		}
 				}
 							
 			}

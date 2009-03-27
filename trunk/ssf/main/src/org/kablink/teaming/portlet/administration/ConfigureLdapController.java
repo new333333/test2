@@ -51,6 +51,7 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.LdapConnectionConfig;
+import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.web.WebKeys;
@@ -187,12 +188,20 @@ public class ConfigureLdapController extends  SAbstractController {
 					getLdapModule().setLdapSchedule(schedule);
 					try {
 						getLdapModule().syncAll();
-					} catch (NamingException ne) {
+					} catch (LdapSyncException ldapSyncEx) {
+						LdapConnectionConfig	ldapConfig;
+						NamingException	ne;
+						
+						ne = ldapSyncEx.getNamingException();
 						if (ne.getCause() != null)
 							response.setRenderParameter(WebKeys.EXCEPTION, ne.getCause().getLocalizedMessage() != null ? ne.getCause().getLocalizedMessage() : ne.getCause().getMessage());
 						else 
 							response.setRenderParameter(WebKeys.EXCEPTION, ne.getLocalizedMessage() != null ? ne.getLocalizedMessage() : ne.getMessage());
 						response.setRenderParameter("runnow", Boolean.TRUE.toString());
+						
+						// Get the ldap connection configuration that had the problem and add it to the response.
+						ldapConfig = ldapSyncEx.getLdapConfig();
+						response.setRenderParameter( "ssErrLdapConfigId", ldapConfig.getId() );
 					} finally {
 						//set it back
 						if (enabled) {
@@ -226,6 +235,8 @@ public class ConfigureLdapController extends  SAbstractController {
     	model.put(WebKeys.DEFAULT_GROUP_FILTER, SZoneConfig.getString("ldapConfiguration/groupFilter"));
     
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
+		model.put( "ssErrLdapConfigId", request.getParameter( "ssErrLdapConfigId") );
+		
 		model.put(WebKeys.LDAP_CONFIG, getLdapModule().getLdapSchedule());
 		model.put(WebKeys.LDAP_CONNECTION_CONFIGS, getAuthenticationModule().getLdapConnectionConfigs());
 		model.put(WebKeys.AUTHENTICATION_CONFIG, getAuthenticationModule().getAuthenticationConfig());
