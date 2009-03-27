@@ -58,6 +58,7 @@ import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -151,10 +152,18 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		    				for (Element element:userLists) {
 		    					String userListName = element.attributeValue("elementName"); //custom attribute name
 		    					if (Validator.isNull(userListName)) continue;
+		    					//elementName can have the element type pre-pended (e.g., user_list:attr_name)
+		    					String listType = "user_list";
+		    					if (userListName.indexOf(":") >= 0) {
+		    						listType = userListName.substring(0, userListName.indexOf(":"));
+		    						userListName = userListName.substring(userListName.indexOf(":")+1);
+		    					}
 		    					CustomAttribute attr = entity.getCustomAttribute(userListName); 
 		    					if (attr != null) {
 		    						//comma separated value
-		    						ids.addAll(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
+		    						if (listType.equals("user_list")) {
+		    							ids.addAll(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
+		    						}
 		    					}
 		    				}
 		    			}
@@ -806,16 +815,34 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 				result.addPrincipalId(ObjectKeys.TEAM_MEMBER_ID);
 			} else if ("condition".equals(name)) {
 				if (entity.getEntryDef() != null) {
+			        User user = RequestContextHolder.getRequestContext().getUser();
 					List<Element> userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
 							entity.getEntryDef().getId() + "']");
 					if (userLists != null && !userLists.isEmpty()) {
 						for (Element element:userLists) {
 							String userListName = element.attributeValue("elementName"); //custom attribute name
 							if (Validator.isNull(userListName)) continue;
+	    					//elementName can have the element type pre-pended (e.g., user_list:attr_name)
+	    					String listType = "user_list";
+	    					if (userListName.indexOf(":") >= 0) {
+	    						listType = userListName.substring(0, userListName.indexOf(":")).trim();
+	    						userListName = userListName.substring(userListName.indexOf(":")+1);
+	    					}
 							CustomAttribute attr = entity.getCustomAttribute(userListName); 
 							if (attr != null) {
 								//comma separated value
-								result.addPrincipalIds(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
+								if (listType.equals("user_list") || listType.equals("group_list")) {
+									result.addPrincipalIds(LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ","));
+								} else if(listType.equals("team_list")) {
+									//The team list is a list of binder ids. We have to get the teams from each binder
+									Set<Long> binderIds = LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ",");
+									if (binderIds != null) {
+										for (Long binderId : binderIds) {
+											Binder binder =  getInstance().getCoreDao().loadBinder(binderId, user.getZoneId());
+											result.addPrincipalIds(binder.getTeamMemberIds());
+										}
+									}
+								}
 							}
 						}
 					}

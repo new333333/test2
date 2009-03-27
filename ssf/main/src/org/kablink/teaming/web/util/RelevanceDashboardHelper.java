@@ -264,10 +264,7 @@ public class RelevanceDashboardHelper {
 		//Prepare for a standard dashboard search operation
 		Map options = new HashMap();
 		String page = "0";
-		String displayStyle = user.getDisplayStyle();
-		if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
-				ObjectKeys.RELEVANCE_PAGE_TASKS.equals(model.get(WebKeys.TYPE2))) 
-			page = (String) model.get(WebKeys.PAGE_NUMBER);
+		page = (String) model.get(WebKeys.PAGE_NUMBER);
 		if (page == null || page.equals("")) page = "0";
 		Integer pageNumber = Integer.valueOf(page);
 		if (pageNumber < 0) pageNumber = 0;
@@ -340,11 +337,7 @@ public class RelevanceDashboardHelper {
 		//Get the documents bean for the documents th the user just authored or modified
 		Map options = new HashMap();
 		String page = "0";
-		User user = RequestContextHolder.getRequestContext().getUser();
-		String displayStyle = user.getDisplayStyle();
-		if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
-				ObjectKeys.RELEVANCE_PAGE_DOCS.equals(model.get(WebKeys.TYPE2))) 
-			page = (String) model.get(WebKeys.PAGE_NUMBER);
+		page = (String) model.get(WebKeys.PAGE_NUMBER);
 		if (page == null || page.equals("")) page = "0";
 		Integer pageNumber = Integer.valueOf(page);
 		if (pageNumber < 0) pageNumber = 0;
@@ -385,11 +378,7 @@ public class RelevanceDashboardHelper {
 		//Get the documents bean for the documents that the user is tracking
 		Map options = new HashMap();
 		String page = "0";
-		User user = RequestContextHolder.getRequestContext().getUser();
-		String displayStyle = user.getDisplayStyle();
-		if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
-				ObjectKeys.RELEVANCE_PAGE_NEW_TRACKED.equals(model.get(WebKeys.TYPE2))) 
-			page = (String) model.get(WebKeys.PAGE_NUMBER);
+		page = (String) model.get(WebKeys.PAGE_NUMBER);
 		if (page == null || page.equals("")) page = "0";
 		Integer pageNumber = Integer.valueOf(page);
 		if (pageNumber < 0) pageNumber = 0;
@@ -435,10 +424,7 @@ public class RelevanceDashboardHelper {
 		Map options = new HashMap();
 		String page = "0";
 		User user = RequestContextHolder.getRequestContext().getUser();
-		String displayStyle = user.getDisplayStyle();
-		if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
-				ObjectKeys.RELEVANCE_PAGE_NEW_TRACKED.equals(model.get(WebKeys.TYPE2))) 
-			page = (String) model.get(WebKeys.PAGE_NUMBER);
+		page = (String) model.get(WebKeys.PAGE_NUMBER);
 		if (page == null || page.equals("")) page = "0";
 		Integer pageNumber = Integer.valueOf(page);
 		if (pageNumber < 0) pageNumber = 0;
@@ -570,11 +556,7 @@ public class RelevanceDashboardHelper {
 		//Get the new items I can see
 		Map options = new HashMap();
 		String page = "0";
-		User user = RequestContextHolder.getRequestContext().getUser();
-		String displayStyle = user.getDisplayStyle();
-		if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
-				ObjectKeys.RELEVANCE_PAGE_NEW_SITE.equals(model.get(WebKeys.TYPE2))) 
-			page = (String) model.get(WebKeys.PAGE_NUMBER);
+		page = (String) model.get(WebKeys.PAGE_NUMBER);
 		if (page == null || page.equals("")) page = "0";
 		Integer pageNumber = Integer.valueOf(page);
 		if (pageNumber < 0) pageNumber = 0;
@@ -615,11 +597,7 @@ public class RelevanceDashboardHelper {
 		//Who has visited my page?
 		if (binder != null) {
 			String page = "0";
-			User user = RequestContextHolder.getRequestContext().getUser();
-			String displayStyle = user.getDisplayStyle();
-			if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
-					ObjectKeys.RELEVANCE_PAGE_VISITORS.equals(model.get(WebKeys.TYPE2))) 
-				page = (String) model.get(WebKeys.PAGE_NUMBER);
+			page = (String) model.get(WebKeys.PAGE_NUMBER);
 			if (page == null || page.equals("")) page = "0";
 			Integer pageNumber = Integer.valueOf(page);
 			if (pageNumber < 0) pageNumber = 0;
@@ -641,10 +619,7 @@ public class RelevanceDashboardHelper {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		if (binder != null && user.getId().equals(binder.getOwnerId())) {
 			String page = "0";
-			String displayStyle = user.getDisplayStyle();
-			if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
-					ObjectKeys.RELEVANCE_PAGE_ENTRIES_VIEWED.equals(model.get(WebKeys.TYPE2))) 
-				page = (String) model.get(WebKeys.PAGE_NUMBER);
+			page = (String) model.get(WebKeys.PAGE_NUMBER);
 			if (page == null || page.equals("")) page = "0";
 			Integer pageNumber = Integer.valueOf(page);
 			if (pageNumber < 0) pageNumber = 0;
@@ -666,11 +641,7 @@ public class RelevanceDashboardHelper {
 		//What activities have been happening?
 		if (binder != null) {
 			String page = "0";
-			User user = RequestContextHolder.getRequestContext().getUser();
-			String displayStyle = user.getDisplayStyle();
-			if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
-					ObjectKeys.RELEVANCE_PAGE_ACTIVITIES.equals(model.get(WebKeys.TYPE2))) 
-				page = (String) model.get(WebKeys.PAGE_NUMBER);
+			page = (String) model.get(WebKeys.PAGE_NUMBER);
 			if (page == null || page.equals("")) page = "0";
 			Integer pageNumber = Integer.valueOf(page);
 			if (pageNumber < 0) pageNumber = 0;
@@ -735,11 +706,7 @@ public class RelevanceDashboardHelper {
 				binder.getDefinitionType() != null && 
 				Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue()) {
 			String page = "0";
-			User user = RequestContextHolder.getRequestContext().getUser();
-			String displayStyle = user.getDisplayStyle();
-			if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
-					ObjectKeys.RELEVANCE_PAGE_SHARED.equals(model.get(WebKeys.TYPE2))) 
-				page = (String) model.get(WebKeys.PAGE_NUMBER);
+			page = (String) model.get(WebKeys.PAGE_NUMBER);
 			if (page == null || page.equals("")) page = "0";
 			Integer pageNumber = Integer.valueOf(page);
 			if (pageNumber < 0) pageNumber = 0;
@@ -789,11 +756,7 @@ public class RelevanceDashboardHelper {
 	
 	public static void setupWhatsHotBean(AllModulesInjected bs, Map model) {
 		String page = "0";
-		User user = RequestContextHolder.getRequestContext().getUser();
-		String displayStyle = user.getDisplayStyle();
-		if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
-				ObjectKeys.RELEVANCE_PAGE_HOT.equals(model.get(WebKeys.TYPE2))) 
-			page = (String) model.get(WebKeys.PAGE_NUMBER);
+		page = (String) model.get(WebKeys.PAGE_NUMBER);
 		if (page == null || page.equals("")) page = "0";
 		Integer pageNumber = Integer.valueOf(page);
 		if (pageNumber < 0) pageNumber = 0;

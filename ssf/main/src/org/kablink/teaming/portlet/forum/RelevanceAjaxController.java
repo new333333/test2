@@ -307,7 +307,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		String type2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE2, "");
-		String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE, "0");
+		String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_NUMBER, "0");
 		String direction = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DIRECTION, "next");
 		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		Map model = new HashMap();

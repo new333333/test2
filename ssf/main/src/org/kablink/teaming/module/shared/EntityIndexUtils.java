@@ -442,6 +442,7 @@ public class EntityIndexUtils {
     public static void addTeamMembership(Document doc, Set<Long> ids, boolean fieldsOnly) {
     	if ((ids == null) || ids.isEmpty()) return;
 		doc.add(new Field(TEAM_MEMBERS_FIELD, LongIdUtil.getIdsAsString(ids), Field.Store.NO, Field.Index.TOKENIZED));
+		doc.add(new Field(IS_TEAM_FIELD, "true", Field.Store.NO, Field.Index.TOKENIZED));
    	
     }
     // Get ids for folder read access.  Replace owner indicator with search owner search flag. Replace team indicator with team owner search flag

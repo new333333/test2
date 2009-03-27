@@ -1173,7 +1173,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								if (Validator.isNull(conditionElementNames[i])) continue;
 								Element workflowCondition = newPropertyEle.addElement("workflowEntryDataUserList");
 								workflowCondition.addAttribute("definitionId", conditionDefinitionId);
-								workflowCondition.addAttribute("elementName", conditionElementNames[i]);
+								workflowCondition.addAttribute("elementName", conditionElementNames[i].trim());
 							}
 						}
 					} else {
@@ -1184,12 +1184,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							if (Validator.isNotNull(conditionDefinitionId)) {
 								Element newPropertyEle = configProperty.createCopy();
 								newPropertiesEle.add(newPropertyEle);
-								String[] conditionElementNames = (String[]) inputData.getValues("previous_conditionElementName");
-								for (int i=0; i<conditionElementNames.length; ++i) {
-									if (Validator.isNull(conditionElementNames[i])) continue;
-									Element workflowCondition = newPropertyEle.addElement("workflowEntryDataUserList");
-									workflowCondition.addAttribute("definitionId", conditionDefinitionId);
-									workflowCondition.addAttribute("elementName", conditionElementNames[i]);
+								String[] conditionElementNames0 = (String[]) inputData.getValues("previous_conditionElementName");
+								if (conditionElementNames0.length > 0) {
+									String[] conditionElementNames = conditionElementNames0[0].split(",");
+									for (int i=0; i<conditionElementNames.length; ++i) {
+										if (Validator.isNull(conditionElementNames[i])) continue;
+										Element workflowCondition = newPropertyEle.addElement("workflowEntryDataUserList");
+										workflowCondition.addAttribute("definitionId", conditionDefinitionId);
+										workflowCondition.addAttribute("elementName", conditionElementNames[i].trim());
+									}
 								}
 							}
 						}
