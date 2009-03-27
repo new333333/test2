@@ -50,8 +50,9 @@
 	     <option value="" selected="selected"><ssf:nlt 
 	       tag="filter.selectElement"/></option>
 	     <c:forEach var="element" items="${ssEntryDefinitionElementData}">
-	       <c:if test="${element.value.type == 'user_list' || element.value.type == 'userListSelectbox'}">
-	         <option value="<c:out value="${element.key}"/>"><c:out value="${element.value.caption}"/></option>
+	       <c:if test="${element.value.type == 'user_list' || element.value.type == 'userListSelectbox' || 
+	           element.value.type == 'group_list' || element.value.type == 'team_list'}">
+	         <option value="<c:out value="${element.value.type}:${element.key}"/>"><c:out value="${element.value.caption}"/></option>
 	       </c:if>
 	     </c:forEach>
 	   </select></div></taconite-replace>

@@ -403,6 +403,12 @@ public class SearchFilter {
 		}
 	}
 	
+	public void addIsTeam() {
+		checkCurrent();
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeIsTeam);
+	}
+	
 	public void addEntryId(String entryId) {
 		checkCurrent();
  
@@ -534,6 +540,11 @@ public class SearchFilter {
 	
 	public void addWorkspaceFilter(String searchText) {
 		addPlacesFilter(searchText, workspaceTypes);
+	}
+		
+	public void addTeamFilter() {
+		addPlacesFilter("", placeTypes);
+		addIsTeam();
 	}
 		
 	public void addPlacesFilter(String searchText, Boolean foldersOnly) {

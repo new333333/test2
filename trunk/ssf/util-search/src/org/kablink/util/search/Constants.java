@@ -157,6 +157,7 @@ public class Constants {
 	public static final String FAMILY_FIELD_MILESTONE = "milestone";
 	public static final String FAMILY_FIELD_MINIBLOG = "miniblog"; 
 	public static final String FAMILY_FIELD_PHOTO = "photo";
+	public static final String IS_TEAM_FIELD = "_isTeam";
 	public static final String TEAM_MEMBERS_FIELD = "_teamMembers";
 	public static final String DOCNUMBER_FIELD = "_docNum";
 	public static final String SORTNUMBER_FIELD = "_sortNum";

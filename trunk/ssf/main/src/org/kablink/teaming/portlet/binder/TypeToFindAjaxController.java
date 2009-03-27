@@ -192,7 +192,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		if (findType.equals(WebKeys.FIND_TYPE_PLACES)) {
 			searchTermFilter.addPlacesFilter(searchText, Boolean.valueOf(foldersOnly));
 		} else if (findType.equals(WebKeys.FIND_TYPE_TEAMS)) {
-			searchTermFilter.addWorkspaceFilter(searchText);
+			searchTermFilter.addTeamFilter();
 		} else if (findType.equals(WebKeys.FIND_TYPE_ENTRIES)) {
 			//Add the title term
 			if (searchText.length()>0)

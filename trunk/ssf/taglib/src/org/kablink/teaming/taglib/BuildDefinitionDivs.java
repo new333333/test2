@@ -1151,12 +1151,17 @@ public class BuildDefinitionDivs extends TagSupport {
 								//We have the current condition element; print out its values
 								String definitionId = workflowConditionEle.attributeValue("definitionId", "");
 								StringBuffer elementName = new StringBuffer();
+								StringBuffer elementNameView = new StringBuffer();
 								for (Element element:workflowConditionElements) {
 									if (definitionId.equals(element.attributeValue("definitionId"))) {
 										String name = element.attributeValue("elementName", "");
 										if (Validator.isNull(name)) continue;
-										if (elementName.length() > 0) elementName.append(", ");
+										if (elementName.length() > 0) elementName.append(",");
 										elementName.append(name);
+										if (elementNameView.length() > 0) elementNameView.append(", ");
+										String nameText = name;
+										if (name.indexOf(":") >= 0) nameText = name.substring(name.indexOf(":")+1);
+										elementNameView.append(nameText);
 									}
 								}
 								//Get the entry definition itself
@@ -1191,7 +1196,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("</span>");
 									sb.append("</td>");
 									sb.append("<td valign=\"top\" style=\"padding-left:4px;\">");
-									sb.append(elementName.toString());
+									sb.append(elementNameView.toString());
 									sb.append("</td>");
 									sb.append("</tr>");
 																		

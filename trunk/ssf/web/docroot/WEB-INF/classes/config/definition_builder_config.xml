@@ -2202,7 +2202,6 @@
 	<item name="box" caption="__box" category="generalLayout" display="form">
 		<properties>
 			<property name="style" caption="__box" type="selectbox" default="square">
-				<option name="rounded" caption="__box_rounded" />
 				<option name="square" caption="__box_square" />
 				<option name="squareNoBorder" caption="__box_square_no_border" />
 			</property>
@@ -2232,7 +2231,6 @@
 	<item name="boxView" caption="__box" category="generalViewLayout" display="view">
 		<properties>
 			<property name="style" caption="__box_style" type="selectbox" default="rounded">
-				<option name="rounded" caption="__box_rounded" />
 				<option name="square" caption="__box_square" />
 				<option name="squareNoBorder" caption="__box_square_no_border" />
 			</property>
@@ -2260,11 +2258,6 @@
 	<item name="expandableDiv" caption="__expandable_div" category="generalLayout" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
-			<property name="style" caption="__expandable_div_style" type="selectbox" default="rounded">
-				<option name="rounded" caption="__box_rounded" />
-				<option name="rounded_shadow" caption="__box_rounded_with_shadow" />
-				<option name="square" caption="__box_square" />
-			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="title" definitionType="1" caption="__title" />
@@ -2292,11 +2285,6 @@
 	<item name="expandableDivView" caption="__expandable_div" category="generalViewLayout" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
-			<property name="style" caption="__expandable_div_style" type="selectbox" default="rounded">
-				<option name="rounded" caption="__box_rounded" />
-				<option name="rounded_shadow" caption="__box_rounded_with_shadow" />
-				<option name="square" caption="__box_square" />
-			</property>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />

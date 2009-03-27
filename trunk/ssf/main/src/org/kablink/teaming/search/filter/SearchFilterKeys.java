@@ -103,6 +103,7 @@ public class SearchFilterKeys {
    	public final static String FilterTypeEvent = "event";
    	public final static String FilterTypeCommunityTagSearch = "communityTag";
    	public final static String FilterTypePersonalTagSearch = "personalTag";
+   	public final static String FilterTypeBinderDefinition = "binder";
    	public final static String FilterTypeEntryDefinition = "entry";
    	public final static String FilterTypeEntryId = "entryId";
    	public final static String FilterTypeTaskEntry = "task";
@@ -119,6 +120,7 @@ public class SearchFilterKeys {
    	public final static String FilterTypeEntityTypes = "entityTypes";
    	public final static String FilterTypeEntryTypes = "entryTypes";
    	public final static String FilterTypeElement = "element";
+   	public final static String FilterTypeIsTeam = "isTeam";
    	public final static String FilterTypeRelative = "relative";
    	public final static String FilterTypeItemTypes = "itemTypes";
    	public final static String FilterStartDate = "startDate";
