@@ -102,7 +102,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 
 	<c:if test="${slidingTableStyle == 'fixed'}">
       <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="2%">
-        <img src="<html:imagesPath/>pics/discussion/ss_pin_orange.png" width="17" height="18" title="<ssf:nlt tag="discussion.pinned"/>">
+        <img src="<html:imagesPath/>pics/discussion/ss_pin_orange.png" width="17" height="18" 
+          title="<%= NLT.get("discussion.pinned").replaceAll("\"", "&QUOT;") %>">
       </ssf:slidingTableColumn>
 	</c:if>
 
@@ -491,11 +492,11 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
       <img 
       <c:if test="${!empty ssPinnedEntries[entry1._docId]}">
         src="<html:imagesPath/>pics/discussion/ss_pin_orange.png" width="17" height="18"
-        title="<ssf:nlt tag="discussion.unpin"/>"
+        title="<%= NLT.get("discussion.unpin").replaceAll("\"", "&QUOT;") %>"
       </c:if>
       <c:if test="${empty entry1._pinned}">
         src="<html:imagesPath/>pics/discussion/ss_pin_grey.png" width="17" height="18"
-        title="<ssf:nlt tag="discussion.pin"/>"
+        title="<%= NLT.get("discussion.pin").replaceAll("\"", "&QUOT;") %>"
       </c:if>
       ></a>
   </ssf:slidingTableColumn>
@@ -511,10 +512,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     entryId="${entry1._docId}" actionUrl="true">
     <ssf:param name="entryViewStyle" value="${ss_entryViewStyle}"/>
     <ssf:param name="entryViewStyle2" value="${ss_entryViewStyle2}"/></ssf:url>" 
-<c:if test="${slidingTableStyle != 'fixed'}">
+<c:if test="${slidingTableStyle != 'fixed' || ssUser.displayStyle != 'iframe'}">
     onClick="ss_loadEntry(this,'${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 </c:if>
-<c:if test="${slidingTableStyle == 'fixed'}">
+<c:if test="${slidingTableStyle == 'fixed' && ssUser.displayStyle == 'iframe'}">
     onClick="ss_loadEntryInPlace(this,'${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', '${ss_entryViewStyle2}', 'no');return false;" 
 </c:if>
     ><span <%= seenStyle %>><c:out value="${entry1._docNum}"/>.</span></a>&nbsp;
@@ -546,12 +547,14 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     ><ssf:param name="entryViewStyle" value="${ss_entryViewStyle}"/>
     <ssf:param name="entryViewStyle2" value="${ss_entryViewStyle2}"/></ssf:url>" 
     
-	<c:if test="${slidingTableStyle != 'fixed'}">
+	<c:if test="${slidingTableStyle != 'fixed' || ssUser.displayStyle != 'iframe'}">
     	onClick="ss_loadEntry(this,'${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 	</c:if>
 	
-	<c:if test="${slidingTableStyle == 'fixed'}">
+	<c:if test="${slidingTableStyle == 'fixed' && ssUser.displayStyle == 'iframe'}">
     	onClick="ss_loadEntryInPlace(this, '${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', '${ss_entryViewStyle2}', 'no', 'ss_folderEntryTitle_${entry1._docId}');return false;" 
+    </c:if>
+    <c:if test="${slidingTableStyle == 'fixed'}">
     	<c:if test="${!empty entry1._desc}">
     	  onMouseOver="ss_showHoverOver(this, 'ss_folderEntryTitle_${entry1._docId}', event, 20, 12);"
     	  onMouseOut="ss_hideHoverOver('ss_folderEntryTitle_${entry1._docId}');"
