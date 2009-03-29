@@ -181,9 +181,25 @@ div.ss_header_bar_timestamp {
 	list-style-type: none;
 	padding: 0px;
 }	
-.ss_blog_footer * div {
-	display: inline;
+.ss_blog_footer * span {
+    font-family: ${ss_style_title_font_family};
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 16px;
+    color: ${ss_style_muted_label_color};
+	padding: 2px 8px;
 }
+.ss_blog_footer * img {
+	vertical-align: baseline;
+	padding-right: 2px;
+}
+.ss_blog_footer * a {
+  font-size: 11px;
+  font-weight: bold;
+  color: ${ss_style_muted_label_color};
+  white-space: nowrap;
+}
+
 div.ss_header_bar_timestamp a, div.ss_header_bar_timestamp a:visited {
 	color: ${ss_style_metadata_color};
 	}
