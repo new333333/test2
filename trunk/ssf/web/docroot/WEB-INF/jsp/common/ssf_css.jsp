@@ -657,31 +657,6 @@ a.ss_tinyButton:focus, a.ss_tinyButton:hover {
   font-size: ${ss_style_font_normalprint};
 }
 
-div.ss_iconed_label {
-  font-family: ${ss_style_title_font_family};
-  background-repeat: no-repeat;
-  background-position: 13px 50%;
-  padding-left: 30px;
-  padding-right: 4px;
-  padding-top:	7px;
-  padding-bottom: 6px;
-  margin-left: 2px;
-  font-size: 11px;
-  font-weight: bold;
-  line-height: 16px;
-  color: ${ss_style_muted_label_color};
-}
-
-div.ss_iconed_label a {
-  font-size: 11px;
-  font-weight: bold;
-  color: ${ss_style_muted_label_color};
-}
-div.ss_iconed_label hover {
-  font-size: 11px;
-  font-weight: bold;
-  color: ${ss_style_muted_label_color};
-}
 div.ss_tag_label {
   font-family: ${ss_style_title_font_family};
   padding-left: 6px;

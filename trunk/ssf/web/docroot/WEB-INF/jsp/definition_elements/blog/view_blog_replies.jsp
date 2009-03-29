@@ -47,33 +47,30 @@
 
 <% // Only show the replies if this is the top entry %>
 <c:if test="${!thisEntryIsEntry && ssDefinitionEntry._entryType == 'entry'}" >
-
+<div class="ss_clear"></div>
 <div class="ss_blog_footer">
 <ssHelpSpot helpId="workspaces_folders/misc_tools/more_blog_tools" 
 	offsetX="0" offsetY="8" 
 	title="<ssf:nlt tag="helpSpot.moreBlogTools"/>">
 </ssHelpSpot>
-<ul>
+<ul class="ss_nobullet">
 <c:if test="${!empty ss_blog_reply_url}">
 <li>
 <a href="${ss_blog_reply_url}" 
   onClick="ss_addBlogReply(this, '${renderResponse.namespace}', '${ssBinder.id}', '${ssDefinitionEntry._docId}');return false;"
   <ssf:title tag="title.add.comment" />
-  >
-<div class="ss_iconed_label ss_add_comment"><ssf:nlt tag="blog.addComment"/></div>
-</a>
-</c:if>
+  ><span><img src="<html:imagesPath/>icons/add_comment.gif"/><ssf:nlt tag="blog.addComment"/></span></a>
 </li>
+</c:if>
 <li>
 <a href="javascript: ;" onClick="ss_showBlogReplies('${renderResponse.namespace}', '${ssBinder.id}','${ssDefinitionEntry._docId}');return false;"
 <ssf:title tag="title.view.comments">
 	<ssf:param name="value" value="${ssDefinitionEntry._totalReplyCount}" />
 </ssf:title>
->
-<div class="ss_iconed_label ss_view_something">
-<ssf:nlt tag="blog.viewComments"/> [<span id="${renderResponse.namespace}ss_blog_reply_count_${ssDefinitionEntry._docId}">${ssDefinitionEntry._totalReplyCount}</span>]
-</div>
-</a>
+><span><img src="<html:imagesPath/>icons/view_something.gif"/><ssf:nlt tag="blog.viewComments"/>
+[<span style="padding:0px !important;" 
+  id="${renderResponse.namespace}ss_blog_reply_count_${ssDefinitionEntry._docId}"
+>${ssDefinitionEntry._totalReplyCount}</span>]</span></a>
 </li>
 <li>
 <a href="<ssf:url adapter="true" 
@@ -83,7 +80,7 @@
 	    entryId="${ssDefinitionEntry._docId}"/>" 
   onClick="ss_openUrlInWindow(this, '_blank');return false;"
   <ssf:title tag="title.send.entry.to.friends" />
-><div class="ss_iconed_label ss_send_friend"><ssf:nlt tag="entry.sendtofriend"/></div></a>
+><span><img src="<html:imagesPath/>icons/send_friend.gif"/><ssf:nlt tag="entry.sendtofriend"/></span></a>
 </li>
 <li>
 <a onclick=" ss_createPopupDiv(this, '${renderResponse.namespace}ss_subscription_entry${ssDefinitionEntry._docId}');return false;" 
@@ -97,9 +94,8 @@
 				<ssf:param name="entryId" value="${ssDefinitionEntry._docId}" />
 				<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
 				<ssf:param name="namespace" value="${renderResponse.namespace}" />
-		</ssf:url>" <ssf:title tag="title.subscribe.to.entry"/>>
-		<div class="ss_iconed_label ss_subscribe"><ssf:nlt tag="entry.subscribe"/></div>
-</a>
+		</ssf:url>" <ssf:title tag="title.subscribe.to.entry"/>
+		><span><img src="<html:imagesPath/>icons/send_friend.gif"/><ssf:nlt tag="entry.subscribe"/></span></a>
 </li>	
 </ul>
 </div>

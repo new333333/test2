@@ -42,18 +42,20 @@
 		 if (description != null && !description.equals("")) {
 		%>
 <% //Description view %>
-  <div class="ss_entryDescriptionLead"></div>
-  <span><ssf:markup entity="${ssDefinitionEntry}"><c:out 
+  <div>
+    <span><ssf:markup entity="${ssDefinitionEntry}"><c:out 
        value="<%= description %>" escapeXml="false"/></ssf:markup></span>
+  </div>
 <%  	}
  	} else if (thisEntry instanceof Map) {
 		description = (String) ((Map)thisEntry).get("_desc");
 	 if (description != null && !description.equals("")) {	
 	 %>	
 <% //Description view %>
-  <div class="ss_entryDescriptionLead"></div>
-  <span><ssf:markup search="${ssDefinitionEntry}"><c:out 
+  <div>
+    <span><ssf:markup search="${ssDefinitionEntry}"><c:out 
        value="<%= description %>" escapeXml="false"/></ssf:markup></span>
+  </div>
 
 <%  	}
 	}
