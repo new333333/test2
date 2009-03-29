@@ -411,6 +411,10 @@ div.ss_editorHints {
 }
 
 /* entry styles: common to entry views and entry forms */
+.ss_entryPopupWrapper {
+	padding: 20px;
+}
+
 .ss_entryTitle {
   font-weight: normal;
   font-size: ${ss_style_font_largerprint};
