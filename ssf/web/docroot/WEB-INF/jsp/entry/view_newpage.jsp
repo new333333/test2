@@ -135,8 +135,13 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));
 </script>
 
-<c:if test="${!empty ssEntryIdToBeShown && !empty ss_useDefaultViewEntryPopup}">
 <script type="text/javascript">
+function ss_showForumEntryInIframe(url) {
+	self.location.href = url;
+	return false;
+}
+
+<c:if test="${!empty ssEntryIdToBeShown && !empty ss_useDefaultViewEntryPopup}">
 function ss_showEntryToBeShown${renderResponse.namespace}() {
     var url = "<ssf:url     
 		adapter="true" 
@@ -149,12 +154,8 @@ function ss_showEntryToBeShown${renderResponse.namespace}() {
 		</ssf:url>" 
 	ss_showForumEntryInIframe(url);
 }
-
-function ss_showForumEntryInIframe(url) {
-	return true;
-}
-
 ss_createOnLoadObj('ss_showEntryToBeShown${renderResponse.namespace}', ss_showEntryToBeShown${renderResponse.namespace});
-</script>
 </c:if>
+
+</script>
 
