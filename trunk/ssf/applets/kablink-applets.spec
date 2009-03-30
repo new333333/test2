@@ -38,11 +38,6 @@ Authors:
 %build
 env >mikenv.txt
 cd applets
-#symlink the contraband jars for now.
-ln -sf /usr/share/java/axis/axis.jar ../lib
-ln -sf /usr/share/java/axis/ant-axis.jar ../lib
-ln -sf /usr/share/java/axis/jaxrpc.jar ../lib
-ln -sf /usr/share/java/ant-contrib.jar ../lib
 ant deploy
 
 %install
@@ -54,16 +49,19 @@ install -d -m 755 $RPM_BUILD_ROOT/usr/share/tomcat6/webapps/ssf/applets/fileopen
 install -d -m 755 $RPM_BUILD_ROOT/usr/share/tomcat6/webapps/ssf/applets/droptarget 
 
 install $RPM_BUILD_DIR/kablink-applets-%{version}/applets/workflow-viewer/kablink-teaming-workflowviewer-applet.jar $RPM_BUILD_ROOT/usr/share/tomcat6/webapps/ssf/applets/workflow-viewer/kablink-teaming-workflowviewer-applet.jar
-install $RPM_BUILD_DIR/kablink-applets-%{version}/applets/fileedit/kablink-teaming-fileedit-applet.jar $RPM_BUILD_ROOT/usr/share/tomcat6/webapps/ssf/applets/workflow-viewer/kablink-teaming-fileedit-applet.jar
-install $RPM_BUILD_DIR/kablink-applets-%{version}/applets/fileopen/kablink-teaming-fileopen-applet.jar  $RPM_BUILD_ROOT/usr/share/tomcat6/webapps/ssf/applets/workflow-viewer/kablink-teaming-fileopen-applet.jar 
-install $RPM_BUILD_DIR/kablink-applets-%{version}/applets/droptarget/kablink-teaming-droptarget-applet.jar $RPM_BUILD_ROOT/usr/share/tomcat6/webapps/ssf/applets/workflow-viewer/kablink-teaming-droptarget-applet.jar 
+install $RPM_BUILD_DIR/kablink-applets-%{version}/applets/fileedit/kablink-teaming-fileedit-applet.jar $RPM_BUILD_ROOT/usr/share/tomcat6/webapps/ssf/applets/fileedit/kablink-teaming-fileedit-applet.jar
+install $RPM_BUILD_DIR/kablink-applets-%{version}/applets/fileopen/kablink-teaming-fileopen-applet.jar  $RPM_BUILD_ROOT/usr/share/tomcat6/webapps/ssf/applets/fileopen/kablink-teaming-fileopen-applet.jar 
+install $RPM_BUILD_DIR/kablink-applets-%{version}/applets/droptarget/kablink-teaming-droptarget-applet.jar $RPM_BUILD_ROOT/usr/share/tomcat6/webapps/ssf/applets/droptarget/kablink-teaming-droptarget-applet.jar 
 
 %files
 %defattr(-,root,root)
 %dir /usr/share/tomcat6/webapps/ssf
 %dir /usr/share/tomcat6/webapps/ssf/applets
 %dir /usr/share/tomcat6/webapps/ssf/applets/workflow-viewer
+%dir /usr/share/tomcat6/webapps/ssf/applets/fileedit
+%dir /usr/share/tomcat6/webapps/ssf/applets/fileopen
+%dir /usr/share/tomcat6/webapps/ssf/applets/droptarget
 /usr/share/tomcat6/webapps/ssf/applets/workflow-viewer/kablink-teaming-workflowviewer-applet.jar
-/usr/share/tomcat6/webapps/ssf/applets/workflow-viewer/kablink-teaming-fileedit-applet.jar
-/usr/share/tomcat6/webapps/ssf/applets/workflow-viewer/kablink-teaming-fileopen-applet.jar
-/usr/share/tomcat6/webapps/ssf/applets/workflow-viewer/kablink-teaming-droptarget-applet.jar
+/usr/share/tomcat6/webapps/ssf/applets/fileedit/kablink-teaming-fileedit-applet.jar
+/usr/share/tomcat6/webapps/ssf/applets/fileopen/kablink-teaming-fileopen-applet.jar
+/usr/share/tomcat6/webapps/ssf/applets/droptarget/kablink-teaming-droptarget-applet.jar
