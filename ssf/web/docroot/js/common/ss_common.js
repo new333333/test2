@@ -849,15 +849,20 @@ function ss_clearStatus(textareaId) {
 
 function ss_trackThisBinder(id, namespace) {
 	ss_setupStatusMessageDiv();
+	ss_moveDivToBody("ss_track_this_ok" + namespace);
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"track_this_binder", binderId:id, namespace:namespace}, "__ajax_relevance");
 	ss_fetch_url(url, ss_postRequestTrackThis, namespace)
 }
 function ss_postRequestTrackThis(s, namespace) {
+	var divObjA = self.document.getElementById("ss_track_this_anchor_div" + namespace);
 	var divObjT = self.document.getElementById("ss_track_this_ok" + namespace);
-	if (divObjT != null) {
+	if (divObjA != null && divObjT != null) {
+		ss_setObjectLeft(divObjT, parseInt(parseInt(ss_getObjectLeft(divObjA)) + 30));
+		ss_setObjectTop(divObjT, parseInt(parseInt(ss_getObjectTop(divObjA)) - 30));
 		divObjT.innerHTML = s;
+		divObjT.style.display = 'block';
+		
 		divObjT.style.visibility = 'visible';
-		divObjT.style.display = 'inline';
 		setTimeout("ss_hideDivNone('ss_track_this_ok" + namespace + "');", 2000);
 	}
 }
