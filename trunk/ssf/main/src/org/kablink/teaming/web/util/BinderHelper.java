@@ -1745,12 +1745,36 @@ public class BinderHelper {
 	
 	public static void updateUserStatus(AllModulesInjected bs, ActionRequest request, 
 			Long folderId, Long entryId) {
+		Folder	miniBlog;
+		
+		// If the user is referencing a mini blog folder that we can't
+		// access or that has been deleted, we ignore it and use the
+		// folder that we were given.
         User user = RequestContextHolder.getRequestContext().getUser();
 		Long miniBlogId = user.getMiniBlogId();
+		boolean userHasMiniBlog = (null != miniBlogId); 
+		if (userHasMiniBlog) {
+			miniBlog = null;
+        	try {
+        		miniBlog = (Folder) bs.getBinderModule().getBinder(miniBlogId); 
+        		if (miniBlog.isDeleted()) {
+        			miniBlog = null;
+        		}
+        	} catch (Exception ex) {
+				miniBlog = null;
+        	}
+    		userHasMiniBlog = (null != miniBlog); 
+		}
+		
+		// If the user doesn't have a mini blog folder...
+		if (!userHasMiniBlog)
+		{
+			// ...default to the folder that we were given.
+			miniBlogId = folderId;
+		}
 
 		// Does the folderId refer to the user's MiniBlog? 
 		if ((null != miniBlogId) && (miniBlogId.longValue() == folderId.longValue())) {
-			Folder	miniBlog;
 			try {
 				// Yes!  Can we access the MiniBlog folder?
 				miniBlog = (Folder) bs.getBinderModule().getBinder(miniBlogId);
@@ -1804,7 +1828,14 @@ public class BinderHelper {
 				
 				// Do we have the text to update the user's status with?
 				if (null != text) {
-					// Yes!  Update it.
+					// Yes!  If we need to set the folder received as
+					// the user's mini blog...
+					if (!userHasMiniBlog) {
+						// ...set it...
+						bs.getProfileModule().setUserMiniBlog(user, miniBlogId);
+					}
+					
+					// ...and update the status text.
 					bs.getProfileModule().setStatus(text);
 					bs.getProfileModule().setStatusDate(new Date());
 					bs.getReportModule().addStatusInfo(user);

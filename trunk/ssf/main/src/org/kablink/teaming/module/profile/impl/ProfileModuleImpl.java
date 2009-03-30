@@ -828,6 +828,16 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	   	return otherMiniBlogId;
    }
 
+   //RW transaction
+   public Folder setUserMiniBlog(User entry, Long folderId) throws AccessControlException {
+		Folder miniBlog = null;
+		
+		entry.setMiniBlogId(folderId);
+		if (folderId != null) 
+			miniBlog = (Folder)getCoreDao().loadBinder(folderId, entry.getZoneId());
+		
+		return miniBlog;
+   }
 
     //RW transaction
     public void deleteEntry(Long principalId, Map options) {
