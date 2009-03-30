@@ -124,6 +124,16 @@ public interface ProfileModule {
 	  */
 	 public Folder addUserMiniBlog(User entry) 
 	 	throws AccessControlException;
+	 
+	 /**
+	  * Sets a user MiniBlog folder from the MiniBlog folder template
+	  * @param user
+	  * @param folderId
+	  * @throws AccessControlException
+	  */
+	 public Folder setUserMiniBlog(User entry, Long folderId) 
+	 	throws AccessControlException;
+	 
 	/**
 	 * Create an user from information from the portal.
 	 * 
