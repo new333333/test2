@@ -218,6 +218,10 @@ a.ss_download_link {
 .ss_finestprint {
   font-size: ${ss_style_font_finestprint} !important; 
 }
+.ss_footnote {
+  font-size: ${ss_style_font_fineprint} !important; 
+  vertical-align: super;
+}
 
 <%-- 
   -- Rich text editor font styles 
