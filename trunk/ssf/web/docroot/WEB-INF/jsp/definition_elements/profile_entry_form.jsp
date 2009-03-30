@@ -115,7 +115,7 @@
 	<input type="text" class="ss_text" name="firstName" id="firstName" 
 		value="${ssDefinitionEntry.firstName}">
 </c:if>
-<c:if test="${!empty ssReadOnlyFields['firstName']}">${ssDefinitionEntry.firstName} &#134;</c:if>
+<c:if test="${!empty ssReadOnlyFields['firstName']}">${ssDefinitionEntry.firstName} <span class="ss_footnote">&#134;</span></c:if>
 	</div>
   </td>
   <td style="padding-right:6px;">
@@ -127,7 +127,7 @@
 	<input type="text" class="ss_text" name="middleName" id="middleName"
 		value="${ssDefinitionEntry.middleName}">
 </c:if>
-<c:if test="${!empty ssReadOnlyFields['middleName']}">${ssDefinitionEntry.middleName} &#134;</c:if>
+<c:if test="${!empty ssReadOnlyFields['middleName']}">${ssDefinitionEntry.middleName} <span class="ss_footnote">&#134;</span></c:if>
 	</div>
   </td>
   <td>
@@ -139,7 +139,7 @@
 	<input type="text" class="ss_text" name="lastName" id="lastName"
 		value="${ssDefinitionEntry.lastName}">
 </c:if>
-<c:if test="${!empty ssReadOnlyFields['lastName']}">${ssDefinitionEntry.lastName} &#134;</c:if>
+<c:if test="${!empty ssReadOnlyFields['lastName']}">${ssDefinitionEntry.lastName} <span class="ss_footnote">&#134;</span></c:if>
 	</div>
   </td>
 </tr>
@@ -153,7 +153,7 @@
 	<input type="text" class="ss_text" name="emailAddress" id="emailAddress"
 		value="${ssDefinitionEntry.emailAddress}">
 </c:if>
-<c:if test="${!empty ssReadOnlyFields['emailAddress']}">${ssDefinitionEntry.emailAddress} &#134;</c:if>
+<c:if test="${!empty ssReadOnlyFields['emailAddress']}">${ssDefinitionEntry.emailAddress} <span class="ss_footnote">&#134;</span></c:if>
 	</div>
   </td>
   <td style="padding-right:6px;">
@@ -165,7 +165,7 @@
 	<input type="text" class="ss_text" name="mobileEmailAddress" id="mobileEmailAddress"
 		value="${ssDefinitionEntry.mobileEmailAddress}">
 </c:if>
-<c:if test="${!empty ssReadOnlyFields['mobileEmailAddress']}">${ssDefinitionEntry.mobileEmailAddress} &#134;</c:if>
+<c:if test="${!empty ssReadOnlyFields['mobileEmailAddress']}">${ssDefinitionEntry.mobileEmailAddress} <span class="ss_footnote">&#134;</span></c:if>
 	</div>
   </td>
   <td>
@@ -177,7 +177,7 @@
 	<input type="text" class="ss_text" name="txtEmailAddress" id="txtEmailAddress"
 		value="${ssDefinitionEntry.txtEmailAddress}">
 </c:if>
-<c:if test="${!empty ssReadOnlyFields['txtEmailAddress']}">${ssDefinitionEntry.txtEmailAddress} &#134;</c:if>
+<c:if test="${!empty ssReadOnlyFields['txtEmailAddress']}">${ssDefinitionEntry.txtEmailAddress} <span class="ss_footnote">&#134;</span></c:if>
 	</div>
   </td>
 </tr>
@@ -191,7 +191,7 @@
 	<input type="text" class="ss_text" name="zonName" id="zonName"
 		value="${ssDefinitionEntry.zonName}">
 </c:if>
-<c:if test="${!empty ssReadOnlyFields['zonName']}">${ssDefinitionEntry.zonName} &#134;</c:if>
+<c:if test="${!empty ssReadOnlyFields['zonName']}">${ssDefinitionEntry.zonName} <span class="ss_footnote">&#134;</span></c:if>
 	</div>
   </td>
   <td>
@@ -268,6 +268,6 @@
 <c:if test="${!empty ssReadOnlyFields}">
 <br/>
 <br/>
-&#134;&nbsp;&nbsp;<ssf:nlt tag="profile.fieldsSynced"/>
+<span class="ss_smallprint">&#134;&nbsp;&nbsp;<ssf:nlt tag="profile.fieldsSynced"/></span>
 </c:if>
 
