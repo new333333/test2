@@ -136,6 +136,8 @@
 		<antcall target="add-image-themes"/>
 	
 		<antcall target="add-release-info"/>
+	
+		<antcall target="add-messages-files"/>
 	</target>
 
 	<target name="add-image-themes">
@@ -157,6 +159,25 @@
 			<fileset dir="${web.dir}/themes/icwg" />
 		</copy>
 
+		<war
+			basedir="temp"
+			destfile="${war.file}"
+			update="true"/>
+
+	</target>
+
+	<target name="add-messages-files">
+		<delete dir="temp"/>
+	
+		<copy 
+			preservelastmodified="true"
+	        file="${web.dir}/WEB-INF/messages/messages.properties"
+			tofile="temp/WEB-INF/messages/messages_en.properties"/>
+		<copy 
+			preservelastmodified="true"
+			file="${web.dir}/WEB-INF/messages/help-messages.properties"
+			tofile="temp/WEB-INF/messages/help-messages_en.properties"/>
+	
 		<war
 			basedir="temp"
 			destfile="${war.file}"
@@ -229,9 +250,17 @@
 				includes="**/*.properties"
 			/>
 		</copy>
+		<copy
+			preservelastmodified="true"
+			file="${web.dir}/WEB-INF/messages/messages.properties"
+			tofile="${app.server.ssf.dir}/WEB-INF/messages/messages_en.properties"/>
+		<copy
+			preservelastmodified="true"
+			file="${web.dir}/WEB-INF/messages/help-messages.properties"
+			tofile="${app.server.ssf.dir}/WEB-INF/messages/help-messages_en.properties"/>
 	</target>
 	
-	<target name="deploy" depends="make-all-generated-files,deploy-light">
+	<target name="deploy" depends="make-all-generated-files,deploy-light,deploy-messages-only">
 	</target>
 	
 	<target name="precompile-jsp">
