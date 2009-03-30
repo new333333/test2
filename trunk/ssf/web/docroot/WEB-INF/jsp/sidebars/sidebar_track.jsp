@@ -40,6 +40,7 @@
 			<div class="ss_sideTrack">
 			  <ul>
 				<li>
+				   <div id="ss_track_this_anchor_div${renderResponse.namespace}">
 				   <a href="javascript: ;"   
 	  				onclick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;"
 				 	<c:if test="${ssBinder.entityType == 'workspace'}">
@@ -63,10 +64,11 @@
 	  					</c:if>
 				 	</c:if>
 				  </a>
+				  </div>
 				
 				  <div id="ss_track_this_ok${renderResponse.namespace}" 
-	  				style="position:relative; display:none; visibility:hidden; top:5px; left:10px; z-index:500;
-	         		border:1px solid black; padding-top:10px; padding-left: 10px; padding-bottom: 10px; padding-right: 10px; background-color:#FFFFFF; white-space:nowrap; margin-bottom:10px;">
+	  				style="position:absolute; display:none; visibility:hidden; z-index:500;
+	         		border:1px solid black; padding:6px; background-color:#FFFFFF; white-space:nowrap;">
 				  </div>
 				</li>
 			  </ul>
