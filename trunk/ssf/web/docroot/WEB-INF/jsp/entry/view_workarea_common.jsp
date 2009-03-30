@@ -71,7 +71,7 @@ function ss_workarea_showId${renderResponse.namespace}(id, action, entryId) {
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
 	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-	self.location.href = url;
+	setTimeout("self.location.href = '"+url+"';", 100);
 	return false;
 }
 if (typeof ss_workarea_showId == "undefined") 
