@@ -72,6 +72,15 @@ public class ICalUtils {
 	public static ByteArrayOutputStream toOutputStream(Calendar calendar) throws IOException, ValidationException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		CalendarOutputter calendarOutputter = new CalendarOutputter();
+		
+		// Bugzilla 488900:
+		//   Changed to output the iCal using a non-validating
+		//   CalendarOutputter.  Changed to non-validating because
+		//   ical4j throws a validation error if we use PUBLISH when
+		//   there are attendees.  In order to get GroupWise
+		//   interaction to work, that's what we're doing.
+		calendarOutputter.setValidating(false);
+		
 		calendarOutputter.output(calendar, out);
 		return out;
 	}
