@@ -34,6 +34,7 @@ package org.kablink.teaming.remoting.ws.service.ldap;
 
 import javax.naming.NamingException;
 
+import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.BaseService;
 
@@ -51,7 +52,7 @@ public class LdapServiceImpl extends BaseService implements LdapService {
 	public void ldap_syncAll(String accessToken) {
 		try {
 			getLdapModule().syncAll();
-		} catch (NamingException e) {
+		} catch (LdapSyncException e) {
 			throw new RemotingException(e);
 		}
 	}
