@@ -122,6 +122,7 @@ public class PresenceManagerImpl implements PresenceManager, PresenceManagerImpl
 	    private boolean reset = false;
 	    private int SLEEPINTERVAL = 2000;
         private Socket presenceSocket = null;
+        private int connectAttempts = 0;
         //private DataInputStream dis;
         private BufferedReader sis;	//socket inputstream
 
@@ -138,7 +139,10 @@ public class PresenceManagerImpl implements PresenceManager, PresenceManagerImpl
 	    	try {
  	            presenceSocket = new Socket(host, port);
 	        } catch (Exception e) {
-	        	logger.error("Can't connect to presence server: host ["+ host + "], port [" + port + "], error: " + e.getMessage());
+	        	if (connectAttempts%10 == 0) {
+	        		logger.error("Can't connect to presence server: host ["+ host + "], port [" + port + "], error: " + e.getMessage());
+	        	}
+	        	connectAttempts++;
          	    return null;
          	}
 	        return presenceSocket;

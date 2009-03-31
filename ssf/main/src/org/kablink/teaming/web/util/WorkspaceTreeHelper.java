@@ -49,6 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
@@ -63,6 +65,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SeenMap;
@@ -534,6 +537,10 @@ public class WorkspaceTreeHelper {
 		Collection users = bs.getBinderModule().getTeamMembers(ws, true);
 		model.put(WebKeys.TEAM_MEMBERS, users);
 		model.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
+		Collection<Principal> usersAndGroups = bs.getBinderModule().getTeamMembers(ws, false);
+		SortedMap<String, Group> teamGroups = new TreeMap();
+		for (Principal p : usersAndGroups) if (p instanceof Group) teamGroups.put(p.getTitle(), (Group)p);
+		model.put(WebKeys.TEAM_MEMBER_GROUPS, teamGroups);
 		
 		buildWorkspaceToolbar(bs, req, response, model, ws, ws.getId().toString());
 	}

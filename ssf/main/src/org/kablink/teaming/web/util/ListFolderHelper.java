@@ -53,6 +53,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.TreeMap;
@@ -81,6 +82,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
@@ -825,6 +827,10 @@ public class ListFolderHelper {
 			Collection users = bs.getBinderModule().getTeamMembers(folder, true);
 			model.put(WebKeys.TEAM_MEMBERS, users);
 			model.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
+			Collection<Principal> usersAndGroups = bs.getBinderModule().getTeamMembers(folder, false);
+			SortedMap<String, Group> teamGroups = new TreeMap();
+			for (Principal p : usersAndGroups) if (p instanceof Group) teamGroups.put(p.getTitle(), (Group)p);
+			model.put(WebKeys.TEAM_MEMBER_GROUPS, teamGroups);
 		} catch (AccessControlException ac) {} //just skip
 		
 		//Build the navigation beans
