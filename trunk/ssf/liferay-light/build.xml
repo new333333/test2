@@ -39,7 +39,7 @@
 		</copy>
 	</target>
 	
-	<target name="clean-build-and-full-deploy" depends="build,full-deploy" />
+	<target name="clean-build-and-full-deploy" depends="build,full-deploy,copy-portal-ext.properties-if-not-there"/>
 	
 	<target name="build" depends="war"/>
 	
@@ -117,6 +117,8 @@
 		<property name="deploy.liferay.taglib.jar" value="${deploy.liferay.webinf}/lib/util-taglib.jar" />
 		<property name="deploy.liferay.util.jar" value="${deploy.liferay.lib.dir}/util-java.jar" />
 		<property name="deploy.liferay.bridges.jar" value="${deploy.liferay.lib.dir}/util-bridges.jar" />
+		
+		<available property="portal-ext.properties.available" file="${deploy.liferay.webinf}/classes/portal-ext.properties"/> 
 	</target>
 
 	<target name="clean-app-server">
@@ -211,4 +213,8 @@
 				      includes="*.native" ext=".properties" />
 	</target>	
 
+	<target name="copy-portal-ext.properties-if-not-there" depends="init-liferay" unless="portal-ext.properties.available">
+		<copy file="resources/portal-ext.properties" todir="${deploy.liferay.webinf}/classes"/>
+	</target>
+	
 </project>
