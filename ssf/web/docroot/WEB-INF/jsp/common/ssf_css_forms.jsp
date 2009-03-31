@@ -240,7 +240,7 @@ fieldset{
   	display: block;
   	border: 1px dotted #5A9A98;
   	background-image: url(<html:imagesPath/>pics/login_bk.png);
-  	background-repeat: no-repeat;
+  	background-repeat: repeat;
   	width: 480px;
   	height: 190px;
     -moz-border-radius: 2%;
