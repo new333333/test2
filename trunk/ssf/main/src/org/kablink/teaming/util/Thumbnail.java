@@ -32,9 +32,9 @@
  */
 package org.kablink.teaming.util;
 
-import java.awt.Color;
 import java.awt.Image;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -45,12 +45,101 @@ import java.io.OutputStream;
 import java.io.FileOutputStream;
 import javax.swing.ImageIcon;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sun.image.codec.jpeg.ImageFormatException;
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGEncodeParam;
 import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 public class Thumbnail {
+	private static Log logger = LogFactory.getLog(Thumbnail.class);
+
+	/*
+	 * Inner class used to catch headless errors potentially thrown by
+	 * ImageIcon.
+	 * 
+	 * See:
+	 *    http://java.sun.com/developer/technicalArticles/J2SE/Desktop/headless/
+	 */
+	private static class ThumbImageIcon {
+		// By default, we'll use whatever headless setting that's
+		// currently set.
+		private static boolean m_setHeadless = false;
+		
+		public  static Image getImage(byte[] imageData) {
+			return getImage(imageData, null);
+		}
+		
+		public static Image getImage(String imageFName) {
+			return getImage(null, imageFName);
+		}
+		
+		private static Image getImage(byte[] imageData, String imageFName) {
+			Exception ex = null;
+			ImageIcon imageIcon = null;
+			
+			// If we're supposed to try the default headless mode...
+			if (!m_setHeadless) {
+				try {
+					// ...construct the ImageIcon without setting it.
+					if (null == imageData) {
+						imageIcon = new ImageIcon(imageFName);
+					} else {
+						imageIcon = new ImageIcon(imageData);
+					}
+				}
+				catch (Exception e) {
+					ex = e;
+					imageIcon = null;
+				}
+			}
+
+			// If we don't have an ImageIcon yet...
+			if (null == imageIcon) {
+				// ...try constructing one in headless mode.
+				String	headless = System.getProperty("java.awt.headless");
+				if (null == headless) {
+					headless = String.valueOf(GraphicsEnvironment.isHeadless());
+				}
+				System.setProperty("java.awt.headless", "true");
+				try {
+					if (null == imageData) {
+						imageIcon = new ImageIcon(imageFName);
+					} else {
+						imageIcon = new ImageIcon(imageData);
+					}
+				}
+				catch (Exception e) {
+					if (null == ex) {
+						ex = e;
+					}
+					imageIcon = null;
+				}
+				System.setProperty("java.awt.headless", headless);
+				if (!m_setHeadless) {
+					m_setHeadless = (null != imageIcon);
+				}
+			}
+			
+			// If we weren't able to get an ImageIcon...
+			if (null == imageIcon) {
+				// ...tell the user about the problem and return null.
+				if (null == ex) {
+					logger.error("Can't construct an image for the thumbnail.");
+				} else {
+					logger.error(ex.getLocalizedMessage(), ex);
+				}
+				return null;
+			}
+			
+			// ...otherwise, return the Image from the ImageIcon.
+			return imageIcon.getImage();
+		}
+	}
+
+	
 	public static void main(String[] args) {
 		createThumbnail("c:/image.jpeg", "c:/image_thumbnailr.jpeg", Integer
 				.parseInt("200"), Integer.parseInt("200"));
@@ -72,7 +161,10 @@ public class Thumbnail {
 	public static void createThumbnail(byte[] imageData, OutputStream os,
 			int maxWidth, int maxHeight) throws ThumbnailException {
 		// Get the image from the byte array.
-		Image inImage = new ImageIcon(imageData).getImage();
+		Image inImage = ThumbImageIcon.getImage(imageData);
+		if (null == inImage) {
+			throw new ThumbnailException();
+		}
 		try {
 			//createThumbnail(inImage, os, maxWidth, maxHeight);
 			createRectThumbnail(inImage, os, maxWidth, maxHeight);
@@ -98,7 +190,10 @@ public class Thumbnail {
 	public static void createThumbnail(byte[] imageData, OutputStream os,
 			int maxSize) throws ThumbnailException {
 		// Get the image from the byte array.
-		Image inImage = new ImageIcon(imageData).getImage();
+		Image inImage = ThumbImageIcon.getImage(imageData);
+		if (null == inImage) {
+			throw new ThumbnailException();
+		}
 		try {
 			//createThumbnail(inImage, os, maxWidth, maxHeight);
 			createSquareThumbnail(inImage, os, maxSize);
@@ -112,7 +207,10 @@ public class Thumbnail {
 	public static void createThumbnail(byte[] imageData, String thumb,
 			int maxWidth, int maxHeight) throws ThumbnailException {
 		// Get the image from the byte array.
-		Image inImage = new ImageIcon(imageData).getImage();
+		Image inImage = ThumbImageIcon.getImage(imageData);
+		if (null == inImage) {
+			throw new ThumbnailException();
+		}
 		try {
 			// Open output stream for the thumbnail file.
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(
@@ -135,7 +233,10 @@ public class Thumbnail {
 	public static void createThumbnail(byte[] imageData, String thumb,
 			int maxSize) throws ThumbnailException {
 		// Get the image from the byte array.
-		Image inImage = new ImageIcon(imageData).getImage();
+		Image inImage = ThumbImageIcon.getImage(imageData);
+		if (null == inImage) {
+			throw new ThumbnailException();
+		}
 		try {
 			// Open output stream for the thumbnail file.
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(
@@ -170,7 +271,10 @@ public class Thumbnail {
 			int maxHeight) throws ThumbnailException {
 		try {
 			// Get the image from a file.
-			Image inImage = new ImageIcon(orig).getImage();
+			Image inImage = ThumbImageIcon.getImage(orig);
+			if (null == inImage) {
+				throw new ThumbnailException();
+			}
 			// Open output stream for the thumbnail file.
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(
 					thumb));
@@ -193,7 +297,10 @@ public class Thumbnail {
 	public static void createThumbnail(String orig, String thumb, int maxSize) throws ThumbnailException {
 		try {
 			// Get the image from a file.
-			Image inImage = new ImageIcon(orig).getImage();
+			Image inImage = ThumbImageIcon.getImage(orig);
+			if (null == inImage) {
+				throw new ThumbnailException();
+			}
 			// Open output stream for the thumbnail file.
 			OutputStream os = new BufferedOutputStream(new FileOutputStream(
 					thumb));
