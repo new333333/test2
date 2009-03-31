@@ -213,14 +213,18 @@ public class TreeTag extends TagSupport {
 			if (this.initOnly) {
 				jspOut.print(sb.toString());
 			} else {
+				List treeRootElements = (List) treeRoot.elements("child");
 				//Mark that the root is the last item in its list
 				treeRoot.addAttribute("treeLS","1");
 				if (this.rootOpen || this.allOpen || treeRoot.attributeValue("id", "-1").equals(this.nodeOpen)) {
-					treeRoot.addAttribute("treeOpen","1");
+					if (treeRootElements.size() > 0) {
+						treeRoot.addAttribute("treeOpen","1");
+					} else {
+						treeRoot.addAttribute("treeOpen","0");
+					}
 				} else {
 					treeRoot.addAttribute("treeOpen","0");
 				}
-				List treeRootElements = (List) treeRoot.elements("child");
 				if (treeRootElements.size() > 0) {
 					treeRoot.addAttribute("treeHasChildren","1");
 					treeRoot.addAttribute("treeHasHiddenChildren","0");
