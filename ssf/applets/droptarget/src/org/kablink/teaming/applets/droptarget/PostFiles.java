@@ -280,10 +280,16 @@ public class PostFiles extends Thread {
             String boundary = "---------------------------7d72fd2f300520";
             
             conn.setRequestProperty("Content-type","multipart/form-data; boundary=" + boundary);
+            conn.setRequestProperty("Cache-Control", "private");
             conn.setRequestProperty("Accept", "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2");
             conn.setRequestProperty("Accept-Charset", "utf-8;q=0.9");
             conn.setRequestProperty("Connection", "keep-alive");
-            conn.connect();
+            try {
+            	conn.connect();
+            } catch(Exception e) {
+            	System.out.println("Error Uploading File: Could not connect to the server. Exception: "+e);
+            	reportErrorMessage(topFrame, conn, e.toString());
+            }
             
             OutputStream out = conn.getOutputStream();
             //ChunkedOutputStream out = new ChunkedOutputStream(conn.getOutputStream());
