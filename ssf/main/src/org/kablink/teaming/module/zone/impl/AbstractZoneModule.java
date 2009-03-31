@@ -598,6 +598,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		if (guest.getWorkspaceId() == null) {
 			Workspace guestWs = getProfileModule().addUserWorkspace(guest, null);
 			getAdminModule().setWorkAreaOwner(guestWs, superU.getId(), true);
+    		List members = new ArrayList();
+    		members.add(guest.getId());
+    		//Let guest be a visitor to the guest workspace
+    		Function visitorsRole = addVisitorsRole(guestWs);
+    		addMembership(guestWs, visitorsRole, guestWs, members);
 		}
 		//make sure allUsers exists
 		try {
