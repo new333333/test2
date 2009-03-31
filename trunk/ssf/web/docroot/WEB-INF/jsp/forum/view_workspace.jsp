@@ -189,11 +189,20 @@ if (typeof ss_workarea_showId == "undefined")
 						</div>
 					  	<c:choose>
 					  		<c:when test="${ss_showTeamMembers}">
-								<% // Navigation links %>
+								<c:if test="${!empty ss_reloadUrl}">
+									<div style="text-align: right; ">
+									  <a class="ss_linkButton" 
+									    href="<c:out value="${ss_reloadUrl}" />"><ssf:nlt tag="__return_to" /> <ssf:nlt tag="__workspace_view" /></a>
+									</div>
+								</c:if>
+
 								<%@ include file="/WEB-INF/jsp/forum/list_team_members.jsp" %>
 								
-								<c:if test="${!empty ss_reloadUrl}">
-									<div style="text-align: right; "><a href="<c:out value="${ss_reloadUrl}" />"><ssf:nlt tag="__return_to" /> <ssf:nlt tag="__workspace_view" /></a></div>
+								<c:if test="${!empty ss_reloadUrl && ssTeamMembersCount > 10}">
+									<div style="text-align: right; ">
+									  <a class="ss_linkButton" 
+									    href="<c:out value="${ss_reloadUrl}" />"><ssf:nlt tag="__return_to" /> <ssf:nlt tag="__workspace_view" /></a>
+									</div>
 								</c:if>
 								
 							</c:when>

@@ -51,10 +51,39 @@
 		  src="<html:brandedImagesPath/>icons/group.gif"/> 
 		  <span>${ssBinder.title}</span> 
     </div>
+    <table>
+    <tr>
+    <td valign="top">
     <div>
-		  <span class="ss_fineprint ss_light"><ssf:nlt tag="teamMembersList.count"/>:</span> 
-		  <span class="ss_fineprint ss_bold">${ssTeamMembersCount}</span>		
+		  <span class="ss_smallprint"><ssf:nlt tag="teamMembersList.count"/>:</span> 
+		  <span class="ss_smallprint ss_bold">${ssTeamMembersCount}</span>		
 	</div>
+	</td>
+	<td valign="top" style="padding-left:40px;">
+	  <c:if test="${!empty ssTeamMemberGroups}">
+	    <span class="ss_smallprint"><ssf:nlt tag="teamMembersList.groupsInTeam"/></span>
+	    <div style="padding-left:10px;">
+	    <c:forEach var="teamGroup" items="${ssTeamMemberGroups}">
+	    	<a href="<ssf:url
+					adapter="true" 
+					crawlable="true"
+					portletName="ss_forum" 
+					action="__ajax_request"
+					actionUrl="false"><ssf:param 
+					name="operation" value="get_group_list"/><ssf:param 
+					name="groupId" value="${teamGroup.value.id}"/></ssf:url>"
+			    onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">
+			<span class="ss_smallprint">${teamGroup.key}</span>
+			<span class="ss_fineprint ss_light">(<ssf:nlt tag="teamMembersList.members">
+			  <ssf:param name="value" value="${fn:length(teamGroup.value.members)}"/>
+			</ssf:nlt>)</span>
+			 </a><br/>
+	    </c:forEach>
+	    </div>
+	  </c:if>
+	</td>
+	</tr>
+	</table>
 <c:if test="${ssConfigJspStyle != 'template'}">	
 	<table class="ss_buddiesList" cellpadding="0" cellspacing="0">
 	
