@@ -63,6 +63,7 @@ import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.multipart.MultipartFile;
@@ -78,7 +79,7 @@ public class ImportDefinitionController extends  SAbstractController {
 			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 			if (binderId != null) response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		} catch (Exception ex) {};
-		if (formData.containsKey("okBtn") && WebKeys.OPERATION_RELOAD.equals(operation)) {
+		if (formData.containsKey("okBtn") && WebKeys.OPERATION_RELOAD.equals(operation) && WebHelper.isMethodPost(request)) {
 			java.util.Collection<String> ids = TreeHelper.getCheckedStringIds(formData, "id");
 			if (ids.isEmpty()) {
 				List currentDefinitions = new ArrayList();
@@ -87,7 +88,7 @@ public class ImportDefinitionController extends  SAbstractController {
 			}
 			getAdminModule().updateDefaultDefinitions(this, RequestContextHolder.getRequestContext().getZoneId(), false, ids);
 			response.setRenderParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
-		} else if (formData.containsKey("okBtn") && request instanceof MultipartFileSupport) {
+		} else if (formData.containsKey("okBtn") && request instanceof MultipartFileSupport && WebHelper.isMethodPost(request)) {
 			int i=0;
 			Map fileMap = ((MultipartFileSupport) request).getFileMap();
 			if (fileMap != null) {

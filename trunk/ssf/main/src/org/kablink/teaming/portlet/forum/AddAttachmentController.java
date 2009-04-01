@@ -55,6 +55,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -71,7 +72,9 @@ public class AddAttachmentController extends SAbstractController {
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		
-		if (op.equals(WebKeys.OPERATION_ADD_FILES_FROM_APPLET) || op.equals(WebKeys.OPERATION_ADD_FILES_BY_BROWSE_FOR_ENTRY)) {
+		if ((op.equals(WebKeys.OPERATION_ADD_FILES_FROM_APPLET) || 
+				op.equals(WebKeys.OPERATION_ADD_FILES_BY_BROWSE_FOR_ENTRY)) && 
+				WebHelper.isMethodPost(request)) {
 			//See if the add entry form was submitted
 			//The form was submitted. Go process it
 			Map fileMap=null;

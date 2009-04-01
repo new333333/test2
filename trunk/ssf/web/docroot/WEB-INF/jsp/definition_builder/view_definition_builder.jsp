@@ -273,7 +273,7 @@ function setVisibility(visible, toId) {
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	//ajaxRequest.setEchoDebugInfo()
 	ajaxRequest.setPostRequest(ss_postVisibilityChange);
-	ajaxRequest.setUseGET();
+	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
 
 }

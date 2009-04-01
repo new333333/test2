@@ -48,6 +48,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
 
 
@@ -66,13 +67,13 @@ public class TeamController extends AbstractBinderController {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Map formData = request.getParameterMap();
 
-		if (formData.containsKey("inheritBtnYes")) {
+		if (formData.containsKey("inheritBtnYes") && WebHelper.isMethodPost(request)) {
 			//Save the inheritance state
 			getBinderModule().setTeamMembershipInherited(binderId, true);
-		} else if (formData.containsKey("inheritBtnNo")) {
+		} else if (formData.containsKey("inheritBtnNo") && WebHelper.isMethodPost(request)) {
 			//Save the inheritance state
 			getBinderModule().setTeamMembershipInherited(binderId, false);
-		} else if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
+		} else if ((formData.containsKey("okBtn") || formData.containsKey("applyBtn")) && WebHelper.isMethodPost(request)) {
 			//Save the inheritance flag
 			if (!binder.isTeamMembershipInherited()) {
 				Set memberIds = new HashSet();

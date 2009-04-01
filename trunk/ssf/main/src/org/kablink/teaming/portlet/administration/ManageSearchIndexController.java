@@ -62,6 +62,7 @@ import org.kablink.teaming.web.tree.SearchTreeHelper;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebStatusTicket;
 import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
@@ -72,7 +73,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		String btnClicked = PortletRequestUtils.getStringParameter(request, "btnClicked", "");
-		if (formData.containsKey("okBtn") || btnClicked.equals("okBtn")) {
+		if ((formData.containsKey("okBtn") || btnClicked.equals("okBtn")) && WebHelper.isMethodPost(request)) {
 			//Get the binders to be indexed
 			Collection<Long> ids = TreeHelper.getSelectedIds(formData);
 			

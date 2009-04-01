@@ -56,6 +56,7 @@ import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WorkAreaHelper;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -84,7 +85,7 @@ public class AccessControlController extends AbstractBinderController {
 		response.setRenderParameter(WebKeys.URL_WORKAREA_ID, workArea.getWorkAreaId().toString());
 		response.setRenderParameter(WebKeys.URL_WORKAREA_TYPE, workArea.getWorkAreaType());
 		//See if the form was submitted
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			SimpleProfiler.setProfiler(new SimpleProfiler("lucene"));
 			Map functionMemberships = new HashMap();
 			getAccessResults(request, functionMemberships);
@@ -92,7 +93,7 @@ public class AccessControlController extends AbstractBinderController {
 			if(logger.isDebugEnabled())
 				logger.debug(SimpleProfiler.toStr());
 			SimpleProfiler.clearProfiler();
-		} else if (formData.containsKey("inheritanceBtn")) {
+		} else if (formData.containsKey("inheritanceBtn") && WebHelper.isMethodPost(request)) {
 			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", false);
 			getAdminModule().setWorkAreaFunctionMembershipInherited(workArea,inherit);			
 		

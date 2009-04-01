@@ -65,6 +65,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
@@ -94,15 +95,15 @@ public class ConfigureController extends AbstractBinderController {
 		response.setRenderParameters(request.getParameterMap());
 			
 		//See if the form was submitted
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			List definitions = new ArrayList();
 			Map workflowAssociations = new HashMap();
 			getDefinitions(request, definitions, workflowAssociations);
 			getBinderModule().setDefinitions(binderId, definitions, workflowAssociations);
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		} else if (formData.containsKey("updateEmailButton")) {
+		} else if (formData.containsKey("updateEmailButton") && WebHelper.isMethodPost(request)) {
 			getBinderModule().setPostingEnabled(binderId, formData.containsKey("allow_simple_email"));
-		} else if (formData.containsKey("addUrlBtn")) {
+		} else if (formData.containsKey("addUrlBtn") && WebHelper.isMethodPost(request)) {
 			String[] globalKeywords = SPropsUtil.getStringArray("simpleUrl.globalKeywords", ",");
 			String prefix = PortletRequestUtils.getStringParameter(request, "prefix", "").trim();
 			boolean prefixIsGlobalKeyword = false;
@@ -167,7 +168,7 @@ public class ConfigureController extends AbstractBinderController {
 					response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, "true");
 				}
 			}
-		} else if (formData.containsKey("deleteUrlBtn")) {
+		} else if (formData.containsKey("deleteUrlBtn") && WebHelper.isMethodPost(request)) {
 			Set<String> deleteNames = new HashSet();
 			for (Iterator iter=formData.entrySet().iterator(); iter.hasNext();) {
 				Map.Entry e = (Map.Entry)iter.next();
@@ -183,7 +184,7 @@ public class ConfigureController extends AbstractBinderController {
 						//Only delete the name if user has right to do so and if the url name is referencing this binder
 						getBinderModule().deleteSimpleName(urlName);
 			}
-		} else if (formData.containsKey("inheritanceBtn")) {
+		} else if (formData.containsKey("inheritanceBtn") && WebHelper.isMethodPost(request)) {
 			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", false);
 			getBinderModule().setDefinitionsInherited(binderId, inherit);
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());

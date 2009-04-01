@@ -57,6 +57,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.ScheduleHelper;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
@@ -66,7 +67,7 @@ public class ConfigureUserAccessController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			AuthenticationConfig authConfig = getAuthenticationModule().getAuthenticationConfig();
 			authConfig.setAllowAnonymousAccess(PortletRequestUtils.getBooleanParameter(request, "allowAnonymous", false));
 			authConfig.setAllowSelfRegistration(PortletRequestUtils.getBooleanParameter(request, "allowSelfRegistration", false));

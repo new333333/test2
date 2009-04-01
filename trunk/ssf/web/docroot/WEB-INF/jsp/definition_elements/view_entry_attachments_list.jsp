@@ -157,7 +157,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				    entryId="${ssDefinitionEntry.id}" actionUrl="true">
 				    <ssf:param name="operation" value="force_unlock_file"/>
 				    <ssf:param name="fileId" value="${selection.id}"/></ssf:url>"
-				    onclick='if(confirm("<ssf:escapeJavaScript><ssf:nlt tag="entry.forceUnlockFileConfirm"/></ssf:escapeJavaScript>")){return true}else{return false};'
+				    onclick='if(confirm("<ssf:escapeJavaScript><ssf:nlt tag="entry.forceUnlockFileConfirm"/></ssf:escapeJavaScript>")){ss_postToThisUrl(this.href);return false;}else{return false};'
 				    style="padding-left:10px;"
 				    >
 			        <span class="ss_fineprint"><ssf:nlt tag="entry.forceUnlockFile"/></span>
@@ -206,7 +206,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				    entryId="${ssDefinitionEntry.id}" actionUrl="true">
 				    <ssf:param name="operation" value="force_unlock_file"/>
 				    <ssf:param name="fileId" value="${selection.id}"/></ssf:url>"
-				    onclick='if(confirm("<ssf:escapeJavaScript><ssf:nlt tag="entry.forceUnlockFileConfirm"/></ssf:escapeJavaScript>")){return true}else{return false};'
+				    onclick='if(confirm("<ssf:escapeJavaScript><ssf:nlt tag="entry.forceUnlockFileConfirm"/></ssf:escapeJavaScript>")){ss_postToThisUrl(this.href);return false;}else{return false};'
 				    style="padding-left:10px;"
 			        >
 			        <span class="ss_fineprint"><ssf:nlt tag="entry.forceUnlockFile"/></span>

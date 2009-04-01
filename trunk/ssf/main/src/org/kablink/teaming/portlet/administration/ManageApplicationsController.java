@@ -55,6 +55,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.springframework.web.portlet.ModelAndView;
@@ -65,7 +66,7 @@ public class ManageApplicationsController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		if (formData.containsKey("addBtn")) {
+		if (formData.containsKey("addBtn") && WebHelper.isMethodPost(request)) {
 			
 			String name = PortletRequestUtils.getStringParameter(request, "name", "").trim();
 			
@@ -89,7 +90,7 @@ public class ManageApplicationsController extends  SAbstractController {
 				response.setRenderParameter(WebKeys.EXCEPTION, iae.getLocalizedMessage());
 			}
 			
-		} else if (formData.containsKey("applyBtn") || formData.containsKey("okBtn")) {
+		} else if ((formData.containsKey("applyBtn") || formData.containsKey("okBtn")) && WebHelper.isMethodPost(request)) {
 			Long applicationId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
 			String title = PortletRequestUtils.getStringParameter(request, "title", "");
 			String description = PortletRequestUtils.getStringParameter(request, "description", "");
@@ -109,7 +110,7 @@ public class ManageApplicationsController extends  SAbstractController {
 			getProfileModule().modifyEntry(applicationId, new MapInputData(updates));
 			response.setRenderParameter(WebKeys.URL_ENTRY_ID, applicationId.toString());
 
-		} else if (formData.containsKey("deleteBtn")) {
+		} else if (formData.containsKey("deleteBtn") && WebHelper.isMethodPost(request)) {
 			Long applicationId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
 			getProfileModule().deleteEntry(applicationId, null);
 			

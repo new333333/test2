@@ -62,6 +62,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.StringUtil;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -77,7 +78,7 @@ public class SendEntryMailController extends SAbstractController {
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		
 		//See if the form was submitted
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			String subject = PortletRequestUtils.getStringParameter(request, "subject", "");	
 			String[] to = StringUtil.split(PortletRequestUtils.getStringParameter(request, "addresses", ""));
 			Set emailAddress = new HashSet();

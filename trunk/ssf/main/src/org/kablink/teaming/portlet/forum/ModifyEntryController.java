@@ -84,7 +84,7 @@ public class ModifyEntryController extends SAbstractController {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		if (op.equals(WebKeys.OPERATION_DELETE)) {
+		if (op.equals(WebKeys.OPERATION_DELETE) && WebHelper.isMethodPost(request)) {
 			FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
 			if (!entry.isTop()) entry = entry.getTopEntry();
 			else entry = null;
@@ -94,15 +94,15 @@ public class ModifyEntryController extends SAbstractController {
 			//Force the user's status to be updated.
 			BinderHelper.updateUserStatus(this, request, folderId);
 		
-		} else if (op.equals(WebKeys.OPERATION_LOCK)) {
+		} else if (op.equals(WebKeys.OPERATION_LOCK) && WebHelper.isMethodPost(request)) {
 			getFolderModule().reserveEntry(folderId, entryId);
 			setupViewEntry(response, folderId, entryId);
 		
-		} else if (op.equals(WebKeys.OPERATION_UNLOCK)) {
+		} else if (op.equals(WebKeys.OPERATION_UNLOCK) && WebHelper.isMethodPost(request)) {
 			getFolderModule().unreserveEntry(folderId, entryId);
 			setupViewEntry(response, folderId, entryId);
 			
-		} else if (op.equals(WebKeys.OPERATION_START_WORKFLOW)) {
+		} else if (op.equals(WebKeys.OPERATION_START_WORKFLOW) && WebHelper.isMethodPost(request)) {
 			String workflowType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKFLOW_TYPE, "");
 			FolderEntry fEntry = getFolderModule().getEntry(folderId, entryId);
     		getFolderModule().addEntryWorkflow(folderId, entryId, workflowType, null);
@@ -112,12 +112,12 @@ public class ModifyEntryController extends SAbstractController {
     		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
     		response.sendRedirect(url.toString());
 			
-		} else if (op.equals(WebKeys.OPERATION_STOP_WORKFLOW)) {
+		} else if (op.equals(WebKeys.OPERATION_STOP_WORKFLOW) && WebHelper.isMethodPost(request)) {
 			String workflowType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKFLOW_TYPE, "");
     		getFolderModule().deleteEntryWorkflow(folderId, entryId, workflowType);
 			setupViewEntry(response, folderId, entryId);
 			
-		} else if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
+		} else if ((formData.containsKey("okBtn") || formData.containsKey("applyBtn")) && WebHelper.isMethodPost(request)) {
 			if (Validator.isNull(op)) {
 
 				//See if the add entry form was submitted
@@ -185,7 +185,7 @@ public class ModifyEntryController extends SAbstractController {
 				
 			}
 			
-		} else if (formData.containsKey("editElementBtn")) {
+		} else if (formData.containsKey("editElementBtn") && WebHelper.isMethodPost(request)) {
 			Map inputData = new HashMap(formData);
 			//Before modifying the entry, check if the user is only modifying one section
 			if (inputData.containsKey(WebKeys.URL_ELEMENT_TO_EDIT) && 

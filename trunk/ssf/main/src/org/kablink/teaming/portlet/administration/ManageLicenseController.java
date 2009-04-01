@@ -59,6 +59,7 @@ import org.kablink.teaming.license.LicenseException;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -68,7 +69,7 @@ public class ManageLicenseController extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();
-		if(formData.containsKey("updateBtn")) {
+		if (formData.containsKey("updateBtn") && WebHelper.isMethodPost(request)) {
 			try {
 				getLicenseModule().updateLicense();
 			} catch(LicenseException e) {

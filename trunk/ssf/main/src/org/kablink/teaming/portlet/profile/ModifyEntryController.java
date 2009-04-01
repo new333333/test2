@@ -59,6 +59,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
@@ -76,7 +77,7 @@ public class ModifyEntryController extends SAbstractController {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		if (formData.containsKey("okBtn") && op.equals(WebKeys.OPERATION_DELETE)) {
+		if (formData.containsKey("okBtn") && op.equals(WebKeys.OPERATION_DELETE) && WebHelper.isMethodPost(request)) {
 			String deleteWs = PortletRequestUtils.getStringParameter(request, "deleteWs", null);
 			Map options = new HashMap();
 			options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, GetterUtil.getBoolean(deleteWs, false));
@@ -85,7 +86,7 @@ public class ModifyEntryController extends SAbstractController {
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 			response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
-		} else if (formData.containsKey("okBtn") && op.equals("")) {
+		} else if (formData.containsKey("okBtn") && op.equals("") && WebHelper.isMethodPost(request)) {
 	        //Modifying the profile is not available to the guest user
 	        if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 				//The modify form was submitted. Go process it

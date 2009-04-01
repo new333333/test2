@@ -61,6 +61,7 @@ import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
 
 
@@ -75,7 +76,7 @@ public class AddEntryController extends SAbstractController {
 		response.setRenderParameters(formData);
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		//See if the add entry form was submitted
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			//The form was submitted. Go process it
 			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
 			Map fileMap=null;

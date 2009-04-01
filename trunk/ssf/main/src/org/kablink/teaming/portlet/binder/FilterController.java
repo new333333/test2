@@ -56,6 +56,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
 
 
@@ -75,7 +76,7 @@ public class FilterController extends AbstractBinderController {
 		Binder binder = getBinderModule().getBinder(binderId);
 			
 		//See if the form was submitted
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			//Parse the search filter
 			SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, getDefinitionModule());
 			Document searchFilter = requestParser.getSearchQuery();
@@ -137,7 +138,7 @@ public class FilterController extends AbstractBinderController {
 			}
 			setupViewBinder(response, binderId, binderType);
 		
-		} else if (formData.containsKey("deleteBtn")) {
+		} else if (formData.containsKey("deleteBtn") && WebHelper.isMethodPost(request)) {
 			//This is a request to delete a filter
 			String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilter", "");
 			if (!selectedSearchFilter.equals("")) {
@@ -152,7 +153,7 @@ public class FilterController extends AbstractBinderController {
 			}
 			setupViewBinder(response, binderId, binderType);
 		
-		} else if (formData.containsKey("deleteBtnGlobal")) {
+		} else if (formData.containsKey("deleteBtnGlobal") && WebHelper.isMethodPost(request)) {
 			//This is a request to delete a global filter
 			String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilterGlobal", "");
 			if (!selectedSearchFilter.equals("")) {

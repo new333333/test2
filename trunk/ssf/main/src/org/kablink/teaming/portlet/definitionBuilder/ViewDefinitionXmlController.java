@@ -44,6 +44,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
 
 
@@ -61,7 +62,7 @@ public class ViewDefinitionXmlController extends SAbstractController {
 		String selectedItem = PortletRequestUtils.getStringParameter(request,"id", "");
 			
 		//See if there is an operation to perform
-		if (formData.containsKey("saveLayout")) {
+		if (formData.containsKey("saveLayout") && WebHelper.isMethodPost(request)) {
 			//This is a request to save the x,y layout of the workflow state graph
 			getDefinitionModule().setDefinitionLayout(selectedItem, new MapInputData(formData));
 		}
