@@ -211,7 +211,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		//See if the add entry form was submitted
 		Long entryId=null;
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			//The form was submitted. Go process it
 			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
 			Map fileMap = new HashMap();
@@ -234,7 +234,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		//See if the modify entry form was submitted
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			//The form was submitted. Go process it
 			Map fileMap = new HashMap();
 			Set deleteAtts = new HashSet();
@@ -263,7 +263,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		//See if the add entry form was submitted
 		Long entryId=null;
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			//The form was submitted. Go process it
 			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
 			Map fileMap = new HashMap();
@@ -285,11 +285,11 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		//See if the add entry form was submitted
-		if (formData.containsKey("miniblogBtn")) {
+		if (formData.containsKey("miniblogBtn") && WebHelper.isMethodPost(request)) {
 			//The miniblog form was submitted. Go process it
 			String text = PortletRequestUtils.getStringParameter(request, "miniblogText", "");
 			BinderHelper.addMiniBlogEntry(bs, text);
-		} else if (formData.containsKey("acceptBtn")) {
+		} else if (formData.containsKey("acceptBtn") && WebHelper.isMethodPost(request)) {
 			//User clicked "I Accept"
 			getProfileModule().setUserProperty( null, "acceptedMobileDisclaimer", true );
 		}
@@ -303,7 +303,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		
 		if (entryId != null) {
 			//See if the user asked to change state
-			if (formData.containsKey("changeStateBtn")) {
+			if (formData.containsKey("changeStateBtn") && WebHelper.isMethodPost(request)) {
 				//Change the state
 				//Get the workflow process to change and the name of the new state
 				Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));

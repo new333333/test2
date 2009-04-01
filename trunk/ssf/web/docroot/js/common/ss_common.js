@@ -241,6 +241,7 @@ function ss_fetch_url(url, callbackRoutine, callbackData, toggleCall) {
 	};   
 	dojo.xhrGet(bindArgs);
 }                
+//Same as ss_fetch_url only do it as a post instead of a get
 function ss_post_to_url(url, formName, callbackRoutine, callbackData, toggleCall) {
 	ss_fetch_url_debug("Request to fetch url: " + url)
 	eval(toggleCall);
@@ -806,7 +807,7 @@ function ss_updateStatusNow(obj) {
 
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_user_status", status:status}, "");
 			var divObj = ss_findOwningElement(obj, "div");
-			ss_fetch_url(url, ss_postUpdateStatusNow, divObj.id)
+			ss_post_to_url(url, "", ss_postUpdateStatusNow, divObj.id)
 		}
 		ss_setStatusBackground(obj, 'blur');
 	}
@@ -3528,7 +3529,7 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 	}
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_dashboard");
 	url += "\&" + idStr;
-	if (callbackRoutine != "") ss_fetch_url(url, callbackRoutine, {divId:divId, componentId:componentId});
+	if (callbackRoutine != "") ss_post_to_url(url, "", callbackRoutine, {divId:divId, componentId:componentId});
 }
 function ss_showComponentCallback(s, data) {
 	// data = {"divId" : divId, "componentId" : componentId}
@@ -4043,7 +4044,7 @@ function ss_pinEntry(obj, binderId, entryId) {
 	} else {
 		imgObj.src = ss_imagesPath + "pics/discussion/ss_pin_orange.png"
 	}
-	ss_fetch_url(url);
+	ss_post_to_url(url);
 }
 
 var ss_entryInPlaceIframeOffset = 50;
