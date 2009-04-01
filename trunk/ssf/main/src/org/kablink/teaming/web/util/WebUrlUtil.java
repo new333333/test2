@@ -58,6 +58,7 @@ import org.kablink.util.Http;
 import org.kablink.util.Validator;
 
 
+
 public class WebUrlUtil {
 	
 	public static final int FILE_URL_ACTION = 1;
@@ -392,23 +393,35 @@ public class WebUrlUtil {
 			
 	}
 	
-	// split apart the FILE..._AND_ID field and find the word associated with with this fileId
+	// split apart the FILE..._AND_ID field and find the word associated with
+	// with this fileId
 	public static String getFileInfoById(String fieldData, String fileId) {
 		String info = "";
+		String data = "";
+	
 		try {
-		int start = fieldData.indexOf(fileId);
-		if (start > -1) {
-			String data = fieldData.substring(start);
-			data.split("\b");
-			String[] infos = data.split ("\b");
-			if (infos.length > 0) {
-				data = infos[0];
-				return data.substring(fileId.length());
+			String[] fields = fieldData.split(org.kablink.util.search.Constants.UNIQUE_PREFIX);
+			if (fields.length == 0)
+				return "";
+			if (fields.length == 1) {
+				logger.info("This system needs to be reindexed");
+				data = fields[0].substring(fileId.length());
+				return data;
 			}
+			for (int i = 1; i < fields.length; i++) {
+				int start = fields[i].indexOf(fileId);
+				if (start > -1) {
+					data = fields[i].substring(fileId.length());
+					return data.trim();
+				}
+			}
+		} catch (Exception e) {
+			logger.info("This system needs to be reindexed");
 		}
-		}catch (Exception e) { logger.info("This system needs to be reindexed");}
 		return info;
 	}
+	
+	
 	public static String getFileUrl(String webPath, String action, String entityId, String entityType, String fileId, String attDate, String version, 
 			String fileName) {
 		if (Validator.isNull(fileId)) fileId = "-";
