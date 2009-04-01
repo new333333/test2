@@ -69,16 +69,16 @@ public class Thumbnail {
 		private static boolean m_setHeadless = false;
 		
 		public  static Image getImage(byte[] imageData) {
-			return getImage(imageData, null);
+			return getImage_Impl(imageData, null);
 		}
 		
 		public static Image getImage(String imageFName) {
-			return getImage(null, imageFName);
+			return getImage_Impl(null, imageFName);
 		}
 		
-		private static Image getImage(byte[] imageData, String imageFName) {
-			Exception ex = null;
+		private static Image getImage_Impl(byte[] imageData, String imageFName) {
 			ImageIcon imageIcon = null;
+			Throwable th = null;
 			
 			// If we're supposed to try the default headless mode...
 			if (!m_setHeadless) {
@@ -90,8 +90,8 @@ public class Thumbnail {
 						imageIcon = new ImageIcon(imageData);
 					}
 				}
-				catch (Exception e) {
-					ex = e;
+				catch (Throwable t) {
+					th = t;
 					imageIcon = null;
 				}
 			}
@@ -111,9 +111,9 @@ public class Thumbnail {
 						imageIcon = new ImageIcon(imageData);
 					}
 				}
-				catch (Exception e) {
-					if (null == ex) {
-						ex = e;
+				catch (Throwable t) {
+					if (null == th) {
+						th = t;
 					}
 					imageIcon = null;
 				}
@@ -126,10 +126,10 @@ public class Thumbnail {
 			// If we weren't able to get an ImageIcon...
 			if (null == imageIcon) {
 				// ...tell the user about the problem and return null.
-				if (null == ex) {
+				if (null == th) {
 					logger.error("Can't construct an image for the thumbnail.");
 				} else {
-					logger.error(ex.getLocalizedMessage(), ex);
+					logger.error(th.getLocalizedMessage(), th);
 				}
 				return null;
 			}
