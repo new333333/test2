@@ -291,7 +291,7 @@ public class MarkupUtil {
 				return PermaLinkUtil.getFilePermalink(searchResults, fileName);
 			}
 			public String getFileUrlById(String fileId) {
-				Object fileName = searchResults.get(org.kablink.util.search.Constants.FILENAME_FIELD+fileId);
+				Object fileName = searchResults.get(WebUrlUtil.getFileInfoById((String)org.kablink.util.search.Constants.FILENAME_AND_ID_FIELD,fileId));
 				if (fileName == null) return "";
 				return getFileUrlByName(fileName.toString());
 

@@ -147,6 +147,9 @@ public class Constants {
 	public static final String FILE_ID_FIELD = "_fileID";
 	public static final String FILE_SIZE_FIELD = "_fileSize";
 	public static final String FILE_TIME_FIELD = "_fileTime";
+	public static final String FILENAME_AND_ID_FIELD = "_fileNameId";
+	public static final String FILE_SIZE_AND_ID_FIELD = "_fileSizeId";
+	public static final String FILE_TIME_AND_ID_FIELD = "_fileTimeId";
 	public static final String FILE_UNIQUE_FIELD = "_fileNameUnique";
 	public static final String RATING_FIELD = "_rating";
 	public static final String DEFINITION_TYPE_FIELD = "_definitionType";
