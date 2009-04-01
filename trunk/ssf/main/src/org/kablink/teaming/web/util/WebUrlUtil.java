@@ -363,14 +363,14 @@ public class WebUrlUtil {
 			if (fileIdResult instanceof SearchFieldResult) {
 				List<String> values = ((SearchFieldResult)fileIdResult).getValueArray();
 				for (int i=0; i<values.size(); ++i) {
-					if (fileName.equals(searchResults.get(org.kablink.util.search.Constants.FILENAME_FIELD+values.get(i)))) {
+					if (fileName.equals(getFileInfoById((String)searchResults.get(org.kablink.util.search.Constants.FILENAME_AND_ID_FIELD),values.get(i)))) {
 						fileId = values.get(i);
 						break;
 					}
 				}
 			} else {
 				fileId = fileIdResult.toString();
-				if (!fileName.equals(searchResults.get(org.kablink.util.search.Constants.FILENAME_FIELD+fileId))) {
+				if (!fileName.equals(getFileInfoById((String)searchResults.get(org.kablink.util.search.Constants.FILENAME_AND_ID_FIELD),fileId))) {
 					fileId = null;
 				}
 			}
@@ -381,13 +381,33 @@ public class WebUrlUtil {
 			fileName = (String)searchResults.get(org.kablink.util.search.Constants.FILENAME_FIELD);
 			fileTime = (String)searchResults.get(org.kablink.util.search.Constants.FILE_TIME_FIELD);
 		} else {
-			fileName = (String)searchResults.get(org.kablink.util.search.Constants.FILENAME_FIELD+fileId);
-			fileTime = (String)searchResults.get(org.kablink.util.search.Constants.FILE_TIME_FIELD+fileId);				
+			String fName = (String)searchResults.get(org.kablink.util.search.Constants.FILENAME_AND_ID_FIELD);
+			fileName = getFileInfoById(fName, fileId);
+			String fTime = (String)searchResults.get(org.kablink.util.search.Constants.FILE_TIME_AND_ID_FIELD);
+			fileTime = getFileInfoById(fTime, fileId);	
 		}
 
 		if (fileTime == null) fileTime = "1";  //doesn't matter
 		return getFileUrl(webPath, action, entityId, entityType.name(), fileId, fileTime, null, fileName);
 			
+	}
+	
+	// split apart the FILE..._AND_ID field and find the word associated with with this fileId
+	public static String getFileInfoById(String fieldData, String fileId) {
+		String info = "";
+		try {
+		int start = fieldData.indexOf(fileId);
+		if (start > -1) {
+			String data = fieldData.substring(start);
+			data.split("\b");
+			String[] infos = data.split ("\b");
+			if (infos.length > 0) {
+				data = infos[0];
+				return data.substring(fileId.length());
+			}
+		}
+		}catch (Exception e) { logger.info("This system needs to be reindexed");}
+		return info;
 	}
 	public static String getFileUrl(String webPath, String action, String entityId, String entityType, String fileId, String attDate, String version, 
 			String fileName) {
