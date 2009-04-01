@@ -139,7 +139,7 @@ public class PresenceManagerImpl implements PresenceManager, PresenceManagerImpl
 	    	try {
  	            presenceSocket = new Socket(host, port);
 	        } catch (Exception e) {
-	        	if (connectAttempts%10 == 0) {
+	        	if (connectAttempts%60 == 0) {
 	        		logger.error("Can't connect to presence server: host ["+ host + "], port [" + port + "], error: " + e.getMessage());
 	        	}
 	        	connectAttempts++;

@@ -709,6 +709,15 @@ function ss_reloadOpener(fallBackUrl) {
 	return false;
 }
 
+//Routine to do a post to a URL
+function ss_postToThisUrl(url) {
+	formObj = document.createElement("form");
+	formObj.method = "POST";
+	formObj.action = url;
+	document.getElementsByTagName( "body" ).item(0).appendChild(formObj);
+	formObj.submit();
+}
+
 //Routines to move an object (or a div) to the "body"
 //  This is usefull for any absolutly positioned div.
 //  The positioning of that div will work correctly when using absolute coordinates.
@@ -3636,8 +3645,8 @@ function ss_showAddAttachmentBrowse(binderId, entryId, namespace) {
 	ss_showDiv(divId);
 	frameObj.style.visibility = "visible";
 	
-	divObj.style.width = "360px";
-	divObj.style.height = "150px";
+	//divObj.style.width = "360px";
+	//divObj.style.height = "150px";
 	
 	try {
 		if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
@@ -3648,8 +3657,8 @@ function ss_showAddAttachmentBrowse(binderId, entryId, namespace) {
 function ss_hideAddAttachmentBrowse(entryId, namespace) {
 	var divId = 'ss_div_browse' + entryId + namespace;
 	var divObj = document.getElementById(divId);
+	ss_hideDivNone(divId);
 	divObj.style.display = "none";
-	ss_hideDiv(divId);
 
 	try {
 		if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
@@ -5847,6 +5856,17 @@ function ss_confirm(label, text) {
 		return true
 	} else {
 		return false
+	}
+}
+
+function ss_confirmPost(label, text, url) {
+	if (text == null) text = "";
+	if (text != "") text = " " + text;
+	if (confirm(label + text)) {
+		ss_postToThisUrl(url);
+		return false;
+	} else {
+		return false;
 	}
 }
 

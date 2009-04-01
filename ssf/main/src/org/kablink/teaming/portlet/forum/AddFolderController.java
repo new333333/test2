@@ -66,6 +66,7 @@ import org.kablink.teaming.web.tree.WorkspaceAddWorkspaceHelper;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
 
 /**
@@ -78,7 +79,7 @@ public class AddFolderController extends SAbstractController {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			//The form was submitted. Go process it
 			Long cfgType = PortletRequestUtils.getRequiredLongParameter(request, "binderConfigId");
 			Long newId = getTemplateModule().addBinder(cfgType, binderId, 
@@ -131,7 +132,7 @@ public class AddFolderController extends SAbstractController {
 			
 			setupReloadOpener(response, newId);
 			
-		} else if (formData.containsKey("addBtn")) {
+		} else if (formData.containsKey("addBtn") && WebHelper.isMethodPost(request)) {
 			//This is the short form
 			String templateName = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_TEMPLATE_NAME);				
 			String title = PortletRequestUtils.getStringParameter(request, "title", "");

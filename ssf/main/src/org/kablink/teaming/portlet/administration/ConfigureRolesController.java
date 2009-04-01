@@ -52,6 +52,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WorkAreaHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.util.Validator;
@@ -63,7 +64,7 @@ public class ConfigureRolesController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
-		if (formData.containsKey("addBtn") && formData.containsKey("roleName")) {
+		if ((formData.containsKey("addBtn") && formData.containsKey("roleName")) && WebHelper.isMethodPost(request)) {
 			//Get the list of workAreaOperations to be added to this new role/function
 			Set operations = new HashSet();
 			Iterator itWorkAreaOperations = WorkAreaOperation.getWorkAreaOperations();
@@ -91,7 +92,7 @@ public class ConfigureRolesController extends  SAbstractController {
 				response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.mustHaveName"));
 			}
 		
-		} else if (formData.containsKey("modifyBtn") && formData.containsKey("roleId")) {
+		} else if (formData.containsKey("modifyBtn") && formData.containsKey("roleId") && WebHelper.isMethodPost(request)) {
 			//Get the function id from the form
 			Long functionId = PortletRequestUtils.getLongParameter(request, "roleId");
 			
@@ -124,7 +125,7 @@ public class ConfigureRolesController extends  SAbstractController {
 			} catch (IllegalArgumentException iae) {
 				response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.illegalCharInName"));
 			}
-		} else if (formData.containsKey("deleteBtn")) {
+		} else if (formData.containsKey("deleteBtn") && WebHelper.isMethodPost(request)) {
 			//Get the function id from the form
 			Long functionId = PortletRequestUtils.getLongParameter(request, "roleId");
 			List result = getAdminModule().deleteFunction(functionId);

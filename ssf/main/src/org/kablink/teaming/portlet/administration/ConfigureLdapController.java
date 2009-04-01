@@ -58,6 +58,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.ScheduleHelper;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
@@ -67,7 +68,7 @@ public class ConfigureLdapController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			LdapSchedule schedule = getLdapModule().getLdapSchedule();
 			if (schedule != null) {
 				schedule.getScheduleInfo().setSchedule(ScheduleHelper.getSchedule(request, null));

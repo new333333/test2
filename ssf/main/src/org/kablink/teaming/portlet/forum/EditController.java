@@ -68,6 +68,7 @@ import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DashboardHelper;
 import org.kablink.teaming.web.util.PortletPreferencesUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -92,8 +93,8 @@ public class EditController extends SAbstractController {
 			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
 		}
 		//see if type is being set
-		if (formData.containsKey("applyBtn") || 
-				formData.containsKey("okBtn")) {
+		if ((formData.containsKey("applyBtn") || 
+				formData.containsKey("okBtn")) && WebHelper.isMethodPost(request)) {
 			//	if not on form, must already be set.  
 			if (ViewController.FORUM_PORTLET.equals(displayType) || 
 					ViewController.MOBILE_PORTLET.equals(displayType)) {

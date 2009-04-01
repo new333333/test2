@@ -110,7 +110,8 @@ function ss_confirmDeleteZone() {
 	</td>	
 	
     <td align="left" valign="middle">
-	<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete" text="Delete"/>" onClick="return ss_confirmDeleteZone();" />
+	<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete" text="Delete"/>" 
+	  onClick="return ss_confirmDeleteZone();" />
 	</td>	
 	</c:if>
 	</form>

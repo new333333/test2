@@ -86,6 +86,7 @@ import org.kablink.teaming.web.tree.WorkspaceConfigHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.cal.Duration;
 
@@ -104,7 +105,7 @@ public class AddEntryController extends SAbstractController {
 		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		//See if the add entry form was submitted
 		Long entryId=null;
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			//The form was submitted. Go process it
 			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
 			Map fileMap=null;
@@ -177,7 +178,7 @@ public class AddEntryController extends SAbstractController {
 			} else {
 				setupCloseWindow(response);
 			}
-		} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_ATTACHMENT)) {
+		} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_ATTACHMENT) && WebHelper.isMethodPost(request)) {
 			String isLibraryBinder = PortletRequestUtils.getStringParameter(request, WebKeys.URL_IS_LIBRARY_BINDER, "");
 			
 			Map fileMap = null;

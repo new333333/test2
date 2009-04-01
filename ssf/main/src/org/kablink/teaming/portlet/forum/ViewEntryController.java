@@ -107,7 +107,7 @@ public class ViewEntryController extends  SAbstractController {
 		
 		if (entryId != null) {
 			//See if the user asked to change state
-			if (formData.containsKey("changeStateBtn")) {
+			if (formData.containsKey("changeStateBtn") && WebHelper.isMethodPost(request)) {
 				//Change the state
 				//Get the workflow process to change and the name of the new state
 				Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
@@ -116,13 +116,13 @@ public class ViewEntryController extends  SAbstractController {
 				String toState = PortletRequestUtils.getRequiredStringParameter(request, "toState");
 				getFolderModule().modifyWorkflowState(folderId, replyId, tokenId, toState);
 				response.setRenderParameter(WebKeys.IS_REFRESH, "1");
-			} else if (formData.containsKey("changeRatingBtn")) {
+			} else if (formData.containsKey("changeRatingBtn") && WebHelper.isMethodPost(request)) {
 				Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
 				if (replyId == null) replyId = entryId;
 				long rating = PortletRequestUtils.getRequiredLongParameter(request, "rating");
 				getFolderModule().setUserRating(folderId, replyId, rating);
 				response.setRenderParameter(WebKeys.IS_REFRESH, "1");
-			} else if (formData.containsKey("changeTags")) {
+			} else if (formData.containsKey("changeTags") && WebHelper.isMethodPost(request)) {
 				boolean community = true;
 				Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
 				if (replyId == null) replyId = entryId;
@@ -131,7 +131,7 @@ public class ViewEntryController extends  SAbstractController {
 				if (scope.equalsIgnoreCase("Personal")) community = false;
 				getFolderModule().setTag(folderId, replyId, tag, community);
 				response.setRenderParameter(WebKeys.IS_REFRESH, "1");
-			} else if (formData.containsKey("respondBtn")) {
+			} else if (formData.containsKey("respondBtn") && WebHelper.isMethodPost(request)) {
 				Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
 				if (replyId == null) replyId = entryId;
 		        Long tokenId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "tokenId"));	
@@ -602,7 +602,7 @@ public class ViewEntryController extends  SAbstractController {
 						String wfTitle = NLT.getDef(workflowDef.getTitle());
 						String wfTitle1 = wfTitle.replaceAll("'", "\\\\'");
 						qualifiers = new HashMap();
-						qualifiers.put("onClick", "if (ss_confirm) {return ss_confirm('" + NLT.get("entry.confirmStopWorkflow") + "', '"+wfTitle1+"')} else {return false}");
+						qualifiers.put("onClick", "return ss_confirmPost('" + NLT.get("entry.confirmStopWorkflow") + "', '"+wfTitle1+"', this.href)");
 						url = response.createActionURL();
 						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_STOP_WORKFLOW);
 						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
@@ -620,7 +620,7 @@ public class ViewEntryController extends  SAbstractController {
 						String wfTitle = NLT.getDef(workflowDef.getTitle());
 						String wfTitle1 = wfTitle.replaceAll("'", "\\\\'");
 						qualifiers = new HashMap();
-						qualifiers.put("onClick", "if (ss_confirm) {return ss_confirm('" + NLT.get("entry.confirmStartWorkflow") + "', '"+wfTitle1+"')} else {return false}");
+						qualifiers.put("onClick", "return ss_confirmPost('" + NLT.get("entry.confirmStartWorkflow") + "', '"+wfTitle1+"', this.href)");
 						url = response.createActionURL();
 						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_WORKFLOW);
 						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
@@ -638,28 +638,31 @@ public class ViewEntryController extends  SAbstractController {
 		if (reserveAccessCheck) {
 			//If no one has reserved the entry, it can be locked
 			if (!isEntryReserved) {
+				Map qualifiers = new HashMap();
+				qualifiers.put("onClick", "ss_postToThisUrl(this.href);return false;");
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOCK_FOLDER_ENTRY);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_LOCK);
 				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 				url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-				toolbar.addToolbarMenu("3_lock", NLT.get("toolbar.lock"), url);
+				toolbar.addToolbarMenu("3_lock", NLT.get("toolbar.lock"), url, qualifiers);
 			} else {
 			    //If some one has reserved the entry	
 				//If the person who has locked the entry and the logged in user are the same we allow access to unlock
 				//If the person who has logged in is the binder administrator we allow access to unlock
 				if (isLockedByAndLoginUserSame || isUserBinderAdministrator) {
+					Map qualifiers = new HashMap();
+					qualifiers.put("onClick", "ss_postToThisUrl(this.href);return false;");
 		   			url = response.createActionURL();
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOCK_FOLDER_ENTRY);
 					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_UNLOCK);
 					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 					url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 					if(!isLockedByAndLoginUserSame) {
-						Map qualifiers = new HashMap();
-						qualifiers.put("onClick", "return ss_confirmUnlockEntry();");
+						qualifiers.put("onClick", "return ss_confirmUnlockEntry(this);");
 						toolbar.addToolbarMenu("3_lock", NLT.get("toolbar.unlock"), url, qualifiers);
 					} else {
-						toolbar.addToolbarMenu("3_lock", NLT.get("toolbar.unlock"), url);
+						toolbar.addToolbarMenu("3_lock", NLT.get("toolbar.unlock"), url, qualifiers);
 					}
 				} else {
 					toolbar.addToolbarMenu("3_lock", NLT.get("toolbar.unlock"), nullPortletUrl, disabledQual);
@@ -675,7 +678,7 @@ public class ViewEntryController extends  SAbstractController {
 			else {
 				accessControlEntryMap.put("deleteEntry", new Boolean(true));
 				Map qualifiers = new HashMap();
-				qualifiers.put("onClick", "return ss_confirmDeleteEntry();");
+				qualifiers.put("onClick", "return ss_confirmDeleteEntry(this);");
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
@@ -714,7 +717,7 @@ public class ViewEntryController extends  SAbstractController {
 		if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 			if (getBinderModule().testAccess(entry.getParentBinder(), BinderOperation.setProperty)) {
 				Map qualifiers = new HashMap();
-				qualifiers.put("onClick", "if (parent.ss_confirmSetWikiHomepage) {return parent.ss_confirmSetWikiHomepage()} else {return false}");
+				qualifiers.put("onClick", "if (parent.ss_confirmSetWikiHomepage) {return parent.ss_confirmSetWikiHomepage(this.href)} else {return false}");
 				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.setWikiHomepage");
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);

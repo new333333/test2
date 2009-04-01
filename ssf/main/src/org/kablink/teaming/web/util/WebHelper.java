@@ -53,10 +53,12 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.TextVerificationException;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
+import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.accesstoken.AccessTokenManager;
@@ -66,6 +68,7 @@ import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
 import org.kablink.util.Html;
 import org.kablink.util.PortalDetector;
 import org.springframework.util.FileCopyUtils;
@@ -119,6 +122,23 @@ public class WebHelper {
 		catch(IllegalStateException e) {
 			return false;
 		}	
+	}
+	
+	public static boolean isMethodPost(PortletRequest request) {
+		HttpServletRequest req = null;
+		ActionRequest actionRequest;
+		PortletRequestImpl portletRequest;
+		
+		// The request parameter is actually a ParamsWrappedActionRequest object.  Get the real ActionRequest object.
+		if ( request instanceof ParamsWrappedActionRequest ) {
+			actionRequest = ((ParamsWrappedActionRequest)request).getActionRequest();
+			if ( actionRequest instanceof PortletRequestImpl ) {
+				portletRequest = (PortletRequestImpl) actionRequest;
+				req = portletRequest.getHttpServletRequest();
+			}
+		}
+		if (req != null) return "post".equals(req.getMethod().toLowerCase());
+		return false;
 	}
 	
 	public static String getRequiredUserName(HttpServletRequest request) 

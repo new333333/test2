@@ -48,6 +48,7 @@ import org.kablink.teaming.web.tree.MailTreeHelper;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.ScheduleHelper;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -58,7 +59,7 @@ public class MirroredFolderSynchronizationController extends  SAbstractControlle
 		Map formData = request.getParameterMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		response.setRenderParameters(formData);		
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 			ScheduleInfo config = getFolderModule().getSynchronizationSchedule(zoneId, binderId);			
 			config.setSchedule(ScheduleHelper.getSchedule(request, "sync"));

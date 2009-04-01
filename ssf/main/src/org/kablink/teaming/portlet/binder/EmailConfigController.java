@@ -58,6 +58,7 @@ import org.kablink.teaming.web.tree.MailTreeHelper;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.ScheduleHelper;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -70,7 +71,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 		Long folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			setupCloseWindow(response);
-		} else  if (formData.containsKey("okBtn")) {
+		} else  if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			//sub-folders don't have a schedule, use addresses to figure it out
 			if (formData.containsKey("addresses")) {
 				Set userList = new HashSet();

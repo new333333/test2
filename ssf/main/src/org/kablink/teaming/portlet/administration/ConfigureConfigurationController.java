@@ -94,7 +94,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
-		if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
+		if ((formData.containsKey("okBtn") || formData.containsKey("applyBtn")) && WebHelper.isMethodPost(request)) {
 			if (WebKeys.OPERATION_ADD.equals(operation)) {
 				//adding top level config
 				Integer type = PortletRequestUtils.getIntParameter(request, "definitionType");
@@ -229,7 +229,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
 				}
 			}
-		} else if (WebKeys.OPERATION_DELETE.equals(operation)) {
+		} else if (WebKeys.OPERATION_DELETE.equals(operation) && WebHelper.isMethodPost(request)) {
 			//Get the function id from the form
 			Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 			TemplateBinder config = getTemplateModule().getTemplate(configId);
@@ -485,7 +485,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				toolbar.addToolbarMenuItem("1_administration", "folders", NLT.get("toolbar.menu.addFolderTemplate"), url, qualifiersBlock);			
 			}
 			//Delete config
-			qualifiers.put("onClick", "return ss_confirmDeleteConfig();");
+			qualifiers.put("onClick", "return ss_confirmDeleteConfig(this);");
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);

@@ -99,17 +99,21 @@ function ss_clearRating(rating, id, namespace) {
     ss_currentRatingInfoId = "";
 }
 
-function ss_confirmDeleteEntry() {
+function ss_confirmDeleteEntry(obj) {
 	if (confirm(ss_confirmDeleteEntryText)) {
-		return true
+		var url = obj.href;
+		ss_postToThisUrl(url);
+		return false
 	} else {
 		return false
 	}
 }
 
-function ss_confirmUnlockEntry() {
+function ss_confirmUnlockEntry(obj) {
 	if (confirm(ss_confirmUnlockEntryText)) {
-		return true
+		var url = obj.href;
+		ss_postToThisUrl(url);
+		return false
 	} else {
 		return false
 	}

@@ -43,6 +43,7 @@ import org.kablink.teaming.NameMissingException;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -51,7 +52,7 @@ public class ManageZonesController extends  SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		//response.setRenderParameters(formData);
-		if (formData.containsKey("addBtn")) {
+		if (formData.containsKey("addBtn") && WebHelper.isMethodPost(request)) {
 			String zoneName=PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_NAME, null);
 			if(Validator.isNull(zoneName))
 				throw new NameMissingException("errorcode.zonename.missing");
@@ -59,11 +60,11 @@ public class ManageZonesController extends  SAbstractController {
 			if(Validator.isNull(virtualHost))
 				throw new NameMissingException("errorcode.virtualhost.missing");
 			getZoneModule().addZone(zoneName, virtualHost, null);
-		} else if (formData.containsKey("deleteBtn")) {
+		} else if (formData.containsKey("deleteBtn") && WebHelper.isMethodPost(request)) {
 			String zoneName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_NAME, null);
 			if(Validator.isNotNull(zoneName))
 				getZoneModule().deleteZone(zoneName);
-		} else if (formData.containsKey("modifyBtn")) {
+		} else if (formData.containsKey("modifyBtn") && WebHelper.isMethodPost(request)) {
 			String zoneName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_NAME, null);
 			if(Validator.isNull(zoneName))
 				throw new NameMissingException("errorcode.zonename.missing");

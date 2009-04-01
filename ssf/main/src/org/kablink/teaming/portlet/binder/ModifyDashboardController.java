@@ -47,6 +47,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.DashboardHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
 
 
@@ -77,32 +78,36 @@ public class ModifyDashboardController extends AbstractBinderController {
 		}
 		String returnView = PortletRequestUtils.getStringParameter(request, "_returnView", "binder");
 
-		if (formData.containsKey("set_title")) {
-			DashboardHelper.setTitle(request, binder, scope);
-			if (returnView.equals("binder")) setupViewBinder(response, binder);
-		} else if (formData.containsKey("add_wideTop")) {
-			componentId = DashboardHelper.addComponent(request, binder, Dashboard.WIDE_TOP, scope);
-			response.setRenderParameter("_componentId", componentId);
-			response.setRenderParameter("_dashboardList", Dashboard.WIDE_TOP);
-		} else if (formData.containsKey("add_narrowFixed")) {
-			componentId = DashboardHelper.addComponent(request, binder, Dashboard.NARROW_FIXED, scope);
-			response.setRenderParameter("_componentId", componentId);
-			response.setRenderParameter("_dashboardList", Dashboard.NARROW_FIXED);
-		} else if (formData.containsKey("add_narrowVariable")) {
-			componentId = DashboardHelper.addComponent(request, binder, Dashboard.NARROW_VARIABLE, scope);
-			response.setRenderParameter("_componentId", componentId);
-			response.setRenderParameter("_dashboardList", Dashboard.NARROW_VARIABLE);
-		} else if (formData.containsKey("add_wideBottom")) {
-			componentId = DashboardHelper.addComponent(request, binder, Dashboard.WIDE_BOTTOM, scope);
-			response.setRenderParameter("_componentId", componentId);
-			response.setRenderParameter("_dashboardList", Dashboard.WIDE_BOTTOM);
-		} else if (operation.equals("_modifyComponentData")) {
-		} else if (formData.containsKey("_modifyConfigData") || formData.containsKey("_modifyConfigData.x")) {
-		} else if (formData.containsKey("_saveConfigData") || formData.containsKey("_saveConfigData.x")) {
-			DashboardHelper.saveComponentData(request, binder, scope);
-		} else if (formData.containsKey("_deleteComponent")) {
-			DashboardHelper.deleteComponent(request, binder, componentId, scope);
-			if (returnView.equals("binder")) setupViewBinder(response, binder);
+		//The following operations must be done by a form post
+		if (WebHelper.isMethodPost(request)) {
+			if (formData.containsKey("set_title")) {
+				DashboardHelper.setTitle(request, binder, scope);
+				if (returnView.equals("binder")) setupViewBinder(response, binder);
+			} else if (formData.containsKey("add_wideTop")) {
+				componentId = DashboardHelper.addComponent(request, binder, Dashboard.WIDE_TOP, scope);
+				response.setRenderParameter("_componentId", componentId);
+				response.setRenderParameter("_dashboardList", Dashboard.WIDE_TOP);
+			} else if (formData.containsKey("add_narrowFixed")) {
+				componentId = DashboardHelper.addComponent(request, binder, Dashboard.NARROW_FIXED, scope);
+				response.setRenderParameter("_componentId", componentId);
+				response.setRenderParameter("_dashboardList", Dashboard.NARROW_FIXED);
+			} else if (formData.containsKey("add_narrowVariable")) {
+				componentId = DashboardHelper.addComponent(request, binder, Dashboard.NARROW_VARIABLE, scope);
+				response.setRenderParameter("_componentId", componentId);
+				response.setRenderParameter("_dashboardList", Dashboard.NARROW_VARIABLE);
+			} else if (formData.containsKey("add_wideBottom")) {
+				componentId = DashboardHelper.addComponent(request, binder, Dashboard.WIDE_BOTTOM, scope);
+				response.setRenderParameter("_componentId", componentId);
+				response.setRenderParameter("_dashboardList", Dashboard.WIDE_BOTTOM);
+			} else if (formData.containsKey("_modifyConfigData") || formData.containsKey("_modifyConfigData.x")) {
+			} else if (formData.containsKey("_saveConfigData") || formData.containsKey("_saveConfigData.x")) {
+				DashboardHelper.saveComponentData(request, binder, scope);
+			} else if (formData.containsKey("_deleteComponent")) {
+				DashboardHelper.deleteComponent(request, binder, componentId, scope);
+				if (returnView.equals("binder")) setupViewBinder(response, binder);
+			}
+		}
+		if (operation.equals("_modifyComponentData")) {
 		} else if (operation.equals("_show")) {
 			DashboardHelper.showHideComponent(request, binder, componentId, scope, "show");
 			if (returnView.equals("binder")) setupViewBinder(response, binder);
@@ -115,7 +120,9 @@ public class ModifyDashboardController extends AbstractBinderController {
 		} else if (operation.equals("_moveDown")) {
 			DashboardHelper.moveComponent(request, binder, scope, "down");
 			if (returnView.equals("binder")) setupViewBinder(response, binder);
-		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
+		}
+				
+		if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
 			if (returnView.equals("binder")) setupViewBinder(response, binder);
 		}

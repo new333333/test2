@@ -57,6 +57,7 @@ import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
 
 
@@ -73,7 +74,7 @@ public class ModifyBinderController extends AbstractBinderController {
 		String binderType = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_BINDER_TYPE);	
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String deleteSource = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DELETE_SOURCE, null);
-		if(op.equals(WebKeys.OPERATION_SYNCHRONIZE_MIRRORED_FOLDER)) {
+		if (op.equals(WebKeys.OPERATION_SYNCHRONIZE_MIRRORED_FOLDER)) {
 			// This trick is here to handle the situation where the synchronization
 			// causes the binder to be deleted.
 			Binder binder = getBinderModule().getBinder(binderId);
@@ -88,7 +89,7 @@ public class ModifyBinderController extends AbstractBinderController {
 				// The binder was indeed deleted.  Finish it up.
 				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");			
 			}
-		} else if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
+		} else if ((formData.containsKey("okBtn") || formData.containsKey("applyBtn")) && WebHelper.isMethodPost(request)) {
 			if (op.equals("") || op.equals(WebKeys.OPERATION_MODIFY)) { 			
 				//	The modify form was submitted. Go process it
 				Map fileMap = null;

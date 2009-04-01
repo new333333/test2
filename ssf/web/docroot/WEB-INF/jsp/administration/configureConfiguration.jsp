@@ -152,9 +152,13 @@ function <%=cTreeName%>_showId(id, obj, action) {
 	self.location.href = url;
 	return false;
 } 
-function ss_confirmDeleteConfig() {
+function ss_confirmDeleteConfig(obj) {
 	if (confirm('<ssf:nlt tag="administration.configure_cfg.confirmDelete"/>')) {
-		return true
+		var actionUrl = obj.href;
+		var formObj = document.getElementById('deleteForm');
+		formObj.action = actionUrl;
+		formObj.submit();
+		return false
 	} else {
 		return false
 	}
@@ -250,6 +254,12 @@ ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initSho
 
 </c:if>
 </ssf:form>
+
+<div style="visibility: hidden;">
+  <form id="deleteForm" method="post" >
+  </form>
+</div>
+
 </div>
 </div>
 </body>
