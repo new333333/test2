@@ -485,7 +485,7 @@ ssSurvey.removeVote = function(formId, binderId, entryId) {
 	var urlParams = {operation:"vote_survey_remove", binderId:binderId, entryId:entryId};
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 
-	dojo.xhrGet({
+	dojo.xhrPost({
     	url: url,
 		handleAs: "json-comment-filtered",		
 		error: function(err) {

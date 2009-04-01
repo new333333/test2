@@ -76,10 +76,14 @@ public class LoginFilter  implements Filter {
 		if(isAtRoot(req) && req.getMethod().equalsIgnoreCase("get")) {
 			// We're at the root URL. Re-direct the client to its workspace.
 			// Do this only if the request method is GET.
-			if (BrowserSniffer.is_wap_xhtml(req)) {
+			if (BrowserSniffer.is_wap_xhtml(req) && 
+					!BrowserSniffer.is_blackberry(req) && 
+					!BrowserSniffer.is_iphone(req)) {
 				String landingPageUrl = getWapLandingPageURL(req);
 				res.sendRedirect(landingPageUrl);
 			} else {
+				//Not a wap phone, but it could be a Blackberry or iPhone or any other browser
+				//  Give the Blackberry's and iPhones the full UI
 				String workspaceUrl = getWorkspaceURL(req);
 				res.sendRedirect(workspaceUrl);
 			}

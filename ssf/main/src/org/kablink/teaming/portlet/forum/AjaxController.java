@@ -174,7 +174,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			} else if (op.equals(WebKeys.OPERATION_ADD_FAVORITES_CATEGORY)) {
 				ajaxAddFavoritesCategory(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_TAGS)) {
-				ajaxModifyTags(request, response);
+				if (WebHelper.isMethodPost(request)) ajaxModifyTags(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_FAVORITES)) {
 				ajaxSaveFavorites(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_USER_APPCONFIG)) {
@@ -184,7 +184,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 				// Save the state of the tutorial panel.  It is either collapsed, expanded or hidden.
 				ajaxSaveUserTutorialPanelState( request, response );
 			} else if (op.equals(WebKeys.OPERATION_SAVE_RATING)) {
-				ajaxSaveRating(request, response);
+				if (WebHelper.isMethodPost(request)) ajaxSaveRating(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SHOW_HELP_CPANEL) || 
 					op.equals(WebKeys.OPERATION_HIDE_HELP_CPANEL)) {
 				ajaxShowHideHelpControlPanel(request, response);
@@ -197,9 +197,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 			} else if (op.equals(WebKeys.OPERATION_SET_UI_THEME)) {
 				ajaxSetUiTheme(request, response);
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
-				ajaxUploadImageFile(request, response); 
+				if (WebHelper.isMethodPost(request)) ajaxUploadImageFile(request, response); 
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
-				ajaxUploadICalendarFile(request, response);
+				if (WebHelper.isMethodPost(request)) ajaxUploadICalendarFile(request, response);
 			} else if (op.equals(WebKeys.OPERATION_LOAD_ICALENDAR_BY_URL)) {
 				ajaxLoadICalendarByURL(request, response);				
 			} else if (op.equals(WebKeys.OPERATION_SAVE_CALENDAR_CONFIGURATION)) {
@@ -207,7 +207,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			} else if (op.equals(WebKeys.OPERATION_SET_BINDER_OWNER_ID)) {
 				ajaxSetBinderOwnerId(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_GROUP)) {
-				ajaxModifyGroup(request, response);
+				if (WebHelper.isMethodPost(request)) ajaxModifyGroup(request, response);
 			} else if (op.equals(WebKeys.OPERATION_STICKY_CALENDAR_DISPLAY_SETTINGS)) {
 				ajaxStickyCalendarDisplaySettings(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_SEARCH_QUERY)) {
@@ -215,20 +215,20 @@ public class AjaxController  extends SAbstractControllerRetry {
 			} else if (op.equals(WebKeys.OPERATION_REMOVE_SEARCH_QUERY)) {
 				ajaxRemoveSearchQuery(request, response);
 			} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY_REMOVE)) {
-				ajaxVoteSurveyRemove(request, response);				
+				if (WebHelper.isMethodPost(request)) ajaxVoteSurveyRemove(request, response);				
 			} else if (op.equals(WebKeys.OPERATION_ATTACHE_MEETING_RECORDS)) {
-				ajaxAttacheMeetingRecords(request, response);
+				if (WebHelper.isMethodPost(request)) ajaxAttacheMeetingRecords(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
 				Map formData = request.getParameterMap();
-				if (formData.containsKey("okBtn")) ajaxDoSubscription(request, response);
+				if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) ajaxDoSubscription(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_UESR_STATUS)) {
-				ajaxSaveUserStatus(this, request, response);
+				if (WebHelper.isMethodPost(request)) ajaxSaveUserStatus(this, request, response);
 			} else if (op.equals(WebKeys.OPERATION_SET_SIDEBAR_VISIBILITY)) {
 				ajaxSetSidebarVisibility(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SET_SUNBURST_VISIBILITY)) {
 				ajaxSetSunburstVisibility(request, response);
 			} else if (op.equals(WebKeys.OPERATION_PIN_ENTRY)) {
-				ajaxPinEntry(request, response);
+				if (WebHelper.isMethodPost(request)) ajaxPinEntry(request, response);
 			}
 		}
 	}
