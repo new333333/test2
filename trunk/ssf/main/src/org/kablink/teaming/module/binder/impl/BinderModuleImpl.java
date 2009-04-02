@@ -339,7 +339,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 						luceneSession.clearIndex();
 		
 					} catch (Exception e) {
-						System.out.println("Exception:" + e);
+						logger.info("Exception:" + e);
 					} finally {
 						luceneSession.close();
 					}
@@ -812,7 +812,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		try {
 			hits = luceneSession.search(soQuery,so.getSortBy(),offset,maxResults);
 		} catch(Exception e) {
-			System.out.println("Exception:" + e);
+			logger.info("Exception:" + e);
 		} finally {
 			luceneSession.close();
 		}
