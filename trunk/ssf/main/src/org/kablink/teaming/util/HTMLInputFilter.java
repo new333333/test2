@@ -33,6 +33,7 @@
 package org.kablink.teaming.util;
 //package com.josephoconnell.html;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -154,8 +155,8 @@ public class HTMLInputFilter
   private static final String PATTERN_PROCESS_TAGS5 = "([a-z0-9]+)(=)([^\"\\s']+)";
   private static final String PATTERN_PROCESS_PARAM_PROTOCOL = "^([^:]+):";
   private static final String PATTERN_DECODE_ENTITIES1 = "&#(\\d+);?";
-  private static final String PATTERN_DECODE_ENTITIES2 = "&#x([0-9a-f]+);?";
-  private static final String PATTERN_DECODE_ENTITIES3 = "%([0-9a-f]{2});?";
+  private static final String PATTERN_DECODE_ENTITIES2 = "&#x([0-9a-fA-F]+);?";
+  private static final String PATTERN_DECODE_ENTITIES3 = "%([0-9a-fA-F]{2});?";
   private static final String PATTERN_VALIDATE_ENTITIES1 = "&([^&;]*)(?=(;|&|$))";
   private static final String PATTERN_VALIDATE_ENTITIES2 = "(>|^)([^<]+?)(<|$)";
   
@@ -522,12 +523,15 @@ public class HTMLInputFilter
   protected String decodeEntities( String s )
   {
     StringBuffer buf = new StringBuffer();
-    
+    try {
+    	s = URLDecoder.decode(s, "UTF-8");
+    } catch(Exception e) {}
+
     Matcher m = pattern_decode_entities1.matcher( s );
     while (m.find()) {
       String match = m.group( 1 );
       int decimal = Integer.decode( match ).intValue();
-      m.appendReplacement( buf, chr( decimal ) );
+      m.appendReplacement( buf, Matcher.quoteReplacement(chr(decimal)));
     }
     m.appendTail( buf );
     s = buf.toString();
@@ -537,7 +541,7 @@ public class HTMLInputFilter
     while (m.find()) {
       String match = m.group( 1 );
       int decimal = Integer.decode( match ).intValue();
-      m.appendReplacement( buf, chr( decimal ) );
+      m.appendReplacement( buf, Matcher.quoteReplacement(chr(decimal)));
     }
     m.appendTail( buf );
     s = buf.toString();
@@ -546,8 +550,8 @@ public class HTMLInputFilter
     m = pattern_decode_entities3.matcher( s );
     while (m.find()) {
       String match = m.group( 1 );
-      int decimal = Integer.decode( match ).intValue();
-      m.appendReplacement( buf, chr( decimal ) );
+      int decimal = Integer.decode( "#" + match ).intValue();
+      m.appendReplacement( buf, Matcher.quoteReplacement(chr(decimal)));
     }
     m.appendTail( buf );
     s = buf.toString();
