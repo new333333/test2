@@ -47,10 +47,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portal.PortalLogin;
+import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.util.ReleaseInfo;
@@ -107,7 +109,11 @@ public class LoginFilter  implements Filter {
 					}
 				}
 				req.setAttribute("referer", url);
-				chain.doFilter(request, response);
+				try {
+					chain.doFilter(request, response);
+				} catch(Exception e) {
+					res.sendRedirect(getErrorUrl(req, e.getLocalizedMessage()));
+				}
 				
 			}
 		}
@@ -252,4 +258,13 @@ public class LoginFilter  implements Filter {
 		AuthenticationConfig config = getAuthenticationModule().getAuthenticationConfigForZone(zoneId);
 		return config.isAllowAnonymousAccess();
 	}
+	
+	public static String getErrorUrl(HttpServletRequest request, String errorMsg) {
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true, true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
+		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ERROR_MESSAGE);
+		adapterUrl.setParameter(WebKeys.URL_VALUE, errorMsg);
+		return adapterUrl.toString();
+	}
+
 }
