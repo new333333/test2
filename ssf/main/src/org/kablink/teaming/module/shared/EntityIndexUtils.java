@@ -641,9 +641,9 @@ public class EntityIndexUtils {
         	Field fileNameField = new Field(FILENAME_FIELD, fa.getFileItem().getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         	doc.add(fileNameField);
         	//create names that groups all the related values together for parsing in displays
-        	//doc.add(new Field(FILE_SIZE_FIELD+fa.getId(), fileSizeField.stringValue(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-        	//doc.add(new Field(FILE_TIME_FIELD+fa.getId(), fileTimeField.stringValue(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-        	//doc.add(new Field(FILENAME_FIELD+fa.getId(), fileNameField.stringValue(), Field.Store.YES, Field.Index.UN_TOKENIZED));
+        	//doc.add(new Field(FILE_SIZE_AND_ID_FIELD, fa.getId()+fileSizeField.stringValue(), Field.Store.YES, Field.Index.UN_TOKENIZED));
+        	doc.add(new Field(FILE_TIME_AND_ID_FIELD, Constants.UNIQUE_PREFIX + fa.getId() + fileTimeField.stringValue(), Field.Store.YES, Field.Index.UN_TOKENIZED));
+        	doc.add(new Field(FILENAME_AND_ID_FIELD, Constants.UNIQUE_PREFIX + fa.getId() + fileNameField.stringValue(), Field.Store.YES, Field.Index.UN_TOKENIZED));
         }
     }    
     //Used to index the file.  Only want info about this file, so remove extraneous stuff
