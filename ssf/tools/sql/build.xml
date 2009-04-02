@@ -220,7 +220,9 @@
 		<antcall target="generate-create-tables-script-sqlserver" inheritAll="false"/>
 		<antcall target="generate-create-tables-script-mysql" inheritAll="false"/>
 		<antcall target="generate-create-tables-script-oracle" inheritAll="false"/>
-		<antcall target="generate-create-tables-script-postgresql" inheritAll="false"/>
+		<!-- Commented out:  Bugzilla 491275.
+			<antcall target="generate-create-tables-script-postgresql" inheritAll="false"/>
+		-->
 	</target>
 	
 	
@@ -240,13 +242,15 @@
 		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
 	</target>
 	
-	<target name="generate-create-tables-script-postgresql">
-		<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
-		<echo file="${basedir}/database.${user.name}.properties">database.type=postgresql</echo>
-		<antcall target="generate-create-tables-script"/>
-		<delete file="${basedir}/database.${user.name}.properties" failonerror="false"/>
-		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
-	</target>
+	<!-- Commented out:  Bugzilla 491275.
+		<target name="generate-create-tables-script-postgresql">
+			<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
+			<echo file="${basedir}/database.${user.name}.properties">database.type=postgresql</echo>
+			<antcall target="generate-create-tables-script"/>
+			<delete file="${basedir}/database.${user.name}.properties" failonerror="false"/>
+			<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
+		</target>
+	-->
 			
 	<target name="generate-create-tables-script-sqlserver">
 		<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
@@ -396,7 +400,9 @@
 		<antcall target="generate-update-tables-script-sqlserver" inheritAll="false"/>
 		<antcall target="generate-update-tables-script-mysql" inheritAll="false"/>
 		<antcall target="generate-update-tables-script-oracle" inheritAll="false"/>
-		<antcall target="generate-update-tables-script-postgresql" inheritAll="false"/>
+		<!-- Commented out:  Bugzilla 491275.
+			<antcall target="generate-update-tables-script-postgresql" inheritAll="false"/>
+		-->
 	</target>
 	
 	
@@ -416,13 +422,15 @@
 		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
 	</target>
 	
-	<target name="generate-update-tables-script-postgresql">
-		<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
-		<echo file="${basedir}/database.${user.name}.properties">database.type=postgresql</echo>
-		<antcall target="generate-update-tables-script"/>
-		<delete file="${basedir}/database.${user.name}.properties" failonerror="false"/>
-		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
-	</target>
+	<!-- Commented out:  Bugzilla 491275.
+		<target name="generate-update-tables-script-postgresql">
+			<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
+			<echo file="${basedir}/database.${user.name}.properties">database.type=postgresql</echo>
+			<antcall target="generate-update-tables-script"/>
+			<delete file="${basedir}/database.${user.name}.properties" failonerror="false"/>
+			<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
+		</target>
+	-->
 			
 	<target name="generate-update-tables-script-sqlserver">
 		<move file="${basedir}/database.${user.name}.properties" tofile="${basedir}/database.${user.name}.properties.moved" failonerror="false"/>
