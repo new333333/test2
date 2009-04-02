@@ -170,9 +170,16 @@ public class ViewPermalinkController  extends SAbstractController {
 	 			url.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_USER_ID_PLACE_HOLDER);
 	 		} else {
 	 			Long workspaceId  = getProfileModule().getEntryWorkspaceId(Long.valueOf(entryId));
-	 			entity = getBinderModule().getBinder(workspaceId);
-	 			url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
-	 			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
+	 			if (workspaceId == null) {
+		 			url.setParameter(WebKeys.URL_ACTION, "view_profile_entry");
+		 			url.setParameter(WebKeys.URL_BINDER_ID, getProfileModule().getProfileBinder().getId().toString());
+		 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+		 			url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, "full");
+	 			} else {
+		 			entity = getBinderModule().getBinder(workspaceId);
+		 			url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
+		 			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
+	 			}
 	 		}
 		} 
 		
