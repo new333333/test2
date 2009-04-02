@@ -75,47 +75,47 @@ public class LoginFilter  implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 
-		if(isAtRoot(req) && req.getMethod().equalsIgnoreCase("get")) {
-			// We're at the root URL. Re-direct the client to its workspace.
-			// Do this only if the request method is GET.
-			if (BrowserSniffer.is_wap_xhtml(req) && 
-					!BrowserSniffer.is_blackberry(req) && 
-					!BrowserSniffer.is_iphone(req)) {
-				String landingPageUrl = getWapLandingPageURL(req);
-				res.sendRedirect(landingPageUrl);
-			} else {
-				//Not a wap phone, but it could be a Blackberry or iPhone or any other browser
-				//  Give the Blackberry's and iPhones the full UI
-				String workspaceUrl = getWorkspaceURL(req);
-				res.sendRedirect(workspaceUrl);
-			}
-		}
-		else {
-			if(WebHelper.isGuestLoggedIn(req)) {
-				// User is logged in as guest, which simply means that the user
-				// is currently accessing Teaming without logging in as a regular 
-				// user (yet).
-				handleGuestAccess(req, res, chain);
+		try {
+			if(isAtRoot(req) && req.getMethod().equalsIgnoreCase("get")) {
+				// We're at the root URL. Re-direct the client to its workspace.
+				// Do this only if the request method is GET.
+				if (BrowserSniffer.is_wap_xhtml(req) && 
+						!BrowserSniffer.is_blackberry(req) && 
+						!BrowserSniffer.is_iphone(req)) {
+					String landingPageUrl = getWapLandingPageURL(req);
+					res.sendRedirect(landingPageUrl);
+				} else {
+					//Not a wap phone, but it could be a Blackberry or iPhone or any other browser
+					//  Give the Blackberry's and iPhones the full UI
+					String workspaceUrl = getWorkspaceURL(req);
+					res.sendRedirect(workspaceUrl);
+				}
 			}
 			else {
-				// User is logged in as regular user. Proceed as normal.
-				String url = req.getQueryString();
-				String redirectUrl = url;
-				if (url != null) { 
-					redirectUrl = redirectUrl.replace(WebKeys.URL_USER_ID_PLACE_HOLDER, WebHelper.getRequiredUserId(req).toString());
-					if (!redirectUrl.equals(url)) {
-						res.sendRedirect(req.getRequestURI() + "?" + redirectUrl);
-						return;
+				if(WebHelper.isGuestLoggedIn(req)) {
+					// User is logged in as guest, which simply means that the user
+					// is currently accessing Teaming without logging in as a regular 
+					// user (yet).
+					handleGuestAccess(req, res, chain);
+				}
+				else {
+					// User is logged in as regular user. Proceed as normal.
+					String url = req.getQueryString();
+					String redirectUrl = url;
+					if (url != null) { 
+						redirectUrl = redirectUrl.replace(WebKeys.URL_USER_ID_PLACE_HOLDER, WebHelper.getRequiredUserId(req).toString());
+						if (!redirectUrl.equals(url)) {
+							res.sendRedirect(req.getRequestURI() + "?" + redirectUrl);
+							return;
+						}
 					}
-				}
-				req.setAttribute("referer", url);
-				try {
+					req.setAttribute("referer", url);
 					chain.doFilter(request, response);
-				} catch(Exception e) {
-					res.sendRedirect(getErrorUrl(req, e.getLocalizedMessage()));
+					
 				}
-				
 			}
+		} catch(Exception e) {
+			res.sendRedirect(getErrorUrl(req, e.getLocalizedMessage()));
 		}
 	}
 	
