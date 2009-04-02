@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.module.profile.processor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +44,6 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 
 public interface ProfileCoreProcessor extends EntryProcessor {
 	public void syncEntry(Principal entry, InputDataAccessor inputData, Map options);
-	public void syncEntries(Map entries, Map options);
-	public List syncNewEntries(Binder binder, Definition definition, Class clazz, List inputAccessors, Map options); 
+	public void syncEntries(Map entries, Map options, ArrayList syncResults );
+	public List syncNewEntries(Binder binder, Definition definition, Class clazz, List inputAccessors, Map options, ArrayList syncResults ); 
 }

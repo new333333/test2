@@ -665,7 +665,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 							logger.info("'" + iter.next() + "'");
 						}
 					}
-					processor.syncEntries(oldEntries, options);
+					processor.syncEntries(oldEntries, options, null );
 					//processor commits entries - so update indexnow
 					IndexSynchronizationManager.applyChanges();
 				} catch (Exception ex) {
@@ -682,7 +682,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 							logger.info("'" + iter.next() + "'");
 						}
 					}
-					List addedEntries = processor.syncNewEntries(binder, def, clazz, new ArrayList(newEntries.values()), options);
+					List addedEntries = processor.syncNewEntries(binder, def, clazz, new ArrayList(newEntries.values()), options, null);
 					//processor commits entries - so update indexnow
 					IndexSynchronizationManager.applyChanges();
 					//flush from cache
@@ -991,7 +991,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			if (userDef == null) userDef = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_ENTRY_VIEW);
 			List<InputDataAccessor>accessors = new ArrayList();
 			accessors.add(new MapInputData(newUpdates));
-			User user = (User)processor.syncNewEntries(profiles, userDef, User.class, accessors, options).get(0);
+			User user = (User)processor.syncNewEntries(profiles, userDef, User.class, accessors, options, null).get(0);
 			// flush user before adding workspace
 			IndexSynchronizationManager.applyChanges();
 			

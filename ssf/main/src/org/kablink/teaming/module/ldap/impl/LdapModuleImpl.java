@@ -32,6 +32,7 @@
  */
 
 package org.kablink.teaming.module.ldap.impl;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -71,6 +72,7 @@ import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.IPrincipal;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.Membership;
@@ -83,6 +85,7 @@ import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSchedule;
+import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -293,14 +296,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	}
 	
 	/**
-	 * This routine alters group membership without updateing the local caches.
+	 * This routine alters group membership without updating the local caches.
 	 * Need to flush cache after use
 	 */
-	public void syncAll() throws LdapSyncException {
+	public void syncAll( LdapSyncResults syncResults ) throws LdapSyncException {
 		Workspace zone = RequestContextHolder.getRequestContext().getZone();
 		LdapSchedule info = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
-    		UserCoordinator userCoordinator = new UserCoordinator(zone,info.isUserSync(),info.isUserRegister(),
-   															  info.isUserDelete(), info.isUserWorkspaceDelete());
+    	UserCoordinator userCoordinator = new UserCoordinator(zone,info.isUserSync(),info.isUserRegister(),
+   															  info.isUserDelete(), info.isUserWorkspaceDelete(), syncResults );
 		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
 	   		LdapContext ctx=null;
 	  		try {
@@ -337,7 +340,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		Map dnUsers = userCoordinator.wrapUp();
 
-   		GroupCoordinator groupCoordinator = new GroupCoordinator(zone, dnUsers, info.isGroupSync(), info.isGroupRegister(), info.isGroupDelete());
+   		GroupCoordinator groupCoordinator = new GroupCoordinator(zone, dnUsers, info.isGroupSync(), info.isGroupRegister(), info.isGroupDelete(), syncResults );
    		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
 	   		LdapContext ctx=null;
 	  		try {
@@ -402,14 +405,23 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 		long createSyncSize;
 		long modifySyncSize;
+		
+		private LdapSyncResults	m_ldapSyncResults;	// Store the results of the sync here.
 
-		public UserCoordinator(Binder zone, boolean sync, boolean create, boolean delete, boolean deleteWorkspace)
+		public UserCoordinator(
+			Binder zone,
+			boolean sync,
+			boolean create,
+			boolean delete,
+			boolean deleteWorkspace,
+			LdapSyncResults syncResults )
 		{
 			this.zoneId = zone.getId();
 			this.sync = sync;
 			this.create = create;
 			this.delete = delete;
 			this.deleteWorkspace = deleteWorkspace;
+			m_ldapSyncResults = syncResults;
 			
 			createSyncSize = GetterUtil.getLong(getLdapProperty(zone.getName(), "create.flush.threshhold"), 100);
 			modifySyncSize = GetterUtil.getLong(getLdapProperty(zone.getName(), "modify.flush.threshhold"), 100);
@@ -505,13 +517,28 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			//do updates after every 100 users
 			if (!ldap_existing.isEmpty() && (ldap_existing.size()%modifySyncSize == 0)) {
 				//doLog("Updating users:", ldap_existing);
-				updateUsers(zoneId, ldap_existing);
+				ArrayList	syncResults	= null;
+				
+				// Do we have a place to store the list of modified users?
+				if ( m_ldapSyncResults != null )
+				{
+					// Yes
+					syncResults = m_ldapSyncResults.getModifiedUsers();
+				}
+				updateUsers(zoneId, ldap_existing, syncResults );
 				ldap_existing.clear();
 			}
 			//do creates after every 100 users
 			if (!ldap_new.isEmpty() && (ldap_new.size()%createSyncSize == 0)) {				
 				doLog("Creating users:", ldap_new);
-				List results = createUsers(zoneId, ldap_new);
+				ArrayList	syncResults	= null;
+				
+				// Do we have a place to store the list of added users?
+				if ( m_ldapSyncResults != null )
+				{
+					syncResults = m_ldapSyncResults.getAddedUsers();
+				}
+				List results = createUsers(zoneId, ldap_new, syncResults );
 				ldap_new.clear();
 				// fill in mapping from distinquished name to id
 				for (int i=0; i<results.size(); ++i) {
@@ -526,11 +553,26 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			if (!ldap_existing.isEmpty()) {
 				//doLog("Updating users:", ldap_existing);
-				updateUsers(zoneId, ldap_existing);
+				ArrayList	syncResults	= null;
+				
+				// Do we have a place to store the list of modified users?
+				if ( m_ldapSyncResults != null )
+				{
+					// Yes
+					syncResults = m_ldapSyncResults.getModifiedUsers();
+				}
+				updateUsers(zoneId, ldap_existing, syncResults );
 			}
 			if (!ldap_new.isEmpty()) {
 				doLog("Creating users:", ldap_new);
-				List results = createUsers(zoneId, ldap_new);
+				ArrayList	syncResults = null;
+				
+				// Do we have a place to store the list of added users?
+				if ( m_ldapSyncResults != null )
+				{
+					syncResults = m_ldapSyncResults.getAddedUsers();
+				}
+				List results = createUsers(zoneId, ldap_new, syncResults );
 				for (int i=0; i<results.size(); ++i) {
 					User user = (User)results.get(i);
 					Object[] row = (Object[])dnUsers.get(user.getForeignName());
@@ -539,6 +581,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 			//if disable is enabled, remove users that were not found in ldap
 			if (delete && !notInLdap.isEmpty()) {
+				ArrayList	syncResults	= null;
+				
 				if (logger.isInfoEnabled()) {
 					logger.info("Deleting users:");
 					for (String name:notInLdap.values()) {
@@ -546,7 +590,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 				}
 
-				deletePrincipals(zoneId, notInLdap.keySet(), deleteWorkspace);
+				// Do we have a place to store the sync results?
+				if ( m_ldapSyncResults != null )
+				{
+					// Yes
+					syncResults = m_ldapSyncResults.getDeletedUsers();
+				}
+				deletePrincipals(zoneId, notInLdap.keySet(), deleteWorkspace, syncResults );
 			}
 			//Set foreign names of users to self; needed to recognize synced names and mark attributes read-only
 			if (!delete && !notInLdap.isEmpty()) {
@@ -563,12 +613,23 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			    		users.put(id, updates);
 			     	}
 				}
-				if (!users.isEmpty()) updateUsers(zoneId, users);
+				if (!users.isEmpty())
+				{
+					ArrayList	syncResults	= null;
+					
+					// Do we have a place to store the sync results?
+					if ( m_ldapSyncResults != null )
+					{
+						// Yes, get the list to store the modified users.
+						syncResults = m_ldapSyncResults.getModifiedUsers();
+					}
+					updateUsers(zoneId, users, syncResults );
+				}
 			}
 			return dnUsers;
 
 		}
-	}
+	}// end UserCoordinator
 	
 	protected void syncUsers(Binder zone, LdapContext ctx, LdapConnectionConfig config, UserCoordinator userCoordinator) 
 		throws NamingException {
@@ -638,13 +699,23 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	
 		long createSyncSize;
 		long modifySyncSize;
+		
+		private LdapSyncResults	m_ldapSyncResults;	// Store the results of the sync here.
 
-		public GroupCoordinator(Binder zone, Map dnUsers, boolean sync, boolean create, boolean delete)
+		public GroupCoordinator(
+			Binder zone,
+			Map dnUsers,
+			boolean sync,
+			boolean create,
+			boolean delete,
+			LdapSyncResults syncResults )
 		{
 			this.zoneId = zone.getId();
 			this.dnUsers = dnUsers;
 			this.create = create;
 			this.delete = delete;
+			m_ldapSyncResults = syncResults;	// Store the results of the sync here.
+			
 			createSyncSize = GetterUtil.getLong(getLdapProperty(zone.getName(), "create.flush.threshhold"), 100);
 			modifySyncSize = GetterUtil.getLong(getLdapProperty(zone.getName(), "modify.flush.threshhold"), 100);
 
@@ -728,7 +799,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	     * @param groups - Map keyed by user id, value is map of attributes
 	     * @return
 	     */
-	    protected Group createGroup(Long zoneId, String ssName, Map groupData) {
+	    protected Group createGroup(Long zoneId, String ssName, Map groupData ) {
 	    	MapInputData groupMods = new MapInputData(groupData);
 			ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
 			//get default definition to use
@@ -736,9 +807,18 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			getDefinitionModule().setDefaultEntryDefinition(temp);
 			Definition groupDef = temp.getEntryDef();
 			try {
+				ArrayList	syncResults	= null;
+				
+				// Are we suppose to store the sync results someplace?
+				if ( m_ldapSyncResults != null )
+				{
+					// Yes, get the ArrayList that holds the list of groups added to Teaming.
+					syncResults = m_ldapSyncResults.getAddedGroups();
+				}
+				
 		    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
 	            	pf, ProfileCoreProcessor.PROCESSOR_KEY);
-		    	List newGroups = processor.syncNewEntries(pf, groupDef, Group.class, Arrays.asList(new MapInputData[] {groupMods}), null);
+		    	List newGroups = processor.syncNewEntries(pf, groupDef, Group.class, Arrays.asList(new MapInputData[] {groupMods}), null, syncResults );
 		    	IndexSynchronizationManager.applyChanges(); //apply now, syncNewEntries will commit
 		    	//flush from cache
 		    	getCoreDao().evict(newGroups);
@@ -762,9 +842,16 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		   	Group g = (Group)foundEntries.get(0);
 		   	entries.put(g, new MapInputData(groupMods));
 		    try {
+		    	ArrayList	syncResults	= null;
+		    	
+		    	// Do we have a place to store the list of modified groups?
+		    	if ( m_ldapSyncResults != null )
+		    	{
+		    		syncResults = m_ldapSyncResults.getModifiedGroups();
+		    	}
 		    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
 	            	pf, ProfileCoreProcessor.PROCESSOR_KEY);
-		    	processor.syncEntries(entries, null);
+		    	processor.syncEntries(entries, null, syncResults );
 		    	IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
 		    	//flush from cache
 		    	getCoreDao().evict(g);
@@ -779,6 +866,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			Object[] uRow;
 			List membership = new ArrayList();
+			ArrayList syncResults	= null;
 			//build new membership
 			while(valEnum.hasMoreElements()) {
 				String mDn = ((String)valEnum.nextElement()).trim();
@@ -787,21 +875,37 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if (uRow == null || uRow[1] == null) continue; //never got created
 				membership.add(new Membership(groupId, (Long)uRow[1]));
 			}
+
+			// Do we have a place to store the list of modified groups?
+			if ( m_ldapSyncResults != null )
+			{
+				// Yes
+				syncResults = m_ldapSyncResults.getModifiedGroups();
+			}
+
 			//do inside a transaction
-			updateMembership(groupId, membership);	
+			updateMembership(groupId, membership, syncResults );	
 		}
 
 		public void deleteObsoleteGroups()
 		{
 			//if disable is enabled, remove groups that were not found in ldap
 			if (delete && !notInLdap.isEmpty()) {
+				ArrayList	syncResults	= null;
+				
 				if (logger.isInfoEnabled()) {
 					logger.info("Deleting groups:");
 					for (String name:notInLdap.values()) {
 						logger.info("'" + name + "'");
 					}
 				}
-				deletePrincipals(zoneId,notInLdap.keySet(), false);
+				// Do we have a place to store the sync results?
+				if ( m_ldapSyncResults != null )
+				{
+					// Yes
+					syncResults = m_ldapSyncResults.getDeletedGroups();
+				}
+				deletePrincipals(zoneId,notInLdap.keySet(), false, syncResults );
 			} else if (!delete && !notInLdap.isEmpty()) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Groups not found in ldap:");
@@ -817,7 +921,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			return (Object [])dnGroups.get(dn);
 		}
-	}
+	}// end GroupCoordinator
 
 	protected void syncGroups(Binder zone, LdapContext ctx, LdapConnectionConfig config, GroupCoordinator groupCoordinator,
 							  boolean syncMembership) 
@@ -1003,7 +1107,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * Update users with their own map of updates
 	 * @param users - Map indexed by user id, value is map of updates for a user
 	 */
-	protected void updateUsers(Long zoneId, final Map users) {
+	protected void updateUsers(Long zoneId, final Map users, ArrayList syncResults ) {
 		if (users.isEmpty()) return;
 		ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
 		List collections = new ArrayList();
@@ -1018,7 +1122,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   	try {
 	   		ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
             	pf, ProfileCoreProcessor.PROCESSOR_KEY);
-	   		processor.syncEntries(entries, null);
+	   		processor.syncEntries(entries, null, syncResults );
 	   		IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
 	   		//flush from cache
 	   		for (int i=0; i<foundEntries.size(); ++i) getCoreDao().evict(foundEntries.get(i));
@@ -1028,7 +1132,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   	}
 	}
 
-    protected void updateMembership(Long groupId, Collection newMembers) {
+    protected void updateMembership(Long groupId, Collection newMembers, ArrayList syncResults ) {
 		//have a list of users, now compare with what exists already
 		List oldMembers = getProfileDao().getMembership(groupId, RequestContextHolder.getRequestContext().getZoneId());
 		final Set newM = CollectionUtil.differences(newMembers, oldMembers);
@@ -1047,6 +1151,25 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
         	}});
 		sessionFactory.evictCollection("org.kablink.teaming.domain.UserPrincipal.memberOf");
 		
+		// Add this group to the list of sync results if the group membership changed.
+		if ( syncResults != null && (newM.size() > 0 || remM.size() > 0) )
+		{
+			ProfileModule	profileMod;
+			Object			tmp;
+			
+			// Get the Group object from the group id.
+			profileMod = getProfileModule();
+			tmp = (Object) profileMod.getEntry( groupId );
+			if ( tmp instanceof Group )
+			{
+				Group	group;
+				String	groupName;
+				
+				group = (Group) tmp; 
+				groupName = group.getName();
+				syncResults.add( groupName + " (" + group.getForeignName() + ")" );
+			}
+		}
     }
     /**
      * Create users.  
@@ -1054,7 +1177,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * @param users - Map keyed by user id, value is map of attributes
      * @return
      */
-    protected List<User> createUsers(Long zoneId, Map<String, Map> users) {
+    protected List<User> createUsers(Long zoneId, Map<String, Map> users, ArrayList syncResults ) {
 		//SimpleProfiler.setProfiler(new SimpleProfiler(false));
 		
 		ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
@@ -1074,7 +1197,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
             	pf, ProfileCoreProcessor.PROCESSOR_KEY);
 			if(logger.isDebugEnabled())
 				logger.debug("Synchronizing user objects");
-			newUsers = processor.syncNewEntries(pf, userDef, User.class, newUsers, null);    
+			newUsers = processor.syncNewEntries(pf, userDef, User.class, newUsers, null, syncResults );    
 //	  Takes to long to addWorkspaces - they will get added as needed
 //	   	for (int i =0; i<newUsers.size(); ++i) {
 //	   		User u = (User)newUsers.get(i);
@@ -1112,7 +1235,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * @param groups - Map keyed by user id, value is map of attributes
      * @return
      */
-    protected List<Group> createGroups(Binder zone, Map<String, Map> groups) {
+    protected List<Group> createGroups(Binder zone, Map<String, Map> groups, ArrayList syncResults) {
 		ProfileBinder pf = getProfileDao().getProfileBinder(zone.getZoneId());
 		List newGroups = new ArrayList();
 		for (Iterator i=groups.values().iterator(); i.hasNext();) {
@@ -1126,7 +1249,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	    try {
 	    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
             	pf, ProfileCoreProcessor.PROCESSOR_KEY);
-	    	newGroups = processor.syncNewEntries(pf, groupDef, Group.class, newGroups, null);
+	    	newGroups = processor.syncNewEntries(pf, groupDef, Group.class, newGroups, null, syncResults );
 	    	IndexSynchronizationManager.applyChanges(); //apply now, syncNewEntries will commit
 	    	//flush from cache
 	    	getCoreDao().evict(newGroups);
@@ -1141,7 +1264,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     	return newGroups;
 	    	
     }
-     public void deletePrincipals(Long zoneId, Collection ids, boolean deleteWS) {
+     public void deletePrincipals(Long zoneId, Collection ids, boolean deleteWS, ArrayList syncResults ) {
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, Boolean.valueOf(deleteWS));
 
@@ -1149,6 +1272,24 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     		Long id = (Long)iter.next();
     		try {
     			getProfileModule().deleteEntry(id, options);
+    			
+    			if ( syncResults != null )
+    			{
+    				Object		tmp;
+    				String		name	= null;
+    				
+    				tmp = (Object) getProfileModule().getEntry( id );
+    				if ( tmp instanceof IPrincipal )
+    				{
+    					IPrincipal	iPrincipal;
+    					
+    					iPrincipal = (IPrincipal) tmp;
+    					name = iPrincipal.getName() + " (" + iPrincipal.getForeignName() + ")";
+    				}
+    				
+    				if ( name != null )
+    					syncResults.add( name );
+    			}
     		} catch (Exception ex) {
     			logger.error(NLT.get("errorcode.ldap.delete", new Object[]{id.toString()}) + " " + ex.getLocalizedMessage());
     		}

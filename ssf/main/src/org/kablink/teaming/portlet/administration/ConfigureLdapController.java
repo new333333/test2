@@ -53,6 +53,7 @@ import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.module.ldap.LdapSchedule;
+import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
@@ -65,8 +66,11 @@ import org.springframework.web.portlet.ModelAndView;
 
 
 public class ConfigureLdapController extends  SAbstractController {
+	// m_syncResults holds the sync results if the user selected "Run now".
+	private LdapSyncResults	m_syncResults	= null;
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
+		m_syncResults = null;
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			LdapSchedule schedule = getLdapModule().getLdapSchedule();
@@ -184,11 +188,15 @@ public class ConfigureLdapController extends  SAbstractController {
 				boolean runNow = PortletRequestUtils.getBooleanParameter(request, "runnow", false);
 				if (runNow) {
 					boolean enabled = schedule.getScheduleInfo().isEnabled();
+					
 					//disable the schedule first
 					schedule.getScheduleInfo().setEnabled(false);
 					getLdapModule().setLdapSchedule(schedule);
 					try {
-						getLdapModule().syncAll();
+						// Create an LdapSyncResults object that will holds the results of the sync and add it to the response.
+						m_syncResults = new LdapSyncResults();
+						
+						getLdapModule().syncAll( m_syncResults );
 					} catch (LdapSyncException ldapSyncEx) {
 						LdapConnectionConfig	ldapConfig;
 						NamingException	ne;
@@ -237,6 +245,12 @@ public class ConfigureLdapController extends  SAbstractController {
     
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 		model.put( "ssErrLdapConfigId", request.getParameter( "ssErrLdapConfigId") );
+		
+		// Add the results of the sync to the response.  m_syncResults will be non-null if the user selected "Run now".
+		model.put( "ssSyncResults", m_syncResults );
+		
+		// Set m_syncResults to null because we don't use it again if we don't need to.
+		m_syncResults = null;
 		
 		model.put(WebKeys.LDAP_CONFIG, getLdapModule().getLdapSchedule());
 		model.put(WebKeys.LDAP_CONNECTION_CONFIGS, getAuthenticationModule().getLdapConnectionConfigs());

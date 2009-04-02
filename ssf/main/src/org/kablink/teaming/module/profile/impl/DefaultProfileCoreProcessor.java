@@ -612,9 +612,13 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	}
 	/**
 	 * Synchronize a list of entries.  The map key is the entry, value
-	 * is an InputDataAccessor of updates.  Only index entries that change
+	 * is an InputDataAccessor of updates.  Only index entries that change.
+	 * Store the list of entries that were sync'd in syncResults.
 	 */
-	public void syncEntries(final Map entries, final Map options) {
+	public void syncEntries(
+		final Map entries,
+		final Map options,
+		ArrayList syncResults ) {
 		if (entries.isEmpty()) return;
 	    
         // The following part requires update database transaction.
@@ -633,7 +637,10 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
                 	 Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
                 	 boolean result1 = syncEntry_fillIn(entry, inputData, entryData, ctx);
                 	 boolean result2 = syncEntry_postFillIn(entry, inputData, entryData, ctx);
-        	    	if (result1 || result2) changes.put(entry, inputData);
+        	    	if (result1 || result2)
+        	    	{
+        	    		changes.put(entry, inputData);
+        	    	}
        	    } 
         	    return changes;
         	}});
@@ -642,7 +649,16 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	    	Map.Entry mEntry = (Map.Entry)i.next();
 	    	Entry entry = (Entry)mEntry.getKey();
 	    	InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
-	    	modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null, null);	
+	    	modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null, null);
+	    	
+	    	// Add this entry to the sync results.
+	    	if ( syncResults != null && entry instanceof Principal )
+	    	{
+	    		Principal principal;
+	    		
+	    		principal = (Principal) entry;
+	    		syncResults.add( principal.getName() + " (" + principal.getForeignName() + ")" );
+	    	}
 	    }
 		
 	}
@@ -669,7 +685,24 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     protected void syncNewEntry_startWorkflow(Entry entry, Map ctx) {
     	addEntry_startWorkflow(entry, ctx);
     }
-   public List syncNewEntries(final Binder binder, final Definition definition, final Class clazz, final List inputAccessors, Map options) {
+    
+    /**
+     * Store the results of the sync in syncResults.
+     * @param binder
+     * @param definition
+     * @param clazz
+     * @param inputAccessors
+     * @param options
+     * @param syncResults
+     * @return
+     */
+    public List syncNewEntries(
+    	final Binder binder,
+    	final Definition definition,
+    	final Class clazz,
+    	final List inputAccessors,
+    	Map options,
+    	ArrayList syncResults ) {
 	   if (inputAccessors.isEmpty()) return new ArrayList();
 	   SimpleProfiler.startProfiler("DefaultProfileCoreProcessor.syncNewEntries");
 	    // The following part requires update database transaction.
@@ -697,6 +730,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        			syncNewEntry_postSave(binder, entry, inputData, entryData, ctx);
 	        		
 	        			newEntries.put(entry, inputData);
+	        			
 	        			syncNewEntry_startWorkflow(entry, ctx);
 	        			ctx.clear();
 	        		}
@@ -712,6 +746,12 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		List<Long> ids = new ArrayList();
 		for (Principal p: newEntries.keySet()) {
 			ids.add(p.getId());
+			
+			// Add this entry to the sync results.
+			if ( syncResults != null )
+			{
+				syncResults.add( p.getName() + " (" + p.getForeignName() + ")" );
+			}
 		}
 		getCoreDao().evict(newEntries);
 
