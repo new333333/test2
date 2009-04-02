@@ -56,7 +56,9 @@ public class TeamingServiceClientWithCall extends WSClientBase
 			} else if(args[0].equals("getGroup")) {
 				wsClient.fetchAndPrintDE("TeamingServiceV1", "profile_getGroup", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("getPrincipals")) {
-				wsClient.fetch("TeamingServiceV1", "profile_getPrincipals", new Object[] {null, Integer.parseInt(args[1]), Integer.parseInt(args[2])});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "profile_getPrincipals", new Object[] {null, Integer.parseInt(args[1]), Integer.parseInt(args[2])});
+			} else if(args[0].equals("getUsers")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "profile_getUsers", new Object[] {null, Integer.parseInt(args[1]), Integer.parseInt(args[2])});
 			} else if(args[0].equals("getFolderEntries")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_getEntries", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("getTeamMembers")) {
@@ -205,6 +207,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("getUser  <user id>  <includeAttachments>");
 		System.out.println("getGroup  <group id>  <includeAttachments>");
 		System.out.println("getPrincipals <first> <max>");
+		System.out.println("getUsers <first> <max>");
 		System.out.println("getFolderEntries <folder id>");
 		System.out.println("getTeamMembers <binder id>");
 		System.out.println("getTeams");

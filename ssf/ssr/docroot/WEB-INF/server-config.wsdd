@@ -80,6 +80,8 @@
 		<beanMapping qname="ns:TemplateCollection" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.TemplateCollection"/>
 		<beanMapping qname="ns:Timestamp" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Timestamp"/>
 		<beanMapping qname="ns:User" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.User"/>
+		<beanMapping qname="ns:UserBrief" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.UserBrief"/>
+		<beanMapping qname="ns:UserCollection" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.UserCollection"/>
 		<beanMapping qname="ns:Workflow" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Workflow"/>
 		<beanMapping qname="ns:WorkflowResponse" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.WorkflowResponse"/>
 	</service>
