@@ -36,10 +36,13 @@ import org.kablink.teaming.remoting.ws.model.FileVersions;
 import org.kablink.teaming.remoting.ws.model.Group;
 import org.kablink.teaming.remoting.ws.model.PrincipalCollection;
 import org.kablink.teaming.remoting.ws.model.User;
+import org.kablink.teaming.remoting.ws.model.UserCollection;
 
 public interface ProfileService {
 
 	public PrincipalCollection profile_getPrincipals(String accessToken, int firstRecord, int maxRecords);
+	
+	public UserCollection profile_getUsers(String accessToken, int firstRecord, int maxRecords);
 
 	public User profile_getUser(String accessToken, long userId, boolean includeAttachments);
 	public User profile_getUserByName(String accessToken, String userName, boolean includeAttachments);

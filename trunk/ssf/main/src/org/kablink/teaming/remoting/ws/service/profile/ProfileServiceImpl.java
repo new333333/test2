@@ -41,6 +41,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoFileByTheNameException;
@@ -55,7 +56,11 @@ import org.kablink.teaming.remoting.ws.BaseService;
 import org.kablink.teaming.remoting.ws.model.FileVersions;
 import org.kablink.teaming.remoting.ws.model.PrincipalBrief;
 import org.kablink.teaming.remoting.ws.model.PrincipalCollection;
+import org.kablink.teaming.remoting.ws.model.UserBrief;
+import org.kablink.teaming.remoting.ws.model.UserCollection;
 import org.kablink.teaming.remoting.ws.util.ModelInputData;
+import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.util.search.Constants;
 
 
 public class ProfileServiceImpl extends BaseService implements ProfileService, ProfileServiceInternal {
@@ -290,5 +295,36 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		else
 			throw new NoFileByTheNameException(fileName);
 	}
+	
+	public UserCollection profile_getUsers(String accessToken, int firstRecord,
+			int maxRecords) {
+    	Map options = new HashMap();
+    	options.put(ObjectKeys.SEARCH_OFFSET, new Integer(firstRecord));
+    	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(maxRecords));
+		Map results = getProfileModule().getUsers(options);
+		List searchEntries = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+		
+		List<UserBrief> users = new ArrayList<UserBrief>();
+		for(Object searchEntry : searchEntries) {
+			Map user = (Map) searchEntry;
+			users.add(toUserBrief(user));
+		}
+		
+		UserBrief[] array = new UserBrief[users.size()];
+		return new UserCollection(firstRecord, 
+				((Integer)results.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue(), 
+				users.toArray(array));
+	}
 
+	protected UserBrief toUserBrief(Map user) {
+		UserBrief userBrief = new UserBrief();
+		setPrincipalBrief(user, userBrief);
+
+		String permaLink = PermaLinkUtil.getPermalink(userBrief.getId(), EntityIdentifier.EntityType.user);
+		
+		userBrief.setPermaLink(permaLink);
+		
+		return userBrief;
+	}
+	
 }

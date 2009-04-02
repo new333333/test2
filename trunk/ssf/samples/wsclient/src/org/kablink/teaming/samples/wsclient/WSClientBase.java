@@ -92,6 +92,8 @@ public abstract class WSClientBase {
 			org.kablink.teaming.client.ws.model.TemplateCollection.class,
 			org.kablink.teaming.client.ws.model.Timestamp.class,
 			org.kablink.teaming.client.ws.model.User.class,
+			org.kablink.teaming.client.ws.model.UserBrief.class,
+			org.kablink.teaming.client.ws.model.UserCollection.class,
 			org.kablink.teaming.client.ws.model.Workflow.class,
 			org.kablink.teaming.client.ws.model.WorkflowResponse.class,
 	};

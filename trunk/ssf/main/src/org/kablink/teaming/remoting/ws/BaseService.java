@@ -452,6 +452,11 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 
 	protected PrincipalBrief toPrincipalBrief(Map principal) {
 		PrincipalBrief principalBrief = new PrincipalBrief();
+		setPrincipalBrief(principal, principalBrief);
+		return principalBrief;
+	}
+	
+	protected void setPrincipalBrief(Map principal, PrincipalBrief principalBrief) {
 		principalBrief.setId(Long.valueOf((String) principal.get(Constants.DOCID_FIELD)));
 		principalBrief.setBinderId(Long.valueOf((String) principal.get(Constants.BINDER_ID_FIELD)));
 		principalBrief.setDefinitionId((String) principal.get(Constants.COMMAND_DEFINITION_FIELD));
@@ -463,12 +468,8 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		if(name != null)
 			principalBrief.setName(name);
 		
-/*
- * I don't know how to get this from the map
-		entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
-*/
-
-		return principalBrief;
+		// The "disabled" field value is not stored in index. Also, getting the value from
+		// database is expensive. So, in this use case, we will not return the value. 
 	}
 	
 	protected PrincipalBrief toPrincipalBrief(Principal principal) {

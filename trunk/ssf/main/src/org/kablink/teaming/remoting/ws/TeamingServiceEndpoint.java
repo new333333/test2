@@ -53,6 +53,7 @@ import org.kablink.teaming.remoting.ws.model.TeamCollection;
 import org.kablink.teaming.remoting.ws.model.TeamMemberCollection;
 import org.kablink.teaming.remoting.ws.model.TemplateCollection;
 import org.kablink.teaming.remoting.ws.model.User;
+import org.kablink.teaming.remoting.ws.model.UserCollection;
 import org.kablink.teaming.remoting.ws.service.admin.AdminService;
 import org.kablink.teaming.remoting.ws.service.binder.BinderService;
 import org.kablink.teaming.remoting.ws.service.definition.DefinitionService;
@@ -435,6 +436,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	}
 	public User profile_getUserByName(String accessToken, String userName, boolean includeAttachments) {
 		return getProfileService().profile_getUserByName(accessToken, userName, includeAttachments);
+	}
+	public UserCollection profile_getUsers(String accessToken, int firstRecord, int maxRecords) {
+		return getProfileService().profile_getUsers(accessToken, firstRecord, maxRecords);
 	}
 
 	public Group profile_getGroup(String accessToken, long groupId, boolean includeAttachments) {
