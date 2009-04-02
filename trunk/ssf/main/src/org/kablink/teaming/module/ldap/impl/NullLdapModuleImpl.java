@@ -39,6 +39,7 @@ import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSchedule;
+import org.kablink.teaming.module.ldap.LdapSyncResults;
 
 
 public class NullLdapModuleImpl extends CommonDependencyInjection implements LdapModule {
@@ -53,7 +54,7 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 	public void setLdapSchedule(LdapSchedule schedule) {
 	}
 
-	public void syncAll() throws LdapSyncException {
+	public void syncAll( LdapSyncResults syncResults ) throws LdapSyncException {
 	}
 
 	public void syncUser(Long userId) throws NoUserByTheNameException, NamingException {
