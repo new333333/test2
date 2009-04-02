@@ -492,6 +492,7 @@ public class WebKeys {
 	public static final String OPERATION_SET_UI_THEME = "set_ui_theme";
 	public static final String OPERATION_FIND_PLACE_FORM = "find_place_form";
     public static final String OPERATION_VIEW_ACCESS = "view_access";
+    public static final String OPERATION_VIEW_ERROR_MESSAGE = "view_error_message";
 	public static final String OPERATION_WIKILINK_FORM = "wikilink_form";
 	
 	public static final String OPERATION_SAVE_SEARCH_SORT_INFO="save_search_sort_info";

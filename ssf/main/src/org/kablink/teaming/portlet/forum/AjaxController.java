@@ -245,6 +245,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxGetWindowHeight(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SET_PORTAL_SIGNAL_URL)) {
 			return ajaxSetPortalUrl(request, response);
+		} else if (op.equals(WebKeys.OPERATION_VIEW_ERROR_MESSAGE)) {
+			return ajaxViewErrorMessage(request, response);
 		}
 		if (!WebHelper.isUserLoggedIn(request)) {
 			//Signal that the user is not logged in. 
@@ -697,6 +699,15 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.PORTAL_SIGNAL_URL, value);
 		response.setContentType("text/html");
 		return new ModelAndView("forum/signal_portal_resize", model);
+	}
+	
+	private ModelAndView ajaxViewErrorMessage(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String errorMsg = PortletRequestUtils.getStringParameter(request, WebKeys.URL_VALUE, "");
+		model.put(WebKeys.ERROR_MESSAGE, NLT.get("general.error.anErrorOccurred") + ": " + errorMsg);
+		response.setContentType("text/html");
+		return new ModelAndView("forum/error_return", model);
 	}
 	
 	private ModelAndView ajaxSetLastViewedBinder(RenderRequest request, 
