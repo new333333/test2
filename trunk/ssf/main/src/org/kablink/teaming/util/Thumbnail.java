@@ -34,7 +34,6 @@ package org.kablink.teaming.util;
 
 import java.awt.Image;
 import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -66,8 +65,6 @@ public class Thumbnail {
 	private static class ThumbImageIcon {
 		// By default, we'll use whatever headless setting that's
 		// currently set.
-		private static boolean m_setHeadless = false;
-		
 		public  static Image getImage(byte[] imageData) {
 			return getImage_Impl(imageData, null);
 		}
@@ -80,49 +77,20 @@ public class Thumbnail {
 			ImageIcon imageIcon = null;
 			Throwable th = null;
 			
-			// If we're supposed to try the default headless mode...
-			if (!m_setHeadless) {
-				try {
-					// ...construct the ImageIcon without setting it.
-					if (null == imageData) {
-						imageIcon = new ImageIcon(imageFName);
-					} else {
-						imageIcon = new ImageIcon(imageData);
-					}
+			try {
+				// Can we construct the ImageIcon?
+				if (null == imageData) {
+					imageIcon = new ImageIcon(imageFName);
+				} else {
+					imageIcon = new ImageIcon(imageData);
 				}
-				catch (Throwable t) {
-					th = t;
-					imageIcon = null;
-				}
+			}
+			catch (Throwable t) {
+				// No!  Save the Exception.
+				th = t;
+				imageIcon = null;
 			}
 
-			// If we don't have an ImageIcon yet...
-			if (null == imageIcon) {
-				// ...try constructing one in headless mode.
-				String	headless = System.getProperty("java.awt.headless");
-				if (null == headless) {
-					headless = String.valueOf(GraphicsEnvironment.isHeadless());
-				}
-				System.setProperty("java.awt.headless", "true");
-				try {
-					if (null == imageData) {
-						imageIcon = new ImageIcon(imageFName);
-					} else {
-						imageIcon = new ImageIcon(imageData);
-					}
-				}
-				catch (Throwable t) {
-					if (null == th) {
-						th = t;
-					}
-					imageIcon = null;
-				}
-				System.setProperty("java.awt.headless", headless);
-				if (!m_setHeadless) {
-					m_setHeadless = (null != imageIcon);
-				}
-			}
-			
 			// If we weren't able to get an ImageIcon...
 			if (null == imageIcon) {
 				// ...tell the user about the problem and return null.
