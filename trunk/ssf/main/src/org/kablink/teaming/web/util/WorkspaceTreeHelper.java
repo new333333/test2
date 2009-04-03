@@ -419,7 +419,7 @@ public class WorkspaceTreeHelper {
     	//Get the sorted list of child binders
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_SORT_BY, TITLE_FIELD);
-		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
 		options.put(ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
 		Map searchResults = bs.getBinderModule().getBinders(ws, options);
 		List<Map> binders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
@@ -442,7 +442,7 @@ public class WorkspaceTreeHelper {
 			//Now search for the next level of binders
 			options = new HashMap();
 			options.put(ObjectKeys.SEARCH_SORT_BY, TITLE_FIELD);
-			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
 			options.put(ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
 			Map searchResults2 = bs.getBinderModule().getBinders(ws, binderIdList, options);
 			List<Map> binders2 = (List)searchResults2.get(ObjectKeys.SEARCH_ENTRIES);
