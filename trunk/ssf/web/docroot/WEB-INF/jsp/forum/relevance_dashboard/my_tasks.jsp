@@ -58,7 +58,14 @@
 </c:if>
 </div>
 <div id="ss_today">
-<div id="ss_hints"><em><ssf:nlt tag="relevance.hint.tasks"/></em></div>
+<div id="ss_hints"><em>
+	<c:if test="${ss_type3 != 'all'}">
+		<ssf:nlt tag="relevance.hint.tasks"/>
+	</c:if>
+	<c:if test="${ss_type3 == 'all'}">
+		<ssf:nlt tag="relevance.hint.tasks.all"/>
+	</c:if>
+</em></div>
 <div id="ss_tasks_para">
 <c:forEach var="entry" items="${ss_myTasks}">
 	<jsp:useBean id="entry" type="java.util.HashMap" />
