@@ -69,6 +69,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getTeamMembers", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("getTeams")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "search_getTeams", new Object[] {null});
+			} else if(args[0].equals("getUserTeams")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "search_getUserTeams", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("getFolderEntry")) {
 				wsClient.fetchAndPrintDE("TeamingServiceV1", "folder_getEntry", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});			
 			} else if(args[0].equals("getToken")) {
@@ -215,6 +217,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("getFolderEntries <folder id>"); 
 		System.out.println("getTeamMembers <binder id>");
 		System.out.println("getTeams");
+		System.out.println("getUserTeams <user id>");
 		System.out.println("getFolderEntry <entry id> <includeAttachments>");
 		System.out.println("getDefinition <definition id>");
 		System.out.println("getDefinitions");

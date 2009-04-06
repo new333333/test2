@@ -43,16 +43,9 @@ public class FolderEntryBrief implements Serializable {
 	private String docNumber;
 	private int docLevel;
 	private String href;
-	private AverageRating averageRating;
 	private Timestamp creation;
 	private Timestamp modification;
 
-	public AverageRating getAverageRating() {
-		return averageRating;
-	}
-	public void setAverageRating(AverageRating averageRating) {
-		this.averageRating = averageRating;
-	}
 	public Long getBinderId() {
 		return binderId;
 	}
