@@ -52,11 +52,21 @@ import org.kablink.teaming.util.TempFileUtil;
 public abstract class Converter<T>
 {
 	protected FileStore cacheFileStore;
+	private int conversionTimeoutMS = 30000;
 	private FileModule fileModule;
 	private static final String TEXT_FILE_SUFFIX = ".txt";
 	
 	public Converter() {
 		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
+		
+		String to = SPropsUtil.getString("conversion.timeout.ms");
+		if ((null != to) && (0 < to.length())) {
+			try {
+				int toi = Integer.valueOf(to).intValue();
+				conversionTimeoutMS = toi;
+			}
+			catch (Exception e) {}
+		}
 	}
 	
 	protected FileModule getFileModule() {
@@ -135,7 +145,7 @@ public abstract class Converter<T>
 				checkAndConvertEncoding(copyOfOriginalFile);
 			}
 			
-			convert(relativeFilePath, copyOfOriginalFile.getAbsolutePath(), tempConvertedFile.getAbsolutePath(), 30000, parameters);
+			convert(relativeFilePath, copyOfOriginalFile.getAbsolutePath(), tempConvertedFile.getAbsolutePath(), conversionTimeoutMS, parameters);
 			
 			FileHelper.move(tempConvertedFile, convertedFile);
 		}
