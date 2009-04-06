@@ -72,7 +72,9 @@ public class TeamingServiceClientWithStub {
 	
 	public static void main(String[] args) throws Exception {
 		FolderEntry entry;
-		testApplicationScopedToken();
+		
+		searchFolderEntries();
+		//testApplicationScopedToken();
 		//calendarSync();
 		//checkUsers();
 		//checkGroups();
@@ -206,6 +208,25 @@ public class TeamingServiceClientWithStub {
     		FolderEntry entry = stub.folder_getEntry(null, id, true);
     		WebServiceClientUtil.extractFiles(stub, new File("icals"));
     		System.out.println(entry.getTitle());
+    	}
+	}
+	public static void searchFolderEntries() throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		
+		// Search for all folder entries with the word "test" in entry title.
+    	Criteria crit = new Criteria()
+			.add(eq(Constants.TITLE_FIELD, "test"))
+			.add(eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY));
+	
+		FolderEntryCollection coll = stub.search_getFolderEntries(null, crit.toQuery().asXML(), 0, -1);
+    	FolderEntryBrief[] entries = coll.getEntries();
+    	System.out.println("Result size: " + entries.length);
+    	for(int i = 0; i < entries.length; i++) {
+    		FolderEntryBrief entry = entries[i];
+    		System.out.println("id=" + entry.getId() + ", binderId=" + entry.getBinderId() + ", title=" + entry.getTitle());
     	}
 	}
 	public static void checkTags(long binderId) throws Exception {

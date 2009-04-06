@@ -481,6 +481,12 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public TeamCollection search_getTeams(String accessToken) {
 		return getSearchService().search_getTeams(accessToken);
 	}
+	public TeamCollection search_getUserTeams(String accessToken, long userId) {
+		return getSearchService().search_getUserTeams(accessToken, userId);
+	}
+	public FolderEntryCollection search_getFolderEntries(String accessToken, String query, int offset, int maxResults) {
+		return getSearchService().search_getFolderEntries(accessToken, query, offset, maxResults);
+	}
 	
 	/// Template Service
 	

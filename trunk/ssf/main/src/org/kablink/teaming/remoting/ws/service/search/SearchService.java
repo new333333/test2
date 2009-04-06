@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.remoting.ws.service.search;
 
+import org.kablink.teaming.remoting.ws.model.FolderEntryCollection;
 import org.kablink.teaming.remoting.ws.model.TeamCollection;
 
 public interface SearchService {
@@ -42,8 +43,13 @@ public interface SearchService {
 	
 	public TeamCollection search_getTeams(String accessToken);
 	
+	public TeamCollection search_getUserTeams(String accessToken, long userId);
+	
 	/*
 	 * howTo can be one of "view", "modify", or "download"
 	 */
 	public String search_getHotContent(String accessToken, String limitType, Long binderId);
+	
+	public FolderEntryCollection search_getFolderEntries(String accessToken, String query, int offset, int maxResults);
+
 }

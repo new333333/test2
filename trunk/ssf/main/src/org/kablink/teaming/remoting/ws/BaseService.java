@@ -34,6 +34,7 @@ package org.kablink.teaming.remoting.ws;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.List;
@@ -444,12 +445,24 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		if(entry.getModification() != null) {
 			entryBrief.setModification(toTimestampModel(entry.getModification()));
 		}
-		if(entry.getAverageRating() != null) {
-			entryBrief.setAverageRating(toAverageRatingModel(entry.getAverageRating()));
-		}	
 		return entryBrief;
 	}	
 
+	protected FolderEntryBrief toFolderEntryBrief(Map entry) {
+		FolderEntryBrief entryBrief = new FolderEntryBrief();
+		entryBrief.setId(Long.valueOf((String) entry.get(Constants.DOCID_FIELD)));
+		entryBrief.setBinderId(Long.valueOf((String) entry.get(Constants.BINDER_ID_FIELD)));
+		entryBrief.setDefinitionId((String) entry.get(Constants.COMMAND_DEFINITION_FIELD));
+		entryBrief.setTitle((String) entry.get(Constants.TITLE_FIELD));
+		entryBrief.setDocNumber((String) entry.get(Constants.DOCNUMBER_FIELD));
+		entryBrief.setDocLevel((new HKey((String) entry.get(Constants.SORTNUMBER_FIELD))).getLevel());
+		entryBrief.setHref(WebUrlUtil.getEntryViewURL((String) entry.get(Constants.BINDER_ID_FIELD),
+					(String) entry.get(Constants.DOCID_FIELD)));
+		entryBrief.setCreation(new Timestamp((String) entry.get(Constants.CREATOR_NAME_FIELD),(Date) entry.get(Constants.CREATION_DATE_FIELD)));
+		entryBrief.setModification(new Timestamp((String) entry.get(Constants.MODIFICATION_NAME_FIELD),(Date) entry.get(Constants.MODIFICATION_DATE_FIELD)));
+		return entryBrief;
+	}
+	
 	protected PrincipalBrief toPrincipalBrief(Map principal) {
 		PrincipalBrief principalBrief = new PrincipalBrief();
 		setPrincipalBrief(principal, principalBrief);

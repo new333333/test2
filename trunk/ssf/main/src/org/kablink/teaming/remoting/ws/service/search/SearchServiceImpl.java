@@ -50,12 +50,15 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.report.ReportModule.ActivityInfo;
 import org.kablink.teaming.remoting.ws.BaseService;
+import org.kablink.teaming.remoting.ws.model.FolderEntryBrief;
+import org.kablink.teaming.remoting.ws.model.FolderEntryCollection;
 import org.kablink.teaming.remoting.ws.model.TeamBrief;
 import org.kablink.teaming.remoting.ws.model.TeamCollection;
 import org.kablink.teaming.remoting.ws.model.Timestamp;
@@ -217,8 +220,20 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 		return doc.getRootElement().asXML();
 	}
 
+	public TeamCollection search_getUserTeams(String accessToken, long userId) {
+		Principal entry = 
+			getProfileModule().getEntry(Long.valueOf(userId));
+		if(!(entry instanceof User))
+			throw new IllegalArgumentException(userId + " does not represent an user. It is " + entry.getClass().getSimpleName());
+		return getTeams((User) entry);
+	}
+	
 	public TeamCollection search_getTeams(String accessToken) {
 		User user = RequestContextHolder.getRequestContext().getUser();
+		return getTeams(user);
+	}
+	
+	protected TeamCollection getTeams(User user) {
 		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());
 
 		List<TeamBrief> teamList = new ArrayList<TeamBrief>();
@@ -235,5 +250,37 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 
 		TeamBrief[] array = new TeamBrief[teamList.size()];
 		return new TeamCollection(user.getId(), user.getName(), teamList.toArray(array));
+	}
+
+	public FolderEntryCollection search_getFolderEntries(String accessToken,
+			String query, int offset, int maxResults) {
+		List<FolderEntryBrief> entries = new ArrayList<FolderEntryBrief>();
+
+		query = StringCheckUtil.check(query);
+		
+		Document queryDoc = getDocument(query);
+		
+		Document doc = DocumentHelper.createDocument();
+		Element folderElement = doc.addElement("searchResults");
+
+		Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, offset, maxResults);
+		List entrylist = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+		Iterator entryIterator = entrylist.listIterator();
+		while (entryIterator.hasNext()) {
+			Map result = (Map) entryIterator.next();
+			String docType = (String) result.get(Constants.DOC_TYPE_FIELD);
+			Element resultElem = null;
+			if(Constants.DOC_TYPE_ENTRY.equals(docType)) {
+				String entryType = (String) result.get(Constants.ENTRY_TYPE_FIELD);
+				String elementName = null;
+				boolean isPrincipal = true;
+				if(Constants.ENTRY_TYPE_ENTRY.equalsIgnoreCase(entryType)) {
+					entries.add(toFolderEntryBrief(result));
+				}
+			}
+		}
+		
+		FolderEntryBrief[] array = new FolderEntryBrief[entries.size()];
+		return new FolderEntryCollection(entries.toArray(array));
 	}
 }
