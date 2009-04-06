@@ -42,7 +42,7 @@ public interface ProfileService {
 
 	public PrincipalCollection profile_getPrincipals(String accessToken, int firstRecord, int maxRecords);
 	
-	public UserCollection profile_getUsers(String accessToken, int firstRecord, int maxRecords);
+	public UserCollection profile_getUsers(String accessToken, Boolean captive, int firstRecord, int maxRecords);
 
 	public User profile_getUser(String accessToken, long userId, boolean includeAttachments);
 	public User profile_getUserByName(String accessToken, String userName, boolean includeAttachments);

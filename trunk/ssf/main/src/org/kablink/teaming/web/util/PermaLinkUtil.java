@@ -80,6 +80,13 @@ public class PermaLinkUtil {
 		getPermalinkURL(adapterUrl, entityId, entityType);
 		return adapterUrl.toString();
 	}
+	public static String getPermalink(Long entityId, EntityIdentifier.EntityType entityType, Boolean captive) {
+		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+		getPermalinkURL(adapterUrl, entityId, entityType);
+		if(captive != null)
+			adapterUrl.setParameter(WebKeys.URL_CAPTIVE, captive.toString());
+		return adapterUrl.toString();
+	}
 	protected static void getPermalinkURL(AdaptedPortletURL adapterUrl, Long entityId, EntityIdentifier.EntityType entityType) {
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entityType.name());
