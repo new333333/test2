@@ -53,7 +53,7 @@ public class SsfQueryAnalyzer extends Analyzer
       protected boolean isTokenChar(char c) 
       {
     	  //changed (RKLEIN) to allow other characters in data; especially '_' in workflow states
-        return !Character.isWhitespace(c);
+    	  return Character.isLetterOrDigit(c) || (c == '_');
       }
     };
   }
