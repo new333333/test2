@@ -108,6 +108,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		String fileId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
 		String fileName= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_NAME, "");
 		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
+		String captive = PortletRequestUtils.getStringParameter(request, WebKeys.URL_CAPTIVE, null);
 		EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.none;
 		DefinableEntity entity = null;
 		try {
@@ -183,6 +184,11 @@ public class ViewPermalinkController  extends SAbstractController {
 	 		}
 		} 
 		
+		if("true".equals(captive))
+			url.setParameter(WebKeys.URL_CAPTIVE, "true");
+		else if("false".equals(captive))
+			url.setParameter(WebKeys.URL_CAPTIVE, "false");
+				
 		String sUrl = url.toString();
     	if(logger.isDebugEnabled()) {
     		logger.debug("Permalink followed: " + sUrl);
@@ -242,6 +248,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		String fileId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
 		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
 		String fileName= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_NAME, "");
+		String captive = PortletRequestUtils.getStringParameter(request, WebKeys.URL_CAPTIVE, null);
 
 		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
@@ -251,6 +258,10 @@ public class ViewPermalinkController  extends SAbstractController {
 		if (Validator.isNotNull(entityType)) url.setParameter(WebKeys.URL_ENTITY_TYPE, entityType);
 		if (Validator.isNotNull(fileId)) url.setParameter(WebKeys.URL_FILE_ID, fileId);
 		if (Validator.isNotNull(fileName)) url.setParameter(WebKeys.URL_FILE_NAME, fileName);
+		if("true".equals(captive))
+			url.setParameter(WebKeys.URL_CAPTIVE, "true");
+		else if("false".equals(captive))
+			url.setParameter(WebKeys.URL_CAPTIVE, "false");
 		model.put(WebKeys.URL, url.toString());
 		if (!"true".equals(PortletRequestUtils.getStringParameter(request, "accessException")) &&
 				!"true".equals(PortletRequestUtils.getStringParameter(request, "noBinderByIdException"))) {
