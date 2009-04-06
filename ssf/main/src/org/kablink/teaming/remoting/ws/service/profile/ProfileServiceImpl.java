@@ -296,7 +296,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 			throw new NoFileByTheNameException(fileName);
 	}
 	
-	public UserCollection profile_getUsers(String accessToken, int firstRecord,
+	public UserCollection profile_getUsers(String accessToken, Boolean captive, int firstRecord,
 			int maxRecords) {
     	Map options = new HashMap();
     	options.put(ObjectKeys.SEARCH_OFFSET, new Integer(firstRecord));
@@ -307,7 +307,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		List<UserBrief> users = new ArrayList<UserBrief>();
 		for(Object searchEntry : searchEntries) {
 			Map user = (Map) searchEntry;
-			users.add(toUserBrief(user));
+			users.add(toUserBrief(user, captive));
 		}
 		
 		UserBrief[] array = new UserBrief[users.size()];
@@ -316,11 +316,11 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 				users.toArray(array));
 	}
 
-	protected UserBrief toUserBrief(Map user) {
+	protected UserBrief toUserBrief(Map user, Boolean captive) {
 		UserBrief userBrief = new UserBrief();
 		setPrincipalBrief(user, userBrief);
 
-		String permaLink = PermaLinkUtil.getPermalink(userBrief.getId(), EntityIdentifier.EntityType.user);
+		String permaLink = PermaLinkUtil.getPermalink(userBrief.getId(), EntityIdentifier.EntityType.user, captive);
 		
 		userBrief.setPermaLink(permaLink);
 		
