@@ -293,7 +293,7 @@ function ss_post(url, formId, callBackRoutine, callbackData, toggleCall) {
 		handleAs: "json",
 		method: "post"
 	};   
-	dojo.xhrGet(bindArgs);
+	dojo.xhrPost(bindArgs);
 }     
 //Use dojo to get a url.  Results in text/json. 
 //When result contains failure, message display
