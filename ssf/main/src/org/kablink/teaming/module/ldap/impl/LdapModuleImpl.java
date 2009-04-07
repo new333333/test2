@@ -212,13 +212,22 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     		try {
     			return (LdapSynchronization)ReflectHelper.getInstance(jobClass);
     		} catch (Exception e) {
- 			   logger.error("Cannot instantiate LdapSynchronization custom class", e);
+ 			   logError("Cannot instantiate LdapSynchronization custom class", e);
     		}
     	}
     	return (LdapSynchronization)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultLdapSynchronization.class);		   		
  
     }	
 	
+    private void logError(String msg, Exception e) {
+    	logger.error(msg + ": " + e.toString());
+    	if(e.getCause() != null)
+    		logger.error(e.getCause().toString());
+    	// print stack dump only if debug logging is enabled
+    	if(logger.isDebugEnabled())
+    		logger.error("", e);
+    }
+    
     protected Map getZoneMap(String zoneName)
     {
     	if(zones.containsKey(zoneName)) { return (Map) zones.get(zoneName); }
@@ -313,6 +322,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 	  		catch (NamingException namingEx)
 	  		{
+	  			logError(NLT.get("errorcode.ldap.context"), namingEx);
+	  			
 	  			LdapSyncException	ldapSyncEx;
 	  			
 	  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
@@ -350,6 +361,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 	  		catch (NamingException namingEx)
 	  		{
+	  			logError(NLT.get("errorcode.ldap.context"), namingEx);
+	  			
 	  			LdapSyncException	ldapSyncEx;
 	  			
 	  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
@@ -824,7 +837,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		    	getCoreDao().evict(newGroups);
 		    	return (Group) newGroups.get(0);		    	
 			} catch (Exception ex) {
-				logger.error("Error adding group: " + ex.getLocalizedMessage());
+				logError("Error adding group", ex);
 				logger.error("'" + ssName + "':'" + groupData.get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME) + "'");
 			}
 			return null;
@@ -857,7 +870,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		    	getCoreDao().evict(g);
 		    } catch (Exception ex) {
 		    	//continue 
-		    	logger.error("Error updating groups: " + ex.getLocalizedMessage());	   		
+		    	logError("Error updating groups", ex);	   		
 		    }
 	    }
 
@@ -1017,35 +1030,31 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// Load user from ldap
 		String user = config.getPrincipal();
 		String pwd = config.getCredentials();
-		try {
-			Hashtable env = new Hashtable();
-			Workspace zone = (Workspace)getCoreDao().load(Workspace.class, zoneId);
-			env.put(Context.INITIAL_CONTEXT_FACTORY, getLdapProperty(zone.getName(), Context.INITIAL_CONTEXT_FACTORY));
-			if (!Validator.isNull(user) && !Validator.isNull(pwd)) {
-				env.put(Context.SECURITY_PRINCIPAL, user);
-				env.put(Context.SECURITY_CREDENTIALS, pwd);		
-				env.put(Context.SECURITY_AUTHENTICATION, getLdapProperty(zone.getName(), Context.SECURITY_AUTHENTICATION));
-			} 
-			String url = config.getUrl();
-			/*
-			if(replaceDn && !Validator.isNull(config.getGroupsBasedn())) {
-				if(url.lastIndexOf('/') > 8) {
-					url = url.substring(0, url.lastIndexOf('/'));
-				}
-				url = url + "/" + config.getGroupsBasedn();
-				logger.debug("Using " + url + " for groups");
+
+		Hashtable env = new Hashtable();
+		Workspace zone = (Workspace)getCoreDao().load(Workspace.class, zoneId);
+		env.put(Context.INITIAL_CONTEXT_FACTORY, getLdapProperty(zone.getName(), Context.INITIAL_CONTEXT_FACTORY));
+		if (!Validator.isNull(user) && !Validator.isNull(pwd)) {
+			env.put(Context.SECURITY_PRINCIPAL, user);
+			env.put(Context.SECURITY_CREDENTIALS, pwd);		
+			env.put(Context.SECURITY_AUTHENTICATION, getLdapProperty(zone.getName(), Context.SECURITY_AUTHENTICATION));
+		} 
+		String url = config.getUrl();
+		/*
+		if(replaceDn && !Validator.isNull(config.getGroupsBasedn())) {
+			if(url.lastIndexOf('/') > 8) {
+				url = url.substring(0, url.lastIndexOf('/'));
 			}
-			*/
-			env.put(Context.PROVIDER_URL, url);
-			String socketFactory = getLdapProperty(zone.getName(), "java.naming.ldap.factory.socket"); 
-			if (!Validator.isNull(socketFactory))
-				env.put("java.naming.ldap.factory.socket", socketFactory);
-		
-			return new InitialLdapContext(env, null);
-		} catch (NamingException ex) {
-			logger.error(NLT.get("errorcode.ldap.context") + " " + ex.getLocalizedMessage());
-			throw ex;
+			url = url + "/" + config.getGroupsBasedn();
+			logger.debug("Using " + url + " for groups");
 		}
+		*/
+		env.put(Context.PROVIDER_URL, url);
+		String socketFactory = getLdapProperty(zone.getName(), "java.naming.ldap.factory.socket"); 
+		if (!Validator.isNull(socketFactory))
+			env.put("java.naming.ldap.factory.socket", socketFactory);
+	
+		return new InitialLdapContext(env, null);
 	}
 
 
@@ -1128,7 +1137,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		for (int i=0; i<foundEntries.size(); ++i) getCoreDao().evict(foundEntries.get(i));
 	   	} catch (Exception ex) {
 	   		//continue 
-			logger.error("Error updating users: " + ex.getLocalizedMessage());	   		
+			logError("Error updating users", ex);	   		
 	   	}
 	}
 
@@ -1219,7 +1228,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			//flush from cache
 			getCoreDao().evict(newUsers);
 		} catch (Exception ex) {
-			logger.error("Error adding users: " + ex.getLocalizedMessage());
+			logError("Error adding users", ex);
 			for (Map.Entry<String, Map> me:users.entrySet()) {
 				logger.error("'" + me.getKey() + "':'" + me.getValue().get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME) + "'");
 			}
@@ -1254,7 +1263,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	    	//flush from cache
 	    	getCoreDao().evict(newGroups);
 		} catch (Exception ex) {
-			logger.error("Error adding groups: " + ex.getLocalizedMessage());
+			logError("Error adding groups", ex);
 			for (Map.Entry<String, Map> me:groups.entrySet()) {
 				logger.error("'" + me.getKey() + "':'" + me.getValue().get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME) + "'");
 			}
@@ -1291,7 +1300,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     					syncResults.add( name );
     			}
     		} catch (Exception ex) {
-    			logger.error(NLT.get("errorcode.ldap.delete", new Object[]{id.toString()}) + " " + ex.getLocalizedMessage());
+    			logError(NLT.get("errorcode.ldap.delete", new Object[]{id.toString()}), ex);
     		}
     	}
 		IndexSynchronizationManager.applyChanges();
