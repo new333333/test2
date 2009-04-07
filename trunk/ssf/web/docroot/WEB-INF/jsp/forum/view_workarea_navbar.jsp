@@ -346,7 +346,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			<span>
 				&nbsp;
 				<!-- The help spot is positioned relative to the position of its parent. -->
-				<!-- That's why I put the <ssHelpSpot...> in a <span> -->
+				<!-- That's why I put it in a <span> -->
 		    	<ssHelpSpot helpId="navigation_bar/my_teams" offsetX="0" offsetY="-5" title="<ssf:nlt tag="helpSpot.myTeamsButton"/>">
 		    	</ssHelpSpot>
 			</span>
@@ -426,7 +426,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 							  	action="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 							  	name="newTab" value="1"/></ssf:url>">
 							<!-- The help spot is positioned relative to the position of its parent. -->
-							<!-- That's why I put the <ssHelpSpot...> in a <span> -->
+							<!-- That's why I put it in a <span> -->
 							<label for="searchText">
 							<span>&nbsp;
 						  		<ssHelpSpot helpId="navigation_bar/search_button" offsetY="-5" 
@@ -628,7 +628,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
             </c:if>
 
 			<!-- The help spot is positioned relative to the position of its parent. -->
-			<!-- That's why I put the <ssHelpSpot...> in a <span> -->
+			<!-- That's why I put it in a <span> -->
 			<span>&nbsp;
             	<ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="-3" offsetX="0" 
 			      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">

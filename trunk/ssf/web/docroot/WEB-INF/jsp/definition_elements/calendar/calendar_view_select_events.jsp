@@ -40,7 +40,7 @@
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
 	<!-- The help spot is positioned relative to the position of its parent. -->
-	<!-- That's why I put the <ssHelpSpot...> in a <span> -->
+	<!-- That's why I put it in a <span> -->
 	<span>
 		<img border="0" src="<html:imagesPath/>pics/1pix.gif" />
 
