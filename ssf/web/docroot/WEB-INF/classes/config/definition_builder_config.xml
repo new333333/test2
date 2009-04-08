@@ -49,7 +49,7 @@
 		</operations>
 	</definition>
 	
-	<definition name="workspaceViewDefinition" definitionType="8" caption="__workspace_view" canBeDeleted="false">
+	<definition name="workspaceViewDefinition" definitionType="8" caption="__workspace_views" canBeDeleted="false">
 		<operations>
 			<operation name="addDefinition" item="workspaceViewType" caption="__add_a_new_workspace_view" />
 		</operations>
