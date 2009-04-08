@@ -66,9 +66,7 @@ import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.report.ReportModule.ActivityInfo;
-import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.search.SearchUtils;
-import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -484,7 +482,7 @@ public class RelevanceDashboardHelper {
 		List trackedCalendars = SearchUtils.getTrackedCalendarIds(bs, binder);
 		if (trackedCalendars.size() > 0) {
 			AbstractIntervalView calendarInterval = new OneDayView(new Date());
-			AbstractIntervalView.VisibleIntervalFormattedDates interval = calendarInterval.getVisibleInterval();
+			AbstractIntervalView.VisibleIntervalFormattedDates interval = calendarInterval.getVisibleIntervalInTZ();
 			Criteria crit = SearchUtils.entriesForTrackedCalendars(bs, trackedCalendars, interval.startDate, interval.endDate);
 			Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 

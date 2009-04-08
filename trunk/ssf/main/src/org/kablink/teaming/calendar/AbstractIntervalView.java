@@ -38,6 +38,8 @@ import java.util.Map;
 
 import org.apache.lucene.document.DateTools;
 import org.joda.time.Interval;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.kablink.util.cal.CalendarUtil;
 
 
@@ -60,7 +62,14 @@ public abstract class AbstractIntervalView {
 	
 	protected Interval visibleInterval;
 	
-	public VisibleIntervalFormattedDates getVisibleInterval() {		
+	public VisibleIntervalFormattedDates getVisibleIntervalInTZ() {
+		DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyyMMddHHmm").withChronology(visibleInterval.getChronology());
+		String endDate = dtf.print(visibleInterval.getEnd());
+		String startDate = dtf.print(visibleInterval.getStart());
+		return new VisibleIntervalFormattedDates(startDate, endDate);
+	}
+	
+	public VisibleIntervalFormattedDates getVisibleIntervalRaw() {		
 		return new VisibleIntervalFormattedDates (
 				DateTools.dateToString(visibleInterval.getStart().toDate(), DateTools.Resolution.MINUTE), 
 				DateTools.dateToString(visibleInterval.getEnd().toDate(), DateTools.Resolution.MINUTE));
@@ -75,12 +84,29 @@ public abstract class AbstractIntervalView {
 
 	/**
 	 * 
-	 * @param startDate
-	 * @param endDate
+	 * @param startTime
+	 * @param endTime
 	 * @return true if at least a part of event overlaps visible view.
 	 */
-	public boolean intervalInView(long startDate, long endDate) {
-		return this.visibleInterval.overlaps(new Interval(startDate, endDate));
+	public boolean intervalInViewInTZ(long startTimeTZ, long endTimeTZ) {
+		// The +1/-1 adjustments being made are to get around what I
+		// consider to be a bug in AbstractInterval.overlaps() where it
+		// doesn't properly consider the times to overlap if the
+		// start/end times are equal.  DRF:  20090408
+		if (startTimeTZ == this.visibleInterval.getEndMillis()) {
+			startTimeTZ -= 1l;
+		}
+		
+		if (endTimeTZ == this.visibleInterval.getStartMillis()) {
+			endTimeTZ += 1l;
+		}
+
+		Interval otherInterval = new Interval(startTimeTZ, endTimeTZ, this.visibleInterval.getChronology());
+		return this.visibleInterval.overlaps(otherInterval);
+	}
+	
+	public boolean intervalInViewRaw(long startTime, long endTime) {
+		return this.visibleInterval.overlaps(new Interval(startTime, endTime));
 	}
 	
 	public Map getCurrentDateMonthInfo() {

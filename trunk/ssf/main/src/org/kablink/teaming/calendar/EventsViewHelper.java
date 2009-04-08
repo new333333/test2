@@ -34,7 +34,6 @@ package org.kablink.teaming.calendar;
 
 import java.io.Serializable;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -52,11 +51,12 @@ import javax.portlet.RenderResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.document.DateTools;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Event;
-import org.kablink.teaming.domain.PersistentObject;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.search.BasicIndexUtils;
@@ -260,6 +260,9 @@ public class EventsViewHelper {
 	private static List<Event> parseSearchResultEntryToEvents(Map entry, AbstractIntervalView viewRangeDates) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		TimeZone timeZone = user.getTimeZone();
+		String dtfPattern = "yyyyMMddHHmm";
+		DateTimeFormatter dtfRaw = DateTimeFormat.forPattern(dtfPattern);
+		DateTimeFormatter dtfInTZ = DateTimeFormat.forPattern(dtfPattern).withZone(DateTimeZone.forTimeZone(timeZone));
 		
 		List<Event> events = new ArrayList<Event>();
 		
@@ -283,26 +286,49 @@ public class EventsViewHelper {
 				freeBusy = Event.FreeBusyType.valueOf(freeBusyString);
 			} catch (NullPointerException e) {				
 			} catch (IllegalArgumentException e) {}
+			
+			// If we have any recurrence dates..
 			if (recurrenceDatesField != null) {
+				// ...scan them...
 				String[] recurrenceDates = recurrenceDatesField.split(",");
 				for (int recCounter = 0; recCounter < recurrenceDates.length; recCounter++) {
+					// ...and parse their start and end dates in both
+					// ...raw and time zone based formats.
 					String[] recurrenceStartEndTime = recurrenceDates[recCounter].split(" ");
-					Date evStartDate = null;
-					Date evEndDate = null;
+					
+					String evStartTime = recurrenceStartEndTime[0];
+					Date evStartDateInTZ = null;
+					Date evStartDateRaw = null;
+
+					String evEndTime = recurrenceStartEndTime[1];
+					Date evEndDateInTZ = null;
+					Date evEndDateRaw = null;
+					
+					Exception ex = null;
 					try {
-						evStartDate = DateTools
-								.stringToDate(recurrenceStartEndTime[0]);
-						evEndDate = DateTools
-								.stringToDate(recurrenceStartEndTime[1]);
-					} catch (ParseException parseExc) {
-						logger.warn("Event recurrence date in search index has wrong format [" + evStartDate + "] or [" + evEndDate + "].");
-						evStartDate = new Date();
-						evEndDate = new Date();
+						evStartDateInTZ = dtfInTZ.parseDateTime(evStartTime).toDate();
+						evStartDateRaw = dtfRaw.parseDateTime(evStartTime).toDate();
+						
+						evEndDateInTZ = dtfInTZ.parseDateTime(evEndTime).toDate();
+						evEndDateRaw = dtfRaw.parseDateTime(evEndTime).toDate();
+					} catch (UnsupportedOperationException e) {
+						ex = e;
+					} catch (IllegalArgumentException e) {
+						ex = e;
+					}
+					if (null != ex) {
+						logger.warn("Event recurrence date in search index has wrong format [" + evStartTime + "] or [" + evEndTime + "].");
+						
+						evStartDateInTZ =
+						evStartDateRaw =
+						evEndDateInTZ =
+						evEndDateRaw = new Date();
 					}
 					
-					// in results we have only entries with events in view range but some entries can have
-					// events out of view, so we have to test each event date
-					if (viewRangeDates != null && !viewRangeDates.intervalInView(evStartDate.getTime(), evEndDate.getTime())) {
+					// In results we have only entries with events in
+					// view range but some entries can have events out
+					// of view, so we have to test each event date.
+					if (viewRangeDates != null && !viewRangeDates.intervalInViewInTZ(evStartDateInTZ.getTime(), evEndDateInTZ.getTime())) {
 						continue;
 					}
 
@@ -314,15 +340,13 @@ public class EventsViewHelper {
 					event.setTimeZoneSensitive(timeZoneSensitive);
 					event.setFreeBusy(freeBusy);
 					Calendar startCal = Calendar.getInstance();
-					startCal.setTime(evStartDate);
+					startCal.setTime(evStartDateRaw);
 					
 					Calendar endCal = Calendar.getInstance();
-					endCal.setTime(evEndDate);
+					endCal.setTime(evEndDateRaw);
 
-					startCal = CalendarHelper.convertToTimeZone(startCal,
-							timeZone);						
-					endCal = CalendarHelper.convertToTimeZone(endCal,
-							timeZone);
+					startCal = CalendarHelper.convertToTimeZone(startCal, timeZone);						
+					endCal = CalendarHelper.convertToTimeZone(endCal, timeZone);
 					
 					event.setDtStart(startCal);
 					event.setDtEnd(endCal);

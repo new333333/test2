@@ -1879,7 +1879,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 				options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
 				
 				List intervals = new ArrayList(1);
-				intervals.add(calendarViewRangeDates.getVisibleInterval());
+				intervals.add(calendarViewRangeDates.getVisibleIntervalRaw());
 
 		       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervals);
 
@@ -1958,7 +1958,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 						startDate != null && endDate != null && userListName != null) {
 				
 					AbstractIntervalView calendarInterval = new StartEndDatesView(startDate.toDate(), endDate.toDate());
-					AbstractIntervalView.VisibleIntervalFormattedDates interval = calendarInterval.getVisibleInterval();
+					AbstractIntervalView.VisibleIntervalFormattedDates interval = calendarInterval.getVisibleIntervalRaw();
 					
 					Criteria crit = new Criteria();
 					crit.add(in(ENTRY_TYPE_FIELD, new String[] {Constants.ENTRY_TYPE_ENTRY, 
