@@ -70,7 +70,9 @@ var ss_wikiLinkUrl = "<ssf:url
 <input type="hidden" name="binderId" id="binderId" size="5" value="${ssBinder.id}"/>
 <a href="javascript:;" onclick="ss_popup_folder();">[<ssf:nlt tag="button.change"/>]</a>
 <div id="folder_popup" style="display: none; background: #CCCCCC; top: 30px; padding: 10px;  border: 1px solid #333333;">
-<div align="right" style="margin-top: -5px; margin-right: -5px;"><a href="javascript:;" onclick="ss_close_popup_folder();"><img border="0" src="<html:imagesPath/>pics/popup_close_box.gif" alt="x" title=""/></a></div>
+<div align="right"><a href="javascript:;" onclick="ss_close_popup_folder();">
+  <img border="0" src="<html:imagesPath/>pics/popup_close_box.gif" alt="x" title=""/></a>
+</div>
 <ssf:nlt tag="wiki.link.differentfolder"/>:
 <br/>
  <ssf:find formName="ss_findLinkForm" 
@@ -92,7 +94,7 @@ var ss_wikiLinkUrl = "<ssf:url
 </p>
 
 <div id="page_popup" style="display: none; background: #CCCCCC; top: 60px; padding: 10px; border: 1px solid #333333;">
-<div align="right" style="margin-top: -5px; margin-right: -5px;"><a href="javascript:;" onclick="ss_close_popup_page();"><img border="0" src="<html:imagesPath/>pics/popup_close_box.gif" alt="x" title=""/></a></div>
+<div align="right" ><a href="javascript:;" onclick="ss_close_popup_page();"><img border="0" src="<html:imagesPath/>pics/popup_close_box.gif" alt="x" title=""/></a></div>
 <ssf:nlt tag="wiki.link.findpage"/>:
  <ssf:find formName="ss_findLinkForm"
     formElement="searchTitle" 
