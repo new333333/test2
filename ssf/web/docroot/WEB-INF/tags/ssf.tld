@@ -743,6 +743,24 @@
 	</tag>
 
 	<tag>
+		<name>ifEntryModifiable</name>
+		<tag-class>org.kablink.teaming.taglib.IfEntryModifiableTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>entryMap</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.HashMap</type>
+		</attribute>		
+		<attribute>
+			<name>invert</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
+	</tag>
+
+	<tag>
 		<name>ifAccessAllowed</name>
 		<tag-class>org.kablink.teaming.taglib.IfAccessAllowedTag</tag-class>
 		<body-content>JSP</body-content>
