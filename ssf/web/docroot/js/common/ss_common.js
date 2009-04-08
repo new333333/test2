@@ -502,30 +502,12 @@ function ss_openTitleUrl(obj, showInParent) {
 			return false;
 		}
 	}
-	//Get the title text
-	var spanObj = obj.getElementsByTagName('span').item(0);
-	var titleText = ss_replaceSubStrAll(spanObj.innerHTML, "\"", "\&quot;");
-	
-	//See if the form exists already
-	var formObj = document.getElementById('ss_title_url_form');
-	if (formObj == null) {
-		//Create the form
-	    formObj = document.createElement("form");
-	    formObj.setAttribute("id", "ss_title_url_form");
-	    formObj.setAttribute("name", "ss_title_url_form");
-	    var hiddenObj = document.createElement("input");
-	    hiddenObj.setAttribute("type", "hidden");
-	    hiddenObj.setAttribute("id", "ss_page_title");
-	    hiddenObj.setAttribute("name", "page_title");
-	    formObj.appendChild(hiddenObj);
-		document.getElementsByTagName( "body" ).item(0).appendChild(formObj);
-	}
-	formObj.action = obj.href;
-	formObj.method = "post"
-	var pageTitleObj = document.getElementById('ss_page_title');
-	pageTitleObj.value = titleText;
-	formObj.submit();
+	ss_showForumEntry(obj.href)
 	return false;
+}
+
+function ss_postOpenTitleUrl(s) {
+	alert('ss_postOpenTitleUrl: '+s)
 }
 
 //Routine to open a url in a new window

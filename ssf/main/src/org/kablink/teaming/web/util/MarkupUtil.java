@@ -34,6 +34,7 @@ package org.kablink.teaming.web.util;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -263,7 +264,7 @@ public class MarkupUtil {
         	if (m.groupCount() >= 2) { linkText = m.group(2).trim().replace("$", "\\$"); }
 
         	if (Validator.isNotNull(linkArgs)) {
-        		description.setText(m.replaceFirst("{{titleUrl: " + linkArgs + " text=" + Html.stripHtml(linkText) + "}}"));
+        		description.setText(m.replaceFirst("{{titleUrl: " + linkArgs.replaceAll("%2B", "+") + " text=" + Html.stripHtml(linkText) + "}}"));
         		m = iceCoreLinkPattern.matcher(description.getText());
 	    	}
     	}
@@ -272,8 +273,8 @@ public class MarkupUtil {
 	protected interface UrlBuilder {
 		public String getFileUrlByName(String fileName);
 		public String getFileUrlById(String fileId);
-		public String getRelativeTitleUrl(String normalizedTitle);
-		public String getTitleUrl(String binderId, String normalizedTitle);
+		public String getRelativeTitleUrl(String normalizedTitle, String title);
+		public String getTitleUrl(String binderId, String normalizedTitle, String title);
 		public String getRootUrl();
 	}
 	public static String markupStringReplacement(final RenderRequest req, final RenderResponse res, 
@@ -296,10 +297,10 @@ public class MarkupUtil {
 				return getFileUrlByName(fileName.toString());
 
 			}
-			public String getRelativeTitleUrl(String normalizedTitle) {
-				return getTitleUrl((String)searchResults.get(org.kablink.util.search.Constants.BINDER_ID_FIELD), normalizedTitle);
+			public String getRelativeTitleUrl(String normalizedTitle, String title) {
+				return getTitleUrl((String)searchResults.get(org.kablink.util.search.Constants.BINDER_ID_FIELD), normalizedTitle, title);
 			}
-			public String getTitleUrl(String binderId, String normalizedTitle) {
+			public String getTitleUrl(String binderId, String normalizedTitle, String title) {
 				if (WebKeys.MARKUP_EXPORT.equals(type) || res == null) {
 					return PermaLinkUtil.getTitlePermalink(Long.valueOf(binderId), normalizedTitle);
 				}
@@ -308,7 +309,7 @@ public class MarkupUtil {
 				if (normalizedTitle != null && !normalizedTitle.equals("")) {
 					portletURL.setParameter(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
 					portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
-					portletURL.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, WebKeys.URL_ENTRY_VIEW_STYLE_FULL_CHECK);
+					portletURL.setParameter(WebKeys.URL_ENTRY_PAGE_TITLE, title);
 				} else {
 					portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				}
@@ -340,10 +341,10 @@ public class MarkupUtil {
 					return getFileUrlByName(fa.getFileItem().getName());
 				} catch (Exception ex) {return "";}
 			}
-			public String getRelativeTitleUrl(String normalizedTitle) {
-				return getTitleUrl(entity.getParentBinder().getId().toString(), normalizedTitle);
+			public String getRelativeTitleUrl(String normalizedTitle, String title) {
+				return getTitleUrl(entity.getParentBinder().getId().toString(), normalizedTitle, title);
 			}
-			public String getTitleUrl(String binderId, String normalizedTitle) {
+			public String getTitleUrl(String binderId, String normalizedTitle, String title) {
 				if (WebKeys.MARKUP_EXPORT.equals(type) || res == null) {
 					return PermaLinkUtil.getTitlePermalink(Long.valueOf(binderId), normalizedTitle);
 				}
@@ -352,6 +353,7 @@ public class MarkupUtil {
 				if (normalizedTitle != null && !normalizedTitle.equals("")) {
 					portletURL.setParameter(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
 					portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+					portletURL.setParameter(WebKeys.URL_ENTRY_PAGE_TITLE, title);
 				} else {
 					portletURL.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				}
@@ -493,14 +495,14 @@ public class MarkupUtil {
 			        	titleLink.append(s_binderId).append(" title=").append(Html.stripHtml(normalizedTitle)).append("\">");
 			        	titleLink.append(title).append("</a>");
 			    	} else if (type.equals(WebKeys.MARKUP_VIEW)){
-			    		String webUrl = builder.getTitleUrl(s_binderId, WebHelper.getNormalizedTitle(normalizedTitle));
+			    		String webUrl = builder.getTitleUrl(s_binderId, WebHelper.getNormalizedTitle(normalizedTitle), title);
 			    		String showInParent = "false";
 			    		if (normalizedTitle == null || normalizedTitle.equals("")) showInParent = "true";
 			    		titleLink.append("<a href=\"").append(webUrl);
 			    		titleLink.append("\" onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this, "+showInParent+");\">");
 			    		titleLink.append("<span class=\"ss_title_link\">").append(title).append("</span></a>");
 			    	} else {
-			    		String webUrl = builder.getTitleUrl(s_binderId, WebHelper.getNormalizedTitle(normalizedTitle));
+			    		String webUrl = builder.getTitleUrl(s_binderId, WebHelper.getNormalizedTitle(normalizedTitle), title);
 			    		titleLink.append("<a href=\"").append(webUrl).append("\">").append(title).append("</a>");
 			    		
 			    	}
@@ -526,7 +528,7 @@ public class MarkupUtil {
 			    		if (Validator.isNotNull(normalizedTitle)) {
 			    			//Build the url to that entry
 				    		StringBuffer titleLink = new StringBuffer();				
-			    			String webUrl = builder.getRelativeTitleUrl(normalizedTitle);
+			    			String webUrl = builder.getRelativeTitleUrl(normalizedTitle, title);
 			    			if (type.equals(WebKeys.MARKUP_VIEW)) {
 					    		String showInParent = "false";
 					    		if (normalizedTitle == null || normalizedTitle.equals("")) showInParent = "true";
