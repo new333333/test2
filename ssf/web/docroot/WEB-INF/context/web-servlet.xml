@@ -60,6 +60,7 @@
 			<props>
 				<prop key="org.kablink.teaming.exception.CheckedCodedException">common/servlet.defCodedError</prop>
 				<prop key="org.kablink.teaming.exception.UncheckedCodedException">common/servlet.defCodedError</prop>
+				<prop key="org.kablink.teaming.web.util.CloseWrapperException">common/defCodedErrorClose</prop>
 			</props>
 		</property>
 		<property name="defaultErrorView"><value>common/defError</value></property>
