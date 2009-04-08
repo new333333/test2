@@ -86,9 +86,11 @@
 	 </tr>
 	</table>
   </c:if>
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${item}" 
-  configJspStyle="${ssConfigJspStyle}" />
+  <c:if test="${!empty ssConfigDefinition}">
+  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+    configElement="${item}" 
+    configJspStyle="${ssConfigJspStyle}" />
+  </c:if>
 </c:if>
 <c:if test="${propertyValues_displayType[0] == 'leftAligned'}">
 <div>
@@ -154,9 +156,11 @@
 
 </td>
 <td valign="top" style="padding-left:10px;">
+<c:if test="${!empty ssConfigDefinition}">
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
   configJspStyle="${ssConfigJspStyle}" />
+</c:if>
 </td>
 </tr>
 </table>

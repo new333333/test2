@@ -475,7 +475,6 @@ div.ss_entryDescription ol li {
 
 
 div.ss_editableTab {
-  float: right; 
   background-color: ${ss_style_background_color_opaque};
   margin-left: 0px;
   margin-top: 2px;
@@ -486,7 +485,6 @@ div.ss_editableTab {
 }
 
 div.ss_editableSectionEditBtn {
-  float: right; 
   margin-left: 0px;
   margin-top: 0px;
   padding-bottom: 4px;
@@ -495,7 +493,6 @@ div.ss_editableSectionEditBtn {
 }
 
 div.ss_editableSectionTitle {
-  float:left;
   width:90%;
 }
 

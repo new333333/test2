@@ -20,6 +20,7 @@ function ss_insertICElink(binderId, title, currentBinderId) {
     var linkText = inst.selection.getSelectedText();
     if (linkText == null || linkText == "") {
     	linkText = document.getElementById('searchTitle').value;
+    	if (linkText == null || linkText == '') linkText = document.getElementById('pageName').value;
     	if (linkText == null || linkText == '') linkText = document.getElementById('searchTitleFolder').value;
     }
     var pad = "";
@@ -41,7 +42,7 @@ function ss_insertICElink(binderId, title, currentBinderId) {
 		} else {
 		    if (binderId == "") { binderId == currentBinderId };
 		    if (linkText == "") { linkText = title; pad = " "; }
-		    if (title == "") { title = linkText; }
+		    //if (title == "") { title = linkText; }
 			link = '<a class="ss_icecore_link" rel="binderId=' + binderId + ' title=' + ss_prenormalizeText(title) + '">' + linkText + '</a>' + pad;
 		}
 		if (link != "") {
@@ -132,6 +133,7 @@ function setAttrib(elm, attrib, value) {
 
 function ss_prenormalizeText(t) {
 	t = t.trim();
+	while (t.indexOf("+") >= 0) t = t.replace("\+", "%2B");
 	t = t.replace(/\s+/g, '_');
 	return t;
 }
