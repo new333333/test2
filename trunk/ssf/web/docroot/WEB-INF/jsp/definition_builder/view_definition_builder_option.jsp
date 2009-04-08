@@ -41,7 +41,7 @@
 <c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
 
 	<taconite-replace contextNodeID="displaydiv" parseInBrowser="true">
-	  <div id="displaydiv" style="margin:0px; padding:4px;"> 
+	  <div id="displaydiv" style="margin:0px; padding:4px 14px;"> 
 	  <c:choose>
 	  <c:when test="${data['option'] == 'copyDefinition'}">
 	  		<span class="ss_titlebold"><ssf:nlt tag="administration.copy.definition.rename"/></span><br/><br/>

@@ -139,8 +139,8 @@ function showDisplayDiv() {
 	//alert(displaydivObj.innerHTML) 
 	//alert("displaydiv: " + parseInt(ss_getDivHeight('displaydiv')) + ", displaydivbox: " + parseInt(ss_getDivHeight('displaydivbox')))
 
-    ss_setObjectHeight(displaydiv0Obj, parseInt(ss_getObjectHeight(displaydivObj)));
-    ss_setObjectHeight(displaydiv0Obj, parseInt(parseInt(ss_getObjectHeight(displaydivboxObj)) + parseInt(ss_getObjectHeight(displaydivButtonsObj))));
+    //ss_setObjectHeight(displaydiv0Obj, parseInt(ss_getObjectHeight(displaydivObj)));
+    //ss_setObjectHeight(displaydiv0Obj, parseInt(parseInt(ss_getObjectHeight(displaydivboxObj)) + parseInt(ss_getObjectHeight(displaydivButtonsObj))));
 
     //Position the div being displayed so it is in view
     var spacerTop = parseInt(ss_getDivTop('displaydiv_spacer'));
@@ -653,9 +653,9 @@ function ss_saveUserGroupResults(s) {
 			  <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
     		  <ssf:param name="box_title" useBody="true">&nbsp;</ssf:param>
 			<div class="ss_form" id="displaydiv" 
-			  style="margin:0px; padding:4px;">&nbsp;</div>  
+			  style="margin:0px; padding:4px 14px;">&nbsp;</div>  
 			<div class="ss_form" id="displaydivButtons" 
-			  style="margin:0; padding:4px; visibility:hidden;">
+			  style="margin:0; padding:4px 14px; visibility:hidden;">
 			<input class="ss_submit" type="submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
 			&nbsp;&nbsp;&nbsp;
 			<input class="ss_submit" type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
