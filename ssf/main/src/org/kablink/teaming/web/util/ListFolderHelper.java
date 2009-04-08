@@ -32,15 +32,10 @@
  */
 package org.kablink.teaming.web.util;
 
-import static org.kablink.util.search.Constants.DOC_TYPE_FIELD;
-import static org.kablink.util.search.Constants.ENTRY_ANCESTRY;
-import static org.kablink.util.search.Constants.ENTRY_TYPE_FIELD;
-import static org.kablink.util.search.Constants.MODIFICATION_DATE_FIELD;
 import static org.kablink.util.search.Restrictions.in;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -65,7 +60,6 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.apache.lucene.document.Field;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -75,16 +69,13 @@ import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.calendar.OneDayView;
 import org.kablink.teaming.calendar.OneMonthView;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
-import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SeenMap;
@@ -101,7 +92,6 @@ import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.rss.util.UrlUtil;
-import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
@@ -573,7 +563,7 @@ public class ListFolderHelper {
 		Map options = getSearchFilter(bs, request, userFolderProperties);
 		options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
        	// options.put(ObjectKeys.SEARCH_EVENT_DAYS, getExtViewDayDates(calStartDateRange, calEndDateRange));
-       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervalView.getVisibleInterval());
+       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervalView.getVisibleIntervalRaw());
        	
        	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, formatter.format(calStartDateRange.getTime()));
        	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, formatter.format(calEndDateRange.getTime()));
