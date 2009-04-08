@@ -262,7 +262,7 @@
 		<c:if test="${!empty ssFolderEntries}">
 			<c:forEach var="entry" items="${ssFolderEntries}" >
 				<jsp:useBean id="entry" type="java.util.HashMap" />
-				
+
 				<%
 					boolean overdue = org.kablink.teaming.util.DateComparer.isOverdue((Date)entry.get("start_end#EndDate"));
 				%>
@@ -318,8 +318,15 @@
 							</ssf:titleLink>
 					</td>
 					<td class="ss_iconsContainer" id="ss_tasks_${renderResponse.namespace}_${entry._docId}_priority">
-					<c:if test="${! empty entry.priority}">
-						<c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><a <c:if test="${entry.priority == prio.key}">href="javascript:// ;" class="ss_taskPriority"</c:if><c:if test="${entry.priority != prio.key}">href="javascript: myTasks_${renderResponse.namespace}.changePriority(${entry._docId}, '${prio.key}');" class="ss_taskPriority ss_taskPriority_${prio.key}_u"</c:if> ><img <c:if test="${entry.priority == prio.key}"> src="<html:imagesPath/>icons/prio_${prio.key}.gif" </c:if><c:if test="${entry.priority != prio.key}">src="<html:imagesPath/>pics/1pix.gif"</c:if>	alt="${prio.value}" title="${prio.value}"></a></c:forEach></c:if></td>
+						<c:if test="${! empty entry.priority}">
+							<ssf:ifEntryModifiable entryMap = "${entry}">
+								<c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><a <c:if test="${entry.priority == prio.key}">href="javascript:// ;" class="ss_taskPriority"</c:if><c:if test="${entry.priority != prio.key}">href="javascript: myTasks_${renderResponse.namespace}.changePriority(${entry._docId}, '${prio.key}');" class="ss_taskPriority ss_taskPriority_${prio.key}_u"</c:if> ><img <c:if test="${entry.priority == prio.key}"> src="<html:imagesPath/>icons/prio_${prio.key}.gif" </c:if><c:if test="${entry.priority != prio.key}">src="<html:imagesPath/>pics/1pix.gif"</c:if>	alt="${prio.value}" title="${prio.value}"></a></c:forEach>
+							</ssf:ifEntryModifiable>
+							<ssf:ifEntryModifiable entryMap = "${entry}" invert="true">
+								<c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><a href="javascript:// ;" <c:if test="${entry.priority == prio.key}"> class="ss_taskPriority"</c:if><c:if test="${entry.priority != prio.key}"> class="ss_taskPriority ss_taskPriority_${prio.key}_u"</c:if> ><img <c:if test="${entry.priority == prio.key}"> src="<html:imagesPath/>icons/prio_${prio.key}.gif" </c:if><c:if test="${entry.priority != prio.key}">src="<html:imagesPath/>pics/1pix.gif"</c:if>	alt="${prio.value}" title="${prio.value}"></a></c:forEach>
+							</ssf:ifEntryModifiable>
+						</c:if>
+					</td>
 					<td class="ss_due<c:if test="${overdue}"> ss_overdue</c:if>" id="ss_tasks_${renderResponse.namespace}_${entry._docId}_due">
 						<c:if test="${!empty entry['start_end#EndDate']}">
 							<c:choose>
@@ -341,7 +348,14 @@
 							</c:if>
 						</c:if>
 					</td>
-					<td class="ss_iconsContainer" id="ss_tasks_${renderResponse.namespace}_${entry._docId}_status"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><a <c:if test="${entry.status == status.key}">href="javascript: //" class="ss_taskStatus" </c:if><c:if test="${entry.status != status.key}">href="javascript:  myTasks_${renderResponse.namespace}.changeStatus(${entry._docId}, '${status.key}');" class="ss_taskStatus ss_taskStatus_${status.key}_u" </c:if>><img <c:if test="${entry.status == status.key}"> src="<html:imagesPath/>icons/status_${status.key}.gif" </c:if><c:if test="${entry.status != status.key}"> src="<html:imagesPath/>pics/1pix.gif" </c:if> alt="${status.value}" title="${status.value}"></a></c:forEach></c:if></td>
+					<td class="ss_iconsContainer" id="ss_tasks_${renderResponse.namespace}_${entry._docId}_status">
+						<ssf:ifEntryModifiable entryMap = "${entry}">
+							<c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><a <c:if test="${entry.status == status.key}">href="javascript: //" class="ss_taskStatus" </c:if><c:if test="${entry.status != status.key}">href="javascript:  myTasks_${renderResponse.namespace}.changeStatus(${entry._docId}, '${status.key}');" class="ss_taskStatus ss_taskStatus_${status.key}_u" </c:if>><img <c:if test="${entry.status == status.key}"> src="<html:imagesPath/>icons/status_${status.key}.gif" </c:if><c:if test="${entry.status != status.key}"> src="<html:imagesPath/>pics/1pix.gif" </c:if> alt="${status.value}" title="${status.value}"></a></c:forEach></c:if>
+						</ssf:ifEntryModifiable>
+						<ssf:ifEntryModifiable entryMap = "${entry}" invert="true">
+							<c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><a href="javascript: //" <c:if test="${entry.status == status.key}"> class="ss_taskStatus" </c:if><c:if test="${entry.status != status.key}"> class="ss_taskStatus ss_taskStatus_${status.key}_u" </c:if>><img <c:if test="${entry.status == status.key}"> src="<html:imagesPath/>icons/status_${status.key}.gif" </c:if><c:if test="${entry.status != status.key}"> src="<html:imagesPath/>pics/1pix.gif" </c:if> alt="${status.value}" title="${status.value}"></a></c:forEach></c:if>
+						</ssf:ifEntryModifiable>
+					</td>
 					<td class="ss_assigned">
 						<c:set var="assignment" value='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(entry.get("assignment")) %>' />
 						<c:if test="${!empty assignment}">
@@ -372,10 +386,20 @@
 					</td>
 					<td id="ss_tasks_${renderResponse.namespace}_${entry._docId}_completed">
 						<c:if test="${! empty entry.completed}">
-							<ssf:progressBar currentValue="${entry.completed}" 
-								valuesMap="${entry.ssEntryDefinitionElementData.completed.values}" 
-								namespace="${renderResponse.namespace}" 
-								entryId="${entry._docId}}" />
+							<ssf:ifEntryModifiable entryMap = "${entry}">
+								<ssf:progressBar currentValue="${entry.completed}" 
+									valuesMap="${entry.ssEntryDefinitionElementData.completed.values}" 
+									namespace="${renderResponse.namespace}" 
+									entryId="${entry._docId}}" />
+							</ssf:ifEntryModifiable>
+
+							<ssf:ifEntryModifiable entryMap = "${entry}" invert="true">
+								<ssf:progressBar currentValue="${entry.completed}" 
+									valuesMap="${entry.ssEntryDefinitionElementData.completed.values}" 
+									namespace="${renderResponse.namespace}" 
+									entryId="${entry._docId}}"
+									readOnly="true" />
+							</ssf:ifEntryModifiable>
 						</c:if>
 					</td>
 				</tr>
