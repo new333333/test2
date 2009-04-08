@@ -30,22 +30,66 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming;
+package org.kablink.teaming.web.util;
 
-import java.io.IOException;
-
-import org.kablink.teaming.exception.UncheckedCodedException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 
 /**
- * Unchecked version of IOException.
+ * This class is used to wrap another exception within the web tier so that the 
+ * framework can direct rendering of the exception object to defCodedErrorClose.jsp 
+ * view instead of the regular defCodedError.jsp view. 
+ * Therefore this class is specifically designed for use by controllers only, and
+ * should never be used for any other usage or in any other tiers.   
  * 
- * @author jong
+ * @author Jong Kim
  *
  */
-public class UncheckedIOException extends UncheckedCodedException {
-	private static final String UncheckedIOException_ErrorCode = "errorcode.io";
-
-    public UncheckedIOException(IOException cause) {
-        super(UncheckedIOException_ErrorCode, new Object[]{cause.getLocalizedMessage()}, cause);
-    }
+public class CloseWrapperException extends RuntimeException {
+	private Exception wrappedExc;
+	
+	public CloseWrapperException(Exception wrappedExc) {
+		super();
+		this.wrappedExc = wrappedExc;
+	}
+		
+	public Throwable getCause() {
+		return wrappedExc.getCause();
+	}
+	
+	public String getLocalizedMessage() {
+		return wrappedExc.getLocalizedMessage();
+	}
+	
+	public String getMessage() {
+		return wrappedExc.getMessage();
+	}
+	
+	public StackTraceElement[] getStackTrace() {
+		return wrappedExc.getStackTrace();
+	}
+	
+	public Throwable initCause(Throwable cause) {
+		return wrappedExc.initCause(cause);
+	}
+	
+	public void printStackTrace() {
+		wrappedExc.printStackTrace();
+	}
+	
+	public void printStackTrace(PrintStream s) {
+		wrappedExc.printStackTrace(s);
+	}
+	
+	public void printStackTrace(PrintWriter s) {
+		wrappedExc.printStackTrace(s);
+	}
+	
+	public void setStackTrace(StackTraceElement[] stackTrace) {
+		wrappedExc.setStackTrace(stackTrace);
+	}
+	
+	public String toString() {
+		return wrappedExc.toString();
+	}
 }

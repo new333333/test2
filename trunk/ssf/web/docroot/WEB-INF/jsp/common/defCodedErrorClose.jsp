@@ -1,3 +1,4 @@
+<%
 /**
  * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
@@ -30,22 +31,32 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming;
+%>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="tundra">
 
-import java.io.IOException;
+<div class="ss_style ss_portlet">
 
-import org.kablink.teaming.exception.UncheckedCodedException;
+<h1><spring:message code="exception.codedError.title"/></h1>
 
-/**
- * Unchecked version of IOException.
- * 
- * @author jong
- *
- */
-public class UncheckedIOException extends UncheckedCodedException {
-	private static final String UncheckedIOException_ErrorCode = "errorcode.io";
+<p>${exception.localizedMessage }<br/></p>
 
-    public UncheckedIOException(IOException cause) {
-        super(UncheckedIOException_ErrorCode, new Object[]{cause.getLocalizedMessage()}, cause);
-    }
-}
+<ssf:ifnotadapter>
+	<c:if test="${!empty ssUser.workspaceId}">
+		<p style="text-align:center;"><a href="<ssf:url action="view_ws_listing"
+					    		binderId="${ssUser.workspaceId}">
+					    		<ssf:param name="newTab" value="1"/>
+								</ssf:url>">- <spring:message code="button.home"/> -</a></p>
+	</c:if>
+</ssf:ifnotadapter>
+
+<ssf:ifadapter>
+<br/>
+<input type="button" value="<ssf:nlt tag="button.close"/>" class="ss_submit" 
+ onClick="self.window.close();return false;">
+</ssf:ifadapter>
+
+</div>
+
+</body>
+</html>
