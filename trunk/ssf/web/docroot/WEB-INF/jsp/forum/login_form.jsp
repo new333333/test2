@@ -87,7 +87,9 @@
       <c:if test="${!empty ss_loginError}">
        <tr>
 		 <td>&nbsp;</td>
-         <td style="color: red;" colspan="2"><ssf:nlt tag="errorcode.login.failed"/></td>
+         <td style="color: red;" colspan="2">
+           <span id="errorcode.login.failed"><ssf:nlt tag="errorcode.login.failed"/></span>
+         </td>
        </tr>
       </c:if>
  		<tr>
