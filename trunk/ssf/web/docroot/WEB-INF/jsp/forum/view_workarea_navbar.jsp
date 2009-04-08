@@ -36,6 +36,7 @@
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
+<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
 <c:set var="accessibility_simple_ui" value='<%= org.kablink.teaming.util.SPropsUtil.getBoolean("accessibility.simple_ui", false) %>'/>
 <c:set var="ss_urlWindowState" value="maximized"/>
 <c:set var="ss_urlWindowState" value=""/>
@@ -358,7 +359,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
         <c:if test="${!ss_mashupHideMasthead || ss_mashupShowBranding}">
 	        <span class="ss_mastheadName">
 	        <c:if test="${!empty ssUser.workspaceId}">
-		        <a title="<ssf:nlt tag="navigation.myWorkspace"/>"
+		        <a title="<ssf:nlt tag="navigation.goto.myWorkspace">
+		        			<ssf:param name="value" value="${ssUser.title}"/></ssf:nlt>"
 						  href="<ssf:url 
 						    windowState="${ss_urlWindowState}"
 					      	action="view_ws_listing"
@@ -616,7 +618,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
        </td>
        <td width="25%" class="ss_workspace">
             <c:if test="${!empty ssUser.workspaceId}">
-              	<a title="<ssf:nlt tag="navigation.myWorkspace"/>"
+              	<a title="<ssf:nlt tag="navigation.goto.myWorkspace">
+		        			<ssf:param name="value" value="${ssUser.title}"/></ssf:nlt>"
 				  href="<ssf:url 
 				    windowState="${ss_urlWindowState}"
 			      	action="view_ws_listing"
@@ -624,7 +627,10 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
               	><img src="<html:rootPath/>images/pics/masthead/ss_banner_guy.png" 
               	  <ssf:alt tag=""/> width="30" height="34" border="0" 
               	  style="vertical-align:middle" 
-              	 />&nbsp;&nbsp;<ssf:nlt tag="navigation.myWorkspace"/></a>
+              	 />&nbsp;&nbsp;<c:if test="${ssUser.internalId == guestInternalId}"
+              	 ><ssf:nlt tag="navigation.guestWorkspace"/></c:if
+              	 ><c:if test="${ssUser.internalId != guestInternalId}"
+              	 ><ssf:nlt tag="navigation.myWorkspace"/></c:if></a>
             </c:if>
 
 			<!-- The help spot is positioned relative to the position of its parent. -->
