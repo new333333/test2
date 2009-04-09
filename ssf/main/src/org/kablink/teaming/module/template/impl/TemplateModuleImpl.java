@@ -64,6 +64,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
@@ -741,7 +742,12 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	   if (cfg.getDescription() != null) description = NLT.getDef(cfg.getDescription().getText());
 	   if (Validator.isNotNull(description)) entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 	   entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.toString(cfg.isLibrary()));
-	   entryData.put(ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.toString(cfg.isMirrored()));
+	   boolean mirrored = cfg.isMirrored();
+	   if((EntityType.folder == parentBinder.getEntityType()) && parentBinder.isMirrored()) {
+		   mirrored = true;
+		   entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, parentBinder.getResourceDriverName());
+	   }
+	   entryData.put(ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.toString(mirrored));
 	   entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.toString(cfg.isUniqueTitles()));
 	   entryData.put(ObjectKeys.FIELD_BINDER_INHERITTEAMMEMBERS, Boolean.toString(cfg.isTeamMembershipInherited()));
 	   //if not null, use icon from template.  Otherwise try icon from definition when binder is created.
