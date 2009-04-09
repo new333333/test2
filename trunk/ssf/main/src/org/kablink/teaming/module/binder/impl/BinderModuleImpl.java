@@ -104,6 +104,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -282,8 +283,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		if (def.getType() == Definition.FOLDER_VIEW) {
 			checkAccess(parentBinder, BinderOperation.addFolder);
 			Binder binder = loadBinderProcessor(parentBinder).addBinder(parentBinder, def, Folder.class, inputData, fileItems, options);
-			if(parentBinder instanceof Folder && parentBinder.isMirrored() && binder.isMirrored())
-				setDefinitionsInherited(binder.getId(), true);
+			if(parentBinder instanceof Folder && parentBinder.isMirrored() && binder.isMirrored()) {
+				// Because addBinder method is not running inside a write transaction, setDefinitionsInherited
+				// method needs to start its own transaction in order for the changes to be persisted to
+				// the database. To do that, we need to invoke the method on the proxy, instead of local
+				// invocation.
+				((BinderModule)SpringContextUtil.getBean("binderModule")).setDefinitionsInherited(binder.getId(), true);
+			}
 			return binder;
 		} else {
 			if (!(parentBinder instanceof Workspace)) throw new NotSupportedException("errorcode.notsupported.addbinder");

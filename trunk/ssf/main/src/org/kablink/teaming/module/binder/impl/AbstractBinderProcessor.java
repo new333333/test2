@@ -439,29 +439,42 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void addBinder_mirrored(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
 		if(binder.isMirrored()) { // The newly created binder is a mirrored one.
 			// First, make sure that the resource path we store is normalized.
-	    	normalizeResourcePath(binder, inputData);
+	    	normalizeResourcePathIfInInput(binder, inputData);
 						
-			// Second, perform outward synchronization, if requested and possible.
 	    	if(binder.getResourceDriverName() != null) {
-				Boolean synchToSource = Boolean.TRUE;
-				if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE))
-					synchToSource = Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.PI_SYNCH_TO_SOURCE));
-				if(Boolean.TRUE.equals(synchToSource)) {
-					ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
-					
-					if(driver.isReadonly()) {
-						throw new NotSupportedException("errorcode.notsupported.addMirroredBinder.readonly", 
-								new String[] {binder.getPathName(), driver.getTitle()});
+				ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
+				ResourceSession session = null;
+				try {
+					if(binder.getResourcePath() == null && parent.getResourcePath() != null) {
+						session = driver.openSession();
+						session.setPath(parent.getResourcePath(), binder.getTitle());
+						binder.setResourcePath(session.getPath());
+						normalizeResourcePath(binder);
 					}
-					else {
-						ResourceSession session = driver.openSession().setPath(binder.getResourcePath());
-						try {
+					
+					// Perform outward synchronization, if requested and possible.
+					Boolean synchToSource = Boolean.TRUE;
+					if(inputData.exists(ObjectKeys.PI_SYNCH_TO_SOURCE))
+						synchToSource = Boolean.parseBoolean(inputData.getSingleValue(ObjectKeys.PI_SYNCH_TO_SOURCE));
+					if(Boolean.TRUE.equals(synchToSource)) {
+						
+						if(driver.isReadonly()) {
+							throw new NotSupportedException("errorcode.notsupported.addMirroredBinder.readonly", 
+									new String[] {binder.getPathName(), driver.getTitle()});
+						}
+						else {
+							if(session == null) {						
+								session = driver.openSession();
+								session.setPath(binder.getResourcePath());
+							}
+							
 							session.createDirectory();
 						}
-						finally {
-							session.close();
-						}	
 					}
+				}
+				finally {
+					if(session != null)
+						session.close();
 				}
 	    	}
 		}
@@ -715,7 +728,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //inside write transaction    
    protected void modifyBinder_mirrored(Binder binder, String oldTitle, String newTitle, InputDataAccessor inputData) {
     	if(binder.isMirrored())
-    		normalizeResourcePath(binder, inputData);
+    		normalizeResourcePathIfInInput(binder, inputData);
     	
     	if(isMirroredAndNotTopLevel(binder) && !oldTitle.equals(newTitle)) {
 			ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
@@ -739,11 +752,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
     }
 
-    private void normalizeResourcePath(Binder binder, InputDataAccessor inputData) {
+    private void normalizeResourcePathIfInInput(Binder binder, InputDataAccessor inputData) {
    		if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_PATH)) {
-			String normalizedResourcePath = getResourceDriverManager().normalizedResourcePath(binder.getResourceDriverName(), binder.getResourcePath());
-			binder.setResourcePath(normalizedResourcePath);  			
+   			normalizeResourcePath(binder);
    		}
+    }
+    
+    private void normalizeResourcePath(Binder binder) {
+		String normalizedResourcePath = getResourceDriverManager().normalizedResourcePath(binder.getResourceDriverName(), binder.getResourcePath());
+		binder.setResourcePath(normalizedResourcePath);  			   	
     }
    		
    //no transaction    
