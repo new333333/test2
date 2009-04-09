@@ -49,9 +49,13 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.AuthenticationConfig;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
+import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.util.SZoneConfig;
@@ -184,7 +188,20 @@ public class ConfigureLdapController extends  SAbstractController {
 					response.setRenderParameter( WebKeys.EXCEPTION, msg );
 				}
 				getAuthenticationModule().setLdapConnectionConfigs(configList);
-
+				
+				// Get the time zone from the form data.
+				String	timeZone;
+				String[] value;
+				
+				value = (String[]) formData.get( WebKeys.DEFAULT_TIME_ZONE );
+				if ( value != null )
+				{
+					timeZone = value[0];
+				
+					// Save away the time zone as the default time zone used when creating a new user.
+					setDefaultTimeZone( timeZone );
+				}
+				
 				boolean runNow = PortletRequestUtils.getBooleanParameter(request, "runnow", false);
 				if (runNow) {
 					boolean enabled = schedule.getScheduleInfo().isEnabled();
@@ -231,6 +248,7 @@ public class ConfigureLdapController extends  SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 
+		String timeZone	= null;
 		Map model = new HashMap();
 
     	Map attributes = new LinkedHashMap();
@@ -256,7 +274,54 @@ public class ConfigureLdapController extends  SAbstractController {
 		model.put(WebKeys.LDAP_CONNECTION_CONFIGS, getAuthenticationModule().getLdapConnectionConfigs());
 		model.put(WebKeys.AUTHENTICATION_CONFIG, getAuthenticationModule().getAuthenticationConfig());
 		model.put("runnow", request.getParameter("runnow"));
+		
+		// Add the default time zone to the response.
+		timeZone = getDefaultTimeZone();
+		model.put( WebKeys.DEFAULT_TIME_ZONE, timeZone );
+		
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_LDAP, model);
 		
 	}
+	
+	/**
+	 * Return the default time zone setting.  This setting is used to set the time zone on a user when
+	 * the user is created from an ldap sync.
+	 */
+	private String getDefaultTimeZone()
+	{
+		String		defaultTimeZone;
+		Workspace	topWorkspace;
+		
+		// Get the top workspace.  That is where global properties are stored.
+		topWorkspace = getWorkspaceModule().getTopWorkspace();
+		
+		// Get the default time zone property.
+		defaultTimeZone = (String) topWorkspace.getProperty( ObjectKeys.GLOBAL_PROPERTY_DEFAULT_TIME_ZONE );
+		if ( defaultTimeZone == null || defaultTimeZone.length() == 0 )
+			defaultTimeZone = "GMT";
+		
+		return defaultTimeZone;
+	}// end getDefaultTimeZone()
+	
+
+	/**
+	 * Set the default time zone setting.  This setting is used to set the time zone on a user when
+	 * the user is created from an ldap sync.
+	 */
+	private void setDefaultTimeZone( String timeZone )
+	{
+		String		defaultTimeZone;
+		Workspace	topWorkspace;
+		
+		if ( timeZone == null || timeZone.length() == 0 )
+			return;
+		
+		// Get the top workspace.  That is where global properties are stored.
+		topWorkspace = getWorkspaceModule().getTopWorkspace();
+		
+		// Save the default time zone as a global property
+		topWorkspace.setProperty( ObjectKeys.GLOBAL_PROPERTY_DEFAULT_TIME_ZONE, timeZone );
+
+	}// end setDefaultTimeZone()
+	
 }
