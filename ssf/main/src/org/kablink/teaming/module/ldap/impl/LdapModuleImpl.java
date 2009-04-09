@@ -81,6 +81,7 @@ import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.jobs.LdapSynchronization;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.ldap.LdapModule;
@@ -89,6 +90,7 @@ import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -97,6 +99,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
 import org.springframework.transaction.TransactionStatus;
@@ -516,11 +519,21 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				return;
 			} else {
 				if (create) {
+					String	timeZone;
+					
 					Map userMods = new HashMap();
 					getUpdates(userAttributeNames, userAttributes, lAttrs, userMods);
 					userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME, ssName);
 					userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
 					userMods.put(ObjectKeys.FIELD_ZONE, zoneId);
+					
+					// Get the default time zone.
+					timeZone = getDefaultTimeZone();
+					if ( timeZone != null && timeZone.length() > 0 )
+					{
+						userMods.put( ObjectKeys.FIELD_USER_TIMEZONE, timeZone );
+					}
+					
 					ldap_new.put(ssName, userMods); 
 					dnUsers.put(dn, new Object[]{ssName, null, Boolean.FALSE, null, dn});
 				}
@@ -1079,6 +1092,29 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 		}		
 	}
+	
+	/**
+	 * Read the default time zone from the global properties
+	 * @param name
+	 * @return
+	 */
+	private String getDefaultTimeZone()
+	{
+		String			defaultTimeZone;
+		Workspace		topWorkspace;
+		WorkspaceModule	workspaceModule;
+		
+		// Get the top workspace.  That is where global properties are stored.
+		workspaceModule = (WorkspaceModule) SpringContextUtil.getBean( "workspaceModule" );
+		topWorkspace = workspaceModule.getTopWorkspace();
+		
+		// Get the default time zone property.
+		defaultTimeZone = (String) topWorkspace.getProperty( ObjectKeys.GLOBAL_PROPERTY_DEFAULT_TIME_ZONE );
+		if ( defaultTimeZone == null || defaultTimeZone.length() == 0 )
+			defaultTimeZone = "GMT";
+		
+		return defaultTimeZone;
+	}// end getDefaultTimeZone()
 
 
 	protected String nameToId(String name) {

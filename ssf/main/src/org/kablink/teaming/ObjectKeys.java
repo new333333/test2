@@ -190,6 +190,9 @@ public interface ObjectKeys {
     public static final String BINDER_PROPERTY_FOLDER_COLUMNS = "folderColumns";
     public static final String BINDER_PROPERTY_TEAM_MEMBERS = "teamMembers";
     public static final String BINDER_PROPERTY_WIKI_HOMEPAGE = "wikiHomepage";
+    
+    // Global properties
+    public static final String GLOBAL_PROPERTY_DEFAULT_TIME_ZONE = "defaultTimeZone";
 
     public static final String CONFIG_PROPERTY_REPOSITORY = "repository";
     public static final String CONFIG_PROPERTY_REPOSITORIES = "repositories";

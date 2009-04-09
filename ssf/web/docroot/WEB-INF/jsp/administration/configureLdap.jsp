@@ -35,6 +35,7 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT"%>
 <%@ page import="java.util.ArrayList"%>
+<%@ page import="java.util.Locale" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp"%>
 <c:set var="ss_windowTitle"
 	value='<%= NLT.get("administration.configure_ldap") %>' scope="request" />
@@ -89,43 +90,76 @@
 	</table>
 
 	<br />
-	<ssf:expandableArea title='<%= NLT.get("ldap.schedule") %>'
-		initOpen="true">
+	<ssf:expandableArea title='<%= NLT.get("ldap.schedule") %>' initOpen="true">
 		<c:set var="schedule" value="${ssLdapConfig.schedule}" />
-		<%@ include file="/WEB-INF/jsp/administration/schedule.jsp"%>
-		<div class="ss_divider"></div>
+		<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
+		<div class="ss_divider">
+		</div>
 	</ssf:expandableArea> <br />
 
 	<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt
 		tag="ldap.users" /></legend>
-	<table class="ss_style" border="0" cellspacing="0" cellpadding="3">
-		<tr>
-			<td><input type="checkbox" name="userSync" id="userSync"
-				<c:if test="${ssLdapConfig.userSync}">checked</c:if> /> <label
-				for="userSync"><span class="ss_labelRight ss_normal"><ssf:nlt
-				tag="ldap.schedule.user.sync" /></span></label></td>
-		</tr>
-		<tr>
-			<td><input type="checkbox" name="userRegister" id="userRegister"
-				<c:if test="${ssLdapConfig.userRegister}">checked</c:if> /> <label
-				for="userRegister"><span class="ss_labelRight ss_normal"><ssf:nlt
-				tag="ldap.schedule.user.register" /></span></label></td>
-		</tr>
-		<tr>
-			<td><input type="checkbox" name="userDelete" id="userDelete"
-				<c:if test="${ssLdapConfig.userDelete}">checked</c:if> /> <label
-				for="userDelete"><span class="ss_labelRight ss_normal"><ssf:nlt
-				tag="ldap.schedule.user.delete" /></span></label></td>
-		</tr>
-		<tr>
-			<td><input type="checkbox" name="userWorkspaceDelete"
-				id="userWorkspaceDelete"
-				<c:if test="${ssLdapConfig.userWorkspaceDelete}">checked</c:if> /> <label
-				for="userWorkspaceDelete"><span
-				class="ss_labelRight ss_normal"><ssf:nlt
-				tag="ldap.schedule.user.workspace.delete" /></span></label></td>
-		</tr>
-	</table>
+		<table class="ss_style" border="0" cellspacing="0" cellpadding="3">
+			<tr>
+				<td><input type="checkbox" name="userSync" id="userSync"
+					<c:if test="${ssLdapConfig.userSync}">checked</c:if> /> <label
+					for="userSync"><span class="ss_labelRight ss_normal"><ssf:nlt
+					tag="ldap.schedule.user.sync" /></span></label></td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" name="userRegister" id="userRegister"
+					<c:if test="${ssLdapConfig.userRegister}">checked</c:if> /> <label
+					for="userRegister"><span class="ss_labelRight ss_normal"><ssf:nlt
+					tag="ldap.schedule.user.register" /></span></label></td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" name="userDelete" id="userDelete"
+					<c:if test="${ssLdapConfig.userDelete}">checked</c:if> /> <label
+					for="userDelete"><span class="ss_labelRight ss_normal"><ssf:nlt
+					tag="ldap.schedule.user.delete" /></span></label></td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" name="userWorkspaceDelete"
+					id="userWorkspaceDelete"
+					<c:if test="${ssLdapConfig.userWorkspaceDelete}">checked</c:if> /> <label
+					for="userWorkspaceDelete"><span
+					class="ss_labelRight ss_normal"><ssf:nlt
+					tag="ldap.schedule.user.workspace.delete" /></span></label></td>
+			</tr>
+			<tr>
+				<td>
+					<label for="ssDefaultTimeZone">
+						<div style="margin-top: .25em;" class="ss_labelAbove"><ssf:nlt tag="ldap.config.default.timezone" /></div>
+					</label>
+					<select name="ssDefaultTimeZone" id="ssDefaultTimeZone">
+					<%
+						java.util.Set<String> tzones = null;
+						java.util.Set<String> map = null;
+						String defaultTimeZone	= null;
+						Locale locale = null;
+	
+						// Get all of the time zone ids.  These are always returned in English.
+						tzones = org.kablink.teaming.calendar.TimeZoneHelper.getTimeZoneIds();
+						
+						// We can use English as the language in the constructor of Locale because the time zones are always
+						// displayed in English.
+						locale = new Locale( "en" );
+						map = new java.util.TreeSet(new org.kablink.teaming.comparator.StringComparator( locale ) ); //sort
+						map.addAll( tzones );
+	
+						// Add an <option> for every time zone.
+						for (String tz:map)
+						{
+					%>
+						<c:set var="nextTimeZone" value="<%= tz %>" />
+						<option value="<%= tz %>" <c:if test="${ssDefaultTimeZone == nextTimeZone}">selected</c:if> ><%= tz %></option>
+					<%
+						}// end for()
+					%>
+					</select>
+				</td>
+			</tr>
+		</table>
 	</fieldset>
 
 	<br />
