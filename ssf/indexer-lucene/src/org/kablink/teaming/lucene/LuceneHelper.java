@@ -188,6 +188,7 @@ public class LuceneHelper {
 			}
 			if (forOptimize) {
 				putPrevState(indexPath,SEARCH);
+				closeReader(indexPath);
 			} else {
 				putPrevState(indexPath, WRITE);
 			}
