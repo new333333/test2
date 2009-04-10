@@ -404,7 +404,6 @@ public class WebUrlUtil {
 			if (fields.length == 0)
 				return "";
 			if (fields.length == 1) {
-				logger.info("This system needs to be reindexed");
 				data = fields[0].substring(fileId.length());
 				return data;
 			}
@@ -416,7 +415,6 @@ public class WebUrlUtil {
 				}
 			}
 		} catch (Exception e) {
-			logger.info("This system needs to be reindexed");
 		}
 		return info;
 	}
