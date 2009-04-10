@@ -126,6 +126,9 @@ public class HTMLInputFilter
   /** allowed protocols **/
   protected String[] vAllowedProtocols;
   
+  /** disallowed protocols **/
+  protected String[] vDisAllowedProtocols;
+  
   /** always allowed tag attributes **/
   protected String vAlwaysAllowedAttributes;
   
@@ -151,8 +154,7 @@ public class HTMLInputFilter
   private static final String PATTERN_PROCESS_TAGS1 = "^/([a-z0-9]+)";
   private static final String PATTERN_PROCESS_TAGS2 = "^([a-z0-9]+)(.*?)(/?)$";
   private static final String PATTERN_PROCESS_TAGS3 = "^!--(.*)--$";
-  private static final String PATTERN_PROCESS_TAGS4 = "([a-z0-9]+)=([\"'])(.*?)\\2";
-  private static final String PATTERN_PROCESS_TAGS5 = "([a-z0-9]+)(=)([^\"\\s']+)";
+  private static final String PATTERN_PROCESS_TAGS4 = "([a-z0-9]+)\\s*=\\s*(?:([\"'])(.*?)\\2|([^\"\\s']+))";
   private static final String PATTERN_PROCESS_PARAM_PROTOCOL = "^([^:]+):";
   private static final String PATTERN_DECODE_ENTITIES1 = "&#(\\d+);?";
   private static final String PATTERN_DECODE_ENTITIES2 = "&#x([0-9a-fA-F]+);?";
@@ -169,7 +171,6 @@ public class HTMLInputFilter
   private Pattern pattern_process_tags2;
   private Pattern pattern_process_tags3;
   private Pattern pattern_process_tags4;
-  private Pattern pattern_process_tags5;
   private Pattern pattern_process_param_protocol;
   private Pattern pattern_decode_entities1;
   private Pattern pattern_decode_entities2;
@@ -193,7 +194,6 @@ public class HTMLInputFilter
 	pattern_process_tags2 = Pattern.compile( PATTERN_PROCESS_TAGS2, REGEX_FLAGS_SI );
 	pattern_process_tags3 = Pattern.compile( PATTERN_PROCESS_TAGS3, REGEX_FLAGS_SI );
 	pattern_process_tags4 = Pattern.compile( PATTERN_PROCESS_TAGS4, REGEX_FLAGS_SI );
-	pattern_process_tags5 = Pattern.compile( PATTERN_PROCESS_TAGS5, REGEX_FLAGS_SI );
 	pattern_process_param_protocol = Pattern.compile( PATTERN_PROCESS_PARAM_PROTOCOL, REGEX_FLAGS_SI );
 	pattern_decode_entities1 = Pattern.compile( PATTERN_DECODE_ENTITIES1 );
 	pattern_decode_entities2 = Pattern.compile( PATTERN_DECODE_ENTITIES2 );
@@ -237,8 +237,9 @@ public class HTMLInputFilter
     
     vSelfClosingTags = new String[] { "img", "br", "hr" };
     vNeedClosingTags = new String[] { "a", "b", "strong", "i", "em", "p", "span", "div", "table", "tr", "td", "th" };
-    vAllowedProtocols = new String[] { "http", "https", "mailto" }; // no ftp.
-    vProtocolAtts = new String[] { "src", "href" };
+    vAllowedProtocols = new String[] { "*", "http", "https", "mailto" }; 
+    vDisAllowedProtocols = new String[] { "ftp" }; // no ftp.
+    vProtocolAtts = new String[] { "src", "href", "cite", "scheme" };
     vRemoveBlanks = new String[] { "a", "b", "strong", "i", "em", "p" };
     vRemoveBlanksPatterns1 = new HashMap<String,Pattern>();
     vRemoveBlanksPatterns2 = new HashMap<String,Pattern>();
@@ -438,21 +439,25 @@ public class HTMLInputFilter
         String params = "";
         
         Matcher m2 = pattern_process_tags4.matcher( body );
-        Matcher m3 = pattern_process_tags5.matcher( body );
         List<String> paramNames = new ArrayList<String>();
+        List<String> paramQuotes = new ArrayList<String>();
         List<String> paramValues = new ArrayList<String>();
         while (m2.find()) {
-          paramNames.add(m2.group(1)); //([a-z0-9]+)
-          paramValues.add(m2.group(3)); //(.*?)
-        }
-        while (m3.find()) {
-          paramNames.add(m3.group(1)); //([a-z0-9]+)
-          paramValues.add(m3.group(3)); //([^\"\\s']+)
+        	String pName = m2.group(1);
+        	String pQuote = m2.group(2);
+        	if (pQuote == null) pQuote = "";
+        	String pValue = m2.group(3);
+        	if (pQuote.equals("")) pValue = m2.group(4);
+        	if (pValue == null) pValue = "";
+        	paramNames.add(pName); //([a-z0-9]+)
+        	paramQuotes.add(pQuote);
+        	paramValues.add(pValue); //(.*?)
         }
         
-        String paramName, paramValue;
+        String paramName, paramQuote, paramValue;
         for( int ii=0; ii<paramNames.size(); ii++ ) {
-          paramName = paramNames.get(ii);
+            paramName = paramNames.get(ii);
+            paramQuote = paramQuotes.get(ii);
           paramValue = paramValues.get(ii);
           
           //debug( "paramName='" + paramName + "'" );
@@ -467,7 +472,7 @@ public class HTMLInputFilter
             if (inArray( paramName.toLowerCase(), vProtocolAtts )) {
               paramValue = processParamProtocol( paramValue );
             }
-            params += " " + paramName + "=\"" + paramValue + "\"";
+            params += " " + paramName + "=" + paramQuote + paramValue + paramQuote;
           }
         }
         
@@ -510,11 +515,16 @@ public class HTMLInputFilter
     Matcher m = pattern_process_param_protocol.matcher( s );
     if (m.find()) {
       String protocol = m.group(1);
-      if (!inArray( protocol, vAllowedProtocols )) {
-        // bad protocol, turn into local anchor link instead
-        s = "#" + s.substring( protocol.length()+1, s.length() );
-        if (s.startsWith("#//")) s = "#" + s.substring( 3, s.length() );
-      }
+      if (!inArray( protocol, vAllowedProtocols ) && !inArray( "*", vAllowedProtocols)) {
+          // bad protocol, turn into local anchor link instead
+          s = "#" + s.substring( protocol.length()+1, s.length() );
+          if (s.startsWith("#//")) s = "#" + s.substring( 3, s.length() );
+        }
+      if (inArray( protocol, vDisAllowedProtocols )) {
+          // bad protocol, turn into local anchor link instead
+          s = "#" + s.substring( protocol.length()+1, s.length() );
+          if (s.startsWith("#//")) s = "#" + s.substring( 3, s.length() );
+        }
     }
     
     return s;

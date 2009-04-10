@@ -195,7 +195,7 @@ public class MarkupUtil {
         	if (m2.find()) url = m2.group().trim();
     		String[] args = url.split(org.kablink.teaming.util.Constants.SLASH);
  
-	    	if (args.length == 7) {
+	    	if (args.length == 8) {
 		    	//Now, replace the url with special markup version
 		    	Matcher m1 = urlSrcPattern.matcher(img);
 	        	if (m1.find()) {
