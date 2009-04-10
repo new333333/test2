@@ -416,7 +416,7 @@
 		<property name="host"><value>localhost</value></property>
         <property name="port"><value>8100</value></property>
         <property name="nullTransform"><value>config/null.xslt</value></property>
-        <property name="excludedExtensions"><value>jpg,jpeg,gif,tiff,png,exe,mpeg,mov,bmp,exe</value></property>
+        <property name="excludedExtensions"><value>jpg,jpeg,gif,tiff,png,exe,mpeg,mov,bmp,exe,mpg,mp4,swf,ogg,m4a,flv,bin</value></property>
     </bean>
     
     <bean id="imageOpenOfficeConverter" class="org.kablink.teaming.docconverter.impl.ImageOpenOfficeConverter" parent="converterCommon">
