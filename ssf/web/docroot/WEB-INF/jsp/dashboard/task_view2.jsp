@@ -186,7 +186,7 @@
 				<c:forEach var="folder" items="${ssDashboard.beans[componentId].ssFolderList}">
 					<c:if test="${folder.id == entry._binderId}">
 						<c:set var="path" value="${folder}"/>
-						<c:set var="title" value="${folder.title}"/>
+						<c:set var="title" value="${folder.title} (${folder.parentWorkArea.title})"/>
 					</c:if>
 				</c:forEach>
 			</c:if>
