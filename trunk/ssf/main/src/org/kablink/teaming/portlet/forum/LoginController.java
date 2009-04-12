@@ -117,10 +117,14 @@ public class LoginController  extends SAbstractControllerRetry {
     		MiscUtil.addCreateNewAccountDataToResponse( this, request, model );
     	}
 
-		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
-		String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));	
+		
+		String refererUrl = request.getParameter("refererUrl");
+		if(Validator.isNull(refererUrl))
+			refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 		if(Validator.isNotNull(refererUrl))
 			model.put(WebKeys.URL, refererUrl);
+		
 		return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
 	} 
 }
