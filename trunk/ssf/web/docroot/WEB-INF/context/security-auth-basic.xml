@@ -12,7 +12,7 @@
          In all other situations, the default authentication option based on form-based login
          must be used instead. -->
          
-    <s:http session-fixation-protection="newSession">
+    <s:http session-fixation-protection="newSession" realm="Teaming">
         <s:intercept-url pattern="/ws/**" filters="none" />
         <s:intercept-url pattern="/rss/**" filters="none" />
         <s:intercept-url pattern="/ical/**" filters="none" />
