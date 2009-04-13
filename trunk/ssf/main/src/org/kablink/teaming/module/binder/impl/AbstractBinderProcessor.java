@@ -437,8 +437,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
     //inside write transaction    
     protected void addBinder_mirrored(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
+		if(parent.isMirrored() && parent.getResourceDriverName() == null) {
+			// We  allow adding sub-folder to a mirrored folder that has not been fully configured yet,
+			// since it can lead to 
+			throw new NotSupportedException("errorcode.notsupported.addBinder.unconfiguredParentMirroredBinder", 
+					new String[] {binder.getPathName()});
+		}		
+		
 		if(binder.isMirrored()) { // The newly created binder is a mirrored one.
-			// First, make sure that the resource path we store is normalized.
+			// Make sure that the resource path we store is normalized.
 	    	normalizeResourcePathIfInInput(binder, inputData);
 						
 	    	if(binder.getResourceDriverName() != null) {
