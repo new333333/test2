@@ -48,6 +48,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -159,15 +160,17 @@ public class FolderUtils {
 		data.put(ObjectKeys.FIELD_ENTITY_TITLE, folderName); 
 		data.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.TRUE.toString());
 		data.put(ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.TRUE.toString());
-		data.put(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, resourceDriverName);
-		data.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, resourcePath);
+		if(resourceDriverName != null)
+			data.put(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, resourceDriverName);
+		if(resourcePath != null)
+			data.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, resourcePath);
 		data.put(ObjectKeys.PI_SYNCH_TO_SOURCE, Boolean.toString(synchToSource));
 		Map params = new HashMap();
 		params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
 		return getBinderModule().addBinder(parentBinder.getId(), def.getId(), 
 					new MapInputData(data), null, params);
 	}
-
+	
 	/**
 	 * Create a new library folder.
 	 * 
@@ -180,6 +183,16 @@ public class FolderUtils {
 	 * @throws WriteFilesException
 	 */
 	public static Binder createLibraryFolder(Binder parentBinder, String folderName)
+	throws ConfigurationException, AccessControlException, WriteFilesException {
+		if((EntityType.folder == parentBinder.getEntityType()) && parentBinder.isMirrored()) {
+			return createMirroredFolder(parentBinder, folderName, parentBinder.getResourceDriverName(), null, true);
+		}
+		else {
+			return createNonMirroredFolder(parentBinder, folderName);
+		}
+	}
+	
+	private static Binder createNonMirroredFolder(Binder parentBinder, String folderName)
 	throws ConfigurationException, AccessControlException, WriteFilesException {
 		Definition def = getFolderDefinition(parentBinder);
 		if(def == null)
