@@ -1756,7 +1756,7 @@ public class BinderHelper {
 		if (userHasMiniBlog) {
 			miniBlog = null;
         	try {
-        		miniBlog = (Folder) bs.getBinderModule().getBinder(miniBlogId); 
+        		miniBlog = bs.getFolderModule().getFolder(miniBlogId); 
         		if (miniBlog.isDeleted()) {
         			miniBlog = null;
         		}
@@ -1766,11 +1766,19 @@ public class BinderHelper {
     		userHasMiniBlog = (null != miniBlog); 
 		}
 		
-		// If the user doesn't have a mini blog folder...
+		// Does this user have a MiniBlog folder yet?
 		if (!userHasMiniBlog)
 		{
-			// ...default to the folder that we were given.
-			miniBlogId = folderId;
+			// No!  Does this Folder have a default view defined?
+			Folder folder = bs.getFolderModule().getFolder(folderId);
+	   		Definition defaultBinderView = folder.getDefaultViewDef();
+	   		if (null != defaultBinderView) {
+	   			// Yes!  Is the default view a MiniBlog Folder?
+	   			if (defaultBinderView.getName().equals("_miniBlogFolder")) {
+   					// Yes!  Use it as this user's MiniBlog.
+   					miniBlogId = folder.getId();
+   				}
+	   		}
 		}
 
 		// Does the folderId refer to the user's MiniBlog? 
