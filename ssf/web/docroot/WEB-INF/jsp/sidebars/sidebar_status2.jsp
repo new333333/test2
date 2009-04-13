@@ -42,6 +42,7 @@
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <c:if test="${ssUser.internalId != guestInternalId}">
 	<script type="text/javascript">
+	  var ss_miniblogTextTooBigErrorMsg = "<ssf:nlt tag="miniblog.textTooBig"/>";
 	  ss_statusCurrent = "";
 	  <c:if test="${!empty ssUser.status}">
 	    ss_statusCurrent = "<%= java.net.URLEncoder.encode(ssUser.getStatus()) %>";

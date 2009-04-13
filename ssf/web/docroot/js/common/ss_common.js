@@ -786,6 +786,10 @@ function ss_updateStatusNow(obj) {
 	    if (ss_statusCurrent != escape(obj.value)) {
 			ss_statusCurrent = escape(obj.value);
 			var status = ss_replaceSubStrAll(obj.value, "\"", "&quot;");
+			if (status.length > 255) {
+				alert(ss_miniblogTextTooBigErrorMsg);
+				return;
+			}
 
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_user_status", status:status}, "");
 			var divObj = ss_findOwningElement(obj, "div");
