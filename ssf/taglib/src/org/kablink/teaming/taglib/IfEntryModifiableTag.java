@@ -37,9 +37,11 @@ import java.util.HashMap;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.SpringContextUtil;
 
 
 /**
@@ -60,12 +62,40 @@ public class IfEntryModifiableTag extends BodyTagSupport {
 		boolean result = false;
 		
 		try {
-			if(entryMap == null){
+			// If we don't have an entryMap...
+			if(entryMap == null) {
+				// ...bail.
 				return SKIP_BODY;
 			}	
 
-//!			// TODO:  Fix this so it actually checks that the item can be modified.
-//!			AccessUtils.modifyCheck(entryMap);
+			// If the entryMap doesn't contain a binderId...
+			Long binderId = null;
+			Object binderIdO = entryMap.get("_binderId");
+			if ((null != binderIdO) && (binderIdO instanceof String)) {
+				binderId = Long.parseLong((String) binderIdO);
+			}
+			if (null == binderId) {
+				// ...bail.
+				return SKIP_BODY;
+			}
+			
+			// If the entryMap doesn't contain an entryId...
+			Long entryId = null;
+			Object entryIdO = entryMap.get("_docId");
+			if ((null != entryIdO) && (entryIdO instanceof String)) {
+				entryId = Long.parseLong((String) entryIdO);
+			}
+			if (null == entryId) {
+				// ...bail.
+				return SKIP_BODY;
+			}
+
+			// Access the entry...
+	    	FolderModule folderModule = (FolderModule)SpringContextUtil.getBean("folderModule");
+	    	FolderEntry folderEntry = folderModule.getEntry(binderId, entryId);
+
+	    	// ...and check whether we can modify it.
+			AccessUtils.modifyCheck(folderEntry);
 			result = true;
 		} catch (Exception e) {
 			if (!(e instanceof AccessControlException)) {
@@ -74,10 +104,14 @@ public class IfEntryModifiableTag extends BodyTagSupport {
 		} finally {
 			this.entryMap = null;
 		}
-		
+
+		// If we're supposed to invert the result...
 		if(invert.booleanValue()) {
+			// ...invert it.
 			result = ! result;
 		}
+		
+		// Finally, return the appropriate EVAL_* value.
 		if(result) {
 			return EVAL_BODY_INCLUDE;
 		}
