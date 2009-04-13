@@ -56,6 +56,7 @@ public class LuceneHelper {
 
 	private static int maxMerge = 1000;
 	private static int mergeFactor = 10;
+	private static int maxFields = 10000;
 
 	static {
 		try {
@@ -63,6 +64,9 @@ public class LuceneHelper {
 		} catch (Exception e) {};
 		try {
 			mergeFactor = Integer.parseInt(PropsUtil.getString("lucene.merge.factor"));
+		} catch (Exception e) {};
+		try {
+			maxFields = Integer.parseInt(PropsUtil.getString("lucene.max.fieldlength"));
 		} catch (Exception e) {};
 	}
 
@@ -266,6 +270,7 @@ public class LuceneHelper {
 			}
 		}
 		indexWriter.setUseCompoundFile(false);
+		indexWriter.setMaxFieldLength(maxFields);
 		return indexWriter;
 	}
 
