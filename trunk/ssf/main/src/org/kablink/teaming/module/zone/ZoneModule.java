@@ -34,7 +34,9 @@ package org.kablink.teaming.module.zone;
 
 import java.util.List;
 
+import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.teaming.ObjectExistsException;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.security.AccessControlException;
@@ -64,7 +66,7 @@ public interface ZoneModule {
 	 * @param virtualHost virtual host
 	 * @param mailDomian mail domain or null
 	 */
-	public Long addZone(String zoneName, String virtualHost, String mailDomian) throws ZoneException;
+	public Long addZone(String zoneName, String virtualHost, String mailDomian) throws ZoneException, ObjectExistsException, IllegalCharacterInNameException;
 	
 	/**
 	 * Modifies new zone under the portal in which ICEcore runs 
@@ -73,7 +75,7 @@ public interface ZoneModule {
 	 * @param virtualHost virtual host
 	 * @param mailDomian mail domain or null
 	 */
-	public void modifyZone(String zoneName, String virtualHost, String mailDomain) throws ZoneException;
+	public void modifyZone(String zoneName, String virtualHost, String mailDomain) throws ZoneException, ObjectExistsException;
 		
 	/**
 	 * Deletes the zone under the portal in which ICEcore runts
