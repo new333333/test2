@@ -35,7 +35,7 @@ package org.kablink.teaming.domain;
 public class ZoneInfo extends ZonedObject {
 	protected String id;
 	protected String zoneName;
-	protected String virtualHost;
+	protected String virtualHost="";
 	
 	public String getId() {
 		return id;
@@ -47,6 +47,8 @@ public class ZoneInfo extends ZonedObject {
 		return virtualHost;
 	}
 	public void setVirtualHost(String virtualHost) {
+		if(virtualHost == null)
+			virtualHost = "";
 		this.virtualHost = virtualHost;
 	}
 	public Long getZoneId() {
