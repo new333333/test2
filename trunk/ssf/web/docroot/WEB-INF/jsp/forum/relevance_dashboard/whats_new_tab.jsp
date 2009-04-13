@@ -118,7 +118,9 @@
 				<div id="ss_title" class="ss_pt_title ss_green ss_ping_img ss_para">
 				  <ssf:nlt tag="relevance.trackedPeople"/></div>
 			</ssf:param>
-			  <c:set var="ss_show_tracked_item_delete_button" value="true" scope="request"/>
+			  <c:if test="${ssBinderId == ssUser.workspaceId}">
+			    <c:set var="ss_show_tracked_item_delete_button" value="true" scope="request"/>
+			  </c:if>
 			  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tracked_people.jsp" />
 			</ssf:canvas>
 			<br/>
