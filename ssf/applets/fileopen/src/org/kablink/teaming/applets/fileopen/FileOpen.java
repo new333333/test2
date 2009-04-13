@@ -71,6 +71,7 @@ public class FileOpen extends JApplet implements Runnable {
     String strEditorTypes = "";
     String strOperatingSystem = "";
     String uploadErrorMessage = "";
+    String editorErrorMessage = "";
 
     ////////////////////////////////////////////////////////////////////////
     //
@@ -85,7 +86,9 @@ public class FileOpen extends JApplet implements Runnable {
 		strOperatingSystem = getParameter(operatingSystem);
 		uploadErrorMessage = getParameter("uploadErrorMessage");
 		if (uploadErrorMessage == null || uploadErrorMessage.equals("")) uploadErrorMessage = "Error";
-    	try {
+		editorErrorMessage = getParameter("EditorErrorMessage");
+		if (editorErrorMessage == null || editorErrorMessage.equals("")) editorErrorMessage = "Error from command";
+		try {
 			boolean ifEditIsClicked = checkEditClicked();
 			resetEditClicked();
 			String [] strEditorType = strEditorTypes.split(",");
@@ -131,8 +134,8 @@ public class FileOpen extends JApplet implements Runnable {
                         	strOutputFromCommand += s;
                         }
                         if (!strOutputFromCommand.equals("")) {
-                        	System.out.println(uploadErrorMessage + ": Output From Commmand:\n " + strOutputFromCommand);
-                        	makeJSAlertCall(uploadErrorMessage + ": Output From Commmand:\n " + strOutputFromCommand);
+                        	System.out.println(editorErrorMessage + ":\n " + strOutputFromCommand);
+                        	makeJSAlertCall(editorErrorMessage + ":\n " + strOutputFromCommand);
                         }
                         
                         String strErrorFromCommand = "";
@@ -145,17 +148,17 @@ public class FileOpen extends JApplet implements Runnable {
 	                    }
 	                    
                         if (!strErrorFromCommand.equals("")) {
-                        	System.out.println(uploadErrorMessage + ": Error From Commmand:\n " + strErrorFromCommand);
-                        	makeJSAlertCall(uploadErrorMessage + ": Error From Commmand:\n " + strErrorFromCommand);
+                        	System.out.println(editorErrorMessage + ":\n " + strErrorFromCommand);
+                        	makeJSAlertCall(editorErrorMessage + ":\n " + strErrorFromCommand);
                         }
             		}
                 	catch(IOException ioe) {
-                    	System.out.println(uploadErrorMessage + ": \n " + ioe.toString());
-                    	makeJSAlertCall(uploadErrorMessage + ": \n" + ioe.toString());
+                    	System.out.println(editorErrorMessage + ": \n " + ioe.toString());
+                    	makeJSAlertCall(editorErrorMessage + ": \n" + ioe.toString());
                 	}
                 	catch(Exception e) {
-                    	System.out.println(uploadErrorMessage + ": \n " + e.toString());
-                    	makeJSAlertCall(uploadErrorMessage + ": \n" + e.toString());
+                    	System.out.println(editorErrorMessage + ": \n " + e.toString());
+                    	makeJSAlertCall(editorErrorMessage + ": \n" + e.toString());
                 	}
                 	finally {
                 		if (!blnEditorErrorEncountered)  break;
@@ -164,8 +167,8 @@ public class FileOpen extends JApplet implements Runnable {
 			}
     	}
     	catch(Exception e) {
-        	System.out.println(uploadErrorMessage + ": \n " + e.toString());
-        	makeJSAlertCall(uploadErrorMessage + ": \n" + e.toString());
+        	System.out.println(editorErrorMessage + ": \n " + e.toString());
+        	makeJSAlertCall(editorErrorMessage + ": \n" + e.toString());
     	}
     	finally {
     		strFileName = "";
