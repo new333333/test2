@@ -87,6 +87,7 @@ OpenFile Applet
 	    <PARAM NAME = "operatingSystem" value="${ssOSInfo}"/>
 		<PARAM NAME = "uploadErrorFileTooLarge" value="<ssf:nlt tag="applet.errorFileTooLarge" />" />
 	    <PARAM NAME = "uploadErrorMessage" value="<ssf:nlt tag="exception.codedError.title" />" />
+	    <PARAM NAME = "editorErrorMessage" value="<ssf:nlt tag="applet.editorError" />" />
 	<c:if test="<%= !isIE %>">
 	</applet>
 	</c:if>
