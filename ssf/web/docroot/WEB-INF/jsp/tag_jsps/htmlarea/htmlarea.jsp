@@ -90,7 +90,7 @@ tinyMCE.init(
   entities:  "39,#39,34,quot,38,amp,60,lt,62,gt",
   gecko_spellcheck : true,
   plugins: "compat2x,table,<%--
-  --%><c:if test="${empty ssInlineNoImage}">ss_addimage,</c:if><%--
+  --%><c:if test="${empty ssInlineNoImage && !ssBinder.mirrored}">ss_addimage,</c:if><%--
   --%>preview,paste,ss_wikilink",
   theme_advanced_buttons3_add : "pastetext,pasteword,selectall",
   theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
