@@ -33,6 +33,7 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.ObjectKeys" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("window.title.siteAdmin") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
@@ -198,6 +199,27 @@ if (typeof ss_setAdministrationIframeSize == "undefined")
   value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
 <br/>
+</c:if>
+
+<c:set var="adminInternalId" value="<%= ObjectKeys.SUPER_USER_INTERNALID %>"/>
+<c:if test="${ssUser.internalId == adminInternalId}">
+ <c:if test="${empty ssUserProperties.upgradeDefinitions || empty ssUserProperties.upgradeTemplates || empty ssUserProperties.upgradeSearchIndex}">
+  <div >
+    <span class="ss_errorLabel ss_bold"><ssf:nlt tag="administration.upgrade.tasksNotDone"/></span>
+    <br/>
+	<ul>
+	  <c:if test="${empty ssUserProperties.upgradeDefinitions}">
+	    <li><span class="ss_errorLabel"><ssf:nlt tag="administration.upgradeDefinitions"/></span></li>
+	  </c:if>
+	  <c:if test="${empty ssUserProperties.upgradeTemplates}">
+	    <li><span class="ss_errorLabel"><ssf:nlt tag="administration.upgradeTemplates"/></li>
+	  </c:if>
+	  <c:if test="${empty ssUserProperties.upgradeSearchIndex}">
+	    <li><span class="ss_errorLabel"><ssf:nlt tag="administration.upgradeSearchIndex"/></li>
+	  </c:if>
+	</ul>
+  </div>
+ </c:if>
 </c:if>
 
 	<table border="0" width="100%">

@@ -51,8 +51,10 @@ import javax.portlet.RenderResponse;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -72,6 +74,7 @@ import org.springframework.web.portlet.ModelAndView;
 public class ImportDefinitionController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
+        User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
 		Long binderId = null;
@@ -87,6 +90,7 @@ public class ImportDefinitionController extends  SAbstractController {
 				for (Definition def : (List<Definition>) currentDefinitions) ids.add(def.getId());
 			}
 			getAdminModule().updateDefaultDefinitions(this, RequestContextHolder.getRequestContext().getZoneId(), false, ids);
+    		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true");
 			response.setRenderParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
 		} else if (formData.containsKey("okBtn") && request instanceof MultipartFileSupport && WebHelper.isMethodPost(request)) {
 			int i=0;

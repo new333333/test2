@@ -92,6 +92,7 @@ import org.springframework.web.portlet.ModelAndView;
 public class ConfigureConfigurationController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
+        User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
 		if ((formData.containsKey("okBtn") || formData.containsKey("applyBtn")) && WebHelper.isMethodPost(request)) {
@@ -152,6 +153,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				response.setRenderParameter(WebKeys.URL_OPERATION,  WebKeys.OPERATION_IMPORT);
 			} else if (WebKeys.OPERATION_RESET.equals(operation)) {
 				getTemplateModule().updateDefaultTemplates(RequestContextHolder.getRequestContext().getZoneId(), true);
+	    		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
 			} else if (WebKeys.OPERATION_MODIFY.equals(operation)) {
 				Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 				//	The modify form was submitted. Go process it
