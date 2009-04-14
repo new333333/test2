@@ -33,30 +33,28 @@
 package org.kablink.teaming.module.rss.impl;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Collection;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -82,8 +80,8 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
-import org.kablink.util.PropertyNotFoundException;
 import org.kablink.util.LockFile;
+import org.kablink.util.PropertyNotFoundException;
 
 public class RssModuleImpl extends CommonDependencyInjection implements
 		RssModule, RssModuleImplMBean {
@@ -92,6 +90,9 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			new SsfQueryAnalyzer());
 
 	private final String ALL_FIELD = "allField";
+	private final String ALL = "all";
+	private final String AGE = "age";
+	
 
 	private final long DAYMILLIS = 24L * 60L * 60L * 1000L;
 
@@ -239,7 +240,6 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			long startDate = new Date().getTime() - (maxDays * DAYMILLIS);
 			Date start = new Date(startDate);
 
-			// TODO figure out sort key
 			List<FolderEntry> entries = getFolderDao().loadFolderTreeUpdates(
 					(Folder) binder, start, new Date(),
 					new OrderBy("HKey.sortKey"), 100);
@@ -429,10 +429,10 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			IndexSearcher indexSearcher = new IndexSearcher(indexPath.getPath());
 
 			// this will add acls to the query
-			Query q = buildRssQuery();
+			SearchObject so = buildRssQuery();
 
 			// get the matching entries
-			Hits hits = indexSearcher.search(q);
+			Hits hits = indexSearcher.search(so.getQuery(),so.getSortBy());
 
 			// create the return string, add the channel info
 			String rss = addRssHeader(binder.getTitle());
@@ -497,10 +497,10 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			IndexSearcher indexSearcher = new IndexSearcher(indexPath.getPath());
 
 			// this will add acls to the query
-			Query q = buildRssQuery();
+			SearchObject so = buildRssQuery();
 
 			// get the matching entries
-			Hits hits = indexSearcher.search(q);
+			Hits hits = indexSearcher.search(so.getQuery(), so.getSortBy());
 
 			// create the return string, add the channel info
 			String atom = addAtomHeader(binder.getTitle());
@@ -565,7 +565,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		Field guidField = new Field("guid", entry.getId().toString(),
 				Field.Store.YES, Field.Index.TOKENIZED);
 		doc.add(guidField);
-		Field allField = new Field(ALL_FIELD, "all", Field.Store.NO,
+		Field allField = new Field(ALL_FIELD, ALL, Field.Store.NO,
 				Field.Index.UN_TOKENIZED);
 		doc.add(allField);
 		Field rssItemField = new Field("rssItem", createRssItem(entry),
@@ -581,8 +581,14 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 	}
 
-	private Query buildRssQuery() {
+	private SearchObject buildRssQuery() {
 		SearchObject so = new SearchObject();
+		SortField[] sortFields = new SortField[1];
+		//setup for sorting by age
+		boolean descend = true;
+		String sortBy = AGE;
+		int sortType = SortField.AUTO;
+		
 		org.dom4j.Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(org.kablink.util.search.Constants.QUERY_ELEMENT);
 		Element qTreeAndElement = qTreeRootElement
@@ -590,11 +596,14 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		Element field = qTreeAndElement.addElement(org.kablink.util.search.Constants.FIELD_ELEMENT);
 		field.addAttribute(org.kablink.util.search.Constants.FIELD_NAME_ATTRIBUTE, ALL_FIELD);
 		Element child = field.addElement(org.kablink.util.search.Constants.FIELD_TERMS_ELEMENT);
-		child.setText("all");
+		child.setText(ALL);
+		//create the query
 		QueryBuilder qb = new QueryBuilder(true);
 		so = qb.buildQuery(qTree);
-
-		return so.getQuery();
+		// add the sort field (by descending age)
+		sortFields[0] = new SortField(sortBy, sortType, descend);
+		so.setSortBy(sortFields);
+		return so;
 
 	}
 
