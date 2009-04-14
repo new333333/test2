@@ -336,6 +336,9 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK="calendarFirstDayOfWeek";
     public static final String USER_PROPERTY_CALENDAR_WORK_DAY_START="calendarWorkDayStart";
     public static final String USER_PROPERTY_TUTORIAL_PANEL_STATE = "userTutorialPanelState";
+    public static final String USER_PROPERTY_UPGRADE_DEFINITIONS = "upgradeDefinitions";
+    public static final String USER_PROPERTY_UPGRADE_TEMPLATES = "upgradeTemplates";
+    public static final String USER_PROPERTY_UPGRADE_SEARCH_INDEX = "upgradeSearchIndex";
     public static final String USER_THEME_DEFAULT="default";
     
     //workflow definition names

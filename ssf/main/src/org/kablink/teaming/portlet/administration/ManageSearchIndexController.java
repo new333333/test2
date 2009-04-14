@@ -45,11 +45,13 @@ import javax.portlet.RenderResponse;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.ProfileBinder;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
@@ -71,6 +73,7 @@ import org.springframework.web.portlet.ModelAndView;
 public class ManageSearchIndexController extends  SAbstractController {
 	private final String usersAndGroups = "zzzzzzzzzzzzzzzzzzz";
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
+        User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		String btnClicked = PortletRequestUtils.getStringParameter(request, "btnClicked", "");
 		if ((formData.containsKey("okBtn") || btnClicked.equals("okBtn")) && WebHelper.isMethodPost(request)) {
@@ -106,6 +109,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 					errors.add(getBinderModule().indexBinder(pf.getId(), true)); 
 				}
 			}
+    		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true");
 			if (logger.isDebugEnabled()) {
 				logger.debug(SimpleProfiler.toStr());
 				SimpleProfiler.clearProfiler();

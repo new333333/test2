@@ -729,6 +729,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		profiles.setModification(stamp);
     		user.setCreation(stamp);
     		user.setModification(stamp);
+    		
+    		//Mark that this user was created in V2 and therefore all upgrade tasks were done
+    		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true");
+    		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
+    		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true");
+    		
     		//flush these changes, other reads may re-load
     		getCoreDao().flush();
 	
