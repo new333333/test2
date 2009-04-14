@@ -45,6 +45,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.repository.RepositoryServiceException;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.FileUploadItem;
 
 
@@ -389,4 +390,12 @@ public interface FileModule {
 	 * @return
 	 */
 	public Map<String,Long> getChildrenFileNames(Binder binder);
+	
+	/**
+	 * Get a file attachment from the fileId.
+	 *  
+	 * @param fileId
+	 */
+	public FileAttachment getFileAttachmentById(String fileId) throws AccessControlException;
+
 }	
