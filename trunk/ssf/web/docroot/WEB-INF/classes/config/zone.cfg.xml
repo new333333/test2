@@ -5,6 +5,14 @@
 	     meaningful only at the top-level. In other words, it does not
 	     apply to individual zone instances. This element is required. -->
 	<defaultZone name="liferay.com"/>
+	<!-- Zone specific settings for default zone of liferay.com. -->
+    <zone name="liferay.com">
+    	<!-- all new users in this zone will be assigned group membership in these groups -->
+		<defaultGroupsOnAcctCreation>
+    		<!-- Example format -->
+    		<!--<group name="registered_user" />-->
+		</defaultGroupsOnAcctCreation>
+	</zone>
 	<property name="adminUser">admin</property>
 	<property name="guestUser">guest</property>
 	<property name="startupConfig">config/startup.xml</property>
