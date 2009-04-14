@@ -71,6 +71,7 @@ public interface FolderModule {
 	//usefull for UI's.  Use to determine which operations are allowed
 	//if not listed, you have the entry and the operation only needs read access
    public enum FolderOperation {
+	   readEntry,
 	   addEntry,
 	   addEntryWorkflow,
 	   addReply,

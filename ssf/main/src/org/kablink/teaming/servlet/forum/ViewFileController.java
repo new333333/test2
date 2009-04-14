@@ -51,6 +51,7 @@ import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.util.FileHelper;
@@ -58,6 +59,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.servlet.SAbstractController;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.BrowserSniffer;
@@ -83,6 +85,7 @@ public class ViewFileController extends SAbstractController {
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
 
+		FileAttachment fa = null;
 		String viewType = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_VIEW_TYPE, ""); 
 		String fileId = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, ""); 
 		String fileTitle = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_TITLE, ""); 
@@ -110,6 +113,7 @@ public class ViewFileController extends SAbstractController {
 			response.getOutputStream().flush();
 			
 		} else {
+			String strBinderId = RequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 			String strEntryId = RequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			Long entryId = null;
 			if (!strEntryId.equals("")) entryId = Long.valueOf(strEntryId);
@@ -142,13 +146,21 @@ public class ViewFileController extends SAbstractController {
 					entity = getProfileModule().getEntry(entryId);
 				}
 				parent = entity.getParentBinder();
+			} else if (strBinderId.equals("")) {
+				//There is no binderId or entryId, see if we can get these from the fileId itself
+				fa = BinderHelper.getFileAttachmentById(this, fileId);
+				parent = null;
+				if (fa != null) {
+					entity = fa.getOwner().getEntity();
+					if (entity instanceof Binder) parent = (Binder)entity;
+					if (entity instanceof FolderEntry) parent = ((FolderEntry)entity).getParentBinder();
+				}
 			} else {
 				Long binderId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 				parent = getBinderModule().getBinder(binderId);
 				entity = parent;
 			}
 			//Set up the beans needed by the jsps
-			FileAttachment fa = null;
 			FileAttachment topAtt = null;
 			if (fileId.equals("")) {
 				if (!fileTitle.equals("")) {

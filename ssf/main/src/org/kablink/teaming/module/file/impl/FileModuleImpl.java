@@ -68,6 +68,7 @@ import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Reservable;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
@@ -77,6 +78,7 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.FileAttachment.FileLock;
 import org.kablink.teaming.lucene.Hits;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.ContentFilter;
 import org.kablink.teaming.module.file.DeleteVersionException;
@@ -85,6 +87,8 @@ import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilterException;
 import org.kablink.teaming.module.file.LockIdMismatchException;
 import org.kablink.teaming.module.file.LockedByAnotherUserException;
+import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.repository.RepositoryServiceException;
@@ -96,6 +100,7 @@ import org.kablink.teaming.repository.archive.ArchiveStore;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.DatedMultipartFile;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FilePathUtil;
@@ -105,6 +110,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.KeyValuePair;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -173,6 +179,16 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return failedFilterFile;
 	}
 	
+	protected BinderModule getBinderModule() {
+		// Can't use IoC due to circular dependency
+		return (BinderModule) SpringContextUtil.getBean("binderModule");
+	}
+
+	protected FolderModule getFolderModule() {
+		// Can't use IoC due to circular dependency
+		return (FolderModule) SpringContextUtil.getBean("folderModule");
+	}
+
 	protected void initFailedFilterFile() {
 		String failedFilterFile = SPropsUtil.getString("file.content.filter.failed.filter.file", "");
 		
@@ -1844,5 +1860,22 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
     	return (lock.getExpirationDate().getTime() + 
     			this.getLockExpirationAllowanceMilliseconds() <= System.currentTimeMillis());
+    }
+    
+    public FileAttachment getFileAttachmentById(String fileId) 
+    		throws AccessControlException {
+		User user = RequestContextHolder.getRequestContext().getUser();
+    	FileAttachment fa = null;
+    	fa = (FileAttachment) coreDao.load(FileAttachment.class, fileId);
+    	if (fa != null) {
+    		//Check the access to the owning entity
+    		DefinableEntity entity = fa.getOwner().getEntity();
+    		if (entity instanceof Binder) {
+    			getBinderModule().checkAccess(entity.getId(), user);
+    		} else if (entity instanceof FolderEntry) {
+    			getFolderModule().checkAccess(((FolderEntry)entity), FolderOperation.readEntry);
+    		}
+    	}
+    	return fa;
     }
 }

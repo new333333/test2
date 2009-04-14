@@ -276,6 +276,7 @@ public class MarkupUtil {
 		public String getRelativeTitleUrl(String normalizedTitle, String title);
 		public String getTitleUrl(String binderId, String normalizedTitle, String title);
 		public String getRootUrl();
+		public String getRootServletUrl();
 	}
 	public static String markupStringReplacement(final RenderRequest req, final RenderResponse res, 
 			final HttpServletRequest httpReq, final HttpServletResponse httpRes,
@@ -285,6 +286,11 @@ public class MarkupUtil {
 				if (httpReq != null) return WebUrlUtil.getAdapterRootURL(httpReq, httpReq.isSecure());
 				if (req != null) return WebUrlUtil.getAdapterRootURL(req, req.isSecure());
 				return WebUrlUtil.getAdapterRootUrl();
+			}
+			public String getRootServletUrl() {
+				if (httpReq != null) return WebUrlUtil.getServletRootURL(httpReq, httpReq.isSecure());
+				if (req != null) return WebUrlUtil.getServletRootURL(req, req.isSecure());
+				return WebUrlUtil.getServletRootURL();
 			}
 			public String getFileUrlByName(String fileName) {
 				if (!WebKeys.MARKUP_EXPORT.equals(type)) return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, searchResults, fileName);
@@ -328,6 +334,11 @@ public class MarkupUtil {
 				if (httpReq != null) return WebUrlUtil.getAdapterRootURL(httpReq, httpReq.isSecure());
 				if (req != null) return WebUrlUtil.getAdapterRootURL(req, req.isSecure());
 				return WebUrlUtil.getAdapterRootUrl();
+			}
+			public String getRootServletUrl() {
+				if (httpReq != null) return WebUrlUtil.getServletRootURL(httpReq, httpReq.isSecure());
+				if (req != null) return WebUrlUtil.getServletRootURL(req, req.isSecure());
+				return WebUrlUtil.getServletRootURL();
 			}
 			public String getFileUrlByName(String fileName) {
 				if (!WebKeys.MARKUP_EXPORT.equals(type)) 
@@ -458,6 +469,12 @@ public class MarkupUtil {
 			        	//This code is here to capture old urls that are lingering
 				    	if (Validator.isNotNull(fileId)) {
 				    		String webUrl = builder.getFileUrlById(fileId);
+				    		if (webUrl == null || webUrl.equals("")) {
+				    			//Not found, just build a url using just the file id
+				    			webUrl = builder.getRootServletUrl() + WebKeys.SERVLET_VIEW_FILE + "?" +
+				    				WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + 
+				    				"&" + WebKeys.URL_FILE_ID + "=" + fileId; 
+				    		}
 				    		matcher.appendReplacement(outputBuf, webUrl.replace("$", "\\$"));
 				    	}
 					}

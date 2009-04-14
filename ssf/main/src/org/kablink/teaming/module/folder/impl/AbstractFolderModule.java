@@ -238,6 +238,9 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	}
 	public void checkAccess(FolderEntry entry, FolderOperation operation) throws AccessControlException {
 		switch (operation) {
+			case readEntry:
+				AccessUtils.readCheck(entry);   
+				break;
 			case modifyEntry:
 			case addEntryWorkflow:
 			case deleteEntryWorkflow:

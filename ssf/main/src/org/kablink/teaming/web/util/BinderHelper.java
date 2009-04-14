@@ -83,6 +83,7 @@ import org.kablink.teaming.domain.DashboardPortlet;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
@@ -2982,6 +2983,14 @@ public class BinderHelper {
 		Matcher m = pattern.matcher( name );
 		if (m.find()) return false;
 		return result;
+	}
+	
+	public static FileAttachment getFileAttachmentById(AllModulesInjected bs, String fileId) {
+		FileAttachment fa = null;
+		try {
+			fa = bs.getFileModule().getFileAttachmentById(fileId);
+		} catch(AccessControlException e) {}
+		return fa;
 	}
 
 }
