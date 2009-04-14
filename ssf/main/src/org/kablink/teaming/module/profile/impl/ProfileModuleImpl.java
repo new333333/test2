@@ -83,6 +83,7 @@ import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.UserPropertiesPK;
 import org.kablink.teaming.domain.Workspace;
@@ -103,6 +104,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.util.Validator;
@@ -1104,7 +1106,34 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
            		definition = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_APPLICATION_VIEW);
         }
         try {
-        	return loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options);
+        	Entry newEntry = loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options);
+
+            //Added to allow default groups to be defined for users in ssf.properties file
+            if (clazz.equals(User.class))  //only do this for users not applications (maybe later;-)
+            {
+                List<Element> groups  = SZoneConfig.getElements("defaultGroupsOnAcctCreation/group");
+                if (!groups.isEmpty()) {
+                    for (Element elem: groups) {  //loop through all returned group names from properties file
+                        try {
+                            Group group = this.getGroup(elem.attributeValue("name"));
+                            if (group!=null){ //make sure it finds the group.  what to do if it doesn't?
+                                Map updates = new HashMap();
+                                List members = new ArrayList(group.getMembers());
+                                members.add((UserPrincipal)newEntry);
+                                updates.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, members);
+                                this.modifyEntry(group.getId(), new MapInputData(updates));
+                            }
+                        }catch (Exception e) {
+                            //Do nothing.  User just won't exist in a group that was wrong anyway.
+                            //won't completely abandon creation though.  Some may be defined correctly.
+                            //Should log it.
+                            logger.warn("Warning: User could not be added to default group.  Please check that " +
+                            "the defined group in the properties file matches the one in the running system: ", e);
+                        }
+                    }
+                }
+            }
+            return newEntry;
         } catch (DataIntegrityViolationException de) {
         	if(clazz.equals(User.class))
         		throw new ObjectExistsException("errorcode.user.exists", (Object[])null, de);
