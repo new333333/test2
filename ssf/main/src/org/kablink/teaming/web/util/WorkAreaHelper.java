@@ -160,7 +160,7 @@ public class WorkAreaHelper {
 			//Build the basic map structure
 			for (int i=0; i<functions.size(); ++i) {
 				Function f = (Function)functions.get(i);
-				if (f.isZoneWide() != zoneWide) continue;
+				if (!zoneWide && f.isZoneWide()) continue;
 				Map pMap = new HashMap();
 				functionMap.put(f, pMap);
 				Map groups = new HashMap();
@@ -219,7 +219,7 @@ public class WorkAreaHelper {
 		} else {
 			for (int i=0; i<functions.size(); ++i) {
 				Function f = (Function)functions.get(i);
-				if (f.isZoneWide() != zoneWide) continue;
+				if (!zoneWide && f.isZoneWide()) continue;
 				Map pMap = new HashMap();
 				functionMap.put(f, pMap);
 				Map<Long,Principal> groups = new HashMap();
@@ -419,7 +419,7 @@ public class WorkAreaHelper {
 		Map functions = new TreeMap();
 		List<Function> fs = bs.getAdminModule().getFunctions();
 		for (Function f:fs) {
-			if (f.isZoneWide() != zoneWide) continue;
+			if (!zoneWide && f.isZoneWide()) continue;
 			functions.put(NLT.getDef(f.getName()).toLowerCase() + f.getId(), f);
 		}
 		model.put(WebKeys.FUNCTIONS, functions.values());
@@ -430,7 +430,7 @@ public class WorkAreaHelper {
 		Iterator itWorkAreaOperations = WorkAreaOperation.getWorkAreaOperations();
 		while (itWorkAreaOperations.hasNext()) {
 			WorkAreaOperation wa = (WorkAreaOperation) itWorkAreaOperations.next();
-			if (wa.isZoneWide() != zoneWide) continue;
+			if (!zoneWide && wa.isZoneWide()) continue;
 			operations.put(NLT.get("workarea_operation." + wa.getName()),wa.getName());
 		}
 		model.put(WebKeys.WORKAREA_OPERATIONS, operations);

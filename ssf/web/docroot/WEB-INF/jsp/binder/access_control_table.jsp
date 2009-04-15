@@ -216,7 +216,7 @@
   </c:if>
   style="padding-right:10px;"/>
 </c:if>
-<c:if test="${!empty ssFunctionMap[function].ssGroups[group.id]}">
+<c:if test="${!empty ssFunctionMap[function].ssGroups[group.id] && (ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
     <input type="checkbox" 
     <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
@@ -225,7 +225,7 @@
     title="<ssf:nlt tag="access.select"/>" 
    checked="checked" /> 
 </c:if>
-<c:if test="${empty ssFunctionMap[function].ssGroups[group.id]}">
+<c:if test="${empty ssFunctionMap[function].ssGroups[group.id] && (ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
     <input type="checkbox" 
     <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
@@ -289,7 +289,7 @@
   </c:if>
     style="padding-right:10px;"/>
 </c:if>
-<c:if test="${!empty ssFunctionMap[function].ssUsers[user.id]}">
+<c:if test="${!empty ssFunctionMap[function].ssUsers[user.id] && (ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
     <input type="checkbox" 
     <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
@@ -298,7 +298,7 @@
     title="<ssf:nlt tag="access.select"/>" 
     checked="checked" />
 </c:if>
-<c:if test="${empty ssFunctionMap[function].ssUsers[user.id]}">
+<c:if test="${empty ssFunctionMap[function].ssUsers[user.id] && (ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
     <input type="checkbox" 
     <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
@@ -322,7 +322,11 @@
 	</c:if>
 	<c:if test="${!ssWorkArea.functionMembershipInherited}">
 	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addApplicationGroupsMenu${ss_namespace}', 40, 40);return false;">
-	      <ssf:nlt tag="access.addApplicationGroup"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
+	      <ssf:nlt tag="access.addApplicationGroup"/>
+	      <c:if test="${ssWorkArea.workAreaType == 'zone'}">
+	        <span class="ss_smallprint" style="vertical-align: super;">*</span>
+	      </c:if>
+	      <img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	        src="<html:imagesPath/>pics/menudown.gif"/>
 	    </a>
     </c:if>
@@ -381,7 +385,7 @@
   </c:if>
   style="padding-right:10px;"/>
 </c:if>
-<c:if test="${!empty ssFunctionMap[function].ssApplicationGroups[group.id]}">
+<c:if test="${!empty ssFunctionMap[function].ssApplicationGroups[group.id] && !function.zoneWide}">
     <input type="checkbox" 
     <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
@@ -390,7 +394,7 @@
     title="<ssf:nlt tag="access.select"/>" 
    checked="checked" />
 </c:if>
-<c:if test="${empty ssFunctionMap[function].ssApplicationGroups[group.id]}">
+<c:if test="${empty ssFunctionMap[function].ssApplicationGroups[group.id] && !function.zoneWide}">
     <input type="checkbox" 
     <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
@@ -413,7 +417,11 @@
 	</c:if>
 	<c:if test="${!ssWorkArea.functionMembershipInherited}">
 	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addApplicationsMenu${ss_namespace}', 40, 40);return false;">
-	      <ssf:nlt tag="access.addApplication"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
+	      <ssf:nlt tag="access.addApplication"/>
+	      <c:if test="${ssWorkArea.workAreaType == 'zone'}">
+	        <span class="ss_smallprint" style="vertical-align: super;">*</span>
+	      </c:if>
+	      <img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	      src="<html:imagesPath/>pics/menudown.gif"/></a>
     </c:if>
   </TH>
@@ -454,7 +462,7 @@
   </c:if>
     style="padding-right:10px;"/>
 </c:if>
-<c:if test="${!empty ssFunctionMap[function].ssApplications[application.id]}">
+<c:if test="${!empty ssFunctionMap[function].ssApplications[application.id] && !function.zoneWide}">
     <input type="checkbox" 
     <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
@@ -462,7 +470,7 @@
     name="role_id${function.id}_${application.id}" 
     checked="checked" />
 </c:if>
-<c:if test="${empty ssFunctionMap[function].ssApplications[application.id]}">
+<c:if test="${empty ssFunctionMap[function].ssApplications[application.id] && !function.zoneWide}">
     <input type="checkbox" 
     <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"

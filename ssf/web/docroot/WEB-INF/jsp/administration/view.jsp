@@ -203,7 +203,10 @@ if (typeof ss_setAdministrationIframeSize == "undefined")
 
 <c:set var="adminInternalId" value="<%= ObjectKeys.SUPER_USER_INTERNALID %>"/>
 <c:if test="${ssUser.internalId == adminInternalId}">
- <c:if test="${empty ssUserProperties.upgradeDefinitions || empty ssUserProperties.upgradeTemplates || empty ssUserProperties.upgradeSearchIndex}">
+ <c:if test="${empty ssUserProperties.upgradeDefinitions || 
+ 		empty ssUserProperties.upgradeTemplates || 
+ 		empty ssUserProperties.upgradeSearchIndex || 
+ 		empty ssUserProperties.upgradeAccessControls}">
   <div >
     <span class="ss_errorLabel ss_bold"><ssf:nlt tag="administration.upgrade.tasksNotDone"/></span>
     <br/>
@@ -216,6 +219,9 @@ if (typeof ss_setAdministrationIframeSize == "undefined")
 	  </c:if>
 	  <c:if test="${empty ssUserProperties.upgradeSearchIndex}">
 	    <li><span class="ss_errorLabel"><ssf:nlt tag="administration.upgradeSearchIndex"/></li>
+	  </c:if>
+	  <c:if test="${empty ssUserProperties.upgradeAccessControls}">
+	    <li><span class="ss_errorLabel"><ssf:nlt tag="administration.upgradeAccessControls"/></li>
 	  </c:if>
 	</ul>
   </div>

@@ -336,6 +336,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK="calendarFirstDayOfWeek";
     public static final String USER_PROPERTY_CALENDAR_WORK_DAY_START="calendarWorkDayStart";
     public static final String USER_PROPERTY_TUTORIAL_PANEL_STATE = "userTutorialPanelState";
+    public static final String USER_PROPERTY_UPGRADE_ACCESS_CONTROLS = "upgradeAccessControls";
     public static final String USER_PROPERTY_UPGRADE_DEFINITIONS = "upgradeDefinitions";
     public static final String USER_PROPERTY_UPGRADE_TEMPLATES = "upgradeTemplates";
     public static final String USER_PROPERTY_UPGRADE_SEARCH_INDEX = "upgradeSearchIndex";

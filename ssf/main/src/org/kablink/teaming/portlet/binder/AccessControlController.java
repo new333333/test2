@@ -45,9 +45,11 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.TemplateBinder;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.function.WorkArea;
@@ -70,6 +72,7 @@ import org.springframework.web.portlet.ModelAndView;
 public class AccessControlController extends AbstractBinderController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
+        User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		//navigation links still use binderId
 		Long workAreaId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
@@ -93,6 +96,9 @@ public class AccessControlController extends AbstractBinderController {
 			if(logger.isDebugEnabled())
 				logger.debug(SimpleProfiler.toStr());
 			SimpleProfiler.clearProfiler();
+			if (EntityIdentifier.EntityType.zone.name().equals(type)) {
+				getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_ACCESS_CONTROLS, "true");
+			}
 		} else if (formData.containsKey("inheritanceBtn") && WebHelper.isMethodPost(request)) {
 			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", false);
 			getAdminModule().setWorkAreaFunctionMembershipInherited(workArea,inherit);			
