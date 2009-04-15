@@ -31,9 +31,10 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.web.util;
-import java.util.Map;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
@@ -363,10 +364,14 @@ public class WebUrlUtil {
 			fileName = file;
 			if (fileIdResult instanceof SearchFieldResult) {
 				List<String> values = ((SearchFieldResult)fileIdResult).getValueArray();
+				SearchFieldResult namesAndIds = (SearchFieldResult)searchResults.get(org.kablink.util.search.Constants.FILENAME_AND_ID_FIELD);	
+				List<String> names = namesAndIds.getValueArray();
 				for (int i=0; i<values.size(); ++i) {
-					if (fileName.equals(getFileInfoById((String)searchResults.get(org.kablink.util.search.Constants.FILENAME_AND_ID_FIELD),values.get(i)))) {
-						fileId = values.get(i);
-						break;
+						for (int j=0; j<names.size(); ++j) {
+						if (fileName.equals(getFileInfoById(names.get(j),values.get(i)))) {
+							fileId = values.get(i);
+							break;
+						}
 					}
 				}
 			} else {
@@ -382,13 +387,31 @@ public class WebUrlUtil {
 			fileName = (String)searchResults.get(org.kablink.util.search.Constants.FILENAME_FIELD);
 			fileTime = (String)searchResults.get(org.kablink.util.search.Constants.FILE_TIME_FIELD);
 		} else {
-			String fName = (String)searchResults.get(org.kablink.util.search.Constants.FILENAME_AND_ID_FIELD);
-			fileName = getFileInfoById(fName, fileId);
-			String fTime = (String)searchResults.get(org.kablink.util.search.Constants.FILE_TIME_AND_ID_FIELD);
-			fileTime = getFileInfoById(fTime, fileId);	
+			Object fName = searchResults.get(org.kablink.util.search.Constants.FILENAME_AND_ID_FIELD);
+			if (fName instanceof String) {
+				fileName = getFileInfoById((String)fName,fileId);
+			} else {
+				List<String> names = ((SearchFieldResult)fName).getValueArray();
+				for (int i=0; i<names.size(); ++i) {
+					fileName = getFileInfoById(names.get(i),fileId);
+					if (!fileName.equals(""))
+						break;
+				}
+			}
+			Object fTime = searchResults.get(org.kablink.util.search.Constants.FILE_TIME_AND_ID_FIELD);
+			if (fTime instanceof String) {
+				fileTime = getFileInfoById((String)fTime,fileId);
+			} else {
+				List<String> times = ((SearchFieldResult)fTime).getValueArray();
+				for (int i=0; i<times.size(); ++i) {
+					fileTime = getFileInfoById(times.get(i),fileId);
+					if (!fileTime.equals(""))
+						break;
+				}
+			}
 		}
 
-		if (fileTime == null) fileTime = "1";  //doesn't matter
+		if (fileTime == null || fileTime == "") fileTime = "1";  //doesn't matter
 		return getFileUrl(webPath, action, entityId, entityType.name(), fileId, fileTime, null, fileName);
 			
 	}
