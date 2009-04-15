@@ -219,7 +219,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 
   <c:if test="${!empty ssFolderColumns['comments']}">
     <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="12%">
-      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Comments"/> </div>
+      <div class="ss_title_menu">
+        <c:if test="${ss_folderViewStyle == 'folder'}"><ssf:nlt tag="folder.column.Replies"/></c:if>
+        <c:if test="${ss_folderViewStyle != 'folder'}"><ssf:nlt tag="folder.column.Comments"/></c:if>
+      </div>
     </ssf:slidingTableColumn>
   </c:if>
 

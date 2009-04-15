@@ -141,7 +141,7 @@
 							       <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" />
 									<c:if test="${!empty entry._totalReplyCount}">
 									    <span style="padding-left: 10px;" class="ss_label"><ssf:nlt 
-									      tag="popularity.Comments"/>: ${entry._totalReplyCount}</span>
+									      tag="popularity.CommentsOrReplies"/>: ${entry._totalReplyCount}</span>
 									</c:if>
 							    </p>
 								<c:if test="${!empty entry._workflowStateCaption}">
@@ -214,7 +214,7 @@
 								   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" />
 									<c:if test="${!empty entry._totalReplyCount}">
 									    <span style="padding-left: 10px;" class="ss_label"><ssf:nlt 
-									      tag="popularity.Comments"/>: ${entry._totalReplyCount}</span>
+									      tag="popularity.CommentsOrReplies"/>: ${entry._totalReplyCount}</span>
 									</c:if>
 								   </p>
 								<p><ssf:nlt tag="searchResult.label.entry" />:
