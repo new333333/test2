@@ -105,7 +105,7 @@
   style="display:none; visibility:hidden;"></div>
 <div id="${renderResponse.namespace}ss_blog_add_reply_${ssDefinitionEntry._docId}" 
   style="display:none; visibility:hidden;">
-<iframe <ssf:title tag="title.add.reply" />
+<iframe <ssf:title tag="title.add.comment" />
   id="${renderResponse.namespace}ss_blog_add_reply_iframe_${ssDefinitionEntry._docId}"
   name="${renderResponse.namespace}ss_blog_add_reply_iframe_${ssDefinitionEntry._docId}"
   src="<html:rootPath/>js/forum/null.html" 

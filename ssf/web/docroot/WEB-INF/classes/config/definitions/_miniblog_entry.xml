@@ -71,9 +71,9 @@
         <property name="caption" value="__description"/> 
       </properties> 
     </item>  
-    <item name="entryReplies" caption="__entry_replies" id="16"> 
+    <item name="entryComments" caption="__entry_comments" id="16"> 
       <properties> 
-        <property name="caption" value="__entry_replies"/> 
+        <property name="caption" value="__entry_comments"/> 
       </properties> 
     </item>  
     <properties> 
@@ -91,9 +91,9 @@
         <property name="caption" value="__description"/> 
       </properties> 
     </item>  
-    <item name="entryBlogReplies" caption="__entry_replies" id="22"> 
+    <item name="entryBlogComments" caption="__entry_comments" id="22"> 
       <properties> 
-        <property name="caption" value="__entry_replies"/> 
+        <property name="caption" value="__entry_comments"/> 
       </properties> 
     </item>  
     <properties> 

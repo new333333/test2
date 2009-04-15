@@ -51,6 +51,7 @@ import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
 import org.dom4j.Document;
+import org.dom4j.Element;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.springframework.web.portlet.ModelAndView;
@@ -503,6 +504,13 @@ public class ViewEntryController extends  SAbstractController {
 		String entryDefId=def.getId().toString();
 		String entryId = entry.getId().toString();
 		String folderId = entry.getParentFolder().getId().toString();
+		Document defDoc = def.getDefinition();
+		Element familyEle = (Element) defDoc.getRootElement().selectSingleNode("./properties/property[@name='family']");
+		String replyText = NLT.get("toolbar.comment");
+		if (familyEle != null && familyEle.attributeValue("value", "").equals("discussion")) {
+			replyText = NLT.get("toolbar.reply");
+			model.put(WebKeys.DEFINITION_FAMILY, familyEle.attributeValue("value", ""));
+		}
 				
 	    //Build the toolbar array
 		Toolbar toolbar = new Toolbar();
@@ -524,11 +532,11 @@ public class ViewEntryController extends  SAbstractController {
 
 						Map qualifiers = new HashMap();
 						qualifiers.put("popup", new Boolean(true));
-						toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), 
+						toolbar.addToolbarMenu("1_reply", replyText, 
 								adapterUrl.toString(), qualifiers);
 					}
 				} else {
-					toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"));
+					toolbar.addToolbarMenu("1_reply", replyText);
 					Map qualifiers = new HashMap();
 					qualifiers.put("popup", new Boolean(true));
 					for (int i = 0; i < replyStyles.size(); i++) {

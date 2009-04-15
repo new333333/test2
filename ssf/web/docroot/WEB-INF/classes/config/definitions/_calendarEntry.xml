@@ -184,9 +184,9 @@
         <property name="caption" value="__entry_attachments"/> 
       </properties> 
     </item>  
-    <item name="entryReplies" caption="__entry_replies" category="entryViewData" id="27"> 
+    <item name="entryComments" caption="__entry_comments" category="entryViewData" id="27"> 
       <properties> 
-        <property name="caption" value="__entry_replies"/> 
+        <property name="caption" value="__entry_comments"/> 
       </properties> 
     </item> 
   </item>  
@@ -226,9 +226,9 @@
         <property name="caption" value="__entry_attachments"/> 
       </properties> 
     </item>  
-    <item name="entryBlogReplies" caption="__entry_replies" category="blogEntryViewData" id="28"> 
+    <item name="entryBlogComments" caption="__entry_comments" category="blogEntryViewData" id="28"> 
       <properties> 
-        <property name="caption" value="__entry_replies"/> 
+        <property name="caption" value="__entry_comments"/> 
       </properties> 
     </item> 
   </item>  

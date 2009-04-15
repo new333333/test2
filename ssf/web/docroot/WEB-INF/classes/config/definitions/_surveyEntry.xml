@@ -123,9 +123,9 @@
         <property name="caption" value="__survey_questions"/> 
       </properties> 
     </item>  
-    <item name="entryReplies" caption="__entry_replies" id="15"> 
+    <item name="entryComments" caption="__entry_comments" id="15"> 
       <properties> 
-        <property name="caption" value="__entry_replies"/> 
+        <property name="caption" value="__entry_comments"/> 
       </properties> 
     </item>  
     <properties> 
@@ -153,9 +153,9 @@
         <property name="caption" value="__entry_attachments"/> 
       </properties> 
     </item>  
-    <item name="entryBlogReplies" caption="__entry_replies" id="21"> 
+    <item name="entryBlogComments" caption="__entry_comments" id="21"> 
       <properties> 
-        <property name="caption" value="__entry_replies"/> 
+        <property name="caption" value="__entry_comments"/> 
       </properties> 
     </item>  
     <properties> 

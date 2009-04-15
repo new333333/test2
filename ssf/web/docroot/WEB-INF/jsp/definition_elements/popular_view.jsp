@@ -91,16 +91,20 @@
 <c:if test="${!empty ssDefinitionEntry.totalReplyCount}">
 <span class="ss_muted_label_small">
   <c:if test="${ssDefinitionEntry.totalReplyCount == 1}">
-    <ssf:nlt tag="popularity.comment1"/>
+    <c:if test="${ssDefinitionFamily == 'discussion'}"><ssf:nlt tag="popularity.reply1"/></c:if>
+    <c:if test="${ssDefinitionFamily != 'discussion'}"><ssf:nlt tag="popularity.comment1"/></c:if>
   </c:if>
   <c:if test="${ssDefinitionEntry.totalReplyCount > 1}">
-    <ssf:nlt tag="popularity.comments"><ssf:param 
-      name="value" value="${ssDefinitionEntry.totalReplyCount}"/></ssf:nlt>
+    <c:if test="${ssDefinitionFamily == 'discussion'}"><ssf:nlt tag="popularity.replies"><ssf:param 
+      name="value" value="${ssDefinitionEntry.totalReplyCount}"/></ssf:nlt></c:if>
+    <c:if test="${ssDefinitionFamily != 'discussion'}"><ssf:nlt tag="popularity.comments"><ssf:param 
+      name="value" value="${ssDefinitionEntry.totalReplyCount}"/></ssf:nlt></c:if>
   </c:if>
 </span>
 </c:if>
 <c:if test="${ssDefinitionEntry.totalReplyCount == 0}">
-<span class="ss_muted_label_small"><ssf:nlt tag="popularity.comments.none" /></span>
+<c:if test="${ssDefinitionFamily == 'discussion'}"><span class="ss_muted_label_small"><ssf:nlt tag="popularity.replies.none" /></span></c:if>
+<c:if test="${ssDefinitionFamily != 'discussion'}"><span class="ss_muted_label_small"><ssf:nlt tag="popularity.comments.none" /></span></c:if>
 </c:if>
 </td>
 </tr>

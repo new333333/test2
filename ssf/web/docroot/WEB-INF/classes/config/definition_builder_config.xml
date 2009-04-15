@@ -125,6 +125,7 @@
 			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
 			<option name="entryWorkflow" caption="__entry_workflow" />
 			<option name="entryAttachments" caption="__entry_attachments" />
+			<option name="entryComments" caption="__entry_comments" />
 			<option name="entryReplies" caption="__entry_replies" />
 			<option_select path="//item[@category='commonEntryViewData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
@@ -392,7 +393,8 @@
 			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
 			<option name="entryWorkflow" caption="__entry_workflow" initial="true" />
 			<option name="entryAttachments" caption="__entry_attachments" initial="true" />
-			<option name="entryReplies" caption="__entry_replies" initial="true" />
+			<option name="entryComments" caption="__entry_comments" initial="true" />
+			<option name="entryReplies" caption="__entry_replies" />
 			<option_select path="//item[@category='entryViewData']" />
 			<option_select path="//item[@category='commonEntryViewData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
@@ -438,6 +440,16 @@
 		
 	
 		
+	<item name="entryComments" caption="__entry_comments" category="entryViewData" display="view">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_comments"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_replies.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_replies.jsp" />
+		</jsps>
+	</item>
+		
 	<item name="entryReplies" caption="__entry_replies" category="entryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__entry_replies"/>
@@ -479,7 +491,8 @@
 			<option name="entryBlogDataItem" caption="__entry_data_item" definitionType="1" />
 			<option name="entryBlogWorkflow" caption="__entry_workflow" initial="true" />
 			<option name="entryBlogAttachments" caption="__entry_attachments" initial="true" />
-			<option name="entryBlogReplies" caption="__entry_replies" initial="true" />
+			<option name="entryBlogComments" caption="__entry_comments" initial="true" />
+			<option name="entryBlogReplies" caption="__entry_replies" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 		</options>
 		
@@ -535,6 +548,16 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/blog/view_blog_attachments.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_attachments.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="entryBlogComments" caption="__entry_comments" category="blogEntryViewData" display="view">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_comments"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/blog/view_blog_replies.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_replies.jsp" />
 		</jsps>
 	</item>
 		
