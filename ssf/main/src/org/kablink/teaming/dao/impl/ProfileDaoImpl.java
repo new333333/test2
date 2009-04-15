@@ -448,6 +448,11 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	return findUserByName(userName, top.getId());
     }
     
+    public User findUserByNameDeadOrAlive(final String userName, String zoneName) {
+    	final Binder top = getCoreDao().findTopWorkspace(zoneName);
+    	return findUserByNameDeadOrAlive(userName, top.getId());
+    }
+    
  	public User findUserByName(final String userName, final Long zoneId) 
 	throws NoUserByTheNameException {
         return (User)getHibernateTemplate().execute(
@@ -699,7 +704,21 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
    			throw new NoUserByTheIdException(userId);   		
     	}
     }
-	
+    public User loadUserDeadOrAlive(Long userId, Long zoneId) {
+    	// STOP!!! THIS METHOD IS FOR INTERNAL/SPECIAL USE ONLY. USE THE REGULAR loadUser() METHOD INSTEAD.
+    	try {
+    		User user = (User)getHibernateTemplate().get(User.class, userId);
+    		if (user == null) {throw new NoUserByTheIdException(userId);}
+    		//	make sure from correct zone
+    		if (!user.getZoneId().equals(zoneId)) {
+    			throw new NoUserByTheIdException(userId);
+    		}
+    		return user;
+    	} catch (ClassCastException ce) {
+   			throw new NoUserByTheIdException(userId);   		
+    	}
+    }
+    
 	public List<User> loadUsers(Collection<Long> ids, Long zoneId) {
 		return loadPrincipals(ids, zoneId, User.class, false, true);
     }
@@ -918,9 +937,22 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     		if ((objs == null) || objs.isEmpty()) throw new NoUserByTheNameException(internalId);
     		User u = objs.get(0);
     		setReservedId(internalId, zoneId, u.getId());
+    		if (!u.isActive())
+    			throw new NoUserByTheIdException(u.getId());
     		return u;
     	}
     	return loadUser(id, zoneId);
+   }
+    public User getReservedUserDeadOrAlive(String internalId, Long zoneId) {
+    	Long id = getReservedId(internalId, zoneId);
+    	if (id == null) {
+    		List<User>objs = getCoreDao().loadObjects(User.class, new FilterControls(ObjectKeys.FIELD_INTERNALID, internalId), zoneId);
+    		if ((objs == null) || objs.isEmpty()) throw new NoUserByTheNameException(internalId);
+    		User u = objs.get(0);
+    		setReservedId(internalId, zoneId, u.getId());
+    		return u;
+    	}
+    	return loadUserDeadOrAlive(id, zoneId);
    }
     
     public Set<Long> getPrincipalIds(Principal p) {
@@ -1328,4 +1360,28 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
       	
     	
     }
+    
+ 	private User findUserByNameDeadOrAlive(final String userName, final Long zoneId) 
+	throws NoUserByTheNameException {
+    	// STOP!!! THIS METHOD IS FOR INTERNAL/SPECIAL USE ONLY. USE THE REGULAR findUserByName() METHOD INSTEAD.
+        return (User)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                 	   //only returns active users
+                 	   User user = (User)session.getNamedQuery("find-User-Company-DeadOrAlive")
+                             		.setString(ParameterNames.USER_NAME, userName.toLowerCase())
+                             		.setLong(ParameterNames.ZONE_ID, zoneId)
+                             		.setCacheable(true)
+                             		.uniqueResult();
+                        //this query doesn't care if user is deleted or disabled
+                 	   if (user == null) {
+                            throw new NoUserByTheNameException(userName); 
+                        }
+                        return user;
+                    }
+                }
+             );		
+ 	}
+
+
 }

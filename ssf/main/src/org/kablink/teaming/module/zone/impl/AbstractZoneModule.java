@@ -249,7 +249,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  	protected void upgradeZoneTx(Workspace top) {
 		String superName = SZoneConfig.getAdminUserName(top.getName());
  		//	get super user from config file - must exist or throws and error
- 		User superU = getProfileDao().findUserByName(superName, top.getName());
+ 		User superU = getProfileDao().findUserByNameDeadOrAlive(superName, top.getName());
  		RequestContextUtil.setThreadContext(superU).resolve();
  		
  		ZoneConfig zoneConfig;
