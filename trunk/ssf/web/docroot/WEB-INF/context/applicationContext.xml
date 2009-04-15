@@ -456,6 +456,7 @@
 	<bean id="accessControlManager" class="org.kablink.teaming.security.impl.AccessControlManagerImpl">
 		<property name="functionManager"><ref local="functionManager"/></property>
 		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
+		<property name="coreDao"><ref local="coreDao"/></property>
 		<property name="profileDao"><ref local="profileDao"/></property>
 		<property name="licenseManager"><ref bean="licenseManager"/></property>
 	</bean>
