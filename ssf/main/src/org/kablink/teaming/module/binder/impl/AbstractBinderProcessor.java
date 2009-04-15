@@ -1130,9 +1130,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //***********************************************************************************************************
     //no transaction    
     public Binder copyBinder(final Binder source, final Binder destination, final Map options) {
-    	if (source.equals(destination))   
-    		throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
-    	 
+    	//Check if moving a binder into itself or into a sub binder of itself
+    	Binder parent = destination;
+    	while (parent != null) {
+    		if (source.equals(parent))
+        		throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
+    		parent = (Binder) parent.getParentWorkArea();
+    	}
     	if (source.isReserved() || source.isZone()) 
     		throw new NotSupportedException(
     				"errorcode.notsupported.copyBinder", new String[]{source.getPathName()});

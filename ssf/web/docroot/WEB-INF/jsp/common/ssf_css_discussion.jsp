@@ -123,7 +123,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 #ss_topic_box { 
 	margin: 8px 0 8px 0;
 	border: 1px #CCCCCC solid; 
-	padding: 2px 5% 4px 3%;
+	padding: 2px 10px 4px 10px;
 	font-size: 12px;
 	font-style: italic;
 	font-family: 'Lucida Sans', 'Lucida Grande', sans-serif;
@@ -133,7 +133,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color:#f2f2f2;
 	}
 #ss_topic_box_h1{
-	margin: 1% 0 1% 0;
+	margin: 2px 0 2px 0;
 	font-size: 20px;
 	font-style: italic;
 	font-weight: 200;
