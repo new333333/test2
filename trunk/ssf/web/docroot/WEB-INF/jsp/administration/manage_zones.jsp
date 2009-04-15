@@ -75,7 +75,7 @@ function ss_confirmDeleteZone() {
 	<span class="ss_bold"><ssf:nlt tag="administration.zoneVirtualHost"/></span><br/>
 	<input type="text" class="ss_text" size="50" name="virtualHost"><br/><br/>
 		
-	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
+	<input type="submit" class="ss_submit" name="addBtn" onclick="ss_startSpinner();" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
 </ssf:expandableArea>
 <br/>
@@ -106,11 +106,11 @@ function ss_confirmDeleteZone() {
 		
 	<c:if test="${default_zone_name != zoneInfo.zoneName}">
     <td align="left" valign="middle">
-	<input type="submit" class="ss_submit" name="modifyBtn" value="<ssf:nlt tag="button.modify" text="Modify"/>">
+	<input type="submit" class="ss_submit" name="modifyBtn" onclick="ss_startSpinner();" value="<ssf:nlt tag="button.modify" text="Modify"/>">
 	</td>	
 	
     <td align="left" valign="middle">
-	<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete" text="Delete"/>" 
+	<input type="submit" class="ss_submit" name="deleteBtn" onclick="ss_startSpinner();" value="<ssf:nlt tag="button.delete" text="Delete"/>" 
 	  onClick="return ss_confirmDeleteZone();" />
 	</td>	
 	</c:if>

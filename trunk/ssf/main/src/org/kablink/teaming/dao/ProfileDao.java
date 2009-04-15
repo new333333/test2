@@ -171,5 +171,38 @@ public interface ProfileDao {
     public List<Application> loadApplications(Collection<Long> applicationIds, Long zoneId);
 
     public List<Principal> loadPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive);
+    /**
+     * IMPORTANT: This method is for internal/special use only - specifically
+     * for error recovery situation only. Application should NEVER use this method
+     * directly. For regular usage, loadUser() method must be used instead.
+     * 
+     * @param userId
+     * @param zoneId
+     * @return
+     */
+    public User loadUserDeadOrAlive(Long userId, Long zoneId);
+    /**
+     * IMPORTANT: This method is for internal/special use only - specifically
+     * for error recovery situation only. Application should NEVER use this method
+     * directly. For regular usage, getReservedUser() method must be used instead.
+     * 
+     * @param internalId
+     * @param zoneId
+     * @return user
+     */
+    public User getReservedUserDeadOrAlive(String internalId, Long zoneId) throws NoUserByTheIdException;
+    /**
+     * IMPORTANT: This method is for internal/special use only - specifically
+     * for error recovery situation only. Application should NEVER use this method
+     * directly. For regular usage, findUserByName() method must be used instead.
+     * 
+     * @param principalName
+     * @param zoneName
+     * @return
+     * @throws NoUserByTheNameException
+     * @throws NoWorkspaceByTheNameException
+     */
+ 	public User findUserByNameDeadOrAlive(String principalName, String zoneName) 
+	throws NoUserByTheNameException, NoWorkspaceByTheNameException;
 
  }

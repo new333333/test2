@@ -276,7 +276,7 @@ public class RequestContext {
 		User u;
 		if(userId != null) {
 			if(zoneId != null) {
-				u = getProfileDao().loadUser(userId, zoneId);
+				u = getProfileDao().loadUserDeadOrAlive(userId, zoneId);
 			}
 			else if(zoneName != null) {
 				u = getProfileDao().loadUser(userId, zoneName);					

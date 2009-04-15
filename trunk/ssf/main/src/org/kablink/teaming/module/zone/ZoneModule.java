@@ -49,7 +49,10 @@ public interface ZoneModule {
 	 * @param zoneName zone name
 	 * @param virtualHost virtual host
 	 */
-	public void writeZone(String zoneName, String virtualHost);
+	// This method used to be called when zone modification (ie, create or update) is 
+	// triggered from portal side. Now that Teaming doesn't run inside portal, this
+	// method is no longer needed. Commenting out.
+	// public void writeZone(String zoneName, String virtualHost);
 	
 	/**
 	 * Returns whether or not the zone exists.
