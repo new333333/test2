@@ -373,6 +373,13 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 </c:if>
 <br/>
 <br/>
+
+<c:if test="${ssWorkArea.workAreaType == 'zone'}">
+<div style="padding-bottom:10px;">
+* <ssf:nlt tag="access.zone.applicationsFiltering"/>
+</div>
+</c:if>
+
 <span class="ss_italic ss_small">[<ssf:nlt tag="access.superUser">
   <ssf:param name="value" value="${ss_superUser.title}"/>
   <ssf:param name="value" value="${ss_superUser.name}"/>

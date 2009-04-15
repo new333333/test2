@@ -734,6 +734,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true");
     		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
     		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true");
+    		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_ACCESS_CONTROLS, "true");
     		
     		//flush these changes, other reads may re-load
     		getCoreDao().flush();
@@ -775,6 +776,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		members.clear();
     		members.add(user.getId());
     		addGlobalFunctions(zoneConfig, members);
+    		
+    		//all applications limited to participant for zone
+    		setApplicationGlobalRoles(zoneConfig, applicationGroup, participantsRole);
+
     		//use module instead of processor directly so index synchronziation works correctly
     		//index flushes entries from session - don't make changes without reload
        		getBinderModule().indexTree(top.getId());
@@ -1143,7 +1148,18 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		// Do not add default members for this.
 		ms.setMemberIds(new HashSet());
 		getCoreDao().save(ms);
-		
 	}
 
+	private void setApplicationGlobalRoles(ZoneConfig zoneConfig, ApplicationGroup applicationGroup,
+			Function participantsRole) {
+		Set members = new HashSet();
+		members.add(applicationGroup);
+		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
+		ms.setWorkAreaId(zoneConfig.getWorkAreaId());
+		ms.setWorkAreaType(zoneConfig.getWorkAreaType());
+		ms.setZoneId(zoneConfig.getZoneId());
+		ms.setFunctionId(participantsRole.getId());
+		ms.setMemberIds(members);
+		getCoreDao().save(ms);
+	}
 }
