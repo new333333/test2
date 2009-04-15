@@ -34,24 +34,19 @@ package org.kablink.teaming.security.impl;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
-import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.license.LicenseManager;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
-import org.kablink.teaming.security.acl.AccessType;
-import org.kablink.teaming.security.acl.AclAccessControlException;
-import org.kablink.teaming.security.acl.AclContainer;
-import org.kablink.teaming.security.acl.AclControlled;
 import org.kablink.teaming.security.function.FunctionManager;
 import org.kablink.teaming.security.function.OperationAccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
@@ -59,8 +54,6 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembershipManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.springframework.web.servlet.support.RequestContextUtils;
-
 
 /**
  *
@@ -70,6 +63,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
     
     private FunctionManager functionManager;
     private WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
+    private CoreDao coreDao;
     private ProfileDao profileDao;
     private LicenseManager licenseManager;
     public FunctionManager getFunctionManager() {
@@ -90,6 +84,12 @@ public class AccessControlManagerImpl implements AccessControlManager {
 	}
 	protected ProfileDao getProfileDao() {
 		return profileDao;
+	}
+	protected CoreDao getCoreDao() {
+		return coreDao;
+	}
+	public void setCoreDao(CoreDao coreDao) {
+		this.coreDao = coreDao;
 	}
 	public void setLicenseManager(LicenseManager licenseManager) {
 		this.licenseManager = licenseManager;
@@ -172,9 +172,20 @@ public class AccessControlManagerImpl implements AccessControlManager {
 			Set membersToLookup = null;
 			if(application != null && !application.isTrusted()) {
 				membersToLookup = getProfileDao().getPrincipalIds(application);
+				// First, test against the zone-wide maximum set by the admin
 				if(!getWorkAreaFunctionMembershipManager()
 						.checkWorkAreaFunctionMembership(user.getZoneId(),
-								workArea, workAreaOperation, membersToLookup)) {
+								getCoreDao().loadZoneConfig(user.getZoneId()),
+								workAreaOperation,
+								membersToLookup)) {
+					return false;
+				}
+				// First test passed. Now test against the specified work area.
+				if(!getWorkAreaFunctionMembershipManager()
+						.checkWorkAreaFunctionMembership(user.getZoneId(),
+								workArea, 
+								workAreaOperation, 
+								membersToLookup)) {
 					return false;
 				}
 			}
