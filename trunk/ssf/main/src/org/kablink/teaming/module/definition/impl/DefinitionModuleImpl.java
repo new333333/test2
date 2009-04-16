@@ -1824,6 +1824,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (inputData.exists(nameValue)) {
 							Description description = new Description();
 							description.setText(inputData.getSingleValue(nameValue));
+							String format = inputData.getSingleValue(nameValue + ".format");
+							if (format != null) {
+								description.setFormat(Integer.valueOf(format));
+							}
 							//Deal with any markup language transformations before storing the description
 							MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
 							MarkupUtil.scanDescriptionForAttachmentFileUrls(description);

@@ -385,7 +385,13 @@ public class AddEntryController extends SAbstractController {
 				model.put(WebKeys.DEFINITION_ID, entryType);
 				//Make sure the requested definition is legal
 				if (folderEntryDefs.containsKey(entryType)) {
-					DefinitionHelper.getDefinition((Definition)folderEntryDefs.get(entryType), model, "//item[@type='form']");
+					Definition currentDef = (Definition)folderEntryDefs.get(entryType);
+					DefinitionHelper.getDefinition(currentDef, model, "//item[@type='form']");
+					Element familyProperty = (Element) currentDef.getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']");
+					if (familyProperty != null) {
+						String family = familyProperty.attributeValue("value", "");
+						model.put(WebKeys.DEFINITION_FAMILY, family);
+					}
 				} else {
 					DefinitionHelper.getDefinition(null, model, "//item[@name='entryForm']");
 				}
@@ -409,6 +415,11 @@ public class AddEntryController extends SAbstractController {
 				Definition entryDefinition = entry.getEntryDef();
 				if (entryDefinition != null) {
 					entryView = entryDefinition.getDefinition();
+					Element familyProperty = (Element) entryView.getRootElement().selectSingleNode("//properties/property[@name='family']");
+					if (familyProperty != null) {
+						String family = familyProperty.attributeValue("value", "");
+						model.put(WebKeys.DEFINITION_FAMILY, family);
+					}
 				}
 				Iterator replyStyles = null;
 				if (entryView != null) {
