@@ -1153,7 +1153,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	private void setApplicationGlobalRoles(ZoneConfig zoneConfig, ApplicationGroup applicationGroup,
 			Function participantsRole) {
 		Set members = new HashSet();
-		members.add(applicationGroup);
+		members.add(applicationGroup.getId());
 		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
 		ms.setWorkAreaId(zoneConfig.getWorkAreaId());
 		ms.setWorkAreaType(zoneConfig.getWorkAreaType());
