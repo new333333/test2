@@ -88,6 +88,9 @@
   </c:if>
   <c:if test="${!empty ss_sectionText}"><c:set var="textValue" value="${ss_sectionText}"/></c:if>
 </c:if>
+<c:if test="${empty ssDefinitionEntry && ssDefinitionFamily == 'miniblog'}">
+  <c:set var="textFormat" value="2"/>
+</c:if>
 <div class="ss_entryContent">
 <c:if test="${empty ssReadOnlyFields[property_name]}">
 
@@ -109,8 +112,9 @@
   </c:if>
   <c:if test="${textFormat == '2'}">
   <textarea name="${property_name}" id="ss_htmleditor_${property_name}" 
-    height="<%= height %>"><ssf:markup type="form" leaveSectionsUnchanged="true"
+    rows="8" cols="80"><ssf:markup type="form" leaveSectionsUnchanged="true"
     entity="${ssDefinitionEntry}">${textValue}</ssf:markup></textarea>
+    <input type="hidden" name="${property_name}.format" value="2"/>
   </c:if>
   </div>
  </c:if>
