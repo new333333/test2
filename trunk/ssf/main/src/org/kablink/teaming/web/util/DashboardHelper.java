@@ -998,7 +998,11 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					}
 				}
 
-				if (folderIds.isEmpty()) doSearch = false; //don't search everything
+				if (folderIds.isEmpty()
+					// allow system-wide search for tasks, maybe more dashboard components later ...
+					&& !component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)) {
+					doSearch = false; //don't search everything
+				}
 				else {
 					//	Limit the search to entries only
 					Document searchFilter2 = DocumentHelper.createDocument();
@@ -1014,7 +1018,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter2);
 				}
 			}
-		}	
+		}
 
 		if (doSearch) {
 			if (binder != null) options.put(ObjectKeys.SEARCH_DASHBOARD_CURRENT_BINDER_ID, binder.getId().toString());
@@ -1038,10 +1042,11 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				}
 			}
 			searchSearchFormData.put(WebKeys.BINDER_DATA, ResolveIds.getBinderTitlesAndIcons(ids));
+			// If we searched in all folders, populate the folder list with the folders in which we found entries.
+			if (folderIds == null || ((folderIds != null) && folderIds.isEmpty())) 
+				idData.put(WebKeys.FOLDER_LIST, getBinderModule().getBinders(ids));
 		}
-	
-			
-	
+
     }
     
     public static void setTitle(ActionRequest request, Binder binder, String scope) {
@@ -1199,8 +1204,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						searchFilter.addFolderIds(folderIds);
 						componentData.put(SearchFormSavedFolderIdList, LongIdUtil.getIdsAsString(folderIds));
 					}
-					
-					
+
 					if (ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY.equals(cName)) {
 						List<SearchFilter.Entry> entries = new ArrayList(); 
 						String assignedTo = PortletRequestUtils.getStringParameter(request, "assignedTo", "");
@@ -1259,7 +1263,6 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					
 					componentData.put(SearchFormSavedSearchQuery, searchFilter
 							.getFilter().asXML());
-					
 				} else if (ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY.equals(cName) ||
 						ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY.equals(cName)) {
 
@@ -1292,7 +1295,6 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					}
 					componentData.put(SearchFormSavedSearchQuery, searchFilter
 							.getFilter().asXML());
-		
 				} else if (ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST.equals(cName)) {
 					String users = LongIdUtil.getIdsAsString(request.getParameterValues(DashboardHelper.ElementNamePrefix+"users"));
 					String groups = LongIdUtil.getIdsAsString(request.getParameterValues(DashboardHelper.ElementNamePrefix+"groups"));
