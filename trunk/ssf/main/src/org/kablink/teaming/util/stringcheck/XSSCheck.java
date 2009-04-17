@@ -32,16 +32,22 @@
  */
 package org.kablink.teaming.util.stringcheck;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.dom4j.Element;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.HTMLInputFilter;
+import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.util.StringPool;
 
 
@@ -67,9 +73,9 @@ public class XSSCheck implements StringCheck {
 	private Pattern pattern6;
 	private boolean enable;
 	private String mode;
-	private String[] users;
-	private String[] groups;
 	private HTMLInputFilter htmlInputFilter;
+	private ConcurrentHashMap<Long, Set<String>> trustedUsersMap;
+	private ConcurrentHashMap<Long, Set<String>> trustedGroupsMap;
 	
 	public XSSCheck() {
 		pattern1 = Pattern.compile(PATTERN_STR1);
@@ -80,8 +86,8 @@ public class XSSCheck implements StringCheck {
 		pattern6 = Pattern.compile(PATTERN_STR6);
 		enable = SPropsUtil.getBoolean("xss.check.enable");
 		mode = SPropsUtil.getString("xss.check.mode");
-		users = SPropsUtil.getStringArray("xss.trusted.users", ";");
-		groups = SPropsUtil.getStringArray("xss.trusted.groups", ";");
+		trustedUsersMap = new ConcurrentHashMap<Long, Set<String>>();
+		trustedGroupsMap = new ConcurrentHashMap<Long, Set<String>>();
 
 		// We do this not only to validate the input mode but also to enable
 		// simple reference comparison for modes. 
@@ -122,16 +128,11 @@ public class XSSCheck implements StringCheck {
 		
 		if (mode == MODE_TRUSTED_DISALLOW || mode == MODE_TRUSTED_STRIP) {
 			User user = RequestContextHolder.getRequestContext().getUser();
-			String userName = user.getName();
-			for(int i = 0; i < users.length; i++) {
-				if(userName.equals(users[i]))
-					return input; // match found on user list
-			}		
-			Set groupNames = user.computeGroupNames();
-			for(int i = 0; i < groups.length; i++) {
-				if(groupNames.contains(groups[i]))
-					return input; // match found on group list
-			}
+			if(getTrustedUserNames(user.getZoneId()).contains(user.getName()))
+				return input; // match found on user list
+			Set userGroupNames = user.computeGroupNames();
+			if(!Collections.disjoint(user.computeGroupNames(), getTrustedGroupNames(user.getZoneId())))
+				return input; // match found on group list
 		}
 		
 		String sequence = new String(input);
@@ -203,4 +204,31 @@ public class XSSCheck implements StringCheck {
 		data.put("sequence", sequence);
 		return result;
 	}
+	
+	private Set<String> getTrustedUserNames(Long zoneId) {
+		Set<String> users = trustedUsersMap.get(zoneId);
+		if(users == null) {
+			users = new TreeSet<String>();
+			List<Element> trustedUsers = SZoneConfig.getElements("xssConfiguration/trustedUsers/user");
+			for(Element elem:trustedUsers) {
+				users.add(elem.attributeValue("name"));
+			}
+            trustedUsersMap.put(zoneId, users);
+		}
+		return users;
+	}
+	
+	private Set<String> getTrustedGroupNames(Long zoneId) {
+		Set<String> groups = trustedGroupsMap.get(zoneId);
+		if(groups == null) {
+			groups = new TreeSet<String>();
+			List<Element> trustedGroups = SZoneConfig.getElements("xssConfiguration/trustedGroups/group");
+			for(Element elem:trustedGroups) {
+				groups.add(elem.attributeValue("name"));
+			}
+            trustedGroupsMap.put(zoneId, groups);
+		}
+		return groups;
+	}
+
 }
