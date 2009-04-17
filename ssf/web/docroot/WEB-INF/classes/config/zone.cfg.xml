@@ -6,12 +6,22 @@
 	     apply to individual zone instances. This element is required. -->
 	<defaultZone name="liferay.com"/>
 	<!-- Zone specific settings for default zone of liferay.com. -->
-    <zone name="liferay.com">
-    	<!-- all new users in this zone will be assigned group membership in these groups -->
+	<zone name="liferay.com">
+		<!-- all new users in this zone will be assigned group membership in these groups -->
 		<defaultGroupsOnAcctCreation>
-    		<!-- Example format -->
-    		<!--<group name="registered_user" />-->
+			<!-- Example format -->
+			<!--<group name="registered_user" />-->
 		</defaultGroupsOnAcctCreation>
+		<xssConfiguration>
+			<trustedUsers>
+				<!-- Example format -->
+				<!--<user name="special_user"/>-->
+			</trustedUsers>
+			<trustedGroups>
+				<!-- Example format -->
+				<!--<group name="special_group"/>-->
+			</trustedGroups>
+		</xssConfiguration>
 	</zone>
 	<property name="adminUser">admin</property>
 	<property name="guestUser">guest</property>
@@ -55,19 +65,5 @@
 		<property name="deploy.seconds">300</property>
 	</extensionConfiguration>
 	<licenseConfiguration/>
-	<xssConfiguration>
-		<!-- A list of trusted user names for whom XSS checking is bypassed. Note that the names in this
-		     list can be accessed from ALL zones in the system. So NEVER add any user to this default list 
-		     unless you're absolutely sure that the account has the same meaning across ALL zones.
-		     Whenever unsure, create xssConfiguration in a specific zone and add the user there to avoid
-		     security vulnerability. -->
-		<trustedUsers>
-			<user name="admin"/>
-		</trustedUsers>
-		<trustedGroups>
-			<!-- Example format -->
-			<!--<group name="special_people"/>-->
-		</trustedGroups>
-	</xssConfiguration>
 </zoneConfiguration>
 
