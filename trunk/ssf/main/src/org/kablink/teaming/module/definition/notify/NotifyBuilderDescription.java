@@ -84,7 +84,7 @@ public class NotifyBuilderDescription extends AbstractNotifyBuilder {
     	if (m3.find()) {
     		value = m3.replaceAll("\r\n");
     	}
-    	value.replaceAll("&nbsp;", " ");
+    	value = value.replaceAll("&nbsp;", " ");
     	return  Html.stripHtml(value);
     }
 }
