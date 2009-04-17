@@ -55,4 +55,19 @@
 		<property name="deploy.seconds">300</property>
 	</extensionConfiguration>
 	<licenseConfiguration/>
-</zoneConfiguration>	
+	<xssConfiguration>
+		<!-- A list of trusted user names for whom XSS checking is bypassed. Note that the names in this
+		     list can be accessed from ALL zones in the system. So NEVER add any user to this default list 
+		     unless you're absolutely sure that the account has the same meaning across ALL zones.
+		     Whenever unsure, create xssConfiguration in a specific zone and add the user there to avoid
+		     security vulnerability. -->
+		<trustedUsers>
+			<user name="admin"/>
+		</trustedUsers>
+		<trustedGroups>
+			<!-- Example format -->
+			<!--<group name="special_people"/>-->
+		</trustedGroups>
+	</xssConfiguration>
+</zoneConfiguration>
+
