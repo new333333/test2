@@ -87,6 +87,7 @@ public class WebUrlUtil {
 	
 	private static final String SSFS_HOST_REWRITE = "ssfs.default.host.rewrite";
 	private static final String SSFS_IGNORE_PASSWORD_ENABLED = "ssfs.ignore.password.enabled";
+	private static final String FILE_URL_ENCODE_FILENAME = "file.url.encode.filename";
 	
 	enum WebApp {
 		SSF,
@@ -454,8 +455,11 @@ public class WebUrlUtil {
 		webUrl.append(Constants.SLASH + fileId); //for fall back
 		webUrl.append(Constants.SLASH + attDate); //for browser caching
 		webUrl.append(Constants.SLASH + version);
-		///encodeUrl replaces spaces with '+' which readFileController doesn't handle
-		webUrl.append(Constants.SLASH + StringUtils.replace(Http.encodeURL(fileName), "+", "%20"));  
+		if(SPropsUtil.getBoolean(FILE_URL_ENCODE_FILENAME, false)) {
+			///encodeUrl replaces spaces with '+' which readFileController doesn't handle
+			fileName = StringUtils.replace(Http.encodeURL(fileName), "+", "%20");
+		}
+		webUrl.append(Constants.SLASH + fileName);  
 		return webUrl.toString();
 	}
 
