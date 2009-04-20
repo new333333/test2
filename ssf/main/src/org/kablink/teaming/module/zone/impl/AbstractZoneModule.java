@@ -731,6 +731,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		user.setModification(stamp);
     		
     		//Mark that this user was created in V2 and therefore all upgrade tasks were done
+    		getBinderModule().setProperty(top.getId(), ObjectKeys.BINDER_PROPERTY_UPGRADE_VERSION, "2.0");
     		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true");
     		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
     		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true");

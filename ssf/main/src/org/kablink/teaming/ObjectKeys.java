@@ -47,6 +47,9 @@ public interface ObjectKeys {
 	public static final String PRODUCT_CONFERENCING_NAME_DEFAULT="Conference";
 	public static final String PRODUCT_CONFERENCING_TITLE_DEFAULT="Kablink Conference";
 	
+	//Upgrade version
+	public static final String PRODUCT_UPGRADE_VERSION="2.0";
+
 	//Original zoneId for V1 zones
 	public static final String DEFAULT_ZONE_ID_FOR_V1="1";
 	
@@ -190,6 +193,7 @@ public interface ObjectKeys {
     public static final String BINDER_PROPERTY_FOLDER_COLUMNS = "folderColumns";
     public static final String BINDER_PROPERTY_TEAM_MEMBERS = "teamMembers";
     public static final String BINDER_PROPERTY_WIKI_HOMEPAGE = "wikiHomepage";
+    public static final String BINDER_PROPERTY_UPGRADE_VERSION = "binderUpgradeVersion";
     
     // Global properties
     public static final String GLOBAL_PROPERTY_DEFAULT_TIME_ZONE = "defaultTimeZone";

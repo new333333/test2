@@ -324,7 +324,7 @@ public class ProfilesBinderHelper {
 		//Site administration
 		if (bs.getAdminModule().testAccess(AdminOperation.manageFunction)) {
 			adminMenuCreated=true;
-			PortletURL url = response.createRenderURL();
+			PortletURL url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_SITE_ADMINISTRATION);
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 			folderToolbar.addToolbarMenuItem("1_administration", "", 
