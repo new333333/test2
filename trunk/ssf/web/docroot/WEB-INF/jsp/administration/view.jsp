@@ -200,16 +200,17 @@ if (typeof ss_setAdministrationIframeSize == "undefined")
 </div>
 <br/>
 </c:if>
-
 <c:set var="adminInternalId" value="<%= ObjectKeys.SUPER_USER_INTERNALID %>"/>
+<c:if test="${ss_upgradeVersionCurrent != ss_upgradeVersion}">
 <c:if test="${ssUser.internalId == adminInternalId}">
+  <div>
+    <span class="ss_errorLabel ss_bold"><ssf:nlt tag="administration.upgrade.tasksNotDone"/></span>
+  </div>
  <c:if test="${empty ssUserProperties.upgradeDefinitions || 
  		empty ssUserProperties.upgradeTemplates || 
  		empty ssUserProperties.upgradeSearchIndex || 
  		empty ssUserProperties.upgradeAccessControls}">
-  <div >
-    <span class="ss_errorLabel ss_bold"><ssf:nlt tag="administration.upgrade.tasksNotDone"/></span>
-    <br/>
+  <div>
 	<ul>
 	  <c:if test="${empty ssUserProperties.upgradeDefinitions}">
 	    <li><span class="ss_errorLabel"><ssf:nlt tag="administration.upgradeDefinitions"/></span></li>
@@ -226,6 +227,16 @@ if (typeof ss_setAdministrationIframeSize == "undefined")
 	</ul>
   </div>
  </c:if>
+</c:if>
+<c:if test="${ssUser.internalId != adminInternalId}">
+  <div >
+    <span class="ss_errorLabel ss_bold"><ssf:nlt tag="administration.upgrade.tasksNotDone"/></span>
+    <br/>
+    <c:if test="${ss_isSiteAdmin}">
+      <span class="ss_errorLabel ss_bold"><ssf:nlt tag="administration.upgrade.tasksNotDoneByAdmin"/></span>
+    </c:if>
+  </div>
+</c:if>
 </c:if>
 
 	<table border="0" width="100%">

@@ -1439,7 +1439,7 @@ public class ListFolderHelper {
 		//Site administration
 		if (bs.getAdminModule().testAccess(AdminOperation.manageFunction)) {
 			adminMenuCreated=true;
-			url = response.createRenderURL();
+			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_SITE_ADMINISTRATION);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			folderToolbar.addToolbarMenuItem("1_administration", "", 

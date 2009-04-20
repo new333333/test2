@@ -1022,6 +1022,8 @@ public class WebKeys {
     public static final String TRACKED_PLACES_PAGE="ss_trackedPlacesPage";
     public static final String TRACKED_TEAMS_PAGE="ss_trackedTeamsPage";
     public static final String TRACKED_SITE_PAGE="ss_trackedSitePage";
+    public static final String UPGRADE_VERSION="ss_upgradeVersion";
+    public static final String UPGRADE_VERSION_CURRENT="ss_upgradeVersionCurrent";
     public static final String WHATS_HOT_PAGE="ss_whatsHotPage";
     
     public static final String FIND_TYPE="ssFindType";

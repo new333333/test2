@@ -57,6 +57,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -85,13 +86,31 @@ public class ViewController extends  SAbstractController {
 	protected Log logger = LogFactory.getLog(getClass());
 
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
- 		PortletPreferences prefs = request.getPreferences();
-		String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
-		//force reload so we can setup js correctly
-		if (Validator.isNull(ss_initialized)) {
-			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
-			prefs.store();
-		}
+        User user = RequestContextHolder.getRequestContext().getUser();
+ 		try {
+ 			PortletPreferences prefs = request.getPreferences();
+			String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
+			//force reload so we can setup js correctly
+			if (Validator.isNull(ss_initialized)) {
+				prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
+				prefs.store();
+			}
+ 		} catch(Exception e) {}
+ 		
+ 		if (user.getInternalId().equals(ObjectKeys.SUPER_USER_INTERNALID)) {
+ 			Binder topWorkspace = getWorkspaceModule().getTopWorkspace();
+	 		String upgradeVersion = (String) topWorkspace.getProperty(ObjectKeys.BINDER_PROPERTY_UPGRADE_VERSION);
+	 		if (upgradeVersion == null || !upgradeVersion.equals(ObjectKeys.PRODUCT_UPGRADE_VERSION)) {
+	 			//See if all upgrade tasks have been done
+	 			UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
+	 			if ("true".equals(userProperties.getProperty(ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX)) &&
+	 					"true".equals(userProperties.getProperty(ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS)) &&
+	 					"true".equals(userProperties.getProperty(ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES))) {
+	 				//All upgrade tasks were done, mark the upgrade complete
+	 				getBinderModule().setProperty(topWorkspace.getId(), ObjectKeys.BINDER_PROPERTY_UPGRADE_VERSION, ObjectKeys.PRODUCT_UPGRADE_VERSION);
+	 			}
+	 		}
+ 		}
 		response.setRenderParameters(request.getParameterMap());
 	}
 
@@ -105,6 +124,8 @@ public class ViewController extends  SAbstractController {
 		model.put(WebKeys.PRODUCT_CONFERENCING_NAME, SPropsUtil.getString("product.conferencing.name", ObjectKeys.PRODUCT_CONFERENCING_NAME_DEFAULT));
 		model.put(WebKeys.PRODUCT_CONFERENCING_TITLE, SPropsUtil.getString("product.conferencing.title", ObjectKeys.PRODUCT_CONFERENCING_TITLE_DEFAULT));
  		model.put(WebKeys.PORTLET_TYPE, WebKeys.PORTLET_TYPE_ADMIN);
+ 		model.put(WebKeys.UPGRADE_VERSION_CURRENT, getWorkspaceModule().getTopWorkspace().getProperty(ObjectKeys.BINDER_PROPERTY_UPGRADE_VERSION));
+ 		model.put(WebKeys.UPGRADE_VERSION, ObjectKeys.PRODUCT_UPGRADE_VERSION);
 		try {
  			//If running in a portal, see if we should redraw ourselves just after adding the portlet
  			PortletPreferences prefs = request.getPreferences();
