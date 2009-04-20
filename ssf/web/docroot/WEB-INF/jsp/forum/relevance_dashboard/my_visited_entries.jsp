@@ -102,6 +102,7 @@
 	    <span class="ss_summary"><ssf:textFormat 
 	      formatAction="limitedDescription" 
 	      textMaxWords="10"><ssf:markup entity="${entry}">${entry.description}</ssf:markup></ssf:textFormat></span>
+	    <div class="ss_clear"></div>
 	  </c:if>
 	<c:set var="count" value="${count + 1}"/>
 	</li>
@@ -158,6 +159,7 @@
 	    <span class="ss_summary"><ssf:textFormat 
 	      formatAction="limitedDescription" 
 	      textMaxWords="10"><ssf:markup entity="${entry2}">${entry2.description}</ssf:markup></ssf:textFormat></span>
+	    <div class="ss_clear"></div>
 	  </c:if>
 	
 	<c:set var="count" value="${count + 1}"/>

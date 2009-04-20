@@ -47,6 +47,7 @@
 <c:if test="${!empty binder && !empty binder.brandingSource.branding && ss_accessBranding}">
   <div id="ss_branding">
     <ssf:markup entity="${binder.brandingSource}">${binder.brandingSource.branding}</ssf:markup>
+    <div class="ss_clear"></div>
   </div>
 </c:if>
 </c:if>

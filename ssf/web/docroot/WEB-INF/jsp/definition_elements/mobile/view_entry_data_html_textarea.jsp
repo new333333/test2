@@ -40,6 +40,7 @@
 </c:if>
  <div class="ss_mobile_description">
 <span><ssf:markup entity="${ssDefinitionEntry}">${ssDefinitionEntry.customAttributes[property_name].value.text}</ssf:markup></span>
+<div class="ss_clear"></div>
  </div>
 </div>
 </c:if>
@@ -53,6 +54,7 @@
   <td valign="top">
     <div class="ss_entryContent ss_mobile_description">
      <span><ssf:markup type="view" entity="${ssDefinitionEntry}">${ssDefinitionEntry.customAttributes[property_name].value.text}</ssf:markup></span>
+     <div class="ss_clear"></div>
     </div>
   </td>
 </tr>

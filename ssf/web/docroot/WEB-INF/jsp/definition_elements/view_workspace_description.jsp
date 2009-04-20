@@ -36,7 +36,8 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${!empty ssDefinitionEntry.description}">
 <div class="ss_entryContent">
- <span><ssf:markup entity="${ssDefinitionEntry}">${ssDefinitionEntry.description.text}</ssf:markup></span>
-   <br/>
+  <span><ssf:markup entity="${ssDefinitionEntry}">${ssDefinitionEntry.description.text}</ssf:markup></span>
+  <div class="ss_clear"></div>
+  <br/>
 </div>
 </c:if>

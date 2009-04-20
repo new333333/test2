@@ -38,6 +38,7 @@
   <c:if test="${!empty ssBlogSetBinder.description}">
     <div class="ss_entryContent">
      <span><ssf:markup entity="${ssBlogSetBinder}">${ssBlogSetBinder.description.text}</ssf:markup></span>
+     <div class="ss_clear"></div>
      <br/>
     </div>
   </c:if>
@@ -47,6 +48,7 @@
   <c:if test="${!empty ssDefinitionEntry.description}">
     <div class="ss_entryContent">
      <span><ssf:markup entity="${ssDefinitionEntry}">${ssDefinitionEntry.description.text}</ssf:markup></span>
+     <div class="ss_clear"></div>
      <br/>
     </div>
   </c:if>

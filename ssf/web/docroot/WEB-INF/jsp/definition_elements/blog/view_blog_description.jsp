@@ -45,6 +45,7 @@
   <div>
     <span><ssf:markup entity="${ssDefinitionEntry}"><c:out 
        value="<%= description %>" escapeXml="false"/></ssf:markup></span>
+    <div class="ss_clear"></div>
   </div>
 <%  	}
  	} else if (thisEntry instanceof Map) {
@@ -55,7 +56,9 @@
   <div>
     <span><ssf:markup search="${ssDefinitionEntry}"><c:out 
        value="<%= description %>" escapeXml="false"/></ssf:markup></span>
+    <div class="ss_clear"></div>
   </div>
+  <div class="ss_clear"></div>
 
 <%  	}
 	}

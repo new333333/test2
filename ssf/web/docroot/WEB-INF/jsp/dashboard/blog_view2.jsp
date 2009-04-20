@@ -118,6 +118,7 @@
  		<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
  	     <ssf:markup search="${fileEntry}" >${fileEntry._desc}</ssf:markup>
  		</ssf:textFormat>
+ 		<div class="ss_clear"></div>
     </div>
 <%
 	}

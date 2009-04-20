@@ -69,6 +69,7 @@
 								</ssf:titleLink></div>
 						  <div style="padding-left:10px;">
 						    <span class="ss_italic" ><ssf:markup search="${entry}">${entry._desc}</ssf:markup></span>
+						    <div class="ss_clear"></div>
 						  </div>
 					    </li>
 				

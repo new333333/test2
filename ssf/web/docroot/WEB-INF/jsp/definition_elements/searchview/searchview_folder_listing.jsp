@@ -88,7 +88,8 @@
 							<c:if test="${!empty entry._desc}">								
 								<ssf:textFormat formatAction="limitedDescription" textMaxWords="100">
 										<ssf:markup search="${entry}">${entry._desc}</ssf:markup>
-								</ssf:textFormat>								
+								</ssf:textFormat>
+								<div class="ss_clear"></div>
 							</c:if>
 						</p>
 					</div>

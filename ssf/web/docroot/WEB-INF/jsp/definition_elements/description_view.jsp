@@ -38,6 +38,6 @@
     --%><ssf:editable entity="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}"><%--
         --%><span><%--
         --%><ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true">${ssDefinitionEntry.description.text}</ssf:markup><%--
-        --%></span><%--
+        --%></span><div class="ss_clear"></div><%--
 --%></ssf:editable><%--
 --%></c:if>

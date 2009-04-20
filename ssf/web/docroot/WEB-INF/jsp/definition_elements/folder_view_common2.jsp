@@ -829,6 +829,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			    <ssf:markup search="${entry2}">${entry2._desc}</ssf:markup>
 			    </ssf:textFormat>
 	      </span>
+	      <div class="ss_clear"></div>
 	  </div>
 	</c:forEach>
 </c:if>
