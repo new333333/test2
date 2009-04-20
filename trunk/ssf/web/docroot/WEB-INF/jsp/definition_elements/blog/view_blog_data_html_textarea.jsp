@@ -51,6 +51,7 @@
 </c:if>
  <div class="ss_entryDescription"></div>
   <span><ssf:markup entity="${ssDefinitionEntry}"><%= text %></ssf:markup></span>
+  <div class="ss_clear"></div>
 <%  	}
  	} else if (thisEntry instanceof Map) {
 		text = (String) ((Map)thisEntry).get(property_name);
@@ -64,6 +65,7 @@
 </c:if>
  <div class="ss_entryDescription"></div>
   <span><ssf:markup search="${ssDefinitionEntry}"><%= text %></ssf:markup></span>
+  <div class="ss_clear"></div>
 
 <%  	}
 	}

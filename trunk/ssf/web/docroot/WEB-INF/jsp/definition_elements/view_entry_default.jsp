@@ -49,6 +49,7 @@
 <div class="formBreak">
 <div class="ss_entryContent">
 <ssf:markup entity="${ssDefinitionEntry}">${ssDefinitionEntry.description.text}</ssf:markup>
+<div class="ss_clear"></div>
 </div>
 </div>
 <c:forEach var="descendant" items="${ssFolderEntryDescendants}">

@@ -107,6 +107,7 @@
 					<ssf:textFormat formatAction="limitedDescription" textMaxWords="50">
 		  				<ssf:markup search="${binder}">${binder._desc}</ssf:markup>
 		  			</ssf:textFormat>
+		  			<div class="ss_clear"></div>
 		  		</div>
     			<c:forEach var="subBinder" items="${ss_bindersSubBinders[binder._docId]}">
       				<c:if test="${subBinder._entityType == 'workspace' || subBinder._entityType == 'profiles'}">
@@ -146,6 +147,7 @@
         				    <div><ssf:textFormat formatAction="limitedDescription" textMaxWords="50">
 		  							<ssf:markup search="${subBinder}">${subBinder._desc}</ssf:markup>
 		  						</ssf:textFormat>
+		  						<div class="ss_clear"></div>
 		  					</div>
         				  </div><!-- end of left padding -->
         				</div><!-- end of title -->
@@ -236,6 +238,7 @@
 		  			textMaxWords="50">
 		  				<ssf:markup search="${binder}">${binder._desc}</ssf:markup>
 		  			</ssf:textFormat>
+		  			<div class="ss_clear"></div>
 		  	  </div>
   		</c:if>
   

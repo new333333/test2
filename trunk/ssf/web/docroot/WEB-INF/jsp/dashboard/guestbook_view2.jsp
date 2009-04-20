@@ -83,6 +83,7 @@
 								<ssf:markup search="${fileEntry}">${fileEntry._desc}</ssf:markup>
 						</ssf:textFormat>
 					  </span>
+					  <div class="ss_clear"></div>
 				</div>
 				</c:if>
 			</td>					 	

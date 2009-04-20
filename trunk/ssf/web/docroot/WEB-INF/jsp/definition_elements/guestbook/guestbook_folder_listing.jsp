@@ -88,6 +88,7 @@
 							<c:if test="${!empty entry._desc}">
 							<div class="ss_entryContent">
 								<span><ssf:markup search="${entry}" >${entry._desc}</ssf:markup></span>
+								<div class="ss_clear"></div>
 							</div>
 							</c:if>
 						</td>

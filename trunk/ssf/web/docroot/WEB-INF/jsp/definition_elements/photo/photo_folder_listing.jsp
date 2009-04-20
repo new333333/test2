@@ -162,6 +162,7 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 		    		<ssf:textFormat formatAction="limitedDescription" textMaxWords="100">
 		    		<ssf:markup search="${fileEntry}">${fileEntry._desc}</ssf:markup>
 		    		</ssf:textFormat></span>
+		    <div class="ss_clear"></div>
 		  </div>
 		</c:forEach>
 	</c:if>

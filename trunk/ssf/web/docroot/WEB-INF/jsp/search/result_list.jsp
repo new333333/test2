@@ -131,6 +131,7 @@
 								<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
 									<ssf:markup search="${entry}">${entry._desc}</ssf:markup>
 									</ssf:textFormat>
+									<div class="ss_clear"></div>
 								</p>
 							</div>
 							<div class="ss_clear">&nbsp;</div>
@@ -297,7 +298,8 @@
 								<p id="summary_${status.count}">	
 									<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
 											<ssf:markup search="${entry}">${entry._desc}</ssf:markup>
-										</ssf:textFormat>	
+										</ssf:textFormat>
+										<div class="ss_clear"></div>
 								</p>
 							</div>
 							<div class="ss_clear">&nbsp;</div>
@@ -371,6 +373,7 @@
 										<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
 											<ssf:markup search="${entry}">${entry._desc}</ssf:markup>
 										</ssf:textFormat>
+										<div class="ss_clear"></div>
 								</p>
 							</div>
 							<div class="ss_clear">&nbsp;</div>
@@ -439,7 +442,8 @@
 								<p id="summary_${status.count}">
 									<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
 											<ssf:markup search="${entry}">${entry._desc}</ssf:markup>	
-									</ssf:textFormat>															
+									</ssf:textFormat>
+									<div class="ss_clear"></div>
 								</p>
 							</div>
 							<div class="ss_clear">&nbsp;</div>

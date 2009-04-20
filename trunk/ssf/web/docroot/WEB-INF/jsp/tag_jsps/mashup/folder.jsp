@@ -81,6 +81,7 @@
 	<c:if test="${ssConfigJspStyle != 'form' && !empty mashup_attributes['showFolderDescription']}">
 	  <div class="ss_mashup_folder_description">
 		<ssf:markup entity="${mashupEntry}">${mashupBinder.description.text}</ssf:markup>
+		<div class="ss_clear"></div>
 	  </div>
 	</c:if>
 	<c:if test="${ssConfigJspStyle != 'form' && empty mashup_attributes['showEntriesOpened']}">
@@ -119,6 +120,7 @@
 			<c:if test="${!empty entry._desc}">
 			  <div class="ss_mashup_folder_list_open_entry">
 			    <ssf:markup search="${entry}">${entry._desc}</ssf:markup>
+			    <div class="ss_clear"></div>
 			  </div>
 			</c:if>
 		  </div>

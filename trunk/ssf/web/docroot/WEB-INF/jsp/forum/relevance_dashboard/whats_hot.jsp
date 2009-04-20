@@ -97,6 +97,7 @@
 	    <span class="ss_summary"><ssf:textFormat 
 	      formatAction="limitedDescription" 
 	      textMaxWords="10"><ssf:markup  entity="${entry}" type="view">${entry.description}</ssf:markup></ssf:textFormat></span>
+	    <div class="ss_clear"></div>
 	  </c:if>
 	
     </li>

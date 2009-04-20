@@ -52,7 +52,7 @@
 --%><c:if test="${aclMap[entityId]['modifyEntry']}"><%--
 
 
-	--%><div align="right" class="ss_editableTab"><a href="javascript:;"<%--
+	--%><div class="ss_clear"></div><div align="right" class="ss_editableTab"><a href="javascript:;"<%--
     --%> onMouseOver="ss_editableHighlight('over', this, '${renderResponse.namespace}ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--
     --%> onMouseOut="ss_editableHighlight('out', this, '${renderResponse.namespace}ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--
     --%> onClick="ss_editablePopUp('${editUrl}', '${renderResponse.namespace}ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--

@@ -86,6 +86,7 @@
 	<c:if test="${ssConfigJspStyle != 'form'}">
 	  <div class="ss_mashup_entry_content">
 	    <ssf:markup entity="${mashupEntry}">${mashupEntry.description.text}</ssf:markup>
+	    <div class="ss_clear"></div>
 	  </div>
 	</c:if>
   <div class="ss_mashup_round_bottom"><div></div></div>
