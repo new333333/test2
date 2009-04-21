@@ -117,6 +117,9 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
     <c:if test="${ss_simpleUrlNameNotAllowedError}">
     	<span class="ss_bold ss_errorLabel"><ssf:nlt tag="simpleUrl.nameNotAllowed"/></span><br/><br/>
     </c:if>
+    <c:if test="${ss_simpleUrlInvalidCharactersError}">
+    	<span class="ss_bold ss_errorLabel"><ssf:nlt tag="simpleUrl.invalidCharacters"/></span><br/><br/>
+    </c:if>
     
     <span class="ss_labelAbove"><ssf:nlt tag="simpleUrl.addUrl"/></span> 
     <table cellspacing="0" cellpadding="0">

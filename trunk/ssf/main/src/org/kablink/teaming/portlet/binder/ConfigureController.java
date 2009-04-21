@@ -41,6 +41,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -147,6 +149,13 @@ public class ConfigureController extends AbstractBinderController {
 					//Not allowed to have a blank prefix; Force it to start with the user's name
 					name = user.getName() + "/" + name;
 				}
+				Pattern p = Pattern.compile("^([a-z0-9$_.+!*'(),-]*)/?([a-z0-9$_.+!*'(),-]*)$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+				Matcher m = p.matcher(name);
+				if (!m.find()) {
+					//Cannot use non-url allowed characters
+					response.setRenderParameter(WebKeys.SIMPLE_URL_INVALID_CHARACTERS, "true");
+					return;
+				}
 				SimpleName simpleUrl = getBinderModule().getSimpleName(name);
 				if (simpleUrl == null) {
 					getBinderModule().addSimpleName(name, binderId, binder.getEntityType().name());
@@ -221,6 +230,9 @@ public class ConfigureController extends AbstractBinderController {
 					  	binder.getEntityType().equals(EntityType.folder) &&
 					  	simpleNames.size() > 0);
 		}
+		model.put(WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR));
+		model.put(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR));
+		model.put(WebKeys.SIMPLE_URL_INVALID_CHARACTERS, PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_INVALID_CHARACTERS));
 		return new ModelAndView(WebKeys.VIEW_CONFIGURE, model);
 	}
 	protected void getDefinitions(ActionRequest request, List definitions, Map workflowAssociations) {
