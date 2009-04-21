@@ -34,29 +34,31 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div id="ss_para" class="ss_link_5">
-<div id="ss_hints"><em><ssf:nlt tag="relevance.peopleBeingTracked"/></em></div>
-<c:forEach var="user" items="${ss_trackedPeople}">
-
-    <div id="ss_col3_para" > 
-    <ssf:showUser user="${user}" titleStyle="ss_link_1" />
-    <c:if test="${ss_show_tracked_item_delete_button == 'true'}">
-    <img style="padding:4px 0px 0px 2px;" align="texttop"
-      src="<html:rootPath/>images/pics/delete.gif"
-      onclick="ss_trackedPeopleDelete(this, '${user.id}');"
-      <ssf:alt text="alt.delete"/>/>
-    </c:if>
-    <c:if test="${!empty user.status}">
-	    <div>
-			<span class="ss_smallprint"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-			  value="${user.statusDate}" type="both" 
-			  timeStyle="short" dateStyle="short" /></span>
-	    </div>
-	    <div id="ss_im_status"><em>${user.status}</em></div>
-    </c:if>
-    </div><!-- end of para -->
-    
-</c:forEach>
-	</div> <!-- end of ss_para -->
+<div id="ss_para">
+	<div id="ss_today">
+		<div id="ss_hints"><em><br />
+			<ssf:nlt tag="relevance.peopleBeingTracked"/>
+		</em></div>
+		<c:forEach var="user" items="${ss_trackedPeople}">
+		    <div id="ss_col3_para" > 
+			    <ssf:showUser user="${user}" titleStyle="ss_link_1" />
+			    <c:if test="${ss_show_tracked_item_delete_button == 'true'}">
+			    <img style="padding:4px 0px 0px 2px;" align="texttop"
+			      src="<html:rootPath/>images/pics/delete.gif"
+			      onclick="ss_trackedPeopleDelete(this, '${user.id}');"
+			      <ssf:alt text="alt.delete"/>/>
+			    </c:if>
+			    <c:if test="${!empty user.status}">
+				    <div>
+						<span class="ss_smallprint"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+						  value="${user.statusDate}" type="both" 
+						  timeStyle="short" dateStyle="short" /></span>
+				    </div>
+				    <div id="ss_im_status"><em>${user.status}</em></div>
+			    </c:if>
+		    </div> <!-- end of ss_col3_para -->
+		</c:forEach>
+	</div>		<!-- end of ss_today -->
+</div>			<!-- end of ss_para -->
 
 <div class="ss_clear_float"></div>
