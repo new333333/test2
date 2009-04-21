@@ -47,7 +47,7 @@
     ss_element_display_style == 'tableAlignLeft'}">
 <tr>
   <td class="ss_table_spacer_right" valign="top" align="right">
-    <c:out value="${property_caption}" />
+    <span class="${ss_element_display_style_caption}"><c:out value="${property_caption}" /></span>
   </td>
   <td valign="top">
     <ssf:editable entity="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}">

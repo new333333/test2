@@ -147,6 +147,8 @@
 
 <td valign="top" align="center">
 <c:set var="ss_element_display_style" value="tableAlignLeft" scope="request"/>
+<c:set var="ss_element_display_style_caption" value="ss_light" scope="request"/>
+<c:set var="ss_element_display_style_item" value="ss_bold" scope="request"/>
 
 <div class="ss_entryContent">
   <div id="ss_presenceOptions1_${renderResponse.namespace}"></div>
@@ -167,11 +169,11 @@
  <c:if test="${element != 'name' && element != 'title'}">
  <tr>
   <td valign="top" align="right">
-   <span class="ss_light"><ssf:nlt tag="profile.element.${element}"/></span>
+   <span class="${ss_element_display_style_caption}"><ssf:nlt tag="profile.element.${element}"/></span>
   </td>
   <td valign="top" align="left">
    <c:if test="${!empty ssDefinitionEntry[element]}">
-    <span class="ss_bold">
+    <span class="${ss_element_display_style_item}">
     <c:if test="${element == 'emailAddress' || element == 'mobileEmailAddress' || element == 'txtEmailAddress'}">
         <a href="mailto:${ssDefinitionEntry[element]}">
     </c:if>    
@@ -180,7 +182,7 @@
     </span>
    </c:if>
    <c:if test="${!empty ssDefinitionEntry.customAttributes[element]}">
-    <span class="ss_bold"><c:out value="${ssDefinitionEntry.customAttributes[element]}"/></span>
+    <span class="${ss_element_display_style_item}"><c:out value="${ssDefinitionEntry.customAttributes[element]}"/></span>
    </c:if>
   </td>
  </tr>
@@ -189,7 +191,8 @@
 
   <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
        configElement="<%= item %>" 
-       configJspStyle="${ssConfigJspStyle}" />
+       configJspStyle="${ssConfigJspStyle}" 
+       entry="${ssDefinitionEntry}" />
 
  
  </table>

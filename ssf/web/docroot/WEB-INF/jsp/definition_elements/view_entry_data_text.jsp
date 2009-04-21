@@ -44,10 +44,10 @@
     ss_element_display_style == 'tableAlignLeft'}">
 <tr>
   <td class="ss_table_spacer_right" valign="top" align="right">
-    <span class="ss_light"><c:out value="${property_caption}" /></span>
+    <span class="${ss_element_display_style_caption}"><c:out value="${property_caption}" /></span>
   </td>
   <td valign="top" align="left">
-    <span class="ss_bold"><c:out 
+    <span class="${ss_element_display_style_item}"><c:out 
       value="${ssDefinitionEntry.customAttributes[property_name].value}" 
       escapeXml="false"/></span>
   </td>
