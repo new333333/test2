@@ -114,7 +114,7 @@
     <span><ssf:nlt tag="permalinks"/></span>
   </td>
   <td valign="top">
-    <span><ssf:nlt tag="permalink.hint.email"/></span>
+    <span><ssf:nlt tag="permalink.hint.permalink"/></span>
   </td>
 </tr>
 
