@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<project name="jsr168" basedir=".">
+	<property name="project.dir" value="${basedir}/../.." />
+
+	<import file="${project.dir}/build-common.xml"/>
+
+	<import file="${project.dir}/deploy-support.xml" />
+		
+	<property name="jar.file" value="teaming-portlet.jar" />
+	<property name="war.name" value="teaming-portlet" />
+	<property name="war.file" value="${war.name}.war" />
+	
+	<target name="war" depends="jar">
+		<copy file="${jar.file}" todir="war/WEB-INF/lib"/>
+		<!-- Copy additional libraries needed by the portlet -->
+		<copy todir="war/WEB-INF/lib">
+			<fileset dir="${project.dir}/lib">
+				<include name="jstl.jar" />
+				<include name="jstl-impl.jar" />
+			</fileset>
+		</copy>
+		<war
+			basedir="war"
+			destfile="${war.file}"
+			webxml="war/WEB-INF/web.xml"
+		/>
+	</target>
+
+	<target name="deploy-jsp">
+		<copy todir="${app.server.dir}/webapps/teaming-portlet/WEB-INF/jsp">
+			<fileset dir="war/WEB-INF/jsp"
+				includes="**/*"
+			/>
+		</copy>
+	</target>
+	
+	<target name="deploy-jar" depends="jar">
+		<antcall target="deploy-jar">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+		</antcall>
+	</target>
+
+    <target name="deploy" depends="war">
+        <antcall target="deploy-war">
+        	<param name="deploy-support.war.name" value="${war.name}" />
+        </antcall>
+	</target>
+	
+</project>

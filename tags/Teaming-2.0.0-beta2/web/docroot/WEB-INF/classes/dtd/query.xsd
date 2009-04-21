@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <xsd:annotation>
+    <xsd:documentation xml:lang="en">
+     Search query schema
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="QUERY" type="singleTermType"/>
+  
+  <xsd:complexType name="singleTermType">
+  	<xsd:choice minOccurs="1" maxOccurs="1">
+		<xsd:element name="AND" type="multipleTermType"/>
+		<xsd:element name="OR" type="multipleTermType"/>
+		<xsd:element name="NOT" type="singleTermType"/>
+		<xsd:element name="SORTBY" type="sortByType"/>
+		<xsd:element name="LANGUAGE" type="languageType"/>
+		<xsd:element name="RANGE" type="rangeType"/>
+		<xsd:element name="PERSONALTAGS" type="personalTagsType"/>
+		<xsd:element name="FIELD" type="fieldType"/>
+  	</xsd:choice>
+  </xsd:complexType>
+
+  <xsd:complexType name="multipleTermType">
+  	<xsd:choice minOccurs="1" maxOccurs="unbounded">
+		<xsd:element name="AND" type="multipleTermType"/>
+		<xsd:element name="OR" type="multipleTermType"/>
+		<xsd:element name="NOT" type="singleTermType"/>
+		<xsd:element name="SORTBY" type="sortByType"/>
+		<xsd:element name="LANGUAGE" type="languageType"/>
+		<xsd:element name="RANGE" type="rangeType"/>
+		<xsd:element name="PERSONALTAGS" type="personalTagsType"/>
+		<xsd:element name="FIELD" type="fieldType"/>
+  	</xsd:choice>
+  </xsd:complexType>
+
+  <xsd:complexType name="sortByType">
+	<xsd:sequence minOccurs="1" maxOccurs="unbounded">
+		<xsd:element name="fieldname">
+			<xsd:complexType>
+				<xsd:attribute name="ascending" type="xsd:boolean" default="false"/>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="languageType">
+  	<xsd:attribute name="language" type="xsd:string"/>
+  </xsd:complexType>
+  
+  <xsd:complexType name="rangeType">
+  	<xsd:all>
+  		<xsd:element name="START" type="xsd:string"/>
+  		<xsd:element name="FINISH" type="xsd:string"/>
+  	</xsd:all>
+  	<xsd:attribute name="inclusive" type="xsd:boolean"/>
+  	<xsd:attribute name="fieldname" type="xsd:string" use="required"/>
+  </xsd:complexType>
+  
+  <xsd:complexType name="personalTagsType">
+	<xsd:sequence minOccurs="1" maxOccurs="unbounded">
+		<xsd:element name="TAG">
+			<xsd:complexType>
+				<xsd:attribute name="tagname" type="xsd:string" use="required"/>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="fieldType">
+  	<xsd:sequence minOccurs="1" maxOccurs="1">
+  		<xsd:element name="TERMS" type="xsd:string"/>
+  	</xsd:sequence>
+  	<xsd:attribute name="fieldname" type="xsd:string" use="required"/>
+  	<xsd:attribute name="exactphrase" type="xsd:string" default="false"/>
+  	<xsd:attribute name="near" type="xsd:string"/>
+  </xsd:complexType>
+</xsd:schema>

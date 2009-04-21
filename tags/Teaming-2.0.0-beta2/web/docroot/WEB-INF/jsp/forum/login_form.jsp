@@ -1,0 +1,122 @@
+<%
+/**
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * 
+ * This work is governed by the Common Public Attribution License Version 1.0 (the
+ * "CPAL"); you may not use this file except in compliance with the CPAL. You may
+ * obtain a copy of the CPAL at http://www.opensource.org/licenses/cpal_1.0. The
+ * CPAL is based on the Mozilla Public License Version 1.1 but Sections 14 and 15
+ * have been added to cover use of software over a computer network and provide
+ * for limited attribution for the Original Developer. In addition, Exhibit A has
+ * been modified to be consistent with Exhibit B.
+ * 
+ * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT
+ * WARRANTY OF ANY KIND, either express or implied. See the CPAL for the specific
+ * language governing rights and limitations under the CPAL.
+ * 
+ * The Original Code is ICEcore, now called Kablink. The Original Developer is
+ * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * 
+ * Attribution Information:
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
+ * Attribution URL: [www.kablink.org]
+ * Graphic Image as provided in the Covered Code
+ * [ssf/images/pics/powered_by_icecore.png].
+ * Display of Attribution Information is required in Larger Works which are
+ * defined in the CPAL as a work which combines Covered Code or portions thereof
+ * with code not governed by the terms of the CPAL.
+ * 
+ * NOVELL and the Novell logo are registered trademarks and Kablink and the
+ * Kablink logos are trademarks of Novell, Inc.
+ */
+%>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%  boolean isMobile = org.kablink.util.BrowserSniffer.is_mobile(request);  %>
+
+<c:if test="${!empty ssAddUserAllowed}">
+	<script type="text/javascript">
+		/**
+		 * This function gets called when the user clicks on the "Create new account" link.
+		 * We will invoke the "Add User" page.
+		 */
+		function invokeCreateNewAccountPage()
+		{
+			var url = '<ssf:escapeJavaScript>${ssAddUserUrl}</ssf:escapeJavaScript>';
+			//url = 'http://137.65.67.72:8080/ssf/a/do?p_name=ss_forum&p_action=1&action=add_profile_entry&binderId=2&entryType=402883b90cc53079010cc539bf260007';
+			ss_toolbarPopupUrl( url, '_blank', '', '' );
+		}// end invokeCreateNewAccountPage()
+	</script>
+</c:if>
+
+  <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}" style="display:inline;">
+   <fieldset class="ss_fieldset_${ss_loginFormStyle}">
+	<% if (isMobile) { %>
+	<c:if test="${!empty ssMobileUrl && ss_loginFormStyle == 'login'}">
+	  <div align="left">
+	  <a class="ss_tinyButton" href="${ssMobileUrl}"><span class="ss_fineprint"
+	    title="<ssf:nlt tag="mobile.login.info"/>"
+	    ><ssf:nlt tag="mobile.login"/></span></a>
+	  </div>
+	</c:if>
+	<% } %>
+    <div class="ss_legend_${ss_loginFormStyle}"><ssf:nlt tag="login.please"/></div>
+     <table>
+     <tbody>
+      <tr>
+        <td valign="middle" align="right">
+          <label for="j_username"><span><ssf:nlt tag="login.name"/></span></label>
+        </td>
+        <td valign="top" style="padding-left:4px;">
+          <input type="text" class="ss_text_${ss_loginFormStyle}" size="40" 
+          name="j_username" id="j_username"/>
+        </td>
+		<td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td valign="middle" align="right">
+          <label for="j_password"><span><ssf:nlt tag="login.password"/></span></label>
+        </td>
+        <td valign="top" style="padding-left:4px;">
+          <input class="ss_text_${ss_loginFormStyle}" type="password" size="40" 
+          name="j_password" id="j_password"/>
+        </td>
+      </tr>
+      <c:if test="${!empty ss_loginError}">
+       <tr>
+		 <td>&nbsp;</td>
+         <td style="color: red;" colspan="2">
+           <span id="errorcode.login.failed"><ssf:nlt tag="errorcode.login.failed"/></span>
+         </td>
+       </tr>
+      </c:if>
+ 		<tr>
+   			<td colspan="2" align="center">
+    		  <br/>
+    		  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
+    		  <input type="reset" class="ss_submit" style="margin-left:20px;" value="<ssf:nlt tag="button.reset"/>"/>
+			  <!-- If the user has rights to create a new user, add the "Create new account" link. -->
+			  <c:if test="${!empty ssAddUserAllowed}">
+				  <a style="margin-left: 2em;"
+					 href="#"
+					 onclick="invokeCreateNewAccountPage();return false;"
+				     title="<ssf:nlt tag="login.createAccount" />" >
+					<span><ssf:nlt tag="login.createAccount" /></span>
+				  </a>
+			  </c:if>
+			  <br/>
+			</td>
+		</tr>		  
+	 </tbody>
+	 </table>
+	 <c:if test="${!empty ssUrl}">
+	    <input type="hidden" name="spring-security-redirect" value="${ssUrl}"/>
+	 </c:if>
+	 </fieldset>
+  </form>
+<script type="text/javascript">
+	var formObj = self.document.getElementById('loginForm');
+	formObj.j_username.focus();
+</script>

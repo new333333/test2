@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html xml:lang="en" lang="en">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Thursday, April 16, 2009" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2009" />
+
+<link rel="stylesheet" type="text/css" href="css/styles.css" />
+<link rel="stylesheet" type="text/css" href="css/expandable.css" />
+
+<title>File Upload Hints</title>
+</head>
+<body>
+<script type="text/javascript" src="css/expandable.js"></script>
+
+<div class="sect1" id="tool_file_uploadhints">
+
+<h1 class="title"> File Upload Hints</h1>
+
+<p class="para">If you are having trouble uploading a file because the file is too large, you might be able to fix this problem by increasing the default amount of memory used by Java applets.</p>
+<div class="sect2" id="bipun26">
+
+<h2 class="title"> Increasing the Default Memory Amount on Windows</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bipungz">
+<p class="para">Navigate to the Control Panel (Click <span class="guimenu">Start</span> &gt; <span class="guimenu">Settings</span> &gt; <span class="guimenu">Control Panel</span>).</p></li>
+<li class="step" id="bipunwc">
+<p class="para">Double-click <span class="guimenu">Java</span>.</p>
+<p class="para">The Java Control Panel is launched.</p></li>
+<li class="step" id="bipuoka">
+<p class="para">Select the <span class="guimenu">Java</span> tab.</p></li>
+<li class="step" id="bipuorx">
+<p class="para">In the <span class="guimenu">Java Applet Runtime Settings</span> section, click <span class="guimenu">View</span>.</p></li>
+<li class="step" id="bipup4t">
+<p class="para">For each of your Java Runtime Versions, add <span class="command">-Xmx256m</span> as a Java Runtime Parameter.</p></li>
+<li class="step" id="bipupgl">
+<p class="para">Click <span class="guimenu">OK</span>.</p>
+<p class="para">After increasing the default memory size for Java applets, you must exit out of all browsers and restart them before the change can take effect.</p></li></ol>
+</div>
+
+<p class="para">This setting causes the applet used for uploading files into a Teaming folder to start up with 256MB of memory. If the applet still indicates that there is not enough memory to run the applet, you might need to reduce this number.</p>
+</span>
+
+</div>
+
+<div class="sect2" id="bipunbb">
+
+<h2 class="title"> Increasing the Default Memory Amount on Linux</h2>
+
+<span class="collapsible">
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bjchmyk">
+<p class="para">Locate the JRE or JDK being used for the browser plug-in.</p>
+<p class="para">The location of the JRE or JDK varies depending on your system.</p></li>
+<li class="step" id="bjchn8n">
+<p class="para">In the <span class="filename">bin</span> directory of the JRE or JDK, run the <span class="filename">ControlPanel</span> file.</p>
+<p class="para">The Control Panel is launched.</p></li>
+<li class="step" id="bjchoed">
+<p class="para">Select the <span class="guimenu">Java</span> tab.</p></li>
+<li class="step" id="bjchokg">
+<p class="para">In the <span class="guimenu">Java Applet Runtime Settings</span> section, click <span class="guimenu">View</span>.</p></li>
+<li class="step" id="bjchor1">
+<p class="para">For each of your Java Runtime Versions, add <span class="command">-Xmx256m</span> as a Java Runtime Parameter.</p></li>
+<li class="step" id="bjchotz">
+<p class="para">Click <span class="guimenu">OK</span>.</p>
+<p class="para">After increasing the default memory size for Java applets, you must exit out of all browsers and restart them before the change can take effect.</p></li></ol>
+</div>
+
+<p class="para">This setting causes the applet used for uploading files into a Teaming folder to start up with 256MB of memory. If the applet still indicates that there is not enough memory to run the applet, you might have to reduce this number.</p>
+</span>
+
+</div>
+
+</div>
+
+<p class="trademark"> For trademark and copyright information, see <a href="./legal.html">Legal Notices</a>.</p>
+</body>
+</html>
