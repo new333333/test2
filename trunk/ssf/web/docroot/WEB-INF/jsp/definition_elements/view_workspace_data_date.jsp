@@ -49,12 +49,12 @@
     ss_element_display_style == 'tableAlignLeft'}">
 <tr>
   <td class="ss_table_spacer_right" valign="top" align="right">
-    <c:out value="${property_caption}" />
+    <span class="${ss_element_display_style_caption}"><c:out value="${property_caption}" /></span>
   </td>
   <td valign="top">
-	<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+	<span class="${ss_element_display_style_item}"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				      value="${ssDefinitionEntry.customAttributes[property_name].value}" type="date" 
-					  dateStyle="medium"  />
+					  dateStyle="medium"  /></span>
   </td>
 </tr>
 </c:if>

@@ -41,6 +41,7 @@ if (isIECheck) strBrowserType = "ie";
 %>
 
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
+<c:if test="${empty ss_element_display_style}">
 <div class="ss_entryContent">
 <span class="ss_bold"><c:out value="${property_caption}" /></span>
 <br>
@@ -48,10 +49,33 @@ if (isIECheck) strBrowserType = "ie";
 <c:set var="selections" value="${ssDefinitionEntry.customAttributes[property_name].valueSet}" />
 <c:forEach var="selection" items="${selections}">
 <a target="_blank" 
-  href="<ssf:fileUrl file="${selection}"/>" <c:out value="${selection.fileItem.name}"/>
+  href="<ssf:fileUrl file="${selection}"/>" 
+>${selection.fileItem.name}
 </a>
 <br>
 </c:forEach>
 </span>
 </div>
 </c:if>
+<c:if test="${!empty ss_element_display_style && 
+    ss_element_display_style == 'tableAlignLeft'}">
+<tr>
+  <td class="ss_table_spacer_right" valign="top" align="right">
+    <span class="${ss_element_display_style_caption}"><c:out value="${property_caption}" /></span>
+  </td>
+  <td valign="top">
+	<span class="${ss_element_display_style_item}">
+	<c:set var="selections" value="${ssDefinitionEntry.customAttributes[property_name].valueSet}" />
+	<c:forEach var="selection" items="${selections}">
+	<a target="_blank" 
+	  href="<ssf:fileUrl file="${selection}"/>" 
+	>${selection.fileItem.name}
+	</a>
+	<br>
+	</c:forEach>
+	</span>
+  </td>
+</tr>
+</c:if>
+</c:if>
+

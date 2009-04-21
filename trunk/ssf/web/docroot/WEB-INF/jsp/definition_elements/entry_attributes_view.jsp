@@ -41,7 +41,7 @@
 <c:if test="${!empty property_caption}">
 <tr>
   <td class="ss_table_spacer_right" valign="top" align="right">
-    <span class="ss_bold">${property_caption}</span>
+    <span class="${ss_element_display_style_caption}">${property_caption}</span>
   </td>
 </tr>
 </c:if>

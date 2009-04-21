@@ -41,7 +41,7 @@
     ss_element_display_style == 'tableAlignLeft'}">
 <tr>
   <td class="ss_table_spacer_right" valign="top" align="right">
-    <c:out value="${property_caption}" />
+    <span class="${ss_element_display_style_caption}"><c:out value="${property_caption}" /></span>
   </td>
   <td class="ss_bold" valign="top">
 	<ul class="ss_nobullet">
@@ -52,7 +52,7 @@
 	caption = NLT.getDef(caption);
 %>
 <c:set var="caption" value="<%= caption %>"/>
-	<li><c:out value="${caption}" escapeXml="false"/></span></li>
+	<li><span class="${ss_element_display_style_item}"><c:out value="${caption}" escapeXml="false"/></span></li>
 	</c:forEach>
 	</ul>
   </td>

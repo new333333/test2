@@ -47,10 +47,10 @@
     ss_element_display_style == 'tableAlignLeft'}">
 <tr>
   <td class="ss_table_spacer_right" valign="top" align="right">
-    <c:out value="${property_caption}" />
+    <span class="${ss_element_display_style_caption}"><c:out value="${property_caption}" /></span>
   </td>
   <td valign="top">
-	<span class="ss_bold">
+	<span class="${ss_element_display_style_item}">
 	  <c:out value="${ssDefinitionEntry.name}"/>
 	</span>
   </td>

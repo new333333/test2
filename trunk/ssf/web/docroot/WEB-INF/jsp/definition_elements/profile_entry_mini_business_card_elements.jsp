@@ -58,6 +58,8 @@
 			
 				<c:set var="ss_element_display_style_saved" value="${ss_element_display_style}"/>
 				<c:set var="ss_element_display_style" value="tableAlignLeft" scope="request"/>
+				<c:set var="ss_element_display_style_caption" value="ss_light" scope="request"/>
+				<c:set var="ss_element_display_style_item" value="ss_bold" scope="request"/>
 				<table cellpadding="0" cellspacing="0" border="0">
 				
 				<c:forEach var="element" items="${propertyValues__elements}">
@@ -80,7 +82,7 @@
 					<c:if test="${!empty ssDefinitionEntry.customAttributes[element]}">
 						<tr>
 							<td valign="top">
-							    <span class="ss_bold"><c:out value="${ssDefinitionEntry[element]}"/></span>
+							    <span class="${ss_element_display_style_item}"><c:out value="${ssDefinitionEntry[element]}"/></span>
 							</td>
 						</tr>
 					</c:if>
