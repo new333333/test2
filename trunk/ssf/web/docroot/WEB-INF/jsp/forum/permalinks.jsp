@@ -100,17 +100,64 @@
   
 </table>
 
-  <div style="padding:10px 10px 0px 10px;">
-    <span><ssf:nlt tag="permalink.hint"/></span>
-    <c:if test="${ssBinder.entityType == 'folder'}">
-      <div style="padding-top:10px;">
-        <span><ssf:nlt tag="permalink.hint.folder"/></span>
-      </div>
-    </c:if>
-  </div>
+<br/>
+<br/>
+<table cellspacing="6" cellpadding="6">
+<tr>
+<th colspan="2">
+    <span><ssf:nlt tag="permalink.hint.title"/></span>
+</th>
+</tr>
+
+<tr>
+  <td valign="top">
+    <span><ssf:nlt tag="permalinks"/></span>
+  </td>
+  <td valign="top">
+    <span><ssf:nlt tag="permalink.hint.email"/></span>
+  </td>
+</tr>
+
+<tr>
+  <td valign="top">
+    <span><ssf:nlt tag="permalink.emailAddresses"/></span>
+  </td>
+  <td valign="top">
+    <span><ssf:nlt tag="permalink.hint.email"/></span>
+  </td>
+</tr>
+
+<tr>
+  <td valign="top">
+    <span><ssf:nlt tag="permalink.webdavUrl"/></span>
+  </td>
+  <td valign="top">
+    <span><ssf:nlt tag="permalink.hint.webdav"/></span>
+  </td>
+</tr>
+
+<tr>
+  <td valign="top">
+    <span><ssf:nlt tag="permalink.icalUrl"/></span>
+  </td>
+  <td valign="top">
+    <span><ssf:nlt tag="permalink.hint.ical"/></span>
+  </td>
+</tr>
+
+<tr>
+  <td valign="top">
+    <span><ssf:nlt tag="permalink.rssUrl"/></span>
+  </td>
+  <td valign="top">
+    <span><ssf:nlt tag="permalink.hint.rss"/></span>
+  </td>
+</tr>
+
+</table>
 
 <c:if test="${ssBinder.entityType == 'folder'}">
-  <div style="padding:10px 10px 0px 10px;">
+  <div style="padding:10px 10px 0px 6px;">
     <span><ssf:nlt tag="permalink.caution.rss"/></span>
   </div>
 </c:if>
