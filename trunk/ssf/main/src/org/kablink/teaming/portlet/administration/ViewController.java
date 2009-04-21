@@ -97,7 +97,7 @@ public class ViewController extends  SAbstractController {
 			}
  		} catch(Exception e) {}
  		
- 		if (user.getInternalId().equals(ObjectKeys.SUPER_USER_INTERNALID)) {
+ 		if (ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) {
  			Binder topWorkspace = getWorkspaceModule().getTopWorkspace();
 	 		String upgradeVersion = (String) topWorkspace.getProperty(ObjectKeys.BINDER_PROPERTY_UPGRADE_VERSION);
 	 		if (upgradeVersion == null || !upgradeVersion.equals(ObjectKeys.PRODUCT_UPGRADE_VERSION)) {
