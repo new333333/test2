@@ -69,7 +69,12 @@
 			calendarHoursSelectorId: "ss_selectCalendarHours${prefix}",
 			eventsTypeChooseId: "ss_calendarEventsTypeChoose${prefix}",
 			eventsTypeSelectId: "ss_calendarEventsTypeSelect${prefix}",
-			addEntryURL: "${addDefaultEntryURL}".replace("addEntryFromIFrame=1&", ""),
+			<% /* Bugzilla 497072:  Different JDKs render the addDefaultEntryURL
+			    * with the addEntryFromIFrame parameter in a different place.
+			    * The double replaces below will remove it if it's the first,
+			    * middle or last parameter.
+			    */ %>
+			addEntryURL: "${addDefaultEntryURL}".replace("addEntryFromIFrame=1&", "").replace("&addEntryFromIFrame=1", ""),
 			stickyId: "${ssBinder.id}"
 		});
 
