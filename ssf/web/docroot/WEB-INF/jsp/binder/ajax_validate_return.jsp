@@ -51,7 +51,12 @@
   <c:if test="${!empty ssAjaxErrorMessage}">
     <taconite-replace contextNodeID="${ss_ajaxMsgId}" 
 	  parseInBrowser="true">
-		<div id="${ss_ajaxMsgId}" style="display:block; visibility:visible;" ss_ajaxResult="error"><span class="ss_formError"><ssf:nlt tag="${ssAjaxErrorMessage}"/> <span class="ss_bold">${ssAjaxErrorDetail}</span></span></div>
+		<div id="${ss_ajaxMsgId}" style="display:block; visibility:visible;" ss_ajaxResult="error">
+		  <span class="ss_formError">
+		  <c:if test="${ssAjaxErrorMessageIsText}">${ssAjaxErrorMessage}</c:if> 
+		  <c:if test="${!ssAjaxErrorMessageIsText}"><ssf:nlt tag="${ssAjaxErrorMessage}"/></c:if> 
+		  <span class="ss_bold">${ssAjaxErrorDetail}</span></span>
+		</div>
     </taconite-replace>
     <taconite-set-attributes contextNodeID="${ss_ajaxLabelId}" 
 	  parseInBrowser="true" style="color:red"/>

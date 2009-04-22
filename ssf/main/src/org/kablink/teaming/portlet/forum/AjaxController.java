@@ -2168,6 +2168,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			} catch (org.springframework.dao.IncorrectResultSizeDataAccessException in) {
 				//not enforced by db, but try to keep unique for import/export
 				model.put(WebKeys.AJAX_ERROR_MESSAGE, NLT.get("errorcode.notsupported.duplicateTemplateName", new Object[]{name}));
+				model.put(WebKeys.AJAX_ERROR_MESSAGE_IS_TEXT, true);
 				model.put(WebKeys.AJAX_ERROR_DETAIL, "");
 				
 			} catch (NoBinderByTheNameException nb) {
@@ -2186,6 +2187,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String title = PortletRequestUtils.getStringParameter(request, WebKeys.URL_AJAX_VALUE,"");
 		if(Validator.containsPathCharacters(title)) {
 			model.put(WebKeys.AJAX_ERROR_MESSAGE, NLT.get("errorcode.title.pathCharacters", new Object[]{title}));
+			model.put(WebKeys.AJAX_ERROR_MESSAGE_IS_TEXT, true);
 			model.put(WebKeys.AJAX_ERROR_DETAIL, "");
 		}
 		model.put(WebKeys.URL_AJAX_ID, PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_AJAX_ID));

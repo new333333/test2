@@ -39,9 +39,22 @@
 	if (caption == null) {caption = "";}
 %>
 <c:if test="${empty ss_profile_entry_form || not ss_profile_entry_form}">
+<script type="text/javascript">
+var ss_checkTitleUrl = "<ssf:url 
+	adapter="true" 
+	portletName="ss_forum" 
+	action="__ajax_request" 
+	actionUrl="false" >
+	<ssf:param name="operation" value="check_binder_title" />
+	</ssf:url>";
+ss_addValidator("ss_titleCheckName", ss_ajax_result_validator);
+</script>
 <div class="ss_entryContent">
+<div class="needed-because-of-ie-bug"><div id="ss_titleCheckName" style="display:none; visibility:hidden;" 
+      ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
 <div class="ss_labelAbove"><%= caption %></div>
-<input type="text" size="40" name="name" value="<c:out value="${ssDefinitionEntry.name}"/>"
+<input type="text" size="40" name="name" id="name" value="<c:out value="${ssDefinitionEntry.name}"/>"
+	onchange="ss_ajaxValidate(ss_checkTitleUrl, this, 'name', 'ss_titleCheckName');"
 	<c:if test="${empty ssDefinitionEntry.name}">
 	  class="ss_text"
 	</c:if>
