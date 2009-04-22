@@ -191,10 +191,10 @@ function ss_getPreviousEntryId(imageId) {
 	var entityType = "";
     if (!ss_currentEntryId || ss_currentEntryId == "") {
 		if (ss_entryCount > 0) {
-			nextEntryIndex = ss_entryList[i].index;
-			nextEntryId = ss_entryList[i].entryId;
-			nextBinderId = ss_entryList[i].binderId;
-			entityType = ss_entryList[i].entityType;
+			nextEntryIndex = ss_entryList[0].index;
+			nextEntryId = ss_entryList[0].entryId;
+			nextBinderId = ss_entryList[0].binderId;
+			entityType = ss_entryList[0].entityType;
 		}
 	} else {
 		for (var i = 0; i < ss_entryCount; i++) {

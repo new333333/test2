@@ -265,21 +265,25 @@ public class ViewEntryController extends  SAbstractController {
 				}
 				
 				entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
-				model.put(WebKeys.ENTRY_TITLE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_PAGE_TITLE, ""));
-				Set entries = getFolderModule().getFolderEntryByNormalizedTitle(folderId, entryId);
-				if (entries.size() == 1) {
-					FolderEntry entry = (FolderEntry)entries.iterator().next();
-					entryId = entry.getId().toString();
-					fe = getShowEntry(entryId, formData, request, response, folderId, model, entryViewType);
-				} else if (entries.size() == 0) {
-					//There are no entries by this title
-					Folder folder = getFolderModule().getFolder(folderId);
-					buildNoEntryBeans(request, response, folder, entryId, model);
-					return new ModelAndView(WebKeys.VIEW_NO_TITLE_ENTRY, model);
+				if (!entryId.equals("")) {
+					model.put(WebKeys.ENTRY_TITLE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_PAGE_TITLE, ""));
+					Set entries = getFolderModule().getFolderEntryByNormalizedTitle(folderId, entryId);
+					if (entries.size() == 1) {
+						FolderEntry entry = (FolderEntry)entries.iterator().next();
+						entryId = entry.getId().toString();
+						fe = getShowEntry(entryId, formData, request, response, folderId, model, entryViewType);
+					} else if (entries.size() == 0) {
+						//There are no entries by this title
+						Folder folder = getFolderModule().getFolder(folderId);
+						buildNoEntryBeans(request, response, folder, entryId, model);
+						return new ModelAndView(WebKeys.VIEW_NO_TITLE_ENTRY, model);
+					} else {
+						//There are multiple matches
+						model.put(WebKeys.FOLDER_ENTRIES, entries);
+						return new ModelAndView(WebKeys.VIEW_MULTIPLE_TITLE_ENTRIES, model);
+					}
 				} else {
-					//There are multiple matches
-					model.put(WebKeys.FOLDER_ENTRIES, entries);
-					return new ModelAndView(WebKeys.VIEW_MULTIPLE_TITLE_ENTRIES, model);
+					return new ModelAndView(WebKeys.VIEW_NO_MORE_ENTRIES, model);
 				}
 			} else {
 				try {
