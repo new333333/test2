@@ -269,7 +269,8 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//Search index
-		if (getBinderModule().testAccess(top, BinderOperation.indexBinder)) {
+		if (ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId()) && 
+				getBinderModule().testAccess(top, BinderOperation.indexBinder)) {
 			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.configure_search_index"));
 			element.addAttribute("image", "bullet");			
