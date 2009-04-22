@@ -46,6 +46,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -175,6 +176,12 @@ public class AddFolderController extends SAbstractController {
 		model.put(WebKeys.BINDER_TEMPLATE_NAME, templateName);
 		model.put(WebKeys.OPERATION, operation);
 		model.put(WebKeys.USER_PRINCIPAL, user);
+
+		Element familyProperty = (Element) binder.getDefaultViewDef().getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']");
+		if (familyProperty != null) {
+			String family = familyProperty.attributeValue("value", "");
+			model.put(WebKeys.DEFINITION_FAMILY, family);
+		}
 
 		//Build the navigation beans
 		BinderHelper.buildNavigationLinkBeans(this, binder, model, new WorkspaceAddWorkspaceHelper());

@@ -72,8 +72,12 @@ function ss_checkForm(obj) {
 
 </script>
 
+<c:set var="titleTag" value="toolbar.menu.addFolder"/>
+<c:if test="${ssDefinitionFamily == 'blog'}"><c:set var="titleTag" value="toolbar.menu.add_blog_folder"/></c:if>
+<c:if test="${ssDefinitionFamily == 'photo'}"><c:set var="titleTag" value="toolbar.menu.add_photo_album_folder"/></c:if>
+<c:if test="${ssDefinitionFamily == 'wiki'}"><c:set var="titleTag" value="toolbar.menu.add_wiki_folder"/></c:if>
 <div class="ss_portlet">
-<ssf:form titleTag="toolbar.menu.addFolder">
+<ssf:form titleTag="${titleTag}">
 
 <form class="ss_style ss_form" 
   action="<ssf:url action="add_binder" actionUrl="true"><ssf:param 
