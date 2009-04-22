@@ -196,6 +196,9 @@ public class SearchObject {
 		PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new ChineseAnalyzer());
 		retAnalyzer.addAnalyzer(Constants.ACL_TAG_FIELD, new NullAnalyzer());
 		retAnalyzer.addAnalyzer(Constants.TAG_FIELD, new NullAnalyzer());
+		retAnalyzer.addAnalyzer(Constants.BINDER_ID_FIELD, new NullAnalyzer());
+		retAnalyzer.addAnalyzer(Constants.DOC_TYPE_FIELD, new NullAnalyzer());
+		retAnalyzer.addAnalyzer(Constants.ENTRY_TYPE_FIELD, new NullAnalyzer());
 		return retAnalyzer;
 	}
 }
