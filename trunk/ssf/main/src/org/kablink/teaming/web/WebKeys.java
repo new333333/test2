@@ -570,6 +570,7 @@ public class WebKeys {
 	public static final String ADD_USER_URL = "ssAddUserUrl";
 	public static final String ADMIN_TREE="ssAdminDomTree";
 	public static final String AJAX_ERROR_MESSAGE="ssAjaxErrorMessage";
+	public static final String AJAX_ERROR_MESSAGE_IS_TEXT="ssAjaxErrorMessageIsText";
 	public static final String AJAX_ERROR_DETAIL="ssAjaxErrorDetail";
     public static final String APPLICATION="ssApplication";
 	public static final String APPLICATIONS="ssApplications";
