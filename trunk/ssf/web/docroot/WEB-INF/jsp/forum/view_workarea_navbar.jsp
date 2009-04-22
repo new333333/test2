@@ -122,7 +122,7 @@ var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
 <!-- End of debug window -->
 </c:if>
 <c:if test="${!empty ss_watermark}">
-<div id="ss_mastheadWatermark${renderResponse.namespace}" style="position:absolute;">
+<div id="ss_mastheadWatermark${renderResponse.namespace}" style="position:absolute;white-space:nowrap;">
 ${ss_watermark}
 </div>
 <script type="text/javascript">
