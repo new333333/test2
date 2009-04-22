@@ -320,7 +320,7 @@ public class ConfigureController extends AbstractBinderController {
 			
 			//build orders list of workflow definition types
 			model.put(WebKeys.ALL_WORKFLOW_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(binder.getId(),  Definition.WORKFLOW));			
-			model.put(WebKeys.ENTRY_REPLY_STYLES, DefinitionHelper.getReplyDefinitions(binder.getEntryDefinitions()));
+			model.put(WebKeys.REPLY_DEFINITION_MAP, DefinitionHelper.getReplyDefinitions(binder.getEntryDefinitions()));
 
 		}
 		
