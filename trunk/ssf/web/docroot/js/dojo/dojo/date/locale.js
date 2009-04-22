@@ -12,7 +12,7 @@ dojo.require("dojo.i18n");
 
 // Load the bundles containing localization information for
 // names and formats
-dojo.requireLocalization("dojo.cldr", "gregorian", null, "zh-cn,zh,en-ca,ko-kr,pt,pt-br,it-it,ROOT,en-gb,de,ja,en,en-au,fr,es,ko,zh-tw,it,es-es");
+dojo.requireLocalization("dojo.cldr", "gregorian", null, "zh-cn,zh,en-ca,ko-kr,pt,pt-br,it-it,ROOT,en-gb,de,ja,en,en-au,fr,es,ko,sv,zh-tw,it,es-es");
 
 //NOTE: Everything in this module assumes Gregorian calendars.
 // Other calendars will be implemented in separate modules.
