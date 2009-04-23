@@ -32,7 +32,6 @@
  */
 
 package org.kablink.teaming.module.ldap.impl;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -77,6 +76,7 @@ import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.Membership;
 import org.kablink.teaming.domain.NoUserByTheNameException;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
@@ -1317,25 +1317,25 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		for (Iterator iter=ids.iterator(); iter.hasNext();) {
     		Long id = (Long)iter.next();
     		try {
+    			String name = null;
+    			if(syncResults != null) {
+    				// Try obtaining the current state of the principal about to be deleted, and use  
+    				// it to report the status back to user. This information must be obtained BEFORE
+    				// the entry gets deleted(to be precise, marked as deleted), because many of the
+    				// properties of the principal object (eg. name) get altered during the operation.
+    				try {
+    					Principal p = (Principal) getProfileModule().getEntry(id);
+    					name = p.getName() + " (" + p.getForeignName() + ")";
+    				}
+    				catch(Exception e) {
+    					// Don't report problem here. Instead, let the next step - deleteEntry() - report it.
+    				}
+    			}
+
     			getProfileModule().deleteEntry(id, options);
     			
-    			if ( syncResults != null )
-    			{
-    				Object		tmp;
-    				String		name	= null;
-    				
-    				tmp = (Object) getProfileModule().getEntry( id );
-    				if ( tmp instanceof IPrincipal )
-    				{
-    					IPrincipal	iPrincipal;
-    					
-    					iPrincipal = (IPrincipal) tmp;
-    					name = iPrincipal.getName() + " (" + iPrincipal.getForeignName() + ")";
-    				}
-    				
-    				if ( name != null )
-    					syncResults.addResult( name );
-    			}
+    			if(syncResults != null && name != null)
+    				syncResults.addResult(name);
     		} catch (Exception ex) {
     			logError(NLT.get("errorcode.ldap.delete", new Object[]{id.toString()}), ex);
     		}
