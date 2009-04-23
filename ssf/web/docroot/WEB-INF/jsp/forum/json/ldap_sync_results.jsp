@@ -39,9 +39,9 @@
 
 
 <% // This is a JSON AJAX response %>
-<!-- Do we have sync results? -->
+<% // Do we have sync results? %>
 <c:if test="${!empty ldapSyncResults}">
-	<!-- Yes -->
+	<% // Yes %>
 	<jsp:useBean id="ldapSyncResults" type="org.kablink.teaming.module.ldap.LdapSyncResults" scope="request" />
 
 <%
@@ -50,6 +50,7 @@
 	int					i;
 	int					status;
 	String				name;
+	String				seperator;
 	String				errDesc;
 	String				errLdapConfigId;
 	
@@ -76,9 +77,15 @@
 	{
 		for (i = 0; i < syncResults.size(); ++i)
 		{
+			// If this is not the first name, add a ',' before we add another name.
+			if ( i != 0 )
+				seperator = ",";
+			else
+				seperator = "";
+
 			name = (String) syncResults.get( i );
 %>
-			'<ssf:escapeJavaScript value="<%= name %>" />',
+			<%= seperator %>'<ssf:escapeJavaScript value="<%= name %>" />'
 <%
 		}
 	}
@@ -99,9 +106,15 @@
 	{
 		for (i = 0; i < syncResults.size(); ++i)
 		{
+			// If this is not the first name, add a ',' before we add another name.
+			if ( i != 0 )
+				seperator = ",";
+			else
+				seperator = "";
+
 			name = (String) syncResults.get( i );
 %>
-			'<ssf:escapeJavaScript value="<%= name %>" />',
+			<%= seperator %>'<ssf:escapeJavaScript value="<%= name %>" />'
 <%
 		}
 	}
@@ -122,9 +135,15 @@
 	{
 		for (i = 0; i < syncResults.size(); ++i)
 		{
+			// If this is not the first name, add a ',' before we add another name.
+			if ( i != 0 )
+				seperator = ",";
+			else
+				seperator = "";
+
 			name = (String) syncResults.get( i );
 %>
-			'<ssf:escapeJavaScript value="<%= name %>" />',
+			<%= seperator %>'<ssf:escapeJavaScript value="<%= name %>" />'
 <%
 		}
 	}
@@ -145,9 +164,15 @@
 	{
 		for (i = 0; i < syncResults.size(); ++i)
 		{
+			// If this is not the first name, add a ',' before we add another name.
+			if ( i != 0 )
+				seperator = ",";
+			else
+				seperator = "";
+
 			name = (String) syncResults.get( i );
 %>
-			'<ssf:escapeJavaScript value="<%= name %>" />',
+			<%= seperator %>'<ssf:escapeJavaScript value="<%= name %>" />'
 <%
 		}
 	}
@@ -168,9 +193,15 @@
 	{
 		for (i = 0; i < syncResults.size(); ++i)
 		{
+			// If this is not the first name, add a ',' before we add another name.
+			if ( i != 0 )
+				seperator = ",";
+			else
+				seperator = "";
+
 			name = (String) syncResults.get( i );
 %>
-			'<ssf:escapeJavaScript value="<%= name %>" />',
+			<%= seperator %>'<ssf:escapeJavaScript value="<%= name %>" />'
 <%
 		}
 	}
@@ -191,9 +222,15 @@
 	{
 		for (i = 0; i < syncResults.size(); ++i)
 		{
+			// If this is not the first name, add a ',' before we add another name.
+			if ( i != 0 )
+				seperator = ",";
+			else
+				seperator = "";
+
 			name = (String) syncResults.get( i );
 %>
-			'<ssf:escapeJavaScript value="<%= name %>" />',
+			<%= seperator %>'<ssf:escapeJavaScript value="<%= name %>" />'
 <%
 		}
 	}
@@ -207,9 +244,9 @@
 }
 </c:if>
 
-<!-- Do we have sync results? -->
+<% // Do we have sync results? %>
 <c:if test="${empty ldapSyncResults}">
-	<!-- No -->
+	<% // No %>
 {
 	status : -1,
 	errDesc : null,
