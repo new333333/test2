@@ -473,9 +473,13 @@ public class WebKeys {
 	public static final String OPERATION_CHANGE_WIKI_HOMEPAGE="change_wiki_homepage";
 	public static final String OPERATION_GET_TEAM_MEMBERS = "get_team_members";
 	public static final String OPERATION_GET_CLIPBOARD_USERS = "get_clipboard_users";
+	public static final String OPERATION_GET_LDAP_SYNC_RESULTS = "getLdapSyncResults";
+	public static final String OPERATION_REMOVE_LDAP_SYNC_RESULTS = "removeLdapSyncResults";
 	public static final String OPERATION_SHOW_TEAM_MEMBERS = "show_team_members";
 	public static final String OPERATION_SHOW_NO_ENTRIES = "show_no_entries";
 	public static final String OPERATION_SHOW_NO_MORE_ENTRIES = "show_no_more_entries";
+	public static final String OPERATION_START_LDAP_SYNC = "startLdapSync";
+	public static final String OPERATION_STOP_COLLECTING_LDAP_SYNC_RESULTS = "stopCollectingLdapSyncResults";
 	public static final String OPERATION_FIND_CALENDAR_EVENTS = "find_calendar_events";
 	public static final String OPERATION_STICKY_CALENDAR_DISPLAY_SETTINGS = "sticky_calendar_display_settings";
 	public static final String OPERATION_GET_CALENDAR_FREE_INFO = "get_calendar_free_info";

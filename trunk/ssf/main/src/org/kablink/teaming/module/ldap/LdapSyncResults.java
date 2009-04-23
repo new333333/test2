@@ -35,9 +35,7 @@ package org.kablink.teaming.module.ldap;
 
 import java.util.ArrayList;
 
-import javax.naming.NamingException;
 
-import org.kablink.teaming.domain.LdapConnectionConfig;
 
 /**
  * This class is used to keep track of the results of an ldap sync.
@@ -46,81 +44,241 @@ import org.kablink.teaming.domain.LdapConnectionConfig;
  */
 public class LdapSyncResults
 {
-	private ArrayList	m_usersAddedToTeaming;		// List of users added to Teaming
-	private ArrayList	m_usersModified;			// List of users modified in Teaming
-	private ArrayList	m_usersDeletedFromTeaming;	// List of users deleted from Teaming
-	private ArrayList	m_groupsAddedToTeaming;		// List of groups added to Teaming
-	private ArrayList	m_groupsModified;			// List of groups modified in Teaming
-	private ArrayList	m_groupsDeletedFromTeaming;	// List of groups deleted from Teaming
+	public enum SyncStatus
+	{
+		STATUS_COLLECT_RESULTS,
+		STATUS_COMPLETED,
+		STATUS_STOP_COLLECTING_RESULTS,
+		STATUS_ABORTED_BY_ERROR
+	}
 	
+	// Define the maximum number of results we can collect for each area.
+	public static final int	MAX_RESULTS				= 400;
+	
+	private PartialLdapSyncResults		m_usersAddedToTeaming;		// List of users added to Teaming
+	private PartialLdapSyncResults		m_usersModified;			// List of users modified in Teaming
+	private PartialLdapSyncResults		m_usersDeletedFromTeaming;	// List of users deleted from Teaming
+	private PartialLdapSyncResults		m_groupsAddedToTeaming;		// List of groups added to Teaming
+	private PartialLdapSyncResults		m_groupsModified;			// List of groups modified in Teaming
+	private PartialLdapSyncResults		m_groupsDeletedFromTeaming;	// List of groups deleted from Teaming
+	private String						m_id;
+	private SyncStatus					m_status;
+	private String						m_errorDesc;				// If an error happened, its description will be stored here.
+	private String						m_errorLdapConfigId;		// The id of the ldap configuration being used when an error happened.
+	
+
 	/**
-	 * Constructor
+	 * Private Constructor
 	 */
-    public LdapSyncResults()
+    public LdapSyncResults( String id )
     {
     	super();
     	
-    	m_usersAddedToTeaming = new ArrayList();
-    	m_usersModified = new ArrayList();
-    	m_usersDeletedFromTeaming = new ArrayList();
-    	m_groupsAddedToTeaming = new ArrayList();
-    	m_groupsModified = new ArrayList();
-    	m_groupsDeletedFromTeaming = new ArrayList();
+    	m_id = id;
+    	m_status = SyncStatus.STATUS_COLLECT_RESULTS;
+    	m_errorDesc = null;
+    	m_errorLdapConfigId = null;
+    	
+    	m_usersAddedToTeaming = new PartialLdapSyncResults();
+    	m_usersModified = new PartialLdapSyncResults();
+    	m_usersDeletedFromTeaming = new PartialLdapSyncResults();
+    	m_groupsAddedToTeaming = new PartialLdapSyncResults();
+    	m_groupsModified = new PartialLdapSyncResults();
+    	m_groupsDeletedFromTeaming = new PartialLdapSyncResults();
     }// end LdapSyncResults()
     
     
     /**
-     * Return the ArrayList that holds the list of users that have been added to Teaming. 
+     * Clear all sync results we have collected so far.
      */
-    public ArrayList getAddedUsers()
+    public void clearResults()
+    {
+    	m_usersAddedToTeaming.clearResults();
+    	m_usersModified.clearResults();
+    	m_usersDeletedFromTeaming.clearResults();
+    	m_groupsAddedToTeaming.clearResults();
+    	m_groupsModified.clearResults();
+    	m_groupsDeletedFromTeaming.clearResults();
+    }// end clearResults()
+    
+    
+    /**
+     * Calling this method will stop all further collection of sync results.
+     */
+    public void completed()
+    {
+    	m_status = SyncStatus.STATUS_COMPLETED;
+    	
+    }// end completed()
+    
+    
+    /**
+     * This method is used to record that an error happened during the sync.
+     */
+    public void error( String errorDesc, String ldapConfigId )
+    {
+    	m_status = SyncStatus.STATUS_ABORTED_BY_ERROR;
+    	m_errorDesc = errorDesc;
+    	m_errorLdapConfigId = ldapConfigId;
+    }// end error()
+    
+    
+    /**
+     * Return the object that holds the list of users that have been added to Teaming. 
+     */
+    public PartialLdapSyncResults getAddedUsers()
     {
     	return m_usersAddedToTeaming;
     }// end getAddedUsers()
 
 
     /**
-     * Return the ArrayList that holds the list of groups that have been added to Teaming. 
+     * Return the object that holds the list of groups that have been added to Teaming. 
      */
-    public ArrayList getAddedGroups()
+    public PartialLdapSyncResults getAddedGroups()
     {
     	return m_groupsAddedToTeaming;
     }// end getAddedGroups()
 
 
     /**
-     * Return the ArrayList that holds the list of users that have been deleted from Teaming. 
+     * Return the object that holds the list of users that have been deleted from Teaming. 
      */
-    public ArrayList getDeletedUsers()
+    public PartialLdapSyncResults getDeletedUsers()
     {
     	return m_usersDeletedFromTeaming;
     }// end getDeletedUsers()
 
     
     /**
-     * Return the ArrayList that holds the list of groups that have been deleted from Teaming. 
+     * Return the object that holds the list of groups that have been deleted from Teaming. 
      */
-    public ArrayList getDeletedGroups()
+    public PartialLdapSyncResults getDeletedGroups()
     {
     	return m_groupsDeletedFromTeaming;
     }// end getDeletedGroups()
 
     
     /**
-     * Return the ArrayList that holds the list of users that have been modified in Teaming. 
+     * Return the description of the error that happened.
      */
-    public ArrayList getModifiedUsers()
+    public String getErrorDesc()
+    {
+    	return m_errorDesc;
+    }// end getErrorDesc()
+    
+    
+    /**
+     * Return the id of the ldap configuration being used when an error happened.
+     */
+    public String getErrorLdapConfigId()
+    {
+    	return m_errorLdapConfigId;
+    }// end getErrorLdapConfigId()
+    
+    
+    /**
+     * Return the id of the object.
+     */
+    public String getId()
+    {
+    	return m_id;
+    }// end getId()
+    
+    
+    /**
+     * Return the object that holds the list of users that have been modified in Teaming. 
+     */
+    public PartialLdapSyncResults getModifiedUsers()
     {
     	return m_usersModified;
     }// end getModifiedUsers()
     
 
     /**
-     * Return the ArrayList that holds the list of groups that have been modified in Teaming. 
+     * Return the object that holds the list of groups that have been modified in Teaming. 
      */
-    public ArrayList getModifiedGroups()
+    public PartialLdapSyncResults getModifiedGroups()
     {
     	return m_groupsModified;
     }// end getModifiedGroups()
     
+    
+    /**
+     * Return the status.
+     */
+    public SyncStatus getStatus()
+    {
+    	return m_status;
+    }// end getStatus()
+    
 
+    /**
+     * Calling this method will stop all further collection of sync results.
+     */
+    public void stopCollectingResults()
+    {
+    	m_status = SyncStatus.STATUS_STOP_COLLECTING_RESULTS;
+    	
+    	// Clear all sync results we have collected so far.
+    	clearResults();
+    }// end abort()
+    
+    
+    
+    /**
+     * This class is used to collect partial sync results.
+     */
+    public class PartialLdapSyncResults
+    {
+    	private ArrayList<String>	m_results;
+    	
+    	/**
+    	 * Constructor
+    	 */
+    	public PartialLdapSyncResults()
+    	{
+    		m_results = new ArrayList<String>();
+    	}// end PartialLdapSyncResults()
+    	
+    	
+    	/**
+    	 * Add a result to our list.
+    	 */
+    	public boolean addResult( String value )
+    	{
+    		// Should we collect this result?
+    		if ( getStatus() == SyncStatus.STATUS_COLLECT_RESULTS )
+    		{
+    			// Yes
+    			// Have we reached the max results we want to store?
+    			if ( m_results.size() < MAX_RESULTS )
+    			{
+    				// No
+        			m_results.add( value );
+        			return true;
+    			}
+    		}
+    		
+    		return false;
+    	}// end addResult()
+    	
+    	
+    	/**
+    	 * Clear any results we may have collected so far.
+    	 */
+    	public void clearResults()
+    	{
+    		m_results.clear();
+    	}// end clearResults()
+    	
+    	
+    	/**
+    	 * Return the list of names we have collected so far.
+    	 */
+    	public ArrayList<String> getResults()
+    	{
+    		return new ArrayList<String>( m_results );
+    	}// end getResults()
+    }// end PartialLdapSyncResults
 }// end LdapSyncResults
