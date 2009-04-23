@@ -107,7 +107,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	public final static String Users= "users";
 	public final static String Groups= "groups";
 	public final static String TeamOn= "teamOn";
-    public static final String Workspace_topId="topId";
+	public final static String Workspace_topId="topId";
+
 	//key in component data used to resolve binders by type
 	public final static String ChooseType = "chooseViewType";
 	public final static String AssignedTo = "assignedTo";
@@ -886,6 +887,42 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     	idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
 
     }
+
+    private void validateComponentConfig(Map component, Map componentData, String componentId, Binder binder) {
+ 		if (component.get(Dashboard.NAME).equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)
+ 			/* Only adjusts task accessories right now. */
+ 			&& !(binder instanceof TemplateBinder)
+ 			/* We don't want to make this adjustment to the template when it gets modified, only to
+ 			 * instances created from the template. */
+ 			&& ((componentData.get(AssignedTo) == null) || ((componentData.get(AssignedTo) != null) && ((Set)componentData.get(AssignedTo)).isEmpty()))
+ 			&& ((componentData.get(AssignedToGroups) == null) || ((componentData.get(AssignedToGroups) != null) && ((Set)componentData.get(AssignedToGroups)).isEmpty()))
+ 			&& ((componentData.get(AssignedToTeams) == null) || ((componentData.get(AssignedToTeams) != null) && ((Set)componentData.get(AssignedToTeams)).isEmpty()))) {
+ 	 		/* Check assignees, if there are none, generate a default query using the binder owner as assignee. */
+ 			SearchFilter searchFilter = new SearchFilter(true);
+
+ 			/* Preserve any folder list that may have been configured. */
+ 			if (componentData.get(SearchFormSavedFolderIdList) instanceof String) {
+ 				Set<String> folderIds = LongIdUtil.getIdsAsStringSet((String)componentData.get(SearchFormSavedFolderIdList));
+ 				searchFilter.addFolderIds(folderIds);
+ 			}
+
+ 			setupAssignees(searchFilter, componentData, binder.getOwner().getId().toString(), "", "");
+ 			componentData.put(SearchFormSavedSearchQuery, searchFilter.getFilter().asXML());
+
+ 			/* Try to save this off on the component so we don't do this each time and so
+ 			 * the user is now free to modify this component further as they wish.
+ 			 */
+ 			if (componentId.contains("_")) {
+ 				String componentScope = componentId.split("_")[0];
+ 				if (!componentScope.equals("")) {
+ 					Dashboard d = getInstance().getDashboardObj(binder, componentScope);
+ 					/* Save the search filter on the component. */
+ 					getInstance().getDashboardModule().modifyComponent(d.getId(), componentId, component);
+ 				}
+ 			}
+ 		}
+    }
+
     protected void getSearchResultsBean(Binder binder, Map ssDashboard, Map model, 
     		String id, Map component, boolean isConfig) {
     	User user = RequestContextHolder.getRequestContext().getUser();
@@ -910,6 +947,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     	}
  		Map searchSearchFormData = new HashMap();      	
  		idData.put(WebKeys.SEARCH_FORM_DATA,searchSearchFormData);
+
+ 		validateComponentConfig(component, data, id, binder);
 
 		searchSearchFormData.put("searchFormTermCount", new Integer(0));
 		Document searchQuery = null;
@@ -1121,6 +1160,64 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		getInstance().internSaveComponentData(request, null, d, PORTLET_COMPONENT_ID, DashboardHelper.Portlet);
 	}
 
+	private void setupAssignees(SearchFilter searchFilter, Map componentData,
+		String assignedTo, String assignedToGroup, String assignedToTeam)
+	{
+		List<SearchFilter.Entry> entries = new ArrayList();
+		String[] assignedToSplit = new String[0];
+		if (!"".equals(assignedTo)) {
+			assignedToSplit = assignedTo.trim().split("\\s");
+			Set ids = new HashSet();
+			for (int i = 0; i < assignedToSplit.length; i++) {
+				try {
+					if (SearchFilterKeys.CurrentUserId.equals(assignedToSplit[i])) {
+						ids.add(SearchFilterKeys.CurrentUserId);
+					} else {
+						ids.add(Long.parseLong(assignedToSplit[i]));
+					}
+				} catch (NumberFormatException e) {
+					// ignore
+				}
+			}
+			componentData.put(AssignedTo, ids);
+		}
+		entries.add(new SearchFilter.Entry(null, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,
+				assignedToSplit, "user_list"));
+
+		String[] assignedToGroupSplit = new String[0];
+		if (!"".equals(assignedToGroup)) {
+			assignedToGroupSplit = assignedToGroup.trim().split("\\s");
+			Set ids = new HashSet();
+			for (int i = 0; i < assignedToGroupSplit.length; i++) {
+				try {
+					ids.add(Long.parseLong(assignedToGroupSplit[i]));
+				} catch (NumberFormatException e) {
+					// ignore
+				}
+			}
+			componentData.put(AssignedToGroups, ids);
+		}
+		entries.add(new SearchFilter.Entry(null, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME,
+				assignedToGroupSplit, "group_list"));
+
+		String[] assignedToTeamSplit = new String[0];
+		if (!"".equals(assignedToTeam)) {
+			assignedToTeamSplit = assignedToTeam.trim().split("\\s");
+			Set ids = new HashSet();
+			for (int i = 0; i < assignedToTeamSplit.length; i++) {
+				try {
+					ids.add(Long.parseLong(assignedToTeamSplit[i]));
+				} catch (NumberFormatException e) {
+					// ignore
+				}
+			}
+			componentData.put(AssignedToTeams, ids);
+		}
+		entries.add(new SearchFilter.Entry(null, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME,
+				assignedToTeamSplit, "team_list"));					
+		searchFilter.addEntries(entries, "userGroupTeam");		
+	}
+
 	/*
 	 * No static version because needs a DefinitionModule.
 	 */
@@ -1155,8 +1252,6 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		if (components != null) {
 			Map componentMap = (Map) components.get(componentId);
 			if (componentMap != null) {
-				Map originalComponentData = new HashMap();
-				if (componentMap.containsKey(Dashboard.DATA)) originalComponentData = (Map) componentMap.get(Dashboard.DATA);
 				String cName = (String)componentMap.get(Dashboard.NAME);
 				//Get any component specific data
 				if (ObjectKeys.DASHBOARD_COMPONENT_SEARCH.equals(cName)) {
@@ -1168,7 +1263,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						ObjectKeys.DASHBOARD_COMPONENT_GALLERY.equals(cName) ||
 						ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY.equals(cName) ||
 						ObjectKeys.DASHBOARD_COMPONENT_CALENDAR_SUMMARY.equals(cName)) {
-					
+
 					//multi-select	
 					Set <String> folderIds = new HashSet();
 					folderIds.addAll(TreeHelper.getSelectedStringIds(formData, "ss_folder_id"));
@@ -1206,59 +1301,11 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					}
 
 					if (ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY.equals(cName)) {
-						List<SearchFilter.Entry> entries = new ArrayList(); 
-						String assignedTo = PortletRequestUtils.getStringParameter(request, "assignedTo", "");
-						String[] assignedToSplited = new String[0];
-						if (!"".equals(assignedTo)) {
-							assignedToSplited = assignedTo.trim().split("\\s");
-							Set ids = new HashSet();
-							for (int i = 0; i < assignedToSplited.length; i++) {
-								try {
-									if (SearchFilterKeys.CurrentUserId.equals(assignedToSplited[i])) {
-										ids.add(SearchFilterKeys.CurrentUserId);
-									} else {
-										ids.add(Long.parseLong(assignedToSplited[i]));
-									}
-								} catch (NumberFormatException e) {
-									// ignore
-								}
-							}
-							componentData.put(AssignedTo, ids);
-						}
-						entries.add(new SearchFilter.Entry(null, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME, assignedToSplited, "user_list"));
-						
-						String assignedToGroup = PortletRequestUtils.getStringParameter(request, "assignedToGroup", "");
-						String[] assignedToGroupSplited = new String[0];
-						if (!"".equals(assignedToGroup)) {
-							assignedToGroupSplited = assignedToGroup.trim().split("\\s");
-							Set ids = new HashSet();
-							for (int i = 0; i < assignedToGroupSplited.length; i++) {
-								try {
-									ids.add(Long.parseLong(assignedToGroupSplited[i]));
-								} catch (NumberFormatException e) {
-									// ignore
-								}
-							}
-							componentData.put(AssignedToGroups, ids);
-						}
-						entries.add(new SearchFilter.Entry(null, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME, assignedToGroupSplited, "group_list"));
-						
-						String assignedToTeam = PortletRequestUtils.getStringParameter(request, "assignedToTeam", "");
-						String[] assignedToTeamSplited = new String[0];
-						if (!"".equals(assignedToTeam)) {
-							assignedToTeamSplited = assignedToTeam.trim().split("\\s");
-							Set ids = new HashSet();
-							for (int i = 0; i < assignedToTeamSplited.length; i++) {
-								try {
-									ids.add(Long.parseLong(assignedToTeamSplited[i]));
-								} catch (NumberFormatException e) {
-									// ignore
-								}
-							}
-							componentData.put(AssignedToTeams, ids);
-						}
-						entries.add(new SearchFilter.Entry(null, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME, assignedToTeamSplited, "team_list"));					
-						searchFilter.addEntries(entries, "userGroupTeam");
+						setupAssignees(searchFilter, componentData,
+								PortletRequestUtils.getStringParameter(request, "assignedTo", ""),
+								PortletRequestUtils.getStringParameter(request, "assignedToGroup", ""),
+								PortletRequestUtils.getStringParameter(request, "assignedToTeam", "")
+								);
 					}
 					
 					componentData.put(SearchFormSavedSearchQuery, searchFilter
