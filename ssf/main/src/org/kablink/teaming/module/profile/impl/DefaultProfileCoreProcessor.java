@@ -77,6 +77,7 @@ import org.kablink.teaming.jobs.UserTitleChange;
 import org.kablink.teaming.module.binder.impl.AbstractEntryProcessor;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.ldap.LdapSyncResults.PartialLdapSyncResults;
 import org.kablink.teaming.module.profile.index.ProfileIndexUtils;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
@@ -618,7 +619,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	public void syncEntries(
 		final Map entries,
 		final Map options,
-		ArrayList syncResults ) {
+		PartialLdapSyncResults syncResults ) {
 		if (entries.isEmpty()) return;
 	    
         // The following part requires update database transaction.
@@ -657,7 +658,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	    		Principal principal;
 	    		
 	    		principal = (Principal) entry;
-	    		syncResults.add( principal.getName() + " (" + principal.getForeignName() + ")" );
+	    		syncResults.addResult( principal.getName() + " (" + principal.getForeignName() + ")" );
 	    	}
 	    }
 		
@@ -702,7 +703,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     	final Class clazz,
     	final List inputAccessors,
     	Map options,
-    	ArrayList syncResults ) {
+    	PartialLdapSyncResults syncResults ) {
 	   if (inputAccessors.isEmpty()) return new ArrayList();
 	   SimpleProfiler.startProfiler("DefaultProfileCoreProcessor.syncNewEntries");
 	    // The following part requires update database transaction.
@@ -750,7 +751,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			// Add this entry to the sync results.
 			if ( syncResults != null )
 			{
-				syncResults.add( p.getName() + " (" + p.getForeignName() + ")" );
+				syncResults.addResult( p.getName() + " (" + p.getForeignName() + ")" );
 			}
 		}
 		getCoreDao().evict(newEntries);

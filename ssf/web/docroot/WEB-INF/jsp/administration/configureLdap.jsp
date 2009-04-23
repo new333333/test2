@@ -34,13 +34,12 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT"%>
-<%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.Locale" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp"%>
 <c:set var="ss_windowTitle"
 	value='<%= NLT.get("administration.configure_ldap") %>' scope="request" />
 <%@ include file="/WEB-INF/jsp/common/include.jsp"%>
-<body class="ss_style_body tundra">
+<body class="ss_style_body tundra" onunload="onUnloadEventHandler();">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet"><ssf:form titleTag="ldap.title">
 
@@ -53,12 +52,14 @@
 	<form class="ss_style ss_form" name="${renderResponse.namespace}fm"
 		method="post"
 		action="<ssf:url action="configure_ldap" actionUrl="true"/>">
+
 	<div class="ss_buttonBarRight"><br />
-	<input type="submit" class="ss_submit" name="okBtn"
-		value="<ssf:nlt tag="button.apply"/>"> <input type="button"
-		class="ss_submit" name="closeBtn"
-		value="<ssf:nlt tag="button.close" text="Close"/>"
-		onClick="self.window.close();return false;" /></div>
+		<input type="submit" class="ss_submit" name="okBtn"
+			value="<ssf:nlt tag="button.apply"/>">
+		<input type="button"
+			class="ss_submit" name="closeBtn"
+			value="<ssf:nlt tag="button.close" text="Close"/>"
+			onClick="self.window.close();return false;" /></div>
 	<div>
 	<div id="funkyDiv" style="width: 500px">
 	<ul>
@@ -81,7 +82,11 @@
 			</label></td>
 		</tr>
 		<tr>
-			<td><input type="checkbox" id="runnow" name="runnow"
+			<td>
+				<!-- This hidden input is used to store a unique id used to identify the sync results. -->
+				<input id="ldapSyncResultsId" name="ldapSyncResultsId" type="hidden" value="" />
+
+				<input type="checkbox" id="runnow" name="runnow"
 				<c:if test="${runnow}"> checked="checked" </c:if> /> <label
 				for="runnow"><span class="ss_labelRight ss_normal"><ssf:nlt
 				tag="ldap.schedule.now" /></span><br />
@@ -411,18 +416,319 @@
 </style>
 
 <script type="text/javascript">
-var	m_ldapConfigId	= null;
+var LDAP_SYNC_STATUS_IN_PROGRESS = 0;
+var LDAP_SYNC_STATUS_COMPLETED = 1;
+var LDAP_SYNC_STATUS_STOP_COLLECTING_RESULTS = 2;
+var LDAP_SYNC_STATUS_ABORTED_BY_ERROR = 3;
+
+var m_syncResultsTimerId = null;
+var m_ldapConfigId = null;
+var m_ldapSyncStatus = -1;
+var m_syncStatusInProgressImg = null;
+var m_syncStatusCompletedImg = null;
+var m_syncStatusErrorImg = null;
+var m_numAddedUsers = 0;
+var m_numModifiedUsers = 0;
+var m_numDeletedUsers = 0;
+var m_numAddedGroups = 0;
+var m_numModifiedGroups = 0;
+var m_numDeletedGroups = 0;
+
+// Create the images that will be used in the sync results dialog.
+m_syncStatusInProgressImg = new Image();
+m_syncStatusInProgressImg.src = '<html:imagesPath/>pics/spinner.gif';
+m_syncStatusCompletedImg = new Image();
+m_syncStatusCompletedImg.src = '<html:imagesPath/>pics/success32.gif';
+m_syncStatusErrorImg = new Image();
+m_syncStatusErrorImg.src = '<html:imagesPath/>pics/error32.gif';
 
 /**
- * This function will close the "Sync Results" dialog.
+ * This function will add the given sync results to the given table.
+ */
+function 	addNamesToSyncResultsDlg( table, names, noneTrId, countId, initialCount )
+{
+	var numAdded;
+
+	numAdded = 0;
+	
+	// Do we have anything to add?
+	if ( names != null && names.length > 0 )
+	{
+		var i;
+		var tr;
+		var finalCount;
+		var span;
+		
+		// Yes
+		// Remove the row from the table that says "None".
+		tr = document.getElementById( noneTrId );
+		if ( tr != null )
+			table.deleteRow( tr.rowIndex );
+
+		// Add each name to the given table.
+		for (i = 0; i < names.length; ++i)
+		{
+			var	tr;
+			var	td;
+			var	span;
+
+			// Create a <tr> and a <td> and a <span> for the name to live in.
+			tr = table.insertRow( table.rows.length-1 );
+			td = tr.insertCell( 0 );
+			span = document.createElement( 'span' );
+			span.className = 'syncResultsSectionItem';
+			updateElementsTextNode( span, names[i] );
+			td.appendChild( span );
+		}// end for()
+
+		// Update the text that displays the count for the given section.  For example, Added Users: 123
+		numAdded = names.length;
+		finalCount = initialCount + numAdded;
+		span = document.getElementById( countId );
+		updateElementsTextNode( span, finalCount );
+	}
+
+	return numAdded;
+}// end addNamesToSyncResultsDlg()
+
+
+/**
+ * This function will close the "Sync Results" dialog and issue an ajax request to tell the ldap
+ * sync process to stop collecting results.
  */
 function closeSyncResultsDlg()
 {
-	var	div;
+	var div;
+
+	// Is the ldap sync running?
+	if ( m_ldapSyncStatus == LDAP_SYNC_STATUS_IN_PROGRESS )
+	{
+		var msg;
+
+		// Yes
+		// Issue an ajax request to tell the ldap sync process to not collect any more sync results.
+		stopCollectingSyncResults();
+
+		// Inform the user that closing the dialog will not stop the sync process.
+		msg = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.syncResults.closeMsg"/></ssf:escapeJavaScript>';
+		alert( msg );
+	}
 
 	div = document.getElementById( 'syncResultsDlg' );
 	div.style.display = 'none';
+
 }// end closeSyncResultsDlg()
+
+
+/**
+ * Issue an ajax request to get the latest results of the ldap sync.
+ */
+function getSyncResults()
+{
+	var	input;
+	var	id;
+	var url;
+	var obj;
+
+	// Get the id of the sync results we are looking for.
+	input = document.getElementById( 'ldapSyncResultsId' );
+	id = input.value;
+
+	// Set up the object that will be used in the ajax request.
+	obj = new Object();
+	obj.operation = 'getLdapSyncResults'
+	obj.ldapSyncResultsId = id;
+
+	// Build the url used in the ajax request.
+	url = ss_buildAdapterUrl( ss_AjaxBaseUrl, obj );
+
+	// Issue the ajax request.  The function handleResponseToGetSyncResults() will be called
+	// when we get the response to the request.
+	ss_get_url( url, handleResponseToGetSyncResults );
+}// end getSyncResults()
+
+
+/**
+ * This function gets called when we get a response to an ajax request to get the ldap sync results.
+ */
+function handleResponseToGetSyncResults( responseData )
+{
+	var table;
+	var status;
+
+	m_syncResultsTimerId = null;
+	
+	// Add the names of the added users to the sync results dialog.
+	table = document.getElementById( 'addedUsersTable' );
+	m_numAddedUsers += addNamesToSyncResultsDlg( table, responseData.addedUsers, 'noAddedUsersTR', 'numAddedUsersSpan', m_numAddedUsers );
+	 
+	// Add the names of the modified users to the sync results dialog.
+	table = document.getElementById( 'modifiedUsersTable' );
+	m_numModifiedUsers += addNamesToSyncResultsDlg( table, responseData.modifiedUsers, 'noModifiedUsersTR', 'numModifiedUsersSpan', m_numModifiedUsers );
+
+	// Add the names of the deleted users to the sync results dialog.
+	table = document.getElementById( 'deletedUsersTable' );
+	m_numDeletedUsers += addNamesToSyncResultsDlg( table, responseData.deletedUsers, 'noDeletedUsersTR', 'numDeletedUsersSpan', m_numDeletedUsers );
+
+	// Add the names of the added groups to the sync results dialog.
+	table = document.getElementById( 'addedGroupsTable' );
+	m_numAddedGroups += addNamesToSyncResultsDlg( table, responseData.addedGroups, 'noAddedGroupsTR', 'numAddedGroupsSpan', m_numAddedGroups );
+	 
+	// Add the names of the modified groups to the sync results dialog.
+	table = document.getElementById( 'modifiedGroupsTable' );
+	m_numModifiedGroups += addNamesToSyncResultsDlg( table, responseData.modifiedGroups, 'noModifiedGroupsTR', 'numModifiedGroupsSpan', m_numModifiedGroups );
+
+	// Add the names of the deleted groups to the sync results dialog.
+	table = document.getElementById( 'deletedGroupsTable' );
+	m_numDeletedGroups += addNamesToSyncResultsDlg( table, responseData.deletedGroups, 'noDeletedGroupsTR', 'numDeletedGroupsSpan', m_numDeletedGroups );
+
+	// Remember the state of the ldap sync process.
+	m_ldapSyncStatus = responseData.status;
+	
+	if ( responseData.status == LDAP_SYNC_STATUS_IN_PROGRESS )
+	{
+		// If we get here the sync is still in progress.
+		// Wait another 2 seconds and then go get some more results.
+		m_syncResultsTimerId = setTimeout( getSyncResults, 2000 );
+	}
+	else if ( responseData.status == LDAP_SYNC_STATUS_COMPLETED )
+	{
+		// If we get here the ldap sync is complete.
+		// Set the status displayed in the sync results dialog to indicate the sync completed.
+		status = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.syncResults.status.completed"/></ssf:escapeJavaScript>';
+		setSyncResultsStatus( status, m_syncStatusCompletedImg );
+	}
+	else if ( responseData.status == LDAP_SYNC_STATUS_STOP_COLLECTING_RESULTS )
+	{
+		// If we get here it means the ldap sync process isn't collecting any more results.  Nothing to do.
+	}
+	else if ( responseData.status == LDAP_SYNC_STATUS_ABORTED_BY_ERROR )
+	{
+		// If we get here an error happened during the sync.
+		// Display the error.
+		if ( responseData.errDesc != null )
+		{
+			var msg;
+
+			msg = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.syncResults.error"/></ssf:escapeJavaScript>';
+			msg += '\n\n' + responseData.errDesc;
+			alert( msg );
+
+			// Show the ldap configuration that had the error.
+			if ( responseData.errLdapConfigId != null )
+			{
+				// Show the ldap configuration that had the error.
+				m_ldapConfigId = responseData.errLdapConfigId;
+				ssPage.showLdapConfig();
+			}
+		}
+
+		// Set the status displayed in the sync results dialog to indicate an error happened.
+		status = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.syncResults.status.stoppedByError"/></ssf:escapeJavaScript>';
+		setSyncResultsStatus( status, m_syncStatusErrorImg );
+	}
+	else if ( responseData.status == -1 )
+	{
+		// If we get here it means that the sync results have been removed from the session.  Nothing else to do.
+	}
+	else
+	{
+		// We should never get here.
+		alert( 'Unknown sync status: ' + responseData.status );
+	}
+}// end handleResponseToGetSyncResults()
+
+
+/**
+ * This function gets called when we get the response to our ajax request to remove the ldap sync results object from the session. 
+ */
+function handleResponseToRemoveExistingLdapSyncResults( responseData )
+{
+	// Nothing to do here.
+}// end handleResponseToRemoveExistingLdapSyncResults()
+
+
+/**
+ * This function gets called when we get the response to our ajax request to start the ldap sync.
+ */
+function handleResponseToStartLdapSync( responseData )
+{
+	// Nothing to do here.  The function, handleResponseToGetSyncResults(), will report any errors.
+}// end handleResponseToStartLdapSync()
+
+
+/**
+ * This functions gets called when we get the response to our ajax request to stop collecting ldap sync results.
+ */
+function handleResponseToStopCollectingSyncResults( responseData )
+{
+	// Nothing to do.
+}// end handleResponseToStopCollectingSyncResults()
+
+
+/**
+ * This function is the event handler for the onunload event for this page.
+ */
+function onUnloadEventHandler()
+{
+	// If a previous ldap sync results exists, remove it from the session.
+	removeExistingLdapSyncResults();
+}// end onUnloadEventHandler()
+
+
+/**
+ * If a previous ldap sync results exists, remove it from the session.
+ */
+function removeExistingLdapSyncResults()
+{
+	var	input;
+	var	id;
+	var url;
+	var obj;
+
+	// Get the id of the sync results we are looking for.
+	input = document.getElementById( 'ldapSyncResultsId' );
+	id = input.value;
+
+	// Do we have an ldap sync results?
+	if ( id != null && id.length > 0 )
+	{
+		// Yes
+		// Set up the object that will be used in the ajax request.
+		obj = new Object();
+		obj.operation = 'removeLdapSyncResults'
+		obj.ldapSyncResultsId = id;
+	
+		// Build the url used in the ajax request.
+		url = ss_buildAdapterUrl( ss_AjaxBaseUrl, obj );
+	
+		// Issue an ajax request to remove the ldap sync results object from the session.
+		// The function handleResponseToRemoveLdapSyncResults() will be called when we get the response to the request.
+		ss_get_url( url, handleResponseToRemoveExistingLdapSyncResults );
+
+		input.value = null;
+	}
+}// end removeExistingLdapSyncResults()
+
+
+/**
+ * This function will set the status in the sync results dialog.
+ */
+function setSyncResultsStatus( statusTxt, img )
+{
+	var span;
+	var imgElement;
+
+	// Get the <span> that holds the status text.
+	span = document.getElementById( 'syncResultsStatusText' );
+
+	// Update the status text in the sync results dialog.
+	updateElementsTextNode( span, statusTxt );
+
+	// Get the <img> that holds the status image.
+	imgElement = document.getElementById( 'syncResultsStatusImg' );
+	imgElement.src = img.src;
+}// end setSyncResultsStatus()
 
 
 /**
@@ -430,21 +736,141 @@ function closeSyncResultsDlg()
  */
 function showSyncResultsDlg()
 {
-	var	div;
-	var	height;
+	var div;
 
-	// Get the height of the <div> that holds all the sync results.
-	div = document.getElementById( 'allSyncResultsDiv' );
-	height = div.offsetHeight;
-
-	// If the height is > 500 set the height to 500.
-	if ( height > 500 )
-		div.style.height = '500px';
-	
 	div = document.getElementById( 'syncResultsDlg' );
-	div.style.top = '200px';
 	div.style.display = '';
 }// end showSyncResultsDlg()
+
+
+/**
+ * Issue an ajax request to start the ldap sync.
+ */
+function startLdapSync()
+{
+	var input;
+	var id;
+	var url;
+	var obj;
+	var status;
+
+	m_numAddedUsers = 0;
+	m_numModifiedUsers = 0;
+	m_numDeletedUsers = 0;
+	m_numAddedGroups = 0;
+	m_numModifiedGroups = 0;
+	m_numDeletedGroups = 0;
+
+	// Remove an existing ldap sync results if one exists.
+	removeExistingLdapSyncResults();
+	
+	// Show the sync results dialog.
+	showSyncResultsDlg();
+	
+	// Generate a unique id that will identify the sync results.  We will use
+	// this id in subsequent ajax calls.
+	input = document.getElementById( 'ldapSyncResultsId' );
+	input.value = Math.random();
+	id = input.value;
+
+	// Set up the object that will be used in the ajax request.
+	obj = new Object();
+	obj.operation = 'startLdapSync'
+	obj.ldapSyncResultsId = id;
+
+	// Build the url used in the ajax request.
+	url = ss_buildAdapterUrl( ss_AjaxBaseUrl, obj );
+	
+	// Issue the ajax request.  The function handleResponseToStartLdapSync() will be called
+	// when we get the response to the request.
+	ss_get_url( url, handleResponseToStartLdapSync );
+
+	// Change the title to indicate the ldap sync is in progress.
+	status = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.syncResults.status.inProgress"/></ssf:escapeJavaScript>';
+	setSyncResultsStatus( status, m_syncStatusInProgressImg );
+
+	// Start a timer.  Whenever the timer goes off we will issue an ajax request
+	// to get the latest results from the ldap sync.
+	m_syncResultsTimerId = setTimeout( getSyncResults, 2000 );
+
+	m_ldapSyncStatus = LDAP_SYNC_STATUS_IN_PROGRESS;
+}// end startLdapSync()
+
+
+/**
+ * This function will issue an ajax request telling the sync process to stop collecting sync results.
+ */
+function stopCollectingSyncResults()
+{
+	var	input;
+	var	id;
+	var url;
+	var obj;
+
+	// Get the id of the sync results we are looking for.
+	input = document.getElementById( 'ldapSyncResultsId' );
+	id = input.value;
+
+	// Set up the object that will be used in the ajax request.
+	obj = new Object();
+	obj.operation = 'stopCollectingLdapSyncResults'
+	obj.ldapSyncResultsId = id;
+
+	// Build the url used in the ajax request.
+	url = ss_buildAdapterUrl( ss_AjaxBaseUrl, obj );
+
+	// Kill any timer we have.
+	if ( m_syncResultsTimerId != null )
+		clearTimeout( m_syncResultsTimerId );
+	
+	// Issue an ajax request to tell the ldap sync process to stop collecting results.
+	// The function handleResponseToStopCollectingSyncResults() will be called when we get the response to the request.
+	ss_get_url( url, handleResponseToStopCollectingSyncResults );
+}// end stopCollectingSyncResults()
+
+
+/**
+ * This function will update the given element's text node with the given text.
+ */
+function updateElementsTextNode(
+	element,	// The Element whose text Node is to be updated.
+	newText)	// The text to update the Node with.
+{
+	var	found;
+	var	i;
+	var kids;
+	var	numKids;
+
+	if (null == element)
+	{
+		return;
+	}
+
+	// Find the text node for this element.
+	kids    = element.childNodes;
+	numKids = kids.length;
+	found   = false;
+	for (i = 0; ((i < numKids) && (!found)); i += 1)
+	{
+		// Is this child a text node?
+		if (3 == kids[i].nodeType)
+		{
+			// Yes!  Replace its text with the new text.
+			kids[i].data = newText;
+			found        = true;
+		}
+	}
+
+	// Did we find a text node?
+	if ( !found )
+	{
+		var	textNode;
+
+		// No!  Create one and add it to the element.
+		textNode = element.ownerDocument.createTextNode( newText );
+		element.appendChild( textNode );
+	}
+}// end updateElementsTextNode()
 
 
 ssPage = {
@@ -672,7 +1098,7 @@ jQuery(document).ready(function() {
 		});
 		ldapDoc += "</ldapConfigs>";
 		jQuery('#ldapConfigDoc').val(ldapDoc);
-		
+
 		return valid;
 	});
 });
@@ -739,288 +1165,134 @@ jQuery(document).ready(function() {
 			}
 		</c:if>
 
-		// Do we have any sync results?
-		<c:if test="${!empty ssSyncResults}">
+		
+		// Are we supposed to start an ldap sync?
+		<c:if test="${!empty startLdapSync}">
 			// Yes
-			// Invoke the Sync Results dialog.
-			showSyncResultsDlg();
+			// Start an ldap sync.
+			startLdapSync();
 		</c:if>
 	});
 </script></div>
 
-<!-- Do we have sync results? -->
-<c:if test="${!empty ssSyncResults}">
-	<!-- Yes, create a dialog that will display the sync results. -->
-
-	<jsp:useBean id="ssSyncResults"
-		type="org.kablink.teaming.module.ldap.LdapSyncResults" scope="request" />
-	<%
-	ArrayList<String>	syncResults;
-	String				name;
-	int					i;
-%>
-
-	<!-- The following <div> is the Sync Results dialog.  This dialog will display -->
-	<!-- all of the results from the ldap sync -->
-	<div id="syncResultsDlg" class="syncResultsDialog" style="left: 200px; top: 6000px;">
-		<div class="syncResultsTitle"><ssf:nlt tag="ldap.syncResults.title" /></div>
-
-		<!-- This section holds all of the results. -->
-		<div id="allSyncResultsDiv" style="width: 400px; overflow: auto;">
-			<table width="100%" cellspacing="0">
-				<!-- This section holds the list of users that were added -->
-				<tr class="syncResultsSectionHeaderTR">
-					<td class="syncResultsSectionHeaderTD">
-						<span class="syncResultsSectionHeaderText"><ssf:nlt tag="ldap.syncResults.addedUsers" /></span>
-					</td>
-				</tr>
-			<%
-				// Get the list of users that were added.
-				syncResults = ssSyncResults.getAddedUsers();
-			
-				// Were any users added?
-				if ( syncResults != null && syncResults.size() > 0 )
-				{
-					// Yes
-					for (i = 0; i < syncResults.size(); ++i)
-					{
-						name = (String)syncResults.get( i );
-			%>
-						<tr>
-							<td>
-								<span class="syncResultsSectionItem"><%= name %></span>
-							</td>
-						</tr>
-			<%
-					}
-				}
-				else
-				{
-					// No users were added.
-			%>
-					<tr>
-						<td><span class="syncResultsSectionItem"><ssf:nlt tag="ldap.syncResults.none" /></span></td>
-					</tr>
-			<%
-				}
-			%>
-				<tr><td><span class="syncResultsSectionBottomSpace">&nbsp;</span></td></tr>
-
-
-				<!-- This section holds the list of users that were modified -->
-				<tr class="syncResultsSectionHeaderTR">
-					<td class="syncResultsSectionHeaderTD">
-						<span class="syncResultsSectionHeaderText"><ssf:nlt tag="ldap.syncResults.modifiedUsers" /></span>
-					</td>
-				</tr>
-			<%
-				// Get the list of users that were modified.
-				syncResults = ssSyncResults.getModifiedUsers();
-			
-				// Were any users modified?
-				if ( syncResults != null && syncResults.size() > 0 )
-				{
-					// Yes
-					for (i = 0; i < syncResults.size(); ++i)
-					{
-						name = (String)syncResults.get( i );
-			%>
-						<tr>
-							<td>
-								<span class="syncResultsSectionItem"><%= name %></span>
-							</td>
-						</tr>
-			<%
-					}
-				}
-				else
-				{
-					// No users were modified.
-			%>
-					<tr>
-						<td>
-							<span class="syncResultsSectionItem"><ssf:nlt tag="ldap.syncResults.none" /></span>
-						</td>
-					</tr>
-			<%
-				}
-			%>
-				<tr><td><span class="syncResultsSectionBottomSpace">&nbsp;</span></td></tr>
-
-
-				<!-- This section holds the list of users that were deleted -->
-				<tr class="syncResultsSectionHeaderTR">
-					<td class="syncResultsSectionHeaderTD">
-						<span class="syncResultsSectionHeaderText"><ssf:nlt tag="ldap.syncResults.deletedUsers" /></span>
-					</td>
-				</tr>
-			<%
-				// Get the list of users that were deleted.
-				syncResults = ssSyncResults.getDeletedUsers();
-			
-				// Were any users deleted?
-				if ( syncResults != null && syncResults.size() > 0 )
-				{
-					// Yes
-					for (i = 0; i < syncResults.size(); ++i)
-					{
-						name = (String)syncResults.get( i );
-			%>
-						<tr>
-							<td>
-								<span class="syncResultsSectionItem"><%= name %></span>
-							</td>
-						</tr>
-			<%
-					}
-				}
-				else
-				{
-					// No users were deleted.
-			%>
-					<tr>
-						<td>
-							<span class="syncResultsSectionItem"><ssf:nlt tag="ldap.syncResults.none" /></span>
-						</td>
-					</tr>
-			<%
-				}
-			%>
-				<tr><td><span class="syncResultsSectionBottomSpace">&nbsp;</span></td></tr>
-
-
-				<!-- This section holds the list of groups that were added -->
-				<tr class="syncResultsSectionHeaderTR">
-					<td class="syncResultsSectionHeaderTD">
-						<span class="syncResultsSectionHeaderText"><ssf:nlt tag="ldap.syncResults.addedGroups" /></span>
-					</td>
-				</tr>
-			<%
-				// Get the list of groups that were added.
-				syncResults = ssSyncResults.getAddedGroups();
-			
-				// Were any groups added?
-				if ( syncResults != null && syncResults.size() > 0 )
-				{
-					// Yes
-					for (i = 0; i < syncResults.size(); ++i)
-					{
-						name = (String)syncResults.get( i );
-			%>
-						<tr>
-							<td>
-								<span class="syncResultsSectionItem"><%= name %></span>
-							</td>
-						</tr>
-			<%
-					}
-				}
-				else
-				{
-					// No groups were added.
-			%>
-					<tr>
-						<td>
-							<span class="syncResultsSectionItem"><ssf:nlt tag="ldap.syncResults.none" /></span>
-						</td>
-					</tr>
-			<%
-				}
-			%>
-				<tr><td><span class="syncResultsSectionBottomSpace">&nbsp;</span></td></tr>
-
-
-				<!-- This section holds the list of groups that were modified -->
-				<tr class="syncResultsSectionHeaderTR">
-					<td class="syncResultsSectionHeaderTD">
-						<span class="syncResultsSectionHeaderText"><ssf:nlt tag="ldap.syncResults.modifiedGroups" /></span>
-					</td>
-				</tr>
-			<%
-				// Get the list of groups that were modified.
-				syncResults = ssSyncResults.getModifiedGroups();
-			
-				// Were any groups modified?
-				if ( syncResults != null && syncResults.size() > 0 )
-				{
-					// Yes
-					for (i = 0; i < syncResults.size(); ++i)
-					{
-						name = (String)syncResults.get( i );
-			%>
-						<tr>
-							<td>
-								<span class="syncResultsSectionItem"><%= name %></span>
-							</td>
-						</tr>
-			<%
-					}
-				}
-				else
-				{
-					// No groups were modified.
-			%>
-					<tr>
-						<td>
-							<span class="syncResultsSectionItem"><ssf:nlt tag="ldap.syncResults.none" /></span>
-						</td>
-					</tr>
-			<%
-				}
-			%>
-				<tr><td><span class="syncResultsSectionBottomSpace">&nbsp;</span></td></tr>
-
-
-				<!-- This section holds the list of groups that were deleted -->
-				<tr class="syncResultsSectionHeaderTR">
-					<td class="syncResultsSectionHeaderTD">
-						<span class="syncResultsSectionHeaderText"><ssf:nlt tag="ldap.syncResults.deletedGroups" /></span>
-					</td>
-				</tr>
-			<%
-				// Get the list of groups that were deleted.
-				syncResults = ssSyncResults.getDeletedGroups();
-			
-				// Were any groups deleted?
-				if ( syncResults != null && syncResults.size() > 0 )
-				{
-					// Yes
-					for (i = 0; i < syncResults.size(); ++i)
-					{
-						name = (String)syncResults.get( i );
-			%>
-						<tr>
-							<td>
-								<span class="syncResultsSectionItem"><%= name %></span>
-							</td>
-						</tr>
-			<%
-					}
-				}
-				else
-				{
-					// No groups were deleted.
-			%>
-					<tr>
-						<td>
-							<span class="syncResultsSectionItem"><ssf:nlt tag="ldap.syncResults.none" /></span>
-						</td>
-					</tr>
-			<%
-				}
-			%>
-				<tr><td><span class="syncResultsSectionBottomSpace">&nbsp;</span></td></tr>
-			</table>
-		</div>
-
-		<!-- Buttons -->
-		<div class="margintop3 rowaltcolor" style="padding: 0.5em; border-top: 1px solid #babdb6">
-			<a id="syncResultDlg_close" title="<ssf:nlt tag="ldap.syncResults.alt.close"/> href="#" onclick="closeSyncResultsDlg()">
-				<input type="button" name="closeSyncResultsDlgBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
-			</a>
+<!-- The following <div> is the Sync Results dialog.  This dialog will display -->
+<!-- all of the results from the ldap sync -->
+<div id="syncResultsDlg" class="syncResultsDialog" style="left: 200px; top: 200px; display: none;">
+	<div class="syncResultsTitle">
+		<span><ssf:nlt tag="ldap.syncResults.title" /></span>
+		
+		<!-- This is where the status of the sync will be displayed. -->
+		<div style="margin-left: 2em;">
+			<span style="margin-right: .5em;"><ssf:nlt tag="ldap.syncResults.status" /></span>
+			<img id="syncResultsStatusImg" src="" align="absmiddle" border="0" >
+			<span style="margin-left: .2em;" id="syncResultsStatusText"></span>
 		</div>
 	</div>
-</c:if>
+
+	<!-- This section holds all of the results. -->
+	<div id="allSyncResultsDiv" style="width: 400px; height: 500px; overflow: auto;">
+		<table id="addedUsersTable" width="100%" height="16%" cellspacing="0">
+			<!-- This section holds the list of users that were added -->
+			<tr class="syncResultsSectionHeaderTR">
+				<td class="syncResultsSectionHeaderTD">
+					<span class="syncResultsSectionHeaderText"><ssf:nlt tag="ldap.syncResults.addedUsers" /><span style="margin-left: .2em;" id="numAddedUsersSpan">0</span></span>
+				</td>
+			</tr>
+			<!-- No users were added. -->
+			<tr id="noAddedUsersTR">
+				<td><span class="syncResultsSectionItem"><ssf:nlt tag="ldap.syncResults.none" /></span></td>
+			</tr>
+			<tr><td><span class="syncResultsSectionBottomSpace">&nbsp;</span></td></tr>
+		</table>
+
+		<table id="modifiedUsersTable" width="100%" height="16%" cellspacing="0">
+			<!-- This section holds the list of users that were modified -->
+			<tr class="syncResultsSectionHeaderTR">
+				<td class="syncResultsSectionHeaderTD">
+					<span class="syncResultsSectionHeaderText"><ssf:nlt tag="ldap.syncResults.modifiedUsers" /><span style="margin-left: .2em;" id="numModifiedUsersSpan">0</span></span>
+				</td>
+			</tr>
+			<!-- No users were modified. -->
+			<tr id="noModifiedUsersTR">
+				<td>
+					<span class="syncResultsSectionItem"><ssf:nlt tag="ldap.syncResults.none" /></span>
+				</td>
+			</tr>
+			<tr><td><span class="syncResultsSectionBottomSpace">&nbsp;</span></td></tr>
+		</table>
+
+		<table id="deletedUsersTable" width="100%" height="16%" cellspacing="0">
+			<!-- This section holds the list of users that were deleted -->
+			<tr class="syncResultsSectionHeaderTR">
+				<td class="syncResultsSectionHeaderTD">
+					<span class="syncResultsSectionHeaderText"><ssf:nlt tag="ldap.syncResults.deletedUsers" /><span style="margin-left: .2em;" id="numDeletedUsersSpan">0</span></span>
+				</td>
+			</tr>
+			<!-- No users were deleted. -->
+			<tr id="noDeletedUsersTR">
+				<td>
+					<span class="syncResultsSectionItem"><ssf:nlt tag="ldap.syncResults.none" /></span>
+				</td>
+			</tr>
+			<tr><td><span class="syncResultsSectionBottomSpace">&nbsp;</span></td></tr>
+		</table>
+
+		<table id="addedGroupsTable" width="100%" height="16%" cellspacing="0">
+			<!-- This section holds the list of groups that were added -->
+			<tr class="syncResultsSectionHeaderTR">
+				<td class="syncResultsSectionHeaderTD">
+					<span class="syncResultsSectionHeaderText"><ssf:nlt tag="ldap.syncResults.addedGroups" /><span style="margin-left: .2em;" id="numAddedGroupsSpan">0</span></span>
+				</td>
+			</tr>
+			<!-- No groups were added. -->
+			<tr id="noAddedGroupsTR">
+				<td>
+					<span class="syncResultsSectionItem"><ssf:nlt tag="ldap.syncResults.none" /></span>
+				</td>
+			</tr>
+			<tr><td><span class="syncResultsSectionBottomSpace">&nbsp;</span></td></tr>
+		</table>
+
+		<table id="modifiedGroupsTable" width="100%" height="16%" cellspacing="0">
+			<!-- This section holds the list of groups that were modified -->
+			<tr class="syncResultsSectionHeaderTR">
+				<td class="syncResultsSectionHeaderTD">
+					<span class="syncResultsSectionHeaderText"><ssf:nlt tag="ldap.syncResults.modifiedGroups" /><span style="margin-left: .2em;" id="numModifiedGroupsSpan">0</span></span>
+				</td>
+			</tr>
+			<!-- No groups were modified. -->
+			<tr id="noModifiedGroupsTR">
+				<td>
+					<span class="syncResultsSectionItem"><ssf:nlt tag="ldap.syncResults.none" /></span>
+				</td>
+			</tr>
+			<tr><td><span class="syncResultsSectionBottomSpace">&nbsp;</span></td></tr>
+		</table>
+
+		<table id="deletedGroupsTable" width="100%" height="16%" cellspacing="0">
+			<!-- This section holds the list of groups that were deleted -->
+			<tr class="syncResultsSectionHeaderTR">
+				<td class="syncResultsSectionHeaderTD">
+					<span class="syncResultsSectionHeaderText"><ssf:nlt tag="ldap.syncResults.deletedGroups" /><span style="margin-left: .2em;" id="numDeletedGroupsSpan">0</span></span>
+				</td>
+			</tr>
+			<!-- No groups were deleted. -->
+			<tr id="noDeletedGroupsTR">
+				<td>
+					<span class="syncResultsSectionItem"><ssf:nlt tag="ldap.syncResults.none" /></span>
+				</td>
+			</tr>
+			<tr><td><span class="syncResultsSectionBottomSpace">&nbsp;</span></td></tr>
+		</table>
+	</div>
+
+	<!-- Buttons -->
+	<div class="margintop3 rowaltcolor" style="padding: 0.5em; border-top: 1px solid #babdb6">
+		<a id="syncResultDlg_close" title="<ssf:nlt tag="ldap.syncResults.alt.close"/> href="#" onclick="closeSyncResultsDlg()">
+			<input type="button" name="closeSyncResultsDlgBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+		</a>
+	</div>
+</div>
 
 <div id="ldapTemplate" style="display: none">
 <fieldset class="ldapConfig ss_fieldset"><legend

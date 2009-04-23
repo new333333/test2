@@ -87,6 +87,7 @@ import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
+import org.kablink.teaming.module.ldap.LdapSyncResults.PartialLdapSyncResults;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -543,7 +544,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			//do updates after every 100 users
 			if (!ldap_existing.isEmpty() && (ldap_existing.size()%modifySyncSize == 0)) {
 				//doLog("Updating users:", ldap_existing);
-				ArrayList	syncResults	= null;
+				PartialLdapSyncResults	syncResults	= null;
 				
 				// Do we have a place to store the list of modified users?
 				if ( m_ldapSyncResults != null )
@@ -557,7 +558,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			//do creates after every 100 users
 			if (!ldap_new.isEmpty() && (ldap_new.size()%createSyncSize == 0)) {				
 				doLog("Creating users:", ldap_new);
-				ArrayList	syncResults	= null;
+				PartialLdapSyncResults	syncResults	= null;
 				
 				// Do we have a place to store the list of added users?
 				if ( m_ldapSyncResults != null )
@@ -579,7 +580,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			if (!ldap_existing.isEmpty()) {
 				//doLog("Updating users:", ldap_existing);
-				ArrayList	syncResults	= null;
+				PartialLdapSyncResults	syncResults	= null;
 				
 				// Do we have a place to store the list of modified users?
 				if ( m_ldapSyncResults != null )
@@ -591,7 +592,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 			if (!ldap_new.isEmpty()) {
 				doLog("Creating users:", ldap_new);
-				ArrayList	syncResults = null;
+				PartialLdapSyncResults	syncResults = null;
 				
 				// Do we have a place to store the list of added users?
 				if ( m_ldapSyncResults != null )
@@ -607,7 +608,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 			//if disable is enabled, remove users that were not found in ldap
 			if (delete && !notInLdap.isEmpty()) {
-				ArrayList	syncResults	= null;
+				PartialLdapSyncResults	syncResults	= null;
 				
 				if (logger.isInfoEnabled()) {
 					logger.info("Deleting users:");
@@ -641,7 +642,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 				if (!users.isEmpty())
 				{
-					ArrayList	syncResults	= null;
+					PartialLdapSyncResults	syncResults	= null;
 					
 					// Do we have a place to store the sync results?
 					if ( m_ldapSyncResults != null )
@@ -833,7 +834,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			getDefinitionModule().setDefaultEntryDefinition(temp);
 			Definition groupDef = temp.getEntryDef();
 			try {
-				ArrayList	syncResults	= null;
+				PartialLdapSyncResults	syncResults	= null;
 				
 				// Are we suppose to store the sync results someplace?
 				if ( m_ldapSyncResults != null )
@@ -868,7 +869,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		   	Group g = (Group)foundEntries.get(0);
 		   	entries.put(g, new MapInputData(groupMods));
 		    try {
-		    	ArrayList	syncResults	= null;
+		    	PartialLdapSyncResults	syncResults	= null;
 		    	
 		    	// Do we have a place to store the list of modified groups?
 		    	if ( m_ldapSyncResults != null )
@@ -892,7 +893,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			Object[] uRow;
 			List membership = new ArrayList();
-			ArrayList syncResults	= null;
+			PartialLdapSyncResults syncResults	= null;
 			//build new membership
 			while(valEnum.hasMoreElements()) {
 				String mDn = ((String)valEnum.nextElement()).trim();
@@ -917,7 +918,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			//if disable is enabled, remove groups that were not found in ldap
 			if (delete && !notInLdap.isEmpty()) {
-				ArrayList	syncResults	= null;
+				PartialLdapSyncResults	syncResults	= null;
 				
 				if (logger.isInfoEnabled()) {
 					logger.info("Deleting groups:");
@@ -1152,7 +1153,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * Update users with their own map of updates
 	 * @param users - Map indexed by user id, value is map of updates for a user
 	 */
-	protected void updateUsers(Long zoneId, final Map users, ArrayList syncResults ) {
+	protected void updateUsers(Long zoneId, final Map users, PartialLdapSyncResults syncResults ) {
 		if (users.isEmpty()) return;
 		ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
 		List collections = new ArrayList();
@@ -1177,7 +1178,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   	}
 	}
 
-    protected void updateMembership(Long groupId, Collection newMembers, ArrayList syncResults ) {
+    protected void updateMembership(Long groupId, Collection newMembers, PartialLdapSyncResults syncResults ) {
 		//have a list of users, now compare with what exists already
 		List oldMembers = getProfileDao().getMembership(groupId, RequestContextHolder.getRequestContext().getZoneId());
 		final Set newM = CollectionUtil.differences(newMembers, oldMembers);
@@ -1212,7 +1213,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 				group = (Group) tmp; 
 				groupName = group.getName();
-				syncResults.add( groupName + " (" + group.getForeignName() + ")" );
+				syncResults.addResult( groupName + " (" + group.getForeignName() + ")" );
 			}
 		}
     }
@@ -1222,7 +1223,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * @param users - Map keyed by user id, value is map of attributes
      * @return
      */
-    protected List<User> createUsers(Long zoneId, Map<String, Map> users, ArrayList syncResults ) {
+    protected List<User> createUsers(Long zoneId, Map<String, Map> users, PartialLdapSyncResults syncResults ) {
 		//SimpleProfiler.setProfiler(new SimpleProfiler(false));
 		
 		ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
@@ -1280,7 +1281,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * @param groups - Map keyed by user id, value is map of attributes
      * @return
      */
-    protected List<Group> createGroups(Binder zone, Map<String, Map> groups, ArrayList syncResults) {
+    protected List<Group> createGroups(Binder zone, Map<String, Map> groups, PartialLdapSyncResults syncResults) {
 		ProfileBinder pf = getProfileDao().getProfileBinder(zone.getZoneId());
 		List newGroups = new ArrayList();
 		for (Iterator i=groups.values().iterator(); i.hasNext();) {
@@ -1309,7 +1310,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     	return newGroups;
 	    	
     }
-     public void deletePrincipals(Long zoneId, Collection ids, boolean deleteWS, ArrayList syncResults ) {
+     public void deletePrincipals(Long zoneId, Collection ids, boolean deleteWS, PartialLdapSyncResults syncResults ) {
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, Boolean.valueOf(deleteWS));
 
@@ -1333,7 +1334,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     				}
     				
     				if ( name != null )
-    					syncResults.add( name );
+    					syncResults.addResult( name );
     			}
     		} catch (Exception ex) {
     			logError(NLT.get("errorcode.ldap.delete", new Object[]{id.toString()}), ex);

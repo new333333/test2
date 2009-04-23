@@ -70,11 +70,7 @@ import org.springframework.web.portlet.ModelAndView;
 
 
 public class ConfigureLdapController extends  SAbstractController {
-	// m_syncResults holds the sync results if the user selected "Run now".
-	private LdapSyncResults	m_syncResults	= null;
-	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
-		m_syncResults = null;
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			LdapSchedule schedule = getLdapModule().getLdapSchedule();
@@ -202,42 +198,17 @@ public class ConfigureLdapController extends  SAbstractController {
 					setDefaultTimeZone( timeZone );
 				}
 				
+				// Save the ldap configuration.
+				getLdapModule().setLdapSchedule(schedule);
+
+				// Did the user choose to run the ldap sync right now?
 				boolean runNow = PortletRequestUtils.getBooleanParameter(request, "runnow", false);
-				if (runNow) {
-					boolean enabled = schedule.getScheduleInfo().isEnabled();
-					
-					//disable the schedule first
-					schedule.getScheduleInfo().setEnabled(false);
-					getLdapModule().setLdapSchedule(schedule);
-					try {
-						// Create an LdapSyncResults object that will holds the results of the sync and add it to the response.
-						m_syncResults = new LdapSyncResults();
-						
-						getLdapModule().syncAll( m_syncResults );
-					} catch (LdapSyncException ldapSyncEx) {
-						LdapConnectionConfig	ldapConfig;
-						NamingException	ne;
-						
-						ne = ldapSyncEx.getNamingException();
-						if (ne.getCause() != null)
-							response.setRenderParameter(WebKeys.EXCEPTION, ne.getCause().getLocalizedMessage() != null ? ne.getCause().getLocalizedMessage() : ne.getCause().getMessage());
-						else 
-							response.setRenderParameter(WebKeys.EXCEPTION, ne.getLocalizedMessage() != null ? ne.getLocalizedMessage() : ne.getMessage());
-						response.setRenderParameter("runnow", Boolean.TRUE.toString());
-						
-						// Get the ldap connection configuration that had the problem and add it to the response.
-						ldapConfig = ldapSyncEx.getLdapConfig();
-						response.setRenderParameter( "ssErrLdapConfigId", ldapConfig.getId() );
-					} finally {
-						//set it back
-						if (enabled) {
-							schedule.getScheduleInfo().setEnabled(enabled);
-							getLdapModule().setLdapSchedule(schedule);
-						}
-					}
-				} else {
-					getLdapModule().setLdapSchedule(schedule);
-					
+				if (runNow)
+				{
+					// Yes
+					// Pass this fact back to the page.  When the page loads it will issue an ajax
+					// request to start the sync.
+					response.setRenderParameter( "startLdapSync", "true" );
 				}
 			}
 		} else
@@ -262,14 +233,9 @@ public class ConfigureLdapController extends  SAbstractController {
     	model.put(WebKeys.DEFAULT_GROUP_FILTER, SZoneConfig.getString("ldapConfiguration/groupFilter"));
     
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
-		model.put( "ssErrLdapConfigId", request.getParameter( "ssErrLdapConfigId") );
-		
-		// Add the results of the sync to the response.  m_syncResults will be non-null if the user selected "Run now".
-		model.put( "ssSyncResults", m_syncResults );
-		
-		// Set m_syncResults to null because we don't use it again if we don't need to.
-		m_syncResults = null;
-		
+
+		model.put( "startLdapSync", request.getParameter( "startLdapSync" ) );
+
 		model.put(WebKeys.LDAP_CONFIG, getLdapModule().getLdapSchedule());
 		model.put(WebKeys.LDAP_CONNECTION_CONFIGS, getAuthenticationModule().getLdapConnectionConfigs());
 		model.put(WebKeys.AUTHENTICATION_CONFIG, getAuthenticationModule().getAuthenticationConfig());

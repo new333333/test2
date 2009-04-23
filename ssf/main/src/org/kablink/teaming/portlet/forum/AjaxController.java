@@ -112,6 +112,10 @@ import org.kablink.teaming.module.ic.ICBrokerModule;
 import org.kablink.teaming.module.ic.ICException;
 import org.kablink.teaming.module.ic.RecordType;
 import org.kablink.teaming.module.ical.AttendedEntries;
+import org.kablink.teaming.module.ldap.LdapModule;
+import org.kablink.teaming.module.ldap.LdapSchedule;
+import org.kablink.teaming.module.ldap.LdapSyncResults;
+import org.kablink.teaming.module.ldap.LdapSyncThread;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portlet.binder.AccessControlController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -287,7 +291,11 @@ public class AjaxController  extends SAbstractControllerRetry {
 					op.equals(WebKeys.OPERATION_GET_FAVORITES_TREE) ||
 					op.equals(WebKeys.OPERATION_SAVE_FAVORITES) ||
 					op.equals(WebKeys.OPERATION_SAVE_USER_APPCONFIG) ||
-					op.equals( WebKeys.OPERATION_SAVE_USER_TUTORIAL_PANEL_STATE ) ) {
+					op.equals( WebKeys.OPERATION_SAVE_USER_TUTORIAL_PANEL_STATE ) ||
+					op.equals( WebKeys.OPERATION_START_LDAP_SYNC ) ||
+					op.equals( WebKeys.OPERATION_GET_LDAP_SYNC_RESULTS ) ||
+					op.equals( WebKeys.OPERATION_REMOVE_LDAP_SYNC_RESULTS ) ||
+					op.equals( WebKeys.OPERATION_STOP_COLLECTING_LDAP_SYNC_RESULTS ) ) {
 				model.put(WebKeys.AJAX_ERROR_MESSAGE, "general.notLoggedIn");	
 				response.setContentType("text/json");
 				return new ModelAndView("common/json_ajax_return", model);
@@ -477,7 +485,26 @@ public class AjaxController  extends SAbstractControllerRetry {
 			response.setContentType( "text/json" );
 			return new ModelAndView( "common/json_ajax_return", model );
 		}
-
+		else if ( op.equals( WebKeys.OPERATION_START_LDAP_SYNC ) )
+		{
+			// Start an ldap sync.
+			return ajaxStartLdapSync( request, response );
+		}
+		else if ( op.equals( WebKeys.OPERATION_GET_LDAP_SYNC_RESULTS ) )
+		{
+			// Get the latest results of an ldap sync results.
+			return ajaxGetLdapSyncResults( request, response );
+		}
+		else if ( op.equals( WebKeys.OPERATION_STOP_COLLECTING_LDAP_SYNC_RESULTS ) )
+		{
+			// Tell the ldap sync process to stop collecting results.
+			return ajaxStopCollectingLdapSyncResults( request, response );
+		}
+		else if ( op.equals( WebKeys.OPERATION_REMOVE_LDAP_SYNC_RESULTS ) )
+		{
+			// Remove the LdapSyncThread object we stored in the session.
+			return ajaxRemoveLdapSyncResults( request, response );
+		}
 		return ajaxReturn(request, response);
 	} 
 
@@ -668,6 +695,128 @@ public class AjaxController  extends SAbstractControllerRetry {
 					ObjectKeys.USER_PROPERTY_BUSINESS_CARD_PREFIX + scope, showBC);
 	}
 
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	private ModelAndView ajaxGetLdapSyncResults( RenderRequest request, RenderResponse response ) throws Exception
+	{
+		Map				model;
+		String			syncId;
+		LdapSyncResults	syncResults;
+		
+		model = new HashMap();
+		
+		// Get the id of the sync results we are looking for.
+		syncId = PortletRequestUtils.getStringParameter( request, "ldapSyncResultsId", "" );
+		
+		// Get the ldap sync results object we are looking for.
+		syncResults = LdapSyncThread.getLdapSyncResults( request, syncId );
+		
+		// Gather up any partial results we have and return them.
+		model.put( "ldapSyncResults", syncResults );
+
+		response.setContentType( "text/json" );
+		return new ModelAndView("forum/json/ldap_sync_results", model);
+	}// end ajaxGetLdapSyncResults()
+	
+	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	private ModelAndView ajaxRemoveLdapSyncResults( RenderRequest request, RenderResponse response ) throws Exception
+	{
+		Map				model;
+		String			syncId;
+		LdapSyncThread	syncThread;
+		
+		model = new HashMap();
+		
+		// Get the id of the sync thread we are looking for.
+		syncId = PortletRequestUtils.getStringParameter( request, "ldapSyncResultsId", "" );
+		
+		// Get the ldap sync thread object we are looking for.
+		syncThread = LdapSyncThread.getLdapSyncThread( request, syncId );
+		
+		// Remove the ldap sync thread from the session.  This won't stop the ldap sync.  Just cleaning up.
+		if ( syncThread != null )
+			syncThread.removeFromSession();
+
+		// We don't need to return any data.
+		response.setContentType( "text/json" );
+		return new ModelAndView( "common/json_ajax_return", model );
+	}// end ajaxRemoveLdapSyncResults()
+	
+	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	private ModelAndView ajaxStartLdapSync( RenderRequest request, RenderResponse response ) throws Exception
+	{
+		Map				model;
+		String			syncId;
+		LdapSyncThread	ldapSyncThread;
+		LdapModule		ldapModule;
+		
+		model = new HashMap();
+		
+		ldapModule = getLdapModule();
+
+		// Get the id of the sync results we are looking for.
+		syncId = PortletRequestUtils.getStringParameter( request, "ldapSyncResultsId", "" );
+		
+		// Create an LdapSyncThread object that will do the sync work.
+		// Currently doing the sync on a separate thread does not work.  When doing work on a separate thread
+		// works, replace the call to doLdapSync() with start().
+		ldapSyncThread = LdapSyncThread.createLdapSyncThread( request, syncId, ldapModule );
+		if ( ldapSyncThread != null )
+		{
+			ldapSyncThread.doLdapSync();
+		}
+
+		// We don't need to return any data for this request.
+		response.setContentType( "text/json" );
+		return new ModelAndView( "common/json_ajax_return", model );
+	}// end ajaxStartLdapSync()
+	
+	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	private ModelAndView ajaxStopCollectingLdapSyncResults( RenderRequest request, RenderResponse response ) throws Exception
+	{
+		Map				model;
+		String			syncId;
+		LdapSyncResults	syncResults;
+		
+		model = new HashMap();
+		
+		// Get the id of the sync results we are looking for.
+		syncId = PortletRequestUtils.getStringParameter( request, "ldapSyncResultsId", "" );
+		
+		// Get the ldap sync results object we are looking for.
+		syncResults = LdapSyncThread.getLdapSyncResults( request, syncId );
+		
+		// Tell the ldap sync process to not collect any more results.
+		if ( syncResults != null )
+			syncResults.stopCollectingResults();
+
+		response.setContentType( "text/json" );
+		return new ModelAndView( "common/json_ajax_return", model );
+	}// end ajaxStopCollectingLdapSyncResults()
+	
+	
 	private ModelAndView ajaxGetWindowHeight(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
