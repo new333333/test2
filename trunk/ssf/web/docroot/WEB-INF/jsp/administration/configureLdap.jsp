@@ -1177,7 +1177,7 @@ jQuery(document).ready(function() {
 
 <!-- The following <div> is the Sync Results dialog.  This dialog will display -->
 <!-- all of the results from the ldap sync -->
-<div id="syncResultsDlg" class="syncResultsDialog" style="left: 200px; top: 200px; display: none;">
+<div id="syncResultsDlg" class="syncResultsDialog" style="left: 200px; top: 100px; display: none;">
 	<div class="syncResultsTitle">
 		<span><ssf:nlt tag="ldap.syncResults.title" /></span>
 		
