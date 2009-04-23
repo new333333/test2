@@ -14,6 +14,10 @@
   <property name="inheritDefinitions">false</property>
   <property name="inheritTeamMembers">true</property>
   <workAreaFunctionMembership>
+    <property name="functionName">__role.participant</property>
+    <property name="members">-1 -2</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
     <property name="functionName">__role.teamMember</property>
     <property name="members">-1 -2</property>
   </workAreaFunctionMembership>
@@ -26,17 +30,18 @@
     <property name="functionName">__role.binderAdmin</property>
     <property name="members">-1</property>
   </workAreaFunctionMembership>
-  <workAreaFunctionMembership>
-    <property name="functionName">__role.participant</property>
-    <property name="members">-1 -2</property>
-  </workAreaFunctionMembership>
   <definition name="_userWorkspace" internalId="402883b90cc53079010cc539bf26000b" databaseId="402883b90cc53079010cc539bf26000b"/>
   <dashboard>
-    <property name="nextComponentId">9</property>
+    <property name="nextComponentId">10</property>
     <property name="showComponents">true</property>
     <property name="version">1</property>
     <property name="title"/>
     <property name="includeBinderTitle">false</property>
+    <layout name="wide_top">
+      <property name="scope">binder</property>
+      <property name="visible">true</property>
+      <property name="id">binder_9</property>
+    </layout>
     <layout name="wide_top">
       <property name="scope">binder</property>
       <property name="visible">true</property>
@@ -46,11 +51,6 @@
       <property name="scope">binder</property>
       <property name="visible">true</property>
       <property name="id">binder_6</property>
-    </layout>
-    <layout name="wide_top">
-      <property name="scope">binder</property>
-      <property name="visible">true</property>
-      <property name="id">binder_5</property>
     </layout>
     <layout name="wide_top">
       <property name="scope">binder</property>
@@ -66,6 +66,15 @@
         <property name="chooseViewType">photo</property>
       </data>
       <property name="name">gallery</property>
+    </component>
+    <component name="binder_9">
+      <property name="displayStyle">border</property>
+      <property name="title">__definition_default_folder_task</property>
+      <data>
+        <property name="resultsCount">5</property>
+      </data>
+      <property name="roles"></property>
+      <property name="name">task</property>
     </component>
     <component name="binder_6">
       <property name="displayStyle">border</property>
@@ -149,8 +158,7 @@
     <property name="inheritDefinitions">false</property>
     <property name="inheritTeamMembers">true</property>
     <workAreaFunctionMembership>
-      <property name="functionName">__role.participant</property>
-      <property name="memberName">allUsers</property>
+      <property name="functionName">__role.teamMember</property>
       <property name="members">-1 -2</property>
     </workAreaFunctionMembership>
     <workAreaFunctionMembership>
@@ -158,7 +166,8 @@
       <property name="members">-1</property>
     </workAreaFunctionMembership>
     <workAreaFunctionMembership>
-      <property name="functionName">__role.teamMember</property>
+      <property name="functionName">__role.participant</property>
+      <property name="memberName">allUsers</property>
       <property name="members">-1 -2</property>
     </workAreaFunctionMembership>
     <definition name="_guestbookFolder" databaseId="402883c6115753d8011157619e35000a"/>
