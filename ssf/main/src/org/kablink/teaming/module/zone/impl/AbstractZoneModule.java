@@ -302,13 +302,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getCoreDao().executeUpdate("update org.kablink.teaming.domain.FolderEntry set subscribed=true where id in (select id.entityId from org.kablink.teaming.domain.Subscription where id.entityType=6)");
 			//update jbpm
 			getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.EnterExitEvent' " +
-					"where className='com.sitescape.teaming.module.workflow.EnterExitEvent'"); 
+					"where className='com.sitescape.team.module.workflow.EnterExitEvent'"); 
 			getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.DecisionAction' " +
-				"where className='com.sitescape.teaming.module.workflow.DecisionAction'"); 
+				"where className='com.sitescape.team.module.workflow.DecisionAction'"); 
 			getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.TimerAction' " +
-				"where className='com.sitescape.teaming.module.workflow.TimerAction'"); 
+				"where className='com.sitescape.team.module.workflow.TimerAction'"); 
 			getCoreDao().executeUpdate("update org.jbpm.instantiation.Delegation set className='org.kablink.teaming.module.workflow.Notify' " +
-				"where className='com.sitescape.teaming.module.workflow.Notify'"); 
+				"where className='com.sitescape.team.module.workflow.Notify'"); 
 			getCoreDao().executeUpdate("update org.kablink.teaming.domain.Definition set binderId=-1 where binderId is null");
 			//add new reserved functions
 			List ids = new ArrayList();
