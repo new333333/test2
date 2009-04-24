@@ -64,6 +64,7 @@ div.xportlet-box {
 .ss_nowrap {
   	white-space: nowrap;
   	}
+    
 table.ss_compact20 {
   margin:0px;
   padding:0px;
@@ -116,6 +117,14 @@ ul.ss_nobullet li {
 ul.ss_square li {
   list-style-type: square;
 } 
+
+ul.ss_horizontal {
+	vertical-align: baseline;
+    }
+ul.ss_horizontal li {
+	float:left;
+	vertical-align: baseline;
+    }
 
 /* ------------------------------------------------------------------------ */
  

@@ -32,13 +32,9 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% //View a workspace %>
+<% //Description view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-
-<div class="ss_style ss_portlet">
-
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${item}" 
-  configJspStyle="${ssConfigJspStyle}"
-  entry="${ssDefinitionEntry}" />
-</div>
+<c:if test="${!empty ssDefinitionEntry.description}">
+  <span><ssf:markup entity="${ssDefinitionEntry}">${ssDefinitionEntry.description.text}</ssf:markup></span>
+  <div class="ss_clear"></div>
+</c:if>

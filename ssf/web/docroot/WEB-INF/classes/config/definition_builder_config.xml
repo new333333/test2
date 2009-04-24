@@ -726,6 +726,9 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__title"/>
 		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option name="folderTitleDescriptionView" caption="__description" />
+		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_folder_title.jsp" />
 		</jsps>
@@ -743,6 +746,23 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_folder_description.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
+		</jsps>
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription"/>
+	</item>
+
+	<item name="folderTitleDescriptionView" caption="__description" category="folderViewData" display="view">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__description"/>
+			<property name="viewType" caption="__folder_description_type" type="radio" 
+				  default="this" value="this">
+				<option name="this" caption="__folder_description_this" />
+				<option name="top" caption="__folder_description_top" />
+				<help>ihelp.designers.description_view_type</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_title_description.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
 		</jsps>
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription"/>
@@ -1598,11 +1618,25 @@
 	
 	<item name="workspaceTitleView" caption="__title" canBeDeleted="true" 
 		multipleAllowed="true" category="workspaceViewData" display="view">
+		<options optionCaption="__standard_entry_options">
+			<option name="workspaceTitleDescriptionView" caption="__description" />
+		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_workspace_title.jsp" />
 		</jsps>
 	</item>
 	
+	<item name="workspaceTitleDescriptionView" caption="__description" category="folderViewData" display="view">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__description"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_title_description.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
+		</jsps>
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription"/>
+	</item>
+
 	<item name="workspaceDataItem" type="dataView" 
 		caption="__workspace_data_item" category="workspaceViewData" display="view">
 		<properties>

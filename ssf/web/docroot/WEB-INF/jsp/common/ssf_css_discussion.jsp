@@ -141,6 +141,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	letter-spacing:-2px;
 	color:#5A9A98!important;
 	}
+#ss_topic_box_h1 a {
+	color:#5A9A98!important;
+	}
+#ss_topic_box_h1 a:hover {
+	color:#555!important;
+	}
 #ss_topic_folder{
 	margin-left:1%;
 	padding-top:0px;
@@ -194,10 +200,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color:#5A9A98!important;
 	}	
 .ss_title_th1 a:hover{
-	color: #777!important;	
+	color: #555 !important;	
 	}	
 .ss_title_count{
-	color: #777!important;
+	color: #777 !important;
 	font-size: 9px;
 	font-style: normal;
 	font-family: Arial, Helvetica, sans-serif;
@@ -272,7 +278,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color: #555;
 	}		
 #ss_topic_thread a:hover{
-	color: #CCC !important;
+	color: #333 !important;
 	}
 /**********************************/
 

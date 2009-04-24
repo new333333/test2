@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_projectWorkspace" caption="__project_management" type="8" nextId="24" definitionType="8" databaseId="402881831317fb620113180363870017"> 
+<definition name="_projectWorkspace" caption="__project_management" type="8" nextId="26" definitionType="8" databaseId="402881831317fb620113180363870017"> 
   <item name="workspaceForm" caption="__workspace_form" type="form" id="1"> 
     <properties/>  
     <item name="title" caption="__title" type="data" id="2"> 
@@ -93,11 +93,13 @@
     <properties> 
       <property name="type" value="project"/> 
     </properties>  
-    <item name="descriptionView" caption="__description" category="commonEntryViewData" id="22"> 
-      <properties> 
-        <property name="caption" value="__description"/> 
-      </properties> 
-    </item>  
+    <item name="workspaceTitleView" caption="__title" category="workspaceViewData" display="view" id="24">
+      <item name="workspaceTitleDescriptionView" caption="__description" category="folderViewData" display="view" id="25">
+        <properties>
+          <property name="caption" value="__description"/>
+        </properties>
+      </item>
+    </item>
     <item name="dashboardCanvas" caption="__dashboard_canvas" id="6"> 
       <properties> 
         <property name="caption" value="__dashboard_canvas"/> 

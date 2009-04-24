@@ -46,7 +46,9 @@
 <c:set var="actionVar2" value="configure_configuration"/>
 </c:if>
 <div class="ss_entryContent" style="text-align:left; padding-bottom:16px;">
+  <ul class="ss_horizontal ss_nobullet">
   <c:if test="${!empty ssDefinitionEntry.parentBinder.title}">
+	<li>
 	<span class="ss_link_7">
   	  <a class="ss_link_7" 
   	    href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
@@ -54,7 +56,9 @@
 		binderId="${ssDefinitionEntry.parentBinder.id}"/>"
 	  >${ssDefinitionEntry.parentBinder.title}</a>&nbsp;&gt;&gt;&nbsp;&nbsp;
 	</span>
+	</li>
   </c:if>
+  <li>
   <span class="ss_link_8">
 	  <img src="<html:rootPath/>images/pics/discussion/folder_orange.png"
 	  	<ssf:alt tag=""/>>&nbsp;<a
@@ -63,4 +67,6 @@
 	  ><c:if test="${empty ssDefinitionEntry.title}" >--<ssf:nlt tag="entry.noTitle" />--</c:if
 	  >${ssDefinitionEntry.title}</a>
   </span>
+  </li>
+  </ul>
 </div>
