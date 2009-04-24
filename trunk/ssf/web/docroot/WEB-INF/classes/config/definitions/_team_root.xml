@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_team_root" caption="__team_workspace_root" type="8" nextId="8" definitionType="8" databaseId="402883b5132516590113251ca0e90003"> 
+<definition name="_team_root" caption="__team_workspace_root" type="8" nextId="10" definitionType="8" databaseId="402883b5132516590113251ca0e90003"> 
   <item name="workspaceForm" caption="__workspace_form" type="form" id="1"> 
     <properties/>  
     <item name="title" caption="__title" type="data" id="2"> 
@@ -34,6 +34,13 @@
     </item> 
   </item>  
   <item name="workspaceView" caption="__workspace_view" id="5"> 
+    <item name="workspaceTitleView" caption="__title" category="workspaceViewData" display="view" id="8">
+      <item name="workspaceTitleDescriptionView" caption="__description" category="folderViewData" display="view" id="9">
+        <properties>
+          <property name="caption" value="__description"/>
+        </properties>
+      </item>
+    </item>
     <item name="dashboardCanvas" caption="__dashboard_canvas" id="6"> 
       <properties> 
         <property name="caption" value="__dashboard_canvas"/> 

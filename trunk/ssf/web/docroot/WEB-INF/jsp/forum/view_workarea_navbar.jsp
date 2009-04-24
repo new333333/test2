@@ -294,7 +294,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		  </c:if>
               <c:if test="${empty ssStandAlone || !ssStandAlone}"> | </c:if>
                 <ssf:ifLoggedIn>
-  				  	  <a href="javascript: ;" onClick="ss_logoff();return false;"><span><ssf:nlt tag="logout"/></span><br/>
+  				  	  <a href="javascript: ;" onClick="ss_logoff();return false;"><span><ssf:nlt tag="logout"/></span></a><br/>
 			    </ssf:ifLoggedIn>
 			    <ssf:ifNotLoggedIn>
 				    <form method="post" id="ss_loginForm${renderResponse.namespace}" 

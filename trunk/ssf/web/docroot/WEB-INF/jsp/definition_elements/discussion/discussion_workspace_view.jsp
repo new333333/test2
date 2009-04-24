@@ -40,22 +40,12 @@
 <div align="center">
 	<div id="ss_diss_inset" class="discussionView">
 	  <div id="ss_diss_top" align="center">
-	
-	   <div id="ss_topic_box">
-	    <div id="ss_topic_box_h1">${ssDefinitionEntry.title}</div>
-		<span><ssf:markup entity="${ssDefinitionEntry}">${ssDefinitionEntry.description.text}</ssf:markup></span>
-	   <div class="ss_clear"></div>
-	   </div><!-- end of box -->
-	
-	  </div><!-- end of top -->
-	
-	
-	
+
 		<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 		  configElement="${item}" 
 		  configJspStyle="${ssConfigJspStyle}"
 		  entry="${ssDefinitionEntry}" />
-	  
-	
+	  	
+	  </div><!-- end of top -->
 	</div><!-- end of div inset -->
 </div>

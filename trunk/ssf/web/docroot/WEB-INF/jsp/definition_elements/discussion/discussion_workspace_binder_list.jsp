@@ -108,7 +108,7 @@
 		  				<ssf:markup search="${binder}">${binder._desc}</ssf:markup>
 		  			</ssf:textFormat>
 		  			<div class="ss_clear"></div>
-		  		</div>
+		  		</div><!-- end of ss_topic_desc -->
     			<c:forEach var="subBinder" items="${ss_bindersSubBinders[binder._docId]}">
       				<c:if test="${subBinder._entityType == 'workspace' || subBinder._entityType == 'profiles'}">
       					<div id="ss_topic_thread" class="">
@@ -138,7 +138,7 @@
 							  <c:otherwise>
 							    <span class="ss_title_count">
 							      <a href="javascript: ;"
-							        onClick="ss_showWhatsNewPage(this, '${subBinder._docId}', 'unseen', '0', '', 'ss_whatsNewDiv', '${renderResponse.namespace}');return false;""
+							        onClick="ss_showWhatsNewPage(this, '${subBinder._docId}', 'unseen', '0', '', 'ss_whatsNewDiv', '${renderResponse.namespace}');return false;"
 							      >(<ssf:nlt tag="Unread"><ssf:param name="value" 
 				  				  value="${ss_binderUnseenCounts[subBinder._docId].count}"/></ssf:nlt>) </a></span>
 							  </c:otherwise>
@@ -150,7 +150,7 @@
 		  						<div class="ss_clear"></div>
 		  					</div>
         				  </div><!-- end of left padding -->
-        				</div><!-- end of title -->
+        				</div><!-- end of topic_thread -->
       				</c:if>
       				<c:if test="${subBinder._entityType == 'profiles'}">
         				<div style="padding-left:10px;">
@@ -191,7 +191,7 @@
 							  <c:otherwise>
 								<span class="ss_title_count">
 								  <a href="javascript: ;"
-							        onClick="ss_showWhatsNewPage(this, '${subBinder._docId}', 'unseen', '0', '', 'ss_whatsNewDiv', '${renderResponse.namespace}');return false;""
+							        onClick="ss_showWhatsNewPage(this, '${subBinder._docId}', 'unseen', '0', '', 'ss_whatsNewDiv', '${renderResponse.namespace}');return false;"
 								  >(<ssf:nlt tag="Unread"><ssf:param name="value" 
 				  					value="${ss_binderUnseenCounts[subBinder._docId].count}"/></ssf:nlt>) </a></span>
 							  </c:otherwise>
@@ -224,7 +224,7 @@
 				  <c:otherwise>
 					<span class="ss_title_count">
 						<a href="javascript: ;"
-						  onClick="ss_showWhatsNewPage(this, '${binder._docId}', 'unseen', '0', '', 'ss_whatsNewDiv', '${renderResponse.namespace}');return false;""
+						  onClick="ss_showWhatsNewPage(this, '${binder._docId}', 'unseen', '0', '', 'ss_whatsNewDiv', '${renderResponse.namespace}');return false;"
 						>(<ssf:nlt tag="Unread"><ssf:param name="value" 
 				  	  		value="${ss_binderUnseenCounts[binder._docId].count}"/></ssf:nlt>) 
 				  	  	</a>
@@ -249,7 +249,7 @@
 </c:forEach>
 </div><!-- end of ss_topic (see top) -->
       </div><!-- end of col2 (right column) -->
-      </div><!-- end of ss_col_R (right column placeholder) -->
+      <c:if test="${column2Seen == '1'}"></div><!-- end of ss_col_R (right column placeholder) --></c:if>
     </div><!-- end of col left -->
 </div><!-- end of inset -->
 </div><!-- end of center -->

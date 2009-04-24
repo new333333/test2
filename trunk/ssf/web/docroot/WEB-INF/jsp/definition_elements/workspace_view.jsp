@@ -46,15 +46,22 @@
 </c:if>
 
 <c:if test="${propertyValues_type[0] == 'discussion'}">
-  <%@ include file="/WEB-INF/jsp/definition_elements/discussion/discussion_workspace_view.jsp" %>
+  <c:set var="ss_discussionWorkspaceView" value="true" scope="request"/>
 </c:if>
 
-<c:if test="${propertyValues_type[0] != 'discussion'}">
-	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-	  configElement="${item}" 
-	  configJspStyle="${ssConfigJspStyle}"
-	  entry="${ssDefinitionEntry}" />
-</c:if>
+<c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
+<div align="center">
+	<div id="ss_diss_inset" class="discussionView">
+	  <div id="ss_diss_top" align="center">
+
+		<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+		  configElement="${item}" 
+		  configJspStyle="${ssConfigJspStyle}"
+		  entry="${ssDefinitionEntry}" />
+	  	
+	  </div><!-- end of top -->
+	</div><!-- end of div inset -->
+</div>
  
 <c:if test="${!empty propertyValues_type && !empty propertyValues_type[0] && propertyValues_type[0] == 'project'}">
 	<%@ include file="/WEB-INF/jsp/definition_elements/workspace_statistics.jsp" %>

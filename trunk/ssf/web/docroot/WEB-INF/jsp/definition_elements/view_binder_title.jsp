@@ -32,13 +32,52 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% //View a workspace %>
+<% //Workspace title view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-
-<div class="ss_style ss_portlet">
-
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${item}" 
-  configJspStyle="${ssConfigJspStyle}"
-  entry="${ssDefinitionEntry}" />
-</div>
+  <div id="ss_topic_box">
+	<div id="ss_topic_box_h1">
+	
+	<c:if test="${ssDefinitionEntry.entityType == 'workspace'}">
+	  <a href="<ssf:url crawlable="true"
+           adapter="true" portletName="ss_forum"
+           folderId="${ssDefinitionEntry.id}" 
+           action="view_workspace"/>">
+	    <c:if test="${empty ssDefinitionEntry.title}">
+          <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
+        </c:if>
+        <span>${ssDefinitionEntry.title}</span>
+      </a>
+    </c:if>
+    
+	<c:if test="${ssDefinitionEntry.entityType == 'profiles'}">
+	  <a href="<ssf:url crawlable="true"
+           adapter="true" portletName="ss_forum"
+           folderId="${ssDefinitionEntry.id}" 
+           action="view_profile_listing"/>">
+	    <c:if test="${empty ssDefinitionEntry.title}">
+          <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
+        </c:if>
+        <span>${ssDefinitionEntry.title}</span>
+      </a>
+    </c:if>
+    
+	<c:if test="${ssDefinitionEntry.entityType == 'folder'}">
+	  <a href="<ssf:url crawlable="true"
+           adapter="true" portletName="ss_forum"
+           folderId="${ssDefinitionEntry.id}" 
+           action="view_folder_listing"/>">
+	    <c:if test="${empty ssDefinitionEntry.title}">
+          <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
+        </c:if>
+        <span>${ssDefinitionEntry.title}</span>
+      </a>
+    </c:if>
+    
+    </div>
+    
+	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	  configElement="${item}" 
+	  configJspStyle="${ssConfigJspStyle}"
+	  entry="${ssDefinitionEntry}" />
+    
+  </div><!-- end of box -->
