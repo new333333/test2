@@ -111,6 +111,10 @@
 					<c:set var="resourceRootPath" value="${ssDefinitionEntry.resourceDriver.rootPath}"/>
 				</c:if>
 
+				<c:if test="${ssDefinitionEntry.mirrored && empty ssDefinitionEntry.resourceDriver}" >
+					<span class="ss_errorLabel"><ssf:nlt tag="folder.resource.driver.select"/></span><br><br>
+				</c:if>
+
 				<c:if test="${!ssDefinitionEntry.mirrored || empty ssDefinitionEntry.resourceDriver}" >
 					<c:if test="${!empty resourceDrivers}" >
 						<span class="ss_labelLeft"><ssf:nlt tag="folder.resource.driver.label"/></span>
