@@ -1500,6 +1500,7 @@ public class ListFolderHelper {
 		if(LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder")) {
 			//Synchronize mirrored folder
 			if(folder.isMirrored() &&
+					folder.getResourceDriverName() != null &&
 					bs.getFolderModule().testAccess(folder, FolderOperation.synchronize)) {
 				adminMenuCreated=true;
 				qualifiers = new HashMap();
@@ -1513,6 +1514,7 @@ public class ListFolderHelper {
 				folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.synchronize_mirrored_folder.manual"), url, qualifiers);
 			}
 			if(folder.isMirrored() &&
+					folder.getResourceDriverName() != null &&
 					bs.getFolderModule().testAccess(folder, FolderOperation.scheduleSynchronization)) {
 				qualifiers = new HashMap();
 				qualifiers.put("popup", new Boolean(true));

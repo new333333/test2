@@ -43,6 +43,7 @@ import java.util.Set;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
+import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -211,6 +212,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
     private void checkInputFilesForMirroredBinder(Binder binder, List fileUploadItems, FilesErrors errors) {
 		String mirroredFileName = null;
+		if(binder.getResourceDriverName() == null)
+			throw new ConfigurationException("Resource driver must be specified for mirrored folder");
 		boolean readonly = getResourceDriverManager().isReadonly(binder.getResourceDriverName());
 		for(int i = 0; i < fileUploadItems.size();) {
 			FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
