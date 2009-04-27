@@ -65,6 +65,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.Principal;
@@ -274,7 +275,13 @@ public class ViewEntryController extends  SAbstractController {
 						fe = getShowEntry(entryId, formData, request, response, folderId, model, entryViewType);
 					} else if (entries.size() == 0) {
 						//There are no entries by this title
-						Folder folder = getFolderModule().getFolder(folderId);
+						Folder folder = null;
+						try {
+							folder = getFolderModule().getFolder(folderId);
+						} catch(NoBinderByTheIdException e) {
+							model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {folderId.toString()}));
+							return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+						}
 						buildNoEntryBeans(request, response, folder, entryId, model);
 						return new ModelAndView(WebKeys.VIEW_NO_TITLE_ENTRY, model);
 					} else {

@@ -53,12 +53,16 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <body class="ss_style_body tundra">
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <c:set var="wsTreeName" value="${renderResponse.namespace}_wsTree"/>
 <script type="text/javascript">
 function ${wsTreeName}_showId(forum, obj, action) {
 	return ss_checkTree(obj, "ss_tree_radio${wsTreeName}destination" + forum)
 }
-
+function ss_saveDestinationBinderId(id) {
+	var formObj = document.getElementById("ss_move_form");
+	formObj.idChoices.value = "destination_" + id
+}
 </script>
 
 <div class="ss_style ss_portlet">
@@ -73,8 +77,21 @@ function ${wsTreeName}_showId(forum, obj, action) {
 </c:if>
 <span class="ss_bold"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
 <br/>
-<form class="ss_style ss_form" method="post" > 
+<form class="ss_style ss_form" method="post" name="ss_move_form" id="ss_move_form"> 
 		
+<br/>
+
+<span class="ss_bold"><ssf:nlt tag="changeLog.findFolder"/></span>
+<br/>
+<ssf:find formName="ss_move_form" 
+    formElement="binderId" 
+    type="places"
+    width="140px" 
+    singleItem="true"
+    clickRoutine="ss_saveDestinationBinderId"
+    /> 
+
+<br/>
 <br/>
 
 <span class="ss_bold"><ssf:nlt tag="move.selectDestination"/></span>
