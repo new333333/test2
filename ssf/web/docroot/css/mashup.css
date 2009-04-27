@@ -5,6 +5,7 @@
 
 table.ss_mashup {
   padding: 0px;
+  text-align:left !important;
 }
 
 .ss_mashup_canvas_view {

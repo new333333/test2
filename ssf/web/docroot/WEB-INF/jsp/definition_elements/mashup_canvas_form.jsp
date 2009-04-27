@@ -54,7 +54,7 @@
 <c:if test="${ssConfigJspStyle == 'form'}">
   <div style="padding: 20px 0px 20px 0px;">
     <div><span class="ss_bold">${property_caption}</span></div>
-    <div>
+    <div style="padding:6px 0px 6px 20px;">
       <input type="checkbox" name="${ss_mashupPropertyName}__hideMasthead"
       	id="${ss_mashupPropertyName}__hideMasthead"
         <c:if test="${ss_mashupHideMasthead}">checked</c:if> >
@@ -90,6 +90,7 @@
       	<span class="ss_labelRight"><ssf:nlt tag="mashup.showBranding"/></span>
       </label>
       <br/>
+      <br/>
       <span class="ss_labelAbove"><ssf:nlt tag="mashup.style"/></span>
       <input type="radio" name="${ss_mashupPropertyName}__style" value="mashup.css"
       	id="${ss_mashupPropertyName}__style"
@@ -101,7 +102,7 @@
       	id="${ss_mashupPropertyName}__style_dark"
         <c:if test="${ss_mashupStyle == 'mashup_dark.css'}">checked</c:if> >
       <label for="${ss_mashupPropertyName}__style_dark">
-      	<span class="ss_labelRight"><ssf:nlt tag="mashup.style"/></span>
+      	<span class="ss_labelRight"><ssf:nlt tag="mashup.style_dark"/></span>
       </label>
       <br/>
     </div>
