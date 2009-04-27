@@ -34,6 +34,8 @@ package org.kablink.teaming.smtp.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,6 +81,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 	protected boolean enabled = false;
 	protected boolean tls = false;
 	protected int port = 2525;
+	protected String bindAddress = null;
 
 	protected SMTPServer server = null;
 	
@@ -96,6 +99,16 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		return tls;
 	}
 
+	public void setBindAddress(String bindAddress) {
+		if ((null != bindAddress) && (0 == bindAddress.length())) {
+			bindAddress = null;
+		}
+		this.bindAddress = bindAddress;
+	}
+	public String getBindAddress() {
+		return bindAddress;
+	}
+	
 	public void setPort(int port) {
 		this.port = port;
 	}
@@ -130,9 +143,30 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 					return new Handler(ctx);
 				}
 			});
-			this.server.setAnnounceTLS(this.tls);
-			this.server.setPort(this.port);
-			this.server.start();
+			InetAddress	iNetAddr;
+			if ((null == this.bindAddress) || (0 == this.bindAddress.length())) {
+				iNetAddr = null;
+			}
+			else if (this.bindAddress.equals("localhost")) {
+				iNetAddr = InetAddress.getLocalHost();
+			}
+			else {
+				try {
+					iNetAddr = InetAddress.getByName(bindAddress);
+				}
+				catch (UnknownHostException e) {
+					iNetAddr = null;
+					setEnabled(false);
+					this.server = null;
+					logger.error("Cannot resolve internal inbound SMTP bind address.  Inbound emailing will be disabled.", e);
+				}
+			}
+			if (isEnabled()) {
+				this.server.setAnnounceTLS(this.tls);
+				this.server.setBindAddress(iNetAddr);
+				this.server.setPort(this.port);
+				this.server.start();
+			}
 		}
 	}
 	
