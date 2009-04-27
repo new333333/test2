@@ -48,16 +48,17 @@
 <table border="0" cellspacing="0" cellpadding="0" width="100%">
 		<tbody>
 		<tr>
-			<td valign="middle" align="right" width="25%">
+			<td valign="middle" align="center" width="25%">
 			<div class="ss_goBox">
-			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
-				<tbody><tr>
-				<td class="ss_page_IE2" valign="middle">
+			  <table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
+				<tbody>
+				<tr>
+				<td class="ss_page_IE2" valign="middle" align="right">
 			      <span>
 			        <label for="ssGoToEntry${renderResponse.namespace}"><ssf:nlt tag="entry.goTo"/></label>
 			      </span>
 			    </td>
-			    <td valign="middle"  class="ss_paginationGo ss_page_IE">
+			    <td valign="middle" class="ss_paginationGo ss_page_IE">
 			      <form name="ss_goToEntryForm_${renderResponse.namespace}" style="display:inline;"
 			        id="ss_goToEntryForm_${renderResponse.namespace}" method="post" 
 				    action="<ssf:url action="view_folder_entry" 
@@ -65,16 +66,26 @@
 					name="binderId" value="${ssFolder.id}"/><ssf:param 
 					name="entryViewStyle" value="full"/><ssf:param 
 					name="operation" value="go_to_entry"/></ssf:url>" >
-			    <input name="ssGoToEntry" id="ssGoToEntry${renderResponse.namespace}" size="10" 
-			      type="text" class="ss_paginationTextBox" />&nbsp;
-				<a href="javascript: ;" 
-				<ssf:title tag="entry.goTo" />
-				onClick="ss_clickGoToEntry_${renderResponse.namespace}('ss_goToEntryForm_${renderResponse.namespace}');return false;">
-				<img src="<html:rootPath/>images/pics/page/go.png"
-				  <ssf:alt tag="entry.goTo"/> 
-				  width="17" height="12" border="0" align="absmiddle" /></a>
-			</form>
-			</td></tr></tbody></table>
+				    <c:if test="${ssBinder.entityType != 'profiles'}">
+					    <input name="ssGoToEntry" id="ssGoToEntry${renderResponse.namespace}" size="10" 
+					      type="text" class="ss_paginationTextBox" />&nbsp;
+						<a href="javascript: ;" 
+						<ssf:title tag="entry.goTo" />
+						onClick="ss_clickGoToEntry_${renderResponse.namespace}('ss_goToEntryForm_${renderResponse.namespace}');return false;">
+						<img src="<html:rootPath/>images/pics/page/go.png"
+						  <ssf:alt tag="entry.goTo"/> 
+						  width="17" height="12" border="0" align="absmiddle" /></a>
+					</c:if>
+				    <c:if test="${ssBinder.entityType == 'profiles'}">
+				      <ssf:find type="user"
+					    width="60px" 
+					    singleItem="true"/> 
+				    </c:if>
+				  </form>
+			    </td>
+			    </tr>
+			    </tbody>
+			  </table>
 			</div>
 		
 			</td>
@@ -166,14 +177,14 @@
 			</td></tr></tbody></table>	</div>
 			</td>
 			<% // goto page option %>
-			<td valign="middle" width="25%">
+			<td valign="middle" align="center" width="25%">
 			<div class="ss_goBox">
 			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable" width="99%">
 				<tbody><tr>
-				<td class="ss_page_IE2" valign="middle">
+				<td class="ss_page_IE2" valign="middle" align="right">
 			      <span><label for="ssGoToPage${renderResponse.namespace}"><ssf:nlt tag="folder.GoToPage"/></label></span>
 			    </td>
-			    <td valign="middle"  class="ss_paginationGo ss_page_IE">
+			    <td valign="middle" class="ss_paginationGo ss_page_IE">
 			    <form name="ss_goToPageForm_${renderResponse.namespace}" 
 			      style="display:inline;"
 			      id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
