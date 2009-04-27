@@ -395,7 +395,7 @@ a.ss_new_thread:hover {
 	color: #333 !important;
 	}	
 .ss_navbar_new a:hover {
-	color: #FFFFFF !important;
+	color: #000 !important;
 	}	
 .ss_navbar_padRt {
 	padding-right: 8px;
