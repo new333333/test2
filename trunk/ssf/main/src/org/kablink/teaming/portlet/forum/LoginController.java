@@ -109,8 +109,8 @@ public class LoginController  extends SAbstractControllerRetry {
     		session.removeAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
     	}
 
-    	// Does the user have rights to add a user?
-    	if ( MiscUtil.canAddUser( this ) )
+    	// Is self registration permitted?
+    	if ( MiscUtil.canDoSelfRegistration( this ) )
     	{
     		// Yes.
     		// Add the information needed to support the "Create new account" ui to the response.

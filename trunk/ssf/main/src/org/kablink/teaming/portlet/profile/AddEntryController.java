@@ -55,11 +55,13 @@ import org.kablink.teaming.module.profile.impl.GuestProperties;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
@@ -160,8 +162,8 @@ public class AddEntryController extends SAbstractController {
 		model.put(WebKeys.ENTRY_DEFINITION_MAP, folderEntryDefs);
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_FORM);
 
-		// Are we dealing with the Guest user?
-		if ( isGuestUser() )
+		// Are we dealing with the Guest user and are we running the Kablink version of Teaming?
+		if ( isGuestUser() && ReleaseInfo.isLicenseRequiredEdition() == false )
 		{
 			// Yes, set the flag that will enable the text verification controls in the page.
 			model.put( WebKeys.URL_DO_TEXT_VERIFICATION, "true" );
