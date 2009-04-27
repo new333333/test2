@@ -121,16 +121,16 @@ li.ss_actions_bar_separator {
 	border-right:none;
 	}
 .ss_actions_bar li a, .ss_actions_bar li a:visited {
-	color: #fff !important;
+	color: #fff ;
 	display:block;
 	padding:4px 7px;
 	}
 .ss_actions_bar li a:hover{
-	color: #333 !important;
+	color: #333 ;
 	background-image: none !important;
 	}
 .ss_actions_bar li a.ss_actions_bar_inline, .ss_actions_bar li a.ss_actions_bar_inline:visited  {
-	color:${ss_style_text_color} !important;
+	color:${ss_style_text_color} ;
 	display: inline;
 	padding:0px 7px;
 	}	
