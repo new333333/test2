@@ -86,6 +86,7 @@ function ss_confirmDeleteZone() {
 <td valign="top">
 <table>
 <tr>
+<th><span class="ss_bold"><ssf:nlt tag="general.id"/></span></th>
 <th><span class="ss_bold"><ssf:nlt tag="administration.zoneName"/></span></th>
 <th><span class="ss_bold"><ssf:nlt tag="administration.zoneVirtualHost"/></span></th>
 </tr>
@@ -95,6 +96,10 @@ function ss_confirmDeleteZone() {
 	<form class="ss_style ss_form" method="post" 
 	action="<ssf:url action="manage_zones" actionUrl="true"/>" 
 	onSubmit="return(${renderResponse.namespace}_onsub(this))">
+		
+    <td align="left" valign="middle">
+	<input type="text" class="ss_text" size="20" name="zoneId" value="${zoneInfo.zoneId}" readonly>
+	</td>
 		
     <td align="left" valign="middle">
 	<input type="text" class="ss_text" size="50" name="zoneName" value="${zoneInfo.zoneName}" readonly>
