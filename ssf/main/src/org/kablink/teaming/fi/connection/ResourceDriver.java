@@ -71,7 +71,7 @@ public interface ResourceDriver {
 	
 	public String getTitleAndMode();
 	
-	public String getZoneName();
+	public Long getZoneId();
 	
 	/**
 	 * Return the type of the driver.
