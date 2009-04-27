@@ -41,7 +41,7 @@
 	  <a href="<ssf:url crawlable="true"
            adapter="true" portletName="ss_forum"
            folderId="${ssDefinitionEntry.id}" 
-           action="view_workspace"/>">
+           action="view_ws_listing"/>">
 	    <c:if test="${empty ssDefinitionEntry.title}">
           <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
         </c:if>
