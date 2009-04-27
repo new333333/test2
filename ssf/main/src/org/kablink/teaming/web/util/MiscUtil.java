@@ -43,6 +43,7 @@ import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.web.WebKeys;
 
 
@@ -99,9 +100,11 @@ public final class MiscUtil
 	}// end addCreateNewAccountDataToResponse()
 
 	/**
-	 * This class determines if the logged in user has rights to add a user.
+	 * This method determines if self-registration is available.  Self-registration is available
+	 * if the logged in user has rights to add a user and we are not running the enterprise version
+	 * of Teaming.
 	 */
-	public static boolean canAddUser( AllModulesInjected bs )
+	public static boolean canDoSelfRegistration( AllModulesInjected bs )
 	{
 		boolean	canAdd	= false;
 		
@@ -109,9 +112,17 @@ public final class MiscUtil
     	{
     		ProfileBinder	profileBinder;
 
+    		// Can the logged in user add an entry to the profile binder?
     		profileBinder = bs.getProfileModule().getProfileBinder();
 			if ( bs.getProfileModule().testAccess( profileBinder, ProfileOperation.addEntry ) )
-				canAdd = true;
+			{
+				// Yes, are we running the Enterprise version of Teaming?
+				if ( ReleaseInfo.isLicenseRequiredEdition() == false )
+				{
+					// No, self registration is available.
+					canAdd = true;
+				}
+			}
     	}
     	catch (Exception e)
     	{
@@ -119,5 +130,6 @@ public final class MiscUtil
     	}
 		
     	return canAdd;
-	}// end canAddUser()
+	}// end canDoSelfRegistration()
+	
 }// end MiscUtil

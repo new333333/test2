@@ -176,8 +176,8 @@ public class WorkspaceTreeHelper {
 						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 						model.put(WebKeys.URL, refererUrl);
 
-				    	// Does the user have rights to add a user?
-				    	if ( MiscUtil.canAddUser( bs ) )
+				    	// Is self registration permitted?
+				    	if ( MiscUtil.canDoSelfRegistration( bs ) )
 				    	{
 				    		// Yes.
 				    		// Add the information needed to support the "Create new account" ui to the response.
