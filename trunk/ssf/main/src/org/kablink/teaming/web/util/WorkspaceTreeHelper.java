@@ -861,6 +861,9 @@ public class WorkspaceTreeHelper {
 		
 		model.put(WebKeys.PERMALINK, permaLink);
 		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
+		
+		//  Build the simple URL beans
+		BinderHelper.buildSimpleUrlBeans(bs,  request, workspace, model);
 
 		// clipboard
 		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
