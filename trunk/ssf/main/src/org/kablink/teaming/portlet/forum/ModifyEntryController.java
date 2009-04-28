@@ -62,6 +62,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.FolderConfigHelper;
@@ -288,9 +289,10 @@ public class ModifyEntryController extends SAbstractController {
 			entry  = getFolderModule().getEntry(folderId, entryId);
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.BINDER, entry.getParentFolder());
-			Workspace ws = getWorkspaceModule().getTopWorkspace();
-			Document wsTree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1);
-			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+			try {
+				Workspace ws = getWorkspaceModule().getTopWorkspace();
+				model.put(WebKeys.WORKSPACE_DOM_TREE, getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
+			} catch(AccessControlException e) {}
 			model.put(WebKeys.OPERATION, op);
 			PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 			Long id = (Long)portletSession.getAttribute(ObjectKeys.SESSION_SAVE_LOCATION_ID);
@@ -309,8 +311,10 @@ public class ModifyEntryController extends SAbstractController {
 			Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 			entry  = getFolderModule().getEntry(folderId, entryId);
 			
-			Workspace ws = getWorkspaceModule().getTopWorkspace();
-			model.put(WebKeys.DOM_TREE, getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
+			try {
+				Workspace ws = getWorkspaceModule().getTopWorkspace();
+				model.put(WebKeys.DOM_TREE, getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
+			} catch(AccessControlException e) {}
 
 			model.put(WebKeys.ENTRY, entry);
 			Subscription sub = getFolderModule().getSubscription(entry);
