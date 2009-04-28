@@ -582,6 +582,29 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		//make sure guest exists
 		User guest=null;
 		try {
+			Binder parent = superU.getParentBinder();
+			String guestName= SZoneConfig.getString(parent.getRoot().getName(), "property[@name='guestUser']", "guest");
+			guest = getProfileDao().findUserByName(guestName, zone.getId());
+			
+			if(guest !=null ){
+				String internalId = guest.getInternalId();
+				// Make sure this isn't the reserved Guest User
+				if(!ObjectKeys.GUEST_USER_INTERNALID.equals(internalId))
+				{
+					Map options = new HashMap();
+					options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, true);
+
+			    		Long id = guest.getId();
+			    		try {
+			    			String name = null;
+			    			getProfileModule().deleteEntry(id, options);
+			    		} catch (Exception ex) {
+			    			logger.error(ex);//logError(NLT.get("errorcode.ldap.delete", new Object[]{id.toString()}), ex);
+			    		}
+				}
+			}
+			
+			// now see if we find the reserved Guest User
 			guest = getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zone.getId());
 			// Make sure guest has password.
 			if(guest.getPassword() == null) {
