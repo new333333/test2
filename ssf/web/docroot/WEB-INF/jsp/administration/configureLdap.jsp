@@ -873,6 +873,7 @@ function updateElementsTextNode(
 }// end updateElementsTextNode()
 
 
+
 ssPage = {
 	nextId : 1,
 	currentTab : 0,
@@ -1127,17 +1128,26 @@ jQuery(document).ready(function() {
 		}
 		%>
 		var initialUserSearches = [ ];
+		var tmp;
 		<c:forEach var="userSearch" items="${config.userSearches}">
-			initialUserSearches.push({ baseDn: "${userSearch.baseDn}", filter: "${userSearch.filter}", searchSubtree: "${userSearch.searchSubtree}" });
+			initialUserSearches.push({ baseDn: "<ssf:escapeJavaScript>${userSearch.baseDn}</ssf:escapeJavaScript>", filter: "<ssf:escapeJavaScript>${userSearch.filter}</ssf:escapeJavaScript>", searchSubtree: "${userSearch.searchSubtree}" });
 		</c:forEach>
 		var initialGroupSearches = [ ];
 		<c:forEach var="groupSearch" items="${config.groupSearches}">
-			initialGroupSearches.push({ baseDn: "${groupSearch.baseDn}", filter: "${groupSearch.filter}", searchSubtree: "${groupSearch.searchSubtree}" });
+			initialGroupSearches.push({ baseDn: "<ssf:escapeJavaScript>${groupSearch.baseDn}</ssf:escapeJavaScript>", filter: "<ssf:escapeJavaScript>${groupSearch.filter}</ssf:escapeJavaScript>", searchSubtree: "${groupSearch.searchSubtree}" });
 		</c:forEach>
 
-		var $pane = ssPage.createConnection("${config.url}", "${config.userIdAttribute}",
-										    "<%=mapText.toString()%>", initialUserSearches, initialGroupSearches,
-											"${config.principal}", "${config.credentials}");
+		// Replace the string "\n" with the carriage return character.
+		tmp = "<ssf:escapeJavaScript><%= mapText.toString() %></ssf:escapeJavaScript>";
+		tmp = tmp.replace( /\\n/g, '\x0A' );
+		var $pane = ssPage.createConnection(
+									"<ssf:escapeJavaScript>${config.url}</ssf:escapeJavaScript>",
+									"<ssf:escapeJavaScript>${config.userIdAttribute}</ssf:escapeJavaScript>",
+									tmp,
+									initialUserSearches,
+									initialGroupSearches,
+									"<ssf:escapeJavaScript>${config.principal}</ssf:escapeJavaScript>",
+									"<ssf:escapeJavaScript>${config.credentials}</ssf:escapeJavaScript>");
 		$pane.append(jQuery('<span id="${config.id}" style="display:none" class="ldapId">${config.id}</span>'));
 	</c:forEach>
 	
@@ -1338,7 +1348,7 @@ jQuery(document).ready(function() {
 <label for="ldapMappings"><ssf:nlt tag="ldap.user.mappings" /></label>
 <br />
 <textarea class="ldapMappings" id="ldapMappings"
-	style="height: 150px; width: 400px" wrap="hard"></textarea> <br />
+	style="height: 150px; width: 400px" wrap="off"></textarea> <br />
 <br />
 <div class="ldapUserSearches">
 <div class="ldapSearchList"></div>
