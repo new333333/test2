@@ -96,7 +96,7 @@ function ${renderResponse.namespace}_onsub(obj) {
   <c:forEach var="group" items="${ss_groupList}">
   	<a href="<ssf:url action="manage_groups" actionUrl="true"><ssf:param 
 		name="binderId" value="${ssBinder.id}"/><ssf:param 
-		name="entryId" value="${group._docId}"/>></ssf:url>"
+		name="entryId" value="${group._docId}"/></ssf:url>"
 	><span>${group.title}</span> <span class="ss_smallprint">(${group._groupName})</span></a><br/>
   </c:forEach>
 </div>
@@ -162,7 +162,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 
 <br/>
 
-<div class="ss_formBreak"/>
+<div class="ss_formBreak"></div>
 
 <form class="ss_style ss_form" method="post"
 		  action="<ssf:url action="manage_groups" actionUrl="true"><ssf:param 
@@ -174,7 +174,6 @@ function ${renderResponse.namespace}_onsub(obj) {
 		  onClick="self.window.close();return false;"/>
 </div>
 </form>
-</div>
 
 </div>
 </ssf:form>
