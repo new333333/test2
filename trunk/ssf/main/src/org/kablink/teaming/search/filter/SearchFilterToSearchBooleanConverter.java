@@ -758,12 +758,22 @@ public class SearchFilterToSearchBooleanConverter {
 		} else {
 			Iterator itTermValues = filterTerm.selectNodes(SearchFilterKeys.FilterElementValue).iterator();
 			String valueType = filterTerm.attributeValue(SearchFilterKeys.FilterElementValueType);
-			while (itTermValues.hasNext()) {
-				Element termValue = (Element) itTermValues.next();
-				String value = termValue.getText();
-				if (termValue.attributeValue(SearchFilterKeys.FilterElementValueType) != null) {
+			boolean term=true;
+			while ((itTermValues.hasNext() || valueType != null) && term) {
+				Element termValue = null;
+				try { 
+					termValue = (Element) itTermValues.next();
+				} catch (Exception e) {}
+				String value = " ";
+				if (termValue == null)
+					term = false;
+				else
+					value = termValue.getText();
+				
+				if (termValue!= null && termValue.attributeValue(SearchFilterKeys.FilterElementValueType) != null) {
 					valueType = termValue.attributeValue(SearchFilterKeys.FilterElementValueType);
 				}
+				
 				if (!value.equals("")) {
 					Element field;
 					Element child;
