@@ -139,35 +139,35 @@ function ss_mashupBuildAttrs${ss_mashupItemId}() {
 	if (ss_mashupAttr_showFolderDescription${ss_mashupItemId} != "") attr += ",showFolderDescription=1";
 	if (ss_mashupAttr_showEntriesOpened${ss_mashupItemId} != "") attr += ",showEntriesOpened=1";
 	if (ss_mashupAttr_numberOfLines${ss_mashupItemId} != "") {
-		attr += ",entriesToShow=" + ss_mashupAttr_numberOfLines${ss_mashupItemId};
+		attr += ",entriesToShow=" + escape(ss_mashupAttr_numberOfLines${ss_mashupItemId});
 	}
 	if (ss_mashupAttr_numberOfCols${ss_mashupItemId} != "") {
-		attr += ",cols=" + ss_mashupAttr_numberOfCols${ss_mashupItemId}
+		attr += ",cols=" + escape(ss_mashupAttr_numberOfCols${ss_mashupItemId})
 	}
 	if (ss_mashupAttr_columnWidths${ss_mashupItemId} != "") {
 		var colWidths = ss_replaceSubStrAll(ss_mashupAttr_columnWidths${ss_mashupItemId}, ",", "|");
-		attr += ",colWidths=" + colWidths;
+		attr += ",colWidths=" + escape(colWidths);
 	}
 	if (ss_mashupAttr_graphic${ss_mashupItemId} != "") {
-		attr += ",graphic=" + ss_mashupAttr_graphic${ss_mashupItemId};
+		attr += ",graphic=" + escape(ss_mashupAttr_graphic${ss_mashupItemId});
 	}
 	if (ss_mashupAttr_graphicTitle${ss_mashupItemId} != "") {
-		attr += ",title=" + ss_replaceSubStrAll(ss_mashupAttr_graphicTitle${ss_mashupItemId}, ",", " ");
+		attr += ",title=" + escape(ss_replaceSubStrAll(ss_mashupAttr_graphicTitle${ss_mashupItemId}, ",", " "));
 	}
 	if (ss_mashupAttr_utilityElement${ss_mashupItemId} != "") {
-		attr += ",element=" + ss_mashupAttr_utilityElement${ss_mashupItemId}
+		attr += ",element=" + escape(ss_mashupAttr_utilityElement${ss_mashupItemId})
 	}
 	if (ss_mashupAttr_listTitle${ss_mashupItemId} != "") {
-		attr += ",title=" + ss_mashupAttr_listTitle${ss_mashupItemId}
+		attr += ",title=" + escape(ss_mashupAttr_listTitle${ss_mashupItemId})
 	}
 	if (ss_mashupAttr_customJsp${ss_mashupItemId} != "") {
-		attr += ",customJsp=" + ss_mashupAttr_customJsp${ss_mashupItemId}
+		attr += ",customJsp=" + escape(ss_mashupAttr_customJsp${ss_mashupItemId})
 	}
 	if (ss_mashupAttr_urlTitle${ss_mashupItemId} != "") {
-		attr += ",title=" + ss_mashupAttr_urlTitle${ss_mashupItemId}
+		attr += ",title=" + escape(ss_mashupAttr_urlTitle${ss_mashupItemId})
 	}
 	if (ss_mashupAttr_urlHref${ss_mashupItemId} != "") {
-		attr += ",href=" + ss_mashupAttr_urlHref${ss_mashupItemId}
+		attr += ",href=" + escape(ss_mashupAttr_urlHref${ss_mashupItemId})
 	}
 	
 	//alert(attr)
