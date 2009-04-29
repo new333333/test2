@@ -49,12 +49,19 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.LdapConnectionConfig;
+import org.kablink.teaming.domain.ProfileBinder;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.ldap.LdapSchedule;
+import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.ScheduleHelper;
 import org.kablink.teaming.web.util.WebHelper;
@@ -79,10 +86,18 @@ public class ConfigureUserAccessController extends  SAbstractController {
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-
 		Map model = new HashMap();
+		boolean		guestUserHasAddRights;
 
 		model.put(WebKeys.AUTHENTICATION_CONFIG, getAuthenticationModule().getAuthenticationConfig());
+
+		// If the guest user doesn't not have rights to add an entry to the profile binder and the user
+		// enables the "Allow people to create their own accounts" option, we want to tell the user that
+		// they need to give the guest user rights to add an entry to the profile binder.
+		// Can the logged in user add an entry to the profile binder?
+		guestUserHasAddRights = MiscUtil.doesGuestUserHaveAddRightsToProfileBinder( this );
+		model.put( "guestUserHasAddRightsToProfileBinder", Boolean.toString( guestUserHasAddRights ) );
+		
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_USER_ACCESS, model);
 		
 	}

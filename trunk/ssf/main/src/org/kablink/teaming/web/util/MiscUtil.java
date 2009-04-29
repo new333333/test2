@@ -38,9 +38,16 @@ import java.util.Map;
 
 import javax.portlet.RenderRequest;
 
+import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.ProfileBinder;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
+import org.kablink.teaming.module.profile.impl.ProfileModuleImpl;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.ReleaseInfo;
@@ -99,6 +106,7 @@ public final class MiscUtil
 		}
 	}// end addCreateNewAccountDataToResponse()
 
+	
 	/**
 	 * This method determines if self-registration is available.  Self-registration is available
 	 * if the logged in user has rights to add a user and we are not running the enterprise version
@@ -110,17 +118,21 @@ public final class MiscUtil
 		
     	try
     	{
-    		ProfileBinder	profileBinder;
-
     		// Can the logged in user add an entry to the profile binder?
-    		profileBinder = bs.getProfileModule().getProfileBinder();
-			if ( bs.getProfileModule().testAccess( profileBinder, ProfileOperation.addEntry ) )
+			if ( doesGuestUserHaveAddRightsToProfileBinder( bs ) )
 			{
-				// Yes, are we running the Enterprise version of Teaming?
-				if ( ReleaseInfo.isLicenseRequiredEdition() == false )
+				AuthenticationConfig	authConfig;
+				
+				// Yes, is the "Allow people to create their own accounts" option turned on?
+				authConfig = bs.getAuthenticationModule().getAuthenticationConfig();
+				if ( authConfig != null && authConfig.isAllowSelfRegistration() )
 				{
-					// No, self registration is available.
-					canAdd = true;
+					// Yes, are we running the Enterprise version of Teaming?
+					if ( ReleaseInfo.isLicenseRequiredEdition() == false )
+					{
+						// No, self registration is available.
+						canAdd = true;
+					}
 				}
 			}
     	}
@@ -131,5 +143,34 @@ public final class MiscUtil
 		
     	return canAdd;
 	}// end canDoSelfRegistration()
+	
+	
+	/**
+	 * This method determines if the guest user has the rights needed to add an entry to
+	 * the profile binder.
+	 */
+	public static boolean doesGuestUserHaveAddRightsToProfileBinder( AllModulesInjected bs )
+	{
+		ProfileBinder	profileBinder;
+		ProfileModule	profileModule;
+		User			guest;
+		boolean		guestUserHasAddRights;
+		
+		guestUserHasAddRights = false;
+		profileModule = bs.getProfileModule();
+			
+		// Get the guest user.
+		guest = profileModule.getGuestUser();
+		
+		// Does the guest user have access to the profile binder?
+		profileBinder = profileModule.getProfileBinder();
+		if ( profileBinder != null && profileModule.testAccess( guest, profileBinder, ProfileOperation.addEntry ) )
+		{
+			// Yes
+			guestUserHasAddRights = true;
+		}
+		
+		return guestUserHasAddRights;
+	}// end doesGuestUserHaveAddRightsToProfileBinder()
 	
 }// end MiscUtil

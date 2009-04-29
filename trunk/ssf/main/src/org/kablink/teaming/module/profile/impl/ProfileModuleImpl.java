@@ -59,6 +59,7 @@ import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Attachment;
@@ -173,6 +174,25 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	 * @see org.kablink.teaming.module.binder.BinderModule#checkAccess(org.kablink.teaming.domain.Binder, java.lang.String)
 	 */
     //NO transaction
+    public boolean testAccess( User user, ProfileBinder binder, ProfileOperation operation)
+    {
+		try
+		{
+			checkAccess( user, binder, operation );
+			return true;
+		}
+		catch (AccessControlException ac)
+		{
+			return false;
+		}
+	}// end testAccess()
+    
+    
+	/*
+	 * Check access to folder.  If operation not listed, assume read_entries needed
+	 * @see org.kablink.teaming.module.binder.BinderModule#checkAccess(org.kablink.teaming.domain.Binder, java.lang.String)
+	 */
+    //NO transaction
     public boolean testAccess(ProfileBinder binder, ProfileOperation operation) {
 		try {
 			checkAccess(binder, operation);
@@ -181,7 +201,27 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			return false;
 		}
 	}
-	public void checkAccess(ProfileBinder binder, ProfileOperation operation) throws AccessControlException {
+
+    /**
+     * 
+     */
+	public void checkAccess( User user, ProfileBinder binder, ProfileOperation operation) throws AccessControlException
+	{
+		switch (operation)
+		{
+			case addEntry:
+		    	getAccessControlManager().checkOperation( user, binder, WorkAreaOperation.CREATE_ENTRIES );
+		    	break;
+			case manageEntries:
+		    	getAccessControlManager().checkOperation( user, binder, WorkAreaOperation.BINDER_ADMINISTRATION );
+		    	break;
+			default:
+		    	throw new NotSupportedException(operation.toString(), "checkAccess");				    		
+		}
+	}// end checkAccess()
+	
+	
+    public void checkAccess(ProfileBinder binder, ProfileOperation operation) throws AccessControlException {
 		switch (operation) {
 			case addEntry:
 		    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_ENTRIES);
@@ -240,6 +280,24 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	private ProfileBinder loadProfileBinder() {
 	   return (ProfileBinder)getProfileDao().getProfileBinder(RequestContextHolder.getRequestContext().getZoneId());
 	}
+
+	/**
+	 * Return the guest user object.
+	 */
+	public User getGuestUser()
+	{
+		ProfileDao	profileDao;
+		User		guest;
+		Long		zoneId;
+		
+		zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		profileDao = getProfileDao();
+		guest = profileDao.getReservedUser( ObjectKeys.GUEST_USER_INTERNALID, zoneId );
+
+		return guest;
+	}// end getGuestUser()
+	
+	
 	private User getUser(Long userId, boolean modify) {
   		User currentUser = RequestContextHolder.getRequestContext().getUser();
    		User user;
