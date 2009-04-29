@@ -127,7 +127,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-size: 12px;
 	font-style: italic;
 	font-family: 'Lucida Sans', 'Lucida Grande', sans-serif;
-	line-height: 18px;
 	text-align:left;
 	vertical-align:top;
 	background-color:#f2f2f2;
