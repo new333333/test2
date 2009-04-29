@@ -36,10 +36,67 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_ldap") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
+<script type="text/javascript">
+	var m_guestRightsMsg			= null;
+	var m_guestHasSufficientRights	= null;
+
+	ss_createOnLoadObj( 'configureUserAccess', onLoadEventHandler );
+	
+	/**
+	 * This function gets called when the page is loaded.
+	 */
+	function onLoadEventHandler()
+	{
+		var form;
+		
+		// Load the string that we may use to tell the user they need to give the guest user "participant" rights to the
+		// "personal workspaces" folder in order for the "allow people to create their own accounts" to work.
+		m_guestRightsMsg = '<ssf:escapeJavaScript><ssf:nlt tag="administration.configure.userAccess.necessaryRightsForSelfReg" /></ssf:escapeJavaScript>';
+		
+		// Get the value that tells us whether the guest user has sufficient rights to create a new account.
+		m_guestHasSufficientRights = false;
+		<c:if test="${guestUserHasAddRightsToProfileBinder}">
+			m_guestHasSufficientRights = true;
+		</c:if>
+		
+		form = document.forms[0];
+		form.onsubmit = onSubmitEventHandler;
+
+	}// end onLoadEventHandler()
+
+	
+	/**
+	 * This function gets called when the user clicks the "apply" button.
+	 * If the user has enabled the "Allow people to create their own accounts" and the guest user does not
+	 * have sufficient rights to create a new account we will pop up a message telling the user what they
+	 * need to do.
+	 */
+	function onSubmitEventHandler()
+	{
+		 var	ckbox;
+
+		 // Did the user enable the "Allow people to create their own accounts" setting?
+		 ckbox = document.getElementById( 'allowSelfRegistration' );
+		 if ( ckbox != null && ckbox.checked )
+		 {
+			 // Yes, does the guest user have sufficient rights to create a new account?
+			 if ( m_guestHasSufficientRights == false )
+			 {
+				 // No, tell the user what they need to do so the "Allow people to create their own accounts" will work.
+				 alert( m_guestRightsMsg );
+			 }
+		 }
+	
+		 return true;
+	}// end onSubmitEventHandler()
+
+</script>
+
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
-<ssf:form titleTag="administration.configure.userAccess.title">
+<ssf:form titleTag="administration.configure.userAccess.title" >
 
 	<c:if test="${!empty ssException}">
 	<span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
@@ -69,8 +126,14 @@
 				<input type="checkbox" id="allowAnonymous" name="allowAnonymous" <c:if test="${ssAuthenticationConfig.allowAnonymousAccess}">checked</c:if>/>
 					<label for="allowAnonymous"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowAnonymous"/></span><br/></label>
 			</c:if>
-			<input type="checkbox" id="allowSelfRegistration" name="allowSelfRegistration" <c:if test="${ssAuthenticationConfig.allowSelfRegistration}">checked</c:if>/>
+
+			<!-- Are we running the open version of Teaming? -->
+			<c:if test="${openEdition}">
+				<!-- Yes, add the "Allow people to create their own accounts" option. -->
+				<input type="checkbox" id="allowSelfRegistration" name="allowSelfRegistration" <c:if test="${ssAuthenticationConfig.allowSelfRegistration}">checked</c:if>/>
 				<label for="allowSelfRegistration"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowSelfRegistration"/></span></label>
+			</c:if>
+
 			<br/>
 			<br/>
 			<br/>

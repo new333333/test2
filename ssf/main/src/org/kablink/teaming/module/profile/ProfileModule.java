@@ -146,6 +146,14 @@ public interface ProfileModule {
 	public User addUserFromPortal(String userName, String password, Map updates, Map options);
 	/**
 	 * Check access to a binder, throwing an exception if access is denied
+	 * @param user
+	 * @param binder
+	 * @param operation
+	 * @throws AccessControlException
+	 */
+	public void checkAccess( User user, ProfileBinder binder, ProfileOperation operation) throws AccessControlException;
+	/**
+	 * Check access to a binder, throwing an exception if access is denied
 	 * @param binder
 	 * @param operation
 	 * @throws AccessControlException
@@ -173,6 +181,13 @@ public interface ProfileModule {
 	 * @param options - additional processing options or null (See ObjectKeys.INPUT_OPTION_DELETE_USE_WORKSPACE)
 	 */
 	public void deleteUserByName(String userName,  Map options);
+	
+	/**
+	 * Get the guest user
+	 * @return
+	 */
+	public User getGuestUser();
+	
 	/**
 	 * Get a principal by name
 	 * @param name
@@ -422,6 +437,14 @@ public interface ProfileModule {
      * @param status
      */
     public void setStatusDate(Date statusDate);
+	/**
+	 * Test access to a binder
+	 * @param user
+	 * @param binder
+	 * @param operation
+	 * @throws AccessControlException
+	 */
+	public boolean testAccess(User user, ProfileBinder binder, ProfileOperation operation) throws AccessControlException;
      /**
      * Test access to a binder
      * @param binder
