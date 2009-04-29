@@ -105,7 +105,8 @@
 							</c:if>
 						 </p>
 						<c:if test="${!empty entry._workflowStateCaption}">
-							<p><span class="ss_label"><ssf:nlt tag="entry.workflowState" />:</span> <c:out value="${entry._workflowStateCaption}" /></p>
+							<p><span class="ss_label"><ssf:nlt tag="entry.workflowState" />:</span> 
+							<ssf:nlt tag="${entry._workflowStateCaption}" checkIfTag="true"/></p>
 						</c:if>
 					</div>
 					<%

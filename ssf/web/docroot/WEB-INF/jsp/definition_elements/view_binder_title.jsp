@@ -34,10 +34,27 @@
 %>
 <% //Workspace title view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="actionVar" value="view_ws_listing"/>
+<c:set var="actionVar2" value="view_folder_listing"/>
+<c:if test="${ssConfigJspStyle != 'template'}">
+	<c:if test="${ssDefinitionEntry.parentBinder.entityType == 'folder'}">
+	  <c:set var="actionVar" value="view_folder_listing"/>
+	</c:if>
+	<c:if test="${ssDefinitionEntry.parentBinder.entityType == 'profiles'}">
+	  <c:set var="actionVar" value="view_profile_listing"/>
+	</c:if>
+</c:if>
+<c:if test="${ssConfigJspStyle == 'template'}">
+	<c:set var="actionVar" value="configure_configuration"/>
+	<c:set var="actionVar2" value="configure_configuration"/>
+</c:if>
+
   <div id="ss_topic_box">
 	<div id="ss_topic_box_h1">
 	
 	<c:if test="${ssDefinitionEntry.entityType == 'workspace'}">
+	  <ul class="ss_horizontal ss_nobullet">
+	  <li>
 	  <a href="<ssf:url crawlable="true"
            adapter="true" portletName="ss_forum"
            folderId="${ssDefinitionEntry.id}" 
@@ -47,9 +64,13 @@
         </c:if>
         <span>${ssDefinitionEntry.title}</span>
       </a>
+      </li>
+      </ul>
     </c:if>
     
 	<c:if test="${ssDefinitionEntry.entityType == 'profiles'}">
+	  <ul class="ss_horizontal ss_nobullet">
+	  <li>
 	  <a href="<ssf:url crawlable="true"
            adapter="true" portletName="ss_forum"
            folderId="${ssDefinitionEntry.id}" 
@@ -59,20 +80,47 @@
         </c:if>
         <span>${ssDefinitionEntry.title}</span>
       </a>
+      </li>
+      </ul>
     </c:if>
     
 	<c:if test="${ssDefinitionEntry.entityType == 'folder'}">
+	  <ul class="ss_horizontal ss_nobullet">
+	  <c:set var="parentBinder2" value="${ssDefinitionEntry}"/>
+	  <c:set var="action" value="view_ws_listing"/>
+	  <jsp:useBean id="parentBinder2" type="java.lang.Object" />
+	  <%
+		Stack parentTree2 = new Stack();
+		while (parentBinder2 != null) {
+			parentTree2.push(parentBinder2);
+			if (((Binder)parentBinder2).getEntityType().equals(org.kablink.teaming.domain.EntityIdentifier.EntityType.workspace)) break;
+			parentBinder2 = ((Binder)parentBinder2).getParentBinder();
+		}
+		while (!parentTree2.empty()) {
+			Binder nextBinder2 = (Binder) parentTree2.pop();
+	  %>
+	  <c:set var="nextBinder" value="<%= nextBinder2 %>"/>
+	  <li>
+	  <div style="display:inline;">
 	  <a href="<ssf:url crawlable="true"
            adapter="true" portletName="ss_forum"
-           folderId="${ssDefinitionEntry.id}" 
-           action="view_folder_listing"/>">
-	    <c:if test="${empty ssDefinitionEntry.title}">
+           folderId="${nextBinder.id}" 
+           action="${action}"/>" style="vertical-align:middle;">
+	    <c:if test="${empty nextBinder.title}">
           <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
         </c:if>
-        <span>${ssDefinitionEntry.title}</span>
-      </a>
+        <span>${nextBinder.title}</span>
+      </a><%  if (!parentTree2.empty()) {  %>&nbsp;&gt;&gt;<%  }  %>
+      </div>
+	  </li>
+	  <c:set var="action" value="view_folder_listing"/>
+  	 <%
+	   }
+  	 %>
+	  </ul>
     </c:if>
-    
+
+	<div class="ss_clear"></div>
     </div>
     
 	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 

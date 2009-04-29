@@ -81,7 +81,7 @@
 		    <option value=""><ssf:nlt tag="workflow.selectState"/></option>
 		  </c:if>
 		  <c:forEach var="transition" items="${ssWorkflowTransitions[workflow.id]}">
-		    <option value="${transition.key}">${transition.value}</option>
+		    <option value="${transition.key}"><ssf:nlt tag="${transition.value}" checkIfTag="true"/></option>
 		  </c:forEach>
 		  </select><input type="submit" class="ss_submit" name="changeStateBtn" 
 		   style="background: inherit !important;"
@@ -149,7 +149,7 @@
 				    <option value=""><ssf:nlt tag="workflow.selectState"/></option>
 				  </c:if>
 				  <c:forEach var="transition" items="${ssWorkflowTransitions[workflow2.id]}">
-				    <option value="${transition.key}">${transition.value}</option>
+				    <option value="${transition.key}"><ssf:nlt tag="${transition.value}" checkIfTag="true"/></option>
 				  </c:forEach>
 				  </select><input type="submit" class="ss_submit" name="changeStateBtn" 
 				   value="<ssf:nlt tag="button.ok" text="OK"/>">

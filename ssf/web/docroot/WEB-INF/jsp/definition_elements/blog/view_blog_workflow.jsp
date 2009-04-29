@@ -38,6 +38,6 @@
 <c:if test="${!empty ss_blog_workflowStateCaption}">
 <div>
 <span class="ss_bold"><ssf:nlt tag="folder.column.State"/>: </span>
-<span>${ss_blog_workflowStateCaption}</span>
+<span><ssf:nlt tag="${ss_blog_workflowStateCaption}" checkIfTag="true"/></span>
 </div>
 </c:if>
