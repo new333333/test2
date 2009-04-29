@@ -512,6 +512,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 					getCoreDao().save(connection);
 				}
 			}
+			//Initialize the mail server settings
+			if (!SPropsUtil.getBoolean("smtp.service.enable")) {
+				zoneConfig.getMailConfig().setSimpleUrlPostingEnabled(true);
+			} else {
+				zoneConfig.getMailConfig().setSimpleUrlPostingEnabled(false);
+			}
  		}
 		//make sure zoneConfig upto date
 		if (version.intValue() <= 2 || zoneConfig.getUpgradeVersion() < ZoneConfig.ZONE_LATEST_VERSION) {
@@ -648,6 +654,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getProfileModule().indexEntry(g);
 		}
 		//turn off or on depending on ssf.props value
+		if (!SPropsUtil.getBoolean("smtp.service.enable")) {
+			zoneConfig.getMailConfig().setSimpleUrlPostingEnabled(false);
+			getAdminModule().setMailConfigAndSchedules(zoneConfig.getMailConfig(), null, null);
+		}
 		if (zoneConfig.getMailConfig().isPostingEnabled()) {
 			if (SPropsUtil.getBoolean("mail.posting.offWhenEmpty", true) && 
 				getAdminModule().getPostings().isEmpty()) {
