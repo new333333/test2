@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.taglib;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -103,7 +104,11 @@ public class MashupTag extends BodyTagSupport {
 						for (int i = 1; i < mashupItemValues.length; i++) {
 							String[] valueSet = mashupItemValues[i].split("=");
 							if (valueSet.length == 2) {
-								mashupItemAttributes.put(valueSet[0], valueSet[1]);
+								String value1 = valueSet[1];
+								try {
+									value1 = URLDecoder.decode(valueSet[1].replaceAll("\\+", "%2B"), "UTF-8");
+								} catch(Exception e) {}
+								mashupItemAttributes.put(valueSet[0], value1);
 							}
 						}
 						httpReq.setAttribute("mashup_id", id);
