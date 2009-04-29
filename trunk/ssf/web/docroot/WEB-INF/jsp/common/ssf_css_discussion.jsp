@@ -141,10 +141,20 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	letter-spacing:-2px;
 	color:#5A9A98!important;
 	}
-#ss_topic_box_h1 a {
+#ss_topic_box_h1 * a {
+	font-size: 20px;
+	font-style: italic;
+	font-weight: 200;
+	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
+	letter-spacing:-2px;
 	color:#5A9A98!important;
 	}
-#ss_topic_box_h1 a:hover {
+#ss_topic_box_h1 * a:hover {
+	font-size: 20px;
+	font-style: italic;
+	font-weight: 200;
+	font-family:'Lucida Sans', 'Lucida Grande', sans-serif;
+	letter-spacing:-2px;
 	color:#555!important;
 	}
 #ss_topic_folder{

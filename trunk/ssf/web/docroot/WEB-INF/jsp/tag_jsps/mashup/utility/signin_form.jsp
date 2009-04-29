@@ -47,7 +47,7 @@
 <% if (ss_mashupListDepth > 0) { %>
 <li>
 <% } %>
-
+<c:if test="${empty ssUrl}"><c:set var="ssUrl" value="${ss_reloadUrl}" scope="request"/></c:if>
 <div class="ss_mashup_element">
  <div class="ss_mashup_round_top"><div></div></div>
  <div class="ss_mashup_element_content">

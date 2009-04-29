@@ -675,7 +675,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <c:if test="${slidingTableStyle == 'fixed'}">
     onClick="ss_loadEntryInPlace(this,'<c:out value="${entry1._docId}"/>', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', '${ss_entryViewStyle2}', 'no');return false;" 
 </c:if>
-    ><span <%= seenStyle %>><c:out value="${entry1._workflowStateCaption}"/></span></a>
+    ><span <%= seenStyle %>><ssf:nlt tag="${entry1._workflowStateCaption}" checkIfTag="true"/></span></a>
     </c:if>&nbsp;
   </ssf:slidingTableColumn>
  </c:if>

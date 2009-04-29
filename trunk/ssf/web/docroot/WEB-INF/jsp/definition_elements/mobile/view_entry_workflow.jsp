@@ -76,7 +76,7 @@
 				  <input type="hidden" name="replyId" value="${ssDefinitionEntry.id}">
 				  <select name="toState">
 				  <c:forEach var="transition" items="${ssWorkflowTransitions[workflow2.id]}">
-				    <option value="${transition.key}">${transition.value}</option>
+				    <option value="${transition.key}"><ssf:nlt tag="${transition.value}" checkIfTag="true"/></option>
 				  </c:forEach>
 				  </select><input type="submit" class="ss_submit" name="changeStateBtn" 
 				   style="background: inherit !important;"
