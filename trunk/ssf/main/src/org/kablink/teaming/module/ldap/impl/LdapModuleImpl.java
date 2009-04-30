@@ -739,6 +739,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			this.zoneId = zone.getId();
 			this.dnUsers = dnUsers;
+			this.sync = sync;
 			this.create = create;
 			this.delete = delete;
 			m_ldapSyncResults = syncResults;	// Store the results of the sync here.

@@ -172,6 +172,12 @@
 		tag="ldap.groups" /></legend>
 	<table class="ss_style" border="0" cellspacing="0" cellpadding="3">
 		<tr>
+			<td><input type="checkbox" name="groupSync" id="groupSync"
+				<c:if test="${ssLdapConfig.groupSync}">checked</c:if> /> <label
+				for="groupSync"><span class="ss_labelRight ss_normal"><ssf:nlt
+				tag="ldap.schedule.group.sync" /></span></label></td>
+		</tr>
+		<tr>
 			<td><input type="checkbox" name="groupRegister"
 				id="groupRegister"
 				<c:if test="${ssLdapConfig.groupRegister}">checked</c:if> /> <label
