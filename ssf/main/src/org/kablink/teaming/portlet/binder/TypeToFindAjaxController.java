@@ -34,6 +34,7 @@ package org.kablink.teaming.portlet.binder;
 
 import static org.kablink.util.search.Constants.COMMAND_DEFINITION_FIELD;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -133,6 +134,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		Map model = new HashMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+		searchText = URLDecoder.decode(searchText, "UTF-8");
 		String findType = PortletRequestUtils.getStringParameter(request, "findType", "");
 		String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "10");
 		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "0");
@@ -179,15 +181,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		//Build the search query
 		SearchFilter searchTermFilter = new SearchFilter();
 		
-		String newStr = searchText;
-		Matcher matcher = replacePtrn.matcher(newStr);
-		while (matcher.find()) {
-			newStr = matcher.replaceFirst(" ");
-			matcher = replacePtrn.matcher(newStr);
-		}
-		newStr = newStr.replaceAll(" \\*", "\\*");
-		
-	    searchText = newStr;
+	    searchText = searchText.replaceAll(" \\*", "\\*").trim();
 	     
 		if (findType.equals(WebKeys.FIND_TYPE_PLACES)) {
 			searchTermFilter.addPlacesFilter(searchText, Boolean.valueOf(foldersOnly));

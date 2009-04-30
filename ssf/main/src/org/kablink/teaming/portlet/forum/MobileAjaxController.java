@@ -897,15 +897,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				//Build the search query
 				SearchFilter searchTermFilter = new SearchFilter();
 				
-				String newStr = searchText;
-				Matcher matcher = replacePtrn.matcher(newStr);
-				while (matcher.find()) {
-					newStr = matcher.replaceFirst(" ");
-					matcher = replacePtrn.matcher(newStr);
-				}
-				newStr = newStr.replaceAll(" \\*", "\\*");
-				
-			    searchText = newStr + "*";
+				searchText = searchText.replaceAll(" \\*", "\\*");
+			    searchText = searchText.trim() + "*";
+			    
 				//Add the login name term
 				if (searchText.length()>0) {
 					searchTermFilter.addTitleFilter(searchText);
