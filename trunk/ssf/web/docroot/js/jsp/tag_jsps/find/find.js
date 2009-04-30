@@ -402,7 +402,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 			searchInProgress = false;
 			return;
 		}
-		var url = that._singleSearchUrl  + "&searchText=" + searchText 
+		var url = that._singleSearchUrl  + "&searchText=" + escape(searchText)
 										+ "&maxEntries=10" 
 										+ "&pageNumber=" + pageNumber 
 										+ "&findType=" + that._singleListType 
