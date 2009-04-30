@@ -53,9 +53,10 @@ function ${renderResponse.namespace}_onsub(obj) {
 var ss_confirmDeleteZoneText = "<ssf:nlt tag="zone.confirmDeleteZone"/>";
 function ss_confirmDeleteZone() {
 	if (confirm(ss_confirmDeleteZoneText)) {
-		return true
+		ss_startSpinner();
+		return true;
 	} else {
-		return false
+		return false;
 	}
 }
 
@@ -115,7 +116,7 @@ function ss_confirmDeleteZone() {
 	</td>	
 	
     <td align="left" valign="middle">
-	<input type="submit" class="ss_submit" name="deleteBtn" onclick="ss_startSpinner();" value="<ssf:nlt tag="button.delete" text="Delete"/>" 
+	<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete" text="Delete"/>" 
 	  onClick="return ss_confirmDeleteZone();" />
 	</td>	
 	</c:if>
