@@ -3866,7 +3866,7 @@ function ss_loadEntryFromMenu(obj, id, binderId, entityType, namespace, isDashbo
 	}
 	
 	ss_showForumEntry(obj.href, isDashboard);
-	
+	ss_hideSunburst(id, binderId);
 	return false;
 }
 
@@ -3908,6 +3908,7 @@ function ss_loadEntry(obj, id, binderId, entityType, namespace, isDashboard) {
 	ss_highlightLine(id, namespace);
 
 	ss_showForumEntry(obj.href, isDashboard);
+	ss_hideSunburst(id, binderId);
 	return false;
 }
 
@@ -4019,6 +4020,7 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType,
 	ss_setOpacity(divObj, 0);
 	dojo.fadeIn({node:divObj, delay:600}).play();
 	ss_highlightLine(id, namespace);
+	ss_hideSunburst(id, binderId);
 	return false;
 }
 
