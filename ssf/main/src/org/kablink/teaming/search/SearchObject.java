@@ -193,12 +193,10 @@ public class SearchObject {
 	}
 
 	private Analyzer getCJKAnalyzer() {
-		PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new ChineseAnalyzer());
-		retAnalyzer.addAnalyzer(Constants.ACL_TAG_FIELD, new NullAnalyzer());
-		retAnalyzer.addAnalyzer(Constants.TAG_FIELD, new NullAnalyzer());
-		retAnalyzer.addAnalyzer(Constants.BINDER_ID_FIELD, new NullAnalyzer());
-		retAnalyzer.addAnalyzer(Constants.DOC_TYPE_FIELD, new NullAnalyzer());
-		retAnalyzer.addAnalyzer(Constants.ENTRY_TYPE_FIELD, new NullAnalyzer());
+		PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new NullAnalyzer());
+		retAnalyzer.addAnalyzer(Constants.ALL_TEXT_FIELD, new ChineseAnalyzer());
+		retAnalyzer.addAnalyzer(Constants.TITLE_FIELD, new ChineseAnalyzer());
+		retAnalyzer.addAnalyzer(Constants.DESC_FIELD, new ChineseAnalyzer());
 		return retAnalyzer;
 	}
 }
