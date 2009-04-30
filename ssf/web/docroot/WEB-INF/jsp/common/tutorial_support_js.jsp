@@ -47,26 +47,6 @@
 	window.TUTORIAL_PANEL_COLLAPSED	= 3;
 
 	/**
-	 * This function will collapse the tutorial ui.
-	 */
-	function collapseTutorialPanel()
-	{
-		var	table;
-
-		// Hide the expanded tutorial table.
-		table = document.getElementById( 'expandedTutorialTable' );
-		table.style.display = 'none';
-
-		// Show the collapsed tutorial table.
-		table = document.getElementById( 'collapsedTutorialTable' );
-		table.style.display = '';
-
-		// Issue an ajax request to remember that the tutorial panel is collapsed.
-		saveTutorialPanelState( window.TUTORIAL_PANEL_COLLAPSED );
-	}// end collapseTutorialPanel()
-
-
-	/**
 	 * This function will tell the user that closing the tutorial panel will permanently remove
 	 * it and will ask the user if that is what they want to do.
 	 */
@@ -74,38 +54,14 @@
 	{
 		var	msg;
 
-		// Ask the user if they want to permanently remove the tutorial panel.
+		// Tell the user they can restore the video tutorial panel from "Personal Preferences" in the sidebar.
 		msg = '<ssf:escapeJavaScript><ssf:nlt tag="tutorial.confirmClose" /></ssf:escapeJavaScript>'; 
-		if ( window.confirm( msg ) )
-		{
-			// The user wants to permanently remove the tutorial panel.
-			// Hide the tutorial panels.
-			hideTutorialPanels();
-			
-			// Issue an ajax request to remember that the tutorial panel should not be displayed again.
-			saveTutorialPanelState( window.TUTORIAL_PANEL_CLOSED );
-		}
-	}// end configCloseTutorialPanel()
+		alert( msg );
 
-
-	/**
-	 * This function will expand the tutorial ui.
-	 */
-	function expandTutorialPanel()
-	{
-		var	table;
-
-		// Hide the collapsed tutorial table.
-		table = document.getElementById( 'collapsedTutorialTable' );
-		table.style.display = 'none';
-
-		// Show the expanded tutorial table.
-		table = document.getElementById( 'expandedTutorialTable' );
-		table.style.display = '';
-
-		// Issue an ajax request to remember that the tutorial panel is expanded.
-		saveTutorialPanelState( window.TUTORIAL_PANEL_EXPANDED );
-	}// end expandTutorialPanel()
+		// The user wants to permanently remove the tutorial panel.
+		// Hide the tutorial panels.
+		hideTutorialPanels();
+	}// end confirmCloseTutorialPanel()
 
 
 	/**
@@ -132,6 +88,12 @@
 		// Hide the expanded tutorial table.
 		table = document.getElementById( 'expandedTutorialTable' );
 		table.style.display = 'none';
+
+		// Update the link in the "Video Tutorial Panel" preference in the sidebar.
+		updateSidebarTutorialPanelPref( window.TUTORIAL_PANEL_CLOSED );
+
+		// Issue an ajax request to remember that the tutorial panel should not be displayed again.
+		saveTutorialPanelState( window.TUTORIAL_PANEL_CLOSED );
 	}// end hideTutorialPanels()
 
 
@@ -142,7 +104,6 @@
 	function initTutorial()
 	{
 		var	initialState;
-		var	table;
 
 		// Is the user looking at a landing page or his own workspace?
 		if ( isLandingPage() || isOwnWorkspace() )
@@ -184,41 +145,24 @@
 			anchor = document.getElementById( 'closeExpandedTutorialTableAnchor' );
 			anchor.style.display = 'none';
 		}
-		
+
 		// Is the tutorial panel supposed to be closed?
 		if ( initialState == window.TUTORIAL_PANEL_CLOSED )
 		{
-			// Yes
-			// Hide the expanded tutorial table.
-			table = document.getElementById( 'expandedTutorialTable' );
-			table.style.display = 'none';
-
-			// Hide the collapsed tutorial table.
-			table = document.getElementById( 'collapsedTutorialTable' );
-			table.style.display = 'none';
+			// Yes, hide the tutorial panel.
+			hideTutorialPanels();
 		}
 		// Is the tutorial panel collapsed?
 		else if ( initialState == window.TUTORIAL_PANEL_COLLAPSED )
 		{
-			// Yes
-			// Hide the expanded tutorial table.
-			table = document.getElementById( 'expandedTutorialTable' );
-			table.style.display = 'none';
-
-			// Show the collapsed tutorial table.
-			table = document.getElementById( 'collapsedTutorialTable' );
-			table.style.display = '';
+			// Yes, collapse the tutorial panel.
+			showTutorialPanelCollapsed();
 		}
 		else
 		{
 			// The tutorial panel is expanded.
 			// Show the expanded tutorial table.
-			table = document.getElementById( 'expandedTutorialTable' );
-			table.style.display = '';
-
-			// Hide the collapsed tutorial table.
-			table = document.getElementById( 'collapsedTutorialTable' );
-			table.style.display = 'none';
+			showTutorialPanelExpanded();
 		}
 	}// end initTutorial()
 
@@ -275,6 +219,52 @@
 
 
 	/**
+	 * Show the tutorial panel in its collapsed state.
+	 */
+	function showTutorialPanelCollapsed()
+	{
+		var	table;
+
+		// Hide the expanded tutorial table.
+		table = document.getElementById( 'expandedTutorialTable' );
+		table.style.display = 'none';
+
+		// Show the collapsed tutorial table.
+		table = document.getElementById( 'collapsedTutorialTable' );
+		table.style.display = '';
+
+		// Update the link in the "Video Tutorial Panel" preference in the sidebar.
+		updateSidebarTutorialPanelPref( window.TUTORIAL_PANEL_COLLAPSED );
+
+		// Issue an ajax request to remember that the tutorial panel is collapsed.
+		saveTutorialPanelState( window.TUTORIAL_PANEL_COLLAPSED );
+	}// end showTutorialPanelCollapsed()
+
+	
+	/**
+	 * Show the tutorial panel in its expanded state.
+	 */
+	function showTutorialPanelExpanded()
+	{
+		var	table;
+
+		// Hide the collapsed tutorial table.
+		table = document.getElementById( 'collapsedTutorialTable' );
+		table.style.display = 'none';
+
+		// Show the expanded tutorial table.
+		table = document.getElementById( 'expandedTutorialTable' );
+		table.style.display = '';
+
+		// Update the link in the "Video Tutorial Panel" preference in the sidebar.
+		updateSidebarTutorialPanelPref( window.TUTORIAL_PANEL_EXPANDED );
+
+		// Issue an ajax request to remember that the tutorial panel is expanded.
+		saveTutorialPanelState( window.TUTORIAL_PANEL_EXPANDED );
+	}// end showTutorialPanelExpanded()
+
+	
+	/**
 	 * Open a window and start the given video tutorial.
 	 */
 	function startTutorial( tutorialName )
@@ -309,5 +299,42 @@
 									'PlayTutorialWindow',
 									'height=' + winHeight + ',resizable,scrollbars,width=' + winWidth );
 	}// end startTutorial()
+
+
+	/**
+	 * Update the link in the "Video Tutorial Panel" section in the "Personal Preferences" section of the sidebar
+	 */
+	function updateSidebarTutorialPanelPref( panelState )
+	{
+		var anchor;
+		var span;
+
+		anchor = document.getElementById( 'tutorialPanelPrefAnchor' );
+		span = document.getElementById( 'tutorialPanelPrefSpan' );
+		if ( anchor != null && span != null )
+		{
+			var text;
+
+			// Is the tutorial panel closed?
+			if ( panelState == window.TUTORIAL_PANEL_CLOSED )
+			{
+				// Yes
+				// Update the link to be a "show" link.
+				text = '<ssf:escapeJavaScript><ssf:nlt tag="sidebar.videoTutorial.show" /></ssf:escapeJavaScript>';
+
+				anchor.onclick = showTutorialPanelExpanded;
+			}
+			else
+			{
+				// No
+				// Update the link to be a "hide" link.
+				text = '<ssf:escapeJavaScript><ssf:nlt tag="sidebar.videoTutorial.hide" /></ssf:escapeJavaScript>';
+
+				anchor.onclick = hideTutorialPanels;
+			}
+
+			updateElementsTextNode( span, text );
+		}
+	}// end updateSidebarTutorialPanelPref()
 </script>
 
