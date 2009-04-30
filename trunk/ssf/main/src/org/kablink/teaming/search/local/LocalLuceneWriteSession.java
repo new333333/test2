@@ -356,6 +356,10 @@ public class LocalLuceneWriteSession extends LocalLuceneSession implements Lucen
 
 	private String getTastingText(Document doc) {
 		String text = doc.getField(Constants.ALL_TEXT_FIELD).stringValue();
+		if (text.length() == 0) {
+			text = doc.getField(Constants.TITLE_FIELD).stringValue();
+			if (text == null) text="";
+		}
 		if (text.length()> 1024) 
 			return text.substring(0,1024);
 		else return text;
@@ -368,13 +372,10 @@ public class LocalLuceneWriteSession extends LocalLuceneSession implements Lucen
 		if (language.equalsIgnoreCase(LanguageTaster.DEFAULT)) {
 			return defaultAnalyzer;
 		} else if (language.equalsIgnoreCase(LanguageTaster.CJK)) {
-			PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new ChineseAnalyzer());
-			retAnalyzer.addAnalyzer(Constants.FOLDER_ACL_FIELD, new SsfIndexAnalyzer());
-			retAnalyzer.addAnalyzer(Constants.ENTRY_ACL_FIELD, new SsfIndexAnalyzer());
-			retAnalyzer.addAnalyzer(Constants.BINDER_OWNER_ACL_FIELD, new SsfIndexAnalyzer());
-			retAnalyzer.addAnalyzer(Constants.TEAM_ACL_FIELD, new SsfIndexAnalyzer());
-			retAnalyzer.addAnalyzer(Constants.ACL_TAG_FIELD, new SsfIndexAnalyzer());
-			retAnalyzer.addAnalyzer(Constants.TAG_FIELD, new SsfIndexAnalyzer());
+			PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new SsfIndexAnalyzer());
+			retAnalyzer.addAnalyzer(Constants.ALL_TEXT_FIELD, new ChineseAnalyzer());
+			retAnalyzer.addAnalyzer(Constants.DESC_FIELD, new ChineseAnalyzer());
+			retAnalyzer.addAnalyzer(Constants.TITLE_FIELD, new ChineseAnalyzer());
 			return retAnalyzer;
 		} else if (language.equalsIgnoreCase(LanguageTaster.HEBREW)) {
 			// return new HEBREWAnalyzer;

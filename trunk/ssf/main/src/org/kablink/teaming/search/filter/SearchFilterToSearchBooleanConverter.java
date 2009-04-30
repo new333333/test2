@@ -767,8 +767,10 @@ public class SearchFilterToSearchBooleanConverter {
 				String value = " ";
 				if (termValue == null)
 					term = false;
-				else
+				else {
 					value = termValue.getText();
+					checkLanguage(value, block);
+				}
 				
 				if (termValue!= null && termValue.attributeValue(SearchFilterKeys.FilterElementValueType) != null) {
 					valueType = termValue.attributeValue(SearchFilterKeys.FilterElementValueType);
@@ -923,9 +925,21 @@ public class SearchFilterToSearchBooleanConverter {
 		lang = LanguageTaster.taste(text.toCharArray()); 
 		if (lang.equalsIgnoreCase(LanguageTaster.DEFAULT))
 			return lang;
-		Element langNode = qTreeRootElement.addElement(Constants.LANGUAGE_ELEMENT);
-		langNode.addAttribute(Constants.LANGUAGE_ATTRIBUTE, lang);
+		getTopElement(qTreeRootElement).addAttribute(Constants.LANGUAGE_ATTRIBUTE, lang);
 		return lang;
+	}
+	
+	private static void checkLanguage(String text, Element element) {
+		String lang = LanguageTaster.taste(text.toCharArray());
+		if (!lang.equalsIgnoreCase(LanguageTaster.DEFAULT))
+			getTopElement(element).addAttribute(Constants.LANGUAGE_ATTRIBUTE, lang);
+	}
+	
+	private static Element getTopElement (Element element) {
+		while (element.getName() != Constants.QUERY_ELEMENT) {
+			element = element.getParent();
+		}
+		return element;
 	}
 	
 }

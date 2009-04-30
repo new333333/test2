@@ -101,7 +101,11 @@ public class QueryBuilder {
 		if (!root.getText().equals(QUERY_ELEMENT)) {
 			//return "Bad Query Dom Object";
 		}
-
+		
+		String lang = root.attributeValue(LANGUAGE_ATTRIBUTE);
+		if ((lang == null) || (lang.equals(""))) lang = DEFAULT;
+		so.setLanguage(lang);
+		
 		parseRootElement(root, so);
 
 		// add acl check to every query. (If it's the superuser doing this query, then this clause
