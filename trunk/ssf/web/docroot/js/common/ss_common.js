@@ -7984,6 +7984,49 @@ function ss_deleteAttribute(obj, id) {
 	if (rowObj != null) rowObj.parentNode.removeChild(rowObj);
 	return true;
 }
+
+/**
+ * This function will update the given element's text node with the given text.
+ */
+function updateElementsTextNode(
+	element,	// The Element whose text Node is to be updated.
+	newText)	// The text to update the Node with.
+{
+	var	found;
+	var	i;
+	var kids;
+	var	numKids;
+
+	if (null == element)
+	{
+		return;
+	}
+
+	// Find the text node for this element.
+	kids    = element.childNodes;
+	numKids = kids.length;
+	found   = false;
+	for (i = 0; ((i < numKids) && (!found)); i += 1)
+	{
+		// Is this child a text node?
+		if (3 == kids[i].nodeType)
+		{
+			// Yes!  Replace its text with the new text.
+			kids[i].data = newText;
+			found        = true;
+		}
+	}
+
+	// Did we find a text node?
+	if ( !found )
+	{
+		var	textNode;
+
+		// No!  Create one and add it to the element.
+		textNode = element.ownerDocument.createTextNode( newText );
+		element.appendChild( textNode );
+	}
+}// end updateElementsTextNode()
 dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
 dojo.require("dojo.io.iframe");

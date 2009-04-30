@@ -51,7 +51,7 @@
 							alt="<ssf:nlt tag="tutorial.alt.closeTutorial"/>" />
 				</a>
 				<a 	href="#"
-					onClick="expandTutorialPanel()">
+					onClick="showTutorialPanelExpanded()">
 					<img	border="0"
 							src="<html:imagesPath/>pics/sym_s_expand.gif"
 							title="<ssf:nlt tag="tutorial.alt.expandTutorial"/>"
@@ -132,7 +132,7 @@
 							alt="<ssf:nlt tag="tutorial.alt.closeTutorial"/>" />
 				</a>
 				<a 	href="#"
-					onClick="collapseTutorialPanel()">
+					onClick="showTutorialPanelCollapsed()">
 					<img	border="0"
 							src="<html:imagesPath/>pics/sym_s_collapse.gif"
 							title="<ssf:nlt tag="tutorial.alt.collapseTutorial"/>"

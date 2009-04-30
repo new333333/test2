@@ -87,6 +87,22 @@
 	   </div>
 	</div>
    </c:if>
+
+	<% /* Is the user looking at their own workspace? */ %>
+	<c:if test="${!empty ssBinder && !empty ssUser && ssBinder.id == ssUser.workspaceId}">
+		<% /* Yes */ %>
+		<div class="ss_sidebarTitle">
+			<ssf:nlt tag="sidebar.videoTutorial" />
+			<div class="ss_sub_sidebarMenu">
+				<!-- Create an anchor for the user to click on that will either show or hide the tutorial panel. -->
+				<!-- The onclick event handler and the text for the anchor will be updated in JavaScript -->
+				<!-- in showTutorialPanel() in tutorial_support_js.jsp. -->
+				<a href="#" id="tutorialPanelPrefAnchor">
+					<span id="tutorialPanelPrefSpan" class="ss_smallprint ss_light"></span>
+				</a>
+			</div>
+		</div>
+	</c:if>
   </ssf:ifLoggedIn>
 
 </ssf:sidebarPanel>
