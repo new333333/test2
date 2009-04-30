@@ -83,6 +83,7 @@ public class ConfigureLdapController extends  SAbstractController {
 				schedule.setUserRegister(PortletRequestUtils.getBooleanParameter(request, "userRegister", false));
 				schedule.setGroupRegister(PortletRequestUtils.getBooleanParameter(request, "groupRegister", false));
 				schedule.setUserSync(PortletRequestUtils.getBooleanParameter(request, "userSync", false));
+				schedule.setGroupSync(PortletRequestUtils.getBooleanParameter(request, "groupSync", false));
 				schedule.setMembershipSync(PortletRequestUtils.getBooleanParameter(request, "membershipSync", false));
 
 				AuthenticationConfig authConfig = getAuthenticationModule().getAuthenticationConfig();
