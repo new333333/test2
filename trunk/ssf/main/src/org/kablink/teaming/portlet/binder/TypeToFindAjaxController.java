@@ -134,7 +134,9 @@ public class TypeToFindAjaxController extends SAbstractController {
 		Map model = new HashMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
-		searchText = URLDecoder.decode(searchText, "UTF-8");
+		try {
+			searchText = URLDecoder.decode(searchText, "UTF-8");
+		} catch(Exception e) {}
 		String findType = PortletRequestUtils.getStringParameter(request, "findType", "");
 		String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "10");
 		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "0");
