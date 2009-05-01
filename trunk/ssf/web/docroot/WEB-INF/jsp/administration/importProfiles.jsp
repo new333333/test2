@@ -42,6 +42,28 @@
 <div class="ss_style ss_portlet">
 <ssf:form titleTag="administration.import.profiles">
 <script type="text/javascript">
+
+//Create an onload handler that will look for errors passed to this page from a previous request.
+ss_createOnLoadObj( 'onloadCheckForErrors', onloadCheckForErrors );
+
+/**
+ * This function gets called when the page is loaded.  It checks to see if an error returned from a previous
+ * request to import a profile.
+ */
+function onloadCheckForErrors()
+{
+	// Did an error happen while importing a profile?
+	<c:if test="${!empty ssException}">
+		var errMsg;
+
+		// Yes, tell the user about it.
+		errMsg = '<ssf:escapeJavaScript><ssf:nlt tag="administration.import.profiles.error"/>${ssException}</ssf:escapeJavaScript>';
+		alert( errMsg );
+	</c:if>
+	 
+}// end onloadCheckForErrors()
+
+
 function ss_checkForFileSelected() {
 	var formObj = document.forms['form1']
 	if (formObj.profiles.value == '') {
