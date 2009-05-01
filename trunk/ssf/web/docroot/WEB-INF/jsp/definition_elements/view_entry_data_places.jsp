@@ -79,7 +79,7 @@
 						 </ssf:url>"
 					 </c:if>
 		          </ssf:ifnotadapter>
-		          class="ss_parentPointer"></c:if><c:out value="${selection.value.title}" escapeXml="false"/><c:if test="${!selection.value.deleted}"></a></c:if>
+		          class="ss_parentPointer"></c:if><c:out value="${selection.value.title} (${selection.value.parentTitle})" escapeXml="false"/><c:if test="${!selection.value.deleted}"></a></c:if>
 				<c:if test="${selection.value.deleted}">
 					<span class="ss_fineprint ss_light"><ssf:nlt tag="milestone.folder.deleted"/></span>
 				</c:if>
