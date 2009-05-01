@@ -42,6 +42,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
@@ -64,10 +65,24 @@ public class ImportProfilesController extends  SAbstractController {
 		    	MultipartFile myFile = (MultipartFile)fileMap.get("profiles");
 		    	SAXReader xIn = new SAXReader();
 		    	InputStream fIn = myFile.getInputStream();
-		    	Document doc = xIn.read(fIn);   
-		    	fIn.close();
-		
-		    	getProfileModule().addEntries(doc, null);
+		    	
+		    	try
+		    	{
+		    		Document doc = xIn.read(fIn);
+
+		    		fIn.close();
+					
+			    	getProfileModule().addEntries(doc, null);
+		    	}
+		    	catch ( DocumentException docEx )
+		    	{
+					String	msg;
+					
+					// There is something bogus about the content of the file the user is trying to import.
+					// Tell the user there is something wrong.
+					msg = docEx.getMessage();
+					response.setRenderParameter( WebKeys.EXCEPTION, msg );
+		    	}
 			} else {
 				response.setRenderParameters(formData);
 			}
@@ -82,6 +97,10 @@ public class ImportProfilesController extends  SAbstractController {
 		Binder binder = getProfileModule().getProfileBinder();
 		Map model = new HashMap();
 		model.put(WebKeys.BINDER, binder);
+
+		// Pass back any error information.
+		model.put( WebKeys.EXCEPTION, request.getParameter( WebKeys.EXCEPTION ) );
+		
 		return new ModelAndView(WebKeys.VIEW_ADMIN_IMPORT_PROFILES, model);
 	}
 
