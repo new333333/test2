@@ -44,9 +44,12 @@ import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.mina.filter.SSLFilter;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
@@ -59,9 +62,8 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.mail.EmailPoster;
 import org.kablink.teaming.module.zone.ZoneModule;
-import org.kablink.teaming.runas.RunasCallback;
-import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.smtp.SMTPManager;
+import org.kablink.teaming.smtp.SMTPSSLProtocolSocketFactory;
 import org.kablink.teaming.util.SessionUtil;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -70,6 +72,7 @@ import org.subethamail.smtp.MessageHandler;
 import org.subethamail.smtp.MessageHandlerFactory;
 import org.subethamail.smtp.RejectException;
 import org.subethamail.smtp.TooMuchDataException;
+import org.subethamail.smtp.command.StartTLSCommand;
 import org.subethamail.smtp.server.ConnectionContext;
 import org.subethamail.smtp.server.SMTPServer;
 
@@ -84,6 +87,9 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 	protected String bindAddress = null;
 
 	protected SMTPServer server = null;
+	
+	private static final boolean USE_HARDCODED_CIPHERSUITES	= false;
+	private static final boolean USE_SSLSERVERSOCKET_CIPHERSUITES = true;
 	
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
@@ -137,37 +143,155 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 	}
 	
 	public void afterPropertiesSet() throws Exception {
-		if(isEnabled()) {
-			this.server = new SMTPServer(new MessageHandlerFactory() {
-				public MessageHandler create(MessageContext ctx) {
-					return new Handler(ctx);
-				}
-			});
-			InetAddress	iNetAddr;
-			if ((null == this.bindAddress) || (0 == this.bindAddress.length())) {
+		// Is the inbound SMTP server is not enabled...
+		if(!(isEnabled())) {
+			// ...bail.
+			return;
+		}
+		
+		// Which, if any, specific address is the inbound SMTP server
+		// supposed to be bound to?
+		InetAddress	iNetAddr;
+		if ((null == this.bindAddress) || (0 == this.bindAddress.length())) {
+			iNetAddr = null;
+		}
+		else if (this.bindAddress.equals("localhost")) {
+			iNetAddr = InetAddress.getLocalHost();
+		}
+		else {
+			try {
+				iNetAddr = InetAddress.getByName(bindAddress);
+			}
+			catch (UnknownHostException e) {
 				iNetAddr = null;
-			}
-			else if (this.bindAddress.equals("localhost")) {
-				iNetAddr = InetAddress.getLocalHost();
-			}
-			else {
-				try {
-					iNetAddr = InetAddress.getByName(bindAddress);
-				}
-				catch (UnknownHostException e) {
-					iNetAddr = null;
-					setEnabled(false);
-					this.server = null;
-					logger.error("Cannot resolve internal inbound SMTP bind address.  Inbound emailing will be disabled.", e);
-				}
-			}
-			if (isEnabled()) {
-				this.server.setAnnounceTLS(this.tls);
-				this.server.setBindAddress(iNetAddr);
-				this.server.setPort(this.port);
-				this.server.start();
+				setEnabled(false);
+				logger.error("Cannot resolve internal inbound SMTP bind address.  Inbound emailing will be disabled.", e);
 			}
 		}
+		
+		// If the bind address evaluation failed...
+		if(!(isEnabled())) {
+			// ...bail.
+			return;
+		}
+			
+		// Construct the SMTPServer object.  We must do this prior to
+		// the TLS handling because it loads a default SSLFilter
+		// that the TLS handling will override.  If we don't do this
+		// first, it would override that setup in the TLS handling.
+		this.server = new SMTPServer(new MessageHandlerFactory() {
+			public MessageHandler create(MessageContext ctx) {
+				return new Handler(ctx);
+			}
+		});
+		
+		// If the inbound SMTP server is supposed to support TLS...
+		if (this.tls) {
+			// ...put an appropriate SSLFilter into effect in
+			// ...the SMTPServer's StartTLSCommand.
+			SMTPSSLProtocolSocketFactory socketFactory = new SMTPSSLProtocolSocketFactory();
+			SSLFilter sslFilter = new SSLFilter(socketFactory.getSSLContext());
+			String[] cipherSuites = sslFilter.getEnabledCipherSuites();
+			ArrayList<String> mergedCipherSuitesAL = new ArrayList<String>();
+			if (null == cipherSuites) {
+				cipherSuites = new String[0];
+			}
+			for (int i = 0; i < cipherSuites.length; i += 1) {
+				mergedCipherSuitesAL.add(cipherSuites[i]);
+			}
+
+			// Are we supposed to include those 'hard coded' cipher
+			// suites discovered while Googling about the 'no cipher
+			// suites in common' exception?
+			if (USE_HARDCODED_CIPHERSUITES) {
+				// Yes!  Define the hard coded cipher suites to use...
+				final String[] smtpAnonCipherSuites = {
+					"SSL_DH_anon_WITH_RC4_128_MD5",
+					"SSL_DH_anon_WITH_3DES_EDE_CBC_SHA",
+					"SSL_DH_anon_WITH_DES_CBC_SHA",
+					"SSL_DH_anon_EXPORT_WITH_RC4_40_MD5",
+					"SSL_DH_anon_EXPORT_WITH_DES40_CBC_SHA",
+/*
+					"SSL_DH_ANON_EXPORT_WITH_DES40_CBC_SHA",
+					"SSL_DH_ANON_EXPORT_WITH_DES_40_CBC_SHA",
+					"SSL_DH_ANON_EXPORT_WITH_RC4_40_MD5",
+					"SSL_DH_ANON_WITH_3DES_EDE_CBC_SHA",
+					"SSL_DH_ANON_WITH_AES_128_CBC_SHA",
+					"SSL_DH_ANON_WITH_AES_256_CBC_SHA",
+					"SSL_DH_ANON_WITH_DES_CBC_SHA",
+					"SSL_DH_ANON_WITH_RC4_128_MD5",
+					"SSL_DH_ANON_WITH_RC4_MD5",
+					"TLS_DH_ANON_WITH_AES_128_CBC_SHA",
+					"TLS_DH_ANON_WITH_AES_256_CBC_SHA",
+	
+					"TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
+					"TLS_DHE_DSS_WITH_AES_256_CBC_SHA",
+					"TLS_RSA_WITH_AES_256_CBC_SHA",
+					"TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
+					"TLS_DHE_DSS_WITH_AES_128_CBC_SHA",
+					"SSL_RSA_WITH_RC4_128_MD5",
+					"SSL_RSA_WITH_RC4_128_SHA",
+					"TLS_RSA_WITH_AES_128_CBC_SHA",
+					"SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA",
+					"SSL_DHE_DSS_WITH_3DES_EDE_CBC_SHA",
+					"SSL_RSA_FIPS_WITH_3DES_EDE_CBC_SHA",
+					"SSL_RSA_WITH_3DES_EDE_CBC_SHA",
+*/
+				};
+				
+				// ...and put them into effect.
+				logger.debug("There are " + smtpAnonCipherSuites.length + " hard coded cipher suites.");
+				for (int i = 0; i < smtpAnonCipherSuites.length; i += 1) {
+					String cipherSuite = smtpAnonCipherSuites[i];
+					mergedCipherSuitesAL.add(cipherSuite);
+					logger.debug("...item " + (i + 1) + ":  " + cipherSuite);
+				}
+			}
+
+			// Are we supposed to include those cipher suites used by a
+			// default SSLServerSocket?
+			if (USE_SSLSERVERSOCKET_CIPHERSUITES) {
+				// Yes!  Create an SSLServerSocket...
+				SSLServerSocketFactory sslserversocketfactory = ((SSLServerSocketFactory) SSLServerSocketFactory.getDefault());
+				SSLServerSocket sslSS;
+				if (null == iNetAddr) {
+					sslSS = ((SSLServerSocket) sslserversocketfactory.createServerSocket(this.port));
+				}
+				else {
+					sslSS = ((SSLServerSocket) sslserversocketfactory.createServerSocket(this.port, 99, iNetAddr));
+				}
+				
+				// ...and put its cipher suites into effect.
+				String[] suites = sslSS.getSupportedCipherSuites();
+				sslSS.close();
+				logger.debug("There are " + suites.length + " enabled cipher suites in an SSLServerSocket.");
+				int count = 1;
+				for (String s: suites) {
+					mergedCipherSuitesAL.add(s);
+					logger.debug("...item " + count + ":  " + s);
+					count +=1;
+				}
+			}
+
+			// If we have any cipher suites to use...
+			String[] mergedCipherSuites = ((String[]) mergedCipherSuitesAL.toArray(new String[0]));
+			if (0 < mergedCipherSuites.length) {
+				// ...put them into effect...
+				sslFilter.setEnabledCipherSuites(mergedCipherSuites);
+			}
+			
+			// ...and store the new SSLFilter for use by the inbound
+			// ...SMTP server.
+			StartTLSCommand.setSSLFilter(sslFilter);
+		}
+		
+
+		// Finally, complete the initializations of the inbound SMTP
+		// server.
+		this.server.setAnnounceTLS(this.tls);
+		this.server.setBindAddress(iNetAddr);
+		this.server.setPort(this.port);
+		this.server.start();
 	}
 	
 	public void destroy() throws Exception
@@ -211,7 +335,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		
 		public void recipient(String recipient) throws RejectException
 		{
-			//parse reciptients now, so other recipients can be handled by someone else
+			// Parse recipients now, so other recipients can be handled by someone else.
 			String[] parts = recipient.split("@");
 			if(parts.length != 2)  throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " not known");
 			String localPart = parts[0];
@@ -238,6 +362,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 			}
 		}
 		
+		@SuppressWarnings("unchecked")
 		public void data(InputStream data) throws TooMuchDataException, IOException, RejectException
 		{
 			SessionUtil.sessionStartup();
@@ -256,7 +381,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 					EmailPoster processor = (EmailPoster)processorManager.getProcessor(binder,EmailPoster.PROCESSOR_KEY);
 					errors.addAll(processor.postMessages((Folder)binder, recipient.email, msgs, session));
 			   		RequestContextHolder.clear();
-			   		getCoreDao().clear(); //clear session incase next from different zone
+			   		getCoreDao().clear(); // Clear session in case next from different zone.
 				}
 				if(errors.size() > 0) {
 					Message m = (Message) errors.get(0);
