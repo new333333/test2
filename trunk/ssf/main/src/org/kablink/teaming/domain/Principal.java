@@ -236,6 +236,28 @@ public abstract class Principal extends Entry implements IPrincipal {
     public void setForeignName(String foreignName) {
     	this.foreignName = foreignName;
     }
+    
+    /**
+     * This method will return true if this object is a "local" principal.  In other words, this
+     * object was not sync'd from an ldap source.
+     */
+    public boolean isLocal()
+    {
+    	String		tmpName;
+    	String		tmpForeignName;
+    	boolean	local;
+    	
+    	// Default to a local object.
+    	local = true;
+    	
+    	// If the name does not equal the foreign name then this object was sync'd from an ldap source.
+    	tmpName = getName();
+    	tmpForeignName = getForeignName();
+    	if ( tmpName != null && tmpForeignName != null && !tmpName.equalsIgnoreCase( tmpForeignName ) )
+    		local = false;
+    	
+    	return local;
+    }// end isLocal()
      
     public List getMemberOf() {
     	if (iMemberOf != null) return iMemberOf;  //must be indexing
