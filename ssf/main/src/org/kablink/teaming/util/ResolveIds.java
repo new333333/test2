@@ -48,6 +48,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.CustomAttribute;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
@@ -186,19 +187,22 @@ public class ResolveIds {
 		Map icons = new HashMap();
 		if ((ids == null) || ids.isEmpty()) return data;
 		CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
-		String query = new String("select x.id,x.title,x.iconName,x.deleted,x.definitionType,x.pathName from x in class org.kablink.teaming.domain.Binder where x.id in (:idList)");
-		data.put("idList", ids);
-		List<Object[]> result = coreDao.loadObjects(query, data);
-		data.clear();
-		for (Object[] objs: result) {
-			data = new HashMap();
-			data.put("id", objs[0].toString());
-			data.put("title", objs[1]);
-			data.put("iconName", objs[2]);
-			data.put("deleted", objs[3]);
-			data.put("definitionType", objs[4]);
-			data.put("pathName", objs[5]);
-			results.put(objs[0].toString(), data);
+		List<Binder> result;
+		try {
+			result = coreDao.loadObjects(ids, Class.forName("org.kablink.teaming.domain.Binder"), RequestContextHolder.getRequestContext().getZoneId());
+			for (Binder binder: result) {
+				data = new HashMap();
+				data.put("id", binder.getId().toString());
+				data.put("title", binder.getTitle());
+				data.put("iconName", binder.getIconName());
+				data.put("deleted", binder.isDeleted());
+				data.put("definitionType", binder.getDefinitionType().toString());
+				data.put("pathName", binder.getPathName());
+				data.put("parentTitle", binder.getParentBinder().getTitle());
+				results.put(binder.getId().toString(), data);
+			}
+		} catch (ClassNotFoundException e) {
+			/* return an empty results map. */
 		}
 		return results;
 	}

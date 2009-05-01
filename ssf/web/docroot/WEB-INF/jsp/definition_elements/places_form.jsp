@@ -104,7 +104,7 @@
 								<c:if test="${folder.value.deleted}">
 									checked="true"
 								</c:if> value="${folder.key}" />
-							<label for="${treeName}${propertyName}del_${folder.key}">${folder.value.title}</label>
+							<label for="${treeName}${propertyName}del_${folder.key}">${folder.value.title} (${folder.value.parentTitle})</label>
 			  				<c:if test="${folder.value.deleted}">
 				  				<span class="ss_fineprint ss_light"><ssf:nlt tag="milestone.folder.deleted"/></span>
 			  				</c:if>
