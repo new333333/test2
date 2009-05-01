@@ -108,6 +108,7 @@ public class TreeTag extends TagSupport {
 	private String callbackUrl = null;
 	private String onMouseover = "";
 	private String onMouseout = "";
+	private String titleClass = null;
 	
 	public int doStartTag() throws JspException {
 		//The "flat" option has been turned off. This was for accessibility mode. 
@@ -362,7 +363,8 @@ public class TreeTag extends TagSupport {
 	    	callbackUrl=null;
 	    	showFullLineOnHover=false;
 	    	onMouseover = "";
-	    	onMouseout = "";}
+	    	onMouseout = "";
+	    	titleClass = null;}
 	    
 		return SKIP_BODY;
 	}
@@ -409,6 +411,14 @@ public class TreeTag extends TagSupport {
 				if (!className.equals("")) titleClass = "class=\"" + className + "\"";
 				if (!e.attributeValue("titleClass", "").equals("")) {
 					titleClass = "class=\"" + e.attributeValue("titleClass") + "\"";
+				}
+			}
+			if (this.titleClass != null) {
+				//If the caller has specified a class, use it
+				if (this.titleClass.equals("")) {
+					titleClass = "";
+				} else {
+					titleClass = "class=\""+this.titleClass+"\"";
 				}
 			}
 	
@@ -724,6 +734,14 @@ public class TreeTag extends TagSupport {
 					titleClass = "class=\"ss_twSpan " + e.attributeValue("titleClass") + "\"";
 				}
 			}
+			if (this.titleClass != null) {
+				//If the caller has specified a class, use it
+				if (this.titleClass.equals("")) {
+					titleClass = "";
+				} else {
+					titleClass = "class=\""+this.titleClass+"\"";
+				}
+			}
 	
 			//Image
 			String s_image = getImage(e.attributeValue("image"));
@@ -982,6 +1000,10 @@ public class TreeTag extends TagSupport {
 	public void setOnMouseout(String routine)
 	{
 		this.onMouseout = routine;
+	}
+	public void setTitleClass(String titleClass)
+	{
+		this.titleClass = titleClass;
 	}
 
 	public void setCommonImg(String commonImg) {

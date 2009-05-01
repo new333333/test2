@@ -140,7 +140,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	letter-spacing:-2px;
 	color:#5A9A98!important;
 	}
-#ss_topic_box_h1 * a {
+#ss_topic_box_h1 * a, #ss_topic_box_h1 * span, #ss_topic_box_h1 table *  {
 	font-size: 20px;
 	font-style: italic;
 	font-weight: 200;
