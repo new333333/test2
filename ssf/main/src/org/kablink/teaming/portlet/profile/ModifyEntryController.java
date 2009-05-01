@@ -106,31 +106,45 @@ public class ModifyEntryController extends SAbstractController {
 					
 				}
 				MapInputData inputData = new MapInputData(formData);
-	        	String password = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD);
-	        	String password2 = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD2);
-	        	if (password == null || !password.equals(password2)) {
-	        		setupReloadPreviousPage(response, NLT.get("errorcode.password.mismatch"));
-	        		return;
-	        	}
-	            ProfileBinder binder = getProfileModule().getProfileBinder();
-	            if (!getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
-	            	String passwordOriginal = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD_ORIGINAL);
-	            	//Check that the user knows the current password
-	            	Principal p = getProfileModule().getEntry(entryId);
-	            	if (p instanceof User && !password.equals("") && !passwordOriginal.equals("")) {
-	            		if (!EncryptUtil.encryptPassword(passwordOriginal).equals(((User)p).getPassword())) {
-	                		setupReloadPreviousPage(response, NLT.get("errorcode.password.invalid"));
-	                		return;
-	            		}
-	            	}
+				
+				// Is there a password field on the page?
+	            if ( inputData.exists( WebKeys.USER_PROFILE_PASSWORD ) ) 
+	            {
+	            	// Yes
+					// Are the passwords entered by the user the same?
+		        	String password = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD);
+		        	String password2 = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD2);
+		        	if ( password == null || password2 == null || !password.equals(password2) ) {
+		        		// No
+		        		setupReloadPreviousPage(response, NLT.get("errorcode.password.mismatch"));
+		        		return;
+		        	}
+
+		        	ProfileBinder binder = getProfileModule().getProfileBinder();
+		            if (!getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
+		            	String passwordOriginal = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD_ORIGINAL);
+
+		            	//Check that the user knows the current password
+		            	Principal p = getProfileModule().getEntry(entryId);
+		            	if ( p instanceof User && !password.equals("") )
+		            	{
+		            		// If the user didn't enter the current password or they entered it incorrectly, tell them about it.
+		            		if ( passwordOriginal.equals("") || !EncryptUtil.encryptPassword(passwordOriginal).equals(((User)p).getPassword())) {
+		                		setupReloadPreviousPage(response, NLT.get("errorcode.password.invalid"));
+		                		return;
+		            		}
+		            	}
+		            }
+		        	
+		            if ( inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD).equals("") )
+		            {
+		            	//Don't allow blank password (either on purpose or by accident)
+		            	Map writeableFormData = new HashMap(formData);
+		            	writeableFormData.remove(WebKeys.USER_PROFILE_PASSWORD);
+		            	inputData = new MapInputData(writeableFormData);
+		            }
 	            }
-	            if (inputData.exists(WebKeys.USER_PROFILE_PASSWORD) && 
-	            		inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD).equals("")) {
-	            	//Don't allow blank password (either on purpose or by accident)
-	            	Map writeableFormData = new HashMap(formData);
-	            	writeableFormData.remove(WebKeys.USER_PROFILE_PASSWORD);
-	            	inputData = new MapInputData(writeableFormData);
-	            }
+	            
 				getProfileModule().modifyEntry(entryId, inputData, fileMap, deleteAtts, null, null);
 	
 				//See if there was a request to reorder the graphic files
@@ -197,6 +211,14 @@ public class ModifyEntryController extends SAbstractController {
 			for (String name:getAuthenticationModule().getMappedAttributes(entry)) {
 				readOnly.put(name, Boolean.TRUE);
 			}
+			
+			// Was this Principal sync'd from an ldap source?
+			if ( !entry.isLocal() )
+			{
+				// Yes, don't let the user change the password.
+				readOnly.put( "password", Boolean.TRUE );
+			}
+			
 			model.put(WebKeys.READ_ONLY, readOnly);
 			return new ModelAndView(WebKeys.VIEW_MODIFY_ENTRY, model);
 		}
