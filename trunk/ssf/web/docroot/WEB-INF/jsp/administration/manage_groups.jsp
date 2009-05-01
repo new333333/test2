@@ -47,6 +47,15 @@ function ${renderResponse.namespace}_onsub(obj) {
 		alert('<ssf:nlt tag="general.required.name"/>');
 		return false;
 	}
+
+	// Did the user enter a group name longer than 128 characters?
+	if ( obj.name.value != null && obj.name.value.length > 128 )
+	{
+		// Yes, tell them about the error.
+		alert( '<ssf:escapeJavaScript><ssf:nlt tag="administration.add.groupName.err.nameTooLong" /></ssf:escapeJavaScript>' );
+		return false;
+	}
+	 
 	return true;
 }
 </script>
