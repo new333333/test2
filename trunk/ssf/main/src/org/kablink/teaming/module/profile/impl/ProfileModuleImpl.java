@@ -55,6 +55,7 @@ import org.dom4j.Element;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectExistsException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -1126,7 +1127,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	
 	//NO transaction
 	public User addUser(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
-	throws AccessControlException, WriteFilesException {
+	throws AccessControlException, WriteFilesException, PasswordMismatchException {
+		if (inputData.getSingleValue("password") == null || inputData.getSingleValue("password").equals(""))
+			throw new PasswordMismatchException("errorcode.password.cannotBeNull");
 		return (User) addIndividualPrincipal(definitionId, inputData, fileItems, options, User.class);
 	}
 	//NO transaction

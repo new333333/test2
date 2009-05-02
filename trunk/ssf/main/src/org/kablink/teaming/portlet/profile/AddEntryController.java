@@ -93,7 +93,9 @@ public class AddEntryController extends SAbstractController {
         	if (!BinderHelper.isBinderNameLegal(name)) throw new IllegalCharacterInNameException("errorcode.illegalCharacterInName");
         	String password = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD);
         	String password2 = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD2);
-        	if (password == null || !password.equals(password2)) {
+        	if (password == null || password.equals("")) 
+        		throw new PasswordMismatchException("errorcode.password.cannotBeNull");
+        	if (!password.equals(password2)) {
         		throw new PasswordMismatchException("errorcode.password.mismatch");
         	}
     		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
