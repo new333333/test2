@@ -182,7 +182,7 @@ public class AdvancedSearchController extends AbstractBinderController {
         	model.putAll(BinderHelper.prepareSearchFormData(this, request));
         	if (binderId != null) {
         		Map options = new HashMap();
-        		options.put("search_currentAndSubfolders", Boolean.TRUE);
+        		//options.put("search_currentAndSubfolders", Boolean.TRUE);
         		options.put("search_subfolders", Boolean.TRUE);
         		options.put("searchFolders", Collections.singletonList(binderId));
         		model.put(WebKeys.SEARCH_FILTER_MAP, options);
