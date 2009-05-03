@@ -45,8 +45,6 @@ import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,7 +62,6 @@ import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.mail.EmailPoster;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.smtp.SMTPManager;
-import org.kablink.teaming.smtp.SMTPSSLProtocolSocketFactory;
 import org.kablink.teaming.util.SessionUtil;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -76,6 +73,7 @@ import org.subethamail.smtp.TooMuchDataException;
 import org.subethamail.smtp.command.StartTLSCommand;
 import org.subethamail.smtp.server.ConnectionContext;
 import org.subethamail.smtp.server.SMTPServer;
+import org.subethamail.smtp.server.io.DummySSLSocketFactory;
 
 
 public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPManager, SMTPManagerImplMBean, InitializingBean, DisposableBean {
@@ -88,11 +86,6 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 	protected String bindAddress = null;
 
 	protected SMTPServer server = null;
-	
-	private static final boolean USE_HARDCODED_CIPHERSUITES	= false;
-	private static final boolean USE_SSLCONTEXT_CIPHERSUITES = true;
-	private static final boolean USE_SSLFILTER_CIPHERSUITES = true;
-	private static final boolean USE_SSLSERVERSOCKET_CIPHERSUITES = false;
 	
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
@@ -180,8 +173,9 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 			
 		// Construct the SMTPServer object.  We must do this prior to
 		// the TLS handling because it loads a default SSLFilter
-		// that the TLS handling will override.  If we don't do this
-		// first, it would override that setup in the TLS handling.
+		// that the TLS handling needs to override.  If we don't do
+		// this first, it would override the SSLFilter setup in the TLS
+		// handling below.
 		this.server = new SMTPServer(new MessageHandlerFactory() {
 			public MessageHandler create(MessageContext ctx) {
 				return new Handler(ctx);
@@ -190,108 +184,21 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		
 		// If the inbound SMTP server is supposed to support TLS...
 		if (this.tls) {
-			// ...put an appropriate SSLFilter into effect in
-			// ...the SMTPServer's StartTLSCommand.
-			SMTPSSLProtocolSocketFactory socketFactory = new SMTPSSLProtocolSocketFactory();
+			// ...put an SSLFilter into effect that has the proper
+			// ...cipher suites enabled in the SMTPServer's
+			// ...StartTLSCommand.
+			DummySSLSocketFactory socketFactory = new DummySSLSocketFactory();
 			SSLContext sslContext = socketFactory.getSSLContext();
+			String[] cipherSuites = sslContext.getSocketFactory().getSupportedCipherSuites();
+			if (logger.isDebugEnabled()) {
+				int cipherSuiteCount = ((null == cipherSuites) ? 0 : cipherSuites.length);
+				logger.debug("There are " + cipherSuiteCount + " supported cipher suites on the SSLContext.");
+				for (int i = 0; i < cipherSuiteCount; i += 1) {
+					logger.debug("...item " + (i + 1) + ":  " + cipherSuites[i]);
+				}
+			}
 			SSLFilter sslFilter = new SSLFilter(sslContext);
-			ArrayList<String> mergedCipherSuitesAL = new ArrayList<String>();
-			String[] cipherSuites;
-
-			// Are we supposed to include those cipher suites from the
-			// SSLFilter?
-			if (USE_SSLFILTER_CIPHERSUITES) {
-				// Yes!  Add them to the ArrayList.
-				cipherSuites = sslFilter.getEnabledCipherSuites();
-				processCipherSuites(cipherSuites, "enabled cipher suites in an SSLFilter", mergedCipherSuitesAL);
-			}
-			
-			// Are we supposed to include those cipher suites from the
-			// SSLContext?
-			if (USE_SSLCONTEXT_CIPHERSUITES) {
-				// Yes!  Add them to the ArrayList.
-				cipherSuites = sslContext.getSocketFactory().getSupportedCipherSuites();
-				processCipherSuites(cipherSuites, "supported cipher suites in an SSLContext", mergedCipherSuitesAL);
-			}
-
-			// Are we supposed to include those 'hard coded' cipher
-			// suites discovered while Googling about the 'no cipher
-			// suites in common' exception?
-			if (USE_HARDCODED_CIPHERSUITES) {
-				// Yes!  Define the hard coded cipher suites to use...
-				final String[] smtpAnonCipherSuites = {
-					"SSL_DH_anon_WITH_RC4_128_MD5",
-					"SSL_DH_anon_WITH_3DES_EDE_CBC_SHA",
-					"SSL_DH_anon_WITH_DES_CBC_SHA",
-					"SSL_DH_anon_EXPORT_WITH_RC4_40_MD5",
-					"SSL_DH_anon_EXPORT_WITH_DES40_CBC_SHA",
-/*
-					"SSL_DH_anon_EXPORT_WITH_DES40_CBC_SHA",
-					"SSL_DH_anon_EXPORT_WITH_DES_40_CBC_SHA",
-					"SSL_DH_anon_EXPORT_WITH_RC4_40_MD5",
-					"SSL_DH_anon_WITH_3DES_EDE_CBC_SHA",
-					"SSL_DH_anon_WITH_AES_128_CBC_SHA",
-					"SSL_DH_anon_WITH_AES_256_CBC_SHA",
-					"SSL_DH_anon_WITH_DES_CBC_SHA",
-					"SSL_DH_anon_WITH_RC4_128_MD5",
-					"SSL_DH_anon_WITH_RC4_MD5",
-					"TLS_DH_anon_WITH_AES_128_CBC_SHA",
-					"TLS_DH_anon_WITH_AES_256_CBC_SHA",
-	
-					"TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
-					"TLS_DHE_DSS_WITH_AES_256_CBC_SHA",
-					"TLS_RSA_WITH_AES_256_CBC_SHA",
-					"TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
-					"TLS_DHE_DSS_WITH_AES_128_CBC_SHA",
-					"SSL_RSA_WITH_RC4_128_MD5",
-					"SSL_RSA_WITH_RC4_128_SHA",
-					"TLS_RSA_WITH_AES_128_CBC_SHA",
-					"SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA",
-					"SSL_DHE_DSS_WITH_3DES_EDE_CBC_SHA",
-					"SSL_RSA_FIPS_WITH_3DES_EDE_CBC_SHA",
-					"SSL_RSA_WITH_3DES_EDE_CBC_SHA",
-*/
-				};
-				
-				// ...and add them to the ArrayList.
-				processCipherSuites(smtpAnonCipherSuites, "hard coded cipher suites", mergedCipherSuitesAL);
-			}
-
-			// Are we supposed to include those cipher suites used by a
-			// default SSLServerSocket?
-			if (USE_SSLSERVERSOCKET_CIPHERSUITES) {
-				// Yes!  Create an SSLServerSocket...
-				SSLServerSocketFactory sslserversocketfactory = ((SSLServerSocketFactory) SSLServerSocketFactory.getDefault());
-				SSLServerSocket sslSS;
-				if (null == iNetAddr) {
-					sslSS = ((SSLServerSocket) sslserversocketfactory.createServerSocket(this.port));
-				}
-				else {
-					sslSS = ((SSLServerSocket) sslserversocketfactory.createServerSocket(this.port, 99, iNetAddr));
-				}
-				
-				// ...read its cipher suites...
-				if (null == sslSS) {
-					cipherSuites = null;
-				}
-				else {
-					cipherSuites = sslSS.getSupportedCipherSuites();
-					sslSS.close();
-				}
-				
-				// ...and add them to the ArrayList.
-				processCipherSuites(cipherSuites, "enabled cipher suites in an SSLServerSocket", mergedCipherSuitesAL);
-			}
-
-			// If we have any cipher suites to use...
-			String[] mergedCipherSuites = ((String[]) mergedCipherSuitesAL.toArray(new String[0]));
-			if (0 < mergedCipherSuites.length) {
-				// ...put them into effect...
-				sslFilter.setEnabledCipherSuites(mergedCipherSuites);
-			}
-			
-			// ...and store the new SSLFilter for use by the inbound
-			// ...SMTP server.
+			sslFilter.setEnabledCipherSuites(cipherSuites);
 			StartTLSCommand.setSSLFilter(sslFilter);
 		}
 		
@@ -304,16 +211,6 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		this.server.start();
 	}
 
-	private void processCipherSuites(String[] cipherSuites, String logType, ArrayList<String> mergedCipherSuitesAL) {
-		int cipherSuiteCount = ((null == cipherSuites) ? 0 : cipherSuites.length);
-		logger.debug("There are " + cipherSuiteCount + " " + logType + ".");
-		for (int i = 0; i < cipherSuiteCount; i += 1) {
-			String cipherSuite = cipherSuites[i];
-			mergedCipherSuitesAL.add(cipherSuite);
-			logger.debug("...item " + (i + 1) + ":  " + cipherSuite);
-		}
-	}
-	
 	public void destroy() throws Exception
 	{
 		if(this.server != null)
