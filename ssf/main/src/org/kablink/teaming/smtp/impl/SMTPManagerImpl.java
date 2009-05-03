@@ -44,6 +44,7 @@ import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 
@@ -89,7 +90,9 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 	protected SMTPServer server = null;
 	
 	private static final boolean USE_HARDCODED_CIPHERSUITES	= false;
-	private static final boolean USE_SSLSERVERSOCKET_CIPHERSUITES = true;
+	private static final boolean USE_SSLCONTEXT_CIPHERSUITES = true;
+	private static final boolean USE_SSLFILTER_CIPHERSUITES = true;
+	private static final boolean USE_SSLSERVERSOCKET_CIPHERSUITES = false;
 	
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
@@ -190,14 +193,25 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 			// ...put an appropriate SSLFilter into effect in
 			// ...the SMTPServer's StartTLSCommand.
 			SMTPSSLProtocolSocketFactory socketFactory = new SMTPSSLProtocolSocketFactory();
-			SSLFilter sslFilter = new SSLFilter(socketFactory.getSSLContext());
-			String[] cipherSuites = sslFilter.getEnabledCipherSuites();
+			SSLContext sslContext = socketFactory.getSSLContext();
+			SSLFilter sslFilter = new SSLFilter(sslContext);
 			ArrayList<String> mergedCipherSuitesAL = new ArrayList<String>();
-			if (null == cipherSuites) {
-				cipherSuites = new String[0];
+			String[] cipherSuites;
+
+			// Are we supposed to include those cipher suites from the
+			// SSLFilter?
+			if (USE_SSLFILTER_CIPHERSUITES) {
+				// Yes!  Add them to the ArrayList.
+				cipherSuites = sslFilter.getEnabledCipherSuites();
+				processCipherSuites(cipherSuites, "enabled cipher suites in an SSLFilter", mergedCipherSuitesAL);
 			}
-			for (int i = 0; i < cipherSuites.length; i += 1) {
-				mergedCipherSuitesAL.add(cipherSuites[i]);
+			
+			// Are we supposed to include those cipher suites from the
+			// SSLContext?
+			if (USE_SSLCONTEXT_CIPHERSUITES) {
+				// Yes!  Add them to the ArrayList.
+				cipherSuites = sslContext.getSocketFactory().getSupportedCipherSuites();
+				processCipherSuites(cipherSuites, "supported cipher suites in an SSLContext", mergedCipherSuitesAL);
 			}
 
 			// Are we supposed to include those 'hard coded' cipher
@@ -212,17 +226,17 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 					"SSL_DH_anon_EXPORT_WITH_RC4_40_MD5",
 					"SSL_DH_anon_EXPORT_WITH_DES40_CBC_SHA",
 /*
-					"SSL_DH_ANON_EXPORT_WITH_DES40_CBC_SHA",
-					"SSL_DH_ANON_EXPORT_WITH_DES_40_CBC_SHA",
-					"SSL_DH_ANON_EXPORT_WITH_RC4_40_MD5",
-					"SSL_DH_ANON_WITH_3DES_EDE_CBC_SHA",
-					"SSL_DH_ANON_WITH_AES_128_CBC_SHA",
-					"SSL_DH_ANON_WITH_AES_256_CBC_SHA",
-					"SSL_DH_ANON_WITH_DES_CBC_SHA",
-					"SSL_DH_ANON_WITH_RC4_128_MD5",
-					"SSL_DH_ANON_WITH_RC4_MD5",
-					"TLS_DH_ANON_WITH_AES_128_CBC_SHA",
-					"TLS_DH_ANON_WITH_AES_256_CBC_SHA",
+					"SSL_DH_anon_EXPORT_WITH_DES40_CBC_SHA",
+					"SSL_DH_anon_EXPORT_WITH_DES_40_CBC_SHA",
+					"SSL_DH_anon_EXPORT_WITH_RC4_40_MD5",
+					"SSL_DH_anon_WITH_3DES_EDE_CBC_SHA",
+					"SSL_DH_anon_WITH_AES_128_CBC_SHA",
+					"SSL_DH_anon_WITH_AES_256_CBC_SHA",
+					"SSL_DH_anon_WITH_DES_CBC_SHA",
+					"SSL_DH_anon_WITH_RC4_128_MD5",
+					"SSL_DH_anon_WITH_RC4_MD5",
+					"TLS_DH_anon_WITH_AES_128_CBC_SHA",
+					"TLS_DH_anon_WITH_AES_256_CBC_SHA",
 	
 					"TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
 					"TLS_DHE_DSS_WITH_AES_256_CBC_SHA",
@@ -239,13 +253,8 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 */
 				};
 				
-				// ...and put them into effect.
-				logger.debug("There are " + smtpAnonCipherSuites.length + " hard coded cipher suites.");
-				for (int i = 0; i < smtpAnonCipherSuites.length; i += 1) {
-					String cipherSuite = smtpAnonCipherSuites[i];
-					mergedCipherSuitesAL.add(cipherSuite);
-					logger.debug("...item " + (i + 1) + ":  " + cipherSuite);
-				}
+				// ...and add them to the ArrayList.
+				processCipherSuites(smtpAnonCipherSuites, "hard coded cipher suites", mergedCipherSuitesAL);
 			}
 
 			// Are we supposed to include those cipher suites used by a
@@ -261,16 +270,17 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 					sslSS = ((SSLServerSocket) sslserversocketfactory.createServerSocket(this.port, 99, iNetAddr));
 				}
 				
-				// ...and put its cipher suites into effect.
-				String[] suites = sslSS.getSupportedCipherSuites();
-				sslSS.close();
-				logger.debug("There are " + suites.length + " enabled cipher suites in an SSLServerSocket.");
-				int count = 1;
-				for (String s: suites) {
-					mergedCipherSuitesAL.add(s);
-					logger.debug("...item " + count + ":  " + s);
-					count +=1;
+				// ...read its cipher suites...
+				if (null == sslSS) {
+					cipherSuites = null;
 				}
+				else {
+					cipherSuites = sslSS.getSupportedCipherSuites();
+					sslSS.close();
+				}
+				
+				// ...and add them to the ArrayList.
+				processCipherSuites(cipherSuites, "enabled cipher suites in an SSLServerSocket", mergedCipherSuitesAL);
 			}
 
 			// If we have any cipher suites to use...
@@ -292,6 +302,16 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		this.server.setBindAddress(iNetAddr);
 		this.server.setPort(this.port);
 		this.server.start();
+	}
+
+	private void processCipherSuites(String[] cipherSuites, String logType, ArrayList<String> mergedCipherSuitesAL) {
+		int cipherSuiteCount = ((null == cipherSuites) ? 0 : cipherSuites.length);
+		logger.debug("There are " + cipherSuiteCount + " " + logType + ".");
+		for (int i = 0; i < cipherSuiteCount; i += 1) {
+			String cipherSuite = cipherSuites[i];
+			mergedCipherSuitesAL.add(cipherSuite);
+			logger.debug("...item " + (i + 1) + ":  " + cipherSuite);
+		}
 	}
 	
 	public void destroy() throws Exception
