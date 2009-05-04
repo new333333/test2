@@ -82,7 +82,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 	onSubmit="return(${renderResponse.namespace}_onsub(this))">
 		
 	<label for="name"><span class="ss_bold"><ssf:nlt tag="administration.add.groupName"/></span><ssf:inlineHelp tag="ihelp.groups.data_name"/><br/></label>
-	<input type="text" class="ss_text" size="70" name="name" id="name"><br/><br/>
+	<input type="text" class="ss_text" size="70" name="name" id="name" maxlength="128"><br/><br/>
 		
 	<label for="title"><span class="ss_bold"><ssf:nlt tag="administration.add.groupTitle"/></span><br/></label>
 	<input type="text" class="ss_text" size="70" name="title" id="title"><br/><br/>
