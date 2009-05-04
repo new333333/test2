@@ -183,6 +183,12 @@ public interface ProfileModule {
 	public void deleteUserByName(String userName,  Map options);
 	
 	/**
+	 * Determine if the user has "create entry" rights to the profile binder.
+	 * @return
+	 */
+	public boolean doesGuestUserHaveAddRightsToProfileBinder();
+	
+	/**
 	 * Get the guest user
 	 * @return
 	 */

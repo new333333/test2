@@ -33,6 +33,8 @@
 package org.kablink.teaming.web.util;
 
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -79,25 +81,28 @@ public final class MiscUtil
 		RenderRequest		request,
 		Map<String,Object>	model )
 	{
-		List			defaultEntryDefinitions;
-		ProfileBinder	profileBinder;
+		ProfileModule			profileModule;
+		Map<String, Definition>	entryDefsMap;
+		Definition				def;
+		Collection<Definition>	entryDefsCollection;
+		Iterator<Definition>	entryDefsIterator;
 
-		profileBinder = bs.getProfileModule().getProfileBinder();
-
-		// Build the url to invoke the "Add User" page.
-		defaultEntryDefinitions = profileBinder.getEntryDefinitions();
-		if ( !defaultEntryDefinitions.isEmpty() )
+		profileModule = bs.getProfileModule();
+		
+		// There is only 1 entry definition for a Profile binder.  Get it.
+		entryDefsMap = profileModule.getProfileBinderEntryDefsAsMap();
+		entryDefsCollection = entryDefsMap.values();
+		entryDefsIterator = entryDefsCollection.iterator();
+		if ( entryDefsIterator.hasNext() )
 		{
-			Definition			def;
 			AdaptedPortletURL	adapterUrl;
 
-			// There is only 1 entry definition for a Profile binder.  Get it.
-			def = (Definition) defaultEntryDefinitions.get( 0 );
-			
+			def = (Definition) entryDefsIterator.next();
+
 			// Create the url needed to invoke the "Add User" page.
 			adapterUrl = new AdaptedPortletURL( request, "ss_forum", true );
 			adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY );
-			adapterUrl.setParameter( WebKeys.URL_BINDER_ID, profileBinder.getId().toString() );
+			adapterUrl.setParameter( WebKeys.URL_BINDER_ID, profileModule.getProfileBinderId().toString() );
 			adapterUrl.setParameter( WebKeys.URL_ENTRY_TYPE, def.getId() );
 			model.put( WebKeys.ADD_USER_URL, adapterUrl.toString() );
 
@@ -151,26 +156,10 @@ public final class MiscUtil
 	 */
 	public static boolean doesGuestUserHaveAddRightsToProfileBinder( AllModulesInjected bs )
 	{
-		ProfileBinder	profileBinder;
 		ProfileModule	profileModule;
-		User			guest;
-		boolean		guestUserHasAddRights;
-		
-		guestUserHasAddRights = false;
+
 		profileModule = bs.getProfileModule();
-			
-		// Get the guest user.
-		guest = profileModule.getGuestUser();
-		
-		// Does the guest user have access to the profile binder?
-		profileBinder = profileModule.getProfileBinder();
-		if ( profileBinder != null && profileModule.testAccess( guest, profileBinder, ProfileOperation.addEntry ) )
-		{
-			// Yes
-			guestUserHasAddRights = true;
-		}
-		
-		return guestUserHasAddRights;
+		return profileModule.doesGuestUserHaveAddRightsToProfileBinder();
 	}// end doesGuestUserHaveAddRightsToProfileBinder()
 	
 }// end MiscUtil
