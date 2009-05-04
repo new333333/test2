@@ -275,11 +275,16 @@ public class EntityIndexUtils {
     				WorkflowState ws = (WorkflowState)iter.next();
     				Field workflowStateField = new Field(WORKFLOW_STATE_FIELD, 
    						ws.getState(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+    				String workflowCaption = WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState());
     				Field workflowStateCaptionField = new Field(WORKFLOW_STATE_CAPTION_FIELD, 
-   						WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState()), Field.Store.YES, Field.Index.UN_TOKENIZED);
+    						workflowCaption, Field.Store.YES, Field.Index.UN_TOKENIZED);
     				//Index the workflow state
     				doc.add(workflowStateField);
     				doc.add(workflowStateCaptionField);
+    				
+    				//Add the caption to the allText field
+    				Field allTextField = BasicIndexUtils.allTextField(workflowCaption);
+            		doc.add(allTextField);
    				
     				Definition def = ws.getDefinition();
     				if (def != null) {
