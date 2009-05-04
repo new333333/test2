@@ -1504,7 +1504,6 @@ public class ListFolderHelper {
 					bs.getFolderModule().testAccess(folder, FolderOperation.synchronize)) {
 				adminMenuCreated=true;
 				qualifiers = new HashMap();
-				qualifiers.put("popup", new Boolean(true));
 				qualifiers.put("showSpinner", new Boolean(true));
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);

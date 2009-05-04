@@ -53,6 +53,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
+import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
@@ -60,6 +61,7 @@ import org.kablink.teaming.web.util.CloseWrapperException;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
+import org.kablink.teaming.web.util.WebStatusTicket;
 import org.springframework.web.portlet.ModelAndView;
 
 
@@ -82,21 +84,16 @@ public class ModifyBinderController extends AbstractBinderController {
 			Binder binder = getBinderModule().getBinder(binderId);
 			// First, setup the view as if the binder is to be deleted.
 			setupViewBinder(response, binder.getParentBinder());
-			try {
-				if(getFolderModule().synchronize(binderId, null)) {
-					// The binder was not deleted (typical situation). 
-					// Setup the right view which will override the previous setup.
-					setupViewBinder(response, binderId, binderType);
-				}
-				else {
-					// The binder was indeed deleted.  Finish it up.
-					response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");			
-				}
+
+			StatusTicket statusTicket = WebStatusTicket.newStatusTicket(PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none"), request);
+			if(getFolderModule().synchronize(binderId, statusTicket)) {
+				// The binder was not deleted (typical situation). 
+				// Setup the right view which will override the previous setup.
+				setupViewBinder(response, binderId, binderType);
 			}
-			catch(UncheckedIOException e) {
-				// This causes the framework to select defCodedErrorClose (instead of the default 
-				// defCodedError) as the exception handler view.
-				throw new CloseWrapperException(e);
+			else {
+				// The binder was indeed deleted.  Finish it up.
+				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");			
 			}
 		} else if ((formData.containsKey("okBtn") || formData.containsKey("applyBtn")) && WebHelper.isMethodPost(request)) {
 			if (op.equals("") || op.equals(WebKeys.OPERATION_MODIFY)) { 			
