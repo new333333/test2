@@ -262,10 +262,22 @@ public interface ProfileModule {
 	public Collection<Principal> getPrincipalsByName(Collection<String> names) throws AccessControlException;
 	
 	/**
+ 	 * Return the profileBinder id
+ 	 * @return
+ 	 */
+	public Long getProfileBinderId();
+	/**
  	 * Return the profileBinder
  	 * @return
  	 */
 	public ProfileBinder getProfileBinder();
+	/**
+ 	 * Return the map of entry definitions
+ 	 *   Must have read or create access
+ 	 * @return
+ 	 */
+	public Map getProfileBinderEntryDefsAsMap();
+	
 	/**
 	 * Return collection
 	 * @param userId

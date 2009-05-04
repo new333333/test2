@@ -51,6 +51,9 @@
     --%><c:if test="${!empty ssFolder}"><%--
             --%><c:set var="wikiLinkBinderId" value="${ssFolder.id}" scope="request" /><%--
     --%></c:if><%--
+    --%><c:if test="${empty ssFolder && !empty ssBinderId}"><%--
+            --%><c:set var="wikiLinkBinderId" value="${ssBinderId}" scope="request" /><%--
+    --%></c:if><%--
 --%></c:if><%--
 --%><script type="text/javascript" src="<html:rootPath/>js/tiny_mce/tiny_mce.js"></script>
 <script type="text/javascript">

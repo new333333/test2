@@ -55,6 +55,7 @@ import org.kablink.teaming.module.profile.impl.GuestProperties;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
@@ -156,11 +157,13 @@ public class AddEntryController extends SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
-		ProfileBinder binder = getProfileModule().getProfileBinder();
 		//Adding an entry; get the specific definition
-		Map folderEntryDefs = DefinitionHelper.getEntryDefsAsMap(binder);
+		Map folderEntryDefs = getProfileModule().getProfileBinderEntryDefsAsMap();
 		String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
-		model.put(WebKeys.FOLDER, binder);
+		try {
+			model.put(WebKeys.FOLDER, getProfileModule().getProfileBinder());
+		} catch(AccessControlException e) {}
+		model.put(WebKeys.BINDER_ID, getProfileModule().getProfileBinderId());
 		model.put(WebKeys.ENTRY_DEFINITION_MAP, folderEntryDefs);
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_FORM);
 
