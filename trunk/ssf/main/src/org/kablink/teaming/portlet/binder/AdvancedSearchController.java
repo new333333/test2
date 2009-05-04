@@ -67,6 +67,7 @@ import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.TreeHelper;
@@ -182,9 +183,14 @@ public class AdvancedSearchController extends AbstractBinderController {
         	model.putAll(BinderHelper.prepareSearchFormData(this, request));
         	if (binderId != null) {
         		Map options = new HashMap();
-        		//options.put("search_currentAndSubfolders", Boolean.TRUE);
         		options.put("search_subfolders", Boolean.TRUE);
-        		options.put("searchFolders", Collections.singletonList(binderId));
+        		try {
+        			options.put("searchFolders", Collections.singletonList(getWorkspaceModule().getTopWorkspace().getId()));
+            		options.put("search_currentAndSubfolders", Boolean.FALSE);
+        		} catch(AccessControlException e) {
+        			options.put("searchFolders", Collections.singletonList(binderId));
+            		options.put("search_currentAndSubfolders", Boolean.TRUE);
+        		}
         		model.put(WebKeys.SEARCH_FILTER_MAP, options);
         	}
         	

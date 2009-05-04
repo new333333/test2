@@ -2121,6 +2121,11 @@ public class BinderHelper {
 		
 		prepareSearchResultPage(bs, results, model, searchQuery, options, tab);
 		
+		Element filterTerm = (Element)searchQuery.getRootElement().selectSingleNode("//filterTerms/filterTerm[@filterType='text' and @caseSensitive='true']");
+		if (filterTerm != null) {
+			model.put(WebKeys.SEARCH_FORM_CASE_SENSITIVE, true);
+		}
+		
 		return model;
 	}
 	
@@ -2153,6 +2158,7 @@ public class BinderHelper {
 		// this function puts also proper part of entries list into a model
 		preparePagination(model, results, options, tab);
 		
+		model.put(WebKeys.SEARCH_FORM_CASE_SENSITIVE, options.get(ObjectKeys.SEARCH_CASE_SENSITIVE));
 		model.put("resultsCount", options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
 		model.put("summaryWordCount", (Integer)options.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS));
 
@@ -2182,6 +2188,7 @@ public class BinderHelper {
 		try {
 			searchCaseSensitive = PortletRequestUtils.getBooleanParameter(request, WebKeys.SEARCH_FORM_CASE_SENSITIVE);
 		} catch(Exception e) {}
+		if (searchCaseSensitive == null) searchCaseSensitive = false;
 		options.put(ObjectKeys.SEARCH_CASE_SENSITIVE, searchCaseSensitive);
 		
 		//If the entries per page is not present in the user properties, then it means the
@@ -2276,6 +2283,7 @@ public class BinderHelper {
 		if (tabData.containsKey(Tabs.TITLE)) options.put(Tabs.TITLE, tabData.get(Tabs.TITLE));
 		if (tabData.containsKey(WebKeys.SEARCH_FORM_SUMMARY_WORDS)) options.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, tabData.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS));
 		if (tabData.containsKey(WebKeys.SEARCH_FORM_QUICKSEARCH)) options.put(WebKeys.SEARCH_FORM_QUICKSEARCH, tabData.get(WebKeys.SEARCH_FORM_QUICKSEARCH));
+		if (tabData.containsKey(ObjectKeys.SEARCH_CASE_SENSITIVE)) options.put(ObjectKeys.SEARCH_CASE_SENSITIVE, tabData.get(ObjectKeys.SEARCH_CASE_SENSITIVE));
 		if (tabData.containsKey(Tabs.PAGE)) options.put(Tabs.PAGE, tabData.get(Tabs.PAGE));
 		return options;
 	}

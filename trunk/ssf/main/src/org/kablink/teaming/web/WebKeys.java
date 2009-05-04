@@ -965,7 +965,7 @@ public class WebKeys {
     public static final String SCHEDULE="ssSchedule";
     public static final String SCHEDULE_INFO="ssScheduleInfo";
     public static final String SCHEDULE_INFO2="ssScheduleInfo2";
-    public static final String SEARCH_FORM_CASE_SENSITIVE="search_caseSensitive";
+    public static final String SEARCH_FORM_CASE_SENSITIVE="ss_searchCaseSensitive";
     public static final String SEARCH_FORM_DATA="ssSearchFormData";
     public static final String SEARCH_FORM_ELEMENT="ssSearchFormElement";
     public static final String SEARCH_FORM_FORM="ssSearchFormForm";

@@ -474,7 +474,8 @@ public class TreeTag extends TagSupport {
 						jspOut.print("<img class=\"ss_twImg\" alt=\"\" src=\"" + getImage("spacer") + "\"/>");
 					} else {
 						String checked = "";
-						if (this.multiSelect.contains(s_binderId)) {
+						if (this.multiSelect.contains(s_binderId) ||
+								this.multiSelect.contains(Long.valueOf(s_binderId))) {
 							checked = "checked=\"checked\"";
 						}
 						jspOut.print("<input type=\"checkbox\" class=\"ss_text\"");

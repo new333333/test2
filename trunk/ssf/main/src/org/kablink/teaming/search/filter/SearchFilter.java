@@ -821,10 +821,11 @@ public class SearchFilter {
 		filterTermValueEle.setText(title.trim());
 	}
 
-	public void addText(String text) {
+	public void addText(String text, Boolean caseSensitive) {
 		checkCurrent();
 		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
 		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeSearchText);
+		if (caseSensitive) filterTerm.addAttribute(SearchFilterKeys.FilterTypeCaseSensitive, "true");
 		filterTerm.addText(text);
 	}
 	
