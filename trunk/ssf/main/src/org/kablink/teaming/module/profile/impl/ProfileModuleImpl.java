@@ -95,6 +95,7 @@ import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
@@ -283,6 +284,32 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	   return (ProfileBinder)getProfileDao().getProfileBinder(RequestContextHolder.getRequestContext().getZoneId());
 	}
 
+	/**
+	 * Determine if the Guest user has "create entry" rights to the profile binder.
+	 */
+	public boolean doesGuestUserHaveAddRightsToProfileBinder()
+	{
+		ProfileBinder	profileBinder;
+		User			guest;
+		boolean		guestUserHasAddRights;
+		
+		guestUserHasAddRights = false;
+			
+		// Get the guest user.
+		guest = getGuestUser();
+		
+		// Does the guest user have access to the profile binder?
+		profileBinder = loadProfileBinder();
+		if ( profileBinder != null && testAccess( guest, profileBinder, ProfileOperation.addEntry ) )
+		{
+			// Yes
+			guestUserHasAddRights = true;
+		}
+		
+		return guestUserHasAddRights;
+	}// end doesGuestUserHaveAddRightsToProfileBinder()
+	
+	
 	/**
 	 * Return the guest user object.
 	 */
