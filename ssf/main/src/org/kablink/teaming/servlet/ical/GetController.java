@@ -45,6 +45,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.ical.util.ICalUtils;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.web.servlet.SAbstractController;
@@ -62,6 +63,7 @@ public class GetController extends SAbstractController {
 	
 	private MailModule mailModule;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -77,7 +79,7 @@ public class GetController extends SAbstractController {
 		Long entryId = RequestUtils.getLongParameter(request, "entry");
 		if (entryId != null) {
 			FolderEntry entry  = getFolderModule().getEntry(binderId, entryId);
-			CalendarOutputter calendarOutputter = new CalendarOutputter();
+			CalendarOutputter calendarOutputter = ICalUtils.getCalendarOutputter();
 			Calendar calendar = getIcalModule().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE));
 			calendarOutputter.output(calendar, response.getWriter());
 		} else {
@@ -85,7 +87,7 @@ public class GetController extends SAbstractController {
 			Map entries = getFolderModule().getFullEntries(binderId, null);
 			List folderEntries = (List)entries.get(ObjectKeys.FULL_ENTRIES);
 			
-			CalendarOutputter calendarOutputter = new CalendarOutputter();
+			CalendarOutputter calendarOutputter = ICalUtils.getCalendarOutputter();
 			Calendar calendar = getIcalModule().generate(folder.getTitle(), folderEntries, mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE));
 			calendarOutputter.output(calendar, response.getWriter());
 		}
