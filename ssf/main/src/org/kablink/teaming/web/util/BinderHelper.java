@@ -2178,6 +2178,12 @@ public class BinderHelper {
 		
 		Map options = new HashMap();
 		
+		Boolean searchCaseSensitive = false;
+		try {
+			searchCaseSensitive = PortletRequestUtils.getBooleanParameter(request, WebKeys.SEARCH_FORM_CASE_SENSITIVE);
+		} catch(Exception e) {}
+		options.put(ObjectKeys.SEARCH_CASE_SENSITIVE, searchCaseSensitive);
+		
 		//If the entries per page is not present in the user properties, then it means the
 		//number of records per page is obtained from the ssf properties file, so we do not have 
 		//to worry about checking the old and new number or records per page.

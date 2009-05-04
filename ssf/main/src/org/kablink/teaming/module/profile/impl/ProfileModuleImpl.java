@@ -108,6 +108,7 @@ import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.web.util.DateHelper;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -349,6 +350,21 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		// Check if the user has "read" access to the folder.
 	   checkReadAccess(binder);		
 	   return binder;
+    }
+	//RO transaction
+	public Long getProfileBinderId() {
+	   return loadProfileBinder().getId();
+    }
+
+	//RO transaction
+	public Map<String, Definition> getProfileBinderEntryDefsAsMap() {
+	   ProfileBinder binder = loadProfileBinder();
+	   try {
+		   checkReadAccess(binder);	
+	   } catch(AccessControlException ac) {
+		   if (!testAccess(binder, ProfileOperation.addEntry)) return null;
+	   }
+	   return DefinitionHelper.getEntryDefsAsMap(binder);
     }
 
     public Long getEntryWorkspaceId(Long principalId) {
