@@ -40,6 +40,7 @@ import java.io.StringWriter;
 
 import javax.activation.DataSource;
 
+import org.kablink.teaming.ical.util.ICalUtils;
 import org.kablink.teaming.module.mail.MailModule;
 
 import net.fortuna.ical4j.data.CalendarOutputter;
@@ -53,7 +54,7 @@ public class CalendarDataSource implements DataSource {
 	public CalendarDataSource(Calendar cal)
 	{
 		StringWriter writer = new StringWriter();
-		CalendarOutputter out = new CalendarOutputter();
+		CalendarOutputter out = ICalUtils.getCalendarOutputter();
 		try {
 			out.output(cal, writer);
 			data = writer.toString();

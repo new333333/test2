@@ -46,6 +46,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.ical.util.ICalUtils;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -58,6 +59,7 @@ public class ViewICalController extends SAbstractController {
 	
 	private MailModule mailModule;
 	
+	@SuppressWarnings("unchecked")
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
 
@@ -96,7 +98,7 @@ public class ViewICalController extends SAbstractController {
 		response.setContentType(MailModule.CONTENT_TYPE_CALENDAR + "; charset=" + XmlFileUtil.FILE_ENCODING);
 		response.setHeader("Cache-Control", "private");
 		
-		CalendarOutputter calendarOutputter = new CalendarOutputter();
+		CalendarOutputter calendarOutputter = ICalUtils.getCalendarOutputter();
 		Calendar calendar = getIcalModule().generate(entry, entry.getEvents(), 
 				mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE));
 		calendarOutputter.output(calendar, response.getWriter());

@@ -44,6 +44,7 @@ import net.fortuna.ical4j.model.ValidationException;
 import org.dom4j.Element;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Event;
+import org.kablink.teaming.ical.util.ICalUtils;
 import org.kablink.teaming.remoting.ws.model.CustomStringField;
 
 
@@ -53,7 +54,7 @@ public class ElementBuilderEvent extends AbstractElementBuilder {
 			Event event = (Event) obj;
 			StringWriter writer = new StringWriter();
 			Calendar cal = context.getIcalModule().generate(entity, Arrays.asList(event), null);
-			CalendarOutputter out = new CalendarOutputter();
+			CalendarOutputter out = ICalUtils.getCalendarOutputter();
 			try {
 				out.output(cal, writer);
 			} catch(IOException e) {

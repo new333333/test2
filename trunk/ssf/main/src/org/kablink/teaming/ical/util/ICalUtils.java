@@ -39,13 +39,13 @@ import java.util.Iterator;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
-import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.model.property.Summary;
 
 public class ICalUtils {
 
+	@SuppressWarnings("unchecked")
 	public static String getSummary(Calendar calendar) {
 		
 		Iterator componentIt = calendar.getComponents().iterator();
@@ -71,18 +71,22 @@ public class ICalUtils {
 
 	public static ByteArrayOutputStream toOutputStream(Calendar calendar) throws IOException, ValidationException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		CalendarOutputter calendarOutputter = new CalendarOutputter();
+		CalendarOutputter calendarOutputter = getCalendarOutputter();
+		calendarOutputter.output(calendar, out);
+		return out;
+	}
+
+	public static CalendarOutputter getCalendarOutputter() {
+		CalendarOutputter	co = new CalendarOutputter();
 		
-		// Bugzilla 488900:
+		// Bugzilla 488900 and 500218:
 		//   Changed to output the iCal using a non-validating
 		//   CalendarOutputter.  Changed to non-validating because
 		//   ical4j throws a validation error if we use PUBLISH when
 		//   there are attendees.  In order to get GroupWise
 		//   interaction to work, that's what we're doing.
-		calendarOutputter.setValidating(false);
+		co.setValidating(false);
 		
-		calendarOutputter.output(calendar, out);
-		return out;
+		return co;
 	}
-	
 }
