@@ -231,7 +231,19 @@ public class ListFolderController extends  SAbstractController {
 			} catch(NoBinderByTheIdException e) {
 				//The binder no longer exists, show the parent binder instead
 				request.setAttribute(WebKeys.URL_BINDER_ID, parentBinderId);
-				Binder parentBinder = getBinderModule().getBinder(parentBinderId);
+				Binder parentBinder = null;
+				try {
+					parentBinder = getBinderModule().getBinder(parentBinderId);
+				} catch(Exception e2) {
+					Map<String,Object> model = new HashMap<String,Object>();
+					model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {binderId.toString()}));
+					return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+				}
+				if (parentBinder == null) {
+					Map<String,Object> model = new HashMap<String,Object>();
+					model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {binderId.toString()}));
+					return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+				}
 				if (parentBinder.getEntityType().name().equals(EntityIdentifier.EntityType.workspace.name())) {
 					return WorkspaceTreeHelper.setupWorkspaceBeans(this, parentBinderId, request, response);
 				}

@@ -93,6 +93,7 @@ public class SearchFilterToSearchBooleanConverter {
 	}
 
 	private static void convertFilterTerms(Element parent, Element filterTerms, String lang, String currentBinderId) {
+    	User user = RequestContextHolder.getRequestContext().getUser();
 //		 each terms block can have information if the children should be join with AND
 		// if not defined use OR as default
 		String joiner = Constants.OR_ELEMENT;
@@ -123,7 +124,10 @@ public class SearchFilterToSearchBooleanConverter {
 		    		String filterType = filterTerm.attributeValue(SearchFilterKeys.FilterType, "");
 		    		if (filterType.equals(SearchFilterKeys.FilterTypeSearchText)) {
 		    			lang = checkLanguage(filterTerm.getText(),parent, lang);
-		    			addSearchTextField(block, filterTerm.getText());
+		    			String text = filterTerm.getText();
+		    			String caseSensitive = filterTerm.attributeValue(SearchFilterKeys.FilterTypeCaseSensitive, "false");
+		    			if (!caseSensitive.equals("true")) text = text.toLowerCase(user.getLocale());
+		    			addSearchTextField(block, text);
 		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeCreatorByName)) {
 		    			lang = checkLanguage(filterTerm.getText(),parent, lang);
 		    			addAuthorField(block, filterTerm.getText());

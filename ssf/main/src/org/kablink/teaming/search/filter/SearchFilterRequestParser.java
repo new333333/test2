@@ -43,7 +43,9 @@ import java.util.Map;
 import javax.portlet.PortletRequest;
 
 import org.dom4j.Document;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 
@@ -376,8 +378,14 @@ public class SearchFilterRequestParser {
 
 	private void parseFreeText(PortletRequest request, SearchFilter searchFilter) {
 		String searchText = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchText, "");
+		Boolean searchCaseSensitive = false;
+		try {
+			searchCaseSensitive = PortletRequestUtils.getBooleanParameter(request, WebKeys.SEARCH_FORM_CASE_SENSITIVE);
+		} catch(Exception e) {}
+		if (searchCaseSensitive == null) searchCaseSensitive = false;
+		
 		if (!searchText.equals("")) {
-			searchFilter.addText(searchText);
+			searchFilter.addText(searchText, searchCaseSensitive);
 		}
 	}
 

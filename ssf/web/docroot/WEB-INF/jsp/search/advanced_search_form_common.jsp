@@ -195,6 +195,14 @@
 								 		</c:if>
 								 	> <label for="search_subfolders"><ssf:nlt tag="searchForm.searchSubfolders"/></label>
 								</div>
+								<div class="ss_additionals">
+								 	<input type="checkbox" name="ss_searchCaseSensitive" id="ss_searchCaseSensitive" 
+								 	  value="true" style="width: 19px; margin: 0; padding: 0; " 
+								 		<c:if test="${ss_searchCaseSensitive}">
+								 			checked="checked"
+								 		</c:if>
+								 	> <label for="ss_searchCaseSensitive"><ssf:nlt tag="searchForm.search_caseSensitive"/></label>
+								</div>
 	 						</td>
 						</tr>
 					</c:if>
