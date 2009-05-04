@@ -167,8 +167,8 @@ public class AddEntryController extends SAbstractController {
 		model.put(WebKeys.ENTRY_DEFINITION_MAP, folderEntryDefs);
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_FORM);
 
-		// Are we dealing with the Guest user and are we running the Kablink version of Teaming?
-		if ( isGuestUser() && ReleaseInfo.isLicenseRequiredEdition() == false )
+		// Are we dealing with the Guest user?
+		if ( isGuestUser() )
 		{
 			// Yes, set the flag that will enable the text verification controls in the page.
 			model.put( WebKeys.URL_DO_TEXT_VERIFICATION, "true" );

@@ -1311,110 +1311,98 @@ jQuery(document).ready(function() {
 </div>
 
 <div id="ldapTemplate" style="display: none">
-<fieldset class="ldapConfig ss_fieldset"><legend
-	class="ldapTitle ss_legend"><ssf:nlt
-	tag="ldap.connection.title" /> <span class="ldapTitle"></span></legend>
-<div>
-<button class="ldapDelete ss_submit"><ssf:nlt
-	tag="ldap.connection.delete" /></button>
-<br />
-<br />
-<table>
-	<tr>
-		<td nowrap></td>
-		<td nowrap><span class="ss_fineprint ss_bright"><ssf:nlt
-			tag="ldap.user.url.title" /></span></td>
-	</tr>
-	<tr>
-		<td nowrap><label for="ldapUrl"><ssf:nlt
-			tag="ldap.user.url" />&nbsp;</label></td>
-		<td><input class="ldapUrl" id="ldapUrl" type="text" value=""
-			size="140" /></td>
-	</tr>
-	<tr>
-		<td nowrap><label for="ldapPrincipal"><ssf:nlt
-			tag="ldap.user.principal" /></label></td>
-		<td><input class="ldapPrincipal" id="ldapPrincipal" type="text"
-			value="" size="140" /></td>
-	</tr>
-	<tr>
-		<td nowrap><label for="ldapCredentials"><ssf:nlt
-			tag="ldap.user.credential" /></label></td>
-		<td><input class="ldapCredentials" id="ldapCredentials"
-			type="password" value="" size="140" /></td>
-	</tr>
-</table>
+	<fieldset class="ldapConfig ss_fieldset">
+		<legend class="ldapTitle ss_legend"><ssf:nlttag="ldap.connection.title" /> <span class="ldapTitle"></span></legend>
+		<div>
+			<button class="ldapDelete ss_submit"><ssf:nlt tag="ldap.connection.delete" /></button>
+			<br />
+			<br />
+			<table>
+				<tr>
+					<td nowrap></td>
+					<td nowrap><span class="ss_fineprint ss_bright"><ssf:nlt tag="ldap.user.url.title" /></span></td>
+				</tr>
+				<tr>
+					<td nowrap><label for="ldapUrl"><ssf:nlt tag="ldap.user.url" />&nbsp;</label></td>
+					<td><input class="ldapUrl" id="ldapUrl" type="text" value="" size="140" /></td>
+				</tr>
+				<tr>
+					<td nowrap><label for="ldapPrincipal"><ssf:nlt tag="ldap.user.principal" /></label></td>
+					<td><input class="ldapPrincipal" id="ldapPrincipal" type="text" value="" size="140" /></td>
+				</tr>
+				<tr>
+					<td nowrap><label for="ldapCredentials"><ssf:nlt tag="ldap.user.credential" /></label></td>
+					<td><input class="ldapCredentials" id="ldapCredentials" type="password" value="" size="140" /></td>
+				</tr>
+			</table>
 
-<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt
-	tag="ldap.users" /></legend> <label for="ldapUserIdAttribute"><ssf:nlt
-	tag="ldap.user.idmapping" />&nbsp;&nbsp;</label><input
-	class="ldapUserIdAttribute" id="ldapUserIdAttribute" type="text"
-	value="" size="40" /><br />
-<br />
-<label for="ldapMappings"><ssf:nlt tag="ldap.user.mappings" /></label>
-<br />
-<textarea class="ldapMappings" id="ldapMappings"
-	style="height: 150px; width: 400px" wrap="off"></textarea> <br />
-<br />
-<div class="ldapUserSearches">
-<div class="ldapSearchList"></div>
-<button class="addSearch ss_submit"><ssf:nlt
-	tag="ldap.search.add" /></button>
-</div>
-</fieldset>
-<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt
-	tag="ldap.groups" /></legend>
-<div class="ldapGroupSearches">
-<div class="ldapSearchList"></div>
-<button class="addSearch ss_submit"><ssf:nlt
-	tag="ldap.search.add" /></button>
-</div>
-</fieldset>
-</div>
-</fieldset>
+			<fieldset class="ss_fieldset">
+				<legend class="ss_legend"><ssf:nlt tag="ldap.users" /></legend>
+				<label for="ldapUserIdAttribute"><ssf:nlt tag="ldap.user.idmapping" />&nbsp;&nbsp;</label>
+				<input class="ldapUserIdAttribute" id="ldapUserIdAttribute" type="text" value="" size="40" />
+				<br />
+				<br />
+				<label for="ldapMappings"><ssf:nlt tag="ldap.user.mappings" /></label>
+				<br />
+				<textarea class="ldapMappings" id="ldapMappings" style="height: 150px; width: 400px" wrap="off"></textarea>
+				<br />
+				<br />
+				<div class="ldapUserSearches">
+					<div class="ldapSearchList"></div>
+					<button class="addSearch ss_submit"><ssf:nlt tag="ldap.search.add" /></button>
+				</div>
+			</fieldset>
+
+			<fieldset class="ss_fieldset">
+				<legend class="ss_legend"><ssf:nlt tag="ldap.groups" /></legend>
+				<div class="ldapGroupSearches">
+					<div class="ldapSearchList"></div>
+					<button class="addSearch ss_submit"><ssf:nlt tag="ldap.search.add" /></button>
+				</div>
+			</fieldset>
+		</div>
+	</fieldset>
 </div>
 
 <div id="ldapSearchTemplate" style="display: none">
-<div class="ldapSearch" style="padding: 6px; border: 1px solid #cecece;">
-<div>
-<table>
-	<tr>
-		<td colspan="2">
-		<div class="errorMessage"><ssf:nlt tag="ldap.error.invalid">
-			<ssf:param name="value" value='<%=NLT.get("ldap.error.baseDn")%>' />
-		</ssf:nlt></div>
-		</td>
-	</tr>
-	<tr>
-		<td nowrap><label for="ldapBaseDn"><ssf:nlt
-			tag="ldap.search.baseDn" /></label></td>
-		<td><input class="ldapBaseDn" id="ldapBaseDn" value="" size="120" />
-		</td>
-	</tr>
-
-	<tr>
-		<td colspan="2">
-		<div class="errorMessage"><ssf:nlt tag="ldap.error.invalid">
-			<ssf:param name="value" value='<%=NLT.get("ldap.error.filter")%>' />
-		</ssf:nlt></div>
-		</td>
-	</tr>
-	<tr>
-		<td nowrap><label for="ldapFilter"><ssf:nlt
-			tag="ldap.search.filter" /></label></td>
-		<td><input class="ldapFilter" id="ldapFilter" value="" size="120" />
-		</td>
-	</tr>
-</table>
-</div>
-<br />
-<input type="checkbox" class="ldapSearchSubtree" id="ldapSearchSubtree"
-	value="true" /> <label for="ldapSearchSubtree"><span
-	style="padding-left: 4px;"><ssf:nlt
-	tag="ldap.search.searchSubtree" /></span></label> <br />
-<button class="deleteSearch ss_submit"><ssf:nlt
-	tag="ldap.search.delete" /></button>
-</div>
+	<div class="ldapSearch" style="padding: 6px; border: 1px solid #cecece;">
+		<div>
+			<table>
+				<tr>
+					<td colspan="2">
+					<div class="errorMessage"><ssf:nlt tag="ldap.error.invalid">
+						<ssf:param name="value" value='<%=NLT.get("ldap.error.baseDn")%>' />
+					</ssf:nlt></div>
+					</td>
+				</tr>
+				<tr>
+					<td nowrap><label for="ldapBaseDn"><ssf:nlt
+						tag="ldap.search.baseDn" /></label></td>
+					<td><input class="ldapBaseDn" id="ldapBaseDn" value="" size="120" />
+					</td>
+				</tr>
+			
+				<tr>
+					<td colspan="2">
+					<div class="errorMessage"><ssf:nlt tag="ldap.error.invalid">
+						<ssf:param name="value" value='<%=NLT.get("ldap.error.filter")%>' />
+					</ssf:nlt></div>
+					</td>
+				</tr>
+				<tr>
+					<td nowrap><label for="ldapFilter"><ssf:nlt
+						tag="ldap.search.filter" /></label></td>
+					<td><input class="ldapFilter" id="ldapFilter" value="" size="120" />
+					</td>
+				</tr>
+			</table>
+		</div>
+		<br />
+		<input type="checkbox" class="ldapSearchSubtree" id="ldapSearchSubtree" value="true" />
+		<label for="ldapSearchSubtree"><span style="padding-left: 4px;"><ssf:nlt tag="ldap.search.searchSubtree" /></span></label>
+		<br />
+		<button class="deleteSearch ss_submit"><ssf:nlt tag="ldap.search.delete" /></button>
+	</div>
 </div>
 </body>
 </html>
