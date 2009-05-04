@@ -262,6 +262,7 @@ public interface ObjectKeys {
     public static final String RELEVANCE_PAGE_TASKS = "tasks";
     public static final String RELEVANCE_PAGE_VISITORS = "visitors";
     
+    public static final String SEARCH_CASE_SENSITIVE = "case_sensitive";
     public static final String SEARCH_OFFSET = "offset";
     public static final String SEARCH_MAX_HITS = "maxHits";
     public static final String SEARCH_USER_MAX_HITS = "userMaxHits";
