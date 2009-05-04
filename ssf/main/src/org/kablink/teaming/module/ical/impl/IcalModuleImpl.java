@@ -1614,8 +1614,12 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			event.allDaysEvent();
 		} else {
 			Parameter tzId = start.getParameter(Parameter.TZID);
-			if (start.getParameter(Parameter.TZID) != null) {
-				TimeZone tz = timeZones.get(tzId.getValue());
+			if (null != tzId) {
+				String tzIdS = tzId.getValue();
+				TimeZone tz = timeZones.get(tzIdS);
+				if (null == tz) {
+					tz = TimeZoneRegistryFactory.getInstance().createRegistry().getTimeZone(tzIdS);
+				}
 				event.setTimeZone(tz);
 			}
 		}
