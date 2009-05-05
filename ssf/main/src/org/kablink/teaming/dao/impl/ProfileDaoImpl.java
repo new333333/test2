@@ -550,7 +550,10 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		for (int i=0; i<result.size(); ++i) {
 			UserPrincipal p = result.get(i);
 			if (!(p instanceof User) && !(p instanceof Group)) {
-				UserPrincipal principal = (UserPrincipal)getHibernateTemplate().get(User.class, p.getId());
+				UserPrincipal principal = null;
+				try {
+					principal = (UserPrincipal)getHibernateTemplate().get(User.class, p.getId());
+				} catch(Exception e) {}; // get throws exception rather than returning null if the object was already loaded into Hibernate as proxy and it is of different type
 				if (principal==null) principal = (UserPrincipal)getHibernateTemplate().get(Group.class, p.getId());
    				result.set(i, principal);
             }
@@ -1217,7 +1220,10 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		for (int i=0; i<result.size(); ++i) {
 			ApplicationPrincipal p = result.get(i);
 			if (!(p instanceof Application) && !(p instanceof ApplicationGroup)) {
-				ApplicationPrincipal principal = (ApplicationPrincipal)getHibernateTemplate().get(Application.class, p.getId());
+				ApplicationPrincipal principal = null;
+				try {
+					principal = (ApplicationPrincipal)getHibernateTemplate().get(Application.class, p.getId());
+				} catch(Exception ex) {}
 				if (principal==null) principal = (ApplicationPrincipal)getHibernateTemplate().get(ApplicationGroup.class, p.getId());
    				result.set(i, principal);
             }
@@ -1231,8 +1237,15 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		for (int i=0; i<result.size(); ++i) {
 			Principal p = result.get(i);
 			if (!(p instanceof Group) && !(p instanceof ApplicationGroup)) {
-				Principal principal = (Principal)getHibernateTemplate().get(Group.class, p.getId());
-				if (principal==null) principal = (Principal)getHibernateTemplate().get(ApplicationGroup.class, p.getId());
+				Principal principal = null;
+				try {
+					principal = (Principal)getHibernateTemplate().get(Group.class, p.getId());
+				} catch(Exception ex) {}
+				if (principal==null) {
+					try {
+						principal = (Principal)getHibernateTemplate().get(ApplicationGroup.class, p.getId());
+					} catch(Exception ex) {}
+				}
 				if(principal != null) {					
 	   				result.set(i, principal);
 				}
@@ -1251,8 +1264,15 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		for (int i=0; i<result.size(); ++i) {
 			Principal p = result.get(i);
 			if (!(p instanceof User) && !(p instanceof Application)) {
-				Principal principal = (Principal)getHibernateTemplate().get(User.class, p.getId());
-				if (principal==null) principal = (Principal)getHibernateTemplate().get(Application.class, p.getId());
+				Principal principal = null;
+				try {
+					principal = (Principal)getHibernateTemplate().get(User.class, p.getId());
+				} catch(Exception ex) {}
+				if (principal==null) {
+					try {
+						principal = (Principal)getHibernateTemplate().get(Application.class, p.getId());
+					} catch(Exception ex) {}
+				}
 				if(principal != null) {					
 	   				result.set(i, principal);
 				}
@@ -1284,9 +1304,20 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		for (int i=0; i<result.size(); ++i) {
 			Principal p = result.get(i);
 			if (!(p instanceof User) && !(p instanceof Group) && !(p instanceof Application) && !(p instanceof ApplicationGroup)) {
-				Principal principal = (Principal)getHibernateTemplate().get(User.class, p.getId());
-				if (principal==null) principal = (Principal)getHibernateTemplate().get(Group.class, p.getId());
-				if (principal==null) principal = (Principal)getHibernateTemplate().get(Application.class, p.getId());
+				Principal principal = null;
+				try {
+					principal = (Principal)getHibernateTemplate().get(User.class, p.getId());
+				} catch(Exception ex) {}
+				if (principal==null) {
+					try {
+						principal = (Principal)getHibernateTemplate().get(Group.class, p.getId());
+					} catch(Exception ex) {}
+				}
+				if (principal==null) {
+					try {
+						principal = (Principal)getHibernateTemplate().get(Application.class, p.getId());
+					} catch(Exception ex) {}
+				}
 				if (principal==null) principal = (Principal)getHibernateTemplate().get(ApplicationGroup.class, p.getId());
    				result.set(i, principal);
             }
