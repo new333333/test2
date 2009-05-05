@@ -53,4 +53,8 @@
 	<input type="password" size="40" name="password2" class="ss_text" />
   </c:if>
 </div>
+
+<!-- If needed, show the Text Verification controls. -->
+<%@ include file="/WEB-INF/jsp/definition_elements/textVerification.jsp" %>
+
 </c:if>
