@@ -42,7 +42,7 @@
 
 <c:if test="${empty ss_presence_user}">
 <a href="javascript: ;"
- onClick="ss_popupPresenceMenu(this, '', '', '-1', '', '', '', '', '', '${ss_presence_component_id}', '${ss_presence_zonBridge}', '');return false;"
+ onClick="ss_popupPresenceMenu(this, '', '', '-1', '', '', '', '', '', '', '${ss_presence_component_id}', '${ss_presence_zonBridge}', '');return false;"
 ><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
  alt="<c:out value="${ss_presence_text}"/>"/></a>
 </c:if>
@@ -58,7 +58,7 @@
 </c:if>
 <c:set var="presence_user_emailAddress" value=""/>
 <c:if test="${!empty ss_presence_user.emailAddress}">
-<c:set var="presence_user_emailAddress" value="${ss_presence_user.emailAddress}"/>
+  <c:set var="presence_user_emailAddress" value="${ss_presence_user.emailAddress}"/>
 </c:if>
 <c:set var="presence_user_skypeId" value=""/>
 <c:if test="${!empty ss_presence_user.skypeId}">  
@@ -74,11 +74,20 @@
 	String presenceUserTitle = presence_user_title;
 	presenceUserTitle = presenceUserTitle.replaceAll("'", "\\\\'");
 	String presenceUserZonName = presence_user_zonName;
-	presenceUserZonName.replaceAll("'", "\\\\'");
+	presenceUserZonName = presenceUserZonName.replaceAll("'", "\\\\'");
 	String presenceUserEmailAddress = presence_user_emailAddress;
-	presenceUserEmailAddress.replaceAll("'", "\\\\'");
+	presenceUserEmailAddress = presenceUserEmailAddress.replaceAll("'", "\\\\'");
 	String presenceUserSkypeId = presence_user_skypeId;
-	presenceUserSkypeId.replaceAll("'", "\\\\'");
+	presenceUserSkypeId = presenceUserSkypeId.replaceAll("'", "\\\\'");
+	String presenceUserEmailAddressName = "";
+	String presenceUserEmailAddressHost = "";
+	if (!presenceUserEmailAddress.equals("") && presenceUserEmailAddress.indexOf("@") > 0) {
+		presenceUserEmailAddressName = presenceUserEmailAddress.substring(0, presenceUserEmailAddress.indexOf("@"));
+		presenceUserEmailAddressHost = presenceUserEmailAddress.substring(presenceUserEmailAddress.indexOf("@")+1);
+	} else {
+		presenceUserEmailAddressName = presenceUserEmailAddress;
+	}
+	
 %>
 <c:set var="current" value=""/>
 <c:if test="${ssUser.zonName == ss_presence_user.zonName}">
@@ -92,7 +101,8 @@
     '${ss_presence_userStatus}', 
     '<%= presenceUserZonName %>', 
     '<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ss_presence_sweep_time}" type="both" timeStyle="short" dateStyle="medium" />', 
-    '<%= presenceUserEmailAddress %>', 
+    '<%= presenceUserEmailAddressName %>', 
+    '<%= presenceUserEmailAddressHost %>', 
     '${ss_presence_vcard}', 
     '${current}', '${ss_presence_component_id}', '${ss_presence_zonBridge}',
     '<%= presenceUserSkypeId %>');return false;"
