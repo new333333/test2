@@ -1312,7 +1312,7 @@ jQuery(document).ready(function() {
 
 <div id="ldapTemplate" style="display: none">
 	<fieldset class="ldapConfig ss_fieldset">
-		<legend class="ldapTitle ss_legend"><ssf:nlttag="ldap.connection.title" /> <span class="ldapTitle"></span></legend>
+		<legend class="ldapTitle ss_legend"><ssf:nlt tag="ldap.connection.title" /> <span class="ldapTitle"></span></legend>
 		<div>
 			<button class="ldapDelete ss_submit"><ssf:nlt tag="ldap.connection.delete" /></button>
 			<br />
