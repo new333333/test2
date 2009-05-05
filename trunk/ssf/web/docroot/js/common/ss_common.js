@@ -4788,7 +4788,7 @@ function ss_savePenletLayout() {
 
 
 //Presence support
-function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId) {
+function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, emailName, emailHost, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId) {
     obj = self.document.getElementById('ss_presencePopUp'+ssNamespace)
     if (obj == null) {
 		obj = document.createElement("div");
@@ -4799,10 +4799,10 @@ function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTim
     	document.getElementsByTagName("body").item(0).appendChild(obj);
     }
     ss_moveObjectToBody(obj)
-	ss_presenceMenu('', x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId);
+	ss_presenceMenu('', x, userId, userTitle, status, screenName, sweepTime, emailName, emailHost, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId);
 }
 
-function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId) {
+function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepTime, emailName, emailHost, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId) {
     var obj;
     var objId = divId;
     if (objId == '') objId = 'ss_presencePopUp'+ssNamespace;
@@ -4868,13 +4868,15 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
         }
 	}
 	if (userId != '' && current == '') {
-        if (email != '') {
+        if (emailName != '') {
             m += '<tr>';
             m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgmail'+ssNamespace+'"></td>';
 
 			bodyText = ss_replaceSubStrAll(ss_pagePermalink, "&", "%26");
+			var emailAdr = emailName;
+            if (emailHost != '') emailAdr += '@' + emailHost;
 	        
-            m += '<td><a class="ss_graymenu" href="mailto:' + email + '?body=' + bodyText +'">'+ss_ostatus_sendMail+' (' + email + ')...</a></td></tr>';
+            m += '<td><a class="ss_graymenu" href="mailto:' + emailAdr + '?body=' + bodyText +'">'+ss_ostatus_sendMail+' (' + emailAdr + ')...</a></td></tr>';
         }
         m += '<tr>';
         m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgvcard'+ssNamespace+'"></td>';
