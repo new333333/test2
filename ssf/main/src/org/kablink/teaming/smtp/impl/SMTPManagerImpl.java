@@ -89,6 +89,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 	
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+		logger.debug("Inbound SMTP Server:  " + (enabled ? "Enabled." : "Disabled."));
 	}
 	public boolean isEnabled() {
 		return enabled;
@@ -96,6 +97,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 
 	public void setTls(boolean tls) {
 		this.tls = tls;
+		logger.debug("Inbound SMTP Server:  " + (tls ? "Will announce TLS support." : "Will not announce TLS support."));
 	}
 	public boolean isTls() {
 		return tls;
@@ -106,6 +108,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 			bindAddress = null;
 		}
 		this.bindAddress = bindAddress;
+		logger.debug("Inbound SMTP Server:  bindAddress is set to:  \"" + ((null == bindAddress) ? "null" : bindAddress) + "\".");
 	}
 	public String getBindAddress() {
 		return bindAddress;
@@ -113,6 +116,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 	
 	public void setPort(int port) {
 		this.port = port;
+		logger.debug("Inbound SMTP Server:  port is set to:  \"" + port + "\".");
 	}
 	public int getPort() {
 		return port;
@@ -150,24 +154,29 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		InetAddress	iNetAddr;
 		if ((null == this.bindAddress) || (0 == this.bindAddress.length())) {
 			iNetAddr = null;
+			logger.debug("Inbound SMTP Server:  No bindAddress, binding to all addresses.");
 		}
 		else if (this.bindAddress.equals("localhost")) {
 			iNetAddr = InetAddress.getLocalHost();
+			logger.debug("Inbound SMTP Server:  Binding to \"localhost\".");
 		}
 		else {
 			try {
 				iNetAddr = InetAddress.getByName(bindAddress);
+				logger.debug("Inbound SMTP Server:  Binding to \"" + bindAddress + "\".");
 			}
 			catch (UnknownHostException e) {
 				iNetAddr = null;
 				setEnabled(false);
-				logger.error("Cannot resolve internal inbound SMTP bind address.  Inbound emailing will be disabled.", e);
+				logger.error("Inbound SMTP Server:  Cannot resolve bindAddress.  Inbound SMTP server will be disabled.", e);
 			}
 		}
+		logger.debug("Inbound SMTP Server:  " + ((null == iNetAddr) ? "Bound to all addresses." : "Bound to a specific address."));
 		
 		// If the bind address evaluation failed...
 		if(!(isEnabled())) {
 			// ...bail.
+			logger.debug("Inbound SMTP Server:  Address binding failed, inbound SMTP server is disabled.");
 			return;
 		}
 			
