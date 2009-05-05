@@ -100,7 +100,7 @@ public class FileUrlTag extends BodyTagSupport {
 			if (Validator.isNotNull(webUrl)) pageContext.getOut().print(webUrl);
 			return SKIP_BODY;
 		} catch (Exception e) {
-			throw new JspTagException(e.getLocalizedMessage());
+			return SKIP_BODY;
 		} finally {
 			setup();
 		}
