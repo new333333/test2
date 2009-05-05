@@ -50,4 +50,10 @@
     <div class="ss_clear"></div>
   </div>
 </c:if>
+<c:if test="${empty binder || empty binder.brandingSource.branding || !ss_accessBranding}">
+  <div id="ss_branding">
+    <img src="<html:rootPath/>images/pics/masthead/novell_teaming.png" border="0"
+      <ssf:alt text="Novell Teaming"/>/>
+  </div>
+</c:if>
 </c:if>

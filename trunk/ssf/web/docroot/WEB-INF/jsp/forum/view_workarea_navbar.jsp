@@ -641,7 +641,15 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			  	</ssHelpSpot>
 			</span> 
        </td>
-          </tr><!-- kablink: ss_banner_guy_ka.gif -->
+       <td width="2%" align="right">
+         <a href="">
+         	<img src="<html:rootPath/>images/pics/masthead/n_red.png" border="0"
+         	  alt="<ssf:nlt tag="navigation.about"><ssf:param name="value" value="Novell Teaming"/></ssf:nlt>"
+         	  onMouseover="this.src='<html:rootPath/>images/pics/masthead/n_white.png';"
+         	  onMouseout="this.src='<html:rootPath/>images/pics/masthead/n_red.png';"/>
+         </a>
+       </td>
+      </tr><!-- kablink: ss_banner_guy_ka.gif -->
     </tbody>
     </table>
   <!-- End of Search/Find boxes -->
