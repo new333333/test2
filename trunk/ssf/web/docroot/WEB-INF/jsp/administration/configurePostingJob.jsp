@@ -118,7 +118,6 @@ function ${renderResponse.namespace}_modifyAlias() {
 <input type="hidden" id="alias${status.index}" name="alias${status.index}" value="${alias.emailAddress}"/>
 <c:if test="${mail_posting_use_aliases == 'false'}">
   <c:set var="emailPassword" value=""/>
-  <c:if test="${!empty alias.password}"><c:set var="emailPassword" value="_____"/></c:if>
   <input type="hidden" id="password${status.index}" name="password${status.index}" value="${emailPassword}"/>
 </c:if>
 <tr><td>
