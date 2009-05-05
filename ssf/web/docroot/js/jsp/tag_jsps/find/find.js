@@ -381,7 +381,8 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	 		text = that._inputObj.value;
 			var liObjs = that._listContainer.getElementsByTagName('li');
 			if (liObjs.length == 1) {
-				that.selectItem(liObjs[0]);
+				eval("var type = "+liObjs[0].id);
+				that.selectItem(liObjs[0], type);
 				return;
 			}
 	 	}
@@ -493,6 +494,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		hrefObj.appendChild(spanObj);
 		liObj.appendChild(hrefObj);
 		that._searchResultsList.appendChild(liObj);
+		eval("ss_find_id_" + item.id + " = '" + item.type + "'");
 	}
 	
 	this._clearSearchResultsList = function() {
@@ -592,13 +594,14 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	this.selectItem0 = function () {
 		var liObjs = that._listContainerInnerDiv.getElementsByTagName('li');
 		if (liObjs.length == 1) {
-			that.selectItem(liObjs[0]);
+			eval("var type = "+liObjs[0].id);
+			that.selectItem(liObjs[0], type);
 		}
 	}
 	
 	//Routine called when item is clicked
 	this.selectItem = function(obj, entityType) {
-		if (!obj || !obj.id ||obj.id == undefined) return false;
+		if (!obj || !obj.id || obj.id == undefined || entityType == undefined) return false;
 		var id = ss_replaceSubStr(obj.id, 'ss_find_id_', "");
 		if (that._singleClickRoutine != "") {
 			that._callRoutineSingle(id, obj, entityType);
