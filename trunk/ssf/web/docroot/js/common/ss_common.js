@@ -8029,6 +8029,21 @@ function updateElementsTextNode(
 		element.appendChild( textNode );
 	}
 }// end updateElementsTextNode()
+
+//Mailto: replacement routines
+function ss_showEmailLinks() {
+	var mailtoElements = document.getElementsByTagName('ssMailTo')
+	for (var i = 0; i < mailtoElements.length; i++) {
+		var mailtoName = mailtoElements[i].getAttribute("name");
+		var mailtoHost = mailtoElements[i].getAttribute("host");
+		var aNode = mailtoElements[i].parentNode;
+		aNode.setAttribute("href", "mailto:"+mailtoName+"@"+mailtoHost);
+		//aNode.removeChild(mailtoElements[i]);
+		spanObj = self.document.createElement("span");
+		spanObj.innerHTML = mailtoName+"@"+mailtoHost;
+		aNode.appendChild(spanObj);
+	}
+}
 dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
 dojo.require("dojo.io.iframe");

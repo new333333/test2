@@ -121,8 +121,7 @@
   
   <ssf:slidingTableColumn style="${slidingTableColStyle}">
     <c:if test="${!empty entry._email}">
-	  <a href="mailto:${entry._email}">
-      <span><c:out value="${entry._email}"/></span></a>
+    	<ssf:mailto email="${entry._email}"/>
     </c:if>
   </ssf:slidingTableColumn>
 
@@ -134,4 +133,3 @@
 </c:forEach>
 </ssf:slidingTable>
 </div>
-

@@ -174,11 +174,12 @@
   <td valign="top" align="left">
    <c:if test="${!empty ssDefinitionEntry[element]}">
     <span class="${ss_element_display_style_item}">
-    <c:if test="${element == 'emailAddress' || element == 'mobileEmailAddress' || element == 'txtEmailAddress'}">
-        <a href="mailto:${ssDefinitionEntry[element]}">
-    </c:if>    
-    <c:out value="${ssDefinitionEntry[element]}"/>
-    <c:if test="${element == 'emailAddress' || element == 'mobileEmailAddress' || element == 'txtEmailAddress'}"></a></c:if>
+	    <c:if test="${element == 'emailAddress' || element == 'mobileEmailAddress' || element == 'txtEmailAddress'}">
+	        <ssf:mailto email="${ssDefinitionEntry[element]}"/>
+	    </c:if>    
+	    <c:if test="${element != 'emailAddress' && element != 'mobileEmailAddress' && element != 'txtEmailAddress'}">
+	    	${ssDefinitionEntry[element]}
+		</c:if>
     </span>
    </c:if>
    <c:if test="${!empty ssDefinitionEntry.customAttributes[element]}">
@@ -268,3 +269,6 @@
 </c:if>
  </div>
 </div>
+<script type="text/javascript">
+ss_createOnLoadObj("ss_showEmailLinks", ss_showEmailLinks);
+</script>
