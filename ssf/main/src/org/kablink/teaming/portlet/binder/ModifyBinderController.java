@@ -85,7 +85,8 @@ public class ModifyBinderController extends AbstractBinderController {
 			// First, setup the view as if the binder is to be deleted.
 			setupViewBinder(response, binder.getParentBinder());
 
-			StatusTicket statusTicket = WebStatusTicket.newStatusTicket(PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none"), request);
+			//StatusTicket statusTicket = WebStatusTicket.newStatusTicket(PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none"), request);
+			StatusTicket statusTicket = null;
 			if(getFolderModule().synchronize(binderId, statusTicket)) {
 				// The binder was not deleted (typical situation). 
 				// Setup the right view which will override the previous setup.
