@@ -115,10 +115,12 @@
 							</select>
 						</td>
 					</tr>
-					<c:if test="${!filterDefinition}">
-						<tr>
-							<td><ssf:nlt tag="searchForm.searchFolders"/>:</td>
-							<td >
+					<tr>
+						<td>
+							<c:if test="${!filterDefinition}"><ssf:nlt tag="searchForm.searchFolders"/>:</c:if>
+						</td>
+						<td >
+							<c:if test="${!filterDefinition}">
 								<ul>
 									<c:if test="${empty ssFolderList && not empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssFolderList}">
 										<c:set var="ssFolderList" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssFolderList}" />
@@ -195,17 +197,17 @@
 								 		</c:if>
 								 	> <label for="search_subfolders"><ssf:nlt tag="searchForm.searchSubfolders"/></label>
 								</div>
-								<div class="ss_additionals">
-								 	<input type="checkbox" name="ss_searchCaseSensitive" id="ss_searchCaseSensitive" 
-								 	  value="true" style="width: 19px; margin: 0; padding: 0; " 
-								 		<c:if test="${ss_searchCaseSensitive}">
-								 			checked="checked"
-								 		</c:if>
-								 	> <label for="ss_searchCaseSensitive"><ssf:nlt tag="searchForm.search_caseSensitive"/></label>
-								</div>
-	 						</td>
-						</tr>
-					</c:if>
+							</c:if>
+							<div class="ss_additionals">
+							 	<input type="checkbox" name="ss_searchCaseSensitive" id="ss_searchCaseSensitive" 
+							 	  value="true" style="width: 19px; margin: 0; padding: 0; " 
+							 		<c:if test="${ss_searchCaseSensitive}">
+							 			checked="checked"
+							 		</c:if>
+							 	> <label for="ss_searchCaseSensitive"><ssf:nlt tag="searchForm.search_caseSensitive"/></label>
+							</div>
+ 						</td>
+					</tr>
 					
 					<c:if test="${!filterDefinition}">
 						<tr>

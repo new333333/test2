@@ -965,6 +965,11 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		
 		SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(this, searchQuery);
 		searchSearchFormData.putAll(searchFilterConverter.convertAndPrepareFormData());
+		Element filterTerm = (Element)searchQuery.getRootElement().selectSingleNode("//filterTerms/filterTerm[@filterType='text' and @caseSensitive='true']");
+		if (filterTerm != null) {
+			model.put(WebKeys.SEARCH_FORM_CASE_SENSITIVE, true);
+		}
+
 		
 		try {
 			//If allowed, get the workspace tree from the top for use by the search filter
