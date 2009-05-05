@@ -51,7 +51,7 @@ JBoss Portal 2.6.1.GA portal-identity-lib.jar
 JBPM 3.1.4 (not using/shipping jbpm-identity;added sequence name patch to *.hbm.xml files http://jira.jboss.com/jira/browse/JBPM-982)
 JCR 1.0
 JDOM 1.0
-Joda-Time 1.5.2
+Joda-Time 1.6
 jQuery 1.2.6
 jQuery UI Tabs 1.5.2
 Json-lib 1.1 for jdk15
@@ -113,4 +113,3 @@ xmlrpc 2.0.1
 xmlsec 1.4.0 (required by WSS4j)
 
 util-taglib.jar, util-bridges.jar - copied from Liferay 4.3, can be removed after we eliminate references to taglibs from jsps
-
