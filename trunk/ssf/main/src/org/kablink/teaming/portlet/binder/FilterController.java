@@ -42,6 +42,7 @@ import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
@@ -220,8 +221,13 @@ public class FilterController extends AbstractBinderController {
 				model.put(WebKeys.FILTER_SEARCH_FILTER_IS_GLOBAL, "true");
 			}
 			if (filter != null) {
-				SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(this, DocumentHelper.parseText(filter));
+				Document searchQuery = DocumentHelper.parseText(filter);
+				SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(this, searchQuery);
 				model.putAll(searchFilterConverter.convertAndPrepareFormData());
+				Element filterTerm = (Element)searchQuery.getRootElement().selectSingleNode("//filterTerms/filterTerm[@filterType='text' and @caseSensitive='true']");
+				if (filterTerm != null) {
+					model.put(WebKeys.SEARCH_FORM_CASE_SENSITIVE, true);
+				}
 			}
 			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER, model);
 		} else {

@@ -33,7 +33,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <%@ include file="/WEB-INF/jsp/search/search_js.jsp" %>
 
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
