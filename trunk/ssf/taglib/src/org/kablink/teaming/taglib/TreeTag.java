@@ -109,7 +109,10 @@ public class TreeTag extends TagSupport {
 	private String onMouseover = "";
 	private String onMouseout = "";
 	private String titleClass = null;
-	
+
+	private static final String PATTERN_NUMBER_FORMAT = "^[0-9]*$";
+	private static final Pattern pattern_number_format = Pattern.compile(PATTERN_NUMBER_FORMAT, Pattern.DOTALL);;
+
 	public int doStartTag() throws JspException {
 		//The "flat" option has been turned off. This was for accessibility mode. 
 		//The tree widget is now fully accessible without the use of "flat" mode
@@ -474,8 +477,9 @@ public class TreeTag extends TagSupport {
 						jspOut.print("<img class=\"ss_twImg\" alt=\"\" src=\"" + getImage("spacer") + "\"/>");
 					} else {
 						String checked = "";
-						if (this.multiSelect.contains(s_binderId) ||
-								this.multiSelect.contains(Long.valueOf(s_binderId))) {
+						Matcher m = pattern_number_format.matcher( s_binderId );
+						if (this.multiSelect.contains(s_binderId) || (m.find() && 
+								this.multiSelect.contains(Long.valueOf(s_binderId)))) {
 							checked = "checked=\"checked\"";
 						}
 						jspOut.print("<input type=\"checkbox\" class=\"ss_text\"");
