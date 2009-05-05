@@ -951,6 +951,17 @@
 	</tag>
 
 	<tag>
+		<name>mailto</name>
+		<tag-class>org.kablink.teaming.taglib.MailtoTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>email</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+
+	<tag>
 		<name>markup</name>
 		<tag-class>org.kablink.teaming.taglib.MarkupTag</tag-class>
 		<body-content>JSP</body-content>
