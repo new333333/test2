@@ -76,6 +76,9 @@
 		  folderId="${mashupBinder.id}">
 		  <ssf:param name="newTab" value="1"/>
 		  </ssf:url>"><span>${mashupBinder.title}</span></a>
+		<c:if test="${ssConfigJspStyle == 'form'}">
+		  <span class="ss_italic ss_smallprint ss_normal">(${mashupBinder.parentBinder.pathName})</span>
+		</c:if>
 	  </div>
 	</c:if>
 	<c:if test="${ssConfigJspStyle != 'form' && !empty mashup_attributes['showFolderDescription']}">

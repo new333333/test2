@@ -428,7 +428,8 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 				searchInProgress = false;
 				
 				if (!data || !data.items || data.items.length == 0) {
-					that._listContainer.display = "none";
+					that._clearSearchResultsList();
+					that._listContainer.style.display = "none";
 					return;
 				}
 				
@@ -602,6 +603,8 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	//Routine called when item is clicked
 	this.selectItem = function(obj, entityType) {
 		if (!obj || !obj.id || obj.id == undefined || entityType == undefined) return false;
+		var spanObjs = obj.getElementsByTagName("span");
+		if (spanObjs.length > 0) that._inputObj.value = spanObjs[0].innerHTML;
 		var id = ss_replaceSubStr(obj.id, 'ss_find_id_', "");
 		if (that._singleClickRoutine != "") {
 			that._callRoutineSingle(id, obj, entityType);
@@ -670,7 +673,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	this.blurTextArea = function() {
 		if (!isMouseOverList) {
 			setTimeout(function() { 
-				that._listContainer.display = "none";
+				that._listContainer.style.display = "none";
 			} , 200);
 		}
 	}

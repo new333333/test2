@@ -79,7 +79,7 @@
 		  <ssf:param name="newTab" value="1"/>
 		  </ssf:url>"><span class="${spanClass}">${mashupEntry.title}</span></a>
 		  <c:if test="${ssConfigJspStyle == 'form'}">
-		    <span class="ss_italic ss_smallprint">(${mashupEntry.parentBinder.title})</span>
+		    <span class="ss_italic ss_smallprint">(${mashupEntry.parentBinder.pathName})</span>
 		  </c:if>
 	  </div>
 	</c:if>
