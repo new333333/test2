@@ -387,11 +387,11 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
     <td class="ss_search_bar"> <!-- Sets background for search area table kablink = #449EFF kablink blue = #6BC5CE -->
     <!-- Start of search area with find boxes -->
     <!-- Beginning of Search Buttons -->
-    <table align="center" border="0" cellpadding="0" cellspacing="0" width="88%">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
        <tbody>
          <tr>
           
-          <td width="34%">
+          <td width="40%">
 			<table border="0" cellpadding="0" cellspacing="0"  align="right">
 			<tbody>
 			  <tr>
@@ -616,7 +616,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
              		<ssf:alt tag=""/> width="1" height="30" hspace="6"/>
              </div>
        </td>
-       <td width="25%" class="ss_workspace">
+       <td width="26%" class="ss_workspace">
             <c:if test="${!empty ssUser.workspaceId}">
               	<a title="<ssf:nlt tag="navigation.goto.myWorkspace">
 		        			<ssf:param name="value" value="${ssUser.title}"/></ssf:nlt>"
@@ -641,23 +641,28 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			  	</ssHelpSpot>
 			</span> 
        </td>
-       <c:if test="${ssProductName != productDefault}">
-       <td width="2%" align="right">
+       <td width="5%" align="right">
          <a href="" onClick="ss_showAbout('ss_aboutBoxDiv');return false;">
-         	<img src="<html:rootPath/>images/pics/masthead/n_white.png" border="0"
-         	  alt="<ssf:nlt tag="navigation.about"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt>"
-         	  onMouseover="this.src='<html:rootPath/>images/pics/masthead/n_red.png';"
-         	  onMouseout="this.src='<html:rootPath/>images/pics/masthead/n_white.png';"/>
+       		<c:if test="${ssProductName != productDefault}">
+	         	<img src="<html:rootPath/>images/pics/masthead/n_white.png" border="0"
+	         	  alt="<ssf:nlt tag="navigation.about"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt>"
+	         	  onMouseover="this.src='<html:rootPath/>images/pics/masthead/n_red.png';"
+	         	  onMouseout="this.src='<html:rootPath/>images/pics/masthead/n_white.png';"/>
+       		</c:if>
+       		<c:if test="${ssProductName == productDefault}">
+	         	<img src="<html:rootPath/>images/pics/masthead/kablink_icon_small.png" border="0"
+	         	  alt="<ssf:nlt tag="navigation.about"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt>"/>
+       		</c:if>
          </a>
          <div id="ss_aboutBoxDiv" 
            style="position:absolute; display:none; border:1px solid #cecece; 
            background-color:#fff; width:300px; text-align:center;">
            <div style="height:200px; padding-top: 90px; margin-bottom: -90px;">
-             <span>${ssProductTitle}</span>
+             <c:if test="${ssProductName != productDefault}"><span>${ssProductTitle}</span></c:if>
+             <c:if test="${ssProductName == productDefault}"><span>${ssProductTitle}</span></c:if>
            </div>
          </div>
        </td>
-       </c:if>
       </tr><!-- kablink: ss_banner_guy_ka.gif -->
     </tbody>
     </table>
