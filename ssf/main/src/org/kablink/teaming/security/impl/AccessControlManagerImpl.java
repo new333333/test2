@@ -210,6 +210,17 @@ public class AccessControlManagerImpl implements AccessControlManager {
 			WorkAreaOperation workAreaOperation) 
     	throws AccessControlException {
         if (!testOperation(user, workArea, workArea, workAreaOperation)) {
+        	// Are we dealing with the Guest user?
+        	if ( ObjectKeys.GUEST_USER_INTERNALID.equals( user.getInternalId() ) )
+        	{
+        		Object[]	errorArgs;
+        		
+        		// Yes
+        		// Throw an exception that indicates the user is not logged in.
+        		errorArgs = new Object[] { user.getName(), workAreaOperation.toString(), workArea.toString() };
+        		throw new AccessControlException( "errorcode.operation.denied.sessionTimeout", errorArgs );
+        	}
+        	
         	//Make sure the user is allowed to see the workarea at all
         	if (WorkAreaOperation.READ_ENTRIES.equals(workAreaOperation)) {
            		//This user shouldn't see anything about this workarea
