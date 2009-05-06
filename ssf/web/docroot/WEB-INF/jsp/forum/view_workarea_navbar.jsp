@@ -641,14 +641,23 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			  	</ssHelpSpot>
 			</span> 
        </td>
+       <c:if test="${ssProductName != productDefault}">
        <td width="2%" align="right">
-         <a href="">
-         	<img src="<html:rootPath/>images/pics/masthead/n_red.png" border="0"
-         	  alt="<ssf:nlt tag="navigation.about"><ssf:param name="value" value="Novell Teaming"/></ssf:nlt>"
-         	  onMouseover="this.src='<html:rootPath/>images/pics/masthead/n_white.png';"
-         	  onMouseout="this.src='<html:rootPath/>images/pics/masthead/n_red.png';"/>
+         <a href="" onClick="ss_showAbout('ss_aboutBoxDiv');return false;">
+         	<img src="<html:rootPath/>images/pics/masthead/n_white.png" border="0"
+         	  alt="<ssf:nlt tag="navigation.about"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt>"
+         	  onMouseover="this.src='<html:rootPath/>images/pics/masthead/n_red.png';"
+         	  onMouseout="this.src='<html:rootPath/>images/pics/masthead/n_white.png';"/>
          </a>
+         <div id="ss_aboutBoxDiv" 
+           style="position:absolute; display:none; border:1px solid #cecece; 
+           background-color:#fff; width:300px; text-align:center;">
+           <div style="height:200px; padding-top: 90px; margin-bottom: -90px;">
+             <span>${ssProductTitle}</span>
+           </div>
+         </div>
        </td>
+       </c:if>
       </tr><!-- kablink: ss_banner_guy_ka.gif -->
     </tbody>
     </table>
