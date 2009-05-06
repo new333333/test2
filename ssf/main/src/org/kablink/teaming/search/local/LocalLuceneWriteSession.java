@@ -355,10 +355,14 @@ public class LocalLuceneWriteSession extends LocalLuceneSession implements Lucen
 	}
 
 	private String getTastingText(Document doc) {
-		String text = doc.getField(Constants.ALL_TEXT_FIELD).stringValue();
+		String text = "";
+		Field allText = doc.getField(Constants.ALL_TEXT_FIELD);
+		if (allText != null) 
+			text = allText.stringValue();
 		if (text.length() == 0) {
-			text = doc.getField(Constants.TITLE_FIELD).stringValue();
-			if (text == null) text="";
+			Field title = doc.getField(Constants.TITLE_FIELD);
+			if (title != null) 
+				text = title.stringValue();
 		}
 		if (text.length()> 1024) 
 			return text.substring(0,1024);
