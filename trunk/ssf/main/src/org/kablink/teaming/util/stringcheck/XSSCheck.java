@@ -127,12 +127,13 @@ public class XSSCheck implements StringCheck {
 		// value equality test due to the way we setup above.
 		
 		if (mode == MODE_TRUSTED_DISALLOW || mode == MODE_TRUSTED_STRIP) {
-			User user = RequestContextHolder.getRequestContext().getUser();
-			if(getTrustedUserNames(user.getZoneId()).contains(user.getName()))
-				return input; // match found on user list
-			Set userGroupNames = user.computeGroupNames();
-			if(!Collections.disjoint(user.computeGroupNames(), getTrustedGroupNames(user.getZoneId())))
-				return input; // match found on group list
+			if (RequestContextHolder.getRequestContext() != null) {
+				User user = RequestContextHolder.getRequestContext().getUser();
+				if(getTrustedUserNames(user.getZoneId()).contains(user.getName()))
+					return input; // match found on user list
+				if(!Collections.disjoint(user.computeGroupNames(), getTrustedGroupNames(user.getZoneId())))
+					return input; // match found on group list
+			}
 		}
 		
 		String sequence = new String(input);
