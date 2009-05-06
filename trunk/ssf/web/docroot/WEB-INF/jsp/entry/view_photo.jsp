@@ -163,7 +163,7 @@ function ss_setImgSize(obj) {
 		var ext = "";
 		if (extArray != null && extArray.length >= 1) ext = extArray[1];
 		ext = ext.toLowerCase();
-		if (ext == 'jpg' || ext == 'jpeg' || ext == 'gif' || ext == 'png') {
+		if (ext == 'jpg' || ext == 'jpeg' || ext == 'gif' || ext == 'png' || ext == 'bmp') {
 			//This is an image, show it hon this page
 			imgObj.src = url;
 		} else {
