@@ -376,4 +376,16 @@ public class Validator {
 	public static final String replaceDelimiter(String str) {
 		return str.replaceAll(",", "-");
 	}
+	
+	public static boolean isConservativeIdentifier(String s) {
+		char[] ca = s.toCharArray();
+		// We allow letters, digits, periods and underscores. 
+		// Do NOT allow hyphen characters, since its encoding is not identical between
+		// ASCII and Unicode which can lead to a problem.
+		for( char c : ca) {
+			if(!Character.isLetterOrDigit(c) && c != '.' && c != '_')
+				return false;
+		}
+		return true;
+	}
 }
