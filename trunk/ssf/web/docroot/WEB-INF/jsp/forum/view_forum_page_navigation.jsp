@@ -264,9 +264,9 @@ function ss_setSliderInit${renderResponse.namespace}() {
 			pageDivObj.innerHTML = "<span>"+ss_pageSlider${renderResponse.namespace}.getValue()+"</span>";
 		}
 	};
-	ss_pageSlider${renderResponse.namespace}.setValue(${ssPageCurrent});
 	ss_pageSlider${renderResponse.namespace}.setMinimum(1);
 	ss_pageSlider${renderResponse.namespace}.setMaximum(${ssPageLast})
+	ss_pageSlider${renderResponse.namespace}.setValue(${ssPageCurrent});
 	setTimeout("ss_setSliderPagePosition${renderResponse.namespace}();", 100);
 }
 ss_createOnLoadObj("ss_setSliderInit${renderResponse.namespace}", ss_setSliderInit${renderResponse.namespace});
