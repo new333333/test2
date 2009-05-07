@@ -34,7 +34,6 @@
 %>
 <% //Branding view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:set var="productDefault" value="<%= org.kablink.teaming.ObjectKeys.PRODUCT_NAME_DEFAULT %>"/>
 <c:if test="${!empty ssBinder}">
 <c:set var="binder" value="${ssBinder}"/>
 <jsp:useBean id="binder" type="org.kablink.teaming.domain.Binder" />
@@ -53,13 +52,13 @@
 </c:if>
 <c:if test="${empty binder || empty binder.brandingSource.branding || !ss_accessBranding}">
   <div id="ss_branding">
-    <c:if test="${ssProductName == productDefault}">
+    <c:if test="<%= !org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
 	    <a href="http://kablink.org">
 	      <img src="<html:rootPath/>images/pics/masthead/kablink_teaming.jpg" border="0"
 	        <ssf:alt text="${ssProductTitle}"/> style="padding:6px 0px 0px 10px" />
 	    </a>
 	</c:if>
-    <c:if test="${ssProductName != productDefault}">
+    <c:if test="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
 	    <img src="<html:rootPath/>images/pics/masthead/novell_teaming.png" border="0"
 	      <ssf:alt text="${ssProductTitle}"/> />
 	</c:if>
