@@ -657,13 +657,14 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
        		</c:if>
          </a>
          <div id="ss_aboutBoxDiv" 
-           style="position:absolute; display:none; border:1px solid #cecece; 
-           background-color:#fff; width:300px; text-align:center;">
-           <div style="height:200px; padding-top: 90px; margin-bottom: -90px;">
-             <c:if test="${ssProductName != productDefault}"><span>${ssProductTitle}</span></c:if>
-             <c:if test="${ssProductName == productDefault}"><span>${ssProductTitle}</span></c:if>
-           </div>
-         </div>
+           style="position:absolute; display:none; border:1px solid #cecece; background-color:#fff;">
+             <c:if test="${ssProductName != productDefault}">
+             	<img src="<html:rootPath/>images/pics/masthead/teaming_about_screen.png" border="0"/>
+			 </c:if>
+             <c:if test="${ssProductName == productDefault}">
+               <img src="<html:rootPath/>images/pics/masthead/teaming_about_screen.png" border="0"/>
+             </c:if>
+          </div>
        </td>
       </tr><!-- kablink: ss_banner_guy_ka.gif -->
     </tbody>
