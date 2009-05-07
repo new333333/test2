@@ -82,7 +82,7 @@
 	<ssf:ifLoggedIn>
 		<label for="ss_status_textarea${renderResponse.namespace}"></label>
 
-		<textarea cols="22" rows="2" id="ss_status_textarea${renderResponse.namespace}"
+		<textarea cols="20" rows="2" id="ss_status_textarea${renderResponse.namespace}"
 			wrap="virtual" class="ss_input_myStatus" 
   			onFocus="ss_setStatusBackground(this, 'focus');"
   			onKeyPress="ss_updateStatusSoon(this, event, <%= ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH %>);"
