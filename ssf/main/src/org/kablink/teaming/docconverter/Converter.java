@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -52,12 +53,15 @@ import org.kablink.teaming.util.TempFileUtil;
 public abstract class Converter<T>
 {
 	protected FileStore cacheFileStore;
+	protected long maxTextLength;
 	private int conversionTimeoutMS = 30000;
 	private FileModule fileModule;
 	private static final String TEXT_FILE_SUFFIX = ".txt";
 	
+	
 	public Converter() {
 		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
+		maxTextLength = SPropsUtil.getLong("doc.max.text.extraction.size.threshold", 1048576);
 		
 		String to = SPropsUtil.getString("conversion.timeout.ms");
 		if ((null != to) && (0 < to.length())) {
@@ -112,12 +116,31 @@ public abstract class Converter<T>
 			}
 		}
 
-		if(convertedFile.exists())
+		if(convertedFile.exists()) {
+			// check if it is a text file and too large
+			if( convertedFile.getPath().endsWith(TEXT_FILE_SUFFIX) &&  convertedFile.length() > maxTextLength) {
+				//concatenate the file
+				shortenConvertedFile(convertedFile.getPath(), maxTextLength);
+				convertedFile = cacheFileStore.getFile(convertedFilePath);
+			} 
 			return new FileInputStream(convertedFile);
+		}	
 		else
 			throw new DocConverterException("Conversion failed");
 	}
 
+	private void shortenConvertedFile(String convertedFilePath, long maxLength) {
+		try {
+
+			RandomAccessFile raf = new RandomAccessFile(convertedFilePath, "rw");
+			raf.setLength(maxLength); // truncate file
+			raf.close();
+		}
+		catch (java.io.IOException ex) {
+			//truncation didn't work, don't do anything
+		}
+	}
+	
 	protected abstract void createConvertedFileWithDefaultContent(File convertedFile) throws IOException;
 
 	protected void createCachedFile(File convertedFile, Binder binder, DefinableEntity entry, FileAttachment fa,
