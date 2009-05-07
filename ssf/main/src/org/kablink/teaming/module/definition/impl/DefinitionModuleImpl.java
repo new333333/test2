@@ -2105,14 +2105,16 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						Boolean hideSidebar = false;
 						Boolean hideToolbar = false;
 						Boolean hideFooter = false;
+						String deleteEverything = "";
 						String mashupStyle = "";
 						if (inputData.exists(nameValue + MASHUP_SHOW_BRANDING)) showBranding = true;
 						if (inputData.exists(nameValue + MASHUP_HIDE_MASTHEAD)) hideMasthead = true;
 						if (inputData.exists(nameValue + MASHUP_HIDE_SIDEBAR)) hideSidebar = true;
 						if (inputData.exists(nameValue + MASHUP_HIDE_TOOLBAR)) hideToolbar = true;
 						if (inputData.exists(nameValue + MASHUP_HIDE_FOOTER)) hideFooter = true;
+						if (inputData.exists(nameValue + MASHUP_DELETE_EVERYTHING)) deleteEverything = inputData.getSingleValue(nameValue + MASHUP_DELETE_EVERYTHING);
 						if (inputData.exists(nameValue + MASHUP_STYLE)) mashupStyle = inputData.getSingleValue(nameValue + MASHUP_STYLE);
-						if (inputData.exists(nameValue + "__idCounter")) {
+						if (deleteEverything.equals("") && inputData.exists(nameValue + "__idCounter")) {
 							int idCounter = Integer.valueOf(inputData.getSingleValue(nameValue + "__idCounter"));
 							String value = "";
 							for (int i = 0; i <= idCounter; i++) {
@@ -2192,6 +2194,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								}
 							}
 							entryData.put(nameValue, value);
+							entryData.put(nameValue + "__showBranding", showBranding);
+							entryData.put(nameValue + "__hideMasthead", hideMasthead);
+							entryData.put(nameValue + "__hideSidebar", hideSidebar);
+							entryData.put(nameValue + "__hideToolbar", hideToolbar);
+							entryData.put(nameValue + "__hideFooter", hideFooter);
+							entryData.put(nameValue + "__style", mashupStyle);
+						} else if (!deleteEverything.equals("")) {
+							entryData.put(nameValue, "");
 							entryData.put(nameValue + "__showBranding", showBranding);
 							entryData.put(nameValue + "__hideMasthead", hideMasthead);
 							entryData.put(nameValue + "__hideSidebar", hideSidebar);
