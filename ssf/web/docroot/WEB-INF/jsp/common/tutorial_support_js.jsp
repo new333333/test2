@@ -38,8 +38,9 @@
 
 <script type="text/javascript">
 	// The m_playTutorialWnd variable holds a handle to the Play Tutorial window.
-	var		m_playTutorialWnd	= null;
-	var		m_inLandingPage		= '${ss_inLandingPage}';	// Have we been included as part of a landing page?
+	var m_playTutorialWnd	= null;
+	var m_inLandingPage		= '${ss_inLandingPage}';	// Have we been included as part of a landing page?
+	var m_saveTutorialPanelState = true;
 
 	// Global variables.
 	window.TUTORIAL_PANEL_CLOSED	= 1;
@@ -92,8 +93,13 @@
 		// Update the link in the "Video Tutorial Panel" preference in the sidebar.
 		updateSidebarTutorialPanelPref( window.TUTORIAL_PANEL_CLOSED );
 
-		// Issue an ajax request to remember that the tutorial panel should not be displayed again.
-		saveTutorialPanelState( window.TUTORIAL_PANEL_CLOSED );
+		// Do we need to save the tutorial panel state?
+		if ( m_saveTutorialPanelState )
+		{
+			// Yes
+			// Issue an ajax request to remember that the tutorial panel should not be displayed again.
+			saveTutorialPanelState( window.TUTORIAL_PANEL_CLOSED );
+		}
 	}// end hideTutorialPanels()
 
 
@@ -146,6 +152,9 @@
 			anchor.style.display = 'none';
 		}
 
+		// We don't want the tutorial panel state saved during initialization, only when the state changes.
+		m_saveTutorialPanelState = false;
+		
 		// Is the tutorial panel supposed to be closed?
 		if ( initialState == window.TUTORIAL_PANEL_CLOSED )
 		{
@@ -164,6 +173,8 @@
 			// Show the expanded tutorial table.
 			showTutorialPanelExpanded();
 		}
+
+		m_saveTutorialPanelState = true;
 	}// end initTutorial()
 
 
@@ -236,8 +247,13 @@
 		// Update the link in the "Video Tutorial Panel" preference in the sidebar.
 		updateSidebarTutorialPanelPref( window.TUTORIAL_PANEL_COLLAPSED );
 
-		// Issue an ajax request to remember that the tutorial panel is collapsed.
-		saveTutorialPanelState( window.TUTORIAL_PANEL_COLLAPSED );
+		// Do we need to save the tutorial panel state?
+		if ( m_saveTutorialPanelState )
+		{
+			// Yes
+			// Issue an ajax request to remember that the tutorial panel is collapsed.
+			saveTutorialPanelState( window.TUTORIAL_PANEL_COLLAPSED );
+		}
 	}// end showTutorialPanelCollapsed()
 
 	
@@ -259,8 +275,13 @@
 		// Update the link in the "Video Tutorial Panel" preference in the sidebar.
 		updateSidebarTutorialPanelPref( window.TUTORIAL_PANEL_EXPANDED );
 
-		// Issue an ajax request to remember that the tutorial panel is expanded.
-		saveTutorialPanelState( window.TUTORIAL_PANEL_EXPANDED );
+		// Do we need to save the tutorial panel state?
+		if ( m_saveTutorialPanelState )
+		{
+			// Yes
+			// Issue an ajax request to remember that the tutorial panel is expanded.
+			saveTutorialPanelState( window.TUTORIAL_PANEL_EXPANDED );
+		}
 	}// end showTutorialPanelExpanded()
 
 	
