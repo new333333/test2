@@ -50,7 +50,7 @@
 <c:if test="${!empty ss_presence_user}">
 <c:set var="presence_user_title" value=""/>
 <c:if test="${!empty ss_presence_user.title}">
-<c:set var="presence_user_title" value="${ss_presence_user.title}"/>
+  <c:set var="presence_user_title"><ssf:userTitle user="${ss_presence_user}"/></c:set>
 </c:if>
 <c:set var="presence_user_zonName" value=""/>
 <c:if test="${!empty ss_presence_user.zonName}">
@@ -116,7 +116,7 @@
 	  href="<ssf:permalink entity="${ss_presence_user}"/>"
 	  onClick="ss_openUrlInParentWorkarea(this.href, '${ss_presence_user.workspaceId}', 'view_ws_listing', '${ss_presence_target}', '${ss_showUserClose}');return false;"
 	  ><span id="${ss_presence_user.id}" 
-	    class="${ss_presence_title_style} ss_muster_users">${ss_presence_user.title}</span></a>
+	    class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle user="${ss_presence_user}"/></span></a>
 	  </c:if>
 	  <c:if test="${empty ss_presence_user.workspaceId}">
   	      <a 
@@ -128,7 +128,7 @@
 	  	      name="newTab" value="1"/><ssf:param name="entryViewStyle" value="full"/></ssf:url>" 
 		  >
 		    <span id="${ss_presence_user.id}" 
-		      class="${ss_presence_title_style} ss_muster_users">${ss_presence_user.title}</span>
+		      class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle user="${ss_presence_user}"/></span>
 		  </a>
 	  </c:if>
 	</ssf:ifadapter>
@@ -139,11 +139,11 @@
 	  	name="binderId" value="${ss_presence_user.workspaceId}"/></ssf:url>"
 	  onClick="ss_openUrlInWorkarea(this.href, '${ss_presence_user.workspaceId}', 'view_ws_listing');return false;"
 	  ><span id="${ss_presence_user.id}"  
-	    class="${ss_presence_title_style} ss_muster_users">${ss_presence_user.title}</span></a>
+	    class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle user="${ss_presence_user}"/></span></a>
 	  </c:if>
 	  <c:if test="${empty ss_presence_user.workspaceId}">
 	  <span id="${ss_presence_user.id}"  
-	    class="${ss_presence_title_style} ss_muster_users">${ss_presence_user.title}</span>
+	    class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle user="${ss_presence_user}"/></span>
 	  </c:if>
 	</ssf:ifnotadapter>
  

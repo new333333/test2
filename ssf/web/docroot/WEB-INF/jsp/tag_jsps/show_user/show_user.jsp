@@ -71,7 +71,7 @@
 					  >
 			  		</c:if>
 					  <span id="${ss_showUserUser.id}" 
-					    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
+					    class="${ss_showUserTitleStyle} ss_muster_users"><ssf:userTitle user="${ss_showUserUser}"/></span>
 			  	<c:choose>
 				  	<c:when test="${!ss_showUserIsGroup}">
 					  </a>
@@ -97,7 +97,7 @@
 	  				name="newTab" value="1"/><ssf:param name="entryViewStyle" value="full"/></ssf:url>" 
 				  >
 				      <span id="${ss_showUserUser.id}" 
-            	       class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
+            	       class="${ss_showUserTitleStyle} ss_muster_users"><ssf:userTitle user="${ss_showUserUser}" /></span>
             	  </a>
               </c:if>		  	
 			</ssf:ifadapter>
@@ -117,7 +117,7 @@
 			  		</c:otherwise>
 			  	</c:choose>
 			  ><span id="${ss_showUserUser.id}"  
-			    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span></a>
+			    class="${ss_showUserTitleStyle} ss_muster_users"><ssf:userTitle user="${ss_showUserUser}"/></span></a>
 			    <c:if test="${ss_showUserIsGroup}">
 			  		<a href="javascript: //"
 			  		onclick="ss_toggleShowDiv('ss_show_user_${ss_showUserInstanceCount}'); return false;" class="ss_fineprint"><ssf:nlt tag="showUser.group.members"><ssf:param name="value" value="${fn:length(ss_showUserGroupMembers)}"/></ssf:nlt></a>
@@ -138,14 +138,14 @@
 	  				name="newTab" value="1"/><ssf:param name="entryViewStyle" value="full"/></ssf:url>" 
 				  >
 				    <span id="${ss_showUserUser.id}"  
-				      class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
+				      class="${ss_showUserTitleStyle} ss_muster_users"><ssf:userTitle user="${ss_showUserUser}"/></span>
 				  </a>
 			  </c:if>
 			</ssf:ifnotadapter>
 		</c:if>
 		<c:if test="${!ss_showUserUser.active}">
 		  <span id="${ss_showUserUser.id}" 
-		    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
+		    class="${ss_showUserTitleStyle} ss_muster_users"><ssf:userTitle user="${ss_showUserUser}"/></span>
 		</c:if>
 	</c:if>
 </c:if>
@@ -156,7 +156,7 @@
 		  	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				    action="__ajax_mobile"
 				    operation="mobile_show_workspace"
-				    binderId="${ss_showUserUser.workspaceId}" />"><span>${ss_showUserUser.title}</span></a>
+				    binderId="${ss_showUserUser.workspaceId}" />"><span><ssf:userTitle user="${ss_showUserUser}"/></span></a>
 			</c:when>
 	  		<c:otherwise>
 		  		<ul>
@@ -168,6 +168,6 @@
 	  	</c:choose>
   </c:if>
   <c:if test="${empty ss_showUserUser.workspaceId}">
-  <span>${ss_showUserUser.title}</span>
+  <span><ssf:userTitle user="${ss_showUserUser}"/></span>
   </c:if>
 </c:if>

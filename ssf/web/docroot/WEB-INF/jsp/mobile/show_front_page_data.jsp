@@ -57,10 +57,10 @@
 		        <a href="<ssf:url adapter="true" portletName="ss_forum" 
 					    action="__ajax_mobile"
 					    operation="mobile_show_workspace"
-					    binderId="${ssUser.workspaceId}" />">${ssUser.title}</a>
+					    binderId="${ssUser.workspaceId}" />"><ssf:userTitle user="${ssUser}"/></a>
 			</c:if>
 			<c:if test="${empty ssUser.workspaceId}">
-				${ssUser.title}
+				<ssf:userTitle user="${ssUser}"/>
 			</c:if>
 	      </ssf:param>
 	    </ssf:nlt>

@@ -217,8 +217,9 @@ function ss_checkForm(obj) {
   !empty ss_accessControlMap.createWorkspace && 
   !ss_accessControlMap.createWorkspace}">
 <span class="ss_errorLabel">
+  <c:set var="userTitle"><ssf:userTitle user="${ssUser}"/></c:set>
   <ssf:nlt tag="errorcode.operation.denied">
-    <ssf:param name="value" value="${ssUser.title}"/>
+    <ssf:param name="value" value="${userTitle}"/>
     <ssf:param name="value" useBody="true"><ssf:nlt tag="workarea_operation.createWorkspaces"/></ssf:param>
     <ssf:param name="value" value="${ssBinder.title}"/>
   </ssf:nlt>

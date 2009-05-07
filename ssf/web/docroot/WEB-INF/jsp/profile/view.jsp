@@ -44,7 +44,7 @@
  		name="binderId" value="${ssUser.parentBinder.id}"/><portlet:param 
  		name="entryId" value="${ssUser.id}"/></portlet:renderURL>">
 
-<c:out value="${ssUser.title}"/></a></td></tr>
+<ssf:userTitle user="${ssUser}"/></a></td></tr>
 </table>
 </div>
 </c:if>
