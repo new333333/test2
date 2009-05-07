@@ -165,4 +165,7 @@
 </div>
 <c:if test="${ssConfigJspStyle == 'form'}">
   </div>
+  <div id="ss_mashupDataValue" style="display:none;">
+  ${ssDefinitionEntry.customAttributes[property_name].value}
+  </div>
 </c:if>
