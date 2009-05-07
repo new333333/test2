@@ -87,6 +87,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractControllerRetry;
@@ -145,6 +146,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		if (ReleaseInfo.isLicenseRequiredEdition() && !SPropsUtil.getBoolean("mobile.enabled", false)) {
+			Map model = new HashMap();
+			return new ModelAndView("mobile/not_supported", model);
+		}
 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
