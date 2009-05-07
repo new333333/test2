@@ -52,6 +52,17 @@
 %>
 <c:set var="ss_mashupPropertyName" value="${property_name}" scope="request"/>
 <c:if test="${ssConfigJspStyle == 'form'}">
+<script type="text/javascript">
+function ss_mashup_deleteAll_${renderResponse.namespace}() {
+	if (confirm("<ssf:nlt tag="mashup.deleteEverythingConfirm"/>")) {
+		var obj = self.document.getElementById("${ss_mashupPropertyName}__deleteEverything");
+		obj.value = "true";
+		return true;
+	} else {
+		return false;
+	}
+}
+</script>
   <div style="padding: 20px 0px 20px 0px;">
     <div><span class="ss_bold">${property_caption}</span></div>
     <div style="padding:6px 0px 6px 20px;">
@@ -162,6 +173,14 @@
     
   </c:if>
   <input type="hidden" name="${ss_mashupPropertyName}__idCounter" value="${ss_mashupItemId}"/>
+  <c:if test="${ssConfigJspStyle == 'form'}">
+   <input type="hidden" name="${ss_mashupPropertyName}__deleteEverything" id="${ss_mashupPropertyName}__deleteEverything" />
+   <br/>
+   <br/>
+   <input type="submit" value="<ssf:nlt tag="mashup.deleteEverything"/>" name="applyBtn" 
+    class="ss_linkButton ss_fineprint"
+	onClick="return ss_mashup_deleteAll_${renderResponse.namespace}();" />
+  </c:if>
 </div>
 <c:if test="${ssConfigJspStyle == 'form'}">
   </div>
