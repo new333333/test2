@@ -131,20 +131,20 @@ boolean isIE6 = BrowserSniffer.is_ie_6(request);
 	}
 div.ss_input_myStatus {
 	border-color: #9EC8CD;
-	width: 160px;
+	width: 148px;
 	padding: 2px 2px 0px 2px;	
 	}
 textarea.ss_input_myStatus {
 	border-color: #9EC8CD;
-	width: 164px;
+	width: 152px;
 	height: 42px;
 	margin: 0px 0px 8px 1px;
 	<c:if test="<%= isIE %>">
-	    width: 180px;
+	    width: 160px;
   		margin: 0px 8px 4px -16px;
  	</c:if>
 	<c:if test="<%= isIE6 %>">
-	    width: 180px;
+	    width: 160px;
   		margin: 0px 8px 4px -10px;
  	</c:if>
 	padding: 0px 0px 3px 2px;	
