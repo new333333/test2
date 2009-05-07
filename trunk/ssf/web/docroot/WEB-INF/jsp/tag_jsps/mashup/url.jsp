@@ -50,7 +50,9 @@
 <c:if test="${ssConfigJspStyle != 'form'}">
 <div class="ss_mashup_url_content">
   <c:if test="${!empty mashup_attributes['title']}">
-    <a href="${mashup_attributes['href']}">${mashup_attributes['title']}</a>
+    <a 
+    <c:if test="${!empty mashup_attributes['popup']}"> target="blank" </c:if>
+    href="${mashup_attributes['href']}">${mashup_attributes['title']}</a>
   </c:if>
 </div>
 </c:if>

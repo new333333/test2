@@ -114,6 +114,7 @@ var ss_mashupAttr_listTitle${ss_mashupItemId} = "";
 var ss_mashupAttr_customJsp${ss_mashupItemId} = "";
 var ss_mashupAttr_urlTitle${ss_mashupItemId} = "";
 var ss_mashupAttr_urlHref${ss_mashupItemId} = "";
+var ss_mashupAttr_urlPopup${ss_mashupItemId} = "";
 var ss_mashupAttr_utilityElement${ss_mashupItemId} = "";
 
 function ss_mashupClearAttrs${ss_mashupItemId}() {
@@ -130,6 +131,7 @@ function ss_mashupClearAttrs${ss_mashupItemId}() {
 	ss_mashupAttr_customJsp${ss_mashupItemId} = "";
 	ss_mashupAttr_urlTitle${ss_mashupItemId} = "";
 	ss_mashupAttr_urlHref${ss_mashupItemId} = "";
+	ss_mashupAttr_urlPopup${ss_mashupItemId} = "";
 	ss_mashupAttr_utilityElement${ss_mashupItemId} = "";
 }
 function ss_mashupBuildAttrs${ss_mashupItemId}() {
@@ -168,6 +170,9 @@ function ss_mashupBuildAttrs${ss_mashupItemId}() {
 	}
 	if (ss_mashupAttr_urlHref${ss_mashupItemId} != "") {
 		attr += ",href=" + escape(ss_mashupAttr_urlHref${ss_mashupItemId})
+	}
+	if (ss_mashupAttr_urlPopup${ss_mashupItemId} != "") {
+		attr += ",popup=1"
 	}
 	
 	//alert(attr)
@@ -491,6 +496,14 @@ function ss_mashupSubmit${ss_mashupItemId}() {
           <input type="text" name="${ss_mashupPropertyName}__urlHref" size="40"
           	id="${ss_mashupPropertyName}__urlHref"
             onChange="ss_mashupAttr_urlHref${ss_mashupItemId} = this.value;"/> 
+          <br/>
+          <input type="checkbox" name="${ss_mashupPropertyName}__urlPopup"
+          	id="${ss_mashupPropertyName}__urlPopup"
+            onChange="ss_mashupAttr_urlPopup${ss_mashupItemId} = this.value;"/> 
+          <label for="${ss_mashupPropertyName}__urlPopup">
+          	<span class="ss_labelAfter"><ssf:nlt tag="mashup.urlPopup"/></span>
+          </label>
+          <br/>
           <br/>
 		  <input type="submit" value="<ssf:nlt tag="button.ok"/>" name="applyBtn" 
 		    class="ss_linkButton ss_fineprint"
