@@ -645,23 +645,23 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
        </td>
        <td width="5%" align="right">
          <a href="" onClick="ss_showAbout('ss_aboutBoxDiv');return false;">
-       		<c:if test="${ssProductName != productDefault}">
+       		<c:if test="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
 	         	<img src="<html:rootPath/>images/pics/masthead/n_white.png" border="0"
 	         	  alt="<ssf:nlt tag="navigation.about"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt>"
 	         	  onMouseover="this.src='<html:rootPath/>images/pics/masthead/n_red.png';"
 	         	  onMouseout="this.src='<html:rootPath/>images/pics/masthead/n_white.png';"/>
        		</c:if>
-       		<c:if test="${ssProductName == productDefault}">
+       		<c:if test="<%= !org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
 	         	<img src="<html:rootPath/>images/pics/masthead/kablink_icon_small.png" border="0"
 	         	  alt="<ssf:nlt tag="navigation.about"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt>"/>
        		</c:if>
          </a>
          <div id="ss_aboutBoxDiv" 
            style="position:absolute; display:none; border:1px solid #cecece; background-color:#fff;">
-             <c:if test="${ssProductName != productDefault}">
+             <c:if test="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
              	<img src="<html:rootPath/>images/pics/masthead/teaming_about_screen.png" border="0"/>
 			 </c:if>
-             <c:if test="${ssProductName == productDefault}">
+             <c:if test="<%= !org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
                <img src="<html:rootPath/>images/pics/masthead/teaming_about_screen.png" border="0"/>
              </c:if>
           </div>
