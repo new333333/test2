@@ -1,4 +1,3 @@
-<%
 /**
  * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
@@ -31,41 +30,68 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-%>
-<%@ page import="org.kablink.teaming.ObjectKeys" %>
+package org.kablink.teaming.taglib;
 
-<div id="header">
-  <ul>
-	<li>
-		<a href="<ssf:url adapter="true" portletName="ss_forum" 
-			action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
-			><img src="<html:rootPath/>css/images/mobile/home_icon.png" 
-			 <ssf:alt tag=""/> width="14" height="15" 
-			 hspace="3" border="0" align="bottom" /><ssf:nlt tag="mobile.returnToTop"/></a>
-	</li>
-	<li>
-		<c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
-		<c:if test="${ssUser.internalId == guestInternalId}">
-		  <c:if test='<%= !org.kablink.teaming.util.SPropsUtil.getBoolean("form.login.auth.disallowed",false) %>' >
-		    <a href="<ssf:url action="__ajax_mobile" actionUrl="false" 
-							operation="mobile_login" />"
-		    >
-		    <span><ssf:nlt tag="login"/></span>
-		    </a>
-		  </c:if>
-		</c:if>
-		
-		<c:if test="${ssUser.internalId != guestInternalId}">
-			<c:if test="${!empty ssUser.workspaceId}">
-				<a href="<ssf:url adapter="true" portletName="ss_forum" 
-				    action="__ajax_mobile"
-				    operation="mobile_show_workspace"
-				    binderId="${ssUser.workspaceId}" />"><ssf:userTitle user="${ssUser}"/></a>
-			</c:if>
-			<c:if test="${empty ssUser.workspaceId}">
-				<ssf:userTitle user="${ssUser}"/>
-			</c:if>
-		</c:if>
-	</li>
-  </ul>
-</div>
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.tagext.BodyTagSupport;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.Utils;
+import org.kablink.util.servlet.StringServletResponse;
+
+
+/**
+ * Show the user's title.
+ * 
+ * 
+ * @author Peter Hurley
+ * 
+ */
+public class UserTitleTag extends BodyTagSupport {
+
+	protected static final Log logger = LogFactory.getLog(UserTitleTag.class);
+	
+	private User user;
+
+	public int doStartTag() {
+		return EVAL_BODY_BUFFERED;
+	}
+
+	public int doAfterBody() {
+		return SKIP_BODY;
+	}
+
+	public int doEndTag() throws JspTagException {
+		try {
+			if (user != null) {
+				JspWriter jspOut = pageContext.getOut();
+				String result = Utils.getUserTitle(user);
+				jspOut.print(result);
+			}
+
+		} catch (Exception e) {
+			throw new JspTagException(e.getLocalizedMessage());
+		} finally {
+			user = null;
+		}
+
+		return EVAL_PAGE;
+	}
+
+	public void setUser(User user) {
+	    this.user = user;
+	}
+
+}

@@ -32,11 +32,14 @@
  */
 package org.kablink.teaming.util;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 
 
@@ -83,5 +86,15 @@ public class Utils {
 			return (RuntimeException) uncheckedException;
 		else
 			throw new IllegalArgumentException(uncheckedException);
+	}
+	
+	public static String getUserTitle(User user) {
+		List values = new ArrayList();
+		values.add(user.getFirstName().trim());
+		values.add(user.getMiddleName().trim());
+		values.add(user.getLastName().trim());
+		String result = NLT.get("user.title", values.toArray(), user.getTitle());
+		result = result.trim().replaceAll("  ", " ");
+		return result;
 	}
 }

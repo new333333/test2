@@ -359,16 +359,17 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
         <c:if test="${!ss_mashupHideMasthead || ss_mashupShowBranding}">
 	        <span class="ss_mastheadName">
 	        <c:if test="${!empty ssUser.workspaceId}">
+		        <c:set var="userTitle"><ssf:userTitle user="${ssUser}"/></c:set>
 		        <a title="<ssf:nlt tag="navigation.goto.myWorkspace">
-		        			<ssf:param name="value" value="${ssUser.title}"/></ssf:nlt>"
+		        			<ssf:param name="value" value="${userTitle}"/></ssf:nlt>"
 						  href="<ssf:url 
 						    windowState="${ss_urlWindowState}"
 					      	action="view_ws_listing"
 					      	binderId="${ssUser.workspaceId}"/>"
-		              	>${ssUser.title}</a>
+		              	>${userTitle}</a>
 		    </c:if>
 		    <c:if test="${empty ssUser.workspaceId}">
-		    	${ssUser.title}
+		    	${userTitle}
 		    </c:if>
 		    </span>
         </c:if>
@@ -618,8 +619,9 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
        </td>
        <td width="26%" class="ss_workspace">
             <c:if test="${!empty ssUser.workspaceId}">
+              	<c:set var="userTitle"><ssf:userTitle user="${ssUser}"/></c:set>
               	<a title="<ssf:nlt tag="navigation.goto.myWorkspace">
-		        			<ssf:param name="value" value="${ssUser.title}"/></ssf:nlt>"
+		        			<ssf:param name="value" value="${userTitle}"/></ssf:nlt>"
 				  href="<ssf:url 
 				    windowState="${ss_urlWindowState}"
 			      	action="view_ws_listing"

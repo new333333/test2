@@ -2036,6 +2036,17 @@
 	</tag>
 
 	<tag>
+		<name>userTitle</name>
+		<tag-class>org.kablink.teaming.taglib.UserTitleTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>user</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+	
+	<tag>
 		<name>velocity</name>
 		<tag-class>org.kablink.teaming.taglib.VelocityTag</tag-class>
 		<body-content>JSP</body-content>

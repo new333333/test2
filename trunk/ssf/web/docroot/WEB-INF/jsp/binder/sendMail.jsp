@@ -61,7 +61,7 @@ self.window.resizeTo(width, height);
  </td></tr>
  <tr><td>
  <input class="ss_style" type="checkbox" name="self" id="self" >&nbsp;<span class="ss_labelRight">
-  <label for="self">${ssUser.title} (${ssUser.emailAddress})</label></span>
+  <label for="self"><ssf:userTitle user="${ssUser}"/> (${ssUser.emailAddress})</label></span>
  </td></tr>
 </table>
 <br/>
