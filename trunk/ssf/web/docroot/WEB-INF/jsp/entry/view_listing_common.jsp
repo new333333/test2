@@ -219,7 +219,7 @@ function ss_loadEntryUrl(url,id) {
 		    <tbody>
 		    <tr>
 		    <c:if test="${!ss_mashupHideSidebar && (empty ss_captive || !ss_captive)}">
-		    <td valign="top" class="ss_view_sidebar" id="ss_sidebarTd${renderResponse.namespace}">
+		    <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
 				<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
 			</td>
 			</c:if>
