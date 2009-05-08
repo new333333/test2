@@ -927,6 +927,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     		String id, Map component, boolean isConfig) {
     	User user = RequestContextHolder.getRequestContext().getUser();
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		if (userProperties == null) userProperties = new HashMap();
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		if (!model.containsKey(WebKeys.SEEN_MAP)) 
 			model.put(WebKeys.SEEN_MAP, getProfileModule().getUserSeenMap(user.getId()));

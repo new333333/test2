@@ -46,6 +46,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.Utils;
@@ -63,7 +64,7 @@ public class UserTitleTag extends BodyTagSupport {
 
 	protected static final Log logger = LogFactory.getLog(UserTitleTag.class);
 	
-	private User user;
+	private Principal user;
 
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -77,7 +78,10 @@ public class UserTitleTag extends BodyTagSupport {
 		try {
 			if (user != null) {
 				JspWriter jspOut = pageContext.getOut();
-				String result = Utils.getUserTitle(user);
+				String result = user.getTitle();
+				if (user instanceof User) {
+					result = Utils.getUserTitle((User) user);
+				}
 				jspOut.print(result);
 			}
 
@@ -90,7 +94,7 @@ public class UserTitleTag extends BodyTagSupport {
 		return EVAL_PAGE;
 	}
 
-	public void setUser(User user) {
+	public void setUser(Principal user) {
 	    this.user = user;
 	}
 
