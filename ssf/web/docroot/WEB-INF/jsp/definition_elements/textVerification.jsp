@@ -48,8 +48,11 @@
 			img = document.getElementById( 'kaptcha-img' );
 			img.width = '200';
 			img.height = '50';
-			img.src = '<html:imagesPath/>pics/1pix.gif';
-			img.src = 'Kaptcha.jpg';
+
+			// We need to append a random number as a dummy parameter on the image url so we will get
+			// a new image every time.  If we just use 'Kaptcha.jpg' as the url, we will not get a new
+			// image because the browser will use a cached image.
+			img.src = 'Kaptcha.jpg?dummy=' + Math.random();
 		}// end getNewCaptchaImg()
 	
 	</script>
