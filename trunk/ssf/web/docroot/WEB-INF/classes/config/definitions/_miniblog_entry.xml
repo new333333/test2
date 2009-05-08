@@ -8,14 +8,14 @@
         <property name="name" value="form1"/>  
         <property name="type" value="form"/> 
       </properties>  
-      <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="24">
-        <properties>
-          <property name="caption" value="__guest.default.caption"/>
-          <property name="name" value="_guestName"/>
-          <property name="width" value=""/>
-          <property name="required" value="false"/>
-        </properties>
-      </item>
+      <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="24"> 
+        <properties> 
+          <property name="caption" value="__guest.default.caption"/>  
+          <property name="name" value="_guestName"/>  
+          <property name="width" value=""/>  
+          <property name="required" value="false"/> 
+        </properties> 
+      </item>  
       <item name="description" caption="__description" type="data" id="5"> 
         <properties> 
           <property name="caption" value="__description"/>  
@@ -54,10 +54,11 @@
     </item> 
   </item>  
   <item name="entryView" caption="__entry_view_definition" id="10" display="view"> 
-    <item name="titleView" caption="__title" id="11"> 
-      <properties> 
-        <property name="caption" value="__title"/> 
-      </properties> 
+    <item name="titleView" caption="__title" id="11" category="entryViewData" display="view"> 
+      <properties>
+        <property name="caption" value="__title"/>
+        <property name="showDocNumber" value="false"/>
+      </properties>
     </item>  
     <item name="entrySignatureView" caption="__entry_signature" id="12"> 
       <properties> 
