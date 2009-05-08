@@ -74,16 +74,16 @@
 						<td align="right" width="35%">
 							<label for="j_username"><span><ssf:nlt tag="login.name"/></span></label>
 						</td>
-						<td align="left">
-		          			<input type="text" class="ss_text_${ss_loginFormStyle}" size="40" name="j_username" id="j_username" style="width: 198px;"/>
+						<td align="left" style="padding: 0px !important;">
+		          			<input type="text" class="ss_text_${ss_loginFormStyle}" size="40" name="j_username" id="j_username" style="width: 198px; padding-right: 0px !important; padding-left: 0px !important; margin-right: 0px !important;"/>
 						</td>
 					</tr>
 					<tr>
 						<td align="right">
 		          			<label for="j_password"><span><ssf:nlt tag="login.password"/></span></label>
 						</td>
-						<td align="left">
-		          			<input class="ss_text_${ss_loginFormStyle}" type="password" size="40" name="j_password" id="j_password" style="width: 198px;"/>
+						<td align="left" style="padding: 0px !important;">
+		          			<input class="ss_text_${ss_loginFormStyle}" type="password" size="40" name="j_password" id="j_password" style="width: 198px; padding-right: 0px !important; padding-left: 0px !important; margin-right: 0px !important;"/>
 						</td>
 					</tr>
 
@@ -97,12 +97,11 @@
 		       		</tr>
 </c:if>
 					<tr>
-						<td></td>
-						<td align="right" nowrap>
-							<div style="margin:5px 0px 5px 0px;">
+						<td align="right">&nbsp;</td>
+						<td align="right" >
+							<div style="margin-top: 1.5em; margin-bottom: .25em;">
 			    		  		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
-			    		  		<input type="reset" class="ss_submit" style="margin-left:20px;" value="<ssf:nlt tag="button.reset"/>"/>
-						  
+			    		  		<input type="reset" style="margin-left: 10px;" class="ss_submit" value="<ssf:nlt tag="button.reset"/>"/>
 			<!-- If the user has rights to create a new user, add the "Create new account" link. -->
 			<c:if test="${!empty ssAddUserAllowed}">
 							  	<a style="margin-left: 2em;"
@@ -110,7 +109,7 @@
 								   onclick="invokeCreateNewAccountPage();return false;"
 							       title="<ssf:nlt tag="login.createAccount" />" >
 									<span><ssf:nlt tag="login.createAccount" /></span>
-							  	</a>
+						  		</a>
 			</c:if>
 							</div>
 						</td>
@@ -122,7 +121,7 @@
 		<!-- This row holds the copyright information. -->
 		<tr height="10" style="color: white; background-color: #999">
 			<td style="font-size: 70%;" align="right">
-				<ssf:nlt tag="${copyrightNotice}"/>
+				<span style="color: white;"><ssf:nlt tag="${copyrightNotice}"/></span>
 			</td>
 		</tr>
 	</table>
