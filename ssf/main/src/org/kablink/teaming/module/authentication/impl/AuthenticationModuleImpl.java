@@ -47,10 +47,15 @@ import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
-import org.kablink.teaming.spring.security.SsfAuthenticationProvider;
 import org.kablink.teaming.spring.security.SsfContextMapper;
+import org.kablink.teaming.spring.security.SynchNotifiableAuthentication;
+import org.kablink.teaming.spring.security.ZoneAwareLocalAuthenticationProvider;
+import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.SessionUtil;
 import org.kablink.util.Validator;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationException;
 import org.springframework.security.AuthenticationServiceException;
@@ -63,18 +68,24 @@ import org.springframework.security.providers.ldap.authenticator.BindAuthenticat
 import org.springframework.security.userdetails.UsernameNotFoundException;
 
 public class AuthenticationModuleImpl extends BaseAuthenticationModule
-		implements AuthenticationProvider {
+		implements AuthenticationProvider, InitializingBean {
 	protected Log logger = LogFactory.getLog(getClass());
 
 	protected Map<Long, ProviderManager> authenticators = null;
 
-	protected Map<Long, SsfAuthenticationProvider> localProviders = null;
+	protected Map<Long, ZoneAwareLocalAuthenticationProvider> localProviders = null;
 	protected Map<Long, Long> lastUpdates = null;
 	
-	public AuthenticationModuleImpl() {
+	protected Class localAuthenticationProviderClass;
+	
+	public AuthenticationModuleImpl() throws ClassNotFoundException {
 		authenticators = new HashMap<Long, ProviderManager>();
-		localProviders = new HashMap<Long, SsfAuthenticationProvider>();
+		localProviders = new HashMap<Long, ZoneAwareLocalAuthenticationProvider>();
 		lastUpdates = new HashMap<Long, Long>();
+	}
+
+	public void afterPropertiesSet() throws Exception {
+		localAuthenticationProviderClass = ReflectHelper.classForName(SPropsUtil.getString("local.authentication.provider.class", "org.kablink.teaming.spring.security.ZoneAwareLocalAuthenticationProviderImpl"));
 	}
 
 	protected void addZone(ZoneConfig zoneConfig) throws Exception
@@ -87,12 +98,18 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		logger.debug("Setting authentication info for zone " + zoneName);
 		ProviderManager pm = new ProviderManager();
 		
-		SsfAuthenticationProvider localProvider = new SsfAuthenticationProvider(zoneName);
+		ZoneAwareLocalAuthenticationProvider localProvider = newZoneAwareLocalAuthenticationProviderInstance(zoneName);
 		localProviders.put(zoneConfig.getZoneId(), localProvider);
 		
 		authenticators.put(zoneConfig.getZoneId(), pm);
 		
 		rebuildProvidersForZone(zoneConfig);
+	}
+	
+	protected ZoneAwareLocalAuthenticationProvider newZoneAwareLocalAuthenticationProviderInstance(String zoneName) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		ZoneAwareLocalAuthenticationProvider provider = (ZoneAwareLocalAuthenticationProvider) localAuthenticationProviderClass.newInstance();
+		provider.setZoneName(zoneName);
+		return provider;
 	}
 	
 	protected void removeZone(Long zoneId)
@@ -222,7 +239,14 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException
     {
 		try {
-			return doAuthenticate(authentication);
+			boolean hadSession = SessionUtil.sessionActive();
+			try {
+				if (!hadSession) SessionUtil.sessionStartup();	
+				return doAuthenticate(authentication);
+			}
+			finally {
+				if (!hadSession) SessionUtil.sessionStop();
+			}
 		}
 		catch(AuthenticationServiceException e) {
 			Throwable t = e.getCause();
@@ -252,10 +276,14 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     	if(authenticators.containsKey(zone)) {
        		Authentication result = null;
     		try {
+    			// Perform authentication
      			result = authenticators.get(zone).authenticate(authentication);
+     			// This is not used for authentication but for synchronization.
     			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
     					(String) result.getName(), (String) result.getCredentials(),
     					(Map) result.getPrincipal(), LoginInfo.AUTHENTICATOR_WEB);
+    			if(result instanceof SynchNotifiableAuthentication)
+    				((SynchNotifiableAuthentication)result).synchDone();
     			return result;
     		} catch(AuthenticationException e) {
     			exc = e;
@@ -314,4 +342,5 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		}
 		return false;
 	}
+
 }

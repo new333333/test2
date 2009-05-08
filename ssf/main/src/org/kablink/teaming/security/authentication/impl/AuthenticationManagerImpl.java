@@ -173,11 +173,11 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			user = getProfileDao().findUserByName(username, zoneName);
 		} catch (NoWorkspaceByTheNameException e) {
      		if (user == null) {
-    			throw new UserDoesNotExistException("Authentication failed: Unrecognized user [" 
+    			throw new UserDoesNotExistException("Unrecognized user [" 
      						+ zoneName + "," + username + "]", e);
     		}
     	} catch (NoUserByTheNameException e) {
-			throw new UserDoesNotExistException("Authentication failed: Unrecognized user [" 
+			throw new UserDoesNotExistException("Unrecognized user [" 
 						+ zoneName + "," + username + "]", e);
     	}
     	
@@ -200,7 +200,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	   				// authentication AND do not allow automatic synchronization of password,
 	   				// then mismatched password results in authentication failure.
 	   				if(!ignorePassword) {
-		   				throw new PasswordDoesNotMatchException("Authentication failed: password does not match");  					
+		   				throw new PasswordDoesNotMatchException("Password does not match for user [" + zoneName + "," + username + "]");				
 	   				}
 	   			}
 	   		}
@@ -218,7 +218,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			if (!hadSession) SessionUtil.sessionStartup();	
 			user = getProfileDao().loadUser(userId, zoneName);
 			if(!privateDigest.equals(user.getPrivateDigest(binderId))) {
-				throw new DigestDoesNotMatchException("Authentication failed: digest does not match");
+				throw new DigestDoesNotMatchException("Digest does not match for user [" + zoneName + "," + userId + "]");
 			}
 			
 			if(authenticatorName != null)
@@ -226,7 +226,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 
 		}
 		catch(NoUserByTheIdException e) {
-			throw new UserDoesNotExistException("Authentication failed: Unrecognized user ["
+			throw new UserDoesNotExistException("Unrecognized user ["
 					+ zoneName + "," + userId + "]", e);
 		} finally {
 			if (!hadSession) SessionUtil.sessionStop();			
