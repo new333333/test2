@@ -261,6 +261,7 @@ public class WebKeys {
     public static final String ACTION_ADD_BINDER = "add_binder";
     public static final String ACTION_ADD_TEAM_MEMBER = "add_team_member";
     public static final String ACTION_ADVANCED_SEARCH = "advanced_search";
+    public static final String ACTION_GUEST_USER_ACCESS_REPORT = "guest_user_access_report";
     public static final String ACTION_IMPORT_FORUM_ENTRIES = "forum_import";
     public static final String ACTION_MOBILE_AJAX = "__ajax_mobile";
     public static final String ACTION_MODIFY_BINDER = "modify_binder";
@@ -1267,6 +1268,7 @@ public class WebKeys {
     public static final String VIEW_GALLERY_EDIT="gallery/edit";
     public static final String VIEW_GUESTBOOK_SUMMARY="guestbook_summary/view";
     public static final String VIEW_GUESTBOOK_EDIT="guestbook_summary/edit";
+    public static final String VIEW_GUEST_USER_ACCESS_REPORT = "administration/guest_user_access_report";
     public static final String VIEW_IMPORT_TEMPLATE="administration/importTemplate";
     public static final String VIEW_LOGIN_PLEASE="forum/login_please";
     public static final String VIEW_LOGIN_RETURN="forum/login_return";
