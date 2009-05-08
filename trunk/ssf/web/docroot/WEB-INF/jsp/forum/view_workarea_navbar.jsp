@@ -662,7 +662,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
              	<img src="<html:rootPath/>images/pics/masthead/teaming_about_screen.png" border="0"/>
 			 </c:if>
              <c:if test="<%= !org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
-               <img src="<html:rootPath/>images/pics/masthead/teaming_about_screen.png" border="0"/>
+               <img src="<html:rootPath/>images/pics/masthead/kablink_about_screen.png" border="0"/>
              </c:if>
           </div>
        </td>
