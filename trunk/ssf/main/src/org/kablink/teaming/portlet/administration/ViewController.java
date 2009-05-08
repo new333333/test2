@@ -428,6 +428,18 @@ public class ViewController extends  SAbstractController {
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
 			reports.put(element.attributeValue("title"), element);
+
+			// Guest user access report
+			element = DocumentHelper.createElement( DomTreeBuilder.NODE_CHILD );
+			element.addAttribute( "title", NLT.get( "administration.report.title.guest_user_access" ) );
+			element.addAttribute( "image", "bullet" );
+			element.addAttribute( "id", String.valueOf( nextId++ ) );
+			url = response.createRenderURL();
+			url.setParameter( WebKeys.ACTION, WebKeys.ACTION_GUEST_USER_ACCESS_REPORT );
+			url.setWindowState( WindowState.MAXIMIZED );
+			url.setPortletMode( PortletMode.VIEW );
+			element.addAttribute( "url", url.toString() );
+			reports.put( element.attributeValue( "title" ), element );
 		}
 		
 		//Credits
