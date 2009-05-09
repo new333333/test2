@@ -95,7 +95,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-family: Arial, Helvetica, sans-serif !important;
 	font-size: 11px !important;
 	color: #FFFFFF !important;
-	background-color: #5A9A98;		/* boulder: #5A9A98; kablink: #449EFF */
 	text-align: left;
 	margin:0px;
 	padding-left:3px;
@@ -112,7 +111,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-size: 1.0em !important;
 	font-weight: 200;
 	color: #FFFFFF !important;
-	background-color: #5A9A98;		/* boulder: #5A9A98; kablink: #449EFF */
 	padding-top: 10px;
 	padding-right: 4px;
 	white-space:nowrap !important;
