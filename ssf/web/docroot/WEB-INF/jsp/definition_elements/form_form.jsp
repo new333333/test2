@@ -100,4 +100,9 @@
   <span class="ss_italic ss_fineprint"><ssf:nlt tag="general.required.info"/></span>
 </div>
 </c:if>
+<c:if test="${!empty ssReadOnlyFields}">
+<br/>
+<br/>
+<span class="ss_smallprint">&#134;&nbsp;&nbsp;<ssf:nlt tag="profile.fieldsSynced"/></span>
+</c:if>
 </ssf:form>
