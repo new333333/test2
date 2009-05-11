@@ -2421,7 +2421,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Long entryId = PortletRequestUtils.getLongParameter(request, "entryId");
 		Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");
 		
-		getProfileModule().setSeen(user.getId(),getFolderModule().getEntry(binderId, entryId));
+		try {
+			getProfileModule().setSeen(user.getId(),getFolderModule().getEntry(binderId, entryId));
+		} catch(Exception e) {}
 	}
 	
 	private void ajaxPinEntry(ActionRequest request, 
