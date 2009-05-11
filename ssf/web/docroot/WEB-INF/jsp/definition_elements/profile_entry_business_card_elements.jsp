@@ -150,20 +150,27 @@
 <c:set var="ss_element_display_style_caption" value="ss_light" scope="request"/>
 <c:set var="ss_element_display_style_item" value="ss_bold" scope="request"/>
 
-<div class="ss_entryContent">
-  <div id="ss_presenceOptions1_${renderResponse.namespace}"></div>
-  <ssf:presenceInfo user="${ssDefinitionEntry}" 
-      optionsDivId="ss_presenceOptions1_${renderResponse.namespace}"/>
-<c:if test="${empty ssDefinitionEntry.title}">
-<span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.name}"/></span>
-</c:if>
-<c:if test="${!empty ssDefinitionEntry.title}">
-<span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.title}"/></span> 
-<span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}"/>)</span>
-</c:if>
-</div>
-
  <table class="ss_transparent" style="border-spacing: 10px 2px;">
+ <tr>
+   <td valign="bottom" align="right">
+	  <div class="ss_entryContent">
+		  <div id="ss_presenceOptions1_${renderResponse.namespace}"></div>
+		  <ssf:presenceInfo user="${ssDefinitionEntry}" 
+		      optionsDivId="ss_presenceOptions1_${renderResponse.namespace}"/>
+	  </div>
+   </td>
+   <td valign="bottom" align="left">
+	  <div class="ss_entryContent">
+		<c:if test="${empty ssDefinitionEntry.title}">
+		  <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.name}"/></span>
+		</c:if>
+		<c:if test="${!empty ssDefinitionEntry.title}">
+		  <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.title}"/></span> 
+		  <span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}"/>)</span>
+		</c:if>
+	  </div>
+   </td>
+ </tr>
 
 <c:forEach var="element" items="${propertyValues__elements}">
  <c:if test="${element != 'name' && element != 'title'}">
@@ -196,34 +203,33 @@
        entry="${ssDefinitionEntry}" />
 
  
- </table>
-
-<c:if test="${!empty ssDefinitionEntry.status}">
-<div align="left" style="padding-top:10px;">
-	<table cellspacing="0" cellpadding="0">
 	<tr>
-		<td>
+		<td align="right">
 			<a href="javascript: ;" onClick="ss_viewMiniBlog('${ssDefinitionEntry.id}', '0', true);return false;"
 			  style="text-decoration:underline;">
 				<span class="ss_bold"><ssf:nlt tag="miniblog"/></span>
 			</a>
 		</td>
-		<td style="padding-left:10px;">
-			<span class="ss_smallprint">
-			  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-			    value="${ssDefinitionEntry.statusDate}" type="both" 
-			    timeStyle="short" dateStyle="short" />
+		<td align="left">
+			<span id="ss_myStatusTitleDest" class="ss_smallprint">
+			  <c:if test="${!empty ssDefinitionEntry.status}">
+			    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+			      value="${ssDefinitionEntry.statusDate}" type="both" 
+			      timeStyle="short" dateStyle="short" />
+			  </c:if>
 			</span>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="2">
-			<span class="ss_normalprint ss_italic">${ssDefinitionEntry.status}</span>
+		<td colspan="2" align="center">
+			<span id="ss_myStatusTextDest" class="ss_normalprint ss_italic">
+			  <c:if test="${!empty ssDefinitionEntry.status}">
+			    ${ssDefinitionEntry.status}
+			  </c:if>
+			</span>
 		</td>
 	</tr>
-	</table>
-</div>
-</c:if>
+</table>
 
 <c:if test="${pictureCount > 1}">
 <table width="99%">
@@ -263,10 +269,12 @@
  <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.title}"/></span> 
  <span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}"/>)</span>
  </c:if>
-<c:if test="${!empty ssDefinitionEntry.status}">
 <br/>
-<span class="ss_normalprint ss_italic">${ssDefinitionEntry.status}</span>
-</c:if>
+<span id="ss_myStatusTextDest2" class="ss_normalprint ss_italic">
+  <c:if test="${!empty ssDefinitionEntry.status}">
+    ${ssDefinitionEntry.status}
+  </c:if>
+</span>
  </div>
 </div>
 <script type="text/javascript">
