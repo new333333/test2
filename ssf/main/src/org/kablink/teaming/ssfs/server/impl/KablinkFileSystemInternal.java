@@ -366,13 +366,13 @@ public class KablinkFileSystemInternal implements KablinkFileSystem {
 			boolean recursive) throws  
 			NoAccessException, NoSuchObjectException, AlreadyExistsException, 
 			TypeMismatchException {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException(getOriginal(targetUri));
 	}
 	
 	public void moveObject(Map sourceUri, Map targetUri, boolean overwrite) 
 	throws NoAccessException, NoSuchObjectException, 
 	AlreadyExistsException, TypeMismatchException {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException(getOriginal(targetUri));
 	}
 	
 	private void removeResourceInternal(Map uri, Map objMap) throws NoAccessException {
