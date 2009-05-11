@@ -754,12 +754,12 @@ function ss_updateStatusSoon(obj, evt, maxLength) {
     var charCode = (evt.which) ? evt.which : event.keyCode
     //check for tab or cr; tab or 2 cr's signals the end of the input
     if (charCode == 9) {
-    	ss_updateStatusNow(obj)
+    	//ss_updateStatusNow(obj)
     } else if (charCode == 10 || charCode == 13) {
     	if (obj.value.length >= 2 && (obj.value.charCodeAt(obj.value.length - 1) == 10 || 
     			obj.value.charCodeAt(obj.value.length - 1) == 13)) {
     		//Double cr also ends new status
-    		ss_updateStatusNow(obj)
+    		//ss_updateStatusNow(obj)
     	} else {
     		ss_setStatusBackground(obj, 'focus');
     	}
@@ -792,19 +792,41 @@ function ss_updateStatusNow(obj) {
 			}
 
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_user_status", status:status}, "");
-			var divObj = ss_findOwningElement(obj, "div");
-			ss_post_to_url(url, "", ss_postUpdateStatusNow, divObj.id)
+			var divId = "ss_myStatusDiv";
+			var textSrcId = "ss_myStatusTextSrc";
+			var textDestId = "ss_myStatusTextDest";
+			var textDest2Id = "ss_myStatusTextDest2";
+			var titleSrcId = "ss_myStatusTitleSrc";
+			var titleDestId = "ss_myStatusTitleDest";
+			if (document.getElementById(divId) == null) {
+				var divObj = ss_findOwningElement(obj, "div");
+				if (divObj != null) divId = divObj.id;
+			}
+			ss_post_to_url(url, "", ss_postUpdateStatusNow, {divId:divId, textSrcId:textSrcId, textDestId:textDestId, textDest2Id:textDest2Id, titleSrcId:titleSrcId, titleDestId:titleDestId})
 		}
 		ss_setStatusBackground(obj, 'blur');
 	}
 }
-function ss_postUpdateStatusNow(s, id) {
-	var divObj = self.document.getElementById(id);
+function ss_postUpdateStatusNow(s, data) {
+	var divObj = self.document.getElementById(data.divId);
 	if (divObj != null) {
-		//divObj.innerHTML = s;
-		//ss_executeJavascript(divObj)
-		document.location.reload();
+		divObj.innerHTML = s;
 	}
+	var textSrcObj = self.document.getElementById(data.textSrcId);
+	var textDestObj = self.document.getElementById(data.textDestId);
+	if (textSrcObj != null && textDestObj != null) {
+		textDestObj.innerHTML = textSrcObj.innerHTML;
+	}
+	var textDest2Obj = self.document.getElementById(data.textDest2Id);
+	if (textSrcObj != null && textDest2Obj != null) {
+		textDest2Obj.innerHTML = textSrcObj.innerHTML;
+	}
+	var titleSrcObj = self.document.getElementById(data.titleSrcId);
+	var titleDestObj = self.document.getElementById(data.titleDestId);
+	if (titleSrcObj != null && titleDestObj != null) {
+		titleDestObj.innerHTML = titleSrcObj.innerHTML;
+	}
+	ss_executeJavascript(divObj)
 }
 
 function ss_setStatusBackground(obj, op) {

@@ -41,7 +41,8 @@
 <c:set var="guestInternalId" value="<%= ObjectKeys.GUEST_USER_INTERNALID %>"/>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <c:if test="${ssUser.internalId != guestInternalId}">
-	<script type="text/javascript">
+  <div id="ss_myStatusDiv">
+    <script type="text/javascript">
 	  var ss_miniblogTextTooBigErrorMsg = "<ssf:nlt tag="miniblog.textTooBig"/>";
 	  ss_statusCurrent = "";
 	  <c:if test="${!empty ssUser.status}">
@@ -57,18 +58,19 @@
 	  </a>
 	  </td>
 	  <td valign="top" align="right">
-	   <c:if test="${!empty ssUser.statusDate && !empty ssUser.status}">
-	    <span class="ss_fineprint"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-          value="${ssUser.statusDate}" type="both" 
-	      timeStyle="short" dateStyle="short" />
+	    <span id="ss_myStatusTitleSrc" class="ss_fineprint">
+	      <c:if test="${!empty ssUser.statusDate && !empty ssUser.status}">
+	        <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+              value="${ssUser.statusDate}" type="both" 
+	          timeStyle="short" dateStyle="short" />
+	      </c:if>
 	    </span>
-	   </c:if>
 	  </td>
 	 </tr>
 	 <tr>
 	  <td colspan="2">
 	  	<div class="ss_input_myStatus">
-	  	  <span>${ssUser.status}</span>
+	  	  <span id="ss_myStatusTextSrc">${ssUser.status}</span>
 	  	</div>
 	  </td>
 	 </tr>
@@ -107,4 +109,5 @@
 	  	</div>
 	</ssf:ifLoggedIn> 
  </ssf:sidebarPanel>
+ </div>
 </c:if>
