@@ -595,7 +595,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	this.selectItem0 = function () {
 		var liObjs = that._listContainerInnerDiv.getElementsByTagName('li');
 		if (liObjs.length == 1) {
-			eval("var type = "+liObjs[0].id);
+			eval("var type = type_"+liObjs[0].id);
 			that.selectItem(liObjs[0], type);
 		}
 	}
