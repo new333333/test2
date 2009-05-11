@@ -1227,57 +1227,60 @@ public class ListFolderHelper {
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
 		int defaultEntryDefs = ((null == defaultEntryDefinitions) ? 0 : defaultEntryDefinitions.size());
 		model.put(WebKeys.URL_BINDER_ENTRY_DEFS, String.valueOf( defaultEntryDefs ));
-		if (defaultEntryDefs > 1) {
-			int count = 1;
-			int	defaultEntryDefIndex = getDefaultFolderEntryDefinitionIndex(
-				RequestContextHolder.getRequestContext().getUser().getId(),
-				bs.getProfileModule(),
-				folder,
-				defaultEntryDefinitions);
-			Map dropdownQualifiers = new HashMap();
-			dropdownQualifiers.put("highlight", new Boolean(true));
-			String	entryAdd = NLT.get("toolbar.new");
-			entryToolbar.addToolbarMenu("1_add", entryAdd, "", dropdownQualifiers);
-			model.put(WebKeys.URL_BINDER_ENTRY_ADD, entryAdd);
-			Map qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			//String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
-			//qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
-			for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
-				Definition def = (Definition) defaultEntryDefinitions.get(i);
+		
+		if(!(folder.isMirrored() && folder.getResourceDriverName() == null)) {
+			if (defaultEntryDefs > 1) {
+				int count = 1;
+				int	defaultEntryDefIndex = getDefaultFolderEntryDefinitionIndex(
+					RequestContextHolder.getRequestContext().getUser().getId(),
+					bs.getProfileModule(),
+					folder,
+					defaultEntryDefinitions);
+				Map dropdownQualifiers = new HashMap();
+				dropdownQualifiers.put("highlight", new Boolean(true));
+				String	entryAdd = NLT.get("toolbar.new");
+				entryToolbar.addToolbarMenu("1_add", entryAdd, "", dropdownQualifiers);
+				model.put(WebKeys.URL_BINDER_ENTRY_ADD, entryAdd);
+				Map qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
+				//String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
+				//qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
+				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
+					Definition def = (Definition) defaultEntryDefinitions.get(i);
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+					String title = NLT.getDef(def.getTitle());
+					if (entryToolbar.checkToolbarMenuItem("1_add", "entries", title)) {
+						title = title + " (" + String.valueOf(count++) + ")";
+					}
+					entryToolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
+					if (i == defaultEntryDefIndex) {
+						adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+						adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
+						model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
+					}
+				}
+			} else if (defaultEntryDefs != 0) {
+				// Only one option
+				Definition def = (Definition) defaultEntryDefinitions.get(0);
 				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
 				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-				String title = NLT.getDef(def.getTitle());
-				if (entryToolbar.checkToolbarMenuItem("1_add", "entries", title)) {
-					title = title + " (" + String.valueOf(count++) + ")";
-				}
-				entryToolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
-				if (i == defaultEntryDefIndex) {
-					adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
-					adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
-					model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
-				}
+				String[] nltArgs = new String[] {NLT.getDef(def.getTitle())};
+				String title = NLT.get("toolbar.new_with_arg", nltArgs);
+				Map qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
+				qualifiers.put("highlight", new Boolean(true));
+				entryToolbar.addToolbarMenu("1_add", title, adapterUrl.toString(), qualifiers);
+				model.put(WebKeys.URL_BINDER_ENTRY_ADD, title);
+				
+				adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+				adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
+				model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
 			}
-		} else if (defaultEntryDefs != 0) {
-			// Only one option
-			Definition def = (Definition) defaultEntryDefinitions.get(0);
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-			String[] nltArgs = new String[] {NLT.getDef(def.getTitle())};
-			String title = NLT.get("toolbar.new_with_arg", nltArgs);
-			Map qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			qualifiers.put("highlight", new Boolean(true));
-			entryToolbar.addToolbarMenu("1_add", title, adapterUrl.toString(), qualifiers);
-			model.put(WebKeys.URL_BINDER_ENTRY_ADD, title);
-			
-			adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
-			adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
-			model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
 		}
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			if (bs.getBinderModule().testAccess(folder, BinderOperation.addFolder)) {
@@ -1762,6 +1765,7 @@ public class ListFolderHelper {
 		}
 		
 		if (!viewType.equals(Definition.VIEW_STYLE_MINIBLOG) && isAppletSupported && !folder.isMirroredAndReadOnly() && 
+				!(folder.isMirrored() && folder.getResourceDriverName() == null) &&
 				bs.getFolderModule().testAccess(folder, FolderOperation.addEntry) && 
 				!isAccessible) {
 			qualifiers = new HashMap();
