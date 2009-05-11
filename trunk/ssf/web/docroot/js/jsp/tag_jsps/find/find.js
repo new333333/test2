@@ -381,7 +381,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	 		text = that._inputObj.value;
 			var liObjs = that._listContainer.getElementsByTagName('li');
 			if (liObjs.length == 1) {
-				eval("var type = "+liObjs[0].id);
+				eval("var type = type_"+liObjs[0].id);
 				that.selectItem(liObjs[0], type);
 				return;
 			}
@@ -495,7 +495,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		hrefObj.appendChild(spanObj);
 		liObj.appendChild(hrefObj);
 		that._searchResultsList.appendChild(liObj);
-		eval("ss_find_id_" + item.id + " = '" + item.type + "'");
+		eval("type_ss_find_id_" + item.id + " = '" + item.type + "'");
 	}
 	
 	this._clearSearchResultsList = function() {
