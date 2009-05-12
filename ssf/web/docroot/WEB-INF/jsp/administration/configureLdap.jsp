@@ -39,186 +39,202 @@
 <c:set var="ss_windowTitle"
 	value='<%= NLT.get("administration.configure_ldap") %>' scope="request" />
 <%@ include file="/WEB-INF/jsp/common/include.jsp"%>
+
 <body class="ss_style_body tundra" onunload="onUnloadEventHandler();">
 <div class="ss_pseudoPortal">
-<div class="ss_style ss_portlet"><ssf:form titleTag="ldap.title">
-
-	<c:if test="${!empty ssException}">
-		<span class="ss_largerprint"><ssf:nlt
-			tag="administration.errors" /> (<c:out value="${ssException}" />)</span>
-		</br>
-	</c:if>
-
-	<form class="ss_style ss_form" name="${renderResponse.namespace}fm"
-		method="post"
-		action="<ssf:url action="configure_ldap" actionUrl="true"/>">
-
-	<div class="ss_buttonBarRight"><br />
-		<input type="submit" class="ss_submit" name="okBtn"
-			value="<ssf:nlt tag="button.apply"/>">
-		<input type="button"
-			class="ss_submit" name="closeBtn"
-			value="<ssf:nlt tag="button.close" text="Close"/>"
-			onClick="self.window.close();return false;" /></div>
-	<div>
-	<div id="funkyDiv" style="width: 500px">
-	<ul>
-		<li><a href='#wah'>Wah</a></li>
-	</ul>
-	<div id='wah'></div>
-	</div>
-	<button id="ldapAddConnection" class="ss_submit"><ssf:nlt
-		tag="ldap.connection.add" /></button>
-	</div>
-	<div class="ss_divider"></div>
-	<br />
-
-	<table class="ss_style" border="0" cellspacing="0" cellpadding="3">
-		<tr>
-			<td><input type="checkbox" id="enabled" name="enabled"
-				<c:if test="${ssLdapConfig.enabled}">checked</c:if> /> <label
-				for="enabled"><span class="ss_labelRight ss_normal"><ssf:nlt
-				tag="ldap.schedule.enable" /></span><br />
-			</label></td>
-		</tr>
-		<tr>
-			<td>
-				<!-- This hidden input is used to store a unique id used to identify the sync results. -->
-				<input id="ldapSyncResultsId" name="ldapSyncResultsId" type="hidden" value="" />
-
-				<input type="checkbox" id="runnow" name="runnow"
-				<c:if test="${runnow}"> checked="checked" </c:if> /> <label
-				for="runnow"><span class="ss_labelRight ss_normal"><ssf:nlt
-				tag="ldap.schedule.now" /></span><br />
-			</label></td>
-		</tr>
-	</table>
-
-	<br />
-	<ssf:expandableArea title='<%= NLT.get("ldap.schedule") %>' initOpen="true">
-		<c:set var="schedule" value="${ssLdapConfig.schedule}" />
-		<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
-		<div class="ss_divider">
-		</div>
-	</ssf:expandableArea> <br />
-
-	<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt
-		tag="ldap.users" /></legend>
-		<table class="ss_style" border="0" cellspacing="0" cellpadding="3">
-			<tr>
-				<td><input type="checkbox" name="userSync" id="userSync"
-					<c:if test="${ssLdapConfig.userSync}">checked</c:if> /> <label
-					for="userSync"><span class="ss_labelRight ss_normal"><ssf:nlt
-					tag="ldap.schedule.user.sync" /></span></label></td>
-			</tr>
-			<tr>
-				<td><input type="checkbox" name="userRegister" id="userRegister"
-					<c:if test="${ssLdapConfig.userRegister}">checked</c:if> /> <label
-					for="userRegister"><span class="ss_labelRight ss_normal"><ssf:nlt
-					tag="ldap.schedule.user.register" /></span></label></td>
-			</tr>
-			<tr>
-				<td><input type="checkbox" name="userDelete" id="userDelete"
-					<c:if test="${ssLdapConfig.userDelete}">checked</c:if> /> <label
-					for="userDelete"><span class="ss_labelRight ss_normal"><ssf:nlt
-					tag="ldap.schedule.user.delete" /></span></label></td>
-			</tr>
-			<tr>
-				<td><input type="checkbox" name="userWorkspaceDelete"
-					id="userWorkspaceDelete"
-					<c:if test="${ssLdapConfig.userWorkspaceDelete}">checked</c:if> /> <label
-					for="userWorkspaceDelete"><span
-					class="ss_labelRight ss_normal"><ssf:nlt
-					tag="ldap.schedule.user.workspace.delete" /></span></label></td>
-			</tr>
-			<tr>
-				<td>
-					<label for="ssDefaultTimeZone">
-						<div style="margin-top: .25em;" class="ss_labelAbove"><ssf:nlt tag="ldap.config.default.timezone" /></div>
+	<div class="ss_style ss_portlet">
+		<ssf:form titleTag="ldap.title">
+			<c:if test="${!empty ssException}">
+				<span class="ss_largerprint"><ssf:nlt
+					tag="administration.errors" /> (<c:out value="${ssException}" />)</span>
+				<br/>
+			</c:if>
+		
+			<form class="ss_style ss_form" name="${renderResponse.namespace}fm"
+				method="post"
+				action="<ssf:url action="configure_ldap" actionUrl="true"/>">
+		
+				<div class="ss_buttonBarRight"><br />
+					<input type="submit" class="ss_submit" name="okBtn"
+						value="<ssf:nlt tag="button.apply"/>">
+					<input type="button"
+						class="ss_submit" name="closeBtn"
+						value="<ssf:nlt tag="button.close" text="Close"/>"
+						onClick="self.window.close();return false;" />
+				</div>
+				
+				<div>
+					<div id="funkyDiv">
+						<div id="ulDiv">
+							<ul>
+								<li>
+									<a href='#wah'>Wah</a>
+								</li>
+							</ul>
+						</div>
+						<div id="funkyDiv2"></div>
+						<div id="wah"></div>
+					</div>
+	
+					<button id="ldapAddConnection" class="ss_submit"><ssf:nlt tag="ldap.connection.add" /></button>
+				</div>
+			
+				<div class="ss_divider"></div>
+				<br />
+		
+				<table class="ss_style" border="0" cellspacing="0" cellpadding="3">
+					<tr>
+						<td><input type="checkbox" id="enabled" name="enabled"
+							<c:if test="${ssLdapConfig.enabled}">checked</c:if> /> <label
+							for="enabled"><span class="ss_labelRight ss_normal"><ssf:nlt
+							tag="ldap.schedule.enable" /></span><br />
+						</label></td>
+					</tr>
+					<tr>
+						<td>
+							<!-- This hidden input is used to store a unique id used to identify the sync results. -->
+							<input id="ldapSyncResultsId" name="ldapSyncResultsId" type="hidden" value="" />
+			
+							<input type="checkbox" id="runnow" name="runnow"
+							<c:if test="${runnow}"> checked="checked" </c:if> /> <label
+							for="runnow"><span class="ss_labelRight ss_normal"><ssf:nlt
+							tag="ldap.schedule.now" /></span><br />
+						</label></td>
+					</tr>
+				</table>
+		
+				<br />
+				<ssf:expandableArea title='<%= NLT.get("ldap.schedule") %>' initOpen="true">
+					<c:set var="schedule" value="${ssLdapConfig.schedule}" />
+					<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
+					<div class="ss_divider">
+					</div>
+				</ssf:expandableArea> <br />
+			
+				<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt
+					tag="ldap.users" /></legend>
+					<table class="ss_style" border="0" cellspacing="0" cellpadding="3">
+						<tr>
+							<td><input type="checkbox" name="userSync" id="userSync"
+								<c:if test="${ssLdapConfig.userSync}">checked</c:if> /> <label
+								for="userSync"><span class="ss_labelRight ss_normal"><ssf:nlt
+								tag="ldap.schedule.user.sync" /></span></label></td>
+						</tr>
+						<tr>
+							<td><input type="checkbox" name="userRegister" id="userRegister"
+								<c:if test="${ssLdapConfig.userRegister}">checked</c:if> /> <label
+								for="userRegister"><span class="ss_labelRight ss_normal"><ssf:nlt
+								tag="ldap.schedule.user.register" /></span></label></td>
+						</tr>
+						<tr>
+							<td><input type="checkbox" name="userDelete" id="userDelete"
+								<c:if test="${ssLdapConfig.userDelete}">checked</c:if> /> <label
+								for="userDelete"><span class="ss_labelRight ss_normal"><ssf:nlt
+								tag="ldap.schedule.user.delete" /></span></label></td>
+						</tr>
+						<tr>
+							<td><input type="checkbox" name="userWorkspaceDelete"
+								id="userWorkspaceDelete"
+								<c:if test="${ssLdapConfig.userWorkspaceDelete}">checked</c:if> /> <label
+								for="userWorkspaceDelete"><span
+								class="ss_labelRight ss_normal"><ssf:nlt
+								tag="ldap.schedule.user.workspace.delete" /></span></label></td>
+						</tr>
+						<tr>
+							<td>
+								<label for="ssDefaultTimeZone">
+									<div style="margin-top: .25em;" class="ss_labelAbove"><ssf:nlt tag="ldap.config.default.timezone" /></div>
+								</label>
+								<select name="ssDefaultTimeZone" id="ssDefaultTimeZone">
+								<%
+									java.util.Set<String> tzones = null;
+									java.util.Set<String> map = null;
+									String defaultTimeZone	= null;
+									Locale locale = null;
+				
+									// Get all of the time zone ids.  These are always returned in English.
+									tzones = org.kablink.teaming.calendar.TimeZoneHelper.getTimeZoneIds();
+									
+									// We can use English as the language in the constructor of Locale because the time zones are always
+									// displayed in English.
+									locale = new Locale( "en" );
+									map = new java.util.TreeSet(new org.kablink.teaming.comparator.StringComparator( locale ) ); //sort
+									map.addAll( tzones );
+				
+									// Add an <option> for every time zone.
+									for (String tz:map)
+									{
+								%>
+									<c:set var="nextTimeZone" value="<%= tz %>" />
+									<option value="<%= tz %>" <c:if test="${ssDefaultTimeZone == nextTimeZone}">selected</c:if> ><%= tz %></option>
+								<%
+									}// end for()
+								%>
+								</select>
+							</td>
+						</tr>
+					</table>
+				</fieldset>
+		
+				<br />
+				<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt
+					tag="ldap.groups" /></legend>
+					<table class="ss_style" border="0" cellspacing="0" cellpadding="3">
+						<tr>
+							<td><input type="checkbox" name="groupSync" id="groupSync"
+								<c:if test="${ssLdapConfig.groupSync}">checked</c:if> /> <label
+								for="groupSync"><span class="ss_labelRight ss_normal"><ssf:nlt
+								tag="ldap.schedule.group.sync" /></span></label></td>
+						</tr>
+						<tr>
+							<td><input type="checkbox" name="groupRegister"
+								id="groupRegister"
+								<c:if test="${ssLdapConfig.groupRegister}">checked</c:if> /> <label
+								for="groupRegister"><span class="ss_labelRight ss_normal"><ssf:nlt
+								tag="ldap.schedule.group.register" /></span></label></td>
+						</tr>
+						<tr>
+							<td><input type="checkbox" name="membershipSync"
+								id="membershipSync"
+								<c:if test="${ssLdapConfig.membershipSync}">checked</c:if> /> <label
+								for="membershipSync"><span class="ss_labelRight ss_normal"><ssf:nlt
+								tag="ldap.schedule.membership.sync" /></span></label></td>
+						</tr>
+						<tr>
+							<td><input type="checkbox" name="groupDelete" id="groupDelete"
+								<c:if test="${ssLdapConfig.groupDelete}">checked</c:if> /> <label
+								for="groupDelete"><span class="ss_labelRight ss_normal"><ssf:nlt
+								tag="ldap.schedule.group.delete" /></span></label></td>
+						</tr>
+					</table>
+				</fieldset>
+		
+				<br />
+				<fieldset class="ss_fieldset">
+					<legend class="ss_legend"><ssf:nlt tag="ldap.localLogin" /></legend>
+					<input type="checkbox" id="allowLocalLogin"
+							name="allowLocalLogin"
+					<c:if test="${ssAuthenticationConfig.allowLocalLogin}">checked</c:if> />
+					<label for="allowLocalLogin"><span
+						class="ss_labelRight ss_normal"><ssf:nlt
+						tag="ldap.config.allowLocalLogin" /></span><br />
 					</label>
-					<select name="ssDefaultTimeZone" id="ssDefaultTimeZone">
-					<%
-						java.util.Set<String> tzones = null;
-						java.util.Set<String> map = null;
-						String defaultTimeZone	= null;
-						Locale locale = null;
-	
-						// Get all of the time zone ids.  These are always returned in English.
-						tzones = org.kablink.teaming.calendar.TimeZoneHelper.getTimeZoneIds();
-						
-						// We can use English as the language in the constructor of Locale because the time zones are always
-						// displayed in English.
-						locale = new Locale( "en" );
-						map = new java.util.TreeSet(new org.kablink.teaming.comparator.StringComparator( locale ) ); //sort
-						map.addAll( tzones );
-	
-						// Add an <option> for every time zone.
-						for (String tz:map)
-						{
-					%>
-						<c:set var="nextTimeZone" value="<%= tz %>" />
-						<option value="<%= tz %>" <c:if test="${ssDefaultTimeZone == nextTimeZone}">selected</c:if> ><%= tz %></option>
-					<%
-						}// end for()
-					%>
-					</select>
-				</td>
-			</tr>
-		</table>
-	</fieldset>
+				</fieldset>
+			
+				<br />
+				<div class="ss_buttonBarLeft">
+					<input type="submit"
+							class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
+					<input type="button" class="ss_submit" name="closeBtn"
+						value="<ssf:nlt tag="button.close" text="Close"/>"
+						onClick="self.window.close();return false;" />
+				</div>
+				<input type="hidden" name="ldapConfigDoc" id="ldapConfigDoc" value="" />
+			</form>
+		</ssf:form>
+	</div>
 
-	<br />
-	<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt
-		tag="ldap.groups" /></legend>
-	<table class="ss_style" border="0" cellspacing="0" cellpadding="3">
-		<tr>
-			<td><input type="checkbox" name="groupSync" id="groupSync"
-				<c:if test="${ssLdapConfig.groupSync}">checked</c:if> /> <label
-				for="groupSync"><span class="ss_labelRight ss_normal"><ssf:nlt
-				tag="ldap.schedule.group.sync" /></span></label></td>
-		</tr>
-		<tr>
-			<td><input type="checkbox" name="groupRegister"
-				id="groupRegister"
-				<c:if test="${ssLdapConfig.groupRegister}">checked</c:if> /> <label
-				for="groupRegister"><span class="ss_labelRight ss_normal"><ssf:nlt
-				tag="ldap.schedule.group.register" /></span></label></td>
-		</tr>
-		<tr>
-			<td><input type="checkbox" name="membershipSync"
-				id="membershipSync"
-				<c:if test="${ssLdapConfig.membershipSync}">checked</c:if> /> <label
-				for="membershipSync"><span class="ss_labelRight ss_normal"><ssf:nlt
-				tag="ldap.schedule.membership.sync" /></span></label></td>
-		</tr>
-		<tr>
-			<td><input type="checkbox" name="groupDelete" id="groupDelete"
-				<c:if test="${ssLdapConfig.groupDelete}">checked</c:if> /> <label
-				for="groupDelete"><span class="ss_labelRight ss_normal"><ssf:nlt
-				tag="ldap.schedule.group.delete" /></span></label></td>
-		</tr>
-	</table>
-	</fieldset>
 
-	<br />
-	<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt
-		tag="ldap.localLogin" /></legend> <input type="checkbox" id="allowLocalLogin"
-		name="allowLocalLogin"
-		<c:if test="${ssAuthenticationConfig.allowLocalLogin}">checked</c:if> />
-	<label for="allowLocalLogin"><span
-		class="ss_labelRight ss_normal"><ssf:nlt
-		tag="ldap.config.allowLocalLogin" /></span><br />
-	</label></fieldset>
-
-	<br />
-	<div class="ss_buttonBarLeft"><input type="submit"
-		class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
-	<input type="button" class="ss_submit" name="closeBtn"
-		value="<ssf:nlt tag="button.close" text="Close"/>"
-		onClick="self.window.close();return false;" /></div>
-	<input type="hidden" name="ldapConfigDoc" id="ldapConfigDoc" value="" />
-	</form>
-</ssf:form></div>
 <script type="text/javascript" src="<html:rootPath/>js/jquery/jquery.js"></script>
 <script type="text/javascript">
      jQuery.noConflict();
@@ -279,14 +295,12 @@
 }
 
 .ui-tabs-nav li {
-	float: left;
 	margin: 0 0 0 2px;
 	font-weight: bold;
 	list-style: none !important;
 }
 
 .ui-tabs-nav a,.ui-tabs-nav a span {
-	float: left; /* fixes dir=ltr problem and other quirks IE */
 	padding: 0 12px;
 }
 
@@ -891,17 +905,17 @@ ssPage = {
 		jQuery(".ldapUrl", $container).change(function() {
 			jQuery(this).parent().parent().find(".ldapTitle span").text(jQuery(this).val());
 			var id = jQuery(this).parent().parent().attr("id");
-			jQuery("#funkyDiv > ul li > a[href='#" + id + "']").text(jQuery(this).val());
+			jQuery("#ulDiv > ul li > a[href='#" + id + "']").text(jQuery(this).val());
 		});
 		jQuery(".ldapDelete", $container).click(function() {
-			var title = jQuery("#funkyDiv > ul li").eq(ssPage.currentTab).find("span").text();
+			var title = jQuery("#ulDiv > ul li").eq(ssPage.currentTab).find("span").text();
 			var prompt;
 
 			prompt = "<ssf:nlt tag="ldap.connection.delete.confirm" quoteDoubleQuote="true" />";
 			prompt = prompt.replace( '{0}', title );
 			if( ss_confirm( prompt, null )) {
 				var id = jQuery(this).parent().parent().attr("id");
-				jQuery("#funkyDiv > ul").tabs("remove", ssPage.currentTab);
+				jQuery("#ulDiv > ul").tabs("remove", ssPage.currentTab);
 				jQuery(this).parent().parent().remove();
 			}
 			return false;
@@ -960,10 +974,24 @@ ssPage = {
 		}
 		jQuery('#funkyDiv').append($pane);
 
-		var index = jQuery("#funkyDiv > ul").tabs("length");
-		jQuery("#funkyDiv > ul").tabs("add", '#'+ id, label);
-		jQuery("#funkyDiv > ul").tabs("select", index);
+		// Add a link the user can click on that will display this ldap configuration.
+		var index = jQuery("#ulDiv > ul").tabs("length");
+		jQuery("#ulDiv > ul").tabs("add", '#'+ id, label);
+		jQuery("#ulDiv > ul").tabs("select", index);
+		
+		// The call to jQuery( "#ulDiv > ul").tabs( "add", '#' + id, label ) moves the <fieldset...> into
+		// the div that holds the <ul>.  This causes display problems on IE, see bug 491677.
+		// We need to move the <fieldset> out of the <div id="ulDiv"> and into the <div id="funkyDiv2">
+		{
+			var fldset;
+			var funkyDiv;
 
+			fldset = document.getElementById( id );
+			fldset.parentNode.removeChild( fldset )
+			funkyDiv = document.getElementById( 'funkyDiv2' );
+			funkyDiv.appendChild( fldset );
+		}
+		
 		ssPage.createBindings($pane);
 		$pane.show();
 		return $pane;
@@ -1016,7 +1044,7 @@ ssPage = {
 				if ( fldset != null && fldset.id != null )
 				{
 					// Select the tab associated with this ldap configuration.
-					jQuery( "#funkyDiv > ul").tabs( "select", '#' + fldset.id );
+					jQuery( "#ulDiv > ul").tabs( "select", '#' + fldset.id );
 				}
 			}
 		}
@@ -1122,7 +1150,7 @@ jQuery(document).ready(function() {
 		%>
 		ssPage.defaultUserMappings = "<%=mapText.toString()%>";
 	
-		jQuery("#funkyDiv > ul").tabs();
+		jQuery("#ulDiv > ul").tabs();
 	<c:forEach var="config" items="${ssLdapConnectionConfigs}">
 		<c:set var="mappings" value="${config.mappings}"/>
 		<jsp:useBean id="mappings" type="java.util.Map"/>
@@ -1157,12 +1185,14 @@ jQuery(document).ready(function() {
 		$pane.append(jQuery('<span id="${config.id}" style="display:none" class="ldapId">${config.id}</span>'));
 	</c:forEach>
 	
-		jQuery('#funkyDiv > ul').bind('tabsshow', function(event, ui) {
+		jQuery('#ulDiv > ul').bind('tabsshow', function(event, ui) {
 			ssPage.currentTab = ui.index;
 		});
-		jQuery("#funkyDiv > ul").tabs("select", 0);
-		jQuery("#funkyDiv > ul").tabs("remove", 0);
 
+		// Remove the <li>Wah</li>
+		jQuery("#ulDiv > ul").tabs("select", 0);
+		jQuery("#ulDiv > ul").tabs("remove", 0);
+		
 		// Did an error happen while doing an ldap sync?
 		<c:if test="${!empty ssException}">
 			var errMsg;
@@ -1189,7 +1219,8 @@ jQuery(document).ready(function() {
 			startLdapSync();
 		</c:if>
 	});
-</script></div>
+</script>
+</div>
 
 <!-- The following <div> is the Sync Results dialog.  This dialog will display -->
 <!-- all of the results from the ldap sync -->
@@ -1310,7 +1341,7 @@ jQuery(document).ready(function() {
 	</div>
 </div>
 
-<div id="ldapTemplate" style="display: none">
+<div id="ldapTemplate" style="display: none;">
 	<fieldset class="ldapConfig ss_fieldset">
 		<legend class="ldapTitle ss_legend"><ssf:nlt tag="ldap.connection.title" /> <span class="ldapTitle"></span></legend>
 		<div>
@@ -1324,15 +1355,15 @@ jQuery(document).ready(function() {
 				</tr>
 				<tr>
 					<td nowrap><label for="ldapUrl"><ssf:nlt tag="ldap.user.url" />&nbsp;</label></td>
-					<td><input class="ldapUrl" id="ldapUrl" type="text" value="" size="140" /></td>
+					<td><input class="ldapUrl" id="ldapUrl" type="text" value="" size="70" /></td>
 				</tr>
 				<tr>
 					<td nowrap><label for="ldapPrincipal"><ssf:nlt tag="ldap.user.principal" /></label></td>
-					<td><input class="ldapPrincipal" id="ldapPrincipal" type="text" value="" size="140" /></td>
+					<td><input class="ldapPrincipal" id="ldapPrincipal" type="text" value="" size="70" /></td>
 				</tr>
 				<tr>
 					<td nowrap><label for="ldapCredentials"><ssf:nlt tag="ldap.user.credential" /></label></td>
-					<td><input class="ldapCredentials" id="ldapCredentials" type="password" value="" size="140" /></td>
+					<td><input class="ldapCredentials" id="ldapCredentials" type="password" value="" size="70" /></td>
 				</tr>
 			</table>
 
@@ -1378,7 +1409,7 @@ jQuery(document).ready(function() {
 				<tr>
 					<td nowrap><label for="ldapBaseDn"><ssf:nlt
 						tag="ldap.search.baseDn" /></label></td>
-					<td><input class="ldapBaseDn" id="ldapBaseDn" value="" size="120" />
+					<td><input class="ldapBaseDn" id="ldapBaseDn" value="" size="70" />
 					</td>
 				</tr>
 			
@@ -1392,7 +1423,7 @@ jQuery(document).ready(function() {
 				<tr>
 					<td nowrap><label for="ldapFilter"><ssf:nlt
 						tag="ldap.search.filter" /></label></td>
-					<td><input class="ldapFilter" id="ldapFilter" value="" size="120" />
+					<td><input class="ldapFilter" id="ldapFilter" value="" size="70" />
 					</td>
 				</tr>
 			</table>
