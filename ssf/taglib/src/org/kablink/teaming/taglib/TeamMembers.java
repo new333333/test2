@@ -78,7 +78,7 @@ public class TeamMembers extends BodyTagSupport {
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext
 					.getResponse();
 			
-			this.instanceCount = UUID.randomUUID().toString();
+			this.instanceCount = "ss_" + UUID.randomUUID().toString().replaceAll("-", "_");
 
 			httpReq.setAttribute("binderId", this.binderId);
 			httpReq.setAttribute("formElement", this.formElement);
