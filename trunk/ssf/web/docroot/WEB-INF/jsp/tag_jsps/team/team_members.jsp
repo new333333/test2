@@ -36,11 +36,21 @@
 
 <c:set var="prefix" value="${instanceCount}" />
 <script type="text/javascript">
-	// Setup text strings for team_members.js
-	// Team memmbers text
-	ss_noTeamMembersText = "<ssf:nlt tag="teamMembers.noUsers"/>";
+// Setup text strings for team_members.js
+// Team memmbers text
+ss_noTeamMembersText = "<ssf:nlt tag='teamMembers.noUsers'/>";
 </script>
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/team/team_members.js"></script>
+<script type="text/javascript">
+function ss_loadTeamMembers_${prefix}() {
+	ss_setTeamMembersVariables('${prefix}', '${formElement}');
+	<c:if test="${appendAll}">
+	var obj = document.getElementById("ss_teamMembersLoadLink_${prefix}");
+	obj.onclick();
+	</c:if>
+}
+ss_createOnLoadObj("ss_loadTeamMembers_${prefix}", ss_loadTeamMembers_${prefix});
+</script>
 
 <div class="ss_teamMembersPane">
 	<span id="ss_teamMembersLoadLink_${prefix}" onclick="if (window.ss_loadTeamMembersList) ss_loadTeamMembersList('${binderId}', '${prefix}' <c:if test="${appendAll == 'true' || checkOnLoad == 'true'}">, true</c:if>);"
@@ -50,8 +60,5 @@
 	</span>
 
 	<div id="ss_teamMembersList_${prefix}" class="ss_teamMembersList ss_style" style="display: block;"></div>
-
-	<img src="<html:imagesPath/>pics/1pix.gif" <ssf:alt/>
-	  onload="ss_setTeamMembersVariables('${prefix}', '${formElement}'); <c:if test="${appendAll}">$('ss_teamMembersLoadLink_${prefix}').onclick(); </c:if>" />
 
 </div>
