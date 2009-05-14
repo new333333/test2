@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
 import javax.portlet.ActionRequest;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
+import javax.portlet.RenderRequest;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -54,11 +55,14 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.TextVerificationException;
+import org.kablink.teaming.context.request.RequestContext;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
+import org.kablink.teaming.portletadapter.portlet.RenderRequestImpl;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.accesstoken.AccessTokenManager;
@@ -70,6 +74,7 @@ import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
 import org.kablink.util.Html;
+import org.kablink.util.Http;
 import org.kablink.util.PortalDetector;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -501,4 +506,21 @@ public class WebHelper {
 		return (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);
 	}
 
+	public static void logWarnRequestInfo(RenderRequest request) {
+		if(request instanceof RenderRequestImpl) { 
+			logWarnRequestInfo(((RenderRequestImpl)request).getHttpServletRequest());
+		}
+	}
+
+	public static void logWarnRequestInfo(HttpServletRequest request) {
+		String url = Http.getCompleteURL(request);
+		String zoneName = null;
+		String userName = null;
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		if(rc != null) {
+			zoneName = rc.getZoneName();
+			userName = rc.getUserName();
+		}
+		logger.warn("Request URL [" + url + "] for user [" + zoneName + "," + userName + "]");
+	}
 }

@@ -55,7 +55,7 @@
 	</bean>
 
 	<!-- Handler Exception Resolver -->
-	<bean id="handlerExceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+	<bean id="handlerExceptionResolver" class="org.kablink.teaming.spring.web.servlet.handler.SimpleMappingExceptionResolver">
 		<property name="exceptionMappings">
 			<props>
 				<prop key="org.kablink.teaming.exception.CheckedCodedException">common/servlet.defCodedError</prop>
