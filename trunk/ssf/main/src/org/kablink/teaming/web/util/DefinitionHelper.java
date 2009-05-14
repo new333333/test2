@@ -47,6 +47,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
@@ -716,7 +717,7 @@ public class DefinitionHelper {
 	}
 	
 	public static void buildMashupBeans(AllModulesInjected bs, DefinableEntity entity, 
-			Document definitionConfig, Map model) {
+			Document definitionConfig, Map model, RenderRequest request ) {
 		Map mashupEntries = new HashMap();
 		Map mashupBinders = new HashMap();
 		Map mashupBinderEntries = new HashMap();
@@ -734,18 +735,22 @@ public class DefinitionHelper {
 	    		String mashupValue = (String) attr.getValue();
 	        	String[] mashupValues = mashupValue.split(";");
 	        	for (int i = 0; i < mashupValues.length; i++) {
+	        		String	attrValue;
 	        		String[] mashupItemValues = mashupValues[i].split(",");
 					Map mashupItemAttributes = new HashMap();
+					attrValue = null;
 					if (mashupItemValues.length > 0) {
 						//Build a map of attributes
 						for (int j = 0; j < mashupItemValues.length; j++) {
 							String[] valueSet = mashupItemValues[j].split("=");
 							if (valueSet.length == 2) {
+								attrValue = valueSet[1];
 								mashupItemAttributes.put(valueSet[0], valueSet[1]);
 							}
 						}
 					}
-	        		String type = mashupItemValues[0];
+
+					String type = mashupItemValues[0];
 	        		if (ObjectKeys.MASHUP_TYPE_ENTRY.equals(type) && 
 	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ENTRY_ID) &&
 	        				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID).equals("")) {
@@ -777,6 +782,22 @@ public class DefinitionHelper {
 	        				mashupBinderEntries.put(binder.getId().toString(), 
 	        						folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
 	        			} catch(Exception e) {}
+	        		}
+	        		else if ( type != null && type.equals( "utility" ) )
+	        		{
+	        			// We are working with a utility element in the mashup.
+	        			// Are we dealing with a "sign in" widget?
+	        			if ( attrValue != null && attrValue.equals( "signInForm" ) )
+	        			{
+	        				// Yes
+	        		    	// Is self registration permitted?
+	        		    	if ( MiscUtil.canDoSelfRegistration( bs ) )
+	        		    	{
+	        		    		// Yes.
+	        		    		// Add the information needed to support the "Create new account" ui to the response.
+	        		    		MiscUtil.addCreateNewAccountDataToResponse( bs, request, model );
+	        		    	}
+	        			}
 	        		}
 	        	}
     		}

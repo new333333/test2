@@ -216,7 +216,7 @@ public class ModifyBinderController extends AbstractBinderController {
 			}
 			//Build the mashup beans
 			Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
-			DefinitionHelper.buildMashupBeans(this, binder, configDocument, model);
+			DefinitionHelper.buildMashupBeans(this, binder, configDocument, model, request );
 
 			model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 			path = WebKeys.VIEW_MODIFY_BINDER;

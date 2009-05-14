@@ -45,7 +45,7 @@
 <c:set var="formName">${renderResponse.namespace}fm</c:set>
 
 <ssf:form title='<%= NLT.get("administration.report.title.activityByUser") %>'>
-<table class="ss_style" width="100%"><tr><td>
+<table class="ss_style" width="100%"><tr><td nowrap>
 <form class="ss_style ss_form" 
 	action="<ssf:url webPath="reportDownload"/>" 
 	method="post" 

@@ -142,9 +142,18 @@ function ss_setAdministrationIframeSize${renderResponse.namespace}() {
 }
 
 function ss_showAdminMenuOption${renderResponse.namespace}(id, obj, action) {
+	var features;
+	
 	//If this is a request to show the error logs, don't pop-up
 	if (action == 'get_log_files') return true;
-	self.window.open(obj.href, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no");
+
+	features = "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no";
+
+	// If we are opening the "Activity By User" page, give the new window a width and height.
+	if ( action == 'activity_report_by_user' )
+		features += ',width=900px,height=500px';
+
+	self.window.open( obj.href, "_blank", features );
 	return false;
 }
 

@@ -98,7 +98,7 @@
 </c:if>
 					<tr>
 						<td align="right">&nbsp;</td>
-						<td align="right" >
+						<td align="right" nowrap >
 							<div style="margin-top: 1.5em; margin-bottom: .25em;">
 			    		  		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
 			    		  		<input type="reset" style="margin-left: 10px;" class="ss_submit" value="<ssf:nlt tag="button.reset"/>"/>

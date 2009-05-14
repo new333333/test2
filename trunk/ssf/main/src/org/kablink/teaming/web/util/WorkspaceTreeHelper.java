@@ -329,7 +329,7 @@ public class WorkspaceTreeHelper {
 			
 			//Build the mashup beans
 			Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
-			DefinitionHelper.buildMashupBeans(bs, binder, configDocument, model);
+			DefinitionHelper.buildMashupBeans(bs, binder, configDocument, model, request );
 			
 			String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
 			model.put(WebKeys.TYPE, type);

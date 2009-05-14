@@ -327,7 +327,7 @@ public class ModifyEntryController extends SAbstractController {
 
 			//Build the mashup beans
 			Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
-			DefinitionHelper.buildMashupBeans(this, entry.getParentBinder(), configDocument, model);
+			DefinitionHelper.buildMashupBeans(this, entry.getParentBinder(), configDocument, model, request );
 
 			if (elementToEdit.equals("")) {
 				path = WebKeys.VIEW_MODIFY_ENTRY;

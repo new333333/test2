@@ -789,7 +789,7 @@ public class ListFolderHelper {
 
 		//Build the mashup beans
 		Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
-		DefinitionHelper.buildMashupBeans(bs, folder, configDocument, model);
+		DefinitionHelper.buildMashupBeans(bs, folder, configDocument, model, req );
 		
 		//Build the navigation beans
 		BinderHelper.buildNavigationLinkBeans(bs, folder, model);

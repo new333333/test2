@@ -109,7 +109,10 @@
 	 */
 	function initTutorial()
 	{
-		var	initialState;
+		var initialState;
+		var lang;
+
+		lang = '${teamingLang}';
 
 		// Is the user looking at a landing page or his own workspace?
 		if ( isLandingPage() || isOwnWorkspace() )
@@ -136,6 +139,20 @@
 		{
 			// No
 			initialState = window.TUTORIAL_PANEL_EXPANDED;
+		}
+
+		// The video tutorials are only in English.  If a user is running in a language other than English
+		// we wan't to display the tutorial panel in its collapsed state.
+		// Is the user running in a language other than English?
+		if ( lang != 'en' )
+		{
+			// Yes
+			// Is the video tutorial panel visible?
+			if ( initialState != window.TUTORIAL_PANEL_CLOSED )
+			{
+				// Yes, set the tutorial panel as collapsed.
+				initialState = window.TUTORIAL_PANEL_COLLAPSED;
+			}
 		}
 
 		// If the user is looking at a landing page hide the "close tutorial" anchor.
