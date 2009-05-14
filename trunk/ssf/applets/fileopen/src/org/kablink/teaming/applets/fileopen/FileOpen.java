@@ -80,6 +80,7 @@ public class FileOpen extends JApplet implements Runnable {
     //
     ////////////////////////////////////////////////////////////////////////
     public void run () {
+        String msg;
     	fileOpen = this;
 		strFileName = getParameter(fileToOpen);
 		strEditorTypes = getParameter(editorType);
@@ -116,13 +117,20 @@ public class FileOpen extends JApplet implements Runnable {
                             command[2] = strEditorType[i] + " '"+strURL+"'";
                             //System.out.println("command: "+ command[0] + " " + command[1] + " " + command[2]);
                         } else {
-                        	String strOSErrMessage = "Operating System " + strOperatingSystem + " not Handled!"; 
-                        	System.out.println(uploadErrorMessage + ":\n " + strOSErrMessage);
-                        	makeJSAlertCall(uploadErrorMessage + ":\n" + strOSErrMessage);
+                        	msg = (uploadErrorMessage + ":\n Operating System " + strOperatingSystem + " not Handled!");
+                        	System.out.println(msg);
+                       		makeJSAlertCall(msg);
                         	return;
                         }
                         
+                        // Bugzilla 481096:  Only show a JavaScript
+                        // alert(...) for the data from the stdout and
+                        // stderr streams if the application returns a
+                        // non-0 exit code.
                         Process p = Runtime.getRuntime().exec(command);
+                        p.waitFor();
+                        int exitValue = p.exitValue();
+                        boolean alertOnOutput = (0 != exitValue);
                         
                         BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
                         BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
@@ -134,31 +142,39 @@ public class FileOpen extends JApplet implements Runnable {
                         	strOutputFromCommand += s;
                         }
                         if (!strOutputFromCommand.equals("")) {
-                        	System.out.println(editorErrorMessage + ":\n " + strOutputFromCommand);
-                        	makeJSAlertCall(editorErrorMessage + ":\n " + strOutputFromCommand);
+                        	msg = (editorErrorMessage + " (" + exitValue + "):\n " + strOutputFromCommand);
+                        	System.out.println(msg);
+                        	if (alertOnOutput) {
+                        		makeJSAlertCall(msg);
+                        	}
                         }
                         
+                        // read any errors from the attempted command
                         String strErrorFromCommand = "";
                         s = null;
-                        // read any errors from the attempted command
-                        
 	                    while ((s = stdError.readLine()) != null) {
 	                    	if (!blnEditorErrorEncountered) blnEditorErrorEncountered = true;
 	                    	strErrorFromCommand += s;
 	                    }
-	                    
                         if (!strErrorFromCommand.equals("")) {
-                        	System.out.println(editorErrorMessage + ":\n " + strErrorFromCommand);
-                        	makeJSAlertCall(editorErrorMessage + ":\n " + strErrorFromCommand);
+                        	msg = (editorErrorMessage + " (" + exitValue + "):\n " + strErrorFromCommand);
+                        	System.out.println(msg);
+                        	if (alertOnOutput) {
+                        		makeJSAlertCall(msg);
+                        	}
                         }
             		}
                 	catch(IOException ioe) {
-                    	System.out.println(editorErrorMessage + ": \n " + ioe.toString());
-                    	makeJSAlertCall(editorErrorMessage + ": \n" + ioe.toString());
+                		ioe.printStackTrace();
+                		msg = (editorErrorMessage + ": \n " + ioe.toString());
+                    	System.out.println(msg);
+                   		makeJSAlertCall(msg);
                 	}
                 	catch(Exception e) {
-                    	System.out.println(editorErrorMessage + ": \n " + e.toString());
-                    	makeJSAlertCall(editorErrorMessage + ": \n" + e.toString());
+                		e.printStackTrace();
+                		msg = (editorErrorMessage + ": \n " + e.toString());
+                    	System.out.println(msg);
+                   		makeJSAlertCall(msg);
                 	}
                 	finally {
                 		if (!blnEditorErrorEncountered)  break;
@@ -167,8 +183,10 @@ public class FileOpen extends JApplet implements Runnable {
 			}
     	}
     	catch(Exception e) {
-        	System.out.println(editorErrorMessage + ": \n " + e.toString());
-        	makeJSAlertCall(editorErrorMessage + ": \n" + e.toString());
+    		e.printStackTrace();
+    		msg = (editorErrorMessage + ": \n" + e.toString());
+        	System.out.println(msg);
+        	makeJSAlertCall(msg);
     	}
     	finally {
     		strFileName = "";
