@@ -54,12 +54,12 @@
   <div id="ss_branding">
     <c:if test="<%= !org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
 	    <a href="http://kablink.org">
-	      <img src="<html:rootPath/>images/pics/masthead/kablink_teaming.jpg" border="0"
+	      <img src="<html:rootPath/>images/pics/masthead/kablink_teaming.gif" border="0"
 	        <ssf:alt text="${ssProductTitle}"/> style="padding:6px 0px 0px 10px" />
 	    </a>
 	</c:if>
     <c:if test="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
-	    <img src="<html:rootPath/>images/pics/masthead/novell_teaming.png" border="0"
+	    <img src="<html:rootPath/>images/pics/masthead/novell_teaming.gif" border="0"
 	      <ssf:alt text="${ssProductTitle}"/> />
 	</c:if>
   </div>
