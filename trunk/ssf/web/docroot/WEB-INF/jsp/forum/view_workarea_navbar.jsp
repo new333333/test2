@@ -626,8 +626,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 				    windowState="${ss_urlWindowState}"
 			      	action="view_ws_listing"
 			      	binderId="${ssUser.workspaceId}"/>"
-              	><img src="<html:rootPath/>images/pics/masthead/ss_banner_guy.png" 
-              	  <ssf:alt tag=""/> width="30" height="34" border="0" 
+              	><img src="<html:rootPath/>images/pics/masthead/ss_banner_guy.gif" 
+              	  <ssf:alt tag=""/>  border="0" 
               	  style="vertical-align:middle" 
               	 />&nbsp;&nbsp;<c:if test="${ssUser.internalId == guestInternalId}"
               	 ><ssf:nlt tag="navigation.guestWorkspace"/></c:if
@@ -646,10 +646,10 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
        <td width="5%" align="right">
          <a href="" onClick="ss_showAbout('ss_aboutBoxDiv');return false;">
        		<c:if test="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
-	         	<img src="<html:rootPath/>images/pics/masthead/n_white.png" border="0"
+	         	<img src="<html:rootPath/>images/pics/masthead/n_white.gif" border="0"
 	         	  alt="<ssf:nlt tag="navigation.about"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt>"
-	         	  onMouseover="this.src='<html:rootPath/>images/pics/masthead/n_red.png';"
-	         	  onMouseout="this.src='<html:rootPath/>images/pics/masthead/n_white.png';"/>
+	         	  onMouseover="this.src='<html:rootPath/>images/pics/masthead/n_red.gif';"
+	         	  onMouseout="this.src='<html:rootPath/>images/pics/masthead/n_white.gif';"/>
        		</c:if>
        		<c:if test="<%= !org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
 	         	<img src="<html:rootPath/>images/pics/masthead/kablink_icon_small.png" border="0"
