@@ -289,7 +289,13 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     			exc = e;
     		}
     		if(SZoneConfig.getAdminUserName(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName())).equals(authentication.getName())) {
-    			return localProviders.get(zone).authenticate(authentication);
+    			result = localProviders.get(zone).authenticate(authentication);
+    			// This is not used for authentication or synchronization but merely to log the authenticator.
+    			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
+    					(String) result.getName(), (String) result.getCredentials(),
+    					false, false, true, 
+    					(Map) result.getPrincipal(), LoginInfo.AUTHENTICATOR_WEB);			
+    			return result;
     		}
     	}
     	if(exc != null)
