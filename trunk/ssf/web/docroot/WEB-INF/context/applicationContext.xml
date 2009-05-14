@@ -353,7 +353,7 @@
 	</bean>
 
 	<!-- Default Exception Handler Bean -->
-    <bean id="portletDefaultExceptionHandlerTemplate" class="org.springframework.web.portlet.handler.SimpleMappingExceptionResolver" lazy-init="true" abstract="true">
+    <bean id="portletDefaultExceptionHandlerTemplate" class="org.kablink.teaming.spring.web.portlet.handler.SimpleMappingExceptionResolver" lazy-init="true" abstract="true">
 		<property name="defaultErrorView"><value>common/defError</value></property>
 		<property name="exceptionMappings">
 			<props>
@@ -831,6 +831,7 @@
 				<value>aopallianceOpenSessionInViewInterceptor</value>
 				<!-- This must come after open-session-in-view -->
 				<value>aopallianceResolveRequestContextInterceptor</value>
+				<value>aopallianceLogContextInfoUponExceptionInterceptor</value>
 				<value>aopallianceMethodInvocationTraceInterceptor</value>
 			</list>
 		</property>
@@ -845,6 +846,8 @@
 	<bean id="aopallianceMethodInvocationTraceInterceptor" class="org.kablink.teaming.util.aopalliance.MethodInvocationTraceInterceptor"/>
 	
 	<bean id="aopallianceResolveRequestContextInterceptor" class="org.kablink.teaming.util.aopalliance.ResolveRequestContextInterceptor"/>
+
+	<bean id="aopallianceLogContextInfoUponExceptionInterceptor" class="org.kablink.teaming.util.aopalliance.LogContextInfoUponExceptionInterceptor"/>
 
 	<!-- referenced internally when viewing files and sending mail -->
 	<bean id="mimeTypes" class="org.springframework.mail.javamail.ConfigurableMimeFileTypeMap">
@@ -1039,6 +1042,7 @@ text/calendar											  ics
 				<value>aopallianceOpenSessionInViewInterceptor</value>
 				<!-- This must come after open-session-in-view -->
 				<value>aopallianceResolveRequestContextInterceptor</value>
+				<value>aopallianceLogContextInfoUponExceptionInterceptor</value>
 				<value>loginInfoInterceptor</value>
 			</list>
 		</property>

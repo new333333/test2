@@ -63,8 +63,8 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.BrowserSniffer;
+import org.kablink.util.Http;
 import org.kablink.util.Validator;
-
 
 public class LoginFilter  implements Filter {
 
@@ -127,7 +127,7 @@ public class LoginFilter  implements Filter {
 			chain.doFilter(req, res);										
 		}
 		else {				
-			String currentURL = getCurrentURL(req);
+			String currentURL = Http.getCompleteURL(req);
 			if(currentURL.contains("p_name=ss_mobile")) {
 				// Mobile interaction. Let it proceed as normal.
 				req.setAttribute(WebKeys.REFERER_URL, currentURL);
@@ -216,15 +216,6 @@ public class LoginFilter  implements Filter {
 			return true;
 		else
 			return false;
-	}
-	
-	protected String getCurrentURL(HttpServletRequest req) {
-		String url;
-		if(req.getQueryString() != null)
-			url = req.getRequestURL().append("?").append(req.getQueryString()).toString();
-		else
-			url = req.getRequestURL().toString();
-		return url;
 	}
 	
 	protected boolean isPathPermittedUnauthenticated(String path) {
