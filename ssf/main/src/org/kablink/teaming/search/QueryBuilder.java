@@ -34,6 +34,7 @@ package org.kablink.teaming.search;
 
 import java.net.URL;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -86,6 +87,12 @@ public class QueryBuilder {
 		}
 	}
 
+	public QueryBuilder(Long asUserId) {
+		this.userPrincipals = new HashSet();
+		this.userPrincipals.add(getProfileDao().loadUser(asUserId, RequestContextHolder.getRequestContext().getZoneId()).getId());
+		this.applicationPrincipals = null;
+	}
+
 	protected ProfileDao getProfileDao() {
 		return (ProfileDao)SpringContextUtil.getBean("profileDao");
 	}
@@ -94,7 +101,15 @@ public class QueryBuilder {
 		return buildQuery(domQuery, false);
 	}
 
+	public SearchObject buildQuery(Document domQuery, Long asUserId) {
+		return buildQuery(domQuery, false, asUserId);
+	}
+
 	public SearchObject buildQuery(Document domQuery, boolean ignoreAcls) {
+		return buildQuery(domQuery, false, null);
+	}
+
+	public SearchObject buildQuery(Document domQuery, boolean ignoreAcls, Long asUserId) {
 		SearchObject so = new SearchObject();
 
 		Element root = domQuery.getRootElement();
@@ -107,6 +122,21 @@ public class QueryBuilder {
 		so.setLanguage(lang);
 		
 		parseRootElement(root, so);
+		
+		//If searching as a different user, add in the acl for that user
+		if (asUserId != null) {
+			QueryBuilder aclQ = new QueryBuilder(asUserId);
+			String acls = getAclClauseForIds(aclQ.userPrincipals, asUserId);
+			if (acls.length() != 0) {
+				String q = so.getQueryString();
+				if (q.equalsIgnoreCase("(  )"))
+					q = "";
+				if (q.length() > 0)
+					q += "AND ";
+				q += acls;
+				so.setQueryString(q);
+			}
+		}
 
 		// add acl check to every query. (If it's the superuser doing this query, then this clause
 		// will return the empty string.

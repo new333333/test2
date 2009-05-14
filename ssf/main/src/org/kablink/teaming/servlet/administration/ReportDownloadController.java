@@ -84,6 +84,8 @@ public class ReportDownloadController extends  SAbstractController {
 		columnNames.put(ReportModule.BINDER_TITLE, "report.columns.title");
 		columnNames.put(ReportModule.ENTRY_TITLE, "report.columns.entryTitle");
 		columnNames.put(ReportModule.ENTITY, "report.columns.entity");
+		columnNames.put(ReportModule.ENTITY_PATH, "report.columns.entityPath");
+		columnNames.put(ReportModule.ENTITY_TYPE, "report.columns.entity");
 		columnNames.put(ReportModule.FOLDER, "report.columns.folder");
 		columnNames.put(ReportModule.USER_ID, "report.columns.user");
 		columnNames.put(ReportModule.USER_TITLE, "report.columns.user");
@@ -226,6 +228,16 @@ public class ReportDownloadController extends  SAbstractController {
 							ReportModule.ENTRY_TITLE,
 							ReportModule.ENTITY};
 				}
+			} else if ("accessByGuest".equals(reportType)) {
+				hasUsers = true;
+				String type = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, ReportModule.REPORT_TYPE_SUMMARY);
+		        User guest = getProfileModule().getGuestUser();
+		        Long userId = guest.getId();
+		        if (!memberIds.isEmpty()) userId = (Long)memberIds.toArray()[0];
+				report = getReportModule().generateAccessReportByUser(userId, startDate, endDate, type);
+				columns = new String[] {ReportModule.ENTITY_TYPE, 
+						ReportModule.BINDER_ID, 
+						ReportModule.ENTITY_PATH};
 			}
 			printReport(response.getOutputStream(), report, columns, hasUsers);
 			response.getOutputStream().flush();

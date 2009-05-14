@@ -653,6 +653,59 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return generateShortActivityByUserReportList(result, reportType);
 	}
 
+	public List<Map<String,Object>> generateAccessReportByUser(final Long userId,
+			final Date startDate, final Date endDate, final String reportType) {
+        final User user = RequestContextHolder.getRequestContext().getUser();
+        getAdminModule().testAccess(AdminOperation.report);
+
+        int returnCount = 1000000;
+        
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+
+		//Get the documents bean for the documents th the user just authored or modified
+		Map options = new HashMap();
+		String page = "0";
+		
+		String entriesPerPage = String.valueOf(returnCount);
+		options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(entriesPerPage));
+		
+		Integer searchUserOffset = 0;
+		Integer searchLuceneOffset = 0;
+		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
+		options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
+		
+		Integer maxHits = new Integer(entriesPerPage);
+		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
+		
+		Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits;
+		if (searchUserOffset > 0) {
+			intInternalNumberOfRecordsToBeFetched+=searchUserOffset;
+		}
+		options.put(ObjectKeys.SEARCH_MAX_HITS, intInternalNumberOfRecordsToBeFetched);
+
+		options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf("0"));
+		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
+		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+		
+		org.kablink.util.search.Criteria crit = SearchUtils.bindersByAccess(userId);
+		Map results = getBinderModule().executeSearchQuery(crit, offset, maxResults, userId);
+
+    	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+
+		for(Map item : items) {
+			Long binderId = Long.valueOf((String)item.get(Constants.DOCID_FIELD));
+			String binderPath = (String)item.get(Constants.ENTITY_PATH);
+			String binderType = (String)item.get(Constants.ENTITY_FIELD);
+			Map<String, Object> row = new HashMap<String, Object>();
+			report.add(row);
+			row.put(ReportModule.BINDER_ID, binderId);
+			row.put(ReportModule.ENTITY_TYPE, binderType);
+			row.put(ReportModule.ENTITY_PATH, binderPath);
+		}
+		return report;
+	}
+
 	public List<Map<String,Object>> generateLoginReport(final Date startDate, final Date endDate, 
 			String optionType, String sortType, String sortType2, Set memberIds) {
 		getAdminModule().checkAccess(AdminOperation.report);

@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.lucene.document.DateTools;
 import org.kablink.teaming.ObjectKeys;
@@ -210,4 +211,14 @@ public class SearchUtils {
     	return org.kablink.teaming.util.Utils.getZoneKey();
     }
 
+	public static Criteria bindersByAccess(Long userId)
+	{
+		String[] uids = new String[1];
+		uids[0] = String.valueOf(userId);
+		Criteria crit = new Criteria();
+		crit.add(eq(DOC_TYPE_FIELD, DOC_TYPE_BINDER));
+		crit.addOrder(Order.asc(ENTITY_PATH));
+		return crit;
+	}
+	
 }
